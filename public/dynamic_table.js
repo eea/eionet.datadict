@@ -139,15 +139,16 @@ function dt_clickobject(){
 // parameter represents the start of the input name eg."pos_"
 // NB! input id should end with row id
 function dt_setrownumbers(input_prefix){
-	if (input_prefix==null || input_prefix.length==0) input_prefix="pos_";
+
+	if (input_prefix==null || input_prefix.length==0)
+			input_prefix="pos_";
 
 	for (var i=1; i<=rows_len; i++){
 		r = rows.item(i-1);
-		inputs=r.getElementsByTagName("input");
+		inputs=document.getElementsByTagName("input");
 		for(j=0;j<inputs.length;j++) {
 			inp = inputs.item(j);
-			if (inp.name==input_prefix + r.id)
-			{
+			if (inp.name==input_prefix + r.id){
 				inp.value=i;
 			}
 		}

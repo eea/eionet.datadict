@@ -174,7 +174,6 @@ private String legalizeAlert(String in){
 	</head>
 	
 	<script language="JavaScript" src='script.js'></script>
-	
 	<script language="JavaScript">
 	
 		function submitForm(mode){
@@ -214,52 +213,6 @@ private String legalizeAlert(String in){
 				<%
 			}
 			%>
-		}
-		function saveChanges(){
-			tbl_obj.insertNumbers("pos_");
-			submitForm("edit_positions");
-		}
-		function clickLink(sUrl){
-			if (getChanged()==1){
-				if(!confirm("This link leads you to the next page, but you have changed the order of elements.\n Are you sure you want to loose the changes?"))
-					return;
-			}
-			window.location=sUrl;
-		}
-		function start() {
-			<%
-			if (!mode.equals("view")){ %>
-				tbl_obj=new dynamic_table("tbl"); //create dynamic_table object
-				<%
-			}
-			%>
-		}
-
-		//call to dynamic table methods. Originated from buttons or click on tr.
-		function sel_row(o){
-			tbl_obj.selectRow(o);
-		}
-		function moveRowUp(){
-			tbl_obj.moveup();
-			setChanged();
-		}
-		function moveRowDown(){
-			tbl_obj.movedown();
-			setChanged();
-		}
-		function moveFirst(){
-			tbl_obj.movefirst();
-			setChanged();
-		}
-		function moveLast(){
-			tbl_obj.movelast();
-			setChanged();
-		}
-		function setChanged(){
-			document.forms["form1"].elements["changed"].value = 1;
-		}
-		function getChanged(){
-			return document.forms["form1"].elements["changed"].value;
 		}
 		
 		function importCodes(){
@@ -444,14 +397,14 @@ private String legalizeAlert(String in){
 		definition = definition.length()>MAX_CELL_LEN ? definition.substring(0,MAX_CELL_LEN) + "..." : definition;
 		
 		%>
-		<tr id="<%=fxvID%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+		<tr id="<%=fxvID%>" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 			<% if (user != null) { %>
 				<td align="right" valign="top" style="padding-right:10">
-					<input type="checkbox" style="height:13;width:13" name="del_id" value="<%=fxvID%>" onclick="tbl_obj.clickOtherObject();"/>
+					<input type="checkbox" style="height:13;width:13" name="del_id" value="<%=fxvID%>"/>
 				</td>
 			<% } %>
 			<td valign="bottom" align="left" style="padding-left:5;padding-right:10">
-				<b><a href="javascript:clickLink('fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=edit&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>')">
+				<b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=edit&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>">
 					<%=Util.replaceTags(value)%>
 				</a></b>&#160;
 			</td>

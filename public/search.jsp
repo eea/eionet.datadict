@@ -476,8 +476,6 @@ else{ %>
 							if (attrValue == null) attrValue="";
 							collect_attrs.append(attrID + "|");
 							
-							System.out.println("===> added " + attrName);
-							
 							%>
 							<tr valign="top">
 								<td align="right" style="padding-right:10">

@@ -856,8 +856,8 @@
 					<%
 					String inh_text[]=new String[3];
 					inh_text[0] = "No inheritance";
-					inh_text[1] = "Inherit attribute values from parent level wtih possibilty to add new values";
-					inh_text[2] = "Inherit attribute values from parent level wtih possibilty to overwrite them";
+					inh_text[1] = "Inherit attribute values from parent level with possibilty to add new values";
+					inh_text[2] = "Inherit attribute values from parent level with possibilty to overwrite them";
 					int chk = 0;
 
 					if (!mode.equals("add")){

@@ -121,6 +121,7 @@ if (mode == null || mode.length()==0) { %>
 String tableIdf = request.getParameter("table_idf");
 String pns = request.getParameter("pns");
 String tableID = request.getParameter("table_id");
+String copy_tbl_id = request.getParameter("copy_tbl_id");
 
 if (mode.equals("view")){
 	if (Util.voidStr(tableID) && (Util.voidStr(tableIdf) || Util.voidStr(pns))){ %>
@@ -128,12 +129,19 @@ if (mode.equals("view")){
 		return;
 	}
 }
-else if (mode.equals("edit") || mode.equals("copy")){
+else if (mode.equals("edit")){
 	if (Util.voidStr(tableID)){ %>
-		<b>Missing ID!</b> <%
+		<b>Missing ID to edit!</b> <%
 		return;
 	}
 }
+else if (mode.equals("copy")){
+	if (Util.voidStr(copy_tbl_id)){ %>
+		<b>Missing ID to copy!</b> <%
+		return;
+	}
+}
+
 boolean latestRequested = mode.equals("view") && !Util.voidStr(tableIdf) && !Util.voidStr(pns);
 
 String dsID   = request.getParameter("ds_id");
@@ -229,7 +237,7 @@ if (request.getMethod().equals("POST")){
 		handler = new DsTableHandler(userConn, request, ctx);
 		handler.setUser(user);
 			
-        String copy_tbl_id = request.getParameter("copy_tbl_id");//copy table function
+        copy_tbl_id = request.getParameter("copy_tbl_id");//copy table function
         if (copy_tbl_id != null && copy_tbl_id.length()!=0){
 			handler.setVersioning(false);
 		}
@@ -304,6 +312,7 @@ if (request.getMethod().equals("POST")){
 		}
 		else if (mode.equals("copy")){
 			String id = handler.getLastInsertID();
+			System.out.println("siin ma olen nyyd, id = " + id);
 			if (id != null && id.length()!=0)
 				redirUrl = redirUrl + "dstable.jsp?mode=edit&table_id=" + id;
 			if (history!=null){
@@ -447,7 +456,15 @@ String attrValue = null;
 				if (!mode.equals("add") && dsTable.isWorkingCopy()){ %>
 					var b = confirm("This working copy will be deleted and the whole dataset released for others to edit! Click OK, if you want to continue. Otherwise click Cancel.");<%
 				}
-				else{ %>
+				else{
+					if (dataset!=null && dataset.getStatus().equals("Released")){ %>
+						var a = confirm("Please be aware that you are about to remove a table from a dataset definition " +
+						  		"in Released status. Unless you change the dataset definition's status back to something lower, " +
+						  		"this removal will become instantly visible for the public visitors! " +
+						  		"Click OK, if you want to continue. Otherwise click Cancel.");
+						if (a==false) return;<%
+					}
+					%>
 					var b = confirm("This table will be deleted! You will be asked if you want this to update the dataset's CheckInNo as well. Click OK, if you want to continue. Otherwise click Cancel.");<%
 				}
 				%>
@@ -553,6 +570,16 @@ String attrValue = null;
 		
 		function goTo(mode, id){
 			if (mode == "edit"){
+				<%
+				// warn about Released datasets
+				if (dataset!=null && dataset.getStatus().equals("Released")){ %>
+					var b = confirm("Please be aware that you are about to edit a table definition in a dataset definition " +
+						  			"in Released status. Unless you change the dataset definition's status back to something lower, " +
+						  			"your edits will become instantly visible for the public visitors after you check in this " +
+						  			"table definition! Click OK, if you want to continue. Otherwise click Cancel.");
+					if (b == false) return;<%
+				}
+				%>
 				document.location.assign("dstable.jsp?mode=edit&table_id=" + id + "&ds_id=<%=dsID%>&ds_name=<%=dsName%>");
 			}
 		}
@@ -930,79 +957,94 @@ String attrValue = null;
 								<!-- schema & MS Excel template-->
 								
 								<%
-								if (mode.equals("view")){ %>
-									<tr><td width="100%" height="10"></td></tr>
-									<tr>
-										<td width="100%" style="border: 1 solid #FF9900">
-											<table border="0" width="100%" cellspacing="0">
-												<%
-												// display schema link only for users that have a right to edit a dataset
-												if (user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u")){ %>
-													<tr>
-														<td width="73%" valign="middle" align="left">
-															Create an XML Schema for this table
-														</td>
-														<td width="27%" valign="middle" align="left">
-															<a target="_blank" href="GetSchema?id=TBL<%=tableID%>">
-																<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
-															</a>
-														</td>
-													</tr><%
-												}
-												
-												if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli")){ %>
-													<tr>
-														<td width="73%" valign="middle" align="left">
-															Create an instance XML for this table
-														</td>
-														<td width="27%" valign="middle" align="left">
-															<a target="_blank" href="GetXmlInstance?id=<%=tableID%>&type=tbl">
-																<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
-															</a>
-														</td>
-													</tr><%
-												}
-												
-												if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xfrm")){ %>
-													<tr>
-														<td width="73%" valign="middle" align="left">
-															Create an XForm for this table
-														</td>
-														<td width="27%" valign="middle" align="left">
-															<a target="_blank" href="GetXForm?id=<%=tableID%>">
-																<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
-															</a>
-														</td>
-													</tr><%
-												}
-												%>
-												
-												<tr>
-													<td width="73%" valign="middle" align="left">
-														Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
-													</td>
-													<td width="27%" valign="middle" align="left">
-														<a href="GetXls?obj_type=tbl&obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
-													</td>
-												</tr>
-												
-												<%
-												if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u")){
-													%>
-													<tr height="20">
-														<td colspan="2" valign="bottom" align="left">
-															<span class="barfont">
-																[ <a target="_blank" onclick="pop(this.href)" href="GetCache?obj_id=<%=tableID%>&obj_type=tbl&idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
-															</span>
-														</td>
-													</tr>
+								if (mode.equals("view")){
+									
+									boolean dispAll = editPrm;
+									boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
+									boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
+									boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
+									boolean dispXForm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xfrm");
+									boolean dispCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
+									
+									if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispXForm || dispCache){
+										%>
+										<tr><td width="100%" height="10"></td></tr>
+										<tr>
+											<td width="100%" style="border: 1 solid #FF9900">
+												<table border="0" width="100%" cellspacing="0">
 													<%
-												}
-												%>
-												
-											</table>
-										</td>
-									</tr><%
+													// XML Schema link
+													if (dispAll || dispXmlSchema){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Create an XML Schema for this table
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a target="_blank" href="GetSchema?id=TBL<%=tableID%>">
+																	<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+																</a>
+															</td>
+														</tr><%
+													}
+													
+													// XML Instance link
+													if (dispAll || dispXmlInstance){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Create an instance XML for this table
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a target="_blank" href="GetXmlInstance?id=<%=tableID%>&type=tbl">
+																	<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+																</a>
+															</td>
+														</tr><%
+													}
+													
+													// XForm link
+													if (dispAll || dispXForm){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Create an XForm for this table
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a target="_blank" href="GetXForm?id=<%=tableID%>">
+																	<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+																</a>
+															</td>
+														</tr><%
+													}
+													
+													// MS Excel link
+													if (dispAll || dispXLS){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a href="GetXls?obj_type=tbl&obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
+															</td>
+														</tr><%
+													}
+													
+													// display the link about cache
+													if (dispAll || dispCache){
+														%>
+														<tr height="20">
+															<td colspan="2" valign="bottom" align="left">
+																<span class="barfont">
+																	[ <a target="_blank" onclick="pop(this.href)" href="GetCache?obj_id=<%=tableID%>&obj_type=tbl&idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
+																</span>
+															</td>
+														</tr>
+														<%
+													}
+													%>
+													
+												</table>
+											</td>
+										</tr><%
+									}
 								}
 								%>
 														

@@ -40,6 +40,7 @@ private String getValue(String id, String mode, DataElement dataElement, DataEle
 		2 - inherited value
 */
 private String getValue(String id, int val, String mode, DataElement dataElement, DataElement newDataElement){
+	
 	if (id==null) return null;
 	DElemAttribute attr = null;
 
@@ -179,6 +180,7 @@ private String legalizeAlert(String in){
 			String delem_id = request.getParameter("delem_id");
 			String delemIdf = request.getParameter("delem_idf");
 			String pns = request.getParameter("pns");
+			String copy_elem_id = request.getParameter("copy_elem_id");
 			
 			if (mode.equals("view")){
 				if (Util.voidStr(delem_id) && Util.voidStr(delemIdf)){ %>
@@ -186,12 +188,19 @@ private String legalizeAlert(String in){
 					return;
 				}
 			}
-			else if (mode.equals("edit") || mode.equals("copy")){
+			else if (mode.equals("edit")){
 				if (Util.voidStr(delem_id)){ %>
-					<b>Missing ID!</b> <%
+					<b>Missing ID to edit!</b> <%
 					return;
 				}
 			}
+			else if (mode.equals("copy")){
+				if (Util.voidStr(copy_elem_id)){ %>
+					<b>Missing ID to copy!</b> <%
+					return;
+				}
+			}
+			
 			boolean latestRequested = mode.equals("view") && !Util.voidStr(delemIdf);
 			
 			if (mode.equals("add"))
@@ -279,8 +288,7 @@ private String legalizeAlert(String in){
 					
 					if ((mode.equals("add") && !wasPick) || mode.equals("copy")){
 						String id = handler.getLastInsertID();
-						if (id != null && id.length()!=0)
-							redirUrl = redirUrl + "data_element.jsp?mode=edit&delem_id=" + id;
+						if (id != null && id.length()!=0) redirUrl = redirUrl + "data_element.jsp?mode=edit&delem_id=" + id;
 						if (history!=null){
 						int idx = history.getCurrentIndex();
 							if (idx>0)
@@ -451,8 +459,6 @@ private String legalizeAlert(String in){
 			    											dataElement.getIdentifier(), "elm");
 			if (mode.equals("edit") && user!=null){
 				
-				System.out.println("===> 1");
-				
 				// see if element is checked out
 				if (Util.voidStr(workingUser)){
 					
@@ -468,6 +474,7 @@ private String legalizeAlert(String in){
 					    return;
 				    }
 				    
+				    //String copyID = verMan.checkOutElm(delem_id, elmCommon);
 				    String copyID = verMan.checkOut(delem_id, "elm");
 				    if (!delem_id.equals(copyID)){
 					    
@@ -489,13 +496,9 @@ private String legalizeAlert(String in){
 			    }
 			    else if (dataElement!=null && !dataElement.isWorkingCopy()){
 				    
-				    System.out.println("===> 2");
-				    
 				    // element is checked out by THIS user.
 				    // If it's not the working copy, send the user to it
 				    String copyID = verMan.getWorkingCopyID(dataElement);
-				    
-				    System.out.println("===> 3, copyID = " + copyID);
 				    
 				    if (copyID!=null && !copyID.equals(delem_id)){
 					    
@@ -524,6 +527,14 @@ private String legalizeAlert(String in){
 			if (complexAttrs == null) complexAttrs = new Vector();
 			
 			DElemAttribute attribute = null;
+			
+			// we get the Registration status in order to know to warn if somebody wnats to edit a Released definition
+			String regStatus = !elmCommon || dataElement==null ? null : dataElement.getStatus();
+			
+			// set up referring tables (if common element)
+        	Vector refTables = null;
+        	if (!mode.equals("add") && elmCommon)
+        		refTables = searchEngine.getReferringTables(delem_id);
 %>
 
 <html>
@@ -594,8 +605,15 @@ private String legalizeAlert(String in){
 				if (elmCommon){
 					if (!mode.equals("add") && dataElement.isWorkingCopy())
 						confirmDelTxt = "This working copy will be deleted! Click OK, if you want to continue. Otherwise click Cancel.";
-					else
-						confirmDelTxt = "This element will be deleted! Click OK, if you want to continue. Otherwise click Cancel.";
+					else if (refTables!=null && refTables.size()>0){
+						confirmDelTxt = "Please note that this common element definition is used in some tables " +
+										"(see the relevant list on this page)! If you still want to delete it, click OK. " +
+										"Otherwise click Cancel.";
+					}
+					else if (regStatus!=null && regStatus.equals("Released")){
+						confirmDelTxt = "Please note that a common element definition in Released status might be referenced by other " +
+										"applications! If you still want to delete it, click OK. Otherwise click Cancel.";
+					}
 				}
 				else{
 					if (!mode.equals("add") && dataElement.isWorkingCopy())
@@ -722,6 +740,24 @@ private String legalizeAlert(String in){
 		
     	function edit(){
 	    	<%
+	    	// check if this is a common element in Released status
+			if (regStatus!=null && regStatus.equals("Released")){ %>
+				var a = confirm("Please be aware that this is a definition in Released status. Unless " +
+					  			"you change the status back to something lower, your edits will become " +
+					  			"instantly visible for the public visitors after you check in the definition! " +
+					  			"Click OK, if you want to continue. Otherwise click Cancel.");
+				if (a == false) return;<%
+			}
+			
+			// check if this is a non-common element in a Released dataset
+			if (dataset!=null && dataset.getStatus().equals("Released")){ %>
+				var b = confirm("Please be aware that you are about to edit an element definition in a dataset definition " +
+					  			"in Released status. Unless you change the dataset definition's status back to something lower, " +
+					  			"your edits will become instantly visible for the public visitors after you check in this " +
+					  			"element definition! Click OK, if you want to continue. Otherwise click Cancel.");
+				if (b == false) return;<%
+			}
+				
 	    	String modeString = new String("mode=view&");
 	    	String qryStr = request.getQueryString();
 	    	int modeStart = qryStr.indexOf(modeString);
@@ -935,16 +971,7 @@ private String legalizeAlert(String in){
 			
 			return false;
 		}
-		
-		<%
-		if (dataElement!=null && elmCommon){%>
-			function viewHistory(){
-				var url = "elm_history.jsp?id=<%=dataElement.getID()%>";
-				pop(url);
-			}<%
-		}
-		%>
-		
+				
 	</script>
 </head>
 
@@ -952,14 +979,29 @@ private String legalizeAlert(String in){
 			
 String attrID = null;
 String attrValue = null;
-%>
-			
-<body>
 
-<%@ include file="header.htm" %>
+boolean popup = request.getParameter("popup")!=null;
 
-<table border="0">
-    <tr valign="top">
+if (popup){ %>	
+
+	<body class="popup">
+	
+	<div class="popuphead">
+		<h1>Data Dictionary</h1>
+		<hr/>
+		<div align="right">
+			<form name="close" action="javascript:window.close()">
+				<input type="submit" class="smallbutton" value="Close"/>
+			</form>
+		</div>
+	</div>
+	<div><%
+}
+else{ %>
+	<body>
+	<%@ include file="header.htm" %>
+	<table border="0">
+    	<tr valign="top">
         <td nowrap="true" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
@@ -971,7 +1013,9 @@ String attrValue = null;
                 <jsp:param name="back" value="true"/>
             </jsp:include>
 		        
-			<div style="margin-left:30">
+			<div style="margin-left:30"><%
+} // end if not popup else
+%>
 		        
 			<form name="form1" id="form1" method="POST" action="data_element.jsp">
 			
@@ -1022,7 +1066,7 @@ String attrValue = null;
 						<td width="28%" height="40" align="right">
 							<%
 							// the buttons displayed in view mode
-							if (mode.equals("view") && dataElement!=null){
+							if (!popup && mode.equals("view") && dataElement!=null){
 								if (user!=null){
 									
 									// set some helper flags
@@ -1056,12 +1100,12 @@ String attrValue = null;
 									}
 									
 									if (elmCommon && editPrm){ %>
-										<input type="button" class="smallbutton" value="History" onclick="viewHistory()"/> <%
+										<input type="button" class="smallbutton" value="History" onclick="popNovr('elm_history.jsp?id=<%=dataElement.getID()%>')"/> <%
 									}
 								}
 							}
 							// the working copy part
-							else if (dataElement!=null && dataElement.isWorkingCopy()){ %>
+							else if (!popup && dataElement!=null && dataElement.isWorkingCopy()){ %>
 								<span class="wrkcopy">Working copy</span><%
 							}
 							%>							
@@ -1111,11 +1155,8 @@ String attrValue = null;
 										<input type="button" class="mediumbuttonb" value="Add" disabled="true"/><%
 									}
 									else { %>
-										<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
-										<%
-										if (!elmCommon){ %>
-											&nbsp;<input type="button" class="mediumbuttonb" value="Copy" onclick="copyElem()" title="Copies data element attributes from existing data element"/><%
-										}
+										<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
+										<input type="button" class="mediumbuttonb" value="Copy" onclick="copyElem()" title="Copies data element attributes from existing data element"/><%
 									}
 								}
 								// edit case
@@ -1174,11 +1215,6 @@ String attrValue = null;
 		                    	if (!mode.equals("add") && !elmCommon && dataset!=null)
 		                    		fKeys = searchEngine.getFKRelationsElm(delem_id, dataset.getID());
 		                    	
-		                    	// set up referring tables (if common element)
-		                    	Vector refTables = null;
-		                    	if (!mode.equals("add") && elmCommon)
-		                    		refTables = searchEngine.getReferringTables(delem_id);
-		                    	
 		                    	if (mode.equals("view")){
 			                    	Vector quicklinks = new Vector();
 			                    	
@@ -1201,24 +1237,29 @@ String attrValue = null;
 								
 								<%
 								// display schema link only in view mode and only for users that have a right to edit a dataset
-								if (mode.equals("view") && user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u")){ %>
-									<tr height="10"><td width="100%"></td></tr>
-									<tr>
-										<td width="100%" style="border: 1 solid #FF9900">
-											<table border="0" width="100%" cellspacing="0">
-												<tr>
-													<td width="73%" valign="middle" align="left">
-														Create an XML Schema for this element
-													</td>
-													<td width="27%" valign="middle" align="left">
-														<a target="_blank" href="GetSchema?id=ELM<%=delem_id%>">
-															<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
-														</a>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr><%
+								if (mode.equals("view")){
+									boolean dispAll = editPrm;
+									boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
+									//user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u")
+									if (!popup && (dispAll || dispXmlSchema)){ %>
+										<tr height="10"><td width="100%"></td></tr>
+										<tr>
+											<td width="100%" style="border: 1 solid #FF9900">
+												<table border="0" width="100%" cellspacing="0">
+													<tr>
+														<td width="73%" valign="middle" align="left">
+															Create an XML Schema for this element
+														</td>
+														<td width="27%" valign="middle" align="left">
+															<a target="_blank" href="GetSchema?id=ELM<%=delem_id%>">
+																<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+															</a>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr><%
+									}
 								}
 								%>
 								
@@ -1473,7 +1514,6 @@ String attrValue = null;
 											<!-- RegistrationStatus, relevant for common elements only -->
 								    		<%
 								    		if (elmCommon){
-									    		String regStatus = dataElement!=null ? dataElement.getStatus() : null;
 									    		%>
 									    		<tr>
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
@@ -1642,13 +1682,15 @@ String attrValue = null;
 												
 												String disabled = user == null ? "disabled" : "";
 												boolean dispMultiple = attribute.getDisplayMultiple().equals("1") ? true:false;
-												boolean inherit = attribute.getInheritable().equals("0") ? false:true;
+												boolean inherit = attribute.getInheritable().equals("0") || elmCommon ? false : true;
 												
 												Vector multiValues=null;
 												String inheritedValue=null;
 								
 												if (!mode.equals("view")){
-													if (inherit) inheritedValue = getValue(attrID, 2, mode, dataElement, newDataElement);
+													if (inherit){
+														inheritedValue = getValue(attrID, 2, mode, dataElement, newDataElement);
+													}
 														
 													if (mode.equals("edit")){
 														if (dispMultiple){
@@ -2394,8 +2436,12 @@ String attrValue = null;
 				
 			</form>
 			
-			<jsp:include page="footer.jsp" flush="true">
-			</jsp:include>
+			<%
+			if (!popup){ %>
+				<jsp:include page="footer.jsp" flush="true">
+				</jsp:include><%
+			}
+			%>
 			
 			</div>
 		</td>

@@ -100,8 +100,6 @@
 		String query = request.getQueryString() == null ? "" : request.getQueryString();
 		String searchUrl =  request.getRequestURI() + "?" + query;
 		
-		System.out.println("===> setting oSearchUrlAttrName to " + searchUrl);
-		
        	session.setAttribute(oSearchUrlAttrName, searchUrl);
    	}
    	
@@ -112,8 +110,6 @@
 	if (rs!=null){
 		if (rs.isAuth && user==null || !rs.isAuth && user!=null){
 			session.removeAttribute(oSearchCacheAttrName);
-			
-			System.out.println("===> redir to " + (String)session.getAttribute(oSearchUrlAttrName));
 			
 			response.sendRedirect((String)session.getAttribute(oSearchUrlAttrName));
 		}
@@ -397,6 +393,12 @@
 							</td>
 							<td width="25%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
 								<%=Util.replaceTags(ds_name)%>
+								<%
+								// mark locked datasets
+								if (dstPrm && topWorkingUser!=null){ %>
+									<font title="<%=topWorkingUser%>" color="red">*</font><%
+			    				}
+			    				%>
 							</td>
 						</tr>
 						<%

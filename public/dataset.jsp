@@ -1,5 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!private String currentUrl=null;%>
 
@@ -321,13 +320,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 			String regStatus = dataset!=null ? dataset.getStatus() : null;
 			%>
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<html>
 <head>
     <title>Data Dictionary</title>
-    <link type="text/css" rel="stylesheet" href="eionet_new.css"/>
-    <script language="javascript" src='script.js'></script>
-    <script language="javascript" src='modal_dialog.js'></script>
-    <script language="javascript">
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+    <link type="text/css" rel="stylesheet" href="eionet_new.css">
+    <script language="JavaScript" src='script.js'></script>
+    <script language="JavaScript" src='modal_dialog.js'></script>
+    <script language="JavaScript">
     
 		function deleteDatasetReady(){
 			document.forms["form1"].elements["mode"].value = "delete";
@@ -476,6 +476,15 @@ private Vector getValues(String id, String mode, Vector attributes){
 		
 		function goTo(mode, id){
 			if (mode == "edit"){
+				<%
+				if (regStatus!=null && regStatus.equals("Released")){ %>
+					var b =  confirm("Please be aware that this is a definition in Released status. Unless " +
+						  			 "you change the status back to something lower, your edits will become " +
+						  			 "instantly visible for the public visitors after you check in the definition! " +
+						  			 "Click OK, if you want to continue. Otherwise click Cancel.");
+					if (b == false) return;<%
+				}
+				%>
 				document.location.assign("dataset.jsp?mode=edit&ds_id=" + id);
 			}
 		}
@@ -716,7 +725,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 										}
 									}
 								} %>
-								<input type="button" class="smallbutton" value="History" onclick="pop('dst_history.jsp?ds_id=<%=ds_id%>')"/><%
+								<input type="button" class="smallbutton" value="History" onclick="popNovr('dst_history.jsp?ds_id=<%=ds_id%>')"/><%
 							}
 							// the working copy part
 							else if (dataset!=null && dataset.isWorkingCopy()){								
@@ -768,7 +777,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								if (mode.equals("add")){
 									boolean iPrm = user==null ? false : SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i");
 									if (!iPrm){ %>
-										<input class="mediumbuttonb" type="button" value="Add" disabled="disabled"/><%
+										<input class="mediumbuttonb" type="button" value="Add" disabled="true"/><%
 									}
 									else{ %>
 										<input class="mediumbuttonb" type="button" value="Add" onclick="submitForm('add')"/><%
@@ -776,7 +785,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								}
 								// edit case
 								else if (mode.equals("edit")){
-									String isDisabled = editPrm ? "" : "disabled='disabled'";
+									String isDisabled = editPrm ? "" : "disabled";
 									%>
 									<input type="button" class="mediumbuttonb" value="Save" <%=isDisabled%> onclick="submitForm('edit')"/>&nbsp;
 									<%
@@ -836,103 +845,121 @@ private Vector getValues(String id, String mode, Vector attributes){
 								<!-- pdfs & schema & docs -->
 								
 								<%
-		                    	if (mode.equals("view")){ %>
-		                    		<tr><td width="100%" height="10"></td></tr>
-									<tr>
-										<td width="100%" style="border: 1 solid #FF9900">
-											<table border="0" width="100%" cellspacing="0">
-												<tr>
-													<td width="73%" valign="middle" align="left">
-														Create technical specification for this dataflow
-													</td>
-													<td width="27%" valign="middle" align="left">
-														<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN">
-															<img border="0" src="images/icon_pdf.jpg" width="17" height="18"/>
-														</a>
-													</td>
-												</tr>
-												
-												<%
-												// display schema link only for users that have a right to edit a dataset
-												if (user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u")){ %>
-													<tr>
-														<td width="73%" valign="middle" align="left">
-															Create an XML Schema for this dataflow
-														</td>
-														<td width="27%" valign="middle" align="left">
-															<a target="_blank" href="GetSchema?id=DST<%=ds_id%>">
-																<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
-															</a>
-														</td>
-													</tr><%
-												}
-												
-												if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli")){ %>
-													<tr>
-														<td width="73%" valign="middle" align="left">
-															Create an instance XML for this dataset
-														</td>
-														<td width="27%" valign="middle" align="left">
-															<a target="_blank" href="GetXmlInstance?id=<%=dataset.getID()%>&type=dst">
-																<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
-															</a>
-														</td>
-													</tr><%
-												}
-												%>
-												
-												<tr>
-													<td width="73%" valign="middle" align="left">
-														Create an MS Excel template for this dataflow&nbsp;<a target="_blank" href="help.jsp?screen=dataset&area=excel" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
-													</td>
-													<td width="27%" valign="middle" align="left">
-														<a href="GetXls?obj_type=dst&obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
-													</td>
-												</tr>
-												
-												<%
-												Vector docs = searchEngine.getDocs(ds_id);
-												for (int i=0; docs!=null && i<docs.size(); i++){
-													Hashtable hash = (Hashtable)docs.get(i);
-													String md5   = (String)hash.get("md5");
-													String file  = (String)hash.get("file");
-													String icon  = (String)hash.get("icon");												
-													String title = (String)hash.get("title");
-													%>
-													<tr>
-														<td width="73%" valign="middle" align="left"><%=title%></td>
-														<td width="27%" valign="middle" align="left">
-															<a target="_blank" href="DocDownload?file=<%=md5%>"><img border="0" src="images/<%=icon%>" width="16" height="18"/></a>
-															<%
-															if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){
-																%>&nbsp;<a target="_blank" href="DocUpload?delete=<%=md5%>&idf=<%=dataset.getIdentifier()%>"><img border="0" src="images/delete.gif" width="14" height="14"/></a><%
-															}
-															%>
-														</td>
-													</tr>
+		                    	if (mode.equals("view")){
+			                    	
+			                    	Vector docs = searchEngine.getDocs(ds_id);
+			                    	boolean dispAll = editPrm;
+			                    	boolean dispPDF = dataset!=null && dataset.displayCreateLink("PDF");
+									boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
+									boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
+									boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
+									boolean dispUploadAndCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
+									boolean dispDocs = docs!=null && docs.size()>0;
+									
+									if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispUploadAndCache || dispDocs){
+				                    	%>
+			                    		<tr><td width="100%" height="10"></td></tr>
+										<tr>
+											<td width="100%" style="border: 1 solid #FF9900">
+												<table border="0" width="100%" cellspacing="0">
+													
 													<%
-												}
-												%>
-												
-												<%
-												if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){
+													// PDF link
+													if (dispAll || dispPDF){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Create technical specification for this dataset
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN">
+																	<img border="0" src="images/icon_pdf.jpg" width="17" height="18"/>
+																</a>
+															</td>
+														</tr><%
+													}
+													
+													// XML Schema link
+													if (dispAll || dispXmlSchema){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Create an XML Schema for this dataset
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a target="_blank" href="GetSchema?id=DST<%=ds_id%>">
+																	<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+																</a>
+															</td>
+														</tr><%
+													}
+													
+													// XML Instance link
+													if (dispAll || dispXmlInstance){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Create an instance XML for this dataset
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a target="_blank" href="GetXmlInstance?id=<%=dataset.getID()%>&type=dst">
+																	<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+																</a>
+															</td>
+														</tr><%
+													}
+													
+													// MS Excel link
+													if (dispAll || dispXLS){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Create an MS Excel template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&area=excel" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a href="GetXls?obj_type=dst&obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
+															</td>
+														</tr><%
+													}
+													
+													// display links to uploaded documents
+													for (int i=0; docs!=null && i<docs.size(); i++){
+														Hashtable hash = (Hashtable)docs.get(i);
+														String md5   = (String)hash.get("md5");
+														String file  = (String)hash.get("file");
+														String icon  = (String)hash.get("icon");												
+														String title = (String)hash.get("title");
+														%>
+														<tr>
+															<td width="73%" valign="middle" align="left"><%=title%></td>
+															<td width="27%" valign="middle" align="left">
+																<a target="_blank" href="DocDownload?file=<%=md5%>"><img border="0" src="images/<%=icon%>" width="16" height="18"/></a>
+																<%
+																if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){
+																	%>&nbsp;<a target="_blank" href="DocUpload?delete=<%=md5%>&idf=<%=dataset.getIdentifier()%>"><img border="0" src="images/delete.gif" width="14" height="14"/></a><%
+																}
+																%>
+															</td>
+														</tr>
+														<%
+													}
+													
+													// display the "Upload document" and "Manage cache" links
+													if (dispAll || dispUploadAndCache){
+														%>
+														<tr height="20">
+															<td colspan="2" valign="bottom" align="left">
+																<span class="barfont">
+																	[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Upload a document ...</a> ]
+																</span>
+																<span class="barfont">
+																	[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&obj_type=dst&idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Open cache ...</a> ]
+																</span>
+															</td>
+														</tr>
+														<%
+													}
 													%>
-													<tr height="20">
-														<td colspan="2" valign="bottom" align="left">
-															<span class="barfont">
-																[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Upload a document ...</a> ]
-															</span>
-															<span class="barfont">
-																[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&obj_type=dst&idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Open cache ...</a> ]
-															</span>
-														</td>
-													</tr>
-													<%
-												}
-												%>
-											</table>
-										</td>
-									</tr><%
+												</table>
+											</td>
+										</tr><%
+									}
 								}
 								%>
 								
@@ -1084,7 +1111,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												String width  = attribute.getDisplayWidth();
 												String height = attribute.getDisplayHeight();
 												
-												String disabled = user == null ? "disabled='disabled'" : "";
+												String disabled = user == null ? "disabled" : "";
 								
 												boolean dispMultiple = attribute.getDisplayMultiple().equals("1") ? true:false;
 												Vector multiValues=null;
@@ -1266,8 +1293,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 											if (!mode.equals("add") && editPrm){
 												String checkedPDF = dataset.displayCreateLink("PDF") ? "checked" : "";
 												String checkedXLS = dataset.displayCreateLink("XLS") ? "checked" : "";
-												int checkedCount = checkedPDF.length()>0 ? 1 : 0;
-												if (checkedXLS.length()>0) checkedCount++;
+												String checkedXmlSchema = dataset.displayCreateLink("XMLSCHEMA") ? "checked" : "";
 												%>
 									    		<tr>
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
@@ -1288,11 +1314,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
 														<%
 														if(mode.equals("view")){ %>
-															<input type="checkbox" disabled="disabled" <%=checkedPDF%>>
+															<input type="checkbox" disabled <%=checkedPDF%>>
 																<span class="barfont">Technical specification in PDF format</span>
 															</input><br/>
-															<input type="checkbox" disabled="disabled" <%=checkedXLS%>>
+															<input type="checkbox" disabled <%=checkedXLS%>>
 																<span class="barfont">MS Excel template</span>
+															</input><br/>
+															<input type="checkbox" disabled <%=checkedXmlSchema%>>
+																<span class="barfont">The definition on XML Schema format</span>
 															</input><%
 														}
 														else{ %>
@@ -1301,6 +1330,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 															</input><br/>
 															<input type="checkbox" name="disp_create_links" value="XLS" <%=checkedXLS%>>
 																<span class="barfont">MS Excel template</span>
+															</input><br/>
+															<input type="checkbox" name="disp_create_links" value="XMLSCHEMA" <%=checkedXmlSchema%>>
+																<span class="barfont">The definition on XML Schema format</span>
 															</input><%
 														}
 														%>
@@ -1400,7 +1432,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														if (mode.equals("view") && dataset.getVisual()!=null){
 															
 															if (imgVisual){ %>
-																<a target="_blank" href="visuals/<%=dsVisual%>" onfocus="blur()" onclick="pop(this.href)">
+																<a target="_blank" href="visuals/<%=dsVisual%>" onFocus="blur()" onclick="pop(this.href)">
 																	<img src="visuals/<%=dsVisual%>" border="0" height="100px" width="100px"/>
 																</a><br/>
 																[Click thumbnail to view large version of the data model]<%

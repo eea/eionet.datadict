@@ -399,17 +399,28 @@ else{ %>
 								<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
 									<%=Util.replaceTags(delem_name)%>
 								</a><%
+								if (userHasEditRights && workingUser!=null){ %>
+		    						<font title="<%=workingUser%>" color="red">*</font><%
+		    					}
 							}
 							else{ %>
-								<a href="javascript:pickElem(<%=dataElement.getID()%>, <%=displayed+1%>)">
-		    						<%=Util.replaceTags(delem_name)%>
-		    					</a><%
+								<table width="100%" cellspacing="0" cellpadding="0">
+									<tr>
+										<td>
+											<a href="javascript:pickElem(<%=dataElement.getID()%>, <%=displayed+1%>)">
+					    						<%=Util.replaceTags(delem_name)%>
+					    					</a><%
+					    					if (userHasEditRights && workingUser!=null){ %>
+					    						<font title="<%=workingUser%>" color="red">*</font><%
+					    					}
+					    					%>
+					    				</td>
+					    				<td align="right" class="barfont">
+					    					[<a target="_blank" href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view&amp;popup" onclick="pop(this.href)">details</a>]
+					    				</td>
+				    				</tr>
+			    				</table><%
 	    					}
-	    					
-	    					if (userHasEditRights && workingUser!=null){ %>
-	    						<font title="<%=workingUser%>" color="red">*</font><%
-	    					}
-	    					
 							%>
 						</td>
 						<td width="20%" class="<%=styleClass%>">
@@ -455,16 +466,30 @@ else{ %>
 								if (!popup){ %>
 									<a href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view">
 										<%=Util.replaceTags(oEntry.oShortName)%>
-									</a><%
+									</a>
+									<%
+									if (userHasEditRights && oEntry.topWorkingUser!=null){ %>
+										<font title="<%=oEntry.topWorkingUser%>" color="red">*</font><%
+									}
 								}
 								else{ %>
-									<a href="javascript:pickElem(<%=oEntry.oID%>, <%=displayed+1%>)">
-			    						<%=Util.replaceTags(oEntry.oShortName)%>
-			    					</a><%
-								}
-								
-								if (userHasEditRights && oEntry.topWorkingUser!=null){ %>
-									<font title="<%=oEntry.topWorkingUser%>" color="red">*</font><%
+									<table width="100%" cellspacing="0" cellpadding="0">
+										<tr>
+											<td>
+												<a href="javascript:pickElem(<%=oEntry.oID%>, <%=displayed+1%>)">
+						    						<%=Util.replaceTags(oEntry.oShortName)%>
+						    					</a>
+						    					<%
+												if (userHasEditRights && oEntry.topWorkingUser!=null){ %>
+													<font title="<%=oEntry.topWorkingUser%>" color="red">*</font><%
+												}
+												%>
+						    				</td>
+						    				<td align="right" class="barfont">
+						    					[<a target="_blank" href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view&amp;popup" onclick="pop(this.href)">details</a>]
+						    				</td>
+					    				</tr>
+				    				</table><%
 								}
 								%>
 							</td>						
@@ -499,6 +524,11 @@ else{ %>
 			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
         	<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
 			<input name='SearchType' type='hidden' value='NoSearch'/>
+			<%
+			if (popup){ %>
+				<input type="hidden" name="ctx" value="popup"/><%
+			}
+			%>
 		</form>
 		
 			</div>

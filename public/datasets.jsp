@@ -539,7 +539,8 @@
 					
 					String regStatus = dataset!=null ? dataset.getStatus() : null;
 					boolean clickable = searchEngine.skipByRegStatus(regStatus) ? false : true;
-					String linkDisabled = clickable ? "" : "disabled";
+					//String linkDisabled = clickable ? "" : "disabled";
+					String linkDisabled = clickable ? "" : "class=\"disabled\"";
 					
 					// for countries show only Recorded & Released
 					/*if (regStatus!=null){
@@ -653,9 +654,9 @@
 								<img border="0" src="<%=statusImg%>" width="56" height="12"/><%
 							}
 							else{ %>
-								<a disabled href="javascript:;" style="text-decoration:none;font-size:8pt"><b><%=statusTxt%></b></a><%
+								<span style="color:gray;text-decoration:none;font-size:8pt"><b><%=statusTxt%></b></span><%
 							}
-							%>							
+							%>
 						</td>
 						<td width="45%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
 							<%
@@ -714,12 +715,14 @@
                     
                     c_SearchResultEntry oEntry;
                     for (int i=0;i<oResultSet.oElements.size();i++) {
+	                    
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
-                        String linkDisabled = oEntry.clickable ? "" : "disabled";
                         
+                        String linkDisabled = oEntry.clickable ? "" : "class=\"disabled\"";
+                        String dsLink = oEntry.clickable ? "dataset.jsp?mode=view&ds_id=" + oEntry.oID : "javascript:;";
                         String statusImg = "images/" + Util.getStatusImage(oEntry.getRegStatus());
+                        String statusTxt   = Util.getStatusRadics(oEntry.getRegStatus());
                         String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
-                        
                         String alertReleased = oEntry.getRegStatus().equals("Released") ? "onclick='alertReleased(" + oEntry.oID + ")'" : "";
                         
                         %>
@@ -737,7 +740,7 @@
 							%>
 							
 							<td width="30%" class="<%=styleClass%>" title="<%=oEntry.oFullName%>">
-								<a <%=linkDisabled%> href="dataset.jsp?ds_id=<%=oEntry.oID%>&amp;mode=view">
+								<a <%=linkDisabled%> href="<%=dsLink%>">
 								<%=Util.replaceTags(oEntry.oFName)%></a>
 							</td>
 							
@@ -750,7 +753,14 @@
 							%>
 							
 							<td width="12%" class="<%=styleClass%>">
-								<img border="0" src="<%=statusImg%>" width="56" height="12"/>
+								<%
+								if (oEntry.clickable){ %>
+									<img border="0" src="<%=statusImg%>" width="56" height="12"/><%
+								}
+								else{ %>
+									<span style="color:gray;text-decoration:none;font-size:8pt"><b><%=statusTxt%></b></span><%
+								}
+								%>
 							</td>
 							
 							<td width="45%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
@@ -759,7 +769,7 @@
 								for (int c=0; tables!=null && c<tables.size(); c++){
 				
 									DsTable table = (DsTable)tables.get(c);
-									String tableLink = "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + oEntry.oID + "&ds_name=" + oEntry.oShortName;
+									String tableLink = oEntry.clickable ? "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + oEntry.oID + "&ds_name=" + oEntry.oShortName : "javascript:;";
 									if (wrkCopies){ %>
 										<%=Util.replaceTags(table.getShortName())%><%
 									}
