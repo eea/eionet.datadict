@@ -1,4 +1,4 @@
-<%@page import="eionet.util.SecurityUtil,com.tee.xmlserver.AppUserIF"%>
+<%@page import="com.tee.uit.security.AccessController, com.tee.uit.security.AccessControlListIF, eionet.util.SecurityUtil,com.tee.xmlserver.AppUserIF"%>
 
 <table cellspacing="0" cellpadding="0" border="0">
 
@@ -33,14 +33,20 @@
   
 	<%
   	if (_user!=null && _user.isAuthentic()) {
+	  	
+	  	String prms=AccessController.getPermissions(_user.getUserName());
+	  	boolean clnPrm = prms.indexOf(",/:x,")==-1 ? false : true;
+	  	
     	%>
 	    <tr><td>&nbsp;</td></tr>
 	    <tr><td align="left"><span class="head0">Administration</span></td></tr>	    
 	    <tr><td align="right"><a onMouseOut="Out('img4')" onMouseOver="Over('img4')" href="attributes.jsp"><img alt="" border="0" src="../images/off.gif" name="img4" width="16" height="13"><img border="0" src="../images/button_attributes.gif" width="84" height="13"></a></td></tr>		
 		<!--tr><td align="right"><a onMouseOut="Out('img5')" onMouseOver="Over('img5')" href="namespaces.jsp"><img alt="" border="0" src="../images/off.gif" name="img5" width="16" height="13"><img border="0" src="../images/button_namespaces.gif" width="84" height="13"></a></td></tr-->
 		<tr><td align="right"><a onMouseOut="Out('img6')" onMouseOver="Over('img6')" href="import.jsp"><img alt="" border="0" src="../images/off.gif" name="img6" width="16" height="13"><img border="0" src="../images/import.gif" width="84" height="13"></a></td></tr>
-		<tr><td align="right"><a onMouseOut="Out('img7')" onMouseOver="Over('img7')" href="clean.jsp"><img alt="" border="0" src="../images/off.gif" name="img7" width="16" height="13"><img border="0" src="../images/button_cleanup.gif" width="84" height="13"></a></td></tr>
 		<%
+		if (clnPrm){ %>
+			<tr><td align="right"><a onMouseOut="Out('img7')" onMouseOver="Over('img7')" href="clean.jsp"><img alt="" border="0" src="../images/off.gif" name="img7" width="16" height="13"><img border="0" src="../images/button_cleanup.gif" width="84" height="13"></a></td></tr><%
+		}
 	}
 	%>
 
