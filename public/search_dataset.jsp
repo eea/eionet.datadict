@@ -183,7 +183,7 @@ private String setDefaultAttrs(String name){
 							<font class="head00">Search for a dataset definition</font>
 						</td>
 						<td align="right">
-							<a target="_blank" href="help.jsp?screen=search_dataset&area=pagehelp">
+							<a target="_blank" href="help.jsp?screen=search_dataset&area=pagehelp" onclick="pop(this.href)">
 								<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
 							</a>
 						</td>
@@ -198,12 +198,12 @@ private String setDefaultAttrs(String name){
 							<b>Short name</b>
 						</td>
 						<td>
-							<a target="_blank" href="identification.html#short_name">
+							<a target="_blank" href="identification.html#short_name" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
-							<input type="text" class="smalltext" size="50" name="short_name" value="<%=short_name%>"/>
+							<input type="text" class="smalltext" size="59" name="short_name" value="<%=short_name%>"/>
 						</td>
 					</tr>
 					
@@ -212,12 +212,12 @@ private String setDefaultAttrs(String name){
 							<b>Identifier</b>
 						</td>
 						<td>
-							<a target="_blank" href="identification.html">
+							<a target="_blank" href="identification.html" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
-							<input type="text" class="smalltext" size="50" name="idfier" value="<%=idfier%>"/>
+							<input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>"/>
 						</td>
 					</tr>
 
@@ -240,12 +240,12 @@ private String setDefaultAttrs(String name){
 										<b><%=attrName%></b>
 									</td>
 									<td>
-										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 										</a>
 									</td>
 									<td colspan="2">
-										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
+										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=attrValue%>"/>
 									</td>
 								</tr>
 								<%
@@ -271,12 +271,12 @@ private String setDefaultAttrs(String name){
 									<b><%=attrName%></b>
 								</td>
 								<td>
-									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 									</a>
 								</td>
 								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
+									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value="<%=attrValue%>"/>
 								</td>
 								<td>
 									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
@@ -297,12 +297,12 @@ private String setDefaultAttrs(String name){
 									<b><%=attrName%></b>
 								</td>
 								<td>
-									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 									</a>
 								</td>
 								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50" value=""/>
+									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
 								</td>
 								<td>
 									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>

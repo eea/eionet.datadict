@@ -302,6 +302,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 			if (complexAttrs == null) complexAttrs = new Vector();
 			tables = searchEngine.getDatasetTables(ds_id, true);
 			
+			Vector rodLinks = dataset==null ? null : searchEngine.getRodLinks(dataset.getID());
+			
 			// set a flag if element has history
 			boolean hasHistory = false;
 			if (mode.equals("edit") && dataset!=null){
@@ -323,10 +325,6 @@ private Vector getValues(String id, String mode, Vector attributes){
     
     	var dlgwin = null;
     
-    	function openSchema(){
-			window.open("station.xsd",null, "height=400,width=600,status=no,toolbar=no,menubar=no,location=no,scrollbars=yes,top=100,left=100");
-		}
-		
 		function deleteDatasetReady(){
 			
 			/*alert(document.forms["form1"].elements["complete"].value);
@@ -452,21 +450,6 @@ private Vector getValues(String id, String mode, Vector attributes){
 				return false;
 		}
 
-		function openTables(uri){
-			uri = uri + "&open=true";
-			wElems = window.open(uri,"DatasetTables","height=500,width=670,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=yes");
-			if (window.focus) {wElems.focus()}
-		}
-
-		function complexAttrs(url){
-					wComplexAttrs = window.open(url,"ComplexAttributes","height=600,width=600,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
-					if (window.focus) {wComplexAttrs.focus()}
-		}
-		function complexAttr(url){
-					wComplexAttrs = window.open(url,"ComplexAttribute","height=600,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
-					if (window.focus) {wComplexAttrs.focus()}
-		}
-		
 		function checkIn(){
 			
 			//openDialog("yesno_dialog.html", "Do you want to increment the dataset's internal version?", retVersionUpd,100, 400);
@@ -486,11 +469,6 @@ private Vector getValues(String id, String mode, Vector attributes){
 			document.forms["form1"].elements["upd_version"].value = v;
 			
 			submitCheckIn();
-		}
-		
-		function viewHistory(){
-			var url = "dst_history.jsp?ds_id=<%=ds_id%>";
-			window.open(url,null,"height=400,width=580,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=yes,location=yes");
 		}
 		
 		function goTo(mode, id){
@@ -682,6 +660,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 				}
 				
 				String topWorkingUser = null;
+				boolean topFree = false;
 				
 				String verb = "View";
 				if (mode.equals("add"))
@@ -707,7 +686,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 							else if (mode.equals("add"))
 								hlpScreen = "dataset_add";
 							%>
-							<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" /></a>
+							<a href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp" onclick="pop(this.href)" target="_blank">
+								<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+							</a>
 						</td>
 					</tr>
 	                <tr>
@@ -721,7 +702,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								if (user!=null){
 									// set the flag indicating if the corresponding namespace is in use
 									topWorkingUser = verMan.getWorkingUser(dataset.getNamespaceID());
-									boolean topFree = topWorkingUser==null ? true : false;
+									topFree = topWorkingUser==null ? true : false;
 										
 									boolean inWorkByMe = workingUser==null ?
 											 false :
@@ -741,7 +722,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 										}
 									}
 								} %>
-								<input type="button" class="smallbutton" value="History" onclick="viewHistory()"/><%
+								<input type="button" class="smallbutton" value="History" onclick="pop('dst_history.jsp?ds_id=<%=ds_id%>')"/><%
 							}
 							// the working copy part
 							else if (dataset!=null && dataset.isWorkingCopy()){								
@@ -847,6 +828,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 			                    		quicklinks.add("Tables | tables");
 			                    	if (complexAttrs!=null && complexAttrs.size()>0)
 			                    		quicklinks.add("Complex attributes | cattrs");
+			                    	if (rodLinks!=null && rodLinks.size()>0)
+			                    		quicklinks.add("Obligations in ROD | rodlinks");
 			                    	
 			                    	request.setAttribute("quicklinks", quicklinks);
 			                    	%>
@@ -887,7 +870,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												
 												<tr>
 													<td width="73%" valign="middle" align="left">
-														Create an MS Excel template for this dataflow&nbsp;<a target="_blank" href="help.jsp?screen=dataset&area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
+														Create an MS Excel template for this dataflow&nbsp;<a target="_blank" href="help.jsp?screen=dataset&area=excel" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
 													</td>
 													<td width="27%" valign="middle" align="left">
 														<a href="GetXls?obj_type=dst&obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
@@ -924,10 +907,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<tr height="20">
 														<td colspan="2" valign="bottom" align="left">
 															<span class="barfont">
-																[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&idf=<%=dataset.getIdentifier()%>">Upload a document ...</a> ]
+																[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Upload a document ...</a> ]
 															</span>
 															<span class="barfont">
-																[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&obj_type=dst&idf=<%=dataset.getIdentifier()%>">Open cache ...</a> ]
+																[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&obj_type=dst&idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Open cache ...</a> ]
 															</span>
 														</td>
 													</tr>
@@ -965,7 +948,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		<tr>
 												<td width="<%=titleWidth%>%" class="short_name">Short name</td>
 												<td width="4%" class="short_name">
-													<a target="_blank" href="identification.html#short_name">
+													<a target="_blank" href="identification.html#short_name" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 													</a>
 												</td>
@@ -1004,7 +987,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													RegistrationStatus
 												</td>
 												<td width="4%" class="simple_attr_help<%=isOdd%>">
-													<a target="_blank" href="statuses.html">
+													<a target="_blank" href="statuses.html" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 													</a>
 												</td>
@@ -1090,8 +1073,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														<%=attribute.getShortName()%>
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<!-- a target="_blank" href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view" -->
-														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 														</a>
 													</td>
@@ -1225,7 +1207,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		}
 																		%>
 																	</select>
-																	<a target="_blank" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=attribute.getShortName()%>&amp;parent_type=attr">
+																	<a target="_blank" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=attribute.getShortName()%>&amp;parent_type=attr" onclick="pop(this.href)">
 																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 																	</a>
 																	<%
@@ -1261,7 +1243,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														LastCheckInNo
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<a target="_blank" href="identification.html#version">
+														<a target="_blank" href="identification.html#version" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 														</a>
 													</td>
@@ -1287,7 +1269,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													Identifier
 												</td>
 												<td width="4%" class="simple_attr_help<%=isOdd%>">
-													<a target="_blank" href="identification.html">
+													<a target="_blank" href="identification.html" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 													</a>
 												</td>
@@ -1341,7 +1323,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														if (mode.equals("view") && dataset.getVisual()!=null){
 															
 															if (imgVisual){ %>
-																<a target="_blank" href="visuals/<%=dsVisual%>" onFocus="blur()">
+																<a target="_blank" href="visuals/<%=dsVisual%>" onFocus="blur()" onclick="pop(this.href)">
 																	<img src="visuals/<%=dsVisual%>" border="0" height="100px" width="100px"/>
 																</a><br/>
 																[Click thumbnail to view large version of the data model]<%
@@ -1355,7 +1337,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														
 														// model link
 														if (mode.equals("edit") && user!=null){ %>
-															[Click <a href="javascript:openUrl('dsvisual.jsp?ds_id=<%=ds_id%>')"><b>HERE</b></a> to manage the model of this dataset]
+															[Click <a href="dsvisual.jsp?ds_id=<%=ds_id%>"><b>HERE</b></a> to manage the model of this dataset]
 															<%
 														}
 														%>
@@ -1370,7 +1352,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 										<!-- tables list -->
 										
 										<%
-										if ((!mode.equals("add") && user!=null) || (mode.equals("view") && tables!=null && tables.size()>0)){
+										if (mode.equals("view") && tables!=null && tables.size()>0 || mode.equals("view") && user!=null && editPrm && topFree){
 											
 											colspan = user==null ? 1 : 2;
 											
@@ -1382,10 +1364,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 											%>
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 												
-												<% if (mode.equals("view")){ %>
-													<tr height="10"><td colspan="<%=String.valueOf(colspan)%>"></td></tr><%
-												} %>
-												
+												<tr height="10"><td colspan="<%=String.valueOf(colspan)%>"></td></tr>
 												<tr>
 													<td width="34%">
 														<b>Dataset tables<a name="tables"></a></b>
@@ -1393,9 +1372,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 													
 													<%
 													// tables link
-													if (user!=null){ %>
+													if (user!=null && editPrm && topFree){ %>
 														<td class="barfont" width="66%">
-															[Click <a href="javascript:openUrl('dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=ds_name%>')"><b>HERE</b></a> to manage tables of this dataset]
+															[Click <a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=ds_name%>"><b>HERE</b></a> to manage tables of this dataset]
 														</td><%
 													}
 													%>
@@ -1438,6 +1417,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 											    															  table.getIdentifier(), "tbl");
 								
 																	String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());																
+																	
+																	String escapedName = Util.replaceTags(tblName);
 																	%>
 																																		
 																	<tr>
@@ -1452,8 +1433,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 																				hasMarkedTables = true;
 																			}
 																			%>
-																			<a href="<%=tableLink%>">																				
-																				<%=Util.replaceTags(tblName)%>
+																			<a href="<%=tableLink%>" title="<%=escapedName%>">
+																				<%=escapedName%>
 																			</a>
 																		</td>
 																		<td width="50%" class="dst_tbls">
@@ -1483,6 +1464,87 @@ private Vector getValues(String id, String mode, Vector attributes){
 										}
 										%>
 										
+										<!-- rod links -->
+										
+										<%
+										if ((mode.equals("edit") && user!=null) || (mode.equals("view") && rodLinks!=null && rodLinks.size()>0)){
+											
+											// horizontal separator 1
+											if (!separ1displayed){ %>
+												<%@ include file="hor_separator.jsp" %><%
+												separ1displayed = true;
+											}
+											
+											%>
+										
+											<table border="0" width="100%" cellspacing="0" cellpadding="3">
+											
+												<% if (mode.equals("view")){ %>
+													<tr height="10"><td width="100%" colspan="2"></td></tr><%
+												} %>
+											
+												<!-- title & link part -->
+												<tr>
+													<td width="34%">
+														<b>Obligations in ROD<a name="rodlinks"></a></b>
+													</td>
+													<td width="66%" class="barfont">
+														<%
+														// the link
+														if (mode.equals("edit") && user!=null){
+															String dstrodLink = "dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&dst_id=" + dataset.getID() + "&dst_name=" + dataset.getShortName();
+															%>
+															[Click <a href="<%=dstrodLink%>"><b>HERE</b></a> to manage the dataset's links to ROD]
+															<%
+														}
+														%>
+													</td>
+												</tr>
+												
+												<!-- table part -->
+												<%
+												if (mode.equals("view") && rodLinks!=null && rodLinks.size()>0){%>
+													<tr>
+														<td width="100%" colspan="2">
+															<table border="1" width="100%" bordercolorlight="#C0C0C0" cellspacing="0" cellpadding="2" bordercolordark="#C0C0C0">
+																<tr>
+																	<th width="20%" class="tbl_elms">Obligation</th>
+																	<th width="40%" class="tbl_elms">Legal instrument</th>
+																	<th width="40%" class="tbl_elms">Details</th>																	
+																</tr>
+																<%
+																// rows
+																for (int i=0; i<rodLinks.size(); i++){
+																	
+																	Hashtable rodLink = (Hashtable)rodLinks.get(i);
+																	String raTitle = (String)rodLink.get("ra-title");
+																	String liTitle = (String)rodLink.get("li-title");
+																	String raDetails = (String)rodLink.get("ra-url");
+																	
+																	%>
+																	<tr>
+																		<td width="20%" class="tbl_elms">
+																			<%=Util.replaceTags(raTitle)%>
+																		</td>
+																		<td width="40%" class="tbl_elms">
+																			<%=Util.replaceTags(liTitle)%>
+																		</td>
+																		<td width="40%" class="tbl_elms">
+																			<a target="_blank" href="<%=raDetails%>"><%=Util.replaceTags(raDetails)%></a>
+																		</td>																		
+																	</tr><%
+																}
+																%>
+															</table>
+														</td>
+													</tr><%
+												}
+												%>
+											</table>
+											<%
+										}
+										%>
+										
 										
 										<!-- complex attributes -->
 										
@@ -1505,7 +1567,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
 														<td class="barfont" width="66%">
-															[Click <a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=ds_name%>&amp;ds=true')"><b>HERE</b></a> to manage complex attributes of this dataset]
+															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=ds_name%>&amp;ds=true"><b>HERE</b></a> to manage complex attributes of this dataset]
 														</td><%
 													}
 													%>
@@ -1531,13 +1593,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 																	
 																	<tr>
 																		<td width="29%" class="complex_attr_title<%=isOdd%>">
-																			<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=ds_name%>&amp;ds=true')" title="Click here to view all the fields">
+																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=ds_name%>&amp;ds=true" title="Click here to view all the fields">
 																				<%=attrName%>
 																			</a>
 																		</td>
 																		<td width="4%" class="complex_attr_help<%=isOdd%>">
-																			<!-- a target="_blank" href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=COMPLEX&amp;mode=view" -->
-																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
+																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href)">
 																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 																			</a>
 																		</td>

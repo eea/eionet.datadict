@@ -153,13 +153,19 @@
 		</script>
 	</head>
 
-<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;"
-		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" onload="onLoad()">
-<div style="margin-left:30">
-	<br>
-	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-	<br>
-	<br>
+<body class="popup" onload="onLoad()">
+
+<div class="popuphead">
+	<h1>Data Dictionary</h1>
+	<hr/>
+	<div align="right">
+		<form name="close" action="javascript:window.close()">
+			<input type="submit" class="smallbutton" value="Close"/>
+		</form>
+	</div>
+</div>
+
+<div>
 	<form name="form1" onsubmit="ok()">
 	<table>
 		<%

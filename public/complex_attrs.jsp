@@ -206,11 +206,24 @@ private String legalizeAlert(String in){
 				window.location.replace(url);
 			}
 			
+			function load(){
+				resize();
+			}
+			
+			function resize(){
+		    	window.resizeTo(700, 700);
+			}
+			
 	</script>
-<body class="popup">
+<body class="popup" onload="load()">
 <div class="popuphead">
 	<h1>Data Dictionary</h1>
 	<hr/>
+	<div align="right">
+		<form name="close" action="javascript:window.close()">
+			<input type="submit" class="smallbutton" value="Close"/>
+		</form>
+	</div>
 </div>
 
 <form name="form1" method="POST" action="complex_attrs.jsp">
@@ -222,7 +235,7 @@ private String legalizeAlert(String in){
 
 	<tr>
 		<td colspan="2" align="right">
-			<a target="_blank" href="help.jsp?screen=complex_attrs&area=pagehelp">
+			<a target="_blank" href="help.jsp?screen=complex_attrs&area=pagehelp" onclick="pop(this.href)">
 				<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"/>
 			</a>
 		</td>
@@ -280,15 +293,11 @@ private String legalizeAlert(String in){
 				</select>&#160;
 				
 				<%
-				if (user != null && isWorkingCopy){
-					%>
-					<input class="smallbutton" type="button" value="Add new" onclick="addNew()"/>
-					<%
+				if (user != null && isWorkingCopy){ %>
+					<input class="smallbutton" type="button" value="Add new" onclick="addNew()"/> <%
 				}
-				else{
-					%>
-					<input class="smallbutton" type="button" value="Add new" disabled />
-					<%
+				else{ %>
+					<input class="smallbutton" type="button" value="Add new" disabled /> <%
 				}
 				%>
 				

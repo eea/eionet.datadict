@@ -140,7 +140,7 @@ String disabled = user == null ? "disabled" : "";
 				
 				<tr>
 					<td align="right">
-						<a target="_blank" href="help.jsp?screen=foreign_key_rel&area=pagehelp">
+						<a target="_blank" href="help.jsp?screen=foreign_key_rel&area=pagehelp" onclick="pop(this.href)">
 							<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
 						</a>
 					</td>
@@ -194,7 +194,7 @@ String disabled = user == null ? "disabled" : "";
 						}
 						%>
 					</select>&nbsp;
-					<a target="_blank" href="help.jsp?screen=foreign_key_rel&area=cardinality">
+					<a target="_blank" href="help.jsp?screen=foreign_key_rel&area=cardinality" onclick="pop(this.href)">
 						<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 					</a>
 				</td>

@@ -395,7 +395,9 @@
 					%>
 				</td>
 				<td align="right">
-					<a target="_blank" href="help.jsp?screen=restore_datasets&area=pagehelp"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"></a><br/>
+					<a target="_blank" href="help.jsp?screen=restore_datasets&area=pagehelp" onclick="pop(this.href)">
+						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page">
+					</a><br/>
 				</td>
 				
 			</tr>
@@ -420,7 +422,7 @@
 								<b>Last CheckIn No</b>
 							</td>
 							<td align="left" width="40%">
-								<a target="_blank" href="help.jsp?screen=datasets&area=version">
+								<a target="_blank" href="help.jsp?screen=datasets&area=version" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>
@@ -434,7 +436,7 @@
 								<b>Tables</b>
 							</td>
 							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=datasets&area=tables">
+								<a target="_blank" href="help.jsp?screen=datasets&area=tables" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>

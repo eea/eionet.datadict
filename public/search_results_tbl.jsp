@@ -197,7 +197,9 @@
 				<!-- search buttons -->
 				
 				<td align="right" colspan="2">
-					<a target="_blank" href="help.jsp?screen=tables&area=pagehelp"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"></a><br/>
+					<a target="_blank" href="help.jsp?screen=tables&area=pagehelp" onclick="pop(this.href)">
+						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page">
+					</a><br/>
 					<a href="search_table.jsp"><img src="images/search.jpg" border=0 alt="Search tables"></a><br/>
 				</td>
 			</tr>

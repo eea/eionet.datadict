@@ -201,7 +201,7 @@ private String legalizeAlert(String in){
 			<span class="head00">Fields of <span class="title2" color="#006666"><%=attr_name%></span></span>
 		</td>		
 		<td align="right">
-			<a target="_blank" href="help.jsp?screen=complex_attr_fields&area=pagehelp">
+			<a target="_blank" href="help.jsp?screen=complex_attr_fields&area=pagehelp" onclick="pop(this.href)">
 				<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
 			</a>
 		</td>

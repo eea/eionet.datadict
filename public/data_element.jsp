@@ -763,40 +763,6 @@ private String legalizeAlert(String in){
 				return false;
 		}
 		
-		function subelems(uri){
-			uri = uri + "&open=true";
-			wSubElems = window.open(uri,"SubElements","height=700,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=yes");
-			if (window.focus) {wSubElems.focus()}
-		}
-
-		function ch1values(url){
-					wCh1Values = window.open(url,"AllowableValues","height=600,width=800,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
-					if (window.focus) {wCh1Values.focus()}
-		}
-		
-		function complexAttrs(url){
-					wComplexAttrs = window.open(url,"ComplexAttributes","height=600,width=600,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
-					if (window.focus) {wComplexAttrs.focus()}
-		}
-		function complexAttr(url){
-					wComplexAttrs = window.open(url,"ComplexAttribute","height=600,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
-					if (window.focus) {wComplexAttrs.focus()}
-		}
-		
-		function printable(url){
-					wPrintablePage = window.open(url + "&open=true","PrintablePage","height=600,width=700,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=yes,location=no");
-					if (window.focus) {wPrintablePage.focus()}
-		}
-		
-		function openDatasetPick(){
-	    	wPick = window.open("dspick.jsp","PickDataset",'height=400,width=400,status=yes,toolbar=no,menubar=no,location=no,scrollbars=yes');
-    	}
-    	
-    	//function setPickedDataset(dsName, dsID){
-	    //	document.forms["form1"].ds_name.value=dsName;
-	    //	document.forms["form1"].ds_id.value=dsID;
-    	//}
-    	
     	function edit(){
 	    	<%
 	    	String modeString = new String("mode=view&");
@@ -966,14 +932,15 @@ private String legalizeAlert(String in){
 			wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
 			if (window.focus) {wAdd.focus()}
 		}
+		
 		function pickElem(id, name){
-			//alert(id);
+			
 			document.forms["form1"].elements["copy_elem_id"].value=id;
 			document.forms["form1"].elements["mode"].value = "copy";
 			document.forms["form1"].submit();
-
 			return true;
 		}
+		
 		function openUrl(url){
 			if (document.forms["form1"].elements["changed"].value=="1"){
 				if (confirm_saving()){
@@ -1055,7 +1022,9 @@ String attrValue = null;
 							else if (mode.equals("add"))
 								hlpScreen = "element_add";
 							%>
-							<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" /></a>
+							<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp" onclick="pop(this.href)">
+								<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+							</a>
 						</td>
 					</tr>
 	                <tr>
@@ -1256,7 +1225,7 @@ String attrValue = null;
 											<tr>
 												<td width="7%"><b>Type</b></td>
 												<td width="6%">
-													<a target="_blank" href="types.html">
+													<a target="_blank" href="types.html" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 													</a>
 												</td>
@@ -1308,7 +1277,7 @@ String attrValue = null;
 								    		<tr>
 												<td width="<%=titleWidth%>%" class="short_name">Short name</td>
 												<td width="4%" class="short_name">
-													<a target="_blank" href="identification.html#short_name">
+													<a target="_blank" href="identification.html#short_name" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 													</a>
 												</td>
@@ -1347,7 +1316,7 @@ String attrValue = null;
 														Dataset
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<a target="_blank" href="identification.html#dataset">
+														<a target="_blank" href="identification.html#dataset" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 														</a>
 													</td>
@@ -1419,7 +1388,7 @@ String attrValue = null;
 														Table
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<a target="_blank" href="identification.html#table">
+														<a target="_blank" href="identification.html#table" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 														</a>
 													</td>
@@ -1490,7 +1459,7 @@ String attrValue = null;
 													RegistrationStatus
 												</td>
 												<td width="4%" class="simple_attr_help<%=isOdd%>">
-													<a target="_blank" href="statuses.html">
+													<a target="_blank" href="statuses.html" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 													</a>
 												</td>
@@ -1531,7 +1500,7 @@ String attrValue = null;
 														GIS type
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<a target="_blank" href="help.jsp?screen=element&area=GIS">
+														<a target="_blank" href="help.jsp?screen=element&area=GIS" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 														</a>
 													</td>
@@ -1654,8 +1623,7 @@ String attrValue = null;
 														<%=attribute.getShortName()%>
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<!-- a target="_blank" href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view" -->
-														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 														</a>
 													</td>
@@ -1679,7 +1647,7 @@ String attrValue = null;
 															}
 															// thumbnail
 															if (mode.equals("view") && !Util.voidStr(attrValue)){ %>
-																<a target="_blank" href="visuals/<%=attrValue%>" onFocus="blur()">
+																<a target="_blank" href="visuals/<%=attrValue%>" onFocus="blur()" onclick="pop(this.href)">
 																	<img src="visuals/<%=attrValue%>" border="0" height="100px" width="100px"/>
 																</a><br/><%
 															}
@@ -1688,7 +1656,7 @@ String attrValue = null;
 																String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
 																%>
 																<span class="barfont">
-																	[Click <a target="_blank" href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=dataElement.getShortName()%>&amp;attr_name=<%=attribute.getShortName()%>"><b>HERE</b></a> to <%=actionText%>]
+																	[Click <a target="_blank" onclick="pop(this.href)" href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=dataElement.getShortName()%>&amp;attr_name=<%=attribute.getShortName()%>"><b>HERE</b></a> to <%=actionText%>]
 																</span><%
 															}
 														}
@@ -1823,7 +1791,7 @@ String attrValue = null;
 																		}
 																		%>
 																	</select>
-																	<a target="_blank" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=attribute.getShortName()%>&amp;parent_type=attr">
+																	<a target="_blank" onclick="pop(this.href)" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=attribute.getShortName()%>&amp;parent_type=attr">
 																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 																	</a>
 																	<%
@@ -1844,6 +1812,50 @@ String attrValue = null;
 							    			%>
 								    		<!-- end dynamic attributes -->
 								    		
+								    		<!-- IsRodParam -->
+								    		<%
+								    		boolean isRodParam = mode.equals("add") ? true : dataElement.isRodParameter();
+								    		%>
+								    		<tr>
+												<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+													Is ROD parameter
+												</td>
+												<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<a target="_blank" href="help.jsp?screen=element&area=is_rod_param" onclick="pop(this.href)">
+														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+													</a>
+												</td>
+												<%
+												if (colspan==4){%>
+													<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<img border="0" src="images/optional.gif" width="16" height="16"/>
+													</td><%
+												}
+												%>
+												<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+													<%
+													if (mode.equals("view")){ %>
+														<%=isRodParam%><%
+													}
+													else{
+														boolean[] options = {true, false};
+														%>
+														<select name="is_rod_param" onchange="form_changed('form1')">
+															<%
+															for (int ii=0; ii<options.length; ii++){
+																String selected = isRodParam==options[ii] ? "selected" : "";
+																%>
+																<option <%=selected%> value="<%=options[ii]%>"><%=options[ii]%></option><%
+															}
+															%>
+														</select><%
+													}
+													%>
+												</td>
+												
+												<%isOdd = Util.isOdd(++displayed);%>
+								    		</tr>
+								    		
 								    		<!-- version (or the so-called LastCheckInNo) -->
 											<%											
 											if (verMan==null) verMan = new VersionManager();
@@ -1861,7 +1873,7 @@ String attrValue = null;
 														LastCheckInNo
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<a target="_blank" href="identification.html#version">
+														<a target="_blank" href="identification.html#version" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 														</a>
 													</td>
@@ -1889,7 +1901,7 @@ String attrValue = null;
 													Identifier
 												</td>
 												<td width="4%" class="simple_attr_help<%=isOdd%>">
-													<a target="_blank" href="identification.html">
+													<a target="_blank" href="identification.html" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 													</a>
 												</td>
@@ -2112,81 +2124,6 @@ String attrValue = null;
 										%>
 										
 										
-										<!-- related elements, not displayed right now (see the 'false' in the beginning of if) -->
-										<%										
-										if (false && (mode.equals("edit") && user!=null) || (mode.equals("view") && relElems!=null && relElems.size()>0)){
-											
-											// horizontal separator 1
-											if (!separ1displayed){ %>
-												<%@ include file="hor_separator.jsp" %><%
-												separ1displayed = true;
-											}
-											%>
-																					
-											<table border="0" width="100%" cellspacing="0" cellpadding="3">
-											
-												<!-- title & link part -->
-												<tr>
-													<td width="34%">
-														<b>Related elements<a name="rels"></a></b>
-													</td>
-													
-													<%
-													// the link
-													if (mode.equals("edit") && user!=null){
-														%>
-														<td class="barfont" width="66%">
-															[Click <a href="rel_elements.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>"><b>HERE</b></a> to manage this element's relations to others]
-														</td><%
-													}
-													%>
-												</tr>
-												
-												<!-- table part -->
-												<%												
-												if (mode.equals("view") && relElems!=null && relElems.size()>0){%>
-													<tr>
-														<td width="100%" colspan="2">
-															<table border="1" width="100%" bordercolorlight="#C0C0C0" cellspacing="0" cellpadding="2" bordercolordark="#C0C0C0">
-																<tr>
-																	<th width="50%" class="tbl_elms">Element</th>
-																	<th width="50%" class="tbl_elms">Relation</th>
-																</tr>
-																<%
-																// rows
-																for (int i=0; i<relElems.size(); i++){
-																	
-																	CsiItem item = (CsiItem)relElems.get(i);
-																	String elem = item.getValue();
-																	String elemID = item.getComponentID();
-																	String relation = item.getRelDescription();
-																	if (relation==null || relation.trim().length()==0)
-																		relation = "&nbsp";
-																		
-																	%>
-																	<tr>
-																		<td width="50%" class="tbl_elms">
-																			<a href="data_element.jsp?delem_id=<%=elemID%>&amp;mode=view">
-																				<%=Util.replaceTags(elem)%>
-																			</a>
-																		</td>
-																		<td width="50%" class="tbl_elms">
-																			<%=Util.replaceTags(relation)%>
-																		</td>
-																	</tr><%
-																}
-																%>
-															</table>
-														</td>
-													</tr><%
-												}
-												%>
-											</table>
-											<%
-										}
-										%>
-										
-										
 										<!-- complex attributes -->
 										
 										<%											
@@ -2208,7 +2145,7 @@ String attrValue = null;
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
 														<td class="barfont" width="66%">
-															[Click <a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=delem_name%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>')"><b>HERE</b></a> to manage complex attributes of this element]
+															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=delem_name%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this element]
 														</td><%
 													}
 													%>
@@ -2234,13 +2171,12 @@ String attrValue = null;
 																	
 																	<tr>
 																		<td width="29%" class="complex_attr_title<%=isOdd%>">
-																			<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=delem_name%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>')" title="Click here to view all the fields">
+																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=delem_name%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																				<%=attrName%>
 																			</a>
 																		</td>
 																		<td width="4%" class="complex_attr_help<%=isOdd%>">
-																			<!-- a target="_blank" href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=COMPLEX&amp;mode=view" -->
-																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
+																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href)">
 																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 																			</a>
 																		</td>

@@ -67,6 +67,7 @@ else{
     <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1" />
     <link type="text/css" rel="stylesheet" href="eionet_new.css" />
     <script language="JavaScript">
+    
     	function load(){
 	    	resize();
     	}
@@ -80,6 +81,11 @@ else{
 <div class="popuphead">
 	<h1>Data Dictionary Help</h1>
 	<hr/>
+	<div align="right">
+		<form name="close" action="javascript:window.close()">
+			<input type="submit" class="smallbutton" value="Close"/>
+		</form>
+	</div>
 </div>
 <%=helpText%>
 </body>

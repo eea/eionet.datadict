@@ -172,7 +172,7 @@ disabled="";
 				<span class="title2"><%=Util.replaceTags(delemName)%></span>.
 			</td>
 			<td align="right">
-				<a target="_blank" href="help.jsp?screen=foreign_keys&area=pagehelp">
+				<a target="_blank" href="help.jsp?screen=foreign_keys&area=pagehelp" onclick="pop(this.href)">
 					<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
 				</a>
 			</td>

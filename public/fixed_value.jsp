@@ -307,7 +307,7 @@ try { // start the whole page try block
 			
 			<tr height="20">
 				<td align="right" colspan="2">
-					<a target="_blank" href="help.jsp?screen=fixed_value&area=pagehelp">
+					<a target="_blank" href="help.jsp?screen=fixed_value&area=pagehelp" onclick="pop(this.href)">
 						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"/>
 					</a>
 				</td>

@@ -428,7 +428,9 @@
 				<!-- search, restore, page help buttons -->
 				
 				<td align="right" colspan="3">
-					<a target="_blank" href="help.jsp?screen=datasets&area=pagehelp"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"></a><br/>
+					<a target="_blank" href="help.jsp?screen=datasets&area=pagehelp" onclick="pop(this.href)">
+						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"/>
+					</a><br/>
 					<a href="search_dataset.jsp"><img src="images/search.jpg" border=0 alt="Search datasets"></a><br/>
 					<%
 					if (user!=null && user.isAuthentic() && !restore){%>
@@ -460,7 +462,7 @@
 								<b>Last CheckIn No</b>
 							</td>
 							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=datasets&area=version">
+								<a target="_blank" href="help.jsp?screen=datasets&area=version" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>
@@ -482,7 +484,7 @@
 								<b>Tables</b>
 							</td>
 							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=datasets&area=tables">
+								<a target="_blank" href="help.jsp?screen=datasets&area=tables" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>

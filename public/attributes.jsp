@@ -169,7 +169,7 @@
 								<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
 							</td>
 							<td>
-								<a target="_blank" href="help.jsp?screen=attributes&area=pagehelp">
+								<a href="help.jsp?screen=attributes&area=pagehelp" onclick="pop(this.href)" target="_blank">
 									<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
 								</a>
 							</td>
@@ -188,7 +188,7 @@
 								<b>Short name</b>
 							</td>
 							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=shortname">
+								<a target="_blank" href="help.jsp?screen=attributes&area=shortname" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>
@@ -202,7 +202,7 @@
 								<b>Type</b>
 							</td>
 							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=type">
+								<a target="_blank" href="help.jsp?screen=attributes&area=type" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>
@@ -216,7 +216,7 @@
 								<b>Datasets</b>
 							</td>
 							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=datasets">
+								<a target="_blank" href="help.jsp?screen=attributes&area=datasets" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>
@@ -230,7 +230,7 @@
 								<b>Tables</b>
 							</td>
 							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=tables">
+								<a target="_blank" href="help.jsp?screen=attributes&area=tables" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>
@@ -244,7 +244,7 @@
 								<b>Data elements with fixed values</b>
 							</td>
 							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=elmfxv">
+								<a target="_blank" href="help.jsp?screen=attributes&area=elmfxv" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>
@@ -258,7 +258,7 @@
 								<b>Data elements with quantitative values</b>
 							</td>
 							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=elmquant">
+								<a target="_blank" href="help.jsp?screen=attributes&area=elmquant" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>

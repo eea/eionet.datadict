@@ -36,6 +36,11 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 <div class="popuphead">
 	<h1>Data Dictionary</h1>
 	<hr/>
+	<div align="right">
+		<form name="close" action="javascript:window.close()">
+			<input type="submit" class="smallbutton" value="Close"/>
+		</form>
+	</div>
 </div>
 
 <br/>

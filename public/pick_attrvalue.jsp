@@ -59,10 +59,7 @@
 						for (var i=0; i<field_ids.length;i++){
 							
 							field_id=document.forms["form1"].elements["field_ids"][i].value;
-						
-							//alert(document.forms["form1"].elements["field_"+field_id].length);
 							if (opener.document.forms["form1"].elements["field_"+field_id])
-								
 								opener.document.forms["form1"].elements["field_"+field_id].value=document.forms["form1"].elements["field_"+field_id][idx+1].value;
 						}
 					}
@@ -83,13 +80,19 @@
 		</script>
 	</head>
 
-<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;"
-		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
-<div style="margin-left:30">
-	<br>
-	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-	<br>
-	<br>
+<body class="popup">
+
+<div class="popuphead">
+	<h1>Data Dictionary</h1>
+	<hr/>
+	<div align="right">
+		<form name="close" action="javascript:window.close()">
+			<input type="submit" class="smallbutton" value="Close"/>
+		</form>
+	</div>
+</div>
+
+<div>	
 	<form name="form1">
 	<table>
 		<tr><td><b>Select attribute (<%=attrName%>) value:</b></td></tr>
@@ -169,7 +172,6 @@
 		<tr><td>&#160;</td></tr>
 
 	</table>
-	<input class="mediumbuttonb" type="button" value="Close" onclick="closeme()"></input>
 	<!--input type="hidden" name="type" value="<%=type%>"></input-->
 	</form>
 </body>

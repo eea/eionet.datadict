@@ -58,10 +58,17 @@
 		}
 	</script>
 <body class="popup">
+
 <div class="popuphead">
 	<h1>Data Dictionary</h1>
 	<hr/>
+	<div align="right">
+		<form name="close" action="javascript:window.close()">
+			<input type="submit" class="smallbutton" value="Close"/>
+		</form>
+	</div>
 </div>
+
 <form name="form1" method="POST" action="complex_attr.jsp">
     <span class="head00">
         History of <em><%=dataset.getShortName()%></em>
@@ -72,7 +79,7 @@
     	<tr><td colspan="3">&nbsp;</td></tr>
     	<tr>
     		<td align="right" colspan="3">
-    			<a target="_blank" href="help.jsp?screen=history&area=pagehelp">
+    			<a target="_blank" href="help.jsp?screen=history&area=pagehelp" onclick="pop(this.href)">
 					<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
 				</a>
     		</td>

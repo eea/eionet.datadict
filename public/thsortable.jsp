@@ -24,7 +24,7 @@ boolean hasHelp = help!=null && help.length()!=0;
 							<b><%=title%></b>
 						</td>
 						<td align="left" width="50%">
-							<a target="_blank" href="<%=help%>">
+							<a target="_blank" href="<%=help%>" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>

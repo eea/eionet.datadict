@@ -84,6 +84,11 @@ private String getAttributeIdByName(String name){
 <div class="popuphead">
 	<h1>Data Dictionary</h1>
 	<hr/>
+	<div align="right">
+		<form name="close" action="javascript:window.close()">
+			<input type="submit" class="smallbutton" value="Close"/>
+		</form>
+	</div>
 </div>
   <h2>Select attributes:</h2>
 	<form name="form1">
@@ -120,7 +125,6 @@ private String getAttributeIdByName(String name){
 		<tr><td>&#160;</td></tr>
 
 	</table>
-	<input class="mediumbuttonb" type="button" value="Close" onclick="closeme()"></input>
 	<input type="hidden" name="type" value="<%=type%>"></input>
 	</form>
 </body>

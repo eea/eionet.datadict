@@ -421,7 +421,7 @@
 							hlpScreen = hlpScreen + "view";
 							
 						%>
-						<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp">
+						<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp" onclick="pop(this.href)">
 							<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
 						</a>
 					</td>
@@ -486,7 +486,6 @@
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
 				
-					<!-- a target="_blank" href="attr_fields.html#type"><span class="help">?</span></a>&#160; -->
 					<span class="mainfont"><b>Type</b>
 						<%
 						displayed++;
@@ -524,7 +523,6 @@
 			
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<!-- a target="_blank" href="attr_fields.html#short_name"><span class="help">?</span></a>&#160; -->
 					<span class="mainfont"><b>Short name</b>
 						<%
 						displayed++;
@@ -550,7 +548,6 @@
 			
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<!-- a target="_blank" href="attr_fields.html#name"><span class="help">?</span></a>&#160; -->
 					<span class="mainfont"><b>Name</b>
 						<%
 						displayed++;
@@ -575,7 +572,6 @@
 			
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>	
 				<td align="right" style="padding-right:10">
-					<!-- a target="_blank" href="attr_fields.html#context"><span class="help">?</span></a>&#160; -->
 					<span class="mainfont"><b>Context</b>
 						<%
 						displayed++;
@@ -645,7 +641,6 @@
 			
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>	
 				<td align="right" style="padding-right:10">
-					<!-- a target="_blank" href="attr_fields.html#definition"><span class="help">?</span></a>&#160; -->
 					<span class="mainfont"><b>Definition</b>
 						<%
 						displayed++;
@@ -687,7 +682,6 @@
 				
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>	
 					<td align="right" style="padding-right:10">
-						<!-- a target="_blank" href="attr_fields.html#obligation"><span class="help">?</span></a>&#160; -->
 						<span class="mainfont"><b>Obligation</b>
 							<%
 							displayed++;
@@ -728,7 +722,6 @@
 				
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<!-- a target="_blank" href="attr_fields.html#disp_type"><span class="help">?</span></a>&#160; -->
 						<span class="mainfont"><b>Display type</b>
 							<%
 							displayed++;
@@ -781,7 +774,6 @@
 				%>
 					<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<td align="right" style="padding-right:10">
-							<!-- a target="_blank" href="attr_fields.html#fxv"><span class="help">?</span></a>&#160; -->
 							<span class="mainfont">
 								<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=attr_shortname%>&amp;parent_type=attr">
 									<b>Fixed values</b>
@@ -808,7 +800,6 @@
 				%>
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<!-- a target="_blank" href="attr_fields.html#disp_mult"><span class="help">?</span></a>&#160; -->
 						<span class="mainfont"><b>Display multiple</b>
 						<%
 							displayed++;
@@ -850,7 +841,6 @@
 			%>
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" valign="top" style="padding-right:10">
-					<!-- a target="_blank" href="attr_fields.html#inherit"><span class="help">?</span></a>&#160; -->
 					<span class="mainfont"><b>Inheritance</b>
 						<%
 						displayed++;
@@ -893,7 +883,6 @@
 			
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<!-- a target="_blank" href="attr_fields.html#disp_order"><span class="help">?</span></a>&#160; -->
 					<span class="mainfont"><b>Display order</b>
 						<%
 						displayed++;
@@ -935,7 +924,6 @@
 			
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" valign="top" style="padding-right:10">
-						<!-- a target="_blank" href="attr_fields.html#disp_for"><span class="help">?</span></a>&#160; -->
 						<span class="mainfont"><b>Display for</b>
 							<%
 							displayed++;
@@ -1003,7 +991,6 @@
 				%>
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<!-- a target="_blank" href="attr_fields.html#dispw"><span class="help">?</span></a>&#160; -->
 						<span class="mainfont"><b>Display width</b>
 							<%
 							displayed++;
@@ -1045,7 +1032,6 @@
 				%>
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<!-- a target="_blank" href="attr_fields.html#disph"><span class="help">?</span></a>&#160; -->
 						<span class="mainfont"><b>Display height</b>
 							<%
 							displayed++;
@@ -1111,7 +1097,6 @@
 			
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<!-- a target="_blank" href="attr_fields.html"><span class="help">?</span></a>&#160; -->
 						<span class="mainfont"><b>Linked harvester</b>
 							<%
 							displayed++;

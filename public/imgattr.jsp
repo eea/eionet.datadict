@@ -159,133 +159,113 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 			
 %>
 
-<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;"
-	topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
-<div style="margin-left:30">
-	<br></br>
-	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-	<br></br>
-	<font color="#006666" face="Arial" size="2">
-		<strong><span class="head0"><script language="JavaScript">document.write(getDDVersionName())</script></span></strong>
-	</font>
-	<br></br>
+<body class="popup">
+
+<div class="popuphead">
+	<h1>Data Dictionary</h1>
+	<hr/>
+	<div align="right">
+		<form name="close" action="javascript:window.close()">
+			<input type="submit" class="smallbutton" value="Close"/>
+		</form>
+	</div>
+</div>
+
+<div>
+<form name="Upload" action="ImgUpload" method="POST" enctype="multipart/form-data">
+
+	<table width="auto" cellspacing="0">
 	
-	<table cellspacing="0" cellpadding="0" width="400" border="0">
 		<tr>
-         	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
-          	<td width="600" background="images/bar_filled.jpg" height="25">
-	            <table height="8" cellSpacing="0" cellPadding="0" border="0">
-	            	<tr>
-			         	<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-			            <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-			         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-						<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-						<td valign="bottom" align="middle"><span class="barfont">Image attribute</span></td>
-						<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
-					</tr>
-				</table>
+			<td class="head00" colspan="2">
+					<%=attrName%> of <a href="<%=titleLink%>"><font color="#006666"><%=objName%></font></a> <%=titleType%>
+				</font>
 			</td>
 		</tr>
+		
+		<tr><td colspan="2">&nbsp;</td></tr>
+		
+		<tr>
+			<td align="left" style="padding-right:5">
+				<input type="radio" name="fileORurl" value="file" checked="true"></input>&#160;File:</td>
+			<td align="left">
+				<input type="file" class="smalltext" name="file_input" size="40"/>
+			</td>
+		</tr>
+		<tr>
+			<td align="left" style="padding-right:5">
+				<input type="radio" class="smalltext" name="fileORurl" value="url"></input>&#160;URL:
+			</td>
+			<td align="left">
+				<input type="text" class="smalltext" name="url_input" size="52"></input>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td align="left">
+				<input name="SUBMIT" type="button" <%=disabled%> class="mediumbuttonb" value="Add" onclick="submitForm('upload')" onkeypress="submitForm('upload')"></input>&#160;&#160;
+				<input name="REMOVE" type="button" <%=disabled%> class="mediumbuttonb" value="Remove selected" onclick="submitForm('remove')" onkeypress="submitForm('remove')"></input>
+			</td>
+		</tr>
+		<tr><td colspan="2">&nbsp;</td></tr>
 	</table>
 	
-				<table width="500">
+	<table width="auto" cellspacing="0">
+		
+		<%							
+		boolean found = false;
+		int displayed = 0;
+		for (int i=0; attrs!=null && i<attrs.size(); i++){	
+			DElemAttribute attr = (DElemAttribute)attrs.get(i);
+			if (attr.getID().equals(attrID)){									
+				Vector values = attr.getValues();
+				for (int j=0; values!=null && j<values.size(); j++){
+					found = true;
+					String value = (String)values.get(j);
+					if (displayed==0){ %>
+						<tr><td colspan="2">Please note that you can only add images of JPG, GIF and PNG!</td></tr> <%
+					}
+					%>
 					<tr>
-						<td colspan="3"><br></br>
-							<font class="head00">
-								<%=attrName%> of
-								<a href="<%=titleLink%>"><font color="#006666"><%=objName%></font></a>
-								<%=titleType%>
-							</font>
+						<td valign="top">
+							<input type="checkbox" name="file_name" value="<%=value%>"/>
+						</td>
+						<td align="left">
+							<img src="visuals/<%=value%>"/>
 						</td>
 					</tr>
-				</table>
-				
-					<FORM NAME="Upload" ACTION="ImgUpload" METHOD="POST" ENCTYPE="multipart/form-data">
-
-						<table width="auto" cellspacing="0">
-							
-							<tr>
-								<td align="left" style="padding-right:5">
-									<input type="radio" name="fileORurl" value="file" checked="true"></input>&#160;File:</td>
-								<td align="left">
-									<input type="file" class="smalltext" name="file_input" size="40"/>
-								</td>
-							</tr>
-							<tr>
-								<td align="left" style="padding-right:5">
-									<input type="radio" class="smalltext" name="fileORurl" value="url"></input>&#160;URL:
-								</td>
-								<td align="left">
-									<input type="text" class="smalltext" name="url_input" size="52"></input>
-								</td>
-							</tr>
-							<tr height="5"><td colspan="2"></td></tr>
-							<tr>
-								<td></td>
-								<td align="left">
-									<input name="SUBMIT" type="button" <%=disabled%> class="mediumbuttonb" value="Add" onclick="submitForm('upload')" onkeypress="submitForm('upload')"></input>&#160;&#160;
-									<input name="REMOVE" type="button" <%=disabled%> class="mediumbuttonb" value="Remove selected" onclick="submitForm('remove')" onkeypress="submitForm('remove')"></input>
-								</td>
-							</tr>
-							<tr height="10"><td colspan="2">&#160;</td></tr>
-						</table>
-						
-						<table width="auto" cellspacing="0">
-							
-							<%							
-							boolean found = false;
-							int displayed = 0;
-							for (int i=0; attrs!=null && i<attrs.size(); i++){	
-								DElemAttribute attr = (DElemAttribute)attrs.get(i);
-								if (attr.getID().equals(attrID)){									
-									Vector values = attr.getValues();
-									for (int j=0; values!=null && j<values.size(); j++){
-										found = true;
-										String value = (String)values.get(j);
-										if (displayed==0){ %>
-											<tr><td colspan="2">Please note that you can only add images of JPG, GIF and PNG!</td></tr> <%
-										}
-										%>
-										<tr>
-											<td valign="top">
-												<input type="checkbox" name="file_name" value="<%=value%>"/>
-											</td>
-											<td align="left" colspan="2">
-												<img src="visuals/<%=value%>"/>
-											</td>
-										</tr>
-										<tr height="10"><td colspan="2">&#160;</td></tr> <%
-										displayed++;
-									}
-								}
-							}
-							
-							if (!found){%>
-								<tr>
-									<td align="left" colspan="2">
-										<b>
-											No images found! You can add by using the form above.<br/>
-											Please note that you can only add images of JPG, GIF or PNG.<br/>
-											If you're not authorized or the object is not a working copy,<br/>
-											the form is disabled.
-										</b>
-									</td>
-								</tr><%
-							}
-							
-							%>
-							
-						</table>
-						
-						<input type="hidden" name="obj_id" value="<%=objID%>"/>
-						<input type="hidden" name="obj_type" value="<%=objType%>"/>
-						<input type="hidden" name="attr_id" value="<%=attrID%>"/>
-						
-						<input type="hidden" name="mode" value="add"/>
-						
-						<input type="hidden" name="redir_url" value="imgattr.jsp?<%=request.getQueryString()%>"/>
-						
-					</FORM>
+					<tr height="10"><td colspan="2">&#160;</td></tr> <%
+					displayed++;
+				}
+			}
+		}
+		
+		if (!found){%>
+			<tr>
+				<td align="left" colspan="2">
+					<b>
+						No images found! You can add by using the form above.<br/>
+						Please note that you can only add images of JPG, GIF or PNG.<br/>
+						If you're not authorized or the object is not a working copy,<br/>
+						the form is disabled.
+					</b>
+				</td>
+			</tr><%
+		}
+		
+		%>
+		
+	</table>
+	
+	<input type="hidden" name="obj_id" value="<%=objID%>"/>
+	<input type="hidden" name="obj_type" value="<%=objType%>"/>
+	<input type="hidden" name="attr_id" value="<%=attrID%>"/>
+	
+	<input type="hidden" name="mode" value="add"/>
+	
+	<input type="hidden" name="redir_url" value="imgattr.jsp?<%=request.getQueryString()%>"/>
+	
+</form>
 </div>
 </body>
 </html>

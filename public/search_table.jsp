@@ -171,18 +171,14 @@ private String setDefaultAttrs(String name){
 		}
 	</script>
 </head>
+
 <%
-if (contextParam == null || !contextParam.equals(POPUP)){
-%>
+if (contextParam == null || !contextParam.equals(POPUP)){ %>
 	<body onfocus="checkalert()" onload="onLoad()">
-	<%@ include file="header.htm" %>
-<%
+	<%@ include file="header.htm" %> <%
 }
-else
-{
-%>
-	<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;"
-		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" onload="onLoad()">
+else { %>
+	<body class="popup" onload="onLoad()">
 <%
 }
 %>
@@ -210,26 +206,10 @@ else
 			}
 			else{ %>
 			
-				<br/>
-				<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-				<br></br>
-				<table cellspacing="0" cellpadding="0" width="400" border="0">
-						<tr>
-		    		     	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
-		          			<td width="600" background="images/bar_filled.jpg" height="25">
-			            		<table height="8" cellSpacing="0" cellPadding="0" border="0">
-			            			<tr>
-					         			<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-							            <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-							         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-										<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-										<td valign="bottom" align="middle"><span class="barfont">Search</span></td>
-										<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
-									</tr>				
-								</table>
-							</td>
-						</tr>			
-				</table> <%
+				<div class="popuphead">
+					<h1>Data Dictionary</h1>
+					<hr/>
+				</div><%
 			}	
 			%>
 			
@@ -240,7 +220,7 @@ else
 					<tr>
 						<td><font class="head00">Search for a dataset table definition</font></td>
 						<td align="right">
-							<a target="_blank" href="help.jsp?screen=search_table&area=pagehelp">
+							<a target="_blank" href="help.jsp?screen=search_table&area=pagehelp" onclick="pop(this.href)">
 								<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
 							</a>
 						</td>
@@ -257,12 +237,12 @@ else
 							<b>Short name</b>
 						</td>
 						<td>
-							<a target="_blank" href="identification.html#short_name">
+							<a target="_blank" href="identification.html#short_name" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
-							<input type="text" class="smalltext" size="50" name="short_name" value="<%=short_name%>"/>
+							<input type="text" class="smalltext" size="59" name="short_name" value="<%=short_name%>"/>
 						</td>
 					</tr>
 					
@@ -271,12 +251,12 @@ else
 							<b>Identifier</b>
 						</td>
 						<td>
-							<a target="_blank" href="identification.html">
+							<a target="_blank" href="identification.html" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
-							<input type="text" class="smalltext" size="50" name="idfier" value="<%=idfier%>"/>
+							<input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>"/>
 						</td>
 					</tr>
 
@@ -318,12 +298,12 @@ else
 										<b><%=attrName%></b>
 									</td>
 									<td>
-										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 										</a>
 									</td>
 									<td colspan="2">
-										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
+										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=attrValue%>"/>
 									</td>
 								</tr>
 								<%
@@ -349,12 +329,12 @@ else
 									<b><%=attrName%></b>
 								</td>
 								<td>
-									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 									</a>
 								</td>
 								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
+									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=attrValue%>"/>
 								</td>
 								<td>
 									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
@@ -375,12 +355,12 @@ else
 									<b><%=attrName%></b>
 								</td>
 								<td>
-										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 										</a>
 									</td>
 								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50" value=""/>
+									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
 								</td>
 								<td>
 									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>

@@ -319,7 +319,9 @@
 					%>
 				</td>
 				<td align="right">
-					<a target="_blank" href="help.jsp?screen=elements&area=pagehelp"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"></a><br/>
+					<a target="_blank" href="help.jsp?screen=elements&area=pagehelp" onclick="pop(this.href)">
+						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page">
+					</a><br/>
 				</td>
 			</tr>
 			
@@ -567,25 +569,6 @@
 		<input name='SearchType' type='hidden' value='NoSearch'/>
 		
 		<input type="hidden" name="mode" value="view"/>
-		
-		<br>
-
-		<!--   Page footer  -->
-		<%
-		/*
-		if (dataElements != null){
-			int iTotal = dataElements.size();
-			%>
-	        <jsp:include page="search_results_footer.jsp" flush='true'>
-		        <jsp:param name="total" value="<%=iTotal%>"/>
-			    <jsp:param name="page_len" value="<%=iPageLen%>"/>
-				<jsp:param name="curr_page" value="<%=iCurrPage%>"/>
-	        </jsp:include>
-			<%
-		}
-		*/
-		%>
-
 
 		</form>
 			</div>

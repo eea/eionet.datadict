@@ -33,16 +33,22 @@ Vector entries = (Vector)request.getAttribute("entries");
 <div class="popuphead">
 	<h1>Data Dictionary</h1>
 	<hr/>
+	<div align="right">
+		<form name="close" action="javascript:window.close()">
+			<input type="submit" class="smallbutton" value="Close"/>
+		</form>
+	</div>
 </div>
 <div>
 
-<br/>
-<span class="head00">
-	Cache for <%=request.getAttribute("object_type")%> <font color="006666"><%=idf%></font>
-</span>
-
 <form name="form1" action="GetCache" method="POST">
 	<table width="500" cellpadding="1" cellspacing="0">
+	
+		<tr>
+			<td colspan="3" class="head0">
+				Cache for <%=request.getAttribute("object_type")%> <font color="006666"><%=idf%></font>
+			</td>
+		</tr>
 	
 		<tr>
 			<td colspan="3">

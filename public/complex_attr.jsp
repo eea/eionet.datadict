@@ -218,13 +218,22 @@ private String legalizeAlert(String in){
 			}
 			
 			function doLoad(){
+				
+				resize();
+				
 				var attrName = document.forms["form1"].elements["attrName"].value;
 				var allowToAdd = document.forms["form1"].elements["allowToAdd"].value;
 				if (attrName!=null && (attrName=="SubmitOrganisation" || attrName=="RespOrganisation")){
 					if (allowToAdd=="false"){
-						document.forms["form1"].elements["addbutton"].disabled = true;
+						if (document.forms["form1"].elements["addbutton"] != null){
+							document.forms["form1"].elements["addbutton"].disabled = true;
+						}
 					}
 				}
+			}
+			
+			function resize(){
+		    	window.resizeTo(700, 600);
 			}
 			
 	</script>
@@ -234,6 +243,11 @@ private String legalizeAlert(String in){
 <div class="popuphead">
 	<h1>Data Dictionary</h1>
 	<hr/>
+	<div align="right">
+		<form name="close" action="javascript:window.close()">
+			<input type="submit" class="smallbutton" value="Close"/>
+		</form>
+	</div>
 </div>
 
 	<%
@@ -352,7 +366,7 @@ if (!mode.equals("view")){
 		%>
 		
 		<td align="right">
-			<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp">
+			<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp" onclick="pop(this.href)">
 				<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"/>
 			</a>
 		</td>
@@ -405,7 +419,9 @@ if (!mode.equals("view")){
 			%>
 			<tr>
 				<td class="small" width="100" align="right"><b><%=name%></b>:</td>
-				<td><input class="smalltext" type="text" name="<%=AttrFieldsHandler.FLD_PREFIX%><%=id%>"/></td>
+				<td>
+					<input class="smalltext" type="text" name="<%=AttrFieldsHandler.FLD_PREFIX%><%=id%>"/>
+				</td>
 			</tr>
 			<%
 		}
@@ -557,6 +573,7 @@ if (ds != null){
 %>
 															 
 </form>
+
 </body>
 </html>
 

@@ -58,10 +58,11 @@ function getDDVersionName(){
 	return "Version 2.1";
 }
 
-function popup(link, title, w, h) {
-	w = w==null ? "600" : w;
-	h = h==null ? "600" : h;
-	link = link==null ? "http://" : link;
-	title = title==null ? "" : title;
-	window.open(link, title, "height=" + h + ",width=" + w + ",status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+function pop(link) {
+	// it is VERY IMOPRTANT to give the popup window a name (even if its an empty string), because setting it to
+	// null will load into the opener if the opener itself has also been opened by another window!!!
+	var newWin = window.open(link,"","status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+	// it is VERY IMOPRTANT to set the window's event return value to FALSE, because this will override the browser's
+	// default behaviour which would ruin the whole thing
+	window.event.returnValue = false;
 }
