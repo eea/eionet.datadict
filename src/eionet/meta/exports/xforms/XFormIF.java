@@ -2,14 +2,21 @@ package eionet.meta.exports.xforms;
 
 public interface XFormIF {
 	
-	public static final String ATTR_ID    = "id";
-	public static final String ATTR_TYPE  = "type";
-	public static final String ATTR_REF  = "ref";
-	public static final String ATTR_NODESET = "nodeset";
+	public static final String ATTR_ID       = "id";
+	public static final String ATTR_TYPE     = "type";
+	public static final String ATTR_REF      = "ref";
+	public static final String ATTR_BIND     = "bind";
+	public static final String ATTR_NODESET  = "nodeset";
+	public static final String ATTR_MINSIZE  = "min-size";
+	public static final String ATTR_MAXSIZE  = "max-size";
+	public static final String ATTR_MINVALUE = "min-value";
+	public static final String ATTR_MAXVALUE = "max-value";
 	
 	public static final String CTRL_LABEL = "ctrl-label";
-	public static final String CTRL_TYPE = "ctrl-type";
-	public static final String CTRL_FXVS = "ctrl-fixed-values";
+	public static final String CTRL_HINT  = "ctrl-hint";
+	public static final String CTRL_TYPE  = "ctrl-type";
+	public static final String CTRL_ALERT = "ctrl-alert";
+	public static final String CTRL_FXVS  = "ctrl-fixed-values";
 	
 	public static final String DEFAULT_DATATYPE = "string";
 	public static final String DEFAULT_CTRLTYPE = "input";

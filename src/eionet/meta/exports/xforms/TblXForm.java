@@ -87,15 +87,28 @@ public class TblXForm extends XForm {
 			DataElement elm = (DataElement)elements.get(i);
 			bindID = elm.getIdentifier();
 			String bindType = elm.getAttributeValueByShortName("Datatype");
-			if (bindType==null)
-				bindType = DEFAULT_DATATYPE;
-			//nodeset = tblNs + elm.getShortName();
+			if (bindType==null) bindType = DEFAULT_DATATYPE;
+			
 			nodeset = tblNs + elm.getIdentifier();
+			// nodeset = tblNs + elm.getShortName();
 	
 			Hashtable elmBind = new Hashtable();
 			elmBind.put(ATTR_ID, bindID);
 			elmBind.put(ATTR_TYPE, bindType);
 			elmBind.put(ATTR_NODESET, nodeset);
+
+			if (!elm.getType().equalsIgnoreCase("CH1")){
+				String minSize  = elm.getAttributeValueByShortName("MinSize");
+				String maxSize  = elm.getAttributeValueByShortName("MaxSize");
+				String minValue = elm.getAttributeValueByShortName("MinValue");
+				String maxValue = elm.getAttributeValueByShortName("MaxValue");			
+				if (!Util.voidStr(minSize)) elmBind.put(ATTR_MINSIZE, minSize);
+				if (!Util.voidStr(maxSize)) elmBind.put(ATTR_MAXSIZE, maxSize);
+				if (bindType.equalsIgnoreCase("float") || bindType.equalsIgnoreCase("integer")){
+					if (!Util.voidStr(minValue)) elmBind.put(ATTR_MINVALUE, minValue);
+					if (!Util.voidStr(maxValue)) elmBind.put(ATTR_MAXVALUE, maxValue);
+				}
+			}
 			
 			addBind(elmBind);
 		}
@@ -110,9 +123,10 @@ public class TblXForm extends XForm {
 			String ctrlLabel = elm.getAttributeValueByShortName("Name");
 			if (ctrlLabel==null)
 				ctrlLabel = elm.getShortName(); // Short name is OK to use for label!
-			//String ref = tblNs + elm.getShortName();			
-			String ref = tblNs + elm.getIdentifier();
+			String bind = elm.getIdentifier();
 			String ctrlType = DEFAULT_CTRLTYPE;
+			String ctrlHint = elm.getAttributeValueByShortName("Definition");
+			String ctrlAlert = extractControlAlert(elm);
 			
 			Vector fxvs = null;
 			String elmType = elm.getType();
@@ -125,9 +139,11 @@ public class TblXForm extends XForm {
 	
 			Hashtable control = new Hashtable();
 			control.put(ATTR_ID, ctrlID);
-			control.put(ATTR_REF, ref);
+			control.put(ATTR_BIND, bind);
 			control.put(CTRL_LABEL, ctrlLabel);
 			control.put(CTRL_TYPE,  ctrlType);
+			if (ctrlAlert!=null) control.put(CTRL_ALERT, ctrlAlert);
+			if (ctrlHint!=null) control.put(CTRL_HINT, ctrlHint);
 			if (fxvs!=null) control.put(CTRL_FXVS,  fxvs);			
 			addControl(control);
 		}
@@ -165,13 +181,74 @@ public class TblXForm extends XForm {
 		writer.println(line);
 	}
 
-	protected void writeTrigger(String line) throws Exception{
+	protected void writeInsert(String line) throws Exception{
+		
+		String tblBindNodeset = (String)tblBind.get(ATTR_NODESET);
+		if (tblBindNodeset!=null){
+			line = setAttr(line, "at", "count(" + tblBindNodeset + ")");
+			line = setAttr(line, "nodeset", tblBindNodeset);
+		}
+		else
+			line = setAttr(line, "at", "index('" + REPEAT_ID + "')");
+
+		writer.println(line);
+		writeInsertValues(tblBindNodeset, extractLead(line));
+	}
+
+	protected void writeDelete(String line) throws Exception{
+		
 		line = setAttr(line, "at", "index('" + REPEAT_ID + "')");
 		String tblBindNodeset = (String)tblBind.get(ATTR_NODESET);
 		if (tblBindNodeset!=null) 
 			line = setAttr(line, "nodeset", tblBindNodeset);
 
 		writer.println(line);
+	}
+	
+	protected void writeInsertValues(String tblBindNodeset, String lead) throws Exception{
+		
+		if (tblBindNodeset==null || elements==null) return;
+		if (lead==null) lead = "";
+
+		for (int i=0; i<elements.size(); i++){
+			DataElement elm = (DataElement)elements.get(i);
+			String elmIdf = elm.getIdentifier();
+			if (elmIdf!=null){
+				
+				StringBuffer buf = new StringBuffer(lead).append("<f:setvalue f:ref=\"").
+				append(tblBindNodeset).append("[index('").append(REPEAT_ID).append("')]/").
+				append(this.tblNs).append(elmIdf).append("\"/>");
+				
+				writer.println(buf);
+			}
+		}
+	}
+	
+	protected String extractControlAlert(DataElement elm){
+		
+		if (elm==null || !elm.getType().equalsIgnoreCase("CH2")) return null;
+		
+		StringBuffer buf = new StringBuffer("Datatype=");
+		String datatype = elm.getAttributeValueByShortName("Datatype");
+		if (datatype==null) datatype = DEFAULT_DATATYPE;
+		buf.append(datatype);
+		
+		String[] attrs = {"MinSize", "MaxSize", "MinValue", "MaxValue"};
+		for (int i=0; i<attrs.length; i++){
+			
+			// allow no MinValue or MaxValue for non-string types, even if the user has specified
+			if (!datatype.equalsIgnoreCase("float") &&
+				!datatype.equalsIgnoreCase("integer") && attrs[i].endsWith("Value"))
+				continue;
+				
+			String value = elm.getAttributeValueByShortName(attrs[i]);
+			if (!Util.voidStr(value)){
+				if (buf.length()>0) buf.append(";");
+				buf.append(attrs[i]).append("=").append(value);
+			}
+		}
+		
+		return buf.toString();
 	}
 
 	public static void main(String args[]){

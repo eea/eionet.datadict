@@ -2,6 +2,7 @@ package eionet.meta.exports.xforms;
 
 import eionet.meta.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
 
 public abstract class XForm implements XFormIF {
@@ -57,15 +58,15 @@ public abstract class XForm implements XFormIF {
 		if (template==null)
 			throw new Exception("Template path cannot be null!");
 		
-		File file = new File(template);
-		if (!file.exists() || file.isDirectory())
-			throw new Exception("Template file <" + template + "> was not found!");
-		
-		BufferedReader reader = new BufferedReader(new FileReader(file));
+		URL url = new URL(template);
+		InputStream in = url.openStream();
+
 		String line;
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		while ((line=reader.readLine())!=null)
 			writeLine(line);
 			
+		in.close();
 		reader.close();
 	}
 	
@@ -73,10 +74,10 @@ public abstract class XForm implements XFormIF {
 		
 		if (line==null) return;
 		
-		if (line.trim().startsWith("<f:submission")){
-			String lead = extractLead(line);
-			writeInstance(lead);
+		if (line.trim().startsWith("<f:model")){
 			writer.println(line);
+			String lead = extractLead(line) + "\t";
+			writeInstance(lead);
 			writeBinds(lead);
 		}
 		else if (line.trim().startsWith("<f:group id=\"controls\"")){
@@ -88,16 +89,16 @@ public abstract class XForm implements XFormIF {
 			writeControls(extractLead(line) + "\t");
 		}
 		else if (line.trim().startsWith("<f:insert")){
-			writeTrigger(line);
+			writeInsert(line);
 		}
 		else if (line.trim().startsWith("<f:delete")){
-			writeTrigger(line);
+			writeDelete(line);
 		}
 		else		
 			writer.println(line);
 	}
 	
-	private String extractLead(String line){
+	protected String extractLead(String line){
 		StringBuffer buf = new StringBuffer();
 		for (int i=0; i<line.length(); i++){
 			char c = line.charAt(i);
@@ -120,7 +121,10 @@ public abstract class XForm implements XFormIF {
 	protected void writeRepeat(String line) throws Exception{
 	}
 
-	protected void writeTrigger(String line) throws Exception{
+	protected void writeInsert(String line) throws Exception{
+	}
+
+	protected void writeDelete(String line) throws Exception{
 	}
 	
 	protected void writeBinds(String lead) throws Exception{
@@ -134,14 +138,15 @@ public abstract class XForm implements XFormIF {
 			String id = (String)bind.get(ATTR_ID);
 			String type = (String)bind.get(ATTR_TYPE);
 			String nodeset = (String)bind.get(ATTR_NODESET);
+			String constraint = getConstraint(bind);
 			
 			StringBuffer buf = new StringBuffer("<f:bind");
-			if (id!=null)
-				buf.append(" id=\"").append(id).append("\"");
-			if (type!=null)
-				buf.append(" type=\"").append(type).append("\"");
-			if (nodeset!=null)
-				buf.append(" nodeset=\"").append(nodeset).append("\"");
+			
+			if (id!=null) buf.append(" id=\"").append(id).append("\"");
+			if (type!=null) buf.append(" type=\"").append(type).append("\"");
+			if (nodeset!=null) buf.append(" nodeset=\"").append(nodeset).append("\"");
+			if (constraint!=null) buf.append(" constraint=\"").append(constraint).append("\"");
+			
 			buf.append("/>");
 			
 			writer.println(lead + buf.toString());
@@ -152,20 +157,34 @@ public abstract class XForm implements XFormIF {
 		
 		for (int i=0; i<controls.size(); i++){
 			Hashtable control = (Hashtable)controls.get(i);
-			String ref = (String)control.get(ATTR_REF);
+			String bind  = (String)control.get(ATTR_BIND);
 			String label = (String)control.get(CTRL_LABEL);
-			String type =  (String)control.get(CTRL_TYPE);
+			String hint  = (String)control.get(CTRL_HINT);
+			String type  = (String)control.get(CTRL_TYPE);
+			String alert = (String)control.get(CTRL_ALERT);
 	
 			// start control
 			StringBuffer buf = new StringBuffer("<f:").append(type);
-			if (ref!=null)
-				buf.append(" ref=\"").append(ref).append("\"");
+			if (bind!=null)
+				buf.append(" bind=\"").append(bind).append("\"");
 			buf.append(">");
 			writer.println(lead + buf.toString());
 			
 			// write label
 			if (label!=null){
 				buf = new StringBuffer("<f:label>").append(label).append("</f:label>");
+				writer.println(lead + "\t" + buf.toString());
+			}
+
+			// write hint
+			if (hint!=null){
+				buf = new StringBuffer("<f:hint>").append(hint).append("</f:hint>");
+				writer.println(lead + "\t" + buf.toString());
+			}
+
+			// write alert
+			if (alert!=null){
+				buf = new StringBuffer("<f:alert>").append(alert).append("</f:alert>");
 				writer.println(lead + "\t" + buf.toString());
 			}
 			
@@ -256,6 +275,38 @@ public abstract class XForm implements XFormIF {
  
 		buf.append("]]>");
 		return buf.toString();
+	}
+	
+	protected String getConstraint(Hashtable bind){
+		
+		StringBuffer buf = new StringBuffer();
+		
+		String minSize = (String)bind.get(ATTR_MINSIZE);
+		if (minSize!=null)
+			buf.append("string-length(.)&gt;=").append(minSize);
+		
+		String maxSize = (String)bind.get(ATTR_MAXSIZE);
+		if (maxSize!=null){
+			if (buf.length()!=0) buf.append(" and ");
+			buf.append("string-length(.)&lt;=").append(maxSize);
+		}
+		
+		String minValue = (String)bind.get(ATTR_MINVALUE);
+		if (minValue!=null){
+			if (buf.length()!=0) buf.append(" and ");
+			buf.append("number(.)&gt;=").append(minValue);
+		}
+
+		String maxValue = (String)bind.get(ATTR_MAXVALUE);
+		if (maxValue!=null){
+			if (buf.length()!=0) buf.append(" and ");
+			buf.append("number(.)&lt;=").append(maxValue);
+		}
+		
+		if (buf.length()!=0)
+			return buf.toString();
+		else
+			return null;
 	}
 
 	/*

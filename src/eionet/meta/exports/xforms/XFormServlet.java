@@ -7,7 +7,7 @@ import java.io.*;
 import java.sql.*;
 
 import eionet.meta.exports.schema.*;
-import eionet.util.Util;
+import eionet.util.*;
 import eionet.meta.DDSearchEngine;
 
 import com.tee.xmlserver.*;
@@ -26,9 +26,15 @@ public class XFormServlet extends HttpServlet {
 		Connection conn = null;
         
 		try{
+			// get ID of table whose form to create
 			String id = req.getParameter("id");
-			if (Util.voidStr(id))
-				throw new Exception("Missing id!");
+			if (Util.voidStr(id)) throw new Exception("Missing id!");
+			id = parseID(id);
+			
+			// get url of the template
+			String template = req.getParameter("template");
+			if (Util.voidStr(template)) template = Props.getProperty(PropsIF.XFORM_TEMPLATE_URL);
+			if (Util.voidStr(template)) throw new Exception("Missing template path!");
 	        
 			ServletContext ctx = getServletContext();
 			String appName = ctx.getInitParameter("application-name");
@@ -47,13 +53,6 @@ public class XFormServlet extends HttpServlet {
 			int i = reqUrl.lastIndexOf("/");
 			if (i != -1) xForm.setAppContext(reqUrl.substring(0,i));
 				
-			// set up the template path
-			String template = getServletContext().getInitParameter(CTXPAR_TMP_FILE_PATH);
-			if (template!=null){
-				if (!template.endsWith(File.separator)) template = template + File.separator;
-				template = template + TEMPLATE_NAME;
-			}
-            
 			xForm.write(id);
 			xForm.flush(template);
 			writer.flush();
@@ -70,5 +69,27 @@ public class XFormServlet extends HttpServlet {
 			}
 			catch(Exception ee){}
 		}
+	}
+	
+	private String parseID(String id) throws Exception{
+		
+		String result = id;
+		try{
+			Long.parseLong(result);
+		}
+		catch (NumberFormatException nfe){
+			String pattern = new String("id=TBL");
+			int i = result.indexOf(pattern);
+			if (i == -1) throw new Exception("Invalid ID!");
+			result = result.substring(i + pattern.length());
+			try{
+				Long.parseLong(result);
+			}
+			catch (NumberFormatException nfe2){
+				throw new Exception("Invalid ID!");
+			}
+		}
+		
+		return result;
 	}
 }
