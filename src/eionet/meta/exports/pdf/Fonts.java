@@ -19,8 +19,9 @@ public class Fonts {
     public static final String TBL_HEADER  = "tbl-header";
     public static final String TBL_CAPTION = "tbl-caption";
     
-    public static final String ATTR_TITLE  = "attr-title";
-    public static final String CELL_VALUE  = "cell-value";
+    public static final String ATTR_TITLE       = "attr-title";
+    public static final String CELL_VALUE       = "cell-value";
+	public static final String CELL_VALUE_BOLD  = "cell-value-bold";
     
     public static final String WARNING     = "warning";
     
@@ -77,8 +78,21 @@ public class Fonts {
 			font = FontFactory.getFont(FontFactory.HELVETICA, 10);
 			System.out.println("Problem with unicode font: " + e.toString());
 		}
+		
+		fonts.put(CELL_VALUE, font);
+
+		// set simple value cell bold font
+		try{
+			bf = BaseFont.createFont(Props.getProperty(PropsIF.UNI_FONT),
+							BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+			font = new Font(bf, 10, Font.BOLD);
+		}
+		catch (Exception e){
+			font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
+			System.out.println("Problem with unicode font: " + e.toString());
+		}
 						
-        fonts.put(CELL_VALUE, font);
+		fonts.put(CELL_VALUE_BOLD, font);
         
         // set warning font
         font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);

@@ -459,8 +459,7 @@ public class PdfUtil {
 			if (pori!=null && pori.equalsIgnoreCase("undefined")) pori = null;
 			
 			Phrase phr = new Phrase();
-			phr.add(process(name + "\n",
-				FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
+			phr.add(process(name + "\n", Fonts.get(Fonts.CELL_VALUE_BOLD)));
 			phr.add(process("(" + shortName + ")\n",
 										Fonts.get(Fonts.CELL_VALUE)));
 			if (!Util.voidStr(pori))
