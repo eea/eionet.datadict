@@ -17,6 +17,9 @@
     private String oCompStr=null;
     private int iO=0;
     
+    private boolean marked = false;
+    private String topWorkingUser = "";
+    
     public c_SearchResultEntry(String _oID,String _oDsID,String _oShortName,String _oName,String _oDsName) {
 	    
             oID		= _oID==null ? "" : _oID;
@@ -46,6 +49,22 @@
 
     public int compareTo(Object oC1) {
         return iO*oCompStr.compareToIgnoreCase(oC1.toString());
+    }
+    
+    public void setMarked(){
+	    marked = true;
+    }
+    
+    public boolean isMarked(){
+	    return marked;
+    }
+    
+    public void setTopWrkUser(String s){
+	    topWorkingUser = s;
+    }
+    
+    public String getTopWrkUser(){
+	    return topWorkingUser;
     }
     
 }%>
@@ -104,7 +123,7 @@
 <head>
     <title>Data Dictionary</title>
     <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet.css">
+    <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="JavaScript" src='script.js'></script>
 	<script language="JavaScript">
 
@@ -149,85 +168,69 @@
             
 			<form id="form1" method="POST" action="search_results_tbl.jsp" onsubmit="setLocation()">
 			
-		<table width="500" cellspacing="0">
+		<table width="700" cellspacing="0">
 			<tr>
 				<td><span class="head00">Dataset tables</span></td>
 			</tr>
 			<tr height="10"><td></td></tr>
-
-			<tr>
-				<td colspan="3"><span class="mainfont">					
-					<% if (user != null){ %>
-						Rows marked with <font color="red">*</font> indicate checked-out tables.<%
-					}
-					%>
-					</span>
-				</td>
-			</tr>
 		</table>
-		<table width="auto" cellspacing="0">
+		
+		
+		<table width="700" cellspacing="0" border="0" cellpadding="2">
+		
+			<!-- the buttons part -->
+		
 			<tr>
-				<td align="right" style="padding-right:10">&#160;</td>
-				<td align="left" colspan="3" style="padding-bottom:5">
+			
+				<!-- update buttons -->
+				
+				<td colspan="2" align="left" style="padding-bottom:5">
 					<%
 					boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
 					if (dstPrm){ %>
 						<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
 						<%
 					}
-					%>
+					%>					
 				</td>
-				<td align="right" colspan="3"><a href="search_table.jsp"><img src="images/search_tbl.gif" border=0 alt="Search tables"></a></td>
-			</tr>
 				
-			<tr height="5"><td colspan="6"></td></tr>
+				<!-- search buttons -->
+				
+				<td align="right" colspan="2">
+					<a target="_blank" href="help.jsp?screen=tables&area=pagehelp"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"></a><br/>
+					<a href="search_table.jsp"><img src="images/search.jpg" border=0 alt="Search tables"></a><br/>
+				</td>
+			</tr>
 			
-			
+			<!-- the table itself -->
+		
 			<tr>
-				<td align="right" style="padding-right:10">&#160;</td>
-				<th align="left" style="padding-right:10">Full name</th>
-				<th align="right" style="padding-left:5;padding-right:5"">
-					<table border="0" width="auto">
-						<tr>
-							<th align="right">
-								<a href="javascript:showSortedList(3, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by full name"/></a>
-							</th>
-							<th align="right">
-								<a href="javascript:showSortedList(3, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by full name"/></a>
-							</th>
-						</tr>
-					</table>
+				<th width="37%" style="border-left:0">
+					<jsp:include page="thsortable.jsp" flush="true">
+			            <jsp:param name="title" value="Table"/>
+			            <jsp:param name="mapName" value="Table"/>
+			            <jsp:param name="sortColNr" value="3"/>
+			            <jsp:param name="help" value="help.jsp?screen=tables&area=table"/>
+			        </jsp:include>
 				</th>
-				<th align="left" style="padding-left:5;padding-right:10">Short name</th>
-				<th align="right" style="padding-left:5;padding-right:5">
-					<table border="0" width="auto">
-						<tr>
-							<th align="right">
-								<a href="javascript:showSortedList(1, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by short name"/></a>
-							</th>
-							<th align="right">
-								<a href="javascript:showSortedList(1, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
-							</th>
-						</tr>
-					</table>
+				<th width="35%" style="border-left:0">
+					<jsp:include page="thsortable.jsp" flush="true">
+			            <jsp:param name="title" value="Short name"/>
+			            <jsp:param name="mapName" value="ShortName"/>
+			            <jsp:param name="sortColNr" value="1"/>
+			            <jsp:param name="help" value="help.jsp?screen=tables&area=shortname"/>
+			        </jsp:include>
 				</th>
-				<th align="left" style="padding-right:10">Dataset</th>
-				<th align="right" style="padding-left:5;padding-right:5"">
-					<table border="0" width="auto">
-						<tr>
-							<th align="right">
-								<a href="javascript:showSortedList(2, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by dataset name"/></a>
-							</th>
-							<th align="right">
-								<a href="javascript:showSortedList(2, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by dataset name"/></a>
-							</th>
-						</tr>
-					</table>
+				<th width="25%" style="border-left:0">
+					<jsp:include page="thsortable.jsp" flush="true">
+			            <jsp:param name="title" value="Dataset"/>
+			            <jsp:param name="mapName" value="Dataset"/>
+			            <jsp:param name="sortColNr" value="2"/>
+			            <jsp:param name="help" value="help.jsp?screen=datasets&area=dataset"/>
+			        </jsp:include>
 				</th>
 			</tr>
 			
-            <%-- Handle Request Parameters and queries --%>
-            
             <%
             
             Connection conn = null;
@@ -283,7 +286,7 @@
         		    if (dsTables == null || dsTables.size()==0){
 		            %>
 			            <tr>
-			            	<td colspan="4"><br/>
+			            	<td colspan="3"><br/>
 			            		<b>No results found!</b>
 			            		<%
 				    	        if (user==null || !user.isAuthentic()){ %>
@@ -356,34 +359,37 @@
                 															 tblFullName,
                 															 ds_name);
                 															 
+						String workingUser = verMan.getTblWorkingUser(table.getIdentifier(), dsNs);
+						String topWorkingUser = verMan.getWorkingUser(table.getParentNs());						
+						boolean marked = user!=null && (topWorkingUser!=null);
+						if (marked) oEntry.setMarked();
+						
 						oResultSet.oElements.add(oEntry);
 						
-						String workingUser = verMan.getTblWorkingUser(table.getIdentifier(), dsNs);
-						String topWorkingUser = verMan.getWorkingUser(table.getParentNs());			
+						String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+						
 						%>
 						<tr>
-							<td align="right" style="padding-right:10">
+		    				<td width="37%" class="<%=styleClass%>">
+								<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
 								<%
-								if (user!=null && (topWorkingUser!=null)){ // mark checked-out tables
+								if (marked){ // mark checked-out tables
 			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
 		    					}
 		    					%>
-		    				</td>
-		    				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-								<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
 							</td>
-							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+							<td width="35%" class="<%=styleClass%>">
 								<%=Util.replaceTags(table_name)%>
 							</td>
-							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+							<td width="25%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
 								<%=Util.replaceTags(ds_name)%>
 							</td>
 						</tr>
 						<%
 					}
 					%>
-    	           	<tr><td colspan="8">&#160;</td></tr>
-					<tr><td colspan="8">Total results: <%=dsTables.size()%></td></tr><%
+    	           	<tr><td colspan="4">&#160;</td></tr>
+					<tr><td colspan="4">Total results: <%=dsTables.size()%></td></tr><%
 				}
 				catch(Exception e){
 					%><B>ERROR: <%=e%></B><%
@@ -404,23 +410,30 @@
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
 
                         tableLink = "dstable.jsp?mode=view&table_id=" + oEntry.oID + "&ds_id=" + oEntry.oDsID + "&ds_name=" + oEntry.oDsName;
+                        
+                        String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
 						%>
 						<tr>
-							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-								<a href="<%=tableLink%>"><%=Util.replaceTags(oEntry.oShortName)%></a>
+							<td width="37%" class="<%=styleClass%>">
+								<a href="<%=tableLink%>"><%=Util.replaceTags(oEntry.oName)%></a>
+								<%
+								if (oEntry.isMarked()){ // mark checked-out tables
+			    					%> <font title="<%=oEntry.getTopWrkUser()%>" color="red">*</font> <%
+		    					}
+		    					%>
 							</td>
-							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+							<td width="35%" class="<%=styleClass%>">
+								<%=Util.replaceTags(oEntry.oShortName)%>								
+							</td>
+							<td width="25%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
 								<%=Util.replaceTags(oEntry.oDsName)%>
-							</td>
-							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=oEntry.oFullName%>" colspan="2">
-								<%=Util.replaceTags(oEntry.oName)%>
 							</td>
 						</tr>
 						<%
                 	}
                 	%>
-                	<tr><td colspan="8">&#160;</td></tr>
-					<tr><td colspan="8">Total results: <%=oResultSet.oElements.size()%></td></tr><%
+                	<tr><td colspan="4">&#160;</td></tr>
+					<tr><td colspan="4">Total results: <%=oResultSet.oElements.size()%></td></tr><%
             	}
 			}
 			%>

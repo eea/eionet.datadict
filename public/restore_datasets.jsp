@@ -237,7 +237,7 @@
 <head>
     <title>Data Dictionary</title>
     <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet.css">
+    <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="JavaScript" src='script.js'></script>
     <script language="JavaScript">
 		function setLocation(){
@@ -338,7 +338,7 @@
             
 			<form id="form1" method="POST" action="restore_datasets.jsp" onsubmit="setLocation()">
 			
-		<table width="450" border="0">
+		<table width="700" border="0">
 		
 			<tr>
 				<td>
@@ -355,7 +355,7 @@
 			<tr height="10"><td></td></tr>
 			
 			<%
-			if (user!=null){ %>
+			if (false){ %>
 				<tr>
 					<%
 					if (!restore){%>
@@ -374,72 +374,75 @@
 				</tr><%
 			}
 			%>				
-			<tr height="5"><td colspan="2"></td></tr>
+			<tr height="10"><td colspan="2"></td></tr>
 		</table>
 		
-		<table width="auto" cellspacing="0" border="0">
+		<table width="700" cellspacing="0" border="0" cellpadding="2">
 		
-			<%
-			if (!restore){%>
-				<tr>
-					<td></td>
-					<td colspan="3" align="left" style="padding-bottom:5">
-						<% if (user != null){
-							%>
-							<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
-							<%
-						}
-						%>
-					</td>
-					<td align="right">
-						<a href="search_dataset.jsp"><img src="images/search_ds.gif" border=0 alt="Search datasets"></a><br/>
-						<%
-						if (user!=null && user.isAuthentic()){%>					
-							<a href="datasets.jsp?SearchType=SEARCH&amp;restore=true">
-								<img src="images/restore_dataset.gif" border=0 alt="Restore datasets">
-							</a><%
-						}
-						%>
-					</td>
-				</tr><%
-			}
-			%>
-			
-			<tr height="5"><td colspan="5"></td></tr>
+			<!-- the buttons part -->
 		
 			<tr>
-				<% if (user != null){%>
-					<td align="right" style="padding-right:10">
-						<%
-						if (!restore){%>
-							<input type="button" name="del_button" disabled value="Delete" class="smallbutton" onclick="deleteDataset()"/><%
-						}
-						else { %>
-							<input type="button" name="del_button" value="Delete" disabled class="smallbutton" onclick="deleteForGood()"/><br/>
-							<input type="button" name="rst_button" value="Restore" disabled class="smallbutton" onclick="restoreDataset()"/><%
+				
+				<td colspan="3" align="left" style="padding-bottom:5">
+					<% if (user != null){
+						if (restore){ %>
+							<input type="button" name="rst_button" value="Restore selected" class="smallbutton" disabled onclick="restoreDataset()"/>&nbsp;<%
+							
 						}
 						%>
-					</td>
-				<% } else {%>
-					<td></td>
-				<% } %>
-				<th align="left" style="padding-left:5;padding-right:10">Dataset name</th>
-				<th align="right" style="padding-left:5;padding-right:5">
-					<table border="0" width="auto">
+						<input type="button" name="del_button" value="Delete selected" class="smallbutton" disabled onclick="deleteDataset()"/><%
+					}
+					%>
+				</td>
+				<td align="right">
+					<a target="_blank" href="help.jsp?screen=restore_datasets&area=pagehelp"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"></a><br/>
+				</td>
+				
+			</tr>
+			
+			<!-- the table itself -->
+		
+			<tr>
+				<th width="3%">&nbsp;</th>
+				<th width="30%" style="border-left: 0">
+					<jsp:include page="thsortable.jsp" flush="true">
+			            <jsp:param name="title" value="Dataset"/>
+			            <jsp:param name="mapName" value="Dataset"/>
+			            <jsp:param name="sortColNr" value="1"/>
+			            <jsp:param name="help" value="help.jsp?screen=datasets&area=dataset"/>
+			        </jsp:include>
+				</th>
+				<!--th width="20%">Version</th-->
+				<th width="10%">
+					<table width="100%">
 						<tr>
-							<th align="right">
-								<a href="javascript:showSortedList(1, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by name"/></a>
-							</th>
-							<th align="right">
-								<a href="javascript:showSortedList(1, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by name"/></a>
-							</th>
+							<td align="right" width="60%">
+								<b>Last CheckIn No</b>
+							</td>
+							<td align="left" width="40%">
+								<a target="_blank" href="help.jsp?screen=datasets&area=version">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								</a>
+							</td>
 						</tr>
 					</table>
 				</th>
-				<th align="left" style="padding-right:10">Version</th>
-				<th align="left" style="padding-right:10">Tables</th>
+				<th width="47%" style="border-right: 1 solid #FF9900">
+					<table width="100%">
+						<tr>
+							<td align="right" width="50%">
+								<b>Tables</b>
+							</td>
+							<td align="left" width="50%">
+								<a target="_blank" href="help.jsp?screen=datasets&area=tables">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</th>
 			</tr>
-			
+		
 			<%
 			
 			boolean wasDelPrm = false;
@@ -502,14 +505,15 @@
 										(dataset.isWorkingCopy() &&
 										workingUser!=null && user!=null &&
 										workingUser.equals(user.getUserName()));
+					
+					String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
 										
 					%>
 				
 					<tr valign="top">
 					
-						<td align="right" style="padding-right:10">
+						<td width="3%" align="right" class="<%=styleClass%>">
 							<%
-	    					//if (user!=null){
 		    				if (delPrm){
 		    					
 		    					if (topWorkingUser!=null){ // mark checked-out datasets
@@ -525,16 +529,15 @@
 							%>
 						</td>
 						
-						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2" title="<%=dsFullName%>">
+						<td width="30%" class="<%=styleClass%>" title="<%=dsFullName%>">
 							<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;out_type=GDLN&amp;obj_id=<%=dataset.getID()%>">
 								<%=Util.replaceTags(dsFullName)%>
 							</a>
 						</td>					
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+						<td width="20%" class="<%=styleClass%>">
 							<%=dsVersion%>
 						</td>
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-							<!-- style="border-bottom-color:#10847B;border-bottom-style:solid;border-bottom-width:1pt;"-->
+						<td width="47%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
 							<%
 							for (int c=0; tables!=null && c<tables.size(); c++){
 				
@@ -560,8 +563,8 @@
 					<%
 				}
 				%>
-        	    <tr><td colspan="8">&#160;</td></tr>
-				<tr><td colspan="8">Total results: <%=datasets.size()%></td></tr><%
+        	    <tr><td colspan="4">&#160;</td></tr>
+				<tr><td colspan="4">Total results: <%=datasets.size()%></td></tr><%
 			}
 			else{
 				// No search - return from another result set or a total stranger...
@@ -576,30 +579,33 @@
                     c_SearchResultEntry oEntry;
                     for (int i=0;i<oResultSet.oElements.size();i++) {
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
+                        
+                        String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
 
                         %>
 						<tr valign="top">	
 							<%
-							//if (user != null){
 							if (oEntry.getDelPrm()){
 								wasDelPrm = true;
 								%>
-								<td align="right" style="padding-right:10">
+								<td width="3%" align="right" class="<%=styleClass%>">
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>"/>
 									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=oEntry.oIdentifier%>"/>
 								</td> <%
 							}
 							%>
-							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"  title="<%=oEntry.oFullName%>">
+							
+							<td width="30%" class="<%=styleClass%>" title="<%=oEntry.oFullName%>">
 								<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;out_type=GDLN&amp;obj_id=<%=oEntry.oID%>">
 									<%=Util.replaceTags(oEntry.oFName)%>
 								</a>
-							</td>					
-							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+							</td>
+							
+							<td width="20%" class="<%=styleClass%>">
 								<%=oEntry.oVersion%>
 							</td>
-							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-								<!-- style="border-bottom-color:#10847B;border-bottom-style:solid;border-bottom-width:1pt;"-->
+							
+							<td width="47%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
 								<%
 								Vector tables = oEntry.oTables;
 								for (int c=0; tables!=null && c<tables.size(); c++){
@@ -618,8 +624,8 @@
 					<%
 					}
                 	%>
-                	<tr><td colspan="8">&#160;</td></tr>
-					<tr><td colspan="8">Total results: <%=oResultSet.oElements.size()%></td></tr><%
+                	<tr><td colspan="4">&#160;</td></tr>
+					<tr><td colspan="4">Total results: <%=oResultSet.oElements.size()%></td></tr><%
                 }
 
             }

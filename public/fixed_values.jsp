@@ -350,8 +350,8 @@ private String legalizeAlert(String in){
 	<table width="auto" cellspacing="0">
 		<tr>
 			<th align="left" style="padding-left:5;padding-right:10">Value</th>
-			<th align="left" style="padding-left:5;padding-right:10">ShortDescription</th>
 			<th align="left" style="padding-left:5;padding-right:10">Definition</th>
+			<th align="left" style="padding-left:5;padding-right:10">ShortDescription</th>			
 		</tr>
 		<%
 		String mode= (user == null) ? "print" : "edit";
@@ -389,9 +389,9 @@ private String legalizeAlert(String in){
 				<td valign="bottom" align="left" title="Definition" style="padding-left:5;padding-right:10">
 					<span class="barfont"><%=definition%></span>
 				</td>
-				<td valign="bottom" align="left" title="Definition" style="padding-left:5;padding-right:10">
+				<td valign="bottom" align="left" title="ShortDescription" style="padding-left:5;padding-right:10">
 					<span class="barfont"><%=shortDesc%></span>
-				</td>
+				</td>				
 			</tr>
 		<%
 		}

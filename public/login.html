@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>User Authentication</title>
-<link href="eionet.css" rel="stylesheet" type="text/css"/>
+<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 <script language="JAVASCRIPT">
 
 	function setFocus(){
@@ -44,21 +44,21 @@
 <form name="LOGIN" name="LOGIN" method="POST" action="Login">
 <table width="100%" cellspacing="0" cellpadding="0">
 	<tr>
-		<th align="right">Username:</th>
+		<td align="right" class="login">&nbsp;Username:&nbsp;</td>
 		<script language="JavaScript">
 			if (navigator.appName.substring(0,5) == "Netsc")
-				document.write("<th align='left' style='padding-left:10'><input size='14' type='text' class='smalltext' name='j_username'/></th>");
+				document.write("<td class='login'><input size='14' type='text' class='smalltext' name='j_username'/></td>");
 			else
-				document.write("<th align='left' style='padding-left:10'><input size='25' type='text' class='smalltext' name='j_username'/></th>");
+				document.write("<td class='login'><input size='25' type='text' class='smalltext' name='j_username'/></td>");
 		</script>
 	</tr>
 	<tr>
-		<th align="right">Password:</th>
+		<td align="right" class="login">&nbsp;Password:&nbsp;</td>
 		<script language="JavaScript">
 			if (navigator.appName.substring(0,5) == "Netsc")
-				document.write("<th align='left' style='padding-left:10'><input size='14' type='password' class='smalltext' name='j_password' onkeydown='javascript:keyDown()'/></th>");
+				document.write("<td class='login'><input size='14' type='password' class='smalltext' name='j_password' onkeydown='javascript:keyDown()'/></td>");
 			else
-				document.write("<th align='left' style='padding-left:10'><input size='25' type='password' class='smalltext' name='j_password' onkeydown='javascript:keyDown()'/></th>");
+				document.write("<td class='login'><input size='25' type='password' class='smalltext' name='j_password' onkeydown='javascript:keyDown()'/></td>");
 		</script>
 	</tr>
 	<tr height="10"><td colspan="2"></td></tr>

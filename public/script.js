@@ -57,3 +57,11 @@ function confirm_saving(){
 function getDDVersionName(){
 	return "Version 2.1";
 }
+
+function popup(link, title, w, h) {
+	w = w==null ? "600" : w;
+	h = h==null ? "600" : h;
+	link = link==null ? "http://" : link;
+	title = title==null ? "" : title;
+	window.open(link, title, "height=" + h + ",width=" + w + ",status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+}

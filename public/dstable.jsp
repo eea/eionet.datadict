@@ -441,7 +441,7 @@ if (mode.equals("edit") && dsTable!=null){
 <head>
 	<title>Meta</title>
 	<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
-	<link href="eionet.css" rel="stylesheet" type="text/css"/>	
+	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>	
 </head>
 <script language="JavaScript" src='script.js'></script>
 <script language="JavaScript" src='modal_dialog.js'></script>
@@ -772,6 +772,7 @@ if (mode.equals("edit") && dsTable!=null){
 </script>
 
 <body>
+
 <%@ include file="header.htm" %>
 
 <script language="JAVASCRIPT" for="window" event="onload">    
@@ -795,1112 +796,1112 @@ if (mode.equals("edit") && dsTable!=null){
 			}
 			%>
 	</script>
+	
 <table border="0">
     <tr valign="top">
-		    <td nowrap="true" width="125">
-		        <p><center>
-		            <%@ include file="menu.jsp" %>
-		        </center></P>
-		    </td>
-        <TD>      
-	        <jsp:include page="location.jsp" flush='true'>
-	            <jsp:param name="name" value="Dataset table"/>
+        <td nowrap="true" width="125">
+            <p><center>
+                <%@ include file="menu.jsp" %>
+            </center></p>
+        </td>
+        <td>
+            <jsp:include page="location.jsp" flush='true'>
+                <jsp:param name="name" value="Dataset table"/>
                 <jsp:param name="back" value="true"/>
-	        </jsp:include>
-	        
-	        <div style="margin-left:30">
+            </jsp:include>
+            
+			<div style="margin-left:30">
 	
-<form name="form1" method="POST" action="dstable.jsp">
-	
-	<table width="600" cellspacing="0">
-	
-		<%
-		//if (contextParam.equals("ds")){
-		if (false){ %>
-			<tr>
-				<td colspan="2">
-					<a href="dstables.jsp?ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">&lt; back to dataset tables</a>
-				</td>
-			</tr>
-		<%
-		}
-		%>
-		
-		<tr height="10"><td></td></tr>
-		
-		<tr>
-			<%
+			<form name="form1" method="POST" action="dstable.jsp">
 			
-			boolean topFree = false;
-			
-			if (mode.equals("add")){ %>
-				<td colspan="2">
-					<span class="head00">Add a new table definition</span>
-					<%
-					if (dsID != null && dsID.length()!=0){ %>
-						<span class="head00">to</span>
-						<span class="title2">
-						<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a></span>
-						<span class="head00">dataset</span> <%
-					}
-					%>
-				</td> <%
-			}
-			else if (mode.equals("edit")){ %>
-				<td colspan="2">
-					<span class="head00">Edit table definition</span>
-					<!--span class="title2"><%=Util.replaceTags(dsTable.getShortName())%></span>
-					<span class="head00">table in</span>
-					<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a>
-					<span class="head00">dataset</span-->
-				</td> <%
-			}
-			else{
+				<!--------------------------->
+				<!-- main table inside div -->
+				<!--------------------------->
 				
-				// set the flag indicating if the top namespace is in use
-				String topWorkingUser = verMan.getWorkingUser(dsTable.getParentNs());
-				topFree = topWorkingUser==null ? true : false;
-			
-				%>
-				<td><span class="head00">View table definition</span></td>
-				<!--td>
-					<span class="head00">View definition of </span>
-					<span class="title2"><%=Util.replaceTags(dsTable.getShortName())%></span>
-					<span class="head00">table in</span>
-					<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a>
-					<span class="head00">dataset</span>
-				</td-->
+				<table border="0" width="620" cellspacing="0" cellpadding="0">
 				
-				<td align="right">
-					<input type="button" class="smallbutton" value="History" onclick="viewHistory()"/>&#160;
-					<%
-					if (user!=null && dsTable!=null){
-						
-						boolean isDeleted = searchEngine.isTblDeleted(dsTable.getID());
-						if (isDeleted && topFree && deletePrm){ %>
-							<input type="button" class="smallbutton" value="Restore" onclick="restore()"/>&#160;<%
-						}
-						
-						boolean inWorkByMe = workingUser==null ?
-											 false :
-											 workingUser.equals(user.getUserName());
-						
-						if (editPrm){		 
-							if (dsTable.isWorkingCopy() ||
-								(isLatest && topFree)   ||
-								(isLatest && inWorkByMe)){ %>
-								<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=tableID%>')"/>&#160;<%
-							}
-						}
-						
-						if (deletePrm){
-							if (!dsTable.isWorkingCopy() && isLatest && topFree){ %>
-								<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/> <%
-							}
-						}
-					}
-					else{
-						%>&#160;<%
-					}
-					%>
-				</td> <%
-			}
-			%>
-		</tr>
-		
-		<%
-		if (dsTable!=null && dsTable.isWorkingCopy()){ %>
-			<tr><td colspan="2"><font color="red"><b>WORKING COPY!!!</b></font></td></tr><%
-		}
-		if (!mode.equals("view")){ %>
-				
-			<tr height="5"><td colspan="2"></td></tr>		
-			<tr>
-				<td colspan="2"><span class="Mainfont">
-					NB! Edits will be lost if you leave the page without saving!
-				</td>
-			</tr> 
-		<%
-		}
-		%>
-		
-		<tr height="5"><td colspan="2"></td></tr>
-		
-		<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-		
-	</table>
-
-	<%
-	int displayed = 0;
-	%>
-	
-	<table width="auto" cellspacing="0">
-	
-		<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-			<td align="right" style="padding-right:10">
-				<a target="_blank" href="identification.html#short_name">
-				<span class="help">?</span></a>&#160;<span class="mainfont"><b>Short name</b>
-					<%
-					displayed++;
-					if (!mode.equals("view")){
-						%>
-						&#160;(M)
-						<%
-					}
-					%>
-				</span>
-			</td>
-			<td colspan="2">
-				<%
-				if(mode.equals("view")){ %>
-					<font class="title2" color="#006666"><%=Util.replaceTags(dsTable.getShortName())%></font>
-					<input type="hidden" name="short_name" value="<%=dsTable.getShortName()%>"/><%
-				}
-				else if (mode.equals("add")){ %>
-					<input class="smalltext" type="text" size="30" name="short_name"/><%
-				}
-				else { %>
-					<input class="smalltext" type="text" size="30" name="short_name" value="<%=dsTable.getShortName()%>"/><%
-				}
-				%>
-			</td>
-		</tr>
-		
-		<%
-		if (mode.equals("add") && Util.voidStr(request.getParameter("ds_id"))){ %>
-			<tr valign="top">
-				<td align="right" style="padding-right:10">
-					<a target="_blank" href="identification.html#dataset"><span class="help">?</span></a>&#160;
-					<span class="mainfont"><b>Dataset</b>&#160;(M)</span>
-				</td>
-				<td>
-					<select name="ds_id" class="small" <%=disabled%> >
-						<option value="">-- select a dataset --</option>
-						<%
-						Vector datasets = searchEngine.getDatasets();
-						for (int i=0; datasets!=null && i<datasets.size(); i++){
-							Dataset ds = (Dataset)datasets.get(i);
-							String dsn = ds.getShortName();
-							if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds.getIdentifier(), "u")) continue;
-							%>
-							<option value="<%=ds.getID()%>"><%=Util.replaceTags(ds.getShortName())%></option> <%
-						}
-						%>
-					</select>
-				</td>
-			</tr> <%
-		}
-		else{
-			%>
-			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-				<td align="right" style="padding-right:10">
-					<a target="_blank" href="identification.html#dataset"><span class="help">?</span></a>&#160;
-					<span class="mainfont"><b>Dataset</b>
-						<%
-						if (!mode.equals("view")){
-							%>
-							&#160;(M)
-							<%
-						}
-						displayed++;
-						%>
-					</span>
-				</td>
-				<td>
-					<%
-					if (dsID != null && dsID.length()!=0){
-						%>
-						<font class="title2" color="#006666">
-							<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a>
-						</font>
-						<%
-					}
-					%>
-				</td>
-			</tr> <%
-		}
-		
-		// display Version, if not "add" mode.
-		// Users cannot specify Version, it is always generated by the code.
-		// First make sure you don't display Version for a status that doesn't require it.
-		
-		String regStatus = dsTable!=null ? dsTable.getStatus() : null;
-		
-		if (!mode.equals("add")){
-			String tblVersion = dsTable.getVersion();
-
-			boolean isFirst=false;
-			if (mode.equals("edit") &&
-				tblVersion.equals("1")){
-					isFirst = verMan.isLastTbl(tableID, dsTable.getIdentifier(), dsNs);
-			}
-			%>
-			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-				<td align="right" style="padding-right:10">
-					<a target="_blank" href="identification.html#version"><span class="help">?</span></a>&#160;
-					<span class="mainfont"><b>Version</b>
-						<%
-						displayed++;
-						if (!mode.equals("view")){
-							%>
-							&#160;(M)
-							<%
-						}
-						%>
-					</span>
-				</td>
-				<td colspan="2">
-					<font class="title2" color="#006666"><%=tblVersion%></font>
-				</td>
-			</tr>
-			
-			<input type="hidden" name="is_first" value="<%=isFirst%>"><%
-		}
-		%>
-		
-		<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-			<td align="right" style="padding-right:10">
-				<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
-				<span class="mainfont"><b>Identifier</b>
-					<%
-					displayed++;
-					if (!mode.equals("view")){
-						%>
-						&#160;(M)
-						<%
-					}
-					%>
-				</span>
-			</td>
-			<td>
-				<% if(!mode.equals("add")){ %>
-					<b><%=Util.replaceTags(dsTable.getIdentifier())%></b>
-					<input type="hidden" name="idfier" value="<%=dsTable.getIdentifier()%>"/>
-				<% } else{ %>
-					<input <%=disabled%> type="text" class="smalltext" size="30" name="idfier"></input>
-				<% } %>
-			</td>
-		</tr>
-		
-		<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-			<td align="right" valign="top" style="padding-right:10">
-				<a target="_blank" href="statuses.html">
-				<span class="help">?</span></a>&#160;
-				<span class="mainfont"><b>Registration status</b>
-					<% if (!mode.equals("view")){ %>
-						&#160;(M) <%
-					} 
-					displayed++;
-					%>
-				</span>
-			</td>
-			<td colspan="2">
-				<%
-				if (mode.equals("view")){ %>
-					<span class="barfont" style="width:400"><%=regStatus%>
-						<%
-						if (user!=null && topFree && editPrm){ %>
-							&#160;&#160;&#160;
-							<a href="javascript:forceStatus('<%=regStatus%>')">&gt; force status to lower levels...</a><%
-						}
-						%>
-					</span>
-					<%
-				}
-				else{ %>
-					<select name="reg_status" onchange="form_changed('form1')"> <%
-						Vector regStatuses = verMan.getRegStatusesOrdered();
-							for (int i=0; i<regStatuses.size(); i++){
-								String stat = (String)regStatuses.get(i);
-								String selected = stat.equals(regStatus) ? "selected" : ""; %>
-								<option <%=selected%> value="<%=stat%>"><%=stat%></option><%
-							} %>
-					</select><%
-				}
-				%>
-			</td>
-		</tr>
-			
-			<%
-
-			// dynamical display of attributes
-			
-			for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
-				
-				attribute = (DElemAttribute)mAttributes.get(i);
-				String dispType = attribute.getDisplayType();
-				if (dispType == null) continue;
-				
-				String attrOblig = attribute.getObligation();
-				
-				if (!attribute.displayFor("TBL")) continue;
-				
-				attrID = attribute.getID();
-				attrValue = getValue(attrID);
-								
-				String width  = attribute.getDisplayWidth();
-				String height = attribute.getDisplayHeight();
-				
-				boolean dispMultiple = attribute.getDisplayMultiple().equals("1") ? true:false;
-				boolean inherit = attribute.getInheritable().equals("0") ? false:true;
-
-				if (mode.equals("view") && (attrValue==null || attrValue.length()==0) && !attrOblig.equals("M"))
-					continue;
-				
-				if (dispType.equals("image") && mode.equals("add")) continue;
-				
-				Vector multiValues=null;
-				String inheritedValue=null;
-
-				if (!mode.equals("view")){
+					<!-- main table head -->
 					
-					if (inherit) inheritedValue = getValue(attrID, 2);
-						
-					if (mode.equals("edit")){
-						if (dispMultiple){
-							if (inherit){
-								multiValues = getValues(attrID, 1); //original values only
-							}
-							else{
-								multiValues = getValues(attrID, 0);  //all values
-							}
-						
-						}
-						else{
-							if (inherit) attrValue = getValue(attrID, 1);  //get original value
-						}
-					}
-				}
+					<%
+					boolean topFree = false;
 					
-				%>
-				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<td align="right" style="padding-right:10">
-						<a href="javascript:openUrl('delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view')"><span class="help">?</span></a>&#160;
-						<span class="mainfont"><!--%=attrNs%>:--><b><%=attribute.getShortName()%></b>
+					String verb = "View";
+					if (mode.equals("add"))
+						verb = "Add";
+					else if (mode.equals("edit"))
+						verb = "Edit";
+					%>
+					
+					<tr>
+						<td colspan="2" align="right">
 							<%
-							//displayed++;
-							if (!mode.equals("view")){
-								%>
-								&#160;(<%=attribute.getObligation()%>)
-								<%
-							}
-							displayed++;
+							String hlpScreen = "table";
+							if (mode.equals("edit"))
+								hlpScreen = "table_edit";
+							else if (mode.equals("add"))
+								hlpScreen = "table_add";
 							%>
-						</span>
-					</td>
-					<td>
-						<%
-						
-						if (attribute.getShortName().equalsIgnoreCase("Identifier")){					
-							%>
-							<input type="hidden" name="IdentifierInputName" value="attr_<%=attrID%>" onchange="form_changed('form1')"/>
+							<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" /></a>
+						</td>
+					</tr>
+					<tr>
+						<td width="72%" height="40" class="head1">
+							<%=verb%> table definition
 							<%
-						}
-						
-						else if (dispType.equals("image")){%>
-							<span class="barfont" style="width:400">
-								<a target="_blank" href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=dsTable.getShortName()%>&amp;attr_name=<%=attribute.getShortName()%>">image(s)</a>
-							</span><%
-						}
-						// if mode is 'view', display a span, otherwise an input						
-						else if (mode.equals("view")){%>
-							<span class="barfont" style="width:400"><%=Util.replaceTags(attrValue)%></span><%
-						}
-						else{ // start display input
-							/*if (mode.equals("add") && inherit){
-								%>
-								<input <%=disabled%> type="checkbox" name="inherit_<%=attrID%>" checked/> Inherit this attribute from dataset level<br>
-								<%
+							if (mode.equals("add") && dsID != null && dsID.length()!=0){ %>
+								to <a target="_blank" href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a> dataset<%
 							}
-							else if (mode.equals("edit") && inherit){
-								%>
-								<input <%=disabled%> type="checkbox" name="inherit_<%=attrID%>"/> Copy this attribute value to data elment level<br>
-								<%
-							}
-							*/
-							if (inherit && inheritedValue!=null){
-								String sInhText = (((dispMultiple && multiValues!=null) || (!dispMultiple && attrValue!=null)) && attribute.getInheritable().equals("2")) ? "Overriding parent level value: ":"Inherited from parent level: ";
-								if (sInhText.startsWith("Inherited")){
-									%>
-									<span class="barfont" style="width:400"><%=sInhText%><%=inheritedValue%></span><br>
-									<%
-								}
-							}
-							
-							
-							if (dispMultiple && !dispType.equals("image")){
-								
-								%>
-								<select <%=disabled%> name="attr_mult_<%=attrID%>" multiple="true" style="width:auto">
-								<%
-										for (int k=0; multiValues!=null && k<multiValues.size(); k++){
-											attrValue = (String)multiValues.get(k);
-											%>
-											<option value="<%=attrValue%>"><%=attrValue%></option>
-										<%
-								}	
-								%>
-								</select>
-								<% if (disabled.equals("")){ %>
-									<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
-									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
-								
-								<%
-								}
-								
-								if (dispType.equals("select")){ %>							
-									<select class="small" name="hidden_attr_<%=attrID%>" style="display:none">
-										<%
-										Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
-										if (fxValues==null || fxValues.size()==0){ %>
-											<option selected value=""></option> <%
-										}
-										else{
-											for (int g=0; g<fxValues.size(); g++){
-												FixedValue fxValue = (FixedValue)fxValues.get(g);
-												%>
-												<option value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
-											}
-										}
-										%>
-									</select> <%
-								}
-								else if (dispType.equals("text")){ 
+							%>
+						</td>
+						<td width="28%" height="40" align="right">
+							<%
+							if (mode.equals("view") && dsTable!=null){
+								if (user!=null){
+									// set the flag indicating if the top namespace is in use
+									String topWorkingUser = verMan.getWorkingUser(dsTable.getParentNs());
+									topFree = topWorkingUser==null ? true : false;
+										
+									boolean isDeleted = searchEngine.isTblDeleted(dsTable.getID());
+									if (isDeleted && topFree && deletePrm){ %>
+										<input type="button" class="smallbutton" value="Restore" onclick="restore()"/>&#160;<%
+									}
 									
-									%>
-									<select class="small" name="hidden_attr_<%=attrID%>" style="display:none">
-										<%
-										Vector attrValues = searchEngine.getSimpleAttributeValues(attrID);
-										if (attrValues==null || attrValues.size()==0){ %>
-											<option selected value=""></option> <%
+									boolean inWorkByMe = workingUser==null ?
+														 false :
+														 workingUser.equals(user.getUserName());
+									
+									if (editPrm){		 
+										if (dsTable.isWorkingCopy() ||
+											(isLatest && topFree)   ||
+											(isLatest && inWorkByMe)){
+												
+											%>
+											<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=tableID%>')"/>&#160;<%
 										}
-										else{
-											for (int g=0; g<attrValues.size(); g++){
-												%>
-												<option value="<%=(String)attrValues.get(g)%>"><%=Util.replaceTags((String)attrValues.get(g))%></option> <%
-											}
+									}
+									
+									if (deletePrm){
+										if (!dsTable.isWorkingCopy() && isLatest && topFree){ %>
+											<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/> <%
 										}
-										%>
-									</select>
-									 <%
-								}
+									}
+								} %>
+								<input type="button" class="smallbutton" value="History" onclick="viewHistory()"/><%
 							}
-							else{
-								if (dispType.equals("text")){
-									if (attrValue!=null){
-										%>
-										<input <%=disabled%> type="text" class="smalltext" size="<%=width%>" name="attr_<%=attrID%>" value="<%=attrValue%>" onchange="form_changed('form1')"/>
-										<%
-									}
-									else{
-										%>
-										<input <%=disabled%> type="text" class="smalltext" size="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"/>
-										<%
-									}
-								}
-								else if (dispType.equals("textarea")){
-									if (attrValue!=null){
-										%>
-										<textarea <%=disabled%> class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"><%=Util.replaceTags(attrValue, true)%></textarea>
-										<%
-									}
-									else{
-										%>
-										<textarea <%=disabled%> class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"></textarea>
-										<%
-									}
-								}
-								else if (dispType.equals("select")){ %>							
-									<select <%=disabled%> class="small" name="attr_<%=attrID%>" onchange="form_changed('form1')">
-										<%
-										Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
-										if (fxValues==null || fxValues.size()==0){ %>
-											<option selected value=""></option> <%
-										}
-										else{
-											boolean selectedByValue = false;
-											for (int g=0; g<fxValues.size(); g++){
-												FixedValue fxValue = (FixedValue)fxValues.get(g);
-												String isSelected = (fxValue.getDefault() && !selectedByValue) ? "selected" : "";
-												if (attrValue!=null && attrValue.equals(fxValue.getValue())){
-													isSelected = "selected";
-													selectedByValue = true;
-												}
-												%>
-												<option <%=isSelected%> value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
-											}
-										}
-										%>
-									</select> <%
-								}
-								else{ %>
-									<span class="barfont" style="width:400">Unknown display type!</span> <%
-								}
+							// the working copy part
+							else if (dsTable!=null && dsTable.isWorkingCopy()){ %>
+								<span class="wrkcopy">!!! Working copy !!!</span><%
 							}
-						}
-						%>
-					</td>
-				</tr>
-				<input type="hidden" name="oblig_<%=attrID%>" value="<%=attribute.getObligation()%>"/>
-				<%
-			}
-			%>
-		
-			<!-- COMPLEX ATTRIBUTES table -->
-			<%
-			if (mode.equals("view") && complexAttrs.size()> 0){
-				%>
-				<tr height="5"><td></td><td></td></tr>
-				<%
-				for (int i=0; i<complexAttrs.size(); i++){
-	
-					DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
-					attrID = attr.getID();
-					String attrName = attr.getShortName();   
-					Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
-		
-					%>		
-					<tr valign="top" <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<td align="right" style="padding-right:10">
-							<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=COMPLEX&amp;mode=view">
-							<span class="help">?</span></a>&#160;
-							<span class="mainfont"><b>
-								<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=dsTable.getShortName()%>&amp;dataset_id=<%=dsID%>');" title="Click here to view all the fields">
-									<%=attrName%>
-								</a></b>
-							</span>
-						</td>
-						<td>
-								<%
-								displayed++;
-								StringBuffer rowValue=null;
-
-								Vector rows = attr.getRows();
-								for (int j=0; rows!=null && j<rows.size(); j++){
-									Hashtable rowHash = (Hashtable)rows.get(j);
-									rowValue = new StringBuffer();
-									%>
-									<!--tr-->
-									<%
-							
-									for (int t=0; t<attrFields.size(); t++){
-										Hashtable hash = (Hashtable)attrFields.get(t);
-										String fieldID = (String)hash.get("id");
-										String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
-										if (fieldValue == null) fieldValue = "";
-										if (fieldValue.trim().equals("")) continue;
-										
-										
-										if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
-											rowValue.append(", ");
-											
-										rowValue.append(Util.replaceTags(fieldValue));
-										String mark = (t == 0) ? "-":"&#160;";
-										%>
-										<span class="barfont"><%=mark%>&#160;<%=Util.replaceTags(fieldValue)%></span><br>
-										<!--td style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-											<span class="barfont"><%=Util.replaceTags(fieldValue)%>
-										</td-->
-										<%
-									}	
-									%>
-									<!--/tr-->
-									<!--span class="barfont">- <%=rowValue%></span><br-->
-								<%
-								}%>
-							<!--/table-->
+							%>
 						</td>
 					</tr>
-				<%
-				}
-			}
-			/*
-			This was needed, when inherited attributes were saved on all levels
-			
-			if (mode.equals("add")){
-				complexAttrs = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_COMPLEX, null, "1");
-				if (complexAttrs.size()>0){
+					
+					
+					<!-- mandatory/optional/conditional bar -->
+	                
+	                <%
+					if (!mode.equals("view")){ %>
+					
+						<tr><td width="100%" height="10" colspan="2" ></td></tr>
+						<tr>
+							<td width="100%" class="mnd_opt_cnd" colspan="2" >
+								<table border="0" width="100%" cellspacing="0">
+									<tr>
+										<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16"/></td>
+										<td width="17%">Mandatory</td>
+										<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16"/></td>
+										<td width="15%">Optional</td>
+										<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16"/></td>
+										<td width="56%">Conditional</td>
+                            		</tr>
+		                            <tr>
+										<td width="100%" colspan="6">
+											<b>NB! Edits will be lost if you leave the page without saving!</b>
+										</td>
+		                            </tr>
+                          		</table>
+                        	</td>
+						</tr><%
+					}	
 					%>
-					<tr height="5"><td></td><td></td></tr>
-					<tr valign="top">
-						<td align="left" style="padding-right:10" colspan="2">
-							<span class="mainfont">Inherit the following complex attributes from dataset level:</span>
-						</td>
-					</tr>
+					
+					
+					<!-- add, save, check-in, undo check-out buttons -->
+					
 					<%
-
-					for (int i=0; i<complexAttrs.size(); i++){
-	
-						DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
-						attrID = attr.getID();
-						String attrName = attr.getShortName();   
-						%>
-						<tr valign="top">
-							<td align="right" style="padding-right:10">
-								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=COMPLEX&amp;mode=view">
-								<span class="help">?</span></a>&#160;
-								<span class="mainfont"><b><%=attrName%></b></span>
-							</td>
-							<td>
-								<input <%=disabled%> type="checkbox" name="inherit_complex_<%=attrID%>" checked/><br>
+					if (mode.equals("add") || mode.equals("edit")){ %>				
+						<tr>
+							<tr><td width="100%" colspan="2" height="10"></td></tr>
+							<td width="100%" align="right" colspan="2">
+							<%
+								// add case
+								if (mode.equals("add")){
+									if (user==null){ %>
+										<input type="button" class="mediumbuttonb" value="Add" disabled="true"/><%
+									}
+									else { %>
+										<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
+										<input type="button" class="mediumbuttonb" value="Copy" onclick="copyTbl()" title="Copies table structure and attributes from existing dataset table"/><%
+									}
+								}
+								// edit case
+								else if (mode.equals("edit")){
+									String isDisabled = user==null ? "disabled" : "";
+									%>
+									<input type="button" class="mediumbuttonb" value="Save" <%=isDisabled%> onclick="submitForm('edit')"/>&nbsp;
+									<%
+									if (!dsTable.isWorkingCopy()){ %>
+										<input class="mediumbuttonb" type="button" value="Delete" <%=isDisabled%> onclick="submitForm('delete')"/>&nbsp;<%
+									}
+									else{ %>
+										<input class="mediumbuttonb" type="button" value="Check in" onclick="checkIn()" <%=isDisabled%>/>&nbsp;
+										<input class="mediumbuttonb" type="button" value="Undo check-out" <%=isDisabled%> onclick="submitForm('delete')"/><%
+									}
+								}
+							%>
 							</td>
 						</tr>
+						
 						<%
-					}
-
-				}
-			}
-			*/
-			%>
-			<tr><td>&#160;</td><td><br><span class="barfont" style="width:400">! General information can be found from <a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view">dataset</a> level</span></td></tr>
-			<%
-			if (!mode.equals("add") && !mode.equals("view")
-					|| (mode.equals("view") && user!=null)){ // if mode is not 'add'
-			%>
-			
-				<tr height="5"><td colspan="2"></td></tr>
-				<tr>
-					<td>&#160;</td>
-					<td>
-						<b>*</b> <span class="smallfont"><a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=dsTable.getShortName()%>&amp;dataset_id=<%=dsID%>')">
-							<b>COMPLEX ATTRIBUTES</b></a></span>&#160;&#160;
-						<span class="smallfont" style="font-weight: normal">
-							&lt;&#160;click here to view/edit complex attributes specified for this table
-						</span>
-					</td>
-				</tr>
-			<%
-			}
-			
-			if (mode.equals("view") && elems!=null && elems.size()>0){ %>
-				<tr height="10"><td colspan="2"></td></tr>
-				<tr height="5"><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr><%
-			}
-			else if (mode.equals("edit")){ %>
-				<tr>
-					<td>&#160;</td>
-					<td>
-						<b>*</b> <span class="smallfont">
-							<% 
-							String elemLink; 
-							if (contextParam.equals("ds"))
-								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=" + contextParam + "&ds_idf=" + dsIdf;
-							else
-								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=dstbl" + "&ds_idf=" + dsIdf;
-							%>
-							<a href="javascript:openUrl('<%=elemLink%>')">
-							<b>ELEMENTS</b></a></span>&#160;&#160;
-						<span class="smallfont" style="font-weight: normal">
-							&lt;&#160;click here to specify/remove elements of this table
-						</span>
-					</td>
-				</tr>
-				
-				<%
-			}
-			
-			if (!mode.equals("view")){ %>
-				<tr height="10"><td colspan="2"></td></tr><%
-			}
-			
-			if (mode.equals("edit") && dsTable!=null && dsTable.isWorkingCopy() && user!=null && hasHistory){%>
-				<tr height="15">
-					<td>&#160;</td>
-					<td colspan="2" style="padding-left:47">
-						<input type="checkbox" name="upd_version" value="true">Update version when checking in</input>
-					</td>
-				</tr><%
-			}
-			
-			if (!mode.equals("view")){ %>
-				<tr>
-					<td>&#160;</td>
-					<td>
-						<% 
-						if (mode.equals("add")){ // if mode is "add"
-							if (user==null){ %>									
-								<input type="button" class="mediumbuttonb" value="Add" disabled="true"/>&#160;&#160;
-							<%} else {%>
-								<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&#160;&#160;
-								<input type="button" class="mediumbuttonb" value="Copy" onclick="copyTbl()" title="Copies table structure and attributes from existing dataset table"/>&#160;&#160;
-							<% }
-						} // end if mode is "add"
-						
-						if (!mode.equals("add")){ // if mode is not "add"
-							if (user==null){ %>									
-								<input type="button" class="mediumbuttonb" value="Save" disabled="true"/>&#160;&#160;
-								<%
-								if (!dsTable.isWorkingCopy()){ %>
-									<input class="mediumbuttonb" type="button" value="Delete" disabled="true"/>&#160;&#160;<%
-								}
-								else{ %>
-									<input class="mediumbuttonb" type="button" value="Check in" onclick="checkIn()" disabled="true"/>&#160;&#160;
-									<input class="mediumbuttonb" type="button" value="Undo check-out" disabled="true"/>&#160;&#160;<%
-								}
-							} else {%>
-								<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&#160;&#160;
-								<%
-								if (!dsTable.isWorkingCopy()){ %>
-									<input class="mediumbuttonb" type="button" value="Delete" onclick="submitForm('delete')"/>&#160;&#160;<%
-								}
-								else{ %>
-									<input class="mediumbuttonb" type="button" value="Check in" onclick="checkIn()"/>&#160;&#160;
-									<input class="mediumbuttonb" type="button" value="Undo check-out" onclick="submitForm('delete')"/>&#160;&#160;<%
-								}
-							}
-						} // end if mode is not "add"
-						
-						%>
-						
-					</td>
-				</tr>
-				<%
-			}
-			%>
-			
-		</table>
-
-		<!-- elements list goes here, if user is in view mode  -->
-				
-		<%
-
-		boolean hasGIS = false;	
-		boolean hasNormal = false;
-		for (int i=0; elems!=null && i<elems.size(); i++){
-			DataElement elm = (DataElement)elems.get(i);
-			if (elm.getGIS()==null)
-				hasNormal = true;
-			else
-				hasGIS = true;
-		}
-		
-		if (mode.equals("view")){
-			
-			boolean hasRedWildcard = false;
-			%>
-			<table width="auto" cellspacing="0">
-			
-			<tr valign="top">
-			
-				<%
-				if (hasNormal){ %>
-					<td align="left" style="padding-right:10">
-					
-						<%
-						if (elems != null && elems.size()>0){
-							
-							String tbltitle = hasGIS ? "Metadata elements" : "Elements";
-							
-							%>						
-							<table width="auto" cellspacing="0">
-								<tr>
-									<td align="right" style="padding-right:10"></td>
-									<td colspan="4">
-										<span class="mainfont"><b><%=tbltitle%></b></span><br/>
-									</td>
-								</tr>
-								<tr>
-									<td align="right" style="padding-right:10"></td>
-									<th align="left" style="padding-left:5;padding-right:10">Short name</th>
-									<th align="left" style="padding-right:10">Datatype</th>
-									<th align="left" style="padding-right:10">Elem type</th>
-									<th align="left" style="padding-right:10"></th>
-								</tr>
-				
-								<%
-				
-								Hashtable types = new Hashtable();
-								types.put("CH1", "Fixed values");
-								types.put("CH2", "Quantitative");
-								
-								int count=-1;
-								for (int i=0; elems!=null && i<elems.size(); i++){
-						
-									DataElement elem = (DataElement)elems.get(i);
-									
-									if (elem.getGIS() != null){
-										hasGIS = true;
-										continue;
-									}
-									
-									String elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID() + "&ds_id=" + dsID + "&table_id=" + tableID + "&ctx=" + contextParam;
-						
-									String elemType = (String)types.get(elem.getType());
-					
-									String datatype = getAttributeValue(elem, "Datatype");		
-									if (datatype == null) datatype="";
-				
-									String max_size = getAttributeValue(elem, "MaxSize");		
-									if (max_size == null) max_size="";
-									
-									// see if the element is part of any foreign key relations
-									Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
-									boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
-									
-									String elemDefinition = elem.getAttributeValueByShortName("Definition");
-									
-									String elemWorkingUser = verMan.getWorkingUser(elem.getNamespace().getID(),
-				    															   elem.getIdentifier(), "elm");
-				    															   
-				    				count++;
-				    				
-									%>
-									<tr <% if (count % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-										<td align="right" style="padding-right:5" bgcolor="#f0f0f0">
-											<%
-											if (user!=null && elemWorkingUser!=null){ // mark checked-out elements
-												hasRedWildcard = true;
-												%> <font title="<%=elemWorkingUser%>" color="red">* </font> <%
-											}
-											%>
-										</td>
-										<td align="left" style="padding-left:5;padding-right:10">
-										
-											<%
-											if (elemDefinition!=null){ %>
-												<a title="<%=elemDefinition%>" href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
-											} else { %>
-												<a href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
-											} %>
-										</td>
-										<td align="left" style="padding-right:10">
-											<span class="barfont"><%=datatype%></span>
-										</td>
-										<td align="left" style="padding-right:10">
-											<% if (elem.getType().equals("CH1")){ %>
-												<span class="barfont"><a href="fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>"><%=elemType%></a></span>
-											<%} else{ %>
-												<span class="barfont"><%=elemType%></span>
-											<% } %>
-										</td>
-										<td align="left" style="padding-right:10">
-											<%
-											if (fks){ %>
-												<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>&amp;ds_id=<%=dsID%>">(FK)</a><%
-											}
-											%>
-										</td>
-									</tr>
-								<%
-								}
-								%>
-								</table> <%
-						}
-						else { %>
-							<span class="barfont" style="width:400">There is no elements in the table</span> <%
-						}
-						%>				
-					</td><%
-				} // end of normal elements table
-				
-				if (hasGIS){ %>
-				
-					<td>
-						<table width="auto" cellspacing="0">
+						// update version checkbox
+						if (mode.equals("edit") && dsTable!=null && dsTable.isWorkingCopy() && user!=null && hasHistory){%>
 							<tr>
-								<td align="right" style="padding-right:10"></td>
-								<td colspan="5">
-									<span class="mainfont"><b>Elements</b></span><br/>									
+								<td align="right" class="smallfont_light" colspan="2">
+									<input type="checkbox" name="upd_version" value="true">&nbsp;Update version when checking in</input>
 								</td>
-							</tr>
-							<tr>
-								<td align="right" style="padding-right:10"></td>
-								<th align="left" style="padding-left:5;padding-right:10">Short name</th>
-								<th align="left" style="padding-right:10">Type</th>
-								<th align="left" style="padding-right:10">Datatype</th>
-								<th align="left" style="padding-right:10">Elem type</th>
-								<th align="left" style="padding-right:10"></th>
-							</tr>
-			
-							<%
-			
-							Hashtable types = new Hashtable();
-							types.put("CH1", "Fixed values");
-							types.put("CH2", "Quantitative");
-							
-							int count=-1;					
-							for (int i=0; elems!=null && i<elems.size(); i++){
+							</tr><%
+						}
+					}
+					%>
 					
-								DataElement elem = (DataElement)elems.get(i);
-								
-								String gisType = elem.getGIS();
-								if (gisType == null)
-									continue;
-								
-								String elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID() + "&ds_id=" + dsID + "&table_id=" + tableID + "&ctx=" + contextParam;
-					
-								String elemType = (String)types.get(elem.getType());
-				
-								String datatype = getAttributeValue(elem, "Datatype");		
-								if (datatype == null) datatype="";
-			
-								String max_size = getAttributeValue(elem, "MaxSize");		
-								if (max_size == null) max_size="";
-								
-								// see if the element is part of any foreign key relations
-								Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
-								boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
-								
-								String elemDefinition = elem.getAttributeValueByShortName("Definition");
-								
-								String elemWorkingUser = verMan.getWorkingUser(elem.getNamespace().getID(),
-			    															   elem.getIdentifier(), "elm");
-								
-								count++;
-								
+					               
+	                <!-- main table body -->
+	                
+					<tr>
+						<td width="100%" colspan="2" height="10">
+							<table border="0" width="100%" cellspacing="0" cellpadding="3">
+		                    
+		                    	<!-- quick links -->
+		                    	
+		                    	<%
+		                    	if (mode.equals("view")){
+			                    	Vector quicklinks = new Vector();
+			                    	
+			                    	if (elems!=null && elems.size()>0)
+			                    		quicklinks.add("Elements | elements");
+			                    	if (complexAttrs!=null && complexAttrs.size()>0)
+			                    		quicklinks.add("Complex attributes | cattrs");
+			                    	
+			                    	request.setAttribute("quicklinks", quicklinks);
+			                    	%>
+		                    		<jsp:include page="quicklinks.jsp" flush="true">
+		                    		</jsp:include>
+						            <%
+								}
 								%>
-								<tr <% if (count % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-									<td align="right" style="padding-right:5" bgcolor="#f0f0f0">
-										<%
-										if (user!=null && elemWorkingUser!=null){ // mark checked-out elements
-											hasRedWildcard = true;
-											%> <font title="<%=elemWorkingUser%>" color="red">* </font> <%
-										}
-										%>
-									</td>
-									<td align="left" style="padding-left:5;padding-right:10">
+								
+								<!-- schema -->
+								
+								<%
+								if (mode.equals("view")){ %>
+									<tr><td width="100%" height="10"></td></tr>
+									<tr>
+										<td width="100%" style="border: 1 solid #FF9900">
+											<table border="0" width="100%" cellspacing="0">											
+												<tr>
+													<td width="73%" valign="middle" align="left">
+														Create an XML Schema for this table
+													</td>
+													<td width="27%" valign="middle" align="left">
+														<a target="_blank" href="GetSchema?id=TBL<%=tableID%>">
+															<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+														</a>
+													</td>
+												</tr>
+												
+												<%
+												if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli")){ %>
+													<tr>
+														<td width="73%" valign="middle" align="left">
+															Create an instance XML for this table
+														</td>
+														<td width="27%" valign="middle" align="left">
+															<a target="_blank" href="GetXmlInstance?id=<%=tableID%>">
+																<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+															</a>
+														</td>
+													</tr><%
+												}
+												
+												if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xfrm")){ %>
+													<tr>
+														<td width="73%" valign="middle" align="left">
+															Create an XForm for this table
+														</td>
+														<td width="27%" valign="middle" align="left">
+															<a target="_blank" href="GetXForm?id=<%=tableID%>">
+																<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+															</a>
+														</td>
+													</tr><%
+												}
+												%>
+											</table>
+										</td>
+									</tr><%
+								}
+								%>
+														
+								<!-- start dotted -->
+								<tr><td width="100%" height="10"></td></tr>
+								<tr>
+									<td width="100%" style="border: 1 dotted #C0C0C0">
+									
+										<!-- attributes -->
 									
 										<%
-										if (elemDefinition!=null){ %>
-											<a title="<%=elemDefinition%>" href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
-										} else { %>
-											<a href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
-										} %>
-									</td>
-									<td align="left" style="padding-right:10">
-										<span class="barfont"><%=gisType%></span>
-									</td>
-									<td align="left" style="padding-right:10">
-										<span class="barfont"><%=datatype%></span>
-									</td>
-									<td align="left" style="padding-right:10">
-										<% if (elem.getType().equals("CH1")){ %>
-											<span class="barfont"><a href="fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>"><%=elemType%></a></span>
-										<%} else{ %>
-											<span class="barfont"><%=elemType%></span>
-										<% } %>
-									</td>
-									<td align="left" style="padding-right:10">
+										int displayed = 0;
+										int colspan = mode.equals("view") ? 3 : 4;
+										String titleWidth = colspan==3 ? "30" : "26";
+										String valueWidth = colspan==3 ? "66" : "62";
+										
+										String isOdd = Util.isOdd(displayed);
+										%>
+										
+										<table border="0" width="100%" cellspacing="0" cellpadding="3">
+								  		
+								  			<!-- static attributes -->
+								  			
+											<!-- short name -->								  			
+								    		<tr>
+												<td width="<%=titleWidth%>%" class="short_name">Short name</td>
+												<td width="4%" class="short_name">
+													<a target="_blank" href="identification.html#short_name">
+														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+													</a>
+												</td>
+												<%
+												if (colspan==4){
+													%>
+													<td width="4%" class="short_name">
+														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+													</td><%
+												}
+												%>
+												<td width="<%=valueWidth%>%" class="short_name_value">
+													<%
+													if (mode.equals("view")){ %>
+														<%=Util.replaceTags(dsTable.getShortName())%>
+														<input type="hidden" name="short_name" value="<%=dsTable.getShortName()%>"/><%
+													}
+													else if (mode.equals("add")){%>
+														<input class="smalltext" type="text" size="30" name="short_name"/><%
+													}
+													else{ %>
+														<input class="smalltext" type="text" size="30" name="short_name" value="<%=dsTable.getShortName()%>"/><%
+													}
+													%>
+												</td>
+												
+												<%isOdd = Util.isOdd(++displayed);%>
+								    		</tr>
+								    		
+								    		<!-- dataset -->
+								    		<tr>
+								    			<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+													Dataset
+												</td>
+												<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<a target="_blank" href="identification.html#dataset">
+														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+													</a>
+												</td>
+												<%
+												if (colspan==4){%>
+													<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+													</td><%
+												}
+												%>
+												<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+													<%
+													// add case
+													if (mode.equals("add") && Util.voidStr(request.getParameter("ds_id"))){ %>
+														<select name="ds_id" class="small" <%=disabled%> >
+															<option value="">-- select a dataset --</option>
+															<%
+															Vector datasets = searchEngine.getDatasets();
+															for (int i=0; datasets!=null && i<datasets.size(); i++){
+																Dataset ds = (Dataset)datasets.get(i);
+																String dsn = ds.getShortName();
+																if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds.getIdentifier(), "u")) continue;
+																%>
+																<option value="<%=ds.getID()%>"><%=Util.replaceTags(ds.getShortName())%></option> <%
+															}
+															%>
+														</select><%
+													}
+													// other cases
+													else if (dsID != null && dsID.length()!=0){%>
+														<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view">
+															<b><%=Util.replaceTags(dsName)%></b>
+														</a><%
+													}
+													%>
+												</td>
+												
+												<%isOdd = Util.isOdd(++displayed);%>
+								    		</tr>
+								    		
+								    		<!-- RegistrationStatus -->
+								    		<%
+								    		String regStatus = dsTable!=null ? dsTable.getStatus() : null;
+								    		%>
+								    		<tr>
+												<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+													RegistrationStatus
+												</td>
+												<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<a target="_blank" href="statuses.html">
+														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+													</a>
+												</td>
+												<%
+												if (colspan==4){%>
+													<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+													</td><%
+												}
+												%>
+												<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+													<%
+													if (mode.equals("view")){ %>														
+														<%=regStatus%>
+														<span class="barfont"><%
+															if (user!=null && topFree && editPrm){ %>
+																&nbsp;&nbsp;&nbsp;
+																<a href="javascript:forceStatus('<%=regStatus%>')">
+																	&gt; force status to lower levels...
+																</a><%
+															}
+															%>
+														</span><%
+													}
+													else{ %>
+														<select name="reg_status" onchange="form_changed('form1')"> <%
+															Vector regStatuses = verMan.getRegStatusesOrdered();
+																for (int i=0; i<regStatuses.size(); i++){
+																	String stat = (String)regStatuses.get(i);
+																	String selected = stat.equals(regStatus) ? "selected" : ""; %>
+																	<option <%=selected%> value="<%=stat%>"><%=stat%></option><%
+																} %>
+														</select><%
+													}
+													%>
+												</td>
+												
+												<%isOdd = Util.isOdd(++displayed);%>
+								    		</tr>
+								    		
+								    		
+								    		<!-- dynamic attributes -->
+								    		
+								    		<%
+								    		boolean imagesQuicklinkSet = false;
+								    		for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
+									    		
+									    		attribute = (DElemAttribute)mAttributes.get(i);
+												String dispType = attribute.getDisplayType();
+												if (dispType == null) continue;
+												
+												String attrOblig = attribute.getObligation();
+												String obligImg  = "optional.gif";
+												if (attrOblig.equalsIgnoreCase("M"))
+													obligImg = "mandatory.gif";
+												else if (attrOblig.equalsIgnoreCase("C"))
+													obligImg = "conditional.gif";
+												
+												if (!attribute.displayFor("TBL")) continue;
+												
+												attrID = attribute.getID();
+												attrValue = getValue(attrID);
+																
+												String width  = attribute.getDisplayWidth();
+												String height = attribute.getDisplayHeight();
+												
+												boolean dispMultiple = attribute.getDisplayMultiple().equals("1") ? true:false;
+												boolean inherit = attribute.getInheritable().equals("0") ? false:true;
+								
+												if (mode.equals("view") && (attrValue==null || attrValue.length()==0))
+													continue;
+												
+												// if image attribute and no reason to display then skip
+												if (dispType.equals("image")){
+													if (mode.equals("add") || (mode.equals("edit") && user==null) || (mode.equals("view") && Util.voidStr(attrValue)))
+														continue;
+												}
+												
+												Vector multiValues=null;
+												String inheritedValue=null;
+								
+												if (!mode.equals("view")){
+													
+													if (inherit) inheritedValue = getValue(attrID, 2);
+														
+													if (mode.equals("edit")){
+														if (dispMultiple){
+															if (inherit){
+																multiValues = getValues(attrID, 1); //original values only
+															}
+															else{
+																multiValues = getValues(attrID, 0);  //all values
+															}
+														
+														}
+														else{
+															if (inherit) attrValue = getValue(attrID, 1);  //get original value
+														}
+													}
+												}
+									    		
+									    		%>								    		
+								    		
+											    <tr>
+													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+														<%=attribute.getShortName()%>
+													</td>
+													<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<!-- a target="_blank" href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view" -->
+														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+														</a>
+													</td>
+													<%
+													if (colspan==4){%>
+														<td width="4%" class="simple_attr_help<%=isOdd%>">
+															<img border="0" src="images/<%=obligImg%>" width="16" height="16"/>
+														</td><%
+													}
+													%>
+													
+													<!-- dynamic attribute value display -->
+													
+													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>"><%
+													
+														// handle image attribute first
+														if (dispType.equals("image")){
+															if (!imagesQuicklinkSet){ %>
+																<a name="images"></a><%
+																imagesQuicklinkSet = true;
+															}
+															// thumbnail
+															if (mode.equals("view") && !Util.voidStr(attrValue)){ %>
+																<a target="_blank" href="visuals/<%=attrValue%>" onFocus="blur()">
+																	<img src="visuals/<%=attrValue%>" border="0" height="100px" width="100px"/>
+																</a><br/><%
+															}
+															// link
+															if (mode.equals("edit") && user!=null){
+																String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
+																%>
+																<span class="barfont">
+																	[Click <a target="_blank" href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=dsTable.getShortName()%>&amp;attr_name=<%=attribute.getShortName()%>"><b>HERE</b></a> to <%=actionText%>]
+																</span><%
+															}
+														}
+														// if view mode, display simple text
+														else if (mode.equals("view")){ %>
+															<%=Util.replaceTags(attrValue)%><%
+														}
+														// if non-view mode, display input
+														else{
+															
+															// inherited value(s)
+															if (inherit && inheritedValue!=null){
+																
+																String sInhText = (((dispMultiple && multiValues!=null) ||
+																					(!dispMultiple && attrValue!=null)) &&
+																					attribute.getInheritable().equals("2")) ?
+																					"Overriding parent level value: " :
+																					"Inherited from parent level: ";
+																					
+																if (sInhText.startsWith("Inherited")){ %>
+																	<%=sInhText%><%=inheritedValue%><br/><%
+																}
+															}
+															
+															// mutliple display
+															if (dispMultiple && !dispType.equals("image")){
+								
+																%>
+																<select <%=disabled%> name="attr_mult_<%=attrID%>" multiple="true" style="width:auto">
+																<%
+																		for (int k=0; multiValues!=null && k<multiValues.size(); k++){
+																			attrValue = (String)multiValues.get(k);
+																			%>
+																			<option value="<%=attrValue%>"><%=attrValue%></option>
+																		<%
+																}	
+																%>
+																</select>
+																<% if (disabled.equals("")){ %>
+																	<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
+																	<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
+																
+																<%
+																}
+																
+																if (dispType.equals("select")){ %>							
+																	<select class="small" name="hidden_attr_<%=attrID%>" style="display:none">
+																		<%
+																		Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
+																		if (fxValues==null || fxValues.size()==0){ %>
+																			<option selected value=""></option> <%
+																		}
+																		else{
+																			for (int g=0; g<fxValues.size(); g++){
+																				FixedValue fxValue = (FixedValue)fxValues.get(g);
+																				%>
+																				<option value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
+																			}
+																		}
+																		%>
+																	</select> <%
+																}
+																else if (dispType.equals("text")){ 
+																	
+																	%>
+																	<select class="small" name="hidden_attr_<%=attrID%>" style="display:none">
+																		<%
+																		Vector attrValues = searchEngine.getSimpleAttributeValues(attrID);
+																		if (attrValues==null || attrValues.size()==0){ %>
+																			<option selected value=""></option> <%
+																		}
+																		else{
+																			for (int g=0; g<attrValues.size(); g++){
+																				%>
+																				<option value="<%=(String)attrValues.get(g)%>"><%=Util.replaceTags((String)attrValues.get(g))%></option> <%
+																			}
+																		}
+																		%>
+																	</select>
+																	 <%
+																}
+															}
+															// no multiple display
+															else{
+																
+																if (dispType.equals("text")){
+																	if (attrValue!=null){
+																		%>
+																		<input <%=disabled%> type="text" class="smalltext" size="<%=width%>" name="attr_<%=attrID%>" value="<%=attrValue%>" onchange="form_changed('form1')"/>
+																		<%
+																	}
+																	else{
+																		%>
+																		<input <%=disabled%> type="text" class="smalltext" size="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"/>
+																		<%
+																	}
+																}
+																else if (dispType.equals("textarea")){
+																	if (attrValue!=null){
+																		%>
+																		<textarea <%=disabled%> class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"><%=Util.replaceTags(attrValue, true)%></textarea>
+																		<%
+																	}
+																	else{
+																		%>
+																		<textarea <%=disabled%> class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"></textarea>
+																		<%
+																	}
+																}
+																else if (dispType.equals("select")){ %>							
+																	<select <%=disabled%> class="small" name="attr_<%=attrID%>" onchange="form_changed('form1')">
+																		<%
+																		Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
+																		if (fxValues==null || fxValues.size()==0){ %>
+																			<option selected value=""></option> <%
+																		}
+																		else{
+																			boolean selectedByValue = false;
+																			for (int g=0; g<fxValues.size(); g++){
+																				FixedValue fxValue = (FixedValue)fxValues.get(g);
+																				String isSelected = (fxValue.getDefault() && !selectedByValue) ? "selected" : "";
+																				if (attrValue!=null && attrValue.equals(fxValue.getValue())){
+																					isSelected = "selected";
+																					selectedByValue = true;
+																				}
+																				%>
+																				<option <%=isSelected%> value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
+																			}
+																		}
+																		%>
+																	</select>
+																	<a target="_blank" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=attribute.getShortName()%>&amp;parent_type=attr">
+																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+																	</a>
+																	<%
+																}
+																else{ %>
+																	Unknown display type!<%
+																}
+															}
+															
+														} // end display input
+														%>
+													</td>
+													<!-- end dynamic attribute value display -->
+													
+													<%isOdd = Util.isOdd(++displayed);%>
+											    </tr>
+											    <input type="hidden" name="oblig_<%=attrID%>" value="<%=attribute.getObligation()%>"/>											    
+											    <%
+										    }
+										    %>
+										    
+										    <!-- version (or the so-called LastCheckInNo) -->
+								    		<%
+								    		if (!mode.equals("add")){
+												String tblVersion = dsTable.getVersion();
+												boolean isFirst=false;
+												if (mode.equals("edit") &&
+													tblVersion.equals("1")){
+														isFirst = verMan.isLastTbl(tableID, dsTable.getIdentifier(), dsNs);
+												}
+												%>												
+									    		<tr>
+													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+														LastCheckInNo
+													</td>
+													<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<a target="_blank" href="identification.html#version">
+															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+														</a>
+													</td>
+													<%
+													if (colspan==4){%>
+														<td width="4%" class="simple_attr_help<%=isOdd%>">
+															<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+														</td><%
+													}
+													%>
+													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+														<%=tblVersion%>
+													</td>
+													
+													<%isOdd = Util.isOdd(++displayed);%>
+									    		</tr>
+									    		<input type="hidden" name="is_first" value="<%=isFirst%>">
+									    		<%
+								    		}
+								    		%>
+								    		
+								    		<!-- Identifier -->
+								    		<tr>
+												<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+													Identifier
+												</td>
+												<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<a target="_blank" href="identification.html">
+														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+													</a>
+												</td>
+												<%
+												if (colspan==4){%>
+													<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+													</td><%
+												}
+												%>
+												<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+													<%
+													if(!mode.equals("add")){ %>
+														<b><%=Util.replaceTags(dsTable.getIdentifier())%></b>
+														<input type="hidden" name="idfier" value="<%=dsTable.getIdentifier()%>"/><%
+													}
+													else{ %>
+														<input <%=disabled%> type="text" class="smalltext" size="30" name="idfier"/><%
+													}
+													%>
+												</td>
+												
+												<%isOdd = Util.isOdd(++displayed);%>
+								    		</tr>
+										    
+										</table>
+										
+										<!-- end of attributes -->
+										
 										<%
-										if (fks){ %>
-											<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>&amp;ds_id=<%=dsID%>">(FK)</a><%
+										boolean separ1displayed = false;
+										%>
+										
+										<!-- table elements -->
+										
+										<%
+										if ((!mode.equals("add") && user!=null) || (mode.equals("view") && elems!=null && elems.size()>0)){
+											
+											// horizontal separator 1
+											if (!separ1displayed){ %>
+												<%@ include file="hor_separator.jsp" %><%
+												separ1displayed = true;
+											}
+											
+											colspan = user==null ? 1 : 2;
+											
+											// check if has GIS elements
+											boolean hasGIS = false;	
+											for (int i=0; elems!=null && i<elems.size(); i++){
+												DataElement elm = (DataElement)elems.get(i);
+												if (elm.getGIS()!=null){
+													hasGIS = true;
+													break;
+												}
+											}
+											
+											// start the table elements loop
+											int loops = hasGIS ? 2 : 1;
+											for (int j=1; j<=loops; j++){
+												
+												String curMode = hasGIS && j==2 ? "GIS" : "NOGIS";
+												String title = "Elements";
+												if (mode.equals("view") && curMode.equals("NOGIS") && hasGIS)
+													title = "Metadata elements";
+												
+												boolean hasMarkedElems = false;
+												boolean hasForeignKeys = false;
+												%>
+												<table border="0" width="100%" cellspacing="0" cellpadding="3">
+													
+													<% if (mode.equals("view")){ %>
+														<tr height="10"><td colspan="<%=String.valueOf(colspan)%>"></td></tr><%
+													} %>
+													
+													<tr>
+														<td width="34%">
+															<b><%=title%><a name="elements"></a></b>
+														</td>
+														
+														<%
+														// elements link
+														if (user!=null){
+															String elemLink; 
+															if (contextParam.equals("ds"))
+																elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=" + contextParam + "&ds_idf=" + dsIdf;
+															else
+																elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=dstbl" + "&ds_idf=" + dsIdf;
+															%>
+															<td class="barfont" width="66%">
+																[Click <a href="javascript:openUrl('<%=elemLink%>')"><b>HERE</b></a> to manage all elements of this table]
+															</td><%
+														}
+														%>
+													</tr>
+													
+													<%
+													// elements (or GIS elements) table
+													if (mode.equals("view") && elems!=null && elems.size()>0){
+														
+														// set colwidths depending on current mode (GIS or NOGIS)
+														String widthShortName = curMode.equals("NOGIS") ? "50%" : "40%";
+														String widthDatatype  = curMode.equals("NOGIS") ? "19%" : "15%";
+														String widthElemtype  = curMode.equals("NOGIS") ? "31%" : "30%";
+														String widthType      = "15%";
+														
+														Hashtable types = new Hashtable();
+														types.put("CH1", "Fixed values");
+														types.put("CH2", "Quantitative");
+														%>
+														<tr>
+											      			<td width="100%" colspan="<%=String.valueOf(colspan)%>">
+											      				<table border="1" width="100%" bordercolorlight="#C0C0C0" cellspacing="0" cellpadding="2" bordercolordark="#C0C0C0">
+																	<tr>
+																		<th width="<%=widthShortName%>" class="tbl_elms">Short name</th>
+																		<%
+																		if (curMode.equals("GIS")){ %>
+																			<th width="<%=widthType%>" class="tbl_elms">GIS type</th><%
+																		}
+																		%>
+																		<th width="<%=widthDatatype%>" class="tbl_elms">Datatype</th>
+																		<th width="<%=widthElemtype%>" class="tbl_elms">Element type</th>
+																	</tr>
+																	
+																	<%
+																	// rows loop
+																	for (int i=0; i<elems.size(); i++){
+																		
+																		DataElement elem = (DataElement)elems.get(i);
+																		String gisType = elem.getGIS();
+																		
+																		if (curMode.equals("GIS") && gisType==null)
+																			continue;
+																		if (curMode.equals("NOGIS") && gisType!=null)
+																			continue;
+																		
+																		String elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID() + "&ds_id=" + dsID + "&table_id=" + tableID + "&ctx=" + contextParam;
+																		String elemDefinition = elem.getAttributeValueByShortName("Definition");
+																		String linkTitle = elemDefinition==null ? "" : elemDefinition;
+																		
+																		String elemType = (String)types.get(elem.getType());
+																		String datatype = getAttributeValue(elem, "Datatype");		
+																		if (datatype == null) datatype="";
+																		String max_size = getAttributeValue(elem, "MaxSize");		
+																		if (max_size == null) max_size="";
+																		
+																		// see if the element is part of any foreign key relations
+																		Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
+																		boolean fks = (_fks!=null && _fks.size()>0) ? true : false;																		
+																		String elemWorkingUser = verMan.getWorkingUser(elem.getNamespace().getID(),
+													    										  		elem.getIdentifier(), "elm");
+																		%>
+																		<tr>
+																			<!-- short name -->
+																			<td width="<%=widthShortName%>" class="tbl_elms">
+																				<%
+																				// red wildcard
+																				if (user!=null && elemWorkingUser!=null){ // mark checked-out elements
+																					hasMarkedElems = true;
+																					%> <font title="<%=elemWorkingUser%>" color="red">* </font> <%
+																				}
+																				// short name and link
+																				%>
+																				<a href="<%=elemLink%>" title="<%=linkTitle%>">
+																					<%=Util.replaceTags(elem.getShortName())%>
+																				</a>
+																				<%
+																				// FK inidcator
+																				if (fks){ %>
+																					&nbsp;
+																					<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>&amp;ds_id=<%=dsID%>">
+																						<b><i>(FK)</i></b>
+																					</a><%
+																					hasForeignKeys = true;
+																				}
+																				%>
+																			</td>
+																			<!-- gis type -->
+																			<%
+																			if (curMode.equals("GIS")){
+																				gisType = (gisType==null || gisType.length()==0) ? "&nbsp" : gisType;
+																				%>
+																				<td width="<%=widthType%>" class="tbl_elms">
+																					<%=gisType%>
+																				</td><%
+																			}
+																			%>
+																			<!-- datatype -->
+																			<td width="<%=widthDatatype%>" class="tbl_elms">
+																				<%=datatype%>
+																			</td>
+																			<!-- element type -->
+																			<td width="<%=widthElemtype%>" class="tbl_elms">
+																				<%
+																				if (elem.getType().equals("CH1")){ %>
+																					<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>">
+																						<%=elemType%>
+																					</a> <%
+																				}
+																				else{ %>
+																					<%=elemType%><%
+																				}
+																				%>
+																			</td>
+																		</tr><%
+																	}
+																	%>
+																</table>
+											      			</td>
+											      		</tr>
+											      		<%
+											      		if (user!=null && elems!=null && elems.size()>0 && hasMarkedElems){%>
+															<tr height="10">
+																<td width="100%" class="barfont" colspan="<%=String.valueOf(colspan)%>">
+																	(a red wildcard stands for checked-out element)
+																</td>
+															</tr><%
+														}
+														if (user!=null && elems!=null && elems.size()>0 && hasForeignKeys){%>
+															<tr height="10">
+																<td width="100%" class="barfont" colspan="<%=String.valueOf(colspan)%>">
+																	(the <u><b><i>(FK)</i></b></u> sign indicates the element participating in a foreign key relation)
+																</td>
+															</tr><%
+														}
+													}
+													else if (mode.equals("edit")){
+														// in edit case we display only the link anyway and we don't
+														// wont to display it twice (once for GIS elems and once for simply elems)
+														// So we break the loop here.
+														break;
+													}
+													%>													
+												</table><%
+											}
 										}
 										%>
+										
+										
+										<!-- complex attributes -->
+										
+										<%											
+										if ((mode.equals("edit") && user!=null) || (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0)){
+											
+											colspan = user==null ? 1 : 2;
+											%>
+											
+											<!-- horizontal separator 2 -->
+											<%@ include file="hor_separator.jsp" %>
+											
+											<table border="0" width="100%" cellspacing="0" cellpadding="3">
+												<tr>
+													<td width="34%">
+														<b>Complex attributes<a name="cattrs"></a></b>
+													</td>
+													
+													<%
+													// the link
+													if (mode.equals("edit") && user!=null){ %>
+														<td class="barfont" width="66%">
+															[Click <a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=dsTable.getShortName()%>&amp;dataset_id=<%=dsID%>')"><b>HERE</b></a> to manage complex attributes of this table]
+														</td><%
+													}
+													%>
+												</tr>
+												
+												<%
+												// the table
+												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
+													%>
+													<tr>
+											  			<td width="100%" colspan="<%=String.valueOf(colspan)%>">
+															<table border="1" width="100%" cellspacing="0" bordercolorlight="#C0C0C0" bordercolordark="#C0C0C0">
+													        	<%
+													        	displayed = 1;
+													        	isOdd = Util.isOdd(displayed);
+													        	for (int i=0; i<complexAttrs.size(); i++){
+														        	
+																	DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
+																	attrID = attr.getID();
+																	String attrName = attr.getShortName();   
+																	Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
+																	%>
+																	
+																	<tr>
+																		<td width="29%" class="complex_attr_title<%=isOdd%>">
+																			<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=dsTable.getShortName()%>&amp;dataset_id=<%=dsID%>')" title="Click here to view all the fields">
+																				<%=attrName%>
+																			</a>
+																		</td>
+																		<td width="4%" class="complex_attr_help<%=isOdd%>">
+																			<!-- a target="_blank" href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=COMPLEX&amp;mode=view" -->
+																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
+																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+																			</a>
+																		</td>
+																		<td width="63%" class="complex_attr_value<%=isOdd%>">
+																			<%
+																			StringBuffer rowValue=null;
+																			Vector rows = attr.getRows();
+																			for (int j=0; rows!=null && j<rows.size(); j++){
+																				
+																				if (j>0){%>---<br/><%}
+																				
+																				Hashtable rowHash = (Hashtable)rows.get(j);
+																				rowValue = new StringBuffer();
+																				
+																				for (int t=0; t<attrFields.size(); t++){
+																					Hashtable hash = (Hashtable)attrFields.get(t);
+																					String fieldID = (String)hash.get("id");
+																					String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
+																					if (fieldValue == null) fieldValue = "";
+																					if (fieldValue.trim().equals("")) continue;
+																					
+																					if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
+																						rowValue.append(", ");
+																						
+																					rowValue.append(Util.replaceTags(fieldValue));
+																					%>
+																					<%=Util.replaceTags(fieldValue)%><br/><%
+																				}	
+																			}
+																			%>
+																		</td>
+																		
+																		<% isOdd = Util.isOdd(++displayed); %>
+																	</tr><%
+																}
+																%>
+													        </table>
+														</td>
+													</tr>
+													<%
+												}
+												%>	
+											</table>
+											<%
+										}
+										%>
+										<!-- end complex attributes -->
+								        
 									</td>
 								</tr>
-							<%
-							}
-							%>
+								
+								<!-- end dotted -->
+								
 							</table>
-					</td><%
+						</td>
+					</tr>
+					
+					<!-- end main table body -->
+					
+				</table>
+				
+				<!-- end main table -->
+				
+				<input type="hidden" name="mode" value="<%=mode%>"/>
+				<input type="hidden" name="check_in" value="false"/>
+				
+				<% if (dsID!=null && dsID.length()>0){ %>
+					<input type="hidden" name="ds_id" value="<%=dsID%>"/> <%
+				} %>
+				
+				<% if (dsName!=null && dsName.length()>0){ %>
+					<input type="hidden" name="ds_name" value="<%=dsName%>"/> <%
+				}
+				else{ %>
+					<input type="hidden" name="ds_name"/><%
+				}%>
+					
+				<%
+				if (!mode.equals("add")){ %>
+					<input type="hidden" name="table_id" value="<%=tableID%>"/>
+					<input type="hidden" name="del_id" value="<%=tableID%>"/>
+					 <%
 				}
 				%>
-			</tr>
-			
-			<%
-			if (user!=null && hasRedWildcard){
-				String align = hasGIS ? "center" : "left";
-				%>
-				<tr>
-					<td colspan="2" style="padding-left:15" align="<%=align%>">
-						<span class="smallfont" style="font-weight: normal">
-							(a red wildcard stands for checked-out element)
-						</span>
-					</td>
-				</tr><%
-			}
-			
-			if (user!=null){ %>
 				
-				<tr height="10"><td colspan="2"></td></tr>
-				<tr>
-					<td colspan="2" style="padding-left:10">
-						<b>*</b> <span class="smallfont">
-							<% 
-							String elemLink; 
-							if (contextParam.equals("ds"))
-								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=" + contextParam + "&ds_idf=" + dsIdf;
-							else
-								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=dstbl" + "&ds_idf=" + dsIdf;
-							%>
-							<a href="javascript:openUrl('<%=elemLink%>')">
-							<b>ELEMENTS</b></a></span>&#160;&#160;
-						<span class="smallfont" style="font-weight: normal">
-							&lt;&#160;click here to specify/remove elements of this table
-						</span>
-					</td>
-				</tr> <%
-			}
-			%>	
-			
-			</table> <%
-		}
-		%>
-		
-		<!-- end of elements list -->
-
-		<table width="auto" cellspacing="0">
-			<%
-			if (mode.equals("view")){
-				%>
+				<input type="hidden" name="ctx" value="<%=contextParam%>"/>
+				<input type="hidden" name="copy_tbl_id" value=""/>
+				<input type="hidden" name="changed" value="0">
+				<input type="hidden" name="ver_upw" value="true">
 				
-				<tr height="15"><td colspan="2"></td></tr>
-				<tr height="20" valign="top">
-					<td align="right" style="padding-right:10;padding-left:10">
-						<span class="mainfont"><b>Templates</b></span>
-					</td>
-					<td>
-						* <a target="_blank" href="GetSchema?comp_id=<%=tableID%>&amp;comp_type=TBL">Create an XML Schema</a>
-					</td>
-				</tr>
-			
 				<%
-			}
-		
-			%>
+				if (latestID!=null){%>
+					<input type="hidden" name="latest_id" value="<%=latestID%>"><%
+				}
+				%>
+				
+				<input type="hidden" name="force_status" value=""/>
+				
+			</form>
+			
+			<%@ include file="footer.htm" %>
+			
+			</div>			
+		</td>
+	</tr>
+</table>
 
-		</table>
-
-<input type="hidden" name="mode" value="<%=mode%>"/>
-
-<input type="hidden" name="check_in" value="false"/>
-
-<% if (dsID!=null && dsID.length()>0){ %>
-	<input type="hidden" name="ds_id" value="<%=dsID%>"/> <%
-} %>
-
-<% if (dsName!=null && dsName.length()>0){ %>
-	<input type="hidden" name="ds_name" value="<%=dsName%>"/> <%
-}
-else{ %>
-	<input type="hidden" name="ds_name"/><%
-}%>
-	
-<%
-if (!mode.equals("add")){ %>
-	<input type="hidden" name="table_id" value="<%=tableID%>"/>
-	<input type="hidden" name="del_id" value="<%=tableID%>"/>
-	 <%
-}
-%>
-
-<input type="hidden" name="ctx" value="<%=contextParam%>"/>
-<input type="hidden" name="copy_tbl_id" value=""/>
-<input type="hidden" name="changed" value="0">
-<input type="hidden" name="ver_upw" value="true">
-<!-- input type="hidden" name="upd_version" value="false" -->
-
-<%
-if (latestID!=null){%>
-	<input type="hidden" name="latest_id" value="<%=latestID%>"><%
-}
-%>
-
-<input type="hidden" name="force_status" value=""/>
-	
-</form>
-</div>
-</TD></TR></table>
 </body>
 </html>
 

@@ -206,7 +206,7 @@
 <head>
     <title>Data Dictionary</title>
     <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet.css">
+    <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="JavaScript" src='script.js'></script>
 	<script language="JavaScript">
     	function openSchema(){
@@ -293,118 +293,79 @@
             
 			<form id="form1" method="POST" action="search_results.jsp" onsubmit="setLocation()">
 			
-		<table width="500" cellspacing="0">
+		<table width="700" cellspacing="0">
 			<tr><td colspan="3"><span class="head00">Search results</span></td></tr>
 			<tr height="10"><td colspan="3"></td></tr>
-			<tr>
-				<td colspan="3"><span class="mainfont">
-					<%
-					if (user!=null){ %>
-						A red wildcard (<font color="red">*</font>) means that the definition of the data element itself or
-						its parent dataset is under work and it cannot be deleted. Otherwise
-						checkboxes enable to delete selected elements.<%
-					}
-					%>
-				</td>
-			</tr>
 		</table>
 		
-		<table width="auto" cellspacing="0">
+		<table width="700" cellspacing="0" border="0" cellpadding="2">
 		
-			<tr height="5"><td colspan="8"></td></tr>
-			
+			<!-- the buttons part -->
+		
 			<tr>
-				<td></td>
-				<td align="left" colspan="8" style="padding-bottom:5">
+			
+				<td colspan="4" align="left" style="padding-bottom:5">
 					<%
 					boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
 					if (dstPrm){
 						%>
-						<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
+						<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>&nbsp;
 						<%
+					}
+					
+					if (user!=null){%>
+						<input type="button" name="del_button" value="Delete selected" class="smallbutton" disabled onclick="deleteElement()"/><%
 					}
 					%>
 				</td>
-			</tr>
-			
-			<tr>
-				<td align="right" style="padding-right:10">
-					<% if (user!=null){%>
-						<input type="button" name="del_button" value="Delete" class="smallbutton" disabled onclick="deleteElement()"/><%
-					}
-					else{ %>
-						&#160;<%
-					}%>
+				<td align="right">
+					<a target="_blank" href="help.jsp?screen=elements&area=pagehelp"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"></a><br/>
 				</td>
-				<th align="left" style="padding-left:5;padding-right:10">Short name</th>
-				<th align="right" style="padding-left:5;padding-right:5">
-					<table border="0" width="auto">
-						<tr>
-							<th align="right">
-								<a href="javascript:showSortedList(1, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by short name"/></a>
-							</th>
-							<th align="right">
-								<a href="javascript:showSortedList(1, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
-							</th>
-						</tr>
-					</table>
-				</th>
-				<th align="left" style="padding-right:10">Type</th>
-				<th align="right" style="padding-left:5;padding-right:5">
-					<table border="0" width="auto">
-						<tr>
-							<th align="right">
-								<a href="javascript:showSortedList(2, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by type"/></a>
-							</th>
-							<th align="right">
-								<a href="javascript:showSortedList(2, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by type"/></a>
-							</th>
-						</tr>
-					</table>
-				</th>
-				<th align="left" style="padding-right:10">Table</th>
-				<th align="right" style="padding-left:5;padding-right:5">
-					<table border="0" width="auto">
-						<tr>
-							<th align="right">
-								<a href="javascript:showSortedList(3, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by table name"/></a>
-							</th>
-							<th align="right">
-								<a href="javascript:showSortedList(3, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by table name"/></a>
-							</th>
-						</tr>
-					</table>
-				</th>
-				<th align="left" style="padding-right:10">Dataset</th>
-				<th align="right" style="padding-left:5;padding-right:5">
-					<table border="0" width="auto">
-						<tr>
-							<th align="right">
-								<a href="javascript:showSortedList(4, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by dataset name"/></a>
-							</th>
-							<th align="right">
-								<a href="javascript:showSortedList(4, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by dataset name"/></a>
-							</th>
-						</tr>
-					</table>
-				</th>
 			</tr>
 			
+			<!-- the table itself -->
+		
+			<tr>
+				<th width="3%">&nbsp;</th>
+				<th width="30%" style="border-left: 0">
+					<jsp:include page="thsortable.jsp" flush="true">
+			            <jsp:param name="title" value="Element"/>
+			            <jsp:param name="mapName" value="Element"/>
+			            <jsp:param name="sortColNr" value="1"/>
+			            <jsp:param name="help" value="help.jsp?screen=elements&area=element"/>
+			        </jsp:include>
+				</th>
+				<th width="20%" style="border-left: 0">
+					<jsp:include page="thsortable.jsp" flush="true">
+			            <jsp:param name="title" value="Type"/>
+			            <jsp:param name="mapName" value="Type"/>
+			            <jsp:param name="sortColNr" value="2"/>
+			            <jsp:param name="help" value="help.jsp?screen=elements&area=type"/>
+			        </jsp:include>
+				</th>
+				<th width="25%" style="border-left: 0">
+					<jsp:include page="thsortable.jsp" flush="true">
+			            <jsp:param name="title" value="Table"/>
+			            <jsp:param name="mapName" value="Table"/>
+			            <jsp:param name="sortColNr" value="3"/>
+			            <jsp:param name="help" value="help.jsp?screen=tables&area=table"/>
+			        </jsp:include>
+				</th>
+				<th width="22%" style="border-left: 0">
+					<jsp:include page="thsortable.jsp" flush="true">
+			            <jsp:param name="title" value="Dataset"/>
+			            <jsp:param name="mapName" value="Dataset"/>
+			            <jsp:param name="sortColNr" value="4"/>
+			            <jsp:param name="help" value="help.jsp?screen=datasets&area=dataset"/>
+			        </jsp:include>
+				</th>
+			</tr>
+				
 			<%
 			
 			boolean wasDelPrm = false;
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
 
-				/* show all
-				if (iPageLen==0)
-					iPageLen = dataElements.size();
-			
-    	        int iBeginNode=iCurrPage*iPageLen;
-        	    int iEndNode=(iCurrPage+1)*iPageLen;
-            	if (iEndNode>=dataElements.size()) 
-	            	iEndNode=dataElements.size();
-            	for (int i=iBeginNode;i<iEndNode;i++) {*/
-            	
 				// init the VersionManager
 				VersionManager verMan = new VersionManager(conn, searchEngine, user);
 			
@@ -466,7 +427,9 @@
 					if (delPrm)
 						wasDelPrm = true;
 					
-					oEntry.oDsIdf = ds.getIdentifier();
+					if (ds!=null)
+						oEntry.oDsIdf = ds.getIdentifier();
+						
 					oResultSet.oElements.add(oEntry);
 					
 					String workingUser = verMan.getWorkingUser(dataElement.getNamespace().getID(),
@@ -477,12 +440,14 @@
 										(dataElement.isWorkingCopy() &&
 										workingUser!=null && user!=null &&
 										workingUser.equals(user.getUserName()));
+					
+					String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+					
 					%>
 				
 					<tr>
-						<td align="right" style="padding-right:10">
+						<td width="3%" align="right" class="<%=styleClass%>">
 							<%
-	    					//if (user!=null){
 		    				if (delPrm){
 		    					
 		    					if (topWorkingUser!=null){ // mark checked-out elements
@@ -496,23 +461,39 @@
 										<input type="hidden" name="ds_idf_<%=delem_id%>" value="<%=ds.getIdentifier()%>"/><%
 									}
 								}
+								else{ %>
+									&nbsp;<%
+								}
+							}
+							else{ %>
+								&nbsp;<%
 							}
 							%>
 						</td>
-						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+						
+						<td width="30%" class="<%=styleClass%>">
 							<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
 							<%=Util.replaceTags(delem_name)%></a>
 						</td>
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=displayType%></td>
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=Util.replaceTags(dispTbl)%></td>
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=Util.replaceTags(dispDs)%></td>
+						
+						<td width="20%" class="<%=styleClass%>">
+							<%=displayType%>
+						</td>
+						
+						<td width="25%" class="<%=styleClass%>">
+							<%=Util.replaceTags(dispTbl)%>
+						</td>
+						
+						<td width="22%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+							<%=Util.replaceTags(dispDs)%>
+						</td>
 					</tr>
 				
 				<%
 				}
 				%>
-               	<tr><td colspan="8">&#160;</td></tr>
-				<tr><td colspan="8">Total results: <%=dataElements.size()%></td></tr><%
+               	<tr><td colspan="5">&#160;</td></tr>
+				<tr><td colspan="5">Total results: <%=dataElements.size()%></td></tr><%
 			}
 			else{
 				// No search - return from another result set or a total stranger...
@@ -526,14 +507,20 @@
                     
                     c_SearchResultEntry oEntry;
                     for (int i=0;i<oResultSet.oElements.size();i++) {
-                        oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
+                    oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
+                    
+                    boolean delPrm = oEntry.getDelPrm();
+					if (delPrm)
+						wasDelPrm = true;
+                    
+                    String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
 
-                        %>
+                    %>
 					<tr>
-						<% if (user != null){%>
-							<td align="right" style="padding-right:10">
-								<%
-								if (oEntry.getDelPrm()){ %>
+						<%
+						if (user != null){ %>
+							<td width="3%" align="right" class="<%=styleClass%>"> <%
+								if (delPrm){ %>
 									<input type="checkbox" style="height:13;width:13" name="delem_id" value="<%=oEntry.oID%>"/><%
 									if (oEntry.oDsName != null){%>
 										<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=oEntry.oDsIdf%>"/><%
@@ -542,21 +529,30 @@
 								%>
 								<input type="hidden" name="delem_name_<%=oEntry.oID%>" value="<%=oEntry.oShortName%>"/>
 								<input type="hidden" name="ns_name_<%=oEntry.oID%>" value="<%=oEntry.oNs%>"/>
-							</td>
-						<% } %>
-						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+							</td><%
+						}
+						%>
+						
+						<td width="30%" class="<%=styleClass%>">
 							<a href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view">
 							<%=Util.replaceTags(oEntry.oShortName)%></a>
-						</td>					
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=oEntry.oType%></td>
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=Util.replaceTags(oEntry.oTblName)%></td>
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=Util.replaceTags(oEntry.oDsName)%></td>
+						</td>
+						
+						<td width="20%" class="<%=styleClass%>">
+							<%=oEntry.oType%>
+						</td>
+						<td width="25%" class="<%=styleClass%>">
+							<%=Util.replaceTags(oEntry.oTblName)%>
+						</td>
+						<td width="22%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+							<%=Util.replaceTags(oEntry.oDsName)%>
+						</td>
 					</tr>
 						<%
                 	}
                 	%>
-                	<tr><td colspan="8">&#160;</td></tr>
-					<tr><td colspan="8">Total results: <%=oResultSet.oElements.size()%></td></tr><%
+                	<tr><td colspan="5">&#160;</td></tr>
+					<tr><td colspan="5">Total results: <%=oResultSet.oElements.size()%></td></tr><%
                 }
 
             }
