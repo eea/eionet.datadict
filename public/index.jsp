@@ -32,7 +32,7 @@
     <link type="text/css" rel="stylesheet" href="eionet.css">
     <script language="JavaScript" src='script.js'></script>
 </head>
-<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0">
+<body>
     <%@ include file="header.htm" %>
     <table border="0">
         <tr valign="top">

@@ -749,7 +749,7 @@ String attrValue = null;
 		}
 </script>
 
-<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0">
+<body>
 <%@ include file="header.htm" %>
 
 <script language="JAVASCRIPT" for="window" event="onload">    

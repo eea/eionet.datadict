@@ -158,7 +158,7 @@ private String setDefaultAttrs(String name){
 		
 	</script>
 </head>
-<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onfocus="checkalert()" onload="onLoad()">
+<body onfocus="checkalert()" onload="onLoad()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">

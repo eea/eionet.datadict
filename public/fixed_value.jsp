@@ -378,7 +378,7 @@ private String legalizeAlert(String in){
 		}
 			
 	</script>
-<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onLoad="onLoad()">
+<body onLoad="onLoad()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">

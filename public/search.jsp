@@ -208,7 +208,7 @@ private String setDefaultAttrs(String name){
 <%
 if (contextParam == null || !contextParam.equals(POPUP)){
 %>
-	<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onfocus="checkalert()" onload="onLoad()">
+	<body onfocus="checkalert()" onload="onLoad()">
 	<%@ include file="header.htm" %>
 <%
 }

@@ -157,7 +157,7 @@ if (disabled.equals("")){
 		
 </script>
 	
-<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0">
+<body>
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">

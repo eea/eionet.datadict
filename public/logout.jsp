@@ -58,7 +58,7 @@ Vector dataElements=null;
 		}
 	</SCRIPT>
 </head>
-<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0"" onload="onLoad()">
+<body onload="onLoad()">
 
 <%@ include file="header.htm"%>
 
