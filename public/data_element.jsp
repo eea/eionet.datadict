@@ -1131,7 +1131,7 @@ String attrValue = null;
 			
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:alert('Under construction!')">
+					<a target="_blank" href="identification.html#short_name">
 					<span class="help">?</span></a>&#160;<span class="mainfont"><b>Short name</b>
 						<%
 						displayed++;
