@@ -55,5 +55,5 @@ function confirm_saving(){
 	return confirm("You have unsaved data on the page! Are you sure you want to leave the page and loose the changes?");
 }
 function getDDVersionName(){
-	return "Version 1.2 Test";
+	return "Version 2.0";
 }
