@@ -169,7 +169,7 @@ if (disabled.equals("")){
 
 		<tr valign="bottom">
 			<td><font class="head00">Tables in 
-				<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a>
+				<span class="title2"><a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><%=Util.replaceTags(dsName)%></a></span>
 			 dataset</td>
 		</tr>
 		

@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<title>Specify deletion type</title>
+		<link type="text/css" rel="stylesheet" href="eionet.css">
+	    <script language="JavaScript">
+			function setComplete(complete){
+				window.opener.document.forms["form1"].elements["complete"].value = "true";
+				clicked();
+			}
+
+			function clicked(){
+				document.forms["form1"].elements["wasclick"].value = "true";
+				window.close();
+			}
+
+			function doUnload(){
+				var f = document.forms["form1"].elements["wasclick"].value;
+				if (f=="true"){
+					window.opener.deleteDatasetReady();
+				}
+			}
+		</script>
+	</head>
+
+	<body style="background-color:#f0f0f0;background-image:url('../images/eionet_background2.jpg');background-repeat:repeat-y;" 			  onblur="window.focus()" onunload="doUnload()">
+		
+		<form name="form1" method="POST" action="dst_del_dialog.html">
+			<table width="100%">
+				<tr>
+					<td colspan="2">
+						<span class="mainfont"><b>
+							Do you want the selected datasets to be deleted permanently?
+							(Note that working copies will always be permanently deleted).
+						</b></span>
+					</td>
+				</tr>
+				<tr height="5"><td colspan="2">&#160;</td></tr>
+				<tr>
+					<td><input type="button" class="mediumbuttonb" name="no" value=" No " onclick="clicked()"/></td>
+					<td><input type="button" class="mediumbuttonb" name="yes" value=" Yes " onclick="setComplete()"/></td>	
+				</tr>
+			</table>
+			<input type="hidden" name="wasclick" value="false"/>
+		</form>
+	</body>
+</html>

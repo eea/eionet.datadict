@@ -91,12 +91,19 @@ private String legalizeAlert(String in){
 			
 			String ds = request.getParameter("ds");
 			
+			// For getting inherited attributes
+			String dataset_id = request.getParameter("dataset_id");
+			if (dataset_id == null) dataset_id = "";
+			String table_id = request.getParameter("table_id");
+			if (table_id == null) table_id = "";
+
 			String redirUrl = "complex_attr.jsp?mode=edit&parent_id=" + parent_id +
 															 "&parent_type=" + parent_type +
 															 "&parent_name=" + parent_name +
 															 "&parent_ns=" + parent_ns +
-															 "&attr_id=" + attr_id;
-				
+															 "&attr_id=" + attr_id+
+															 "&table_id=" + table_id+
+															 "&dataset_id=" + dataset_id;
 			if (ds != null)
 				redirUrl = redirUrl + "&ds=" + ds;
 
@@ -143,9 +150,11 @@ private String legalizeAlert(String in){
 			if (mode.equals("add"))
 				v = searchEngine.getDElemAttributes(attr_id,DElemAttribute.TYPE_COMPLEX);
 			else
-				v = searchEngine.getComplexAttribute(attr_id, parent_id, parent_type);
+				v = searchEngine.getComplexAttributes(parent_id, parent_type, attr_id, table_id, dataset_id);
 			
 			DElemAttribute attribute = (v==null || v.size()==0) ? null : (DElemAttribute)v.get(0);
+			boolean inherit = attribute.getInheritable().equals("0") ? false:true;
+			
 			
 			Vector attrFields = searchEngine.getAttrFields(attr_id);
 			
@@ -157,7 +166,6 @@ private String legalizeAlert(String in){
 			else if (parent_type.equals("T"))
 				_type="tbl";
 			boolean isWorkingCopy = _type==null ? true : searchEngine.isWorkingCopy(parent_id, _type);
-
 			%>
 
 <html>
@@ -222,7 +230,9 @@ private String legalizeAlert(String in){
 	String backURL = "complex_attrs.jsp?parent_id=" + parent_id +
 															 "&parent_type=" + parent_type +
 															 "&parent_name=" + parent_name +
-															 "&parent_ns=" + parent_ns;
+															 "&parent_ns=" + parent_ns +
+															 "&table_id=" + table_id+
+															 "&dataset_id=" + dataset_id;
 	if (ds != null)
 		backURL = backURL + "&ds=" + ds;
 		
@@ -253,7 +263,25 @@ private String legalizeAlert(String in){
 	String attrName = attribute.getShortName();
 	int position = 0;
 	
-	Vector rows = attribute.getRows();
+	
+	Vector rows = null;
+	Vector inheritRows=null;
+	Vector originalRows=null;
+
+
+	if (inherit){
+		if (mode.equals("view")){
+			rows = attribute.getRows();
+		}
+		else{
+			inheritRows = attribute.getInheritedValues();
+			rows = attribute.getOriginalValues();
+		}
+	}
+	else
+		rows = attribute.getRows();
+	
+	
 	%>
 		
 <form name="form1" method="POST" action="complex_attr.jsp">
@@ -386,7 +414,7 @@ if (!mode.equals("view")){
 					%>
 				</td>
 				<td width="10">&#160;</td>
-			<%
+				<%
 			}
 			%>
 			
@@ -401,9 +429,40 @@ if (!mode.equals("view")){
 			}
 			%>
 		</tr>
-		
 		<%
-		
+		int displayed=0;
+		// show inherited rows
+		if (inherit && inheritRows!=null && !mode.equals("view")){
+			String sInhText = (rows!=null && rows.size()>0 && attribute.getInheritable().equals("2")) ? "Overridden":"Inherited";
+			if (sInhText.equals("Inherited")){
+				for (int j=0; inheritRows!=null && j<inheritRows.size(); j++){
+					Hashtable rowHash = (Hashtable)inheritRows.get(j);
+					String row_id = (String)rowHash.get("rowid");
+					int pos = Integer.parseInt((String)rowHash.get("position"));
+					if (pos >= position) position = pos +1;
+					%>
+					<tr>
+						<td align="right"><span><%=sInhText%></td>
+						<td width="10">&#160;</td>
+					<%
+			
+					for (int t=0; t<attrFields.size(); t++){
+						Hashtable hash = (Hashtable)attrFields.get(t);
+						String fieldID = (String)hash.get("id");
+						String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
+						if (fieldValue == null) fieldValue = " ";
+							%>
+							<td <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-right:10">&#160;<%=Util.replaceTags(fieldValue)%></td>
+							<%
+					}		
+					displayed++;
+					
+					%>
+					</tr>				
+					<%
+				}
+			}
+		}
 		
 		for (int j=0; rows!=null && j<rows.size(); j++){
 			Hashtable rowHash = (Hashtable)rows.get(j);
@@ -428,9 +487,10 @@ if (!mode.equals("view")){
 				String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 				if (fieldValue == null) fieldValue = " ";
 					%>
-					<td <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-right:10">&#160;<%=Util.replaceTags(fieldValue)%></td>
+					<td <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-right:10">&#160;<%=Util.replaceTags(fieldValue)%></td>
 					<%
 			}
+			displayed++;
 			
 			%>
 			</tr>				
@@ -448,6 +508,8 @@ if (!mode.equals("view")){
 <input type="hidden" name="parent_name" value="<%=parent_name%>"/>
 <input type="hidden" name="parent_type" value="<%=parent_type%>"/>
 <input type="hidden" name="parent_ns" value="<%=parent_ns%>"/>
+<input type="hidden" name="table_id" value="<%=table_id%>"/>
+<input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
 
 <input type="hidden" name="position" value="<%=String.valueOf(position)%>"></input>
 

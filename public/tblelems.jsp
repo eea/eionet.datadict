@@ -280,6 +280,16 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 
 			return true;
 		}
+		function goToAddForm(){
+			
+			var url = "data_element.jsp?mode=add&table_id=<%=tableID%>&ds_id=<%=dsID%>";
+			short_name = document.forms["form1"].elements["delem_name"].value;
+			elem_type = document.forms["form1"].elements["type"].value;
+			
+			url +="&delem_name=" + short_name;
+			url +="&type=" + elem_type;
+			document.location.assign(url);
+		}
 </script>
 	
 <body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onload="start()">
@@ -323,8 +333,8 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 		%>
 		<tr valign="bottom">
 			<td colspan="4">
-				<font class="head00">Elements in <a href="dstable.jsp?mode=view&table_id=<%=tableID%>&ds_id=<%=dsID%>&ds_name=<%=dsName%>"><span class="title2"><%=Util.replaceTags(tableName)%></span></a> table,
-				<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a> dataset.
+				<font class="head00">Elements in <span class="title2"><a href="dstable.jsp?mode=view&table_id=<%=tableID%>&ds_id=<%=dsID%>&ds_name=<%=dsName%>"><%=Util.replaceTags(tableName)%></a></span> table,
+				<span class="title2"><a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><%=Util.replaceTags(dsName)%></a></span> dataset.
 			</td>
 		</tr>
 		
@@ -371,7 +381,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 								<input type="text" class="smalltext" width="10" name="delem_name"/>
 							</td>
 							<td align="right">
-								<input type="button" class="smallbutton" value="Add" onclick="submitForm('add')"/>
+								<input type="button" class="smallbutton" value="Add" onclick="goToAddForm()"/>
 							</td>
 							<td align="right">
 								<input type="button" class="smallbutton" value="Copy" onclick="copyElem()" title="Copies new data element definition from existing data element"/>
@@ -411,6 +421,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 			<th align="left" style="padding-left:5;padding-right:10">Short name</th>
 			<th align="left" style="padding-right:10">Datatype</th>
 			<th align="left" style="padding-right:10">Elem Type</th>
+			<td align="left" style="padding-right:10"></td>
 		</tr>
 		<tbody>
 			
@@ -437,6 +448,10 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 			
 			String max_size = getAttributeValue(elem, "MaxSize");		
 			if (max_size == null) max_size="";
+			
+			// see if the element is part of any foreign key relations
+			Vector _fks = searchEngine.getFKRelationsElm(elem.getID());
+			boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
 			
 			String elemDefinition = elem.getAttributeValueByShortName("Definition");
 			
@@ -487,7 +502,12 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 						<%=elemType%>
 					<% } %>
 				</td>
-				<td>
+				<td align="left" style="padding-right:10">
+					<%
+					if (fks){ %>
+						<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&delem_name=<%=elem.getShortName()%>&ds_id=<%=dataset.getID()%>">(FK)</a><%
+					}
+					%>
 					<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5">
 					<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPosition()%>" size="5">
 					<input type="hidden" name="pos_<%=elem.getID()%>" value="0" size="5">

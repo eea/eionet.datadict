@@ -91,7 +91,12 @@
 			</td>
 		</tr>
 		<tr height="15"><td colspan="3"></td></tr>
-		<tr><td colspan="3">Click on version to go to corresponding element view.</td></tr>
+		<tr>
+			<td colspan="3">
+				Click on version to go to corresponding element view.<br/>
+				User indicates the creator of the version.
+			</td>
+		</tr>
 		<tr height="5"><td colspan="3"></td></tr>
 
 		<tr>

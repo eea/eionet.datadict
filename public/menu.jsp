@@ -8,6 +8,7 @@
 	<tr><td align="right"><a onMouseOut="Out('img2')" onMouseOver="Over('img2')" href="search.jsp"><img alt="" border="0" src="../images/off.gif" name="img2" width="16" height="13"><img border="0" src="../images/button_dataelements.gif" width="84" height="13"></a></td></tr>
 	<tr><td>&nbsp;</td></tr>
 	<%
+	boolean clnPrm = false;
 	AppUserIF _user = SecurityUtil.getUser(request);
 	%>
 	<tr>
@@ -15,7 +16,7 @@
 			<%
 			if (_user!=null && _user.isAuthentic()) {
 				%>
-		        <a onMouseOut="Out('img3')" onMouseOver="Over('img3')" href="javascript:logout()">
+		        <a onMouseOut="Out('img3')" onMouseOver="Over('img3')" href="logout.jsp">
 		        	<img alt="" border="0" src="../images/off.gif" name="img3" width="16" height="13"><img alt="Login" height="13" width="84" border="0" src="../images/button_logout.gif">
 		        </a>
 				<%
@@ -34,7 +35,6 @@
 	<%
   	if (_user!=null && _user.isAuthentic()) {
 	  	
-	  	boolean clnPrm = false;
 	  	if (_user instanceof eionet.meta.TestUser)
 	  		clnPrm = true;
 	  	else{

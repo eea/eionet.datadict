@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<title>Dialog</title>
+		<link type="text/css" rel="stylesheet" href="eionet.css">
+	    <script language="JavaScript">
+			function clicked(value) {
+				document.forms["form1"].elements["wasclick"].value = "true";
+				if (opener && !opener.closed) {
+					window.opener.dialogWin.returnValue=value;
+					opener.dialogWin.returnFunc();
+				} else {
+					alert("You have closed the main window.\n\nNo action will be taken on the choices in this dialog box.")
+				}
+				window.close();
+				return false
+			}
+			function doUnload(){
+				// if window is closed without yes no buttons
+				var f = document.forms["form1"].elements["wasclick"].value;
+				if (f!="true"){
+					if (opener && !opener.closed) {
+						opener.dialogWin.returnFunc();
+					}
+					window.close();
+				}
+				return false
+			}
+		</script>
+	</head>
+
+	<body style="background-color:#f0f0f0;background-image:url('../images/eionet_background2.jpg');background-repeat:repeat-y;" 			  onblur="window.focus()" onunload="doUnload()">
+		
+		<form name="form1" method="POST" action="modal_dialog.html">
+			<table width="100%">
+				<tr>
+					<td colspan="2">
+						<span class="mainfont"><b>
+							<SCRIPT LANGUAGE="JavaScript">
+								document.write(window.opener.dialogWin.text);
+							</SCRIPT>
+						</b></span>
+					</td>
+				</tr>
+				<tr height="5"><td colspan="2">&#160;</td></tr>
+				<tr>
+					<td><input type="button" class="mediumbuttonb" name="yes" value=" Yes " onclick="clicked(true)"/></td>	
+					<td><input type="button" class="mediumbuttonb" name="no" value=" No " onclick="clicked(false)"/></td>
+				</tr>
+			</table>
+			<input type="hidden" name="wasclick" value="false"/>
+		</form>
+	</body>
+</html>

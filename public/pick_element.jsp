@@ -27,7 +27,17 @@
 		
 	String sel = request.getParameter("selected");
 	
-	String backUrl = "search.jsp?ctx=popup&selected=" + sel;
+	String fk = request.getParameter("fk");
+	
+	StringBuffer buf = new StringBuffer("search.jsp?");
+	if (fk!=null && fk.equals("true"))
+		buf.append("fk=true&");
+	if (dataset!=null && dataset.length()>0)
+		buf.append("dataset=").append(dataset).append("&");
+	buf.append("ctx=popup&selected=").append(sel);
+	
+	String backUrl = buf.toString();
+	
 	String id=null;
 	selected= new Vector();
 	if (sel!=null && sel.length()>0){

@@ -30,9 +30,10 @@
 				<%
 				return;
 			}
+			
+			searchEngine.setUser(user);
 						
-			Vector v = searchEngine.getDstHistory(dataset.getShortName(),
-									dataset.getVersion());
+			Vector v = searchEngine.getDstHistory(dataset.getShortName(), dataset.getVersion());
 			
 			if (v==null || v.size()==0){
 				%>
@@ -97,7 +98,19 @@
 			</td>
 		</tr>
 		<tr height="15"><td colspan="3"></td></tr>
-		<tr><td colspan="3">Click on version to go to corresponding dataset view.</td></tr>
+		<tr>
+			<td colspan="3">
+				Click on version to go to corresponding dataset view.<br/>
+				User indicates the creator of the version.
+				<%
+				if (user!=null && user.isAuthentic()){ %>
+					<br/>If you see a <font color="red">'D'</font> sign behind the version,
+						it means it has been deleted by you.<br/>
+						You can go to 'Restore datasets' page by clicking the sign.<%
+				}
+				%>
+			</td>
+		</tr>
 		<tr height="5"><td colspan="3"></td></tr>
 
 		<tr>
@@ -114,11 +127,17 @@
 			String version = (String)hash.get("version");
 			String usr = (String)hash.get("user");
 			String date = (String)hash.get("date");
+			String deleted = (String)hash.get("deleted");
 			
 			%>
 			<tr>
 				<td align="left" style="padding-left:5;padding-right:10">
 					<a href="javascript:view('<%=id%>')">&#160;<%=version%>&#160;</a>
+					<%
+					if (deleted!=null){%>
+						&#160;&#160;<a href="restore_datasets.jsp?SearchType=SEARCH"><font color="red">D</font></a><%
+					}
+					%>
 				</td>
 				<td align="left" style="padding-right:10"><%=usr%></td>
 				<td align="left" style="padding-right:10"><%=date%></td>

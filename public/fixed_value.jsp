@@ -248,6 +248,11 @@ private String legalizeAlert(String in){
 				
 					if (elemUrl.indexOf("delem_id=" + delem_id)>-1)
 						parentUrl = elemUrl;
+					if (delem_name.equals("?")){
+						DataElement elem = searchEngine.getDataElement(delem_id);
+						if (elem!=null)	delem_name=elem.getShortName();
+						if (delem_name == null) delem_name = "?";
+					}
 				}
 			}
 			else{

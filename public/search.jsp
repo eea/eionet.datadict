@@ -317,29 +317,39 @@ else
 							</select>
 						</td>
 					</tr>
+					
+					<%
+					String fk = request.getParameter("fk");
+					if (fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0){%>
+						<input type="hidden" name="dataset" value="<%=sel_ds%>"/>
+						<input type="hidden" name="fk" value="<%=fk%>"/><%
+					}
+					else{%>
 
-					<tr valign="top">
-						<td align="right" style="padding-right:10">
-							<a href="javascript:openDataset()"><span class="help">?</span></a>&#160;
-							<span class="mainfont"><b>Dataset</b></span>
-						</td>
-						<td colspan="2">
-							<select name="dataset" class="small">
-								<option value="">All</option>
-								<option value="-1" <% if (sel_ds.equals("-1"))%>selected<%;%>>Not defined</option>
-								<%
-								Vector datasets = searchEngine.getDatasets();
-								for (int i=0; datasets!=null && i<datasets.size(); i++){
-									Dataset ds = (Dataset)datasets.get(i);
-									String selected = (sel_ds!=null && sel_ds.equals(ds.getID())) ? "selected" : "";
-									%>
-									<option <%=selected%> value="<%=ds.getID()%>"><%=Util.replaceTags(ds.getShortName())%></option>
+						<tr valign="top">
+							<td align="right" style="padding-right:10">
+								<a href="javascript:openDataset()"><span class="help">?</span></a>&#160;
+								<span class="mainfont"><b>Dataset</b></span>
+							</td>
+							<td colspan="2">
+								<select name="dataset" class="small">
+									<option value="">All</option>
+									<option value="-1" <% if (sel_ds.equals("-1"))%>selected<%;%>>Not defined</option>
 									<%
-								}
-								%>
-							</select>
-						</td>
-					</tr>
+									Vector datasets = searchEngine.getDatasets();
+									for (int i=0; datasets!=null && i<datasets.size(); i++){
+										Dataset ds = (Dataset)datasets.get(i);
+										String selected = (sel_ds!=null && sel_ds.equals(ds.getID())) ? "selected" : "";
+										%>
+										<option <%=selected%> value="<%=ds.getID()%>"><%=Util.replaceTags(ds.getShortName())%></option>
+										<%
+									}
+									%>
+								</select>
+							</td>
+						</tr><%
+					}
+					%>
 					
 					<tr valign="top">
 						<td align="right" style="padding-right:10">

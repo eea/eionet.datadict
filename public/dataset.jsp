@@ -117,8 +117,6 @@ private Vector getValues(String id){
 				
 				String redirUrl = "";
 				
-				
-				
 				if (mode.equals("add")){
 					String id = handler.getLastInsertID();
 					if (id != null && id.length()!=0)
@@ -149,7 +147,6 @@ private Vector getValues(String id){
 				}
 				else if (mode.equals("delete")){
 					String deleteUrl = history.gotoLastMatching("datasets.jsp");
-
 					redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl:redirUrl + "/index.jsp";
 				}
 				
@@ -167,6 +164,7 @@ private Vector getValues(String id){
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			
 			mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+			searchEngine.setUser(user);
 			
 			String ds_name = "";
 			String version = "";
@@ -176,6 +174,7 @@ private Vector getValues(String id){
 			if (!mode.equals("add")){
 				
 				dataset = searchEngine.getDataset(ds_id);
+					
 				if (dataset!=null){
 					ds_name = dataset.getShortName();
 					if (ds_name == null) ds_name = "unknown";
@@ -270,8 +269,19 @@ private Vector getValues(String id){
     <script language="JavaScript" src='script.js'></script>
     <script language="JavaScript">
     
+    	var dialogWin = null
+    
     	function openSchema(){
 			window.open("station.xsd",null, "height=400,width=600,status=no,toolbar=no,menubar=no,location=no,scrollbars=yes,top=100,left=100");
+		}
+		
+		function deleteDatasetReady(){
+			
+			/*alert(document.forms["form1"].elements["complete"].value);
+	    	return;*/
+	    	
+			document.forms["form1"].elements["mode"].value = "delete";
+			document.forms["form1"].submit();
 		}
 
 		function submitForm(mode){
@@ -287,6 +297,20 @@ private Vector getValues(String id){
 				}
 				%>
 				if (b==false) return;
+				
+				<%
+				if (dataset!=null && dataset.isWorkingCopy()){ %>
+					document.forms["form1"].elements["complete"].value = "true";
+					deleteDatasetReady();<%
+				}
+				else{ %>
+					// now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
+					dialogWin = window.open("dst_del_dialog.html", "", "height=130,width=400,status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no,modal=yes");
+					window.onfocus = checkModal;
+					
+					return;<%
+				}
+				%>
 			}
 			
 			if (mode != "delete"){
@@ -306,13 +330,20 @@ private Vector getValues(String id){
 					alert("Identifier cannot contain any white space!");
 					return;
 				}
-			}
-			slctAllValues();
+				
+				slctAllValues();
+			}			
 			
 			document.forms["form1"].elements["mode"].value = mode;
 			document.forms["form1"].submit();
 		}
-		
+
+		function checkModal() {
+   			if (dialogWin!=null && !dialogWin.closed) 
+      			dialogWin.focus()
+		}
+
+
 		function checkObligations(){
 			
 			var o = document.forms["form1"].delem_name;
@@ -400,7 +431,7 @@ private Vector getValues(String id){
 		
 		function viewHistory(){
 			var url = "dst_history.jsp?ds_id=<%=ds_id%>";
-			window.open(url,null,"height=400,width=400,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=yes,location=yes");
+			window.open(url,null,"height=400,width=580,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=yes,location=yes");
 		}
 		
 		function goTo(mode, id){
@@ -518,7 +549,7 @@ private Vector getValues(String id){
 			return false;
 		}
 		function openAddBox(id, dispParams){
-			attrWindow=window.open('multiple_value_add.jsp?id=' + id + '&' + dispParams,"Search","height=250,width=500,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
+			attrWindow=window.open('multiple_value_add.jsp?id=' + id + '&' + dispParams,"Search","height=350,width=500,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
 			if (window.focus) {attrWindow.focus()}
 		}
 		function openUrl(url){
@@ -605,13 +636,13 @@ private Vector getValues(String id){
 											 false :
 											 workingUser.equals(user.getUserName());
 											 
-									if (dataset.isWorkingCopy() ||
+									if (dataset!=null && dataset.isWorkingCopy() ||
 										(isLatest && topFree)   ||
 										(isLatest && inWorkByMe)){ %>
 										<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=ds_id%>')"/>&#160;<%
 									}
 									
-									if (!dataset.isWorkingCopy() && isLatest && topFree){ %>
+									if (dataset!=null && !dataset.isWorkingCopy() && isLatest && topFree){ %>
 										<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/> <%
 									}
 								}
@@ -687,7 +718,7 @@ private Vector getValues(String id){
 			String regStatus = dataset!=null ? dataset.getStatus() : null;
 			//verMan = new VersionManager();
 			
-			if (!mode.equals("add") && verMan.requiresVersioning(regStatus)){
+			if (!mode.equals("add")){
 				String dstVersion = dataset.getVersion();
 				%>
 				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
@@ -857,6 +888,22 @@ private Vector getValues(String id){
 										%>
 									</select> <%
 								}
+								else if (dispType.equals("text")){ %>
+									<select class="small" name="hidden_attr_<%=attrID%>" style="display:none">
+										<%
+										Vector attrValues = searchEngine.getSimpleAttributeValues(attrID);
+										if (attrValues==null || attrValues.size()==0){ %>
+											<option selected value=""></option> <%
+										}
+										else{
+											for (int g=0; g<attrValues.size(); g++){
+												%>
+												<option value="<%=(String)attrValues.get(g)%>"><%=Util.replaceTags((String)attrValues.get(g))%></option> <%
+											}
+										}
+										%>
+									</select> <%
+								}
 							}
 							else{
 						
@@ -892,11 +939,17 @@ private Vector getValues(String id){
 										<option selected value=""></option> <%
 									}
 									else{
+										boolean selectedByValue = false;
 										for (int g=0; g<fxValues.size(); g++){
 											FixedValue fxValue = (FixedValue)fxValues.get(g);
-											String isSelected = fxValue.getDefault() ? "selected" : "";
-											if (attrValue!=null && attrValue.equals(fxValue.getValue()))
+											
+											String isSelected = (fxValue.getDefault() && !selectedByValue) ? "selected" : "";
+											
+											if (attrValue!=null && attrValue.equals(fxValue.getValue())){
 												isSelected = "selected";
+												selectedByValue = true;
+											}
+											
 											%>
 											<option <%=isSelected%> value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
 										}
@@ -931,7 +984,7 @@ private Vector getValues(String id){
 					Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
 		
 					%>		
-					<tr valign="top" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+					<tr valign="top" <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<td align="right" style="padding-right:10">
 							<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=COMPLEX&mode=view">
 							<span class="help">?</span></a>&#160;
@@ -957,7 +1010,7 @@ private Vector getValues(String id){
 								%>
 								<!--/tr-->
 								<%
-								
+								displayed++;
 								StringBuffer rowValue=null;
 								
 								Vector rows = attr.getRows();
@@ -973,20 +1026,25 @@ private Vector getValues(String id){
 										String fieldID = (String)hash.get("id");
 										String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 										if (fieldValue == null) fieldValue = "";
+										if (fieldValue.trim().equals("")) continue;
 										
 										if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
 											rowValue.append(", ");
 											
 										rowValue.append(Util.replaceTags(fieldValue));
+										
+										String mark = (t == 0) ? "-":"&#160;";
 										%>
 										<!--td style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 											<span class="barfont"><%=Util.replaceTags(fieldValue)%>
 										</td-->
+										
+										<span class="barfont"><%=mark%> <%=Util.replaceTags(fieldValue)%></span><br>
 										<%
 									}	
 									%>
 									<!--/tr-->
-									<span class="barfont">- <%=rowValue%></span><br>
+									<!--span class="barfont">- <%=rowValue%></span><br-->
 								<%
 								}%>
 							<!--/table-->
@@ -1292,6 +1350,9 @@ private Vector getValues(String id){
 		<input type="hidden" name="unlock" value="false"/>
 		
 		<input type="hidden" name="changed" value="0">
+		
+		<!-- Special input for 'delete' mode only. Inidcates if dataset(s) should be deleted completely. -->
+		<input type="hidden" name="complete" value="false"/>
 		
 	</table>
 	</form>

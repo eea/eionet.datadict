@@ -190,8 +190,8 @@
 		wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
 				
 		// see if looking for deleted datasets		
-		String _restore = request.getParameter("restore");
-		if (_restore!=null && _restore.equals("true")){
+		/*String _restore = request.getParameter("restore");
+		if (_restore!=null && _restore.equals("true")){*/
 			if (user==null || !user.isAuthentic()){
 				Exception e = new Exception("User not authorized!");
 				String msg = e.getMessage();
@@ -209,9 +209,9 @@
 			}
 			restore = true;
 			datasets = searchEngine.getDeletedDatasets();
-		}
+		/*}
 		else
-			datasets = searchEngine.getDatasets(params, short_name, version, oper, wrkCopies);
+			datasets = searchEngine.getDatasets(params, short_name, version, oper, wrkCopies);*/
 		
 		verMan = new VersionManager(conn, searchEngine, user);
 	}	
@@ -225,7 +225,6 @@
     <link type="text/css" rel="stylesheet" href="eionet.css">
     <script language="JavaScript" src='script.js'></script>
     <script language="JavaScript">
-    	var dialogWin=null;
 		function setLocation(){
 			var o = document.forms["form1"].searchUrl;
 			if (o!=null)
@@ -261,14 +260,8 @@
 			if (b==false) return;
 			
 			// now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
-			dialogWin=window.open("dst_del_dialog.html", "", "height=130,width=400,status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no");
-			window.onfocus= checkModal;
+			window.open("dst_del_dialog.html", "", "height=130,width=300,status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no");
     	}
-
-    	function checkModal() {
-   			if (dialogWin!=null && !dialogWin.closed) 
-      			dialogWin.focus()
-		}
     	
     	function deleteDatasetReady(){
 	    	document.forms["form1"].elements["mode"].value = "delete";
@@ -313,7 +306,7 @@
         	}
             %>
             
-			<form id="form1" method="POST" action="datasets.jsp" onsubmit="setLocation()">
+			<form id="form1" method="POST" action="restore_datasets.jsp" onsubmit="setLocation()">
 			
 		<table width="450" border="0">
 		
@@ -344,6 +337,7 @@
 					else{%>
 						<td colspan="3"><span class="mainfont">
 							Checkboxes and 'Restore' button enable to restore the selected datasets.
+							Clicking on dataset will generate PDF where you can see the details.
 						</td><%
 					}
 					%>
@@ -371,7 +365,7 @@
 						<a href="search_dataset.jsp"><img src="../images/search_ds.gif" border=0 alt="Search datasets"></a><br/>
 						<%
 						if (user!=null && user.isAuthentic()){%>					
-							<a href="restore_datasets.jsp?SearchType=SEARCH&restore=true">
+							<a href="datasets.jsp?SearchType=SEARCH&restore=true">
 								<img src="../images/restore_dataset.gif" border=0 alt="Restore datasets">
 							</a><%
 						}
@@ -488,8 +482,9 @@
 						</td>
 						
 						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2" title="<%=dsFullName%>">
-							<a href="dataset.jsp?ds_id=<%=ds_id%>&#38;mode=view">
-							<%=Util.replaceTags(dsFullName)%></a>
+							<a href="GetPrintout?format=PDF&obj_type=DST&out_type=GDLN&obj_id=<%=dataset.getID()%>">
+								<%=Util.replaceTags(dsFullName)%>
+							</a>
 						</td>					
 						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 							<%=dsVersion%>
@@ -507,7 +502,7 @@
 			
 								%>
 								<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
-								<a href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a>								
+									<%=Util.replaceTags(table.getShortName())%>
 								<%
 								if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
 									%>&#160;<font color="red">*</font> <%
@@ -546,8 +541,9 @@
 								</td>
 							<% } %>
 							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"  title="<%=oEntry.oFullName%>">
-								<a href="dataset.jsp?ds_id=<%=oEntry.oID%>&#38;mode=view">
-								<%=Util.replaceTags(oEntry.oFName)%></a>
+								<a href="GetPrintout?format=PDF&obj_type=DST&out_type=GDLN&obj_id=<%=oEntry.oID%>">
+									<%=Util.replaceTags(oEntry.oFName)%>
+								</a>
 							</td>					
 							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 								<%=oEntry.oVersion%>
@@ -563,7 +559,7 @@
 			
 									%>
 									<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
-									<a href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a><br/>
+										<%=Util.replaceTags(table.getShortName())%><br/>
 									<%
 								}
 								%>

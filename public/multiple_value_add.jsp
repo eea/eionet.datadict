@@ -59,7 +59,7 @@
 				if (opener && !opener.closed) {
 					var id = document.forms["form1"].attr_id.value;
 				  	<%
-				  	if(dispType.equals("select")){
+				  	if(dispType.equals("select") || dispType.equals("text")){
 				  	%>
 						if (document.all){
 							var optns=document.all('val').options;
@@ -81,10 +81,10 @@
 					
 					<%
 					}
-					else
+				  	if(dispType.startsWith("text"))
 					{
 					%>
-						var new_val = document.forms["form1"].val.value;
+						var new_val = document.forms["form1"].text_val.value;
 						window.opener.addValue(id, new_val);
 					<%
 					}
@@ -98,7 +98,7 @@
 			function onLoad(){
 				
 			  <%
-			  if(dispType.equals("select")){
+			  if(dispType.equals("select") || dispType.equals("text")){
 			  %>
 				if (opener==null || opener.closed) {
 					alert("You have closed the main window.\n\nNo action will be taken on the choices in this dialog box.");
@@ -121,11 +121,14 @@
 							addValue(slct.options[i].value);
 						}
 					}
-				}
+				}				
+
 				if (document.forms["form1"].elements['val'].length>6)
 					document.forms["form1"].elements['val'].size=6;
-				if (document.forms["form1"].elements['val'].length==0)
+				if (document.forms["form1"].elements['val'].length==0){
 					addValue("There is nothing to select");
+					document.forms["form1"].elements['val'].disabled=true;
+				}
 			  <%
 			  }
 			  %>
@@ -157,31 +160,10 @@
 	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
 	<br>
 	<br>
-	<form name="form1">
+	<form name="form1" onsubmit="ok()">
 	<table>
 		<%
-		if (dispType.startsWith("text")){
-		%>
-			<tr><td><b>Insert value:</b></td></tr>
-			<tr><td>&#160;</td></tr>
-			<tr><td>
-				<%
-				if (dispType.equals("text")){
-				%>
-					<input class="smalltext" class="smalltext" type="text" size="<%=width%>" name="val"/>
-				<%
-				}
-				else if(dispType.equals("textarea")){
-				%>
-					<textarea class="small" rows="5" cols="<%=width%>"  name="val"/></textarea>
-				<%
-			}
-			%>
-			</td></tr>
-			<tr><td>&#160;</td></tr>
-		<%
-		}
-		else if(dispType.equals("select")){
+		if(dispType.equals("select") || dispType.equals("text")){
 		%>
 			<tr><td><b>Select value:</b></td></tr>
 			<tr><td>&#160;</td></tr>
@@ -192,8 +174,28 @@
 			<tr><td>&#160;</td></tr>
 		<%
 		}
+		if (dispType.startsWith("text")){
 		%>
-
+			<tr><td><b>Insert value:</b></td></tr>
+			<tr><td>&#160;</td></tr>
+			<tr><td>
+				<%
+				if (dispType.equals("text")){
+				%>
+					<input class="smalltext" class="smalltext" type="text" size="<%=width%>" name="text_val"/>
+				<%
+				}
+				else if(dispType.equals("textarea")){
+				%>
+					<textarea class="small" rows="5" cols="<%=width%>"  name="text_val"/></textarea>
+				<%
+			}
+			%>
+			</td></tr>
+			<tr><td>&#160;</td></tr>
+		<%
+		}
+		%>
 	</table>
 	<input class="mediumbuttonb" type="button" value="OK" onclick="ok()"></input>
 	<input class="mediumbuttonb" type="button" value="Cancel" onclick="closeme()"></input>

@@ -1,10 +1,10 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.Util"%>
 
 <%!private String type=null;%>
 <%!private String mode=null;%>
 <%!private DElemAttribute attribute=null;%>
 <%!private Vector attrFields=null;%>
-
+<%!private DDSearchEngine  searchEngine=null;%>
 <%@ include file="history.jsp" %>
 
 			<%
@@ -61,6 +61,19 @@
 				
 				try{
 					userConn = user.getConnection();
+
+					// if mode==delete, check whether the attribute is used somewhere. if Yes, then prompt user
+					if (mode.equals("delete")){
+						searchEngine = new DDSearchEngine(userConn, "", ctx);
+						boolean hasObjects = searchEngine.hasAttributeObjects(attr_id, type);
+						if (hasObjects){
+					        String sName = request.getParameter("short_name");
+					        
+							response.sendRedirect("dialog_delete_attr.jsp?mode=delete&attr_id=" + attr_id + "&type=" + type + "&short_name=" + sName);
+							return;
+						}
+					}
+
 					AttributeHandler handler = new AttributeHandler(userConn, request, ctx);
 					handler.execute();
 					
@@ -106,7 +119,7 @@
 			try { // start the whole page try block
 			
 			conn = pool.getConnection();
-			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+			searchEngine = new DDSearchEngine(conn, "", ctx);
 			
 			String attr_name = null;
 			String attr_shortname = null;
@@ -678,6 +691,8 @@
 								dispDispType = "Text area";
 							else if (dispType.equals("select"))
 								dispDispType = "Select box";
+							else if (dispType.equals("image"))
+								dispDispType = "Image";
 							%>
 							<span class="barfont" style="width:400"><%=dispDispType%></span>
 							<%
@@ -689,6 +704,7 @@
 								<option selected value="text">Text box</option>
 								<option value="textarea">Text area</option>
 								<option value="select">Select box</option>
+								<option value="image">Image</option>
 							</select>
 							<%
 							if (mode.equals("edit") && dispType!=null && dispType.equals("select")){
@@ -701,6 +717,32 @@
 						%>
 					</td>
 				</tr>
+				<%
+				if (mode.equals("view") && dispType!=null && dispType.equals("select")){
+				%>
+					<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+						<td align="right" style="padding-right:10">
+							<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+							<span class="mainfont"><b>Fixed values</b></span>
+						</td>
+						<td>
+						<%
+							displayed++;
+							Vector fxValues = searchEngine.getFixedValues(attr_id, "attr");
+							if (fxValues!=null && fxValues.size()>0){ 
+								for (int g=0; g<fxValues.size(); g++){
+									FixedValue fxValue = (FixedValue)fxValues.get(g);
+									%>
+									<span class="barfont" style="width:400"><%=Util.replaceTags(fxValue.getValue())%></span><br>
+									<%
+								}
+							}
+						%>
+						</td>
+					</tr>
+				<%
+				}
+				%>
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
 						<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
@@ -743,6 +785,48 @@
 				<%
 			}
 			%>
+			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+				<td align="right" valign="top" style="padding-right:10">
+					<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+					<span class="mainfont"><b>Inheritance</b>
+						<%
+						displayed++;
+						if (!mode.equals("view")){
+							%>
+							&#160;(O)
+							<%
+						}
+						%>
+					</span>
+				</td>
+				<td>
+					<%
+					String inh_text[]=new String[3];
+					inh_text[0] = "No inheritance";
+					inh_text[1] = "Inherit attribute values from parent level wtih possibilty to add new values";
+					inh_text[2] = "Inherit attribute values from parent level wtih possibilty to overwrite them";
+					int chk = 0;
+
+					if (!mode.equals("add")){
+						String inherit = attribute.getInheritable();
+						if (inherit==null) inherit="0";
+						chk =  Integer.parseInt(inherit);
+					}						
+					if (mode.equals("view")){
+						%>
+						<span class="barfont" style="width:400"><%=inh_text[chk]%></span>
+						<%
+					}
+					else{
+						for (int i=0;i<3;i++){
+						%>
+							<input value="<%=i%>" <%=disabled%> <% if (i==chk) %>checked<%;%> type="radio" class="smalltext" name="inheritable"><%=inh_text[i]%></input><br>
+						<%
+						}
+					}
+				%>
+				</td>
+			</tr>
 			
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
@@ -856,7 +940,8 @@
 				</tr>
 			<%
 			} 
-			
+			%>
+			<%
 			if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
 				%>
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>

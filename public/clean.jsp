@@ -116,7 +116,7 @@
 								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
 									   value="<%=MrProper.ORPHAN_ELM%>">
 									   <span class="smallfont">
-									   	Delete all elements without parent tables
+									   	Delete all elements without parent tables.
 									   </span>
 								</input>
 							</td>
@@ -126,7 +126,7 @@
 								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
 									   value="<%=MrProper.ORPHAN_TBL%>">
 									   <span class="smallfont">
-									   	Delete all tables without parent datasets
+									   	Delete all tables without parent datasets.
 									   </span>
 								</input>
 							</td>
@@ -136,7 +136,27 @@
 								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
 									   value="<%=MrProper.RLS_NOWC%>">
 									   <span class="smallfont">
-									   	Release locked objects which actually don't have a working copy
+									   	Release locked objects which actually don't have a working copy.
+									   </span>
+								</input>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
+									   value="<%=MrProper.RMV_WC_NORIG%>">
+									   <span class="smallfont">
+									   	Remove working copies which do not have any associated originals.
+									   </span>
+								</input>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
+									   value="<%=MrProper.RMV_MULT_VERS%>">
+									   <span class="smallfont">
+									   	Remove multiple versions by leaving only the latest by timestamp.
 									   </span>
 								</input>
 							</td>
@@ -145,9 +165,8 @@
 						<tr>
 							<td>
 								<%
-								String disabled = "";
-								if (user==null || !user.isAuthentic())
-									disabled = "disabled";
+								
+								String disabled = clnPrm ? "" : "disabled";
 								%>
 								<input type="button" <%=disabled%>
 									   class="smallbuttonb" value="Action" onclick="submitForm()">

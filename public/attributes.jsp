@@ -148,22 +148,24 @@
 					</span>
 				</td>
 			</tr>
-			<tr height="10"><td></td></tr>
+			<tr height="5"><td></td></tr>
 			
 		</table>
 		
 		<table width="auto" cellspacing="0" cellpadding="0" border="0">
 		
-			<tr>
 				<%
 				if (user != null && mode==null){
 					%>
-					<td valign="top" align="right" style="padding-right:10;padding-top:3">
+					<tr><td colspan="8" valign="top" align="left" style="padding-right:10;padding-top:3">
 						<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
-					</td>
+					</td></tr>
+					<tr height="5"><td colspan="8"></td></tr>
 					<%
 				}
+			
 				%>
+			<tr>
 				<th rowspan="2" valign="bottom" align="left" style="padding-left:5;padding-right:10;padding-bottom:5;padding-top:5">Short name</th>
 				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Type</th>
 				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Datasets</th>
@@ -175,6 +177,7 @@
 			</tr>
 			
 			<%
+			if (false){
 			if (user != null && mode==null){
 				%>
 				<tr>
@@ -183,6 +186,7 @@
 					</td>
 				</tr>
 				<%
+			}
 			}
 			%>
 			
@@ -226,6 +230,9 @@
 				
 				<tr>
 					<%
+					// it is disabled to delete several attributes at once. 
+					//Then it's easier to check, whether th attribute is used somewhere
+					if (false){
 					if (user != null && mode==null){
 						%>
 						<td align="right" style="padding-right:10">
@@ -244,6 +251,7 @@
 						</td>
 						<%
 					}
+				}
 					if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
 						attrTypeDisp = "Complex";
 					%>

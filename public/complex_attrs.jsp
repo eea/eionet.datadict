@@ -73,6 +73,12 @@ private String legalizeAlert(String in){
 			
 			String ds = request.getParameter("ds");
 			
+			// For getting inherited attributes
+			String dataset_id = request.getParameter("dataset_id");
+			if (dataset_id == null) dataset_id = "";
+			String table_id = request.getParameter("table_id");
+			if (table_id == null) table_id = "";
+
 			if (request.getMethod().equals("POST")){
 
 				Connection userConn = null;				
@@ -98,7 +104,9 @@ private String legalizeAlert(String in){
 				String redirUrl = "complex_attrs.jsp?parent_id=" + parent_id +
 															 "&parent_type=" + parent_type +
 															 "&parent_name=" + parent_name +
-															 "&parent_ns=" + parent_ns;
+															 "&parent_ns=" + parent_ns +
+															 "&table_id=" + table_id +
+															 "&dataset_id=" + dataset_id;
 				
 				response.sendRedirect(redirUrl);
 				return;
@@ -116,7 +124,7 @@ private String legalizeAlert(String in){
 			Vector mComplexAttrs = searchEngine.getDElemAttributes(DElemAttribute.TYPE_COMPLEX);
 			if (mComplexAttrs == null) mComplexAttrs = new Vector();
 			
-			complexAttrs = searchEngine.getComplexAttributes(parent_id, parent_type);
+			complexAttrs = searchEngine.getComplexAttributes(parent_id, parent_type, null, table_id, dataset_id);
 			
 			if (complexAttrs == null) complexAttrs = new Vector();
 			
@@ -171,7 +179,7 @@ private String legalizeAlert(String in){
 			function addNew(){
 				var id = document.forms["form1"].elements["new_attr_id"].value;
 				var url = "<%=redirUrl%>" + "complex_attr.jsp?mode=add&attr_id=" + id + 
-							"&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>";
+							"&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>&table_id=<%=table_id%>&dataset_id=<%=dataset_id%>";
 				
 				<%
 				if (ds!=null && ds.equals("true")){
@@ -186,7 +194,7 @@ private String legalizeAlert(String in){
 			
 			function edit(id){
 				var url = "<%=redirUrl%>" + "complex_attr.jsp?mode=edit&attr_id=" + id + 
-							"&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>";
+							"&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>&table_id=<%=table_id%>&dataset_id=<%=dataset_id%>";
 				<%
 				if (ds!=null && ds.equals("true")){
 					%>
@@ -323,6 +331,7 @@ private String legalizeAlert(String in){
 		DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
 		String attrID = attr.getID();
 		String attrName = attr.getShortName();
+		boolean inherit = attr.getInheritable().equals("1") ? true:false;
 		
 		Vector attrFields = searchEngine.getAttrFields(attrID);
 		
@@ -408,6 +417,8 @@ private String legalizeAlert(String in){
 <input type="hidden" name="parent_name" value="<%=parent_name%>"/>
 <input type="hidden" name="parent_type" value="<%=parent_type%>"/>
 <input type="hidden" name="parent_ns" value="<%=parent_ns%>"/>
+<input type="hidden" name="table_id" value="<%=table_id%>"/>
+<input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
 
 <%
 if (ds != null){

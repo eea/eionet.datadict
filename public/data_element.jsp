@@ -3,6 +3,7 @@
 <%!private String mode=null;%>
 <%!private Vector mAttributes=null;%>
 <%!private DataElement dataElement=null;%>
+<%!private DataElement newDataElement=null;%>
 <%!private Vector complexAttrs=null;%>
 <%!private Vector fixedValues=null;%>
 <%!private Vector fxvAttributes=null;%>
@@ -35,19 +36,74 @@ private String getAttributeIdByName(String name){
 }
 
 private String getValue(String id){
+	return getValue(id, 0);
+}
+/*
+		int val indicates which type of value is requested. the default is 0
+		0 - display value (if original value is null, then show inherited value)
+		1 - original value
+		2 - inherited value
+*/
+private String getValue(String id, int val){
 	if (id==null) return null;
-	if (mode.equals("add")) return null;
-	DElemAttribute attr = dataElement.getAttributeById(id);
+	DElemAttribute attr = null;
+
+	if (mode.equals("add")){
+		if (val<2) 
+			return null;
+		else{
+			if (newDataElement==null) return null;
+			attr = newDataElement.getAttributeById(id);
+		}
+	}
+	else{
+		if (dataElement==null) return null;
+		attr = dataElement.getAttributeById(id);
+	}
+
 	if (attr == null) return null;
-	return attr.getValue();
+	if (val==1)
+		return attr.getOriginalValue();
+	else if (val==2)
+		return attr.getInheritedValue();
+	else
+		return attr.getValue();
 }
 
 private Vector getValues(String id){
+	return getValues(id, 0);
+}
+
+/*
+		int val indicates which group of values is requested. the default is 0
+		0 - all
+		1 - original
+		2 - inherited
+*/
+private Vector getValues(String id, int val){
 	if (id==null) return null;
-	if (mode.equals("add")) return null;
-	DElemAttribute attr = dataElement.getAttributeById(id);
+	DElemAttribute attr = null;
+
+	if (mode.equals("add")){
+		if (val<2) 
+			return null;
+		else{
+			if (newDataElement==null) return null;
+			attr = newDataElement.getAttributeById(id);
+		}
+	}
+	else{
+		if (dataElement==null) return null;
+		attr = dataElement.getAttributeById(id);
+	}
+
 	if (attr == null) return null;
-	return attr.getValues();
+	if (val==1)
+		return attr.getOriginalValues();
+	else if (val==2)
+		return attr.getInheritedValues();
+	else
+		return attr.getValues();
 }
 
 private String getAttributeObligationById(String id){
@@ -283,7 +339,9 @@ private String legalizeAlert(String in){
 			// get the data element if not "add" mode
 			String delem_name = "";
 			if (mode.equals("edit") || mode.equals("view")){
+				
 				dataElement = searchEngine.getDataElement(delem_id);
+					
 				if (dataElement!=null){
 					type = dataElement.getType();
 					//delem_name = dataElement.getAttributeValueByName("Name");
@@ -300,13 +358,26 @@ private String legalizeAlert(String in){
 				<b>No metadata on attributes found!</b> <%
 				return;
 			}
+			else if(mode.equals("add")){
+				delem_name = request.getParameter("delem_name");
+				if (delem_name==null) delem_name="";
+				
+				//get inherited attribues
+				if (dsID!=null && tableID!=null){
+					if (!dsID.equals("") && !tableID.equals("")){
+						newDataElement = new DataElement();
+						newDataElement.setDatasetID(dsID);
+						newDataElement.setTableID(tableID);
+						newDataElement.setAttributes(searchEngine.getSimpleAttributes(null, "E", tableID, dsID));
+					}
+				}
+			}
 			
 
 			// find out if it's the latest version of this data element			
 			VersionManager verMan = new VersionManager(conn, searchEngine, user);
 			String latestID = dataElement==null ? null : verMan.getLatestElmID(dataElement);
 			boolean isLatest = Util.voidStr(latestID) ? true : latestID.equals(dataElement.getID());
-			
 			
 			// implementing check-in/check-out
 			
@@ -356,11 +427,14 @@ private String legalizeAlert(String in){
 			if (dataElement!=null){
 				tableID = dataElement.getTableID();
 				if (tableID!=null){
+					
 					dsTable = searchEngine.getDatasetTable(tableID);
+						
 					if (dsTable!=null){
 						dsID = dsTable.getDatasetID();
-						if (dsID!=null)
+						if (dsID!=null){							
 							dataset = searchEngine.getDataset(dsID);
+						}
 					}
 				}
 			}
@@ -399,7 +473,7 @@ private String legalizeAlert(String in){
 			}
 			
 			// get the complex attributes
-			complexAttrs = searchEngine.getComplexAttributes(delem_id, "E");			
+			complexAttrs = searchEngine.getComplexAttributes(delem_id, "E", null, tableID, dsID);
 			if (complexAttrs == null) complexAttrs = new Vector();
 			
 			DElemAttribute attribute = null;
@@ -412,6 +486,7 @@ private String legalizeAlert(String in){
     <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet.css">
     <script language="JavaScript" src='script.js'></script>
+    <script language="JavaScript" src='modal_dialog.js'></script>
     <script language="JavaScript">
     
     	function openSchema(){
@@ -424,17 +499,43 @@ private String legalizeAlert(String in){
 		}
 		
 		function checkIn(){
+			
+			if (document.forms["form1"].elements["is_first"]){
+				if (document.forms["form1"].elements["is_first"].value=="true"){
+					openDialog("yesno_dialog.html", "Do you want to update parent table and dataset versions?",updateParent,100, 400);
+					return;
+				}
+			}
+
 			document.forms["form1"].elements["check_in"].value = "true";
 			submitForm('edit');
+			
+			
 			//document.forms["form1"].elements["mode"].value = "edit";
 			//document.forms["form1"].submit();
+		}
+		function updateParent(){
+			value = dialogWin.returnValue;
+			if (value==null)
+				value=true;
+			document.forms["form1"].elements["ver_upw"].value=value;
+			document.forms["form1"].elements["check_in"].value = "true";
+			submitForm('edit');
 		}
 		
 		function submitForm(mode){
 			
 			if (mode=="add"){
-				var ds = document.forms["form1"].elements["ds_id"];
-				if (ds!=null){
+				var ds = document.forms["form1"].elements["ds_id"].value;
+				if (ds==null || ds==""){
+					alert('Dataset not specified!');
+					return;
+				}
+				
+				var tbl = document.forms["form1"].elements["table_id"].value;
+				if (tbl==null || tbl==""){
+					alert('Table not specified!');
+					return;
 				}
 			}
 			
@@ -720,7 +821,7 @@ private String legalizeAlert(String in){
 		}
 		
 		function openAddBox(id, dispParams){
-			attrWindow=window.open('multiple_value_add.jsp?id=' + id + '&' + dispParams,"Search","height=250,width=500,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
+			attrWindow=window.open('multiple_value_add.jsp?id=' + id + '&' + dispParams,"Search","height=350,width=500,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
 			if (window.focus) {attrWindow.focus()}
 		}
 		
@@ -933,7 +1034,7 @@ String attrValue = null;
 						<font class="title2" color="#006666"><%=Util.replaceTags(delem_name)%></font>
 						<input type="hidden" name="delem_name" value="<%=delem_name%>"/>
 					<% } else{ %>
-						<input class="smalltext" class="smalltext" type="text" size="30" name="delem_name" onchange="form_changed('form1')"></input>
+						<input class="smalltext" class="smalltext" type="text" size="30" name="delem_name" onchange="form_changed('form1')" value="<%=delem_name%>"></input>
 					<% } %>
 				</td>
 			</tr>
@@ -960,7 +1061,7 @@ String attrValue = null;
 					</td>
 					<td colspan="2">
 						<%
-						if (dataset!=null){
+						if (dataset!=null && !mode.equals("add")){
 								%>
 								<font class="title2" color="#006666"><a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><%=Util.replaceTags(dataset.getShortName())%></a></font>
 								<input type="hidden" name="ds_id" value="<%=dsID%>"/>
@@ -1036,7 +1137,7 @@ String attrValue = null;
 					</td>
 					<td colspan="2">
 						<%
-						if (dsTable!=null){
+						if (dsTable!=null && !mode.equals("add")){
 								%>
 								<font class="title2" color="#006666">
 								<a href="dstable.jsp?mode=view&table_id=<%=tableID%>&ds_id=<%=dsID%>"><%=Util.replaceTags(dsTable.getShortName())%></a></font>
@@ -1051,7 +1152,7 @@ String attrValue = null;
 								tbl = searchEngine.getDatasetTable(tableID);
 								
 							%>
-							<select class="small" name="table_id">
+							<select class="small" name="table_id"">
 								<%
 								if (dst!=null){
 									if (tbl==null){ %>
@@ -1183,10 +1284,15 @@ String attrValue = null;
 			// First make sure you don't display Version for a status that doesn't require it.
 			
 			String regStatus = dataElement!=null ? dataElement.getStatus() : null;
-			verMan = new VersionManager();
+			if (verMan==null) verMan = new VersionManager();
 			
-			if (!mode.equals("add") && verMan.requiresVersioning(regStatus)){
+			if (!mode.equals("add")){
 				String elmVersion = dataElement.getVersion();
+				
+				boolean isFirst=false;
+				if (mode.equals("edit") && elmVersion.equals("1")){
+					isFirst = verMan.isLastElm(delem_id, delem_name, dsTable.getNamespace());
+				}
 				%>
 				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
@@ -1204,6 +1310,8 @@ String attrValue = null;
 					</td>
 					<td colspan="2"><font class="title2" color="#006666"><%=elmVersion%></font></td>
 				</tr>
+				
+				<input type="hidden" name="is_first" value="<%=isFirst%>">
 				<%
 			}
 			
@@ -1276,6 +1384,8 @@ String attrValue = null;
 				if (mode.equals("view") && (attrValue==null || attrValue.length()==0) && !attrOblig.equals("M"))
 					continue;
 				
+				if (dispType.equals("image") && mode.equals("add")) continue;
+				
 				displayed++;
 				
 				String width  = attribute.getDisplayWidth();
@@ -1283,10 +1393,27 @@ String attrValue = null;
 				
 				String disabled = user == null ? "disabled" : "";
 				boolean dispMultiple = attribute.getDisplayMultiple().equals("1") ? true:false;
+				boolean inherit = attribute.getInheritable().equals("0") ? false:true;
 				
 				Vector multiValues=null;
-				if (dispMultiple){
-					multiValues = getValues(attrID);
+				String inheritedValue=null;
+
+				if (!mode.equals("view")){
+					if (inherit) inheritedValue = getValue(attrID, 2);
+						
+					if (mode.equals("edit")){
+						if (dispMultiple){
+							if (inherit){
+								multiValues = getValues(attrID, 1); //original values only
+							}
+							else{
+								multiValues = getValues(attrID, 0);  //all values
+							}
+						}
+						else{
+							if (inherit) attrValue = getValue(attrID, 1);  //get original value
+						}
+					}
 				}
 				%>
 				<tr <% if (mode.equals("view") && displayed % 2 == 0) %> bgcolor="#D3D3D3" <%;%>>
@@ -1304,6 +1431,7 @@ String attrValue = null;
 						</span>
 					</td>
 					<td colspan="2">
+					
 						<%
 						if (attribute.getShortName().equalsIgnoreCase("Identifier")){					
 							%>
@@ -1311,29 +1439,34 @@ String attrValue = null;
 							<%
 						}
 						
+						if (dispType.equals("image")){%>
+							<span class="barfont" style="width:400">
+								<a target="_blank" href="imgattr.jsp?obj_id=<%=delem_id%>&obj_type=E&attr_id=<%=attribute.getID()%>&obj_name=<%=dataElement.getShortName()%>&attr_name=<%=attribute.getShortName()%>">image(s)</a>
+							</span><%
+						}
 						// if mode is 'view', display a span, otherwise an input
-								
-						if (mode.equals("view")){
-							if (dispMultiple){
-								%>
-									<span class="barfont" style="width:400">
-								<%
-								for (int k=0; multiValues!=null && k<multiValues.size(); k++){
-									attrValue = (String)multiValues.get(k);
-									%><%if (k>0)%>, <%;%><%=attrValue%><%
-								}	
-								%>										
-								</span>
-								<%
-							}
-							else{
+						else if (mode.equals("view")){
 							%>
 								<span class="barfont" style="width:400"><%=Util.replaceTags(attrValue)%></span>
 							<%
-							}
 						}
 						else{
-							if (dispMultiple){
+							
+							/*if (mode.equals("add") && inherit && dsID!=null){
+								%>
+								<input <%=disabled%> type="checkbox" name="inherit_<%=attrID%>" checked/> Inherit this attribute from table level<br/>
+								<%
+							}
+							*/
+							if (inherit && inheritedValue!=null){
+								String sInhText = (((dispMultiple && multiValues!=null) || (!dispMultiple && attrValue!=null)) && attribute.getInheritable().equals("2")) ? "Overriding parent level value: ":"Inherited from parent level: ";
+								if (sInhText.startsWith("Inherited")){
+									%>
+										<span class="barfont" style="width:400"><%=sInhText%><%=inheritedValue%></span><br>
+									<%
+								}
+							}
+							if (dispMultiple && !dispType.equals("image")){
 								%>
 									<select <%=disabled%> id="attr_mult_<%=attrID%>" name="attr_mult_<%=attrID%>" multiple="true" style="width:auto">
 								<%
@@ -1363,6 +1496,22 @@ String attrValue = null;
 												FixedValue fxValue = (FixedValue)fxValues.get(g);
 												%>
 												<option value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
+											}
+										}
+										%>
+									</select> <%
+								}
+								else if (dispType.equals("text")){ %>
+									<select class="small" name="hidden_attr_<%=attrID%>" style="display:none">
+										<%
+										Vector attrValues = searchEngine.getSimpleAttributeValues(attrID);
+										if (attrValues==null || attrValues.size()==0){ %>
+											<option selected value=""></option> <%
+										}
+										else{
+											for (int g=0; g<attrValues.size(); g++){
+												%>
+												<option value="<%=(String)attrValues.get(g)%>"><%=Util.replaceTags((String)attrValues.get(g))%></option> <%
 											}
 										}
 										%>
@@ -1402,15 +1551,21 @@ String attrValue = null;
 										<option selected value=""></option> <%
 									}
 									else{
+										boolean selectedByValue = false;
 										for (int g=0; g<fxValues.size(); g++){
 											FixedValue fxValue = (FixedValue)fxValues.get(g);
-											String isSelected = fxValue.getDefault() ? "selected" : "";
+											
+											String isSelected = (fxValue.getDefault() && !selectedByValue) ? "selected" : "";
+											
 											if (attribute.getShortName().equalsIgnoreCase("Datatype")){
 												if (type.equals("CH2") && fxValue.getValue().equalsIgnoreCase("boolean")) continue;
 											}
 
-											if (attrValue!=null && attrValue.equals(fxValue.getValue()))
+											if (attrValue!=null && attrValue.equals(fxValue.getValue())){
 												isSelected = "selected";
+												selectedByValue = true;
+											}
+											
 											%>
 											<option <%=isSelected%> value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
 										}
@@ -1445,12 +1600,12 @@ String attrValue = null;
 					Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
 		
 					%>		
-					<tr valign="top" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+					<tr valign="top" <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<td align="right" style="padding-right:10">
 							<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=COMPLEX&mode=view">
 							<span class="help">?</span></a>&#160;
 							<span class="mainfont"><b>
-								<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&#38;mode=view&#38;parent_id=<%=delem_id%>&#38;parent_type=E&#38;parent_name=<%=delem_name%>')" title="Click here to view all the fields">
+								<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&#38;mode=view&#38;parent_id=<%=delem_id%>&#38;parent_type=E&#38;parent_name=<%=delem_name%>&#38;table_id=<%=tableID%>&#38;dataset_id=<%=dsID%>')" title="Click here to view all the fields">
 									<%=attrName%>
 								</a></b>
 							</span>
@@ -1470,7 +1625,7 @@ String attrValue = null;
 								%>
 								<!--/tr-->
 								<%
-
+								displayed++;
 								StringBuffer rowValue=null;
 
 								Vector rows = attr.getRows();
@@ -1486,12 +1641,15 @@ String attrValue = null;
 										String fieldID = (String)hash.get("id");
 										String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 										if (fieldValue == null) fieldValue = "";
+										if (fieldValue.trim().equals("")) continue;
 										
 										if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
 											rowValue.append(", ");
 											
 										rowValue.append(Util.replaceTags(fieldValue));
+										String mark = (t == 0) ? "-":"&#160;";
 										%>
+										<span class="barfont"><%=mark%> <%=Util.replaceTags(fieldValue)%></span><br>
 										<!--td style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 											<span class="barfont"><%=Util.replaceTags(fieldValue)%>
 										</td-->
@@ -1499,7 +1657,7 @@ String attrValue = null;
 									}	
 									%>
 									<!--/tr-->
-									<span class="barfont">- <%=rowValue%></span><br>
+									<!--span class="barfont">- <%=rowValue%></span><br-->
 								<%
 								}%>
 							<!--/table-->
@@ -1508,6 +1666,42 @@ String attrValue = null;
 				<%
 				}
 			}
+			/*
+			This was needed, when inherited attributes were saved on all levels
+			if (mode.equals("add") && dsID!=null){
+				complexAttrs = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_COMPLEX, null, "1");
+				
+				if (complexAttrs.size()>0){
+					%>
+					
+					<tr height="5"><td colspan="2"></td></tr>
+					<tr valign="top">
+						<td align="left" style="padding-right:10" colspan="2">
+							<span class="mainfont">Inherit the following complex attributes from table level:</span>
+						</td>
+					</tr>
+					<%
+					for (int i=0; i<complexAttrs.size(); i++){
+	
+						DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
+						attrID = attr.getID();
+						String attrName = attr.getShortName();   
+						%>
+						<tr valign="top">
+							<td align="right" style="padding-right:10">
+								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=COMPLEX&mode=view">
+								<span class="help">?</span></a>&#160;
+								<span class="mainfont"><b><%=attrName%></b></span>
+							</td>
+							<td>
+								<input type="checkbox" name="inherit_complex_<%=attrID%>" checked/><br>
+							</td>
+						</tr>
+						<%
+					}
+
+				}
+			}*/
 			%>
 
 			<%
@@ -1520,7 +1714,7 @@ String attrValue = null;
 			<tr>
 				<td>&#160;</td>
 				<td>
-					<b>*</b> <span class="smallfont"><a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=delem_id%>&#38;parent_type=E&#38;parent_name=<%=delem_name%>')">
+					<b>*</b> <span class="smallfont"><a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=delem_id%>&#38;parent_type=E&#38;parent_name=<%=delem_name%>&#38;table_id=<%=tableID%>&#38;dataset_id=<%=dsID%>')">
 						<b>COMPLEX ATTRIBUTES</b></a></span>&#160;&#160;
 					<span class="smallfont" style="font-weight: normal">
 						&lt;&#160;click here to view/edit complex attributes specified for this data element
@@ -1735,9 +1929,77 @@ String attrValue = null;
 		</tr>
 			
 		<% 
-		} // if AGG and mode is not 'add'
+		} // if AGG and mode is not 'add'		
+		%>
 		
-		%>	
+		<!-- FOREIGN KEYS -->
+		
+		<%
+		if (mode.equals("view")){
+			Vector fKeys = searchEngine.getFKRelationsElm(delem_id);
+			if (fKeys.size()>0){
+				%>
+				<tr height="5"><td colspan="2"></td></tr>
+				<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
+				<tr valign="top">
+					<td align="right" style="padding-right:10">
+						<span class="mainfont"><b>Foreign keys</b></span>
+					</td>
+					<td>
+						<table width="600" cellspacing="0">
+							<tr>
+								<th align="left" style="padding-left:5;padding-right:10">Element</th>
+								<th align="left" style="padding-right:10">Table</th>
+							</tr>
+
+							<%
+							for (int i=0; i<fKeys.size(); i++){
+								
+								Hashtable fkRel  = (Hashtable)fKeys.get(i);
+								String fkElmID   = (String)fkRel.get("elm_id");
+								String fkElmName = (String)fkRel.get("elm_name");
+								String fkTblName = (String)fkRel.get("tbl_name");
+								String fkRelID   = (String)fkRel.get("rel_id");
+								
+								if (fkElmID==null || fkElmID.length()==0)
+									continue;
+									
+								%>
+								<tr>
+									<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+										<a href="data_element.jsp?delem_id=<%=fkElmID%>&#38;mode=view"><%=fkElmName%></a>
+									</td>
+									<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+										<%=fkTblName%>
+									</td>
+								</tr>
+							<%
+							}
+							%>
+						</table>
+					</td>
+				</tr>
+				<%
+			}
+		}
+		
+		if (user!=null && !mode.equals("add")){
+			%>
+			<tr height="5"><td colspan="2"></td></tr>
+			<tr>
+				<td>&#160;</td>
+				<td colspan="2">
+					<b>*</b> <span class="smallfont"><a href="foreign_keys.jsp?delem_id=<%=delem_id%>&#38;delem_name=<%=delem_name%>&#38;ds_id=<%=dsID%>">
+						<b>FOREIGN KEYS</b></a></span>&#160;&#160;
+					<span class="smallfont" style="font-weight: normal">
+						&lt;&#160;click here to edit the foreign key relations of this data element
+					</span>
+				</td>
+			</tr>
+		<%
+		}
+		%>
+		
 		<!-- RELATED ELEMENTS table -->
 		<% if ( !mode.equals("add")){ // if mode!=add
 			if (mode.equals("view")){
@@ -1929,6 +2191,7 @@ String attrValue = null;
 		<input type="hidden" name="copy_elem_id" value=""/>
 		<input type="hidden" name="changed" value="0">
 		
+		<input type="hidden" name="ver_upw" value="true">
 		<%
 		if (latestID!=null){%>
 			<input type="hidden" name="latest_id" value="<%=latestID%>"><%
