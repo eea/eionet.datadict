@@ -141,6 +141,14 @@ private String legalizeAlert(String in){
 
 			<%
 
+			//
+			mode=null;
+			mAttributes=null;
+			dataElement=null;
+			newDataElement=null;
+			complexAttrs=null;
+			fixedValues=null;
+			//
 			
 			XDBApplication.getInstance(getServletContext());
 			AppUserIF user = SecurityUtil.getUser(request);

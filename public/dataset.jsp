@@ -40,6 +40,14 @@ private Vector getValues(String id){
 %>
 
 			<%
+			
+			mode=null;
+			mAttributes=null;
+			attributes=null;
+			dataset=null;
+			complexAttrs=null;
+			tables=null;
+
 			XDBApplication.getInstance(getServletContext());
 			AppUserIF user = SecurityUtil.getUser(request);
 			

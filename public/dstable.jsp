@@ -1,11 +1,11 @@
 <%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,eionet.util.QueryString"%>
 
-<%!ServletContext ctx=null;%>
-<%!private Vector mAttributes=null;%>
-<%!private Vector attributes=null;%>
-<%!private Vector complexAttrs=null;%>
-<%!private Vector elems=null;%>
-<%!private String mode=null;%>
+<%! ServletContext ctx=null; %>
+<%! Vector mAttributes=null; %>
+<%! Vector attributes=null; %>
+<%! Vector complexAttrs=null; %>
+<%! Vector elems=null; %>
+<%! String mode=null; %>
 
 <%@ include file="history.jsp" %>
 
@@ -90,6 +90,15 @@ private String getAttributeValue(DataElement elem, String name){
 %>
 
 <%
+
+//
+ctx=null;
+mAttributes=null;
+attributes=null;
+complexAttrs=null;
+elems=null;
+mode=null;
+//
 
 response.setHeader("Pragma", "no-cache");
 response.setHeader("Cache-Control", "no-cache");
