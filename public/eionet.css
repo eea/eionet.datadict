@@ -9,6 +9,26 @@ BODY {
   background-repeat: repeat-y;
 }
 
+/*
+ * Popups don't have left or right columns. Instead we
+ * indent the text a bit
+ */
+.popup {
+  margin:30px;
+  background-image: none;
+}
+
+.popuphead h1 {
+  color: #006666;
+  font-size: 14pt;
+  font-weight: bold;
+}
+
+.popuphead hr {
+   background-color: #ff9400;
+   height: 15px;
+   border: none;
+}
 
 .sitetitle {
   color: #006666;
@@ -145,12 +165,22 @@ line-height: normal;
 font-weight: bold; 
 text-decoration: none }
 
-h2 {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-font-size: 12pt; 
-font-style: normal; 
-line-height: normal; 
-font-weight: bold; 
-text-decoration: none; }
+h2 {
+    font-family: Verdana, Arial, Helvetica, sans-serif; 
+    font-size: 12pt; 
+    font-style: normal; 
+    line-height: normal; 
+    font-weight: bold; 
+    text-decoration: none;
+}
+
+/*
+ * In headlines we don't change to italics, but change the colour
+ */
+h2 em {
+    font-style: normal; 
+    color: #006666;
+}
 
 h3 {  font-family: Verdana, Arial, Helvetica, sans-serif; 
 font-size: 11pt; 
@@ -261,8 +291,22 @@ font-style: normal;
 line-height: normal;
 text-decoration: none; }
 
-select.small {  font-family: Verdana, Arial, MS Sans Serif; 
-font-size: 8pt;
-font-style: normal; 
-line-height: normal;
-text-decoration: none; }
+select.small {
+    font-family: Verdana, Arial, MS Sans Serif; 
+    font-size: 8pt;
+    font-style: normal; 
+    line-height: normal;
+    text-decoration: none;
+}
+
+/*
+ * Admonitions
+ */
+.caution {
+    color: red;
+    border-width: 1px;
+}
+
+.error {
+    font-style: bold;
+}

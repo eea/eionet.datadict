@@ -80,35 +80,14 @@ private String getAttributeIdByName(String name){
     <script language="JAVASCRIPT" for="window" event="onload">    	
 	</script>
 
-<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;"
-		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
-<div style="margin-left:30">
-	<br>
-	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-	<br>
-	<!--table cellspacing="0" cellpadding="0" width="250" border="0">
-		<tr>
-         	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
-          	<td width="600" background="images/bar_filled.jpg" height="25">
-            <table height="8" cellSpacing="0" cellPadding="0" border="0">
-            	<tr>
-		         	<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-		            <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-		         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-					<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-					<td valign="bottom" align="middle"><span class="barfont">Attributes</span></td>
-					<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
-				</tr>
-			</table>
-			</td>
-		</tr>
-		<tr><td>&#160;</td></tr>
-	</table-->
-	<br>
+<body class="popup">
+<div class="popuphead">
+	<h1>Data Dictionary</h1>
+	<hr/>
+</div>
+  <h2>Select attributes:</h2>
 	<form name="form1">
 	<table>
-		<tr><td><b>Select attributes:</b></td></tr>
-		<tr><td>&#160;</td></tr>
 			<%
 			for (int i=0; i<mAttributes.size(); i++){
 				

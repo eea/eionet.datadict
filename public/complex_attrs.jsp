@@ -43,7 +43,7 @@ private String legalizeAlert(String in){
 	      			%>
 	      				<html>
 	      				<body>
-	      					<h1>Error</h1><b>Not authorized to post any data!</b>
+	      					<h1>Error</h1><p>Not authorized to post any data!</p>
 	      				</body>
 	      				</html>
 	      			<%
@@ -54,14 +54,14 @@ private String legalizeAlert(String in){
 			String parent_id = request.getParameter("parent_id");
 			
 			if (parent_id == null || parent_id.length()==0){ %>
-				<b>Parent ID is missing!</b> <%
+				<span class="error">Parent ID is missing!</span> <%
 				return;
 			}
 			
 			String parent_type = request.getParameter("parent_type");
 			
 			if (parent_type == null || parent_type.length()==0){ %>
-				<b>Parent type is missing!</b> <%
+				<span class="error">Parent type is missing!</span> <%
 				return;
 			}
 			
@@ -157,7 +157,7 @@ private String legalizeAlert(String in){
 
 <html>
 	<head>
-		<title>Meta</title>
+		<title>Complex attributes</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
 	    <script language="JavaScript" src='script.js'></script>
@@ -207,49 +207,22 @@ private String legalizeAlert(String in){
 			}
 			
 	</script>
-<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;"
-		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
-<div style="margin-left:30">
-	<br></br>
-	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-	<br></br>
-	<font color="#006666" face="Arial" size="2">
-		<strong><span class="head0"><script language="JavaScript">document.write(getDDVersionName())</script></span></strong>
-	</font>
-	<br></br>
-	<table cellspacing="0" cellpadding="0" width="400" border="0">
-		<tr>
-         	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
-          	<td width="600" background="images/bar_filled.jpg" height="25">
-	            <table height="8" cellSpacing="0" cellPadding="0" border="0">
-	            	<tr>
-			         	<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-			            <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-			         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-						<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-						<td valign="bottom" align="middle"><span class="barfont">Complex attributes</span></td>
-						<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
+<body class="popup">
+<div class="popuphead">
+	<h1>Data Dictionary</h1>
+	<hr/>
+</div>
 
 <form name="form1" method="POST" action="complex_attrs.jsp">
+    <h2>
+        Complex attributes of <em><%=Util.replaceTags(parent_name)%></em>
+    </h2>
 
 <table width="400">
 
 	<%
 	//String qualfName = (ds != null && ds.equals("true")) ? parent_name : parent_ns + ":" + parent_name;
 	%>
-	
-	<tr valign="bottom">
-		<td colspan="2">
-			<span class="head00">Complex attributes of </span>
-			<span class="title2" color="#006666"><%=Util.replaceTags(parent_name)%></span>
-		</td>
-	</tr>
-	<tr height="10"><td colspan="2"></td></tr>
 	
 	<%
 	if (complexAttrs.size() == 0){
@@ -429,7 +402,6 @@ if (ds != null){
 %>
 															 
 </form>
-</div>
 </body>
 </html>
 

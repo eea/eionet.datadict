@@ -39,7 +39,7 @@ private String legalizeAlert(String in){
 			String mode = request.getParameter("mode");
 			
 			if (mode == null || mode.length()==0){ %>
-				<b>Mode is missing!</b> <%
+				<span class="error">Mode is missing!</span> <%
 				return;
 			}
 			
@@ -47,8 +47,11 @@ private String legalizeAlert(String in){
       			if (user == null){
 	      			%>
 	      				<html>
-	      				<body>
-	      					<h1>Error</h1><b>Not authorized to post any data!</b>
+	      				<body class="popup">
+                                        <div class="error">
+	      					<h1>Error</h1>
+                                                <p>Not authorized to post any data!</p>
+                                        </div>
 	      				</body>
 	      				</html>
 	      			<%
@@ -59,14 +62,14 @@ private String legalizeAlert(String in){
 			String parent_id = request.getParameter("parent_id");
 			
 			if (parent_id == null || parent_id.length()==0){ %>
-				<b>Parent ID is missing!</b> <%
+				<span class="error">Parent ID is missing!</span> <%
 				return;
 			}
 			
 			String parent_type = request.getParameter("parent_type");
 			
 			if (parent_type == null || parent_type.length()==0){ %>
-				<b>Parent type is missing!</b> <%
+				<span class="error">Parent type is missing!</span> <%
 				return;
 			}
 			
@@ -79,7 +82,7 @@ private String legalizeAlert(String in){
 			String attr_id = request.getParameter("attr_id");
 			
 			if (attr_id == null || attr_id.length()==0){ %>
-				<b>Attribute ID is missing!</b> <%
+				<span class="error">Attribute ID is missing!</span> <%
 				return;
 			}
 			
@@ -120,7 +123,7 @@ private String legalizeAlert(String in){
 					}
 					catch (Exception e){
 						%>
-						<html><body><b><%=e.toString()%></b></body></html>
+						<html><body class="popup"><h1>Error</h1><p><%=e.toString()%></p></body></html>
 						<%
 						return;
 					}
@@ -168,11 +171,10 @@ private String legalizeAlert(String in){
 
 <html>
 	<head>
-		<title>Meta</title>
+		<title>Complex attribute</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
 	    <script language="JavaScript" src='script.js'></script>
-	</head>
 	<script language="JavaScript">
 			function submitForm(mode){
 				
@@ -215,33 +217,13 @@ private String legalizeAlert(String in){
 				if (window.focus) {attrWindow.focus()}
 			}
 	</script>
-<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;"
-		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
-<div style="margin-left:30">
-	<br></br>
-	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-	<br></br>
-	<font color="#006666" face="Arial" size="2">
-		<strong><span class="head0"><script language="JavaScript">document.write(getDDVersionName())</script></span></strong>
-	</font>
-	<br></br>
-	<table cellspacing="0" cellpadding="0" width="400" border="0">
-			<tr>
-	         	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
-	          	<td width="600" background="images/bar_filled.jpg" height="25">
-		            <table height="8" cellSpacing="0" cellPadding="0" border="0">
-		            	<tr>
-				         	<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-				            <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-				         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-							<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-							<td valign="bottom" align="middle"><span class="barfont">Complex attribute</span></td>
-							<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
-						</tr>				
-					</table>
-				</td>
-			</tr>			
-	</table>
+	</head>
+<body class="popup">
+		
+<div class="popuphead">
+	<h1>Data Dictionary</h1>
+	<hr/>
+</div>
 
 	<%
 	
@@ -257,7 +239,7 @@ private String legalizeAlert(String in){
 	if (mode.equals("add")){
 		if (attrFields == null || attrFields.size()==0){
 			%>
-			<b>No fields found for this attribute!</b></div></body></html>
+			<span class="error">No fields found for this attribute!</span></body></html>
 			<%
 			return;
 		}
@@ -269,9 +251,9 @@ private String legalizeAlert(String in){
 			return;
 		}
 		%>
-		<b>Attribute not found!</b><br>
+		<span class="error">Attribute not found!</span><br>
 			<a href="javascript:history.back(-1)">
-				<b>< back</b>
+				<b>&amp; back</b>
 			</a></div>
 		</body></html>
 		<%
@@ -315,7 +297,7 @@ if (!mode.equals("view")){
 	<td colspan="2">
 		<span class="smallfont">
 			<a href="javascript:window.location.replace('<%=backURL%>')">
-				<b>< back to attributes</b>
+				<b>&amp; back to attributes</b>
 			</a>
 		</span>
 	</td>
@@ -466,7 +448,7 @@ if (!mode.equals("view")){
 					if (pos >= position) position = pos +1;
 					%>
 					<tr>
-						<td align="right"><span><%=sInhText%></td>
+						<td align="right"><%=sInhText%></td>
 						<td width="10">&#160;</td>
 					<%
 			
@@ -548,7 +530,6 @@ if (ds != null){
 %>
 															 
 </form>
-</div>
 </body>
 </html>
 
