@@ -22,6 +22,9 @@ public interface PropsIF {
 	
 	public static final String UNI_FONT = "pdf.uni-font";
 	
+	public static final String XFORMS_NSS = "xforms.nss";
+	public static final String XFORMS_NS = "xforms.ns";
+	
 	/** defaults */
 	
 }

@@ -21,7 +21,9 @@ public abstract class Schema implements SchemaIF{
     
     protected String lineTerminator = "\n";
     
-    private String targetNsUrl = "";
+	protected String targetNsUrl = "";
+	protected String referredNsPrefix = "";
+	protected String referredNsID = "";
     
     protected Hashtable nonAnnotationAttributes = new Hashtable();
     
@@ -70,12 +72,20 @@ public abstract class Schema implements SchemaIF{
     protected void setTargetNsUrl(String nsID){
         this.targetNsUrl = appContext + "namespace.jsp?ns_id=" + nsID;
     }
+
+	protected void setRefferedNs(Namespace ns){
+		this.referredNsID = ns.getID();
+		this.referredNsPrefix = getNamespacePrefix(ns);		
+	}
+	
+	protected String getNamespacePrefix(Namespace ns){
+		return "dd" + ns.getID();
+	}
     
     protected void addNamespace(Namespace ns){
         
         StringBuffer nsDeclaration = new StringBuffer("xmlns:");
-        //nsDeclaration.append(ns.getShortName());
-        nsDeclaration.append("ns" + ns.getID());
+        nsDeclaration.append(getNamespacePrefix(ns));
         String url = appContext + "namespace.jsp?ns_id=" + ns.getID();
         nsDeclaration.append("=\"" + url + "\"");
             
@@ -83,14 +93,15 @@ public abstract class Schema implements SchemaIF{
             namespaces.add(nsDeclaration.toString());
     }
     
-    protected void addImport(String compID, String compType, Namespace ns){
+    protected void addImport(String compID, String compType){
         
         StringBuffer importClause = new StringBuffer("<xs:import namespace=\"");
-        String url = appContext + "namespace.jsp?ns_id=" + ns.getID();
+        //String url = appContext + "namespace.jsp?ns_id=" + ns.getID();
+		String url = appContext + "namespace.jsp?ns_id=" + this.referredNsID;
         importClause.append(url);
         importClause.append("\" schemaLocation=\"");
         
-        importClause.append(appContext + "GetSchema?comp_id=" + compID + "&amp;comp_type=" + compType);
+        importClause.append(appContext + "GetSchema?id=" + compType + compID);
         
         importClause.append("\"/>");
         
@@ -147,8 +158,7 @@ public abstract class Schema implements SchemaIF{
             // get attribute
             DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
             Namespace ns = attr.getNamespace();
-            //String name = ns.getShortName() + ":" + attr.getShortName();
-            String name = "ns" + ns.getID() + ":" + attr.getShortName();
+            String name = this.getNamespacePrefix(ns) + ":" + attr.getShortName();
             
             // put attributes value or values into a vector
             String dispMultiple = attr.getDisplayMultiple();
@@ -226,13 +236,15 @@ public abstract class Schema implements SchemaIF{
                     
                 Namespace ns = elem.getNamespace();
                     
-                addImport(elem.getID(), GetSchema.ELM, ns);
-                addNamespace(ns);
+                addImport(elem.getID(), GetSchema.ELM);
+				// addNamespace(ns); - substituted with parent's namespace, i.e. referredNs
+				// which is added already in parent's write() method
                     
                 addString(tab + "\t");
                 addString("<xs:element ref=\"");
                 //addString(ns.getShortName() + ":" + elem.getShortName());
-                addString("ns" + ns.getID() + ":" + elem.getShortName());
+                //addString("ns" + ns.getID() + ":" + elem.getShortName());
+				addString("ns" + ns.getID() + ":" + elem.getIdentifier());
                     
                 addString("\"/>");
                 newLine();
@@ -259,7 +271,8 @@ public abstract class Schema implements SchemaIF{
         newLine();
     }
     
-    protected void writeSequence(Vector children, String tab, String minOcc, String maxOcc) throws Exception{
+    protected void writeSequence(Vector children, String tab, String minOcc, String maxOcc)
+    																		throws Exception{
         
         if (children == null || children.size()==0) return;
         
@@ -296,13 +309,14 @@ public abstract class Schema implements SchemaIF{
                     
                 Namespace ns = elem.getNamespace();
                 
-                addImport(elem.getID(), GetSchema.ELM, ns);
-                addNamespace(ns);
+                addImport(elem.getID(), GetSchema.ELM);
+                // addNamespace(ns); - substituted with parent's namespace, i.e. referredNs
+                // which is added already in parent's write() method
                     
                 addString(tab + "\t");
                 addString("<xs:element ref=\"");
-                //addString(ns.getShortName() + ":" + elem.getShortName());
-                addString("ns" + ns.getID() + ":" + elem.getShortName());
+				addString(referredNsPrefix + ":" + elem.getIdentifier());
+                //addString(referredNsPrefix + ":" + elem.getShortName());
                 
                 String minOccs = elem.getMinOccurs();
                 String maxOccs = elem.getMaxOccurs();
@@ -329,13 +343,14 @@ public abstract class Schema implements SchemaIF{
                 if (ns == null)
                     ns = searchEngine.getNamespace("1");
                 
-                addImport(dsTable.getID(), GetSchema.TBL, ns);
-                addNamespace(ns);
+                addImport(dsTable.getID(), GetSchema.TBL);
+				// addNamespace(ns); - substituted with parent's namespace, i.e. referredNs
+				// which is added already in parent's write() method
             
                 addString(tab + "\t");
-                addString("<xs:element ref=\"");
-                //addString(ns.getShortName() + ":" + dsTable.getShortName());
-                addString("ns" + ns.getID() + ":" + dsTable.getShortName());
+                addString("<xs:element ref=\"");                
+				addString(referredNsPrefix + ":" + dsTable.getIdentifier());
+//				addString(referredNsPrefix + ":" + dsTable.getShortName());
                     
                 addString("\" minOccurs=\"");
                 addString("1");

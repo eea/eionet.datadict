@@ -478,6 +478,29 @@ public class DElemAttribute{
         inheritedValues=null;
         inheritedValue=null;
     }
+
+	public static Vector orderAttrs(Vector attrs, Vector order){
+		
+		if (order==null || order.size()==0 || attrs==null || attrs.size()==0) return attrs;
+		
+		for (int i=0; i<attrs.size(); i++){
+			DElemAttribute attr = (DElemAttribute)attrs.get(i);
+			String shortName = attr.getShortName();
+			int pos = order.indexOf(shortName);
+			if (pos == -1)
+				order.add(attr);
+			else{
+				order.remove(pos);
+				order.insertElementAt(attr, pos);
+			}
+		}
+		
+		for (int i=0; i<order.size(); i++)
+			if (!order.get(i).getClass().getName().endsWith("DElemAttribute")) order.remove(i--);
+		
+		return order;
+	}
+
     /**
     *
     */

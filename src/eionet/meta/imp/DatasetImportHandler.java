@@ -3,9 +3,8 @@
 package eionet.meta.imp;
 
 import org.xml.sax.*;
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.StringTokenizer;
+import java.util.*;
+import javax.xml.parsers.*;
 
 /**
  * A Class class.
@@ -111,8 +110,8 @@ public class DatasetImportHandler extends BaseHandler{
 		while (i != -1){
 			buf = new StringBuffer(data);
 			buf.replace(i, i + oldEntity.length(), newEntity);
-			data = data.toString();
-			i = data.indexOf(oldEntity, i + newEntity.length());
+			data = buf.toString();
+			i = data.indexOf(oldEntity);
 		}
 
 		return data;
@@ -123,9 +122,10 @@ public class DatasetImportHandler extends BaseHandler{
      */
     public static void main(String[] args){
       StringBuffer errorBuff = new StringBuffer();
-      String srcFile = "F:\\Projects\\DD\\tmp\\importtables.xml";
+      //String srcFile = "C:\\Documents and Settings\\jaanus\\Desktop\\import013_testMay.xml";
+	  String srcFile = "D:\\projects\\datadict\\tmp\\valid_nuka_tbl.xml";
 
-     /* try{
+     try{
         DatasetImportHandler handler=new DatasetImportHandler();
         SAXParserFactory spfact = SAXParserFactory.newInstance();
         SAXParser parser = spfact.newSAXParser();
@@ -137,7 +137,7 @@ public class DatasetImportHandler extends BaseHandler{
        if (handler.hasError())
           System.out.println(handler.getErrorBuff().toString());
 
-        String tblName;
+        /*String tblName;
         Hashtable row;
 
        Hashtable tbls = handler.getTables();
@@ -149,10 +149,10 @@ public class DatasetImportHandler extends BaseHandler{
               row = (Hashtable)tbl.get(i);
               System.out.println(tblName + ": " + row.toString());
           }
-       }
+       }*/
       }
       catch (Exception e){
           System.out.println(e.toString());
-      }*/
+      }
     }
 }

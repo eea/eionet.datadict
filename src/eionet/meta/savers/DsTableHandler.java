@@ -342,6 +342,8 @@ public class DsTableHandler extends BaseHandler {
         String[] del_IDs = req.getParameterValues("del_id");
         if (del_IDs==null || del_IDs.length==0) return;
         
+		System.out.println("===> del_IDs = " + del_IDs);
+        
         // get more data about each table
         StringBuffer buf = new StringBuffer();
         buf.append("select * from DS_TABLE where ");
@@ -557,7 +559,7 @@ public class DsTableHandler extends BaseHandler {
         while (iter.hasNext()){
             String s = (String)iter.next();
             int pos = s.indexOf(",");
-            String tblName = s.substring(pos);
+            String tblName = s.substring(pos+1);
             String parentNs = s.substring(0,pos);
             
             if (i>0) buf.append(" or ");
@@ -852,20 +854,19 @@ public class DsTableHandler extends BaseHandler {
         try{
             Class.forName("org.gjt.mm.mysql.Driver");
             Connection conn =
-                DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
+                DriverManager.getConnection("jdbc:mysql://195.250.186.33:3306/dd",
+				"dduser", "xxx");
 
             AppUserIF testUser = new TestUser();
-            testUser.authenticate("jaanus", "jaanus");
+            testUser.authenticate("heinlja", "xxx");
 
             Parameters pars = new Parameters();
             pars.addParameterValue("mode", "delete");
-            pars.addParameterValue("del_id", "2283");
-			pars.addParameterValue("del_id", "2281");
-			pars.addParameterValue("del_id", "2279");
+            pars.addParameterValue("del_id", "2010");
 
             DsTableHandler handler = new DsTableHandler(conn, pars, null);
             handler.setUser(testUser);
-            handler.setVersioning(false);
+            handler.setVersioning(true);
             handler.execute();
        }
         catch (Exception e){

@@ -456,7 +456,8 @@ public class DDSearchEngine {
         
 		if (!Util.nullString(tblID))
 			buf.append(", DS_TABLE.VERSION ");
-        buf.append("from DATAELEM left outer join NAMESPACE ").
+
+        buf.append("from DATAELEM left outer join NAMESPACE ").
         append("on DATAELEM.PARENT_NS=NAMESPACE.NAMESPACE_ID ").
         append("left outer join TBL2ELEM ").
         append("on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID ");
@@ -1767,6 +1768,7 @@ public class DDSearchEngine {
                 ds.setVisual(rs.getString("VISUAL"));
                 ds.setDetailedVisual(rs.getString("DETAILED_VISUAL"));
                 ds.setNamespaceID(rs.getString("CORRESP_NS"));
+				ds.setDate(rs.getString("DATASET.DATE"));
                 
                 // set the name if nameID was previously successfully found
                 if (nameID!=null){
@@ -3332,7 +3334,6 @@ public class DDSearchEngine {
 
 	/**
 	 * 
-	 * @param msg
 	 */
 	public boolean hasGIS(String tblID) throws SQLException{
 		
@@ -3349,6 +3350,88 @@ public class DDSearchEngine {
 			return true;
 		else
 			return false;	
+	}
+
+	/**
+	 * 
+	 */
+	public Vector getDocs(String ownerID) throws SQLException{
+		return getDocs(ownerID, "dst");
+	}
+	
+	/**
+	 * 
+	 */
+	public Vector getDocs(String ownerID, String ownerType) throws SQLException{
+		
+		StringBuffer buf = new StringBuffer("select * from DOC where ").
+		append("OWNER_ID=").append(ownerID).
+		append(" and OWNER_TYPE=").append(Util.strLiteral(ownerType)).
+		append(" order by TITLE asc");
+		
+		Vector v = new Vector();
+		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+		while (rs.next()){
+			String file = rs.getString("ABS_PATH");
+			Hashtable hash = new Hashtable();
+			hash.put("md5", rs.getString("MD5_PATH"));
+			hash.put("file", file);
+			hash.put("icon", eionet.util.Util.getIcon(file));
+			hash.put("title", rs.getString("TITLE"));
+			v.add(hash);
+		}
+		
+		return v;
+	}
+
+	public String getAttrHelp(String attrID, String attrType){
+		if (attrID==null) return "";
+		if (attrType==null)
+			return getSimpleAttrHelp(attrID);
+		else if (attrType.equals(DElemAttribute.TYPE_SIMPLE))
+			return getSimpleAttrHelp(attrID);
+		else if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
+			return getComplexAttrHelp(attrID);
+		else
+			return getSimpleAttrHelp(attrID);
+	}
+
+	public String getSimpleAttrHelp(String attrID){
+		
+		StringBuffer help = new StringBuffer("");
+		if (attrID!=null){
+			try{
+				ResultSet rs = conn.createStatement().executeQuery(
+						"select * from M_ATTRIBUTE where M_ATTRIBUTE_ID=" + attrID);
+				if (rs.next()){
+					help.append("<br/><b>").append(rs.getString("SHORT_NAME")).
+					append("</b><br/><br/>").append(rs.getString("DEFINITION")); 
+				}
+			}
+			catch (SQLException e){
+			}
+		}
+		
+		return help.toString();
+	}
+
+	public String getComplexAttrHelp(String attrID){
+		
+		StringBuffer help = new StringBuffer("");
+		if (attrID!=null){
+			try{
+				ResultSet rs = conn.createStatement().executeQuery(
+					"select * from M_COMPLEX_ATTR where M_COMPLEX_ATTR_ID=" + attrID);
+				if (rs.next()){
+					help.append("<br/><b>").append(rs.getString("SHORT_NAME")).
+					append("</b><br/><br/>").append(rs.getString("DEFINITION")); 
+				}
+			}
+			catch (SQLException e){
+			}
+		}
+		
+		return help.toString();
 	}
 	
     /**
@@ -3370,18 +3453,14 @@ public class DDSearchEngine {
             Class.forName("com.mysql.jdbc.Driver");
             Connection conn =
                 DriverManager.getConnection(
-			"jdbc:mysql://195.250.186.16:3306/dd", "root", "ABr00t");
+			"jdbc:mysql://195.250.186.33:3306/dd", "dduser", "xxx");
 
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
 			AppUserIF testUser = new TestUser();
-			testUser.authenticate("heinlja", "xxx");
+			testUser.authenticate("tennoan", "tennoan");
 			searchEngine.setUser(testUser);
 			
-			System.out.println(searchEngine.hasGIS("1614"));
-			System.out.println(searchEngine.hasGIS("1648"));
-			System.out.println(searchEngine.hasGIS("1613"));
-			System.out.println(searchEngine.hasGIS("1312"));
-			System.out.println(searchEngine.hasGIS("1615"));
+			DataElement elm = searchEngine.getDataElement("9643");
         }
         catch (Exception e){
             System.out.println(e.toString());

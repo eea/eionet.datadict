@@ -1,7 +1,7 @@
 package eionet.meta;
 
 import java.sql.*;
-import com.tee.xmlserver.AppUserIF;
+import com.tee.xmlserver.*;
 
 public class TestUser implements AppUserIF {
     
@@ -10,12 +10,17 @@ public class TestUser implements AppUserIF {
     private String password = null;
     private String fullName = null;
     private String[] _roles = null;
+	private DBPoolIF dbPool = null;
 
     /**
     *
     */
     public TestUser() {
+		dbPool = XDBApplication.getDBPool();
     }
+
+	public TestUser(boolean noPool) {
+	}
    
     /**
     *
@@ -70,9 +75,9 @@ public class TestUser implements AppUserIF {
 /**
  *
  */
-   public Connection getConnection() {
-      return null;
-   }
+	public Connection getConnection() {
+		return dbPool.getConnection();
+	}
 /**
  * Returns a string array of roles the user is linked to.
  * Note that the method returns newly constructed array, leaving internal role list unrevealed.

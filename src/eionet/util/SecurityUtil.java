@@ -109,7 +109,8 @@ public class SecurityUtil {
     	
     	boolean has = false;
 		AccessControlListIF acl = null;
-		int i = aclPath.indexOf("/", 1);
+		int i =
+		aclPath.length()<=1 ? -1 : aclPath.indexOf("/", 1); // not forgetting root path ("/")
 		while (i!=-1 && !has){
 			String subPath = aclPath.substring(0,i);
 			try{

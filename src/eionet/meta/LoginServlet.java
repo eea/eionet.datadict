@@ -47,7 +47,7 @@ public class LoginServlet extends HttpServlet {
             res.setContentType("text/html");
             try {
                 PrintWriter out = res.getWriter();
-                out.print("<html><script>window.close()</script></html>");
+                out.print(responseText(req));
                 out.close();   
             } catch (IOException e) {
                 Logger.log("Writing page to response stream failed", e);
@@ -58,5 +58,15 @@ public class LoginServlet extends HttpServlet {
             SecurityUtil.freeSession(req);
             res.sendRedirect(loginError);
         }
+    }
+    
+    private String responseText(HttpServletRequest req){
+    	
+    	String target = req.getParameter("target");
+    	StringBuffer buf = new StringBuffer("<html><script>");
+    	if (target!=null && target.equals("blank"))
+    		buf.append("window.opener.location.reload(true);");
+		buf.append("window.close();</script></html>");
+    	return buf.toString();
     }
 }

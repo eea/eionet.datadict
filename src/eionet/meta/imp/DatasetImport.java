@@ -15,6 +15,9 @@ import javax.servlet.ServletContext;
 import com.tee.xmlserver.AppUserIF;
 import com.tee.util.*;
 
+import org.xml.sax.*;
+import javax.xml.parsers.*;
+
 /**
  * A Class class.
  * <P>
@@ -481,8 +484,10 @@ public class DatasetImport{
               params.addParameterValue((String)fieldMap.get("param"), importValue);
           }
           if (hasAttrs){
-              if (type==null)
+          	
+              if (type==null || table.equals("DATAELEM"))
                   type=params.getParameter("type");
+              
               getSimpleAttrs(row, params, type, (String)params.getParameter(context));
               if (parent_type!=null){
                 try{
@@ -517,8 +522,8 @@ public class DatasetImport{
         boolean dispMult=false;
         for (int i=0; i< dbSimpleAttrs.size(); i++){
             DElemAttribute delemAttr = (DElemAttribute)dbSimpleAttrs.get(i);
+			attrName = delemAttr.getShortName();
             if (delemAttr.displayFor(type)){
-              attrName = delemAttr.getShortName();
               dispMult = delemAttr.getDisplayMultiple().equals("1") ? true:false;
 
 //find attributes with multiple values
@@ -562,6 +567,11 @@ public class DatasetImport{
                     }
                 }
               }
+            }
+            // this attribute is irrelevant for this element type, but nevertheless
+            // remove it from row, because otherwise the output will say it's an unknown field
+            else{
+				row.remove(attrName.toLowerCase());
             }
         }
     }
@@ -651,8 +661,8 @@ public class DatasetImport{
         rowMap.add(getFieldMap("dataset_id", "ds_id", false, "dataset id in DATASET table"));
         rowMap.add(getFieldMap("short_name", "ds_name", false, "dataset short name in DATASET table"));
 		rowMap.add(getFieldMap("identifier", "idfier", false, "dataset identifier in DATASET table"));
-        rowMap.add(getFieldMap("version", "version", false, "Dataset version in DATASET table"));
 		rowMap.add(getFieldMap("regstatus", "reg_status", true, "REG_STATUS in DATASET table"));
+		
         tblMap.put("DATASET", rowMap);
         rowMap = new Vector();
 
@@ -662,8 +672,7 @@ public class DatasetImport{
         rowMap.add(getFieldMap("short_name", "short_name", false, "dataset table short name in DS_TABLE table"));
 		rowMap.add(getFieldMap("identifier", "idfier", false, "dataset table identifier in DS_TABLE table"));
 		rowMap.add(getFieldMap("regstatus", "reg_status", true, "REG_STATUS in DS_TABLE table"));
-        //rowMap.add(getFieldMap("name", "full_name", true, "dataset table full name in DS_TABLE table"));
-        //rowMap.add(getFieldMap("definition", "definition", true, "Dataset table definition short name in DS_TABLE table"));
+		
         tblMap.put("DS_TABLE", rowMap);
         rowMap = new Vector();
 
@@ -672,9 +681,9 @@ public class DatasetImport{
         rowMap.add(getFieldMap("type", "type", false, "data element type in DATAELEM table"));
         rowMap.add(getFieldMap("short_name", "delem_name", false, "data element short name in DATAELEM table"));
 		rowMap.add(getFieldMap("identifier", "idfier", false, "data element identifier in DATAELEM table"));
-		rowMap.add(getFieldMap("gis", "gis", false, "GIS in DATAELEM table"));
+		rowMap.add(getFieldMap("gistype", "gis", true, "GIS in DATAELEM table"));
 		rowMap.add(getFieldMap("regstatus", "reg_status", true, "REG_STATUS in DATAELEM table"));
- //       rowMap.add(getFieldMap("namespace_id", "ns", true, "data element namespace_id in DATAELEM table"));
+		
         tblMap.put("DATAELEM", rowMap);
         rowMap = new Vector();
 
@@ -754,6 +763,48 @@ public class DatasetImport{
     
     public void setUser(AppUserIF user){
     	this.user = user;
+    }
+    
+    public static void main(String[] args){
+    	
+    	try{
+    		
+			Class.forName("org.gjt.mm.mysql.Driver");
+			Connection conn =
+			DriverManager.getConnection("jdbc:mysql://195.250.186.33:3306/DataDict", "dduser", "xxx");
+							
+			DatasetImportHandler handler = new DatasetImportHandler();
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser parser = factory.newSAXParser();
+			XMLReader reader = parser.getXMLReader();
+			reader.setContentHandler(handler); // pass our handler to SAX
+	
+			reader.parse("C:\\Documents and Settings\\jaanus\\Desktop\\import013_testMay.xml");
+	
+			// SAX was OK, but maybe handler has problems of its own
+			StringBuffer responseText = new StringBuffer(); 
+			if (!handler.hasError()){
+	
+				DatasetImport dbImport =
+					new DatasetImport((DatasetImportHandler)handler, conn, null, "DST");
+				
+				AppUserIF testUser = new TestUser();
+				testUser.authenticate("jaanus", "jaanus");
+				
+				dbImport.setUser(testUser);
+				dbImport.setImportType("DST");
+				dbImport.execute();
+				
+				responseText.append(dbImport.getResponseText());
+				System.out.println(responseText.toString());
+			}
+			else{
+				throw new Exception(handler.getErrorBuff().toString());
+			}
+    	}
+    	catch (Exception e){
+    		e.printStackTrace(System.out);
+    	}
     }
 }
 

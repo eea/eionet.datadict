@@ -110,6 +110,54 @@ public class Util {
         return time;
     }
 
+	/**
+	 * A method for formatting the given timestamp into a String released_datasets.jsp.
+	 */
+     
+	public static String releasedDate(long timestamp){
+        
+		Date date = new Date(timestamp);
+		
+		String year = String.valueOf(1900 + date.getYear());
+		String month = String.valueOf(date.getMonth());
+		String day = String.valueOf(date.getDate());
+		day = (day.length() < 2) ? ("0" + day) : day;
+		
+		Hashtable months = new Hashtable();
+		months.put("0", "January");
+		months.put("1", "February");
+		months.put("2", "March");
+		months.put("3", "April");
+		months.put("4", "May");
+		months.put("5", "June");
+		months.put("6", "July");
+		months.put("7", "August");
+		months.put("8", "September");
+		months.put("9", "October");
+		months.put("10", "November");
+		months.put("11", "December");
+		
+		String time = day + " " + months.get(month) + " " + year;
+		return time;
+	}
+
+	/**
+	 * 
+	 */
+     
+	public static String pdfDate(long timestamp){
+        
+		Date date = new Date(timestamp);
+		
+		String year = String.valueOf(1900 + date.getYear());
+		String month = String.valueOf(date.getMonth() + 1);
+		month = (month.length() < 2) ? ("0" + month) : month;
+		String day = String.valueOf(date.getDate());
+		day = (day.length() < 2) ? ("0" + day) : day;
+		
+		return day + "/" + month + "/" + year;
+	}
+
     /**
      * A method for calculating time difference in MILLISECONDS,
      * between a date-time specified in input parameters and the
@@ -453,6 +501,149 @@ public class Util {
 		t.printStackTrace(new PrintStream(bytesOut));
 		return bytesOut.toString();
     }
+
+	/*
+	 * Return's indicator-image name according to given status 
+	 */
+	public static String getStatusImage(String status){
+		
+		if (status==null) status = "Incomplete";
+		
+		if (status.equals("Incomplete"))
+			return "dd_status_1.gif";
+		else if (status.equals("Candidate"))
+			return "dd_status_2.gif";
+		else if (status.equals("Recorded"))
+			return "dd_status_3.gif";
+		else if (status.equals("Qualified"))
+			return "dd_status_4.gif";
+		else if (status.equals("Released"))
+			return "dd_status_5.gif";
+		else
+			return "dd_status_1.gif";
+	}
+
+	/*
+	 * Return's a sequence of radics illustrating the given status 
+	 */
+	public static String getStatusRadics(String status){
+		
+		if (status==null) status = "Incomplete";
+		
+		if (status.equals("Incomplete"))
+			return "&radic;";
+		else if (status.equals("Candidate"))
+			return "&radic;&radic;";
+		else if (status.equals("Recorded"))
+			return "&radic;&radic;&radic;";
+		else if (status.equals("Qualified"))
+			return "&radic;&radic;&radic;&radic;";
+		else if (status.equals("Released"))
+			return "&radic;&radic;&radic;&radic;&radic;";
+		else
+			return "&radic;";
+	}
+
+	/*
+	 * Return's a sortable string of the given status, taking into account
+	 * the business-logical order of statuses   
+	 */
+	public static String getStatusSortString(String status){
+		
+		if (status==null) status = "Incomplete";
+		
+		if (status.equals("Incomplete"))
+			return "1";
+		else if (status.equals("Candidate"))
+			return "2";
+		else if (status.equals("Recorded"))
+			return "3";
+		else if (status.equals("Qualified"))
+			return "4";
+		else if (status.equals("Released"))
+			return "5";
+		else
+			return "1";
+	}
+
+	/*
+	 * 
+	 */
+	public static String getIcon(String path){
+		
+		String s = path==null ? null : path.toLowerCase();
+		
+		if (s==null)
+			return "icon_unknown.gif";
+		else if (s.endsWith(".pdf"))
+			return "icon_pdf.jpg";
+		else if (s.endsWith(".doc"))
+			return "icon_doc.gif";
+		else if (s.endsWith(".rtf"))
+			return "icon_doc.gif";
+		else if (s.endsWith(".xls"))
+			return "icon_xls.gif";
+		else if (s.endsWith(".ppt"))
+			return "icon_ppt.gif";
+		else if (s.endsWith(".txt"))
+			return "icon_txt.gif";
+		else if (s.endsWith(".zip"))
+			return "icon_zip.gif";
+		else if (s.endsWith(".htm"))
+			return "icon_html.gif";
+		else if (s.endsWith(".html"))
+			return "icon_html.gif";
+		else if (s.endsWith(".xml"))
+			return "icon_xml.jpg";
+		else if (s.endsWith(".xsd"))
+			return "icon_xml.jpg";
+		else
+			return "icon_unknown.gif";
+	}
+
+	/**
+	 * Method used in JSP to determine weather the row with a given index is
+	 * odd or even. Returns a String used by JSP to set the style correspondingly
+	 * and with as little code as possible.
+	 */
+	public static String isOdd(int displayed){
+		String isOdd = (displayed % 2 != 0) ? "_odd" : "";
+		return isOdd;
+	}
+
+	/**
+	 *  
+	 */	
+	public static String getUrlContent(String url){
+
+		int i;
+		byte[] buf = new byte[1024];		
+		InputStream in = null;
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+		try{
+			URL _url = new URL(url);
+			HttpURLConnection httpConn = (HttpURLConnection)_url.openConnection();
+					
+			in = _url.openStream();
+			while ((i=in.read(buf, 0, buf.length)) != -1){
+				out.write(buf, 0, i);
+			}
+			out.flush();
+		}
+		catch (IOException e){
+			return e.toString().trim();
+		}
+		finally{
+			try{
+				if (in!=null) in.close();
+				if (out!=null) out.close();
+			}
+			catch (IOException e){}
+		}
+		
+		return out.toString().trim();
+	}
     
     /**
     * Converts HTML/XML escape sequences (a la &#147; or &amp;)
@@ -507,12 +698,13 @@ public class Util {
         
         return buf.toString();*/
     }
-    
+
     /**
     * main
     */
     public static void main(String[] args){
-        
-        String s = Replace("ttrrrtttrrrtt", "tt", "jj");
+
+    	String s = getUrlContent("http://www.eionet.eu.int/boxes/DD/box1/view_teaser_box?vis=standard&width=270");
+		System.out.println(s);
     }
 }

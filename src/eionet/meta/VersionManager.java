@@ -1674,10 +1674,14 @@ public class VersionManager{
         try{
             Class.forName("org.gjt.mm.mysql.Driver");
             Connection conn =
-                DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
+                DriverManager.getConnection("jdbc:mysql://195.250.186.33:3306/DataDict",
+				"dduser", "xxx");
                 
             AppUserIF testUser = new TestUser();
-            testUser.authenticate("jaanus", "jaanus");
+            testUser.authenticate("tennoan", "tennoan");
+            
+			VersionManager verMan = new VersionManager();
+            //String id = verMan.LatestElmID(dataElement);
       }
         catch (Exception e){
             System.out.println(e.toString());

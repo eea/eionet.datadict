@@ -53,7 +53,6 @@ public class DstPdfGuideline extends PdfHandout {
         	if (searchEngine.hasGIS(tbl.getID())){
         		tbl.setGIS(true);
         		this.hasGisTables = true;
-        		System.out.println("===> tulin write()-st");
         	}
         	tbl.setSimpleAttributes(
         			searchEngine.getSimpleAttributes(tbl.getID(), "T"));
@@ -576,6 +575,7 @@ public class DstPdfGuideline extends PdfHandout {
 		font.setColor(Color.lightGray);
 		prg.add(new Chunk("Dataset specification for " + dsName +
 								" * Version " + dsVersion, font));
+		prg.add(new Chunk(" * created " + Util.pdfDate(System.currentTimeMillis()), font));
 
 		this.header = new HeaderFooter(prg, false);
 		header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
@@ -673,7 +673,7 @@ public class DstPdfGuideline extends PdfHandout {
 				font.setColor(Color.gray);
 				phr.add(new Chunk("\n" + respOrgName, font));
 				
-				String respOrgUrl = (String)submitOrg.get("url");
+				String respOrgUrl = (String)respOrg.get("url");
 				if (!Util.voidStr(respOrgUrl)){
 					font = FontFactory.getFont(FontFactory.HELVETICA, 9);
 					font.setColor(Color.lightGray);

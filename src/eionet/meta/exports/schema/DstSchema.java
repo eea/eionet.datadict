@@ -41,22 +41,21 @@ public class DstSchema extends Schema {
     */
     private void write(Dataset ds) throws Exception{
         
-        Namespace ns = null;
-        String nsID = ds.getNamespaceID();
-        if (!Util.voidStr(nsID))
-            ns = searchEngine.getNamespace(nsID);
-        if (ns == null)
-            ns = searchEngine.getNamespace("1");
+		// set target namespace (being the so-called "datasets" namespace) 
+		setTargetNsUrl(NSID_DATASETS);
+		
+		// set the dataset corresponding namespace
+		String nsID = ds.getNamespaceID();
+		if (!Util.voidStr(nsID)){
+			Namespace ns = searchEngine.getNamespace(nsID);
+			if (ns != null){
+				addNamespace(ns);
+				setRefferedNs(ns);
+			}
+		}
         
-        if (ns != null){
-            // add to namespaces
-            addNamespace(ns);
-                
-            // set target namespace url
-            setTargetNsUrl(ns.getID());
-        }
-        
-        writeElemStart(ds.getShortName());
+        //writeElemStart(ds.getShortName());
+		writeElemStart(ds.getIdentifier());
         writeAnnotation(ds.getSimpleAttributes(), ds.getComplexAttributes());
         writeContent(ds);
         writeElemEnd();
@@ -64,7 +63,8 @@ public class DstSchema extends Schema {
     
     private void writeContent(Dataset ds) throws Exception {
         
-        addString("\t<xs:complexType name=\"type" + ds.getShortName() + "\">");
+        //addString("\t<xs:complexType name=\"type" + ds.getShortName() + "\">");
+		addString("\t<xs:complexType name=\"type" + ds.getIdentifier() + "\">");
         newLine();
         
         String tab = "\t\t";

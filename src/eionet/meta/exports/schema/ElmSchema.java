@@ -72,16 +72,12 @@ public class ElmSchema extends Schema {
     */
     private void write(DataElement elem) throws Exception{
 
-        Namespace ns = elem.getNamespace();
-        if (ns != null){
-            // add to namespaces
-            addNamespace(ns);
-            
-            // set target namespace url
-            setTargetNsUrl(ns.getID());
-        }
-        
-        writeElemStart(elem.getShortName());
+		// set target namespace (being the parent table's namespace)
+		String parentNsID = elem.getNamespace().getID(); 
+		if (parentNsID!=null) setTargetNsUrl(parentNsID);
+
+        //writeElemStart(elem.getShortName());
+		writeElemStart(elem.getIdentifier());
         writeAnnotation(elem.getAttributes(), elem.getComplexAttributes());
         writeContent(elem);
         writeElemEnd();
@@ -98,7 +94,8 @@ public class ElmSchema extends Schema {
     
     protected void writeComplexContent(DataElement elem) throws Exception {
         
-        addString("\t<xs:complexType name=\"type" + elem.getShortName() + "\">");
+        //addString("\t<xs:complexType name=\"type" + elem.getShortName() + "\">");
+		addString("\t<xs:complexType name=\"type" + elem.getIdentifier() + "\">");
         newLine();
         
         String tab = "\t\t";
@@ -115,7 +112,8 @@ public class ElmSchema extends Schema {
             addString(tab + "\t");
             addString("<xs:extension base=\"");
             //addString(extNs.getShortName() + ":" + ext.getShortName());
-            addString("ns" + extNs.getID() + ":" + ext.getShortName());
+            //addString("ns" + extNs.getID() + ":" + ext.getShortName());
+			addString("ns" + extNs.getID() + ":" + ext.getIdentifier());
             addString("\">");
             newLine();
             
