@@ -14,6 +14,7 @@
 		../public/WEB-INF/lib/eionet-dir.jar;
 		../public/WEB-INF/lib/uit-security.jar;
 		../public/WEB-INF/lib/uit-client.jar;
+		../public/WEB-INF/lib/uit-help.jar;
 		../public/WEB-INF/lib/log4j.jar;
 		/var/lib/tomcat4/common/lib/[servletapi4].jar"/>
   </target>
