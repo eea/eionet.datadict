@@ -48,6 +48,11 @@
 		<param-value>/prj/datadict/tmp</param-value>
 	</context-param>
 
+	<context-param>
+		<param-name>doc-path</param-name>
+		<param-value>/prj/datadict/tmp</param-value>
+	</context-param>
+
 
 <!-- servlets -->
 
@@ -59,6 +64,26 @@
 	<servlet>
 		<servlet-name>rpcrouter</servlet-name>
 		<servlet-class>com.tee.uit.servlets.XmlRpcRouter</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>DocUpload</servlet-name>
+		<servlet-class>eionet.meta.DocUpload</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>DocDownload</servlet-name>
+		<servlet-class>eionet.meta.DocDownload</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>GetXmlInstance</servlet-name>
+		<servlet-class>eionet.meta.exports.xmlinst.XmlInstServlet</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>GetXForm</servlet-name>
+		<servlet-class>eionet.meta.exports.xforms.XFormServlet</servlet-class>
 	</servlet>
 
 	<servlet>
@@ -109,6 +134,22 @@
 	<servlet-mapping>
 		<servlet-name>rpcrouter</servlet-name>
 		<url-pattern>/rpcrouter</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>DocUpload</servlet-name>
+		<url-pattern>/DocUpload</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>DocDownload</servlet-name>
+		<url-pattern>/DocDownload</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>GetXmlInstance</servlet-name>
+		<url-pattern>/GetXmlInstance</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>GetXForm</servlet-name>
+		<url-pattern>/GetXForm</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Login</servlet-name>
