@@ -20,7 +20,7 @@
  *
  * Original Code: Rando Valt (TietoEnator)
  *
- * $Id: Log4jLoggerImpl.java,v 1.8 2004/08/19 11:22:29 te-ee Exp $
+ * $Id: Log4jLoggerImpl.java,v 1.9 2004/09/14 12:19:50 te-ee Exp $
  */
 
 package eionet.util;
@@ -37,7 +37,7 @@ import java.util.*;
  * Updates: <UL>15.02.02 log4j version</UL>
  *
  * @author  Rando Valt
- * @version $Revision: 1.8 $	
+ * @version $Revision: 1.9 $	
  */
 
 public class Log4jLoggerImpl implements LogServiceIF {

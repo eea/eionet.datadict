@@ -84,6 +84,7 @@ public class Props implements PropsIF{
 	private static synchronized void setDefaults(){
 		defaultProps = new Hashtable();
 		defaultProps.put(XFORM_TEMPLATE_URL,"http://cdr-ewn.eionet.eu.int/webq/GetXFormTemplate");
+		defaultProps.put(INSERV_ROD_RA_URLPATTERN,"http://rod.eionet.eu.int/show.jsv?id=<RA_ID>&mode=A");
 	}
 	
 	public static void main(String[] args){

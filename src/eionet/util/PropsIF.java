@@ -25,6 +25,18 @@ public interface PropsIF {
 	public static final String XFORMS_NSS = "xforms.nss";
 	public static final String XFORMS_NS = "xforms.ns";
 	public static final String XFORM_TEMPLATE_URL = "xforms.templ.url";
+
+	public static final String INSERV_PREFIX = "inserv.";
+	public static final String INSERV_NAME = ".name";
+	public static final String INSERV_URL = ".url";
+	public static final String INSERV_USR = ".usr";
+	public static final String INSERV_PSW = ".psw";
+	
+	public static final String INSERV_ROD_RA_URLPATTERN = "inserv.webrod.ra-url-pattern";
+	public static final String INSERV_ROD_RA_IDPATTERN  = "<RA_ID>";
+	
+	public static final String OUTSERV_ELM_URLPATTERN = "outserv.elm-details-url";
+	public static final String OUTSERV_ELM_IDPATTERN  = "<ELM_ID>";
 	
 	/** defaults */
 	
