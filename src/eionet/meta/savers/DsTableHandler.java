@@ -229,14 +229,6 @@ public class DsTableHandler extends BaseHandler {
         stmt.executeUpdate(gen.insertStatement());
         setLastInsertID();
 
-		// add acl
-		if (user!=null){
-			String aclPath = "/tables/" + getLastInsertID();
-			String aclDesc =
-				"Short name=" + shortName + ", parentNS=" + parentNS;
-			AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
-		}
-        
         // create the corresponding namespace
         if (!copy){
             String correspNS = createNamespace(dsName, shortName);
@@ -461,16 +453,9 @@ public class DsTableHandler extends BaseHandler {
             buf.append(del_IDs[i]);
         }
         stmt.executeUpdate(buf.toString());
+        
         stmt.close();
 
-		// remove acls
-		for (int i=0; i<del_IDs.length; i++){
-			try{
-				AccessController.removeAcl("/tables/" + del_IDs[i]);
-			}
-			catch (Exception e){}
-		}
-        
         // release originals and top namespaces
         cleanup();
     }

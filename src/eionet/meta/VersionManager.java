@@ -363,11 +363,6 @@ public class VersionManager{
     	
     	if (dstID==null) throw new Exception("Dataset ID missing!"); 
     	
-		// check permissions
-		String aclp = "/datasets/" + dstID;
-		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), aclp, "u"))
-			throw new Exception("Not allowed!");
-        
 		// set the working user of the original
 		SQLGenerator gen = new SQLGenerator();
 		gen.setTable("DATASET");

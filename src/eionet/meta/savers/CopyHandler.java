@@ -120,14 +120,6 @@ public class CopyHandler extends Object {
         if (newID==null)
             return null;
 
-		// add acl
-		if (user!=null){
-			String aclp = "/elements/" + newID;
-			String aclDesc = "Copy of " + srcElemID;
-			AccessController.addAcl(aclp, user.getUserName(), aclDesc);
-		}
-
-
 		// make it a working copy if needed
 		if (workingCopy){
 			gen.clear();
@@ -296,13 +288,6 @@ log(q);
         if (newID==null)
             return null;
 
-		// add acl
-		if (user!=null){
-			String aclp = "/tables/" + newID;
-			String aclDesc = "Copy of " + tblID;
-			AccessController.addAcl(aclp, user.getUserName(), aclDesc);
-		}
-        
         Statement stmt = conn.createStatement();
         
         // make it a working copy if needed
@@ -365,13 +350,6 @@ log(q);
         
         if (newID==null) return null;
 
-		// add acl
-		if (user!=null){
-			String aclp = "/datasets/" + newID;
-			String aclDesc = "Copy of " + dstID;
-			AccessController.addAcl(aclp, user.getUserName(), aclDesc);
-		}
-        
         // make it a working copy if needed
         if (workingCopy){
             gen.clear();

@@ -1769,7 +1769,6 @@ public class DDSearchEngine {
                 }
                 
                 String regStatus = rs.getString("REG_STATUS");
-                if (skipByRegStatus(regStatus)) continue; 
 				ds.setStatus(regStatus);
                 
                 v.add(ds);
@@ -1789,7 +1788,7 @@ public class DDSearchEngine {
 	 * @param regStatus
 	 * @return
 	 */
-	private boolean skipByRegStatus(String regStatus) {
+	public boolean skipByRegStatus(String regStatus) {
 		
 		if (regStatus!=null){
 			if (user==null || !user.isAuthentic()){
@@ -1802,21 +1801,43 @@ public class DDSearchEngine {
 		
 		return false;
 	}
-
+	
 	public Vector getDatasetTables(String dsID) throws SQLException {
+		return getDatasetTables(dsID, false);
+	}
+
+	public Vector getDatasetTables(String dsID, boolean orderByFN)
+												throws SQLException {
         
         StringBuffer buf  = new StringBuffer();
-        buf.append("select distinct DS_TABLE.* ");//, DATASET.* ");
-        buf.append("from DS_TABLE ");
+        buf.append("select distinct DS_TABLE.*");
+        
+        if (orderByFN){
+			buf.append(", ATTRIBUTE.VALUE");
+        }
+        
+        buf.append(" from DS_TABLE ");
         
         // JH140803
         // there's now a many-to-many relation btw DS_TABLE & DATASET
-        buf.append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ");
-        //buf.append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ");
+        buf.append("left outer join DST2TBL on ").
+        append("DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ");
+        
+        if (orderByFN){
+			buf.append("left outer join ATTRIBUTE on ").
+			append("DS_TABLE.TABLE_ID=ATTRIBUTE.DATAELEM_ID ").
+			append("left outer join M_ATTRIBUTE on ").
+			append("ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID ");
+        }
             
-        //buf.append("where DS_TABLE.CORRESP_NS is not null and DATASET.DATASET_ID=");
-        buf.append("where DS_TABLE.CORRESP_NS is not null and DST2TBL.DATASET_ID=");
-        buf.append(dsID);
+        buf.append("where DS_TABLE.CORRESP_NS is not null and ").
+        append("DST2TBL.DATASET_ID=").append(dsID);
+        
+        if (orderByFN){
+			buf.append(" and M_ATTRIBUTE.SHORT_NAME='Name' and ").
+			append("ATTRIBUTE.PARENT_TYPE='T'");
+        }
+        
         buf.append(" order by DS_TABLE.SHORT_NAME,DS_TABLE.VERSION desc");
         
         log(buf.toString());
@@ -1843,7 +1864,6 @@ public class DDSearchEngine {
                                             dsID,//rs.getString("DATASET.DATASET_ID"),
                                             shortName);
                 
-                dsTable.setName(rs.getString("DS_TABLE.NAME"));
                 dsTable.setWorkingCopy(rs.getString("DS_TABLE.WORKING_COPY"));
 				dsTable.setWorkingUser(rs.getString("DS_TABLE.WORKING_USER"));
                 dsTable.setVersion(rs.getString("DS_TABLE.VERSION"));
@@ -1852,6 +1872,11 @@ public class DDSearchEngine {
                 dsTable.setType(rs.getString("DS_TABLE.TYPE"));
                 dsTable.setNamespace(rs.getString("DS_TABLE.CORRESP_NS"));
                 dsTable.setParentNs(rs.getString("DS_TABLE.PARENT_NS"));
+                
+                if (orderByFN){
+					dsTable.setName(rs.getString("ATTRIBUTE.VALUE"));
+					dsTable.setCompStr(dsTable.getName());
+                }
                 
                 v.add(dsTable);
             }
@@ -1862,6 +1887,9 @@ public class DDSearchEngine {
                 if (stmt != null) stmt.close();
             } catch (SQLException sqle) {}
         }
+        
+		if (orderByFN)
+			Collections.sort(v);
         
         return v;
     }
@@ -2041,7 +2069,6 @@ public class DDSearchEngine {
                                           rs.getString("DS_TABLE.SHORT_NAME"));
 
                 tbl.setDefinition(rs.getString("DS_TABLE.DEFINITION"));
-                tbl.setName(rs.getString("DS_TABLE.NAME"));
                 tbl.setNamespace(rs.getString("DS_TABLE.CORRESP_NS"));
                 tbl.setParentNs(rs.getString("DS_TABLE.PARENT_NS"));
                 tbl.setDatasetName(rs.getString("DATASET.SHORT_NAME"));
@@ -2050,12 +2077,15 @@ public class DDSearchEngine {
                 if (nameID!=null){
                     ps.setInt(1, rs.getInt("DS_TABLE.TABLE_ID"));
                     ResultSet rs2 = ps.executeQuery();
-                    if (rs2.next()) tbl.setName(rs2.getString(1));
+                    if (rs2.next())
+                    	tbl.setName(rs2.getString(1));
                 }
                 
 				String regStatus = rs.getString("DS_TABLE.REG_STATUS");
 				if (skipByRegStatus(regStatus)) continue;
 				tbl.setStatus(regStatus);
+				
+				tbl.setCompStr(tbl.getName());
 
                 v.add(tbl);
             }
@@ -2066,6 +2096,8 @@ public class DDSearchEngine {
                 if (stmt != null) stmt.close();
             } catch (SQLException sqle) {}
         }
+        
+		Collections.sort(v);
 
         return v;
     }
@@ -2111,7 +2143,6 @@ public class DDSearchEngine {
                                             rs.getString("DATASET.DATASET_ID"),
                                             rs.getString("DS_TABLE.SHORT_NAME"));
                 
-                dsTable.setName(rs.getString("DS_TABLE.NAME"));
                 dsTable.setWorkingCopy(rs.getString("DS_TABLE.WORKING_COPY"));
                 dsTable.setVersion(rs.getString("DS_TABLE.VERSION"));
                 dsTable.setStatus(rs.getString("DS_TABLE.REG_STATUS"));

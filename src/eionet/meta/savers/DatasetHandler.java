@@ -126,13 +126,6 @@ public class DatasetHandler extends BaseHandler {
     
     private void insert() throws Exception {
     	
-    	// check permissions
-		AccessControlListIF acl = AccessController.getAcl("/datasets");
-		if (!importMode){
-			if (user==null || !acl.checkPermission(user.getUserName(), "i"))
-				throw new Exception("Not allowed!");
-		}
-        
         if (ds_name == null)
             throw new SQLException("Short name must be specified!");
         
@@ -161,11 +154,14 @@ public class DatasetHandler extends BaseHandler {
         setLastInsertID();
         
         // add acl
-        if (user!=null){
-	        String aclPath = "/datasets/" + getLastInsertID();
-	        String aclDesc = "Short name: " + ds_name;
-			AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
-        }
+		if (user!=null){
+			String aclPath = "/datasets/" + ds_name;
+			HashMap acls = AccessController.getAcls();
+			if (!acls.containsKey(aclPath)){
+				String aclDesc = "Short name: " + ds_name;
+				AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
+			}
+		}
         
         // create the corresponding namespace
         // (this also sets the WORKING_USER)
@@ -188,11 +184,6 @@ public class DatasetHandler extends BaseHandler {
     	
     	if (ds_id==null) throw new Exception("Dataset ID missing!");
 
-		// check permissions
-		String aclp = "/datasets/" + ds_id;
-		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), aclp, "u"))
-			throw new Exception("Not allowed!");
-    	
 		// see if it's just an unlock
 		String unlock = req.getParameter("unlock");
 		if (unlock!=null && !unlock.equals("false")){
@@ -320,15 +311,6 @@ public class DatasetHandler extends BaseHandler {
         if (ds_ids==null || ds_ids.length==0)
             return;
 
-		// check permissions
-		AccessControlListIF acl = null;
-		String aclp = "/datasets/";
-		for (int i=0; i<ds_ids.length; i++){
-			aclp = aclp + ds_id;
-			if (user==null || !SecurityUtil.hasPerm(user.getUserName(), aclp, "d"))
-				throw new Exception("Not allowed!");
-		}
-		            
         // find out which of ds_ids are not working copies
         // and if they're not the latest versions, throw
         // an exception
@@ -347,6 +329,7 @@ public class DatasetHandler extends BaseHandler {
         Vector  legal     = new Vector();
         HashSet delns     = new HashSet();
 		HashSet wrkCopies = new HashSet();
+		Hashtable shortNames = new Hashtable();
         VersionManager verMan = new VersionManager(conn, user);
 		verMan.setContext(ctx);
         while (rs.next()){
@@ -354,6 +337,8 @@ public class DatasetHandler extends BaseHandler {
             String thisID = rs.getString("DATASET_ID");
             String shortName = rs.getString("SHORT_NAME");
             String wrkCopy   = rs.getString("WORKING_COPY");
+            
+			shortNames.put(thisID, shortName);
             
             if (wrkCopy.equals("Y")){
                 nss.add(rs.getString("CORRESP_NS"));
@@ -425,15 +410,18 @@ public class DatasetHandler extends BaseHandler {
             buf.append(ds_ids[i]);
         }
         stmt.executeUpdate(buf.toString());
-        stmt.close();
         
         // remove acls
 		for (int i=0; i<ds_ids.length; i++){
-			try{
-				AccessController.removeAcl("/datasets/" + ds_ids[i]);
-			}
-			catch (Exception e){}
+			String shortName = (String)shortNames.get(ds_ids[i]);
+			if (shortName==null) continue; 
+			rs = stmt.executeQuery("select count(*) from DATASET " +
+							"where SHORT_NAME='" + shortName + "'");
+			if (rs.next() && rs.getInt(1)>0) continue;
+			AccessController.removeAcl("/datasets/" + shortName);
 		}
+        
+        stmt.close();
         
         // release the originals and namespaces
         cleanup();

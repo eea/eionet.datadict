@@ -299,13 +299,6 @@ public class DataElementHandler extends BaseHandler {
 		
         stmt.close();
 
-		// add acl
-		if (user!=null){
-			String aclPath = "/elements/" + getLastInsertID();
-			String aclDesc = "Short name=" + delem_name + ", parentNS=" + ns_id;
-			AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
-		}
-
         // process other stuff
         setLastInsertID();
         processDataClass();
@@ -451,14 +444,6 @@ public class DataElementHandler extends BaseHandler {
         }
         stmt.executeUpdate(buf.toString());
         stmt.close();
-
-		// remove acls
-		for (int i=0; i<delem_ids.length; i++){
-			try{
-				AccessController.removeAcl("/elements/" + delem_ids[i]);
-			}
-			catch (Exception e){}
-		}
 
         // release originals and top namespaces
 		cleanup();
