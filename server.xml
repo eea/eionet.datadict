@@ -1,52 +1,48 @@
-	<Host appBase='webapps'
-	contextClass='org.apache.catalina.core.StandardContext'
-	configClass='org.apache.catalina.startup.ContextConfig'
-	debug='0'
-	mapperClass='org.apache.catalina.core.StandardHostMapper'
-	unpackWARs='true'
-	name='dd.eionet.eu.int'
-	autoDeploy='true'
-	errorReportValveClass='org.apache.catalina.valves.ErrorReportValve'
-	className='org.apache.catalina.core.StandardHost'
-	deployXML='true' liveDeploy='true'>
 <!-- START OF DATADICTIONARY -->
-		<Context crossContext='true' debug='0' path='/datadict' docBase='/home/jaanus/datadict' reloadable='true'>
-			<Logger timestamp='true' suffix='.log' className='org.apache.catalina.logger.FileLogger' prefix='dd.' />
-			<Resource auth='Container' name='jdbc/datadict' type='javax.sql.DataSource' />
-			<ResourceParams name='jdbc/datadict'>
-				<parameter>
-					<name>factory</name>
-					<value>org.apache.commons.dbcp.BasicDataSourceFactory</value>
-				</parameter>
-				<parameter>
-					<name>maxActive</name>
-					<value>100</value>
-				</parameter>
-				<parameter>
-					<name>maxIdle</name>
-					<value>30</value>
-				</parameter>
-				<parameter>
-					<name>maxWait</name>
-					<value>10000</value>
-				</parameter>
-				<parameter>
-					<name>username</name>
-					<value>dduser</value>
-				</parameter>
-				<parameter>
-					<name>password</name>
-					<value>xxx</value>
-				</parameter>
-				<parameter>
-					<name>driverClassName</name>
-					<value>org.gjt.mm.mysql.Driver</value>
-				</parameter>
-				<parameter>
-					<name>url</name>
-					<value>jdbc:mysql://localhost:3306/testdd</value>
-				</parameter>
-			</ResourceParams>
+	    <Host name="dd.eionet.eu.int"
+		debug="0" appBase="/prj/datadict" 
+		unpackWARs="true">
+		<Context path='' docBase='/prj/datadict/public' debug='0'
+			reloadable='true' crossContext='true'>
+
+		    <Logger className="org.apache.catalina.logger.FileLogger"
+			prefix="dd." suffix=".log" timestamp="true"/>
+
+		    <Resource auth='Container' name='jdbc/datadict' type='javax.sql.DataSource' />
+		    <ResourceParams name='jdbc/datadict'>
+			<parameter>
+			    <name>factory</name>
+			    <value>org.apache.commons.dbcp.BasicDataSourceFactory</value>
+			</parameter>
+			<parameter>
+			    <name>maxActive</name>
+			    <value>100</value>
+			</parameter>
+			<parameter>
+			    <name>maxIdle</name>
+			    <value>30</value>
+			</parameter>
+			<parameter>
+			    <name>maxWait</name>
+			    <value>10000</value>
+			</parameter>
+			<parameter>
+			    <name>username</name>
+			    <value>user_here</value>
+			</parameter>
+			<parameter>
+			    <name>password</name>
+			    <value>password_here</value>
+			</parameter>
+			<parameter>
+			    <name>driverClassName</name>
+			    <value>org.gjt.mm.mysql.Driver</value>
+			</parameter>
+			<parameter>
+			    <name>url</name>
+			    <value>jdbc:mysql:///DataDict?autoReconnect=true</value>
+			</parameter>
+		    </ResourceParams>
 		</Context>
+	    </Host>
 <!-- END OF DATADICTIONARY -->
-	</Host>
