@@ -43,7 +43,9 @@ public class DElemAttribute{
     private String displayWidth  = "20";
     private String displayHeight = "1";
     private String displayMultiple   = "0";
-    private String inheritable   = "0";
+    private String inheritable   = "0";    
+	private String harvesterID   = null;
+	private String harvAttrID   = null;
 
     private Vector fields = null;
     private Vector rows = null;
@@ -171,7 +173,7 @@ public class DElemAttribute{
     public Namespace getNamespace(){
         return ns;
     }
-
+    
     public void setDisplayProps(String displayType,
                                   int displayOrder,
                                   int displayWhen,
@@ -190,6 +192,19 @@ public class DElemAttribute{
     public void setInheritable(String value){
         this.inheritable = value;
     }
+    
+    public void setHarvesterID(String harvesterID){
+    	this.harvesterID = harvesterID; 
+    }
+    
+	public String getHarvesterID(){
+		return this.harvesterID; 
+	}
+
+	public void setDisplayType(String displayType){
+		this.displayType = displayType;
+	}
+	
     public String getDisplayType(){
         return displayType;
     }
@@ -279,7 +294,7 @@ public class DElemAttribute{
 
     /**
     * A function for getting value of the specified field.
-    * Meant for complex attributes only and return the field
+    * Meant for complex attributes only and return the field                   
     * value as soon as it finds it in one of the rows.
     */
 

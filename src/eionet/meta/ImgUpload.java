@@ -12,6 +12,8 @@ import com.tee.xmlserver.*;
 
 import eionet.util.SecurityUtil;
 
+import com.eteks.awt.PJAToolkit;
+
 public class ImgUpload extends HttpServlet {
 
     private static final int BUF_SIZE = 1024;
@@ -21,7 +23,7 @@ public class ImgUpload extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
-       doPost(req,res);
+		doPost(req,res);
     }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -181,7 +183,19 @@ public class ImgUpload extends HttpServlet {
                 writeToFile(raFile, req.getInputStream(), boundary);
             
             // We seem to have successfully uploaded the file.
-            // Now let's store its relation in the DB as well.
+            // However, we must be srue that PJAToolkit can handle
+            // the file later when inserting into generated PDF
+			try{
+				checkPJA(filePath + fileName);
+            }
+            catch (Exception e){
+				req.setAttribute("DD_ERR_MSG", e.getMessage());
+				req.setAttribute("DD_ERR_BACK_LINK", "imgattr.jsp?" + qryStr);
+				req.getRequestDispatcher("error.jsp").forward(req, res);
+				return;
+            }
+                        
+            // Now let's store the image relation in the DB as well.
             
             // getting the DB pool through XmlServer
             XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
@@ -271,7 +285,67 @@ public class ImgUpload extends HttpServlet {
         return "--" + boundary; // the real boundary is always preceded by an extra "--"
     }
     
+    public static void checkPJA(String filePath) throws Exception{
+		// get old properties
+		String propToolkit = System.getProperty("awt.toolkit");
+		String propGraphics = System.getProperty("java.awt.graphicsenv");
+		String propFonts = System.getProperty("java.awt.fonts");
+        
+		// set new properties
+		System.setProperty ("awt.toolkit", "com.eteks.awt.PJAToolkit");
+		System.setProperty ("java.awt.graphicsenv", "com.eteks.java2d.PJAGraphicsEnvironment");
+		System.setProperty ("java.awt.fonts", System.getProperty("user.dir"));
+		
+		java.awt.Image jImg = null;
+		try{
+			PJAToolkit kit = new PJAToolkit();//java.awt.Toolkit.getDefaultToolkit();
+			//java.awt.Image
+			jImg = kit.getImage(filePath);
+		}
+		catch (Exception e){
+			
+			// reset old properties
+			if (propToolkit != null)
+				System.setProperty ("awt.toolkit", propToolkit);
+			if (propGraphics != null)
+				System.setProperty ("java.awt.graphicsenv", propGraphics);
+			if (propFonts != null)
+				System.setProperty ("java.awt.fonts", propFonts);
+			
+			throw new Exception("Failed to recognize the image!" + 
+						" Make sure it's a JPG, GIF or PNG"); 
+		}
+    }
+    
     public static void main(String[] args) {
 
     }
 }
+
+/*class PJAThread extends Thread{
+	
+	private String absPath = null;
+	private boolean wasOK = false;
+	
+	PJAThread(String absPath){
+		super();
+		this.absPath = absPath;
+	}
+	
+	public void run() {
+		
+		try{
+			ImgUpload.checkPJA(absPath);
+			wasOK = true;
+		}
+		catch (Exception e){
+			System.out.println("===> failed with " + absPath);
+			File file = new File(absPath);
+			file.renameTo(new File(absPath + ".rmv"));
+		}
+	}
+	
+	public boolean success(){
+		return wasOK;
+	}
+}*/

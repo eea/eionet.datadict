@@ -8,8 +8,10 @@ import java.sql.*;
 
 import eionet.util.*;
 import eionet.meta.exports.pdf.*;
+import eionet.meta.savers.Parameters;
 
-import com.tee.xmlserver.*;
+import com.tee.xmlserver.XDBApplication;
+import com.tee.xmlserver.DBPoolIF;
 
 public class GetPrintout extends HttpServlet {
 	
@@ -80,10 +82,8 @@ public class GetPrintout extends HttpServlet {
             // construct the handout
             PdfHandoutIF handout = null;
             if (outType.equals(PdfHandoutIF.FACTSHEET)){
-                if (objType.equals(PdfHandoutIF.DATASET)){
+                if (objType.equals(PdfHandoutIF.DATASET))
                     handout = new DstPdfFactsheet(conn, barray);
-                    ((DstPdfFactsheet)handout).setVsPath(visualsPath);
-                }
                 else if (objType.equals(PdfHandoutIF.DSTABLE))
                     handout = new TblPdfFactsheet(conn, barray);
                 else if (objType.equals(PdfHandoutIF.DATAELEM))
@@ -93,10 +93,8 @@ public class GetPrintout extends HttpServlet {
                                         "- for this handout type!");
             }
             else if (outType.equals(PdfHandoutIF.GUIDELINE)){
-                if (objType.equals(PdfHandoutIF.DATASET)){
+                if (objType.equals(PdfHandoutIF.DATASET))
                     handout = new DstPdfGuideline(conn, barray);
-                    ((DstPdfGuideline)handout).setVsPath(visualsPath);
-                }
                 else 
                     throw new Exception("Unknown object type- " + objType +
                                         "- for this handout type!");
@@ -106,6 +104,12 @@ public class GetPrintout extends HttpServlet {
             
             // set handout logo
             handout.setLogo(ctx.getRealPath(PDF_LOGO_PATH));
+            
+            // set images path
+			handout.setVsPath(visualsPath);
+			
+			// set parameters
+			handout.setParameters(new Parameters(req));
             
             // write the handout
             handout.write(objID);

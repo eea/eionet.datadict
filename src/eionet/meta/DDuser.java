@@ -27,11 +27,8 @@ import com.tee.xmlserver.*;
 import java.sql.*;
 import java.util.*;
 
-import eionet.directory.DirectoryService;
-
-import com.tee.uit.security.AccessControlListIF;
-import com.tee.uit.security.AccessController;
-import com.tee.uit.security.SignOnException;
+import eionet.directory.*;
+import com.tee.uit.security.*;
 
 /**
  * <P>Data Dictionary specific implementation of the <CODE>com.tee.xmlserver.AppUserIF</CODE> interface. 
@@ -77,11 +74,13 @@ public class DDuser implements AppUserIF {
             	
 				Logger.log("Authenticating user '" + userName + "'", 5);
             	
-                DirectoryService.sessionLogin(userName, userPws);
-                fullName = DirectoryService.getFullName(userName);
+                //DirectoryService.sessionLogin(userName, userPws);
+                AuthMechanism.sessionLogin(userName, userPws);
+                //fullName = DirectoryService.getFullName(userName);
+				fullName = AuthMechanism.getFullName(userName);
             }
             
-            // user was found in LDAP, now check his rights in ACL            
+            /* user was found in LDAP, now check his rights in ACL            
 			Logger.log("Authenticating user '" + userName + "'", 5);
             AccessControlListIF acl = getAcl(ACL_SERVICE_NAME );
             boolean isOK = acl.checkPermission(userName, ACL_UPDATE_PRM);
@@ -89,7 +88,7 @@ public class DDuser implements AppUserIF {
                 throw new Exception("User " + userName + " does not have " +
                                     "this permission: " + ACL_UPDATE_PRM);
             
-            // no exceptions raised, so we must be authentic
+            // no exceptions raised, so we must be authentic*/
             Logger.log("Authenticated!", 5);
                 
             authented = true;

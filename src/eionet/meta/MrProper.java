@@ -4,6 +4,7 @@ import eionet.meta.savers.*;
 
 import java.util.*;
 import java.sql.*;
+import java.io.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContext;
 
@@ -14,6 +15,7 @@ public class MrProper {
     
     public static final String FUNCTIONS_PAR = "functs";
     public static final String DST_NAME = "dsname";
+	public static final String VISUALS_PATH = "vispath";
     
     public static final String RLS_DST = "rls_dst";
     public static final String ORPHAN_ELM = "orphan_elm";
@@ -21,6 +23,8 @@ public class MrProper {
     public static final String RMV_MULT_VERS = "rmv_mult_vers";
     public static final String RLS_NOWC = "rls_nowc";
 	public static final String RMV_WC_NORIG = "rmv_wc_noorig";
+	public static final String CLN_VISUALS = "cln_visuals";
+	public static final String RMV_OBJECTS = "rmv_objects";
     
     /** */
     private Connection conn = null;
@@ -29,6 +33,7 @@ public class MrProper {
     private Vector response = new Vector();
     
     private Hashtable funNames = null;
+    private boolean wasExc = false;
     
     /**
     *
@@ -43,6 +48,8 @@ public class MrProper {
         funNames.put(RMV_MULT_VERS, "Removing multiple versions");
         funNames.put(RLS_NOWC, "Releasing locked objects");
 		funNames.put(RMV_WC_NORIG, "Removing working copies with no originals");
+		funNames.put(CLN_VISUALS, "Deleting uploaded images no longer used");
+		funNames.put(RMV_OBJECTS, "Removing objects by selected criteria");
     }
     
     /**
@@ -70,7 +77,7 @@ public class MrProper {
     *
     */
     public void execute(Parameters pars){
-        
+    	
         // check if user is authentic
         if (user==null || !user.isAuthentic()){
             response.add("Unauthorized user!");
@@ -103,20 +110,26 @@ public class MrProper {
             String fun = functs[i];
             
             try{
+				if (fun.equals(RMV_OBJECTS))
+					removeObj(pars);
+				if (fun.equals(RMV_WC_NORIG))
+					removeHangingWCs();
+				if (fun.equals(RLS_NOWC))
+					releaseNonWC();
+				if (fun.equals(RMV_MULT_VERS))
+					multipleVersions();
+				if (fun.equals(ORPHAN_ELM))
+					orphanElements();
+				if (fun.equals(ORPHAN_TBL))
+					orphanTables();
                 if (fun.equals(RLS_DST))
                     releaseDataset(pars.getParameter(DST_NAME));
-                else if (fun.equals(ORPHAN_ELM))
-                    orphanElements();
-                else if (fun.equals(ORPHAN_TBL))
-                    orphanTables();
-                else if (fun.equals(RMV_MULT_VERS))
-                    multipleVersions();
-                else if (fun.equals(RLS_NOWC))
-                    releaseNonWC();
-                else if (fun.equals(RMV_WC_NORIG))
-					removeHangingWCs();
+				//if (fun.equals(CLN_VISUALS))
+				//	cleanVisuals(pars.getParameter(VISUALS_PATH));
             }
             catch (Exception e){
+				wasExc = true;
+				log(e.toString());
                 response.add((String)funNames.get(fun) +
                                 " failed: <b>" + e.toString() + "</b>");
                 continue;
@@ -125,6 +138,170 @@ public class MrProper {
             response.add((String)funNames.get(fun) + " was <b>OK!</b>");
         }
     }
+
+	/**
+	 * 
+	 */
+	private void removeObj(Parameters pars) throws Exception {
+		String objType = pars.getParameter("rm_obj_type");
+		if (objType==null)
+			return;
+		else if (objType.equals("dst"))
+			removeDst(pars);
+		else if (objType.equals("tbl"))
+			removeTbl(pars);
+		else if (objType.equals("elm"))
+			removeElm(pars);
+		else
+			return;
+	}
+
+	/**
+	 * 
+	 */
+	private void removeDst(Parameters pars) throws Exception {
+		
+		Vector v = new Vector();
+		StringBuffer buf = new StringBuffer();
+		String rmCrit = pars.getParameter("rm_crit");
+		if (rmCrit==null)
+			return;
+		else if (rmCrit.equals("lid")){
+			String name = pars.getParameter("rm_name");
+			if (name!=null){
+				buf.append("select DATASET_ID from DATASET where "); 
+				buf.append("SHORT_NAME=").append(Util.strLiteral(name));
+			}
+		}
+		else if (rmCrit.equals("id")){
+			String id = pars.getParameter("rm_id");
+			if (id!=null){
+				StringTokenizer st = new StringTokenizer(id);
+				while (st.hasMoreTokens())
+					v.add(st.nextToken());
+			}
+		}
+		
+		if (buf.length()>0){
+			ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+			while (rs.next())
+				v.add(rs.getString(1));
+		}
+		
+		if (v.size()==0) return;
+		
+		Parameters ps = new Parameters();
+		ps.addParameterValue("mode", "delete");
+		ps.addParameterValue("complete", "true");
+		for (int i=0; i<v.size(); i++)
+			ps.addParameterValue("ds_id", (String)v.get(i));
+		
+		DatasetHandler handler = new DatasetHandler(conn, ps, ctx);
+		handler.setUser(user);
+		handler.setVersioning(false);
+		handler.execute();
+	}
+
+	/**
+	 * 
+	 */
+	private void removeTbl(Parameters pars) throws Exception {
+
+		Vector v = new Vector();
+		StringBuffer buf = new StringBuffer();
+		String rmCrit = pars.getParameter("rm_crit");
+		if (rmCrit==null)
+			return;
+		else if (rmCrit.equals("lid")){
+			String name = pars.getParameter("rm_name");
+			String ns = pars.getParameter("rm_ns");
+			if (name!=null && ns!=null){
+				buf.append("select TABLE_ID from DS_TABLE where "); 
+				buf.append("SHORT_NAME=").append(Util.strLiteral(name));
+				buf.append("and PARENT_NS=").append(ns);
+			}
+		}
+		else if (rmCrit.equals("id")){
+			String id = pars.getParameter("rm_id");
+			if (id!=null){
+				StringTokenizer st = new StringTokenizer(id);
+				while (st.hasMoreTokens())
+					v.add(st.nextToken());
+			}
+		}
+		
+		if (buf.length()>0){
+			ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+			while (rs.next())
+				v.add(rs.getString(1));
+		}
+		
+		if (v.size()==0) return;
+		
+		Parameters ps = new Parameters();
+		ps.addParameterValue("mode", "delete");
+		for (int i=0; i<v.size(); i++)
+			ps.addParameterValue("del_id", (String)v.get(i));
+		
+		DsTableHandler handler = new DsTableHandler(conn, ps, ctx);
+		handler.setUser(user);
+		handler.setVersioning(false);
+		handler.execute();
+	}
+
+	/**
+	 * 
+	 */
+	private void removeElm(Parameters pars) throws Exception {
+
+		Vector v = new Vector();
+		StringBuffer buf = new StringBuffer();
+		String rmCrit = pars.getParameter("rm_crit");
+		if (rmCrit==null)
+			return;
+		else if (rmCrit.equals("lid")){
+			String name = pars.getParameter("rm_name");
+			String ns = pars.getParameter("rm_ns");
+			if (name!=null && ns!=null){
+				buf.append("select DATAELEM_ID from DATAELEM where "); 
+				buf.append("SHORT_NAME=").append(Util.strLiteral(name));
+				buf.append("and PARENT_NS=").append(ns);
+			}
+		}
+		else if (rmCrit.equals("id")){
+			String id = pars.getParameter("rm_id");
+			if (id!=null){
+				StringTokenizer st = new StringTokenizer(id);
+				while (st.hasMoreTokens())
+					v.add(st.nextToken());
+			}
+		}
+		
+		if (buf.length()>0){
+			ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+			while (rs.next())
+				v.add(rs.getString(1));
+		}
+		
+		if (v.size()==0) return;
+		
+		Parameters ps = new Parameters();
+		ps.addParameterValue("mode", "delete");
+		for (int i=0; i<v.size(); i++)
+			ps.addParameterValue("delem_id", (String)v.get(i));
+		
+		DataElementHandler handler = new DataElementHandler(conn, ps, ctx);
+		handler.setUser(user);
+		handler.setVersioning(false);
+		handler.execute();
+	}
+
+	/**
+	*
+	*/
+	public boolean wasException(){
+		return this.wasExc;
+	}
     
     /**
     *
@@ -148,6 +325,56 @@ public class MrProper {
                          "where NAMESPACE_ID=" + ns);
         stmt.close();
     }
+
+	/**
+	*
+	*/
+	private void cleanVisuals(String visualsPath) throws Exception{
+		
+		if (Util.nullString(visualsPath))
+			throw new Exception("Path to uploaded image files not given!");
+        
+        File dir = new File(visualsPath);
+        if (!dir.exists() || !dir.isDirectory())
+        	return;
+
+		String q1 =
+		"select count(*) from DATASET where VISUAL=? or DETAILED_VISUAL=?";
+		String q2 =
+		"select count(*) from ATTRIBUTE, M_ATTRIBUTE where " +
+		"ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID and " +
+		"M_ATTRIBUTE.DISP_TYPE='image' and VALUE=?";
+		 
+		PreparedStatement pstmt1 = conn.prepareStatement(q1);
+		PreparedStatement pstmt2 = conn.prepareStatement(q2);
+		
+        File[] files = dir.listFiles();
+        for (int i=0; files!=null && i<files.length; i++){
+        	String fileName = files[i].getName();
+        	if (Util.nullString(fileName))
+        		continue;
+
+			boolean delete = true;
+			        	
+        	pstmt1.setString(1, fileName);
+			pstmt1.setString(2, fileName);
+			ResultSet rs = pstmt1.executeQuery();
+			if (rs.next() && rs.getInt(1)>0)
+				delete = false;
+			
+			pstmt2.setString(1, fileName);
+			rs = pstmt2.executeQuery();
+			if (rs.next() && rs.getInt(1)>0)
+				delete = false;
+			
+			if (delete){
+				files[i].delete();
+			}
+        }
+        
+		pstmt1.close();
+		pstmt2.close();
+	}
     
     /**
     *
@@ -237,7 +464,7 @@ public class MrProper {
 			v.add(rs.getString(1));
 		
 		for (int i=0; i<v.size(); i++)
-			stmt.executeQuery("delete from DST2TBL where DATASET_ID=" +
+			stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" +
 															(String)v.get(i));
 		
         // get orphan tables
@@ -278,7 +505,7 @@ public class MrProper {
     */
     private void multipleVersions() throws Exception{
     	
-    	// data elements
+		//data elements
     	StringBuffer buf = new StringBuffer().
     	append("select * from DATAELEM order by DATE desc");
 		
@@ -305,20 +532,16 @@ public class MrProper {
 				all.add(hash);
 		}
 		
-		for (int i=0; i<odd.size(); i++){
-			
-			String id = (String)odd.get(i);
-			
-			Parameters pars = new Parameters();
-			pars.addParameterValue("mode", "delete");
-			pars.addParameterValue("complete", "true");
+		Parameters pars = new Parameters();
+		pars.addParameterValue("mode", "delete");
+		pars.addParameterValue("complete", "true");
+		for (int i=0; i<odd.size(); i++)
 			pars.addParameterValue("delem_id", (String)odd.get(i));
 
-			DataElementHandler h = new DataElementHandler(conn, pars, null);
-			h.setUser(user);
-			h.setVersioning(false);
-			h.execute();
-		}
+		DataElementHandler elmH = new DataElementHandler(conn, pars, ctx);
+		elmH.setUser(user);
+		elmH.setVersioning(false);
+		elmH.execute();
 
 		// tables
 		buf = new StringBuffer().
@@ -346,23 +569,21 @@ public class MrProper {
 				all.add(hash);
 		}
 		
-		for (int i=0; i<odd.size(); i++){
-			String id = (String)odd.get(i);
-			
-			Parameters pars = new Parameters();
-			pars.addParameterValue("mode", "delete");
-			pars.addParameterValue("complete", "true");
+		pars = new Parameters();
+		pars.addParameterValue("mode", "delete");
+		pars.addParameterValue("complete", "true");
+					
+		for (int i=0; i<odd.size(); i++)
 			pars.addParameterValue("del_id", (String)odd.get(i));
 
-			DsTableHandler h = new DsTableHandler(conn, pars, null);
-			h.setUser(user);
-			h.setVersioning(false);
-			h.execute();
-		}
+		DsTableHandler tblH = new DsTableHandler(conn, pars, ctx);
+		tblH.setUser(user);
+		tblH.setVersioning(false);
+		tblH.execute();
 
 		// datasets
 		buf = new StringBuffer().
-		append("select * from DATASET order by DATE desc");
+		append("select * from DATASET where SHORT_NAME='accidents' order by DATE desc");
 		
 		odd = new Vector();
 		all = new HashSet();
@@ -382,27 +603,25 @@ public class MrProper {
 				all.add(hash);
 		}
 		
-		for (int i=0; i<odd.size(); i++){
-			String id = (String)odd.get(i);
-			
-			Parameters pars = new Parameters();
-			pars.addParameterValue("mode", "delete");
-			pars.addParameterValue("complete", "true");
+		pars = new Parameters();
+		pars.addParameterValue("mode", "delete");
+		pars.addParameterValue("complete", "true");
+		
+		for (int i=0; i<odd.size(); i++)
 			pars.addParameterValue("ds_id", (String)odd.get(i));
 
-			DatasetHandler h = new DatasetHandler(conn, pars, null);
-			h.setUser(user);
-			h.setVersioning(false);
-			h.execute();
-		}
+		DatasetHandler dstH = new DatasetHandler(conn, pars, ctx);
+		dstH.setUser(user);
+		dstH.setVersioning(false);
+		dstH.execute();
     }
     
     /**
     *
     */
     private void releaseNonWC() throws Exception{
-        //releaseNonWC("DATAELEM");
-        //releaseNonWC("DS_TABLE");
+        releaseNonWC("DATAELEM");
+        releaseNonWC("DS_TABLE");
         releaseNonWC("DATASET");
     }
     
@@ -420,8 +639,6 @@ public class MrProper {
         buf.append(tblName);
         buf.append(" where WORKING_USER is not null");
         
-        //System.out.println(buf.toString());
- 
         Vector v = new Vector();
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(buf.toString());
@@ -443,8 +660,6 @@ public class MrProper {
         buf.append(" from ");
         buf.append(tblName);
         buf.append(" where WORKING_COPY='Y'");
-        
-        //System.out.println(buf.toString());
         
         HashSet wcs = new HashSet();
         rs = stmt.executeQuery(buf.toString());
@@ -491,8 +706,9 @@ public class MrProper {
 		// data elements
 		StringBuffer buf = new StringBuffer().
 		append("select count(*) from DATAELEM where WORKING_COPY='N' and ").
-		append("WORKING_USER=").append(Util.strLiteral(user.getUserName())).
-		append(" and SHORT_NAME=? and PARENT_NS=? and VERSION=? and ").
+		//append("WORKING_USER=").append(Util.strLiteral(user.getUserName())).
+		append("WORKING_USER is not null and ").
+		append("SHORT_NAME=? and PARENT_NS=? and VERSION=? and ").
 		append("DATE<?");
 
 		PreparedStatement pstmt= conn.prepareStatement(buf.toString());
@@ -501,7 +717,7 @@ public class MrProper {
 		 
     	Statement stmt = conn.createStatement();
     	ResultSet rs = stmt.
-    	executeQuery("select * from DATAELEM where WORKING_COPY='Y'");
+    			executeQuery("select * from DATAELEM where WORKING_COPY='Y'");
     	
     	while (rs.next()){
     		// execute prep statement with qry for original
@@ -525,7 +741,7 @@ public class MrProper {
 			pars.addParameterValue("complete", "true");
 			pars.addParameterValue("delem_id", id);
 
-			DataElementHandler h = new DataElementHandler(conn, pars, null);
+			DataElementHandler h = new DataElementHandler(conn, pars, ctx);
 			h.setUser(user);
 			h.setVersioning(false);
 			h.execute();
@@ -534,7 +750,8 @@ public class MrProper {
 		// tables
 		buf = new StringBuffer().
 		append("select count(*) from DS_TABLE where WORKING_COPY='N' and ").
-		append("WORKING_USER=").append(Util.strLiteral(user.getUserName())).
+		//append("WORKING_USER=").append(Util.strLiteral(user.getUserName())).
+		append("WORKING_USER is not null and ").
 		append(" and SHORT_NAME=? and PARENT_NS=? and VERSION=? and ").
 		append("DATE<?");
 
@@ -567,17 +784,17 @@ public class MrProper {
 			pars.addParameterValue("complete", "true");
 			pars.addParameterValue("del_id", id);
 
-			DsTableHandler h = new DsTableHandler(conn, pars, null);
+			DsTableHandler h = new DsTableHandler(conn, pars, ctx);
 			h.setUser(user);
 			h.setVersioning(false);
 			//h.execute();
-			System.out.println("table " + id);
 		}
 
 		// datasets
 		buf = new StringBuffer().
 		append("select count(*) from DATASET where WORKING_COPY='N' and ").
-		append("WORKING_USER=").append(Util.strLiteral(user.getUserName())).
+		//append("WORKING_USER=").append(Util.strLiteral(user.getUserName())).
+		append("WORKING_USER is not null and ").
 		append(" and SHORT_NAME=? and VERSION=? and ").
 		append("DATE<?");
 
@@ -609,11 +826,10 @@ public class MrProper {
 			pars.addParameterValue("complete", "true");
 			pars.addParameterValue("ds_id", id);
 
-			DatasetHandler h = new DatasetHandler(conn, pars, null);
+			DatasetHandler h = new DatasetHandler(conn, pars, ctx);
 			h.setUser(user);
 			h.setVersioning(false);
 			//h.execute();
-			System.out.println("dataset " + id);
 		}
     }
     
@@ -623,45 +839,39 @@ public class MrProper {
     public Vector getResponse(){
         return response;
     }
-    
+
+	/**
+	*
+	*/
+	public void log(String msg){
+		if (ctx!=null)
+			ctx.log(msg);
+	}
+
     /**
     *
     */
     public static void main(String[] args){
-
+    	
         MrProper mrProper = null;
         
         try{
             Class.forName("org.gjt.mm.mysql.Driver");
             Connection conn = DriverManager.getConnection(
-			//"jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-			"jdbc:mysql://192.168.1.6:3306/DataDict", "dduser", "xxx");
+			"jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
+			//"jdbc:mysql://192.168.1.6:3306/DataDict", "dduser", "xxx");
 
 			AppUserIF testUser = new TestUser();
 			testUser.authenticate("jaanus", "jaanus");
-
-			/*StringBuffer buf = new StringBuffer().
-			append("select count(*) from DATAELEM where WORKING_COPY='N'").
-			append(" and SHORT_NAME=? and PARENT_NS=? and VERSION=?");
-
-			PreparedStatement pstmt= conn.prepareStatement(buf.toString());
-			pstmt.setString(1, "enriko");
-			pstmt.setInt(2, 197);
-			pstmt.setInt(3, 1);
-			
-			ResultSet rs = pstmt.executeQuery();
-			while (rs.next()){
-				System.out.println(rs.getString(1));
-			} */
 
             mrProper = new MrProper(conn);    
             mrProper.setUser(testUser);
             
             Parameters pars = new Parameters();
-            //pars.addParameterValue(FUNCTIONS_PAR, ORPHAN_ELM);
-            //pars.addParameterValue(FUNCTIONS_PAR, ORPHAN_TBL);
-            pars.addParameterValue(FUNCTIONS_PAR, RMV_MULT_VERS);            
-			//pars.addParameterValue(FUNCTIONS_PAR, RMV_WC_NORIG);
+            pars.addParameterValue(FUNCTIONS_PAR, RMV_MULT_VERS);
+			/*pars.addParameterValue("rm_obj_type", "dst");
+			pars.addParameterValue("rm_crit", "id");
+			pars.addParameterValue("rm_id", "1428 1222 1219 1220 1249 1429");*/
             
             mrProper.execute(pars);
             

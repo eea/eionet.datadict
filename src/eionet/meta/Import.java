@@ -2,26 +2,17 @@ package eionet.meta;
 
 import javax.servlet.http.*;
 import javax.servlet.*;
-import java.io.*;
-import java.util.*;
-import java.sql.*;
-import com.caucho.sql.DBPool;
-import eionet.meta.schema.*;
-import eionet.meta.imp.*;
-
-import java.net.*;
-import java.util.*;
-import java.lang.reflect.Constructor;
-
 import javax.xml.parsers.*;
 
 import org.xml.sax.*;
-import org.xml.sax.helpers.*;
-//import org.apache.xerces.parsers.*;
-//import org.apache.xerces.framework.*;
+import java.io.*;
+import java.util.*;
+import java.net.*;
+import eionet.meta.imp.*;
+import eionet.util.SecurityUtil;
 
-//import org.w3c.dom.*;
-//import org.xml.sax.*;
+import com.tee.xmlserver.AppUserIF;
+import com.tee.uit.security.*;
 
 public class Import extends HttpServlet {
 
@@ -32,7 +23,6 @@ public class Import extends HttpServlet {
     private static final String TMP_FILE_PREFIX = "import_";
 
     private static PrintStream s = System.out;
-//    private static XMLFactoryIF xmlFactory = new com.tee.xmlserver.apache.ApacheXMLFactory();
 
     private static boolean validation = false;
     private static String  drv = "";
@@ -45,259 +35,285 @@ public class Import extends HttpServlet {
 
     private static Hashtable conf;
     
+    /**
+    * Override the servlet's doGet()
+    */
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
        req.getRequestDispatcher("import_results.jsp").forward(req, res);
-        //doPost(req,res);
     }
 
+    /**
+    * Override the servlet's doPost()
+    */
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
+        ServletContext ctx = getServletContext();
+        
+        // init response text and exception indicator
+
         StringBuffer responseText = new StringBuffer();
         boolean bException = false;
-        //Writer writer = res.getWriter();
 
-  			DDuser user=getUser(req);
+        // authenticate user
+        AppUserIF user = SecurityUtil.getUser(req);
+        try{
+			AccessControlListIF acl = AccessController.getAcl("/import");
+			if (user==null || !acl.checkPermission(user.getUserName(), "x")){
+				responseText.append("<h1>Not allowed!</h1><br/>");
+				bException = true;
+			}
+        }
+        catch (SignOnException soe){
+			responseText.append("<h1>" + soe.toString() + "</h1><br/>");
+			bException = true;
+        }
 
-        if ( user == null){
-            responseText.append("<h1>Not authorized to store data!</h1><br/>");
-            bException = true;
-         }
-
+        // get content type, check that it's valid
         String contentType = req.getContentType();
-
         if (contentType == null ||
             !(contentType.toLowerCase().startsWith("multipart/form-data") ||
             contentType.toLowerCase().startsWith("text/xml"))){
             responseText.append("<h1>Posted content type is unknown!</h1>");
             bException = true;
-          	//throw new IOException("Posted content type is unknown!");
         }
 
+        // set the response content type
         res.setContentType("text/html");
+
+
+        // start processing the request
 
         String boundary = null;
         String sUrl = null;
         String type = null;
+        String delem_id = null;
 
         if (contentType.toLowerCase().startsWith("multipart/form-data")){
+
+            // file upload, multipart request
+
             String fileORurl = req.getParameter("fileORurl");
             type = req.getParameter("type");
+            delem_id = req.getParameter("delem_id");
 
-            if (fileORurl != null && fileORurl.equalsIgnoreCase("url")){
+            if (fileORurl != null && fileORurl.equalsIgnoreCase("url"))
                 sUrl = req.getParameter("url_input");
-            }
+
+            // extract the multipart request's boundary string
             boundary = extractBoundary(contentType);
         }
-        //writer.write("type:" + type);
+
+        // check that the element type is valid
         if (type == null){
-            responseText.append("<h1>Data Dictionary importer could not get data elment type!</h1><br/>");
+            responseText.append("<h1>Failed to get the import type!</h1><br/>");
             bException = true;
-            //writer.write("<html><body><h1>Data Dictionary importer could not get data elment type</h1><br/>"
-             //   + "<br/><br/></body></html>");
-            //return;
         }
+        else{
+           // check that the element id is valid, when type is FXV
+            if (type.equals("FXV") && delem_id == null){
+                responseText.append("<h1>Failed to get data element id!</h1><br/>");
+                bException = true;
+            }
+        }
+
+        // since the data is going to be saved into a file
+        // (regardless of whether we have a file upload or
+        // URL stream, we initialize the file
+
+        String tmpFilePath = ctx.getInitParameter(PAR_TEMP_FILE_PATH);
+        if (tmpFilePath == null)
+            tmpFilePath = System.getProperty("user.dir");
+
+        if (!tmpFilePath.endsWith(File.separator))
+            tmpFilePath = tmpFilePath + File.separator;
+
+        StringBuffer tmpFileName = new StringBuffer(tmpFilePath + TMP_FILE_PREFIX);
+        tmpFileName.append("_");
+        tmpFileName.append(req.getRequestedSessionId().replace('-', '_'));
+        tmpFileName.append("_");
+        tmpFileName.append(System.currentTimeMillis());
+        tmpFileName.append(".xml");
+
+        File file = new File(tmpFileName.toString());
+        RandomAccessFile raFile = new RandomAccessFile(file, "rw");
+
+        // set up our handler
+        BaseHandler handler = new BaseHandler();
+        if (type.equals("DST") || type.equals("FXV"))
+            handler = new DatasetImportHandler();
+        else
+            handler=new SchemaHandler();
+
+        /* JH290503 - trying to get rid of basens-path usage
+        // get the base namespace path
+        String basensPath = ctx.getInitParameter("basens-path");
+        if (basensPath == null){
+            responseText.append("<h1>Could not get base namespace url path!</h1><br/>");
+            bException = true;
+        }
+        */
+
+        // if no exceptions, get the data and save to file, parse
         if (!bException){
-          try{
-            if (sUrl == null){
-                
-                ServletContext ctx = getServletContext();
-                
-                String tmpFilePath = ctx.getInitParameter(PAR_TEMP_FILE_PATH);
-                if (tmpFilePath == null)
-                    tmpFilePath = System.getProperty("user.dir");
-                
-                if (!tmpFilePath.endsWith(File.separator))
-                    tmpFilePath = tmpFilePath + File.separator;
-                
-                StringBuffer tmpFileName = new StringBuffer(TMP_FILE_PREFIX);
-                tmpFileName.append("_");
-                tmpFileName.append(req.getRequestedSessionId().replace('-', '_'));
-                tmpFileName.append("_");
-                tmpFileName.append(System.currentTimeMillis());
-                tmpFileName.append(".xml");
-                
-                PipedOutputStream pipeOut = new PipedOutputStream();
-                PipedInputStream pipeIn = new PipedInputStream(pipeOut);
-                WritingPipe writingPipe = new WritingPipe(pipeOut,
-                                                          req.getInputStream(),
-                                                          boundary,
-                                                          tmpFilePath + tmpFileName);
-                writingPipe.start();
 
-                importContext(user, pipeIn, responseText, type);
-            }
-            else{
-                URL url = new URL(sUrl);
-                HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+            try{
+                // get the data and save to file
+                if (sUrl == null){
+                    writeToFile(raFile, req.getInputStream(), boundary);
+                }
+                else{
+                    URL url = new URL(sUrl);
+                    HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
 
-                importContext(user, httpConn.getInputStream(), responseText, type);
+                    writeToFile(raFile, url.openStream());
+                }
+
+                // parse the file
+
+                SAXParserFactory factory = SAXParserFactory.newInstance();
+                SAXParser parser = factory.newSAXParser();
+                XMLReader reader = parser.getXMLReader();
+                reader.setContentHandler(handler); // pass our handler to SAX
+
+                reader.parse(tmpFileName.toString());
+
+                // SAX was OK, but maybe handler problems of its own
+                if (!handler.hasError()){
+
+                    if (type.equals("DST")||type.equals("FXV")){
+                        DatasetImport dbImport =
+                            new DatasetImport((DatasetImportHandler)handler,
+                                            user.getConnection(), ctx, type);
+						dbImport.setUser(user);
+                        dbImport.setImportType(type);
+                        if (type.equals("FXV")) {
+                            dbImport.setParentID(delem_id);
+                        }
+                        dbImport.execute();
+
+                        responseText.append(dbImport.getResponseText());
+                    }
+                    else{
+                        SchemaImp dbImport =
+                            new SchemaImp((SchemaHandler)handler,
+                                          user.getConnection(), ctx, type);
+                        dbImport.execute();
+                        responseText.append(dbImport.getResponseText());
+                    }
+                }
+                else{
+                    throw new Exception(handler.getErrorBuff().toString());
+                }
             }
-          }
-          catch (Exception e){
-            responseText.append("<h1>Data Dictionary importer encountered an exception:</h1><br/>" +
-                                    e.getMessage() + "<br/><br/>");
-            //e.printStackTrace(new PrintWriter(writer));
-           // return;
-          }
+            catch (Exception e){
+
+                StringBuffer msg = new StringBuffer(e.toString());
+                int lineNumber = handler.getLine();
+                if (lineNumber>0)
+                    msg.append(" Line " + String.valueOf(lineNumber));
+
+                responseText.append("<h1>Data Dictionary importer encountered an exception:" +
+                                    "</h1><br/>" + msg.toString() + "<br/><br/>");
+            }
+            catch (OutOfMemoryError oome){
+
+                StringBuffer msg = new StringBuffer(oome.toString());
+                int lineNumber = handler.getLine();
+                if (lineNumber>0)
+                    msg.append(" Line " + String.valueOf(lineNumber));
+
+                responseText.append("<h1>Data Dictionary importer encountered an exception:" +
+                                    "</h1><br/>" + msg.toString() + "<br/><br/>");
+            }
+            if (type.equals("FXV"))
+            {
+              		responseText.append("<br><br><a href='data_element.jsp?mode=view&delem_id=" + delem_id + "'>Back to data element</a>");
+            }
         }
 
-        //responseText.append("<h1>Data was successfully imported!</h1>");
+
+        file.delete();
+
+        
+
         req.setAttribute("TEXT", responseText.toString());
         doGet(req, res);
     }
-/*
-    private void importMultipart(DDuser user,
-                            ServletInputStream instream,
-                            String boundary, StringBuffer responseText, String type) throws Exception {
 
-      PipedOutputStream pipeOut = new PipedOutputStream();
-      PipedInputStream pipeIn = new PipedInputStream(pipeOut);
-      WritingPipe writingPipe = new WritingPipe(pipeOut, instream, boundary);
-      writingPipe.start();
-
-      importContext(user, pipeIn, responseText, type);
-    }*/
-    private void importContext(DDuser user, InputStream instream, StringBuffer responseText, String type) throws Exception {
-
-      ServletContext ctx = getServletContext();
-
-      String basensPath = ctx.getInitParameter("basens-path");
-      if (basensPath == null){
-	        throw new Exception("Could not get base namespace url path!");
-      }
-      BaseHandler handler = new BaseHandler();
-      if (type.equals("DST")){
-          handler = new DatasetImportHandler();
-      }
-      else{
-          handler=new SchemaHandler();
-      }
-      SAXParserFactory spfact = SAXParserFactory.newInstance();
-      SAXParser parser = spfact.newSAXParser();
-      XMLReader reader = parser.getXMLReader();
-
-      reader.setContentHandler(handler);
-
-      try{
-         reader.parse(new InputSource(instream));
-         if (!handler.hasError()){
-             if(type.equals("DST")){
-                 DatasetImport dbImport = new DatasetImport((DatasetImportHandler)handler, user.getConnection(), ctx, basensPath, type);
-                try{
-                   dbImport.execute();
-                }
-                catch (Exception e){
-                  responseText.append(e.toString());
-                }
-                responseText.append(dbImport.getResponseText());
-             }
-             else{
-                 SchemaImp dbImport = new SchemaImp((SchemaHandler)handler, user.getConnection(), ctx, basensPath, type);
-                 dbImport.execute();
-                 responseText.append(dbImport.getResponseText());
-             }
-         }
-         else{
-             responseText.append("Import failed!<br>");
-             responseText.append(handler.getErrorBuff());
-         }
-      }
-      catch (Exception e){
-          int lineNumber = handler.getLine();
-          responseText.append("Import failed!<br>");
-          responseText.append(e.toString());
-          if (lineNumber>0)
-              responseText.append(" Line " + String.valueOf(lineNumber));
-          //throw new Exception(e.toString() + " Line " + String.valueOf(lineNumber));
+    /**
+    * Write to file, if import goes through URL
+    */
+    private void writeToFile(RandomAccessFile raFile, InputStream in) throws Exception{
+        
+        byte[] buf = new byte[BUF_SIZE];
+        int i;
+        while ((i=in.read(buf, 0, buf.length)) != -1){
+            raFile.write(buf, 0, i);
         }
+            
+        raFile.close();
+        in.close();
     }
-
-    public static void main(String[] args) {
-
+    
+    /**
+    * Write to file, if import goes through a file upload
+    */
+    private void writeToFile(RandomAccessFile raFile, ServletInputStream in, String boundary) throws Exception{
+        
+        byte[] buf = new byte[BUF_SIZE];
+        int i;
+        
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        boolean fileStart = false;
+        boolean pastContentType = false;
+        do{
+            int b = in.read();
+            if (b == -1) break; // if end of stream, break
+            
+            bout.write(b);
+            
+            if (!pastContentType){ // if Content-Type not passed, no check of LNF
+                String s = bout.toString();
+                if (s.indexOf("Content-Type") != -1)
+                    pastContentType = true;
+            }
+            else{
+                // Content-Type is passed, after next double LNF is file start
+                byte[] bs = bout.toByteArray();
+                if (bs != null && bs.length >= 4){
+                    if (bs[bs.length-1]==10 &&
+                        bs[bs.length-2]==13 &&
+                        bs[bs.length-3]==10 &&
+                        bs[bs.length-4]==13){
+                        
+                        fileStart = true;
+                    }
+                }
+            }
+        }
+        while(!fileStart);
+        
+        while ((i=in.readLine(buf, 0, buf.length)) != -1){
+            String line = new String(buf, 0, i);
+            if (boundary != null && line.startsWith(boundary))
+                break;
+            raFile.write(buf, 0, i);
+        }
+            
+        raFile.close();
+        in.close();
     }
-
+    
+    /**
+    * Extract the boundary string in multipart request
+    */
     private String extractBoundary(String contentType){
         int i = contentType.indexOf("boundary=");
         if (i == -1) return null;
         String boundary = contentType.substring(i + 9); // 9 for "boundary="
         return "--" + boundary; // the real boundary is always preceded by an extra "--"
     }
-
-
-    class WritingPipe extends Thread {
-
-        private PipedOutputStream out = null;
-        private ServletInputStream in = null;
-        private String boundary = null;
-        private String filePath = null;
-
-        WritingPipe(PipedOutputStream out, ServletInputStream in, String boundary, String filePath){
-            super();
-            this.out = out;
-            this.in = in;
-            this.boundary = boundary;
-            this.filePath = filePath;
-        }
-        
-        public void run(){
-            
-            byte[] buf = new byte[BUF_SIZE];
-            int i;
-            boolean xmlStarted = false;
-        
-            try {
-                
-                File file = new File(filePath);
-                RandomAccessFile raFile = new RandomAccessFile(file, "rw");
-                
-                while ((i=in.readLine(buf, 0, buf.length)) != -1){
-                    
-                    raFile.write(buf, 0, i);
-                    
-                    String line = new String(buf, 0, i);
-                    if (!xmlStarted){
-                        if (line.startsWith(START_XML_STRING)){
-                            xmlStarted = true;
-                            out.write(buf, 0, i);
-                            out.flush();
-                            //raFile.write(buf, 0, i);
-                        }
-                    }
-                    else{
-                        if (boundary != null && line.startsWith(boundary))
-                            break;
-                        out.write(buf, 0, i);
-                        out.flush();
-                        //raFile.write(buf, 0, i);
-                    }
-                }
-            
-                raFile.close();
-                out.close();
-                in.close();
-                file.delete();
-                stop();
-            }
-            catch (IOException ioe){
-                ioe.printStackTrace();
-            }
-        }
-    }
-  private DDuser getUser(HttpServletRequest req) {
-
-  	DDuser user = null;
-
-      HttpSession httpSession = req.getSession(false);
-      if (httpSession != null) {
-      	user = (DDuser)httpSession.getAttribute("DataDictionaryUser");
-  	}
-
-      if (user != null)
-      	return user.isAuthentic() ? user : null;
-  	else
-      	return null;
-  }
 }

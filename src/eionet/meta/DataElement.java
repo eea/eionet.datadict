@@ -344,6 +344,24 @@ public class DataElement {
 	public Vector getFKRelations(){
 		return this.fks;
 	}
+	
+	public boolean hasImages(){
+		boolean hasImages = false;
+		for (int t=0; simpleAttrs!=null && t<simpleAttrs.size(); t++){
+			DElemAttribute attr = (DElemAttribute)simpleAttrs.get(t);
+			String dispType = attr.getDisplayType();
+			Vector values = attr.getValues();
+			if (dispType!=null &&
+				dispType.equals("image") &&
+				values!=null &&
+				values.size()>0){
+					hasImages = true;
+					break;
+				}
+		}
+		
+		return hasImages;
+	}
     
     public String toString(){
 
