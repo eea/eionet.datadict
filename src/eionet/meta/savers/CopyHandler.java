@@ -198,8 +198,17 @@ log(q);
                 continue;
 
             csiIds.put(csiID, newID);
+            
+            // copy attributes
+            // copy rows in ATTRIBUTE, with lastInsertID
+		    gen.clear();
+		    gen.setTable("ATTRIBUTE");
+		    gen.setField("DATAELEM_ID", newID);
+		    copy(gen, "DATAELEM_ID=" + csiID + " and PARENT_TYPE='CSI'");
         }
+        
         if (csiIds.size()==0) return;
+        
         //copy relations
         StringBuffer sConstraint=new StringBuffer();
         boolean bFirst=true;
