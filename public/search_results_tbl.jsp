@@ -2,7 +2,8 @@
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
-<%!final static String oSearchCacheAttrName="search_cache";%>
+<%!final static String oSearchCacheAttrName="tbl_search_cache";%>
+<%!final static String oSearchUrlAttrName="tbl_search_url";%>
 
 <%@ include file="history.jsp" %>
 
@@ -13,12 +14,10 @@
     public String oName;
     public String oFullName;
     public String oDsName;
+    public String topWorkingUser = null;
 
     private String oCompStr=null;
     private int iO=0;
-    
-    private boolean marked = false;
-    private String topWorkingUser = "";
     
     public c_SearchResultEntry(String _oID,String _oDsID,String _oShortName,String _oName,String _oDsName) {
 	    
@@ -51,28 +50,13 @@
         return iO*oCompStr.compareToIgnoreCase(oC1.toString());
     }
     
-    public void setMarked(){
-	    marked = true;
-    }
-    
-    public boolean isMarked(){
-	    return marked;
-    }
-    
-    public void setTopWrkUser(String s){
-	    topWorkingUser = s;
-    }
-    
-    public String getTopWrkUser(){
-	    return topWorkingUser;
-    }
-    
 }%>
 
 <%!class c_SearchResultSet {
     private boolean isSorted=false;
     private int iSortColumn=0;
     private int iSortOrder=0;
+    public boolean isAuth = false;
 
     public Vector oElements;
     public boolean SortByColumn(Integer oCol,Integer oOrder) {
@@ -110,13 +94,36 @@
     	oSortCol=null;
         oSortOrder=null;
     }
-	
+    
+    // if this is no sorting request, then remember the query string in session in order to come back if needed
+    if (oSortCol==null){
+		String query = request.getQueryString() == null ? "" : request.getQueryString();
+		String searchUrl =  request.getRequestURI() + "?" + query;
+		
+		System.out.println("===> setting oSearchUrlAttrName to " + searchUrl);
+		
+       	session.setAttribute(oSearchUrlAttrName, searchUrl);
+   	}
+   	
+   	// The following if block tries to identify if a login has happened in which
+	// case it will redirect the response to the query string in session. This
+	// happens regardless of weather it's a sorting request or search request.
+	c_SearchResultSet rs = (c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
+	if (rs!=null){
+		if (rs.isAuth && user==null || !rs.isAuth && user!=null){
+			session.removeAttribute(oSearchCacheAttrName);
+			
+			System.out.println("===> redir to " + (String)session.getAttribute(oSearchUrlAttrName));
+			
+			response.sendRedirect((String)session.getAttribute(oSearchUrlAttrName));
+		}
+	}
+   	
     String searchType=request.getParameter("SearchType");
-	
-    String tableLink="";	
-
-
-
+    String tableLink="";
+    
+    String _wrkCopies = request.getParameter("wrk_copies");
+	boolean wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;	
 %>
 
 <html>
@@ -139,11 +146,11 @@
 			}
 		}
     	function showSortedList(clmn,ordr) {
-    		if ((document.forms["form1"].elements["sort_column"].value != clmn)
-       			|| (document.forms["form1"].elements["sort_order"].value != ordr)) {
-        		document.forms["form1"].elements["sort_column"].value=clmn;
-		    	document.forms["form1"].elements["sort_order"].value=ordr;
-        		document.forms["form1"].submit();
+    		if ((document.forms["sort_form"].elements["sort_column"].value != clmn)
+       			|| (document.forms["sort_form"].elements["sort_order"].value != ordr)) {
+        		document.forms["sort_form"].elements["sort_column"].value=clmn;
+		    	document.forms["sort_form"].elements["sort_order"].value=ordr;
+        		document.forms["sort_form"].submit();
     		}
 		}
 	</script>
@@ -170,9 +177,32 @@
 			
 		<table width="700" cellspacing="0">
 			<tr>
-				<td><span class="head00">Dataset tables</span></td>
+				<td class="head00">
+					<%
+					if (wrkCopies){ %>
+						Working copies of table definitions<%
+					}
+					else{ %>
+						Dataset tables<%
+					}
+					%>
+				</td>
 			</tr>
-			<tr height="10"><td></td></tr>
+			<tr><td>&nbsp;</td></tr>
+			<%
+			if (user==null){ %>
+				<tr>	
+					<td class="barfont">
+		        		<br/><br/>
+    		    		NB! For un-authenticated users the definitions from datasets whose Registration status
+    		    		is not <i>Recorded</i> or <i>Released</i> are not listed.<br/>
+    		    		To see which datasets have such a Registration status, go to the
+    		    		<a href="datasets.jsp?SearchType=SEARCH">datasets list</a>.
+			        </td>
+			    </tr><%
+		    }
+			%>
+			<tr><td>&nbsp;</td></tr>
 		</table>
 		
 		
@@ -196,18 +226,20 @@
 				
 				<!-- search buttons -->
 				
-				<td align="right" colspan="2">
+				<td align="right" colspan="1">
 					<a target="_blank" href="help.jsp?screen=tables&area=pagehelp" onclick="pop(this.href)">
 						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page">
-					</a><br/>
-					<a href="search_table.jsp"><img src="images/search.jpg" border=0 alt="Search tables"></a><br/>
+					</a>
+					<a href="search_table.jsp">
+						<img src="images/search.jpg" border=0 alt="Search tables">
+					</a>
 				</td>
 			</tr>
 			
 			<!-- the table itself -->
 		
 			<tr>
-				<th width="37%" style="border-left:0">
+				<th width="37%">
 					<jsp:include page="thsortable.jsp" flush="true">
 			            <jsp:param name="title" value="Table"/>
 			            <jsp:param name="mapName" value="Table"/>
@@ -223,12 +255,12 @@
 			            <jsp:param name="help" value="help.jsp?screen=tables&area=shortname"/>
 			        </jsp:include>
 				</th>
-				<th width="25%" style="border-left:0">
+				<th width="25%" style="border-left:0" style="border-right: 1 solid #FF9900">
 					<jsp:include page="thsortable.jsp" flush="true">
 			            <jsp:param name="title" value="Dataset"/>
 			            <jsp:param name="mapName" value="Dataset"/>
 			            <jsp:param name="sortColNr" value="2"/>
-			            <jsp:param name="help" value="help.jsp?screen=datasets&area=dataset"/>
+			            <jsp:param name="help" value="help.jsp?screen=tables&area=dataset"/>
 			        </jsp:include>
 				</th>
 			</tr>
@@ -239,11 +271,11 @@
             XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
 			DBPoolIF pool = xdbapp.getDBPool();
             
-			boolean wrkCopies = false;
-			
             try { // start the whole page try block
             
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
+				
+				session.removeAttribute(oSearchCacheAttrName);
 	                        
 	            try {
 		            
@@ -280,35 +312,36 @@
 						params.add(param);
 					}
 					
-					String _wrkCopies = request.getParameter("wrk_copies");
-					wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
-					
 					Vector dsTables = searchEngine.getDatasetTables(params, short_name, idfier, full_name, definition, oper, wrkCopies);
-        		    if (dsTables == null || dsTables.size()==0){
-		            %>
-			            <tr>
-			            	<td colspan="3"><br/>
-			            		<b>No results found!</b>
-			            		<%
-				    	        if (user==null || !user.isAuthentic()){ %>
-				    	        	<br/>
-				    	        		This might be due to fact that you have not been authorized and there are<br/>
-				    	        		no datasets at the moment ready to be published for non-authorized users.<br/>
-				    	        		Please go to the <a href="datasets.jsp?SearchType=SEARCH">list of datasets</a>
-				    	        		to see which of them are in which status!
-				    	        	<br/><%
-			    	        	}
-			    	        	%>
-			            	</td>
-			            </tr>
-			            </table></form></div></TD></TR></table></body></html>
-	            	<%
+					
+					// see if any result were found
+        		    if (dsTables == null || dsTables.size()==0){ %>
+        		    	<tr>
+        		    		<td colspan="3"><br/>
+        		    			<%
+        		    			// prepare message trailer for un-authenticated users
+	        		    		String msgTrailer = user==null ? " for un-authenticated users" : "";
+	        		    		
+			        		    // see if this is a search or just listing all the tables
+			        		    if (Util.voidStr(request.getParameter("search_precision"))){ // listing all the tables
+				        		    %>
+				        		    <b>No table definitions were found<%=msgTrailer%>!</b><%
+			        		    }
+			        		    else{ // a search
+			        		    	%>
+			        		    	<b>No table definitions matching the search criteria were found<%=msgTrailer%>!</b><%
+			        		    }
+			        		    %>
+			        		</td>
+			        	</tr>
+			        	</table></form></div></TD></TR></table></body></html> <%
 	            		return;
             		}
 
             		DElemAttribute attr = null;
 					
 					c_SearchResultSet oResultSet=new c_SearchResultSet();
+					oResultSet.isAuth = user!=null;
 	        		oResultSet.oElements=new Vector(); 
 	        		session.setAttribute(oSearchCacheAttrName,oResultSet);
 	        		
@@ -317,15 +350,6 @@
 
 					for (int i=0; i<dsTables.size(); i++){
 						DsTable table = (DsTable)dsTables.get(i);
-						
-						String regStatus = table!=null ? table.getStatus() : null;			
-						// for countries show only Recorded & Released
-						/*if (regStatus!=null){
-							if (user==null || !user.isAuthentic()){
-								if (regStatus.equals("Incomplete") || regStatus.equals("Candidate") || regStatus.equals("Qualified"))
-									continue;
-							}
-						}*/
 						
 						String table_id = table.getID();
 						String table_name = table.getShortName();
@@ -338,17 +362,8 @@
 				
 						if (ds_name == null || ds_name.length() == 0) ds_name = "unknown";
 				
-						//String tblName = "";
 						String tblName = table.getName()==null ? "" : table.getName();
 		
-						/*Vector attributes = searchEngine.getAttributes(table_id, "T", DElemAttribute.TYPE_SIMPLE);
-		
-						for (int c=0; c<attributes.size(); c++){
-							attr = (DElemAttribute)attributes.get(c);
-        					if (attr.getName().equalsIgnoreCase("Name"))
-        						tblName = attr.getValue();
-						}*/
-				
 						String tblFullName = tblName;
 						tblName = tblName.length()>60 && tblName != null ? tblName.substring(0,60) + " ..." : tblName;
 
@@ -360,11 +375,8 @@
                 															 tblFullName,
                 															 ds_name);
                 															 
-						String workingUser = verMan.getTblWorkingUser(table.getIdentifier(), dsNs);
-						String topWorkingUser = verMan.getWorkingUser(table.getParentNs());						
-						boolean marked = user!=null && (topWorkingUser!=null);
-						if (marked) oEntry.setMarked();
-						
+						String topWorkingUser = verMan.getWorkingUser(table.getParentNs());
+						oEntry.topWorkingUser = topWorkingUser;
 						oResultSet.oElements.add(oEntry);
 						
 						String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
@@ -374,10 +386,11 @@
 		    				<td width="37%" class="<%=styleClass%>">
 								<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
 								<%
-								if (marked){ // mark checked-out tables
-			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
-		    					}
-		    					%>
+								// mark tables in a locked dataset
+								if (dstPrm && topWorkingUser!=null){ %>
+									<font title="<%=topWorkingUser%>" color="red">*</font><%
+			    				}
+			    				%>
 							</td>
 							<td width="35%" class="<%=styleClass%>">
 								<%=Util.replaceTags(table_name)%>
@@ -389,8 +402,8 @@
 						<%
 					}
 					%>
-    	           	<tr><td colspan="4">&#160;</td></tr>
-					<tr><td colspan="4">Total results: <%=dsTables.size()%></td></tr><%
+    	           	<tr><td colspan="3">&#160;</td></tr>
+					<tr><td colspan="3">Total results: <%=dsTables.size()%></td></tr><%
 				}
 				catch(Exception e){
 					%><B>ERROR: <%=e%></B><%
@@ -418,10 +431,11 @@
 							<td width="37%" class="<%=styleClass%>">
 								<a href="<%=tableLink%>"><%=Util.replaceTags(oEntry.oName)%></a>
 								<%
-								if (oEntry.isMarked()){ // mark checked-out tables
-			    					%> <font title="<%=oEntry.getTopWrkUser()%>" color="red">*</font> <%
-		    					}
-		    					%>
+								// mark tables in a locked dataset
+								if (dstPrm && oEntry.topWorkingUser!=null){ %>
+									<font title="<%=oEntry.topWorkingUser%>" color="red">*</font><%
+			    				}
+			    				%>
 							</td>
 							<td width="35%" class="<%=styleClass%>">
 								<%=Util.replaceTags(oEntry.oShortName)%>								
@@ -433,8 +447,8 @@
 						<%
                 	}
                 	%>
-                	<tr><td colspan="4">&#160;</td></tr>
-					<tr><td colspan="4">Total results: <%=oResultSet.oElements.size()%></td></tr><%
+                	<tr><td colspan="3">&#160;</td></tr>
+					<tr><td colspan="3">Total results: <%=oResultSet.oElements.size()%></td></tr><%
             	}
 			}
 			%>
@@ -442,14 +456,20 @@
 		</table>
 		
 		<input type="hidden" name="searchUrl" value=""/>
-        <input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
-        <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
-		<input name='SearchType' type='hidden' value='NoSearch'/>
+        
+		<input name='SearchType' type='hidden' value='<%=TYPE_SEARCH%>'/>
           <br>
 
 		<!--   Page footer  -->
 
 		</form>
+		
+		<form name="sort_form" action="search_results_tbl.jsp" method="GET">
+			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
+        	<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
+			<input name='SearchType' type='hidden' value='NoSearch'/>
+		</form>
+		
 			</div>
 			
 		</TD>

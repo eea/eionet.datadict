@@ -10,13 +10,21 @@ parameters:
 		height, width - dialog window height and width
 	*/
 
-function openDialog(url, text, returnFunc, height, width) {
+function openYesNo(url, text, returnFunc, height, width) {
+	openDialog(url, text, returnFunc, "yesno", height, width);
+}
+function openNoYes(url, text, returnFunc, height, width) {
+	openDialog(url, text, returnFunc, "noyes", height, width);
+}
+
+function openDialog(url, text, returnFunc, order, height, width) {
 
 	if (!dialogWin.win || (dialogWin.win && dialogWin.win.closed)) {
 
 		// Initialize properties of the modal dialog object.
 		dialogWin.text = text;
 		dialogWin.returnFunc = returnFunc;
+		dialogWin.order = order;
 		
 		// Generate the dialog and make sure it has focus.
 		dialogWin.win = window.open(url, "", "height=" + height +",width="+width+",status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no,modal=yes");

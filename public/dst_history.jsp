@@ -72,7 +72,7 @@
 <form name="form1" method="POST" action="complex_attr.jsp">
     <span class="head00">
         History of <em><%=dataset.getShortName()%></em>
-        below LastCheckInNo <em><%=dataset.getVersion()%></em>
+        below CheckInNo <em><%=dataset.getVersion()%></em>
     </span>
     <table width="auto" cellspacing="0" id="tbl">
     
@@ -86,7 +86,7 @@
     	</tr>
 
 		<tr>
-			<th align="left" style="padding-left:5;padding-right:10">LastCheckInNo</th>
+			<th align="left" style="padding-left:5;padding-right:10">CheckInNo</th>
 			<th align="left" style="padding-left:5;padding-right:10">User</th>
 			<th align="left" style="padding-left:5;padding-right:10;border-right:1 solid #FF9900">Date</th>
 		</tr>
@@ -103,11 +103,14 @@
 
 			%>
 			<tr>
-				<td align="left" style="padding-left:5;padding-right:10">
-					<a href="javascript:view('<%=id%>')">&#160;<%=version%>&#160;</a>
+				<td align="right" style="padding-left:5;padding-right:10">
 					<%
-					if (deleted!=null){%>
-						&#160;&#160;<a href="restore_datasets.jsp?SearchType=SEARCH"><font color="red">D</font></a><%
+					if (deleted==null){ %>
+						<a href="javascript:view('<%=id%>')">&nbsp;<%=version%>&nbsp;</a><%
+					}
+					else{ %>
+						<a disabled href="javascript:;">&nbsp;<%=version%>&nbsp;</a>&nbsp;&nbsp;
+						<a href="restore_datasets.jsp?SearchType=SEARCH"><font color="red">D</font></a><%
 					}
 					%>
 				</td>

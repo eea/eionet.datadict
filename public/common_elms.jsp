@@ -4,7 +4,6 @@
 <%!static int iPageLen=0;%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
 <%!final static String attrCommonElms="common_elms";%>
-<%!final static String oSearchCacheAttrName="elms_search_cache";%>
 <%!final static String oSearchUrlAttrName="elms_search_url";%>
 
 <%!private int reqno = 0;%>
@@ -20,6 +19,8 @@
     public String oNs;
     public String oDsIdf;
     public String topWorkingUser = null;
+    public String status = null;
+    public String checkInNo = null;
 
     private String oCompStr=null;
     private int iO=0;
@@ -38,8 +39,7 @@
     public void setComp(int i,int o) {
         switch(i) {
             case 2: oCompStr=oType; break;
-            case 3: oCompStr=oTblName; break;
-            case 4: oCompStr=oDsName; break;
+            case 3: oCompStr=status; break;
             default: oCompStr=oShortName; break;
             }
         iO=o;
@@ -51,7 +51,7 @@
 
     public int compareTo(Object oC1) {
         return iO*oCompStr.compareToIgnoreCase(oC1.toString());
-    }    
+    }
 }%>
 
 <%!class c_SearchResultSet {
@@ -75,25 +75,18 @@
 }%>
 
 <%
-	// if this is a search for common elements only, forward the request to common_elms.jsp
-	String common = request.getParameter("common");
-	if (common!=null && common.equals("true")){
-		session.removeAttribute(attrCommonElms);
-		request.getRequestDispatcher("common_elms.jsp").forward(request, response);
-	}
-
 	// The following if block tries to identify if a login has happened in which
 	// case it will redirect the response to the query string in session. This
 	// happens regardless of weather it's a sorting request or search request.
 	AppUserIF user = SecurityUtil.getUser(request);
-	c_SearchResultSet rs = (c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
+	c_SearchResultSet rs = (c_SearchResultSet)session.getAttribute(attrCommonElms);
 	if (rs!=null){
 		if (rs.isAuth && user==null || !rs.isAuth && user!=null){
-			session.removeAttribute(oSearchCacheAttrName);
+			session.removeAttribute(attrCommonElms);
 			response.sendRedirect((String)session.getAttribute(oSearchUrlAttrName));
 		}
 	}
-	
+
 	// get search type
 	String searchType=request.getParameter("SearchType");
 	
@@ -112,13 +105,6 @@
         oSortOrder=null;
     }
     
-    // if this is no sorting request, then remember the query string in session in order to come back if needed
-    if (oSortCol==null){
-		String query = request.getQueryString() == null ? "" : request.getQueryString();
-		String searchUrl =  request.getRequestURI() + "?" + query;
-       	session.setAttribute(oSearchUrlAttrName, searchUrl);
-   	}
-    
     // declare some global stuff
     Connection conn = null;
     Vector dataElements = null;
@@ -131,7 +117,7 @@
 		if (searchType != null && searchType.equals(TYPE_SEARCH)){
 			
 			// remove the cached result set
-			session.removeAttribute(oSearchCacheAttrName);
+			session.removeAttribute(attrCommonElms);
 			
 	       	// get the DB connection and set up search engine
 			ServletContext ctx = getServletContext();
@@ -141,10 +127,8 @@
 		
 			// get statical search parameters
 			String type = request.getParameter("type");
-			String ns_param = request.getParameter("ns");
 			String short_name = request.getParameter("short_name");
 			String idfier = request.getParameter("idfier");
-			String dataset = request.getParameter("dataset");
 		
 			String searchPrecision = request.getParameter("search_precision");
 			String oper="=";
@@ -179,8 +163,7 @@
 			}
 			
 			// all set up for search, do it
-			dataElements =
-			searchEngine.getDataElements(params, type, ns_param, short_name, idfier, null, dataset, wrkCopies, oper);
+			dataElements = searchEngine.getCommonElements(params, type, short_name, idfier, wrkCopies, oper);
 			
 		} // end if in search mode
 
@@ -193,20 +176,6 @@
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="JavaScript" src='script.js'></script>
 	<script language="JavaScript">
-		function setLocation(){
-			var o = document.forms["form1"].searchUrl;
-			if (o!=null)
-				o.value=document.location.href;
-		}
-		function goTo(mode){
-			if (mode == "add")
-				document.location.assign("data_element.jsp?mode=add");
-			else if (mode=="search"){
-				alert("");
-				document.location.assign("search.jsp");
-			}
-			
-		}
     	function showSortedList(clmn,ordr) {
     		if ((document.forms["sort_form"].elements["sort_column"].value != clmn)
        			|| (document.forms["sort_form"].elements["sort_order"].value != ordr)) {
@@ -262,7 +231,6 @@ if (popup){ %>
 	<div><%
 }
 else{ %>
-
 	<body>
 	<%@ include file="header.htm" %>
 	<table border="0">
@@ -282,41 +250,41 @@ else{ %>
 }
             
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
-				
-				// see if any results were found
         	    if (dataElements == null || dataElements.size()==0){
-	        	    
-        	    	// prepare message trailer for un-authenticated users
-		    		String msgTrailer = user==null ? " for un-authenticated users" : "";
-		    		%>
-        		    <b>No element definitions matching the search criteria were found<%=msgTrailer%>!</b>
-            		</div></TD></TR></table></body></html> <%
-            		return;
-        		}
+	        	    %>
+	            	<b>No results found!</b>
+	            	<%
+	    	        if (user==null){ %>
+	    	        	<br/>
+	    	        		This might be due to fact that you have not been authorized and there are<br/>
+	    	        		no datasets at the moment ready to be published for non-authorized users.<br/>
+	    	        		Please go to the <a href="datasets.jsp?SearchType=SEARCH">list of datasets</a>
+							to see which of them are in which status!
+	    	        	<br/><%
+    	        	}
+    	        	%>
+	            	</div></TD></TR></table></body></html>
+	            	<%
+	            	return;
+            	}
             }
             %>
             
-			<form id="form1" method="POST" action="search_results.jsp" onsubmit="setLocation()">
-			
 			<span class="head00">Search results</span><br/><br/>
-			
-			<%
-			if (user==null){ %>
-				<span class="barfont">
-		    		NB! For un-authenticated users the definitions from datasets whose Registration status
-		    		is not <i>Recorded</i> or <i>Released</i> are not listed.<br/>
-		    		To see which datasets have such a Registration status, go to the
-		    		<a href="datasets.jsp?SearchType=SEARCH">datasets list</a>.
-		        </span><%
-		    }
-			%>
 		
 			<table width="700" cellspacing="0" border="0" cellpadding="2">
+			
+			<%
+			boolean userHasEditRights = user!=null &&
+										(SecurityUtil.hasPerm(user.getUserName(), "/elements" , "u") ||
+										SecurityUtil.hasPerm(user.getUserName(), "/elements" , "i"));
+			int colSpan = userHasEditRights ? 4 : 3;
+			%>
 		
 			<!-- the tab row -->
 		
 			<tr>
-				<td align="right" colspan="4">
+				<td align="right" colspan="<%=colSpan%>">
 					<a target="_blank" href="help.jsp?screen=elements&area=pagehelp" onclick="pop(this.href)">
 						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page">
 					</a><br/>
@@ -326,7 +294,7 @@ else{ %>
 			<!-- the table itself -->
 		
 			<tr>
-				<th width="30%">
+				<th width="35%">
 					<jsp:include page="thsortable.jsp" flush="true">
 			            <jsp:param name="title" value="Element"/>
 			            <jsp:param name="mapName" value="Element"/>
@@ -334,23 +302,7 @@ else{ %>
 			            <jsp:param name="help" value="help.jsp?screen=elements&area=element"/>
 			        </jsp:include>
 				</th>
-				<th width="25%">
-					<jsp:include page="thsortable.jsp" flush="true">
-			            <jsp:param name="title" value="Table"/>
-			            <jsp:param name="mapName" value="Table"/>
-			            <jsp:param name="sortColNr" value="3"/>
-			            <jsp:param name="help" value="help.jsp?screen=elements&area=table"/>
-			        </jsp:include>
-				</th>
-				<th width="22%">
-					<jsp:include page="thsortable.jsp" flush="true">
-			            <jsp:param name="title" value="Dataset"/>
-			            <jsp:param name="mapName" value="Dataset"/>
-			            <jsp:param name="sortColNr" value="4"/>
-			            <jsp:param name="help" value="help.jsp?screen=elements&area=dataset"/>
-			        </jsp:include>
-				</th>
-				<th width="20%" style="border-right: 1 solid #FF9900">
+				<th width="20%">
 					<jsp:include page="thsortable.jsp" flush="true">
 			            <jsp:param name="title" value="Type"/>
 			            <jsp:param name="mapName" value="Type"/>
@@ -358,12 +310,36 @@ else{ %>
 			            <jsp:param name="help" value="help.jsp?screen=element&area=type"/>
 			        </jsp:include>
 				</th>
+				<%
+				if (userHasEditRights){ %>
+					<th width="20%">
+						<table width="100%">
+							<tr>
+								<td align="right" width="50%">
+									<b>CheckInNo</b>
+								</td>
+								<td align="left" width="50%">
+									<a target="_blank" href="help.jsp?screen=dataset&area=check_in_no" onclick="pop(this.href)">
+										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+									</a>
+								</td>
+							</tr>
+						</table>
+					</th><%
+				}
+				%>
+				<th width="25%" style="border-right: 1 solid #FF9900">
+					<jsp:include page="thsortable.jsp" flush="true">
+			            <jsp:param name="title" value="Status"/>
+			            <jsp:param name="mapName" value="Status"/>
+			            <jsp:param name="sortColNr" value="3"/>
+			            <jsp:param name="help" value="help.jsp?screen=dataset&area=regstatus"/>
+			        </jsp:include>
+				</th>
 			</tr>
 				
 			<%
-			
 			int displayed = 0;
-			boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
 
 				// init the VersionManager
@@ -373,19 +349,15 @@ else{ %>
 				c_SearchResultSet oResultSet=new c_SearchResultSet();
 				oResultSet.isAuth = user!=null;
 	        	oResultSet.oElements=new Vector(); 
-	        	session.setAttribute(oSearchCacheAttrName,oResultSet);
+	        	session.setAttribute(attrCommonElms,oResultSet);
 	        	
 	        	// search results processing loop
-	        	String skipID = request.getParameter("skip_id");
 	        	for (int i=0; i<dataElements.size(); i++){
 		        	
 					// set up the element
 		        	DataElement dataElement = (DataElement)dataElements.get(i);
-		        	
-					// skip_id is used for skipping the element for which we might be searching for foreign keys here
-		        	String delem_id = dataElement.getID();
-					if (skipID!=null && skipID.equals(delem_id)) continue;
 					
+					String delem_id = dataElement.getID();
 					String delem_name = dataElement.getShortName();
 					if (delem_name == null) delem_name = "unknown";
 					if (delem_name.length() == 0) delem_name = "empty";
@@ -400,64 +372,60 @@ else{ %>
 						displayType = "Quantitative";
 					}
 					
-					String topWorkingUser = verMan.getWorkingUser(dataElement.getTopNs());
-				
-					String dispDs = dataElement.getDstShortName();
-					if (dispDs==null) dispDs = "-";
-					String dispTbl = dataElement.getTblShortName();
-					if (dispTbl==null) dispTbl = "-";
-				
+					String status = dataElement.getStatus();
+					String checkInNo = dataElement.getVersion();
+					
 					c_SearchResultEntry oEntry = new c_SearchResultEntry(delem_id,
                															 displayType,
                 														 delem_name,
-                														 dispDs,
-                														 dispTbl,
+                														 null,
+                														 null,
                 														 null);                															 
-					oEntry.topWorkingUser = topWorkingUser;
+					oEntry.status = status;
+					oEntry.checkInNo = checkInNo;
 					oResultSet.oElements.add(oEntry);
 					String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
 					
 					%>
 				
 					<tr>
-						<td width="30%" class="<%=styleClass%>">
+						<td width="35%" class="<%=styleClass%>">
 							<%
 							if (!popup){ %>
 								<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
 									<%=Util.replaceTags(delem_name)%>
-								</a>
-								<%
-								// mark elements in a locked dataset
-								if (dstPrm && topWorkingUser!=null){ %>
-									<font title="<%=topWorkingUser%>" color="red">*</font><%
-			    				}
-		    				}
-		    				else{ %>
-		    					<a href="javascript:pickElem(<%=dataElement.getID()%>, <%=displayed+1%>)">
+								</a><%
+							}
+							else{ %>
+								<a href="javascript:pickElem(<%=dataElement.getID()%>, <%=displayed+1%>)">
 		    						<%=Util.replaceTags(delem_name)%>
 		    					</a><%
 	    					}
-		    				%>
+							%>
 						</td>
-						<td width="25%" class="<%=styleClass%>">
-							<%=Util.replaceTags(dispTbl)%>
-						</td>
-						<td width="22%" class="<%=styleClass%>">
-							<%=Util.replaceTags(dispDs)%>
-						</td>
-						<td width="20%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+						<td width="20%" class="<%=styleClass%>">
 							<%=displayType%>
+						</td>
+						<%
+						if (userHasEditRights){ %>
+							<td width="20%" class="<%=styleClass%>">
+								<%=checkInNo%>
+							</td><%
+						}
+						%>
+						<td width="25%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+							<%=status%>
 						</td>
 					</tr><%
 					displayed++;
 				}
 				%>
-               	<tr><td colspan="4">&#160;</td></tr>
-				<tr><td colspan="4">Total results: <%=dataElements.size()%></td></tr><%
+               	<tr><td colspan="<%=colSpan%>">&nbsp;</td></tr>
+				<tr><td colspan="<%=colSpan%>">Total results: <%=dataElements.size()%></td></tr><%
 			}
 			else{
 				// No search - return from another result set or a total stranger...
-                c_SearchResultSet oResultSet=(c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
+                c_SearchResultSet oResultSet=(c_SearchResultSet)session.getAttribute(attrCommonElms);
                 if (oResultSet==null) {
                     %><P>This page has experienced a time-out. Try searching again.<%
                 }
@@ -465,47 +433,48 @@ else{ %>
                     if ((oSortCol!=null) && (oSortOrder!=null))
                         oResultSet.SortByColumn(oSortCol,oSortOrder);
                     
+                    c_SearchResultEntry oEntry;
                     for (int i=0;i<oResultSet.oElements.size();i++) {
-	                    
-	                    c_SearchResultEntry oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
-	                    String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
-	                    %>
+                    oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
+                    
+                    String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+
+                    %>
 						<tr>
-							<td width="30%" class="<%=styleClass%>">
+							<td width="35%" class="<%=styleClass%>">
 								<%
 								if (!popup){ %>
 									<a href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view">
 										<%=Util.replaceTags(oEntry.oShortName)%>
-									</a>
-									<%
-									// mark elements in a locked dataset
-									if (dstPrm && oEntry.topWorkingUser!=null){ %>
-										<font title="<%=oEntry.topWorkingUser%>" color="red">*</font><%
-				    				}
-			    				}
-			    				else{ %>
-			    					<a href="javascript:pickElem(<%=oEntry.oID%>, <%=displayed+1%>)">
+									</a><%
+								}
+								else{ %>
+									<a href="javascript:pickElem(<%=oEntry.oID%>, <%=displayed+1%>)">
 			    						<%=Util.replaceTags(oEntry.oShortName)%>
 			    					</a><%
-		    					}
-		    					%>
+								}
+								%>
 							</td>						
-							<td width="25%" class="<%=styleClass%>">
-								<%=Util.replaceTags(oEntry.oTblName)%>
-							</td>
-							<td width="22%" class="<%=styleClass%>">
-								<%=Util.replaceTags(oEntry.oDsName)%>
-							</td>
-							<td width="20%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+							<td width="20%" class="<%=styleClass%>">
 								<%=oEntry.oType%>
+							</td>
+							<%
+							if (userHasEditRights){ %>
+								<td width="20%" class="<%=styleClass%>">
+									<%=oEntry.checkInNo%>
+								</td><%
+							}
+							%>
+							<td width="25%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+								<%=oEntry.status%>
 							</td>
 						</tr>
 						<%
 						displayed++;
                 	}
                 	%>
-                	<tr><td colspan="4">&#160;</td></tr>
-					<tr><td colspan="4">Total results: <%=oResultSet.oElements.size()%></td></tr><%
+                	<tr><td colspan="<%=colSpan%>">&nbsp;</td></tr>
+					<tr><td colspan="<%=colSpan%>">Total results: <%=oResultSet.oElements.size()%></td></tr><%
                 }
 
             }
@@ -513,27 +482,16 @@ else{ %>
 			
 		</table>
 		
-		<input type="hidden" name="searchUrl" />
-		<input name='SearchType' type='hidden' value='<%=TYPE_SEARCH%>'/>
-		<input type="hidden" name="mode" value="view"/>
-
-		</form>
-		
-		<form name="sort_form" action="search_results.jsp" method="GET">
+		<form name="sort_form" action="common_elms.jsp" method="GET">
 			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
         	<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
 			<input name='SearchType' type='hidden' value='NoSearch'/>
-			<%
-			if (popup){ %>
-				<input type='hidden' name='ctx' value='popup'/><%
-			}
-			%>
 		</form>
 		
 			</div>
 			
-		</td>
-</tr>
+		</TD>
+</TR>
 </table>
 </body>
 </html>

@@ -93,12 +93,6 @@ private String setDefaultAttrs(String name){
     String sel_ds = request.getParameter("dataset");
 	String search_precision = request.getParameter("search_precision");
 	
-	String submitForm=null;
-	if (contextParam != null && contextParam.equals(POPUP))
-		submitForm = "pick_element.jsp";
-	else
-		submitForm = "search_results.jsp";
-	
 	if (sel_attr == null) sel_attr="";
 	if (sel_type == null) sel_type="";
 	if (short_name == null) short_name="";
@@ -266,7 +260,7 @@ else{ %>
 							<b>Type</b>
 						</td>
 						<td>
-							<a target="_blank" href="types.html" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=element&area=type" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>
@@ -292,7 +286,7 @@ else{ %>
 								<b>Dataset</b>
 							</td>
 							<td>
-								<a target="_blank" href="identification.html#dataset" onclick="pop(this.href)">
+								<a target="_blank" href="help.jsp?screen=table&area=dataset" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>
@@ -321,7 +315,7 @@ else{ %>
 							<b>Short name</b>
 						</td>
 						<td>
-							<a target="_blank" href="identification.html#short_name" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>
@@ -335,7 +329,7 @@ else{ %>
 							<b>Identifier</b>
 						</td>
 						<td>
-							<a target="_blank" href="identification.html" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset&area=identifier" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>
@@ -531,34 +525,49 @@ else{ %>
 						}
 					}
 					%>
-                        <tr valign="bottom">
-                    		<td width="150" colspan="2">&#160;</td>
-                    		<td colspan="2">
-                    			<input type="radio" name="search_precision" value="substr" checked>Substring search</input>
-                    			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
-                    			<input type="radio" name="search_precision" value="free">Free text search</input>&#160;&#160;
-                    		</td>
-                        </tr>
-					<%					
-					// if authenticated user, enable to get working copies only
-					if (user!=null && user.isAuthentic()){
-						%>
-						<tr valign="top">
-							<td width="150" colspan="2"></td>
-							<td colspan="2">
-								<input type="checkbox" name="wrk_copies" value="true"/><span class="smallfont" style="font-weight: normal">Working copies only</span>
+					
+					<tr valign="bottom">
+						<td width="150" colspan="2">&nbsp;</td>
+                		<td colspan="2" class="smallfont_light">
+                			<input type="radio" name="search_precision" value="substr" checked>Substring search</input>
+                			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
+                			<input type="radio" name="search_precision" value="free">Free text search</input>&#160;&#160;
+                		</td>
+                    </tr>
+                    
+                    <%
+                    boolean commonOnly = request.getParameter("common")!=null;
+                    boolean nonCommonOnly = request.getParameter("noncommon")!=null;
+					
+					if (!commonOnly && !nonCommonOnly){ %>
+						<tr>
+							<td colspan="2">&nbsp;</td>
+							<td colspan="2" align="left" class="smallfont_light">
+								<input type="radio" name="common" value="false" checked>Non-common elements</input>
+								<input type="radio" name="common" value="true">Common elements</input>
 							</td>
-						</tr>
-						<%
+						</tr><%
+					}
+					
+					// if authenticated user, enable to get working copies only
+					if (user!=null){ %>
+						<tr>
+							<td colspan="2">&nbsp;</td>
+							<td colspan="2" align="left">
+								<input type="checkbox" name="wrk_copies" value="true"/>
+								<span class="smallfont_light">Working copies only</span>
+							</td>
+						</tr> <%
 					}
 					%>
 					
+                    
 					<tr height="10"><td colspan="4"></td></tr>
 					
 					<tr valign="top">
 						<td colspan="2"></td>
 						<td>
-							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('<%=submitForm%>')"/>
+							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('search_results.jsp')"/>
 							<input class="mediumbuttonb" type="reset" value="Reset"/>
 						</td>
 						<td align="left">
@@ -580,7 +589,9 @@ else{ %>
 				<!-- table for 'Add' -->
 				<%
 				
-					boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
+					boolean dstPrm = user!=null &&
+									 (SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u") ||
+									 SecurityUtil.hasChildPerm(user.getUserName(), "/elements", "i"));
 					if (dstPrm) { %>
 					<table width="520">
 						<tr height"10">
@@ -589,13 +600,20 @@ else{ %>
 						<tr>
 							<td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td>
 						</tr>	
-							<tr>
-								<td width="10">&#160;</td>
-								<td valign="bottom">
-									<input class="mediumbuttonb" type="button" value="Add" onclick="window.location.assign('data_element.jsp?mode=add')"/>
-									&#160;&#160;<span class="head00">a new data element</span>&#160;&#160;
-								</td>
-							</tr>
+						<tr>
+							<td width="10">&#160;</td>
+							<td valign="bottom">
+								<input class="mediumbuttonb" type="button" value="Add" onclick="window.location.assign('data_element.jsp?mode=add')"/>
+								&#160;&#160;<span class="head00">a definition of a new non-common element</span>&#160;&#160;
+							</td>
+						</tr>
+						<tr>
+							<td width="10">&#160;</td>
+							<td valign="bottom">
+								<input class="mediumbuttonb" type="button" value="Add" onclick="window.location.assign('data_element.jsp?mode=add&common=true')"/>
+								&#160;&#160;<span class="head00">a definition of a new common element</span>&#160;&#160;
+							</td>
+						</tr>
 					</table> <%
 					}
 					%>
@@ -610,16 +628,29 @@ else{ %>
 				
 				<input type="hidden" name="collect_attrs" value="<%=collect_attrs.toString()%>"></input>
                 <input name='SearchType' type='hidden' value='SEARCH'/>
-                <input name='ctx' type='hidden' value='<%=contextParam%>'/>
+                <input name="ctx" type="hidden" value="<%=contextParam%>"/>
                 
                 <%
+                String skipID = request.getParameter("skip_id");
+                if (skipID!=null && skipID.length()!=0){ %>
+                	<input type="hidden" name="skip_id" value="<%=skipID%>"/><%
+            	}
+            	
                 String selected = request.getParameter("selected");
                 if (selected!=null && selected.length()!=0){
 	                %>
 	                <input name='selected' type='hidden' value='<%=selected%>'/>
 	                <%
                 }                
-                %>
+                
+                if (commonOnly){ %>
+                	<input type="hidden" name="common" value="true"/><%
+            	}
+            	
+            	if (nonCommonOnly){ %>
+            		<input type="hidden" name="common" value="false"/><%
+        		}
+        		%>
                 
 				</form>
 			</div>

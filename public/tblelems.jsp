@@ -76,9 +76,6 @@ if (tableID == null || tableID.length()==0){ %>
 	return;
 }
 
-String contextParam = request.getParameter("ctx");
-if (contextParam == null) contextParam = "";
-
 String dsID = request.getParameter("ds_id");
 if (dsID == null || dsID.length()==0){ %>
 	<b>Dataset ID is missing!</b> <%
@@ -104,17 +101,26 @@ if (request.getMethod().equals("POST")){
 	}
 	
 	Connection userConn = null;
-	DataElementHandler handler = null;
-	
+	DsTableHandler tblHandler = null;
+	DataElementHandler elmHandler = null;
+	String link_elm = request.getParameter("link_elm");
 	try{
-		userConn = user.getConnection();
-		handler = new DataElementHandler(userConn, request, ctx);
-		handler.setUser(user);
 		try{
-			handler.execute();
+			userConn = user.getConnection();
+			if (link_elm!=null && link_elm.length()!=0){
+				tblHandler = new DsTableHandler(userConn, request, ctx);
+				tblHandler.setUser(user);
+				tblHandler.execute();
+			}
+			else{
+				elmHandler = new DataElementHandler(userConn, request, ctx);
+				elmHandler.setUser(user);
+				elmHandler.execute();
+			}
 		}
 		catch (Exception e){
-			handler.cleanup();
+			if (tblHandler!=null) tblHandler.cleanup();
+			if (elmHandler!=null) elmHandler.cleanup();
 			%>
 			<html><body><b><%=e.toString()%></b></body></html> <%
 			return;
@@ -125,25 +131,28 @@ if (request.getMethod().equals("POST")){
 		} catch (SQLException e) {}
 	}
 	
-	String mode = request.getParameter("mode");	
-	if (mode.equals("add") || mode.equals("copy")){
-		response.sendRedirect("data_element.jsp?mode=view&delem_id=" + handler.getLastInsertID());
+	if (link_elm==null || link_elm.length()==0){
+		
+		System.out.println();
+		
+		String mode = request.getParameter("mode");	
+		if (mode.equals("add") || mode.equals("copy")){
+			response.sendRedirect("data_element.jsp?mode=view&delem_id=" + elmHandler.getLastInsertID());
+		}
+		else{
+			String redirUrl = currentUrl;
+			String newTblID = elmHandler.getNewTblID();
+			if (newTblID!=null)
+				redirUrl = "dstable.jsp?mode=view&table_id=" + newTblID;
+			response.sendRedirect(redirUrl);
+		}
+		
+		return;
 	}
-	else{
-		String redirUrl = currentUrl;
-		String newTblID = handler.getNewTblID();
-		if (newTblID!=null)
-			redirUrl = "dstable.jsp?mode=view&table_id=" + newTblID;
-		response.sendRedirect(redirUrl);
-	}
-	
-	return;
 }
 
 
-//handle the GET
-
-String appName = ctx.getInitParameter("application-name");
+//handle the GET & elm linkage POST
 
 Connection conn = null;
 XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
@@ -190,7 +199,7 @@ for (int i=0; elems!=null && i<elems.size(); i++){
 	}
 }
 
-int colCount = hasGIS ? 6 : 5;
+int colCount = hasGIS ? 5 : 4;
 	
 %>
 
@@ -203,24 +212,19 @@ int colCount = hasGIS ? 6 : 5;
 
 <script language="JavaScript" src='script.js'></script>
 <script language="JavaScript" src='dynamic_table.js'></script>
+<script language="JavaScript" src='modal_dialog.js'></script>
 
 <script language="JavaScript">
 		function submitForm(mode){
 			
 			if (mode=="delete"){
-				var b = confirm("This will delete all the elements you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
+				var b = confirm("This will remove the selected elements from this table. Click OK, if you want to continue. Otherwise click Cancel.");
 				if (b==false) return;
+				openNoYes("yesno_dialog.html", "Do you want to update the dataset definition's CheckInNo with this deletion?", delDialogReturn,100, 400);
+				return;
 			}
 			
-			//var mode;
-			//var elm = document.forms["form1"].elements["elm"].value;
-			//if (elm == "new")
-				//mode = "add";
-			//else
-				//mode = "edit";
-
-			if (mode=="add" 
-						&& document.forms["form1"].elements["idfier"].value==""){
+			if (mode=="add"  && document.forms["form1"].elements["idfier"].value==""){
 				alert("Identifier cannot be empty!");
 				return;
 			}
@@ -229,8 +233,26 @@ int colCount = hasGIS ? 6 : 5;
 				alert("Identifier cannot contain any white space!");
 				return;
 			}
+			
+			if (mode=="add" && !validForXMLTag(document.forms["form1"].elements["idfier"].value)){
+				alert("Identifier must start with a letter or underscore to be valid for usage as an XML tag!");
+				return;
+			}
 				
 			document.forms["form1"].elements["mode"].value = mode;
+			document.forms["form1"].submit();
+		}
+		
+		function delDialogReturn(){
+			var v = dialogWin.returnValue;
+			if (v==null || v=="" || v=="cancel") return;
+			
+			document.forms["form1"].elements["upd_version"].value = v;
+			deleteReady();
+		}
+		
+		function deleteReady(){
+			document.forms["form1"].elements["mode"].value = "delete";
 			document.forms["form1"].submit();
 		}
 		
@@ -291,28 +313,62 @@ int colCount = hasGIS ? 6 : 5;
 		function getChanged(){
 			return document.forms["form1"].elements["changed"].value;
 		}
+		
+		var pickMode = "";
 		function copyElem(){
 			
-			if (document.forms["form1"].elements["idfier"].value==""){
-				alert("Identifier cannot be empty!");
+			if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
+				alert("Identifier must start with a letter or underscore to be valid for usage as an XML tag!");
+				return;
+			}
+			
+			if (hasWhiteSpace("idfier")){
+				alert("Identifier cannot contain any white space!");
 				return;
 			}
 
-						var url='search.jsp?ctx=popup';
-			//if (url != null) url = url + "&selected=" + selected;
-			
-			wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
-			if (window.focus) {wAdd.focus()}
+			pickMode = "copy";
+			var url="search.jsp?ctx=popup&noncommon";
+			wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+			if (window.focus){
+				wAdd.focus();
+			}
 		}
-		function pickElem(id, name){
-			//alert(id);
-			document.forms["form1"].copy_elem_id.value=id;
-			document.forms["form1"].mode.value="copy";
-			submitForm('copy');
+		function linkElem(){
+			
+			pickMode = "link";
+			var url="search.jsp?ctx=popup&common";
+			wLink = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+			if (window.focus){
+				wLink.focus();
+			}
+		}
+		function pickElem(id){
+			if (pickMode=="copy"){
+				document.forms["form1"].copy_elem_id.value=id;
+				document.forms["form1"].mode.value="copy";
+				submitForm('copy');
+			}
+			else if (pickMode=="link"){
+				document.forms["common_elm_link_form"].link_elm.value=id;
+				document.forms["common_elm_link_form"].submit();
+			}
+			else
+				alert("Unknown pick mode: " + pickMode);
 
 			return true;
 		}
 		function goToAddForm(){
+			
+			if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
+				alert("Identifier must start with a letter or underscore to be valid for usage as an XML tag!");
+				return;
+			}
+			
+			if (hasWhiteSpace("idfier")){
+				alert("Identifier cannot contain any white space!");
+				return;
+			}
 			
 			var url = "data_element.jsp?mode=add&table_id=<%=tableID%>&ds_id=<%=dsID%>";
 			identifier = document.forms["form1"].elements["idfier"].value;
@@ -321,6 +377,17 @@ int colCount = hasGIS ? 6 : 5;
 			url +="&idfier=" + identifier;
 			url +="&type=" + elem_type;
 			document.location.assign(url);
+		}
+		
+		function validForXMLTag(str){
+			
+			if (str!=null && str.length>0){
+				var ch = str.charCodeAt(0);
+				if (ch==95 || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))
+					return true;
+			}
+			
+			return false;
 		}
 </script>
 	
@@ -383,8 +450,7 @@ int colCount = hasGIS ? 6 : 5;
 		String topWorkingUser = verMan.getWorkingUser(dsTable.getParentNs());
 		boolean topFree = topWorkingUser==null ? true : false;
 		
-		String latestDstID = dataset==null ? null : verMan.getLatestDstID(dataset);
-		boolean dsLatest = Util.voidStr(latestDstID) ? true : latestDstID.equals(dataset.getID());
+		boolean dsLatest = dataset==null ? false : verMan.isLatestDst(dataset.getID(), dataset.getIdentifier());
 		
 		boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
 		if (user != null && topFree && dstPrm){ %>
@@ -397,7 +463,7 @@ int colCount = hasGIS ? 6 : 5;
 								<span class="barfont">Identifier:</span>
 							</td>
 							<td align="right">
-								<a target="_blank" href="identification.html" onclick="pop(this.href)">
+								<a target="_blank" href="help.jsp?screen=dataset&area=identifier" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>
@@ -405,20 +471,26 @@ int colCount = hasGIS ? 6 : 5;
 								<input type="text" class="smalltext" width="10" name="idfier"/>
 							</td>
 							<td align="right">
-								<input type="button" class="smallbutton" value="Add" onclick="goToAddForm()"/>
+								<input type="button" class="smallbutton" value="Add" onclick="goToAddForm()"
+									   title="Define a new element into this table, give it the Identifier on the left."/>
 							</td>
 							<td align="right">
-								<input type="button" class="smallbutton" value="Copy" onclick="copyElem()" title="Copies new data element definition from existing data element"/>
+								<input type="button" class="smallbutton" value="Copy" onclick="copyElem()"
+									   title="Define a new element into this table by copying an existing element in some other table, give it the Identifier on the left."/>
+							</td>
+							<td align="right">
+								<input type="button" class="smallbutton" value="Link" onclick="linkElem()"
+									   title="Link this table with a common element."/>
 							</td>
 						</tr>
 						<tr>
 							<td align="right"><span class="barfont">Type:</span></td>
 							<td>
-								<a target="_blank" href="types.html" onclick="pop(this.href)">
+								<a target="_blank" href="help.jsp?screen=element&area=type" onclick="pop(this.href)">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 								</a>
 							</td>
-							<td style="padding-left:5" colspan="3">
+							<td style="padding-left:5" colspan="4">
 								<select name="type" class="small">
 									<option selected value="CH2">Quantitative</option>
 									<option value="CH1">Fixed values (codes)</option>
@@ -459,11 +531,11 @@ int colCount = hasGIS ? 6 : 5;
 						<tr>
 							<td colspan="<%=String.valueOf(colCount)%>">
 								<%
-								if (user!=null && topFree && dsLatest && dstPrm){ %>
-									<input type="button" value="Delete selected" class="smallbutton" onclick="submitForm('delete')"/> <%
+								if (dispDelete){ %>
+									<input type="button" value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/> <%
 								}
 								
-								if (user!=null && topFree && dsLatest && elems.size()>1 && dstPrm){ %>
+								if (dispSave){ %>
 									<input type="button" <%=disabled%> value="Save order" class="smallbutton" onclick="saveChanges()" title="save the new order of elements"/><%
 								}
 								%>
@@ -484,7 +556,7 @@ int colCount = hasGIS ? 6 : 5;
 										<b>Short name</b>
 									</td>
 									<td align="left" width="50%">
-										<a target="_blank" href="identification.html#short_name" onclick="pop(this.href)">
+										<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
 											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 										</a>
 									</td>
@@ -526,62 +598,70 @@ int colCount = hasGIS ? 6 : 5;
 							</table>
 						</th>
 						
-						<th align="left" style="padding-right:10; border-right:0">
+						<th align="left" style="padding-right:10; border-left:0; border-right:1 solid #FF9900">
 							<table width="100%">
 								<tr>
 									<td align="right" width="50%">
 										<b>Element type</b>
 									</td>
 									<td align="left" width="50%">
-										<a target="_blank" href="types.html" onclick="pop(this.href)">
+										<a target="_blank" href="help.jsp?screen=element&area=type" onclick="pop(this.href)">
 											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 										</a>
 									</td>
 								</tr>
 							</table>
 						</th>
-						
-						<th align="left" style="padding-right:10; border-left:0; border-right:1 solid #FF9900">&nbsp;</th> <!-- FK column -->
 					</tr>
 					
 					</thead>
 					<tbody id="tbl_body">
 					
 					<%
+					
 					Hashtable types = new Hashtable();
 					types.put("CH1", "Fixed values");
 					types.put("CH2", "Quantitative");
 					
-					// the elements display loop
+					int maxPos = 0;
 					
+					// the elements display loop
+					boolean hasMarkedElems = false;
+					boolean hasForeignKeys = false;
+					boolean hasCommonElms = false;
 					for (int i=0; elems!=null && i<elems.size(); i++){
-			
+						
 						DataElement elem = (DataElement)elems.get(i);
 						
 						String gis = elem.getGIS()!=null ?  gis = elem.getGIS() : "no GIS";
-						
-						String elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID() + "&ds_id=" + dsID + "&table_id=" + tableID + "&ctx=" + contextParam;
-						
 						String delem_name=elem.getShortName();
 						if (delem_name.length() == 0) delem_name = "empty";
-						
 						String elemType = (String)types.get(elem.getType());
-						
 						String datatype = getAttributeValue(elem, "Datatype");		
 						if (datatype == null) datatype="";
-						
 						String max_size = getAttributeValue(elem, "MaxSize");		
 						if (max_size == null) max_size="";
+						int posInTable = Integer.parseInt(elem.getPositionInTable());
+						if (posInTable > maxPos) maxPos = posInTable;
+						boolean elmCommon = elem.getNamespace()==null || elem.getNamespace().getID()==null;
+						
+						String elemLink = null;
+						if (!elmCommon)
+							elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID() + "&ds_id=" + dsID + "&table_id=" + tableID;
+						else
+							elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID();
 						
 						// see if the element is part of any foreign key relations
 						Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
 						boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
 						
 						String elemDefinition = elem.getAttributeValueByShortName("Definition");
-						
 						String workingUser = verMan.getWorkingUser(elem.getNamespace().getID(),
 						    											elem.getIdentifier(), "elm");
 						String ifDisabled = workingUser==null ? "" : "disabled";
+						
+						if (fks) hasForeignKeys = true;
+						if (elmCommon) hasCommonElms = true;
 					%>
 						
 						<!-- element row -->
@@ -591,15 +671,12 @@ int colCount = hasGIS ? 6 : 5;
 							<td align="right" style="padding-right:10" bgcolor="#f0f0f0">
 								<%
 								if (user!=null && dstPrm){
-									
-									if (workingUser!=null){ // mark checked-out elements
-										%> <font title="<%=workingUser%>" color="red">* </font> <%
-									}
-									
-									if (workingUser==null && topFree && dsLatest){ %>
+									if ((workingUser==null || elmCommon) && topFree && dsLatest){
+										String name = elmCommon ? "linkelm_id" : "delem_id";
+										%>
 										<input onclick="tbl_obj.clickOtherObject();"
 												type="checkbox"
-												style="height:13;width:13" name="delem_id" value="<%=elem.getID()%>"/>
+												style="height:13;width:13" name="<%=name%>" value="<%=elem.getID()%>"/>
 										<%
 									}
 								}
@@ -607,11 +684,36 @@ int colCount = hasGIS ? 6 : 5;
 							</td>
 					
 							<td align="left" style="padding-left:5;padding-right:10">
-								<% if (elemDefinition!=null){ %>
+								<%
+								// red asterisk
+								if (workingUser!=null){ %>
+									<font title="<%=workingUser%>" color="red">* </font><%
+									hasMarkedElems = true;
+								}
+									
+								// short name
+								if (elemDefinition!=null){ %>
 									<a title="<%=elemDefinition%>" href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
-								} else { %>
+								}
+								else { %>
 									<a href="<%=elemLink%>"><%=Util.replaceTags(delem_name)%></a><%
-								} %>
+								}
+								
+								// common elm indicator
+								if (elmCommon){ %>
+									<span class="commonelm"><sup>C</sup></span><%
+								}
+								
+								// FK inidcator
+								if (fks){ %>
+									&nbsp;
+									<span class="barfont">
+										<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>&amp;ds_id=<%=dsID%>">
+											<b><i>(FK)</i></b>
+										</a>
+									</span><%
+								}
+								%>
 							</td>
 							
 							<%
@@ -634,19 +736,41 @@ int colCount = hasGIS ? 6 : 5;
 								<% } %>
 							</td>
 							
-							<td align="left" style="padding-right:10">
-								<%
-								if (fks){ %>
-									<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>&amp;ds_id=<%=dataset.getID()%>">(FK)</a><%
-								}
-								%>
-								<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5">
-								<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPosition()%>" size="5">
-								<input type="hidden" name="pos_<%=elem.getID()%>" value="0" size="5">
-							</td>
+							<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5">
+							<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>" size="5">
+							<input type="hidden" name="pos_<%=elem.getID()%>" value="0" size="5">
 						</tr>
 						<%
 					} // end elements display loop
+					%>
+					
+					<tr height="10">
+						<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>"></td>
+					</tr>
+					
+					<%
+					// explanations about red asterisks, fks and c-signs
+					if (user!=null && elems!=null && elems.size()>0 && hasMarkedElems){%>
+						<tr height="10">
+							<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>">
+								(a red wildcard stands for checked-out element)
+							</td>
+						</tr><%
+					}
+					if (user!=null && elems!=null && elems.size()>0 && hasForeignKeys){%>
+						<tr height="10">
+							<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>">
+								(the <u><b><i>(FK)</i></b></u> link indicates the element participating in a foreign key relation)
+							</td>
+						</tr><%
+					}
+					if (elems!=null && elems.size()>0 && hasCommonElms){%>
+						<tr height="10">
+							<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>">
+								(the <span class="commonelm"><sup>C</sup></span> sign marks a common element)
+							</td>
+						</tr><%
+					}
 					%>
 					
 					</tbody>
@@ -707,11 +831,23 @@ int colCount = hasGIS ? 6 : 5;
 	<input type="hidden" name="ds_name" value="<%=dsName%>"/>
 	<input type="hidden" name="ds_idf" value="<%=dsIdf%>"/>
 	<input type="hidden" name="table_id" value="<%=tableID%>"/>
-	<input type="hidden" name="ctx" value="<%=contextParam%>"/>
 	<input type="hidden" name="changed" value="0"/>
 	<input type="hidden" name="copy_elem_id" value=""/>
 	
+	<input type="hidden" name="upd_version" value="false"/>
+	
 </form>
+
+<form name="common_elm_link_form" method="POST" action="tblelems.jsp">
+	<input type="hidden" name="link_elm" value=""/>
+	<input type="hidden" name="mode" value="add"/>
+	<input type="hidden" name="table_id" value="<%=tableID%>"/>
+	<input type="hidden" name="ds_id" value="<%=dsID%>"/>
+	<input type="hidden" name="ds_name" value="<%=dsName%>"/>
+	<input type="hidden" name="ds_idf" value="<%=dsIdf%>"/>
+	<input type="hidden" name="elmpos" value="<%=maxPos+1%>"/>
+</form>
+
 </div>
 </body>
 </html>

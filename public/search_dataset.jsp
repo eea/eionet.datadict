@@ -198,7 +198,7 @@ private String setDefaultAttrs(String name){
 							<b>Short name</b>
 						</td>
 						<td>
-							<a target="_blank" href="identification.html#short_name" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>
@@ -212,7 +212,7 @@ private String setDefaultAttrs(String name){
 							<b>Identifier</b>
 						</td>
 						<td>
-							<a target="_blank" href="identification.html" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset&area=identifier" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>

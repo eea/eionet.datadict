@@ -24,9 +24,7 @@
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			DataElement elm = searchEngine.getDataElement(elmID);
 			
-			Vector v = searchEngine.getElmHistory(elm.getIdentifier(),
-												  elm.getNamespace().getID(),
-												  elm.getVersion());
+			Vector v = searchEngine.getElmHistory(elm.getIdentifier(), elm.getVersion());
 			if (v==null || v.size()==0){ %>
 				<b>No history found for this element!</b> <%
 				return;
@@ -42,7 +40,6 @@
 	    <script language="JavaScript" src='script.js'></script>
 	<script language="JavaScript">
 		function view(id){
-			//window.location="data_element.jsp?mode=view&delem_id=" + id;
 			window.opener.location="data_element.jsp?mode=view&delem_id=" + id;
 			window.close();
 		}
@@ -62,7 +59,7 @@
 
     <span class="head00">
         History of <em><%=elm.getShortName()%></em>
-        below LastCheckInNo <em><%=elm.getVersion()%></em>
+        below CheckInNo <em><%=elm.getVersion()%></em>
     </span>
 
 	<table width="auto" cellspacing="0" id="tbl">
@@ -77,7 +74,7 @@
     	</tr>
 	
         <tr>
-            <th align="left" style="padding-left:5;padding-right:10">LastCheckInNo</th>
+            <th align="left" style="padding-left:5;padding-right:10">CheckInNo</th>
             <th align="left" style="padding-left:5;padding-right:10">User</th>
             <th align="left" style="padding-left:5;padding-right:10;border-right:1 solid #FF9900">Date</th>
         </tr>

@@ -64,12 +64,6 @@ if (request.getMethod().equals("POST")){
 		try { if (userConn!=null) userConn.close();
 		} catch (SQLException e) {}
 	}
-	
-	// build reload URL
-
-	response.sendRedirect(currentUrl);
-	return;
-
 }
 
 //handle the GET
@@ -94,8 +88,6 @@ if (disabled.equals("")){
 	if (!isWorkingCopy) disabled = "disabled";
 }
 
-disabled="";
-	
 %>
 
 <html>
@@ -111,7 +103,7 @@ disabled="";
 		function submitForm(mode){
 			
 			if (mode=="delete"){
-				var b = confirm("This will delete all the foreign key relations you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
+				var b = confirm("This will delete the foreign key relations you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
 				if (b==false) return;
 			}
 			
@@ -130,16 +122,18 @@ disabled="";
 			
 			var selected = document.forms["form1"].collect_elems.value;
 			if (url != null) url = url + "&selected=" + selected;
-			wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
-			if (window.focus) {wAdd.focus()}
+			
+			wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+			if (window.focus){
+				wAdd.focus();
+			}
 		}
 		
-		function pickElem(id, name){
+		function pickElem(id){
 			document.forms["form1"].b_id.value=id;
 			document.forms["form1"].mode.value="add";
 			submitForm('add');
-			
-			return false;
+			return true;
 		}
 		
 </script>
@@ -169,7 +163,7 @@ disabled="";
 		<tr valign="bottom">
 			<td>
 				<font class="head00">Foreign keys associated with
-				<span class="title2"><%=Util.replaceTags(delemName)%></span>.
+				<span class="title2"><a href="data_element.jsp?mode=edit&delem_id=<%=delemID%>"><%=Util.replaceTags(delemName)%></a></span>.
 			</td>
 			<td align="right">
 				<a target="_blank" href="help.jsp?screen=foreign_keys&area=pagehelp" onclick="pop(this.href)">
@@ -188,13 +182,15 @@ disabled="";
 	
 	<table width="auto" cellspacing="0" cellpadding="0">
 	
+		<%
+		String skipID = request.getParameter("orig_id");
+		if (skipID!=null && skipID.length()>0) skipID = "&skip_id=" + skipID;
+		%>
+	
 		<tr style="padding-bottom:2" >
 			<td></td>
 			<td colspan="3">
-				<input type="button" <%=disabled%>
-					class="smallbutton"
-					value="Add"
-					onclick="openAdd('search.jsp?fk=true&ctx=popup')"/>
+				<input type="button" <%=disabled%> class="smallbutton" value="Add" onclick="openAdd('search.jsp?fk=true&ctx=popup<%=skipID%>&noncommon')"/>
 			</td>
 		</tr>
 
@@ -254,6 +250,7 @@ disabled="";
 	<input type="hidden" name="mode" value="delete"/>
 	<input type="hidden" name="delem_id" value="<%=delemID%>"/>
 	<input type="hidden" name="delem_name" value="<%=delemName%>"/>
+	<input type="hidden" name="ds_id" value="<%=dstID%>"/>
 	
 	<input type="hidden" name="a_id" value="<%=delemID%>"/>
 	<input type="hidden" name="b_id" value=""/>

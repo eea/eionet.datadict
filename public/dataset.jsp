@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*,eionet.util.SecurityUtil,eionet.util.QueryString"%>
+<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!private String currentUrl=null;%>
 
@@ -46,47 +46,44 @@ private Vector getValues(String id, String mode, Vector attributes){
 			AppUserIF user = SecurityUtil.getUser(request);
 			
 			ServletContext ctx = getServletContext();			
-			String appName = ctx.getInitParameter("application-name");
 			
-		    String urlPath = ctx.getInitParameter("basens-path");
-			if (urlPath == null) urlPath = "";
-			
-
 			if (request.getMethod().equals("POST")){
-      			if (user == null){
-	      			%>
-	      				<html>
-	      				<body>
-	      					<h1>Error</h1><b>Not authorized to post any data!</b>
-	      				</body>
-	      				</html>
-	      			<%
+      			if (user == null){ %>
+					<b>Not authorized to post any data!</b> <%
 	      			return;
       			}
-			}						
+			}
 			
+			String dstIdf = request.getParameter("ds_idf");
 			String ds_id = request.getParameter("ds_id");
 			
 			mode = request.getParameter("mode");
 			if (mode == null || mode.length()==0) { %>
-				<b>Mode paramater is missing!</b>
-				<%
-				return;
-			}
-			
-			if (!mode.equals("add") && (ds_id == null || ds_id.length()==0)){ %>
-				<b>Dataset ID is missing!</b> <%
+				<b>Mode paramater is missing!</b> <%
 				return;
 			}
 			
 			if (mode.equals("add")){
-				if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){
-					%>
+				if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
 					<b>Not allowed!</b> <%
 					return;
 				}
 			}
 			
+			if (mode.equals("view")){
+				if (Util.voidStr(dstIdf) && Util.voidStr(ds_id)){ %>
+					<b>Missing identifier or ID!</b> <%
+					return;
+				}
+			}
+			else if (mode.equals("edit")){
+				if (Util.voidStr(ds_id)){ %>
+					<b>Missing ID!</b> <%
+					return;
+				}
+			}
+			
+			boolean latestRequested = mode.equals("view") && !Util.voidStr(dstIdf);
 			boolean editPrm = false;
 			boolean delPrm = false;
 
@@ -162,11 +159,13 @@ private Vector getValues(String id, String mode, Vector attributes){
 					redirUrl =qs.getValue();
 				}
 				else if (mode.equals("delete")){
-					String deleteUrl = history.gotoLastMatching("datasets.jsp");
-					redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl:redirUrl + "/index.jsp";
-				}
-				else if (mode.equals("force_status")){
-					redirUrl = redirUrl + "dataset.jsp?mode=view&ds_id=" + ds_id;
+					String lid = request.getParameter("latest_id");
+					if (lid!=null)
+						redirUrl = redirUrl + "dataset.jsp?mode=view&ds_id=" + lid;
+					else{
+						redirUrl = history.gotoLastMatching("datasets.jsp");;
+						redirUrl = (redirUrl!=null&&redirUrl.length()>0) ? redirUrl : redirUrl + "/index.jsp";
+					}
 				}
 				
 				response.sendRedirect(redirUrl);
@@ -193,7 +192,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 			
 			if (!mode.equals("add")){
 				
-				dataset = searchEngine.getDataset(ds_id);
+				if (latestRequested){
+					dataset = searchEngine.getLatestDst(dstIdf);
+					if (dataset!=null) ds_id = dataset.getID();
+				}
+				else
+					dataset = searchEngine.getDataset(ds_id);
 					
 				if (dataset!=null){
 					
@@ -312,24 +316,20 @@ private Vector getValues(String id, String mode, Vector attributes){
 					hasHistory = true;
 			}
 			
+			// we get the registration status already here, because it's needed in JavaScript below
+			String regStatus = dataset!=null ? dataset.getStatus() : null;
 			%>
 
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="JavaScript" src='script.js'></script>
     <script language="JavaScript" src='modal_dialog.js'></script>
     <script language="JavaScript">
     
-    	var dlgwin = null;
-    
 		function deleteDatasetReady(){
-			
-			/*alert(document.forms["form1"].elements["complete"].value);
-	    	return;*/
-	    	
 			document.forms["form1"].elements["mode"].value = "delete";
 			document.forms["form1"].submit();
 		}
@@ -337,13 +337,20 @@ private Vector getValues(String id, String mode, Vector attributes){
 		function submitForm(mode){
 			
 			if (mode == "delete"){
-				var b;
+				
 				<%
-				if (!mode.equals("add") && dataset.isWorkingCopy()){ %>
-					b = confirm("This working copy will be deleted and the corresponding dataset released for others to edit! Click OK, if you want to continue. Otherwise click Cancel.");<%
+				if (regStatus!=null && !dataset.isWorkingCopy() && regStatus.equals("Released")){ %>
+					alert("A dataset definition in Released status cannot be deleted, because it might be referenced by outer sources!");
+					return;<%
+				}
+				%>
+			
+				<%
+				if (dataset!=null && dataset.isWorkingCopy()){ %>
+					var b = confirm("This working copy will be deleted and the whole dataset released for others to edit! Click OK, if you want to continue. Otherwise click Cancel.");<%
 				}
 				else{ %>
-					b = confirm("This dataset's latest version will be deleted! Click OK, if you want to continue. Otherwise click Cancel.");<%
+					var b = confirm("This dataset will be deleted! You will be given a chance to delete it permanently or save it for restoring later. Click OK, if you want to continue. Otherwise click Cancel.");<%
 				}
 				%>
 				if (b==false) return;
@@ -351,13 +358,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 				<%
 				if (dataset!=null && dataset.isWorkingCopy()){ %>
 					document.forms["form1"].elements["complete"].value = "true";
-					deleteDatasetReady();<%
+					deleteDatasetReady();
+					return;<%
 				}
 				else{ %>
 					// now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
-					dlgwn = window.open("dst_del_dialog.html", "", "height=130,width=400,status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no,modal=yes");
-					window.onfocus = checkModal;
-					
+					openNoYes("yesno_dialog.html", "Do you want the selected datasets to be deleted permanently?\n(Note that working copies will always be permanently deleted)", delDialogReturn,100, 400);
 					return;<%
 				}
 				%>
@@ -374,34 +380,33 @@ private Vector getValues(String id, String mode, Vector attributes){
 					return;
 				}
 				
+				if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
+					alert("Identifier must start with a letter or underscore to be valid for usage as an XML tag!");
+					return;
+				}
+				
 				slctAllValues();
 			}			
 			
 			document.forms["form1"].elements["mode"].value = mode;
 			document.forms["form1"].submit();
 		}
-
-		function checkModal() {
-   			if (dlgwn!=null && !dlgwn.closed) 
-      			dlgwn.focus()
+		
+		function delDialogReturn(){
+			var v = dialogWin.returnValue;
+			if (v==null || v=="" || v=="cancel") return;
+			
+			document.forms["form1"].elements["complete"].value = v;
+			deleteDatasetReady();
 		}
-
 
 		function checkObligations(){
 			
 			var o = document.forms["form1"].ds_name;
-			if (o!=null)
-				if (o.value.length == 0) return false;
-			
-			var o = document.forms["form1"].version;
-			if (o!=null){
-				if (o.value.length == 0) return false;
-			}
+			if (o!=null && o.value.length == 0) return false;
 			
 			var elems = document.forms["form1"].elements;
-			if (elems == null) return true;
-			
-			for (var i=0; i<elems.length; i++){
+			for (var i=0; elems!=null && i<elems.length; i++){
 				var elem = elems[i];
 				var elemName = elem.name;
 				var elemValue = elem.value;
@@ -450,25 +455,23 @@ private Vector getValues(String id, String mode, Vector attributes){
 				return false;
 		}
 
-		function checkIn(){
-			
-			//openDialog("yesno_dialog.html", "Do you want to increment the dataset's internal version?", retVersionUpd,100, 400);
-			
+		function checkIn(){			
 			submitCheckIn();
 		}
 		
 		function submitCheckIn(){
+			<%
+			if (regStatus!=null && regStatus.equals("Released")){ %>
+				var b = confirm("Please note that you are checking in a dataset definition with Released status! " +
+								"This will automatically release the definition for public view. " +
+								"If you want to continue, click OK. Otherwise click Cancel.");
+				if (b==false) return;<%
+			}
+			%>
+			
 			document.forms["form1"].elements["check_in"].value = "true";
 			document.forms["form1"].elements["mode"].value = "edit";
 			document.forms["form1"].submit();
-		}
-		
-		function retVersionUpd(){
-			var v = dialogWin.returnValue;
-			if (v==null) v=true;			
-			document.forms["form1"].elements["upd_version"].value = v;
-			
-			submitCheckIn();
 		}
 		
 		function goTo(mode, id){
@@ -589,14 +592,16 @@ private Vector getValues(String id, String mode, Vector attributes){
 			attrWindow=window.open('multiple_value_add.jsp?id=' + id + '&' + dispParams,"Search","height=350,width=500,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
 			if (window.focus) {attrWindow.focus()}
 		}
-		function openUrl(url){
-			if (document.forms["form1"].elements["changed"].value=="1"){
-				if (confirm_saving()){
-					document.location=url;
-				}
+		
+		function validForXMLTag(str){
+			
+			if (str!=null && str.length>0){
+				var ch = str.charCodeAt(0);
+				if (ch==95 || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))
+					return true;
 			}
-			else
-				document.location=url;
+			
+			return false;
 		}
 		
 		<%
@@ -617,17 +622,6 @@ private Vector getValues(String id, String mode, Vector attributes){
 			}<%
 		}
 		%>
-		
-		function forceStatus(status){
-			var b = confirm("This will force the '" + status + "' to lower levels as well, affecting all " +
-								"tables and data elements within this dataset. Click OK, if you " +
-								"still want to continue. Otherwise click Cancel.");				
-			if (b==false) return;
-			
-			document.forms["form1"].elements["mode"].value = "force_status";
-			document.forms["form1"].elements["force_status"].value = status;
-			document.forms["form1"].submit();
-		}
 		
     </script>
 </head>
@@ -727,7 +721,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 							// the working copy part
 							else if (dataset!=null && dataset.isWorkingCopy()){								
 								%>
-								<span class="wrkcopy">!!! Working copy !!!</span><%
+								<span class="wrkcopy">Working copy</span><%
 							}
 							%>
 														
@@ -803,7 +797,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 						if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy() && editPrm && hasHistory){ %>
 							<tr>
 								<td align="right" class="smallfont_light" colspan="2">
-									<input type="checkbox" name="upd_version" value="true">&nbsp;Update LastCheckInNo when checking in</input>
+									<input type="checkbox" name="upd_version" value="true">&nbsp;Update the definition's CheckInNo when checking in</input>
 								</td>
 							</tr><%
 						}
@@ -857,16 +851,35 @@ private Vector getValues(String id, String mode, Vector attributes){
 														</a>
 													</td>
 												</tr>
-												<tr>
-													<td width="73%" valign="middle" align="left">
-														Create an XML Schema for this dataflow
-													</td>
-													<td width="27%" valign="middle" align="left">
-														<a target="_blank" href="GetSchema?id=DST<%=ds_id%>">
-															<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
-														</a>
-													</td>
-												</tr>
+												
+												<%
+												// display schema link only for users that have a right to edit a dataset
+												if (user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u")){ %>
+													<tr>
+														<td width="73%" valign="middle" align="left">
+															Create an XML Schema for this dataflow
+														</td>
+														<td width="27%" valign="middle" align="left">
+															<a target="_blank" href="GetSchema?id=DST<%=ds_id%>">
+																<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+															</a>
+														</td>
+													</tr><%
+												}
+												
+												if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli")){ %>
+													<tr>
+														<td width="73%" valign="middle" align="left">
+															Create an instance XML for this dataset
+														</td>
+														<td width="27%" valign="middle" align="left">
+															<a target="_blank" href="GetXmlInstance?id=<%=dataset.getID()%>&type=dst">
+																<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+															</a>
+														</td>
+													</tr><%
+												}
+												%>
 												
 												<tr>
 													<td width="73%" valign="middle" align="left">
@@ -948,7 +961,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		<tr>
 												<td width="<%=titleWidth%>%" class="short_name">Short name</td>
 												<td width="4%" class="short_name">
-													<a target="_blank" href="identification.html#short_name" onclick="pop(this.href)">
+													<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 													</a>
 												</td>
@@ -979,15 +992,13 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		</tr>
 								    		
 								    		<!-- RegistrationStatus -->
-								    		<%
-								    		String regStatus = dataset!=null ? dataset.getStatus() : null;
-								    		%>
+								    		
 								    		<tr>
 												<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 													RegistrationStatus
 												</td>
 												<td width="4%" class="simple_attr_help<%=isOdd%>">
-													<a target="_blank" href="statuses.html" onclick="pop(this.href)">
+													<a target="_blank" href="help.jsp?screen=dataset&area=regstatus" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 													</a>
 												</td>
@@ -1001,20 +1012,11 @@ private Vector getValues(String id, String mode, Vector attributes){
 												<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
 													<%
 													if (mode.equals("view")){ %>														
-														<%=regStatus%>
-														<span class="barfont"><%
-															if (user!=null && topWorkingUser==null && editPrm){ %>
-																&nbsp;&nbsp;&nbsp;
-																<a href="javascript:forceStatus('<%=regStatus%>')">
-																	&gt; force status to lower levels...
-																</a><%
-															}
-															%>
-														</span><%
+														<%=regStatus%><%
 													}
 													else{ %>
 														<select name="reg_status" onchange="form_changed('form1')"> <%
-															Vector regStatuses = verMan.getRegStatusesOrdered();
+															Vector regStatuses = verMan.getRegStatuses();
 															for (int i=0; i<regStatuses.size(); i++){
 																String stat = (String)regStatuses.get(i);
 																String selected = stat.equals(regStatus) ? "selected" : ""; %>
@@ -1027,6 +1029,30 @@ private Vector getValues(String id, String mode, Vector attributes){
 												
 												<%isOdd = Util.isOdd(++displayed);%>
 								    		</tr>
+								    		
+								    		<!-- Reference URL -->
+								    		<%
+								    		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+								    		if (mode.equals("view") && jspUrlPrefix!=null){
+									    		String refUrl = jspUrlPrefix + "dataset.jsp?mode=view&ds_idf=" + dataset.getIdentifier();
+									    		%>
+									    		<tr>
+													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+														Reference URL
+													</td>
+													<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<a target="_blank" href="help.jsp?screen=dataset&area=refurl" onclick="pop(this.href)">
+															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+														</a>
+													</td>
+													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+														<span class="barfont"><a target="_blank" href="<%=refUrl%>"><%=refUrl%></a></span>
+													</td>
+													
+													<%isOdd = Util.isOdd(++displayed);%>
+									    		</tr><%
+								    		}
+								    		%>
 								    		
 								    										    		
 								    		<!-- dynamic attributes -->
@@ -1234,16 +1260,67 @@ private Vector getValues(String id, String mode, Vector attributes){
 											}
 											%>
 											
-											<!-- version (or the so-called LastCheckInNo) -->
+											<!-- public outputs -->
+											
+											<%
+											if (!mode.equals("add") && editPrm){
+												String checkedPDF = dataset.displayCreateLink("PDF") ? "checked" : "";
+												String checkedXLS = dataset.displayCreateLink("XLS") ? "checked" : "";
+												int checkedCount = checkedPDF.length()>0 ? 1 : 0;
+												if (checkedXLS.length()>0) checkedCount++;
+												%>
+									    		<tr>
+													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+														Public outputs
+													</td>
+													<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<a target="_blank" href="help.jsp?screen=dataset&area=public_outputs" onclick="pop(this.href)">
+															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+														</a>
+													</td>
+													<%
+													if (colspan==4){%>
+														<td width="4%" class="simple_attr_help<%=isOdd%>">
+															<img border="0" src="images/optional.gif" width="16" height="16"/>
+														</td><%
+													}
+													%>
+													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+														<%
+														if(mode.equals("view")){ %>
+															<input type="checkbox" disabled <%=checkedPDF%>>
+																<span class="barfont">Technical specification in PDF format</span>
+															</input><br/>
+															<input type="checkbox" disabled <%=checkedXLS%>>
+																<span class="barfont">MS Excel template</span>
+															</input><%
+														}
+														else{ %>
+															<input type="checkbox" name="disp_create_links" value="PDF" <%=checkedPDF%>>
+																<span class="barfont">Technical specification in PDF format</span>
+															</input><br/>
+															<input type="checkbox" name="disp_create_links" value="XLS" <%=checkedXLS%>>
+																<span class="barfont">MS Excel template</span>
+															</input><%
+														}
+														%>
+													</td>
+													
+													<%isOdd = Util.isOdd(++displayed);%>
+									    		</tr><%
+								    		}%>
+											
+											<!-- version (or the so-called CheckInNo) -->
 								    		<%
-								    		if (!mode.equals("add")){
+								    		// display only in non-add mode and for users with edit prm
+								    		if (!mode.equals("add") && editPrm){
 												String dstVersion = dataset.getVersion(); %>
 									    		<tr>
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
-														LastCheckInNo
+														CheckInNo
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<a target="_blank" href="identification.html#version" onclick="pop(this.href)">
+														<a target="_blank" href="help.jsp?screen=dataset&area=check_in_no" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 														</a>
 													</td>
@@ -1269,7 +1346,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													Identifier
 												</td>
 												<td width="4%" class="simple_attr_help<%=isOdd%>">
-													<a target="_blank" href="identification.html" onclick="pop(this.href)">
+													<a target="_blank" href="help.jsp?screen=dataset&area=identifier" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 													</a>
 												</td>
@@ -1398,10 +1475,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 																for (int i=0; tables!=null && i<tables.size(); i++){
 																				
 																	DsTable table = (DsTable)tables.get(i);
-																	String tableLink = "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + ds_id + "&ds_name=" + ds_name + "&ctx=ds";
+																	
+																	String tableLink = "";
+																	if (latestRequested)
+																		tableLink = "dstable.jsp?mode=view&table_idf=" + table.getIdentifier() + "&pns=" + dataset.getNamespaceID();
+																	else
+																		tableLink = "dstable.jsp?mode=view&table_id=" + table.getID();
 											
 																	String tblName = "";
-										
 																	attributes = searchEngine.getAttributes(table.getID(), "T", DElemAttribute.TYPE_SIMPLE);
 										
 																	for (int c=0; c<attributes.size(); c++){
@@ -1671,7 +1752,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 				<input type="hidden" name="changed" value="0">
 				<!-- Special input for 'delete' mode only. Inidcates if dataset(s) should be deleted completely. -->
 				<input type="hidden" name="complete" value="false"/>
-				<input type="hidden" name="force_status" value=""/>
+				
+				<%
+				if (latestID!=null){%>
+					<input type="hidden" name="latest_id" value="<%=latestID%>"><%
+				}
+				%>
 				
 			</form>
 			

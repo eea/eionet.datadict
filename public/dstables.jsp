@@ -117,9 +117,7 @@ if (disabled.equals("")){
 	if (!topFree) disabled = "disabled";
 }
 
-String latestDstID = dataset==null ? null : verMan.getLatestDstID(dataset);
-boolean dsLatest = Util.voidStr(latestDstID) ? true : latestDstID.equals(dataset.getID());
-
+boolean dsLatest = dataset==null ? false : verMan.isLatestDst(dataset.getID(), dataset.getIdentifier());
 if (disabled.equals("")){
 	if (!dsLatest) disabled = "disabled";
 }
@@ -232,7 +230,7 @@ if (disabled.equals("")){
 							<b>Short name</b>
 						</td>
 						<td align="left" width="50%">
-							<a target="_blank" href="identification.html#short_name" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>

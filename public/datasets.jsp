@@ -1,9 +1,9 @@
-<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+	<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
-<%!final static String oSearchCacheAttrName="search_cache";%>
-<%!final static String oSearchUrlAttrName="search_url";%>
+<%!final static String oSearchCacheAttrName="datasets_search_cache";%>
+<%!final static String oSearchUrlAttrName="datasets_search_url";%>
 <%!private Vector attributes=null;%>
 <%!private boolean restore = false;%>
 
@@ -83,6 +83,7 @@
     private boolean isSorted=false;
     private int iSortColumn=0;
     private int iSortOrder=0;
+    public boolean isAuth = false;
 
     public Vector oElements;
     public boolean SortByColumn(Integer oCol,Integer oOrder) {
@@ -118,6 +119,13 @@
     	oSortCol=null;
         oSortOrder=null;
     }
+    
+    // if this is no sorting request, then remember the query string in session in order to come back if needed
+    if (oSortCol==null){
+		String query = request.getQueryString() == null ? "" : request.getQueryString();
+		String searchUrl =  request.getRequestURI() + "?" + query;
+       	session.setAttribute(oSearchUrlAttrName, searchUrl);
+   	}
 	
     String searchType=request.getParameter("SearchType");
 	
@@ -131,7 +139,19 @@
 	
 	AppUserIF user = SecurityUtil.getUser(request);
 	
-	boolean wrkCopies = false;
+	// The following if block tries to identify if a login has happened in which
+	// case it will redirect the response to the query string in session. This
+	// happens regardless of weather it's a sorting request or search request.
+	c_SearchResultSet rs = (c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
+	if (rs!=null){		
+		if (rs.isAuth && user==null || !rs.isAuth && user!=null){
+			session.removeAttribute(oSearchCacheAttrName);
+			searchType = TYPE_SEARCH;
+		}
+	}
+	
+	String _wrkCopies = request.getParameter("wrk_copies");
+	boolean wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
 	
 	VersionManager verMan = null;
 
@@ -156,7 +176,7 @@
 					}
 				}
 			}
-	
+			
       		Connection userConn = null;
       		DatasetHandler handler = null;
       		
@@ -171,18 +191,10 @@
 				try { if (userConn!=null) userConn.close();
 				} catch (SQLException e) {}
 			}
-		
-			String redirUrl = (String)session.getAttribute(oSearchUrlAttrName);
-			if (redirUrl != null && redirUrl.length()!=0){
-				response.sendRedirect(redirUrl);
-				return;
-			}
 		}
+       	
+       	session.removeAttribute(oSearchCacheAttrName);
 		
-		String query = request.getQueryString() == null ? "" : request.getQueryString();
-		String searchUrl =  request.getRequestURI() + "?" + query;
-       	session.setAttribute(oSearchUrlAttrName, searchUrl);
-
        	searchEngine = new DDSearchEngine(conn, "", ctx);	
        	searchEngine.setUser(user);
 
@@ -218,9 +230,6 @@
 		String idfier = request.getParameter("idfier");
 		String version = request.getParameter("version");
 
-		String _wrkCopies = request.getParameter("wrk_copies");
-		wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
-				
 		// see if looking for deleted datasets		
 		String _restore = request.getParameter("restore");
 		if (_restore!=null && _restore.equals("true")){
@@ -242,8 +251,9 @@
 			restore = true;
 			datasets = searchEngine.getDeletedDatasets();
 		}
-		else
+		else{
 			datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, wrkCopies);
+		}
 		
 		verMan = new VersionManager(conn, searchEngine, user);
 	}
@@ -256,17 +266,12 @@
     <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="JavaScript" src='script.js'></script>
+    <script language="JavaScript" src='modal_dialog.js'></script>
     <script language="JavaScript">
-    	var dialogWin=null;
 		function setLocation(){
 			var o = document.forms["form1"].searchUrl;
 			if (o!=null)
 				o.value=document.location.href;
-		}
-		function openTables(uri){
-			uri = uri + "&open=true";
-			wElems = window.open(uri,"DatasetTables","height=500,width=750,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=yes");
-			if (window.focus) {wElems.focus()}
 		}
 		
 		function goTo(mode){
@@ -275,33 +280,32 @@
 			}
 		}
     	function showSortedList(clmn,ordr) {
-    		if ((document.forms["form1"].elements["sort_column"].value != clmn)
-       			|| (document.forms["form1"].elements["sort_order"].value != ordr)) {
-        		document.forms["form1"].elements["sort_column"].value=clmn;
-		    	document.forms["form1"].elements["sort_order"].value=ordr;
-        		document.forms["form1"].submit();
+    		if ((document.forms["sort_form"].elements["sort_column"].value != clmn)
+       			|| (document.forms["sort_form"].elements["sort_order"].value != ordr)) {
+        		document.forms["sort_form"].elements["sort_column"].value=clmn;
+		    	document.forms["sort_form"].elements["sort_order"].value=ordr;
+        		document.forms["sort_form"].submit();
     		}
 		}
 		
     	function deleteDataset(){
 	    	
 	    	// first confirm if the deletetion is about to take place at all
-			var b = confirm("This will delete all the datasets you have selected. " +
-							"If any of them are working copies then the corresponding " +
-							"original copies will be released. Click OK, if you want to continue. " +
-							"Otherwise click Cancel.");
+			var b = confirm("Selected datasets will be deleted! You will be given a chance to delete them permanently or save them for restoring later. Click OK, if you want to continue. Otherwise click Cancel.");
 			if (b==false) return;
-			
+				
 			// now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
-			dialogWin=window.open("dst_del_dialog.html", "", "height=130,width=400,status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no");
-			window.onfocus= checkModal;
+			openNoYes("yesno_dialog.html", "Do you want the selected datasets to be deleted permanently?\n(Note that working copies will always be permanently deleted)", delDialogReturn,100, 400);
     	}
-
-    	function checkModal() {
-   			if (dialogWin!=null && !dialogWin.closed) 
-      			dialogWin.focus()
-		}
     	
+    	function delDialogReturn(){
+			var v = dialogWin.returnValue;
+			if (v==null || v=="" || v=="cancel") return;
+			
+			document.forms["form1"].elements["complete"].value = v;
+			deleteDatasetReady();
+		}
+
     	function deleteDatasetReady(){
 	    	document.forms["form1"].elements["mode"].value = "delete";
 	    	document.forms["form1"].elements["SearchType"].value='<%=TYPE_SEARCH%>';
@@ -309,14 +313,24 @@
     	}
     	
     	function restoreDataset(){
-	    	//alert("Not supported right now!");
 	    	document.forms["form1"].elements["mode"].value = "restore";
 	    	document.forms["form1"].elements["SearchType"].value='<%=TYPE_SEARCH%>';
        		document.forms["form1"].submit();
     	}
     	
+    	function alertReleased(id){
+	    	alert("A dataset definition in Released status cannot be deleted, because it might be referenced by outer sources!");
+	    	var checkBoxes = document.forms["form1"].elements["ds_id"];
+	    	for (var i=0; checkBoxes!=null && i<checkBoxes.length; i++){
+	    		var checkBox = checkBoxes[i];
+	    		if (checkBox.value==id){
+		    		checkBox.checked = false;
+	    		}
+	    	}
+    	}
+    	
     	function doLoad(){
-	    	if (document.forms["form1"]!=null){
+	    	if (document.forms["form1"]!=null && document.forms["form1"].elements["was_del_prm"]!=null){
 		    	var wasDelPrm = document.forms["form1"].elements["was_del_prm"].value;
 		    	if (wasDelPrm == "true")
 		    		document.forms["form1"].elements["del_button"].disabled = false;
@@ -345,16 +359,20 @@
 			<%
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
             
-	            if (datasets == null || datasets.size()==0){ %>		            
-	    	        <b>No results found!</b>
-	    	        <%
-	    	        if (user==null || !user.isAuthentic()){ %>
-	    	        	<br/>
-	    	        		This might be due to fact that you have not been authorized and there are<br/>
-	    	        		no datasets at the moment ready to be published for non-authorized users.
-	    	        	<br/><%
-    	        	}
+	            // check if any results found
+				if (datasets == null || datasets.size()==0){
+					
+		            // see if this is a search or just listing all the datasets
+					if (Util.voidStr(request.getParameter("search_precision"))){ // listing all the datasets
+						%>
+						<b>No dataset definitions were found!</b><%
+					}
+					else{ // a search
+						%>
+						<b>No dataset definitions matching the search criteria were found!</b><%
+					}
     	        	%>
+    	        	
 	    	        </div></TD></TR></table></body></html>
 	        	    <%
 	            	return;
@@ -369,7 +387,10 @@
 			<tr>
 				<td>
 					<%
-					if (!restore){%>
+					if (!restore && wrkCopies){ %>
+						<font class="head00">Working copies of dataset definitions</font><%
+					}
+					else if (!restore){%>
 						<font class="head00">Datasets</font><%
 					}
 					else{%>
@@ -378,31 +399,28 @@
 					%>
 				</td>
 			</tr>
-			<tr height="10"><td></td></tr>
 			
 			<%
-			if (false){ %>
-				<tr>
-					<%
-					if (!restore){%>
-						<td colspan="3"><span class="mainfont">
-							A red wildcard (<font color="red">*</font>) means that the definition of the dataset is under work
-							and cannot be deleted. Otherwise checkboxes enable to delete selected datasets.
-						</td><%
-					}
-					else{%>
-						<td colspan="3"><span class="mainfont">
-							Checkboxes and 'Restore' button enable to restore the selected datasets.
-						</td><%
-					}
-					%>
-				</tr><%
-			}
-			%>				
-			<tr height="5"><td colspan="2"></td></tr>
+			if (user==null){ %>
+				<tr>	
+					<td class="barfont">
+		        		<br/>
+		        		NB! For un-authenticated users dataset definitions whose Registration status<br/>
+		        		is not <i>Recorded</i> or <i>Released</i> are displayed as inacessible.
+			        </td>
+			    </tr><%
+		    }
+			%>
+			
 		</table>
 		
 		<table width="700" cellspacing="0" border="0" cellpadding="2">
+		
+			<%
+			// Set the colspan. Users with no edit rights must not see the CheckInNo
+			boolean userHasEditRights = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
+			int colSpan = userHasEditRights ? 5 : 3;
+			%>
 		
 			<!-- the buttons part -->
 		
@@ -411,14 +429,15 @@
 				<!-- update buttons -->
 				
 				<td colspan="2" align="left" style="padding-bottom:5">
-					<% if (user != null){
-						if (SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>							
+					<%
+					if (user != null){
+						if (!wrkCopies && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>							
 							<input type="button" class="smallbutton" value="Add new" onclick="goTo('add')"/><%
 						}
-						if (!restore){ %>
+						if (!restore && !wrkCopies){ %>
 							&nbsp;<input type="button" name="del_button" value="Delete selected" class="smallbutton" disabled onclick="deleteDataset()"/><%
 						}
-						else{%>
+						else if (restore){%>
 							&nbsp;<input type="button" name="rst_button" value="Restore selected" class="smallbutton" disabled onclick="restoreDataset()"/><%
 						}
 					}
@@ -427,10 +446,8 @@
 				
 				<!-- search, restore, page help buttons -->
 				
-				<td align="right" colspan="3">
-					<a target="_blank" href="help.jsp?screen=datasets&area=pagehelp" onclick="pop(this.href)">
-						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"/>
-					</a><br/>
+				<td align="right" colspan="<%=String.valueOf(colSpan-2)%>">
+					<a target="_blank" href="help.jsp?screen=datasets&area=pagehelp" onclick="pop(this.href)"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"/></a><br/>
 					<a href="search_dataset.jsp"><img src="images/search.jpg" border=0 alt="Search datasets"></a><br/>
 					<%
 					if (user!=null && user.isAuthentic() && !restore){%>
@@ -445,8 +462,15 @@
 			<!-- the table itself -->
 		
 			<tr>
-				<th width="3%">&nbsp;</th>
-				<th width="32%" style="border-left: 0">
+				<%
+				if (userHasEditRights){ %>
+					<th width="3%">&nbsp;</th>
+					<th width="32%" style="border-left:0"><%
+				}
+				else{ %>
+					<th width="32%"><%
+				}
+				%>
 					<jsp:include page="thsortable.jsp" flush="true">
 			            <jsp:param name="title" value="Dataset"/>
 			            <jsp:param name="mapName" value="Dataset"/>
@@ -454,27 +478,30 @@
 			            <jsp:param name="help" value="help.jsp?screen=datasets&area=dataset"/>
 			        </jsp:include>
 				</th>
-				<!-- th width="10%">Version</th -->
-				<th width="10%">
-					<table width="100%">
-						<tr>
-							<td align="right" width="50%">
-								<b>Last CheckIn No</b>
-							</td>
-							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=datasets&area=version" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
-								</a>
-							</td>
-						</tr>
-					</table>
-				</th>
+				<%
+				if (userHasEditRights){ %>
+					<th width="10%">
+						<table width="100%">
+							<tr>
+								<td align="right" width="50%">
+									<b>CheckInNo</b>
+								</td>
+								<td align="left" width="50%">
+									<a target="_blank" href="help.jsp?screen=dataset&area=check_in_no" onclick="pop(this.href)">
+										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+									</a>
+								</td>
+							</tr>
+						</table>
+					</th><%
+				}
+				%>
 				<th width="15%">
 					<jsp:include page="thsortable.jsp" flush="true">
 			            <jsp:param name="title" value="Status"/>
 			            <jsp:param name="mapName" value="Status"/>
 			            <jsp:param name="sortColNr" value="2"/>
-			            <jsp:param name="help" value="help.jsp?screen=datasets&area=status"/>
+			            <jsp:param name="help" value="help.jsp?screen=dataset&area=regstatus"/>
 			        </jsp:include>
 				</th>
 				<th width="40%" style="border-right: 1 solid #FF9900">
@@ -498,8 +525,9 @@
 			boolean wasDelPrm = false;
 			
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
-
+				
 				c_SearchResultSet oResultSet=new c_SearchResultSet();
+				oResultSet.isAuth = user!=null;
 	        	oResultSet.oElements=new Vector(); 
 	        	session.setAttribute(oSearchCacheAttrName,oResultSet);
 	        	
@@ -552,11 +580,9 @@
                															 dsFullName,
                 														 tables);
                 														 
-					boolean delPrm = user!=null &&
-									 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "d");
+					boolean delPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
 					oEntry.setDelPrm(delPrm);
-					if (delPrm)
-						wasDelPrm = true;
+					if (delPrm) wasDelPrm = true;
 					
 					
 					oEntry.setRegStatus(regStatus);
@@ -577,46 +603,50 @@
 					String statusImg   = "images/" + Util.getStatusImage(regStatus);
 					String statusTxt   = Util.getStatusRadics(regStatus);
 					String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+					
+					String alertReleased = regStatus.equals("Released") ? "onclick='alertReleased(" + ds_id + ")'" : "";
 					%>
 				
 					<tr valign="top">
-					
-						<td width="3%" align="right" class="<%=styleClass%>">
-							<%
-							if (delPrm){
-		    					
+						<%
+						if (delPrm){ %>
+							<td width="3%" align="right" class="<%=styleClass%>">
+								<%
 		    					if (topWorkingUser!=null){ // mark checked-out datasets
 			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
 		    					}
 		    					else if (canDelete){ %>
-									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>"/>
+									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" <%=alertReleased%>/>
 									<input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=dataset.getIdentifier()%>"/>
 									<%
 								}
 								else{ %>
 									&nbsp;<%
 								}
-							}
-							else{ %>
-								&nbsp;<%
-							}
-							%>
-						</td>
+								%>
+							</td><%
+						}
+						%>
 						
 						<td width="30%" class="<%=styleClass%>" title="<%=dsFullName%>">
 							<a <%=linkDisabled%> href="<%=dsLink%>">
 							<%=Util.replaceTags(dsFullName)%></a>
-						</td>					
-						<td width="10%" class="<%=styleClass%>">
-							<%
-							if (clickable){ %>
-								<%=dsVersion%><%
-							}
-							else{ %>
-								<a disabled href="javascript:;" style="text-decoration:none"><%=dsVersion%></a><%
-							}
-							%>
 						</td>
+						
+						<%
+						if (userHasEditRights){ %>
+							<td width="10%" class="<%=styleClass%>">
+								<%
+								if (clickable){ %>
+									<%=dsVersion%><%
+								}
+								else{ %>
+									<a disabled href="javascript:;" style="text-decoration:none"><%=dsVersion%></a><%
+								}
+								%>
+							</td><%
+						}
+						%>
 						<td width="12%" class="<%=styleClass%>">
 							<%
 							if (clickable){ %>
@@ -642,12 +672,16 @@
 			    															  table.getIdentifier(), "tbl");
 
 								String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());
-								%>
-								<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
-								<a <%=linkDisabled%> href="<%=tableLink%>">
-									<%=Util.replaceTags(table.getShortName())%>
-								</a>
-								<%
+								
+								if (wrkCopies){ %>
+									<%=Util.replaceTags(table.getShortName())%><%
+								}
+								else{ %>
+									<a <%=linkDisabled%> href="<%=tableLink%>">
+										<%=Util.replaceTags(table.getShortName())%>
+									</a><%
+								}
+								
 								if (user!=null && tblWorkingUser!=null){ // mark checked-out tables
 									%>&#160;<font color="red">*</font> <%
 								}
@@ -663,16 +697,18 @@
 					<%
 				}
 				%>
-        	    <tr><td colspan="5">&#160;</td></tr>
-				<tr><td colspan="5">Total results: <%=datasets.size()%></td></tr><%
+        	    <tr><td colspan="<%=String.valueOf(colSpan)%>">&#160;</td></tr>
+				<tr><td colspan="<%=String.valueOf(colSpan)%>">Total results: <%=datasets.size()%></td></tr><%
 			}
 			else{
+				
 				// No search - return from another result set or a total stranger...
                 c_SearchResultSet oResultSet=(c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
                 if (oResultSet==null) {
                     %><P>This page has experienced a time-out. Try searching again.<%
                 }
                 else {
+	                
                     if ((oSortCol!=null) && (oSortOrder!=null))
                         oResultSet.SortByColumn(oSortCol,oSortOrder);
                     
@@ -684,28 +720,34 @@
                         String statusImg = "images/" + Util.getStatusImage(oEntry.getRegStatus());
                         String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
                         
+                        String alertReleased = oEntry.getRegStatus().equals("Released") ? "onclick='alertReleased(" + oEntry.oID + ")'" : "";
+                        
                         %>
-						<tr valign="top">	
+						<tr valign="top">
 						
-							<td width="3%" align="right" class="<%=styleClass%>">
-								<%
-								if (oEntry.getDelPrm()){
-									wasDelPrm = true;
-									%>
-									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>"/>
-									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=oEntry.oIdentifier%>"/><%
-								}
+							<%
+							if (oEntry.getDelPrm()){
+								wasDelPrm = true;
 								%>
-							</td>
+								<td width="3%" align="right" class="<%=styleClass%>">
+									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" <%=alertReleased%>/>
+									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=oEntry.oIdentifier%>"/>
+								</td><%
+							}
+							%>
 							
 							<td width="30%" class="<%=styleClass%>" title="<%=oEntry.oFullName%>">
 								<a <%=linkDisabled%> href="dataset.jsp?ds_id=<%=oEntry.oID%>&amp;mode=view">
 								<%=Util.replaceTags(oEntry.oFName)%></a>
 							</td>
 							
-							<td width="10%" class="<%=styleClass%>">
-								<%=oEntry.oVersion%>
-							</td>
+							<%
+							if (userHasEditRights){ %>
+								<td width="10%" class="<%=styleClass%>">
+									<%=oEntry.oVersion%>
+								</td><%
+							}
+							%>
 							
 							<td width="12%" class="<%=styleClass%>">
 								<img border="0" src="<%=statusImg%>" width="56" height="12"/>
@@ -718,11 +760,12 @@
 				
 									DsTable table = (DsTable)tables.get(c);
 									String tableLink = "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + oEntry.oID + "&ds_name=" + oEntry.oShortName;
-			
-									%>
-									<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
-									<a <%=linkDisabled%> href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a><br/>
-									<%
+									if (wrkCopies){ %>
+										<%=Util.replaceTags(table.getShortName())%><%
+									}
+									else{ %>
+										<a <%=linkDisabled%> href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a><br/><%
+									}
 								}
 								%>
 							</td>
@@ -730,8 +773,8 @@
 					<%
 					}
                 	%>
-                	<tr><td colspan="5">&#160;</td></tr>
-					<tr><td colspan="5">Total results: <%=oResultSet.oElements.size()%></td></tr><%
+                	<tr><td colspan="<%=String.valueOf(colSpan)%>">&#160;</td></tr>
+					<tr><td colspan="<%=String.valueOf(colSpan)%>">Total results: <%=oResultSet.oElements.size()%></td></tr><%
                 }
 
             }
@@ -741,15 +784,30 @@
 		
 		<input name="was_del_prm" type="hidden" value="<%=wasDelPrm%>"/>
 		<input type="hidden" name="searchUrl" value=""/>
-        <input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
-        <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
-		<input name='SearchType' type='hidden' value='NoSearch'/>
+		<input name='SearchType' type='hidden' value='<%=TYPE_SEARCH%>'/>
 		
 		<input type="hidden" name="mode" value="view"/>
 		
 		<!-- Special input for 'delete' mode only. Inidcates if dataset(s) should be deleted completely. -->
 		<input type="hidden" name="complete" value="false"/>
 		
+		<%
+		if (wrkCopies){ %>
+			<input name='wrk_copies' type='hidden' value='true'/><%
+		}
+		%>
+		
+		</form>
+		
+		<form name="sort_form" action="datasets.jsp" method="GET">
+			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
+	        <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
+			<input name='SearchType' type='hidden' value='NoSearch'/>
+			<%
+			if (wrkCopies){ %>
+				<input name='wrk_copies' type='hidden' value='true'/><%
+			}
+			%>
 		</form>
 		
 			<jsp:include page="footer.jsp" flush="true">

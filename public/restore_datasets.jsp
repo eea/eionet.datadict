@@ -2,8 +2,7 @@
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
-<%!final static String oSearchCacheAttrName="search_cache";%>
-<%!final static String oSearchUrlAttrName="search_url";%>
+<%!final static String oSearchCacheAttrName="restore_datasets_search_cache";%>
 <%!private Vector attributes=null;%>
 <%!private boolean restore = false;%>
 
@@ -157,17 +156,10 @@
 				} catch (SQLException e) {}
 			}
 		
-			String redirUrl = (String)session.getAttribute(oSearchUrlAttrName);
-			if (redirUrl != null && redirUrl.length()!=0){
-				response.sendRedirect(redirUrl);
-				return;
-			}
+			response.sendRedirect("restore_datasets.jsp?SearchType=SEARCH&restore=true");
+			return;
 		}
 		
-		String query = request.getQueryString() == null ? "" : request.getQueryString();
-		String searchUrl =  request.getRequestURI() + "?" + query;
-       	session.setAttribute(oSearchUrlAttrName, searchUrl);
-
        	searchEngine = new DDSearchEngine(conn, "", ctx);	
        	searchEngine.setUser(user);
 
@@ -266,17 +258,40 @@
 		}
 		
     	function deleteDataset(){
+	    	<%
+	    	if (restore){ %>
+	    		var msg = "This will permanently delete the selected datasets! Click OK, if you want to continue. Otherwise click Cancel.";<%
+	    	}
+	    	else{ %>
+	    		var msg = "This will delete all the datasets you have selected. " +
+					  "If any of them are working copies then the corresponding " +
+					  "original copies will be released. Click OK, if you want to continue. " +
+					  "Otherwise click Cancel.";<%
+	    	}
+	    	%>
 	    	
-	    	// first confirm if the deletetion is about to take place at all
-			var b = confirm("This will delete all the datasets you have selected. " +
-							"If any of them are working copies then the corresponding " +
-							"original copies will be released. Click OK, if you want to continue. " +
-							"Otherwise click Cancel.");
+			var b = confirm(msg);
 			if (b==false) return;
 			
-			// now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
-			window.open("dst_del_dialog.html", "", "height=130,width=300,status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no");
+			<%
+			if (!restore){ %>
+				// now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
+				openNoYes("yesno_dialog.html", "Do you want the selected datasets to be deleted permanently?\n(Note that working copies will always be permanently deleted)", delDialogReturn,100, 400);<%
+			}
+			else{ %>
+				document.forms["form1"].elements["complete"].value = "true";
+				deleteDatasetReady();<%
+			}
+			%>
     	}
+    	
+    	function delDialogReturn(){
+			var v = dialogWin.returnValue;
+			if (v==null || v=="" || v=="cancel") return;
+			
+			document.forms["form1"].elements["complete"].value = v;
+			deleteDatasetReady();
+		}
     	
     	function deleteDatasetReady(){
 	    	document.forms["form1"].elements["mode"].value = "delete";
@@ -288,14 +303,6 @@
 	    	document.forms["form1"].elements["mode"].value = "restore";
 	    	document.forms["form1"].elements["SearchType"].value='<%=TYPE_SEARCH%>';
        		document.forms["form1"].submit();
-    	}
-    	
-    	function deleteForGood(){
-	    	document.forms["form1"].elements["complete"].value = "true";
-	    	var b = confirm("This will delete the selected datasets permanently! Click OK, if you want to continue. " +
-							"Otherwise click Cancel.");
-			if (b==false) return;
-			deleteDatasetReady();
     	}
     	
     	function doLoad(){
@@ -419,7 +426,7 @@
 					<table width="100%">
 						<tr>
 							<td align="right" width="60%">
-								<b>Last CheckIn No</b>
+								<b>CheckInNo</b>
 							</td>
 							<td align="left" width="40%">
 								<a target="_blank" href="help.jsp?screen=datasets&area=version" onclick="pop(this.href)">
@@ -491,7 +498,7 @@
                 														 tables);
                 															 
 					boolean delPrm = user!=null &&
-									 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "d");
+									 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
 									 
 					oEntry.setDelPrm(delPrm);
 					if (delPrm)
@@ -544,13 +551,10 @@
 							for (int c=0; tables!=null && c<tables.size(); c++){
 				
 								DsTable table = (DsTable)tables.get(c);
-								String tableLink = "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + ds_id + "&ds_name=" + ds_name;
-								
 								String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
 			    															  table.getIdentifier(), "tbl");
 			
 								%>
-								<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
 									<%=Util.replaceTags(table.getShortName())%>
 								<%
 								if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
@@ -613,10 +617,8 @@
 								for (int c=0; tables!=null && c<tables.size(); c++){
 				
 									DsTable table = (DsTable)tables.get(c);
-									String tableLink = "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + oEntry.oID + "&ds_name=" + oEntry.oShortName;
 			
 									%>
-									<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
 										<%=Util.replaceTags(table.getShortName())%><br/>
 									<%
 								}

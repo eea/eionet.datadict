@@ -33,18 +33,31 @@
 		<form name="form1" method="POST" action="modal_dialog.html">
 			<table width="100%">
 				<tr>
-					<td colspan="2">
+					<td colspan="3">
 						<span class="mainfont"><b>
-							<SCRIPT LANGUAGE="JavaScript">
+							<script language="JavaScript">
 								document.write(window.opener.dialogWin.text);
-							</SCRIPT>
+							</script>
 						</b></span>
 					</td>
 				</tr>
-				<tr height="5"><td colspan="2">&#160;</td></tr>
+				<tr height="5"><td colspan="3">&#160;</td></tr>
 				<tr>
-					<td><input type="button" class="mediumbuttonb" name="yes" value=" Yes " onclick="clicked(true)"/></td>	
-					<td><input type="button" class="mediumbuttonb" name="no" value=" No " onclick="clicked(false)"/></td>
+					<script language="JavaScript">
+						if (window.opener.dialogWin.order=="yesno"){
+							document.writeln(
+							'<td><input type="button" class="mediumbuttonb" name="1stbutton" value=" Yes " onclick="clicked(\'true\')"/></td>');
+							document.writeln(
+							'<td><input type="button" class="mediumbuttonb" name="2ndbutton" value=" No " onclick="clicked(\'false\')"/></td>');
+						}
+						else{
+							document.writeln(
+								'<td><input type="button" class="mediumbuttonb" name="1stbutton" value=" No " onclick="clicked(\'false\')"/></td>');
+							document.writeln(
+							'<td><input type="button" class="mediumbuttonb" name="2ndbutton" value=" Yes " onclick="clicked(\'true\')"/></td>');
+						}
+					</script>
+					<td><input type="button" class="mediumbuttonb" name="3rdbutton" value="Cancel" onclick="clicked('cancel')"/></td>
 				</tr>
 			</table>
 			<input type="hidden" name="wasclick" value="false"/>

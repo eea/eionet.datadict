@@ -20,16 +20,6 @@ if (request.getMethod().equals("POST")){
 	}
 }
 else if (request.getMethod().equals("GET")){
-	/*if (requestURI.indexOf("data_element.jsp")==-1 && requestURI.indexOf("dataset.jsp")==-1 && requestURI.indexOf("dstable.jsp")==-1)
-		bLog=true;
-	if ((requestURI.indexOf("data_element.jsp")>-1 || requestURI.indexOf("dataset.jsp")>-1 || requestURI.indexOf("dstable.jsp")>-1)
-			 && queryString.indexOf("mode=edit")==-1){
-		bLog=true;
-	}
-	else if ((requestURI.indexOf("data_element.jsp")>-1 || requestURI.indexOf("dataset.jsp")>-1 || requestURI.indexOf("dstable.jsp")>-1)
-			&& queryString.indexOf("mode=edit")>-1){
-		backUrl=history.getLastMatching("mode=view");
-	}*/
 	bLog=true;
 }			
 if (bLog){	

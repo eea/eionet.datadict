@@ -85,7 +85,11 @@ try{
 							<span class="head00">
 								ROD obligations corresponding to <a href="dataset.jsp?mode=edit&ds_id=<%=dstID%>"><%=dstName%><a> dataset
 							</span>
-			
+							<p align="right">
+								<a target="_blank" href="help.jsp?screen=dataset_rod&area=pagehelp" onclick="pop(this.href)">
+									<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+								</a>
+							</p>
 							<form name="rodlinks" action="dstrod_links.jsp" method="POST">
 								<table width="auto" cellspacing="0" cellpadding="0">
 									<tr>

@@ -51,9 +51,6 @@ function logout() {
 function form_changed(form_name){
 	document.forms[form_name].elements["changed"].value="1";		
 }
-function confirm_saving(){
-	return confirm("You have unsaved data on the page! Are you sure you want to leave the page and loose the changes?");
-}
 function getDDVersionName(){
 	return "Version 2.1";
 }
