@@ -92,6 +92,11 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>CacheServlet</servlet-name>
+		<servlet-class>eionet.meta.exports.CacheServlet</servlet-class>
+	</servlet>
+
+	<servlet>
 		<servlet-name>Login</servlet-name>
 		<servlet-class>eionet.meta.LoginServlet</servlet-class>
 	</servlet>
@@ -159,6 +164,10 @@
 	<servlet-mapping>
 		<servlet-name>XlsServlet</servlet-name>
 		<url-pattern>/GetXls</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>CacheServlet</servlet-name>
+		<url-pattern>/GetCache</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Login</servlet-name>
