@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<html xmlns="http://www.w3.org/2002/06/xhtml2" 
+	xmlns:f="http://www.w3.org/2002/xforms" 
+	xmlns:ev="http://www.w3.org/2001/xml-events">
+	<head>
+		<style type="text/css">
+		</style>
+		<f:model id="model1">
+			<f:submission id="return" f:action="public/return-instance.jsp" f:method="post" f:replace="all" />
+		</f:model>
+	</head>
+	<body>
+	    <f:group id="controls" f:appearance="minimal">
+	  	    <f:repeat id="???" bind="???" appearance="compact">
+	  	    </f:repeat>
+	    </f:group>
+	    <f:group id="triggers" f:appearance="minimal">
+	  	  <f:trigger id="addline">
+			<f:label>Add line</f:label>
+			<f:action ev:event="DOMActivate">
+				<f:insert at="xforms:index('???')" nodeset="???" position="after" />
+			</f:action>
+		</f:trigger>
+		<f:trigger id="deleteline">
+			<f:label>Delete line</f:label>
+			<f:action ev:event="DOMActivate">
+				<f:delete at="xforms:index('???')" nodeset="???" />
+			</f:action>
+		</f:trigger>
+		<f:submit name="Submit" submission="save">
+			<f:label>Save</f:label>
+		</f:submit>
+	    </f:group>
+	</body>
+</html>
