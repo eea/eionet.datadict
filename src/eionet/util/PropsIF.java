@@ -25,6 +25,9 @@ public interface PropsIF {
 	public static final String XFORMS_NSS = "xforms.nss";
 	public static final String XFORMS_NS = "xforms.ns";
 	public static final String XFORM_TEMPLATE_URL = "xforms.templ.url";
+	
+	public static final String XLS_SCHEMA_URL = "xls.schema-url";
+	public static final String XLS_SCHEMA_URL_SHEET = "xls.schema-url-sheet";
 
 	public static final String INSERV_PREFIX = "inserv.";
 	public static final String INSERV_NAME = ".name";
@@ -37,6 +40,8 @@ public interface PropsIF {
 	
 	public static final String OUTSERV_ELM_URLPATTERN = "outserv.elm-details-url";
 	public static final String OUTSERV_ELM_IDPATTERN  = "<ELM_ID>";
+	
+	public static final String JSP_URL_PREFIX = "jsp.url-prefix";
 	
 	/** defaults */
 	

@@ -2,39 +2,31 @@
 package eionet.meta;
 
 import java.util.*;
+import eionet.util.Util;
 
 public class DsTable implements Comparable {
-    
-    public static final String TYPE_NORMAL = "normal";
-    public static final String TYPE_LOOKUP = "lookup";
     
     private String id = null;
     private String dsID = null;
     private String shortName = null;
-    private String name = null;
-    private String definition = null;
-    private String type = TYPE_NORMAL;
+	private String identifier = null;
+	private String version = null;
     
+	private String name = null;
     private String nsID = null;
-    
+	private String parentNS = null;
+	private String datasetName = null;
+	private String dstIdentifier = null;
+	private boolean gis = false;
+	
+	private String workingUser = null;
     private String workingCopy = null;
     
+	private String compStr = null;
+	
     private Vector elements = new Vector();
     private Vector simpleAttrs = new Vector();
     private Vector complexAttrs = new Vector();
-    
-    private String version = null;
-    private String status = null;
-    
-    private String datasetName = null;
-    
-    private String parentNS = null;
-	private String identifier = null;
-    
-    private String workingUser = null;
-    
-    private String compStr = null;
-    private boolean gis = false;
     
     private int dstVersion = -1; 
     
@@ -62,29 +54,13 @@ public class DsTable implements Comparable {
         return shortName;
     }
     
-    public void setName(String name){
-        this.name = name;
-    }
-    
-    public String getName(){
-        return name;
-    }
-    
-    public void setDefinition(String definition){
-        this.definition = definition;
-    }
-    
-    public String getDefinition(){
-        return definition;
-    }
-    
-    public void setType(String type){
-        this.type = type;
-    }
-    
-    public String getType(){
-        return type;
-    }
+	public void setName(String name){
+		this.name = name;
+	}
+
+	public String getName(){
+		return name;
+	}
     
     public void addElement(DataElement element){
         elements.add(element);
@@ -148,14 +124,6 @@ public class DsTable implements Comparable {
     
     public void setWorkingCopy(String workingCopy){
         this.workingCopy = workingCopy;
-    }
-    
-    public void setStatus(String status){
-        this.status = status;
-    }
-    
-    public String getStatus(){
-        return this.status;
     }
     
     public void setVersion(String version){
@@ -260,14 +228,14 @@ public class DsTable implements Comparable {
 		return gis;
 	}
 
-	public void setDstVersion(int ver){
-		this.dstVersion = ver;
+	public String getDstIdentifier(){
+		return dstIdentifier;
 	}
-    
-	public int getDstVersion(){
-		return dstVersion;
+
+	public void setDstIdentifier(String dstIdentifier){
+		this.dstIdentifier = dstIdentifier;
 	}
-	    
+
 	public int compareTo(Object o){
 		
 		if (!o.getClass().getName().endsWith("DsTable")) return 1;
@@ -282,5 +250,29 @@ public class DsTable implements Comparable {
 			return -1;
 		
 		return compStr.compareToIgnoreCase(oCompStr);
+	}
+
+	public String getRelativeTargetNs(){
+		
+		if (Util.voidStr(dstIdentifier)){
+			if (Util.voidStr(parentNS))
+				return "";
+			else
+				return "/namespaces/" + parentNS;
+		}
+		else
+			return "/datasets/" + dstIdentifier;
+	}
+	
+	public String getRelativeCorrespNs(){
+		
+		if (Util.voidStr(dstIdentifier)){
+			if (Util.voidStr(nsID))
+				return "";
+			else
+				return "/namespaces/" + nsID;
+		}
+		else
+			return "/datasets/" + dstIdentifier + "/tables/" + identifier;
 	}
 }

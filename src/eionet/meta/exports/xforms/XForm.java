@@ -4,6 +4,7 @@ import eionet.meta.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import eionet.util.Util;
 
 public abstract class XForm implements XFormIF {
 	
@@ -206,10 +207,12 @@ public abstract class XForm implements XFormIF {
 	private void writeSelectItem(FixedValue fxv, String lead) throws Exception{
 		
 		String value = fxv.getValue();
-		if (value==null || value.length()==0) return;
-		String label = fxv.getDefinition();
-		if (label==null || label.length()==0) label = value;
-		if (label.length()>60) label = label.substring(0, 60) + "...";
+		if (value==null || value.length()==0)
+			return;
+		else
+			value = Util.escapeXML(value);
+			
+		String label = value;
 		
 		writer.println(lead + "<f:item>");
 		writer.println(lead + "\t<f:label>" + label + "</f:label>");
@@ -238,26 +241,6 @@ public abstract class XForm implements XFormIF {
 		return buf.toString();
 	}
 
-	protected String escape(String s){
-        
-		if (s == null) return null;
-        
-		StringBuffer buf = new StringBuffer();
-		for (int i=0; i<s.length(); i++){
-			char c = s.charAt(i);
-			if (c == '<')
-				buf.append("&lt;");
-			else if (c == '>')
-				buf.append("&gt;");
-			else if (c == '&')
-				buf.append("&amp;");
-			else
-				buf.append(c);
-		}
-        
-		return buf.toString();
-	}
-    
 	protected String escapeCDATA(String s){
         
 		if (s == null) return null;

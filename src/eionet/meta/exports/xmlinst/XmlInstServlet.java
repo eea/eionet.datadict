@@ -17,8 +17,6 @@ public class XmlInstServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse res)
                                 throws ServletException, IOException {
 
-		res.setContentType("text/xml");
-		
         PrintWriter writer = null;
         Connection conn = null;
         
@@ -26,9 +24,13 @@ public class XmlInstServlet extends HttpServlet {
         	
 			//guard(req);
 			
+            // get the object ID
             String id = req.getParameter("id");
-	        if (Util.voidStr(id))
-	            throw new Exception("Missing id!");
+	        if (Util.voidStr(id)) throw new Exception("Missing id!");
+
+			// get the object type
+			String type = req.getParameter("type");
+			if (Util.voidStr(type)) throw new Exception("Missing type!");
 	        
 	        ServletContext ctx = getServletContext();
 	        String appName = ctx.getInitParameter("application-name");
@@ -39,9 +41,16 @@ public class XmlInstServlet extends HttpServlet {
             conn = pool.getConnection();
                 
 	        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+			res.setContentType("text/xml; charset=UTF-8");
             writer = new PrintWriter(res.getOutputStream());
 
-            XmlInstIF xmlInst = new TblXmlInst(searchEngine, writer);
+			XmlInstIF xmlInst = null;
+			if (type.equals("tbl"))
+            	xmlInst = new TblXmlInst(searchEngine, writer);
+            else if (type.equals("dst"))
+				xmlInst = new DstXmlInst(searchEngine, writer);
+			else
+				throw new Exception("Unknown type: " + type);
             
             // build application context
             String reqUri = req.getRequestURL().toString();

@@ -53,6 +53,7 @@ public class GetSchema extends HttpServlet {
             conn = pool.getConnection();
                 
 	        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+	        res.setContentType("text/xml; charset=UTF-8");
             writer = new PrintWriter(res.getOutputStream());
 
             SchemaIF schema = null;

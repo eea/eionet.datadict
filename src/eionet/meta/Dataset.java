@@ -8,6 +8,14 @@ public class Dataset {
     private String id = null;
     private String shortName = null;
     private String version = null;
+	private String status = null;
+	private String name = null;
+	private String identifier = null;
+	private String date = null;
+	
+	private String workingCopy = null;
+    
+	private String nsID = null;
     private String visual = null;
     private String detailedVisual = null;
     
@@ -15,15 +23,8 @@ public class Dataset {
     private Vector simpleAttrs = new Vector();
     private Vector complexAttrs = new Vector();
     
-    private String nsID = null;
-    
-    private String status = null;
-    private String workingCopy = null;
-    
-    private String name = null;
-    private String identifier = null;
-    
-	private String date = null;
+    private int displayCreateLinks = -1;
+	private static Hashtable createLinkWeights = null;
 
     public Dataset(String id, String shortName, String version){
         this.id = id;
@@ -222,4 +223,48 @@ public class Dataset {
     	
     	return hash;
     }
+    
+	public String getRelativeTargetNs(){
+		return "/datasets";
+	}
+	
+	public String getRelativeCorrespNs(){
+		return "/datasets/" + identifier;
+	}
+	
+	public void setDisplayCreateLinks(int displayCreateLinks){
+		this.displayCreateLinks = displayCreateLinks;
+	}
+
+	/*
+	 * The return value indicates weather the given "Create..." link should be displayed
+	 */
+	public boolean displayCreateLink(String linkID){
+
+		// if not a single create link should be displayed the obviously return false
+		if (displayCreateLinks == 0) return false;
+
+		Hashtable weights = Dataset.getCreateLinkWeights();
+		Integer weight = (Integer)weights.get(linkID);
+		if (weight == null) return false;
+        
+		// if the integer division displayCreateLinks/weight is not a multiplicand of 2,
+		// then the given link  should not be displayed 
+		int div = displayCreateLinks/weight.intValue();
+		if (div % 2 != 0)
+			return true;
+		else
+			return false;
+	}
+	
+	public static Hashtable getCreateLinkWeights(){
+		
+		if (createLinkWeights==null){
+			createLinkWeights = new Hashtable();
+			createLinkWeights.put("PDF", new Integer(2));
+			createLinkWeights.put("XLS", new Integer(1));
+		}
+		
+		return createLinkWeights;
+	}
 }

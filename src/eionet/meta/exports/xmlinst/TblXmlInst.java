@@ -11,12 +11,6 @@ import com.tee.xmlserver.AppUserIF;
 
 public class TblXmlInst extends XmlInst {
 	
-	private static final int ROW_COUNT = 1;
-	
-	private String dstNsPrefix = "";
-	private String tblNsPrefix = "";
-	private Vector elements = null;
-	
 	public TblXmlInst(DDSearchEngine searchEngine, PrintWriter writer){
 		super(searchEngine, writer);
 	}
@@ -31,7 +25,7 @@ public class TblXmlInst extends XmlInst {
 		if (tbl == null) throw new Exception("Table not found!");
         
 		// get data elements (this will set all the simple attributes of elements)
-		elements = searchEngine.getDataElements(null, null, null, null, tblID);
+		tbl.setElements(searchEngine.getDataElements(null, null, null, null, tblID));
         
 		write(tbl);
 	}
@@ -48,7 +42,7 @@ public class TblXmlInst extends XmlInst {
 			if (ns != null){
 				addNamespace(ns);
 				dstNsPrefix = getNamespacePrefix(ns);
-				setSchemaLocation(getSchemaLocation(nsID, tbl));
+				setSchemaLocation(getSchemaLocation(nsID, tbl.getID()));
 			}
 		}
 		
@@ -62,57 +56,22 @@ public class TblXmlInst extends XmlInst {
 			}
 		}
 		
-		//setDocElement(dstNsPrefix + ":" + tbl.getShortName());
 		setDocElement(dstNsPrefix + ":" + tbl.getIdentifier());
 		
-		writeRows();
+		writeRows(tbl.getElements());
 	}
 	
-	private void writeRows(){		
-		for (int i=0; i<ROW_COUNT; i++){
-			writeRow();
-		}
-	}
-	
-	private void writeRow(){
-		addString(startRow());
-		newLine();
-		
-		for (int i=0; elements!=null && i<elements.size(); i++){
-			DataElement elm = (DataElement)elements.get(i);
-			//addString(elm(elm.getShortName()));
-			addString(elm(elm.getIdentifier()));
-			newLine(); 
-		}
-		
-		addString(endRow());
-		newLine();
-	}
-	
-	private String startRow(){
-		return getLead("row") + "<" + dstNsPrefix + ":" + "Row status=\"new\">";
-	}
-
-	private String endRow(){
-		return getLead("row") + "</" + dstNsPrefix + ":" + "Row>";
-	}
-
-	private String elm(String name){
-		String qfName = tblNsPrefix + ":" + name;
-		return getLead("elm") + "<" + qfName + "></" + qfName + ">";
-	}
-
-	private String getSchemaLocation(String nsID, DsTable tbl){
+	protected String getSchemaLocation(String nsID, String id){
 		StringBuffer buf = new StringBuffer().
-		/*append(this.appContext).
-		append("namespace.jsp?ns_id=").
-		append(nsID).
-		append(" ").*/
-		append(this.appContext).
-		append("GetSchema?id=TBL").
-		append(tbl.getID());
+		append(this.appContext).append("GetSchema?id=TBL").append(id);
 		
 		return buf.toString();
+	}
+
+	protected void setLeads(){
+		leads = new Hashtable();
+		leads.put("row", "\t");
+		leads.put("elm", "\t\t");
 	}
 		
 	public static void main(String args[]){

@@ -90,12 +90,14 @@ public class TblSchema extends Schema {
 		newLine();
         addString("\t\t\t\t<xs:complexType>");
 		newLine();
-		addString("\t\t\t\t\t<xs:attribute name=\"status\" type=\"xs:string\" use=\"optional\"/>");
-        newLine();
         
         String tab = "\t\t\t\t\t";
-        
         writeSequence(dsTable.getElements(), tab, null, null);
+        
+		// the "status" attribute required by GDEM
+		// must AFTER the sequence, according to XMLSchema specs
+		addString("\t\t\t\t\t<xs:attribute name=\"status\" type=\"xs:string\" use=\"optional\"/>");
+		newLine();
         
         addString("\t\t\t\t</xs:complexType>");
         newLine();

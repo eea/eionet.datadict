@@ -67,7 +67,10 @@ public class DataElementHandler extends BaseHandler {
 
 	/** for storing restored elm ID returned by Restorer.restoreElm() */
 	private String restoredID = null;
-	
+
+	/** for storing the ID of the next-in-line version of the deleted common element */
+	private String latestCommonElmID = null;
+
 	private boolean importMode = false;
 
     /**
@@ -158,26 +161,29 @@ public class DataElementHandler extends BaseHandler {
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("DATAELEM");
         
-        // if there where any working copies, release originals
-        Iterator iter=originals.iterator();
-        while (iter.hasNext()){
-            String s = (String)iter.next();
-            int pos = s.indexOf(",");
-            gen.setFieldExpr("WORKING_USER", "NULL");
-            String q = gen.updateStatement() + " where WORKING_USER='" +
-                        user.getUserName() + "' and PARENT_NS=" +
-                        s.substring(0, pos) + " and IDENTIFIER='" +
-                        s.substring(pos+1) + "'";
-            stmt.executeUpdate(q);
-        }
-        
+        // release originals
+		for (Iterator i=originals.iterator(); i.hasNext(); ){
+			StringBuffer buf = new StringBuffer().
+			append("update DATAELEM set WORKING_USER=NULL where IDENTIFIER=");
+			String origID = (String)i.next();
+			int commaPos = origID.indexOf(',');
+			if (commaPos<0)
+				buf.append(Util.strLiteral(origID));
+			else
+				buf.append(Util.strLiteral(origID.substring(0,commaPos))).
+				append(" and PARENT_NS=").append(origID.substring(commaPos+1));
+			stmt.executeUpdate(buf.toString());
+		}
+		
         // release the top namespaces
-        gen.clear();
-        gen.setTable("NAMESPACE");
-        gen.setFieldExpr("WORKING_USER", "NULL");
-        for (Iterator i=topns.iterator(); i.hasNext(); ){            
-            stmt.executeUpdate(gen.updateStatement() +
-                    " where NAMESPACE_ID=" + (String)i.next());
+        if (req.getParameter("common")==null){
+	        gen.clear();
+	        gen.setTable("NAMESPACE");
+	        gen.setFieldExpr("WORKING_USER", "NULL");
+	        for (Iterator i=topns.iterator(); i.hasNext(); ){            
+	            stmt.executeUpdate(gen.updateStatement() +
+	                    " where NAMESPACE_ID=" + (String)i.next());
+	        }
         }
         
         stmt.close();
@@ -192,7 +198,6 @@ public class DataElementHandler extends BaseHandler {
                           !mode.equalsIgnoreCase("edit") &&
                           !mode.equalsIgnoreCase("delete") &&
                           !mode.equalsIgnoreCase("copy") &&
-						  !mode.equalsIgnoreCase("restore") &&
                           !mode.equalsIgnoreCase("edit_tblelems")))
             throw new Exception("DataElementHandler mode unspecified!");
 
@@ -210,8 +215,6 @@ public class DataElementHandler extends BaseHandler {
             update();
         else if (mode.equalsIgnoreCase("edit_tblelems"))
             processTableElems();
-        else if (mode.equalsIgnoreCase("restore"))
-        	restore();
         else{
             delete();
             cleanVisuals();
@@ -222,25 +225,30 @@ public class DataElementHandler extends BaseHandler {
     *
     */
     private void insert() throws Exception {
+    	
+    	// see if this is a common elements
+    	boolean elmCommon = req.getParameter("common")!=null; 
 
         // get some stuff of the parent table
-        String topNS = null;
-        if (!Util.nullString(table_id)){
-            if (searchEngine==null)
-                searchEngine = new DDSearchEngine(conn, "", ctx);
-            DsTable dsTable = searchEngine.getDatasetTable(table_id);
-            if (dsTable != null){
-                ns_id = dsTable.getNamespace();
-                topNS = dsTable.getParentNs();
-            }
-        }
-        
-        // make sure we don't try to add under a checked-out namespace
-        if (topNS!=null){
-			VersionManager verMan = new VersionManager(conn, user);
-			verMan.setContext(ctx);
-			if (verMan.getWorkingUser(topNS) != null)
-				throw new Exception("Cannot add to a dataset in work!");
+		String topNS = null;
+        if (!elmCommon){
+	        if (!Util.nullString(table_id)){
+	            if (searchEngine==null)
+	                searchEngine = new DDSearchEngine(conn, "", ctx);
+	            DsTable dsTable = searchEngine.getDatasetTable(table_id);
+	            if (dsTable != null){
+	                ns_id = dsTable.getNamespace();
+	                topNS = dsTable.getParentNs();
+	            }
+	        }
+	        
+	        // make sure we don't try to add under a checked-out namespace
+	        if (topNS!=null){
+				VersionManager verMan = new VersionManager(conn, user);
+				verMan.setContext(ctx);
+				if (verMan.getWorkingUser(topNS) != null)
+					throw new Exception("Cannot add to a dataset in work!");
+	        }
         }
         
         // see if making a copy
@@ -251,12 +259,11 @@ public class DataElementHandler extends BaseHandler {
 		}
         
         // make sure you have the necessary params
-        if (idfier == null || ns_id == null)
-            throw new SQLException("Identifier or namespace not specified!");
-
-        // make sure such a data element doe not already exist
-        if (exists()) throw new SQLException(
-					"Such a data element already exists!");
+        if (idfier == null) throw new SQLException("Identifier not specified!");
+        if (!elmCommon && ns_id==null) throw new SQLException("Namespace not specified!");
+        
+		// make sure such a data element does not already exist
+		if (exists(elmCommon)) throw new SQLException("Such a data element already exists!");
 
         SQLGenerator gen = new SQLGenerator();
         Statement stmt = conn.createStatement();
@@ -269,25 +276,19 @@ public class DataElementHandler extends BaseHandler {
                     " where NAMESPACE_ID=" + topNS);
         }
         
-        // insert the element
+        // set up the element short name
+        if (Util.nullString(delem_name)) delem_name = idfier;
         
-        if (Util.nullString(delem_name))
-			delem_name = idfier;
-        
+		// insert the element
         gen.clear();
         gen.setTable("DATAELEM");
         gen.setField("IDENTIFIER", idfier);
 		gen.setField("SHORT_NAME", delem_name);
         gen.setField("TYPE", type);
-        gen.setField("PARENT_NS", ns_id);
-        if (!Util.nullString(topNS))
-            gen.setField("TOP_NS", topNS);
+        if (!elmCommon) gen.setField("PARENT_NS", ns_id);
+        if (!Util.nullString(topNS)) gen.setField("TOP_NS", topNS);
             
-        String extension = req.getParameter("extends");
-        if (extension != null && extension.length()!=0)
-            gen.setFieldExpr("EXTENDS", extension);
-            
-		String gisType = req.getParameter("gis");
+		String gisType = elmCommon ? null : req.getParameter("gis");
 		if (gisType!=null && gisType.length()==0 && importMode)
 			gisType = null;
 		if (gisType!=null && !gisType.equals("nogis"))
@@ -299,11 +300,11 @@ public class DataElementHandler extends BaseHandler {
             if (user!=null && user.isAuthentic())
                 gen.setField("WORKING_USER", user.getUserName());
         }
-
-        // set the status
-        String status = req.getParameter("reg_status");
-        if (!Util.nullString(status))
-            gen.setField("REG_STATUS", status);
+        
+		// set the status
+		String status = req.getParameter("reg_status");
+		if (!Util.nullString(status))
+			gen.setField("REG_STATUS", status);
 
 		// set IS_ROD_PARAM
 		String isRodParam = req.getParameter("is_rod_param");
@@ -313,27 +314,48 @@ public class DataElementHandler extends BaseHandler {
 			gen.setField("IS_ROD_PARAM", isRodParam);
 		}
         
-        stmt.executeUpdate(gen.insertStatement());
+		stmt.executeUpdate(gen.insertStatement());
 		setLastInsertID();
 		
         stmt.close();
 
         // process other stuff
         setLastInsertID();
-        processDataClass();
         processAttributes();
-        insertTableElem();
+        if (!elmCommon) insertTableElem();
     }
 
     private void update() throws Exception {
+
+		// if check-in, do the action and exit
+		String checkIn = req.getParameter("check_in");
+		if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
+        	
+			VersionManager verMan = new VersionManager(conn, user);
+			verMan.setContext(ctx);
+			
+			String updVer = req.getParameter("upd_version");
+			if (updVer!=null && updVer.equalsIgnoreCase("true")){
+				verMan.updateVersion();
+				verMan.setUpwardsVersioning(true);
+			}
+				
+			verMan.checkIn(delem_id, "elm",
+									req.getParameter("reg_status"));
+			return;
+		}
+		
+		// if not check-in then do the save
         
+		// set up the SQL generator
 		SQLGenerator gen = new SQLGenerator();
 		gen.setTable("DATAELEM");
 		
-        String status = req.getParameter("reg_status");
-        if (!Util.nullString(status))
-            gen.setField("REG_STATUS", status);
-
+		// set the reg status
+		String status = req.getParameter("reg_status");
+		if (!Util.nullString(status))
+			gen.setField("REG_STATUS", status);
+		
 		// set IS_ROD_PARAM
 		String isRodParam = req.getParameter("is_rod_param");
 		if (isRodParam!=null){
@@ -341,69 +363,59 @@ public class DataElementHandler extends BaseHandler {
 				throw new Exception("Invalid value for is_rod_param!");
 			gen.setField("IS_ROD_PARAM", isRodParam);
 		}
-        
-		String gisType = req.getParameter("gis");
-		if (gisType==null || gisType.equals("nogis"))
-			gen.setFieldExpr("GIS", "NULL");
-		else
-			gen.setField("GIS", gisType);
 		
-		if (!Util.nullString(gen.getValues()))
-			conn.createStatement().executeUpdate(gen.updateStatement() + 
-										" where DATAELEM_ID=" + delem_id);        
+		// see if this is a common element
+		boolean elmCommon = req.getParameter("common")!=null;
+        
+		// set the gis type (relevant for common elements only)
+		if (!elmCommon){
+			String gisType = req.getParameter("gis");
+			if (gisType==null || gisType.equals("nogis"))
+				gen.setFieldExpr("GIS", "NULL");
+			else
+				gen.setField("GIS", gisType);
+		}
         
 		// short name
-		if (!Util.nullString(delem_name)){
-			gen = new SQLGenerator();
-			gen.setTable("DATAELEM");
+		if (!Util.nullString(delem_name))
 			gen.setField("SHORT_NAME", delem_name);
-			conn.createStatement().executeUpdate(gen.updateStatement() +
-									" where DATAELEM_ID=" + delem_id);
-		}
-
-        // if check-in, do the action and exit
-        String checkIn = req.getParameter("check_in");
-        if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
-        	
-            VersionManager verMan = new VersionManager(conn, user);
-			verMan.setContext(ctx);
-			
-            String verUpw = req.getParameter("ver_upw");
-            if (verUpw!=null && verUpw.equalsIgnoreCase("false"))
-            	verMan.setUpwardsVersioning(false);
-			
-			String updVer = req.getParameter("upd_version");
-			if (updVer!=null && updVer.equalsIgnoreCase("true"))
-				verMan.updateVersion();
-				
-            verMan.checkIn(delem_id, "elm",
-                                    req.getParameter("reg_status"));
-            return;
-        }
-        
+		
+		// finally, execute SQLGenerator if at least one filed was set
+		if (!Util.nullString(gen.getValues()))
+			conn.createStatement().executeUpdate(gen.updateStatement() + 
+													" where DATAELEM_ID=" + delem_id);
+        // set the lastInsertID
         lastInsertID = delem_id;
         
-        // if request parameter "elm" equals "exs",
-        // it means we just need to add "delem_id" to table_id
-        String elm = req.getParameter("elm");
-        if (elm!=null && elm.equals("exs")){
-            insertTableElem();
-            return;
-        }
-        
+        // deal with element attributes
         deleteAttributes();
         processAttributes();
-        processDataClass();
     }
     
     private void delete() throws Exception {
 
-        if (delem_ids==null || delem_ids.length==0)
-            return;
-
         // do not allow deletion by unauthorized users
         if (user==null || !user.isAuthentic())
             throw new Exception("Unauthorized user!");
+        
+        // first handle the linked elements, because their deletion means just
+        // removing the rows in TBL2ELEM
+		String[] linkelms = req.getParameterValues("linkelm_id");
+        if (linkelms!=null && linkelms.length!=0){
+			VersionManager verMan = new VersionManager(conn, user);
+			verMan.setContext(ctx);
+			verMan.setUpwardsVersioning(true);
+			String updVer = req.getParameter("upd_version");
+			if (updVer!=null && updVer.equalsIgnoreCase("true"))
+				verMan.updateVersion();
+			this.newTblID = verMan.deleteElmLinks(req.getParameter("ds_id"),
+												  req.getParameter("table_id"),
+												  linkelms);
+        }
+        
+		// if there no non-common elements to delete, return
+		if (delem_ids==null || delem_ids.length==0)
+			return;
         
         // get more data about each element
         StringBuffer buf = new StringBuffer();
@@ -415,111 +427,119 @@ public class DataElementHandler extends BaseHandler {
             buf.append(delem_ids[i]);
         }
         
-        // loop over all elements
-        // if an element is not a working copy, then it's deletion is
-        // handled by VersionManager.deleteElm(), otherwise it is simply
-        // deleted, but its original's WORKING_USER must be set to NULL
+        // set up the flag indicating if element is a common one
+        boolean elmCommon = req.getParameter("common")!=null;
+        
+        // Loop over elements.
+        // Non-working copies will be handled by VersionManager.deleteElm().
+        // Working copies will be simply deleted, but originals must be released!
+        // If in "no versioning" mode, treat all elements as working copies 
         Vector wrkCopies = new Vector();
-        VersionManager verMan = null;
+		Vector nonWrkCopies = new Vector();
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(buf.toString());
         while (rs.next()){
             
-            // see if the element is in work by another user
+            // make sure this element element is not in work by another user
             String userName = rs.getString("WORKING_USER");
-            if (userName!=null &&
-                !userName.equals(user.getUserName()) && !superUser)
+            if (userName!=null && !userName.equals(user.getUserName()) && !superUser)
                 throw new Exception("Element " + rs.getString("DATAELEM_ID") +
                     " is in work by another user: " + userName);
             
-            boolean wrkCopy = rs.getString("WORKING_COPY").equals("Y") ?
-                             true : false;
-                             
-            // if no versioning logic should be applied (for
-            // example when overwriting a previous version),
-            // then treat the given tables as if they were
-            // working copies 
-            if (!versioning){
+            // set the flag indicatgin if the element is a working copy
+            boolean wrkCopy = rs.getString("WORKING_COPY").equals("Y") ? true : false;
+			
+			// if a common non-working copy or in non-versioning mode anyhow
+			// then treat the element as a working copy of any kind, meaning it will be
+			// deleted without VersionManager
+			if (!wrkCopy && elmCommon || !versioning){
                 wrkCopies.add(rs.getString("DATAELEM.DATAELEM_ID"));
-                if (wrkCopy && !superUser)
-                    topns.add(rs.getString("DATAELEM.TOP_NS"));
+                if (wrkCopy && !superUser && !elmCommon)
+                	topns.add(rs.getString("DATAELEM.TOP_NS"));
             }
-            // see if it's a working copy
+            // if a working copy of any kind, it will be deleted without VersionManager
             else if (wrkCopy){
-                originals.add(rs.getString("PARENT_NS") + "," +
-                                rs.getString("IDENTIFIER"));
-                wrkCopies.add(rs.getString("DATAELEM.DATAELEM_ID"));
-                topns.add(rs.getString("DATAELEM.TOP_NS"));
+				wrkCopies.add(rs.getString("DATAELEM.DATAELEM_ID"));
+				// remember the original
+            	String origID = rs.getString("IDENTIFIER");
+            	String pns = rs.getString("PARENT_NS");
+            	if (!Util.nullString(pns)) origID = origID + "," + pns;
+            	// remember the top ns
+            	if (!elmCommon) topns.add(rs.getString("DATAELEM.TOP_NS"));
             }
+            // in all cases but above, the deletion must happend via VersionManager
             else{
-                // deletion of non-working copies is handled by verMan
-                if (verMan==null){
-                    verMan = new VersionManager(conn, user);
-					verMan.setContext(ctx);
-                }
-                this.newTblID = verMan.deleteElm(rs.getString("DATAELEM_ID"));
+				nonWrkCopies.add(rs.getString("DATAELEM_ID"));
             }
         }
         
-        if (wrkCopies.size()==0)
-            return;
+        // handle those that must be handled by VersionManager
+        if (nonWrkCopies.size()>0){
+			VersionManager verMan = new VersionManager(conn, user);
+			verMan.setContext(ctx);
+			verMan.setUpwardsVersioning(true);
+			String updVer = req.getParameter("upd_version");
+			if (updVer!=null && updVer.equalsIgnoreCase("true")) verMan.updateVersion();
+			this.newTblID = verMan.deleteElm(req.getParameter("ds_id"),
+											 req.getParameter("ds_idf"),
+											 req.getParameter("table_id"),
+											 nonWrkCopies);
+        }
         
-        // start working with those legal for deletion
+		// handle those that must NOT be handled by VersionManager,
+        // see if any were found at all
+        if (wrkCopies.size()==0) return;
+        
+        // put those legal for deletion without VersionManager back into delem_ids
         delem_ids = new String[wrkCopies.size()];
         for (int i=0; i<wrkCopies.size(); i++)
             delem_ids[i] = (String)wrkCopies.get(i);
         
-        // delete element dependencies
-        deleteAttributes();
-        deleteComplexAttributes();
-        deleteFixedValues();
-        deleteContents();
-        deleteCsItems();
+        // finally, all set up for the deletion without VersionManager, so do the action
+		deleteWithoutVersionManager();
+        
+        // set the ID of the new latest ID if the element is common
+        if (elmCommon) setLatestCommonElmID(req.getParameter("idfier"));
+    }
+    
+    private void deleteWithoutVersionManager() throws Exception{
+    	
+    	// first thing, set versioning to false
+    	this.versioning = false;
+    	
+		// delete element dependencies
+		deleteAttributes();
+		deleteComplexAttributes();
+		deleteFixedValues();
 		deleteFkRelations();
         
-        // delete elm-tbl relations
-        deleteTableElem();
+		// delete elm-tbl relations
+		deleteTableElem();
         
-        // we've passed the critical point, set cleanup is needed
-        // in case an exception happens now
-        doCleanup = true;
+		// we've passed the critical point, set cleanup is needed
+		// in case an exception happens now
+		doCleanup = true;
         
-        // delete elements themselves
-        buf = new StringBuffer("delete from DATAELEM where ");
-        for (int i=0; i<delem_ids.length; i++){
-            if (i>0)
-                buf.append(" or ");
-            buf.append("DATAELEM_ID=");
-            buf.append(delem_ids[i]);
-        }
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
+		// delete elements themselves
+		StringBuffer buf = new StringBuffer("delete from DATAELEM where ");
+		for (int i=0; i<delem_ids.length; i++){
+			if (i>0)
+				buf.append(" or ");
+			buf.append("DATAELEM_ID=");
+			buf.append(delem_ids[i]);
+		}
+		
+		Statement stmt = null;
+		try{
+			stmt = conn.createStatement();
+			stmt.executeUpdate(buf.toString());
+		}
+		finally{
+			try{ if (stmt!=null) stmt.close(); } catch (SQLException e){}
+		}
 
-        // release originals and top namespaces
+		// release originals and top namespaces
 		cleanup();
-    }
-
-	/**
-	 * 
-	 */
-	private void restore() throws Exception {
-    	
-		if (Util.nullString(delem_id)) return;
-		Restorer restorer = new Restorer(conn);
-		restorer.setUser(user);
-		this.restoredID = restorer.restoreElm(delem_id); 
-	}
-
-    private void deleteContentDefinition() throws SQLException {
-        
-        StringBuffer buf = new StringBuffer("delete from CONTENT_DEFINITION where DATAELEM_ID=");
-        buf.append(delem_id);
-        
-        log(buf.toString());
-        
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
     }
     
     private void deleteAttributes() throws SQLException {
@@ -592,54 +612,6 @@ public class DataElementHandler extends BaseHandler {
         stmt.close();
     }
 
-    private void deleteContents() throws SQLException {
-        
-        StringBuffer buf = new StringBuffer();
-        buf.append("select CHILD_ID, CHILD_TYPE from CONTENT where PARENT_TYPE='elm' and (");
-        for (int i=0; i<delem_ids.length; i++){
-            if (i>0) buf.append(" or ");
-            buf.append("PARENT_ID=");
-            buf.append(delem_ids[i]);
-        }
-        buf.append(")");
-
-        log(buf.toString());
-        
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
-        while (rs.next()){
-            String contentID = rs.getString("CHILD_ID");
-            String contentType = rs.getString("CHILD_TYPE");
-            if (contentID != null && contentType != null){
-                buf = null;
-                if (contentType.equals("seq")){
-                    buf = new StringBuffer("delete from SEQUENCE where SEQUENCE_ID=");
-                    buf.append(contentID);
-                }
-                else if (contentType.equals("chc")){
-                    buf = new StringBuffer("delete from CHOICE where CHOICE_ID=");
-                    buf.append(contentID);
-                }
-                
-                if (buf == null) continue;
-                
-                stmt.executeUpdate(buf.toString());
-            }
-        }
-        
-        buf = new StringBuffer("delete from CONTENT where PARENT_TYPE='elm' and (");
-        for (int i=0; i<delem_ids.length; i++){
-            if (i>0) buf.append(" or ");
-            buf.append("PARENT_ID=");
-            buf.append(delem_ids[i]);
-        }
-        buf.append(")");
-        
-        log(buf.toString());
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
-    }
-    
     private void deleteFixedValues() throws Exception {
         
         StringBuffer buf = new StringBuffer().
@@ -685,32 +657,6 @@ public class DataElementHandler extends BaseHandler {
 		stmt.close();
     }
     
-    private void deleteCsItems() throws Exception {
-
-        StringBuffer buf = new StringBuffer();
-        buf.append("select distinct CSI_ID from CS_ITEM where CSI_TYPE='elem' and COMPONENT_TYPE='elem' and (");
-        for (int i=0; i<delem_ids.length; i++){
-            if (i>0)
-                buf.append(" or ");
-            buf.append("COMPONENT_ID=");
-            buf.append(delem_ids[i]);
-        }
-        buf.append(")");
-
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
-        Parameters pars = new Parameters();
-        while (rs.next()){
-            pars.addParameterValue("del_id", rs.getString("CSI_ID"));
-        }
-        stmt.close();
-
-        pars.addParameterValue("mode", "delete");
-        CsItemHandler csiHandler = new CsItemHandler(conn, pars, ctx);
-        csiHandler.setVersioning(this.versioning);
-        csiHandler.execute();
-    }
-
     private void insertTableElem() throws SQLException {
 
         if (table_id == null || table_id.length()==0)
@@ -939,34 +885,6 @@ public class DataElementHandler extends BaseHandler {
         stmt.close();
     }
     
-    private void processDataClass() throws SQLException {
-        
-        StringBuffer buf = new StringBuffer();
-        Statement stmt = conn.createStatement();
-        if (!mode.equals("add")){
-            
-            buf.append("delete from CLASS2ELEM where DATAELEM_ID=");
-            buf.append(delem_id);
-            
-            stmt.executeUpdate(buf.toString());
-        }
-        
-        if (!mode.equals("del")){
-            
-            if (lastInsertID==null || delem_class == null || delem_class.length()==0) return;
-            
-            SQLGenerator gen = new SQLGenerator();
-            gen.setTable("CLASS2ELEM");
-            
-            gen.setFieldExpr("DATAELEM_ID", lastInsertID);
-            gen.setFieldExpr("DATACLASS_ID", delem_class);
-        
-            stmt.executeUpdate(gen.insertStatement());
-        }
-        
-        stmt.close();
-    }
-    
     private void setLastInsertID() throws SQLException {
 
         String qry = "SELECT LAST_INSERT_ID()";
@@ -985,28 +903,6 @@ public class DataElementHandler extends BaseHandler {
         return lastInsertID;
     }
 
-    public boolean exists() throws SQLException {
-
-        // data element unique ID consists of SHORT_NAME and PARENT_NS
-        StringBuffer buf = new StringBuffer();
-        buf.append("select count(*) as COUNT from DATAELEM where IDENTIFIER=");
-        buf.append(com.tee.util.Util.strLiteral(idfier));
-        buf.append(" and PARENT_NS=");
-        buf.append(com.tee.util.Util.strLiteral(ns_id));
-        
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
-
-        if (rs.next()){
-            if (rs.getInt("COUNT")>0){
-                return true;
-            }
-        }
-
-        stmt.close();
-
-        return false;
-    }
     private void copyElem(String copyElemID, String topNS) throws Exception{
 
         if (copyElemID==null) return;
@@ -1043,6 +939,31 @@ public class DataElementHandler extends BaseHandler {
         insertTableElem();
 
     }
+    
+	public boolean exists(boolean elmCommon) throws SQLException {
+
+		// data element unique ID consists of IDENTIFIER and PARENT_NS
+		StringBuffer buf = new StringBuffer();
+		buf.append("select count(*) as COUNT from DATAELEM where IDENTIFIER=");
+		buf.append(com.tee.util.Util.strLiteral(idfier));
+		if (!elmCommon){
+			buf.append(" and PARENT_NS=");
+			buf.append(com.tee.util.Util.strLiteral(ns_id));
+		}
+    
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(buf.toString());
+
+		if (rs.next()){
+			if (rs.getInt("COUNT")>0){
+				return true;
+			}
+		}
+
+		stmt.close();
+
+		return false;
+	}
 
     public boolean getCheckInResult(){
         return this.checkInResult;
@@ -1051,7 +972,19 @@ public class DataElementHandler extends BaseHandler {
 	public String getRestoredID(){
 		return this.restoredID;
 	}
-    
+
+	private void setLatestCommonElmID(String idf) throws SQLException{
+		
+		VersionManager verMan = new VersionManager(conn, user);
+		DataElement elm = new DataElement();
+		elm.setIdentifier(idf);
+		this.latestCommonElmID = verMan.getLatestElmID(elm);
+	}
+	
+	public String getLatestCommonElmID(){
+		return latestCommonElmID;
+	}
+	
 	public static void main(String[] args){
         
 		try{

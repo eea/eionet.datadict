@@ -65,25 +65,7 @@ public class TblPdfFactsheet extends PdfHandout {
             v.add(0, hash);
         }
         
-        // type
-        String type = dsTable.getType();
-        if (!Util.voidStr(type)){
-            hash = new Hashtable();
-            hash.put("name", "Type");
-            hash.put("value", type);
-            v.add(0, hash);
-        }
-        
-        // definition
-        String definition = dsTable.getDefinition();
-        if (!Util.voidStr(definition)){
-            hash = new Hashtable();
-            hash.put("name", "Definition");
-            hash.put("value", definition);
-            v.add(0, hash);
-        }
-        
-        // definition
+        // name
         String name = dsTable.getName();
         if (!Util.voidStr(name)){
             hash = new Hashtable();

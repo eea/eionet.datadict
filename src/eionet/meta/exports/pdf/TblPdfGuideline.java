@@ -107,35 +107,7 @@ public class TblPdfGuideline {
         Hashtable hash = null;
         Vector v = dsTable.getSimpleAttributes();
         
-        // dataset short name
-        /* JH151003 - not needed, cause tbl gldn is always part of a dst gldn
-        if (ds != null){
-            hash = new Hashtable();
-            hash.put("name", "Dataset");
-            hash.put("value", ds.getShortName());
-            v.add(0, hash);
-        }
-        */
-        
-        // type
-        String type = dsTable.getType();
-        if (!Util.voidStr(type)){
-            hash = new Hashtable();
-            hash.put("name", "Type");
-            hash.put("value", type);
-            v.add(0, hash);
-        }
-        
-        // definition
-        String definition = dsTable.getDefinition();
-        if (!Util.voidStr(definition)){
-            hash = new Hashtable();
-            hash.put("name", "Definition");
-            hash.put("value", definition);
-            v.add(0, hash);
-        }
-        
-        // definition
+        // name
         String name = dsTable.getName();
         if (!Util.voidStr(name)){
             hash = new Hashtable();

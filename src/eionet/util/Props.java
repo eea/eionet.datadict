@@ -85,6 +85,7 @@ public class Props implements PropsIF{
 		defaultProps = new Hashtable();
 		defaultProps.put(XFORM_TEMPLATE_URL,"http://cdr-ewn.eionet.eu.int/webq/GetXFormTemplate");
 		defaultProps.put(INSERV_ROD_RA_URLPATTERN,"http://rod.eionet.eu.int/show.jsv?id=<RA_ID>&mode=A");
+		defaultProps.put(XLS_SCHEMA_URL_SHEET, "DO_NOT_DELETE_THIS_SHEET");
 	}
 	
 	public static void main(String[] args){

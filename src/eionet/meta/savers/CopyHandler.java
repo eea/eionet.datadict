@@ -129,24 +129,6 @@ public class CopyHandler extends Object {
 			conn.createStatement().executeUpdate(gen.updateStatement() +
 											 " where DATAELEM_ID=" + newID);
 		}
-		
-        /* copy rows in CONTENT, with lastInsertID
-        gen.clear();
-        gen.setTable("CONTENT");
-        gen.setField("PARENT_ID", newID);
-        copy(gen, "PARENT_ID=" + srcElemID + " and PARENT_TYPE='elm'");
-
-        // copy rows in SEQUENCE, with lastInsertID
-        gen.clear();
-        gen.setTable("SEQUENCE");
-        gen.setField("CHILD_ID", newID);
-        copy(gen, "CHILD_ID=" + srcElemID + " and CHILD_TYPE='elm'");
-
-        // copy rows in CHOICE, with lastInsertID
-        gen.clear();
-        gen.setTable("CHOICE");
-        gen.setField("CHILD_ID", newID);
-        copy(gen, "CHILD_ID=" + srcElemID + " and CHILD_TYPE='elm'");*/
         
 		// copy rows in TBL2ELEM, with lastInsertID, if needed
 		if (tbl2elem){
@@ -165,9 +147,6 @@ public class CopyHandler extends Object {
         // copy rows in COMPLEX_ATTR_ROW, with lastInsertID
         copyComplexAttrs(newID, srcElemID, "E");
         
-		// copy classification items
-        copyCsi(newID, srcElemID, "elem");
-        
         // copy fixed values
 		copyFxv(newID, srcElemID, "elem");
 		
@@ -176,9 +155,7 @@ public class CopyHandler extends Object {
 		gen.setTable("FK_RELATION");
 		gen.setField("REL_ID", "");
 		gen.setField("A_ID", newID);
-		
 		copy(gen, "A_ID=" + srcElemID, false);
-		
 		gen.clear();
 		gen.setTable("FK_RELATION");
 		gen.setField("REL_ID", "");
@@ -217,89 +194,6 @@ public class CopyHandler extends Object {
 		
 		stmt.close();
 	}
-	
-	public void copyCsi(String newCompID, String compID, String compType)
-														throws SQLException{
-
-        Statement stmt = null;
-        ResultSet rs = null;
-
-        String q =
-        "select CSI_ID from CS_ITEM where COMPONENT_ID=" + compID + " and COMPONENT_TYPE='" + compType + "'";
-
-        stmt = conn.createStatement();
-        rs = stmt.executeQuery(q);
-        Hashtable csiIds = new Hashtable();
-        SQLGenerator gen = new SQLGenerator();
-
-        while (rs.next()){
-
-            String csiID = rs.getString("CSI_ID");
-
-            gen.clear();
-            gen.setTable("CS_ITEM");
-            gen.setField("CSI_ID", "");
-            gen.setField("COMPONENT_ID", newCompID);
-            String newID = copy(gen, "CSI_ID=" + csiID, false);
-
-            if (newID==null)
-                continue;
-
-            csiIds.put(csiID, newID);
-            
-            // copy attributes
-            // copy rows in ATTRIBUTE, with lastInsertID
-		    gen.clear();
-		    gen.setTable("ATTRIBUTE");
-		    gen.setField("DATAELEM_ID", newID);
-		    copy(gen, "DATAELEM_ID=" + csiID + " and PARENT_TYPE='CSI'");
-        }
-        
-        if (csiIds.size()==0) return;
-        
-        //copy relations
-        StringBuffer sConstraint=new StringBuffer();
-        boolean bFirst=true;
-        Enumeration ids = csiIds.keys();
-        while (ids.hasMoreElements()){
-            String id = (String)ids.nextElement();
-
-            if (bFirst==true) bFirst=false;
-            else
-              sConstraint.append(" OR");
-            sConstraint.append(" (PARENT_CSI=");
-            sConstraint.append(id);
-            sConstraint.append(" OR CHILD_CSI=");
-            sConstraint.append(id);
-            sConstraint.append(")");
-        }
-        q = "select * from CSI_RELATION WHERE" + sConstraint.toString();
-
-        rs = stmt.executeQuery(q);
-    log(q);
-        ResultSetMetaData rsmd = rs.getMetaData();
-
-        int colCount = rsmd.getColumnCount();
-
-        while (rs.next()){
-            gen.clear();
-            gen.setTable("CSI_RELATION");
-              for (int i=1; i<=colCount; i++){
-                String colName = rsmd.getColumnName(i);
-                String colValue = rs.getString(i);
-                if (colValue==null) continue;
-                if (colName.equalsIgnoreCase("PARENT_CSI")||
-                      colName.equalsIgnoreCase("CHILD_CSI")){
-                    if (csiIds.containsKey(colValue))
-                    colValue = (String)csiIds.get(colValue);
-                }
-                gen.setField(colName, colValue);
-            }
-
-            log(gen.insertStatement());
-            stmt.executeUpdate(gen.insertStatement());
-        }
-    }
     
     /**
     *

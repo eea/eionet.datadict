@@ -2,6 +2,7 @@
 package eionet.meta;
 
 import java.util.*;
+import eionet.util.Util;
 
 public class DataElement {
     
@@ -10,45 +11,28 @@ public class DataElement {
     private String type = null;
     private String version = null;
     private String status = null;
-    private String defUrl = null;
+	private String identifier = null;
+	
+	private String tableID = null;
+	private String datasetID = null;
+	private String dstShortName = null; // used in the data elements search
+	private String tblShortName = null; // used in the data elements search
+	private String tblIdentifier = null; // used in setting target namespaces in schemas
+	private String dstIdentifier = null; // used in setting target namespaces in schemas
+    
+	private String gis = null;
+	private String positionInTable = null;
+	private boolean isRodParam = true;
+
+	private String workingUser = null;
+	private String workingCopy = null;
+
+	private Namespace ns = null; // parent namespace
+	private String topNS = null; // top namespace
     
     private Vector simpleAttrs = new Vector();
     private Vector complexAttrs = new Vector();
-    
-    private String parentID = null;
-    private String position = null;
-    private String minOccurs = null;
-    private String maxOccurs = null;
-    
-    private String inSequenceID = null;
-    private String inChoiceID = null;
-    
-    private Namespace ns = null; // parent namespace
-    private String topNS = null; // top namespace
-    
-    private String tableID = null;
-    private String datasetID = null;
-    
-    private String dataClassID = null;
-    
-    private Vector subElements = null;
     private Vector fixedValues = null;
-    
-    private String contentDefType = "xsd";
-    
-    private String sequenceID = null;
-    private String choiceID = null;
-    
-    private String extendsID = null;
-    
-    private String workingUser = null;
-    private String workingCopy = null;
-    
-	private String gis = null;
-	private String identifier = null;
-	
-	private boolean isRodParam = true;
-    
 	private Vector fks = new Vector();
 	
     public DataElement(){
@@ -60,11 +44,6 @@ public class DataElement {
         this.type = type;
     }
     
-    public DataElement(String id, String shortName, String type, String defUrl){
-        this(id, shortName, type);
-        this.defUrl = defUrl;
-    }
-    
     public String getTableID(){
         return tableID;
     }
@@ -72,6 +51,15 @@ public class DataElement {
     public void setTableID(String tableID){
         this.tableID = tableID;
     }
+
+	public String getTblShortName(){
+		return tblShortName;
+	}
+
+	public void setTblShortName(String tblShortName){
+		this.tblShortName = tblShortName;
+	}
+    
     public String getDatasetID(){
         return datasetID;
     }
@@ -79,6 +67,30 @@ public class DataElement {
     public void setDatasetID(String datasetID){
         this.datasetID = datasetID;
     }
+
+	public String getDstShortName(){
+		return dstShortName;
+	}
+
+	public void setDstShortName(String dstShortName){
+		this.dstShortName = dstShortName;
+	}
+
+	public String getTblIdentifier(){
+		return tblIdentifier;
+	}
+
+	public void setTblIdentifier(String tblIdentifier){
+		this.tblIdentifier = tblIdentifier;
+	}
+
+	public String getDstIdentifier(){
+		return dstIdentifier;
+	}
+
+	public void setDstIdentifier(String dstIdentifier){
+		this.dstIdentifier = dstIdentifier;
+	}
 
     public String getID(){
         return id;
@@ -90,22 +102,6 @@ public class DataElement {
     
     public String getType(){
         return type;
-    }
-    
-    public String getDefinitionUrl(){
-        return defUrl;
-    }
-    
-    public void setDefinitionUrl(String url){
-        this.defUrl = url;
-    }
-    
-    public void setExtension(String id){
-        this.extendsID = id;
-    }
-    
-    public String getExtension(){
-        return this.extendsID;
     }
     
     public void addAttribute(Object attr){
@@ -133,29 +129,12 @@ public class DataElement {
         return set;
     }
     
-    public void setSubElements(Vector subElements){
-        this.subElements = subElements;
-    }
-    
-    public Vector getSubElements(){
-        return subElements;
-    }
-    
     public void setFixedValues(Vector fixedValues){
         this.fixedValues = fixedValues;
     }
     
     public Vector getFixedValues(){
         return fixedValues;
-    }
-    
-    public void setContentDefType(String type){
-        if (type != null && type.length()!=0)
-            contentDefType = type;
-    }
-    
-    public String getContentDefType(){
-        return contentDefType;
     }
     
     public DElemAttribute getAttributeByShortName(String name){
@@ -223,30 +202,10 @@ public class DataElement {
         return null;
     }
     
-    public void setRelation(String parentID, String position, String minOccurs, String maxOccurs){
-        this.parentID = parentID;
-        this.position = position;
-        this.minOccurs = minOccurs;
-        this.maxOccurs = maxOccurs;
-    }
-    
-    public void setInSequence(String sequenceID, String position, String minOccurs, String maxOccurs){
-        this.inSequenceID = sequenceID;
-        this.position = position;
-        this.minOccurs = minOccurs;
-        this.maxOccurs = maxOccurs;
-    }
-    
-    /**
-     * Setter for PARENT namespace 
-     */
     public void setNamespace(Namespace ns){
         this.ns = ns;
     }
     
-    /**
-     * Getter for PARENT namespace
-     */
     public Namespace getNamespace(){
         return ns;
     }
@@ -259,48 +218,12 @@ public class DataElement {
         return topNS;
     }
     
-    public String getParentID(){
-        return parentID;
+    public String getPositionInTable(){
+        return positionInTable;
     }
     
-    public String getPosition(){
-        return position;
-    }
-    
-    public String getMinOccurs(){
-        return minOccurs;
-    }
-    
-    public String getMaxOccurs(){
-        return maxOccurs;
-    }
-    
-    public void setSequence(String sequenceID){
-        this.sequenceID = sequenceID;
-    }
-
-    public String getSequence(){
-        return sequenceID;
-    }
-
-    public void setChoice(String choiceID){
-        this.choiceID = choiceID;
-    }
-
-    public String getChoice(){
-        return choiceID;
-    }
-
-    public void setDataClass(String dataClassID){
-        this.dataClassID = dataClassID;
-    }
-
-    public String getDataClass(){
-        return dataClassID;
-    }
-
-    public void setPosition(String pos){
-        this.position = pos;
+    public void setPositionInTable(String pos){
+        this.positionInTable = pos;
     }
     
     public void setComplexAttributes(Vector v){
@@ -340,20 +263,20 @@ public class DataElement {
             return false;
     }
     
-    public void setStatus(String status){
-        this.status = status;
-    }
-    
-    public String getStatus(){
-        return this.status;
-    }
-
 	public void setIdentifier(String identifier){
 		this.identifier = identifier;
 	}
     
 	public String getIdentifier(){
 		return this.identifier;
+	}
+	
+	public void setStatus(String status){
+		this.status = status;
+	}
+
+	public String getStatus(){
+		return this.status;
 	}
     
 	public void setGIS(String gis){
@@ -406,68 +329,16 @@ public class DataElement {
 		
 		return hasImages;
 	}
-    
-    public String toString(){
-
-        StringBuffer buf = new StringBuffer();
-
-        buf.append("id=");
-        buf.append(id);
-        buf.append("\n");
-
-        buf.append("type=");
-        buf.append(type);
-        buf.append("\n");
-
-        buf.append("shortName=");
-        buf.append(shortName);
-        buf.append("\n");
-
-        buf.append("defUrl=");
-        buf.append(defUrl);
-        buf.append("\n");
-
-        if (ns != null){
-            buf.append("xmlns:");
-            buf.append(ns.getShortName());
-            buf.append("=\"");
-            buf.append(ns.getUrl());
-            buf.append("\"\n");
-        }
-        
-        buf.append("\nAttributes:\n");
-        for (int i=0; simpleAttrs!=null && i<simpleAttrs.size(); i++){
-            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
-            buf.append(attr.getShortName());
-            buf.append("=");
-            buf.append(attr.getValue());
-            buf.append("\n");
-        }
-        
-        buf.append("\nFixedValues:\n");
-        for (int i=0; fixedValues!=null && i<fixedValues.size(); i++){
-            String value = (String)fixedValues.get(i);
-            buf.append(value);
-            buf.append("\n");
-        }
-        
-        buf.append("\nSubElements:\n");
-        for (int i=0; subElements!=null && i<subElements.size(); i++){
-            DataElement subElem = (DataElement)subElements.get(i);
-            Namespace namespace = subElem.getNamespace();
-            String nsName = namespace==null ? "null" : namespace.getShortName();
-            buf.append(nsName);
-            buf.append(":");
-            buf.append(subElem.getShortName());
-            buf.append(", minOcc=");
-            buf.append(subElem.getMinOccurs());
-            buf.append(", maxOcc=");
-            buf.append(subElem.getMaxOccurs());
-            buf.append(", defUrl=");
-            buf.append(subElem.getDefinitionUrl());
-            buf.append("\n");
-        }
-        
-        return buf.toString();
-    }
+	
+	public String getRelativeTargetNs(){
+		
+		if (ns==null || Util.voidStr(ns.getID()))
+			return "/elements/" + identifier;
+		else{
+			if (Util.voidStr(dstIdentifier) || Util.voidStr(tblIdentifier))
+				return "/namespaces/" + ns.getID();
+			else
+				return "/datasets/" + dstIdentifier + "/tables/" + tblIdentifier;
+		}
+	}
 }

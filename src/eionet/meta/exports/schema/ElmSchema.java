@@ -31,32 +31,6 @@ public class ElmSchema extends Schema {
         // get and set the element's complex attributes
         elem.setComplexAttributes(searchEngine.getComplexAttributes(elemID, "E",null,elem.getTableID(),elem.getDatasetID()));
         
-        if (elem.getType().equalsIgnoreCase("AGG")){
-	            
-	        String choiceID = elem.getChoice();
-	        String sequenceID = elem.getSequence();
-	            
-	        if (choiceID != null && sequenceID != null)
-	            throw new Exception("An aggregate cannot have both a sequence and a choice!");
-        		
-		    Vector subElements = null;
-		    if (choiceID != null)
-		        subElements = searchEngine.getChoice(choiceID);
-		    else if (sequenceID != null)
-		        subElements = searchEngine.getSequence(sequenceID);
-		        
-	        if (subElements != null && subElements.size()!=0){
-	            for (int i=0; i<subElements.size(); i++){
-	                    
-	                Object o = subElements.get(i);
-		            Class oClass = o.getClass();
-		            String oClassName = oClass.getName();
-	            }
-        	        
-	            elem.setSubElements(subElements);
-	        }
-        }
-        
         if (elem.getType().equalsIgnoreCase("CH1")){
         		
 		    Vector fixedValues =
@@ -73,8 +47,13 @@ public class ElmSchema extends Schema {
     private void write(DataElement elem) throws Exception{
 
 		// set target namespace (being the parent table's namespace)
-		String parentNsID = elem.getNamespace().getID(); 
-		if (parentNsID!=null) setTargetNsUrl(parentNsID);
+		//String parentNsID = elem.getNamespace().getID(); 
+		//if (parentNsID!=null) setTargetNsUrl(parentNsID);
+		Namespace parentNs = elem.getNamespace();
+		if (parentNs==null || Util.voidStr(parentNs.getID()))
+			this.targetNsUrl = this.appContext + "elements/" + elem.getIdentifier();
+		else
+			setTargetNsUrl(parentNs.getID());
 
         //writeElemStart(elem.getShortName());
 		writeElemStart(elem.getIdentifier());
@@ -84,61 +63,7 @@ public class ElmSchema extends Schema {
     }
     
     private void writeContent(DataElement elem) throws Exception {
-        
-        String type = elem.getType();
-        if (type.equalsIgnoreCase("AGG"))
-            writeComplexContent(elem);
-        else
-            writeSimpleContent(elem);
-    }
-    
-    protected void writeComplexContent(DataElement elem) throws Exception {
-        
-        //addString("\t<xs:complexType name=\"type" + elem.getShortName() + "\">");
-		addString("\t<xs:complexType name=\"type" + elem.getIdentifier() + "\">");
-        newLine();
-        
-        String tab = "\t\t";
-        
-        String extendsID = elem.getExtension();
-        if (extendsID != null && searchEngine != null){
-            DataElement ext = searchEngine.getDataElement(extendsID);
-            Namespace extNs = ext.getNamespace();
-            
-            addString(tab);
-            addString("<xs:complexContent>");
-            newLine();
-            
-            addString(tab + "\t");
-            addString("<xs:extension base=\"");
-            //addString(extNs.getShortName() + ":" + ext.getShortName());
-            //addString("ns" + extNs.getID() + ":" + ext.getShortName());
-			addString("ns" + extNs.getID() + ":" + ext.getIdentifier());
-            addString("\">");
-            newLine();
-            
-            tab = tab + "\t\t";
-        }
-        
-        Vector subElements = elem.getSubElements();
-        
-        if (elem.getChoice()!=null)
-            writeChoice(subElements, tab, null, null);
-        else if (elem.getSequence()!=null)
-            writeSequence(subElements, tab, null, null);
-        
-        if (extendsID != null && searchEngine != null){
-            addString("\t\t\t");
-            addString("</xs:extension>");
-            newLine();
-            addString("\t\t");
-            addString("</xs:complexContent>");
-            newLine();
-        }
-        
-        addString("\t");
-        addString("</xs:complexType>");
-        newLine();
+		writeSimpleContent(elem);
     }
     
     private void writeSimpleContent(DataElement elem) throws Exception {

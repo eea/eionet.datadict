@@ -20,8 +20,6 @@ public class XFormServlet extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse res)
 								throws ServletException, IOException {
 
-		res.setContentType("text/xml");
-		
 		PrintWriter writer = null;
 		Connection conn = null;
         
@@ -44,6 +42,7 @@ public class XFormServlet extends HttpServlet {
 			conn = pool.getConnection();
                 
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+			res.setContentType("text/xml; charset=UTF-8");
 			writer = new PrintWriter(res.getOutputStream());
 
 			XFormIF xForm = new TblXForm(searchEngine, writer);

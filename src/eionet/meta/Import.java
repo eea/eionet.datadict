@@ -141,21 +141,8 @@ public class Import extends HttpServlet {
         File file = new File(tmpFileName.toString());
         RandomAccessFile raFile = new RandomAccessFile(file, "rw");
 
-        // set up our handler
-        BaseHandler handler = new BaseHandler();
-        if (type.equals("DST") || type.equals("FXV"))
-            handler = new DatasetImportHandler();
-        else
-            handler=new SchemaHandler();
-
-        /* JH290503 - trying to get rid of basens-path usage
-        // get the base namespace path
-        String basensPath = ctx.getInitParameter("basens-path");
-        if (basensPath == null){
-            responseText.append("<h1>Could not get base namespace url path!</h1><br/>");
-            bException = true;
-        }
-        */
+        // set up handler
+        BaseHandler handler = new DatasetImportHandler();
 
         // if no exceptions, get the data and save to file, parse
         if (!bException){
@@ -184,26 +171,17 @@ public class Import extends HttpServlet {
                 // SAX was OK, but maybe handler problems of its own
                 if (!handler.hasError()){
 
-                    if (type.equals("DST")||type.equals("FXV")){
-                        DatasetImport dbImport =
-                            new DatasetImport((DatasetImportHandler)handler,
-                                            user.getConnection(), ctx, type);
-						dbImport.setUser(user);
-                        dbImport.setImportType(type);
-                        if (type.equals("FXV")) {
-                            dbImport.setParentID(delem_id);
-                        }
-                        dbImport.execute();
+                    DatasetImport dbImport =
+                        new DatasetImport((DatasetImportHandler)handler,
+                                        user.getConnection(), ctx, type);
+					dbImport.setUser(user);
+                    dbImport.setImportType(type);
+                    if (type.equals("FXV")) {
+                        dbImport.setParentID(delem_id);
+                    }
+                    dbImport.execute();
 
-                        responseText.append(dbImport.getResponseText());
-                    }
-                    else{
-                        SchemaImp dbImport =
-                            new SchemaImp((SchemaHandler)handler,
-                                          user.getConnection(), ctx, type);
-                        dbImport.execute();
-                        responseText.append(dbImport.getResponseText());
-                    }
+                    responseText.append(dbImport.getResponseText());
                 }
                 else{
                     throw new Exception(handler.getErrorBuff().toString());

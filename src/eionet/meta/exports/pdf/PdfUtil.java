@@ -1088,6 +1088,7 @@ public class PdfUtil {
                 
             // create java.awt.Image
             java.awt.Image jImg = kit.createImage(filePath);
+            if (jImg==null) return null;
                 
             // of the java.awt.Image, create com.lowagie.text.Image
             com.lowagie.text.Image vsImage =

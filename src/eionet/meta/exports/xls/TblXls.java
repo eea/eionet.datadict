@@ -14,27 +14,10 @@ import com.tee.util.SQLGenerator;
 
 import org.apache.poi.hssf.usermodel.*;
 
-public class TblXls implements XlsIF, CachableIF{
-	
-	private static final String FILE_EXT = ".xls";
-	
-	private DDSearchEngine searchEngine = null;
-	private OutputStream os = null;
-	private Connection conn = null;
-	
-	private HSSFWorkbook wb = null;
-	private HSSFSheet sheet = null;
-	private HSSFRow row = null;
-	
-	private Hashtable styles    = new Hashtable();
-	private Hashtable cellTypes = new Hashtable();
-	
-	private String fileName = "table.xls";
-	
-	private String cachePath = null;
-	private String cacheFileName = null;
+public class TblXls extends Xls implements XlsIF, CachableIF{
 	
 	public TblXls(){
+		fileName = "table.xls";
 		wb = new HSSFWorkbook();
 	}
 	
@@ -63,6 +46,7 @@ public class TblXls implements XlsIF, CachableIF{
 		}
 
 		addElements(tblID);
+		setSchemaUrl("TBL" + tblID);
 	}
 	
 	public void write() throws Exception{
@@ -87,7 +71,7 @@ public class TblXls implements XlsIF, CachableIF{
 		fileName = tbl.getDatasetName() + "_" + tbl.getShortName() + FILE_EXT;
 		
 		tbl.setGIS(searchEngine.hasGIS(tbl.getID()));
-		sheet = wb.createSheet(tbl.getShortName());
+		sheet = wb.createSheet(tbl.getIdentifier());
 		row = sheet.createRow(0);
 		
 		addElements(tbl);
@@ -114,7 +98,7 @@ public class TblXls implements XlsIF, CachableIF{
 		}
 		
 		if (done<elems.size()){
-			sheet = wb.createSheet(tbl.getShortName() + "-meta");
+			sheet = wb.createSheet(tbl.getIdentifier() + "-meta");
 			row = sheet.createRow(0);
 			done = 0;
 			for (int i=0; i<elems.size(); i++){
@@ -129,7 +113,7 @@ public class TblXls implements XlsIF, CachableIF{
 
 	private void addElement(DataElement elm, short index) throws Exception{
 		HSSFCell cell = row.createCell(index);
-		String title = elm.getShortName();
+		String title = elm.getIdentifier();
 		title = PdfUtil.processUnicode(title);
 		setColWidth(title, index);
 		cell.setCellValue(title);
@@ -139,19 +123,6 @@ public class TblXls implements XlsIF, CachableIF{
 	private void setColWidth(String title, short index){
 		short width = (short)(title.length() * ElmStyle.FONT_HEIGHT * 50);
 		sheet.setColumnWidth(index, width);
-	}
-	
-	private HSSFCellStyle getStyle(Class styleClass) throws Exception {
-		Short index = (Short)styles.get(styleClass.getName());
-		if (index==null){
-			Class[] argTypes = {wb.getClass()};
-			Method method = styleClass.getMethod("create", argTypes);
-			Object[] args = {wb}; 
-			index = (Short)method.invoke(null, args);
-			styles.put(styleClass.getName(), index);
-		}
-		
-		return wb.getCellStyleAt(index.shortValue());
 	}
 	
 	public String getName(){

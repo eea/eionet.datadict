@@ -106,7 +106,6 @@ public class DatasetHandler extends BaseHandler {
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
 						  !mode.equalsIgnoreCase("edit") &&
                           !mode.equalsIgnoreCase("restore") &&
-						  !mode.equalsIgnoreCase("force_status") &&
                           !mode.equalsIgnoreCase("delete")))
             throw new Exception("DatasetHandler mode unspecified!");
             
@@ -118,8 +117,6 @@ public class DatasetHandler extends BaseHandler {
             update();
 		else if (mode.equalsIgnoreCase("restore"))
 			restore();
-		else if (mode.equalsIgnoreCase("force_status"))
-			forceStatus();
         else{
             delete();
             cleanVisuals();
@@ -131,8 +128,7 @@ public class DatasetHandler extends BaseHandler {
         if (this.idfier == null)
             throw new SQLException("Identifier must be specified!");
         
-        if (exists()) throw new SQLException(
-					"A dataset with this identifier already exists!");
+        if (exists()) throw new SQLException("Such a dataset already exists!");
             
         if (Util.nullString(ds_name))
         	ds_name = idfier;
@@ -203,6 +199,22 @@ public class DatasetHandler extends BaseHandler {
 		
         lastInsertID = ds_id;
 
+		// if check-in, do the action and exit
+		String checkIn = req.getParameter("check_in");
+		if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
+            
+			VersionManager verMan = new VersionManager(conn, user);
+			verMan.setContext(ctx);
+			
+			String updVer = req.getParameter("upd_version");
+			if (updVer!=null && updVer.equalsIgnoreCase("true"))
+				verMan.updateVersion();
+							
+			verMan.checkIn(ds_id, "dst",
+									req.getParameter("reg_status"));
+			return;
+		}
+
 		// handle the update of data model
         String dsVisual = req.getParameter("visual");
         if (!Util.nullString(dsVisual)){
@@ -229,86 +241,28 @@ public class DatasetHandler extends BaseHandler {
             
             return; // we only changed the 'visual'. no need to deal with attrs
         }
+        
+        // seems like updating the DATASET table. so do it.
+		SQLGenerator gen = new SQLGenerator();
+		gen.setTable("DATASET");
 
         // set the status
         String status = req.getParameter("reg_status");
-        if (!Util.nullString(status)){
-            SQLGenerator gen = new SQLGenerator();
-            gen.setTable("DATASET");
-            gen.setField("REG_STATUS", status);
-            conn.createStatement().executeUpdate(gen.updateStatement() +
-                                    " where DATASET_ID=" + ds_id);
-        }
+        if (!Util.nullString(status)) gen.setField("REG_STATUS", status);
         
         // short name
-		if (!Util.nullString(ds_name)){
-			SQLGenerator gen = new SQLGenerator();
-			gen.setTable("DATASET");
-			gen.setField("SHORT_NAME", ds_name);
-			conn.createStatement().executeUpdate(gen.updateStatement() +
-									" where DATASET_ID=" + ds_id);
-		}
-        
-        // if check-in, do the action and exit
-        String checkIn = req.getParameter("check_in");
-        if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
-            
-            VersionManager verMan = new VersionManager(conn, user);
-			verMan.setContext(ctx);
-			
-			String updVer = req.getParameter("upd_version");
-			if (updVer!=null && updVer.equalsIgnoreCase("true"))
-				verMan.updateVersion();
-							
-            verMan.checkIn(ds_id, "dst",
-                                    req.getParameter("reg_status"));
-            return;
-        }
-        
+		if (!Util.nullString(ds_name)) gen.setField("SHORT_NAME", ds_name);
+		
+		// display create links
+		gen.setFieldExpr("DISP_CREATE_LINKS", getDisplayCreateLinks());
+		
+		// execute the statement
+		conn.createStatement().executeUpdate(gen.updateStatement() +
+											" where DATASET_ID=" + ds_id);
+
         deleteAttributes();
         processAttributes();
     }
-    
-    /**
-	 * @param frcStatus
-	 */
-	private void forceStatus() throws SQLException{
-		
-		if (ds_id==null) return;
-		String frcStatus = req.getParameter("force_status");
-		if (frcStatus==null) return;
-		
-		// get all tables and data elements in dataset
-		HashSet tbls = new HashSet();
-		HashSet elms = new HashSet();
-		StringBuffer buf = new StringBuffer().
-		append("select distinct DST2TBL.TABLE_ID, TBL2ELEM.DATAELEM_ID ").
-		append("from DST2TBL left outer join TBL2ELEM on ").
-		append("DST2TBL.TABLE_ID=TBL2ELEM.TABLE_ID where DST2TBL.DATASET_ID=").
-		append(ds_id);
-		
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
-		while (rs.next()){
-			tbls.add(rs.getString("DST2TBL.TABLE_ID"));
-			elms.add(rs.getString("TBL2ELEM.DATAELEM_ID"));
-		} 
-		
-		// force status to tables
-		String s = "update DS_TABLE set REG_STATUS='" +
-					frcStatus + "' where TABLE_ID=";
-		Iterator iter = tbls.iterator();
-		while (iter.hasNext())
-			stmt.executeUpdate(s + (String)iter.next());
-			
-		// force status to elements
-		s = "update DATAELEM set REG_STATUS='" +
-					frcStatus + "' where DATAELEM_ID=";
-		iter = elms.iterator();
-		while (iter.hasNext())
-			stmt.executeUpdate(s + (String)iter.next());
-		
-	}
 
 	private void restore() throws Exception {
     	
@@ -731,6 +685,23 @@ public class DatasetHandler extends BaseHandler {
 		String s =
 		"update NAMESPACE set WORKING_USER=NULL where NAMESPACE_ID=" + nsID;
 		conn.createStatement().executeUpdate(s);
+	}
+
+	private String getDisplayCreateLinks(){
+        
+		String[] dispCreateLinks = req.getParameterValues("disp_create_links");
+		if (dispCreateLinks == null || dispCreateLinks.length == 0)
+			return "0";
+            
+		int k = 0;
+		Hashtable weights = Dataset.getCreateLinkWeights();
+		for (int i=0; i<dispCreateLinks.length; i++){
+			Integer weight = (Integer)weights.get(dispCreateLinks[i]);
+			if (weight != null)
+				k = k + weight.intValue();
+		}
+        
+		return String.valueOf(k);
 	}
 	
     public static void main(String[] args){

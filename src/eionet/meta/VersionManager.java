@@ -18,15 +18,11 @@ public class VersionManager{
     private Connection conn = null;
     private DDSearchEngine searchEngine = null;
     private AppUserIF user = null;
-    private boolean upwardsVersioning = true;
+    private boolean upwardsVersioning = false;
 	private boolean versionUpdate = false;
     
     /** possible registration statuses*/
-    private Hashtable regStatuses = new Hashtable();
-    private Vector regStatusesOrdered = new Vector();
-    
-    /** version-effecting attributes */
-    private HashSet compAttrs = new HashSet();
+    private Vector regStatuses = new Vector();
     
 	/** servlet context object if instatiated from servlet environment*/
 	private ServletContext ctx = null;
@@ -54,33 +50,12 @@ public class VersionManager{
     */
     public VersionManager(){
         
-        // init compAttrs
-        compAttrs.add("ShortDescription");
-        compAttrs.add("Definition");
-        compAttrs.add("Descriptipon of Use");
-        compAttrs.add("Methodology");
-        compAttrs.add("Datatype");
-        compAttrs.add("MinSize");
-        compAttrs.add("MaxSize");
-        compAttrs.add("Decimal precision");
-        compAttrs.add("Unit");
-        compAttrs.add("MinValue");
-        compAttrs.add("MaxValue");
-        compAttrs.add("Planned Upd Frequency");
-        
 		// init registration statuses vector
-		regStatusesOrdered.add("Incomplete");
-		regStatusesOrdered.add("Candidate");
-		regStatusesOrdered.add("Recorded");
-		regStatusesOrdered.add("Qualified");
-		regStatusesOrdered.add("Released");
-		
-        // init registration statuses hashtable
-        regStatuses.put("Incomplete", "true");
-        regStatuses.put("Candidate", "false");
-        regStatuses.put("Recorded", "true");
-        regStatuses.put("Qualified", "true");
-        regStatuses.put("Released", "true");
+		regStatuses.add("Incomplete");
+		regStatuses.add("Candidate");
+		regStatuses.add("Recorded");
+		regStatuses.add("Qualified");
+		regStatuses.add("Released");
     }
     
     public void setUpwardsVersioning(boolean f){
@@ -122,7 +97,7 @@ public class VersionManager{
         
         String qry = "select distinct WORKING_USER, VERSION from " + tblName +
         " where IDENTIFIER='" + idfier + "'";
-        if (ctxField!=null)
+        if (ctxField!=null && ctxID!=null)
             qry = qry + " and " + ctxField + "=" + ctxID;
         
         qry = qry + " and " + tblName + ".WORKING_COPY='Y'";
@@ -437,21 +412,20 @@ public class VersionManager{
         // load the element we need to check in
         DataElement elm = loadElm(elmID);
         
-        // check if the status satisfies the requirements
-        checkStatusRequirements(elm, status);
+        // check the requirements for checking in a data element
+        checkRequirements(elm, status);
         
         String newVersion = null;
         DataElement latestElm = null;
         
 		String latestID = getLatestElmID(elm);
-		if (latestID==null || latestID.equals(elm.getID()))
+		if (latestID==null || latestID.equals(elm.getID())) // a brand new element
 			newVersion = composeNewVersion(null);
 		else
 			latestElm = loadElm(latestID);
         
 		if (newVersion==null)
-			newVersion = versionUpdate ?
-						composeNewVersion(elm.getVersion()) : elm.getVersion();
+		newVersion = versionUpdate ? composeNewVersion(elm.getVersion()) : elm.getVersion();
         
         // update from working copy to acting copy
         SQLGenerator gen = new SQLGenerator();
@@ -526,8 +500,8 @@ public class VersionManager{
         // load the table we need to check in
         DsTable tbl = loadTbl(tblID);
         
-        // check if the status satisfies the requirements
-        checkStatusRequirements(tbl, status);
+		// check the requirements for checking in a table
+        checkRequirements(tbl, status);
         
         String newVersion = null;
         DsTable latestTbl = null;
@@ -614,8 +588,8 @@ public class VersionManager{
 		// load the table we need to check in
 		Dataset dst = loadDst(dstID);
         
-		// check if the status satisfies the requirements
-		checkStatusRequirements(dst, status);
+		// check the requirements for checking in a dataset
+		checkRequirements(dst, status);
         
 		String newVersion = null;
 		Dataset latestDst = null;
@@ -691,247 +665,49 @@ public class VersionManager{
 		return true;
     }
     
-    /**
-     * Check status requirements, based on given object id and type.
-     */
-    private void checkStatusRequirements(String objID, String objType,
-        String status) throws Exception{
-        
-        if (objID==null || objType==null)
-            throw new Exception("Check-in error: object id or type null!");
-        
-        if (status==null)
-            throw new Exception("Status null!");
-        
-        if (objType.equals("elm")){
-            checkStatusRequirements(loadElm(objID), status);
-        }
-        else if (objType.equals("tbl")){
-        }
-        else if (objType.equals("dst")){
-        }
-        else
-            throw new Exception("Unknown object type: " + objType);
-    }
-    
-    /**
-     * Check status requirements of the specified data element
-     */
-    private void checkStatusRequirements(DataElement elm, String status)
+    private void checkRequirements(DataElement elm, String status)
                                                     throws Exception{        
-        // check Name
-        String name = elm.getAttributeValueByShortName("Name");
-        if (Util.nullString(name))
-            throw new Exception("Status '" + status + "' requires Name!");
-            
         // check Submitting Org
-        
-        DElemAttribute submOrgAttr =
-            elm.getAttributeByShortName("SubmitOrganisation");
-        if (submOrgAttr==null)
-            throw new Exception("For '" +status+ "' status you must specify " +
-                                "SubmitOrganisation complex attribute!");
-        
-        /*                        
-        submOrgAttr.setFields(searchEngine.getAttrFields(submOrgAttr.getID()));
-        
-        //check name
-        if (submOrgAttr.getFieldValueByName("name")==null)
-            throw new Exception("For '"+status+"' status you must specify " +
-                "'name' field in SubmitOrganisation complex attribute!");
-                
-        //check PhoneNr
-        if (submOrgAttr.getFieldValueByName("PhoneNr")==null)
-            throw new Exception("For '"+status+"' status you must specify " +
-                "'PhoneNr' field in SubmitOrganisation complex attribute!");*/
-        
-        if (!status.equals("Recorded"))
-            return;
-        
-        // 'Recorded' status requires all mandatory attributes
-        Vector attrs =
-            searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE);
-        for (int i=0; attrs!=null && i<attrs.size(); i++){
-            DElemAttribute attr = (DElemAttribute)attrs.get(i);
-            String oblig = attr.getObligation();
-            if (oblig!=null && oblig.equals("M")){
-                if (attr.displayFor(elm.getType())){
-                    String attrName = attr.getShortName();
-                    String value = elm.getAttributeValueByShortName(attrName);
-                    if (Util.nullString(value)){
-                        throw new Exception("Status '" + status +
-                                                "' requires " + attrName);
-                    }
-                }
-            }
-        }
+        DElemAttribute submOrg = elm.getAttributeByShortName("SubmitOrganisation");
+        if (submOrg==null) throw new Exception("SubmitOrganisation complex attribute required!");
     }
     
     /**
      * Check status requirements of the specified table
      */
-    private void checkStatusRequirements(DsTable tbl, String status)
+    private void checkRequirements(DsTable tbl, String status)
                                                     throws Exception{        
-        // check Name
-        String name = tbl.getAttributeValueByShortName("Name");
-        if (Util.nullString(name))
-            throw new Exception("Status '" + status + "' requires Name!");
-            
         // check Submitting Org
-        DElemAttribute submOrgAttr =
-            tbl.getAttributeByShortName("SubmitOrganisation");
-        if (submOrgAttr==null)
-            throw new Exception("For '" + status + "' status you must specify " +
-                                "SubmitOrganisation complex attribute!");
-        /*                        
-        submOrgAttr.setFields(searchEngine.getAttrFields(submOrgAttr.getID()));
-            //check name
-        if (submOrgAttr.getFieldValueByName("name")==null)
-            throw new Exception("For '"+status+"' status you must specify " +
-                "'name' field in SubmitOrganisation complex attribute!");
-                
-            //check PhoneNr
-        if (submOrgAttr.getFieldValueByName("PhoneNr")==null)
-            throw new Exception("For '"+status+"' status you must specify " +
-                "'PhoneNr' field in SubmitOrganisation complex attribute!");*/
-        
-        if (!status.equals("Recorded"))
-            return;
-        
-        // 'Recorded' status requires all mandatory attributes
-        Vector attrs =
-            searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE);
-        for (int i=0; attrs!=null && i<attrs.size(); i++){
-            DElemAttribute attr = (DElemAttribute)attrs.get(i);
-            String oblig = attr.getObligation();
-            if (oblig!=null && oblig.equals("M")){
-                if (attr.displayFor("TBL")){
-                    String attrName = attr.getShortName();
-                    String value = tbl.getAttributeValueByShortName(attrName);
-                    if (Util.nullString(value)){
-                        throw new Exception("Status '" + status +
-                                                "' requires " + attrName);
-                    }
-                }
-            }
-        }
+        DElemAttribute submOrg = tbl.getAttributeByShortName("SubmitOrganisation");
+		if (submOrg==null) throw new Exception("SubmitOrganisation complex attribute required!");
     }
     
 	/**
 	 * Check status requirements of the specified table
 	 */
-	private void checkStatusRequirements(Dataset dst, String status)
+	private void checkRequirements(Dataset dst, String status)
 													throws Exception{        
-		// check Name
-		String name = dst.getAttributeValueByShortName("Name");
-		if (Util.nullString(name))
-			throw new Exception("Status '" + status + "' requires Name!");
-        
 		// check Submitting Org
-		DElemAttribute submOrgAttr =
-			dst.getAttributeByShortName("SubmitOrganisation");
-		if (submOrgAttr==null)
-			throw new Exception("For '" + status + "' status you must specify " +
-                "SubmitOrganisation complex attribute!");
-		
-		/*submOrgAttr.setFields(searchEngine.getAttrFields(submOrgAttr.getID()));
-		
-			//check name
-		if (submOrgAttr.getFieldValueByName("name")==null)
-			throw new Exception("For '"+status+"' status you must specify " +
-                "'name' field in SubmitOrganisation complex attribute!");
-                
-			//check PhoneNr
-		if (submOrgAttr.getFieldValueByName("PhoneNr")==null)
-			throw new Exception("For '"+status+"' status you must specify " +
-                "'PhoneNr' field in SubmitOrganisation complex attribute!");*/
-    
-		if (!status.equals("Recorded"))
-			return;
-    
-		// 'Recorded' status requires all mandatory attributes
-		Vector attrs =
-			searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE);
-		for (int i=0; attrs!=null && i<attrs.size(); i++){
-			DElemAttribute attr = (DElemAttribute)attrs.get(i);
-			String oblig = attr.getObligation();
-			if (oblig!=null && oblig.equals("M")){
-				if (attr.displayFor("DST")){
-					String attrName = attr.getShortName();
-					String value = dst.getAttributeValueByShortName(attrName);
-					if (Util.nullString(value)){
-						throw new Exception("Status '" + status +
-												"' requires " + attrName);
-					}
-				}
-			}
-		}
+		DElemAttribute submOrg = dst.getAttributeByShortName("SubmitOrganisation");
+		if (submOrg==null) throw new Exception("SubmitOrganisation complex attribute required!");
 	}
-    
-    /**
-     * Update version of the specified object.
-     */
-    private String updateVersion(String objID, String objType,
-        String status) throws Exception{
-            
-        return null;
-    }
-    
-    /**
-     * Check if the given status requires versioning.
-     */
-    public boolean requiresVersioning(String status) throws Exception{
-        
-        if (status==null)
-            throw new Exception("Unknown status: null");
-        
-        if (!regStatuses.containsKey(status))
-            throw new Exception("Unknown status!");
-        
-        return Boolean.valueOf((String)regStatuses.get(status)).booleanValue();
-    }
-    
-    /**
-    *
-    */
-    private String newVersion(String copyID, String type, String latestID)
-        throws Exception{
-        
-        if (Util.nullString(copyID) || Util.nullString(type))
-            throw new Exception("Unable to locate the object!");
-        
-        if (type.equals("elm"))
-            return newVersion(loadElm(copyID), loadElm(latestID));
-        else if (type.equals("tbl"))
-            return newVersion(loadTbl(copyID));
-        else if (type.equals("dst"))
-            return newVersion(loadDst(copyID));
-        else
-            throw new Exception("Unknown type!");
-    }
     
     /**
     *
     */
     private DataElement loadElm(String elmID) throws Exception{
 
-        if (Util.nullString(elmID))
-            throw new Exception("Data element ID not specified!");
+        if (Util.nullString(elmID)) throw new Exception("Data element ID not specified!");
         
-        // Get the data element object. This will also give us the
-        // element's simple attributes + tableID
+        // get the element (this will return simple attributes + tableID
         DataElement elem = searchEngine.getDataElement(elmID);
-        if (elem == null)
-            throw new Exception("Data element not found!");
+        if (elem == null) throw new Exception("Element not found!");
         
         // get and set the element's complex attributes
-        //elem.setComplexAttributes(searchEngine.getComplexAttributes(elmID, "E",null,elem.getTableID(),elem.getDatasetID()));
-        //EK get also iinherited attributes
         elem.setComplexAttributes(
-        	searchEngine.getComplexAttributes(
-        		elmID, "E",null,elem.getTableID(),elem.getDatasetID()));
+        searchEngine.getComplexAttributes(elmID,"E",null,elem.getTableID(),elem.getDatasetID()));
 
-        // write allowable values (levelling not needed here)
+        // set fixed values
         elem.setFixedValues(searchEngine.getFixedValues(elmID, "elem"));
         
         return elem;
@@ -942,33 +718,22 @@ public class VersionManager{
     */
     private DsTable loadTbl(String tblID) throws Exception{
         
-        if (Util.nullString(tblID))
-            throw new Exception("Table ID not specified!");
+        if (Util.nullString(tblID)) throw new Exception("Table ID not specified!");
         
         // get the table
         DsTable dsTable = searchEngine.getDatasetTable(tblID);
-        if (dsTable == null)
-            throw new Exception("Table not found!");
+        if (dsTable == null) throw new Exception("Table not found!");
             
         // get simple attributes
         Vector v = searchEngine.getSimpleAttributes(tblID, "T");
         dsTable.setSimpleAttributes(v);
         
-        // get complex attributes
-        //dsTable.setComplexAttributes(searchEngine.getComplexAttributes(tblID, "T"));
-       //EK get also iinherited attributes
-        dsTable.setComplexAttributes(searchEngine.getComplexAttributes(tblID, "T", null, null,dsTable.getDatasetID()));
+        // get & set complex attributes
+        dsTable.setComplexAttributes(
+        searchEngine.getComplexAttributes(tblID, "T", null, null,dsTable.getDatasetID()));
 
-        // get data elements (this will set all the simple attributes,
-        // but no fixed values)
-        Vector vv = searchEngine.getDataElements(null, null, null, null, tblID);
-        dsTable.setElements(vv);
-        
-        // get the dataset basic info
-        Dataset ds = null;
-        if (!Util.nullString(dsTable.getDatasetID())){
-            ds = searchEngine.getDataset(dsTable.getDatasetID());
-        }
+        // get data elements (this will also return simple attributes, but no fixed values!)
+        dsTable.setElements(searchEngine.getDataElements(null, null, null, null, tblID));
         
         return dsTable;
     }
@@ -978,94 +743,19 @@ public class VersionManager{
     */
     private Dataset loadDst(String dstID) throws Exception{
         
-        if (Util.nullString(dstID))
-            throw new Exception("Dataset ID not specified!");
+        if (Util.nullString(dstID)) throw new Exception("Dataset ID not specified!");
         
         Dataset ds = searchEngine.getDataset(dstID);
-        if (ds == null)
-            throw new Exception("Dataset not found!");
+        if (ds == null) throw new Exception("Dataset not found!");
             
-        Vector v = searchEngine.getSimpleAttributes(dstID, "DS");
-        ds.setSimpleAttributes(v);
-        
-        v = searchEngine.getComplexAttributes(dstID, "DS");
-        ds.setComplexAttributes(v);
-        
-        v = searchEngine.getDatasetTables(dstID);
-        ds.setTables(v);
+        // get & set simple attributes, compelx attributes and tables
+        ds.setSimpleAttributes(searchEngine.getSimpleAttributes(dstID, "DS"));
+        ds.setComplexAttributes(searchEngine.getComplexAttributes(dstID, "DS"));
+        ds.setTables(searchEngine.getDatasetTables(dstID));
         
         return ds;
     }
 
-    
-    /**
-    *
-    */
-    private String newVersion(DataElement srcElm, DataElement latestElm)
-        throws Exception{
-        	
-        // compare statuses
-        if (!srcElm.getStatus().equals(latestElm.getStatus()))
-			return composeNewVersion(latestElm.getVersion());
-        
-        // compare the attributes
-        if (!equalWithoutOrder(latestElm.getVersioningAttributes(),
-                                    srcElm.getVersioningAttributes()))
-            return composeNewVersion(latestElm.getVersion());
-            
-        // compare the value domain
-        if (!equalWithoutOrder(latestElm.getFixedValues(),
-                                    srcElm.getFixedValues()))
-            return composeNewVersion(latestElm.getVersion());
-        
-        // elements must have been equal
-        return latestElm.getVersion();
-    }
-    
-    /**
-    *
-    */
-    private String newVersion(DsTable srcTbl, DsTable latestTbl)
-        throws Exception{
-        
-		// compare statuses
-		if (!srcTbl.getStatus().equals(latestTbl.getStatus()))
-			return composeNewVersion(latestTbl.getVersion());
-
-        // compare the attributes
-        if (!equalWithoutOrder(latestTbl.getVersioningAttributes(),
-                                    srcTbl.getVersioningAttributes()))
-            return composeNewVersion(latestTbl.getVersion());
-            
-        // elements we don't compare, because table structure is versioned
-        // by versioning its single elements
-        
-        // tables must have been equal
-        return latestTbl.getVersion();
-    }
-    
-    /**
-    *
-    */
-    private String newVersion(Dataset srcDst, Dataset latestDst)
-        throws Exception{
-        	
-		// compare statuses
-		if (!srcDst.getStatus().equals(latestDst.getStatus()))
-			return composeNewVersion(latestDst.getVersion());
-
-        
-        // compare the attributes
-        if (!equalWithoutOrder(latestDst.getVersioningAttributes(),
-                                    srcDst.getVersioningAttributes()))
-            return composeNewVersion(latestDst.getVersion());
-            
-        // elements we don't compare, because table structure is versioned
-        // by versioning its single elements
-        
-        // tables must have been equal
-        return latestDst.getVersion();
-    }
     
     /**
     *
@@ -1168,8 +858,9 @@ public class VersionManager{
         SQLGenerator gen = new SQLGenerator();
         gen.clear();
         gen.setTable("DATASET");
-        gen.setFieldExpr("VERSION", "VERSION+1");
         gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+		if (versionUpdate)
+			gen.setFieldExpr("VERSION", "VERSION+1");
         if (user==null)
             gen.setFieldExpr("USER", "NULL");
         else
@@ -1178,187 +869,138 @@ public class VersionManager{
         Statement stmt = conn.createStatement();
         String sql = gen.updateStatement() + " where DATASET_ID=" + newDstID;
         stmt.executeUpdate(sql);
+
+		// remove old table from the new dataset
+		// (that is if there ever was an old table, i.e. it's a completely new table)
+		if (latestID!=null)
+			stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" + newDstID +
+								" and TABLE_ID=" + latestID);
         
-        // remove new table from the dataset's old version
-        stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" + oldDstID +
-                                " and TABLE_ID=" + tbl.getID());
-        
-        // remove old table from the dataset's new version
-        // (that is if there ever was an old table, i.e.
-        // it's a completely new table)
-        if (latestID!=null)
-            stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" + newDstID +
-                                " and TABLE_ID=" + latestID);
-    }
-    
-    /**
-    *
-    */
-    private String newVersion(DsTable srcTbl)
-        throws Exception{
-        
-        return null;
-    }
-    
-    /**
-    *
-    */
-    private String newVersion(Dataset srcDst)
-        throws Exception{
-        
-        return null;
-    }
-    
-    /**
-    *
-    */
-    public boolean tblEmpty(String tblID, boolean exclWC) throws SQLException {
-        
-        String s = null;
-        if (exclWC){
-            s = "select count(TBL2ELEM.DATAELEM_ID) from TBL2ELEM " +
-            "left outer join " +
-            "DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID " +
-            "where DATAELEM.WORKING_COPY='N' and TABLE_ID=" + tblID;
+        if (versionUpdate){
+	        // remove new table from the dataset's old version
+	        stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" + oldDstID +
+	                                " and TABLE_ID=" + tbl.getID());
         }
-        else
-            s = "select count(*) from TBL2ELEM where TABLE_ID=" + tblID;
-        
-        ResultSet rs = conn.createStatement().executeQuery(s);
-        boolean f = true;
-        if (rs.next()){
-            if (rs.getInt(1) > 0)
-                f = false;
+        else{
+        	// delete old dataset completely
+			Parameters params = new Parameters();
+			params.addParameterValue("mode", "delete");
+			params.addParameterValue("complete", "true");
+			params.addParameterValue("ds_id", oldDstID);
+			DatasetHandler dstHandler = new DatasetHandler(conn, params, ctx);
+			dstHandler.setUser(user);
+			dstHandler.setVersioning(false);
+			dstHandler.execute();
         }
-        else
-            f = false;
-        
-        return f;
     }
-    
-    /**
-    *
-    */
-    public boolean dstEmpty(String dstID, boolean exclWC) throws SQLException {
-        
-        String s = null;
-        if (exclWC){
-            s = "select count(DST2TBL.TABLE_ID) from DST2TBL " +
-            "left outer join " +
-            "DS_TABLE on DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID " +
-            "where DS_TABLE.WORKING_COPY='N' and DST2TBL.DATASET_ID=" + dstID;
-        }
-        else
-            s = "select count(*) from DST2TBL where DATASET_ID=" + dstID;
-        
-        ResultSet rs = conn.createStatement().executeQuery(s);
-        boolean f = true;
-        if (rs.next()){
-            if (rs.getInt(1) > 0)
-                f = false;
-        }
-        else
-            f = false;
-        
-        return f;
-    }
-    
+
 	/**
 	*
 	*/
-	public String restoreElm(String elmID) throws Exception{
-        
-		// make sure the element has been deleted
-		if (!searchEngine.isElmDeleted(elmID))
-			throw new Exception("No point in restoring a non-deleted element!");
-        
-        // get the element's latest table
-        DataElement elm = loadElm(elmID);
-        String latestTblID = elm.getTableID();
-        if (Util.nullString(latestTblID))
-			throw new Exception("Could not find the latest table!");
-        
-        // make sure the element's latest table has not been deleted
-		if (!searchEngine.isTblDeleted(latestTblID))
-			throw new Exception("This element's parent table has been deleted!"+
-									" You must restore it first!");
-        
-        // LOCK THE TOP NAMESPACE
-        
-        // copy the latest dataset
-        String latestDstID = elm.getDatasetID();
-        if (Util.nullString(latestDstID))
-			throw new Exception("Could not find the latest dataset!");
+	public String deleteElmLinks(String dstID, String tblID, String[] elmlinks) throws Exception{
 		
+		if (dstID==null || tblID==null || elmlinks==null || elmlinks.length==0)
+			return null;
+        
+		// make sure that we're doing this in the latest dataset
+		Dataset dst = searchEngine.getDataset(dstID);
+		if (dst==null)
+			return null;
+		else if (!isLatestDst(dst.getID(), dst.getIdentifier()))
+			throw new Exception("Cannot delete in history!");
+        
+		// removing a links to common elements means creating a new dataset where these links
+		// are missing in this table. So first create a new table where these links
+		// are missing and then put that table into the new dataset
+        
+		// copy the table
 		CopyHandler copyHandler = new CopyHandler(conn);
 		copyHandler.setUser(user);
-		String newDstID = copyHandler.copyDst(latestDstID, false, true, false);
-		if (Util.nullString(newDstID))
-			throw new Exception("Failed to copy the dataset!");
+		String newTblID = copyHandler.copyTbl(tblID, false, true);
+		if (Util.nullString(newTblID))
+			return null;
 
+		// set the new table's credentials for history
 		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("DATASET");
-		gen.setFieldExpr("VERSION", "VERSION+1");
+		gen.clear();
+		gen.setTable("DS_TABLE");
 		gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+		if (versionUpdate)
+			gen.setFieldExpr("VERSION", "VERSION+1");
 		if (user==null)
 			gen.setFieldExpr("USER", "NULL");
 		else
 			gen.setField("USER", user.getUserName());
         
 		Statement stmt = conn.createStatement();
-		stmt.executeUpdate(gen.updateStatement() + 
-									" where DATASET_ID=" + newDstID);
+		stmt.executeUpdate(gen.updateStatement() + " where TABLE_ID=" + newTblID);
+        
+		// remove the element links from the new table
+		StringBuffer buf = new StringBuffer().
+		append("delete from TBL2ELEM where TABLE_ID=").append(newTblID).append(" and (");
+		for (int i=0; i<elmlinks.length; i++){
+			if (i>0) buf.append(" or ");
+			buf.append("DATAELEM_ID=").append(elmlinks[i]);
+		}
+		buf.append(")");
+		stmt.executeUpdate(buf.toString());
+        
+		// update the parent dataset
+		versionUpwards(loadTbl(newTblID), tblID);
+        
+		return newTblID;
+	}
 
-		// copy the latest table
-		String newTblID = copyHandler.copyTbl(latestTblID, false, true);
+	/*
+	 * 
+	 */
+	public String deleteElm(String dstID,String dstIdf,String tblID,Vector elms)throws Exception{
+		
+		if (elms==null || elms.size()==0 || dstID==null || tblID==null) return null;
+        
+		// make sure that we're doing this in the latest dataset
+		if (!isLatestDst(dstID, dstIdf)) throw new Exception("Cannot delete in history!");
+        
+		// deleting elements belonging to a table means creating a new dataset where
+		// these elements are missing in this table. So first create a new table where
+		// these elements are missing and then put that table into the new dataset
+        
+		// copy old table
+		CopyHandler copyHandler = new CopyHandler(conn);
+		copyHandler.setUser(user);
+		String newTblID = copyHandler.copyTbl(tblID, false, true);
 		if (Util.nullString(newTblID))
-			throw new Exception("Failed to copy the table!");
+			return null;
 
-		gen = new SQLGenerator();
+		// set the new table's credentials for history
+		SQLGenerator gen = new SQLGenerator();
+		gen.clear();
 		gen.setTable("DS_TABLE");
-		gen.setFieldExpr("VERSION", "VERSION+1");
 		gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+		if (versionUpdate)
+			gen.setFieldExpr("VERSION", "VERSION+1");
 		if (user==null)
 			gen.setFieldExpr("USER", "NULL");
 		else
 			gen.setField("USER", user.getUserName());
         
-		stmt.executeUpdate(gen.updateStatement() + 
-									" where TABLE_ID=" + newTblID);
-		
-		// add the table copy into the dataset copy
-		gen.setTable("DST2TBL");
-		gen.setFieldExpr("DATASET_ID", newDstID);
-		gen.setFieldExpr("TABLE_ID", newTblID);
-		stmt.executeUpdate(gen.insertStatement());
-		
-		// copy the element
-		String newElmID = copyHandler.copyElem(elmID, true);
-		if (Util.nullString(newElmID))
-			throw new Exception("Failed to copy the element!");
-
-		gen = new SQLGenerator();
-		gen.setTable("DATAELEM");
-		gen.setFieldExpr("VERSION", "VERSION+1");
-		gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-		if (user==null)
-			gen.setFieldExpr("USER", "NULL");
-		else
-			gen.setField("USER", user.getUserName());
+		Statement stmt = conn.createStatement();
+		stmt.executeUpdate(gen.updateStatement() + " where TABLE_ID=" + newTblID);
         
-		stmt.executeUpdate(gen.updateStatement() + 
-									" where DATAELEM_ID=" + newElmID);
-		
-		// add the element copy into the table copy
-		gen.setTable("TBL2ELEM");
-		gen.setFieldExpr("DATAELEM_ID", newElmID);
-		gen.setFieldExpr("TABLE_ID", newTblID);
-		stmt.executeUpdate(gen.insertStatement());
-		
-		// UNLOCK THE TOP NAMESPACE
-
-		// all fine, return
-		return newElmID;
+		// remove the deleted elements from the new table
+		StringBuffer buf = new StringBuffer().
+		append("delete from TBL2ELEM where TABLE_ID=").append(newTblID).append(" and (");
+		for (int i=0; i<elms.size(); i++){
+			if (i>0) buf.append(" or ");
+			buf.append("DATAELEM_ID=").append(elms.get(i));
+		}
+		buf.append(")");
+		stmt.executeUpdate(buf.toString());
+        
+		// update the parent dataset
+		versionUpwards(loadTbl(newTblID), tblID);
+        
+		return newTblID;
 	}
     
     /**
@@ -1370,15 +1012,16 @@ public class VersionManager{
         if (elm==null)
             return null;
         
-        // make sure that this is the latest version of an element
-        // with such logical ID
-        String latestID = getLatestElmID(elm);
-        if (latestID!=null && !latestID.equals(elmID))
-            throw new Exception("Cannot delete an intermediate version!");
+        // make sure that we're doing this in the latest dataset
+        Dataset dst = searchEngine.getDataset(elm.getDatasetID());
+        if (dst==null)
+        	return null;
+        else if (!isLatestDst(dst.getID(), dst.getIdentifier()))
+            throw new Exception("Cannot delete in history!");
         
-        // deleting the latest version means creating a new
-        // parent table where this element is missing (if it had
-        // a table in the first place)
+        // Deleting an element means creating a new dataset where this element
+        // is missing in this table. So first create a new table where this element
+        // is missing and then put that table into the new dataset
         
         String oldTblID = elm.getTableID();
         if (Util.nullString(oldTblID))
@@ -1395,20 +1038,20 @@ public class VersionManager{
         SQLGenerator gen = new SQLGenerator();
         gen.clear();
         gen.setTable("DS_TABLE");
-        gen.setFieldExpr("VERSION", "VERSION+1");
         gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+		if (versionUpdate)
+			gen.setFieldExpr("VERSION", "VERSION+1");
         if (user==null)
             gen.setFieldExpr("USER", "NULL");
         else
             gen.setField("USER", user.getUserName());
         
         Statement stmt = conn.createStatement();
-        stmt.executeUpdate(gen.updateStatement() + " where TABLE_ID=" +
-                                                                newTblID);
+        stmt.executeUpdate(gen.updateStatement() + " where TABLE_ID=" + newTblID);
         
         // remove this element from the new table
-        stmt.executeUpdate("delete from TBL2ELEM where TABLE_ID=" +
-                newTblID + " and DATAELEM_ID=" + elmID);
+        stmt.executeUpdate(
+		"delete from TBL2ELEM where TABLE_ID=" + newTblID + " and DATAELEM_ID=" + elmID);
         
         // update the parent dataset
         versionUpwards(loadTbl(newTblID), oldTblID);
@@ -1425,21 +1068,18 @@ public class VersionManager{
         if (tbl==null)
             return null;
         
-        // make sure that this is the latest version of a table
-        // with such logical ID
-        String latestID = getLatestTblID(tbl);
-        if (latestID!=null && !latestID.equals(tblID))
-            throw new Exception("Cannot delete an intermediate version- " +
-                    "tblID=" + tblID + ", latestID=" + latestID);
+		// make sure that we're doing this in the latest dataset
+		Dataset dst = searchEngine.getDataset(tbl.getDatasetID());
+		if (dst==null)
+			return null;
+		else if (!isLatestDst(dst.getID(), dst.getIdentifier()))
+			throw new Exception("Cannot delete in history!");
         
-        // deleting the latest version means creating a new
-        // parent dataset where this table is missing
-        
+        // deleting a table means creating a new dataset where this table is missing
+        // so first we need to copy the old dataset and its relations.
         String oldDstID = tbl.getDatasetID();
-        if (Util.nullString(oldDstID))
-            return null;
+        if (Util.nullString(oldDstID)) return null;
         
-        // we need to copy the latest parent dataset and its table relations
         CopyHandler copyHandler = new CopyHandler(conn);
         copyHandler.setUser(user);
         String newDstID = copyHandler.copyDst(oldDstID, false,true,false);
@@ -1450,8 +1090,9 @@ public class VersionManager{
         SQLGenerator gen = new SQLGenerator();
         gen.clear();
         gen.setTable("DATASET");
-        gen.setFieldExpr("VERSION", "VERSION+1");
         gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+		if (versionUpdate)
+			gen.setFieldExpr("VERSION", "VERSION+1");
         if (user==null)
             gen.setFieldExpr("USER", "NULL");
         else
@@ -1463,6 +1104,19 @@ public class VersionManager{
         // remove this table from the new dataset
         stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" +
                 newDstID + " and TABLE_ID=" + tblID);
+        
+        // if this table deletion should NOT create a new version of the dataset,
+        // then delete the old dataset and delete it completely
+        if (!versionUpdate){
+			Parameters params = new Parameters();
+			params.addParameterValue("mode", "delete");
+			params.addParameterValue("complete", "true");
+			params.addParameterValue("ds_id", oldDstID);
+			DatasetHandler dstHandler = new DatasetHandler(conn, params, ctx);
+			dstHandler.setUser(user);
+			dstHandler.setVersioning(false);
+			dstHandler.execute();
+        }
 		
 		return newDstID;
     }
@@ -1470,64 +1124,106 @@ public class VersionManager{
     /**
     *
     */
-    public String getLatestElmID(DataElement copyElm) throws SQLException{
-        
-        String q =
-        "select * from DATAELEM " +
-		"left outer join TBL2ELEM on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID " +
-		"left outer join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID " +
-        "left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID " +
-		"left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +
-        "where DATAELEM.WORKING_COPY='N' and " +
-		"DATASET.DELETED is null and " +
-        "DATAELEM.PARENT_NS=" + copyElm.getNamespace().getID() + " and " +
-        "DATAELEM.IDENTIFIER='" + copyElm.getIdentifier() + "' " +
-        "order by DATAELEM.VERSION desc";
-        
-		ResultSet rs = conn.createStatement().executeQuery(q);
-		if (rs.next())
-			return rs.getString("DATAELEM_ID");
-		else        
-			return null;
-    }
-    
-    /**
-    *
-    */
-    public String getLatestTblID(DsTable tbl) throws SQLException{
+    public String getLatestElmID(DataElement elm) throws SQLException{
     	
-        String q =
-		"select * from DS_TABLE " +
-		"left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID " +
-		"left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +
-		"where DS_TABLE.WORKING_COPY='N' and " +
-		"DATASET.DELETED is null and " +
-		"DS_TABLE.PARENT_NS=" + tbl.getParentNs() + " and " +
-		"DS_TABLE.IDENTIFIER='" + tbl.getIdentifier() + "' " +
-		"order by DS_TABLE.VERSION desc";
-				
-        ResultSet rs = conn.createStatement().executeQuery(q);
-        if (rs.next())
-            return rs.getString("TABLE_ID");
-        else        
-            return null;
+    	// see if this is a common element and behave relevantly
+		boolean elmCommon = elm.getNamespace()==null || elm.getNamespace().getID()==null;
+    	
+        StringBuffer buf = new StringBuffer("select DATAELEM.DATAELEM_ID from DATAELEM");
+        if (elm.getNamespace()!=null && elm.getNamespace().getID()!=null){ // non-common element
+			buf.append(", TBL2ELEM, DST2TBL, DATASET ").
+			append("where ").
+			append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID and ").
+			append("TBL2ELEM.TABLE_ID=DST2TBL.TABLE_ID and ").
+			append("DST2TBL.DATASET_ID=DATASET.DATASET_ID and ").
+			append("DATAELEM.WORKING_COPY='N' and DATAELEM.PARENT_NS=").
+			append(elm.getNamespace().getID()).append(" and DATAELEM.IDENTIFIER=").
+			append(Util.strLiteral(elm.getIdentifier())).
+			append(" and DATASET.DELETED is null order by DATASET.VERSION desc");
+        }
+        else{
+			buf.append(" where ").
+			append("DATAELEM.WORKING_COPY='N' and DATAELEM.PARENT_NS is null and ").
+			append("DATAELEM.IDENTIFIER=").append(Util.strLiteral(elm.getIdentifier())).
+			append(" order by DATAELEM.VERSION desc");
+        }
+        
+        Statement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(buf.toString());
+			if (rs.next()) return rs.getString(1);
+		}
+		finally{
+			try{
+				if (stmt!=null) stmt.close();
+				if (rs!=null) rs.close();
+			}
+			catch (SQLException e){}
+		}
+		
+		return null;
     }
+
+	/**
+	*
+	*/
+	public String getLatestTblID(DsTable tbl) throws SQLException{
+        
+		StringBuffer buf = new StringBuffer().
+		append("select DS_TABLE.TABLE_ID from DS_TABLE ").
+		append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ").
+		append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ").
+		append("where DS_TABLE.WORKING_COPY='N' and DS_TABLE.PARENT_NS=").
+		append(tbl.getParentNs()).append(" and DS_TABLE.IDENTIFIER=").
+		append(Util.strLiteral(tbl.getIdentifier())).
+		append(" and DATASET.DELETED is null order by DATASET.VERSION desc");
+        
+		Statement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(buf.toString());
+			if (rs.next()) return rs.getString(1);
+		}
+		finally{
+			try{
+				if (stmt!=null) stmt.close();
+				if (rs!=null) rs.close();
+			}
+			catch (SQLException e){}
+		}
+		
+		return null;
+	}
     
 	/**
 	*
 	*/
 	public String getLatestDstID(Dataset dst) throws SQLException{
     
-		String q =
-		"select * from DATASET where WORKING_COPY='N' and " +
-		"DELETED is null and " +
-		"IDENTIFIER='" + dst.getIdentifier() + "' order by VERSION desc";
+		StringBuffer buf = new StringBuffer().
+		append("select DATASET_ID from DATASET where WORKING_COPY='N' and DELETED is null and ").
+		append("IDENTIFIER=").append(Util.strLiteral(dst.getIdentifier())).
+		append(" order by VERSION desc");
 
-		ResultSet rs = conn.createStatement().executeQuery(q);
-		if (rs.next())
-			return rs.getString("DATASET_ID");
-		else        
-			return null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(buf.toString());
+			if (rs.next()) return rs.getString(1);
+		}
+		finally{
+			try{
+				if (stmt!=null) stmt.close();
+				if (rs!=null) rs.close();
+			}
+			catch (SQLException e){}
+		}
+		
+		return null;
 	}
     
     /**
@@ -1539,76 +1235,15 @@ public class VersionManager{
         return String.valueOf(oldVer+1);
     }
     
-    /**
-    *
-    */
-    public Hashtable getRegStatuses(){
-        return this.regStatuses;
-    }
-
 	/**
 	*
 	*/
-	public Vector getRegStatusesOrdered(){
-		return this.regStatusesOrdered;
+	public Vector getRegStatuses(){
+		return regStatuses;
 	}
     
     /**
-    *
-    */
-    public boolean equalWithoutOrder(Vector v1, Vector v2){
-        
-        if (v1==null){
-            if (v2==null)
-                return true;
-        }
-        else if (v2==null)
-            return false;
-                
-        if (v1.size() != v2.size())
-            return false;
-            
-        for (int i=0; i<v1.size(); i++)
-            if (!v2.contains(v1.get(i)))
-                return false;
-        
-        return true;
-    }
-    
-    /**
-    *
-    */
-    public boolean isLastElm(String id, String idfier, String parentNS)
-                                                        throws SQLException{
-        
-        String s =
-		"select count(*) from DATAELEM " +
-		"left outer join TBL2ELEM on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID " +
-		"left outer join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID " +
-		"left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID " +
-		"left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +        
-		"where DATAELEM.IDENTIFIER='" + idfier +
-		"' and DATASET.DELETED is null and " +
-        "DATAELEM.DATAELEM_ID<>" + id + " and ";
-        
-        if (parentNS==null)
-            s = s + "DATAELEM.PARENT_NS is null";
-        else
-            s = s + "DATAELEM.PARENT_NS=" + parentNS;
-            
-        boolean f = false;
-        
-        ResultSet rs = conn.createStatement().executeQuery(s);
-        if (rs.next()){
-            if (rs.getInt(1) == 0)
-                f = true;
-        }
-        
-        return f;
-    }
-    
-    /**
-    *
+    * Needed for checking if the namespace should be deleted as well
     */
     public boolean isLastTbl(String id, String idfier, String parentNS)
                                                         throws SQLException{
@@ -1638,7 +1273,7 @@ public class VersionManager{
     }
     
     /**
-    *
+    * Needed for checking if the namespace should be deleted as well
     */
     public boolean isLastDst(String id, String idfier)
                                                         throws SQLException{
@@ -1661,6 +1296,46 @@ public class VersionManager{
 	/**
 	*
 	*/
+	public boolean isLatestDst(String id, String idf) throws SQLException{
+		
+		Dataset dst = new Dataset(null, null, null);
+		dst.setIdentifier(idf);
+		return id.equals(getLatestDstID(dst));
+	}
+	
+	public boolean isLatestCommonElm(String id, String idf) throws SQLException{
+		DataElement elm = new DataElement(id, null, null);
+		elm.setIdentifier(idf);
+		return id.equals(getLatestElmID(elm));
+	}
+
+	public boolean isFirstCommonElm(String idf) throws SQLException{
+		
+		StringBuffer buf = new StringBuffer().
+		append("select count(*) from DATAELEM where IDENTIFIER=").append(Util.strLiteral(idf));
+		
+		Statement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(buf.toString());
+			if (rs.next() && rs.getInt(1)==1)
+				return true;
+		}
+		finally{
+			try{
+				if (stmt!=null) stmt.close();
+				if (rs!=null) rs.close();
+			}
+			catch (SQLException e){}
+		}
+		
+		return false;
+	}
+
+	/**
+	*
+	*/
 	public void setContext(ServletContext ctx){
 		this.ctx = ctx;
 	}
@@ -1678,16 +1353,15 @@ public class VersionManager{
     public static void main(String[] args){
         
         try{
-            Class.forName("org.gjt.mm.mysql.Driver");
+            Class.forName("com.mysql.jdbc.Driver");
             Connection conn =
-                DriverManager.getConnection("jdbc:mysql://195.250.186.33:3306/DataDict",
-				"dduser", "xxx");
+            DriverManager.getConnection("jdbc:mysql://195.250.186.33:3306/dd", "dduser", "xxx");
                 
-            AppUserIF testUser = new TestUser();
-            testUser.authenticate("tennoan", "tennoan");
+            AppUserIF user = new TestUser(false);
+            user.authenticate("heinlja", "sss");
             
-			VersionManager verMan = new VersionManager();
-            //String id = verMan.LatestElmID(dataElement);
+			VersionManager verMan = new VersionManager(conn, user);
+            verMan.checkInElm("14917", "Incomplete");
       }
         catch (Exception e){
             System.out.println(e.toString());

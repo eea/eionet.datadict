@@ -114,15 +114,6 @@ public class ElmPdfAll {
 			attrs.add(0, hash);
 		}
 
-		// reg stat
-		String stat = elem.getStatus();
-		if (!Util.voidStr(stat)){
-			hash = new Hashtable();
-			hash.put("name", "Registration status");
-			hash.put("value", stat);
-			attrs.add(0, hash);
-		}
-        
         addElement(PdfUtil.simpleAttributesTable(attrs));
         addElement(new Phrase("\n"));
         

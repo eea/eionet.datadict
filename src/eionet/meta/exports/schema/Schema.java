@@ -204,73 +204,6 @@ public abstract class Schema implements SchemaIF{
         newLine();
     }
     
-    protected void writeChoice(Vector children, String tab, String minOcc, String maxOcc) throws Exception{
-        
-        if (children == null || children.size()==0) return;
-        
-        addString(tab);
-        addString("<xs:choice");
-        if (minOcc != null)
-            addString(" minOccurs=\"" + minOcc + "\"");
-        if (maxOcc != null)
-            addString(" maxOccurs=\"" + maxOcc + "\"");
-        addString(">");            
-        newLine();
-            
-        for (int i=0; children!=null && i<children.size(); i++){
-                
-            Object o = children.get(i);
-		    Class oClass = o.getClass();
-		    String oClassName = oClass.getName();
-        		
-		    DataElement elem = null;
-		    Hashtable child = null;
-		    if (oClassName.endsWith("DataElement"))
-			    elem = (DataElement)o;
-		    else if (oClassName.endsWith("Hashtable"))
-			    child = (Hashtable)o;
-		    else
-			    continue;
-                
-            if (elem != null){
-                    
-                Namespace ns = elem.getNamespace();
-                    
-                addImport(elem.getID(), GetSchema.ELM);
-				// addNamespace(ns); - substituted with parent's namespace, i.e. referredNs
-				// which is added already in parent's write() method
-                    
-                addString(tab + "\t");
-                addString("<xs:element ref=\"");
-                //addString(ns.getShortName() + ":" + elem.getShortName());
-                //addString("ns" + ns.getID() + ":" + elem.getShortName());
-				addString("ns" + ns.getID() + ":" + elem.getIdentifier());
-                    
-                addString("\"/>");
-                newLine();
-            }
-            else if (child != null){
-                
-                String childID = (String)child.get("child_id");
-                String childType = (String)child.get("child_type");
-                
-                if (childID == null || childType == null)
-                    continue;
-                
-                Vector v = null;
-                if (searchEngine != null)
-                    v = searchEngine.getSubElements(childType, childID);
-                
-                if (childType.equals("seq"))
-                    writeSequence(v, tab + "\t", null, null);
-            }
-        }
-            
-        addString(tab);
-        addString("</xs:choice>");
-        newLine();
-    }
-    
     protected void writeSequence(Vector children, String tab, String minOcc, String maxOcc)
     																		throws Exception{
         
@@ -293,15 +226,12 @@ public abstract class Schema implements SchemaIF{
 		    String oClassName = oClass.getName();
         		
 		    DataElement elem = null;
-		    Hashtable child = null;
 		    DsTable dsTable = null;
 		    
 		    if (oClassName.endsWith("DataElement"))
 			    elem = (DataElement)o;
 			else if (oClassName.endsWith("DsTable"))
 			    dsTable = (DsTable)o;
-		    else if (oClassName.endsWith("Hashtable"))
-			    child = (Hashtable)o;
 		    else
 			    continue;
                 
@@ -318,12 +248,8 @@ public abstract class Schema implements SchemaIF{
 				addString(referredNsPrefix + ":" + elem.getIdentifier());
                 //addString(referredNsPrefix + ":" + elem.getShortName());
                 
-                String minOccs = elem.getMinOccurs();
-                String maxOccs = elem.getMaxOccurs();
-                if (this.getClass().getName().endsWith("TblSchema")){
-                    minOccs = "1";
-                    maxOccs = "1";
-                }
+                String minOccs = "1";
+                String maxOccs = "1";
                 
                 addString("\" minOccurs=\"");
                 addString(minOccs);
@@ -360,23 +286,6 @@ public abstract class Schema implements SchemaIF{
                 addString("\"/>");
                 newLine();
             }
-            else if (child != null){
-                
-                String childID = (String)child.get("child_id");
-                String childType = (String)child.get("child_type");
-                String childMinOcc = (String)child.get("child_min_occ");
-                String childMaxOcc = (String)child.get("child_max_occ");
-                
-                if (childID == null || childType == null)
-                    continue;
-                
-                Vector v = null;
-                if (searchEngine != null)
-                    v = searchEngine.getSubElements(childType, childID);
-                
-                if (childType.equals("chc"))
-                    writeChoice(v, tab + "\t", childMinOcc, childMaxOcc);
-            }
         }
             
         addString(tab);
@@ -386,8 +295,8 @@ public abstract class Schema implements SchemaIF{
     
     private void writeHeader(){
         
-         writer.print("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
-        //writer.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        //writer.print("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+        writer.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         writer.print(lineTerminator);
         writer.print("<xs:schema targetNamespace=\"");        
         writer.print(targetNsUrl);

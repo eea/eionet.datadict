@@ -190,40 +190,6 @@ public class FixedValue {
     public Vector getItems(){
         return items;
     }
-    public CsiItem getItemByComponentId(String id){
-
-        CsiItem item = null;
-        for (int i=0; i<items.size(); i++){
-            item = (CsiItem)items.get(i);
-            if (item.getComponentID().equalsIgnoreCase(id))
-                return item;
-        }
-
-        return null;
-    }
-
-    public String getItemValueByComponentId(String id){
-
-        CsiItem item = null;
-        for (int i=0; i<items.size(); i++){
-            item = (CsiItem)items.get(i);
-            if (item.getComponentID().equalsIgnoreCase(id))
-                return item.getValue();
-        }
-
-        return null;
-    }
-    public String getItemIdByComponentId(String id){
-
-        CsiItem item = null;
-        for (int i=0; i<items.size(); i++){
-            item = (CsiItem)items.get(i);
-            if (item.getComponentID().equalsIgnoreCase(id))
-                return item.getID();
-        }
-
-        return null;
-    }
     
     public void setDefinition(String definition){
     	this.definition= definition;

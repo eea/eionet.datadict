@@ -118,15 +118,6 @@ public class TblPdfAll {
 			v.add(0, hash);
 		}
 
-		// reg stat
-		String stat = dsTable.getStatus();
-		if (!Util.voidStr(stat)){
-			hash = new Hashtable();
-			hash.put("name", "Registration status");
-			hash.put("value", stat);
-			v.add(0, hash);
-		}
-        
         addElement(PdfUtil.simpleAttributesTable(v));
         addElement(new Phrase("\n"));
 

@@ -671,7 +671,6 @@ public class DatasetImport{
         rowMap.add(getFieldMap("dataset_id", "ds_id", false, "dataset id in DS_TABLE table"));
         rowMap.add(getFieldMap("short_name", "short_name", false, "dataset table short name in DS_TABLE table"));
 		rowMap.add(getFieldMap("identifier", "idfier", false, "dataset table identifier in DS_TABLE table"));
-		rowMap.add(getFieldMap("regstatus", "reg_status", true, "REG_STATUS in DS_TABLE table"));
 		
         tblMap.put("DS_TABLE", rowMap);
         rowMap = new Vector();
@@ -682,7 +681,6 @@ public class DatasetImport{
         rowMap.add(getFieldMap("short_name", "delem_name", false, "data element short name in DATAELEM table"));
 		rowMap.add(getFieldMap("identifier", "idfier", false, "data element identifier in DATAELEM table"));
 		rowMap.add(getFieldMap("gistype", "gis", true, "GIS in DATAELEM table"));
-		rowMap.add(getFieldMap("regstatus", "reg_status", true, "REG_STATUS in DATAELEM table"));
 		
         tblMap.put("DATAELEM", rowMap);
         rowMap = new Vector();

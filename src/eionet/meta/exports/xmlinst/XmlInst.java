@@ -6,19 +6,24 @@ import java.util.*;
 
 public abstract class XmlInst implements XmlInstIF {
 	
+	protected static final int ROW_COUNT = 1;
+	
 	protected DDSearchEngine searchEngine = null;
 	private PrintWriter writer = null;
 	
 	protected String appContext = "";
 	protected String lineTerminator = "\n";
 	private String docElement = null;
-	private Hashtable leads = null;
+	protected Hashtable leads = null;
 	private String curLead = "";
 
 	private Vector content = new Vector();
 	private Vector namespaces = new Vector();
 	
 	private String schemaLocation = "";
+	
+	protected String dstNsPrefix = "";
+	protected String tblNsPrefix = "";
 	
 	/*
 	 * 
@@ -92,7 +97,8 @@ public abstract class XmlInst implements XmlInstIF {
 	}
 	
 	private void writeHeader(){
-		writer.print("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+		//writer.print("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+		writer.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		writer.print(lineTerminator);
 	}
 
@@ -156,9 +162,7 @@ public abstract class XmlInst implements XmlInstIF {
 	protected String getLead(String leadName){
 		
 		if (leads==null || leads.size()==0){
-			leads = new Hashtable();
-			leads.put("row", "\t");
-			leads.put("elm", "\t\t");
+			setLeads();
 		}
 		
 		String lead = (String)leads.get(leadName);
@@ -178,7 +182,50 @@ public abstract class XmlInst implements XmlInstIF {
 	protected void setSchemaLocation(String schemaLocation){
 		this.schemaLocation = schemaLocation;
 	}
+
+	protected void writeRows(Vector elms){		
+		for (int i=0; i<ROW_COUNT; i++){
+			writeRow(elms);
+		}
+	}
 	
+	protected void writeRow(Vector elms){
+		addString(startRow());
+		newLine();
+		
+		for (int i=0; elms!=null && i<elms.size(); i++){
+			DataElement elm = (DataElement)elms.get(i);
+			addString(elm(elm.getIdentifier()));
+			newLine(); 
+		}
+		
+		addString(endRow());
+		newLine();
+	}
+	
+	protected String startRow(){
+		return getLead("row") + "<" + dstNsPrefix + ":" + "Row status=\"new\">";
+	}
+
+	private String endRow(){
+		return getLead("row") + "</" + dstNsPrefix + ":" + "Row>";
+	}
+
+	private String elm(String name){
+		String qfName = tblNsPrefix + ":" + name;
+		return getLead("elm") + "<" + qfName + "></" + qfName + ">";
+	}
+
+	/*
+	 * 
+	 */
+	protected abstract String getSchemaLocation(String nsID, String id);
+	
+	/*
+	 * 
+	 */
+	protected abstract void setLeads();
+		
 	/*
 	 * 
 	 */	

@@ -134,8 +134,6 @@ public class DsTableHandler extends BaseHandler {
 
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
                            !mode.equalsIgnoreCase("edit") &&
-						   !mode.equalsIgnoreCase("restore") &&
-						   !mode.equalsIgnoreCase("force_status") &&
                            !mode.equalsIgnoreCase("delete")))
             throw new Exception("DsTableHandler mode unspecified!");
 
@@ -143,10 +141,6 @@ public class DsTableHandler extends BaseHandler {
             insert();
         else if (mode.equalsIgnoreCase("edit"))
             update();
-		else if (mode.equalsIgnoreCase("restore"))
-			restore();
-		else if (mode.equalsIgnoreCase("force_status"))
-			forceStatus();
         else{
             delete();
             cleanVisuals();
@@ -154,6 +148,18 @@ public class DsTableHandler extends BaseHandler {
     }
     
     private void insert() throws Exception {
+    	
+    	// see if this is just linking to another element
+		String link_elm = req.getParameter("link_elm");
+		if (!Util.nullString(link_elm)){
+			SQLGenerator gen = new SQLGenerator();
+			gen.setTable("TBL2ELEM");
+			gen.setFieldExpr("TABLE_ID", req.getParameter("table_id"));
+			gen.setFieldExpr("DATAELEM_ID", req.getParameter("link_elm"));
+			gen.setFieldExpr("POSITION", req.getParameter("elmpos"));
+			conn.createStatement().executeUpdate(gen.insertStatement());
+			return;
+		}
         
         // get the onwer dataset id
         dsID = req.getParameter("ds_id");
@@ -182,8 +188,7 @@ public class DsTableHandler extends BaseHandler {
                                     "the parent dataset's namespace!");
         
         // now make sure that such a table does not exist
-        if (exists(parentNS, idfier)) throw new Exception(
-			"DsTableHandler: such a table already exists in such a dataset");
+        if (exists(parentNS, idfier)) throw new Exception("Such a table already exists!");
 
         SQLGenerator gen = new SQLGenerator();
         Statement stmt = conn.createStatement();
@@ -221,11 +226,6 @@ public class DsTableHandler extends BaseHandler {
             gen.setField("TYPE", type);
         if (!versioning && !Util.nullString(version))
             gen.setField("VERSION", version);
-
-        // set the status
-        String status = req.getParameter("reg_status");
-        if (!Util.nullString(status))
-            gen.setField("REG_STATUS", status);
 
         // insert the table
         stmt.executeUpdate(gen.insertStatement());
@@ -285,16 +285,6 @@ public class DsTableHandler extends BaseHandler {
         if (tableID == null)
             throw new Exception("DsTableHandler: table_id not specified!");
 
-        // set the status
-        String status = req.getParameter("reg_status");
-        if (!Util.nullString(status)){
-            SQLGenerator gen = new SQLGenerator();
-            gen.setTable("DS_TABLE");
-            gen.setField("REG_STATUS", status);
-            conn.createStatement().executeUpdate(gen.updateStatement() +
-                            " where TABLE_ID=" + tableID);
-        }
-
 		// short name
 		String shn = req.getParameter("short_name");
 		if (!Util.nullString(shn)){
@@ -312,13 +302,11 @@ public class DsTableHandler extends BaseHandler {
             VersionManager verMan = new VersionManager(conn, user);
 			verMan.setContext(ctx);
 			
-			String verUpw = req.getParameter("ver_upw");
-			if (verUpw!=null && verUpw.equalsIgnoreCase("false"))
-				verMan.setUpwardsVersioning(false);
-			
 			String updVer = req.getParameter("upd_version");
-			if (updVer!=null && updVer.equalsIgnoreCase("true"))
+			if (updVer!=null && updVer.equalsIgnoreCase("true")){
 				verMan.updateVersion();
+				verMan.setUpwardsVersioning(true);
+			}
 				
             verMan.checkIn(tableID, "tbl",
                                     req.getParameter("reg_status"));
@@ -357,6 +345,10 @@ public class DsTableHandler extends BaseHandler {
         HashSet delns = new HashSet();
         VersionManager verMan = new VersionManager(conn, user);
 		verMan.setContext(ctx);
+		String updVer = req.getParameter("upd_version");
+		if (updVer!=null && updVer.equalsIgnoreCase("true"))
+			verMan.updateVersion();
+		
         while (rs.next()){
             
             // if table in work by another user, throw something
@@ -452,18 +444,6 @@ public class DsTableHandler extends BaseHandler {
         // release originals and top namespaces
         cleanup();
     }
-    
-    /**
-     * 
-     */
-	private void restore() throws Exception {
-    	
-		String tableID = req.getParameter("table_id");
-		if (Util.nullString(tableID)) return;
-		Restorer restorer = new Restorer(conn);
-		restorer.setUser(user);
-		this.restoredID = restorer.restoreTbl(tableID); 
-	}
     
     /*
      * 
@@ -777,7 +757,7 @@ public class DsTableHandler extends BaseHandler {
         if (searchEngine==null)
             searchEngine=new DDSearchEngine(conn, "", ctx);
         searchEngine.setUser(user);
-        Vector elems = searchEngine.getDataElements(null, null, null, null, srcTblID, null, false);
+        Vector elems = searchEngine.getDataElements(null, null, null, null, srcTblID);
 
         if (elems==null) return;
 
@@ -816,34 +796,6 @@ public class DsTableHandler extends BaseHandler {
     public String getRestoredID(){
     	return this.restoredID;
     }
-
-	/**
-	 * @param frcStatus
-	 */
-	private void forceStatus() throws SQLException{
-		
-		String tblID = req.getParameter("table_id");
-		String frcStatus = req.getParameter("force_status");
-		if (tblID==null || frcStatus==null)
-			return;
-
-		// get all data elements in this table
-		HashSet elms = new HashSet();
-		String s =
-		"select distinct DATAELEM_ID from TBL2ELEM where TABLE_ID=" + tblID;
-		
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(s);
-		while (rs.next())
-			elms.add(rs.getString(1));
-		
-		// force status to elements
-		s = "update DATAELEM set REG_STATUS='" +
-					frcStatus + "' where DATAELEM_ID=";
-		Iterator iter = elms.iterator();
-		while (iter.hasNext())
-			stmt.executeUpdate(s + (String)iter.next());
-	}
 
     public static void main(String[] args){
 
