@@ -34,8 +34,14 @@
 	<%
   	if (_user!=null && _user.isAuthentic()) {
 	  	
-	  	String prms=AccessController.getPermissions(_user.getUserName());
-	  	boolean clnPrm = prms.indexOf(",/:x,")==-1 ? false : true;
+	  	boolean clnPrm = false;
+	  	if (_user instanceof eionet.meta.TestUser)
+	  		clnPrm = true;
+	  	else{
+		  	String prms=AccessController.getPermissions(_user.getUserName());
+		  	if (prms.indexOf(",/:x,")!=-1)
+		  		clnPrm = true;
+	  	}
 	  	
     	%>
 	    <tr><td>&nbsp;</td></tr>
