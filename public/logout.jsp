@@ -1,18 +1,19 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
 <%!
 
-request.setCharacterEncoding("UTF-8");
-
 ServletContext ctx = null;
 boolean wc = false;
 Vector datasets=null;
 Vector tables=null;
 Vector dataElements=null;
+
 %>
 
 <%@ include file="history.jsp" %>
 
 <%
+	request.setCharacterEncoding("UTF-8");
+	
 	XDBApplication.getInstance(getServletContext());
 	AppUserIF user = SecurityUtil.getUser(request);
 	
