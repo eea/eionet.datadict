@@ -348,7 +348,7 @@ private String legalizeAlert(String in){
 					<input class="smalltext" type="text" size="20" name="new_value"></input>
 					<input class="smallbutton" type="button" value="Add" onclick="submitForm('add')"/>&#160;
 					<%
-					if (valsType.equals("CH1")){ %>
+					if (!valsType.equals("AGG")){ %>
 						<input class="smallbutton" type="button" value="Import..." onclick="importCodes()"/><%
 					}
 					%>
