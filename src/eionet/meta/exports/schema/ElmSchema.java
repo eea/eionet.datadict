@@ -29,7 +29,7 @@ public class ElmSchema extends Schema {
             throw new Exception("Data element not found!");
         
         // get and set the element's complex attributes
-        elem.setComplexAttributes(searchEngine.getComplexAttributes(elemID, "E"));
+        elem.setComplexAttributes(searchEngine.getComplexAttributes(elemID, "E",null,elem.getTableID(),elem.getDatasetID()));
         
         if (elem.getType().equalsIgnoreCase("AGG")){
 	            

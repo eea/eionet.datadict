@@ -32,7 +32,7 @@ public class TblSchema extends Schema {
             throw new Exception("Dataset table not found!");
         
         // get simple attributes
-        Vector v = searchEngine.getSimpleAttributes(tblID, "T");
+        Vector v = searchEngine.getSimpleAttributes(tblID, "T", null, dsTable.getDatasetID());
         dsTable.setSimpleAttributes(v);
         
         // get data elements (this will set all the simple attributes,
