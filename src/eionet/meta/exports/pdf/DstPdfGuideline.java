@@ -683,13 +683,17 @@ public class DstPdfGuideline extends PdfHandout {
             Class.forName("org.gjt.mm.mysql.Driver");
             Connection conn =
             //DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
-            DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
+            DriverManager.getConnection(
+				"jdbc:mysql://195.250.186.16:3306/dd", "root", "ABr00t");
 
-            String fileName = "x:\\projects\\datadict\\tmp\\ds_test_guideline.pdf";
-            DstPdfGuideline guideline = new DstPdfGuideline(conn, new FileOutputStream(fileName));
-            guideline.setVsPath("x:\\projects\\datadict\\visuals");
-            guideline.setLogo("x:\\projects\\datadict\\images\\pdf_logo_small.png");
-            guideline.write("1259");
+            String fileName =
+				"d:\\projects\\datadict\\tmp\\ds_test_guideline.pdf";
+            DstPdfGuideline guideline =
+            	new DstPdfGuideline(conn, new FileOutputStream(fileName));
+            guideline.setVsPath("x:\\projects\\datadict\\public\\visuals");
+            guideline.setLogo(
+				"d:\\projects\\datadict\\public\\images\\pdf_logo.png");
+            guideline.write("1275");
             guideline.flush();
         }
         catch (Exception e){

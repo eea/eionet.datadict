@@ -4,7 +4,10 @@ package eionet.meta.exports.pdf;
 import java.util.Hashtable;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
+import com.lowagie.text.pdf.BaseFont;
 import java.awt.Color;
+
+import eionet.util.*;
 
 public class Fonts {
     
@@ -64,7 +67,17 @@ public class Fonts {
         fonts.put(ATTR_TITLE, font);
         
         // set simple value cell font
-        font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+		BaseFont bf = null;
+		try{
+			bf = BaseFont.createFont(Props.getProperty(PropsIF.UNI_FONT),
+							BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+			font = new Font(bf, 10);
+		}
+		catch (Exception e){
+			font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+			System.out.println("Problem with unicode font: " + e.toString());
+		}
+						
         fonts.put(CELL_VALUE, font);
         
         // set warning font

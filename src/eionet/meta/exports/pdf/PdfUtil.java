@@ -6,6 +6,7 @@ import eionet.util.Util;
 
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
+import eionet.util.UnicodeEscapes;
 
 import java.util.*;
 import java.net.*;
@@ -71,9 +72,8 @@ public class PdfUtil {
 			for (int t=0; t<fields.size(); t++){
 				
 				String value = (String)fkRel.get(fields.get(t));
-				
-				cell = new PdfPCell(new Phrase(value,
-									Fonts.get(Fonts.CELL_VALUE)));
+				Phrase phr = process(value, Fonts.get(Fonts.CELL_VALUE));
+				cell = new PdfPCell(phr);
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				cell.setPaddingLeft(5);
 				cell.setBorder(Rectangle.NO_BORDER);
@@ -208,7 +208,10 @@ public class PdfUtil {
 				
 	            nameCell = new PdfPCell(new Phrase(dispName,
 											Fonts.get(Fonts.ATTR_TITLE)));
-	            valueCell = new PdfPCell(processLinks(value,
+				/*BaseFont bf = BaseFont.createFont("/home/www/webs/datadict/public/WEB-INF/classes/arial.ttf",
+								BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+				Font font = new Font(bf, 10);*/
+	            valueCell = new PdfPCell(process(value, 
 	            							Fonts.get(Fonts.CELL_VALUE)));
 				valueCell.setLeading(9*1.2f, 0);
 				
@@ -302,7 +305,8 @@ public class PdfUtil {
 				
 				if (fieldValue == null) fieldValue = " ";
 				
-				cell = new PdfPCell(processLinks(fieldValue, Fonts.get(Fonts.CELL_VALUE)));
+				Phrase phr = process(fieldValue, Fonts.get(Fonts.CELL_VALUE));
+				cell = new PdfPCell(phr);
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setPaddingLeft(5);
                 cell.setBorder(Rectangle.NO_BORDER);
@@ -488,7 +492,8 @@ public class PdfUtil {
             String defin = elem.getAttributeValueByShortName("Definition");
 			defin = defin==null ? " " : defin;
 			
-			cell = new PdfPCell(new Phrase(defin, Fonts.get(Fonts.CELL_VALUE)));
+			phr = process(defin, Fonts.get(Fonts.CELL_VALUE));
+			cell = new PdfPCell(phr);
 			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 			cell.setPaddingLeft(5);
 
@@ -512,8 +517,8 @@ public class PdfUtil {
 						sect.getRefIllustrations();
 				}
 					 
-				cell = new PdfPCell(
-							new Phrase(method, Fonts.get(Fonts.CELL_VALUE)));
+				phr = process(method, Fonts.get(Fonts.CELL_VALUE));
+				cell = new PdfPCell(phr);
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				cell.setPaddingLeft(5);
 	
@@ -529,61 +534,52 @@ public class PdfUtil {
             }
 			
 			// add data specs
+			StringBuffer dataspecs = new StringBuffer();
+			String datatype = elem.getAttributeValueByShortName("Datatype");
+			if (datatype!=null)
+				dataspecs.append(datatype);
 			
-            String datatype = elemType.equals("CH1") ?
-                                "Code list" :
-                                elem.getAttributeValueByShortName("Datatype");
-            
-            if (Util.voidStr(datatype))
-                datatype = " ";
-            else if (elemType.equals("CH1")){
-            	
-            	datatype = "Codelist";
+			
+            if (elemType.equals("CH1")){
 				Vector fxvs = elem.getFixedValues();
-				if (fxvs!=null && fxvs.size()>0)
-				if (sect==null)
-					datatype = datatype + ":\nsee below";
-				else
-					datatype = datatype + ":\nsee section " +
-							sect.getRefCodelists();
-            	
-                // list 4 first codes for example (from the highest level)
-                // if no codes found, let the datatype stay simply 'Code list'
-                /*StringBuffer buf = new StringBuffer(datatype);
-                Vector fixedValues = elem.getFixedValues();
-                if (fixedValues!=null && fixedValues.size()!=0){
-                    buf.append(":");
-                    int k = 0;
-                    for (k=0; k<fixedValues.size() && k<4; k++){
-                        FixedValue fxv = (FixedValue)fixedValues.get(k);
-		                String value = fxv.getValue();
-                        buf.append("\n" + value);
-                    }
-                    
-                    if (k<fixedValues.size())
-                        buf.append("\n...");
-                }
-                
-                datatype = buf.toString();*/
-            }
-            else{
-            	String[][] ss = {{"MinSize", "Minimum size: "},
-            		{"MaxSize", "Maximum size: "},
-            		{"MinValue", "Minimum value: "},
-            		{"MaxValue", "Maximum value: "},
-            		{"DecimalPrecision", "Decimal precision: "}}; 
-				 
-				StringBuffer buf = new StringBuffer("Datatype: " + datatype);
-				for (int k=0; k<ss.length; k++){
-					String value =
-						elem.getAttributeValueByShortName(ss[k][0]);
-					if (!Util.voidStr(value))
-						buf.append("\n").append(ss[k][1]).append(value);
+				if (fxvs==null || fxvs.size()==0){
+					if (dataspecs.length()>0)
+						dataspecs.append(" codelist");
+					else
+						dataspecs.append("Codelist");
 				}
-				datatype = buf.toString();
+				else{
+					dataspecs = new StringBuffer("Codelist:\nsee ");
+					if (sect==null)
+						dataspecs.append("below");
+					else
+						dataspecs.append("section ").
+						append(sect.getRefCodelists());
+				}
+            }
+            else if (elemType.equals("CH2")){
+            	if (dataspecs.length()>0){
+					dataspecs.insert(0, "Datatype: ");
+					
+					String[][] ss = {{"MinSize", "Minimum size: "},
+								{"MaxSize", "Maximum size: "},
+								{"MinValue", "Minimum value: "},
+								{"MaxValue", "Maximum value: "},
+								{"DecimalPrecision", "Decimal precision: "}};
+					for (int k=0; k<ss.length; k++){
+						String value =
+							elem.getAttributeValueByShortName(ss[k][0]);
+						if (!Util.voidStr(value))
+							dataspecs.append("\n").
+							append(ss[k][1]).append(value);
+					}
+            	}
+            	else
+					dataspecs = new StringBuffer(" ");
             }
             
-            cell = new PdfPCell(new Phrase(datatype, Fonts.get(Fonts.CELL_VALUE)));
+            cell = new PdfPCell(new Phrase(dataspecs.toString(),
+            								Fonts.get(Fonts.CELL_VALUE)));
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
             
@@ -705,7 +701,8 @@ public class PdfUtil {
 			def = def==null ? "" : def;
 			
 			// value cell
-			cell = new PdfPCell(new Phrase(val, Fonts.get(Fonts.CELL_VALUE)));
+			Phrase phr = process(val, Fonts.get(Fonts.CELL_VALUE));
+			cell = new PdfPCell(phr);
 			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 			cell.setPaddingLeft(5);
 
@@ -720,7 +717,8 @@ public class PdfUtil {
 			table.addCell(cell);
 
 			// definition cell
-			cell = new PdfPCell(new Phrase(def, Fonts.get(Fonts.CELL_VALUE)));
+			phr = process(def, Fonts.get(Fonts.CELL_VALUE));
+			cell = new PdfPCell(phr);
 			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 			cell.setPaddingLeft(5);
 
@@ -832,7 +830,8 @@ public class PdfUtil {
             FixedValue fxv = (FixedValue)fxValues.get(i);
             
             // value
-            cell = new PdfPCell(processLinks(fxv.getValue(), Fonts.get(Fonts.CELL_VALUE)));
+            Phrase phr = process(fxv.getValue(), Fonts.get(Fonts.CELL_VALUE));
+            cell = new PdfPCell(phr);
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
             cell.setBorder(Rectangle.NO_BORDER);
@@ -846,7 +845,8 @@ public class PdfUtil {
             String definition = fxv.getDefinition();
             if (Util.voidStr(definition))
                 definition = " ";
-            cell = new PdfPCell(processLinks(definition, Fonts.get(Fonts.CELL_VALUE)));
+            phr = process(definition, Fonts.get(Fonts.CELL_VALUE));
+            cell = new PdfPCell(phr);
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
             cell.setBorder(Rectangle.NO_BORDER);
@@ -934,8 +934,8 @@ public class PdfUtil {
 				
 				String val = dsTable.getAttributeValueByShortName(attr);
 				val = Util.voidStr(val) ? "" : val;
-				cell =
-					new PdfPCell(new Phrase(val, Fonts.get(Fonts.CELL_VALUE)));
+				Phrase phr = process(val, Fonts.get(Fonts.CELL_VALUE));
+				cell = new PdfPCell(phr);
 				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 				cell.setPaddingLeft(5);
 				cell.setBorder(Rectangle.NO_BORDER);
@@ -1136,6 +1136,61 @@ public class PdfUtil {
 		}
 		
 		return buf.toString();
+    }
+    
+    private static Phrase process(String value, Font font) throws Exception{
+    	
+    	if (value==null)
+    		return new Phrase();
+    	
+    	String s = processUnicode(value);
+		return processLinks(s, font);
+    }
+    
+    private static String processUnicode(String s){
+    	
+    	if (s==null) return null;
+    		
+    	StringBuffer buf = new StringBuffer();
+		UnicodeEscapes unicodeEscapes = new UnicodeEscapes();
+		for (int i=0; i<s.length(); i++){
+            
+			char c = s.charAt(i);
+			String tk = s.substring(i, i+1);
+            
+			if (c=='&'){
+				int j = s.indexOf(";", i);
+				if (j > i){
+					char cc = s.charAt(i+1);
+					int decimal = -1;
+					if (cc=='#'){
+						// handle Unicode escape
+						String sDecimal = s.substring(i+2, j);
+						try{
+							decimal = Integer.parseInt(sDecimal);
+						}
+						catch (Exception e){}
+					}
+					else{
+						// handle entity
+						String ent = s.substring(i+1, j);
+						decimal = unicodeEscapes.getDecimal(ent);
+					}
+                    
+					if (decimal >= 0){
+						// if decimal was found
+						c = (char)decimal;
+						i = j;
+					}
+				}
+			}
+            
+			buf.append(c);
+		}
+		
+		//if (s.startsWith("&#1081")) return "\u1081\u1094";
+    	
+    	return buf.toString();
     }
     
     public static void main(String[] args){
