@@ -28,9 +28,9 @@ public class TblPdfFactsheet extends PdfHandout {
             throw new Exception("Table not found!");
             
         // get simple attributes
-        Vector v = searchEngine.getSimpleAttributes(tblID, "T");
+        Vector v = searchEngine.getSimpleAttributes(tblID, "T", null, dsTable.getDatasetID());
         dsTable.setSimpleAttributes(v);
-        
+
         // get data elements (this will set all the simple attributes,
         // but no fixed values required by writer!)
         v = searchEngine.getDataElements(null, null, null, null, tblID);
@@ -101,6 +101,13 @@ public class TblPdfFactsheet extends PdfHandout {
         addElement(PdfUtil.simpleAttributesTable(v));
         addElement(new Phrase("\n"));
         
+        /* write image attributes
+		Element imgAttrs = PdfUtil.imgAttributes(v, vsPath);
+		if (imgAttrs!=null){
+			addElement(new Phrase("\n"));
+			addElement(imgAttrs);
+		}*/
+        
         // write table elements, but 1st get their fixed values & FK relations
         
         v = dsTable.getElements();
@@ -112,7 +119,9 @@ public class TblPdfFactsheet extends PdfHandout {
             elem = (DataElement)v.get(i);
             Vector fxValues = searchEngine.getFixedValues(elem.getID(), "elem");
             elem.setFixedValues(fxValues);
-			Vector fks = searchEngine.getFKRelationsElm(elem.getID());
+            
+			String dstID = getParameter("dstID");
+			Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
 			elem.setFKRelations(fks);
         }
         

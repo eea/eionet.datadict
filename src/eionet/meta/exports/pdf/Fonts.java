@@ -84,27 +84,27 @@ public class Fonts {
         fonts.put(HEADING_0, font);
         
         // set Heading 1 font
-        font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20);
+        font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
         fonts.put(HEADING_1, font);
         
         // set Heading 1 Italic font
-        font = FontFactory.getFont(FontFactory.HELVETICA_BOLDOBLIQUE, 20);
+        font = FontFactory.getFont(FontFactory.HELVETICA_BOLDOBLIQUE, 16);
         fonts.put(HEADING_1_ITALIC, font);
         
         // set Heading 2 font
-        font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
+        font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
         fonts.put(HEADING_2, font);
         
         // set Heading 2 Italic font
-        font = FontFactory.getFont(FontFactory.HELVETICA_BOLDOBLIQUE, 16);
+        font = FontFactory.getFont(FontFactory.HELVETICA_BOLDOBLIQUE, 14);
         fonts.put(HEADING_2_ITALIC, font);
         
         // set Heading 3 font
-        font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
+        font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
         fonts.put(HEADING_3, font);
         
         // set Heading 3 Italic font
-        font = FontFactory.getFont(FontFactory.HELVETICA_BOLDOBLIQUE, 14);
+        font = FontFactory.getFont(FontFactory.HELVETICA_BOLDOBLIQUE, 12);
         fonts.put(HEADING_3_ITALIC, font);
         
         // set Anchor font

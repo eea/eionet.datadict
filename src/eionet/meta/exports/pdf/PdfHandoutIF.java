@@ -1,6 +1,8 @@
 
 package eionet.meta.exports.pdf;
 
+import eionet.meta.savers.Parameters;
+
 public interface PdfHandoutIF {
     
     public static final String DATASET  = "DST";
@@ -24,4 +26,14 @@ public interface PdfHandoutIF {
     * Sets the full path to the EEA logo image
     */
     public abstract void setLogo(String logo);
+
+	/**
+	 * Sets full path to datadict images directory
+	 */
+	public abstract void setVsPath(String visualsPath);
+
+	/**
+	 * Sets whatever additional parameters that the handouts might need
+	 */
+	public abstract void setParameters(Parameters params);
 }

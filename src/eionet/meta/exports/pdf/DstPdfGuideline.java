@@ -7,36 +7,26 @@ import eionet.util.Util;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
+import java.awt.Color;
 
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 
 public class DstPdfGuideline extends PdfHandout {
     
-    private String vsPath = null;
     private int vsTableIndex = -1;
     
     private int elmCount = 0;
     
-    private Chapter chapter = null;
+    //private Chapter chapter = null;
     
     private String dsName = "";
+	private String dsVersion = "";
+	private Hashtable tblElms = new Hashtable();
     
     public DstPdfGuideline(Connection conn, OutputStream os){
         searchEngine = new DDSearchEngine(conn);
         this.os = os;
-    }
-    
-    public void setVsPath(String s){
-        
-        vsPath = s;
-        
-        if (!Util.voidStr(vsPath)){
-            if (!vsPath.endsWith(File.separator))
-                vsPath = vsPath + File.separator;
-        }
-        else
-            vsPath = System.getProperty("user.dir") + File.separator;
     }
     
     public void write(String dsID) throws Exception {
@@ -55,6 +45,8 @@ public class DstPdfGuideline extends PdfHandout {
         v = searchEngine.getDatasetTables(dsID);
         ds.setTables(v);
         
+        addParameter("dstID", dsID);
+        
         write(ds);
     }
     
@@ -65,42 +57,48 @@ public class DstPdfGuideline extends PdfHandout {
         
         String s = ds.getAttributeValueByShortName("Name");
         dsName = Util.voidStr(s) ? ds.getShortName() : s;
-            
-        Paragraph prg = new Paragraph();
-        prg.add(new Chunk(ds.getShortName(), Fonts.get(Fonts.HEADING_1_ITALIC)));
-        prg.add(new Chunk(" dataset", Fonts.get(Fonts.HEADING_1)));
+        dsVersion = ds.getVersion();
         
-        chapter = new Chapter(prg, 1);
+        String title = "General information for " + dsName + " dataset";
+		String nr = sect.level(title, 1);
+		nr = nr==null ? "" : nr + " ";
+		        
+        Paragraph prg = new Paragraph();
+        prg.add(new Chunk(nr + title, Fonts.get(Fonts.HEADING_1)));
+        
+        //chapter = new Chapter(prg, 1);
         
         // add the dataset chapter to the document
-        elmCount = super.addElement(chapter);
+        // elmCount = super.addElement(chapter);
+		elmCount = addElement(prg);
         
         addElement(new Paragraph("\n"));
         
         // write simple attributes
         addElement(new Paragraph("Basic metadata:\n", Fonts.get(Fonts.HEADING_0)));
         
-        Vector v = ds.getSimpleAttributes();
+        Vector attrs = ds.getSimpleAttributes();
 
         Hashtable hash = new Hashtable();
         hash.put("name", "Short name");
         hash.put("value", ds.getShortName());
-        v.add(0, hash);
+		attrs.add(0, hash);
         
         String version = ds.getVersion();
         if (!Util.voidStr(version)){
             hash = new Hashtable();
             hash.put("name", "Version");
             hash.put("value", version);
-            v.add(1, hash);
+			attrs.add(1, hash);
         }
             
-        addElement(PdfUtil.simpleAttributesTable(v));
+        addElement(PdfUtil.simpleAttributesTable(attrs));
         addElement(new Phrase("\n"));
         
         // write complex attributes, one table for each
         
-        v = ds.getComplexAttributes();
+        Vector v = ds.getComplexAttributes();
+        v = null;
         if (v!=null && v.size()>0){
             
             DElemAttribute attr = null;
@@ -115,10 +113,21 @@ public class DstPdfGuideline extends PdfHandout {
                 addElement(new Phrase("\n"));
             }
         }
+
+		/* write image attributes
+		Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath);
+		if (imgAttrs!=null){
+			addElement(new Phrase("\n"));
+			addElement(imgAttrs);
+		}*/
         
         // write tables list
-        
-        addElement(new Phrase("Tables in this dataset:\n", Fonts.get(Fonts.HEADING_0)));
+        title = "Overview of " + dsName + " dataset tables";
+		nr = sect.level(title, 1);
+		nr = nr==null ? "" : nr + " ";
+		prg = new Paragraph(nr + title, Fonts.get(Fonts.HEADING_1));
+		addElement(prg);
+        //addElement(new Phrase("Tables in this dataset:\n", Fonts.get(Fonts.HEADING_0)));
         
         Vector tables = ds.getTables();
         addElement(PdfUtil.tablesList(tables));
@@ -131,7 +140,7 @@ public class DstPdfGuideline extends PdfHandout {
             if (file.exists()){
                 
                 try {
-                    PdfPTable table = PdfUtil.vsTable(fullPath, "Dataset visual structure");
+                    PdfPTable table = PdfUtil.vsTable(fullPath, "Datamodel for this dataset");
                     if (table != null){
                         //insertPageBreak();
                         int size = addElement(table);
@@ -154,29 +163,202 @@ public class DstPdfGuideline extends PdfHandout {
             }
         }
         
+		pageToLandscape();
+		if (tables!=null && tables.size()>0){
+			title = "Tables";
+			nr = sect.level(title, 1);
+			nr = nr==null ? "" : nr + " ";
+			prg = new Paragraph(nr + title, Fonts.get(Fonts.HEADING_1));
+			addElement(prg);
+		}
+        
         // add full guidlines of tables
         for (int i=0; tables!=null && i<tables.size(); i++){
             DsTable dsTable = (DsTable)tables.get(i);
-            // the tables guidelines will be added to the currnet chapter
+            // the tables guidelines will be added to the current chapter
             addElement(new Paragraph("\n"));
             TblPdfGuideline tblGuideln =
-            	new TblPdfGuideline(searchEngine, (Section)chapter);
+            	new TblPdfGuideline(searchEngine, this);//, (Section)chapter);
+			tblGuideln.setVsPath(vsPath);
             tblGuideln.write(dsTable.getID(), ds.getID());
+            insertPageBreak();
         }
-
-        // set the factsheet header
-        setHeader("dataset full definition");
+        
+		pageToPortrait();
+        
+        // add codelists
+        addCodelists(tables);
+		insertPageBreak();
+        
+        // add img attrs
+        addImgAttrs(tables);
+        
+        // set header & footer
+        setHeader("");
+		setFooter();
     }
     
-    protected int addElement(Element elm){
+    private void addCodelists(Vector tables) throws Exception{
+    	
+		String nr = null;
+		Paragraph prg = null;
+		String title = null;
+		String s = null;
+		boolean lv1added = false;
+		
+		for (int i=0; tables!=null && i<tables.size(); i++){
+			boolean lv2added = false;
+			DsTable tbl = (DsTable)tables.get(i);
+			Vector elms = (Vector)tblElms.get(tbl.getID());
+			for (int j=0; elms!=null && j<elms.size(); j++){
+				
+				DataElement elm = (DataElement)elms.get(j);
+				
+				PdfPTable codelist = PdfUtil.codelist(elm.getFixedValues());
+				if (codelist==null || codelist.size()==0) continue;
+				
+				// add 'Codelists' title
+				if (!lv1added){
+					nr = sect.level("Codelists", 1);
+					nr = nr==null ? "" : nr + " ";
+					prg = new Paragraph(nr +
+							"Codelists", Fonts.get(Fonts.HEADING_1));
+					addElement(prg);
+					addElement(new Paragraph("\n"));
+					lv1added = true;
+				}
+				
+				// add table title
+				if (!lv2added){
+					s = tbl.getAttributeValueByShortName("Name");
+					String tblName = Util.voidStr(s) ? tbl.getShortName() : s;
+					title = "Codelists for " + tblName + " table";
+					nr = sect.level(title, 2, false);
+					nr = nr==null ? "" : nr + " ";
+					
+					prg = new Paragraph();
+					prg.add(new Chunk(nr,
+						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
+					prg.add(new Chunk("Codelists for ",
+						FontFactory.getFont(FontFactory.HELVETICA, 14)));
+					prg.add(new Chunk(tblName,
+						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
+					prg.add(new Chunk(" table",
+						FontFactory.getFont(FontFactory.HELVETICA, 14)));
+					
+					addElement(prg);
+					addElement(new Paragraph("\n"));
+					lv2added = true;
+				}
+				
+				// add element title
+				s = elm.getAttributeValueByShortName("Name");
+				String elmName = Util.voidStr(s) ? elm.getShortName() : s;
+				title = elmName + " codelist";
+				nr = sect.level(title, 3, false);
+				nr = nr==null ? "" : nr + " ";
+				
+				prg = new Paragraph();
+				prg.add(new Chunk(nr + elmName,
+					FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
+				prg.add(new Chunk(" codelist",
+					FontFactory.getFont(FontFactory.HELVETICA, 14)));
+
+				addElement(prg);
+				addElement(new Paragraph("\n"));
+				
+				// add codelist
+				addElement(codelist);
+				addElement(new Paragraph("\n"));
+			}
+		}
+    }
+
+	private void addImgAttrs(Vector tables) throws Exception{
+		
+		String nr = null;
+		Paragraph prg = null;
+		String title = null;
+		String s = null;
+		boolean lv1added = false;
+		
+		for (int i=0; tables!=null && i<tables.size(); i++){
+			boolean lv2added = false;
+			DsTable tbl = (DsTable)tables.get(i);
+			Vector elms = (Vector)tblElms.get(tbl.getID());
+			for (int j=0; elms!=null && j<elms.size(); j++){
+				
+				DataElement elm = (DataElement)elms.get(j);
+				PdfPTable imgTable =
+					PdfUtil.imgAttributes(elm.getAttributes(), vsPath);
+				if (imgTable==null || imgTable.size()==0) continue;
+				
+				// add 'Images' title
+				if (!lv1added){
+					nr = sect.level("Images", 1);
+					nr = nr==null ? "" : nr + " ";
+					prg = new Paragraph(nr +
+							"Images", Fonts.get(Fonts.HEADING_1));
+					addElement(prg);
+					addElement(new Paragraph("\n"));
+					lv1added = true;
+				}
+				
+				// add table title
+				if (!lv2added){
+					s = tbl.getAttributeValueByShortName("Name");
+					String tblName = Util.voidStr(s) ? tbl.getShortName() : s;
+					title = "Images for " + tblName + " table";
+					nr = sect.level(title, 2, false);
+					nr = nr==null ? "" : nr + " ";
+					
+					prg = new Paragraph();
+					prg.add(new Chunk(nr,
+						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
+					prg.add(new Chunk("Images for ",
+						FontFactory.getFont(FontFactory.HELVETICA, 14)));
+					prg.add(new Chunk(tblName,
+						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
+					prg.add(new Chunk(" table",
+						FontFactory.getFont(FontFactory.HELVETICA, 14)));
+					
+					addElement(prg);
+					addElement(new Paragraph("\n"));
+					lv2added = true;
+				}
+				
+				// add element title
+				s = elm.getAttributeValueByShortName("Name");
+				String elmName = Util.voidStr(s) ? elm.getShortName() : s;
+				title = elmName + " images";
+				nr = sect.level(title, 3, false);
+				nr = nr==null ? "" : nr + " ";
+				
+				prg = new Paragraph();
+				prg.add(new Chunk(nr + elmName,
+					FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
+				prg.add(new Chunk(" images",
+					FontFactory.getFont(FontFactory.HELVETICA, 14)));
+
+				addElement(prg);
+				
+				// add images
+				addElement(imgTable);
+				addElement(new Paragraph("\n"));
+			}
+		}
+	}
+    
+    /*protected int addElement(Element elm){
         
         if (elm == null || chapter == null)
+		if (elm == null)
             return elmCount;
         
         chapter.add(elm);
         elmCount = elmCount + 1;
         return elmCount;
-    }
+    }*/
     
     protected boolean keepOnOnePage(int index){
         if (index == vsTableIndex)
@@ -190,37 +372,48 @@ public class DstPdfGuideline extends PdfHandout {
     */
     protected void addTitlePage(Document doc) throws Exception {
         
-        Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 26);
-        
-        // reportnet
-        Paragraph prg = new Paragraph("Reportnet", font);
-        prg.setAlignment(Element.ALIGN_CENTER);
-        doc.add(prg);
-        
+		doc.add(new Paragraph("\n\n\n\n"));			
         // data dictionary
-        font = FontFactory.getFont(FontFactory.TIMES_BOLD, 26);
-        prg = new Paragraph("Data Dictionary", font);
+        Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22);
+		Paragraph prg = new Paragraph("Data Dictionary", font);
         prg.setAlignment(Element.ALIGN_CENTER);
         doc.add(prg);
         
         doc.add(new Paragraph("\n\n\n\n\n\n\n\n\n"));
         
         // full definition
-        font = FontFactory.getFont(FontFactory.COURIER, 14);
-        prg = new Paragraph("Full definition of", font);
+        font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
+        prg = new Paragraph("Definition of", font);
         prg.setAlignment(Element.ALIGN_CENTER);
         doc.add(prg);
         
         // dataset name
-        font = FontFactory.getFont(FontFactory.HELVETICA_BOLDOBLIQUE, 24);
+        font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 26);
         prg = new Paragraph(dsName, font);
-        font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 24);
-        prg.add(new Chunk(" dataset", font));
+		prg.setAlignment(Element.ALIGN_CENTER);
+		doc.add(prg);
+		
+		// dataset word
+        font = FontFactory.getFont(FontFactory.HELVETICA, 14);
+		prg = new Paragraph("dataset", font);
         prg.setAlignment(Element.ALIGN_CENTER);
         doc.add(prg);
         
-        doc.add(new Paragraph("\n\n\n\n\n\n\n\n\n\n\n\n\n\n"));
-        doc.add(new Paragraph("\n\n\n\n\n\n"));
+		doc.add(new Paragraph("\n\n"));
+		
+		// version
+		prg = new Paragraph();
+		prg.add(new Chunk("Version: ", font));
+		prg.add(new Chunk(dsVersion, font));
+		prg.setAlignment(Element.ALIGN_CENTER);
+		doc.add(prg);
+		
+		// date
+		prg = new Paragraph(getTitlePageDate());
+		prg.setAlignment(Element.ALIGN_CENTER);
+		doc.add(prg);
+        
+        doc.add(new Paragraph("\n\n\n\n\n\n\n\n\n\n\n"));
         
         // European Environment Agency
         font = FontFactory.getFont(FontFactory.TIMES_BOLD, 12);
@@ -244,6 +437,91 @@ public class DstPdfGuideline extends PdfHandout {
         return true;
     }
     
+    private String getTitlePageDate(){
+    	
+    	String[] months = {"January", "February", "March", "April", "May",
+    					   "June", "July", "August", "September", "October",
+    					   "November", "December"};
+    	
+		Calendar cal = Calendar.getInstance();
+		int month = cal.get(Calendar.MONTH);
+		int year = cal.get(Calendar.YEAR);
+		
+		return months[month] + " " + String.valueOf(year);
+    }
+    
+	protected void setHeader(String title) throws Exception {
+        
+		Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
+		font.setColor(Color.gray);
+	
+		Paragraph prg = new Paragraph();		
+		prg.add(new Chunk("Data Dictionary\n", font));
+		prg.setLeading(10*1.2f);
+		font = FontFactory.getFont(FontFactory.HELVETICA, 9);
+		font.setColor(Color.lightGray);
+		prg.add(new Chunk("Dataset specification for [" + dsName +
+								"] * Version [" + dsVersion + "]", font));
+
+		this.header = new HeaderFooter(prg, false);
+		header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
+	}
+
+	/**
+	 * Default implementation for adding index based on sectioning
+	 */
+	public Vector getIndexPage() throws Exception{
+		
+		Vector elems = new Vector();
+		
+		Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
+		Paragraph prg = new Paragraph("About this document", font);
+		elems.add(prg);
+		elems.add(new Paragraph("\n"));
+		
+		String about = 
+		"This document holds the technical specifications for a dataflow " +
+		"based on automatically generated output from the Data Dictionary " +
+		"application. The Data Dictionary is a central service for storing " +
+		"technical specifications for information requested in reporting " +
+		"obligations. The purpose of this document is to support countries " +
+		"in reporting good quality data. This document contains detailed " +
+		"specifications in a structured format for the data requested in a " +
+		"dataflow. Suggestions from users on how to improve the document " +
+		"are welcome";
+		
+		font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+		prg = new Paragraph(about, font);
+		elems.add(prg);
+		
+		if (sect==null)
+			return elems;
+		
+		Vector toc = sect.getTOCformatted("\t\t\t\t");
+		if (toc==null || toc.size()==0)
+			return elems;
+		
+		elems.add(new Paragraph("\n\n\n"));
+		
+		font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
+		prg = new Paragraph("Index", font);
+		elems.add(prg);
+		
+		elems.add(new Paragraph("\n"));
+		
+		font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+		for (int i=0; i<toc.size(); i++){
+			String line = (String)toc.get(i);
+			elems.add(new Chunk(line + "\n", font));
+		}
+		
+		return elems;
+	}
+	
+	public void addTblElms(String tblID, Vector elms){
+		tblElms.put(tblID, elms);
+	}
+   
     public static void main(String[] args){
         try{
             Class.forName("org.gjt.mm.mysql.Driver");

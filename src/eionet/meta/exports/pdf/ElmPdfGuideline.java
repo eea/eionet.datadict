@@ -2,6 +2,7 @@
 package eionet.meta.exports.pdf;
 
 import eionet.meta.*;
+import eionet.meta.savers.Parameters;
 import eionet.util.Util;
 
 import java.sql.*;
@@ -11,21 +12,30 @@ import com.lowagie.text.*;
 public class ElmPdfGuideline {
     
     private DDSearchEngine searchEngine = null;
-    private Section parentSection = null;
-    private Section section = null;
+    //private Section parentSection = null;
+    //private Section section = null;
     
-    private Vector docElements = new Vector();
+    //private Vector docElements = new Vector();
     
-    public ElmPdfGuideline(DDSearchEngine searchEngine, Section parentSection)
+	private String vsPath = null;
+	
+	private Parameters params = null;
+	
+	private TblPdfGuideline owner = null;
+	
+	// methods
+	///////////	
+    
+    public ElmPdfGuideline(DDSearchEngine searchEngine, TblPdfGuideline owner) //Section parentSection)
         throws Exception {
             
-        if (parentSection==null)
-            throw new Exception("parentSection cannot be null!");
+        //if (parentSection==null) throw new Exception("parentSection cannot be null!");
         if (searchEngine==null)
             throw new Exception("searchEngine cannot be null!");
             
         this.searchEngine = searchEngine;
-        this.parentSection = parentSection;
+        //this.parentSection = parentSection;
+        this.owner = owner;
     }
     
 	public void write(String elemID) throws Exception {
@@ -39,7 +49,7 @@ public class ElmPdfGuideline {
         
         // Get the data element object. This will also give us the
         // element's simple attributes + tableID
-        DataElement elem = searchEngine.getDataElement(elemID, tblID);
+        DataElement elem = searchEngine.getDataElement(elemID, tblID, false);
         if (elem == null)
             throw new Exception("Data element not found!");
         
@@ -57,11 +67,21 @@ public class ElmPdfGuideline {
         if (elem==null)
             throw new Exception("Element object was null!");
         
+		String nr = "";
+		Sectioning sect = null;
+		if (owner != null)
+			sect = owner.getSectioning();
+		if (sect != null)
+			nr = sect.level(elem.getShortName() + " element", 3);
+		nr = nr==null ? "" : nr + " ";
+				
         Paragraph prg = new Paragraph();
-        prg.add(new Chunk(elem.getShortName(), Fonts.get(Fonts.HEADING_3_ITALIC)));
+        prg.add(new Chunk(nr +
+        			elem.getShortName(), Fonts.get(Fonts.HEADING_3_ITALIC)));
         prg.add(new Chunk(" data element", Fonts.get(Fonts.HEADING_3)));
         
-        section = parentSection.addSection(prg, 3);
+        //section = parentSection.addSection(prg, 3);
+        addElement(prg);
         
         // see if this guideline is part of a table, get the
         // latter's information.
@@ -80,7 +100,7 @@ public class ElmPdfGuideline {
         addElement(new Paragraph("\n"));
         
         Hashtable hash = null;
-        Vector v = elem.getAttributes();
+        Vector attrs = elem.getAttributes();
         
         // dataset name, table name
         /* JH151003 - not needed, cause elm gdln is always part of a tbl gdln
@@ -107,20 +127,21 @@ public class ElmPdfGuideline {
         hash = new Hashtable();
         hash.put("name", "Short name");
         hash.put("value", elem.getShortName());
-        v.add(0, hash);
+        attrs.add(0, hash);
         
-        addElement(PdfUtil.simpleAttributesTable(v));
+        addElement(PdfUtil.simpleAttributesTable(attrs));
         addElement(new Phrase("\n"));
         
 		// write foreign key reltaions if any exist
-		Vector fks = searchEngine.getFKRelationsElm(elem.getID());
+		String dstID = params==null ? null : params.getParameter("dstID");
+		Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
 		if (fks!=null && fks.size()>0){
 			addElement(PdfUtil.foreignKeys(fks));
 			addElement(new Phrase("\n"));
 		}
 			 
         // write complex attributes, one table for each
-        v = elem.getComplexAttributes();
+        Vector v = elem.getComplexAttributes();
         if (v!=null && v.size()>0){
             
             DElemAttribute attr = null;
@@ -143,19 +164,35 @@ public class ElmPdfGuideline {
                                 "following fixed values:\n", Fonts.get(Fonts.HEADING_0)));
             addElement(PdfUtil.fixedValuesTable(v, false));
         }
-        
+
+		/*/ write image attributes
+		Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath);
+		if (imgAttrs!=null){
+			addElement(new Phrase("\n"));
+			addElement(imgAttrs);
+		}*/
+     
         // write aggregate structure
         // ... not implemented, as aggregates are currently out of focus
     }
     
-    private void addElement(Element elm){
+	private void addElement(Element elm){
+    	
+		if (owner!=null)
+			owner.addElement(elm);
         
-        if (elm != null)
-            section.add(elm);
-        
-        //return docElements.size();
-    }
-    
+		//if (elm != null) section.add(elm);        
+		//return docElements.size();
+	}
+
+	public void setVsPath(String vsPath){
+		this.vsPath = vsPath;
+	}
+
+	public void setParameters(Parameters params){
+		this.params = params;
+	}
+	
     public static void main(String[] args){
         try{
             Class.forName("org.gjt.mm.mysql.Driver");
@@ -167,7 +204,7 @@ public class ElmPdfGuideline {
             
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
             Section chapter = (Section)new Chapter("test", 1);
-            ElmPdfGuideline guideline = new ElmPdfGuideline(searchEngine, chapter);
+            ElmPdfGuideline guideline = new ElmPdfGuideline(searchEngine, null);//chapter);
             guideline.write("4518");
         }
         catch (Exception e){

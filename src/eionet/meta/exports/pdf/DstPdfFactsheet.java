@@ -13,24 +13,11 @@ import com.lowagie.text.pdf.*;
 
 public class DstPdfFactsheet extends PdfHandout {
     
-    private String vsPath = null;
     private int vsTableIndex = -1;
     
     public DstPdfFactsheet(Connection conn, OutputStream os){
         searchEngine = new DDSearchEngine(conn);
         this.os = os;
-    }
-    
-    public void setVsPath(String s){
-        
-        vsPath = s;
-        
-        if (!Util.voidStr(vsPath)){
-            if (!vsPath.endsWith(File.separator))
-                vsPath = vsPath + File.separator;
-        }
-        else
-            vsPath = System.getProperty("user.dir") + File.separator;
     }
     
     public void write(String dsID) throws Exception {
@@ -70,27 +57,27 @@ public class DstPdfFactsheet extends PdfHandout {
         
         addElement(new Paragraph("Basic metadata:\n", Fonts.get(Fonts.HEADING_0)));
         
-        Vector v = ds.getSimpleAttributes();
+        Vector attrs = ds.getSimpleAttributes();
 
         Hashtable hash = new Hashtable();
         hash.put("name", "Short name");
         hash.put("value", ds.getShortName());
-        v.add(0, hash);
+        attrs.add(0, hash);
         
         String version = ds.getVersion();
         if (!Util.voidStr(version)){
             hash = new Hashtable();
             hash.put("name", "Version");
             hash.put("value", version);
-            v.add(1, hash);
+            attrs.add(1, hash);
         }
             
-        addElement(PdfUtil.simpleAttributesTable(v));
+        addElement(PdfUtil.simpleAttributesTable(attrs));
         addElement(new Phrase("\n"));
         
         // write complex attributes, one table for each
         
-        v = ds.getComplexAttributes();
+        Vector v = ds.getComplexAttributes();
         if (v!=null && v.size()>0){
             
             DElemAttribute attr = null;
@@ -105,6 +92,13 @@ public class DstPdfFactsheet extends PdfHandout {
                 addElement(new Phrase("\n"));
             }
         }
+
+		/* write image attributes
+		Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath);
+		if (imgAttrs!=null){
+			addElement(new Phrase("\n"));
+			addElement(imgAttrs);
+		}*/
         
         // write tables of tables in dataset
         

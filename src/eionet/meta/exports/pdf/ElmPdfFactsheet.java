@@ -29,7 +29,7 @@ public class ElmPdfFactsheet extends PdfHandout {
             throw new Exception("Data element not found!");
         
         // get and set the element's complex attributes
-        elem.setComplexAttributes(searchEngine.getComplexAttributes(elemID, "E"));
+        elem.setComplexAttributes(searchEngine.getComplexAttributes(elemID, "E",null,elem.getTableID(),elem.getDatasetID()));
         
         write(elem);
     }
@@ -54,7 +54,7 @@ public class ElmPdfFactsheet extends PdfHandout {
         // write simple attributes
         
         Hashtable hash = null;
-        Vector v = elem.getAttributes();
+        Vector attrs = elem.getAttributes();
         
         // dataset name, table name
         if (!Util.voidStr(tableID)){
@@ -65,13 +65,13 @@ public class ElmPdfFactsheet extends PdfHandout {
                     hash = new Hashtable();
                     hash.put("name", "Dataset");
                     hash.put("value", ds.getShortName());
-                    v.add(0, hash);
+                    attrs.add(0, hash);
                 }
                 
                 hash = new Hashtable();
                 hash.put("name", "Table");
                 hash.put("value", dsTable.getShortName());
-                v.add(0, hash);
+                attrs.add(0, hash);
             }
         }
         
@@ -91,20 +91,21 @@ public class ElmPdfFactsheet extends PdfHandout {
         hash = new Hashtable();
         hash.put("name", "Short name");
         hash.put("value", elem.getShortName());
-        v.add(0, hash);
+        attrs.add(0, hash);
         
-        addElement(PdfUtil.simpleAttributesTable(v));
+        addElement(PdfUtil.simpleAttributesTable(attrs));
         addElement(new Phrase("\n"));
         
         // write foreign key reltaions if any exist
-        Vector fks = searchEngine.getFKRelationsElm(elem.getID());
+        String dstID = getParameter("dstID");
+        Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
         if (fks!=null && fks.size()>0){
 			addElement(PdfUtil.foreignKeys(fks));
 			addElement(new Phrase("\n"));
         }
         
         // write complex attributes, one table for each
-        v = elem.getComplexAttributes();
+        Vector v = elem.getComplexAttributes();
         if (v!=null && v.size()>0){
             
             DElemAttribute attr = null;
@@ -122,9 +123,15 @@ public class ElmPdfFactsheet extends PdfHandout {
         
         // write allowable values (for a factsheet levelling not needed I guess)
         v = searchEngine.getAllFixedValues(elem.getID(), "elem");
-        
         addElement(PdfUtil.fixedValuesTable(v, false));
         
+        /* write image attributes
+        Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath);
+        if (imgAttrs!=null){
+			addElement(new Phrase("\n"));
+			addElement(imgAttrs);
+        }*/
+					
         // write aggregate structure
         // ... not implemented, as aggregates are currently out of focus
         
