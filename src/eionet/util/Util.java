@@ -372,25 +372,27 @@ public class Util {
         return replaceTags(in, false);
     }
     public static String replaceTags(String in, boolean inTextarea) {
+    	
 	    in = (in != null ? in : "");
-	
-	
 	    StringBuffer ret = new StringBuffer();
-	
 	    for (int i = 0; i < in.length(); i++) {
 	      char c = in.charAt(i);
 	      if (c == '<')
 	        ret.append("&lt;");
 	      else if (c == '>')
 	        ret.append("&gt;");
-	      //else if (c == '\n' && inTextarea==false)
-	        //ret.append("<br/>");
+	      else if (c == '\n' && inTextarea==false)
+	        ret.append("<br/>");
+		  else if (c == '\r' && in.charAt(i+1)=='\n' && inTextarea==false){
+			ret.append("<br/>");
+			i = i + 1;
+		  }
 	      else
 	        ret.append(c);
 	    }
+	    
 	    String retString = ret.toString();
-	    if (inTextarea == false)
-	        retString=setAnchors(retString, true, 50);
+	    if (inTextarea == false) retString=setAnchors(retString, true, 50);
 	
 	    return retString;
 	}
