@@ -173,8 +173,11 @@ public class Dataset {
     	
 		DElemAttribute attr = null;
     	for (int i=0; complexAttrs!=null && i<complexAttrs.size(); i++){
-    		attr = (DElemAttribute)complexAttrs.get(i);
-    		if (!attr.getShortName().equals(shn)) break;
+			DElemAttribute a = (DElemAttribute)complexAttrs.get(i);
+    		if (a.getShortName().equals(shn)){
+    			attr = a;
+    			break;
+    		}
     	}
     	
     	Vector rows = attr==null ? null : attr.getRows();
