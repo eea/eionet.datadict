@@ -517,7 +517,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
     */
     protected void addTitlePage(Document doc) throws Exception {
         
-		doc.add(new Paragraph("\n\n\n\n"));			
+		doc.add(new Paragraph("\n\n\n\n"));
+			
         // data dictionary
         Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22);
 		Paragraph prg = new Paragraph("Data Dictionary", font);
