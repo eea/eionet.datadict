@@ -1,0 +1,17 @@
+<project name="DataDict" default="compile" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property name="src" value="."/>
+  <property name="classes" value="../public/WEB-INF/classes"/>
+
+  <target name="compile">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${classes}"
+		classpath="../public/WEB-INF/lib/xmlserver.jar;../public/WEB-INF/lib/xerces.jar;
+		../public/WEB-INF/lib/pja.jar;../public/WEB-INF/lib/itext-0.99.jar;
+		../public/WEB-INF/lib/eionet-dir.jar;../public/WEB-INF/lib/uit-security.jar;
+		../public/WEB-INF/lib/uit-client.jar;../public/WEB-INF/lib/log4j.jar;
+		/usr/local/jakarta-tomcat/common/lib/servlet.jar"/>
+  </target>
+</project>
+
