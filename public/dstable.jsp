@@ -1,17 +1,10 @@
 <%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,eionet.util.QueryString"%>
 
-<%! ServletContext ctx=null; %>
-<%! Vector mAttributes=null; %>
-<%! Vector attributes=null; %>
-<%! Vector complexAttrs=null; %>
-<%! Vector elems=null; %>
-<%! String mode=null; %>
-
 <%@ include file="history.jsp" %>
 
 <%!
-private String getValue(String id){
-	return getValue(id, 0);
+private String getValue(String id, String mode, Vector attributes){
+	return getValue(id, 0, mode, attributes);
 }
 /*
 		int val indicates which type of value is requested. the default is 0
@@ -19,7 +12,7 @@ private String getValue(String id){
 		1 - original value
 		2 - inherited value
 */
-private String getValue(String id, int val){
+private String getValue(String id, int val, String mode, Vector attributes){
 	if (id==null) return null;
 	if (mode.equals("add") && val<2) return null;
 	
@@ -38,8 +31,8 @@ private String getValue(String id, int val){
 	
 	return null;
 }
-private Vector getValues(String id){
-	return getValues(id, 0);
+private Vector getValues(String id, String mode, Vector attributes){
+	return getValues(id, 0, mode, attributes);
 }
 
 /*
@@ -48,7 +41,7 @@ private Vector getValues(String id){
 		1 - original
 		2 - inherited
 */
-private Vector getValues(String id, int val){
+private Vector getValues(String id, int val, String mode, Vector attributes){
 	if (id==null) return null;
 	if (mode.equals("add") && val<2) return null;
 
@@ -67,10 +60,10 @@ private Vector getValues(String id, int val){
 	return null;
 }
 
-private String getAttributeIdByName(String name){
+private String getAttributeIdByName(String name, Vector mAttributes){
 	
 
-		for (int i=0; i<mAttributes.size(); i++){
+		for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
 		DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
         if (attr.getShortName().equalsIgnoreCase(name))
         	return attr.getID();
@@ -78,9 +71,9 @@ private String getAttributeIdByName(String name){
         
     return null;
 }
-private String getAttributeValue(DataElement elem, String name){
+private String getAttributeValue(DataElement elem, String name, Vector mAttributes){
 	
-	String id = getAttributeIdByName(name);
+	String id = getAttributeIdByName(name, mAttributes);
 	if (elem == null) return null;
 	DElemAttribute attr = elem.getAttributeById(id);
 	if (attr == null) return null;
@@ -92,12 +85,12 @@ private String getAttributeValue(DataElement elem, String name){
 <%
 
 //
-ctx=null;
-mAttributes=null;
-attributes=null;
-complexAttrs=null;
-elems=null;
-mode=null;
+ServletContext ctx=null;
+Vector mAttributes=null;
+Vector attributes=null;
+Vector complexAttrs=null;
+Vector elems=null;
+String mode=null;
 //
 
 response.setHeader("Pragma", "no-cache");
@@ -660,7 +653,7 @@ if (mode.equals("edit") && dsTable!=null){
 		}
 		
 		function complexAttrs(url){
-					wComplexAttrs = window.open(url,"ComplexAttributes","height=500,width=500,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
+					wComplexAttrs = window.open(url,"ComplexAttributes","height=600,width=600,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
 					if (window.focus) {wComplexAttrs.focus()}
 		}
 		function complexAttr(url){
@@ -894,9 +887,11 @@ if (mode.equals("edit") && dsTable!=null){
 											<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/> <%
 										}
 									}
-								} %>
-								<!--input type="button" class="smallbutton" value="History" onclick="viewHistory()"/ -->
-								<%
+								}
+								
+								if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u")){ %>
+									<input type="button" class="smallbutton" value="History" onclick="viewHistory()"/> <%
+								}
 							}
 							// the working copy part
 							else if (dsTable!=null && dsTable.isWorkingCopy()){ %>
@@ -1065,6 +1060,20 @@ if (mode.equals("edit") && dsTable!=null){
 														<a target="_blank" href="GetXls?obj_type=tbl&obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
 													</td>
 												</tr>
+												
+												<%
+												if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u")){
+													%>
+													<tr height="20">
+														<td colspan="2" valign="bottom" align="left">
+															<span class="barfont">
+																[ <a target="_blank" href="GetCache?obj_id=<%=tableID%>&obj_type=tbl&idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
+															</span>
+														</td>
+													</tr>
+													<%
+												}
+												%>
 												
 											</table>
 										</td>
@@ -1244,7 +1253,7 @@ if (mode.equals("edit") && dsTable!=null){
 												if (!attribute.displayFor("TBL")) continue;
 												
 												attrID = attribute.getID();
-												attrValue = getValue(attrID);
+												attrValue = getValue(attrID, mode, attributes);
 																
 												String width  = attribute.getDisplayWidth();
 												String height = attribute.getDisplayHeight();
@@ -1266,20 +1275,20 @@ if (mode.equals("edit") && dsTable!=null){
 								
 												if (!mode.equals("view")){
 													
-													if (inherit) inheritedValue = getValue(attrID, 2);
+													if (inherit) inheritedValue = getValue(attrID, 2, mode, attributes);
 														
 													if (mode.equals("edit")){
 														if (dispMultiple){
 															if (inherit){
-																multiValues = getValues(attrID, 1); //original values only
+																multiValues = getValues(attrID, 1, mode, attributes); //original values only
 															}
 															else{
-																multiValues = getValues(attrID, 0);  //all values
+																multiValues = getValues(attrID, 0, mode, attributes);  //all values
 															}
 														
 														}
 														else{
-															if (inherit) attrValue = getValue(attrID, 1);  //get original value
+															if (inherit) attrValue = getValue(attrID, 1, mode, attributes);  //get original value
 														}
 													}
 												}
@@ -1663,9 +1672,9 @@ if (mode.equals("edit") && dsTable!=null){
 																		String linkTitle = elemDefinition==null ? "" : elemDefinition;
 																		
 																		String elemType = (String)types.get(elem.getType());
-																		String datatype = getAttributeValue(elem, "Datatype");		
+																		String datatype = getAttributeValue(elem, "Datatype", mAttributes);
 																		if (datatype == null) datatype="";
-																		String max_size = getAttributeValue(elem, "MaxSize");		
+																		String max_size = getAttributeValue(elem, "MaxSize", mAttributes);
 																		if (max_size == null) max_size="";
 																		
 																		// see if the element is part of any foreign key relations
@@ -1915,7 +1924,8 @@ if (mode.equals("edit") && dsTable!=null){
 				
 			</form>
 			
-			<%@ include file="footer.htm" %>
+			<jsp:include page="footer.jsp" flush="true">
+			</jsp:include>
 			
 			</div>			
 		</td>

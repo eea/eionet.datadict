@@ -1,21 +1,14 @@
 <%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.io.*"%>
 
-<%!private String mode=null;%>
-<%!private Vector mAttributes=null;%>
-<%!private DataElement dataElement=null;%>
-<%!private DataElement newDataElement=null;%>
-<%!private Vector complexAttrs=null;%>
-<%!private Vector fixedValues=null;%>
 <%!private static final int MAX_CELL_LEN=40;%>
 <%!private static final int MAX_ATTR_LEN=500;%>
 <%!private static final int MAX_DISP_VALUES=30;%>
 
-
 <%!
 
-private DElemAttribute getAttributeByName(String name){
+private DElemAttribute getAttributeByName(String name, Vector mAttributes){
 	
-	for (int i=0; i<mAttributes.size(); i++){
+	for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
 		DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
         //if (attr.getName().equalsIgnoreCase(name))
         if (attr.getShortName().equalsIgnoreCase(name))
@@ -25,9 +18,9 @@ private DElemAttribute getAttributeByName(String name){
 	    return null;
 }
 
-private String getAttributeIdByName(String name){
+private String getAttributeIdByName(String name, Vector mAttributes){
 	
-	for (int i=0; i<mAttributes.size(); i++){
+	for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
 		DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
         //if (attr.getName().equalsIgnoreCase(name))
         if (attr.getShortName().equalsIgnoreCase(name))
@@ -37,8 +30,8 @@ private String getAttributeIdByName(String name){
     return null;
 }
 
-private String getValue(String id){
-	return getValue(id, 0);
+private String getValue(String id, String mode, DataElement dataElement, DataElement newDataElement){
+	return getValue(id, 0, mode, dataElement, newDataElement);
 }
 /*
 		int val indicates which type of value is requested. the default is 0
@@ -46,7 +39,7 @@ private String getValue(String id){
 		1 - original value
 		2 - inherited value
 */
-private String getValue(String id, int val){
+private String getValue(String id, int val, String mode, DataElement dataElement, DataElement newDataElement){
 	if (id==null) return null;
 	DElemAttribute attr = null;
 
@@ -72,8 +65,8 @@ private String getValue(String id, int val){
 		return attr.getValue();
 }
 
-private Vector getValues(String id){
-	return getValues(id, 0);
+private Vector getValues(String id, String mode, DataElement dataElement, DataElement newDataElement){
+	return getValues(id, 0, mode, dataElement, newDataElement);
 }
 
 /*
@@ -82,7 +75,7 @@ private Vector getValues(String id){
 		1 - original
 		2 - inherited
 */
-private Vector getValues(String id, int val){
+private Vector getValues(String id, int val, String mode, DataElement dataElement, DataElement newDataElement){
 	if (id==null) return null;
 	DElemAttribute attr = null;
 
@@ -108,9 +101,9 @@ private Vector getValues(String id, int val){
 		return attr.getValues();
 }
 
-private String getAttributeObligationById(String id){
+private String getAttributeObligationById(String id, Vector mAttributes){
 	
-	for (int i=0; i<mAttributes.size(); i++){
+	for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
 		DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
         if (attr.getID().equalsIgnoreCase(id))
         	return attr.getObligation();
@@ -142,12 +135,12 @@ private String legalizeAlert(String in){
 			<%
 
 			//
-			mode=null;
-			mAttributes=null;
-			dataElement=null;
-			newDataElement=null;
-			complexAttrs=null;
-			fixedValues=null;
+			String mode=null;
+			Vector mAttributes=null;
+			DataElement dataElement=null;
+			DataElement newDataElement=null;
+			Vector complexAttrs=null;
+			Vector fixedValues=null;
 			//
 			
 			XDBApplication.getInstance(getServletContext());
@@ -782,7 +775,7 @@ private String legalizeAlert(String in){
 		}
 		
 		function complexAttrs(url){
-					wComplexAttrs = window.open(url,"ComplexAttributes","height=500,width=500,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
+					wComplexAttrs = window.open(url,"ComplexAttributes","height=600,width=600,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
 					if (window.focus) {wComplexAttrs.focus()}
 		}
 		function complexAttr(url){
@@ -1109,9 +1102,10 @@ String attrValue = null;
 										}
 									}
 								}
-								%>
-								<!--input type="button" class="smallbutton" value="History" onclick="viewHistory()"/>-->
-								<%
+								
+								if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){ %>
+									<input type="button" class="smallbutton" value="History" onclick="viewHistory()"/> <%
+								}
 							}
 							// the working copy part
 							else if (dataElement!=null && dataElement.isWorkingCopy()){ %>
@@ -1597,7 +1591,7 @@ String attrValue = null;
 													continue;
 												
 												attrID = attribute.getID();
-												attrValue = getValue(attrID);
+												attrValue = getValue(attrID, mode, dataElement, newDataElement);
 												String attrOblig = attribute.getObligation();
 												String obligImg  = "optional.gif";
 												if (attrOblig.equalsIgnoreCase("M"))
@@ -1637,19 +1631,19 @@ String attrValue = null;
 												String inheritedValue=null;
 								
 												if (!mode.equals("view")){
-													if (inherit) inheritedValue = getValue(attrID, 2);
+													if (inherit) inheritedValue = getValue(attrID, 2, mode, dataElement, newDataElement);
 														
 													if (mode.equals("edit")){
 														if (dispMultiple){
 															if (inherit){
-																multiValues = getValues(attrID, 1); //original values only
+																multiValues = getValues(attrID, 1, mode, dataElement, newDataElement); //original values only
 															}
 															else{
-																multiValues = getValues(attrID, 0);  //all values
+																multiValues = getValues(attrID, 0, mode, dataElement, newDataElement);  //all values
 															}
 														}
 														else{
-															if (inherit) attrValue = getValue(attrID, 1);  //get original value
+															if (inherit) attrValue = getValue(attrID, 1, mode, dataElement, newDataElement);  //get original value
 														}
 													}
 												}
@@ -2340,7 +2334,8 @@ String attrValue = null;
 				
 			</form>
 			
-			<%@ include file="footer.htm" %>
+			<jsp:include page="footer.jsp" flush="true">
+			</jsp:include>
 			
 			</div>
 		</td>

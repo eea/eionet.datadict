@@ -219,6 +219,13 @@ td {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	text-decoration: none;
 }
 
+td.small {  font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 8pt; 
+	font-style: normal; 
+	line-height: normal; 
+	text-decoration: none;
+}
+
 td.short_name {
 	font-weight: bold;
 	border-left: 1 solid #C0C0C0;
@@ -438,6 +445,18 @@ td.login {
 
 th {  font-family: Verdana, Arial, Helvetica, sans-serif; 
 	font-size: 10pt;
+	font-style: normal; 
+	line-height: normal; 
+	font-weight: bold; 
+	background: #FFFFFF;
+	text-decoration: none;
+	border-left: 1 solid #FF9900;
+	border-top: 1 solid #FF9900;
+	border-bottom: 1 solid #FF9900;
+}
+
+th.small {  font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 8pt;
 	font-style: normal; 
 	line-height: normal; 
 	font-weight: bold; 

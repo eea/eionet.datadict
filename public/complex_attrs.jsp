@@ -159,7 +159,7 @@ private String legalizeAlert(String in){
 	<head>
 		<title>Complex attributes</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
-		<link href="eionet.css" rel="stylesheet" type="text/css"/>
+		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	    <script language="JavaScript" src='script.js'></script>
 	</head>
 	<script language="JavaScript">
@@ -344,11 +344,14 @@ private String legalizeAlert(String in){
 						<tr>
 						<%
 						
-						for (int t=0; t<attrFields.size(); t++){
+						for (int t=0; attrFields!=null && t<attrFields.size(); t++){
 							Hashtable hash = (Hashtable)attrFields.get(t);
 							String name = (String)hash.get("name");
+							String style = "padding-right:10";
+							if (t == attrFields.size()-1)
+								style = style + ";border-right:1 solid #FF9900";
 							%>
-							<th align="left" style="padding-right:10"><%=name%></th>
+							<th align="left" class="small" style="<%=style%>"><%=name%></th>
 							<%
 						}
 						
@@ -369,7 +372,7 @@ private String legalizeAlert(String in){
 								String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 								if (fieldValue == null) fieldValue = " ";
 								%>
-								<td style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=Util.replaceTags(fieldValue)%></td>
+								<td class="small" style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=Util.replaceTags(fieldValue)%></td>
 								<%
 							}
 							%>

@@ -7,6 +7,7 @@ import java.io.*;
 import java.sql.*;
 
 import eionet.util.*;
+import eionet.meta.exports.*;
 import eionet.meta.exports.pdf.*;
 import eionet.meta.savers.Parameters;
 
@@ -62,8 +63,10 @@ public class GetPrintout extends HttpServlet {
         // get handout type
         String handoutType = PdfHandoutIF.FACTSHEET;
         
-        // set the path of images
+        // get the path of images
         String visualsPath = ctx.getInitParameter("visuals-path");
+		// get the path of cache
+		String cachePath = ctx.getInitParameter("doc-path");
         
         Connection conn = null;
         
@@ -93,8 +96,10 @@ public class GetPrintout extends HttpServlet {
                                         "- for this handout type!");
             }
             else if (outType.equals(PdfHandoutIF.GUIDELINE)){
-                if (objType.equals(PdfHandoutIF.DATASET))
+                if (objType.equals(PdfHandoutIF.DATASET)){
                     handout = new DstPdfGuideline(conn, barray);
+                    ((CachableIF)handout).setCachePath(cachePath);
+                }
                 else 
                     throw new Exception("Unknown object type- " + objType +
                                         "- for this handout type!");
@@ -118,6 +123,9 @@ public class GetPrintout extends HttpServlet {
             // flush the handout to the servlet output stream
             res.setContentType("application/pdf");
             res.setContentLength(barray.size()); // not supported by Resin version < 2.x.x
+			StringBuffer buf = new StringBuffer("attachment; filename=\"").
+			append(handout.getFileName()).append("\"");
+			res.setHeader("Content-Disposition", buf.toString());
             
             ServletOutputStream out = res.getOutputStream();
             barray.writeTo(out);

@@ -166,7 +166,7 @@ try { // start the whole page try block
 	<head>
 		<title>Meta</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
-		<link href="eionet.css" rel="stylesheet" type="text/css"/>
+		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
 	
 	<script language="JavaScript" src='script.js'></script>
@@ -299,6 +299,10 @@ try { // start the whole page try block
 					<span class="title2"><a href="<%=parentUrl%>"><%=Util.replaceTags(delem_name)%></a></span>
 					<span class="head00"><%=dispParentType%></span>
 				</td>
+			</tr>
+			
+			<tr height="20">
+				<td colspan="2"></td>
 			</tr>
 			
 			<tr height="20">

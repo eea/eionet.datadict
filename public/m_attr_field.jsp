@@ -138,7 +138,7 @@ private String legalizeAlert(String in){
 	<head>
 		<title>Meta</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
-		<link href="eionet.css" rel="stylesheet" type="text/css"/>
+		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
 	
 	<script language="JavaScript" src='script.js'></script>
@@ -217,9 +217,15 @@ private String legalizeAlert(String in){
 				</td>
 			</tr>
 			
-			<tr height="20"><td colspan="2"></td></tr>
+			<tr height="20" valign="bottom">
+				<td valign="bottom" align="right" colspan="2">
+					<a target="_blank" href="help.jsp?screen=complex_attr_field&area=pagehelp">
+						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+					</a>
+				</td>
+			</tr>
 			
-			<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
+			<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&nbsp;</td></tr>
 			
 			<tr>				
 				<td align="right" style="padding-right:10" valign="top">

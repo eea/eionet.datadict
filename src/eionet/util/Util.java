@@ -36,6 +36,8 @@ import java.security.*;
  * @author Jaanus Heinlaid
  */
 public class Util {
+	
+	private static final int BUF_SIZE = 1024;
     
     /**
      * A method for determining if a String is void.
@@ -698,6 +700,22 @@ public class Util {
         
         return buf.toString();*/
     }
+    
+	public static void write(InputStream in, OutputStream out) throws IOException{
+		
+		int i = 0;
+		byte[] buf = new byte[BUF_SIZE];
+		
+		try{
+			while ((i=in.read(buf, 0, buf.length)) != -1){
+				out.write(buf, 0, i);
+			}
+		}
+		finally{
+			if (in!=null) in.close();
+			out.close();
+		}
+	}
 
     /**
     * main

@@ -81,7 +81,7 @@
 <head>
     <title>Data Dictionary</title>
     <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet.css">
+    <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="JavaScript" src='script.js'></script>
     <script language="JavaScript">
 		function setLocation(){
@@ -142,10 +142,8 @@
 				<td>
 					<span class="mainfont">
 						This is a list of all definition attributes used in Data Dictionary.
-						Every attribute is uniquely identifed by its short name. There are two
-						types of attributes, click page help to find out more. The last 4
-						columns on this page inidcate the definitions where this attribute
-						can be used.
+						Every attribute is uniquely identifed by its short name. Click page help
+						and question marks in column headers to to find out more.
 						To view <% if (user != null && mode==null){ %> or modify <%}%> an attribute's
 						definition, click its short name.
 						<% if (false && user != null && mode==null){ %>
@@ -183,12 +181,90 @@
 			
 				%>
 			<tr>
-				<th rowspan="2" valign="bottom" align="left" style="padding-left:5;padding-right:10;padding-bottom:5;padding-top:5">Short name</th>
-				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Type</th>
-				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Datasets</th>
-				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Tables</th>
-				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Data elements with fixed values</th>
-				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Data elements with quantitative values</th>
+				<th rowspan="2">
+					<table width="100%">
+						<tr>
+							<td align="right" width="50%">
+								<b>Short name</b>
+							</td>
+							<td align="left" width="50%">
+								<a target="_blank" href="help.jsp?screen=attributes&area=shortname">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</th>
+				<th rowspan="2">
+					<table width="100%">
+						<tr>
+							<td align="right" width="50%">
+								<b>Type</b>
+							</td>
+							<td align="left" width="50%">
+								<a target="_blank" href="help.jsp?screen=attributes&area=type">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</th>
+				<th rowspan="2">
+					<table width="100%">
+						<tr>
+							<td align="right" width="50%">
+								<b>Datasets</b>
+							</td>
+							<td align="left" width="50%">
+								<a target="_blank" href="help.jsp?screen=attributes&area=datasets">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</th>
+				<th rowspan="2">
+					<table width="100%">
+						<tr>
+							<td align="right" width="50%">
+								<b>Tables</b>
+							</td>
+							<td align="left" width="50%">
+								<a target="_blank" href="help.jsp?screen=attributes&area=tables">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</th>
+				<th rowspan="2">
+					<table width="100%">
+						<tr>
+							<td align="left" width="50%">
+								<b>Data elements with fixed values</b>
+							</td>
+							<td align="left" width="50%">
+								<a target="_blank" href="help.jsp?screen=attributes&area=elmfxv">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</th>
+				<th rowspan="2">
+					<table width="100%">
+						<tr>
+							<td align="left" width="50%">
+								<b>Data elements with quantitative values</b>
+							</td>
+							<td align="left" width="50%">
+								<a target="_blank" href="help.jsp?screen=attributes&area=elmquant">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								</a>
+							</td>
+						</tr>
+					</table>
+				</th>
 			</tr>
 			
 			<%

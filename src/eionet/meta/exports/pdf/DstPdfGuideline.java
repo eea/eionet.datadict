@@ -1,6 +1,7 @@
 package eionet.meta.exports.pdf;
 
 import eionet.meta.*;
+import eionet.meta.exports.*;
 import eionet.util.Util;
 
 import java.sql.*;
@@ -11,7 +12,11 @@ import java.awt.Color;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 
-public class DstPdfGuideline extends PdfHandout {
+import com.tee.util.SQLGenerator;
+
+public class DstPdfGuideline extends PdfHandout implements CachableIF {
+	
+	private static final String FILE_EXT = ".pdf";
 	
     private int vsTableIndex = -1;
     private int elmCount = 0;
@@ -24,23 +29,50 @@ public class DstPdfGuideline extends PdfHandout {
 	private Hashtable respOrg = new Hashtable();
 	private boolean hasGisTables = false;
 	
-//	private Chapter chapter = null;
+	private String cachePath = null;
+	private String cacheFileName = null;
+	
+	private Connection conn = null; // for storing cache entries
+	
+	//	private Chapter chapter = null;
     
+	public DstPdfGuideline(Connection conn){
+		this.conn = conn;
+		searchEngine = new DDSearchEngine(conn);
+	}
+	
     public DstPdfGuideline(Connection conn, OutputStream os){
-        searchEngine = new DDSearchEngine(conn);
+    	this(conn);
         this.os = os;
 		setShowedAttributes();
     }
     
-    public void write(String dsID) throws Exception {
+	private void cache(String dsID) throws Exception {
+		write(dsID, true);
+	}
+    
+	public void write(String dsID) throws Exception {
+		write(dsID, false);
+	}
+    
+    private void write(String dsID, boolean caching) throws Exception {
         
         if (Util.voidStr(dsID))
             throw new Exception("Dataset ID not specified");
         
+        // See if this output has been cached.
+        // If so, write from cache and exit
+        if (!caching && isCached(dsID)){
+        	writeFromCache();
+        	return;
+        }
+        
         Dataset ds = searchEngine.getDataset(dsID);
         if (ds == null)
             throw new Exception("Dataset not found!");
-            
+        
+        fileName = ds.getIdentifier() + FILE_EXT;
+        
         Vector v = searchEngine.getSimpleAttributes(dsID, "DS");
         ds.setSimpleAttributes(v);
         v = searchEngine.getComplexAttributes(dsID, "DS");
@@ -754,24 +786,160 @@ public class DstPdfGuideline extends PdfHandout {
 	
 		return buf==null ? null : buf.toString();
 	}
+	
+	/*
+	 *  (non-Javadoc)
+	 * @see eionet.meta.exports.CachableIF#updateCache(java.lang.String)
+	 */
+	public void updateCache(String id) throws Exception{
+		
+		cache(id);
+		if (cachePath!=null && fileName!=null){
+			String fn = cachePath + fileName;
+			try{
+				os = new FileOutputStream(fn);
+				flush();
+				os.flush();
+				storeCacheEntry(id, fileName);
+			}
+			catch (Exception e){
+				try{
+					File file = new File(fn);
+					if (file.exists()) file.delete();
+				}
+				catch (Exception ee){}
+			}
+			finally{
+				if (os != null) os.close();
+			}
+		}
+	}
+
+	/*
+	 *  (non-Javadoc)
+	 * @see eionet.meta.exports.CachableIF#clearCache(java.lang.String)
+	 */
+	public void clearCache(String id) throws Exception{
+		
+		String fn = deleteCacheEntry(id);
+		File file = new File(cachePath + fn);
+		if (file.exists() && file.isFile())
+			file.delete();
+	}
+	
+	/*
+	 *  (non-Javadoc)
+	 * @see eionet.meta.exports.CachableIF#setCachePath(java.lang.String)
+	 */
+	public void setCachePath(String path) throws Exception{
+		cachePath = path;
+		if (cachePath!=null){
+			cachePath.trim();
+			if (!cachePath.endsWith(File.separator))
+				cachePath = cachePath + File.separator;
+		}
+	}
+	
+	/*
+	 *  (non-Javadoc)
+	 * @see eionet.meta.exports.CachableIF#isCached(java.lang.String)
+	 */
+	public boolean isCached(String id) throws Exception{
+		if (searchEngine == null)
+			throw new Exception("DstPdfGuideline.isCached(): missing searchEngine!");
+		
+		cacheFileName = searchEngine.getCacheFileName(id, "dst", "pdf");
+		return cacheFileName==null ? false : true;
+	}
+	
+	/*
+	 * Called when the output is present in cache.
+	 * Writes the cached document into the output stream.
+	 */
+	public void writeFromCache() throws Exception{
+		
+		if (Util.voidStr(cachePath)) throw new Exception("Cache path is missing!");
+		if (Util.voidStr(cacheFileName)) throw new Exception("Cache file name is missing!");
+		
+		fileName = cacheFileName;
+		
+		String fullName = cachePath + cacheFileName;
+		File file = new File(fullName);
+		if (!file.exists()) throw new Exception("Cache file <" + fullName + "> does not exist!");
+
+		int i = 0;
+		byte[] buf = new byte[1024];		
+		FileInputStream in = null;
+		try{
+			in = new FileInputStream(file);
+			while ((i=in.read(buf, 0, buf.length)) != -1)
+				os.write(buf, 0, i);
+		}
+		finally{
+			if (in!=null){
+				in.close();
+			}
+		}
+	}
+	
+	/*
+	 * Overriding flush() to check if content has beenw ritten from cache
+	 */
+	public void flush() throws Exception {
+		if (cacheFileName!=null)
+			os.flush();
+		else
+			super.flush();
+	}
+	
+	private void storeCacheEntry(String id, String fn) throws SQLException{
+		
+		if (id==null || fn==null || conn==null) return;
+		
+		SQLGenerator gen = new SQLGenerator();
+		gen.setTable("CACHE");
+		gen.setFieldExpr("OBJ_ID", id);
+		gen.setField("OBJ_TYPE", "dst");
+		gen.setField("ARTICLE", "pdf");
+		gen.setField("FILENAME", fn);
+		gen.setFieldExpr("CREATED", String.valueOf(System.currentTimeMillis()));
+		
+		conn.createStatement().executeUpdate(gen.insertStatement());
+	}
+
+	private String deleteCacheEntry(String id) throws SQLException{
+		
+		if (id==null || conn==null) return null;
+		
+		StringBuffer buf = new StringBuffer("select FILENAME from CACHE where ").
+		append("OBJ_TYPE='dst' and ARTICLE='pdf' and OBJ_ID=").append(id);
+		
+		String fn = null;
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(buf.toString());
+		if (rs.next()){
+			fn = rs.getString(1);
+			buf = new StringBuffer("delete from CACHE where ").
+			append("OBJ_TYPE='dst' and ARTICLE='pdf' and OBJ_ID=").append(id);
+			stmt.executeUpdate(buf.toString());
+		}
+		
+		return fn;
+	}
   
     public static void main(String[] args){
         try{
             Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn =
-            //DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
-            DriverManager.getConnection(
-				"jdbc:mysql://195.250.186.16:3306/dd", "root", "ABr00t");
+            Connection conn = DriverManager.getConnection(
+					"jdbc:mysql://195.250.186.33:3306/dd", "dduser", "xxx");
 
-            String fileName =
-				"d:\\projects\\datadict\\tmp\\ds_test_guideline.pdf";
-            DstPdfGuideline guideline =
-            	new DstPdfGuideline(conn, new FileOutputStream(fileName));
-            guideline.setVsPath("x:\\projects\\datadict\\public\\visuals");
-            guideline.setLogo(
-				"d:\\projects\\datadict\\public\\images\\pdf_logo.png");
-            guideline.write("1275");
-            guideline.flush();
+            DstPdfGuideline pdf = new DstPdfGuideline(conn);
+            pdf.setVsPath("d:\\projects\\datadict\\public\\visuals");
+            pdf.setLogo("d:\\projects\\datadict\\public\\images\\pdf_logo.png");
+			pdf.setCachePath("d:\\projects\\datadict\\doc\\");
+            pdf.updateCache("1552");
+            
+            System.out.println();
         }
         catch (Exception e){
             System.out.println(e.toString());

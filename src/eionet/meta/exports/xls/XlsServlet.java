@@ -7,6 +7,7 @@ import java.io.*;
 import java.sql.*;
 import java.util.HashSet;
 
+import eionet.meta.exports.*;
 import eionet.meta.exports.schema.*;
 import eionet.util.*;
 import eionet.meta.DDSearchEngine;
@@ -43,6 +44,7 @@ public class XlsServlet extends HttpServlet {
 	        
 	        ServletContext ctx = getServletContext();
 	        String appName = ctx.getInitParameter("application-name");
+			String cachePath = ctx.getInitParameter("doc-path");
 
             // JH 300603 - getting the DB pool through XmlServer
             XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
@@ -53,14 +55,18 @@ public class XlsServlet extends HttpServlet {
             os = res.getOutputStream();
             
             XlsIF xls = null;
-            if (type.equals("dst"))
+            if (type.equals("dst")){
             	xls = new DstXls(searchEngine, os);
-            else
+				((CachableIF)xls).setCachePath(cachePath);
+            }
+            else{
             	xls = new TblXls(searchEngine, os);
+				((CachableIF)xls).setCachePath(cachePath);
+            }
             
 			xls.create(id);
 			StringBuffer buf = new StringBuffer("attachment; filename=\"").
-			append(xls.getName()).append(".xls\"");
+			append(xls.getName()).append("\"");
 			res.setHeader("Content-Disposition", buf.toString());
 			
 			xls.write();

@@ -36,4 +36,10 @@ public interface PdfHandoutIF {
 	 * Sets whatever additional parameters that the handouts might need
 	 */
 	public abstract void setParameters(Parameters params);
+	
+	/**
+	 * Gets the name of the generated file
+	 */
+	public abstract String getFileName();
+
 }

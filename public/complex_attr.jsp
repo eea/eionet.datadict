@@ -173,7 +173,7 @@ private String legalizeAlert(String in){
 	<head>
 		<title>Complex attribute</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
-		<link href="eionet.css" rel="stylesheet" type="text/css"/>
+		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	    <script language="JavaScript" src='script.js'></script>
 	<script language="JavaScript">
 			function submitForm(mode){
@@ -382,8 +382,8 @@ if (!mode.equals("view")){
 <%
 	if (user!=null){
 		%>
-		<input class="smallbutton" type="button" name="addbutton" value="Add"  onclick="submitForm('add')">&#160;
-		<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')">&#160;
+		<input class="smallbutton" type="button" name="addbutton" value="Add"  onclick="submitForm('add')">&nbsp;
+		<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')">&nbsp;
 		<%
 		if (harvesterID!=null && harvesterID.length()>0){ %>
 			<input class="smallbutton" type="button" value="Get"  onclick="openHarvested('<%=attr_id%>')"><%
@@ -398,13 +398,13 @@ if (!mode.equals("view")){
 <table style="border: 1 solid #808080">
 
 	<%
-		for (int t=0; t<attrFields.size(); t++){			
+		for (int t=0; attrFields!=null && t<attrFields.size(); t++){			
 			Hashtable hash = (Hashtable)attrFields.get(t);
 			String id = (String)hash.get("id");
 			String name = (String)hash.get("name");
 			%>
 			<tr>
-				<td width="100" align="right"><span class="mainfont"><b><%=name%></b>:</span></td>
+				<td class="small" width="100" align="right"><b><%=name%></b>:</td>
 				<td><input class="smalltext" type="text" name="<%=AttrFieldsHandler.FLD_PREFIX%><%=id%>"/></td>
 			</tr>
 			<%
@@ -438,18 +438,21 @@ if (!mode.equals("view")){
 					}
 					%>
 				</td>
-				<td width="10">&#160;</td>
+				<td width="10">&nbsp;</td>
 				<%
 			}
 			%>
 			
 			
 			<%
-			for (int t=0; t<attrFields.size(); t++){
+			for (int t=0; attrFields!=null && t<attrFields.size(); t++){
 				Hashtable hash = (Hashtable)attrFields.get(t);
 				String name = (String)hash.get("name");
+					String style = "padding-left:5;padding-right:10";
+					if (t == attrFields.size()-1)
+						style = style + ";border-right:1 solid #FF9900";
 					%>
-					<th align="left" style="padding-right:10">&#160;<%=name%></th>
+					<th class="small" align="left" style="<%=style%>"><%=name%></th>
 					<%
 			}
 			%>
@@ -467,8 +470,8 @@ if (!mode.equals("view")){
 					if (pos >= position) position = pos +1;
 					%>
 					<tr>
-						<td align="right"><%=sInhText%></td>
-						<td width="10">&#160;</td>
+						<td class="small" align="right"><%=sInhText%></td>
+						<td class="small" width="10">&nbsp;</td>
 					<%
 			
 					for (int t=0; t<attrFields.size(); t++){
@@ -477,7 +480,7 @@ if (!mode.equals("view")){
 						String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 						if (fieldValue == null) fieldValue = " ";
 							%>
-							<td <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-right:10">&#160;<%=Util.replaceTags(fieldValue)%></td>
+							<td class="small" <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-left:5;padding-right:10"><%=Util.replaceTags(fieldValue)%></td>
 							<%
 					}		
 					displayed++;
@@ -500,8 +503,8 @@ if (!mode.equals("view")){
 			<%
 			if (!mode.equals("view")){
 			%>
-				<td align="right"><input type="checkbox" style="height:13;width:13" name="del_row" value="<%=row_id%>"/></td>
-				<td width="10">&#160;</td>
+				<td class="small" align="right"><input type="checkbox" style="height:13;width:13" name="del_row" value="<%=row_id%>"/></td>
+				<td class="small" width="10">&nbsp;</td>
 			<%
 			}
 			%>
@@ -513,7 +516,7 @@ if (!mode.equals("view")){
 				String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 				if (fieldValue == null) fieldValue = " ";
 					%>
-					<td <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-right:10">&#160;<%=Util.replaceTags(fieldValue)%></td>
+					<td class="small" <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-left:5;padding-right:10"><%=Util.replaceTags(fieldValue)%></td>
 					<%
 			}
 			displayed++;

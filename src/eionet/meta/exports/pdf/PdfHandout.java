@@ -44,6 +44,8 @@ public abstract class PdfHandout implements PdfHandoutIF {
 	
 	protected Vector showedAttrs = new Vector();
 	
+	protected String fileName = "DataDictionary.pdf";
+	
     /// methods
     ////////////
     
@@ -116,12 +118,6 @@ public abstract class PdfHandout implements PdfHandoutIF {
 					if (tableHeight <= pageHeight/2)
 						document.newPage();
 				}
-				
-            	System.out.println("===> Table#" + tblCounter);
-				System.out.println("===> fits=" + fitsPage);
-				System.out.println("===> height=" + tableHeight);
-				System.out.println("===> page_height=" + pageHeight);
-				System.out.println("===>");
             }*/
             
 			if (elm.getClass().getName().endsWith("ImgRaw")){
@@ -342,6 +338,10 @@ public abstract class PdfHandout implements PdfHandoutIF {
 	
 	public boolean canShowAttr(String shn){
 		return shn!=null && showedAttrs.contains(shn);
+	}
+	
+	public String getFileName(){
+		return fileName;
 	}
 }
 

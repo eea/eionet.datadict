@@ -48,7 +48,7 @@
     <head>
         <title>Element history</title>
         <meta http-equiv="Content-Type" content="text/html"/>
-        <link href="eionet.css" rel="stylesheet" type="text/css"/>
+        <link href="eionet_new.css" rel="stylesheet" type="text/css"/>
         <script language="JavaScript" src='script.js'></script>
         <script language="JavaScript">
             function view(id){
@@ -66,7 +66,7 @@
 
     <span class="head00">
     	History of <em><%=dsTable.getShortName()%></em>
-        below version <em><%=dsTable.getVersion()%></em>
+        below LastCheckInNo <em><%=dsTable.getVersion()%></em>
     </span>
         
 	<table width="auto" cellspacing="0" id="tbl">
@@ -82,8 +82,8 @@
     	
         <tr>
             <th align="left" style="padding-left:5;padding-right:10">LastCheckInNo</th>
-            <th align="left" style="padding-right:10">User</th>
-            <th align="left" style="padding-right:10">Date</th>
+            <th align="left" style="padding-left:5;padding-right:10">User</th>
+            <th align="left" style="padding-left:5;padding-right:10;border-right:1 solid #FF9900">Date</th>
         </tr>
 		
 		<%
@@ -100,8 +100,8 @@
                             <td align="left" style="padding-left:5;padding-right:10">
                                 <a href="javascript:view('<%=id%>')">&#160;<%=version%>&#160;</a>
                             </td>
-                            <td align="left" style="padding-right:10"><%=usr%></td>
-                            <td align="left" style="padding-right:10"><%=date%></td>
+                            <td align="left" style="padding-left:5;padding-right:10"><%=usr%></td>
+                            <td align="left" style="padding-left:5;padding-right:10"><%=date%></td>
 			</tr>
 			<%
 		}

@@ -182,7 +182,7 @@
 <head>
     <title>Data Dictionary</title>
     <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet.css">
+    <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="JavaScript" src='script.js'></script>
     <script language="JavaScript">
     
@@ -568,7 +568,7 @@
 					<% } else if (mode.equals("add")){ %>
 						<input <%=disabled%> type="text" class="smalltext" size="30" name="name"></input>
 					<% } else { %>
-						<span class="barfont" style="width:400"><%=attr_name%></span>
+						<span class="Mainfont" style="width:400"><%=attr_name%></span>
 					<% } %>
 				</td>
 			</tr>
@@ -601,7 +601,7 @@
 						if (nsName == null) nsName = "";
 						
 						%>
-						<span class="barfont" style="width:400"><%=nsName%></span> <%
+						<span class="Mainfont" style="width:400"><%=nsName%></span> <%
 					}
 					else{
 						%>
@@ -668,7 +668,7 @@
 						}
 						else{
 							%>
-							<span class="barfont" style="width:400"><%=definition%></span>
+							<span class="Mainfont" style="width:400"><%=definition%></span>
 							<%
 						}
 					}
@@ -710,7 +710,7 @@
 							else if (obligation != null && obligation.equals("C"))
 								dispOblig = "Conditional";
 							%>
-							<span class="barfont" style="width:400"><%=dispOblig%></span>
+							<span class="Mainfont" style="width:400"><%=dispOblig%></span>
 							<%
 						}
 						else{
@@ -753,7 +753,7 @@
 							else if (dispType.equals("image"))
 								dispDispType = "Image";
 							%>
-							<span class="barfont" style="width:400"><%=dispDispType%></span>
+							<span class="Mainfont" style="width:400"><%=dispDispType%></span>
 							<%
 						}
 						else{
@@ -796,7 +796,7 @@
 								for (int g=0; g<fxValues.size(); g++){
 									FixedValue fxValue = (FixedValue)fxValues.get(g);
 									%>
-									<span class="barfont" style="width:400"><%=Util.replaceTags(fxValue.getValue())%></span><br>
+									<span class="Mainfont" style="width:400"><%=Util.replaceTags(fxValue.getValue())%></span><br>
 									<%
 								}
 							}
@@ -833,7 +833,7 @@
 							}
 							else{
 								%>
-								<span class="barfont" style="width:400"><%=checked_text%></span>
+								<span class="Mainfont" style="width:400"><%=checked_text%></span>
 								<%
 							}
 						}
@@ -877,7 +877,7 @@
 					}						
 					if (mode.equals("view")){
 						%>
-						<span class="barfont" style="width:400"><%=inh_text[chk]%></span>
+						<span class="Mainfont" style="width:400"><%=inh_text[chk]%></span>
 						<%
 					}
 					else{
@@ -917,7 +917,7 @@
 						}
 						else{
 							%>
-							<span class="barfont" style="width:400"><%=dispOrder%></span>
+							<span class="Mainfont" style="width:400"><%=dispOrder%></span>
 							<%
 						}
 					}
@@ -959,7 +959,7 @@
 						if (mode.equals("view")){
 							boolean hasOne = false;
 							%>
-							<span class="barfont" style="width:400">
+							<span class="Mainfont" style="width:400">
 							<%
 							if (ch1Checked.equals("checked")) { hasOne = true; %>
 								Data elements with fixed values <%
@@ -985,10 +985,10 @@
 						}
 						else {
 							%>							
-							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=ch1Checked%> name="dispWhen" value="CH1"><span class="barfont">Data elements with fixed values</span></input></br>
-							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=ch2Checked%> name="dispWhen" value="CH2"><span class="barfont">Data elements with quanitative values</span></input></br>
-							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=dstChecked%> name="dispWhen" value="DST"><span class="barfont">Datasets</span></input></br>
-							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=tblChecked%> name="dispWhen" value="TBL"><span class="barfont">Dataset tables</span></input></br>
+							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=ch1Checked%> name="dispWhen" value="CH1"><span class="Mainfont">Data elements with fixed values</span></input></br>
+							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=ch2Checked%> name="dispWhen" value="CH2"><span class="Mainfont">Data elements with quanitative values</span></input></br>
+							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=dstChecked%> name="dispWhen" value="DST"><span class="Mainfont">Datasets</span></input></br>
+							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=tblChecked%> name="dispWhen" value="TBL"><span class="Mainfont">Dataset tables</span></input></br>
 							<%
 						}
 						%>
@@ -1026,7 +1026,7 @@
 							}
 							else{
 								%>
-								<span class="barfont" style="width:400"><%=dispWidth%></span>
+								<span class="Mainfont" style="width:400"><%=dispWidth%></span>
 								<%
 							}
 						}
@@ -1068,7 +1068,7 @@
 							}
 							else{
 								%>
-								<span class="barfont" style="width:400"><%=dispHeight%></span>
+								<span class="Mainfont" style="width:400"><%=dispHeight%></span>
 								<%
 							}
 						}
@@ -1147,7 +1147,7 @@
 							}
 						}
 						else { %>
-							<span class="barfont" style="width:400"><%=harvesterID%></span> <%
+							<span class="Mainfont" style="width:400"><%=harvesterID%></span> <%
 						}
 						%>
 					</td>

@@ -3455,6 +3455,67 @@ public class DDSearchEngine {
 		return help.toString();
 	}
 	
+	public String getCacheFileName(String objID, String objType, String article)
+																		throws SQLException{
+		if (objID==null || objType==null || article==null)
+			throw new SQLException("getCacheFileName(): objID or objType or article is null");
+			
+		StringBuffer buf = new StringBuffer("select FILENAME from CACHE where ").
+		append("OBJ_ID=").append(objID).
+		append(" and OBJ_TYPE=").append(Util.strLiteral(objType)).
+		append(" and ARTICLE=").append(Util.strLiteral(article));
+		
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(buf.toString());
+		String fileName = rs.next() ? rs.getString(1) : null;
+		
+		stmt.close();
+		rs.close();
+		
+		return fileName;
+	}
+
+	public Hashtable getCache(String objID, String objType) throws SQLException{
+		
+		if (objID==null || objType==null)
+			throw new SQLException("getCache(): objID or objType or article is null");
+			
+		StringBuffer buf = new StringBuffer("select * from CACHE where ").
+		append("OBJ_ID=").append(objID).
+		append(" and OBJ_TYPE=").append(Util.strLiteral(objType));
+		
+		Hashtable hash = new Hashtable();
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(buf.toString());
+		while (rs.next()){
+			if (Util.nullString(rs.getString("FILENAME")))
+				continue;
+			
+			hash.put(rs.getString("ARTICLE"), new Long(rs.getLong("CREATED")));
+		}
+		
+		stmt.close();
+		rs.close();
+		
+		return hash;
+	}
+	
+	public String getLastUpdated() throws SQLException{
+		
+		String lastUpdated = null;
+		ResultSet rs = conn.createStatement().executeQuery("show table status");
+		while (rs.next()){
+			String updTime = rs.getDate("Update_time").toString();
+			if (lastUpdated==null)
+				lastUpdated = updTime;
+			else if (lastUpdated.compareTo(updTime)<0){
+				lastUpdated = updTime;
+			}
+		}
+		
+		return lastUpdated;
+	}
+	
     /**
     *
     */
@@ -3481,9 +3542,8 @@ public class DDSearchEngine {
 			testUser.authenticate("heinlja", "ddd");
 			searchEngine.setUser(testUser);
 			
-			Vector pars = new Vector();
-			Vector v = searchEngine.getDatasetTables(pars, null, null, null, null, "=", false);
-			System.out.println(v);
+			String s = searchEngine.getLastUpdated();
+			System.out.println(s);
         }
         catch (Exception e){
             System.out.println(e.toString());

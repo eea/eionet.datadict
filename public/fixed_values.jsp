@@ -170,7 +170,7 @@ private String legalizeAlert(String in){
 	<head>
 		<title>Meta</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
-		<link href="eionet.css" rel="stylesheet" type="text/css"/>
+		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
 	
 	<script language="JavaScript" src='script.js'></script>
@@ -365,7 +365,7 @@ private String legalizeAlert(String in){
 		<tr>
 			<th align="left" style="padding-left:5;padding-right:10">Value</th>
 			<th align="left" style="padding-left:5;padding-right:10">Definition</th>
-			<th align="left" style="padding-left:5;padding-right:10">ShortDescription</th>			
+			<th align="left" style="padding-left:5;padding-right:10;border-right:1 solid #FF9900">ShortDescription</th>			
 		</tr>
 		<%
 		String mode= (user == null) ? "print" : "edit";
@@ -401,10 +401,10 @@ private String legalizeAlert(String in){
 					</b>
 				</td>
 				<td valign="bottom" align="left" title="Definition" style="padding-left:5;padding-right:10">
-					<span class="barfont"><%=definition%></span>
+					<%=definition%>
 				</td>
 				<td valign="bottom" align="left" title="ShortDescription" style="padding-left:5;padding-right:10">
-					<span class="barfont"><%=shortDesc%></span>
+					<%=shortDesc%>
 				</td>				
 			</tr>
 		<%
@@ -417,7 +417,7 @@ private String legalizeAlert(String in){
 	<% if (user != null) { %>
 		<tr>
 			<td align="left" colspan="3">
-				<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')">&#160;
+				<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')">
 				<input class="smallbutton" type="button" value="Remove all" onclick="submitForm('delete_all')">
 			</td>
 		</tr>
@@ -425,8 +425,8 @@ private String legalizeAlert(String in){
 	<% } %>	
   	<tr>
   		<th>&#160;</th>
-		<th align="left" style="padding-left:5;padding-right:10" width="100">Value</th>
-		<th align="left" style="padding-right:10" width="500">Definition</th>
+		<th align="left" style="padding-left:5;padding-right:10;border-left:0" width="100">Value</th>
+		<th align="left" style="padding-left:5;padding-right:10;border-right:1 solid #FF9900" width="500">Definition</th>
 	</tr>
 	<tbody>
 			
@@ -455,8 +455,8 @@ private String legalizeAlert(String in){
 					<%=Util.replaceTags(value)%>
 				</a></b>&#160;
 			</td>
-			<td align="left" style="padding-right:10" title="Definition">
-				<span class="barfont"><%=Util.replaceTags(definition)%></span>
+			<td align="left" style="padding-left:5;padding-right:10" title="Definition">
+				<%=Util.replaceTags(definition)%>
 			</td>
 			<td>
 				<input type="hidden" name="pos_id" value="<%=fxvID%>" size="5">

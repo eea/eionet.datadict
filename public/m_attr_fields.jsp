@@ -120,7 +120,7 @@ private String legalizeAlert(String in){
 	<head>
 		<title>Meta</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
-		<link href="eionet.css" rel="stylesheet" type="text/css"/>
+		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<script language="JavaScript" src='script.js'></script>
 	<script language="JavaScript" src='dynamic_table.js'></script>
@@ -194,15 +194,25 @@ private String legalizeAlert(String in){
 <div style="margin-left:30">
 
 <form name="form1" method="POST" action="m_attr_fields.jsp">
-<table width="400">
-	<tr valign="bottom">
-		<td colspan="2"><font class="head00">Fields of <font class="title2" color="#006666"><%=attr_name%></font></font></td>
-	</tr>
-	<tr height="10"><td colspan="2"></td></tr>
-	<tr height="10"><td colspan="2"><font class="smallFont">Enter a new field here:</font><br></br></td></tr>
+
+<table width="500">
 	<tr>
-		<td width="100">Name:</td>
-		<td width="300">
+		<td>
+			<span class="head00">Fields of <span class="title2" color="#006666"><%=attr_name%></span></span>
+		</td>		
+		<td align="right">
+			<a target="_blank" href="help.jsp?screen=complex_attr_fields&area=pagehelp">
+				<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+			</a>
+		</td>
+</table>
+
+<table width="auto">
+	<tr height="20"><td colspan="2"></td></tr>
+	<tr><td colspan="2" class="smallFont">Enter a new field here:</td></tr>
+	<tr>
+		<td class="small" align="left">Name:</td>
+		<td>
 			<input type="text" size="20" name="new_field"></input>&#160;
 			<%
 			if (user!=null){
@@ -219,24 +229,33 @@ private String legalizeAlert(String in){
 		</td>
 	</tr>
 	<tr>
-		<td width="100">Definition:</td>
-		<td width="300">
+		<td class="small" align="left">Definition:</td>
+		<td>
 			<textarea rows="2" cols="30" name="definition"></textarea>
 		</td>
 	</tr>
 	<tr height="10"><td colspan="2"></td></tr>
 </table>
-<table width="auto" cellspacing="0"  border="0"><tr><td rowspan="2">	
-<table width="auto" id="tbl">
-	<tr>
-		<% if (user != null) { %>
-			<td align="right" style="padding-right:10">
-				<input type="button" <%=disabled%> value="Remove" class="smallbutton" onclick="submitForm('delete')"/>
+
+<table width="auto" cellspacing="0" cellpadding="0" border="0"><tr><td rowspan="2">	
+<table width="auto" id="tbl" cellspacing="0" cellpadding="0" >
+	<%
+	if (user != null) { %>
+		<tr>
+			<td colspan="4" style="padding-right:10">
+				<input type="button" <%=disabled%> value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/>
+				<input type="button" value="Save order" class="smallbutton" onclick="saveChanges()" title="save the order of the fields"/>
 			</td>
-		<% } %>
-		<th width="100">Name</th>
-		<th width="300">Definition</th>
-		<th width="50">Priority</th>
+		</tr>
+		<tr height="3"><td colspan="4"></td></tr>
+		<%
+	}
+	%>
+	<tr>
+		<th>&nbsp;</th>
+		<th style="padding-left:5;padding-right:5;border-left:0">Name</th>
+		<th style="padding-left:5;padding-right:5">Definition</th>
+		<th style="padding-left:5;padding-right:5;border-right:1 solid #FF9900">Priority</th>
 	</tr>
 	<tbody id="tbl_body">	
 	
@@ -261,14 +280,24 @@ private String legalizeAlert(String in){
 		String pri = (priority!=null && priority.equals(DElemAttribute.FIELD_PRIORITY_HIGH)) ? "High" : "Low";
 		%>
 		<tr id="<%=id%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-			<% if (user != null) { %>
-				<td align="center" width="40"><input type="checkbox" style="height:13;width:13" name="del_field" value="<%=id%>" onclick="tbl_obj.clickOtherObject();"/></td>
-			<% } %>
-			<td align="center" width="100">
-				<a href="javascript:clickLink('<%=fieldLink%>')"><%=Util.replaceTags(name)%></a>
+			<%
+			if (user != null){ %>
+				<td align="right" style="padding-left:5;padding-right:5">
+					<input type="checkbox" style="height:13;width:13" name="del_field" value="<%=id%>" onclick="tbl_obj.clickOtherObject();"/>
+				</td><%
+			}
+			%>
+			<td align="center" style="padding-left:5;padding-right:5">
+				<a href="javascript:clickLink('<%=fieldLink%>')">
+					<%=Util.replaceTags(name)%>
+				</a>
 			</td>
-			<td align="center" width="300" onmouseover=""><%=Util.replaceTags(definition)%></td>
-			<td align="center" width="50" onmouseover=""><%=pri%></td>
+			<td align="center" onmouseover="" style="padding-left:5;padding-right:5">
+				<%=Util.replaceTags(definition)%>
+			</td>
+			<td align="center" onmouseover="" style="padding-left:5;padding-right:5">
+				<%=pri%>
+			</td>
 			<td width="0" style="display:none">
 				<input type="hidden" name="pos_id" value="<%=id%>" size="5">
 				<input type="hidden" name="oldpos_<%=id%>" value='<%=(String)hash.get("position")%>' size="5">
@@ -283,9 +312,7 @@ private String legalizeAlert(String in){
 	</td>
 	<%
 		if (user!=null && attrFields.size()>1){ %>
-		<td align="left" style="padding-right:10" valign="top" height="10">
-			<input type="button" value="Save" class="smallbutton" onclick="saveChanges()" title="save the new order of fields"/>
-		</td>
+		<td align="left" style="padding-right:10" valign="top" height="10">&nbsp;</td>
 		</tr><tr><td>
 				<table cellspacing="2" cellpadding="2" border="0">
 					<tr>

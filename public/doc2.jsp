@@ -80,7 +80,8 @@
 					</tr>
 				</table>
 				
-				<%@ include file="footer.htm" %>
+				<jsp:include page="footer.jsp" flush="true">
+				</jsp:include>
 								
 				</div>
             </TD>

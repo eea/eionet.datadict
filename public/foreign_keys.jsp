@@ -102,7 +102,7 @@ disabled="";
 <head>
 	<title>Meta</title>
 	<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
-	<link href="eionet.css" rel="stylesheet" type="text/css"/>
+	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <script language="JavaScript" src='script.js'></script>
@@ -203,8 +203,8 @@ disabled="";
 				<input type="button" <%=disabled%> value="Remove" class="smallbutton" onclick="submitForm('delete')"/>
 			</td>				
 			<th align="left" style="padding-left:5;padding-right:10">Element</th>
-			<th align="left" style="padding-right:10">Table</th>
-			<th align="left" style="padding-right:10">Cardinality</th>
+			<th align="left" style="padding-left:5;padding-right:10">Table</th>
+			<th align="left" style="padding-left:5;padding-right:10;border-right:1 solid #FF9900">Cardinality</th>
 		</tr>
 			
 		<%
@@ -236,10 +236,10 @@ disabled="";
 				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<a href="data_element.jsp?delem_id=<%=fkElmID%>&amp;mode=view"><%=fkElmName%></a>
 				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<%=fkTblName%>
 				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<a  title="<%=relDefin%>"
 						href="fk_relation.jsp?rel_id=<%=fkRelID%>&amp;mode=view"><%=cardinality%></a>
 				</td>

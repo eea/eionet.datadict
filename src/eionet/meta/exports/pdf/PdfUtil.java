@@ -1227,16 +1227,5 @@ public class PdfUtil {
     }
     
     public static void main(String[] args){
-    	
-    	String value = "kalameespesamunaninatarkkurat";
-		Vector values = new Vector();
-		int c;
-		for (c=0; c<(value.length() / MAX_VALUE_LEN); c++)
-			values.add(value.substring(c*MAX_VALUE_LEN, (c+1)*MAX_VALUE_LEN));
-		if (value.length() > c*MAX_VALUE_LEN)
-			values.add(value.substring(c*MAX_VALUE_LEN));
-		
-		for (int i=0; i<values.size(); i++)
-			System.out.println("|" + values.get(i) + "|");
     }
 }

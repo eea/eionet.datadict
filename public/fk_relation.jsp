@@ -89,7 +89,7 @@ String disabled = user == null ? "disabled" : "";
 <head>
     <title>Data Dictionary</title>
     <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet.css">
+    <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="JavaScript" src='script.js'></script>
     <script language="JavaScript">
     
@@ -102,10 +102,6 @@ String disabled = user == null ? "disabled" : "";
 			
 			document.forms["form1"].elements["mode"].value = mode;
 			document.forms["form1"].submit();
-		}
-		
-		function cardinalityHelp(){
-			alert("Cardinaltiy of '+' stands for one or more, cardinaltiy of '*' stands for zero or more");
 		}
 		
     </script>
@@ -129,25 +125,27 @@ String disabled = user == null ? "disabled" : "";
 			
 			<form id="form1" method="POST" action="fk_relation.jsp">
 			
-			<table>
+			<table width="560">
 				<tr>
-					<td width="500">
+					<td>
 						This is the foreign key relation between elements
 						<font color="#006666"><%=(String)fkRel.get("a_name")%></font> and
 						<font color="#006666"><%=(String)fkRel.get("b_name")%></font>.<br/>
 						The relation is direction-less, so it doesn't matter which
 						exactly is A or B.
 					</td>
-					<td></td>
 				</tr>
 				
+				<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&nbsp;</td></tr>
+				
 				<tr>
-					<td width="500"
-						style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">
-						&#160;
+					<td align="right">
+						<a target="_blank" href="help.jsp?screen=foreign_key_rel&area=pagehelp">
+							<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+						</a>
 					</td>
-					<td></td>
 				</tr>
+				
 			</table>
 			
 			<table width="600" cellspacing="0"  cellpadding="0" border="0">
@@ -195,7 +193,10 @@ String disabled = user == null ? "disabled" : "";
 							<option <%=selected%> value="<%=cardin%>"><%=cardin%></option><%
 						}
 						%>
-					</select>&#160;<a href="javascript:cardinalityHelp()">help</a>
+					</select>&nbsp;
+					<a target="_blank" href="help.jsp?screen=foreign_key_rel&area=cardinality">
+						<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+					</a>
 				</td>
 			</tr>
 			

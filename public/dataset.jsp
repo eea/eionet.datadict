@@ -1,18 +1,12 @@
 <%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*,eionet.util.SecurityUtil,eionet.util.QueryString"%>
 
-<%!private String mode=null;%>
-<%!private Vector mAttributes=null;%>
-<%!private Vector attributes=null;%>
-<%!private Dataset dataset=null;%>
-<%!private Vector complexAttrs=null;%>
-<%!private Vector tables=null;%>
 <%!private String currentUrl=null;%>
 
 <%@ include file="history.jsp" %>
 
 <%!
 
-private String getValue(String id){
+private String getValue(String id, String mode, Vector attributes){
 	if (id==null) return null;
 	if (mode.equals("add")) return null;
 	
@@ -24,7 +18,7 @@ private String getValue(String id){
 	
 	return null;
 }
-private Vector getValues(String id){
+private Vector getValues(String id, String mode, Vector attributes){
 	if (id==null) return null;
 	if (mode.equals("add")) return null;
 
@@ -41,12 +35,12 @@ private Vector getValues(String id){
 
 			<%
 			
-			mode=null;
-			mAttributes=null;
-			attributes=null;
-			dataset=null;
-			complexAttrs=null;
-			tables=null;
+			String mode=null;
+			Vector mAttributes=null;
+			Vector attributes=null;
+			Dataset dataset=null;
+			Vector complexAttrs=null;
+			Vector tables=null;
 
 			XDBApplication.getInstance(getServletContext());
 			AppUserIF user = SecurityUtil.getUser(request);
@@ -465,7 +459,7 @@ private Vector getValues(String id){
 		}
 
 		function complexAttrs(url){
-					wComplexAttrs = window.open(url,"ComplexAttributes","height=600,width=500,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+					wComplexAttrs = window.open(url,"ComplexAttributes","height=600,width=600,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
 					if (window.focus) {wComplexAttrs.focus()}
 		}
 		function complexAttr(url){
@@ -932,6 +926,9 @@ private Vector getValues(String id){
 															<span class="barfont">
 																[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&idf=<%=dataset.getIdentifier()%>">Upload a document ...</a> ]
 															</span>
+															<span class="barfont">
+																[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&obj_type=dst&idf=<%=dataset.getIdentifier()%>">Open cache ...</a> ]
+															</span>
 														</td>
 													</tr>
 													<%
@@ -1068,7 +1065,7 @@ private Vector getValues(String id){
 												if (!attribute.displayFor("DST")) continue;
 												
 												attrID = attribute.getID();
-												attrValue = getValue(attrID);
+												attrValue = getValue(attrID, mode, attributes);
 												
 												if (mode.equals("view") && (attrValue==null || attrValue.length()==0))
 													continue;
@@ -1083,7 +1080,7 @@ private Vector getValues(String id){
 												boolean dispMultiple = attribute.getDisplayMultiple().equals("1") ? true:false;
 												Vector multiValues=null;
 												if (dispMultiple){
-													multiValues = getValues(attrID);
+													multiValues = getValues(attrID, mode, attributes);
 												}
 												
 												%>
@@ -1617,7 +1614,8 @@ private Vector getValues(String id){
 				
 			</form>
 			
-			<%@ include file="footer.htm" %>
+			<jsp:include page="footer.jsp" flush="true">
+			</jsp:include>
 			
 			</div>
         </td>
