@@ -83,7 +83,7 @@ public class GetPrintout extends HttpServlet {
             PdfHandoutIF handout = null;
             if (outType.equals(PdfHandoutIF.FACTSHEET)){
                 if (objType.equals(PdfHandoutIF.DATASET))
-                    handout = new DstPdfFactsheet(conn, barray);
+                    handout = new DstPdfAll(conn, barray);
                 else if (objType.equals(PdfHandoutIF.DSTABLE))
                     handout = new TblPdfFactsheet(conn, barray);
                 else if (objType.equals(PdfHandoutIF.DATAELEM))

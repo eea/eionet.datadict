@@ -54,11 +54,8 @@ public class DstPdfFactsheet extends PdfHandout {
         addElement(new Paragraph("\n", Fonts.get(Fonts.HEADING_1)));
         
         // write simple attributes
-        
         addElement(new Paragraph("Basic metadata:\n", Fonts.get(Fonts.HEADING_0)));
-        
         Vector attrs = ds.getSimpleAttributes();
-
         Hashtable hash = new Hashtable();
         hash.put("name", "Short name");
         hash.put("value", ds.getShortName());
@@ -71,6 +68,14 @@ public class DstPdfFactsheet extends PdfHandout {
             hash.put("value", version);
             attrs.add(1, hash);
         }
+        
+		String regStatus = ds.getStatus();
+		if (!Util.voidStr(regStatus)){
+			hash = new Hashtable();
+			hash.put("name", "Registration status");
+			hash.put("value", regStatus);
+			attrs.add(2, hash);
+		}
             
         addElement(PdfUtil.simpleAttributesTable(attrs));
         addElement(new Phrase("\n"));
@@ -89,7 +94,6 @@ public class DstPdfFactsheet extends PdfHandout {
             for (int i=0; i<v.size(); i++){
                 
                 addElement(PdfUtil.complexAttributeTable((DElemAttribute)v.get(i)));
-                addElement(new Phrase("\n"));
             }
         }
 

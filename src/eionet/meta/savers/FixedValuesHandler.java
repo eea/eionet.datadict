@@ -5,18 +5,18 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.util.*;
 
-import java.io.File;
-
-import eionet.meta.DataElement;
-import eionet.meta.DElemAttribute;
-import eionet.meta.schema.SchemaExp;
+import eionet.meta.*;
 
 import com.tee.util.*;
 
 public class FixedValuesHandler {
 
     public static String ATTR_PREFIX = "attr_";
-    
+    public static String ITEM_PREFIX = "item_";
+
+    public static String POS_PREFIX = "pos_";
+    public static String OLDPOS_PREFIX = "oldpos_";
+
     private Connection conn = null;
     private Parameters req = null;
     private ServletContext ctx = null;
@@ -28,6 +28,11 @@ public class FixedValuesHandler {
     private String[] fxv_ids = null;
     private String lastInsertID = null;    
     private String parentType = "elem";
+    
+    private String elmDatatype = null;
+    private HashSet prohibitedDatatypes = new HashSet();
+    
+    private boolean versioning = true;
 
     public FixedValuesHandler(Connection conn, HttpServletRequest req, ServletContext ctx){
         this(conn, new Parameters(req), ctx);
@@ -46,6 +51,15 @@ public class FixedValuesHandler {
         String parentType = req.getParameter("parent_type");
         if (!Util.nullString(parentType))
             this.parentType = parentType;
+        
+        if (ctx!=null){
+	        String _versioning = ctx.getInitParameter("versioning");
+	        if (_versioning!=null && _versioning.equalsIgnoreCase("false"))
+	            setVersioning(false);
+    	}
+            
+        // set the prohibited datatypes of parent element
+        prohibitedDatatypes.add("BOOLEAN");
     }
 
     public FixedValuesHandler(Connection conn, HttpServletRequest req, ServletContext ctx, String mode){
@@ -53,25 +67,67 @@ public class FixedValuesHandler {
         this.mode = mode;
     }
     
+    public void setVersioning(boolean f){
+        this.versioning = f;
+    }
+    
     public void execute() throws Exception {
-        if (mode==null || (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("edit") && !mode.equalsIgnoreCase("delete")))
+        if (mode==null || (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("edit") && !mode.equalsIgnoreCase("delete")) && !mode.equalsIgnoreCase("edit_positions"))
             throw new Exception("FixedValuesHandler mode unspecified!");
-        
+
         if (delem_id == null && !mode.equals("delete"))
             throw new Exception("FixedValuesHandler delem_id unspecified!");
-        
+
+		if (parentType.equals("CH1") || parentType.equals("CH2"))
+			parentType = "elem";
+		
         if (!parentType.equals("elem") && !parentType.equals("attr"))
             throw new Exception("FixedValuesHandler: unknown parent type!");
+
+        if (parentType.equals("elem")){
+            
+            // if in versioning mode, we cannot edit fixed-values of
+            // non-working copies
+            
+            DDSearchEngine searchEngine = new DDSearchEngine(conn);
+            boolean wc = true;
+            try{ wc = searchEngine.isWorkingCopy(delem_id, "elm"); }
+            catch (Exception e){}            
+            if (!wc && versioning)
+                throw new Exception("Cannot edit fixed values of a " +
+                            "non-working copy!");
+        }
         
         if (mode.equalsIgnoreCase("add"))
             insert();
         else if (mode.equalsIgnoreCase("edit"))
             update();
+        else if (mode.equalsIgnoreCase("edit_positions"))
+            processPositions();
         else
             delete();
     }
 
     private void insert() throws Exception {
+
+        // set the datatype of parent element
+        if (parentType.equalsIgnoreCase("elem")){
+            if (!Util.nullString(delem_id)){
+                try{
+                    DDSearchEngine eng = new DDSearchEngine(conn);
+                    DataElement elm = eng.getDataElement(delem_id);
+                    if (elm != null){
+                        elmDatatype = elm.getAttributeValueByShortName("Datatype");
+                        if (elmDatatype != null) elmDatatype = elmDatatype.toUpperCase();
+                    }
+                }
+                catch (Exception e){}
+            }
+        }
+        
+        // check if fixed values are not allowed for this element's datatype
+        if (prohibitedDatatypes.contains(this.elmDatatype))
+            return;
 
         String[] newValues = req.getParameterValues("new_value");
         if (newValues!=null){
@@ -122,12 +178,19 @@ public class FixedValuesHandler {
         //gen.setField("CSI_ID", fxv_id);
         //gen.setField("CS_ID", csID);
         gen.setFieldExpr("COMPONENT_ID", delem_id);
+        gen.setField("CSI_TYPE", "fxv");
         gen.setField("CSI_VALUE", value);
         gen.setField("COMPONENT_TYPE", parentType);
 
         String isDefault = req.getParameter("is_default");
         if (!Util.nullString(isDefault) && isDefault.equalsIgnoreCase("true"))
             gen.setField("IS_DEFAULT", "Y");
+
+        String position = req.getParameter("pos");
+        if (Util.nullString(position))
+            position = getValuePos();
+
+        gen.setField("POSITION", position);
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(gen.insertStatement());
@@ -157,6 +220,7 @@ public class FixedValuesHandler {
         }
         
         deleteAttributes();
+        deleteChildren();
         deleteRelations();
     }
 
@@ -178,20 +242,23 @@ public class FixedValuesHandler {
             SQLGenerator gen = new SQLGenerator();
             gen.setTable("CS_ITEM");
             gen.setField("IS_DEFAULT", isDefault.equals("true") ? "Y" : "N");
-            
+
             StringBuffer buf = new StringBuffer(gen.updateStatement());
             buf.append(" where CSI_ID=");
             buf.append(fxv_id);
-            
+
             log(buf.toString());
-            
+
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(buf.toString());
             stmt.close();
         }
-        
+
         deleteAttributes();
         processAttributes();
+
+        deleteItems();
+        processItems();
     }
     
     private void deleteAttributes() throws SQLException {
@@ -230,6 +297,7 @@ public class FixedValuesHandler {
             insertAttribute(attrID, attrValue);
         }
     }
+
 
     private void insertAttribute(String attrId, String value) throws SQLException {
 
@@ -277,10 +345,47 @@ public class FixedValuesHandler {
             buf.append(" or CHILD_CSI=");
             buf.append(fxv_ids[i]);
         }
-        
+
+        log(buf.toString());
+
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
         stmt.close();
+    }
+    
+    private void deleteChildren() throws SQLException {
+        
+        //get the children
+        StringBuffer buf = new StringBuffer("select distinct CHILD_CSI from CSI_RELATION where REL_TYPE='taxonomy' and ");
+        for (int i=0; i<fxv_ids.length; i++){
+            if (i>0)
+                buf.append(" or ");
+            buf.append("PARENT_CSI=");
+            buf.append(fxv_ids[i]);
+        }
+        log(buf.toString());
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(buf.toString());
+        Vector children = new Vector();
+        while (rs.next()){
+            children.add(rs.getString("CHILD_CSI"));
+        }
+        stmt.close();
+        
+        // delete the children
+        
+        if (children.size() == 0) return;
+        
+        Parameters params = new Parameters();
+        params.addParameterValue("mode", "delete");
+        for (int i=0; i<children.size(); i++){
+            params.addParameterValue("del_id", (String)children.get(i));
+        }
+        
+        FixedValuesHandler fxvHandler = new FixedValuesHandler(conn, params, ctx);
+        try{ fxvHandler.execute(); } catch (Exception e){
+            throw new SQLException(e.toString());
+        }
     }
 
     private void setLastInsertID() throws SQLException {
@@ -317,6 +422,8 @@ public class FixedValuesHandler {
                 return true;
             }
         }
+        
+        stmt.close();
 
         return false;
     }
@@ -339,26 +446,159 @@ public class FixedValuesHandler {
                 return true;
             }
         }
+        
+        stmt.close();
 
         return false;
+    }
+    private void deleteItems() throws SQLException {
+
+        StringBuffer buf = new StringBuffer("delete from CSI_RELATION where REL_TYPE='abstract' and PARENT_CSI=");
+        buf.append(fxv_id);
+
+        log(buf.toString());
+
+        Statement stmt = conn.createStatement();
+        stmt.executeUpdate(buf.toString());
+        stmt.close();
+    }
+
+
+    private void processItems() throws SQLException {
+        Enumeration parNames = req.getParameterNames();
+        while (parNames.hasMoreElements()){
+            String parName = (String)parNames.nextElement();
+            if (!parName.startsWith(ITEM_PREFIX))
+                continue;
+            String itemValue = req.getParameter(parName);
+            if (itemValue.length()==0)
+                continue;
+            //String itemID = parName.substring(ITEM_PREFIX.length());
+            insertItem(itemValue);
+        }
+    }
+    private void insertItem(String childId) throws SQLException {
+
+        Parameters pars = new Parameters();
+        pars.addParameterValue("mode", "add");
+        pars.addParameterValue("parent_id", fxv_id);
+        pars.addParameterValue("child_id", childId);
+        pars.addParameterValue("rel_type", "abstract");
+        pars.addParameterValue("csi_type", "fxv");
+        pars.addParameterValue("component_type", "elem");
+
+        try{
+          CsiRelationHandler crHandler = new CsiRelationHandler(conn, pars, ctx);
+          crHandler.setVersioning(this.versioning);
+          crHandler.execute();
+        }
+        catch (Exception e){
+            throw new SQLException(e.toString());
+        }
+    }
+    private String getValuePos() throws SQLException{
+
+        String parentCSI = req.getParameter("parent_csi");
+        log("parent_csi:" + parentCSI);
+        StringBuffer buf = new StringBuffer("SELECT MAX(POSITION) FROM CS_ITEM ");
+        if (!Util.nullString(parentCSI)){
+            buf.append("left join CSI_RELATION on (CS_ITEM.CSI_ID=CSI_RELATION.CHILD_CSI and CSI_RELATION.REL_TYPE='taxonomy') ");
+            buf.append("where COMPONENT_ID=");
+            buf.append(delem_id);
+            buf.append(" and CSI_TYPE='fxv' and COMPONENT_TYPE='");
+            buf.append(parentType);
+            buf.append("' and parent_csi=");
+            buf.append(parentCSI);
+            /*buf.append("AS PARENTITEM left outer join CSI_RELATION on PARENTITEM.CSI_ID=CSI_RELATION.PARENT_CSI ");
+            buf.append("left outer join CS_ITEM AS CHILDITEM on CSI_RELATION.CHILD_CSI=CHILDITEM.CSI_ID ");
+            buf.append("left outer join DATAELEM on CHILDITEM.COMPONENT_ID=DATAELEM.DATAELEM_ID ");
+            buf.append("where PARENTITEM.COMPONENT_ID=");
+            buf.append(delem_id);
+            buf.append(" and PARENTITEM.COMPONENT_TYPE='");
+            buf.append(parentType);
+            buf.append("' and PARENTITEM.CSI_TYPE='elem' and DATAELEM.TYPE='CH1'");*/
+        }
+        else{ //first level values
+          buf.append("left join CSI_RELATION on (CS_ITEM.CSI_ID=CSI_RELATION.CHILD_CSI and CSI_RELATION.REL_TYPE='taxonomy') ");
+          buf.append("where COMPONENT_ID=");
+          buf.append(delem_id);
+          buf.append(" and CSI_TYPE='fxv' and COMPONENT_TYPE='");
+          buf.append(parentType);
+          buf.append("' and child_csi is null");
+        }
+
+        log(buf.toString());
+
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(buf.toString());
+        rs.clearWarnings();
+
+        String pos=null;
+        if (rs.next())
+            pos = rs.getString(1);
+        stmt.close();
+        if (pos != null){
+            try {
+              int i = Integer.parseInt(pos) + 1;
+              return Integer.toString(i);
+            }
+            catch(Exception e){
+                return "1";
+            }
+        }
+
+        return "1";
+    }
+    private void processPositions() throws Exception {
+
+        String[] posIds = req.getParameterValues("pos_id");
+        String old_pos=null;
+        String pos=null;
+        String parName=null;
+        if (posIds==null || posIds.length==0) return;
+
+        for (int i=0; i<posIds.length; i++){
+            old_pos = req.getParameter(OLDPOS_PREFIX + posIds[i]);
+            pos = req.getParameter(POS_PREFIX + posIds[i]);
+            if (old_pos.length()==0 || pos.length()==0)
+                continue;
+            if (!old_pos.equals(pos))
+                updatePosition(posIds[i], pos);
+        }
+    }
+    private void updatePosition(String fxv_id, String pos) throws Exception {
+
+        SQLGenerator gen = new SQLGenerator();
+        gen.setTable("CS_ITEM");
+        gen.setField("POSITION", pos);
+
+        StringBuffer buf = new StringBuffer(gen.updateStatement());
+        buf.append(" where CSI_ID=");
+        buf.append(fxv_id);
+
+        log(buf.toString());
+
+        Statement stmt = conn.createStatement();
+        stmt.executeUpdate(buf.toString());
+        stmt.close();
     }
 
     private void log(String msg){
         if (ctx != null)
             ctx.log(msg);
     }
-    
+
     public static void main(String[] args){
-        
+
         try{
             Class.forName("org.gjt.mm.mysql.Driver");
             Connection conn =
                 DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-            
+
             String qry = "select distinct * from FIXED_VALUE";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(qry);
-            
+
             while (rs.next()){
                 Parameters pars = new Parameters();
                 pars.addParameterValue("mode", "add");

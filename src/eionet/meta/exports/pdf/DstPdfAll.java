@@ -12,7 +12,7 @@ import java.awt.Color;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 
-public class DstPdfGuideline extends PdfHandout {
+public class DstPdfAll extends PdfHandout {
     
     private int vsTableIndex = -1;
     private int elmCount = 0;
@@ -25,7 +25,7 @@ public class DstPdfGuideline extends PdfHandout {
 	
 //	private Chapter chapter = null;
     
-    public DstPdfGuideline(Connection conn, OutputStream os){
+    public DstPdfAll(Connection conn, OutputStream os){
         searchEngine = new DDSearchEngine(conn);
         this.os = os;
 		setShowedAttributes();
@@ -69,26 +69,20 @@ public class DstPdfGuideline extends PdfHandout {
 		s = ds.getAttributeValueByShortName("ETCVersion");
 		dsVersion = Util.voidStr(s) ? ds.getVersion() : s;
         
-        String title = "General information for " + dsName + " dataset";
+        String title = dsName + " dataset";
 		String nr = sect.level(title, 1);
 		nr = nr==null ? "" : nr + " ";
 		        
         Paragraph prg = new Paragraph();
-		prg.add(new Chunk(nr + "General information for " + dsName,
-											Fonts.get(Fonts.HEADING_1)));  
+		prg.add(new Chunk(nr + dsName, Fonts.get(Fonts.HEADING_1)));  
         prg.add(new Chunk(" dataset",
         			FontFactory.getFont(FontFactory.HELVETICA, 16)));
-        
-        //chapter = new Chapter(prg, 1);
-        
-        // add the dataset chapter to the document
-        // elmCount = super.addElement(chapter);
 		elmCount = addElement(prg);
-        
         addElement(new Paragraph("\n"));
         
         // write simple attributes
-        addElement(new Paragraph("Basic metadata:\n", Fonts.get(Fonts.HEADING_0)));
+        addElement(
+        	new Paragraph("Basic metadata:\n", Fonts.get(Fonts.HEADING_0)));
         
         Vector attrs = ds.getSimpleAttributes();
 
@@ -105,54 +99,56 @@ public class DstPdfGuideline extends PdfHandout {
 			attrs.add(1, hash);
         }
         
-		showedAttrs.remove("Name");
-		showedAttrs.add(0, "Short name");
-        addElement(PdfUtil.simpleAttributesTable(attrs, showedAttrs));
+		String regStatus = ds.getStatus();
+		if (!Util.voidStr(regStatus)){
+			hash = new Hashtable();
+			hash.put("name", "Registration status");
+			hash.put("value", regStatus);
+			attrs.add(2, hash);
+		}
+        
+        addElement(PdfUtil.simpleAttributesTable(attrs));
         addElement(new Phrase("\n"));
         
         // write complex attributes, one table for each
 		Vector v = ds.getComplexAttributes();
 		if (v!=null && v.size()>0){
             
+			addElement(new Paragraph("Complex metadata:\n",
+										Fonts.get(Fonts.HEADING_0)));
 			DElemAttribute attr = null;
 			for (int i=0; i<v.size(); i++){
 				attr = (DElemAttribute)v.get(i);
 				attr.setFields(searchEngine.getAttrFields(attr.getID()));
 			}
             
-			/*for (int i=0; i<v.size(); i++){
-				addElement(PdfUtil.complexAttributeTable((DElemAttribute)v.get(i)));
+			for (int i=0; i<v.size(); i++){
+				addElement(
+					PdfUtil.complexAttributeTable((DElemAttribute)v.get(i)));
 				addElement(new Phrase("\n"));
-			}*/
+			}
 		}
 		
 		this.submitOrg = ds.getCAttrByShortName("SubmitOrganisation");
 		
-		/* write image attributes
-		Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath);
-		if (imgAttrs!=null){
-			addElement(new Phrase("\n"));
-			addElement(imgAttrs);
-		}*/
-        
         // write tables list
-        title = "Overview of " + dsName + " dataset tables";
-		nr = sect.level(title, 1);
-		nr = nr==null ? "" : nr + " ";
-		prg = new Paragraph();
-		prg.add(new Chunk(nr,
-					 FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
-		prg.add(new Chunk("Overview of ",
-					 FontFactory.getFont(FontFactory.HELVETICA, 16)));
-		prg.add(new Chunk(dsName,
-					 FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
-		prg.add(new Chunk(" dataset tables",
-					 FontFactory.getFont(FontFactory.HELVETICA, 16)));
-		addElement(prg);
-        //addElement(new Phrase("Tables in this dataset:\n", Fonts.get(Fonts.HEADING_0)));
-        
+		addElement(new Paragraph("Overview of tables:\n",
+									Fonts.get(Fonts.HEADING_0)));
         Vector tables = ds.getTables();
-        addElement(PdfUtil.tablesList(tables));
+        
+		Vector headers = new Vector();
+		hash = new Hashtable();
+		hash.put("attr", "Name");
+		hash.put("title", "Name");
+		hash.put("width", "40");
+		headers.add(hash);
+		hash = new Hashtable();
+		hash.put("attr", "Definition");
+		hash.put("title", "Definition");
+		hash.put("width", "60");
+		headers.add(hash);
+					
+        addElement(PdfUtil.tablesList(tables, headers));
         addElement(new Phrase("\n"));
         
         // add dataset visual structure image
@@ -162,7 +158,7 @@ public class DstPdfGuideline extends PdfHandout {
             if (file.exists()){
                 
                 try {
-                    PdfPTable table = PdfUtil.vsTable(fullPath, "Datamodel for this dataset");
+                    PdfPTable table = PdfUtil.vsTable(fullPath, "Datamodel:");
                     if (table != null){
                         //insertPageBreak();
                         int size = addElement(table);
@@ -185,35 +181,16 @@ public class DstPdfGuideline extends PdfHandout {
             }
         }
         
-		pageToLandscape();
-		if (tables!=null && tables.size()>0){
-			title = "Tables";
-			nr = sect.level(title, 1);
-			nr = nr==null ? "" : nr + " ";
-			prg = new Paragraph(nr + title, Fonts.get(Fonts.HEADING_1));
-			addElement(prg);
-		}
-        
-        // add full guidlines of tables
         for (int i=0; tables!=null && i<tables.size(); i++){
             DsTable dsTable = (DsTable)tables.get(i);
             // the tables guidelines will be added to the current chapter
             addElement(new Paragraph("\n"));
-            TblPdfGuideline tblGuideln =
-            	new TblPdfGuideline(searchEngine, this);//, (Section)chapter);
-			tblGuideln.setVsPath(vsPath);
-            tblGuideln.write(dsTable.getID(), ds.getID());
+            TblPdfAll tblAll =
+            	new TblPdfAll(searchEngine, this);//, (Section)chapter);
+			tblAll.setVsPath(vsPath);
+			tblAll.write(dsTable.getID(), ds.getID());
             insertPageBreak();
         }
-        
-		pageToPortrait();
-        
-        // add codelists
-        addCodelists(tables);
-		insertPageBreak();
-        
-        // add img attrs
-        addImgAttrs(tables);
         
         // set header & footer
         setHeader("");
@@ -402,7 +379,8 @@ public class DstPdfGuideline extends PdfHandout {
     */
     protected void addTitlePage(Document doc) throws Exception {
         
-		doc.add(new Paragraph("\n\n\n\n"));			
+		doc.add(new Paragraph("\n\n\n\n"));
+			
         // data dictionary
         Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22);
 		Paragraph prg = new Paragraph("Data Dictionary", font);
@@ -460,13 +438,6 @@ public class DstPdfGuideline extends PdfHandout {
         doc.add(prg);
     }
     
-    /**
-    * Override of the method indicating if title page needed
-    */
-    protected boolean titlePageNeeded(){
-        return true;
-    }
-    
     private String getTitlePageDate(){
     	
     	String[] months = {"January", "February", "March", "April", "May",
@@ -482,16 +453,16 @@ public class DstPdfGuideline extends PdfHandout {
     
 	protected void setHeader(String title) throws Exception {
         
-		Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
-		font.setColor(Color.gray);
-	
-		Paragraph prg = new Paragraph();		
-		prg.add(new Chunk("Data Dictionary\n", font));
-		prg.setLeading(10*1.2f);
-		font = FontFactory.getFont(FontFactory.HELVETICA, 9);
-		font.setColor(Color.lightGray);
-		prg.add(new Chunk("Dataset specification for " + dsName +
-								" * Version " + dsVersion, font));
+		Font bold = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
+		Font normal = FontFactory.getFont(FontFactory.HELVETICA, 9);
+		bold.setColor(Color.gray);
+		normal.setColor(Color.gray);
+				
+		Paragraph prg = new Paragraph();
+		prg.add(new Chunk("Full ", normal));
+		prg.add(new Chunk("Data Dictionary ", bold));
+		prg.add(new Chunk("output for " + dsName +
+								" * Version " + dsVersion, normal));
 
 		this.header = new HeaderFooter(prg, false);
 		header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
@@ -510,9 +481,9 @@ public class DstPdfGuideline extends PdfHandout {
 		elems.add(new Paragraph("\n"));
 		
 		String about = 
-		"This document holds the technical specifications for a dataflow " +
-		"based on automatically generated output from the Data Dictionary " +
-		"application. The Data Dictionary is a central service for storing " +
+		"This document is generated by the Data Dictionary application and " +
+		"holds full contents of a dataset's technical specifications." +
+		"Data Dictionary is a central service for storing " +
 		"technical specifications for information requested in reporting " +
 		"obligations. The purpose of this document is to support countries " +
 		"in reporting good quality data. This document contains detailed " +
@@ -531,7 +502,7 @@ public class DstPdfGuideline extends PdfHandout {
 		if (toc==null || toc.size()==0)
 			return elems;
 		
-		elems.add(new Paragraph("\n\n\n"));
+		elems.add(new Paragraph("\n"));
 		
 		font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
 		prg = new Paragraph("Index", font);
