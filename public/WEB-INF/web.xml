@@ -57,6 +57,11 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>rpcrouter</servlet-name>
+		<servlet-class>com.tee.uit.servlets.XmlRpcRouter</servlet-class>
+	</servlet>
+
+	<servlet>
 		<servlet-name>Login</servlet-name>
 		<servlet-class>eionet.meta.LoginServlet</servlet-class>
 	</servlet>
@@ -96,6 +101,10 @@
 	<servlet-mapping>
 		<servlet-name>env</servlet-name>
 		<url-pattern>/env/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>rpcrouter</servlet-name>
+		<url-pattern>/rpcrouter</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Login</servlet-name>
