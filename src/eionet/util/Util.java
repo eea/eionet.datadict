@@ -223,9 +223,6 @@ public class Util {
         Date nextDate = cal.getTime();
         Date currDate = new Date();
 
-        System.out.println(nextDate.toString());
-        System.out.println(currDate.toString());
-
         long nextTime = cal.getTime().getTime();
         long currTime = (new Date()).getTime();
 
@@ -506,44 +503,6 @@ public class Util {
     */
     public static void main(String[] args){
         
-     //   String s = "kala http://www.neti.ee mees";
-      //  System.out.println(setAnchors(s));
         String s = Replace("ttrrrtttrrrtt", "tt", "jj");
-        System.out.println(s);
-        /*try {
-            System.out.println(digestHexDec("http://purl.org/dc/elements/1.1/subject", "md5"));
-        }
-        catch (GeneralSecurityException e){
-            System.out.println(e.toString());
-        }
-        
-        byte[] digest = new byte[1];
-        String sMessage = "kalu";
-        byte[] message = sMessage.getBytes();
-        String sDigest = "";
-        String sDigest2 = "";
-        
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(message);
-            MessageDigest tc1 = (MessageDigest)md.clone();
-            digest = tc1.digest();
-            sDigest2 = new String(digest, "US-ASCII");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        StringBuffer buf = new StringBuffer();
-        for (int i=0; i<digest.length; i++){
-            Byte byteWrapper = new Byte(digest[i]);
-            int j = byteWrapper.intValue();
-            buf.append(String.valueOf(j));
-        }
-        
-        System.out.println(buf.toString());
-        
-        System.out.println(sDigest);
-        System.out.println(sDigest2);
-        System.out.println("bye");*/
     }
 }

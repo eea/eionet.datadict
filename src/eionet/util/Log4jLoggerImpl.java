@@ -20,13 +20,15 @@
  *
  * Original Code: Rando Valt (TietoEnator)
  *
- * $Id: Log4jLoggerImpl.java,v 1.1 2003/11/04 14:23:55 te-ee Exp $
+ * $Id: Log4jLoggerImpl.java,v 1.2 2004/01/09 13:18:59 te-ee Exp $
  */
 
 package eionet.util;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
+
+import java.util.*;
 
 /**
  * Log4J specific LogServiceIF implementation.<BR><BR>
@@ -35,7 +37,7 @@ import org.apache.log4j.Priority;
  * Updates: <UL>15.02.02 log4j version</UL>
  *
  * @author  Rando Valt
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 
 public class Log4jLoggerImpl implements LogServiceIF {
@@ -45,6 +47,8 @@ public class Log4jLoggerImpl implements LogServiceIF {
 	public static final int WARNING 	= 3;
 	public static final int ERROR 		= 2;
 	public static final int EMERGENCY 	= 1;
+	
+	public static final String DEFAULT_CATEGORY = "datadict";
   
   Category logger;
   
@@ -53,15 +57,24 @@ public class Log4jLoggerImpl implements LogServiceIF {
  * will be initialized by the servlet container.
  */
   public Log4jLoggerImpl() {
-    logger = Category.getInstance("eionet");
+    logger = Category.getInstance(DEFAULT_CATEGORY);
     //logger.debug("****************************************************** ");
   }
   
   public Log4jLoggerImpl(String catName) {
+  	
+	  if (catName==null){
+		logger = Category.getInstance(DEFAULT_CATEGORY);
+		return;
+	  }
+	  
 	  logger = Category.getInstance(catName);
+	  Enumeration appenders = logger.getAllAppenders();
+	  if (!appenders.hasMoreElements())
+		logger = Category.getInstance(DEFAULT_CATEGORY);
 	  //logger.debug("****************************************************** ");
 	}
-  
+	
   private Priority convSeverity(int severity) {
     switch (severity) {
       case EMERGENCY:
@@ -138,5 +151,11 @@ public class Log4jLoggerImpl implements LogServiceIF {
   
   public void fatal(Object msg, Throwable t)  {
     logger.fatal(msg);
+  }
+  
+  public static void main(String[] args){
+  	
+	LogServiceIF log = new Log4jLoggerImpl("og");
+	log.info("he-heePPPPPPPPPP");
   }
 }

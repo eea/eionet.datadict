@@ -11,11 +11,14 @@ public interface PropsIF {
 	/** properties file name prefix */
 	public static final String PROP_FILE = "datadict";
 	
-	/** harvester db properties */
-	public static final String HRV_DBDRV = "harvester.db.drv";
-	public static final String HRV_DBURL = "harvester.db.url";
-	public static final String HRV_DBUSR = "harvester.db.usr";
-	public static final String HRV_DBPSW = "harvester.db.psw";
+	/** properties names*/
+	public static final String DBDRV = "db.drv";
+	public static final String DBURL = "db.url";
+	public static final String DBUSR = "db.usr";
+	public static final String DBPSW = "db.psw";
+	
+	public static final String HRV_LOG    = "harvester.log";
+	public static final String HRV_LOGLEV = "harvester.log-level";
 	
 	/** defaults */
 	

@@ -12,7 +12,7 @@ public class Props implements PropsIF{
 	
 	private static ResourceBundle props = null;
 	private static Hashtable defaultProps = null;
-	
+
 	/**
 	 * get String property 
 	 * @param name
@@ -83,5 +83,11 @@ public class Props implements PropsIF{
 	 */	
 	private static synchronized void setDefaults(){
 		defaultProps = new Hashtable();
+	}
+	
+	public static void main(String[] args){
+		
+		String kala = Props.getProperty("kala");
+		System.out.println(kala);
 	}
 }

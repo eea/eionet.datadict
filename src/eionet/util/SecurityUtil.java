@@ -24,8 +24,8 @@
 package eionet.util;
 
 import javax.servlet.http.*;
-
 import com.tee.xmlserver.*;
+import com.tee.uit.security.*; 
 
 /**
  * This is a class containing several utility methods for keeping
@@ -97,5 +97,45 @@ public class SecurityUtil {
             //
 	        httpSession.invalidate();
         }
+    }
+    
+    /**
+     * 
+     */
+    public static boolean hasPerm(String usr, String aclPath, String prm)
+    														throws Exception{
+    	if (!aclPath.startsWith("/")) return false;
+    	
+    	boolean has = false;
+		AccessControlListIF acl = null;
+		int i = aclPath.indexOf("/", 1);
+		while (i!=-1 && !has){
+			String subPath = aclPath.substring(0,i);
+			try{
+				acl = AccessController.getAcl(subPath);
+			}
+			catch (Exception e){
+				acl = null;
+			}
+			
+			if (acl!=null)
+				has = acl.checkPermission(usr, prm);
+			
+			i = aclPath.indexOf("/", i+1);
+		}
+		
+		if (!has){
+			try{
+				acl = AccessController.getAcl(aclPath);
+			}
+			catch (Exception e){
+				acl = null;
+			}
+			
+			if (acl!=null)
+				has = acl.checkPermission(usr, prm);
+		}
+    	
+    	return has;
     }
 }
