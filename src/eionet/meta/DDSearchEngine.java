@@ -107,13 +107,19 @@ public class DDSearchEngine {
 	Vector result = new Vector();
 	Statement elemsStmt = null;
 	ResultSet elemsRs = null;
+	
+	int counter = 0;
+	
 	try{
 		elemsStmt = conn.createStatement();
 		elemsRs = elemsStmt.executeQuery(monsterQry.toString());
 	
+		
 		// process ResultSet
 		String curElmIdf = null;
 		while (elemsRs.next()){
+			
+			counter++;
 			
 			String elmIdf = elemsRs.getString("DATAELEM.IDENTIFIER");
 			if (elmIdf==null) continue;
@@ -856,28 +862,46 @@ public class DDSearchEngine {
     
     public DataElement getDataElement(String elmID, String tblID, boolean inheritAttrs)
     																	throws SQLException {
-		StringBuffer qry = new StringBuffer("select DATAELEM.*, TBL2ELEM.POSITION, ").
-		append("DS_TABLE.TABLE_ID, DS_TABLE.IDENTIFIER, DS_TABLE.SHORT_NAME, DS_TABLE.VERSION, ").
-		append("DATASET.DATASET_ID, DATASET.IDENTIFIER, DATASET.SHORT_NAME, DATASET.VERSION ").
-		append("from DATAELEM ").
-		append("left outer join TBL2ELEM on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID ").
-		append("left outer join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID ").
-		append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ").
-		append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ").
-		append("where DATAELEM.DATAELEM_ID=").append(elmID);
+		StringBuffer qry = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		DataElement elm = null;
+		try{
+			// first find out if this is a common element
+			qry = new StringBuffer("select * from DATAELEM where DATAELEM_ID=").append(elmID);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(qry.toString());
+			if (!rs.next()) return null;
+			boolean elmCommon = Util.nullString(rs.getString("PARENT_NS"));
 		
-		if (!Util.nullString(tblID))
-			qry.append(" and DS_TABLE.TABLE_ID=").append(tblID);
-			
-		qry.append(" order by ").
-		append("DATAELEM.VERSION desc, DS_TABLE.VERSION desc, DATASET.VERSION desc");
-
-        log(qry.toString());
-
-        Statement stmt = null;
-        ResultSet rs = null;
-        DataElement elm = null;
-        try{
+			// Build the query which takes into account the tblID.
+			// If the latter is null then take the table which is latest in history,
+			// otherwise take exactly the table wanted by tblID
+			qry = new StringBuffer("select DATAELEM.*");
+			if (!elmCommon){
+				qry.append(", TBL2ELEM.POSITION, DS_TABLE.TABLE_ID, DS_TABLE.IDENTIFIER, ").
+				append("DS_TABLE.SHORT_NAME, DS_TABLE.VERSION, DATASET.DATASET_ID, ").
+				append("DATASET.IDENTIFIER, DATASET.SHORT_NAME, DATASET.VERSION");
+			}
+			qry.append(" from DATAELEM");
+			if (!elmCommon){
+				qry.
+				append(" left outer join TBL2ELEM on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID ").
+				append("left outer join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID ").
+				append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ").
+				append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID");
+			}
+			qry.append(" where DATAELEM.DATAELEM_ID=").append(elmID);
+			if (!elmCommon && !Util.nullString(tblID))
+				qry.append(" and DS_TABLE.TABLE_ID=").append(tblID);
+				
+			qry.append(" order by ").
+			append("DATAELEM.VERSION desc");
+			if (!elmCommon) qry.append(", DS_TABLE.VERSION desc, DATASET.VERSION desc");
+	
+	        log(qry.toString());
+	
+            // execute the query
             stmt = conn.createStatement();
             rs = stmt.executeQuery(qry.toString());
             if (rs.next()){
@@ -897,13 +921,15 @@ public class DDSearchEngine {
 				elm.setNamespace(
 					new Namespace(rs.getString("DATAELEM.PARENT_NS"), null, null, null, null));
 					
-                elm.setTableID(rs.getString("DS_TABLE.TABLE_ID"));
-                elm.setDatasetID(rs.getString("DATASET.DATASET_ID"));
-                elm.setDstShortName(rs.getString("DATASET.SHORT_NAME"));
-                elm.setTblShortName(rs.getString("DS_TABLE.SHORT_NAME"));
-                elm.setPositionInTable(rs.getString("TBL2ELEM.POSITION"));
+                if (!elmCommon){
+	                elm.setTableID(rs.getString("DS_TABLE.TABLE_ID"));
+	                elm.setDatasetID(rs.getString("DATASET.DATASET_ID"));
+	                elm.setDstShortName(rs.getString("DATASET.SHORT_NAME"));
+	                elm.setTblShortName(rs.getString("DS_TABLE.SHORT_NAME"));
+	                elm.setPositionInTable(rs.getString("TBL2ELEM.POSITION"));
+                }
 
-                Vector attributes = inheritAttrs ?
+                Vector attributes = !elmCommon && inheritAttrs ?
 				getSimpleAttributes(elmID, "E", elm.getTableID(), elm.getDatasetID()) :
 				getSimpleAttributes(elmID, "E");
                     
@@ -1021,39 +1047,6 @@ public class DDSearchEngine {
         return v;
     }
     
-    public Vector getSubValues(String parent_csi) throws SQLException {
-        
-        StringBuffer buf = new StringBuffer();
-        buf.append("select distinct CHILD_CSI from CSI_RELATION ");
-        buf.append(" left outer join CS_ITEM on CHILD_CSI=CSI_ID ");
-        buf.append("where rel_type='taxonomy' and PARENT_CSI=");
-        buf.append(parent_csi);
-        buf.append(" ORDER BY CS_ITEM.POSITION");
-        
-        Statement stmt = null;
-        ResultSet rs = null;
-        Vector v = null;
-
-        try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(buf.toString());
-            v = new Vector();
-
-            while (rs.next()){
-                FixedValue fxv = getFixedValue(rs.getString("CHILD_CSI"));
-                v.add(fxv);
-            }
-        }
-        finally{
-            try{
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-            } catch (SQLException sqle) {}
-        }
-        
-        return v;
-    }
-
     public boolean hasSubValues(String parent_csi) throws SQLException {
         
         StringBuffer buf = new StringBuffer();
@@ -2816,13 +2809,11 @@ public class DDSearchEngine {
         if (type.equals(DElemAttribute.TYPE_COMPLEX)){
           sql.append("select DISTINCT PARENT_TYPE, PARENT_ID, DS.SHORT_NAME DS_NAME, DS.VERSION DS_VERSION, ");
           sql.append("E.SHORT_NAME E_NAME, E.VERSION E_VERSION, ");
-          sql.append("T.SHORT_NAME T_NAME, T.VERSION T_VERSION, ");
-          sql.append("CSI.CSI_VALUE CSI_NAME, CSI.COMPONENT_ID, CSI.COMPONENT_TYPE ");
+          sql.append("T.SHORT_NAME T_NAME, T.VERSION T_VERSION ");
           sql.append("from (((COMPLEX_ATTR_ROW A ");
           sql.append("left join DATASET DS on DS.DATASET_ID=A.PARENT_ID and A.PARENT_TYPE='DS') ");
           sql.append("left join DATAELEM E on E.DATAELEM_ID=A.PARENT_ID and A.PARENT_TYPE='E' ) ");
           sql.append("left join DS_TABLE T on T.TABLE_ID=A.PARENT_ID and A.PARENT_TYPE='T' ) ");
-          sql.append("left join CS_ITEM CSI on CSI.CSI_ID=A.PARENT_ID and A.PARENT_TYPE='CSI' ");
           sql.append("where A.M_COMPLEX_ATTR_ID=");
           sql.append(attrID);
           sql.append(" ORDER BY PARENT_TYPE, DS_NAME, DS_VERSION, T_NAME, T_VERSION, E_NAME, E_VERSION, CSI_VALUE");
@@ -2831,13 +2822,11 @@ public class DDSearchEngine {
           sql.append("select DISTINCT PARENT_TYPE, A.DATAELEM_ID PARENT_ID, ");
           sql.append("DS.SHORT_NAME DS_NAME, DS.VERSION DS_VERSION, ");
           sql.append("E.SHORT_NAME E_NAME, E.VERSION E_VERSION, ");
-          sql.append("T.SHORT_NAME T_NAME, T.VERSION T_VERSION, ");
-          sql.append("CSI.CSI_VALUE CSI_NAME, CSI.COMPONENT_ID, CSI.COMPONENT_TYPE ");
+          sql.append("T.SHORT_NAME T_NAME, T.VERSION T_VERSION ");
           sql.append("from ((((ATTRIBUTE A ");
           sql.append("left join DATASET DS on DS.DATASET_ID=A.DATAELEM_ID and A.PARENT_TYPE='DS') ");
           sql.append("left join DATAELEM E on E.DATAELEM_ID=A.DATAELEM_ID and A.PARENT_TYPE='E') ");
           sql.append("left join DS_TABLE T on T.TABLE_ID=A.DATAELEM_ID and A.PARENT_TYPE='T') ");
-          sql.append("left join CS_ITEM CSI on CSI.CSI_ID=A.DATAELEM_ID and A.PARENT_TYPE='CSI') ");
           sql.append("where A.M_ATTRIBUTE_ID=");
           sql.append(attrID);
           sql.append(" ORDER BY PARENT_TYPE, DS_NAME, DS_VERSION, T_NAME, T_VERSION, E_NAME, E_VERSION, CSI_VALUE");
@@ -2860,7 +2849,7 @@ public class DDSearchEngine {
                     || Util.nullString(parent_id)) continue;
 
                 if (!parent_type.equals("DS")&&!parent_type.equals("E")
-                        &&!parent_type.equals("T")&&!parent_type.equals("CSI")) continue;
+                        &&!parent_type.equals("T")) continue;
 
                 String parent_name = rs.getString(parent_type + "_NAME");
                 if (parent_name!=null){
@@ -2868,21 +2857,9 @@ public class DDSearchEngine {
                     ht.put("parent_id", parent_id);
                     ht.put("parent_name", parent_name);
 
-                    if (parent_type.equals("CSI")){
-
-                        String comp_id = rs.getString("COMPONENT_ID");
-                        String comp_type = rs.getString("COMPONENT_TYPE");
-
-                        if (Util.nullString(comp_type)
-                            || Util.nullString(comp_id)) continue;
-
-                        ht.put("component_id", comp_id);
-                        ht.put("component_type", comp_type);
-                    }
-                    else{
-                        String version = rs.getString(parent_type + "_VERSION");
-                        ht.put("version", version);
-                    }
+                    String version = rs.getString(parent_type + "_VERSION");
+                    ht.put("version", version);
+                    
                     v.add(ht);
                 }
             }

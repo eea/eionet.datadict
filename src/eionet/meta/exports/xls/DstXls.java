@@ -212,8 +212,6 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
 	 */
 	public void writeFromCache() throws Exception{
 		
-		System.out.println("===> " + this.getClass().getName() + ": writing from cache!");
-		
 		if (Util.voidStr(cachePath)) throw new Exception("Cache path is missing!");
 		if (Util.voidStr(cacheFileName)) throw new Exception("Cache file name is missing!");
 		

@@ -1,8 +1,7 @@
 
 package eionet.meta;
 
-import eionet.util.Util;
-import java.util.*;
+import java.util.Vector;
 
 public class DDSearchParameter {
     
@@ -10,6 +9,7 @@ public class DDSearchParameter {
     private Vector attrValues = null;
     private String valueOper = "=";
     private String idOper = "=";
+    private String attrShortName = null;
     
     public DDSearchParameter(String attrID){
         this.attrID = attrID;
@@ -41,6 +41,14 @@ public class DDSearchParameter {
     
     public String getIdOper(){
         return idOper;
+    }
+    
+    public void setAttrShortName(String attrShortName){
+        this.attrShortName = attrShortName;
+    }
+    
+    public String getAttrShortName(){
+        return this.attrShortName;
     }
     
     public void addValue(String value){

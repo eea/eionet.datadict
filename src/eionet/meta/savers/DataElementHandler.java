@@ -254,7 +254,10 @@ public class DataElementHandler extends BaseHandler {
         // see if making a copy
 		String copy_elem_id = req.getParameter("copy_elem_id");
 		if (copy_elem_id != null && copy_elem_id.length()!=0){
-			copyElem(copy_elem_id, topNS);
+			if (elmCommon)
+				convertElm(copy_elem_id);
+			else
+				copyElem(copy_elem_id, topNS);
 			return;
 		}
         
@@ -326,6 +329,9 @@ public class DataElementHandler extends BaseHandler {
     }
 
     private void update() throws Exception {
+    	
+		// see if this is a common element
+		boolean elmCommon = req.getParameter("common")!=null;
 
 		// if check-in, do the action and exit
 		String checkIn = req.getParameter("check_in");
@@ -340,8 +346,10 @@ public class DataElementHandler extends BaseHandler {
 				verMan.setUpwardsVersioning(true);
 			}
 				
-			verMan.checkIn(delem_id, "elm",
-									req.getParameter("reg_status"));
+			if (!elmCommon)
+				verMan.checkIn(delem_id, "elm", req.getParameter("reg_status"));
+			else
+				verMan.checkInElm(delem_id, "elm", true);
 			return;
 		}
 		
@@ -364,9 +372,6 @@ public class DataElementHandler extends BaseHandler {
 			gen.setField("IS_ROD_PARAM", isRodParam);
 		}
 		
-		// see if this is a common element
-		boolean elmCommon = req.getParameter("common")!=null;
-        
 		// set the gis type (relevant for common elements only)
 		if (!elmCommon){
 			String gisType = req.getParameter("gis");
@@ -939,6 +944,36 @@ public class DataElementHandler extends BaseHandler {
         insertTableElem();
 
     }
+    
+	private void convertElm(String copyElemID) throws Exception{
+
+		if (copyElemID==null) return;
+
+		CopyHandler copier = new CopyHandler(conn, ctx);
+		copier.setUser(user);
+		lastInsertID = copier.copyElem(copyElemID, false);
+		if (lastInsertID==null) return;
+
+		SQLGenerator gen = new SQLGenerator();
+		gen.setTable("DATAELEM");
+		gen.setField("IDENTIFIER", idfier);
+		gen.setField("VERSION", "1");
+		gen.setFieldExpr("PARENT_NS", "NULL");
+		gen.setFieldExpr("TOP_NS", "NULL");
+		if (versioning==false){
+			if (user!=null && user.isAuthentic())
+				gen.setField("USER", user.getUserName());
+		}
+		else{
+			gen.setField("WORKING_COPY", "Y");
+			if (user!=null && user.isAuthentic())
+				gen.setField("WORKING_USER", user.getUserName());
+		}
+		gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+
+		String q = gen.updateStatement() + " where DATAELEM_ID=" + lastInsertID;
+		conn.createStatement().executeUpdate(q);
+	}
     
 	public boolean exists(boolean elmCommon) throws SQLException {
 

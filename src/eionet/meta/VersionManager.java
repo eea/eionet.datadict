@@ -248,14 +248,13 @@ public class VersionManager{
             throw new Exception("Unknown object type!");
     }
     
+	private String checkOutElm(String elmID) throws Exception{
+		return checkOutElm(elmID, false);
+	}
+    
     /**
-     * Check out the specified data element.
-     * 
-     * @param   elmID    element id.
-     * @return  id of the working copy
-     * @exception   Exception
      */
-    private String checkOutElm(String elmID) throws Exception{
+    public String checkOutElm(String elmID, boolean elmCommon) throws Exception{
         
         if (user==null || !user.isAuthentic())
             throw new Exception("Check-out attempt by an unauthorized user!");
@@ -285,7 +284,7 @@ public class VersionManager{
 		// copy element
 		CopyHandler copyHandler = new CopyHandler(conn);
 		copyHandler.setUser(user);
-		String newID = copyHandler.copyElem(elmID, true, true);
+		String newID = copyHandler.copyElem(elmID, true, !elmCommon);
         
         return newID;
     }
@@ -405,11 +404,18 @@ public class VersionManager{
         else
             throw new Exception("Unknown object type!");
     }
+
+	/**
+	 * Check in the specified element.
+	 */
+	private boolean checkInElm(String elmID, String status) throws Exception{
+		return checkInElm(elmID, status, false);
+	}
     
     /**
      * Check in the specified element.
      */
-    private boolean checkInElm(String elmID, String status) throws Exception{
+    public boolean checkInElm(String elmID, String status, boolean elmCommon) throws Exception{
         
         // load the element we need to check in
         DataElement elm = loadElm(elmID);
@@ -473,6 +479,12 @@ public class VersionManager{
                 gen.setFieldExpr("WORKING_USER", "NULL");
                 stmt.executeUpdate(gen.updateStatement() +
                         " where DATAELEM_ID=" + latestElm.getID());
+                
+                // if this is a common element and we update its version,
+                // we must delete the new version's TBL2ELEM relations
+                // so that the previous copy remains used in tables wherever it was used
+                if (elmCommon)
+					stmt.executeUpdate("delete from TBL2ELEM where DATAELEM_ID=" + elmID);
 
                 // update the parent table
                 versionUpwards(elm, latestElm.getID());
@@ -487,8 +499,7 @@ public class VersionManager{
             gen.clear();
             gen.setTable("NAMESPACE");
             gen.setFieldExpr("WORKING_USER", "NULL");
-            stmt.executeUpdate(gen.updateStatement() +
-                    " where NAMESPACE_ID=" + topNS);
+            stmt.executeUpdate(gen.updateStatement() + " where NAMESPACE_ID=" + topNS);
         }
         
         return true;

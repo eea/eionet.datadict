@@ -298,9 +298,14 @@ public class ImgUpload extends HttpServlet {
 		
 		java.awt.Image jImg = null;
 		try{
-			PJAToolkit kit = new PJAToolkit();//java.awt.Toolkit.getDefaultToolkit();
-			//java.awt.Image
-			jImg = kit.getImage(filePath);
+			PJAToolkit kit = new PJAToolkit();
+			// create java.awt.Image
+			jImg = kit.createImage(filePath);
+			if (jImg==null) throw new Exception(); 
+			// of the java.awt.Image, create com.lowagie.text.Image
+			com.lowagie.text.Image vsImage =
+				com.lowagie.text.Image.getInstance(jImg, null);
+			if (vsImage==null) throw new Exception();
 		}
 		catch (Exception e){
 			
@@ -339,7 +344,6 @@ public class ImgUpload extends HttpServlet {
 			wasOK = true;
 		}
 		catch (Exception e){
-			System.out.println("===> failed with " + absPath);
 			File file = new File(absPath);
 			file.renameTo(new File(absPath + ".rmv"));
 		}

@@ -263,11 +263,12 @@ public class MrProper {
 		else if (rmCrit.equals("lid")){
 			String idfier = pars.getParameter("rm_idfier");
 			String ns = pars.getParameter("rm_ns");
-			if (idfier!=null && ns!=null){
-				buf.append("select DATAELEM_ID from DATAELEM where "); 
-				buf.append("IDENTIFIER=").append(Util.strLiteral(idfier));
-				buf.append("and PARENT_NS=").append(ns);
+			if (idfier!=null){
+				buf.append("select DATAELEM_ID from DATAELEM where "). 
+				append("IDENTIFIER=").append(Util.strLiteral(idfier));
 			}
+			
+			if (!Util.nullString(ns)) buf.append(" and PARENT_NS=").append(ns);
 		}
 		else if (rmCrit.equals("id")){
 			String id = pars.getParameter("rm_id");
@@ -647,8 +648,8 @@ public class MrProper {
         	Hashtable hash = new Hashtable();
             hash.put("SHORT_NAME", rs.getString("SHORT_NAME"));
 			hash.put("VERSION", rs.getString("VERSION"));
-			if (!tblName.equals("DATASET"))
-				hash.put("PARENT_NS", rs.getString("PARENT_NS"));
+			String pns = rs.getString("PARENT_NS");
+			if (pns!=null && !tblName.equals("DATASET")) hash.put("PARENT_NS", pns);
             v.add(hash);
         }
         
@@ -668,8 +669,8 @@ public class MrProper {
 			Hashtable hash = new Hashtable();
 			hash.put("IDENTIFIER", rs.getString("IDENTIFIER"));
 			hash.put("VERSION", rs.getString("VERSION"));
-			if (!tblName.equals("DATASET"))
-				hash.put("PARENT_NS", rs.getString("PARENT_NS"));
+			String pns = rs.getString("PARENT_NS");
+			if (pns!=null && !tblName.equals("DATASET")) hash.put("PARENT_NS", pns);
 			wcs.add(hash);
         }
         
@@ -688,10 +689,9 @@ public class MrProper {
 			buf.append(Util.strLiteral((String)hash.get("IDENTIFIER")));
 			buf.append(" and VERSION=");
 			buf.append((String)hash.get("VERSION"));
-			if (!tblName.equals("DATASET")){
-				buf.append(" and PARENT_NS=");
-				buf.append((String)hash.get("PARENT_NS"));
-			}
+			
+			String pns = (String)hash.get("PARENT_NS");
+			if (pns!=null && !tblName.equals("DATASET"))buf.append(" and PARENT_NS=").append(pns);
 			
             stmt.executeUpdate(buf.toString());
         }
@@ -699,44 +699,48 @@ public class MrProper {
         stmt.close();
     }
     
-    /*
-     * 
-     */
-    private void removeHangingWCs() throws Exception{
-    	
-		// data elements
+	/*
+	 * 
+	 */
+	private void removeHangingElmWCs(boolean common) throws Exception{
+		
+		// prepare the statement for retreiving the count of non-WCs for given logical ID
 		StringBuffer buf = new StringBuffer().
 		append("select count(*) from DATAELEM where WORKING_COPY='N' and ").
-		//append("WORKING_USER=").append(Util.strLiteral(user.getUserName())).
-		append("WORKING_USER is not null and ").
-		append("IDENTIFIER=? and PARENT_NS=? and VERSION=? and ").
-		append("DATE<?");
-
+		append("WORKING_USER is not null and IDENTIFIER=? and VERSION=? and DATE<?");
+		if (!common)
+			buf.append(" and PARENT_NS=?");
+		else
+			buf.append(" and PARENT_NS is null");
 		PreparedStatement pstmt= conn.prepareStatement(buf.toString());
-
+		
+		// execute the statement for finding all all working copies
 		Vector hangingWcs = new Vector();
-		 
-    	Statement stmt = conn.createStatement();
-    	ResultSet rs = stmt.
-    			executeQuery("select * from DATAELEM where WORKING_COPY='Y'");
-    	
-    	while (rs.next()){
-    		// execute prep statement with qry for original
+		buf = new StringBuffer("select * from DATAELEM where WORKING_COPY='Y'");
+		if (!common)
+			buf.append(" and PARENT_NS is not null");
+		else
+			buf.append(" and PARENT_NS is null");
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt. executeQuery(buf.toString());
+		while (rs.next()){
+			// execute the prepared statement
 			pstmt.setString(1, rs.getString("IDENTIFIER"));
-			pstmt.setInt(2, rs.getInt("PARENT_NS"));
-			pstmt.setInt(3, rs.getInt("VERSION"));
-			pstmt.setLong(4, rs.getLong("DATE"));
+			pstmt.setInt(2, rs.getInt("VERSION"));
+			pstmt.setLong(3, rs.getLong("DATE"));
+			if (!common) pstmt.setInt(4, rs.getInt("PARENT_NS"));
+			
 			ResultSet rs2 = pstmt.executeQuery();
 
-    		// if no original found, add WC ID to hash
+			// if no original found, add WC ID to hash
 			if (!rs2.next() || rs2.getInt(1)==0)
 				hangingWcs.add(rs.getString("DATAELEM_ID"));
-    	}
-    	
-    	for (int i=0; i<hangingWcs.size(); i++){
-    		
+		}
+
+		for (int i=0; i<hangingWcs.size(); i++){
+	
 			String id = (String)hangingWcs.get(i);
-			
+	
 			Parameters pars = new Parameters();
 			pars.addParameterValue("mode", "delete");
 			pars.addParameterValue("complete", "true");
@@ -746,22 +750,31 @@ public class MrProper {
 			h.setUser(user);
 			h.setVersioning(false);
 			h.execute();
-    	}
+		}
+	}
+    
+    /*
+     * 
+     */
+    private void removeHangingWCs() throws Exception{
+    	
+		removeHangingElmWCs(true); // handles common elements 
+		removeHangingElmWCs(false); // hanldes non-common elements
     	
 		// tables
-		buf = new StringBuffer().
+		StringBuffer buf = new StringBuffer().
 		append("select count(*) from DS_TABLE where WORKING_COPY='N' and ").
 		//append("WORKING_USER=").append(Util.strLiteral(user.getUserName())).
 		append("WORKING_USER is not null and ").
 		append("IDENTIFIER=? and PARENT_NS=? and VERSION=? and ").
 		append("DATE<?");
 
-		pstmt= conn.prepareStatement(buf.toString());
+		PreparedStatement pstmt= conn.prepareStatement(buf.toString());
 
-		hangingWcs = new Vector();
+		Vector hangingWcs = new Vector();
 		 
-		stmt = conn.createStatement();
-		rs = stmt.executeQuery("select * from DS_TABLE where WORKING_COPY='Y'");
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("select * from DS_TABLE where WORKING_COPY='Y'");
     	
 		while (rs.next()){
 			// execute prep statement with qry for original

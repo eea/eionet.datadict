@@ -165,6 +165,31 @@ public class CopyHandler extends Object {
         return newID;
     }
     
+	/*
+	 * 
+	 */
+	public String convertElm(String elmID) throws Exception{
+		
+		if (elmID==null) return null;
+        
+		SQLGenerator gen = new SQLGenerator();
+		gen.setTable("DATAELEM");
+		gen.setField("DATAELEM_ID", "");
+		String newID = copy(gen, "DATAELEM_ID=" + elmID, false);
+		if (newID==null) return null;
+
+		// copy rows in ATTRIBUTE, with lastInsertID
+		gen.clear();
+		gen.setTable("ATTRIBUTE");
+		gen.setField("DATAELEM_ID", newID);
+		copy(gen, "DATAELEM_ID=" + elmID + " and PARENT_TYPE='E'");
+
+		// copy fixed values
+		copyFxv(newID, elmID, "elem");
+
+		return newID;
+	}
+    
     /**
 	 * @param newOwner
 	 * @param oldOwner

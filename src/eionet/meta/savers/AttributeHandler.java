@@ -369,11 +369,10 @@ public class AttributeHandler extends BaseHandler {
             return;
         
         StringBuffer buf = new StringBuffer();
-        buf.append("select distinct CSI_ID from CS_ITEM where COMPONENT_TYPE='attr' and (");
+        buf.append("select distinct FXV_ID from FXV where WNER_TYPE='attr' and (");
         for (int i=0; i<attr_ids.length; i++){
-            if (i>0)
-                buf.append(" or ");
-            buf.append("COMPONENT_ID=");
+            if (i>0) buf.append(" or ");
+            buf.append("OWNER_ID=");
             buf.append(attr_ids[i]);
         }
         buf.append(")");
@@ -381,9 +380,7 @@ public class AttributeHandler extends BaseHandler {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(buf.toString());
         Parameters pars = new Parameters();
-        while (rs.next()){
-            pars.addParameterValue("del_id", rs.getString("CSI_ID"));
-        }
+        while (rs.next()) pars.addParameterValue("del_id", rs.getString("FXV_ID"));
         stmt.close();
         
         pars.addParameterValue("mode", "delete");

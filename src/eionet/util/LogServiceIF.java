@@ -20,7 +20,7 @@
  *
  * Original Code: Rando Valt (TietoEnator)
  *
- * $Id: LogServiceIF.java,v 1.1 2003/11/04 14:23:55 te-ee Exp $
+ * $Id$
  */
 
 package eionet.util;

@@ -383,8 +383,8 @@ public class Util {
 	        ret.append("&lt;");
 	      else if (c == '>')
 	        ret.append("&gt;");
-	      else if (c == '\n' && inTextarea==false)
-	        ret.append("<BR>");
+	      //else if (c == '\n' && inTextarea==false)
+	        //ret.append("<br/>");
 	      else
 	        ret.append(c);
 	    }

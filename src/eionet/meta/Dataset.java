@@ -261,8 +261,10 @@ public class Dataset {
 		
 		if (createLinkWeights==null){
 			createLinkWeights = new Hashtable();
-			createLinkWeights.put("PDF", new Integer(2));
-			createLinkWeights.put("XLS", new Integer(1));
+			createLinkWeights.put("PDF", new Integer(1));
+			createLinkWeights.put("XLS", new Integer(2));
+			createLinkWeights.put("XMLINST", new Integer(4));
+			createLinkWeights.put("XMLSCHEMA", new Integer(8));
 		}
 		
 		return createLinkWeights;
