@@ -3,10 +3,10 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
 
- <display-name>Data Dictionary</display-name>
-  <description>Reportnet Data Semantics Registry</description>
+    <display-name>Data Dictionary</display-name>
+    <description>Reportnet Data Semantics Registry</description>
 
-	<!-- context params -->
+<!-- context params -->
 
 	<context-param>
 		<param-name>application-name</param-name>
@@ -49,7 +49,7 @@
 	</context-param>
 
 
-	<!-- servlets -->
+<!-- servlets -->
 
 	<servlet>
 		<servlet-name>env</servlet-name>
@@ -91,7 +91,7 @@
 		<servlet-class>eionet.meta.ImgUpload</servlet-class>
 	</servlet>
 
-	<!-- servlet mappings -->
+<!-- servlet mappings -->
 
 	<servlet-mapping>
 		<servlet-name>env</servlet-name>
@@ -131,7 +131,7 @@
 	</servlet-mapping>
 
 
-  <!-- the application server might allow directory listing.
+<!-- the application server might allow directory listing.
        The welcome-files are used to overcome workings of such feature 
   -->
 
@@ -151,7 +151,7 @@
 			<web-resource-name>Restricted Area</web-resource-name>
 			<url-pattern>/app/*</url-pattern>
 		</web-resource-collection>
-   </security-constraint>
+	</security-constraint>
 
 
   <!-- force the entire application to security constraint CONFIDENTIAL -->
@@ -165,7 +165,7 @@
       <web-resource-name>XslXmlFiles</web-resource-name>
       <description>app files</description>
       <url-pattern>/app/*</url-pattern>
-      <url-pattern>//public/images/*</url-pattern>
+      <url-pattern>/images/*</url-pattern>
       <http-method>GET</http-method>
       <http-method>POST</http-method>
     </web-resource-collection>
