@@ -1,4 +1,4 @@
-%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!static int iPageLen=0;%>
