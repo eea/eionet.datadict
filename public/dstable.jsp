@@ -1057,7 +1057,7 @@ if (mode.equals("edit") && dsTable!=null){
 														Create an MS Excel template for this table&nbsp;<a target="_blank" href="help.jsp?screen=table&area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
 													</td>
 													<td width="27%" valign="middle" align="left">
-														<a target="_blank" href="GetXls?obj_type=tbl&obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
+														<a href="GetXls?obj_type=tbl&obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
 													</td>
 												</tr>
 												

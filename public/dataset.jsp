@@ -890,7 +890,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														Create an MS Excel template for this dataflow&nbsp;<a target="_blank" href="help.jsp?screen=dataset&area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
 													</td>
 													<td width="27%" valign="middle" align="left">
-														<a target="_blank" href="GetXls?obj_type=dst&obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
+														<a href="GetXls?obj_type=dst&obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
 													</td>
 												</tr>
 												

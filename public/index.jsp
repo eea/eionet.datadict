@@ -131,7 +131,7 @@ catch (Exception e){
 					                  		<!-- the support part -->
 					                  		
 					                  		<td width="50%" style="border: 1 solid #FF9900" valign="top">
-					                  			<%=Util.getUrlContent("http://www.eionet.eu.int/boxes/DD/box3/view_teaser_box?vis=standard&width=302")%>
+					                  			<%=Helps.get("front_page", "support")%>
 					                  		</td>
 					                	</tr>
 					                	<tr>
@@ -139,13 +139,13 @@ catch (Exception e){
 					                		<!-- the documentation part -->
 					                		
 					                  		<td width="50%" style="border: 1 solid #FF9900" valign="top">
-												<%=Util.getUrlContent("http://www.eionet.eu.int/boxes/DD/box2/view_teaser_box?vis=standard&width=302")%>
+												<%=Helps.get("front_page", "documentation")%>
 					                  		</td>
 					                  		
 					                  		<!-- the news part -->
 					                  		
 					                  		<td width="50%" style="border: 1 solid #FF9900" valign="top">
-												<%=Util.getUrlContent("http://www.eionet.eu.int/boxes/DD/box1/view_teaser_box?vis=standard&width=302")%>
+												<%=Helps.get("front_page", "news")%>
 		                  					</td>
 										</tr>
 									</table>
