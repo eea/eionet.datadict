@@ -1,0 +1,5 @@
+a:Access
+x:Execute
+u:Update
+d:Delete
+c:Control ACL
