@@ -87,8 +87,10 @@ public class TblSchema extends Schema {
         newLine();
         addString("\t\t\t<xs:element name=\"Row\" minOccurs=\"1\" maxOccurs=\"unbounded\">");
 		//addString("\t\t\t<xs:element ref=\"" + this.referredNsPrefix + ":Row\" minOccurs=\"1\" maxOccurs=\"unbounded\">");
-        newLine();
+		newLine();
         addString("\t\t\t\t<xs:complexType>");
+		newLine();
+		addString("\t\t\t\t\t<xs:attribute name=\"status\" type=\"xs:string\" use=\"optional\"/>");
         newLine();
         
         String tab = "\t\t\t\t\t";

@@ -90,7 +90,7 @@ public class TblXmlInst extends XmlInst {
 	}
 	
 	private String startRow(){
-		return getLead("row") + "<" + dstNsPrefix + ":" + "Row>";
+		return getLead("row") + "<" + dstNsPrefix + ":" + "Row status=\"new\">";
 	}
 
 	private String endRow(){
