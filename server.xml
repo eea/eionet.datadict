@@ -1,135 +1,52 @@
-<?xml version='1.0' encoding='utf-8'?>
-<Server className="org.apache.catalina.core.StandardServer" debug="0" port="8005" shutdown="SHUTDOWN">
-  <Listener className="org.apache.catalina.mbeans.ServerLifecycleListener" debug="0" jsr77Names="false"/>
-  <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" debug="0"/>
-  <GlobalNamingResources>
-    <Environment name="simpleValue" override="true" type="java.lang.Integer" value="30"/>
-    <Resource auth="Container" description="User database that can be updated and saved" name="UserDatabase" scope="Shareable" type="org.apache.catalina.UserDatabase"/>
-    <ResourceParams name="UserDatabase">
-      <parameter>
-        <name>factory</name>
-        <value>org.apache.catalina.users.MemoryUserDatabaseFactory</value>
-      </parameter>
-      <parameter>
-        <name>pathname</name>
-        <value>conf/tomcat-users.xml</value>
-      </parameter>
-    </ResourceParams>
-  </GlobalNamingResources>
-  <Service className="org.apache.catalina.core.StandardService" debug="0" name="Tomcat-Standalone">
-    <Connector className="org.apache.coyote.tomcat4.CoyoteConnector" acceptCount="100" bufferSize="2048" compression="off" connectionLinger="-1" connectionTimeout="20000" debug="0" disableUploadTimeout="true" enableLookups="true" maxKeepAliveRequests="100" maxProcessors="75" minProcessors="1" port="8081" protocolHandlerClassName="org.apache.coyote.http11.Http11Protocol" proxyPort="0" redirectPort="8443" scheme="http" secure="false" tcpNoDelay="true" useURIValidationHack="false">
-      <Factory className="org.apache.catalina.net.DefaultServerSocketFactory"/>
-    </Connector>
-    <Connector className="org.apache.coyote.tomcat4.CoyoteConnector" acceptCount="10" bufferSize="2048" compression="off" connectionLinger="-1" connectionTimeout="0" debug="0" disableUploadTimeout="false" enableLookups="true" maxKeepAliveRequests="100" maxProcessors="75" minProcessors="1" port="8009" protocolHandlerClassName="org.apache.jk.server.JkCoyoteHandler" proxyPort="0" redirectPort="8443" scheme="http" secure="false" tcpNoDelay="true" useURIValidationHack="false">
-      <Factory className="org.apache.catalina.net.DefaultServerSocketFactory"/>
-    </Connector>
-    <Engine className="org.apache.catalina.core.StandardEngine" debug="0" defaultHost="localhost" mapperClass="org.apache.catalina.core.StandardEngineMapper" name="Standalone">
-      <Host className="org.apache.catalina.core.StandardHost" appBase="webapps" autoDeploy="true" configClass="org.apache.catalina.startup.ContextConfig" contextClass="org.apache.catalina.core.StandardContext" debug="0" deployXML="true" errorReportValveClass="org.apache.catalina.valves.ErrorReportValve" liveDeploy="true" mapperClass="org.apache.catalina.core.StandardHostMapper" name="localhost" unpackWARs="true">
-        <Context className="org.apache.catalina.core.StandardContext" cachingAllowed="true" charsetMapperClass="org.apache.catalina.util.CharsetMapper" cookies="true" crossContext="false" debug="0" displayName="Tomcat Administration Application" docBase="../server/webapps/admin" mapperClass="org.apache.catalina.core.StandardContextMapper" path="/admin" privileged="true" reloadable="false" swallowOutput="false" useNaming="true" wrapperClass="org.apache.catalina.core.StandardWrapper">
-          <Logger className="org.apache.catalina.logger.FileLogger" debug="0" directory="logs" prefix="localhost_admin_log." suffix=".txt" timestamp="true" verbosity="1"/>
-        </Context>
-        <Context className="org.apache.catalina.core.StandardContext" cachingAllowed="true" charsetMapperClass="org.apache.catalina.util.CharsetMapper" cookies="true" crossContext="false" debug="0" displayName="Webdav Content Management" docBase="/var/tomcat4/webapps/webdav" mapperClass="org.apache.catalina.core.StandardContextMapper" path="/webdav" privileged="false" reloadable="false" swallowOutput="false" useNaming="true" wrapperClass="org.apache.catalina.core.StandardWrapper">
-        </Context>
-        <Context className="org.apache.catalina.core.StandardContext" cachingAllowed="true" charsetMapperClass="org.apache.catalina.util.CharsetMapper" cookies="true" crossContext="true" debug="0" docBase="/home/cityreg" mapperClass="org.apache.catalina.core.StandardContextMapper" path="/MAIS" privileged="false" reloadable="true" swallowOutput="true" useNaming="true" wrapperClass="org.apache.catalina.core.StandardWrapper">
-          <Logger className="org.apache.catalina.logger.FileLogger" debug="0" directory="logs" prefix="mais_log_" suffix=".txt" timestamp="true" verbosity="0"/>
-        </Context>
-        <Context className="org.apache.catalina.core.StandardContext" cachingAllowed="true" charsetMapperClass="org.apache.catalina.util.CharsetMapper" cookies="true" crossContext="true" debug="0" displayName="Tomcat Examples" docBase="examples" mapperClass="org.apache.catalina.core.StandardContextMapper" path="/examples" privileged="false" reloadable="true" swallowOutput="false" useNaming="true" wrapperClass="org.apache.catalina.core.StandardWrapper">
-          <Logger className="org.apache.catalina.logger.FileLogger" debug="0" directory="logs" prefix="localhost_examples_log." suffix=".txt" timestamp="true" verbosity="1"/>
-          <Parameter name="context.param.name" override="false" value="context.param.value"/>
-          <Ejb home="com.wombat.empl.EmployeeRecordHome" name="ejb/EmplRecord" remote="com.wombat.empl.EmployeeRecord" type="Entity"/>
-          <Ejb description="Example EJB Reference" home="com.mycompany.mypackage.AccountHome" name="ejb/Account" remote="com.mycompany.mypackage.Account" type="Entity"/>
-          <Environment name="foo/name4" override="true" type="java.lang.Integer" value="10"/>
-          <Environment name="maxExemptions" override="true" type="java.lang.Integer" value="15"/>
-          <Environment name="minExemptions" override="true" type="java.lang.Integer" value="1"/>
-          <Environment name="foo/bar/name2" override="true" type="java.lang.Boolean" value="true"/>
-          <Environment name="name3" override="true" type="java.lang.Integer" value="1"/>
-          <Environment name="foo/name1" override="true" type="java.lang.String" value="value1"/>
-          <LocalEjb description="Example Local EJB Reference" home="com.mycompany.mypackage.ProcessOrderHome" local="com.mycompany.mypackage.ProcessOrder" name="ejb/ProcessOrder" type="Session"/>
-          <Resource auth="SERVLET" name="jdbc/EmployeeAppDb" scope="Shareable" type="javax.sql.DataSource"/>
-          <Resource auth="Container" name="mail/Session" scope="Shareable" type="javax.mail.Session"/>
-          <ResourceParams name="jdbc/EmployeeAppDb">
-            <parameter>
-              <name>url</name>
-              <value>jdbc:HypersonicSQL:database</value>
-            </parameter>
-            <parameter>
-              <name>password</name>
-              <value></value>
-            </parameter>
-            <parameter>
-              <name>driverClassName</name>
-              <value>org.hsql.jdbcDriver</value>
-            </parameter>
-            <parameter>
-              <name>username</name>
-              <value>sa</value>
-            </parameter>
-          </ResourceParams>
-          <ResourceParams name="mail/Session">
-            <parameter>
-              <name>mail.smtp.host</name>
-              <value>localhost</value>
-            </parameter>
-          </ResourceParams>
-          <ResourceLink global="simpleValue" name="linkToGlobalResource" type="java.lang.Integer"/>
-        </Context>
-        <Context className="org.apache.catalina.core.StandardContext" cachingAllowed="true" charsetMapperClass="org.apache.catalina.util.CharsetMapper" cookies="true" crossContext="false" debug="0" displayName="Tomcat Documentation" docBase="/var/tomcat4/webapps/tomcat-docs" mapperClass="org.apache.catalina.core.StandardContextMapper" path="/tomcat-docs" privileged="false" reloadable="false" swallowOutput="false" useNaming="true" wrapperClass="org.apache.catalina.core.StandardWrapper">
-        </Context>
-        <!--Context className="org.apache.catalina.core.StandardContext" cachingAllowed="true" charsetMapperClass="org.apache.catalina.util.CharsetMapper" cookies="true" crossContext="true" debug="0" displayName="XQuery Utils" docBase="/home/gdem/web" mapperClass="org.apache.catalina.core.StandardContextMapper" path="/gdem" privileged="false" reloadable="true" swallowOutput="true" useNaming="true" wrapperClass="org.apache.catalina.core.StandardWrapper">
-
-          <Logger className="org.apache.catalina.logger.FileLogger" debug="0" directory="logs" prefix="gdem_log_" suffix=".txt" timestamp="true" verbosity="0"/>
-        </Context-->
-
-	<Context path="/gdem" docBase="/home/gdem/web" debug="0" reloadable="true" crossContext="true">
-		<Logger className="org.apache.catalina.logger.FileLogger" prefix="gdem_log." suffix=".log" timestamp="true"/>
-	</Context>
-
-	<Context path="/datadict" docBase="/home/jaanus/datadict" debug="0" reloadable="true" crossContext="true">
-
-		<Logger className="org.apache.catalina.logger.FileLogger" prefix="dd." suffix=".log" 	  timestamp="true"/>
-		<Resource name="jdbc/datadict" auth="Container" type="javax.sql.DataSource"/>
-
-		<ResourceParams name="jdbc/datadict">
-		<parameter><name>factory</name><value>org.apache.commons.dbcp.BasicDataSourceFactory</value></parameter>
-		<parameter><name>maxActive</name><value>100</value></parameter>
-		<parameter><name>maxIdle</name><value>30</value></parameter>
-		<parameter><name>maxWait</name><value>10000</value></parameter>
-		<parameter><name>username</name><value>dduser</value></parameter>
-		<parameter><name>password</name><value>xxx</value></parameter>
-		<parameter><name>driverClassName</name><value>org.gjt.mm.mysql.Driver</value></parameter>
-		<parameter><name>url</name><value>jdbc:mysql://192.168.1.6:3306/testdd</value></parameter>
-		</ResourceParams>
-
-	</Context>
-
-	<Context path="/contreg" docBase="/home/jaanus/contreg" debug="0" reloadable="true" crossContext="true">
-
-                <Logger className="org.apache.catalina.logger.FileLogger" prefix="dd." suffix=".log" timestamp="true"/>
-                <Resource name="jdbc/contreg" auth="Container" type="javax.sql.DataSource"/>
-
-                <ResourceParams name="jdbc/contreg">
-                <parameter><name>factory</name><value>org.apache.commons.dbcp.BasicDataSourceFactory</value></parameter>
-                <parameter><name>maxActive</name><value>100</value></parameter>
-                <parameter><name>maxIdle</name><value>30</value></parameter>
-                <parameter><name>maxWait</name><value>10000</value></parameter>
-                <parameter><name>username</name><value>cruser</value></parameter>
-                <parameter><name>password</name><value>xxx</value></parameter>
-                <parameter><name>driverClassName</name><value>org.gjt.mm.mysql.Driver</value></parameter>
-                <parameter><name>url</name><value>jdbc:mysql://192.168.1.6:3306/testcr</value></parameter>
-                </ResourceParams>
-
-        </Context>
-
-
-        <Context className="org.apache.catalina.core.StandardContext" cachingAllowed="true" charsetMapperClass="org.apache.catalina.util.CharsetMapper" cookies="true" crossContext="false" debug="0" displayName="Welcome to Tomcat" docBase="/var/tomcat4/webapps/ROOT" mapperClass="org.apache.catalina.core.StandardContextMapper" path="" privileged="false" reloadable="false" swallowOutput="false" useNaming="true" wrapperClass="org.apache.catalina.core.StandardWrapper">
-        </Context>
-        <Context className="org.apache.catalina.core.StandardContext" cachingAllowed="true" charsetMapperClass="org.apache.catalina.util.CharsetMapper" cookies="true" crossContext="false" debug="0" displayName="Tomcat Manager Application" docBase="../server/webapps/manager" mapperClass="org.apache.catalina.core.StandardContextMapper" path="/manager" privileged="true" reloadable="false" swallowOutput="false" useNaming="true" wrapperClass="org.apache.catalina.core.StandardWrapper">
-          <ResourceLink global="UserDatabase" name="users" type="org.apache.catalina.UserDatabase"/>
-        </Context>
-        <Logger className="org.apache.catalina.logger.FileLogger" debug="9" directory="logs" prefix="localhost_log." suffix=".txt" timestamp="true" verbosity="4"/>
-      </Host>
-      <Logger className="org.apache.catalina.logger.FileLogger" debug="0" directory="logs" prefix="catalina_log." suffix=".txt" timestamp="true" verbosity="0"/>
-      <Realm className="org.apache.catalina.realm.UserDatabaseRealm" debug="0" resourceName="UserDatabase" validate="true"/>
-    </Engine>
-  </Service>
-</Server>
+	<Host appBase='webapps'
+	contextClass='org.apache.catalina.core.StandardContext'
+	configClass='org.apache.catalina.startup.ContextConfig'
+	debug='0'
+	mapperClass='org.apache.catalina.core.StandardHostMapper'
+	unpackWARs='true'
+	name='dd.eionet.eu.int'
+	autoDeploy='true'
+	errorReportValveClass='org.apache.catalina.valves.ErrorReportValve'
+	className='org.apache.catalina.core.StandardHost'
+	deployXML='true' liveDeploy='true'>
+<!-- START OF DATADICTIONARY -->
+		<Context crossContext='true' debug='0' path='/datadict' docBase='/home/jaanus/datadict' reloadable='true'>
+			<Logger timestamp='true' suffix='.log' className='org.apache.catalina.logger.FileLogger' prefix='dd.' />
+			<Resource auth='Container' name='jdbc/datadict' type='javax.sql.DataSource' />
+			<ResourceParams name='jdbc/datadict'>
+				<parameter>
+					<name>factory</name>
+					<value>org.apache.commons.dbcp.BasicDataSourceFactory</value>
+				</parameter>
+				<parameter>
+					<name>maxActive</name>
+					<value>100</value>
+				</parameter>
+				<parameter>
+					<name>maxIdle</name>
+					<value>30</value>
+				</parameter>
+				<parameter>
+					<name>maxWait</name>
+					<value>10000</value>
+				</parameter>
+				<parameter>
+					<name>username</name>
+					<value>dduser</value>
+				</parameter>
+				<parameter>
+					<name>password</name>
+					<value>xxx</value>
+				</parameter>
+				<parameter>
+					<name>driverClassName</name>
+					<value>org.gjt.mm.mysql.Driver</value>
+				</parameter>
+				<parameter>
+					<name>url</name>
+					<value>jdbc:mysql://localhost:3306/testdd</value>
+				</parameter>
+			</ResourceParams>
+		</Context>
+<!-- END OF DATADICTIONARY -->
+	</Host>
