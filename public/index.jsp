@@ -59,6 +59,7 @@ catch (Exception e){
     <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <link type="text/css" rel="stylesheet" href="boxes.css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <script language="javascript" src='script.js'></script>
 </head>
 <body>
