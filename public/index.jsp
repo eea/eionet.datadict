@@ -59,16 +59,16 @@
 						<tr>
 							<td>
 								<br/>
-								<font class="head00">Content of the Data dictionary </font><br></br>
-								The Data Dictionary is a central service for storing technical specifications of the data requested in reporting obligations. The Data Dictionary provides descriptions of data file structures, such as definition of data sets, tables, data elements, nomenclature, allowable values and other technical requirements. <br>
+								<font class="head00">Content of the Data Dictionary </font><br></br>
+								The Data Dictionary is a central service for storing technical specifications of the data requested in reporting obligations. The Data Dictionary provides descriptions of data file structures, such as definition of datasets, tables, data elements, nomenclature, allowable values and other technical requirements. <br>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								You can view and get information about existing data set definitions, tables within data sets and their data elements (attributes/fields). <br>
+								You can view and get information about existing dataset definitions, tables within datasets and their data elements (attributes/fields). <br>
 								<ul>
-									<li><a href="datasets.jsp?SearchType=SEARCH">Data sets</a></li>
-									<li><a href="search_results_tbl.jsp?SearchType=SEARCH">Tables within data sets</a></li>
+									<li><a href="datasets.jsp?SearchType=SEARCH">Datasets</a></li>
+									<li><a href="search_results_tbl.jsp?SearchType=SEARCH">Tables within datasets</a></li>
 									<li><a href="search_results.jsp?SearchType=SEARCH">Data elements</a></li>
 								</ul>
 							</td>
@@ -77,7 +77,7 @@
 							<td>
 								For each of these categories different services are or will be offered.
 								<ul>
-									<li>View on web. Provides you with overview lists or details of specific data sets or elements.</li>
+									<li>View on web. Provides you with overview lists or details of specific dataset or elements.</li>
 									<li>Search and listing. Sorting and search is possible, either using name, keywords or other identification or content.</li>
 									<li>Download specification documents and fact sheets. (to come)</li>
 									<li>Download parameter files. (to come)</li>
@@ -89,9 +89,9 @@
 							<td>
 								Links to further information about
 								<ul>
-									<li><a href="index.jsp?page=1">Data dictionary - functions, services and users</a></li>
-									<li><a href="index.jsp?page=2">Concepts & terms - data sets, tables, data elements, code lists</a></li>
-									<li><a href="index.jsp?page=3">Data dictionary - administrative tools - login mode</a>
+									<li><a href="index.jsp?page=1">Data Dictionary - functions, services and users</a></li>
+									<li><a href="index.jsp?page=2">Concepts & terms - datasets, tables, data elements, code lists</a></li>
+									<li><a href="index.jsp?page=3">Data Dictionary - administrative tools - login mode</a>
 								</ul>
 							</td>
 						</tr>
@@ -104,8 +104,8 @@
 						<tr>
 							<td>
 								<br/>
-								<font class="head00">Data dictionary - functions, services and users</font><br></br>
-								The data dictionary serves some main functions<br>
+								<font class="head00">Data Dictionary - functions, services and users</font><br></br>
+								The Data Dictionary serves some main functions<br>
 							</td>
 						</tr>
 						<tr>
@@ -115,11 +115,11 @@
 									<li>provide <b>parameters</b> necessary as input in <b>technical quality control</b> and validation of the reported data.</li>
 									<li>provides a reference for <b>users</b> of the EEA and others using data following the specifications.</li>
 									<li>provide a reference for <b>harmonisation processes</b> at the European level, the existing specifications to be reused when reporting obligations get revised or new ones are to be defined.</li>
-									<li>The data dictionary does not only contain spec ifications of data to be reported from the countries, but also other data needed flowing from other sources to be used in <b>indicator</b> development.</li>
+									<li>Data Dictionary does not only contain spec ifications of data to be reported from the countries, but also other data needed flowing from other sources to be used in <b>indicator</b> development.</li>
 									<li>If agreed with the EEA, countries can also store own definitions about national or internal reporting obligations.</li>
 								</ul>
 								<br>
-								Reporting obligations are usually long-lasting. The definitions found in the data dictionary, therefore, are relatively stable. Revision and definitions of new data sets is handled by persons who have obtained administrating rights and have logged in by pressing the <a href="javascript:login()">Login</a> button. 
+								Reporting obligations are usually long-lasting. The definitions found in the Data Dictionary, therefore, are relatively stable. Revision and definitions of new dataset is handled by persons who have obtained administrating rights and have logged in by pressing the <a href="javascript:login()">Login</a> button. 
 							</td>
 						</tr>
 					</table>
@@ -131,7 +131,7 @@
 						<tr>
 							<td>
 								<br/>
-								<font class="head00">Concepts & terms - data sets, tables, data elements </font><br></br>
+								<font class="head00">Concepts & terms - datasets, tables, data elements </font><br></br>
 								<b>&nbsp;&nbsp;Datasets</b><br>
 							</td>
 						</tr>
@@ -190,16 +190,16 @@
 						<tr>
 							<td>
 								<br/>
-								<font class="head00">Data dictionary - administrative tools - login mode</font><br></br>
+								<font class="head00">Data Dictionary - administrative tools - login mode</font><br></br>
 								&nbsp;&nbsp;<b>Adding or revising the content</b><br>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								Revision and definitions of new data sets is handled by persons who have obtained administration rights and have logged in by pressing the <a href="javascript:login()">Login</a> button.
+								Revision and definitions of new datasets is handled by persons who have obtained administration rights and have logged in by pressing the <a href="javascript:login()">Login</a> button.
 								<ul>
 									<li><b>Revision</b> of data definitions: Once you log in, you will be provided with additional functions on the left-hand pane, enabling you to add new data element definitions or revise content. This you can do manually, by writing into the forms on the web pages.</li>
-									<li>You can <b>import data</b> definitions them directly in XML format. EEA has developed an Access database for preparation of the definition information, the database exporting XML files that can then be imported into the Data dictionary. </li>
+									<li>You can <b>import data</b> definitions them directly in XML format. EEA has developed an Access database for preparation of the definition information, the database exporting XML files that can then be imported into the Data Dictionary. </li>
 									<li>Each data element definition can be <b>represented in XML Schema</b> format and you can see (and save) it when pressing 'view schema' links in data element views. </li>
 									<li>Each data element belongs to a certain <b>namespace</b>. This enables data elements to have same short names in different areas/topics. A data element is uniquely identified by it's short name and the namespace to which it belongs.  
 									Namespaces can be dynamically added/removed to/from the system. To search for namespaces, use the <a href="namespaces.jsp">Namespaces</a> button on the left-hand pane. 
@@ -216,7 +216,7 @@
 						<tr>
 							<td>
 								Each data element is defined by a set of attributes (fields) corresponding to <a href="javascript:openSource('http://www.diffuse.org/meta.html#ISO11179')">ISO 11179 standard</a> for describing data elements. 
-								The set of attributes used to describe the data sets, tables and data elements will be relatively stable. 
+								The set of attributes used to describe the datasets, tables and data elements will be relatively stable. 
 								However, the system is flexible and an administrator can dynamically <b>add/remove attributes</b> from/to the system. 
 								To search for attributes, use the <a href="attributes.jsp">Attributes</a> button on the left-hand pane.
 							</td>

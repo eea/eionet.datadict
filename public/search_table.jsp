@@ -236,7 +236,7 @@ else
             
 				<form name="form1" action="search_results_tbl.jsp" method="GET">
 				<table width="500">
-					<tr><td><font class="head00">Search for a dataset table:</font></td></tr>
+					<tr><td><font class="head00">Search for a dataset table definition</font></td></tr>
 					<tr height="10"><td>&#160;</td></tr>
 					<tr>
 						<td>

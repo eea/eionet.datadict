@@ -274,7 +274,7 @@ else
 				<form name="form1" action="search_results.jsp" method="GET">
 				
 				<table width="500">
-					<tr><td><font class="head00">Search for a data element</font></td></tr>
+					<tr><td><font class="head00">Search for a data element definition</font></td></tr>
 					<tr height="10"><td>&#160;</td></tr>
 					<tr>
 						<td>
@@ -312,8 +312,8 @@ else
 							<select name="type" class="small" onchange="typeSelect()">
 								<option value="">All</option>
 								<option value="AGG">Aggregate data element</option>
-								<option value="CH1">Data element with fixed values</option>
-								<option value="CH2">Data element with quantitative values</option>
+								<option value="CH1">Data element with fixed values (codes)</option>
+								<option value="CH2">Data element with quantitative values (e.g. measurements)</option>
 							</select>
 						</td>
 					</tr>

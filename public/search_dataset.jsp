@@ -176,7 +176,7 @@ private String setDefaultAttrs(String name){
 			<div style="margin-left:30">
 				<form name="form1" action="datasets.jsp" method="GET">
 				<table width="500">
-					<tr><td><font class="head00">Search for a dataset</font></td></tr>
+					<tr><td><font class="head00">Search for a dataset definition</font></td></tr>
 					<tr height="10"><td>&#160;</td></tr>
 					<tr>
 						<td>

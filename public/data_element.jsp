@@ -797,10 +797,10 @@ String attrValue = null;
 				<tr>
 					<%
 					if (mode.equals("add")){ %>
-						<td colspan="2"><span class="head00">Add a data element</span></td> <%
+						<td colspan="2"><span class="head00">Add a data element definition</span></td> <%
 					}
 					else if (mode.equals("edit")){ %>
-						<td colspan="2"><span class="head00">Edit data element</span></td> <%
+						<td colspan="2"><span class="head00">Edit data element definition</span></td> <%
 					}
 					else{
 						
@@ -809,7 +809,7 @@ String attrValue = null;
 						boolean topFree = topWorkingUser==null ? true : false;
 			
 						%>
-						<td><span class="head00">View data element</span></td>
+						<td><span class="head00">View data element definition</span></td>
 						<td align="right">
 							<input type="button" class="smallbutton" value="History" onclick="viewHistory()"/>&#160;
 							<%
@@ -893,8 +893,8 @@ String attrValue = null;
 						<select class="small" name="typeSelect" onchange="fixType()">
 							<option value="">-- Select element type --</option>
 							<option value="AGG">Aggregate data element</option>
-							<option value="CH1">Data element with fixed values</option>
-							<option value="CH2">Data element with quantitative values</option>
+							<option value="CH1">Data element with fixed values (codes)</option>
+							<option value="CH2">Data element with quantitative values (e.g. measurements)</option>
 						</select> <%
 					}
 					else{
@@ -1868,18 +1868,18 @@ String attrValue = null;
 				if (userAgent != null && userAgent.length()!=0){
 					int isMSIE = userAgent.toUpperCase().indexOf("MSIE");
 					if (isMSIE != -1){
-						if (! userAgent.substring(isMSIE + 4).trim().startsWith("6")){
+						//if (! userAgent.substring(isMSIE + 4).trim().startsWith("6")){
 							%>
 							<tr height="20" valign="top">
 								<td></td>
 								<td colspan="2">
 									<span class="smallfont" style="font-weight: normal">
-										! If you see a blank page instead of the PDF, try setting off your Acrobat Reader's Web integration.
+										! If you see a blank page instead of the PDF, try setting off your Acrobat Reader's Web browser integration.<br>Acrobat 6.0 is recommended.
 									</span>
 								</td>
 							</tr>
 							<%
-						}
+						//}
 					}
 				}
 				%>

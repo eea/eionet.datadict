@@ -357,13 +357,13 @@
 				<tr>
 					<%
 					if (mode.equals("add")){ %>
-						<td colspan="2"><span class="head00">Add an attribute</span></td> <%
+						<td colspan="2"><span class="head00">Add an attribute definition</span></td> <%
 					}
 					else if (mode.equals("edit")){ %>
-						<td colspan="2"><span class="head00">Edit attribute</span></td> <%
+						<td colspan="2"><span class="head00">Edit attribute definition</span></td> <%
 					}
 					else{ %>
-						<td><span class="head00">View attribute</span></td>
+						<td><span class="head00">View attribute definition</span></td>
 						<td align="right">
 							<%
 							if (user!=null){ %>
