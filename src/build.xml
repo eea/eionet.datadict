@@ -8,7 +8,6 @@
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}"
            destdir="${classes}"
-	   classpath="../WEB-INF/xmlserver.jar;../WEB-INF/xerces.jar;../WEB-INF/jsdk22.jar;/prj/javaserv/resin1.1.6/lib/resin.jar"/>
+	   classpath="/prj/javaserv/resin1.1.6/lib/resin.jar;../WEB-INF/lib/xmlserver.jar;../WEB-INF/lib/xerces.jar;../WEB-INF/lib/jsdk22.jar;../WEB-INF/lib/pja.jar;../WEB-INF/lib/pjatools.jar;../WEB-INF/lib/itext-0.99.jar;../WEB-INF/lib/eionet-dir.jar;../WEB-INF/lib/uit-security.jar"/>
   </target>
 </project>
-
