@@ -1,0 +1,5 @@
+localgroup:dd_admin:i,u,d,w
+user:kaido:i
+user:ander:i
+user:owner:u,d,w,c:doc
+localgroup:dd_admin:u,d,w,c:doc
