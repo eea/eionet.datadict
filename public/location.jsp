@@ -12,7 +12,7 @@
 						<a href="http://www.eionet.eu.int/"><span class="barfont">EIONET</span></a>
 		    		</td>
 		    		<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-		    		<td valign="BOTTOM" align="left">
+		    		<td valign="bottom" align="left">
 			            <%
 			            String oHName=request.getParameter("name");
 			            if (oHName!=null){ %>
@@ -30,7 +30,7 @@
 			        <%
 			        if (oHName!=null){ %>
 					    <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-					    <td valign=BOTTOM nowrap="true" align="left">
+					    <td valign="bottom" nowrap="nowrap" align="left">
 							<span class="barfont"><%=oHName%></span>
 					    </td><%
 					}

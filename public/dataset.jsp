@@ -1,4 +1,5 @@
-<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
 
 <%!private String currentUrl=null;%>
 
@@ -320,14 +321,13 @@ private Vector getValues(String id, String mode, Vector attributes){
 			String regStatus = dataset!=null ? dataset.getStatus() : null;
 			%>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
     <title>Data Dictionary</title>
-    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="JavaScript" src='script.js'></script>
-    <script language="JavaScript" src='modal_dialog.js'></script>
-    <script language="JavaScript">
+    <link type="text/css" rel="stylesheet" href="eionet_new.css"/>
+    <script language="javascript" src='script.js'></script>
+    <script language="javascript" src='modal_dialog.js'></script>
+    <script language="javascript">
     
 		function deleteDatasetReady(){
 			document.forms["form1"].elements["mode"].value = "delete";
@@ -768,7 +768,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								if (mode.equals("add")){
 									boolean iPrm = user==null ? false : SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i");
 									if (!iPrm){ %>
-										<input class="mediumbuttonb" type="button" value="Add" disabled="true"/><%
+										<input class="mediumbuttonb" type="button" value="Add" disabled="disabled"/><%
 									}
 									else{ %>
 										<input class="mediumbuttonb" type="button" value="Add" onclick="submitForm('add')"/><%
@@ -776,7 +776,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								}
 								// edit case
 								else if (mode.equals("edit")){
-									String isDisabled = editPrm ? "" : "disabled";
+									String isDisabled = editPrm ? "" : "disabled='disabled'";
 									%>
 									<input type="button" class="mediumbuttonb" value="Save" <%=isDisabled%> onclick="submitForm('edit')"/>&nbsp;
 									<%
@@ -1084,7 +1084,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												String width  = attribute.getDisplayWidth();
 												String height = attribute.getDisplayHeight();
 												
-												String disabled = user == null ? "disabled" : "";
+												String disabled = user == null ? "disabled='disabled'" : "";
 								
 												boolean dispMultiple = attribute.getDisplayMultiple().equals("1") ? true:false;
 												Vector multiValues=null;
@@ -1288,10 +1288,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
 														<%
 														if(mode.equals("view")){ %>
-															<input type="checkbox" disabled <%=checkedPDF%>>
+															<input type="checkbox" disabled="disabled" <%=checkedPDF%>>
 																<span class="barfont">Technical specification in PDF format</span>
 															</input><br/>
-															<input type="checkbox" disabled <%=checkedXLS%>>
+															<input type="checkbox" disabled="disabled" <%=checkedXLS%>>
 																<span class="barfont">MS Excel template</span>
 															</input><%
 														}
@@ -1400,7 +1400,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														if (mode.equals("view") && dataset.getVisual()!=null){
 															
 															if (imgVisual){ %>
-																<a target="_blank" href="visuals/<%=dsVisual%>" onFocus="blur()" onclick="pop(this.href)">
+																<a target="_blank" href="visuals/<%=dsVisual%>" onfocus="blur()" onclick="pop(this.href)">
 																	<img src="visuals/<%=dsVisual%>" border="0" height="100px" width="100px"/>
 																</a><br/>
 																[Click thumbnail to view large version of the data model]<%
