@@ -38,6 +38,8 @@ public abstract class PdfHandout implements PdfHandoutIF {
 	
 	protected Sectioning sect = new Sectioning();
 	
+	protected Vector showedAttrs = new Vector();
+	
     /// methods
     ////////////
     
@@ -289,6 +291,35 @@ public abstract class PdfHandout implements PdfHandoutIF {
 	 */
 	public Vector getIndexPage() throws Exception{
 		return null;
+	}
+	
+	protected void setShowedAttributes(){
+		
+		showedAttrs.add("Name");
+		showedAttrs.add("ShortDescription");
+		showedAttrs.add("Definition");
+		showedAttrs.add("Methodology");
+		showedAttrs.add("Datatype");
+		showedAttrs.add("MinSize");
+		showedAttrs.add("MaxSize");
+		showedAttrs.add("DecimalPrecision");
+		showedAttrs.add("Unit");
+		showedAttrs.add("MinValue");
+		showedAttrs.add("MaxValue");
+		showedAttrs.add("PublicOrInternal");
+		showedAttrs.add("PlannedUpdFreq");
+		showedAttrs.add("ETCVersion");
+		showedAttrs.add("Descriptive_image");
+		showedAttrs.add("SubmitOrganisation");
+		showedAttrs.add("RespOrganisation");
+	}
+	
+	protected Vector getShowedAttributes(){
+		return showedAttrs;
+	}
+	
+	public boolean canShowAttr(String shn){
+		return shn!=null && showedAttrs.contains(shn);
 	}
 }
 

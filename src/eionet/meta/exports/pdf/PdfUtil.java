@@ -90,7 +90,12 @@ public class PdfUtil {
 			return null;
 	}
     
-    public static PdfPTable simpleAttributesTable(Vector attrs)
+	public static PdfPTable simpleAttributesTable(Vector attrs)
+			throws Exception{
+		return simpleAttributesTable(attrs, null);
+	}
+	
+    public static PdfPTable simpleAttributesTable(Vector attrs, Vector show)
         throws Exception {
         
         if (attrs ==null || attrs.size() == 0)
@@ -111,12 +116,14 @@ public class PdfUtil {
         for (int i=0; attrs!=null && i<attrs.size(); i++){
             
             String name = null;
+			String dispName = null;
             String value = null;
             //Vector values = null;
             
             Object o = attrs.get(i);
             if (o.getClass().getName().endsWith("Hashtable")){
                 name = (String)((Hashtable)o).get("name");
+                dispName = name;
                 value = (String)((Hashtable)o).get("value");
                 /*String _value = (String)((Hashtable)o).get("value");
                 if (!Util.voidStr(_value)){
@@ -126,6 +133,7 @@ public class PdfUtil {
             }
             else if (o.getClass().getName().endsWith("DElemAttribute")){
                 name = ((DElemAttribute)o).getShortName();
+                dispName = ((DElemAttribute)o).getName();
                 value = ((DElemAttribute)o).getValue();
                 
                 // JH201103 - skip image attributes, will be treated later
@@ -148,12 +156,15 @@ public class PdfUtil {
             }
             
             if (Util.voidStr(value) || Util.voidStr(name)) continue;
+            
+            if (show!=null && !show.contains(name)) continue;
+            
             //if (values==null || values.size()==0) continue;
             
             //for (int j=0; j<values.size(); j++){
             //String _name = j==0 ? name : "";            
             //nameCell = new PdfPCell(new Phrase(_name, Fonts.get(Fonts.ATTR_TITLE)));
-            nameCell = new PdfPCell(new Phrase(name, Fonts.get(Fonts.ATTR_TITLE)));
+            nameCell = new PdfPCell(new Phrase(dispName, Fonts.get(Fonts.ATTR_TITLE)));
             //valueCell = new PdfPCell(processLinks((String)values.get(j), Fonts.get(Fonts.CELL_VALUE)));            
             valueCell = new PdfPCell(processLinks(value, Fonts.get(Fonts.CELL_VALUE)));
                 
@@ -381,17 +392,22 @@ public class PdfUtil {
 
 			table.addCell(cell);
 					 
-            // add short name
+            // add short name + full name + public or internal + foreign key
 			String s = elem.getAttributeValueByShortName("Name");
 			String name = Util.voidStr(s) ? elem.getShortName() : s;
             String shortName = elem.getShortName();
 			Vector fks = elem.getFKRelations();
+			
+			String pori = elem.getAttributeValueByShortName("PublicOrInternal");
 			
 			Phrase phr = new Phrase();
 			phr.add(new Chunk(name + "\n",
 				FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
 			phr.add(new Chunk("(" + shortName + ")\n",
 										Fonts.get(Fonts.CELL_VALUE)));
+			if (!Util.voidStr(pori))
+				phr.add(new Chunk("\n" + pori,
+					FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
 			if (fks!=null && fks.size()>0)
 				phr.add(new Chunk("\nForeign key",
 					FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
@@ -791,16 +807,16 @@ public class PdfUtil {
         table.setHorizontalAlignment(Element.ALIGN_LEFT);
         
         // set the column widths
-        float headerwidths[] = {40, 50, 10}; // percentage
+        float headerwidths[] = {30, 35, 35}; // percentage
         table.setWidths(headerwidths);
         table.setWidthPercentage(100); // percentage
         
         // start adding rows and cells
         // add header row
         
-        // short name
+        // Name
         PdfPCell cell =
-            new PdfPCell(new Phrase("Short name", Fonts.get(Fonts.TBL_HEADER)));
+            new PdfPCell(new Phrase("Name", Fonts.get(Fonts.TBL_HEADER)));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setPaddingLeft(5);
         cell.setBorder(Rectangle.NO_BORDER);
@@ -808,8 +824,8 @@ public class PdfUtil {
         
         table.addCell(cell);
         
-        // full name
-        cell = new PdfPCell(new Phrase("Full name", Fonts.get(Fonts.TBL_HEADER)));
+        // Definition
+        cell = new PdfPCell(new Phrase("Definition", Fonts.get(Fonts.TBL_HEADER)));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setPaddingLeft(5);
         cell.setBorder(Rectangle.NO_BORDER);
@@ -817,8 +833,9 @@ public class PdfUtil {
         
         table.addCell(cell);
         
-        // type
-        cell = new PdfPCell(new Phrase("Type", Fonts.get(Fonts.TBL_HEADER)));
+        // ShortDescription
+        cell = new PdfPCell(new Phrase("Short description",
+        									Fonts.get(Fonts.TBL_HEADER)));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setPaddingLeft(5);
         cell.setBorder(Rectangle.NO_BORDER);
@@ -831,19 +848,9 @@ public class PdfUtil {
             
             DsTable dsTable = (DsTable)tables.get(i);
             
-            // add table short name
-            cell = new PdfPCell(new Phrase(dsTable.getShortName(), Fonts.get(Fonts.CELL_VALUE)));
-            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            cell.setPaddingLeft(5);
-            cell.setBorder(Rectangle.NO_BORDER);
-                
-            if (i % 2 == 1)
-                cell.setGrayFill(0.9f);
-                    
-            table.addCell(cell);
-            
             // add table name
-            String name = dsTable.getName()==null ? " " : dsTable.getName();
+			String name = dsTable.getAttributeValueByShortName("Name");
+			name = Util.voidStr(name) ? dsTable.getShortName() : name;
             cell = new PdfPCell(new Phrase(name, Fonts.get(Fonts.CELL_VALUE)));
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
@@ -854,9 +861,24 @@ public class PdfUtil {
                     
             table.addCell(cell);
             
-            // add table type
-            String type = dsTable.getType()==null ? " " : dsTable.getType();
-            cell = new PdfPCell(new Phrase(type, Fonts.get(Fonts.CELL_VALUE)));
+            // add table definition
+			String def = dsTable.getAttributeValueByShortName("Definition");
+			def = def==null ? "" : def;
+            cell = new PdfPCell(new Phrase(def, Fonts.get(Fonts.CELL_VALUE)));
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            cell.setPaddingLeft(5);
+            cell.setBorder(Rectangle.NO_BORDER);
+                
+            if (i % 2 == 1)
+                cell.setGrayFill(0.9f);
+                    
+            table.addCell(cell);
+            
+            // add table short description
+			String desc =
+					dsTable.getAttributeValueByShortName("ShortDescription");
+			desc = desc==null ? "" : desc;
+            cell = new PdfPCell(new Phrase(desc, Fonts.get(Fonts.CELL_VALUE)));
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
             cell.setBorder(Rectangle.NO_BORDER);
@@ -903,6 +925,7 @@ public class PdfUtil {
 				
 				String value = (String)values.get(j);
 				String nrName = name + " #" + String.valueOf(j+1);
+				nrName = "";
 				
 				// add row for name
 				cell = new PdfPCell(

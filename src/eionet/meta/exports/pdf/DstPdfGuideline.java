@@ -15,18 +15,20 @@ import com.lowagie.text.pdf.*;
 public class DstPdfGuideline extends PdfHandout {
     
     private int vsTableIndex = -1;
-    
     private int elmCount = 0;
-    
-    //private Chapter chapter = null;
     
     private String dsName = "";
 	private String dsVersion = "";
 	private Hashtable tblElms = new Hashtable();
+	private Hashtable tblNames = new Hashtable();
+	private Hashtable submitOrg = new Hashtable();
+	
+//	private Chapter chapter = null;
     
     public DstPdfGuideline(Connection conn, OutputStream os){
         searchEngine = new DDSearchEngine(conn);
         this.os = os;
+		setShowedAttributes();
     }
     
     public void write(String dsID) throws Exception {
@@ -57,14 +59,19 @@ public class DstPdfGuideline extends PdfHandout {
         
         String s = ds.getAttributeValueByShortName("Name");
         dsName = Util.voidStr(s) ? ds.getShortName() : s;
-        dsVersion = ds.getVersion();
+        
+		s = ds.getAttributeValueByShortName("ETCVersion");
+		dsVersion = Util.voidStr(s) ? ds.getVersion() : s;
         
         String title = "General information for " + dsName + " dataset";
 		String nr = sect.level(title, 1);
 		nr = nr==null ? "" : nr + " ";
 		        
         Paragraph prg = new Paragraph();
-        prg.add(new Chunk(nr + title, Fonts.get(Fonts.HEADING_1)));
+		prg.add(new Chunk("General information for " + dsName,
+											Fonts.get(Fonts.HEADING_1)));  
+        prg.add(new Chunk(" dataset",
+        			FontFactory.getFont(FontFactory.HELVETICA, 16)));
         
         //chapter = new Chapter(prg, 1);
         
@@ -92,28 +99,27 @@ public class DstPdfGuideline extends PdfHandout {
 			attrs.add(1, hash);
         }
             
-        addElement(PdfUtil.simpleAttributesTable(attrs));
+        addElement(PdfUtil.simpleAttributesTable(attrs, showedAttrs));
         addElement(new Phrase("\n"));
         
         // write complex attributes, one table for each
-        
-        Vector v = ds.getComplexAttributes();
-        v = null;
-        if (v!=null && v.size()>0){
+		Vector v = ds.getComplexAttributes();
+		if (v!=null && v.size()>0){
             
-            DElemAttribute attr = null;
-            for (int i=0; i<v.size(); i++){
-                attr = (DElemAttribute)v.get(i);
-                attr.setFields(searchEngine.getAttrFields(attr.getID()));
-            }
+			DElemAttribute attr = null;
+			for (int i=0; i<v.size(); i++){
+				attr = (DElemAttribute)v.get(i);
+				attr.setFields(searchEngine.getAttrFields(attr.getID()));
+			}
             
-            for (int i=0; i<v.size(); i++){
-                
-                addElement(PdfUtil.complexAttributeTable((DElemAttribute)v.get(i)));
-                addElement(new Phrase("\n"));
-            }
-        }
-
+			/*for (int i=0; i<v.size(); i++){
+				addElement(PdfUtil.complexAttributeTable((DElemAttribute)v.get(i)));
+				addElement(new Phrase("\n"));
+			}*/
+		}
+		
+		this.submitOrg = ds.getCAttrByShortName("SubmitOrganisation");
+		
 		/* write image attributes
 		Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath);
 		if (imgAttrs!=null){
@@ -230,7 +236,7 @@ public class DstPdfGuideline extends PdfHandout {
 				
 				// add table title
 				if (!lv2added){
-					s = tbl.getAttributeValueByShortName("Name");
+					s = (String)tblNames.get(tbl.getID());
 					String tblName = Util.voidStr(s) ? tbl.getShortName() : s;
 					title = "Codelists for " + tblName + " table";
 					nr = sect.level(title, 2, false);
@@ -306,7 +312,7 @@ public class DstPdfGuideline extends PdfHandout {
 				
 				// add table title
 				if (!lv2added){
-					s = tbl.getAttributeValueByShortName("Name");
+					s = (String)tblNames.get(tbl.getID());
 					String tblName = Util.voidStr(s) ? tbl.getShortName() : s;
 					title = "Images for " + tblName + " table";
 					nr = sect.level(title, 2, false);
@@ -409,9 +415,9 @@ public class DstPdfGuideline extends PdfHandout {
 		doc.add(prg);
 		
 		// date
-		prg = new Paragraph(getTitlePageDate());
-		prg.setAlignment(Element.ALIGN_CENTER);
-		doc.add(prg);
+		//prg = new Paragraph(getTitlePageDate());
+		//prg.setAlignment(Element.ALIGN_CENTER);
+		//doc.add(prg);
         
         doc.add(new Paragraph("\n\n\n\n\n\n\n\n\n\n\n"));
         
@@ -460,8 +466,8 @@ public class DstPdfGuideline extends PdfHandout {
 		prg.setLeading(10*1.2f);
 		font = FontFactory.getFont(FontFactory.HELVETICA, 9);
 		font.setColor(Color.lightGray);
-		prg.add(new Chunk("Dataset specification for [" + dsName +
-								"] * Version [" + dsVersion + "]", font));
+		prg.add(new Chunk("Dataset specification for " + dsName +
+								" * Version " + dsVersion, font));
 
 		this.header = new HeaderFooter(prg, false);
 		header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
@@ -488,7 +494,7 @@ public class DstPdfGuideline extends PdfHandout {
 		"in reporting good quality data. This document contains detailed " +
 		"specifications in a structured format for the data requested in a " +
 		"dataflow. Suggestions from users on how to improve the document " +
-		"are welcome";
+		"are welcome.";
 		
 		font = FontFactory.getFont(FontFactory.HELVETICA, 10);
 		prg = new Paragraph(about, font);
@@ -521,7 +527,49 @@ public class DstPdfGuideline extends PdfHandout {
 	public void addTblElms(String tblID, Vector elms){
 		tblElms.put(tblID, elms);
 	}
-   
+	
+	public void addTblNames(String tblID, String name){
+		tblNames.put(tblID, name);
+	}
+
+	protected void setFooter() throws Exception {
+    	
+		Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
+		font.setColor(Color.gray);
+		
+		Phrase phr = new Phrase();
+		phr.add(new Chunk("European Environment Agency  *  ", font));
+
+		font = FontFactory.getFont(FontFactory.HELVETICA, 9);
+		font.setColor(Color.lightGray);
+		phr.add(new Chunk("http://www.eea.eu.int     ", font));
+		phr.setLeading(10*1.2f);
+		
+		String submOrgName = (String)submitOrg.get("name");
+		if (!Util.voidStr(submOrgName) &&
+			!submOrgName.trim().equals("European Environment Agency")){
+			if (!Util.voidStr(submOrgName)){
+				font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
+				font.setColor(Color.gray);
+				phr.add(new Chunk("\n" + submOrgName, font));
+			}
+			
+			String submOrgUrl = (String)submitOrg.get("url");
+			if (!Util.voidStr(submOrgUrl)){
+				font = FontFactory.getFont(FontFactory.HELVETICA, 9);
+				font.setColor(Color.lightGray);
+				phr.add(new Chunk("  *  " + submOrgUrl, font));
+			}
+		}
+		
+		phr.add(new Chunk("   ", font));
+		
+		footer = new HeaderFooter(phr, true);
+		//footer.setAlignment(Element.ALIGN_LEFT);
+		footer.setAlignment(Element.ALIGN_RIGHT);
+		footer.setBorder(com.lowagie.text.Rectangle.TOP);
+	}
+  
     public static void main(String[] args){
         try{
             Class.forName("org.gjt.mm.mysql.Driver");
