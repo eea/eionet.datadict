@@ -1,7 +1,7 @@
-v:view
-i:insert
-u:update
-d:delete
-w:write
-x:execute
-c:control ACL
+v:View
+i:Insert
+u:Update
+d:Delete
+w:Link to this
+x:Execute
+c:Control ACL
