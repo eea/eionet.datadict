@@ -3,14 +3,13 @@
 package eionet.meta.imp;
 
 import org.xml.sax.*;
-import org.xml.sax.helpers.*;
-import javax.xml.parsers.*;
 
+//import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-import java.util.StringTokenizer;
-import java.util.*;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 /**
  * A Class class.
  * <P>
@@ -21,8 +20,8 @@ public class DatasetImportHandler extends BaseHandler{
     public static String ROWSET = "RowSet";
     public static String ROW = "Row";
 
-    private StringBuffer fieldData = new StringBuffer(); // buffer for collecting characters
-
+	//	buffer for collecting characters
+    private StringBuffer fieldData = new StringBuffer();                                                                              
     private Hashtable tables;
     private Vector table;
     private Hashtable row;
@@ -39,9 +38,14 @@ public class DatasetImportHandler extends BaseHandler{
       tables = new Hashtable();
       table = new Vector();
       row = new Hashtable();
+      //this.ctx=ctx;
   }
 
     public void startElement(String uri, String localName, String name, Attributes attributes){
+    	
+		String lowName = name.toLowerCase();
+		if (lowName.indexOf("methodology") != -1)
+			System.out.println("entered methodology!");
 
       if (bTableStart==true){   //start of table
           bTableStart=false;
@@ -63,8 +67,79 @@ public class DatasetImportHandler extends BaseHandler{
         fieldData.append(ch, start, len);
       }
     }
+    
+	/**
+	* This one converts the given string into UTF-8 bytes.
+	* If the string is already UTF-8 encoded, its bytes are simply returned.
+	*/
+	private byte[] getUTF8Bytes(String literal) throws Exception {
+        
+		if (literal == null || literal.length()==0)
+			return null;
+
+		StringBuffer buf = new StringBuffer();
+		for (int i=0; i<literal.length(); i++){
+            
+			char c = literal.charAt(i);
+            
+			if (c=='&'){
+				int j = literal.indexOf(";", i);
+				if (j > i){
+					char cc = literal.charAt(i+1);
+					int decimal = -1;
+					if (cc=='#'){
+						// handle Unicode decimal escape
+						String sDecimal = literal.substring(i+2, j);
+                        
+						try{
+							decimal = Integer.parseInt(sDecimal);
+						}
+						catch (Exception e){}
+					}
+					else{
+						// handle entity
+						String ent = literal.substring(i+1, j);
+						decimal = 0;//unicodeEscapes.getDecimal(ent);
+					}
+                    
+					if (decimal >= 0){
+						// if decimal was found, use the corresponding char. otherwise stick to c.
+						c = (char)decimal;
+						i = j;
+					}
+				}
+			}
+
+			buf.append(c);
+		}
+        
+		String unicodeLiteral = buf.toString();
+		return unicodeLiteral.getBytes("UTF-8");
+	}
+
 
     public void endElement(String uri, String localName, String name){
+    	
+		String lowName = name.toLowerCase();
+		if (lowName.indexOf("methodology") != -1){
+			String s = fieldData.toString();			
+			try {
+				byte[] bs = getUTF8Bytes(s);
+				
+				System.out.println("here we go!");
+				
+				for (int i=0; i<bs.length; i++){
+					Byte bt = new Byte(bs[i]);
+					int intVal = bt.intValue();            
+					System.out.println(Integer.toHexString(intVal));
+				}
+			}
+			catch (Exception e){
+				System.out.println(e.toString());
+			}
+			System.out.println("end of definition!");
+		}
+					
       if (name.equals(ROWSET)){  //end of table
           tables.put(tableName, table);
       }
@@ -78,16 +153,17 @@ public class DatasetImportHandler extends BaseHandler{
             row.put(name.toLowerCase(), fieldData.toString().trim());
         }
       }
-      fieldData.setLength(0);
+      fieldData =  new StringBuffer();
     }
     public Hashtable getTables(){
         return tables;
     }
     public static void main(String[] args){
+    	
       StringBuffer errorBuff = new StringBuffer();
-      String srcFile = "F:\\Projects\\DD\\tmp\\importtables.xml";
+      String srcFile = "X:\\Projects\\datadict\\import\\importtables.xml";
 
-      try{
+     try{
         DatasetImportHandler handler=new DatasetImportHandler();
         SAXParserFactory spfact = SAXParserFactory.newInstance();
         SAXParser parser = spfact.newSAXParser();
@@ -99,7 +175,7 @@ public class DatasetImportHandler extends BaseHandler{
        if (handler.hasError())
           System.out.println(handler.getErrorBuff().toString());
 
-        String tblName;
+        /*String tblName;
         Hashtable row;
 
        Hashtable tbls = handler.getTables();
@@ -111,7 +187,7 @@ public class DatasetImportHandler extends BaseHandler{
               row = (Hashtable)tbl.get(i);
               System.out.println(tblName + ": " + row.toString());
           }
-       }
+       }*/
       }
       catch (Exception e){
           System.out.println(e.toString());
