@@ -280,9 +280,8 @@
 					
 					String _wrkCopies = request.getParameter("wrk_copies");
 					wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
-
+					
 					Vector dsTables = searchEngine.getDatasetTables(params, short_name, idfier, full_name, definition, oper, wrkCopies);
-		           
         		    if (dsTables == null || dsTables.size()==0){
 		            %>
 			            <tr>
@@ -331,7 +330,7 @@
 						String ds_id = table.getDatasetID();
 						String ds_name = table.getDatasetName();
 						String dsNs = table.getParentNs();
-				
+						
 						if (table_name == null) table_name = "unknown";
 						if (table_name.length() == 0) table_name = "empty";
 				

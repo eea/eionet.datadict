@@ -895,7 +895,8 @@ if (mode.equals("edit") && dsTable!=null){
 										}
 									}
 								} %>
-								<input type="button" class="smallbutton" value="History" onclick="viewHistory()"/><%
+								<!--input type="button" class="smallbutton" value="History" onclick="viewHistory()"/ -->
+								<%
 							}
 							// the working copy part
 							else if (dsTable!=null && dsTable.isWorkingCopy()){ %>
@@ -1009,7 +1010,7 @@ if (mode.equals("edit") && dsTable!=null){
 								}
 								%>
 								
-								<!-- schema -->
+								<!-- schema & MS Excel template-->
 								
 								<%
 								if (mode.equals("view")){ %>
@@ -1055,6 +1056,16 @@ if (mode.equals("edit") && dsTable!=null){
 													</tr><%
 												}
 												%>
+												
+												<tr>
+													<td width="73%" valign="middle" align="left">
+														Create an MS Excel template for this table&nbsp;<a target="_blank" href="help.jsp?screen=table&area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
+													</td>
+													<td width="27%" valign="middle" align="left">
+														<a target="_blank" href="GetXls?obj_type=tbl&obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
+													</td>
+												</tr>
+												
 											</table>
 										</td>
 									</tr><%

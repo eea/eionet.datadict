@@ -153,13 +153,19 @@ if (dsVisual!=null && dsVisual.length()!=0){
             	<div style="margin-left:30">
             
 				<table width="500">
+					<tr height="20"><td colspan="2"></td></tr>
 					<tr>
-						<td colspan="3"><br></br>
+						<td>
 							<font class="head00">
 								Data model of
 								<font class="title2" color="#006666"><%=dataset.getShortName()%></font>
 								Dataset
 							</font>
+						</td>
+						<td align="right">
+							<a target="_blank" href="help.jsp?screen=dataset_model&area=pagehelp">
+								<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+							</a>
 						</td>
 					</tr>
 					

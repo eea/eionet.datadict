@@ -141,11 +141,14 @@
 			<tr>
 				<td>
 					<span class="mainfont">
-						This is a list of all the attributes used in Data Dictionary.
-						The columns indicate for which concepts exactly the attribute can be used.
+						This is a list of all definition attributes used in Data Dictionary.
+						Every attribute is uniquely identifed by its short name. There are two
+						types of attributes, click page help to find out more. The last 4
+						columns on this page inidcate the definitions where this attribute
+						can be used.
 						To view <% if (user != null && mode==null){ %> or modify <%}%> an attribute's
-						definition, click on its short name.
-						<% if (user != null && mode==null){ %>
+						definition, click its short name.
+						<% if (false && user != null && mode==null){ %>
 							To add a new attribute, click the 'Add' button on top of the list.
 							The left-most column enables you to delete selected attributes.
 						<%}%>
@@ -163,9 +166,16 @@
 					boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
 					if (addPrm){
 						%>
-						<tr><td colspan="6" valign="top" align="left" style="padding-right:10;padding-top:3">
-							<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
-						</td></tr>
+						<tr>
+							<td colspan="5" valign="top" align="left" style="padding-right:10;padding-top:3">
+								<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
+							</td>
+							<td>
+								<a target="_blank" href="help.jsp?screen=attributes&area=pagehelp">
+									<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+								</a>
+							</td>
+						</tr>
 						<tr height="5"><td colspan="6"></td></tr>
 						<%
 					}

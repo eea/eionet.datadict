@@ -301,7 +301,13 @@ try { // start the whole page try block
 				</td>
 			</tr>
 			
-			<tr height="20"><td colspan="2"></td></tr>
+			<tr height="20">
+				<td align="right" colspan="2">
+					<a target="_blank" href="help.jsp?screen=fixed_value&area=pagehelp">
+						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"/>
+					</a>
+				</td>
+			</tr>
 			
 			<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
 			

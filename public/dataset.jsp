@@ -891,6 +891,15 @@ private Vector getValues(String id){
 													</td>
 												</tr>
 												
+												<tr>
+													<td width="73%" valign="middle" align="left">
+														Create an MS Excel template for this dataflow&nbsp;<a target="_blank" href="help.jsp?screen=dataset&area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
+													</td>
+													<td width="27%" valign="middle" align="left">
+														<a target="_blank" href="GetXls?obj_type=dst&obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
+													</td>
+												</tr>
+												
 												<%
 												Vector docs = searchEngine.getDocs(ds_id);
 												for (int i=0; docs!=null && i<docs.size(); i++){
@@ -1499,7 +1508,7 @@ private Vector getValues(String id){
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
 														<td class="barfont" width="66%">
-															[Click <a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=ds_name%>&amp;ds=true')"><b>HERE</b></a> to manage compelx attributes of this dataset]
+															[Click <a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=ds_name%>&amp;ds=true')"><b>HERE</b></a> to manage complex attributes of this dataset]
 														</td><%
 													}
 													%>

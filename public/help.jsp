@@ -9,16 +9,25 @@ String height = "400";
 String screen = request.getParameter("screen");
 String area   = request.getParameter("area");
 String attrid = request.getParameter("attrid");
+String attrshn = request.getParameter("attrshn");
 
-if (attrid==null){
+if (attrid==null && attrshn==null){
 	if (screen==null || area==null){ %>
 		<b>Missing screen or area!</b> <%
 		return;
 	}
 	
-	helpText = Helps.get(screen, area);
-	width  = Helps.getPopupWidth(screen, area);
-	height = Helps.getPopupLength(screen, area);
+	String _helpText = Helps.get(screen, area);
+	if (_helpText!=null)
+		helpText = _helpText;
+		
+	String _width = Helps.getPopupWidth(screen, area);
+	if (_width!=null && _width.length()!=0)
+		width = _width;
+	
+	String _height = Helps.getPopupLength(screen, area);
+	if (_height!=null && _height.length()!=0)
+		height = _height;
 }
 else{
 	
@@ -34,7 +43,12 @@ else{
 	try {
 		conn = pool.getConnection();
 		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", getServletContext());
-		helpText = searchEngine.getAttrHelp(attrid, attrtype);
+		if (attrid==null || attrid.length()==0)
+			helpText = searchEngine.getAttrHelpByShortName(attrshn, attrtype);
+		else
+			helpText = searchEngine.getAttrHelp(attrid, attrtype);
+		
+		helpText = helpText==null ? "" : helpText;
 	}
 	catch (Exception e){ %>
 		<b><%=e.toString()%></b><%

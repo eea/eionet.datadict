@@ -177,6 +177,20 @@ dsName = dataset.getShortName();
 // if the table is not a working copy, its complex attributes cannot be edited.
 // so here we set the falg it is a working copy or not
 boolean isWorkingCopy = dsTable.isWorkingCopy();
+
+String tableName = dsTable.getShortName();
+if (tableName == null) tableName = "unknown";
+
+boolean hasGIS = false;
+for (int i=0; elems!=null && i<elems.size(); i++){
+	DataElement elm = (DataElement)elems.get(i);
+	if (elm.getGIS()!=null){
+		hasGIS = true;
+		break;
+	}
+}
+
+int colCount = hasGIS ? 6 : 5;
 	
 %>
 
@@ -184,7 +198,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 <head>
 	<title>Meta</title>
 	<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
-	<link href="eionet.css" rel="stylesheet" type="text/css"/>
+	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <script language="JavaScript" src='script.js'></script>
@@ -329,49 +343,40 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 			
 <form name="form1" method="POST" action="tblelems.jsp">
 
-	<table width="500">
-
-		<!---------------------- title  ------------------------------------------->
-
-		<%
-		String tableName = dsTable.getShortName();
-		if (tableName == null)
-			tableName = "unknown";
-
-    	//if (contextParam.equals("dstbl")){
-    	if (false){ %>
-			<tr>
-				<td colspan="4">
-					<a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>&amp;ctx=<%=contextParam%>">
-						&lt; back to table view
-					</a>
-				</td>
-			</tr> <%
-		}
-		%>
-		<tr valign="bottom">
-			<td colspan="4">
-				<font class="head00">Elements in <span class="title2"><a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>"><%=Util.replaceTags(tableName)%></a></span> table,
-				<span class="title2"><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a></span> dataset.
-			</td>
-		</tr>
-		
-		<tr height="5"><td colspan="4"></td></tr>
-	</table>
+	<!-- page title & the add new part -->
 	
 	<table width="500" cellspacing="0" cellpadding="0">
 	
+		<!-- title row & pagehelp -->
+		
 		<tr>
-			<td colspan="2">				
-				<% if (user != null){ %>
-					A red wildcard (<font color="red">*</font>) means that the definition of the data element is under work
-					and cannot be deleted. Otherwise checkboxes enable to delete selected elements.
-					To change the elements order, click on a row, use move buttons on the table's
-					right and click 'Save'.<%
-				}%>					
+			<td>
+				<span class="head00">
+					Elements in
+					<span class="title2">
+						<a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">
+							<%=Util.replaceTags(tableName)%>
+						</a>
+					</span>
+					table,
+					<span class="title2">
+						<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view">
+							<%=Util.replaceTags(dsName)%>
+						</a>
+					</span>
+					dataset.
+				</span>
+			</td>
+			
+			<td align="right">
+				<a target="_blank" href="help.jsp?screen=table_elements&area=pagehelp">
+					<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+				</a>
 			</td>
 		</tr>
 		
+		<tr height="10"><td colspan="2"></td></tr>
+	
 		<%
 		// set the flag indicating if the top namespace is in use
 		VersionManager verMan = new VersionManager(conn, searchEngine, user);
@@ -380,14 +385,9 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 		
 		String latestDstID = dataset==null ? null : verMan.getLatestDstID(dataset);
 		boolean dsLatest = Util.voidStr(latestDstID) ? true : latestDstID.equals(dataset.getID());
-
-		%>
 		
-		<%
 		boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
 		if (user != null && topFree && dstPrm){ %>
-		
-			<tr height="5"><td colspan="2"></td></tr>
 		
 			<tr>
 				<td colspan="2">
@@ -395,6 +395,11 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 						<tr>
 							<td align="right">
 								<span class="barfont">Identifier:</span>
+							</td>
+							<td align="right">
+								<a target="_blank" href="identification.html">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								</a>
 							</td>
 							<td style="padding-left:5">
 								<input type="text" class="smalltext" width="10" name="idfier"/>
@@ -408,7 +413,12 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 						</tr>
 						<tr>
 							<td align="right"><span class="barfont">Type:</span></td>
-							<td style="padding-left:5" colspan="2">
+							<td>
+								<a target="_blank" href="types.html">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								</a>
+							</td>
+							<td style="padding-left:5" colspan="3">
 								<select name="type" class="small">
 									<option selected value="CH2">Quantitative</option>
 									<option value="CH1">Fixed values (codes)</option>
@@ -421,186 +431,276 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 			<%
 		}
 		%>
+		
 		<tr height="10"><td colspan="2"></td></tr>
 	</table>
-	
-	<%
-	boolean hasGIS = false;
-	for (int i=0; elems!=null && i<elems.size(); i++){
-		DataElement elm = (DataElement)elems.get(i);
-		if (elm.getGIS()!=null){
-			hasGIS = true;
-			break;
-		}
-	}
-	
-	int colCount = hasGIS ? 6 : 5;
-	
-	%>
-	
-	<table width="auto" cellspacing="0"  border="0"><tr><td rowspan="2">	
-	<table width="auto" cellspacing="0" id="tbl">
 
+		
+	<!-- here's gonna be a table consisting of two columns -->
+	<!-- the first column contains the table of elements,  -->
+	<!-- the second one contains the ordering buttons      -->
+	
+	<table width="auto" cellspacing="0"  border="0">
 		<tr>
-			<td align="right" style="padding-right:10">
-				<% if (user!=null && topFree && dsLatest && dstPrm){ %>
-					<input type="button" value="Delete" class="smallbutton" onclick="submitForm('delete')"/><%
-				}
-				else{ %>
-					&#160;<%
-				}%>
-			</td>
+		
+			<!-- table of elements -->
+			
+			<td>
+				<table width="auto" cellspacing="0" id="tbl">
+				
+					<thead>
+				
+					<!-- Delete & Save buttons -->
+				
+					<%
+					boolean dispDelete = user!=null && topFree && dsLatest && dstPrm && elems.size()>0;
+					boolean dispSave   = user!=null && topFree && dsLatest && elems.size()>1 && dstPrm;
+					if (dispDelete || dispSave){ %>
+						<tr>
+							<td colspan="<%=String.valueOf(colCount)%>">
+								<%
+								if (user!=null && topFree && dsLatest && dstPrm){ %>
+									<input type="button" value="Delete selected" class="smallbutton" onclick="submitForm('delete')"/> <%
+								}
+								
+								if (user!=null && topFree && dsLatest && elems.size()>1 && dstPrm){ %>
+									<input type="button" <%=disabled%> value="Save order" class="smallbutton" onclick="saveChanges()" title="save the new order of elements"/><%
+								}
+								%>
+							</td>
+						</tr><%
+					}
+					%>
 					
-			<th align="left" style="padding-left:5;padding-right:10">Short name</th>
+					<!-- column headers -->
+
+					<tr>
+						<th align="right" style="padding-right:10">&nbsp;</th> <!-- checkboxes column -->
+						
+						<th align="left" style="padding-left:5;padding-right:10;border-left:0">
+							<table width="100%">
+								<tr>
+									<td align="right" width="50%">
+										<b>Short name</b>
+									</td>
+									<td align="left" width="50%">
+										<a target="_blank" href="identification.html#short_name">
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										</a>
+									</td>
+								</tr>
+							</table>
+						</th>
+						
+						<%
+						if (hasGIS){ %>
+							<th align="left" style="padding-right:10">
+								<table width="100%">
+									<tr>
+										<td align="right" width="50%">
+											<b>GIS</b>
+										</td>
+										<td align="left" width="50%">
+											<a target="_blank" href="help.jsp?screen=element&area=GIS">
+												<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+											</a>
+										</td>
+									</tr>
+								</table>
+							</th><%
+						}
+						%>
+						
+						<th align="left" style="padding-right:10">
+							<table width="100%">
+								<tr>
+									<td align="right" width="50%">
+										<b>Datatype</b>
+									</td>
+									<td align="left" width="50%">
+										<a target="_blank" href="help.jsp?attrshn=Datatype&amp;attrtype=SIMPLE">
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										</a>
+									</td>
+								</tr>
+							</table>
+						</th>
+						
+						<th align="left" style="padding-right:10; border-right:0">
+							<table width="100%">
+								<tr>
+									<td align="right" width="50%">
+										<b>Element type</b>
+									</td>
+									<td align="left" width="50%">
+										<a target="_blank" href="types.html">
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										</a>
+									</td>
+								</tr>
+							</table>
+						</th>
+						
+						<th align="left" style="padding-right:10; border-left:0; border-right:1 solid #FF9900">&nbsp;</th> <!-- FK column -->
+					</tr>
+					
+					</thead>
+					<tbody id="tbl_body">
+					
+					<%
+					Hashtable types = new Hashtable();
+					types.put("CH1", "Fixed values");
+					types.put("CH2", "Quantitative");
+					
+					// the elements display loop
+					
+					for (int i=0; elems!=null && i<elems.size(); i++){
+			
+						DataElement elem = (DataElement)elems.get(i);
+						
+						String gis = elem.getGIS()!=null ?  gis = elem.getGIS() : "no GIS";
+						
+						String elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID() + "&ds_id=" + dsID + "&table_id=" + tableID + "&ctx=" + contextParam;
+						
+						String delem_name=elem.getShortName();
+						if (delem_name.length() == 0) delem_name = "empty";
+						
+						String elemType = (String)types.get(elem.getType());
+						
+						String datatype = getAttributeValue(elem, "Datatype");		
+						if (datatype == null) datatype="";
+						
+						String max_size = getAttributeValue(elem, "MaxSize");		
+						if (max_size == null) max_size="";
+						
+						// see if the element is part of any foreign key relations
+						Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
+						boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
+						
+						String elemDefinition = elem.getAttributeValueByShortName("Definition");
+						
+						String workingUser = verMan.getWorkingUser(elem.getNamespace().getID(),
+						    											elem.getIdentifier(), "elm");
+						String ifDisabled = workingUser==null ? "" : "disabled";
+					%>
+						
+						<!-- element row -->
+						
+						<tr id="<%=elem.getID()%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+		
+							<td align="right" style="padding-right:10" bgcolor="#f0f0f0">
+								<%
+								if (user!=null && dstPrm){
+									
+									if (workingUser!=null){ // mark checked-out elements
+										%> <font title="<%=workingUser%>" color="red">* </font> <%
+									}
+									
+									if (workingUser==null && topFree && dsLatest){ %>
+										<input onclick="tbl_obj.clickOtherObject();"
+												type="checkbox"
+												style="height:13;width:13" name="delem_id" value="<%=elem.getID()%>"/>
+										<%
+									}
+								}
+								%>
+							</td>
+					
+							<td align="left" style="padding-left:5;padding-right:10">
+								<% if (elemDefinition!=null){ %>
+									<a title="<%=elemDefinition%>" href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
+								} else { %>
+									<a href="<%=elemLink%>"><%=Util.replaceTags(delem_name)%></a><%
+								} %>
+							</td>
+							
+							<%
+							if (hasGIS){ %>
+								<td align="left" style="padding-right:10">
+									<%=gis%>
+								</td><%
+							}
+							%>
+							
+							<td align="left" style="padding-right:10">
+								<%=datatype%>
+							</td>
+							
+							<td align="left" style="padding-right:10">
+								<% if (elem.getType().equals("CH1")){ %>
+									<a href="javascript:clickLink('fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>')"><%=elemType%></a>
+								<%} else{ %>
+									<%=elemType%>
+								<% } %>
+							</td>
+							
+							<td align="left" style="padding-right:10">
+								<%
+								if (fks){ %>
+									<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>&amp;ds_id=<%=dataset.getID()%>">(FK)</a><%
+								}
+								%>
+								<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5">
+								<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPosition()%>" size="5">
+								<input type="hidden" name="pos_<%=elem.getID()%>" value="0" size="5">
+							</td>
+						</tr>
+						<%
+					} // end elements display loop
+					%>
+					
+					</tbody>
+				</table>
+			</td>
+			
+			<!-- ordering buttons -->
+			
 			<%
-			if (hasGIS){ %>
-				<th align="left" style="padding-right:10">GIS</th><%
+			if (user!=null && topFree && dsLatest && elems.size()>1 && dstPrm){ %>
+				<td align="left" style="padding-right:10" valign="center" height="10">
+					<table cellspacing="2" cellpadding="2" border="0">
+						<tr>
+							<td>
+								<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" title="move selected row to top"/></a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" title="move selected row up"/></a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<img src="images/dot.gif"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="javascript:moveRowDown()"><img src="images/move_down.gif" border="0" title="move selected row down"/></a>			
+							</td>
+						<tr>
+							<td>
+								<a href="javascript:moveLast()"><img src="images/move_last.gif" border="0" title="move selected row last"/></a>			
+							</td>
+						</tr>
+					</table>
+				</td><%
 			}
 			%>
-			<th align="left" style="padding-right:10">Datatype</th>
-			<th align="left" style="padding-right:10">Elem Type</th>
-			<td align="left" style="padding-right:10"></td>
 		</tr>
-		<tbody>
-			
-		<%
 		
-		Hashtable types = new Hashtable();
-		types.put("CH1", "Fixed values");
-		types.put("CH2", "Quantitative");
-		
-		for (int i=0; elems!=null && i<elems.size(); i++){
-
-			DataElement elem = (DataElement)elems.get(i);
-			
-			String gis = elem.getGIS()!=null ?  gis = elem.getGIS() : "no GIS";
-			
-			String elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID() + "&ds_id=" + dsID + "&table_id=" + tableID + "&ctx=" + contextParam;
-			
-			String delem_name=elem.getShortName();
-			if (delem_name.length() == 0) delem_name = "empty";
-			
-			String elemType = (String)types.get(elem.getType());
-			
-			String datatype = getAttributeValue(elem, "Datatype");		
-			if (datatype == null) datatype="";
-			
-			String max_size = getAttributeValue(elem, "MaxSize");		
-			if (max_size == null) max_size="";
-			
-			// see if the element is part of any foreign key relations
-			Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
-			boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
-			
-			String elemDefinition = elem.getAttributeValueByShortName("Definition");
-			
-			String workingUser = verMan.getWorkingUser(elem.getNamespace().getID(),
-			    											elem.getIdentifier(), "elm");
-			String ifDisabled = workingUser==null ? "" : "disabled";
-
-						%>
-			<tr id="<%=elem.getID()%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-			
-				<td align="right" style="padding-right:10" bgcolor="#f0f0f0">
-					<%
-					if (user!=null && dstPrm){
-						
-						if (workingUser!=null){ // mark checked-out elements
-							%> <font title="<%=workingUser%>" color="red">* </font> <%
-						}
-						
-						if (workingUser==null && topFree && dsLatest){ %>
-							<input onclick="tbl_obj.clickOtherObject();"
-									type="checkbox"
-									style="height:13;width:13" name="delem_id" value="<%=elem.getID()%>"/>
-							<%
-						}
-					}
-					%>
-				</td>
-						
-<!--				<% if (user != null) {
-					%>
-					<td align="right" style="padding-right:10" bgcolor="#f0f0f0"><input <%=ifDisabled%> onclick="tbl_obj.clickOtherObject();" type="checkbox" style="height:13;width:13" name="delem_id" value="<%=elem.getID()%>"/>
-				<% } %> -->
-				
-				<td align="left" style="padding-left:5;padding-right:10">
-					<% if (elemDefinition!=null){ %>
-						<a title="<%=elemDefinition%>" href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
-					} else { %>
-						<a href="<%=elemLink%>"><%=Util.replaceTags(delem_name)%></a><%
-					} %>
-				</td>
-				<%
-				if (hasGIS){ %>
-					<td align="left" style="padding-right:10">
-						<%=gis%>
-					</td><%
-				}
-				%>
-				<td align="left" style="padding-right:10">
-					<%=datatype%>
-				</td>
-				<td align="left" style="padding-right:10">
-					<% if (elem.getType().equals("CH1")){ %>
-						<a href="javascript:clickLink('fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>')"><%=elemType%></a>
-					<%} else{ %>
-						<%=elemType%>
-					<% } %>
-				</td>
-				<td align="left" style="padding-right:10">
-					<%
-					if (fks){ %>
-						<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>&amp;ds_id=<%=dataset.getID()%>">(FK)</a><%
-					}
-					%>
-					<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5">
-					<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPosition()%>" size="5">
-					<input type="hidden" name="pos_<%=elem.getID()%>" value="0" size="5">
-				</td>
-			</tr>
-			<%
-		}
-		%>
 	</table>
-	</td>
-	<%
-		if (user!=null && topFree && dsLatest && elems.size()>1 && dstPrm){ %>
-		<td align="left" style="padding-right:10" valign="top" height="10">
-			<input type="button" <%=disabled%> value="Save" class="smallbutton" onclick="saveChanges()" title="save the new order of elements"/>
-		</td>
-		</tr><tr><td>
-				<table cellspacing="2" cellpadding="2" border="0">
-					<tr>
-					</tr>
-					<td>
-						<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" title="move selected row to top"/></a>			
-					</td></tr>
-					<td>
-						<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" title="move selected row up"/></a>			
-					</td></tr>
-					<tr><td>
-						<img src="images/dot.gif"/>
-					</td></tr>
-					<tr><td>
-						<a href="javascript:moveRowDown()"><img src="images/move_down.gif" border="0" title="move selected row down"/></a>			
-					</td>
-					<tr><td>
-						<a href="javascript:moveLast()"><img src="images/move_last.gif" border="0" title="move selected row last"/></a>			
-					</td>
-				</tr>
-			<% } %>
-		</table>
-		
-		<%
-		if (hasGIS){ %>
-			<br/>
-			NB! Note that in table view this table is split into two:<br/>
-			one for Metadata elements and one for Elements.<%
-		}
-		%>
 	
-	</td></tr></table>
+	<%
+	if (hasGIS){ %>
+		<p>
+		NB! Note that in table view this table is split into two:<br/>
+		one for GIS elements (i.e. elements) and one for non-GIS elements<br/>
+		(i.e. Metadata elements).
+		</p><%
+	}
+	%>
+		
 	
 	<input type="hidden" name="mode" value="delete"/>
 	<input type="hidden" name="ds_id" value="<%=dsID%>"/>

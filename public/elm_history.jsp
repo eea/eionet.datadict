@@ -54,21 +54,28 @@
 	<hr/>
 </div>
 <form name="form1" method="POST" action="complex_attr.jsp">
-        <h2>
-            History of <em><%=elm.getShortName()%></em>
-            below version <em><%=elm.getVersion()%></em>
-        </h2>
-        <p>
-            Click on version to go to corresponding element view.<br/>
-            User indicates the creator of the version.
-        </p>
+
+    <span class="head00">
+        History of <em><%=elm.getShortName()%></em>
+        below version <em><%=elm.getVersion()%></em>
+    </span>
 
 	<table width="auto" cellspacing="0" id="tbl">
-            <tr>
-                <th align="left" style="padding-left:5;padding-right:10">Version</th>
-                <th align="left" style="padding-right:10">User</th>
-                <th align="left" style="padding-right:10">Date</th>
-            </tr>
+	
+		<tr><td colspan="3">&nbsp;</td></tr>
+    	<tr>
+    		<td align="right" colspan="3">
+    			<a target="_blank" href="help.jsp?screen=history&area=pagehelp">
+					<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+				</a>
+    		</td>
+    	</tr>
+	
+        <tr>
+            <th align="left" style="padding-left:5;padding-right:10">LastCheckInNo</th>
+            <th align="left" style="padding-right:10">User</th>
+            <th align="left" style="padding-right:10">Date</th>
+        </tr>
 		
 		<%
 		for (int i=0; i<v.size(); i++){

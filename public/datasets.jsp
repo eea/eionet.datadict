@@ -316,9 +316,11 @@
     	}
     	
     	function doLoad(){
-	    	var wasDelPrm = document.forms["form1"].elements["was_del_prm"].value;
-	    	if (wasDelPrm == "true")
-	    		document.forms["form1"].elements["del_button"].disabled = false;
+	    	if (document.forms["form1"]!=null){
+		    	var wasDelPrm = document.forms["form1"].elements["was_del_prm"].value;
+		    	if (wasDelPrm == "true")
+		    		document.forms["form1"].elements["del_button"].disabled = false;
+    		}
     	}
     	
     </script>

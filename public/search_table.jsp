@@ -123,7 +123,7 @@ private String setDefaultAttrs(String name){
 <head>
     <title>Data Dictionary</title>
     <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet.css">
+    <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="JavaScript" src='script.js'></script>
     <script language="JavaScript">
 		attrWindow=null;
@@ -200,78 +200,66 @@ else
 		}
 		%>
         <TD>
-			<div style="margin-left:30">
 			<%
-				if (contextParam == null || !contextParam.equals(POPUP)){
-			%>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Search"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
-			<%
+			if (contextParam == null || !contextParam.equals(POPUP)){ %>
+			
+	            <jsp:include page="location.jsp" flush='true'>
+	                <jsp:param name="name" value="Search"/>
+	                <jsp:param name="back" value="true"/>
+	            </jsp:include> <%
 			}
-			else{
-			%>
-			<br></br>
-			<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-			<br></br>
-			<table cellspacing="0" cellpadding="0" width="400" border="0">
-					<tr>
-	    		     	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
-	          			<td width="600" background="images/bar_filled.jpg" height="25">
-		            		<table height="8" cellSpacing="0" cellPadding="0" border="0">
-		            			<tr>
-				         			<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-						            <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-						         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-									<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-									<td valign="bottom" align="middle"><span class="barfont">Search</span></td>
-									<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
-								</tr>				
-							</table>
-						</td>
-					</tr>			
-			</table>
-			<%
+			else{ %>
+			
+				<br/>
+				<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
+				<br></br>
+				<table cellspacing="0" cellpadding="0" width="400" border="0">
+						<tr>
+		    		     	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
+		          			<td width="600" background="images/bar_filled.jpg" height="25">
+			            		<table height="8" cellSpacing="0" cellPadding="0" border="0">
+			            			<tr>
+					         			<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
+							            <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
+							         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
+										<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
+										<td valign="bottom" align="middle"><span class="barfont">Search</span></td>
+										<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
+									</tr>				
+								</table>
+							</td>
+						</tr>			
+				</table> <%
 			}	
 			%>
+			
+			<div style="margin-left:30">
             
 				<form name="form1" action="search_results_tbl.jsp" method="GET">
 				<table width="500">
-					<tr><td><font class="head00">Search for a dataset table definition</font></td></tr>
-					<tr height="10"><td>&#160;</td></tr>
 					<tr>
-						<td>
-							
-							To find out more about the search criteria provided below, please
-							click on their titles.  It is possible to add more criteria by clicking
-							the '+' button underneath. To remove added criteria, use the '-' buttons
-							appearing next to them. <br>
-							Please use dataset search page, for searching tables using dataset attributes as search criteria:
+						<td><font class="head00">Search for a dataset table definition</font></td>
+						<td align="right">
+							<a target="_blank" href="help.jsp?screen=search_table&area=pagehelp">
+								<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+							</a>
 						</td>
 					</tr>
-					<%
-						if (contextParam == null || !contextParam.equals(POPUP)){
-					%>
-						<tr>
-							<td align="right">
-								 <a href="search_dataset.jsp"><img src="images/search_ds.gif" border=0 alt="Search datasets"></a>
-							</td>
-						</tr>
-						<!--tr height"10"><td>&#160;</td></tr-->
-					<%
-					}
-					%>
-					<tr><td colspan="3" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
+					<tr>
+						<td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td>
+					</tr>
 				</table>
 				
 				<table width="auto" cellspacing="0">
 				
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
+							<b>Short name</b>
+						</td>
+						<td>
 							<a target="_blank" href="identification.html#short_name">
-							<span class="help">?</span></a>&#160;
-							<span class="mainfont"><b>Short name</b></span>&#160;&#160;
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							</a>
 						</td>
 						<td colspan="2">
 							<input type="text" class="smalltext" size="50" name="short_name" value="<%=short_name%>"/>
@@ -280,8 +268,12 @@ else
 					
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
-							<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
-							<span class="mainfont"><b>Identifier</b></span>&#160;&#160;
+							<b>Identifier</b>
+						</td>
+						<td>
+							<a target="_blank" href="identification.html">
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							</a>
 						</td>
 						<td colspan="2">
 							<input type="text" class="smalltext" size="50" name="idfier" value="<%=idfier%>"/>
@@ -323,8 +315,12 @@ else
 								%>
 								<tr valign="top">
 									<td align="right" style="padding-right:10">
-										<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view"><span class="help">?</span></a>&#160;
-										<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
+										<b><%=attrName%></b>
+									</td>
+									<td>
+										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										</a>
 									</td>
 									<td colspan="2">
 										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
@@ -350,8 +346,12 @@ else
 							%>
 							<tr valign="top">
 								<td align="right" style="padding-right:10">
-									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view"><span class="help">?</span></a>&#160;
-									<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
+									<b><%=attrName%></b>
+								</td>
+								<td>
+									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+									</a>
 								</td>
 								<td>
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
@@ -372,9 +372,13 @@ else
 							%>
 							<tr valign="top">
 								<td align="right" style="padding-right:10">
-									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view"><span class="help">?</span></a>&#160;
-									<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
+									<b><%=attrName%></b>
 								</td>
+								<td>
+										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										</a>
+									</td>
 								<td>
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50" value=""/>
 								</td>
@@ -388,8 +392,8 @@ else
 					%>
 					
                     <tr valign="bottom">
-                		<td width="150">&#160;</td>
-                		<td colspan="2">
+                		<td width="150" colspan="2">&#160;</td>
+                    	<td colspan="2">
                 			<input type="radio" name="search_precision" value="substr" checked>Substring search</input>
                 			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
                 			<input type="radio" name="search_precision" value="free">Free text search</input>&#160;&#160;
@@ -401,7 +405,7 @@ else
 					if (user!=null && user.isAuthentic()){
 						%>
 						<tr valign="top">
-							<td width="150"></td>
+							<td width="150" colspan="2"></td>
 							<td colspan="2">
 								<input type="checkbox" name="wrk_copies" value="true"/><span class="smallfont" style="font-weight: normal">Working copies only</span>
 							</td>
@@ -410,10 +414,10 @@ else
 					}
 					%>
 					
-					<tr height="10"><td colspan="3"></td></tr>
+					<tr height="10"><td colspan="4"></td></tr>
 					
 					<tr valign="top">
-						<td></td>
+						<td colspan="2"></td>
 						<td>
 							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('<%=submitForm%>')"/>
 							<input class="mediumbuttonb" type="reset" value="Reset"/>

@@ -130,7 +130,7 @@ if (disabled.equals("")){
 <head>
 	<title>Meta</title>
 	<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
-	<link href="eionet.css" rel="stylesheet" type="text/css"/>
+	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <script language="JavaScript" src='script.js'></script>
@@ -183,49 +183,76 @@ if (disabled.equals("")){
 			 dataset</td>
 		</tr>
 		
-		<%
-		if (user!=null){ %>
-			<tr>
-				<td>
-					A red wildcard (<font color="red">*</font>) means that the definition of the table is under work
-					and cannot be deleted. Otherwise checkboxes enable to remove selected tables.
-				</td>
-			</tr><%
-		}
-		%>
-		
 	</table>
 
 	<table width="auto" cellspacing="0">
 	
-		<%
-		boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
-		if (dstPrm){ %>
-			<tr>
-				<td colspan="4" align="right">
-					<input type="button"
-						   <%=disabled%>
-						   value="Add new"
-						   class="smallbutton"
+		<tr><td colspan="4">&nbsp;</td></tr>
+	
+		<tr>
+			<%
+			boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
+			if (dstPrm){ %>		
+				<td colspan="3">
+					<input type="button" <%=disabled%> value="Add new" class="smallbutton"
 						   onclick="window.location.replace('dstable.jsp?mode=add&ds_id=<%=dsID%>&#38;ds_name=<%=dsName%>&ctx=ds')"/>
-				</td>
-			</tr> <%
-		}
-		%>
+					<input type="button" <%=disabled%> value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/>
+				</td><%
+			}
+			%>
+			<td align="right">
+				<a target="_blank" href="help.jsp?screen=dataset_tables&area=pagehelp">
+					<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+				</a>
+			</td>
+		</tr>
 		
-		<tr><td colspan="4"></td></tr>
+		<tr height="5"><td colspan="4"></td></tr>
 
 		<tr>
-			<td align="right" style="padding-right:10">
-				<%
-				if (dstPrm){ %>
-					<input type="button" <%=disabled%> value="Remove" class="smallbutton" onclick="submitForm('delete')"/><%
-				}
-				%>
-			</td>
-			<th align="left" style="padding-right:10">Full name</th>
-			<th align="left" style="padding-left:5;padding-right:10">Short name</th>
-			<th align="left" style="padding-right:10">Definition</th>
+			<th align="right" style="padding-right:10">&nbsp;</td>
+			<th align="left" style="padding-right:10; border-left:0">
+				<table width="100%">
+					<tr>
+						<td align="right" width="50%">
+							<b>Name</b>
+						</td>
+						<td align="left" width="50%">
+							<a target="_blank" href="help.jsp?attrshn=Name&amp;attrtype=SIMPLE">
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							</a>
+						</td>
+					</tr>
+				</table>
+			</th>
+			<th align="left" style="padding-left:5;padding-right:10">
+				<table width="100%">
+					<tr>
+						<td align="right" width="50%">
+							<b>Short name</b>
+						</td>
+						<td align="left" width="50%">
+							<a target="_blank" href="identification.html#short_name">
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							</a>
+						</td>
+					</tr>
+				</table>
+			</th>
+			<th align="left" style="padding-right:10; border-right:1 solid #FF9900">
+				<table width="100%">
+					<tr>
+						<td align="right" width="50%">
+							<b>Definition</b>
+						</td>
+						<td align="left" width="50%">
+							<a target="_blank" href="help.jsp?attrshn=Definition&amp;attrtype=SIMPLE">
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							</a>
+						</td>
+					</tr>
+				</table>
+			</th>
 			
 		</tr>
 			

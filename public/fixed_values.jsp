@@ -174,7 +174,6 @@ private String legalizeAlert(String in){
 	</head>
 	
 	<script language="JavaScript" src='script.js'></script>
-	<script language="JavaScript" src='dynamic_table.js'></script>
 	
 	<script language="JavaScript">
 	
@@ -277,7 +276,7 @@ private String legalizeAlert(String in){
 		}
 	</script>
 	
-<body onload="start()">
+<body>
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
@@ -308,13 +307,24 @@ private String legalizeAlert(String in){
 <table width="600">
 	
 	<tr valign="bottom">
-		<td colspan="2">
+		<td>
 			<span class="head00">
 				<%=initCaseTitle%> values of
 				<span class="title2"><a href="<%=parentUrl%>"><%=Util.replaceTags(delem_name)%></a></span>
 				<span class="head00"><%=dispParentType%></span>
 			</span>
 		</td>
+		
+		<%
+		String hlpScreen = mode.equals("view") ? "fixed_values_view" : "fixed_values_edit";
+		%>
+		
+		<td align="right">
+			<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp">
+				<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"/>
+			</a>
+		</td>
+		
 	</tr>
 	<tr height="10"><td colspan="2"></td></tr>
 	<tr><td align="left">
@@ -337,7 +347,11 @@ private String legalizeAlert(String in){
 				<td colspan="1" width="300">
 					<input class="smalltext" type="text" size="20" name="new_value"></input>
 					<input class="smallbutton" type="button" value="Add" onclick="submitForm('add')"/>&#160;
-					<input class="smallbutton" type="button" value="Import..." onclick="importCodes()"/>
+					<%
+					if (valsType.equals("CH1")){ %>
+						<input class="smallbutton" type="button" value="Import..." onclick="importCodes()"/><%
+					}
+					%>
 				</td>
 			</tr>
 		<% } %>

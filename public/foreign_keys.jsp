@@ -171,22 +171,18 @@ disabled="";
 				<font class="head00">Foreign keys associated with
 				<span class="title2"><%=Util.replaceTags(delemName)%></span>.
 			</td>
-		</tr>
-		
-		<tr height="5"><td></td></tr>
-		
-		<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-		
-		<tr>
-			<td>
-				This is a list of elements associated as foreign keys with
-				<font color="#006666"><%=Util.replaceTags(delemName)%></font>.
-				Click on element name to view its definition, click on Cardinality
-				to view or edit the fk relation.
+			<td align="right">
+				<a target="_blank" href="help.jsp?screen=foreign_keys&area=pagehelp">
+					<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+				</a>
 			</td>
 		</tr>
 		
-		<tr height="5"><td>&#160;</td></tr>
+		<tr height="5"><td colspan="2"></td></tr>
+		
+		<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
+		
+		<tr height="5"><td colspan="2">&#160;</td></tr>
 		
 	</table>
 	

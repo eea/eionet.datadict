@@ -216,9 +216,20 @@ private String legalizeAlert(String in){
 										
 				if (window.focus) {attrWindow.focus()}
 			}
+			
+			function doLoad(){
+				var attrName = document.forms["form1"].elements["attrName"].value;
+				var allowToAdd = document.forms["form1"].elements["allowToAdd"].value;
+				if (attrName!=null && (attrName=="SubmitOrganisation" || attrName=="RespOrganisation")){
+					if (allowToAdd=="false"){
+						document.forms["form1"].elements["addbutton"].disabled = true;
+					}
+				}
+			}
+			
 	</script>
 	</head>
-<body class="popup">
+<body class="popup" onload="doLoad()">
 		
 <div class="popuphead">
 	<h1>Data Dictionary</h1>
@@ -305,10 +316,10 @@ if (!mode.equals("view")){
 <%
 }
 %>
-<tr height="10"><td colspan="2"></td></tr>
+	<tr height="10"><td colspan="2"></td></tr>
 
-<tr valign="bottom">
-		<td colspan="2">
+	<tr valign="bottom">
+		<td>
 			<span class="head00">
 				<%
 				String nsPrefix = "";
@@ -335,6 +346,16 @@ if (!mode.equals("view")){
 			</span>
 			<span class="title2" color="#006666"><%=Util.replaceTags(parent_name)%></span>
 		</td>
+		
+		<%
+		String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edit";
+		%>
+		
+		<td align="right">
+			<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp">
+				<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"/>
+			</a>
+		</td>
 	</tr>
 	
 	<tr valign="bottom">
@@ -343,11 +364,9 @@ if (!mode.equals("view")){
 		</td>
 		<td align="right">
 			<%
-				if (user != null && isWorkingCopy && mode.equals("view")){
-			%>
-					<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit')"/> 
-			<%
-				}
+			if (user != null && isWorkingCopy && mode.equals("view")){ %>
+				<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit')"/> <%
+			}
 			%>
 		</td>
 	</tr>
@@ -363,7 +382,7 @@ if (!mode.equals("view")){
 <%
 	if (user!=null){
 		%>
-		<input class="smallbutton" type="button" value="Add"  onclick="submitForm('add')">&#160;
+		<input class="smallbutton" type="button" name="addbutton" value="Add"  onclick="submitForm('add')">&#160;
 		<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')">&#160;
 		<%
 		if (harvesterID!=null && harvesterID.length()>0){ %>
@@ -470,6 +489,7 @@ if (!mode.equals("view")){
 			}
 		}
 		
+		int nonInheritedCount = 0;
 		for (int j=0; rows!=null && j<rows.size(); j++){
 			Hashtable rowHash = (Hashtable)rows.get(j);
 			String row_id = (String)rowHash.get("rowid");
@@ -497,6 +517,7 @@ if (!mode.equals("view")){
 					<%
 			}
 			displayed++;
+			nonInheritedCount++;
 			
 			%>
 			</tr>				
@@ -506,6 +527,9 @@ if (!mode.equals("view")){
 
 	</table>
 </div>
+
+<input type="hidden" name="allowToAdd" value="<%=nonInheritedCount==0%>"/>
+<input type="hidden" name="attrName" value="<%=attrName%>"/>
 
 <input type="hidden" name="mode" value="<%=mode%>"/>
 

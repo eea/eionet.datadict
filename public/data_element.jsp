@@ -1110,7 +1110,8 @@ String attrValue = null;
 									}
 								}
 								%>
-								<input type="button" class="smallbutton" value="History" onclick="viewHistory()"/><%
+								<!--input type="button" class="smallbutton" value="History" onclick="viewHistory()"/>-->
+								<%
 							}
 							// the working copy part
 							else if (dataElement!=null && dataElement.isWorkingCopy()){ %>
@@ -1536,7 +1537,7 @@ String attrValue = null;
 														GIS type
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<a target="_blank" href="identification.html">
+														<a target="_blank" href="help.jsp?screen=element&area=GIS">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 														</a>
 													</td>
@@ -2117,7 +2118,7 @@ String attrValue = null;
 										%>
 										
 										
-										<!-- related elements -->
+										<!-- related elements, not displayed right now (see the 'false' in the beginning of if) -->
 										<%										
 										if (false && (mode.equals("edit") && user!=null) || (mode.equals("view") && relElems!=null && relElems.size()>0)){
 											

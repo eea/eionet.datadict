@@ -238,7 +238,7 @@ private String legalizeAlert(String in){
 		<th width="300">Definition</th>
 		<th width="50">Priority</th>
 	</tr>
-	<tbody>	
+	<tbody id="tbl_body">	
 	
 	<%
 	

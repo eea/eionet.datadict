@@ -112,7 +112,7 @@ private String setDefaultAttrs(String name){
 <head>
     <title>Data Dictionary</title>
     <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet.css">
+    <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="JavaScript" src='script.js'></script>
     <script language="JavaScript">
 		attrWindow=null;
@@ -178,28 +178,29 @@ private String setDefaultAttrs(String name){
 			<div style="margin-left:30">
 				<form name="form1" action="datasets.jsp" method="GET">
 				<table width="500">
-					<tr><td><font class="head00">Search for a dataset definition</font></td></tr>
-					<tr height="10"><td>&#160;</td></tr>
 					<tr>
 						<td>
-							
-							To find out more about the search criteria provided below, please
-							click on their titles.  It is possible to add more criteria by clicking
-							the '+' button underneath. To remove added criteria, use the '-' buttons
-							appearing next to them.
+							<font class="head00">Search for a dataset definition</font>
+						</td>
+						<td align="right">
+							<a target="_blank" href="help.jsp?screen=search_dataset&area=pagehelp">
+								<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+							</a>
 						</td>
 					</tr>
-					<tr height"10"><td>&#160;</td></tr>
-					<tr><td colspan="3" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
+					<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
 				</table>
 				
 				<table width="auto" cellspacing="0">
 				
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
+							<b>Short name</b>
+						</td>
+						<td>
 							<a target="_blank" href="identification.html#short_name">
-							<span class="help">?</span></a>&#160;							
-							<span class="mainfont"><b>Short name</b></span>&#160;&#160;
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							</a>
 						</td>
 						<td colspan="2">
 							<input type="text" class="smalltext" size="50" name="short_name" value="<%=short_name%>"/>
@@ -208,8 +209,12 @@ private String setDefaultAttrs(String name){
 					
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
-							<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
-							<span class="mainfont"><b>Identifier</b></span>&#160;&#160;
+							<b>Identifier</b>
+						</td>
+						<td>
+							<a target="_blank" href="identification.html">
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							</a>
 						</td>
 						<td colspan="2">
 							<input type="text" class="smalltext" size="50" name="idfier" value="<%=idfier%>"/>
@@ -232,8 +237,12 @@ private String setDefaultAttrs(String name){
 								%>
 								<tr valign="top">
 									<td align="right" style="padding-right:10">
-										<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view"><span class="help">?</span></a>&#160;
-										<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
+										<b><%=attrName%></b>
+									</td>
+									<td>
+										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										</a>
 									</td>
 									<td colspan="2">
 										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
@@ -259,8 +268,12 @@ private String setDefaultAttrs(String name){
 							%>
 							<tr valign="top">
 								<td align="right" style="padding-right:10">
-									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view"><span class="help">?</span></a>&#160;
-									<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
+									<b><%=attrName%></b>
+								</td>
+								<td>
+									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+									</a>
 								</td>
 								<td>
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
@@ -281,8 +294,12 @@ private String setDefaultAttrs(String name){
 							%>
 							<tr valign="top">
 								<td align="right" style="padding-right:10">
-									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=edit"><span class="help">?</span></a>&#160;
-									<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
+									<b><%=attrName%></b>
+								</td>
+								<td>
+									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE">
+										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+									</a>
 								</td>
 								<td>
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50" value=""/>
@@ -296,7 +313,7 @@ private String setDefaultAttrs(String name){
 					}
 					%>
                         <tr valign="bottom">
-                    		<td width="150">&#160;</td>
+                    		<td width="150" colspan="2">&#160;</td>
                     		<td colspan="2">
                     			<input type="radio" name="search_precision" value="substr" checked>Substring search</input>
                     			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
@@ -309,7 +326,7 @@ private String setDefaultAttrs(String name){
 					if (user!=null && user.isAuthentic()){
 						%>
 						<tr valign="top">
-							<td width="150"></td>
+							<td width="150" colspan="2"></td>
 							<td colspan="2">
 								<input type="checkbox" name="wrk_copies" value="true"/><span class="smallfont" style="font-weight: normal">Working copies only</span>
 							</td>
@@ -319,7 +336,7 @@ private String setDefaultAttrs(String name){
 					%>
 					
 					<tr valign="top">
-						<td></td>
+						<td colspan="2"></td>
 						<td>
 							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('datasets.jsp')"/>
 							<input class="mediumbuttonb" type="reset" value="Reset"/>
@@ -331,7 +348,8 @@ private String setDefaultAttrs(String name){
 				</table>
 				<!-- table for 'Add' -->
 				
-				<% if (user != null){ %>
+				<%
+				if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
 					<table width="500">
 						<tr height"10"><td>&#160;</td></tr>
 						<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>

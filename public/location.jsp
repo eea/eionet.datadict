@@ -50,7 +50,7 @@
 			String back = back_url.length()<1 ? "javascript:history.back(-1)":back_url;	
 			%>
         	<tr>
-        		<td valign="bottom" align="right" colspan="2">
+        		<td align="right" colspan="2">
 					<a href="<%=back%>">&lt;back</a>
 				</td>
 			</tr> <%

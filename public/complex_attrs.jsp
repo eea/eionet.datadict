@@ -220,10 +220,14 @@ private String legalizeAlert(String in){
 
 <table width="400">
 
-	<%
-	//String qualfName = (ds != null && ds.equals("true")) ? parent_name : parent_ns + ":" + parent_name;
-	%>
-	
+	<tr>
+		<td colspan="2" align="right">
+			<a target="_blank" href="help.jsp?screen=complex_attrs&area=pagehelp">
+				<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"/>
+			</a>
+		</td>
+	</tr>
+
 	<%
 	if (complexAttrs.size() == 0){
 		%>

@@ -7,8 +7,18 @@
 function dynamic_table(name) {
 
 	mytable= document.getElementById(name);
-	mytableBody = mytable.getElementsByTagName("tbody")[1];
-	rows = mytableBody.getElementsByTagName("TR");
+	mytableBodies = mytable.getElementsByTagName("tbody");
+
+	//mytableBody = mytableBodies[3];
+	mytableBody = mytableBodies.item(0);
+	for (var i=1; i<=mytableBodies.length; i++){
+		if (mytableBody.id=="tbl_body")
+			break;
+		else
+			mytableBody = mytableBodies.item(i);
+	}
+
+	rows = mytableBody.getElementsByTagName("tr");
  	rows_len=rows.length;
  	sel_pos=0;  //to store selected row position
 	other_click=false; //variable for understand the clicks on other objects (eg. checkbox)
@@ -70,6 +80,7 @@ function dt_moverowlast(){
 // This method sets the selected row position and changes the color.
 // parameter row is TR object
 function dt_selectrow(row){
+
 	if (other_click==true)
 	{
 		other_click=false;
@@ -77,8 +88,9 @@ function dt_selectrow(row){
 	}
 
 	row_pos = this.getRowPos(row);
-	
 
+//	row_pos = 1;
+	
 	if (row_pos != sel_pos && eval(row_pos)>0)
 	{
 		sel_pos=row_pos;
@@ -87,6 +99,7 @@ function dt_selectrow(row){
 	{
 		sel_pos=0;
 	}
+
 	dt_setrowcolors();
 }
 // This method receives the selected row's position in table.
