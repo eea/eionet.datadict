@@ -1,3 +1,4 @@
+<!-- saved from url=(0022)http://internet.e-mail -->
 <html>
 <head>
 	<title>Registration statuses</title>
@@ -6,48 +7,41 @@
 </head>
 
 <body class="popup">
-<div class="popuphead">
 
-	<h1>Data Dictionary</h1>
+<div class="popuphead">
+	<h1>Data Dictionary Help</h1>
 	<hr/>
 </div>
-<h2>Registration statuses</h2>
-    <p>
-        Each data definition in Data Dictionary (DD) goes through a life-cycle. Its phases are marked
-        by Registration Statuses. They are specified by the data definers and a definition can be
-        in one of the following statuses:
-    </p>
-    <h3>Incomplete</h3>
-    <p>
-        Existing dataflows under consideration to be included in DD; new dataflows under development
-        where DD is used as a structuring tool; test dataflows. <span class="caution">(At least metadata
-        attributes of Submitter organisation and Submitter phone number are required for this status!).<br/>
-        This status is not published for countries!
-        </span>
-    </p>
-    <h3>Candidate</h3>	
-    <p>
-        Dataflows to be included in DD (of relevance to countries). This level is for opening discussions
-        between ETCs and EEA. <span class="caution">(At least metadata attributes of Submitter organisation
-        and Submitter phone number are required for this status!).<br/>
-        This status is not published for countries!
-        </span>
-    </p>
-    <h3>Recorded</h3>	
-    <p>
-        <span class="caution">All mandatory metadata entered!</span> This level is for discussions between ETCs
-        and countries. <span class="caution">So it is published for countries as well!</span>
-    </p>
-    <h3>Qualified</h3>	
-    <p>
-        <span class="caution">All mandatory metadata entered!</span> This level is for closing discussions between
-        ETCs and EEA. <span class="caution">Not published for countries!</span>
-    </p>
-    <h3>Released</h3>
-    <p>
-        <span class="caution">All mandatory metadata entered!</span> Accepted by ETCs and EEA. Released for countries
-        to use for download of technical guidelines and templates.<br/>
-        <span class="caution">Naturally, it is published for countries too!</span>
-    </p>
+
+<h2>Registration status</h2>
+    
+<p> Each dataset in data dictionary goes through a life-cycle. Its phases are 
+  marked by a registration status. The status of a dataset is shown graphically 
+  by how many ticks are shown in this column. The registration status of a dataset 
+  is specified by the data definers and can be in one of the following statuses: 
+</p>
+<h3>Released (5 ticks)</h3>
+<p> The dataset is accepted by ETCs and EEA and is released for countries to use 
+  for download of technical guidelines and templates. Datasets in this status 
+  can be accessed by countries. </p>
+<h3>Qualified (4 ticks)</h3>
+<p> All mandatory metadata are entered in this status. This level is for closing 
+  discussions between ETCs and EEA. Datasets in this status cannot be accessed 
+  by countries. </p>
+<h3>Recorded (3 ticks)</h3>
+<p> All mandatory metadata are entered in this status. This level is for discussions 
+  between ETCs and countries if applicable. Otherwise the dataset will skip this 
+  status and move directly to a Qualified status. Datasets in Recorded status 
+  can be accessed by countries. </p>
+<h3>Candidate (2 ticks)</h3>
+<p> Dataflows that are included in the data dictionary by the EEA or ETC data 
+  managers. This level is for opening discussions between ETCs and EEA. Datasets 
+  in this status cannot be accessed by countries. </p>
+<h3>Incomplete (1 tick)</h3>
+<p> This can be existing dataflows under consideration to be included in the data 
+  dictionary or new dataflows under development where the data dictionary is used 
+  as a structuring tool or to test dataflows. At a minimum metadata attributes 
+  of submitter organisation and submitter phone number are required for this status.<br/>
+  Datasets in this status cannot be accessed by countries.</p>
 </body>
 </html>
