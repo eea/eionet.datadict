@@ -822,7 +822,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 						if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy() && editPrm && hasHistory){ %>
 							<tr>
 								<td align="right" class="smallfont_light" colspan="2">
-									<input type="checkbox" name="upd_version" value="true">&nbsp;Update version when checking in</input>
+									<input type="checkbox" name="upd_version" value="true">&nbsp;Update LastCheckInNo when checking in</input>
 								</td>
 							</tr><%
 						}

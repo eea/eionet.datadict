@@ -1185,7 +1185,7 @@ String attrValue = null;
 						if (mode.equals("edit") && dataElement!=null && dataElement.isWorkingCopy() && user!=null && hasHistory){%>
 							<tr>
 								<td align="right" class="smallfont_light" colspan="2">
-									<input type="checkbox" name="upd_version" value="true">&nbsp;Update version when checking in</input>
+									<input type="checkbox" name="upd_version" value="true">&nbsp;Update LastCheckInNo when checking in</input>
 								</td>
 							</tr><%
 						}
