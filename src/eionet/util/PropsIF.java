@@ -24,6 +24,7 @@ public interface PropsIF {
 	
 	public static final String XFORMS_NSS = "xforms.nss";
 	public static final String XFORMS_NS = "xforms.ns";
+	public static final String XFORM_TEMPLATE_URL = "xforms.templ.url";
 	
 	/** defaults */
 	
