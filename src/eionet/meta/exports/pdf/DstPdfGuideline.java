@@ -45,6 +45,12 @@ public class DstPdfGuideline extends PdfHandout {
         v = searchEngine.getComplexAttributes(dsID, "DS");
         ds.setComplexAttributes(v);
         v = searchEngine.getDatasetTables(dsID);
+        DsTable tbl = null;
+        for (int i=0; v!=null && i<v.size(); i++){
+        	tbl = (DsTable)v.get(i);
+        	tbl.setSimpleAttributes(
+        			searchEngine.getSimpleAttributes(tbl.getID(), "T"));
+        }
         ds.setTables(v);
         
         addParameter("dstID", dsID);
@@ -68,7 +74,7 @@ public class DstPdfGuideline extends PdfHandout {
 		nr = nr==null ? "" : nr + " ";
 		        
         Paragraph prg = new Paragraph();
-		prg.add(new Chunk("General information for " + dsName,
+		prg.add(new Chunk(nr + "General information for " + dsName,
 											Fonts.get(Fonts.HEADING_1)));  
         prg.add(new Chunk(" dataset",
         			FontFactory.getFont(FontFactory.HELVETICA, 16)));
@@ -131,7 +137,15 @@ public class DstPdfGuideline extends PdfHandout {
         title = "Overview of " + dsName + " dataset tables";
 		nr = sect.level(title, 1);
 		nr = nr==null ? "" : nr + " ";
-		prg = new Paragraph(nr + title, Fonts.get(Fonts.HEADING_1));
+		prg = new Paragraph();
+		prg.add(new Chunk(nr,
+					 FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
+		prg.add(new Chunk("Overview of ",
+					 FontFactory.getFont(FontFactory.HELVETICA, 16)));
+		prg.add(new Chunk(dsName,
+					 FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
+		prg.add(new Chunk(" dataset tables",
+					 FontFactory.getFont(FontFactory.HELVETICA, 16)));
 		addElement(prg);
         //addElement(new Phrase("Tables in this dataset:\n", Fonts.get(Fonts.HEADING_0)));
         

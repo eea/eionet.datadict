@@ -112,6 +112,7 @@ public class PdfUtil {
         int rowCount = 0;
         PdfPCell nameCell = null;
         PdfPCell valueCell = null;
+        String methodology = null;
         
         for (int i=0; attrs!=null && i<attrs.size(); i++){
             
@@ -159,6 +160,11 @@ public class PdfUtil {
             
             if (show!=null && !show.contains(name)) continue;
             
+            if (name.equalsIgnoreCase("methodology")){
+				methodology= value;
+				continue;
+            }
+            
             //if (values==null || values.size()==0) continue;
             
             //for (int j=0; j<values.size(); j++){
@@ -183,6 +189,26 @@ public class PdfUtil {
             
             rowCount++;
         }
+        
+		if (!Util.voidStr(methodology)){
+			nameCell = new PdfPCell(new Phrase("Methodology",
+										Fonts.get(Fonts.ATTR_TITLE)));
+			valueCell = new PdfPCell(processLinks(methodology,
+										Fonts.get(Fonts.CELL_VALUE)));
+    
+			nameCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			nameCell.setPaddingRight(5);
+			nameCell.setBorder(Rectangle.NO_BORDER);
+			valueCell.setBorder(Rectangle.NO_BORDER);
+    
+			if (rowCount % 2 != 1){
+				nameCell.setGrayFill(0.9f);
+				valueCell.setGrayFill(0.9f);
+			}
+        
+			table.addCell(nameCell);
+			table.addCell(valueCell);
+		}
         
         if (table.size() > 0)
             return table;
@@ -399,6 +425,7 @@ public class PdfUtil {
 			Vector fks = elem.getFKRelations();
 			
 			String pori = elem.getAttributeValueByShortName("PublicOrInternal");
+			if (pori!=null && pori.equalsIgnoreCase("undefined")) pori = null;
 			
 			Phrase phr = new Phrase();
 			phr.add(new Chunk(name + "\n",
