@@ -44,10 +44,10 @@ ctx = getServletContext();
 //handle the POST
 if (request.getMethod().equals("POST")){
 	
-	String dsn = request.getParameter("ds_name");
+	String dsIdf = request.getParameter("ds_idf");
 	boolean delPrm = user!=null &&
-					 dsn!=null &&
-					 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "u");
+					 dsIdf!=null &&
+					 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
 	
 	if (!delPrm){ %>
 		<b>Not allowed!</b> <%
@@ -199,7 +199,7 @@ if (disabled.equals("")){
 	<table width="auto" cellspacing="0">
 	
 		<%
-		boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getShortName(), "u");
+		boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
 		if (dstPrm){ %>
 			<tr>
 				<td colspan="4" align="right">
@@ -298,6 +298,7 @@ if (disabled.equals("")){
 	<input type="hidden" name="mode" value="delete"/>
 	<input type="hidden" name="ds_id" value="<%=dsID%>"/>
 	<input type="hidden" name="ds_name" value="<%=dataset.getShortName()%>"/>
+	<input type="hidden" name="ds_idf" value="<%=dataset.getIdentifier()%>"/>
 	
 </form>
 </div>

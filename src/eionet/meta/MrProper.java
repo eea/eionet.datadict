@@ -684,7 +684,7 @@ public class MrProper {
             buf = new StringBuffer();
             buf.append("update ");
 			buf.append(tblName);
-			buf.append(" set WORKING_USER=NULL where IDENTIFIER");
+			buf.append(" set WORKING_USER=NULL where IDENTIFIER=");
 			buf.append(Util.strLiteral((String)hash.get("IDENTIFIER")));
 			buf.append(" and VERSION=");
 			buf.append((String)hash.get("VERSION"));
@@ -692,7 +692,7 @@ public class MrProper {
 				buf.append(" and PARENT_NS=");
 				buf.append((String)hash.get("PARENT_NS"));
 			}
-            
+			
             stmt.executeUpdate(buf.toString());
         }
         
@@ -869,7 +869,8 @@ public class MrProper {
             mrProper.setUser(testUser);
             
             Parameters pars = new Parameters();
-            pars.addParameterValue(FUNCTIONS_PAR, RMV_MULT_VERS);
+			pars.addParameterValue(FUNCTIONS_PAR, MrProper.RLS_NOWC);
+            //pars.addParameterValue(FUNCTIONS_PAR, RMV_MULT_VERS);
 			/*pars.addParameterValue("rm_obj_type", "dst");
 			pars.addParameterValue("rm_crit", "id");
 			pars.addParameterValue("rm_id", "1428 1222 1219 1220 1249 1429");*/

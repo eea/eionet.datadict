@@ -16,6 +16,7 @@
     public String oFName;  //truncated full name
     public String oVersion;
     public Vector oTables;
+    public String oIdentifier;
 
     private String oCompStr=null;
     private int iO=0;
@@ -145,8 +146,8 @@
 			else{
 				String[] ds_ids = request.getParameterValues("ds_id");
 				for (int i=0; ds_ids!=null && i<ds_ids.length; i++){
-					String dsn = request.getParameter("ds_name_" + ds_ids[i]);
-					if (dsn==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "d")){ %>
+					String dsIdf = request.getParameter("ds_idf_" + ds_ids[i]);
+					if (dsIdf==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "d")){ %>
 						<b>Not allowed!</b><%
 					}
 				}
@@ -531,7 +532,7 @@
                 														 tables);
                 														 
 					boolean delPrm = user!=null &&
-									 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getShortName(), "d");
+									 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "d");
 					oEntry.setDelPrm(delPrm);
 					if (delPrm)
 						wasDelPrm = true;
@@ -539,6 +540,7 @@
 					
 					oEntry.setRegStatus(regStatus);
 					oEntry.clickable = clickable;
+					oEntry.oIdentifier = dataset.getIdentifier();
 					
 					oResultSet.oElements.add(oEntry);
 					
@@ -565,7 +567,7 @@
 		    					
 		    					if (canDelete){ %>
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>"/>
-									<input type="hidden" name="ds_name_<%=dataset.getID()%>" value="<%=dataset.getShortName()%>"/>
+									<input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=dataset.getIdentifier()%>"/>
 									<%
 								}
 							}
@@ -646,7 +648,7 @@
 									wasDelPrm = true;
 									%>
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>"/>
-									<input type="hidden" name="ds_name_<%=oEntry.oID%>" value="<%=oEntry.oShortName%>"/><%
+									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=oEntry.oIdentifier%>"/><%
 								}
 								%>
 							</td>

@@ -242,7 +242,14 @@ public class DataElementHandler extends BaseHandler {
 			if (verMan.getWorkingUser(topNS) != null)
 				throw new Exception("Cannot add to a dataset in work!");
         }
-
+        
+        // see if making a copy
+		String copy_elem_id = req.getParameter("copy_elem_id");
+		if (copy_elem_id != null && copy_elem_id.length()!=0){
+			copyElem(copy_elem_id);
+			return;
+		}
+        
         // make sure you have the necessary params
         if (idfier == null || ns_id == null)
             throw new SQLException("Identifier or namespace not specified!");
@@ -250,13 +257,6 @@ public class DataElementHandler extends BaseHandler {
         // make sure such a data element doe not already exist
         if (exists()) throw new SQLException(
 					"Such a data element already exists!");
-
-        // stuff needed if making a copy
-        String copy_elem_id = req.getParameter("copy_elem_id");
-        if (copy_elem_id != null && copy_elem_id.length()!=0){
-            copyElem(copy_elem_id);
-            return;
-        }
 
         SQLGenerator gen = new SQLGenerator();
         Statement stmt = conn.createStatement();
@@ -325,7 +325,6 @@ public class DataElementHandler extends BaseHandler {
             gen.setField("REG_STATUS", status);
         
 		String gisType = req.getParameter("gis");
-		System.out.println("GIS type = " + gisType);
 		if (gisType==null || gisType.equals("nogis"))
 			gen.setFieldExpr("GIS", "NULL");
 		else
@@ -854,7 +853,7 @@ public class DataElementHandler extends BaseHandler {
     }
     
     private void insertAttribute(String attrId, String value) throws Exception {
-        
+    	
         // for CH1 certain attributes are not allowed
         if (type!=null && type.equals("CH1") && ch1ProhibitedAttrs.contains(attrId))
             return;

@@ -5,6 +5,8 @@ package eionet.meta.imp;
 import org.xml.sax.*;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.StringTokenizer;
+
 /**
  * A Class class.
  * <P>
@@ -75,7 +77,7 @@ public class DatasetImportHandler extends BaseHandler{
       }
       else{
         if (bOK==true){
-            row.put(name.toLowerCase(), fieldData.toString().trim());
+            row.put(name.toLowerCase(), processFieldData(fieldData.toString().trim()));
         }
       }
       fieldData =  new StringBuffer();
@@ -86,6 +88,39 @@ public class DatasetImportHandler extends BaseHandler{
     public String getImportName(){
         return importName;
     }
+    
+    /**
+     * 
+     */
+    private String processFieldData(String data){
+    	
+    	return processApos(data);
+    }
+    
+    /**
+     * Substitutes &apos; entities with &#39;, because &apos; is not supported in older
+     * browsers and IE6 :(
+     */
+    private String processApos(String data){
+    	
+    	String oldEntity = "&apos;";
+		String newEntity = "&#39;";
+    	
+		StringBuffer buf = null;
+		int i = data.indexOf(oldEntity);
+		while (i != -1){
+			buf = new StringBuffer(data);
+			buf.replace(i, i + oldEntity.length(), newEntity);
+			data = data.toString();
+			i = data.indexOf(oldEntity, i + newEntity.length());
+		}
+
+		return data;
+    }
+    
+    /**
+     * 
+     */
     public static void main(String[] args){
       StringBuffer errorBuff = new StringBuffer();
       String srcFile = "F:\\Projects\\DD\\tmp\\importtables.xml";

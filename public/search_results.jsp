@@ -15,6 +15,7 @@
     public String oDsName;
     public String oTblName;
     public String oNs;
+    public String oDsIdf;
 
     private String oCompStr=null;
     private int iO=0;
@@ -129,8 +130,8 @@
 			else{
 				String[] delem_ids = request.getParameterValues("delem_id");
 				for (int i=0; delem_ids!=null && i<delem_ids.length; i++){
-					String dsn = request.getParameter("ds_name_" + delem_ids[i]);
-					if (dsn==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "u")){ %>
+					String dsidf = request.getParameter("ds_idf_" + delem_ids[i]);
+					if (dsidf==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsidf, "u")){ %>
 						<b>Not allowed!</b> <%
 					}
 				}
@@ -459,12 +460,13 @@
                 														 null);                															 
 					boolean delPrm = user!=null &&
 									 ds!=null &&
-									 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds.getShortName(), "u");
+									 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds.getIdentifier(), "u");
 									 
 					oEntry.setDelPrm(delPrm);
 					if (delPrm)
 						wasDelPrm = true;
 					
+					oEntry.oDsIdf = ds.getIdentifier();
 					oResultSet.oElements.add(oEntry);
 					
 					String workingUser = verMan.getWorkingUser(dataElement.getNamespace().getID(),
@@ -491,7 +493,7 @@
 									<input type="checkbox" style="height:13;width:13" name="delem_id" value="<%=delem_id%>"/>
 									<%
 									if (ds!=null){ %>
-										<input type="hidden" name="ds_name_<%=delem_id%>" value="<%=ds.getShortName()%>"/><%
+										<input type="hidden" name="ds_idf_<%=delem_id%>" value="<%=ds.getIdentifier()%>"/><%
 									}
 								}
 							}
@@ -500,22 +502,7 @@
 						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
 							<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
 							<%=Util.replaceTags(delem_name)%></a>
-						</td>					
-						<%
-						/*if (ns != null){
-							%>
-							<td align="center" width="80pts">&#160;
-								<a href="namespace.jsp?ns_id=<%=ns.getID()%>&amp;mode=edit">
-								<%=ns.getShortName()%></a>
-							</td>
-							<%
-						}
-						else{
-							%>
-								<td align="center" width="80pts">Unknown</td>
-								<%
-							}*/
-						%>
+						</td>
 						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=displayType%></td>
 						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=Util.replaceTags(dispTbl)%></td>
 						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=Util.replaceTags(dispDs)%></td>
@@ -549,7 +536,7 @@
 								if (oEntry.getDelPrm()){ %>
 									<input type="checkbox" style="height:13;width:13" name="delem_id" value="<%=oEntry.oID%>"/><%
 									if (oEntry.oDsName != null){%>
-										<input type="hidden" name="ds_name_<%=oEntry.oID%>" value="<%=oEntry.oDsName%>"/><%
+										<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=oEntry.oDsIdf%>"/><%
 									}
 								}
 								%>

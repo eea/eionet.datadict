@@ -793,6 +793,8 @@ public class DsTableHandler extends BaseHandler {
             pars.addParameterValue("mode", "copy");
             pars.addParameterValue("table_id", getLastInsertID());
             pars.addParameterValue("delem_name", elem.getShortName());
+			pars.addParameterValue("idfier", elem.getIdentifier());
+			pars.addParameterValue("ns", elem.getNamespace().getID());
             pars.addParameterValue("type", elem.getType());
             pars.addParameterValue("copy_elem_id", elem_id);
 

@@ -207,8 +207,8 @@ private Vector getValues(String id){
 					if (version == null) version = "unknown";
 					if (version.length() == 0) version = "empty";
 					
-					editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getShortName(), "u");
-					delPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getShortName(), "u");
+					editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
+					delPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
 					
 					if (mode.equals("edit") && !editPrm){ %>
 						<b>Not allowed!</b> <%
@@ -760,7 +760,7 @@ private Vector getValues(String id){
 			
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:alert('Under construction!')">
+					<a target="_blank" href="identification.html#short_name">
 					<span class="help">?</span></a>&#160;<span class="mainfont"><b>Short name</b>
 						<%
 						displayed++;

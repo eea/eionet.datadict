@@ -177,14 +177,22 @@ private String legalizeAlert(String in){
 	<script language="JavaScript" src='dynamic_table.js'></script>
 	
 	<script language="JavaScript">
-			function submitForm(mode){
-				document.forms["form1"].elements["mode"].value = mode;
-				if (mode == "delete"){
-					var b = confirm("This will delete all the  values you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
-					if (b==false) return;
-				}
-				document.forms["form1"].submit();
+	
+		function submitForm(mode){
+			
+			if (mode == "delete_all"){
+				selectAll();
+				mode = "delete";
 			}
+			
+			document.forms["form1"].elements["mode"].value = mode;
+			if (mode == "delete"){
+				var b = confirm("This will delete all the  values you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
+				if (b==false) return;
+			}
+			document.forms["form1"].submit();
+		}
+		
     	function edit(){
 	    	<%
 	    	String modeString = new String("mode=view&");
@@ -259,6 +267,14 @@ private String legalizeAlert(String in){
 			var url = "import.jsp?mode=FXV&delem_id=<%=delem_id%>&short_name=<%=delem_name%>";
 			document.location.assign(url);
 		}
+		
+		function selectAll(){
+			
+			var checks = document.form1.del_id;
+			for (var i=0; checks!=null && i<checks.length; i++){
+				checks[i].checked=true;
+			}
+		}
 	</script>
 	
 <body onload="start()">
@@ -327,7 +343,7 @@ private String legalizeAlert(String in){
 		<% } %>
 	<% } %>
 			
-	<tr height="10"><td colspan="2"></td></tr>
+	<tr height="5"><td colspan="2"></td></tr>
 </table>
 <% if (mode.equals("view")){
 	%>
@@ -365,7 +381,7 @@ private String legalizeAlert(String in){
 				<td valign="bottom" align="left" style="padding-left:5;padding-right:10">
 					<%=spaces%>
 					<b>
-					<a href="fixed_value.jsp?fxv_id=<%=fxvID%>&#amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>">
+					<a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>">
 						<%=Util.replaceTags(value)%>
 					</a>
 					</b>
@@ -384,12 +400,17 @@ private String legalizeAlert(String in){
 <%} else {%>
 <table width="600" cellspacing="0"  border="0"><tr><td rowspan="2">	
 	<table width="auto" cellspacing="0" cellpadding="0" id="tbl">
-  	<tr>
-		<% if (user != null) { %>
-			<td align="right" style="padding-right:10">
-				<input class="smallbutton" type="button" value="Remove" onclick="submitForm('delete')">
+	<% if (user != null) { %>
+		<tr>
+			<td align="left" colspan="3">
+				<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')">&#160;
+				<input class="smallbutton" type="button" value="Remove all" onclick="submitForm('delete_all')">
 			</td>
-		<% } %>
+		</tr>
+		<tr height="3"><td colspan="3"></td></tr>
+	<% } %>	
+  	<tr>
+  		<th>&#160;</th>
 		<th align="left" style="padding-left:5;padding-right:10" width="100">Value</th>
 		<th align="left" style="padding-right:10" width="500">Definition</th>
 	</tr>

@@ -85,6 +85,12 @@ if (dsID == null || dsID.length()==0){ %>
 	return;
 }
 
+String dsIdf = request.getParameter("ds_idf");
+if (dsIdf == null || dsIdf.length()==0){ %>
+	<b>Dataset Identifier is missing!</b> <%
+	return;
+}
+
 String dsName = request.getParameter("ds_name");
 if (dsName == null || dsName.length()==0) dsName = "unknown";
 
@@ -93,8 +99,7 @@ ctx = getServletContext();
 //handle the POST
 if (request.getMethod().equals("POST")){
 	
-	String dsn = request.getParameter("ds_name");
-	if (dsn==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "u")){ %>
+	if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u")){ %>
 		<b>Not allowed!</b> <%
 	}
 	
@@ -379,7 +384,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 		%>
 		
 		<%
-		boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsName, "u");
+		boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
 		if (user != null && topFree && dstPrm){ %>
 		
 			<tr height="5"><td colspan="2"></td></tr>
@@ -600,6 +605,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 	<input type="hidden" name="mode" value="delete"/>
 	<input type="hidden" name="ds_id" value="<%=dsID%>"/>
 	<input type="hidden" name="ds_name" value="<%=dsName%>"/>
+	<input type="hidden" name="ds_idf" value="<%=dsIdf%>"/>
 	<input type="hidden" name="table_id" value="<%=tableID%>"/>
 	<input type="hidden" name="ctx" value="<%=contextParam%>"/>
 	<input type="hidden" name="changed" value="0"/>

@@ -127,13 +127,58 @@ if (!mode.equals("add") && (tableID == null || tableID.length()==0)){ %>
 	return;
 }
 
-String dsID = request.getParameter("ds_id");
+String dsID   = request.getParameter("ds_id");
 String dsName = request.getParameter("ds_name");
+String dsIdf = null;
+
+Connection conn = null;
+XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+DBPoolIF pool = xdbapp.getDBPool();
+
+conn = pool.getConnection();
+DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+searchEngine.setUser(user);
+
+// get the table
+DsTable dsTable = null;
+if (tableID!=null){	
+	dsTable = searchEngine.getDatasetTable(tableID);		
+	if (dsTable == null){ %>
+		<b>Table was not found!</b> <%
+		return;
+	}
+}
+
+// get the dataset
+Dataset dataset = null;
+String dsNs = null;
+if (dsTable!=null){
+	dsID = dsTable.getDatasetID();
+	if (dsID!=null){		
+		dataset = searchEngine.getDataset(dsID);
+		if (dataset!=null){
+			dsName = dataset.getShortName();
+			dsNs = dataset.getNamespaceID();
+			dsIdf = dataset.getIdentifier();
+		}
+	}
+}
+
+if (dataset==null && (mode.equals("view") || mode.equals("edit"))){ %>
+	<b>Could not relate this table to any dataset, cannot continue!</b>	
+	<%
+	return;
+}
+else if (dsID!=null && dsID.length()>0){
+	Dataset dst = searchEngine.getDataset(dsID);
+	if (dst!=null)
+		dsIdf = dst.getIdentifier();
+}
 
 // check permission for add
 if (mode.equals("add")){
-	if (dsName!=null){
-		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsName, "u")){ %>
+	if (dsIdf!=null){
+		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u")){ %>
 			<b>Not allowed!</b><%
 			return;
 		}
@@ -157,7 +202,7 @@ boolean deletePrm = false;
 //handle the POST
 if (request.getMethod().equals("POST")){
 	
-	if (dsName==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsName, "u")){%>
+	if (dsIdf==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u")){%>
 		<b>Not allowed!</b><%
 		return;
 	}
@@ -273,58 +318,10 @@ if (request.getMethod().equals("POST")){
 
 //handle the GET
 
-String appName = ctx.getInitParameter("application-name");
-
-Connection conn = null;
-XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-DBPoolIF pool = xdbapp.getDBPool();
-
-// start the whole page try block
-
 try {
-
-conn = pool.getConnection();
-DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-searchEngine.setUser(user);
-
-// get the table
-DsTable dsTable = null;
-if (!mode.equals("add")){
 	
-	dsTable = searchEngine.getDatasetTable(tableID);
-		
-	if (dsTable == null){ %>
-		<b>Table was not found!</b> <%
-		return;
-	}
-}
-
-// get the dataset
-Dataset dataset = null;
-String dsNs = null;
 if (dsTable!=null){
-	dsID = dsTable.getDatasetID();
-	if (dsID!=null){
-		
-		dataset = searchEngine.getDataset(dsID);
-			
-		if (dataset!=null){
-			dsName = dataset.getShortName();
-			dsNs = dataset.getNamespaceID();
-		}
-	}
-}
-
-if (dataset==null && (mode.equals("view") || mode.equals("edit"))){ %>
-	<b>Could not relate this table to any dataset, cannot continue!</b>	
-	<%
-	return;
-}
-
-// -> ACL
-
-if (dsTable!=null){
-	editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsName, "u");
+	editPrm = user!=null && dsIdf!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
 	deletePrm = editPrm;
 }
 
@@ -333,7 +330,6 @@ if (mode.equals("edit") && !editPrm){ %>
 	return;
 }
 
-// JH150803
 // version management
 
 VersionManager verMan = new VersionManager(conn, searchEngine, user);
@@ -985,7 +981,7 @@ if (mode.equals("edit") && dsTable!=null){
 						for (int i=0; datasets!=null && i<datasets.size(); i++){
 							Dataset ds = (Dataset)datasets.get(i);
 							String dsn = ds.getShortName();
-							if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "u")) continue;
+							if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds.getIdentifier(), "u")) continue;
 							%>
 							<option value="<%=ds.getID()%>"><%=Util.replaceTags(ds.getShortName())%></option> <%
 						}
@@ -1488,9 +1484,9 @@ if (mode.equals("edit") && dsTable!=null){
 							<% 
 							String elemLink; 
 							if (contextParam.equals("ds"))
-								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=" + contextParam;
+								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=" + contextParam + "&ds_idf=" + dsIdf;
 							else
-								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=dstbl";
+								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=dstbl" + "&ds_idf=" + dsIdf;
 							%>
 							<a href="javascript:openUrl('<%=elemLink%>')">
 							<b>ELEMENTS</b></a></span>&#160;&#160;
@@ -1823,9 +1819,9 @@ if (mode.equals("edit") && dsTable!=null){
 							<% 
 							String elemLink; 
 							if (contextParam.equals("ds"))
-								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=" + contextParam;
+								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=" + contextParam + "&ds_idf=" + dsIdf;
 							else
-								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=dstbl";
+								elemLink="tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=dstbl" + "&ds_idf=" + dsIdf;
 							%>
 							<a href="javascript:openUrl('<%=elemLink%>')">
 							<b>ELEMENTS</b></a></span>&#160;&#160;

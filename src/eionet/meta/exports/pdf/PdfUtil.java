@@ -662,11 +662,11 @@ public class PdfUtil {
 			return null;
         
 		// set up the PDF table
-		PdfPTable table = new PdfPTable(2);
+		PdfPTable table = new PdfPTable(3);
 		table.setHorizontalAlignment(Element.ALIGN_LEFT);
         
 		// set the column widths
-		float headerwidths[] = {33, 67}; // percentage
+		float headerwidths[] = {16, 42, 42}; // percentage
 		table.setWidths(headerwidths);
 		table.setWidthPercentage(100); // percentage
 		
@@ -692,6 +692,16 @@ public class PdfUtil {
         
 		table.addCell(cell);
 
+		// short description
+		cell =
+			new PdfPCell(new Phrase("Short Description", Fonts.get(Fonts.TBL_HEADER)));
+		cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+		cell.setPaddingLeft(5);
+		cell.setBorder(Rectangle.NO_BORDER);
+		cell.setGrayFill(0.4f);
+        
+		table.addCell(cell);
+
 		for (int i=0; i<fxvs.size(); i++){
 			FixedValue fxv = (FixedValue)fxvs.get(i);
 			String val = fxv.getValue();
@@ -699,6 +709,9 @@ public class PdfUtil {
 			
 			String def = fxv.getDefinition();
 			def = def==null ? "" : def;
+			
+			String desc = fxv.getShortDesc();
+			desc = desc==null ? "" : desc;
 			
 			// value cell
 			Phrase phr = process(val, Fonts.get(Fonts.CELL_VALUE));
@@ -718,6 +731,22 @@ public class PdfUtil {
 
 			// definition cell
 			phr = process(def, Fonts.get(Fonts.CELL_VALUE));
+			cell = new PdfPCell(phr);
+			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+			cell.setPaddingLeft(5);
+
+			if (i == fxvs.size()-1)
+				cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
+			else
+				cell.setBorder(Rectangle.LEFT);
+
+			if (i % 2 == 1)
+				cell.setGrayFill(0.9f);
+
+			table.addCell(cell);
+
+			// short description cell
+			phr = process(desc, Fonts.get(Fonts.CELL_VALUE));
 			cell = new PdfPCell(phr);
 			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 			cell.setPaddingLeft(5);

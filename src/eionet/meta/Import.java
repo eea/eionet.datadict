@@ -218,7 +218,8 @@ public class Import extends HttpServlet {
                     append("\n");
 
                 msg.append(Util.getStack(e));
-                responseText.append("<h1>Data Dictionary importer encountered").                	append(" an exception:</h1><br/>").append(msg.toString()).
+                responseText.append("<h1>Data Dictionary importer encountered").
+                	append(" an exception:</h1><br/>").append(msg.toString()).
                 	append("<br/><br/>");
             }
             catch (OutOfMemoryError oome){

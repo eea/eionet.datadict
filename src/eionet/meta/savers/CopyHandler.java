@@ -111,12 +111,12 @@ public class CopyHandler extends Object {
     					   boolean tbl2elem) throws Exception{
 
         if (srcElemID==null) return null;
-
+        
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("DATAELEM");
         gen.setField("DATAELEM_ID", "");
         String newID = copy(gen, "DATAELEM_ID=" + srcElemID, false);
-
+        
         if (newID==null)
             return null;
 
@@ -129,7 +129,7 @@ public class CopyHandler extends Object {
 			conn.createStatement().executeUpdate(gen.updateStatement() +
 											 " where DATAELEM_ID=" + newID);
 		}
-				 
+		
         /* copy rows in CONTENT, with lastInsertID
         gen.clear();
         gen.setTable("CONTENT");
@@ -155,28 +155,30 @@ public class CopyHandler extends Object {
 			gen.setField("DATAELEM_ID", newID);
 			copy(gen, "DATAELEM_ID=" + srcElemID);
 		}
-
+		
 		// copy rows in ATTRIBUTE, with lastInsertID
 		gen.clear();
 		gen.setTable("ATTRIBUTE");
 		gen.setField("DATAELEM_ID", newID);
 		copy(gen, "DATAELEM_ID=" + srcElemID + " and PARENT_TYPE='E'");
-
+		
         // copy rows in COMPLEX_ATTR_ROW, with lastInsertID
         copyComplexAttrs(newID, srcElemID, "E");
-
+        
 		// copy classification items
         copyCsi(newID, srcElemID, "elem");
         
         // copy fixed values
 		copyFxv(newID, srcElemID, "elem");
-        
+		
         // copy fk relations
 		gen.clear();
 		gen.setTable("FK_RELATION");
 		gen.setField("REL_ID", "");
 		gen.setField("A_ID", newID);
+		
 		copy(gen, "A_ID=" + srcElemID, false);
+		
 		gen.clear();
 		gen.setTable("FK_RELATION");
 		gen.setField("REL_ID", "");

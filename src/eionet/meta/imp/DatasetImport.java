@@ -652,6 +652,7 @@ public class DatasetImport{
         rowMap.add(getFieldMap("short_name", "ds_name", false, "dataset short name in DATASET table"));
 		rowMap.add(getFieldMap("identifier", "idfier", false, "dataset identifier in DATASET table"));
         rowMap.add(getFieldMap("version", "version", false, "Dataset version in DATASET table"));
+		rowMap.add(getFieldMap("regstatus", "reg_status", true, "REG_STATUS in DATASET table"));
         tblMap.put("DATASET", rowMap);
         rowMap = new Vector();
 
@@ -660,6 +661,7 @@ public class DatasetImport{
         rowMap.add(getFieldMap("dataset_id", "ds_id", false, "dataset id in DS_TABLE table"));
         rowMap.add(getFieldMap("short_name", "short_name", false, "dataset table short name in DS_TABLE table"));
 		rowMap.add(getFieldMap("identifier", "idfier", false, "dataset table identifier in DS_TABLE table"));
+		rowMap.add(getFieldMap("regstatus", "reg_status", true, "REG_STATUS in DS_TABLE table"));
         //rowMap.add(getFieldMap("name", "full_name", true, "dataset table full name in DS_TABLE table"));
         //rowMap.add(getFieldMap("definition", "definition", true, "Dataset table definition short name in DS_TABLE table"));
         tblMap.put("DS_TABLE", rowMap);
@@ -670,14 +672,15 @@ public class DatasetImport{
         rowMap.add(getFieldMap("type", "type", false, "data element type in DATAELEM table"));
         rowMap.add(getFieldMap("short_name", "delem_name", false, "data element short name in DATAELEM table"));
 		rowMap.add(getFieldMap("identifier", "idfier", false, "data element identifier in DATAELEM table"));
-		rowMap.add(getFieldMap("gis", "gis", false, "GIS in DATAELEM table"));
+		rowMap.add(getFieldMap("gis", "gis", true, "GIS in DATAELEM table"));
+		rowMap.add(getFieldMap("regstatus", "reg_status", true, "REG_STATUS in DATAELEM table"));
  //       rowMap.add(getFieldMap("namespace_id", "ns", true, "data element namespace_id in DATAELEM table"));
         tblMap.put("DATAELEM", rowMap);
         rowMap = new Vector();
 
         //TBL2ELEM
         rowMap.add(getFieldMap("dataelem_id", "delem_id", false, "data element id in TBL2ELEM table"));
-        rowMap.add(getFieldMap("table_id", "table_id", false, "dataset table id in TBL2ELEM"));
+        rowMap.add(getFieldMap("table_id", "table_id", false, "dataset table id in TBL2ELEM"));		
         //rowMap.add(getFieldMap("position", "pos", true, "position in TBL2ELEM table"));
         tblMap.put("TBL2ELEM", rowMap);
         rowMap = new Vector();

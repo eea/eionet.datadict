@@ -8,6 +8,8 @@
 <%!private Vector fixedValues=null;%>
 <%!private static final int MAX_CELL_LEN=40;%>
 
+<%!private static final int MAX_ATTR_LEN=500;%>
+
 
 <%!
 
@@ -191,6 +193,9 @@ private String legalizeAlert(String in){
 				return;
 			}
 			
+			if (mode.equals("add"))
+				dataElement = null;
+			
 			String dsID = request.getParameter("ds_id");
 			String tableID = request.getParameter("table_id");
 			
@@ -233,8 +238,8 @@ private String legalizeAlert(String in){
 				try{
 					if (!wasPick){
 						
-						String dsn = request.getParameter("ds_name");
-						if (dsn==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "u")){%>
+						String dsidf = request.getParameter("ds_idf");
+						if (dsidf==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsidf, "u")){%>
 							<b>Not allowed!</b><%
 							return;
 						}
@@ -563,6 +568,20 @@ private String legalizeAlert(String in){
     <script language="JavaScript" src='modal_dialog.js'></script>
     <script language="JavaScript">
     
+    	function forceAttrMaxLen(){
+	    	var i = 0;
+	    	var elms = document.forms["form1"].elements;
+	    	for (i=0; elms!=null && i<elms.length; i++){
+		    	var elmName = elms[i].name;
+		    	if (startsWith(elmName, "attr_")){
+			    	if (elms[i].value.length > <%=MAX_ATTR_LEN%>){
+			    		alert("Maximum length of attribute values for data element definitions is <%=MAX_ATTR_LEN%>!");
+			    		return;
+		    		}
+				}
+	    	}
+    	}
+    
     	function openSchema(){
 			window.open("station.xsd",null, "height=400,width=600,status=no,toolbar=no,menubar=no,location=no,scrollbars=yes,top=100,left=100");
 		}
@@ -633,6 +652,9 @@ private String legalizeAlert(String in){
 		function submitForm(mode){
 			
 			if (mode=="add"){
+				
+				forceAttrMaxLen();
+				
 				var ds = document.forms["form1"].elements["ds_id"].value;
 				if (ds==null || ds==""){
 					alert('Dataset not specified!');
@@ -661,6 +683,9 @@ private String legalizeAlert(String in){
 			}
 			
 			if (mode != "delete"){
+				
+				forceAttrMaxLen();
+				
 				if (!checkObligations()){
 					alert("You have not specified one of the mandatory atttributes!");
 					return;
@@ -766,10 +791,10 @@ private String legalizeAlert(String in){
 	    	wPick = window.open("dspick.jsp","PickDataset",'height=400,width=400,status=yes,toolbar=no,menubar=no,location=no,scrollbars=yes');
     	}
     	
-    	function setPickedDataset(dsName, dsID){
-	    	document.forms["form1"].ds_name.value=dsName;
-	    	document.forms["form1"].ds_id.value=dsID;
-    	}
+    	//function setPickedDataset(dsName, dsID){
+	    //	document.forms["form1"].ds_name.value=dsName;
+	    //	document.forms["form1"].ds_id.value=dsID;
+    	//}
     	
     	function edit(){
 	    	<%
@@ -1883,16 +1908,13 @@ String attrValue = null;
 										
 										String defin = fxv.getDefinition();
 										defin = defin==null ? "" : defin;
-										defin = defin.length()>MAX_CELL_LEN ?
+										String dispDefin = defin.length()>MAX_CELL_LEN ?
 											defin.substring(0,MAX_CELL_LEN) + "..." : defin;
 			
 										String shortDesc = fxv.getShortDesc();
 										shortDesc = shortDesc==null ? "" : shortDesc;
-										shortDesc = shortDesc.length()>MAX_CELL_LEN ?
+										String dispShortDesc = shortDesc.length()>MAX_CELL_LEN ?
 											shortDesc.substring(0,MAX_CELL_LEN) + "..." : shortDesc;
-										
-										String fxvAttrValue = null;
-										String fxvAttrValueShort = null;
 										
 										String spaces="";
 										for (int j=1; j<level; j++){
@@ -1908,11 +1930,11 @@ String attrValue = null;
 												<a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=type%>"><%=Util.replaceTags(value)%></a>
 												</b>
 											</td>
-											<td valign="bottom" align="left" title="<%=fxvAttrValue%>" style="padding-left:5;padding-right:10">
-												<span class="barfont"><%=Util.replaceTags(defin)%></span>
+											<td valign="bottom" align="left" title="<%=Util.replaceTags(shortDesc)%>" style="padding-left:5;padding-right:10">
+												<span class="barfont"><%=Util.replaceTags(dispShortDesc)%></span>
 											</td>
-											<td valign="bottom" align="left" title="<%=fxvAttrValue%>" style="padding-left:5;padding-right:10">
-												<span class="barfont"><%=Util.replaceTags(shortDesc)%></span>
+											<td valign="bottom" align="left" title="<%=Util.replaceTags(defin)%>" style="padding-left:5;padding-right:10">
+												<span class="barfont"><%=Util.replaceTags(dispDefin)%></span>
 											</td>
 										</tr>
 									<%
@@ -2196,12 +2218,12 @@ String attrValue = null;
 			<input type="hidden" name="latest_id" value="<%=latestID%>"><%
 		}
 		
-		String dsn = dataset==null ? null : dataset.getShortName();
-		if (dsn==null && dst!=null)
-			dsn = dst.getShortName();
+		String dsidf = dataset==null ? null : dataset.getIdentifier();
+		if (dsidf==null && dst!=null)
+			dsidf = dst.getIdentifier();
 		
-		if (dsn!=null){%>
-			<input type="hidden" name="ds_name" value="<%=dsn%>"/><%
+		if (dsidf!=null){%>
+			<input type="hidden" name="ds_idf" value="<%=dsidf%>"/><%
 		}
 		%>
 		
