@@ -921,6 +921,20 @@ private Vector getValues(String id, String mode, Vector attributes){
 														</tr><%
 													}
 													
+													// codelist
+													if (dispAll || dispXmlSchema){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Get the comma-separated codelists of this dataset
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a target="_blank" href="CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST">
+																	<img border="0" src="images/icon_txt.gif" width="16" height="18"/>
+																</a>
+															</td>
+														</tr><%
+													}
+													
 													// display links to uploaded documents
 													for (int i=0; docs!=null && i<docs.size(); i++){
 														Hashtable hash = (Hashtable)docs.get(i);

@@ -956,7 +956,7 @@ String attrValue = null;
 								}
 								%>
 								
-								<!-- schema & MS Excel template-->
+								<!-- schema, MS Excel template, XForm, XmlInst, etc -->
 								
 								<%
 								if (mode.equals("view")){
@@ -1025,6 +1025,20 @@ String attrValue = null;
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a href="GetXls?obj_type=tbl&obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
+															</td>
+														</tr><%
+													}
+													
+													// codelist
+													if (dispAll || dispXmlSchema){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Get the comma-separated codelists of this table
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a target="_blank" href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL">
+																	<img border="0" src="images/icon_txt.gif" width="16" height="18"/>
+																</a>
 															</td>
 														</tr><%
 													}

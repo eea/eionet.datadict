@@ -1235,7 +1235,7 @@ else{ %>
 								}
 								%>
 								
-								<!-- schema -->
+								<!-- schema && codelist links-->
 								
 								<%
 								// display schema link only in view mode and only for users that have a right to edit a dataset
@@ -1258,9 +1258,24 @@ else{ %>
 															</a>
 														</td>
 													</tr>
+													<%
+													if (dataElement.getType().equals("CH1") && fixedValues!=null && fixedValues.size()>0){%>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Get a comma-separated codelist of this element
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
+																	<img border="0" src="images/icon_txt.gif" width="16" height="18"/>
+																</a>
+															</td>
+														</tr><%
+													}
+													%>
 												</table>
 											</td>
-										</tr><%
+										</tr>
+										<%
 									}
 								}
 								%>
