@@ -300,31 +300,24 @@
 						String table_id = table.getID();
 						String table_name = table.getShortName();
 						String ds_id = table.getDatasetID();
-						String ds_name = null;
-						String dsNs = null;
-						if (ds_id!=null){
-							Dataset ds = (Dataset)searchEngine.getDataset(ds_id);
-							if (ds!=null){
-								ds_name = ds.getShortName();
-								dsNs = ds.getNamespaceID();
-							}
-						}
+						String ds_name = table.getDatasetName();
+						String dsNs = table.getParentNs();
 				
 						if (table_name == null) table_name = "unknown";
 						if (table_name.length() == 0) table_name = "empty";
 				
 						if (ds_name == null || ds_name.length() == 0) ds_name = "unknown";
 				
-						//String fullName = table.getName();
-						String tblName = "";
+						//String tblName = "";
+						String tblName = table.getName()==null ? "" : table.getName();
 		
-						Vector attributes = searchEngine.getAttributes(table_id, "T", DElemAttribute.TYPE_SIMPLE);
+						/*Vector attributes = searchEngine.getAttributes(table_id, "T", DElemAttribute.TYPE_SIMPLE);
 		
 						for (int c=0; c<attributes.size(); c++){
 							attr = (DElemAttribute)attributes.get(c);
         					if (attr.getName().equalsIgnoreCase("Name"))
         						tblName = attr.getValue();
-						}
+						}*/
 				
 						String tblFullName = tblName;
 						tblName = tblName.length()>60 && tblName != null ? tblName.substring(0,60) + " ..." : tblName;

@@ -179,7 +179,6 @@
 		}
 		String short_name = request.getParameter("short_name");
 		String version = request.getParameter("version");
-		Vector v = searchEngine.getSimpleAttributes("", "");
 
 		String _wrkCopies = request.getParameter("wrk_copies");
 		wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
@@ -346,14 +345,16 @@
 					if (ds_name.length() == 0) ds_name = "empty";
 					
 					Vector tables = searchEngine.getDatasetTables(ds_id);
-					attributes = searchEngine.getAttributes(ds_id, "DS", DElemAttribute.TYPE_SIMPLE);
+					/*attributes = searchEngine.getAttributes(ds_id, "DS", DElemAttribute.TYPE_SIMPLE);
 		
 					String dsFullName=null;
 					for (int c=0; c<attributes.size(); c++){
 						attr = (DElemAttribute)attributes.get(c);
        					if (attr.getName().equalsIgnoreCase("Name"))
        						dsFullName = attr.getValue();
-					}
+					}*/
+					
+					String dsFullName=dataset.getName();
 					
 					if (dsFullName == null) dsFullName = ds_name;
 					if (dsFullName.length() == 0) dsFullName = ds_name;
