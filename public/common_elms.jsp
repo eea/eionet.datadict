@@ -286,7 +286,7 @@ else{ %>
 			<tr>
 				<td align="right" colspan="<%=colSpan%>">
 					<a target="_blank" href="help.jsp?screen=elements&area=pagehelp" onclick="pop(this.href)">
-						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page">
+						<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page">
 					</a><br/>
 				</td>
 			</tr>

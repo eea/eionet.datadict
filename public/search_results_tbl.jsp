@@ -224,10 +224,10 @@
 				
 				<td align="right" colspan="1">
 					<a target="_blank" href="help.jsp?screen=tables&area=pagehelp" onclick="pop(this.href)">
-						<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page">
+						<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page">
 					</a>
 					<a href="search_table.jsp">
-						<img src="images/search.jpg" border=0 alt="Search tables">
+						<img src="images/search.jpg" border="0" alt="Search tables">
 					</a>
 				</td>
 			</tr>

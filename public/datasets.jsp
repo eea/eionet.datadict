@@ -447,12 +447,12 @@
 				<!-- search, restore, page help buttons -->
 				
 				<td align="right" colspan="<%=String.valueOf(colSpan-2)%>">
-					<a target="_blank" href="help.jsp?screen=datasets&area=pagehelp" onclick="pop(this.href)"><img src="images/pagehelp.jpg" border=0 alt="Get some help on this page"/></a><br/>
-					<a href="search_dataset.jsp"><img src="images/search.jpg" border=0 alt="Search datasets"></a><br/>
+					<a target="_blank" href="help.jsp?screen=datasets&area=pagehelp" onclick="pop(this.href)"><img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/></a><br/>
+					<a href="search_dataset.jsp"><img src="images/search.jpg" border="0" alt="Search datasets"></a><br/>
 					<%
 					if (user!=null && user.isAuthentic() && !restore){%>
 						<a href="restore_datasets.jsp?SearchType=SEARCH&amp;restore=true">
-							<img src="images/restore.jpg" border=0 alt="Restore datasets">
+							<img src="images/restore.jpg" border="0" alt="Restore datasets">
 						</a><%
 					}
 					%>

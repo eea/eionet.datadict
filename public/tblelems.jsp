@@ -437,7 +437,7 @@ int colCount = hasGIS ? 5 : 4;
 			
 			<td align="right">
 				<a target="_blank" href="help.jsp?screen=table_elements&area=pagehelp" onclick="pop(this.href)">
-					<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 				</a>
 			</td>
 		</tr>

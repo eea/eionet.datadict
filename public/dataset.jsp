@@ -690,7 +690,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								hlpScreen = "dataset_add";
 							%>
 							<a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)" target="_blank">
-								<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 							</a>
 						</td>
 					</tr>
@@ -872,7 +872,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN">
-																	<img border="0" src="images/icon_pdf.jpg" width="17" height="18"/>
+																	<img border="0" src="images/icon_pdf.jpg" width="17" height="18" alt="PDF" />
 																</a>
 															</td>
 														</tr><%

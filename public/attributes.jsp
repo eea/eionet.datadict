@@ -170,7 +170,7 @@
 							</td>
 							<td>
 								<a href="help.jsp?screen=attributes&area=pagehelp" onclick="pop(this.href)" target="_blank">
-									<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+									<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 								</a>
 							</td>
 						</tr>

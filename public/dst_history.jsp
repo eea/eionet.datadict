@@ -80,7 +80,7 @@
     	<tr>
     		<td align="right" colspan="3">
     			<a target="_blank" href="help.jsp?screen=history&area=pagehelp" onclick="pop(this.href)">
-					<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 				</a>
     		</td>
     	</tr>

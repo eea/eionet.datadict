@@ -221,7 +221,7 @@ else { %>
 						<td><font class="head00">Search for a dataset table definition</font></td>
 						<td align="right">
 							<a target="_blank" href="help.jsp?screen=search_table&area=pagehelp" onclick="pop(this.href)">
-								<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
+								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 							</a>
 						</td>
 					</tr>

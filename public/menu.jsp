@@ -3,9 +3,9 @@
 <table cellspacing="0" cellpadding="0" border="0">
 
 	<tr><td align="left"><span class="head0">Contents</span></td></tr>
-	<tr><td align="right"><a onmouseout="Out('img0')" onmouseover="Over('img0')" href="datasets.jsp?SearchType=SEARCH"><img alt="" border="0" src="images/off.gif" name="img0" width="16" height="13" /><img border="0" src="images/button_datasets.gif" width="84" height="13" /></a></td></tr>
-	<tr><td align="right"><a onmouseout="Out('img1')" onmouseover="Over('img1')" href="search_results_tbl.jsp?SearchType=SEARCH"><img alt="" border="0" src="images/off.gif" name="img1" width="16" height="13" /><img border="0" src="images/button_tables.gif" width="84" height="13" /></a></td></tr>
-	<tr><td align="right"><a onmouseout="Out('img2')" onmouseover="Over('img2')" href="search.jsp"><img alt="" border="0" src="images/off.gif" name="img2" width="16" height="13" /><img border="0" src="images/button_dataelements.gif" width="84" height="13" /></a></td></tr>
+	<tr><td align="right"><a onmouseout="Out('img0')" onmouseover="Over('img0')" href="datasets.jsp?SearchType=SEARCH"><img alt="" border="0" src="images/off.gif" name="img0" width="16" height="13" /><img border="0" src="images/button_datasets.gif" width="84" height="13" alt="Datasets" /></a></td></tr>
+	<tr><td align="right"><a onmouseout="Out('img1')" onmouseover="Over('img1')" href="search_results_tbl.jsp?SearchType=SEARCH"><img alt="" border="0" src="images/off.gif" name="img1" width="16" height="13" /><img border="0" src="images/button_tables.gif" width="84" height="13" alt="Tables" /></a></td></tr>
+	<tr><td align="right"><a onmouseout="Out('img2')" onmouseover="Over('img2')" href="search.jsp"><img alt="" border="0" src="images/off.gif" name="img2" width="16" height="13" /><img border="0" src="images/button_dataelements.gif" width="84" height="13" alt="Data elements" /></a></td></tr>
 	<tr><td>&nbsp;</td></tr>
 	<%
 	AppUserIF _user = SecurityUtil.getUser(request);
@@ -23,7 +23,7 @@
 			else{
 				%>
 		        <a onmouseout="Out('img3')" onmouseover="Over('img3')" href="javascript:login()">
-		        	<img alt="" border="0" src="images/off.gif" name="img3" width="16" height="13" /><img alt="Login" height="13" width="84" border="0" src="images/button_login.gif">
+		        	<img alt="" border="0" src="images/off.gif" name="img3" width="16" height="13" /><img alt="Login" height="13" width="84" border="0" src="images/button_login.gif" />
 		        </a>
 		        <%
 		    }
@@ -52,8 +52,8 @@
 	<tr><td>&nbsp;</td></tr>
 	<tr><td align="left"><span class="head0">Reportnet</span></td></tr>
 	<tr><td align="right"><a onmouseout="Out('img8')" onmouseover="Over('img8')" href="http://cr.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img8" width="16" height="13" /><img border="0" src="images/dd_but_CR.jpg" width="84" height="13" /></a></td></tr>
-	<tr><td align="right"><a onmouseout="Out('img9')" onmouseover="Over('img9')" href="http://dd.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img9" width="16" height="13" /><img border="0" src="images/dd_but_DD.jpg" width="84" height="13" /></a></td></tr>
-	<tr><td align="right"><a onmouseout="Out('img10')" onmouseover="Over('img10')" href="http://cdr.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img10" width="16" height="13" /><img border="0" src="images/dd_but_CDR.jpg" width="84" height="13" /></a></td></tr>
-	<tr><td align="right"><a onmouseout="Out('img11')" onmouseover="Over('img11')" href="http://rod.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img11" width="16" height="13" /><img border="0" src="images/dd_but_ROD.jpg" width="84" height="13" /></a></td></tr>
+	<tr><td align="right"><a onmouseout="Out('img9')" onmouseover="Over('img9')" href="http://dd.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img9" width="16" height="13" /><img border="0" src="images/dd_but_DD.jpg" width="84" height="13" alt="DD" /></a></td></tr>
+	<tr><td align="right"><a onmouseout="Out('img10')" onmouseover="Over('img10')" href="http://cdr.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img10" width="16" height="13" /><img border="0" src="images/dd_but_CDR.jpg" width="84" height="13" alt="CDR" /></a></td></tr>
+	<tr><td align="right"><a onmouseout="Out('img11')" onmouseover="Over('img11')" href="http://rod.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img11" width="16" height="13" /><img border="0" src="images/dd_but_ROD.jpg" width="84" height="13" alt="ROD" /></a></td></tr>
 
 </table>
