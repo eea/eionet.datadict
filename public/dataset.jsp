@@ -1397,7 +1397,6 @@ private Vector getValues(String id){
 				</td>
 				<td colspan="2">
 					* <a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN">Create technical specifications for this dataflow (PDF)</a> <BR>
-					* <a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>">Create full Data Dictionary output for this dataflow (PDF)</a>
 				</td>
 			</tr>
 			
