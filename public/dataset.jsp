@@ -689,7 +689,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 							else if (mode.equals("add"))
 								hlpScreen = "dataset_add";
 							%>
-							<a href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp" onclick="pop(this.href)" target="_blank">
+							<a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)" target="_blank">
 								<img src="images/pagehelp.jpg" border=0 alt="Get some help on this page" />
 							</a>
 						</td>
@@ -747,11 +747,11 @@ private Vector getValues(String id, String mode, Vector attributes){
 							<td width="100%" class="mnd_opt_cnd" colspan="2" >
 								<table border="0" width="100%" cellspacing="0">
 									<tr>
-										<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16"/></td>
+										<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
 										<td width="17%">Mandatory</td>
-										<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16"/></td>
+										<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
 										<td width="15%">Optional</td>
-										<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16"/></td>
+										<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
 										<td width="56%">Conditional</td>
                             		</tr>
 		                            <tr>
@@ -886,7 +886,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a target="_blank" href="GetSchema?id=DST<%=ds_id%>">
-																	<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt="XML icon"/>
 																</a>
 															</td>
 														</tr><%
@@ -899,8 +899,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 																Create an instance XML for this dataset
 															</td>
 															<td width="27%" valign="middle" align="left">
-																<a target="_blank" href="GetXmlInstance?id=<%=dataset.getID()%>&type=dst">
-																	<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+																<a target="_blank" href="GetXmlInstance?id=<%=dataset.getID()%>&amp;type=dst">
+																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt="XML icon"/>
 																</a>
 															</td>
 														</tr><%
@@ -910,10 +910,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 													if (dispAll || dispXLS){ %>
 														<tr>
 															<td width="73%" valign="middle" align="left">
-																Create an MS Excel template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&area=excel" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
+																Create an MS Excel template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=excel" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td width="27%" valign="middle" align="left">
-																<a href="GetXls?obj_type=dst&obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
+																<a href="GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt="XLS icon"/></a>
 															</td>
 														</tr><%
 													}
@@ -929,10 +929,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 														<tr>
 															<td width="73%" valign="middle" align="left"><%=title%></td>
 															<td width="27%" valign="middle" align="left">
-																<a target="_blank" href="DocDownload?file=<%=md5%>"><img border="0" src="images/<%=icon%>" width="16" height="18"/></a>
+																<a target="_blank" href="DocDownload?file=<%=md5%>"><img border="0" src="images/<%=icon%>" width="16" height="18" alt="icon"/></a>
 																<%
 																if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){
-																	%>&nbsp;<a target="_blank" href="DocUpload?delete=<%=md5%>&idf=<%=dataset.getIdentifier()%>"><img border="0" src="images/delete.gif" width="14" height="14"/></a><%
+																	%>&nbsp;<a target="_blank" href="DocUpload?delete=<%=md5%>&amp;idf=<%=dataset.getIdentifier()%>"><img border="0" src="images/delete.gif" width="14" height="14"/></a><%
 																}
 																%>
 															</td>
@@ -946,10 +946,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 														<tr height="20">
 															<td colspan="2" valign="bottom" align="left">
 																<span class="barfont">
-																	[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Upload a document ...</a> ]
+																	[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Upload a document ...</a> ]
 																</span>
 																<span class="barfont">
-																	[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&obj_type=dst&idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Open cache ...</a> ]
+																	[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Open cache ...</a> ]
 																</span>
 															</td>
 														</tr>
@@ -988,15 +988,15 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		<tr>
 												<td width="<%=titleWidth%>%" class="short_name">Short name</td>
 												<td width="4%" class="short_name">
-													<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
+														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 													</a>
 												</td>
 												<%
 												if (colspan==4){
 													%>
 													<td width="4%" class="short_name">
-														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+														<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
 													</td><%
 												}
 												%>
@@ -1025,14 +1025,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 													RegistrationStatus
 												</td>
 												<td width="4%" class="simple_attr_help<%=isOdd%>">
-													<a target="_blank" href="help.jsp?screen=dataset&area=regstatus" onclick="pop(this.href)">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href)">
+														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+														<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
 													</td><%
 												}
 												%>
@@ -1068,8 +1068,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 														Reference URL
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<a target="_blank" href="help.jsp?screen=dataset&area=refurl" onclick="pop(this.href)">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href)">
+															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
 													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
@@ -1127,7 +1127,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
 													<%
@@ -1261,7 +1261,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		%>
 																	</select>
 																	<a target="_blank" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=attribute.getShortName()%>&amp;parent_type=attr" onclick="pop(this.href)">
-																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																	</a>
 																	<%
 																}
@@ -1300,14 +1300,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 														Public outputs
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<a target="_blank" href="help.jsp?screen=dataset&area=public_outputs" onclick="pop(this.href)">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+														<a target="_blank" href="help.jsp?screen=dataset&amp;area=public_outputs" onclick="pop(this.href)">
+															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
 														<td width="4%" class="simple_attr_help<%=isOdd%>">
-															<img border="0" src="images/optional.gif" width="16" height="16"/>
+															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
 														</td><%
 													}
 													%>
@@ -1352,14 +1352,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 														CheckInNo
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<a target="_blank" href="help.jsp?screen=dataset&area=check_in_no" onclick="pop(this.href)">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+														<a target="_blank" href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href)">
+															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
 														<td width="4%" class="simple_attr_help<%=isOdd%>">
-															<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+															<img border="0" src="images/mandatory.gif" width="16" height="16" alt="Help"/>
 														</td><%
 													}
 													%>
@@ -1378,14 +1378,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 													Identifier
 												</td>
 												<td width="4%" class="simple_attr_help<%=isOdd%>">
-													<a target="_blank" href="help.jsp?screen=dataset&area=identifier" onclick="pop(this.href)">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
+														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+														<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
 													</td><%
 												}
 												%>
@@ -1712,7 +1712,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		</td>
 																		<td width="4%" class="complex_attr_help<%=isOdd%>">
 																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href)">
-																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																			</a>
 																		</td>
 																		<td width="63%" class="complex_attr_value<%=isOdd%>">
