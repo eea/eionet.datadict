@@ -133,7 +133,7 @@ private String legalizeAlert(String in){
 								redirUrl = redirUrl + "&prv_parent_csi=" + prevParent;
 								*/
 							%>
-							<a href="javascript:window.location.replace('<%=currentUrl%>')">< back</a>
+							<a href="javascript:window.location.replace('<%=currentUrl%>')">&lt; back</a>
 						</body></html>
 						<%
 						return;
@@ -381,7 +381,7 @@ private String legalizeAlert(String in){
 		%>
 		<!--tr>
 			<td colspan="2">
-				<a href="javascript:window.location.replace('<%=buf.toString()%>')">< back to upper level</a>
+				<a href="javascript:window.location.replace('<%=buf.toString()%>')">&lt; back to upper level</a>
 			</td>
 		</tr>
 		<tr height="20"><td colspan="2"></td></tr-->

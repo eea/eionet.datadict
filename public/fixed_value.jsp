@@ -163,7 +163,7 @@ private String legalizeAlert(String in){
 																 //"&ns=" + ns;
 							*/
 							%>
-							<a href="javascript:window.location.replace('<%=currentUrl%>')">< back</a>
+							<a href="javascript:window.location.replace('<%=currentUrl%>')">&lt; back</a>
 							
 						</body></html>
 						<%

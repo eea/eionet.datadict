@@ -338,7 +338,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 			<tr>
 				<td colspan="4">
 					<a href="dstable.jsp?mode=view&table_id=<%=tableID%>&ds_id=<%=dsID%>&ds_name=<%=dsName%>&ctx=<%=contextParam%>">
-						< back to table view
+						&lt; back to table view
 					</a>
 				</td>
 			</tr> <%

@@ -253,7 +253,7 @@ private String legalizeAlert(String in){
 		%>
 		<span class="error">Attribute not found!</span><br>
 			<a href="javascript:history.back(-1)">
-				<b>&amp; back</b>
+				<b>&lt; back</b>
 			</a></div>
 		</body></html>
 		<%
@@ -297,7 +297,7 @@ if (!mode.equals("view")){
 	<td colspan="2">
 		<span class="smallfont">
 			<a href="javascript:window.location.replace('<%=backURL%>')">
-				<b>&amp; back to attributes</b>
+				<b>&lt; back to attributes</b>
 			</a>
 		</span>
 	</td>

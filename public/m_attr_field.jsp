@@ -204,7 +204,7 @@ private String legalizeAlert(String in){
 			
 			<!-- tr>
 				<td colspan="2">
-					<a href="javascript:window.location.replace('<%=backURL%>')">< back to allowable values list</a>
+					<a href="javascript:window.location.replace('<%=backURL%>')">&lt; back to allowable values list</a>
 				</td>
 			</tr -->
 					

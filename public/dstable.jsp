@@ -784,7 +784,7 @@ String attrValue = null;
 		if (false){ %>
 			<tr>
 				<td colspan="2">
-					<a href="dstables.jsp?ds_id=<%=dsID%>&ds_name=<%=dsName%>">< back to dataset tables</a>
+					<a href="dstables.jsp?ds_id=<%=dsID%>&ds_name=<%=dsName%>">&lt; back to dataset tables</a>
 				</td>
 			</tr>
 		<%

@@ -81,7 +81,7 @@
 								Links to further information about
 								<ul>
 									<li><a href="index.jsp?page=1">Data Dictionary - functions, services and users</a></li>
-									<li><a href="index.jsp?page=2">Concepts & terms - datasets, tables, data elements, code lists</a></li>
+									<li><a href="index.jsp?page=2">Concepts &amp; terms - datasets, tables, data elements, code lists</a></li>
 									<li><a href="index.jsp?page=3">Data Dictionary - administrative tools - login mode</a>
 								</ul>
 							</p>
