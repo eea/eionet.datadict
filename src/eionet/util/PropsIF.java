@@ -20,6 +20,8 @@ public interface PropsIF {
 	public static final String HRV_LOG    = "harvester.log";
 	public static final String HRV_LOGLEV = "harvester.log-level";
 	
+	public static final String UNI_FONT = "pdf.uni-font";
+	
 	/** defaults */
 	
 }
