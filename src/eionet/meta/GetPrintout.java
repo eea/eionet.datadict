@@ -18,7 +18,7 @@ public class GetPrintout extends HttpServlet {
 	
 	public static final String PDF_LOGO_PATH = "images/pdf_logo.png";
     
-    private static final String DEFAULT_HANDOUT_TYPE = PdfHandoutIF.FACTSHEET;
+    private static final String DEFAULT_HANDOUT_TYPE = PdfHandoutIF.GUIDELINE;
     
     protected void service(HttpServletRequest req, HttpServletResponse res)
                                 throws ServletException, IOException {

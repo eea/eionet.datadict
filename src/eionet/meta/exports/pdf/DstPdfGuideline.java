@@ -850,7 +850,16 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 			throw new Exception("DstPdfGuideline.isCached(): missing searchEngine!");
 		
 		cacheFileName = searchEngine.getCacheFileName(id, "dst", "pdf");
-		return cacheFileName==null ? false : true;
+		if (Util.voidStr(cacheFileName)) return false;
+		
+		// if the file is referenced in CACHE table, but does not actually exist, we say false
+		File file = new File(cachePath + cacheFileName);
+		if (!file.exists()){
+			cacheFileName = null;
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/*
@@ -884,7 +893,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 	}
 	
 	/*
-	 * Overriding flush() to check if content has beenw ritten from cache
+	 * Overriding flush() to check if content has been written from cache
 	 */
 	public void flush() throws Exception {
 		if (cacheFileName!=null)

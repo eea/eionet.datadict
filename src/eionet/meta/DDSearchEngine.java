@@ -3495,20 +3495,26 @@ public class DDSearchEngine {
 		append("OBJ_ID=").append(objID).
 		append(" and OBJ_TYPE=").append(Util.strLiteral(objType));
 		
-		Hashtable hash = new Hashtable();
+		Hashtable result = new Hashtable();
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(buf.toString());
 		while (rs.next()){
-			if (Util.nullString(rs.getString("FILENAME")))
-				continue;
+			String filename = rs.getString("FILENAME");
+			String article = rs.getString("ARTICLE");
+			Long created = new Long(rs.getLong("CREATED"));
+			if (Util.nullString(filename)) continue;
 			
-			hash.put(rs.getString("ARTICLE"), new Long(rs.getLong("CREATED")));
+			Hashtable hash = new Hashtable();
+			hash.put("filename", filename);
+			hash.put("created", created);
+			
+			result.put(rs.getString("ARTICLE"), hash);
 		}
 		
 		stmt.close();
 		rs.close();
 		
-		return hash;
+		return result;
 	}
 	
 	public String getLastUpdated() throws SQLException{

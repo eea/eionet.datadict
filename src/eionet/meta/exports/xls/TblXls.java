@@ -191,7 +191,16 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
 			throw new Exception("TblXls.isCached(): missing searchEngine!");
 		
 		cacheFileName = searchEngine.getCacheFileName(id, "tbl", "xls");
-		return cacheFileName==null ? false : true;
+		if (Util.voidStr(cacheFileName)) return false;
+
+		// if the file is referenced in CACHE table, but does not actually exist, we say false
+		File file = new File(cachePath + cacheFileName);
+		if (!file.exists()){
+			cacheFileName = null;
+			return false;
+		}
+				
+		return true;
 	}
 
 	/*

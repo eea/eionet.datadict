@@ -24,12 +24,23 @@ public class CacheServlet extends HttpServlet {
 	public static final String KEY_CREATED  = "created";
 	
 	private Hashtable objTypes = null;
+	private String cachePath = null;
+	
+	public void init() throws ServletException{
+		cachePath = getServletConfig().getServletContext().getInitParameter("doc-path");
+		if (!Util.nullString(cachePath)){
+			cachePath.trim();
+			if (!cachePath.endsWith(File.separator))
+				cachePath = cachePath + File.separator;
+		}
+	}
 	
 	protected void service(HttpServletRequest req, HttpServletResponse res)
 											throws ServletException, IOException {
 		
-		if (objTypes==null)
-			setObjectTypes();
+		if (objTypes==null) setObjectTypes();
+		if (Util.nullString(cachePath))
+			throw new ServletException("Missing the path to cache directory!");
 			
 		try{
 			if (req.getMethod().equalsIgnoreCase("GET"))
@@ -68,7 +79,6 @@ public class CacheServlet extends HttpServlet {
 		if (articles==null || articles.length==0) throw new Exception("Missing articles!");
 		
 		ServletContext ctx = getServletContext();
-		String cachePath = ctx.getInitParameter("doc-path");
 		
 		for (int i=0; i<articles.length; i++){
 			
@@ -119,16 +129,36 @@ public class CacheServlet extends HttpServlet {
 		DDSearchEngine searchEngine =
 					new DDSearchEngine(getConnection(req), "", getServletContext());
 		Hashtable cache = searchEngine.getCache(objID, objType);
-		Hashtable h = null;
+		Hashtable supportedArticles = null;
 		for (int i=0; i<objArticles.size(); i++){
-			h = (Hashtable)objArticles.get(i);
-			String article = (String)h.get("article");
-			Long created = (Long)cache.get(article);
-			if (created!=null)
-				h.put("created", created);
+			supportedArticles = (Hashtable)objArticles.get(i);
+			String article = (String)supportedArticles.get("article");
+			
+			Hashtable cachedArticle = (Hashtable)cache.get(article);
+			if (cachedArticle!=null){
+				String filename = (String)cachedArticle.get("filename");
+				Long created = (Long)cachedArticle.get("created");
+				String full = this.cachePath + filename;
+				File file = new File(full);
+				if (!file.exists() || created==null || created.longValue()==0){
+					deleteCacheEntry(objID, objType, article, getConnection(req));
+					continue;
+				}
+				else
+					supportedArticles.put("created", created);
+			}
 		}
 		
 		req.setAttribute("entries", objArticles);
+	}
+	
+	private void deleteCacheEntry(String objID, String objType, String article, Connection conn)
+																throws SQLException{
+		StringBuffer buf = new StringBuffer("delete from CACHE where OBJ_ID=").
+		append(objID).append(" and OBJ_TYPE=").append(Util.strLiteral(objType)).
+		append(" and ARTICLE=").append(Util.strLiteral(article));
+		
+		conn.createStatement().executeUpdate(buf.toString());
 	}
 	
 	private Hashtable getArticles(HttpServletRequest req){
