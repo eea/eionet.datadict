@@ -1,9 +1,0 @@
-#!/bin/sh
-# Small script to run ant with the correct environment variables
-# Try also ./build -v
-#
-ANT_HOME=/usr/local/jakarta-ant-1.4.1/
-JAVA_HOME=/prj/javaserv/jdk1.2.2
-PATH=${PATH}:${ANT_HOME}/bin
-export ANT_HOME JAVA_HOME PATH
-ant $@
