@@ -164,4 +164,38 @@ public class Dataset {
     public String getName(){
         return name;
     }
+    
+    public Hashtable getCAttrByShortName(String shn){
+
+		Hashtable hash = new Hashtable();
+		    	
+    	if (shn==null) return hash;
+    	
+		DElemAttribute attr = null;
+    	for (int i=0; complexAttrs!=null && i<complexAttrs.size(); i++){
+    		attr = (DElemAttribute)complexAttrs.get(i);
+    		if (!attr.getShortName().equals(shn)) break;
+    	}
+    	
+    	Vector rows = attr==null ? null : attr.getRows();
+    	Hashtable row = new Hashtable();
+    	if (rows!=null && rows.size()>0)
+    		row = (Hashtable)rows.get(0);
+    	
+    	Vector flds = attr==null ? null : attr.getFields();
+    	for (int i=0; flds!=null && i<flds.size(); i++){
+    		Hashtable fld = (Hashtable)flds.get(i);
+    		String fldID = (String)fld.get("id");
+    		if (fldID!=null){
+    			String value = (String)row.get(fldID);
+    			if (value!=null){
+    				String fldName = (String)fld.get("name");
+    				if (fldName!=null)
+    					hash.put(fldName, value);
+    			}
+    		}
+    	}
+    	
+    	return hash;
+    }
 }
