@@ -1,0 +1,99 @@
+<caucho.com>
+
+<log id="/" href="log/stderr.log"/>
+
+ <dbpool.sql id="contreg" driver="org.gjt.mm.mysql.Driver" 
+		 url="jdbc:mysql://127.0.0.1:3306/ContReg" user="cr_user" password="secret"/>
+
+ <http-server character-encoding='ISO-8859-1'>
+  <app-dir>/home/www</app-dir>
+  <srun host='127.0.0.1' port='6802' />
+  <caucho-status>false</caucho-status>
+  <class-update-interval id='2'/>
+  <thread-min>3</thread-min>
+  <thread-max>150</thread-max>
+  <thread-keepalive id=100/>
+  <cache dir='cache' size='1024' entries='1024'/>
+	
+  <host id=''>
+   <access-log id='log/access.log' format='%h %l %u %t "%r" %s %b "%{Referer}i" "%{User-Agent}i"'/>
+   <error-log id='log/error.log'/>
+
+   <servlet-mapping url-pattern="*.jsp" servlet-name="com.caucho.jsp.JspServlet"/>
+
+   <web-app id="/contreg/public" app-dir="contreg/public/">
+    <classpath id="../WEB-INF/classes"/>
+    <classpath id="../WEB-INF/xmlserver.jar"/>
+    <classpath id="../WEB-INF/xerces.jar"/>
+    <classpath id="../WEB-INF/xalan.jar"/>
+
+	<classpath id="/home/www/webs/contreg/WEB-INF/arp.jar"/>
+		
+	<!-- KL 021004 stuff for xml/rpc and UIT -->
+	<classpath id="../WEB-INF/mail.jar"/>
+    <classpath id="../WEB-INF/xmlrpc.jar"/>
+    <classpath id="../WEB-INF/uit-server.jar"/>
+    <classpath id="../WEB-INF/uit-definition.jar"/>
+    <classpath id="../WEB-INF/uit-security.jar"/>
+    <classpath id="../WEB-INF/eionet-dir.jar"/>
+    <classpath id="../WEB-INF/castor.jar"/>
+
+
+    <servlet-mapping url-pattern="*.jsp" servlet-name="com.caucho.jsp.JspServlet"/>
+    <servlet-mapping url-pattern="/servlet/*" servlet-name="invoker"/>
+
+    <context-param application-name="contreg"/>
+    <context-param authenticator="eionet.meta.MetaUser"/>
+    <context-param login-error-page="error.html"/>
+    <context-param log-level="5"/>
+    <context-param app-host="127.0.0.1"/>
+    <context-param app-port="80"/>
+    <context-param app-ctxt="/contreg/app/"/>
+<!--    <context-param proxy-host="cache.online.ee"/> -->
+<!--    <context-param proxy-port="80"/> -->
+
+<!--    <context-param harvester-log="meta/log/harvester.log"/> -->
+<!--    <context-param harvester-trace="meta/log/harvester.trc"/> -->
+
+<!--	<context-param use-acl="false"/> -->
+
+    <cache-mapping url-pattern="*.gif*" expires="1d"/>
+    <cache-mapping url-pattern="*.jpeg" expires="1d"/>
+    <cache-mapping url-pattern="*.jpg" expires="1d"/>
+
+    <servlet servlet-name="Login" servlet-class="com.tee.xmlserver.LoginServlet"/>
+    <servlet-mapping url-pattern="/Login" servlet-name="Login"/>
+
+    <servlet servlet-name="rpcrouter" servlet-class="com.tee.uit.servlets.XmlRpcRouter"/>
+    <servlet-mapping url-pattern="/rpcrouter" servlet-name="rpcrouter"/>
+    <!--SERVICES SERVLET: -->
+    <servlet servlet-name="Services" servlet-class="eionet.meta.servlets.Services"/>
+    <servlet-mapping url-pattern="/Services" servlet-name="Services"/>
+    <!--SERVICE SERVLET: -->
+    <servlet servlet-name="Service" servlet-class="eionet.meta.servlets.Service"/>
+    <servlet-mapping url-pattern="/Service" servlet-name="Service"/>
+    <!--GUIDED_SEARCH SERVLET: -->
+    <servlet servlet-name="GuidedSearch" servlet-class="eionet.meta.servlets.GuidedSearch"/>
+    <servlet-mapping url-pattern="/GuidedSearch" servlet-name="GuidedSearch"/>
+	<!--GET_RESOURCES_BY_RESOURCE SERVLET: -->
+	<servlet servlet-name="GetResourcesByResource" servlet-class="eionet.meta.servlets.GetResourcesByResource"/>
+	<servlet-mapping url-pattern="/GetResourcesByResource" servlet-name="GetResourcesByResource"/>
+	<!--GET_RESOURCES_BY_SUBJECTS SERVLET: -->
+	<servlet servlet-name="GetResourcesBySubjects" servlet-class="eionet.meta.servlets.GetResourcesBySubjects"/>
+	<servlet-mapping url-pattern="/GetResourcesBySubjects" servlet-name="GetResourcesBySubjects"/>
+	<!--GET_RELATED_RESOURCES: -->
+	<servlet servlet-name="GetRelatedResources" servlet-class="eionet.meta.servlets.GetRelatedResources"/>
+	<servlet-mapping url-pattern="/GetRelatedResources" servlet-name="GetRelatedResources"/>
+				
+    <session-config>
+     <session-timeout>15</session-timeout>
+    </session-config>
+
+   </web-app>
+
+   <web-app id="contreg/app" app-dir="contreg/app/">
+   </web-app>
+
+  </host>
+ </http-server>
+</caucho.com>
