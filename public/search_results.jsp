@@ -128,7 +128,8 @@
 			else{
 				String[] delem_ids = request.getParameterValues("delem_id");
 				for (int i=0; delem_ids!=null && i<delem_ids.length; i++){
-					if (!SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delem_ids[i], "d")){ %>
+					String dsn = request.getParameter("ds_name_" + delem_ids[i]);
+					if (dsn==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "u")){ %>
 						<b>Not allowed!</b> <%
 					}
 				}
@@ -197,25 +198,6 @@
 									short_name, null, dataset, wrkCopies, oper);
 	}
 
-// prepare Vector of deletion rights for each element
-Vector delPrms = new Vector();
-for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
-	DataElement elm = (DataElement)dataElements.get(i);
-	if (SecurityUtil.hasPerm(user.getUserName(), "/elements/" + elm.getID(), "d"))
-		delPrms.add(elm.getID());
-}
-
-/*  Not needed currently
-	int iCurrPage=0;
-    try {
-	    iCurrPage=Integer.parseInt(request.getParameter("page_number"));
-    }
-    catch(Exception e){
-        iCurrPage=0;
-    }
-    if (iCurrPage<0)
-        iCurrPage=0;
-*/           
 %>
 
 <html>
@@ -259,9 +241,15 @@ for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
        		document.forms["form1"].submit();
     	}
     	
+    	function doLoad(){
+	    	var wasDelPrm = document.forms["form1"].elements["was_del_prm"].value;
+	    	if (wasDelPrm == "true")
+	    		document.forms["form1"].elements["del_button"].disabled = false;
+    	}
+    	
     </script>
 </head>
-<body>
+<body onload="doLoad()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
@@ -283,7 +271,18 @@ for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
         	    if (dataElements == null || dataElements.size()==0){
 	        	    %>
-	            	<b>No results found!</b></div></TD></TR></table></body></html>
+	            	<b>No results found!</b>
+	            	<%
+	    	        if (user==null || !user.isAuthentic()){ %>
+	    	        	<br/>
+	    	        		This might be due to fact that you have not been authorized and there are<br/>
+	    	        		no datasets at the moment ready to be published for non-authorized users.<br/>
+	    	        		Please go to the <a href="datasets.jsp?SearchType=SEARCH">list of datasets</a>
+							to see which of them are in which status!
+	    	        	<br/><%
+    	        	}
+    	        	%>
+	            	</div></TD></TR></table></body></html>
 	            	<%
 	            	return;
             	}
@@ -315,7 +314,9 @@ for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
 			<tr>
 				<td></td>
 				<td align="left" colspan="8" style="padding-bottom:5">
-					<% if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")){
+					<%
+					boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
+					if (dstPrm){
 						%>
 						<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
 						<%
@@ -326,9 +327,8 @@ for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
 			
 			<tr>
 				<td align="right" style="padding-right:10">
-					<% if (user!=null){
-						String _disabled = delPrms.size()>0 ? "" : "disabled"; %>
-						<input type="button" value="Delete" class="smallbutton" <%=_disabled%> onclick="deleteElement()"/><%
+					<% if (user!=null){%>
+						<input type="button" name="del_button" value="Delete" class="smallbutton" disabled onclick="deleteElement()"/><%
 					}
 					else{ %>
 						&#160;<%
@@ -389,6 +389,8 @@ for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
 			</tr>
 			
 			<%
+			
+			boolean wasDelPrm = false;
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
 
 				/* show all
@@ -457,8 +459,13 @@ for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
                 														 dispDs,
                 														 dispTbl,
                 														 null);                															 
-					boolean delPrm = delPrms.contains(delem_id);
+					boolean delPrm = user!=null &&
+									 ds!=null &&
+									 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds.getShortName(), "u");
+									 
 					oEntry.setDelPrm(delPrm);
+					if (delPrm)
+						wasDelPrm = true;
 					
 					oResultSet.oElements.add(oEntry);
 					
@@ -476,7 +483,7 @@ for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
 						<td align="right" style="padding-right:10">
 							<%
 	    					//if (user!=null){
-		    				if (delPrms.contains(delem_id)){
+		    				if (delPrm){
 		    					
 		    					if (topWorkingUser!=null){ // mark checked-out elements
 			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
@@ -484,7 +491,10 @@ for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
 	    					
 		    					if (canDelete){ %>
 									<input type="checkbox" style="height:13;width:13" name="delem_id" value="<%=delem_id%>"/>
-									<input type="hidden" name="delem_name_<%=delem_id%>" value="<%=delem_name%>"/> <%
+									<%
+									if (ds!=null){ %>
+										<input type="hidden" name="ds_name_<%=delem_id%>" value="<%=ds.getShortName()%>"/><%
+									}
 								}
 							}
 							%>
@@ -540,6 +550,9 @@ for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
 								<%
 								if (oEntry.getDelPrm()){ %>
 									<input type="checkbox" style="height:13;width:13" name="delem_id" value="<%=oEntry.oID%>"/><%
+									if (oEntry.oDsName != null){%>
+										<input type="hidden" name="ds_name_<%=oEntry.oID%>" value="<%=oEntry.oDsName%>"/><%
+									}
 								}
 								%>
 								<input type="hidden" name="delem_name_<%=oEntry.oID%>" value="<%=oEntry.oShortName%>"/>
@@ -566,6 +579,7 @@ for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
 			
 		</table>
 		
+		<input name="was_del_prm" type="hidden" value="<%=wasDelPrm%>"/>
 		<input type="hidden" name="searchUrl" />
         <input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
         <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>

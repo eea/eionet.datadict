@@ -93,17 +93,9 @@ ctx = getServletContext();
 //handle the POST
 if (request.getMethod().equals("POST")){
 	
-	if (user==null){ %>
+	String dsn = request.getParameter("ds_name");
+	if (dsn==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "u")){ %>
 		<b>Not allowed!</b> <%
-		return;
-	}
-	else{
-		String[] delem_ids = request.getParameterValues("delem_id");
-		for (int i=0; delem_ids!=null && i<delem_ids.length; i++){
-			if (!SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delem_ids[i], "d")){ %>
-				<b>Not allowed!</b> <%
-			}
-		}
 	}
 	
 	Connection userConn = null;
@@ -169,6 +161,12 @@ elems = searchEngine.getDataElements(null, null, null, null, tableID);
 mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
 
 Dataset dataset = searchEngine.getDataset(dsTable.getDatasetID());
+if (dataset==null){ %>
+	<b>Could not associate the table with any dataset!</b><%
+	return;
+}
+
+dsName = dataset.getShortName();
 
 // JH180803
 // if the table is not a working copy, its complex attributes cannot be edited.
@@ -381,8 +379,8 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 		%>
 		
 		<%
-		boolean wPrm = user==null ? false : SecurityUtil.hasPerm(user.getUserName(), "/tables/" + tableID, "w");
-		if (user != null && topFree && wPrm){ %>
+		boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsName, "u");
+		if (user != null && topFree && dstPrm){ %>
 		
 			<tr height="5"><td colspan="2"></td></tr>
 		
@@ -426,7 +424,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 
 		<tr>
 			<td align="right" style="padding-right:10">
-				<% if (user!=null && topFree && dsLatest && wPrm){ %>
+				<% if (user!=null && topFree && dsLatest && dstPrm){ %>
 					<input type="button" value="Delete" class="smallbutton" onclick="submitForm('delete')"/><%
 				}
 				else{ %>
@@ -480,7 +478,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 			
 				<td align="right" style="padding-right:10" bgcolor="#f0f0f0">
 					<%
-					if (user!=null && wPrm){
+					if (user!=null && dstPrm){
 						
 						if (workingUser!=null){ // mark checked-out elements
 							%> <font title="<%=workingUser%>" color="red">* </font> <%
@@ -536,7 +534,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 	</table>
 	</td>
 	<%
-		if (user!=null && topFree && dsLatest && elems.size()>1 && wPrm){ %>
+		if (user!=null && topFree && dsLatest && elems.size()>1 && dstPrm){ %>
 		<td align="left" style="padding-right:10" valign="top" height="10">
 			<input type="button" <%=disabled%> value="Save" class="smallbutton" onclick="saveChanges()" title="save the new order of elements"/>
 		</td>

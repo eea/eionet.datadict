@@ -756,7 +756,11 @@
 					<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<td align="right" style="padding-right:10">
 							<a target="_blank" href="attr_fields.html#fxv"><span class="help">?</span></a>&#160;
-							<span class="mainfont"><b>Fixed values</b></span>
+							<span class="mainfont">
+								<a href="fixed_values.jsp?mode=view&delem_id=<%=attr_id%>&delem_name=<%=attr_shortname%>&parent_type=attr">
+									<b>Fixed values</b>
+								</a>
+							</span>
 						</td>
 						<td>
 						<%

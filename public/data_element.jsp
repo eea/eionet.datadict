@@ -194,39 +194,19 @@ private String legalizeAlert(String in){
 			String dsID = request.getParameter("ds_id");
 			String tableID = request.getParameter("table_id");
 			
-			// check permissions
-			
 			boolean editPrm = false;
 			boolean deletePrm = false;
-			if (!mode.equals("add")){
-				editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delem_id, "u");
-				deletePrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delem_id, "d");
-			}
-			if (mode.equals("edit") && !editPrm){ %>
-				<b>Not allowed!</b> <%
-				return;
-			}
-			if ((mode.equals("delete") || mode.equals("restore")) && !deletePrm){ %>
-				<b>Not allowed!</b> <%
-				return;
-			}
 			
-			if (mode.equals("add")){
-				if (tableID != null){
-					if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/tables/" + tableID, "w")){ %>
-						<b>Not allowed!</b><%
-						return;
-					}
+			if (mode.equals("add") && dsID==null){
+				if (request.getMethod().equals("POST")){ %>
+					<b>Dataset ID missing in POST!</b><%
+					return;
 				}
-				else{
-					if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")){ %>
-						<b>Not allowed!</b><%
-						return;
-					}
+				else if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
+					<b>Not allowed!</b><%
+					return;
 				}
 			}
-			
-			// ...
 			
 			String type = request.getParameter("type");
 			if (type!=null && type.length()==0)
@@ -252,6 +232,13 @@ private String legalizeAlert(String in){
 				
 				try{
 					if (!wasPick){
+						
+						String dsn = request.getParameter("ds_name");
+						if (dsn==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "u")){%>
+							<b>Not allowed!</b><%
+							return;
+						}
+						
 						userConn = user.getConnection();
 						handler = new DataElementHandler(userConn, request, ctx);
 						handler.setUser(user);
@@ -500,6 +487,11 @@ private String legalizeAlert(String in){
 					}
 				}
 			}
+			
+			editPrm = user!=null &&
+					  dataset!=null &&
+					  SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getShortName(), "u");
+			deletePrm = editPrm;
 			
 			/*if (tableID != null && tableID.length()!=0){
 				dsTable = searchEngine.getDatasetTable(tableID);
@@ -922,7 +914,9 @@ private String legalizeAlert(String in){
 		}
 		
 		function restore(){
-			var b = confirm("This operation will create a new copy this element and its table and its dataset. Click OK, if you want to continue. Otherwise click Cancel.");
+			var b = confirm("This version of the data element will now become the new latest version. " +
+							"Also, the versions of the parent table and dataset will be updated as well. " +
+							"Click OK, if you want to continue. Otherwise click Cancel.");
 			if (b==false) return;
 	    	document.forms["form1"].elements["mode"].value = "restore";
        		document.forms["form1"].submit();
@@ -1070,7 +1064,6 @@ String attrValue = null;
 					if (mode.equals("add") && (type==null || type.length()==0)){ %>
 						<select class="small" name="typeSelect" onchange="fixType()">
 							<option value="">-- Select element type --</option>
-							<option value="AGG">Aggregate data element</option>
 							<option value="CH1">Data element with fixed values (codes)</option>
 							<option value="CH2">Data element with quantitative values (e.g. measurements)</option>
 						</select> <%
@@ -1168,6 +1161,9 @@ String attrValue = null;
 								for (int i=0; datasets!=null && i<datasets.size(); i++){
 									Dataset ds = (Dataset)datasets.get(i);
 									
+									if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds.getShortName(), "u"))
+										continue;
+									
 									// skip datasets in work
 									if (verMan.getWorkingUser(ds.getNamespaceID()) != null)
 										continue;
@@ -1231,7 +1227,7 @@ String attrValue = null;
 							%>
 							<select class="small" name="table_id"">
 								<%
-								if (dst!=null){
+								if (dst!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dst.getShortName(), "u")){
 									if (tbl==null){ %>
 										<option selected value="">-- select a table --</option>
 										<%
@@ -1648,7 +1644,11 @@ String attrValue = null;
 										}
 									}
 									%>
-								</select> <%
+								</select>&#160;
+								<a target="_blank" href="fixed_values.jsp?mode=view&delem_id=<%=attrID%>&delem_name=<%=attribute.getShortName()%>&parent_type=attr">
+									<span class="help">?</span>
+								</a>
+								<%
 							}
 							else{ %>
 								<span class="barfont" style="width:400">Unknown display type!</span> <%
@@ -1862,7 +1862,7 @@ String attrValue = null;
 								String mode= (user == null) ? "print" : "edit";
 
 								for (int i=0; i<fixedValues.size(); i++){
-									if (i==100){	// it's possible to see only the first 20 values on element page
+									if (i==30){	// it's possible to see only the first 30 values on element page
 										%>
 										<tr><td colspan="<%=fxvAttributes.size() + 1 %>">
 											<span class="barfont">... &#160; to view the whole list of allowable values, click the link below</span>
@@ -2274,6 +2274,14 @@ String attrValue = null;
 		<%
 		if (latestID!=null){%>
 			<input type="hidden" name="latest_id" value="<%=latestID%>"><%
+		}
+		
+		String dsn = dataset==null ? null : dataset.getShortName();
+		if (dsn==null && dst!=null)
+			dsn = dst.getShortName();
+		
+		if (dsn!=null){%>
+			<input type="hidden" name="ds_name" value="<%=dsn%>"/><%
 		}
 		%>
 		

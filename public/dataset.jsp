@@ -78,21 +78,15 @@ private Vector getValues(String id){
 			}
 			
 			if (mode.equals("add")){
-				if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
+				if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){
+					%>
 					<b>Not allowed!</b> <%
 					return;
 				}
 			}
-			if (mode.equals("edit")){
-				if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds_id, "u")){ %>
-					<b>Not allowed!</b> <%
-					return;
-				}
-			}
-
-			boolean wPrm = false;
-			if (!mode.equals("add"))
-				wPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds_id, "w");
+			
+			boolean editPrm = false;
+			boolean delPrm = false;
 
 			//// HANDLE THE POST //////////////////////
 			
@@ -207,6 +201,14 @@ private Vector getValues(String id){
 					if (version == null) version = "unknown";
 					if (version.length() == 0) version = "empty";
 					
+					editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getShortName(), "u");
+					delPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getShortName(), "u");
+					
+					if (mode.equals("edit") && !editPrm){ %>
+						<b>Not allowed!</b> <%
+						return;
+					}
+					
 					// get the visual structure, so it will be displayed in the dataset view already
 					dsVisual = dataset.getVisual();
 					if (dsVisual!=null && dsVisual.length()!=0){
@@ -290,7 +292,7 @@ private Vector getValues(String id){
 			
 			complexAttrs = searchEngine.getComplexAttributes(ds_id, "DS");		
 			if (complexAttrs == null) complexAttrs = new Vector();
-			tables = searchEngine.getDatasetTables(ds_id);
+			tables = searchEngine.getDatasetTables(ds_id, true);
 			
 			%>
 
@@ -680,8 +682,7 @@ private Vector getValues(String id){
 											 false :
 											 workingUser.equals(user.getUserName());
 									
-									String aclp = "/datasets/" + ds_id;
-									if (SecurityUtil.hasPerm(user.getUserName(), aclp, "u")){
+									if (editPrm){
 										if (dataset!=null && dataset.isWorkingCopy() ||
 											(isLatest && topFree)   ||
 											(isLatest && inWorkByMe)){ %>
@@ -689,7 +690,7 @@ private Vector getValues(String id){
 										}
 									}
 									
-									if (SecurityUtil.hasPerm(user.getUserName(), aclp, "d")){
+									if (delPrm){
 										if (dataset!=null && !dataset.isWorkingCopy() && isLatest && topFree){ %>
 											<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/> <%
 										}
@@ -808,7 +809,7 @@ private Vector getValues(String id){
 						<span class="barfont" style="width:400">
 							<%=regStatus%>
 							<%
-							if (user!=null && topWorkingUser==null && wPrm){ %>
+							if (user!=null && topWorkingUser==null && editPrm){ %>
 								&#160;&#160;&#160;
 								<a href="javascript:forceStatus('<%=regStatus%>')">&gt; force status to lower levels...</a><%
 							}
@@ -1194,9 +1195,8 @@ private Vector getValues(String id){
 							<table width="auto" cellspacing="0">
 								<tr>
 									<td align="right" style="padding-right:10"></td>
-									<th align="left" style="padding-left:5;padding-right:10">Short name</th>
-									<th align="left" style="padding-right:10">Full name</th>
-									<th align="left" style="padding-right:10">Type</th>
+									<th align="left" style="padding-left:5;padding-right:10">Full name</th>
+									<th align="left" style="padding-right:10">Short name</th>
 								</tr>
 								<%
 								for (int i=0; tables!=null && i<tables.size(); i++){
@@ -1237,13 +1237,10 @@ private Vector getValues(String id){
 											
 										</td>
 										<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-											<a href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a>
+											<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
 										</td>
 										<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=tblFullName%>">
-											<span class="barfont"><%=Util.replaceTags(tblName)%></span>
-										</td>
-										<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-											<span class="barfont"><%=table.getType()%></span>
+											<span class="barfont"><%=Util.replaceTags(table.getShortName())%></span>
 										</td>
 									</tr>
 								<%
@@ -1298,10 +1295,7 @@ private Vector getValues(String id){
 					
 					if (!mode.equals("add")){ // if mode is not "add"
 					
-						String aclp = "/datasets/" + ds_id;
-						boolean uPrm = user==null ? false : SecurityUtil.hasPerm(user.getUserName(), aclp, "u");
-					
-						if (!uPrm){ %>
+						if (!editPrm){ %>
 							<input type="button" class="mediumbuttonb" value="Save" disabled="true"/>&#160;&#160;
 							<%
 							if (!dataset.isWorkingCopy()){ %>
@@ -1339,8 +1333,8 @@ private Vector getValues(String id){
 					<span class="mainfont"><b>Documentation</b></span>
 				</td>
 				<td colspan="2">
-					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>">Create dataset factsheet (PDF)</a> <BR>
-					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>&out_type=GDLN">Create full dataset specification (PDF)</a>
+					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>">Create technical specifications for this dataflow (PDF)</a> <BR>
+					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>&out_type=GDLN">Create full Data Dicrionary output for this dataflow (PDF)</a>
 				</td>
 			</tr>
 			

@@ -419,7 +419,9 @@ else
 				<%
 					if (contextParam == null || !contextParam.equals(POPUP)){
 				%>
-				<% if (user != null) { %>
+				<%
+				boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
+				if (dstPrm) { %>
 					<table width="500">			
 						<tr height"10"><td>&#160;</td></tr>				
 						<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>

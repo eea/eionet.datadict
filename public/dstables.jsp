@@ -44,17 +44,14 @@ ctx = getServletContext();
 //handle the POST
 if (request.getMethod().equals("POST")){
 	
-	if (user==null){ %>
+	String dsn = request.getParameter("ds_name");
+	boolean delPrm = user!=null &&
+					 dsn!=null &&
+					 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "u");
+	
+	if (!delPrm){ %>
 		<b>Not allowed!</b> <%
 		return;
-	}
-	else{
-		String[] del_ids = request.getParameterValues("del_ids");
-		for (int i=0; del_ids!=null && i<del_ids.length; i++){
-			if (!SecurityUtil.hasPerm(user.getUserName(), "/tables/" + del_ids[i], "d")){ %>
-				<b>Not allowed!</b><%
-			}
-		}
 	}
 	
 	Connection userConn = null;
@@ -108,7 +105,7 @@ if (dataset == null){ %>
 	return;
 }
 
-tables = searchEngine.getDatasetTables(dsID);
+tables = searchEngine.getDatasetTables(dsID, true);
 
 DElemAttribute attr = null;
 
@@ -202,10 +199,10 @@ if (disabled.equals("")){
 	<table width="auto" cellspacing="0">
 	
 		<%
-		boolean wPrm = user==null ? false : SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsID, "w");
-		if (wPrm){ %>
+		boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getShortName(), "u");
+		if (dstPrm){ %>
 			<tr>
-				<td colspan="5" align="right">
+				<td colspan="4" align="right">
 					<input type="button"
 						   <%=disabled%>
 						   value="Add new"
@@ -216,20 +213,20 @@ if (disabled.equals("")){
 		}
 		%>
 		
-		<tr><td colspan="5"></td></tr>
+		<tr><td colspan="4"></td></tr>
 
 		<tr>
 			<td align="right" style="padding-right:10">
 				<%
-				if (wPrm){ %>
+				if (dstPrm){ %>
 					<input type="button" <%=disabled%> value="Remove" class="smallbutton" onclick="submitForm('delete')"/><%
 				}
 				%>
-			</td>				
-			<th align="left" style="padding-left:5;padding-right:10">Short name</th>
+			</td>
 			<th align="left" style="padding-right:10">Full name</th>
+			<th align="left" style="padding-left:5;padding-right:10">Short name</th>
 			<th align="left" style="padding-right:10">Definition</th>
-			<th align="left" style="padding-right:10">Type</th>
+			
 		</tr>
 			
 		<%
@@ -267,7 +264,7 @@ if (disabled.equals("")){
 			<tr>
 				<td align="right" style="padding-right:10">
 					<%
-					if (user!=null && wPrm){
+					if (user!=null && dstPrm){
 						
 						if (tblWorkingUser!=null){ // mark checked-out tables
 							%> <font title="<%=tblWorkingUser%>" color="red">* </font> <%
@@ -283,16 +280,13 @@ if (disabled.equals("")){
 					%>					
 				</td>
 				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<a href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a>
+					<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
 				</td>
 				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=tblFullName%>">
-					<%=tblName%>
+					<%=Util.replaceTags(table.getShortName())%>
 				</td>
 				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=tblFullDef%>">
 					<%=tblDef%>
-				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<%=table.getType()%>
 				</td>
 			</tr>
 			<%
@@ -303,6 +297,7 @@ if (disabled.equals("")){
 	
 	<input type="hidden" name="mode" value="delete"/>
 	<input type="hidden" name="ds_id" value="<%=dsID%>"/>
+	<input type="hidden" name="ds_name" value="<%=dataset.getShortName()%>"/>
 	
 </form>
 </div>

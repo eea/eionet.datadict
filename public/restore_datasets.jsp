@@ -134,7 +134,8 @@
 			else{
 				String[] ds_ids = request.getParameterValues("ds_id");
 				for (int i=0; ds_ids!=null && i<ds_ids.length; i++){
-					if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds_ids[i], "d")){ %>
+					String dsn = request.getParameter("ds_name_" + ds_ids[i]);
+					if (dsn==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "d")){ %>
 						<b>Not allowed!</b><%
 					}
 				}
@@ -229,15 +230,6 @@
 		verMan = new VersionManager(conn, searchEngine, user);
 	}	
 
-// prepare Vector of deletion rights for each dataset
-Vector delPrms = new Vector();
-for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
-	Dataset dst = (Dataset)datasets.get(i);
-	if (SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dst.getID(), "d")){
-		delPrms.add(dst.getID());
-	}
-}
-	
 %>
 
 <html>
@@ -304,9 +296,17 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 			if (b==false) return;
 			deleteDatasetReady();
     	}
+    	
+    	function doLoad(){
+	    	var wasDelPrm = document.forms["form1"].elements["was_del_prm"].value;
+	    	if (wasDelPrm == "true"){
+	    		document.forms["form1"].elements["del_button"].disabled = false;
+	    		document.forms["form1"].elements["rst_button"].disabled = false;
+    		}
+    	}
     </script>
 </head>
-<body>
+<body onload="doLoad()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
@@ -411,11 +411,11 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 					<td align="right" style="padding-right:10">
 						<%
 						if (!restore){%>
-							<input type="button" value="Delete" class="smallbutton" onclick="deleteDataset()"/><%
+							<input type="button" name="del_button" disabled value="Delete" class="smallbutton" onclick="deleteDataset()"/><%
 						}
-						else if (delPrms.size()>0){ %>
-							<input type="button" value="Delete" class="smallbutton" onclick="deleteForGood()"/><br/>
-							<input type="button" value="Restore" class="smallbutton" onclick="restoreDataset()"/><%
+						else { %>
+							<input type="button" name="del_button" value="Delete" disabled class="smallbutton" onclick="deleteForGood()"/><br/>
+							<input type="button" name="rst_button" value="Restore" disabled class="smallbutton" onclick="restoreDataset()"/><%
 						}
 						%>
 					</td>
@@ -440,6 +440,8 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 			</tr>
 			
 			<%
+			
+			boolean wasDelPrm = false;
 			
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
 
@@ -482,8 +484,12 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
                															 dsFullName,
                 														 tables);
                 															 
-					boolean delPrm = delPrms.contains(ds_id);
+					boolean delPrm = user!=null &&
+									 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getShortName(), "d");
+									 
 					oEntry.setDelPrm(delPrm);
+					if (delPrm)
+						wasDelPrm = true;
 					
 					oResultSet.oElements.add(oEntry);
 					
@@ -502,14 +508,16 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 						<td align="right" style="padding-right:10">
 							<%
 	    					//if (user!=null){
-		    				if (delPrms.contains(ds_id)){
+		    				if (delPrm){
 		    					
 		    					if (topWorkingUser!=null){ // mark checked-out datasets
 			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
 		    					}
 	    					
 		    					if (canDelete){ %>
-									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>"/><%
+									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>"/>
+									<input type="hidden" name="ds_name_<%=dataset.getID()%>" value="<%=dataset.getShortName()%>"/>
+									<%
 								}
 							}
 							%>
@@ -571,9 +579,12 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 						<tr valign="top">	
 							<%
 							//if (user != null){
-							if (oEntry.getDelPrm()){ %>
+							if (oEntry.getDelPrm()){
+								wasDelPrm = true;
+								%>
 								<td align="right" style="padding-right:10">
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>"/>
+									<input type="hidden" name="ds_name_<%=oEntry.oID%>" value="<%=oEntry.oShortName%>"/>
 								</td> <%
 							}
 							%>
@@ -614,6 +625,7 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 			
 		</table>
 		
+		<input name="was_del_prm" type="hidden" value="<%=wasDelPrm%>"/>
 		<input type="hidden" name="searchUrl" value=""/>
         <input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
         <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>

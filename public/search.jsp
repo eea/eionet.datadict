@@ -311,7 +311,7 @@ else
 						<td colspan="2">
 							<select name="type" class="small" onchange="typeSelect()">
 								<option value="">All</option>
-								<option value="AGG">Aggregate data element</option>
+								<!-- option value="AGG">Aggregate data element</option -->
 								<option value="CH1">Data element with fixed values (codes)</option>
 								<option value="CH2">Data element with quantitative values (e.g. measurements)</option>
 							</select>
@@ -578,7 +578,10 @@ else
 				%>
 				
 				<!-- table for 'Add' -->
-				<% if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")) { %>
+				<%
+				
+				boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
+				if (dstPrm) { %>
 					<table width="500">
 						<tr height"10"><td>&#160;</td></tr>
 						<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>	

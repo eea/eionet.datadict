@@ -1,4 +1,4 @@
- <%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private Vector fixedValues=null;%>
 <%!private Vector mAttributes=null;%>
@@ -168,7 +168,7 @@ private String legalizeAlert(String in){
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 
 			if (mode.equals("view")){
-				fixedValues = searchEngine.getAllFixedValues(delem_id, "elem");
+				fixedValues = searchEngine.getAllFixedValues(delem_id, parent_type);
 			}
 			else{
 				if (parentCSI!=null && parentCSI.length()!=0)
@@ -216,7 +216,7 @@ private String legalizeAlert(String in){
 				}
 			}
 			else{
-				parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&type=SIMPLE&mode=edit";
+				parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&type=SIMPLE&mode=" + mode;
 				if (history!=null){
 					String attrUrl = history.getLastMatching("delem_attribute.jsp");
 				
@@ -404,7 +404,8 @@ private String legalizeAlert(String in){
 			
 	<tr height="10"><td colspan="2"></td></tr>
 </table>
-<% if (mode.equals("view")){%>
+<% if (mode.equals("view")){
+	%>
 	<table width="auto" cellspacing="0">
 		<tr>
 			<th align="left" style="padding-left:5;padding-right:10" width="100">Value</th>
@@ -440,11 +441,11 @@ private String legalizeAlert(String in){
 			for (int j=1; j<level; j++){
 				spaces +="&#160;&#160;&#160;";
 			}
-									
+			
 			%>
 			<tr>
 				<td valign="bottom" align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&#38;mode=<%=mode%>&delem_id=<%=delem_id%>&delem_name=<%=delem_name%>&parent_type=elem">
+					<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&#38;mode=<%=mode%>&delem_id=<%=delem_id%>&delem_name=<%=delem_name%>&parent_type=<%=parent_type%>">
 						<%=Util.replaceTags(value)%>
 					</a></b>
 				</td>

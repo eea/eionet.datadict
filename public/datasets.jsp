@@ -21,6 +21,8 @@
     private int iO=0;
     
     private boolean delPrm = false;
+    private String regStatus = "";
+    public boolean clickable = false;
     
     public c_SearchResultEntry(String _oID, String _oShortName, String _oVersion, String _oFName, Vector _oTables) {
 	    
@@ -39,10 +41,12 @@
     public void setComp(int i,int o) {
         switch(i) {
             case 1: oCompStr=oFName; break;
+            case 2: oCompStr=regStatus; break;
             default: oCompStr=oFName; break;
-            }
+		}
+		
         iO=o;
-        }
+	}
     
     public String toString() {
         return oCompStr;
@@ -58,6 +62,14 @@
     
     public boolean getDelPrm(){
 	    return delPrm;
+    }
+    
+    public void setRegStatus(String stat){
+	    regStatus = stat;
+    }
+    
+    public String getRegStatus(){
+	    return regStatus;
     }
     
 }%>
@@ -133,7 +145,8 @@
 			else{
 				String[] ds_ids = request.getParameterValues("ds_id");
 				for (int i=0; ds_ids!=null && i<ds_ids.length; i++){
-					if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds_ids[i], "d")){ %>
+					String dsn = request.getParameter("ds_name_" + ds_ids[i]);
+					if (dsn==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsn, "d")){ %>
 						<b>Not allowed!</b><%
 					}
 				}
@@ -228,14 +241,6 @@
 		verMan = new VersionManager(conn, searchEngine, user);
 	}
 	
-// prepare Vector of deletion rights for each dataset
-Vector delPrms = new Vector();
-for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
-	Dataset dst = (Dataset)datasets.get(i);
-	if (SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dst.getID(), "d"))
-		delPrms.add(dst.getID());
-}
-	
 %>
 
 <html>
@@ -302,9 +307,16 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 	    	document.forms["form1"].elements["SearchType"].value='<%=TYPE_SEARCH%>';
        		document.forms["form1"].submit();
     	}
+    	
+    	function doLoad(){
+	    	var wasDelPrm = document.forms["form1"].elements["was_del_prm"].value;
+	    	if (wasDelPrm == "true")
+	    		document.forms["form1"].elements["del_button"].disabled = false;
+    	}
+    	
     </script>
 </head>
-<body>
+<body onload="doLoad()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
@@ -387,11 +399,10 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 			if (!restore){%>
 				<tr>
 					<td></td>
-					<td colspan="3" align="left" style="padding-bottom:5">
+					<td colspan="5" align="left" style="padding-bottom:5">
 						<% if (user != null){
 							
-							AccessControlListIF acl = AccessController.getAcl("/datasets");
-							if (acl.checkPermission(user.getUserName(), "i")){ %>
+							if (SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
 							
 								<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/><%
 							}
@@ -418,12 +429,11 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 				<% if (user != null){%>
 					<td align="right" style="padding-right:10">
 						<%
-						if (!restore){
-							String _disabled = delPrms.size()>0 ? "" : "disabled"; %>
-							<input type="button" value="Delete" class="smallbutton" <%=_disabled%> onclick="deleteDataset()"/><%
+						if (!restore){ %>
+							<input type="button" name="del_button" value="Delete" class="smallbutton" disabled onclick="deleteDataset()"/><%
 						}
 						else{%>
-							<input type="button" value="Restore" class="smallbutton" onclick="restoreDataset()"/><%
+							<input type="button" name="rst_button" value="Restore" class="smallbutton" disabled onclick="restoreDataset()"/><%
 						}
 						%>
 					</td>
@@ -444,10 +454,25 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 					</table>
 				</th>
 				<th align="left" style="padding-right:10">Version</th>
+				<th align="left" style="padding-right:10">RegStatus</th>
+				<th align="right" style="padding-right:5">
+					<table border="0" width="auto">
+						<tr>
+							<th align="right">
+								<a href="javascript:showSortedList(2, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending"/></a>
+							</th>
+							<th align="right">
+								<a href="javascript:showSortedList(2, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending"/></a>
+							</th>
+						</tr>
+					</table>
+				</th>
 				<th align="left" style="padding-right:10">Tables</th>
 			</tr>
 			
 			<%
+			
+			boolean wasDelPrm = false;
 			
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
 
@@ -461,7 +486,10 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 				
 					Dataset dataset = (Dataset)datasets.get(i);
 					
-					String regStatus = dataset!=null ? dataset.getStatus() : null;			
+					String regStatus = dataset!=null ? dataset.getStatus() : null;
+					boolean clickable = searchEngine.skipByRegStatus(regStatus) ? false : true;
+					String linkDisabled = clickable ? "" : "disabled";
+					
 					// for countries show only Recorded & Released
 					/*if (regStatus!=null){
 						if (user==null || !user.isAuthentic()){
@@ -498,8 +526,16 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
                															 dsVersion,
                															 dsFullName,
                 														 tables);
-					boolean delPrm = delPrms.contains(ds_id);
+                														 
+					boolean delPrm = user!=null &&
+									 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getShortName(), "d");
 					oEntry.setDelPrm(delPrm);
+					if (delPrm)
+						wasDelPrm = true;
+					
+					
+					oEntry.setRegStatus(regStatus);
+					oEntry.clickable = clickable;
 					
 					oResultSet.oElements.add(oEntry);
 					
@@ -518,25 +554,30 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 						<td align="right" style="padding-right:10">
 							<%
 	    					//if (user!=null){
-							if (delPrms.contains(ds_id)){
+							if (delPrm){
 		    					
 		    					if (topWorkingUser!=null){ // mark checked-out datasets
 			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
 		    					}
 		    					
 		    					if (canDelete){ %>
-									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>"/><%
+									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>"/>
+									<input type="hidden" name="ds_name_<%=dataset.getID()%>" value="<%=dataset.getShortName()%>"/>
+									<%
 								}
 							}
 							%>
 						</td>
 						
 						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2" title="<%=dsFullName%>">
-							<a href="dataset.jsp?ds_id=<%=ds_id%>&#38;mode=view">
+							<a <%=linkDisabled%> href="dataset.jsp?ds_id=<%=ds_id%>&#38;mode=view">
 							<%=Util.replaceTags(dsFullName)%></a>
 						</td>					
 						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 							<%=dsVersion%>
+						</td>
+						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+							<%=regStatus%>
 						</td>
 						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 							<!-- style="border-bottom-color:#10847B;border-bottom-style:solid;border-bottom-width:1pt;"-->
@@ -552,7 +593,7 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 								String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());
 								%>
 								<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
-								<a href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a>								
+								<a <%=linkDisabled%> href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a>								
 								<%
 								if (user!=null && tblWorkingUser!=null){ // mark checked-out tables
 									%>&#160;<font color="red">*</font> <%
@@ -585,24 +626,30 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
                     c_SearchResultEntry oEntry;
                     for (int i=0;i<oResultSet.oElements.size();i++) {
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
+                        String linkDisabled = oEntry.clickable ? "" : "disabled";
 
                         %>
 						<tr valign="top">	
-							<%
-							//if (user != null){
-							if (oEntry.getDelPrm()){
-								%>
-								<td align="right" style="padding-right:10">
+							<td align="right" style="padding-right:10">
+								<%
+								//if (user != null){
+								if (oEntry.getDelPrm()){
+									wasDelPrm = true;
+									%>
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>"/>
-								</td> <%
-							}
-							%>
+									<input type="hidden" name="ds_name_<%=oEntry.oID%>" value="<%=oEntry.oShortName%>"/><%
+								}
+								%>
+							</td>
 							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"  title="<%=oEntry.oFullName%>">
-								<a href="dataset.jsp?ds_id=<%=oEntry.oID%>&#38;mode=view">
+								<a <%=linkDisabled%> href="dataset.jsp?ds_id=<%=oEntry.oID%>&#38;mode=view">
 								<%=Util.replaceTags(oEntry.oFName)%></a>
 							</td>					
 							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 								<%=oEntry.oVersion%>
+							</td>
+							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+								<%=oEntry.getRegStatus()%>
 							</td>
 							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 								<!-- style="border-bottom-color:#10847B;border-bottom-style:solid;border-bottom-width:1pt;"-->
@@ -615,7 +662,7 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 			
 									%>
 									<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
-									<a href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a><br/>
+									<a <%=linkDisabled%> href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a><br/>
 									<%
 								}
 								%>
@@ -633,6 +680,7 @@ for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
 			
 		</table>
 		
+		<input name="was_del_prm" type="hidden" value="<%=wasDelPrm%>"/>
 		<input type="hidden" name="searchUrl" value=""/>
         <input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
         <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>

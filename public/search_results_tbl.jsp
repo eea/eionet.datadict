@@ -168,7 +168,9 @@
 			<tr>
 				<td align="right" style="padding-right:10">&#160;</td>
 				<td align="left" colspan="3" style="padding-bottom:5">
-					<% if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/tables", "i")){ %>
+					<%
+					boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
+					if (dstPrm){ %>
 						<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
 						<%
 					}
@@ -182,6 +184,19 @@
 			
 			<tr>
 				<td align="right" style="padding-right:10">&#160;</td>
+				<th align="left" style="padding-right:10">Full name</th>
+				<th align="right" style="padding-left:5;padding-right:5"">
+					<table border="0" width="auto">
+						<tr>
+							<th align="right">
+								<a href="javascript:showSortedList(3, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending by full name"/></a>
+							</th>
+							<th align="right">
+								<a href="javascript:showSortedList(3, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending by full name"/></a>
+							</th>
+						</tr>
+					</table>
+				</th>
 				<th align="left" style="padding-left:5;padding-right:10">Short name</th>
 				<th align="right" style="padding-left:5;padding-right:5">
 					<table border="0" width="auto">
@@ -208,20 +223,6 @@
 						</tr>
 					</table>
 				</th>
-				<th align="left" style="padding-right:10">Full name</th>
-				<th align="right" style="padding-left:5;padding-right:5"">
-					<table border="0" width="auto">
-						<tr>
-							<th align="right">
-								<a href="javascript:showSortedList(3, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending by full name"/></a>
-							</th>
-							<th align="right">
-								<a href="javascript:showSortedList(3, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending by full name"/></a>
-							</th>
-						</tr>
-					</table>
-				</th>
-				<!--th align="left" style="padding-right:10">Definition</th-->
 			</tr>
 			
             <%-- Handle Request Parameters and queries --%>
@@ -280,7 +281,22 @@
 		           
         		    if (dsTables == null || dsTables.size()==0){
 		            %>
-			            <tr><td colspan="4"><b>No results found!</b></td></tr></table></form></div></TD></TR></table></body></html>
+			            <tr>
+			            	<td colspan="4"><br/>
+			            		<b>No results found!</b>
+			            		<%
+				    	        if (user==null || !user.isAuthentic()){ %>
+				    	        	<br/>
+				    	        		This might be due to fact that you have not been authorized and there are<br/>
+				    	        		no datasets at the moment ready to be published for non-authorized users.<br/>
+				    	        		Please go to the <a href="datasets.jsp?SearchType=SEARCH">list of datasets</a>
+				    	        		to see which of them are in which status!
+				    	        	<br/><%
+			    	        	}
+			    	        	%>
+			            	</td>
+			            </tr>
+			            </table></form></div></TD></TR></table></body></html>
 	            	<%
 	            		return;
             		}
@@ -352,14 +368,14 @@
 		    					}
 		    					%>
 		    				</td>
+		    				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+								<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
+							</td>
 							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-								<a href="<%=tableLink%>"><%=Util.replaceTags(table_name)%></a>
+								<%=Util.replaceTags(table_name)%>
 							</td>
 							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
 								<%=Util.replaceTags(ds_name)%>
-							</td>
-							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=tblFullName%>" colspan="2">
-								<%=Util.replaceTags(tblName)%>
 							</td>
 						</tr>
 						<%

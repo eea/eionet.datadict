@@ -256,7 +256,8 @@ private String legalizeAlert(String in){
 				}
 			}
 			else{
-				parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&type=SIMPLE&mode=edit";
+				String mm = mode.equals("print") ? "view" : mode;
+				parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&type=SIMPLE&mode=" + mm;
 				if (history!=null){
 					String attrUrl = history.getLastMatching("delem_attribute.jsp");
 				
