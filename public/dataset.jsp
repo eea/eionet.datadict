@@ -582,10 +582,10 @@ private Vector getValues(String id){
 				<tr>
 						<%
 						if (mode.equals("add")){ %>
-							<td colspan="2"><span class="head00">Add a dataset</span></td> <%
+							<td colspan="2"><span class="head00">Add a dataset definition</span></td> <%
 						}
 						else if (mode.equals("edit")){ %>
-							<td colspan="2"><span class="head00">Edit dataset</span></td> <%
+							<td colspan="2"><span class="head00">Edit dataset definition</span></td> <%
 						}
 						else{
 							
@@ -594,7 +594,7 @@ private Vector getValues(String id){
 							boolean topFree = topWorkingUser==null ? true : false;
 				
 							%>
-							<td><span class="head00">View dataset</span></td>
+							<td><span class="head00">View dataset definition</span></td>
 							
 							<td align="right">
 								<input type="button" class="smallbutton" value="History" onclick="viewHistory()"/>&#160;
@@ -1112,7 +1112,7 @@ private Vector getValues(String id){
 										<td align="right" style="padding-right:5" bgcolor="#f0f0f0">
 											<%
 											if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
-												%> <font color="red">* </font> <%
+												%> <font title="<%=tblWorkingUser%>" color="red">* </font> <%
 											}
 											%>
 										</td>
@@ -1225,18 +1225,19 @@ private Vector getValues(String id){
 			if (userAgent != null && userAgent.length()!=0){
 				int isMSIE = userAgent.toUpperCase().indexOf("MSIE");
 				if (isMSIE != -1){
-					if (! userAgent.substring(isMSIE + 4).trim().startsWith("6")){
+					//if (! userAgent.substring(isMSIE + 4).trim().startsWith("6")){
 						%>
 						<tr height="20" valign="top">
 							<td></td>
 							<td colspan="2">
 								<span class="smallfont" style="font-weight: normal">
 									! If you see a blank page instead of the PDF, try setting off your Acrobat Reader's Web integration.
+									<br>Acrobat 6.0 is recommended.
 								</span>
 							</td>
 						</tr>
 						<%
-					}
+					//}
 				}
 			}
 			%>

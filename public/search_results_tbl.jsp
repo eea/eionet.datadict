@@ -345,8 +345,8 @@
 						<tr>
 							<td align="right" style="padding-right:10">
 								<%
-								if (user!=null && (workingUser!=null || topWorkingUser!=null)){ // mark checked-out tables
-			    					%> <font color="red">*</font> <%
+								if (user!=null && (topWorkingUser!=null)){ // mark checked-out tables
+			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
 		    					}
 		    					%>
 		    				</td>

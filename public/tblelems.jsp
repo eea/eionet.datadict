@@ -336,7 +336,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 		<tr>
 			<td colspan="2">				
 				<% if (user != null){ %>
-					A red wildcard (<font color="red">*</font>) means that the element is under work
+					A red wildcard (<font color="red">*</font>) means that the definition of the data element is under work
 					and cannot be deleted. Otherwise checkboxes enable to delete selected elements.
 					To change the elements order, click on a row, use move buttons on the table's
 					right and click 'Save'.<%
@@ -382,7 +382,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 							<td style="padding-left:5" colspan="2">
 								<select name="type" class="small">
 									<option selected value="CH2">Quantitative</option>
-									<option value="CH1">Fixed values</option>
+									<option value="CH1">Fixed values (codes)</option>
 								</select>
 							</td>
 						</tr>
@@ -418,7 +418,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 		
 		Hashtable types = new Hashtable();
 		types.put("AGG", "Aggregate");
-		types.put("CH1", "Codes");
+		types.put("CH1", "Fixed values");
 		types.put("CH2", "Quantitative");
 		
 		for (int i=0; elems!=null && i<elems.size(); i++){
@@ -452,7 +452,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 					if (user!=null){
 						
 						if (workingUser!=null){ // mark checked-out elements
-							%> <font color="red">* </font> <%
+							%> <font title="<%=workingUser%>" color="red">* </font> <%
 						}
 						
 						if (workingUser==null && topFree && dsLatest){ %>

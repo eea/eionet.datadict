@@ -177,7 +177,7 @@ if (disabled.equals("")){
 		if (user!=null){ %>
 			<tr>
 				<td>
-					A red wildcard (<font color="red">*</font>) means that the table is under work
+					A red wildcard (<font color="red">*</font>) means that the definition of the table is under work
 					and cannot be deleted. Otherwise checkboxes enable to remove selected tables.
 				</td>
 			</tr><%
@@ -245,7 +245,7 @@ if (disabled.equals("")){
 					if (user!=null){
 						
 						if (tblWorkingUser!=null){ // mark checked-out tables
-							%> <font color="red">* </font> <%
+							%> <font title="<%=tblWorkingUser%>" color="red">* </font> <%
 						}
 					
 						if (tblWorkingUser==null && topFree){ %>

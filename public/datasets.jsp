@@ -224,16 +224,7 @@
 		}
     	function deleteDataset(){
 	    	
-	    	var b;
-	    	<%
-	    	if (wrkCopies){ %>
-	    		b = confirm("This will undo check-out of the selected working copies. They will be deleted and corresponding datasets will be released for others to edit. Click OK, if you want to continue. Otherwise click Cancel.");<%
-    		}
-    		else{ %>
-    			b = confirm("This will delete all the datasets you have selected. Click OK, if you want to continue. Otherwise click Cancel.");<%
-			}
-			%>
-			
+			var b = confirm("This will delete all the datasets you have selected. If any of them are working copies then the corresponding original copies will be released. Click OK, if you want to continue. Otherwise click Cancel.");
 			if (b==false) return;
 			
 			document.forms["form1"].elements["mode"].value = "delete";
@@ -284,7 +275,7 @@
 			if (user!=null){ %>
 				<tr>
 					<td colspan="3"><span class="mainfont">
-						A red wildcard (<font color="red">*</font>) means that the dataset is under work
+						A red wildcard (<font color="red">*</font>) means that the definition of the dataset is under work
 						and cannot be deleted. Otherwise checkboxes enable to delete selected datasets.
 					</td>
 				</tr><%
@@ -380,6 +371,11 @@
 					String workingUser    = verMan.getDstWorkingUser(dataset.getShortName());
 					String topWorkingUser = verMan.getWorkingUser(dataset.getNamespaceID());
 					
+					boolean canDelete = topWorkingUser==null ||
+										(dataset.isWorkingCopy() &&
+										workingUser!=null && user!=null &&
+										workingUser.equals(user.getUserName()));
+										
 					%>
 				
 					<tr valign="top">
@@ -388,11 +384,11 @@
 							<%
 	    					if (user!=null){
 		    					
-		    					if (workingUser!=null || topWorkingUser!=null){ // mark checked-out datasets
-			    					%> <font color="red">*</font> <%
+		    					if (topWorkingUser!=null){ // mark checked-out datasets
+			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
 		    					}
 	    					
-		    					if (workingUser==null && topWorkingUser==null){ %>
+		    					if (canDelete){ %>
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>"/><%
 								}
 							}

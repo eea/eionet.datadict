@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!static int iPageLen=0;%>
@@ -230,16 +230,8 @@
 		}
 		
     	function deleteElement(){
-	    	var b;
-	    	<%
-	    	if (wrkCopies){ %>
-	    		b = confirm("This will undo check-out of the selected working copies. They will be deleted and corresponding elements will be released for others to edit. Click OK, if you want to continue. Otherwise click Cancel.");<%
-    		}
-    		else{ %>
-    			b = confirm("This will delete all the data elements you have selected. Click OK, if you want to continue. Otherwise click Cancel.");<%
-			}
-			%>
-    		
+	    	
+	    	var b = confirm("This will delete all the data elements you have selected. If any of them are working copies then the corresponding original copies will be released. Click OK, if you want to continue. Otherwise click Cancel.");
 			if (b==false) return;
 
 			document.forms["form1"].elements["mode"].value = "delete";			
@@ -287,7 +279,7 @@
 				<td colspan="3"><span class="mainfont">
 					<%
 					if (user!=null){ %>
-						A red wildcard (<font color="red">*</font>) means that the element itself or
+						A red wildcard (<font color="red">*</font>) means that the definition of the data element itself or
 						its parent dataset is under work and it cannot be deleted. Otherwise
 						checkboxes enable to delete selected elements.<%
 					}
@@ -432,14 +424,17 @@
                 														 delem_name,
                 														 dispDs,
                 														 dispTbl,
-                														 null);
-                															 
+                														 null);                															 
 					oResultSet.oElements.add(oEntry);
 					
 					String workingUser = verMan.getWorkingUser(dataElement.getNamespace().getID(),
-		    											dataElement.getShortName(), "elm");
-					
+		    											dataElement.getShortName(), "elm");					
 					String topWorkingUser = verMan.getWorkingUser(dataElement.getTopNs());
+					
+					boolean canDelete = topWorkingUser==null ||
+										(dataElement.isWorkingCopy() &&
+										workingUser!=null && user!=null &&
+										workingUser.equals(user.getUserName()));
 					%>
 				
 					<tr>
@@ -447,11 +442,11 @@
 							<%
 	    					if (user!=null){
 		    					
-		    					if (workingUser!=null || topWorkingUser!=null){ // mark checked-out elements
-			    					%> <font color="red">*</font> <%
+		    					if (topWorkingUser!=null){ // mark checked-out elements
+			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
 		    					}
 	    					
-		    					if (!dataElement.isWorkingCopy() && topWorkingUser==null){ %>
+		    					if (canDelete){ %>
 									<input type="checkbox" style="height:13;width:13" name="delem_id" value="<%=delem_id%>"/>
 									<input type="hidden" name="delem_name_<%=delem_id%>" value="<%=delem_name%>"/> <%
 								}

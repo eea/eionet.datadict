@@ -663,7 +663,7 @@ String attrValue = null;
 			<%
 			if (mode.equals("add")){ %>
 				<td colspan="2">
-					<span class="head00">Add a new table</span>
+					<span class="head00">Add a new table definition</span>
 					<%
 					if (dsID != null && dsID.length()!=0){ %>
 						<span class="head00">to</span>
@@ -675,7 +675,7 @@ String attrValue = null;
 			}
 			else if (mode.equals("edit")){ %>
 				<td colspan="2">
-					<span class="head00">Edit</span>
+					<span class="head00">Edit definition of </span>
 					<span class="title2"><%=Util.replaceTags(dsTable.getShortName())%></span>
 					<span class="head00">table in</span>
 					<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a>
@@ -690,7 +690,7 @@ String attrValue = null;
 			
 				%>
 				<td>
-					<span class="head00">View</span>
+					<span class="head00">View definition of </span>
 					<span class="title2"><%=Util.replaceTags(dsTable.getShortName())%></span>
 					<span class="head00">table in</span>
 					<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a>
@@ -1245,7 +1245,7 @@ String attrValue = null;
 			
 							Hashtable types = new Hashtable();
 							types.put("AGG", "Aggregate");
-							types.put("CH1", "Codes");
+							types.put("CH1", "Fixed values");
 							types.put("CH2", "Quantitative");
 					
 							for (int i=0; elems!=null && i<elems.size(); i++){
@@ -1270,7 +1270,7 @@ String attrValue = null;
 									<td align="right" style="padding-right:5" bgcolor="#f0f0f0">
 										<%
 										if (user!=null && elemWorkingUser!=null){ // mark checked-out elements
-											%> <font color="red">* </font> <%
+											%> <font title="<%=elemWorkingUser%>" color="red">* </font> <%
 										}
 										%>
 									</td>
@@ -1402,18 +1402,19 @@ String attrValue = null;
 				if (userAgent != null && userAgent.length()!=0){
 					int isMSIE = userAgent.toUpperCase().indexOf("MSIE");
 					if (isMSIE != -1){
-						if (! userAgent.substring(isMSIE + 4).trim().startsWith("6")){
+						//if (! userAgent.substring(isMSIE + 4).trim().startsWith("6")){
 							%>
 							<tr height="20" valign="top">
 								<td></td>
 								<td colspan="2">
 									<span class="smallfont" style="font-weight: normal">
 										! If you see a blank page instead of the PDF, try setting off your Acrobat Reader's Web integration.
+										<br>Acrobat 6.0 is recommended.
 									</span>
 								</td>
 							</tr>
 							<%
-						}
+						//}
 					}
 				}
 				%>
