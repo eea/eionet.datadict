@@ -1,0 +1,9 @@
+The access control is maintained in both text files and two tables in
+the MySQL database.
+
+If you want to batch modify all acls, then you can do something like
+this in sql:
+
+insert into ACL_ROWS (ACL_ID, TYPE, ENTRY_TYPE, PRINCIPAL, PERMISSIONS, STATUS)
+select distinct ACL_ID, 'object', 'user', 'palitmet', 'u,d,w,c', 1 from ACLS;
+
