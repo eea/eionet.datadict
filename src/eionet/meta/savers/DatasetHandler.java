@@ -203,6 +203,7 @@ public class DatasetHandler extends BaseHandler {
 		
         lastInsertID = ds_id;
 
+		// handle the update of data model
         String dsVisual = req.getParameter("visual");
         if (!Util.nullString(dsVisual)){
             
@@ -228,7 +229,7 @@ public class DatasetHandler extends BaseHandler {
             
             return; // we only changed the 'visual'. no need to deal with attrs
         }
-        
+
         // set the status
         String status = req.getParameter("reg_status");
         if (!Util.nullString(status)){
@@ -408,6 +409,7 @@ public class DatasetHandler extends BaseHandler {
 		// delete dataset dependencies
 		deleteAttributes();
 		deleteComplexAttributes();
+		deleteRodLinks();
 		deleteTablesElems();
 		//deleteNamespaces();
 	
@@ -530,7 +532,25 @@ public class DatasetHandler extends BaseHandler {
             }
         }
     }
-    
+
+	private void deleteRodLinks() throws SQLException {
+
+		StringBuffer buf = new StringBuffer("delete from DST2ROD where ");
+		for (int i=0; i<ds_ids.length; i++){
+			if (i>0) buf.append(" or ");
+			buf.append("DATASET_ID=").append(ds_ids[i]);
+		}
+	
+		Statement stmt = null;
+		try{
+			stmt = conn.createStatement();
+			stmt.executeUpdate(buf.toString());
+		}
+		catch (SQLException sqle){
+			try{if (stmt != null) stmt.close();}catch (SQLException sqlee){}
+		}
+	}
+
     private void processAttributes() throws SQLException {
         Enumeration parNames = req.getParameterNames();
         while (parNames.hasMoreElements()){
@@ -713,16 +733,6 @@ public class DatasetHandler extends BaseHandler {
 		conn.createStatement().executeUpdate(s);
 	}
 	
-//	private AccessControlListIF getAcl(String name) throws SignOnException {
-//
-//		if (acls == null || !ACLS_OK )
-//	  		acls = AccessController.getAcls();
-//
-//		ACLS_OK=true;
-//
-//		return (AccessControlListIF)acls.get(name);
-//  	}
-    
     public static void main(String[] args){
         
         try{

@@ -246,7 +246,7 @@ public class DataElementHandler extends BaseHandler {
         // see if making a copy
 		String copy_elem_id = req.getParameter("copy_elem_id");
 		if (copy_elem_id != null && copy_elem_id.length()!=0){
-			copyElem(copy_elem_id);
+			copyElem(copy_elem_id, topNS);
 			return;
 		}
         
@@ -304,6 +304,14 @@ public class DataElementHandler extends BaseHandler {
         String status = req.getParameter("reg_status");
         if (!Util.nullString(status))
             gen.setField("REG_STATUS", status);
+
+		// set IS_ROD_PARAM
+		String isRodParam = req.getParameter("is_rod_param");
+		if (isRodParam!=null){
+			if (!isRodParam.equals("true") && !isRodParam.equals("false"))
+				throw new Exception("Invalid value for is_rod_param!");
+			gen.setField("IS_ROD_PARAM", isRodParam);
+		}
         
         stmt.executeUpdate(gen.insertStatement());
 		setLastInsertID();
@@ -325,6 +333,14 @@ public class DataElementHandler extends BaseHandler {
         String status = req.getParameter("reg_status");
         if (!Util.nullString(status))
             gen.setField("REG_STATUS", status);
+
+		// set IS_ROD_PARAM
+		String isRodParam = req.getParameter("is_rod_param");
+		if (isRodParam!=null){
+			if (!isRodParam.equals("true") && !isRodParam.equals("false"))
+				throw new Exception("Invalid value for is_rod_param!");
+			gen.setField("IS_ROD_PARAM", isRodParam);
+		}
         
 		String gisType = req.getParameter("gis");
 		if (gisType==null || gisType.equals("nogis"))
@@ -991,7 +1007,7 @@ public class DataElementHandler extends BaseHandler {
 
         return false;
     }
-    private void copyElem(String copyElemID) throws Exception{
+    private void copyElem(String copyElemID, String topNS) throws Exception{
 
         if (copyElemID==null) return;
 
@@ -1006,7 +1022,8 @@ public class DataElementHandler extends BaseHandler {
 
         gen.setTable("DATAELEM");
         gen.setField("IDENTIFIER", idfier);
-        gen.setField("PARENT_NS", ns_id);
+        gen.setFieldExpr("PARENT_NS", ns_id);
+		gen.setFieldExpr("TOP_NS", topNS);
         gen.setField("VERSION", "1");
         if (versioning==false){
             if (user!=null && user.isAuthentic())

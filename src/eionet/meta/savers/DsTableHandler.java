@@ -232,19 +232,17 @@ public class DsTableHandler extends BaseHandler {
         setLastInsertID();
 
         // create the corresponding namespace
-        if (!copy){
-            String correspNS = createNamespace(dsName, idfier);
-            if (correspNS==null)
-                throw new Exception("DsTableHandler: failed to create " +
-                    "a corresponding namespace!");
-            
-            if (correspNS!=null){
-                gen.clear();
-                gen.setTable("DS_TABLE");
-                gen.setField("CORRESP_NS", correspNS);
-                stmt.executeUpdate(gen.updateStatement() + 
-                            " where TABLE_ID=" + lastInsertID);
-            }
+        String correspNS = createNamespace(dsName, idfier);
+        if (correspNS==null)
+            throw new Exception("DsTableHandler: failed to create " +
+                "a corresponding namespace!");
+        
+        if (correspNS!=null){
+            gen.clear();
+            gen.setTable("DS_TABLE");
+            gen.setField("CORRESP_NS", correspNS);
+            stmt.executeUpdate(gen.updateStatement() + 
+                        " where TABLE_ID=" + lastInsertID);
         }
 
         // JH140303 - enter a row into DST2TBL

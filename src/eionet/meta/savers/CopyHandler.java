@@ -412,6 +412,12 @@ public class CopyHandler extends Object {
             copy(gen, "DATASET_ID=" + dstID);
         }
         
+        // copy rod links
+		gen.clear();
+		gen.setTable("DST2ROD");
+		gen.setField("DATASET_ID", newID);
+		copy(gen, "DATASET_ID=" + dstID);
+        
         // copy the tables as well, eventually with elements as well.
         // this is needed if copying an existing dataset for the creation
         // of a new one
