@@ -775,9 +775,9 @@ String attrValue = null;
 	
 			<form name="form1" method="POST" action="dstable.jsp">
 			
-				<!--------------------------->
+				<!--=======================-->
 				<!-- main table inside div -->
-				<!--------------------------->
+				<!--=======================-->
 				
 				<table border="0" width="620" cellspacing="0" cellpadding="0">
 				

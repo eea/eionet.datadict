@@ -673,9 +673,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 					
 				%>
 				
-				<!--------------------------->
+				<!--=======================-->
 				<!-- main table inside div -->
-				<!--------------------------->
+				<!--=======================-->
 				
 				<table border="0" width="620" cellspacing="0" cellpadding="0">
 				

@@ -167,7 +167,7 @@ if (disabled.equals("")){
 
 	<table width="440">
 
-		<!---------------------- dataset title  ------------------------------------------->
+		<!--==================== dataset title  =========================================-->
 
 		<%
 		String dsName = dataset.getShortName();
