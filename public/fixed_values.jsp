@@ -318,7 +318,7 @@ private String legalizeAlert(String in){
 		<tr>
 			<th align="left" style="padding-left:5;padding-right:10">Value</th>
 			<th align="left" style="padding-left:5;padding-right:10">Definition</th>
-			<th align="left" style="padding-left:5;padding-right:10;border-right:1 solid #FF9900">ShortDescription</th>			
+			<th align="left" style="padding-left:5;padding-right:10;border-right:1px solid #FF9900">ShortDescription</th>			
 		</tr>
 		<%
 		String mode= (user == null) ? "print" : "edit";
@@ -379,7 +379,7 @@ private String legalizeAlert(String in){
   	<tr>
   		<th>&#160;</th>
 		<th align="left" style="padding-left:5;padding-right:10;border-left:0" width="100">Value</th>
-		<th align="left" style="padding-left:5;padding-right:10;border-right:1 solid #FF9900" width="500">Definition</th>
+		<th align="left" style="padding-left:5;padding-right:10;border-right:1px solid #FF9900" width="500">Definition</th>
 	</tr>
 	<tbody>
 			

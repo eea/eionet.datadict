@@ -33,7 +33,7 @@
 					<tr height="10"><td></td></tr>					
 					<tr>
 						<td width="620" style="border: 1 dotted #C0C0C0">												
-							<table border="0" width="100%" cellspacing="0" cellpadding="3" bordercolorlight="#C0C0C0" bordercolordark="#C0C0C0" style="border: 1 solid #FF9900">
+							<table border="0" width="100%" cellspacing="0" cellpadding="3" bordercolorlight="#C0C0C0" bordercolordark="#C0C0C0" style="border: 1px solid #FF9900">
 								<tr>
 									<td>
 										<%=Helps.get("doc2", "text")%>

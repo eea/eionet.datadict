@@ -1244,7 +1244,7 @@ else{ %>
 									if (!popup && (dispAll || dispXmlSchema)){ %>
 										<tr height="10"><td width="100%"></td></tr>
 										<tr>
-											<td width="100%" style="border: 1 solid #FF9900">
+											<td width="100%" style="border: 1px solid #FF9900">
 												<table border="0" width="100%" cellspacing="0">
 													<tr>
 														<td width="73%" valign="middle" align="left">

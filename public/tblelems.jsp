@@ -598,7 +598,7 @@ int colCount = hasGIS ? 5 : 4;
 							</table>
 						</th>
 						
-						<th align="left" style="padding-right:10; border-left:0; border-right:1 solid #FF9900">
+						<th align="left" style="padding-right:10; border-left:0; border-right:1px solid #FF9900">
 							<table width="100%">
 								<tr>
 									<td align="right" width="50%">

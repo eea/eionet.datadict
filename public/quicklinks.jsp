@@ -5,7 +5,7 @@ Vector links = (Vector)request.getAttribute("quicklinks");
 if (links!=null && links.size()>0){
 	%>
 	<tr>
-		<td width="100%" style="border: 1 solid #FF9900" bgcolor="#FFFFFF">
+		<td width="100%" style="border: 1px solid #FF9900" bgcolor="#FFFFFF">
 			<table border="0" width="100%" cellspacing="0" cellpadding="2">
 				<tr>
 					<td width="100%" class="barfont">

@@ -504,7 +504,7 @@
 			            <jsp:param name="help" value="help.jsp?screen=dataset&area=regstatus"/>
 			        </jsp:include>
 				</th>
-				<th width="40%" style="border-right: 1 solid #FF9900">
+				<th width="40%" style="border-right: 1px solid #FF9900">
 					<table width="100%">
 						<tr>
 							<td align="right" width="50%">
@@ -658,7 +658,7 @@
 							}
 							%>
 						</td>
-						<td width="45%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+						<td width="45%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
 							<%
 							for (int c=0; tables!=null && c<tables.size(); c++){
 				
@@ -763,7 +763,7 @@
 								%>
 							</td>
 							
-							<td width="45%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+							<td width="45%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
 								<%
 								Vector tables = oEntry.oTables;
 								for (int c=0; tables!=null && c<tables.size(); c++){

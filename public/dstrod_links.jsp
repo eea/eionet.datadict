@@ -105,7 +105,7 @@ try{
 									<tr>
 										<th>&nbsp;</th>
 										<th style="padding-left:5;padding-right:10;border-left:0">Title</th>
-										<th style="padding-left:5;padding-right:10;border-right:1 solid #FF9900">Details</th>
+										<th style="padding-left:5;padding-right:10;border-right:1px solid #FF9900">Details</th>
 									</tr>
 									<%
 									int displayed = 0;

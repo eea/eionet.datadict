@@ -200,7 +200,7 @@ if (disabled.equals("")){
 			</td>				
 			<th align="left" style="padding-left:5;padding-right:10">Element</th>
 			<th align="left" style="padding-left:5;padding-right:10">Table</th>
-			<th align="left" style="padding-left:5;padding-right:10;border-right:1 solid #FF9900">Cardinality</th>
+			<th align="left" style="padding-left:5;padding-right:10;border-right:1px solid #FF9900">Cardinality</th>
 		</tr>
 			
 		<%

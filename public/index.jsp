@@ -130,7 +130,7 @@ catch (Exception e){
 					                  		
 					                  		<!-- the support part -->
 					                  		
-					                  		<td width="50%" style="border: 1 solid #FF9900" valign="top">
+					                  		<td width="50%" style="border: 1px solid #FF9900" valign="top">
 					                  			<%=Helps.get("front_page", "support")%>
 					                  		</td>
 					                	</tr>
@@ -138,13 +138,13 @@ catch (Exception e){
 					                	
 					                		<!-- the documentation part -->
 					                		
-					                  		<td width="50%" style="border: 1 solid #FF9900" valign="top">
+					                  		<td width="50%" style="border: 1px solid #FF9900" valign="top">
 												<%=Helps.get("front_page", "documentation")%>
 					                  		</td>
 					                  		
 					                  		<!-- the news part -->
 					                  		
-					                  		<td width="50%" style="border: 1 solid #FF9900" valign="top">
+					                  		<td width="50%" style="border: 1px solid #FF9900" valign="top">
 												<%=Helps.get("front_page", "news")%>
 		                  					</td>
 										</tr>

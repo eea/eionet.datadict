@@ -60,7 +60,7 @@ Vector entries = (Vector)request.getAttribute("entries");
 		<tr>
 			<th width="3%">&nbsp;</th>
 			<th width="67%" align="left" style="padding-left:10; border-left:0">Article</th>
-			<th width="30%" align="left" style="padding-left:10; border-right:1 solid #FF9900">Created</th>
+			<th width="30%" align="left" style="padding-left:10; border-right:1px solid #FF9900">Created</th>
 		</tr>
 			
 		<%

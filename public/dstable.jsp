@@ -970,7 +970,7 @@ String attrValue = null;
 										%>
 										<tr><td width="100%" height="10"></td></tr>
 										<tr>
-											<td width="100%" style="border: 1 solid #FF9900">
+											<td width="100%" style="border: 1px solid #FF9900">
 												<table border="0" width="100%" cellspacing="0">
 													<%
 													// XML Schema link

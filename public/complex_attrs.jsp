@@ -358,7 +358,7 @@ private String legalizeAlert(String in){
 							String name = (String)hash.get("name");
 							String style = "padding-right:10";
 							if (t == attrFields.size()-1)
-								style = style + ";border-right:1 solid #FF9900";
+								style = style + ";border-right:1px solid #FF9900";
 							%>
 							<th align="left" class="small" style="<%=style%>"><%=name%></th>
 							<%

@@ -328,7 +328,7 @@ else{ %>
 					</th><%
 				}
 				%>
-				<th width="25%" style="border-right: 1 solid #FF9900">
+				<th width="25%" style="border-right: 1px solid #FF9900">
 					<jsp:include page="thsortable.jsp" flush="true">
 			            <jsp:param name="title" value="Status"/>
 			            <jsp:param name="mapName" value="Status"/>
@@ -433,7 +433,7 @@ else{ %>
 							</td><%
 						}
 						%>
-						<td width="25%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+						<td width="25%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
 							<%=status%>
 						</td>
 					</tr><%
@@ -503,7 +503,7 @@ else{ %>
 								</td><%
 							}
 							%>
-							<td width="25%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+							<td width="25%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
 								<%=oEntry.status%>
 							</td>
 						</tr>

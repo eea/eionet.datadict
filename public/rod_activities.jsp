@@ -58,7 +58,7 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 		<table width="auto" cellspacing="0" cellpadding="0">
 			<tr>
 				<th style="padding-left:5;padding-right:10">Title</th>
-				<th style="padding-left:5;padding-right:10;border-right:1 solid #FF9900">Details</th>
+				<th style="padding-left:5;padding-right:10;border-right:1px solid #FF9900">Details</th>
 			</tr>
 			<%
 			int displayed = 0;

@@ -350,7 +350,7 @@ else{ %>
 			            <jsp:param name="help" value="help.jsp?screen=elements&area=dataset"/>
 			        </jsp:include>
 				</th>
-				<th width="20%" style="border-right: 1 solid #FF9900">
+				<th width="20%" style="border-right: 1px solid #FF9900">
 					<jsp:include page="thsortable.jsp" flush="true">
 			            <jsp:param name="title" value="Type"/>
 			            <jsp:param name="mapName" value="Type"/>
@@ -445,7 +445,7 @@ else{ %>
 						<td width="22%" class="<%=styleClass%>">
 							<%=Util.replaceTags(dispDs)%>
 						</td>
-						<td width="20%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+						<td width="20%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
 							<%=displayType%>
 						</td>
 					</tr><%
@@ -496,7 +496,7 @@ else{ %>
 							<td width="22%" class="<%=styleClass%>">
 								<%=Util.replaceTags(oEntry.oDsName)%>
 							</td>
-							<td width="20%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+							<td width="20%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
 								<%=oEntry.oType%>
 							</td>
 						</tr>

@@ -251,7 +251,7 @@
 			            <jsp:param name="help" value="help.jsp?screen=tables&area=shortname"/>
 			        </jsp:include>
 				</th>
-				<th width="25%" style="border-left:0" style="border-right: 1 solid #FF9900">
+				<th width="25%" style="border-left:0" style="border-right: 1px solid #FF9900">
 					<jsp:include page="thsortable.jsp" flush="true">
 			            <jsp:param name="title" value="Dataset"/>
 			            <jsp:param name="mapName" value="Dataset"/>
@@ -391,7 +391,7 @@
 							<td width="35%" class="<%=styleClass%>">
 								<%=Util.replaceTags(table_name)%>
 							</td>
-							<td width="25%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+							<td width="25%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
 								<%=Util.replaceTags(ds_name)%>
 								<%
 								// mark locked datasets
@@ -442,7 +442,7 @@
 							<td width="35%" class="<%=styleClass%>">
 								<%=Util.replaceTags(oEntry.oShortName)%>								
 							</td>
-							<td width="25%" class="<%=styleClass%>" style="border-right: 1 solid #C0C0C0">
+							<td width="25%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
 								<%=Util.replaceTags(oEntry.oDsName)%>
 							</td>
 						</tr>

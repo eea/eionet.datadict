@@ -255,7 +255,7 @@ private String legalizeAlert(String in){
 		<th>&nbsp;</th>
 		<th style="padding-left:5;padding-right:5;border-left:0">Name</th>
 		<th style="padding-left:5;padding-right:5">Definition</th>
-		<th style="padding-left:5;padding-right:5;border-right:1 solid #FF9900">Priority</th>
+		<th style="padding-left:5;padding-right:5;border-right:1px solid #FF9900">Priority</th>
 	</tr>
 	<tbody id="tbl_body">	
 	

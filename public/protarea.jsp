@@ -6,7 +6,7 @@ AppUserIF userProtarea = SecurityUtil.getUser(request);
 if (userProtarea!=null && userProtarea.isAuthentic()) loggedIn = true;
 %>
 
-<td width="50%" style="border: 1 solid #FF9900" valign="top">	
+<td width="50%" style="border: 1px solid #FF9900" valign="top">	
 	<table border="0" width="100%" cellspacing="0" cellpadding="2">
 		<tr height="20">
 			<td align="center" width="100%" valign="top" class="front_page_prot_area" >

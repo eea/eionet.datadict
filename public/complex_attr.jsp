@@ -409,7 +409,7 @@ if (!mode.equals("view")){
 		<%
 	}
 %>
-<table style="border: 1 solid #808080">
+<table style="border: 1px solid #808080">
 
 	<%
 		for (int t=0; attrFields!=null && t<attrFields.size(); t++){			
@@ -466,7 +466,7 @@ if (!mode.equals("view")){
 				String name = (String)hash.get("name");
 					String style = "padding-left:5;padding-right:10";
 					if (t == attrFields.size()-1)
-						style = style + ";border-right:1 solid #FF9900";
+						style = style + ";border-right:1px solid #FF9900";
 					%>
 					<th class="small" align="left" style="<%=style%>"><%=name%></th>
 					<%
