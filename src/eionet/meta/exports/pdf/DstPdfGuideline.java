@@ -106,11 +106,10 @@ public class DstPdfGuideline extends PdfHandout {
         hash.put("value", ds.getShortName());
 		attrs.add(0, hash);
         
-        String version = ds.getVersion();
-        if (!Util.voidStr(version)){
+        if (!Util.voidStr(dsVersion)){
             hash = new Hashtable();
             hash.put("name", "Version");
-            hash.put("value", version);
+            hash.put("value", dsVersion);
 			attrs.add(1, hash);
         }
 
