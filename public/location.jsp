@@ -79,48 +79,48 @@
 Enumeration oNames;
 String oName=null;
 %>
-<P><B><U>Init parameters (app):</U></B><%
+<p><b><u>Init parameters (app):</u></b><%
 oNames=application.getInitParameterNames();
 oName=null;
 while (oNames.hasMoreElements()) {
   oName=(String)oNames.nextElement();%>
-  <LI><%=oName%> = <%=application.getInitParameter(oName)%></LI><%
+  <li><%=oName%> = <%=application.getInitParameter(oName)%></li><%
   }%>
-<P><B><U>Init parameters (sess):</U></B><%
+<p><b><u>Init parameters (sess):</u></b><%
 oNames=config.getInitParameterNames();
 oName=null;
 while (oNames.hasMoreElements()) {
   oName=(String)oNames.nextElement();%>
-  <LI><%=oName%> = <%=config.getInitParameter(oName)%></LI><%
+  <li><%=oName%> = <%=config.getInitParameter(oName)%></li><%
   }%>
-<P><U><B>Session attributes:</U></B><%
+<p><u><b>Session attributes:</u></b><%
 oNames=session.getAttributeNames();
 oName=null;
 while (oNames.hasMoreElements()) {
   oName=(String)oNames.nextElement();%>
-  <LI><%=oName%> = <%=session.getAttribute(oName)%></LI><%
+  <li><%=oName%> = <%=session.getAttribute(oName)%></li><%
   }%>
-<P><B><U>Request:</U></B>
-<P><U>parameters:</U><%
+<p><b><u>Request:</u></b>
+<p><u>parameters:</u><%
 oNames=request.getParameterNames();
 oName=null;
 while (oNames.hasMoreElements()) {
   oName=(String)oNames.nextElement();%>
-  <LI><%=oName%> = <%=request.getParameter(oName)%></LI><%
+  <li><%=oName%> = <%=request.getParameter(oName)%></li><%
   }%>
-<P><U>attributes:</U><%
+<p><u>attributes:</u><%
 oNames=request.getAttributeNames();
 oName=null;
 while (oNames.hasMoreElements()) {
   oName=(String)oNames.nextElement();%>
-  <LI><%=oName%> = <%=request.getAttribute(oName)%></LI><%
+  <li><%=oName%> = <%=request.getAttribute(oName)%></li><%
   }%>
-<P><U>headers:</U><%
+<p><u>headers:</u><%
 oNames=request.getHeaderNames();
 oName=null;
 while (oNames.hasMoreElements()) {
   oName=(String)oNames.nextElement();%>
-  <LI><%=oName%> = <%=request.getHeader(oName)%></LI><%
+  <li><%=oName%> = <%=request.getHeader(oName)%></li><%
   }
 %>
 <%-- --%>

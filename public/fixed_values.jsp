@@ -169,12 +169,12 @@ private String legalizeAlert(String in){
 <html>
 	<head>
 		<title>Meta</title>
-		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+		<meta http-equiv="Content-Type" content="text/html"/>
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
 	
-	<script language="JavaScript" src='script.js'></script>
-	<script language="JavaScript">
+	<script language="javascript" src='script.js'></script>
+	<script language="javascript">
 	
 		function submitForm(mode){
 			
@@ -233,12 +233,12 @@ private String legalizeAlert(String in){
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
         	<%
         	if (valsType.equals("CH1")){ %>
 	            <jsp:include page="location.jsp" flush='true'>

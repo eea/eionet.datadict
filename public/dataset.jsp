@@ -316,7 +316,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 					hasHistory = true;
 			}
 			
-			// we get the registration status already here, because it's needed in JavaScript below
+			// we get the registration status already here, because it's needed in javascript below
 			String regStatus = dataset!=null ? dataset.getStatus() : null;
 			%>
 

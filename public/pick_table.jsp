@@ -97,9 +97,9 @@
 <html>
 	<head>
 		<title>Meta</title>
-		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+		<meta http-equiv="Content-Type" content="text/html"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
-		<script language="JavaScript">
+		<script language="javascript">
 			function pickTable(id, i, name) {
 				if (opener && !opener.closed) {
 					if (window.opener.pickTable(id, name)==true)  //window opener should have function pickTABLE with 2 params - tbl id & tbl name
@@ -121,7 +121,7 @@
 			}
 		</script>
 	</head>
-    <script language="JAVASCRIPT" for="window" event="onload">    	
+    <script language="javascript" for="window" event="onload">    	
 	</script>
 
 <body class="popup">
@@ -151,7 +151,7 @@
  			<%
         		    if (dsTables == null || dsTables.size()==0){
 		            %>
-			            <tr><td colspan="4"><b>No results found!</b></td></tr></tbody></table></form></div></TD></TR></table></body></html>
+			            <tr><td colspan="4"><b>No results found!</b></td></tr></tbody></table></form></div></td></tr></table></body></html>
 	            	<%
 	            		return;
             		}
@@ -205,7 +205,7 @@
 			%>
 			</tbody>
 		</table>
-		<br>
+		<br/>
  	</form>
 </body>
 </html>

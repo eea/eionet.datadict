@@ -64,9 +64,9 @@ else{
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
     <link type="text/css" rel="stylesheet" href="eionet_new.css" />
-    <script language="JavaScript">
+    <script language="javascript">
     
     	function load(){
 	    	resize();

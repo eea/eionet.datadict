@@ -107,17 +107,17 @@
 				}
 			}
 			
-			String disabled = user == null ? "disabled" : "";
+			String disabled = user == null ? "disabled='disabled'" : "";
 			
 			%>
 
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet.css">
-    <script language="JavaScript" src='script.js'></script>
-    <script language="JavaScript">
+    <script language="javascript" src='script.js'></script>
+    <script language="javascript">
     
 		function submitForm(mode){
 			
@@ -184,12 +184,12 @@
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Namespace"/>
                 <jsp:param name="back" value="true"/>
@@ -371,7 +371,7 @@
 					<%
 					if (mode.equals("add")){ // if mode is "add"
 						if (user==null){ %>									
-							<input type="button" class="mediumbuttonb" value="Add" disabled="true"/>&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Add" disabled="disabled"/>&#160;&#160;
 						<%} else {%>
 							<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&#160;&#160;
 						<% }
@@ -379,8 +379,8 @@
 					
 					if (!mode.equals("add")){ // if mode is not "add"
 						if (user==null || !nsEditable){ %>									
-							<input type="button" class="mediumbuttonb" value="Save" disabled="true"/>&#160;&#160;
-							<!--input type="button" class="mediumbuttonb" value="Delete" disabled="true"/>&#160;&#160;-->
+							<input type="button" class="mediumbuttonb" value="Save" disabled="disabled"/>&#160;&#160;
+							<!--input type="button" class="mediumbuttonb" value="Delete" disabled="disabled"/>&#160;&#160;-->
 						<%} else {%>
 							<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&#160;&#160;
 							<!--input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')"/>&#160;&#160; -->
@@ -399,8 +399,8 @@
 	</table>
 	</form>
 </div>
-        </TD>
-</TR>
+        </td>
+</tr>
 </table>
 </body>
 </html>

@@ -46,7 +46,7 @@ if (lastUpdated==null){
           </tr>
           <tr>
             <td align="center"><span class="barfont"><font face="Verdana" size="1"><b><a href="http://www.eea.eu.int" target="_blank">European
-              Environment Agency</a></b><br>
+              Environment Agency</a></b><br/>
               Kgs. Nytorv 6, DK-1050 Copenhagen K, Denmark - Phone: +45 3336
               7100</font></span></td>
           </tr>

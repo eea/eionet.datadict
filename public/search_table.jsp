@@ -122,10 +122,10 @@ private String setDefaultAttrs(String name){
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="JavaScript" src='script.js'></script>
-    <script language="JavaScript">
+    <script language="javascript" src='script.js'></script>
+    <script language="javascript">
 		attrWindow=null;
 
 		function submitForm(action){
@@ -187,15 +187,15 @@ else { %>
 		<%
 			if (contextParam == null || !contextParam.equals(POPUP)){
 		%>
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
+            </center></p>
+        </td>
 		<%
 		}
 		%>
-        <TD>
+        <td>
 			<%
 			if (contextParam == null || !contextParam.equals(POPUP)){ %>
 			
@@ -374,7 +374,7 @@ else { %>
                     <tr valign="bottom">
                 		<td width="150" colspan="2">&#160;</td>
                     	<td colspan="2">
-                			<input type="radio" name="search_precision" value="substr" checked>Substring search</input>
+                			<input type="radio" name="search_precision" value="substr" checked="checked">Substring search</input>
                 			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
                 			<input type="radio" name="search_precision" value="free">Free text search</input>&#160;&#160;
                 		</td>
@@ -446,8 +446,8 @@ else { %>
 				<input type="hidden" name="collect_attrs" value="<%=collect_attrs.toString()%>"></input>
 				</form>
 			</div>
-        </TD>
-</TR>
+        </td>
+</tr>
 </table>
 </body>
 </html>

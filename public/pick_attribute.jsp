@@ -57,9 +57,9 @@ private String getAttributeIdByName(String name){
 <html>
 	<head>
 		<title>Meta</title>
-		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+		<meta http-equiv="Content-Type" content="text/html"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
-		<script language="JavaScript">
+		<script language="javascript">
 			function selectAttr(id, oControl) {
 				if (opener && !opener.closed) {
 					window.opener.selAttr(id, 'add');
@@ -77,7 +77,7 @@ private String getAttributeIdByName(String name){
 			}
 		</script>
 	</head>
-    <script language="JAVASCRIPT" for="window" event="onload">    	
+    <script language="javascript" for="window" event="onload">    	
 	</script>
 
 <body class="popup">
@@ -113,7 +113,7 @@ private String getAttributeIdByName(String name){
 				%>
 				<tr>
 					<td align="left" width="300pts">	
-						<a href='#' onClick='selectAttr(<%=attr_id%>, this)'>
+						<a href='#' onclick='selectAttr(<%=attr_id%>, this)'>
 							<%=attr_name%>
 						</a>
 					</td>

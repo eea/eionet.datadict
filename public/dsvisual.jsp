@@ -10,10 +10,10 @@
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="JavaScript" src='script.js'></script>
-	<SCRIPT LANGUAGE="JavaScript">
+	<script language="javascript" src='script.js'></script>
+	<script language="javascript">
 
 	function submitForm(mode){
 		
@@ -79,7 +79,7 @@
 	function openStructure(url){
 		window.open(url,null,"height=600,width=800,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=yes,location=yes");
 	}
-	</SCRIPT>
+	</script>
 </head>
 
 <%
@@ -139,12 +139,12 @@ if (dsVisual!=null && dsVisual.length()!=0){
 
 <table border="0">
     <tr valign="top">
-		<td nowrap="true" width="125">
+		<td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Dataset model"/>
                 <jsp:param name="back" value="true"/>
@@ -264,7 +264,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 				<%
 				if (user!=null){
 					%>
-					<FORM NAME="Upload" ACTION="DsVisualUpload" METHOD="POST" ENCTYPE="multipart/form-data">
+					<form name="Upload" action="DsVisualUpload" method="POST" enctype="multipart/form-data">
 
 						<table width="auto" cellspacing="0">
 							
@@ -303,11 +303,11 @@ if (dsVisual!=null && dsVisual.length()!=0){
 						%>
 						
 						<input type="hidden" name="str_type" value="<%=type%>"/>
-					</FORM>
+					</form>
 					<%
 				}
 				%>
-		</TD>
+		</td>
 	</tr>
 </table>
 </div>

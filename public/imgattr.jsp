@@ -10,10 +10,10 @@
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="JavaScript" src='script.js'></script>
-	<SCRIPT LANGUAGE="JavaScript">
+	<script language="javascript" src='script.js'></script>
+	<script language="javascript">
 
 	function submitForm(mode){
 		
@@ -71,7 +71,7 @@
 		}
 	}
 	
-	</SCRIPT>
+	</script>
 </head>
 
 <%

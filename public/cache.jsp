@@ -10,9 +10,9 @@ Vector entries = (Vector)request.getAttribute("entries");
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
     <link type="text/css" rel="stylesheet" href="eionet_new.css" />
-    <script language="JavaScript">
+    <script language="javascript">
     
     	function submitForm(action){
 	    	document.forms["form1"].elements["action"].value = action;

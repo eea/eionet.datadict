@@ -2,7 +2,7 @@
 	<head>
 		<title>Dialog</title>
 		<link type="text/css" rel="stylesheet" href="eionet.css">
-	    <script language="JavaScript">
+	    <script language="javascript">
 			function clicked(value) {
 				document.forms["form1"].elements["wasclick"].value = "true";
 				if (opener && !opener.closed) {
@@ -35,7 +35,7 @@
 				<tr>
 					<td colspan="3">
 						<span class="mainfont"><b>
-							<script language="JavaScript">
+							<script language="javascript">
 								document.write(window.opener.dialogWin.text);
 							</script>
 						</b></span>
@@ -43,7 +43,7 @@
 				</tr>
 				<tr height="5"><td colspan="3">&#160;</td></tr>
 				<tr>
-					<script language="JavaScript">
+					<script language="javascript">
 						if (window.opener.dialogWin.order=="yesno"){
 							document.writeln(
 							'<td><input type="button" class="mediumbuttonb" name="1stbutton" value=" Yes " onclick="clicked(\'true\')"/></td>');

@@ -36,8 +36,8 @@ boolean hasHelp = help!=null && help.length()!=0;
 		<td width="20%" align="right">
 			<img border="0" src="images/arrows.gif" width="17" height="22" usemap="#map<%=mapName%>"/>
           	<map name="map<%=mapName%>">
-		    	<area shape="rect" COORDS="0,0,17,11" href="javascript:showSortedList(<%=sortColNr%>, 1)" title="Sort ascending">
-		    	<area shape="rect" COORDS="0,12,17,22" href="javascript:showSortedList(<%=sortColNr%>, -1)" title="Sort descending">
+		    	<area shape="rect" coords="0,0,17,11" href="javascript:showSortedList(<%=sortColNr%>, 1)" title="Sort ascending">
+		    	<area shape="rect" coords="0,12,17,22" href="javascript:showSortedList(<%=sortColNr%>, -1)" title="Sort descending">
 		    </map>
 		</td>
 	</tr>

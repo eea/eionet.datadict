@@ -540,11 +540,11 @@ private String legalizeAlert(String in){
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="JavaScript" src='script.js'></script>
-    <script language="JavaScript" src='modal_dialog.js'></script>
-    <script language="JavaScript">
+    <script language="javascript" src='script.js'></script>
+    <script language="javascript" src='modal_dialog.js'></script>
+    <script language="javascript">
     
     	function forceAttrMaxLen(){
 	    	var i = 0;
@@ -1002,7 +1002,7 @@ else{ %>
 	<%@ include file="header.htm" %>
 	<table border="0">
     	<tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
             </center></p>
@@ -1766,14 +1766,14 @@ else{ %>
 																					"Inherited from parent level: ";
 																					
 																if (sInhText.startsWith("Inherited")){ %>
-																		<%=sInhText%><%=inheritedValue%><br><%
+																		<%=sInhText%><%=inheritedValue%><br/><%
 																}
 															}
 															
 															// mutliple display
 															if (dispMultiple && !dispType.equals("image")){ %>
 															
-																<select <%=disabled%> id="attr_mult_<%=attrID%>" name="attr_mult_<%=attrID%>" multiple="true" style="width:auto"><%
+																<select <%=disabled%> id="attr_mult_<%=attrID%>" name="attr_mult_<%=attrID%>" multiple="multiple" style="width:auto"><%
 																	for (int k=0; multiValues!=null && k<multiValues.size(); k++){
 																		attrValue = (String)multiValues.get(k);
 																		%>

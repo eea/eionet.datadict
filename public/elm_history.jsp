@@ -35,10 +35,10 @@
 <html>
 	<head>
 		<title>Element history</title>
-		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+		<meta http-equiv="Content-Type" content="text/html"/>
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	    <script language="JavaScript" src='script.js'></script>
-	<script language="JavaScript">
+	    <script language="javascript" src='script.js'></script>
+	<script language="javascript">
 		function view(id){
 			window.opener.location="data_element.jsp?mode=view&delem_id=" + id;
 			window.close();

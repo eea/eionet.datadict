@@ -60,10 +60,10 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet.css">
-    <script language="JavaScript" src='script.js'></script>
-    <script language="JavaScript">
+    <script language="javascript" src='script.js'></script>
+    <script language="javascript">
 		function submitForm(){
 			
 			var b = confirm("This will delete all the namespaces you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
@@ -87,12 +87,12 @@
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Namespaces"/>
                 <jsp:param name="back" value="true"/>
@@ -104,7 +104,7 @@
             
             if (namespaces == null || namespaces.size()==0){
 	            %>
-	            <b>No namespaces were found!</b></div></TD></TR></table></body></html>
+	            <b>No namespaces were found!</b></div></td></tr></table></body></html>
 	            <%
 	            return;
             }
@@ -232,8 +232,8 @@
 		</form>
 			</div>
 			
-		</TD>
-</TR>
+		</td>
+</tr>
 </table>
 </body>
 </html>

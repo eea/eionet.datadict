@@ -158,11 +158,11 @@ private String legalizeAlert(String in){
 <html>
 	<head>
 		<title>Complex attributes</title>
-		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+		<meta http-equiv="Content-Type" content="text/html"/>
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	    <script language="JavaScript" src='script.js'></script>
+	    <script language="javascript" src='script.js'></script>
 	</head>
-	<script language="JavaScript">
+	<script language="javascript">
 			function submitForm(mode){
 				
 				if (mode == "delete"){
@@ -337,7 +337,7 @@ private String legalizeAlert(String in){
 					<%
 					if (user != null && isWorkingCopy){
 						%>
-						<input class="smallbutton" type="button" value="Edit" onClick="edit('<%=attrID%>')"/>
+						<input class="smallbutton" type="button" value="Edit" onclick="edit('<%=attrID%>')"/>
 						<%
 					}
 					else{

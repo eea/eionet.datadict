@@ -263,11 +263,11 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="JavaScript" src='script.js'></script>
-    <script language="JavaScript" src='modal_dialog.js'></script>
-    <script language="JavaScript">
+    <script language="javascript" src='script.js'></script>
+    <script language="javascript" src='modal_dialog.js'></script>
+    <script language="javascript">
 		function setLocation(){
 			var o = document.forms["form1"].searchUrl;
 			if (o!=null)
@@ -343,12 +343,12 @@
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Datasets"/>
                 <jsp:param name="back" value="true"/>
@@ -373,7 +373,7 @@
 					}
     	        	%>
     	        	
-	    	        </div></TD></TR></table></body></html>
+	    	        </div></td></tr></table></body></html>
 	        	    <%
 	            	return;
 	            }
@@ -706,7 +706,7 @@
 				// No search - return from another result set or a total stranger...
                 c_SearchResultSet oResultSet=(c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
                 if (oResultSet==null) {
-                    %><P>This page has experienced a time-out. Try searching again.<%
+                    %><p>This page has experienced a time-out. Try searching again.</p><%
                 }
                 else {
 	                
@@ -825,8 +825,8 @@
 			
 			</div>
 			
-		</TD>
-</TR>
+		</td>
+</tr>
 </table>
 </body>
 </html>

@@ -434,12 +434,12 @@ String attrValue = null;
 <html>
 <head>
 	<title>Meta</title>
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+	<meta http-equiv="Content-Type" content="text/html"/>
 	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>	
 </head>
-<script language="JavaScript" src='script.js'></script>
-<script language="JavaScript" src='modal_dialog.js'></script>
-<script language="JavaScript">
+<script language="javascript" src='script.js'></script>
+<script language="javascript" src='modal_dialog.js'></script>
+<script language="javascript">
     
 		function submitForm(mode){
 			
@@ -760,7 +760,7 @@ String attrValue = null;
 
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
             </center></p>

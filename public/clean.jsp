@@ -12,10 +12,10 @@
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="JavaScript" src='script.js'></script>
-	<SCRIPT LANGUAGE="JavaScript">
+	<script language="javascript" src='script.js'></script>
+	<script language="javascript">
 	
 		var idsCleared = false;
 		
@@ -49,7 +49,7 @@
 				document.forms["form1"].elements["rm_id"].disabled = true;
 			}
 		}
-	</SCRIPT>
+	</script>
 </head>
 <body>
 
@@ -57,12 +57,12 @@
 
 <table border="0">
     <tr valign="top">
-		<td nowrap="true" width="125">
+		<td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Cleanup"/>
             </jsp:include>
@@ -121,7 +121,7 @@
 	            
 				<table width="500">
 					<tr>
-						<td colspan="3"><br></br><font class="head00">Cleanup functions</font><br></br>
+						<td colspan="3"><br/><font class="head00">Cleanup functions</font><br/>
 							<font color="red">
 							This is a function enabling you to clean the database from all kinds of
 							leftovers that might result from exceptional situations. Please use this
@@ -131,7 +131,7 @@
 				</tr>
 				</table>
 				
-				<FORM NAME="form1" ACTION="clean.jsp" METHOD="POST">
+				<form name="form1" action="clean.jsp" method="POST">
 				
 					<table width="auto" cellspacing="0">
 						<tr>
@@ -275,11 +275,11 @@
 						}
 						%>
 					</table>
-				</FORM>
+				</form>
 	            </div> <%
             } // end GET
             %>
-		</TD>
+		</td>
 	</tr>
 </table>
 </body>

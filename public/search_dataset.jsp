@@ -111,10 +111,10 @@ private String setDefaultAttrs(String name){
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="JavaScript" src='script.js'></script>
-    <script language="JavaScript">
+    <script language="javascript" src='script.js'></script>
+    <script language="javascript">
 		attrWindow=null;
 
 		function submitForm(action){
@@ -164,12 +164,12 @@ private String setDefaultAttrs(String name){
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Search"/>
                 <jsp:param name="back" value="true"/>
@@ -315,7 +315,7 @@ private String setDefaultAttrs(String name){
                         <tr valign="bottom">
                     		<td width="150" colspan="2">&#160;</td>
                     		<td colspan="2">
-                    			<input type="radio" name="search_precision" value="substr" checked>Substring search</input>
+                    			<input type="radio" name="search_precision" value="substr" checked="checked">Substring search</input>
                     			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
                     			<input type="radio" name="search_precision" value="free">Free text search</input>&#160;&#160;
                     		</td>
@@ -369,8 +369,8 @@ private String setDefaultAttrs(String name){
                 <input name='SearchType' type='hidden' value='SEARCH'/>
 				</form>
 			</div>
-        </TD>
-</TR>
+        </td>
+</tr>
 </table>
 </body>
 </html>

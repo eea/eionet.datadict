@@ -127,13 +127,13 @@ if (disabled.equals("")){
 <html>
 <head>
 	<title>Meta</title>
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+	<meta http-equiv="Content-Type" content="text/html"/>
 	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 </head>
 
-<script language="JavaScript" src='script.js'></script>
+<script language="javascript" src='script.js'></script>
 
-<script language="JavaScript">
+<script language="javascript">
 		function submitForm(mode){
 			
 			if (mode=="delete"){
@@ -150,12 +150,12 @@ if (disabled.equals("")){
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Dataset tables"/>
                 <jsp:param name="back" value="true"/>

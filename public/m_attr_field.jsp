@@ -137,13 +137,13 @@ private String legalizeAlert(String in){
 <html>
 	<head>
 		<title>Meta</title>
-		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+		<meta http-equiv="Content-Type" content="text/html"/>
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
 	
-	<script language="JavaScript" src='script.js'></script>
+	<script language="javascript" src='script.js'></script>
 	
-	<script language="JavaScript">
+	<script language="javascript">
 
 		function submitForm(mode){
 			
@@ -181,12 +181,12 @@ private String legalizeAlert(String in){
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Allowable value"/>
                 <jsp:param name="back" value="true"/>
@@ -295,8 +295,8 @@ private String legalizeAlert(String in){
 			
 				<% 
 					if (user==null){ %>									
-						<input class="mediumbuttonb" type="button" value="Save" disabled="true"/>&#160;&#160;
-						<input class="mediumbuttonb" type="button" value="Delete" disabled="true"/>&#160;&#160;
+						<input class="mediumbuttonb" type="button" value="Save" disabled="disabled"/>&#160;&#160;
+						<input class="mediumbuttonb" type="button" value="Delete" disabled="disabled"/>&#160;&#160;
 					<%} else {%>
 						<input class="mediumbuttonb" type="button" value="Save" onclick="submitForm('edit')"/>&#160;&#160;
 						<input class="mediumbuttonb" type="button" value="Delete" onclick="submitForm('delete')"/>&#160;&#160;
@@ -317,8 +317,8 @@ private String legalizeAlert(String in){
 	
 	</form>
 </div>
-        </TD>
-</TR>
+        </td>
+</tr>
 </table>
 </body>
 </html>

@@ -28,10 +28,10 @@
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="JavaScript" src='script.js'></script>
-	<SCRIPT LANGUAGE="JavaScript">
+	<script language="javascript" src='script.js'></script>
+	<script language="javascript">
 
 	function submitForm(){
 
@@ -86,19 +86,19 @@
 			document.forms["Upload"].submit();
 		}
 	}
-	</SCRIPT>
+	</script>
 </head>
 <body>
 <%@ include file="header.htm"%>
 
 <table border="0">
     <tr valign="top">
-		<td nowrap="true" width="125">
+		<td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Import"/>
             </jsp:include>
@@ -142,14 +142,14 @@
 					%>
 				</table>
 				
-				<FORM NAME="Upload" ACTION="Import" METHOD="POST" ENCTYPE="multipart/form-data">
+				<form name="Upload" action="Import" method="POST" enctype="multipart/form-data">
 				
 				<input type="hidden" name="type" value="<%=mode%>"></input>
 
 				<table width="auto" cellspacing="0">
 					<tr>
 						<td align="left" style="padding-right:5">
-							<input type="radio" name="fileORurl" value="file" checked="true"></input>&#160;File:</td>
+							<input type="radio" name="fileORurl" value="file" checked="checked"></input>&#160;File:</td>
 						<td align="left">
 							<input type="file" class="smalltext" name="file_input" size="40"/>
 						</td>
@@ -173,8 +173,8 @@
 						</td>
 					</tr>
 				</table>
-			</FORM>	
-		</TD>
+			</form>	
+		</td>
 	</tr>
 </table>
 </div>

@@ -39,9 +39,9 @@
 <html>
 	<head>
 		<title>Meta</title>
-		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+		<meta http-equiv="Content-Type" content="text/html"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
-		<script language="JavaScript">
+		<script language="javascript">
 			function selectAttr(id, oControl) {
 				if (opener && !opener.closed) {
 					window.opener.selAttr(id, 'add');

@@ -76,7 +76,7 @@ if (request.getMethod().equals("POST")){
 		catch (Exception e){
 			%>
 			<html><body>
-				<b><%=e.toString()%></b><br>
+				<b><%=e.toString()%></b><br/>
 				<a href="javascript:window.location.replace('<%=currentUrl%>')">< back</a>
 				
 			</body></html>
@@ -165,13 +165,13 @@ try { // start the whole page try block
 <html>
 	<head>
 		<title>Meta</title>
-		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+		<meta http-equiv="Content-Type" content="text/html"/>
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
 	
-	<script language="JavaScript" src='script.js'></script>
+	<script language="javascript" src='script.js'></script>
 	
-	<script language="JavaScript">
+	<script language="javascript">
 
 		function submitForm(mode){
 			
@@ -256,16 +256,16 @@ try { // start the whole page try block
 		}
 			
 	</script>
-<body onLoad="onLoad()">
+<body onload="onLoad()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
         	<%
         	if (valsType.equals("CH1")){ %>
 	            <jsp:include page="location.jsp" flush='true'>
@@ -373,7 +373,7 @@ try { // start the whole page try block
 				
 				if (mode.equals("add")){ // if mode is "add"
 					if (user==null){ %>									
-						<input class="mediumbuttonb" type="button" value="Add" disabled="true"/>&#160;&#160;
+						<input class="mediumbuttonb" type="button" value="Add" disabled="disabled"/>&#160;&#160;
 					<%} else {%>
 						<input class="mediumbuttonb" type="button" value="Add" onclick="submitForm('add')"/>&#160;&#160;
 					<% }
@@ -381,8 +381,8 @@ try { // start the whole page try block
 				
 				if (!mode.equals("add") && !mode.equals("print")){ // if mode is not "add" and not "print"
 					if (user==null || !isWorkingCopy){ %>									
-						<input class="mediumbuttonb" type="button" value="Save" disabled="true"/>&#160;&#160;
-						<input class="mediumbuttonb" type="button" value="Delete" disabled="true"/>&#160;&#160;
+						<input class="mediumbuttonb" type="button" value="Save" disabled="disabled"/>&#160;&#160;
+						<input class="mediumbuttonb" type="button" value="Delete" disabled="disabled"/>&#160;&#160;
 					<%} else {%>
 						<input class="mediumbuttonb" type="button" value="Save" onclick="submitForm('edit')"/>&#160;&#160;
 						<input class="mediumbuttonb" type="button" value="Delete" onclick="submitForm('delete')"/>&#160;&#160;
@@ -406,8 +406,8 @@ try { // start the whole page try block
 	
 	</form>
 </div>
-        </TD>
-</TR>
+        </td>
+</tr>
 </table>
 </body>
 </html>

@@ -70,10 +70,10 @@ ServletContext ctx = null;
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="JavaScript" src='script.js'></script>
-	<script language="JavaScript">
+	<script language="javascript" src='script.js'></script>
+	<script language="javascript">
 		function deleteAttr(){
 				
 			document.forms["form1"].submit();
@@ -92,12 +92,12 @@ ServletContext ctx = null;
 
 <table border="0">
     <tr valign="top">
-		<td nowrap="true" width="125">
+		<td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Logout"/>
                 <jsp:param name="back" value="true"/>
@@ -190,7 +190,7 @@ ServletContext ctx = null;
 				<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
 				</form>
             </div>
-		</TD>
+		</td>
 	</tr>
 </table>
 </body>

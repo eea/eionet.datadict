@@ -6,10 +6,10 @@
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="JavaScript" src='script.js'></script>
-    <script language="JAVASCRIPT">
+	<script language="javascript" src='script.js'></script>
+    <script language="javascript">
 		function openPDF(){
 			
 			document.forms["form1"].submit();
@@ -21,12 +21,12 @@
 <%@ include file="header.htm"%>
 <table border="0">
     <tr valign="top">
-		<td nowrap="true" width="125">
+		<td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Import results"/>
             </jsp:include>
@@ -44,12 +44,12 @@
 						</tr>
 					</table>
 				</div>
-		</TD>
+		</td>
 	</tr>
 </table>
 <form name="form1" action="GetImportResults" method="POST">
 <%
-	String text=Util.Replace(resptext, "<br>", "\n");
+	String text=Util.Replace(resptext, "<br/>", "\n");
 
 %>
 <input type="hidden" name="text" value="<%=text%>"></input>

@@ -119,12 +119,12 @@ private String legalizeAlert(String in){
 <html>
 	<head>
 		<title>Meta</title>
-		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+		<meta http-equiv="Content-Type" content="text/html"/>
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
-	<script language="JavaScript" src='script.js'></script>
-	<script language="JavaScript" src='dynamic_table.js'></script>
-	<script language="JavaScript">
+	<script language="javascript" src='script.js'></script>
+	<script language="javascript" src='dynamic_table.js'></script>
+	<script language="javascript">
 		function submitForm(mode){
 				
 			if (mode == "delete"){
@@ -180,12 +180,12 @@ private String legalizeAlert(String in){
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Complex attribute fields"/>
                 <jsp:param name="back" value="true"/>
@@ -347,8 +347,8 @@ private String legalizeAlert(String in){
 <input type="hidden" name="changed" value="0"/>
 </form>
 </div>
-        </TD>
-</TR>
+        </td>
+</tr>
 </body>
 </html>
 

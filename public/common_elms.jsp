@@ -172,10 +172,10 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="JavaScript" src='script.js'></script>
-	<script language="JavaScript">
+    <script language="javascript" src='script.js'></script>
+	<script language="javascript">
     	function showSortedList(clmn,ordr) {
     		if ((document.forms["sort_form"].elements["sort_column"].value != clmn)
        			|| (document.forms["sort_form"].elements["sort_order"].value != ordr)) {
@@ -235,7 +235,7 @@ else{ %>
 	<%@ include file="header.htm" %>
 	<table border="0">
 	    <tr valign="top">
-	        <td nowrap="true" width="125">
+	        <td nowrap="nowrap" width="125">
 	            <p><center>
 	                <%@ include file="menu.jsp" %>
 	            </center></p>
@@ -263,7 +263,7 @@ else{ %>
 	    	        	<br/><%
     	        	}
     	        	%>
-	            	</div></TD></TR></table></body></html>
+	            	</div></td></tr></table></body></html>
 	            	<%
 	            	return;
             	}
@@ -447,7 +447,7 @@ else{ %>
 				// No search - return from another result set or a total stranger...
                 c_SearchResultSet oResultSet=(c_SearchResultSet)session.getAttribute(attrCommonElms);
                 if (oResultSet==null) {
-                    %><P>This page has experienced a time-out. Try searching again.<%
+                    %><p>This page has experienced a time-out. Try searching again.</p><%
                 }
                 else {
                     if ((oSortCol!=null) && (oSortOrder!=null))
@@ -533,8 +533,8 @@ else{ %>
 		
 			</div>
 			
-		</TD>
-</TR>
+		</td>
+</tr>
 </table>
 </body>
 </html>

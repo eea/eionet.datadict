@@ -80,10 +80,10 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="JavaScript" src='script.js'></script>
-    <script language="JavaScript">
+    <script language="javascript" src='script.js'></script>
+    <script language="javascript">
 		function setLocation(){
 			var o = document.forms["form1"].searchUrl;
 			if (o!=null)
@@ -108,12 +108,12 @@
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Attributes"/>
                 <jsp:param name="back" value="true"/>
@@ -125,7 +125,7 @@
             
             if (attributes == null || attributes.size()==0){
 	            %>
-	            <b>No attributes were found!</b></div></TD></TR></table></body></html>
+	            <b>No attributes were found!</b></div></td></tr></table></body></html>
 	            <%
 	            return;
             }
@@ -375,8 +375,8 @@
 		</form>
 			</div>
 			
-		</TD>
-</TR>
+		</td>
+</tr>
 </table>
 </body>
 </html>

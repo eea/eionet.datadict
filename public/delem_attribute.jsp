@@ -181,10 +181,10 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META CONTENT="text/html; CHARSET=ISO-8859-1" HTTP-EQUIV="Content-Type">
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="JavaScript" src='script.js'></script>
-    <script language="JavaScript">
+    <script language="javascript" src='script.js'></script>
+    <script language="javascript">
     
 		function submitForm(mode){
 			
@@ -367,12 +367,12 @@
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
-        <td nowrap="true" width="125">
+        <td nowrap="nowrap" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
-            </center></P>
-        </TD>
-        <TD>
+            </center></p>
+        </td>
+        <td>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Attribute"/>
                 <jsp:param name="back" value="true"/>
@@ -788,7 +788,7 @@
 								for (int g=0; g<fxValues.size(); g++){
 									FixedValue fxValue = (FixedValue)fxValues.get(g);
 									%>
-									<span class="Mainfont" style="width:400"><%=Util.replaceTags(fxValue.getValue())%></span><br>
+									<span class="Mainfont" style="width:400"><%=Util.replaceTags(fxValue.getValue())%></span><br/>
 									<%
 								}
 							}
@@ -873,7 +873,7 @@
 					else{
 						for (int i=0;i<3;i++){
 						%>
-							<input value="<%=i%>" <%=disabled%> <% if (i==chk) %>checked<%;%> type="radio" class="smalltext" name="inheritable"><%=inh_text[i]%></input><br>
+							<input value="<%=i%>" <%=disabled%> <% if (i==chk) %>checked<%;%> type="radio" class="smalltext" name="inheritable"><%=inh_text[i]%></input><br/>
 						<%
 						}
 					}
@@ -1245,8 +1245,8 @@
 	</table>
 	</form>
 </div>
-        </TD>
-</TR>
+        </td>
+</tr>
 </table>
 	<script>
 //			alert("vorm");

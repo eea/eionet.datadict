@@ -43,5 +43,5 @@ session.setAttribute("backUrl", backUrl);
 String currentUrl=history.getCurrentUrl();
 
 
-	%><!--br><%=history.toString()%><br><%=history.getSize()%><br><%=backUrl%><br--><%
+	%><!--br/><%=history.toString()%><br/><%=history.getSize()%><br/><%=backUrl%><br/--><%
 %>

@@ -67,7 +67,7 @@
 		%>
 		<html>
 			<head>
-				<script language="JavaScript">
+				<script language="javascript">
 				var s = opener.document.forms["form1"].elements["reloadUrl"].value;
 				if (s!=null)
 					opener.location.assign(s);
@@ -101,9 +101,9 @@
 <html>
 	<head>
 		<title>Meta</title>
-		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+		<meta http-equiv="Content-Type" content="text/html"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
-		<script language="JavaScript">
+		<script language="javascript">
 
 			function closeme(){
 				window.close();

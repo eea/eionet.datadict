@@ -10,9 +10,9 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 <html>
 <head>
     <title>Data Dictionary</title>
-    <META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
+    <meta http-equiv="Content-Type" content="text/html"/>
 	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	<script language="JavaScript">
+	<script language="javascript">
 	
 		function select(raID, raTitle,liID, liTitle){
 			window.opener.submitAdd(raID, raTitle,liID, liTitle);

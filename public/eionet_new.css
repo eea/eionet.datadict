@@ -63,7 +63,7 @@ table.box {
 }
 
 .barfont {
-  font-family: Verdana, Arial, MS Sans Serif;
+  font-family: Verdana, Arial, "MS Sans Serif", sans-serif;
   font-size: 7pt;
   font-style: normal;
   line-height: normal;
@@ -71,7 +71,7 @@ table.box {
 }
 
 .smallfont {
-  font-family: Verdana, Arial, MS Sans Serif; 
+  font-family: Verdana, Arial, "MS Sans Serif", sans-serif; 
   font-size: 8pt;
   font-style: normal; 
   line-height: normal;
@@ -80,7 +80,7 @@ table.box {
 }
 
 .smallfont_light {
-  font-family: Verdana, Arial, MS Sans Serif; 
+  font-family: Verdana, Arial, "MS Sans Serif", sans-serif; 
   font-size: 8pt;
   font-style: normal; 
   line-height: normal;
@@ -172,9 +172,9 @@ font-weight: bold;
 color: #008B8B;
 text-decoration: none }
 
-A:link { color: #024176 }
-A:visited { color: #A30A21 }
-A:active { color: #A30A21 }
+a:link { color: #024176 }
+a:visited { color: #A30A21 }
+a:active { color: #A30A21 }
 
 h1 { font-family: Verdana, Arial, Helvetica, sans-serif; 
 font-size: 16pt; 
@@ -520,37 +520,37 @@ border-color: gray;
 }
 
 
-IMG#selected_order {
+img#selected_order {
 border-width: 1px;
 border-color: red;
 border-style: solid;
 }
 
-TH.selected { 
+th.selected { 
 border-width: 2px;
 border-color: red;
 }
 
-input.smallbutton {  font-family: Verdana, Arial, MS Sans Serif; 
+input.smallbutton {  font-family: Verdana, Arial, "MS Sans Serif", sans-serif; 
 font-size: 7pt;
 font-style: normal; 
 line-height: normal;
 text-decoration: none; }
 
-input.smallbuttonb {  font-family: Verdana, Arial, MS Sans Serif; 
+input.smallbuttonb {  font-family: Verdana, Arial, "MS Sans Serif", sans-serif; 
 font-size: 7pt;
 font-style: normal; 
 line-height: normal;
 font-weight: bold;
 text-decoration: none; }
 
-input.mediumbutton {  font-family: Arial, MS Sans Serif; 
+input.mediumbutton {  font-family: Arial, "MS Sans Serif", sans-serif; 
 font-size: 8pt;
 font-style: normal; 
 line-height: normal;
 text-decoration: none; }
 
-input.mediumbuttonb {  font-family: Arial, MS Sans Serif; 
+input.mediumbuttonb {  font-family: Arial, "MS Sans Serif", sans-serif; 
 font-size: 8pt;
 font-style: normal; 
 line-height: normal;
@@ -558,26 +558,26 @@ font-weight: bold;
 text-decoration: none; }
 
 input.loginbutton {
-	font-family: Arial, MS Sans Serif;
+	font-family: Arial, "MS Sans Serif", sans-serif;
 	font-size: 10pt;
 	color: #000000;
 	font-weight: bold;
 }
 
-input.smalltext {  font-family: Verdana, Arial, MS Sans Serif; 
+input.smalltext {  font-family: Verdana, Arial, "MS Sans Serif", sans-serif; 
 font-size: 8pt;
 font-style: normal; 
 line-height: normal;
 text-decoration: none; }
 
-textarea.small {  font-family: Verdana, Arial, MS Sans Serif; 
+textarea.small {  font-family: Verdana, Arial, "MS Sans Serif", sans-serif; 
 font-size: 8pt;
 font-style: normal; 
 line-height: normal;
 text-decoration: none; }
 
 select.small {
-    font-family: Verdana, Arial, MS Sans Serif; 
+    font-family: Verdana, Arial, "MS Sans Serif", sans-serif; 
     font-size: 8pt;
     font-style: normal; 
     line-height: normal;
