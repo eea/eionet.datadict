@@ -288,6 +288,8 @@ public class DataElementHandler extends BaseHandler {
             gen.setFieldExpr("EXTENDS", extension);
             
 		String gisType = req.getParameter("gis");
+		if (gisType!=null && gisType.length()==0 && importMode)
+			gisType = null;
 		if (gisType!=null && !gisType.equals("nogis"))
 			gen.setField("GIS", gisType);
 

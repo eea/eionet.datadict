@@ -672,7 +672,7 @@ public class DatasetImport{
         rowMap.add(getFieldMap("type", "type", false, "data element type in DATAELEM table"));
         rowMap.add(getFieldMap("short_name", "delem_name", false, "data element short name in DATAELEM table"));
 		rowMap.add(getFieldMap("identifier", "idfier", false, "data element identifier in DATAELEM table"));
-		rowMap.add(getFieldMap("gis", "gis", true, "GIS in DATAELEM table"));
+		rowMap.add(getFieldMap("gis", "gis", false, "GIS in DATAELEM table"));
 		rowMap.add(getFieldMap("regstatus", "reg_status", true, "REG_STATUS in DATAELEM table"));
  //       rowMap.add(getFieldMap("namespace_id", "ns", true, "data element namespace_id in DATAELEM table"));
         tblMap.put("DATAELEM", rowMap);
