@@ -323,55 +323,89 @@ public class Util {
         return replaceTags(in, false);
     }
     public static String replaceTags(String in, boolean inTextarea) {
-    in = (in != null ? in : "");
+	    in = (in != null ? in : "");
+	
+	
+	    StringBuffer ret = new StringBuffer();
+	
+	    for (int i = 0; i < in.length(); i++) {
+	      char c = in.charAt(i);
+	      if (c == '<')
+	        ret.append("&lt;");
+	      else if (c == '>')
+	        ret.append("&gt;");
+	      else if (c == '\n' && inTextarea==false)
+	        ret.append("<BR>");
+	      else
+	        ret.append(c);
+	    }
+	    String retString = ret.toString();
+	    if (inTextarea == false)
+	        retString=setAnchors(retString, true, 50);
+	
+	    return retString;
+	}
+	
+    /**
+     * A method for replacing substrings in string
+     */
+    public static String Replace(String str, String oldStr, String replace) {
+        str = (str != null ? str : "");
 
+        StringBuffer buf = new StringBuffer();
+        int found = 0;
+        int last=0;
 
-    StringBuffer ret = new StringBuffer();
+        while ((found = str.indexOf(oldStr, last)) >= 0) {
+            buf.append(str.substring(last, found));
+            buf.append(replace);
+            last = found+oldStr.length();
+        }
+        buf.append(str.substring(last));
+        return buf.toString();
+	}
 
-    for (int i = 0; i < in.length(); i++) {
-      char c = in.charAt(i);
-      if (c == '<')
-        ret.append("&lt;");
-      else if (c == '>')
-        ret.append("&gt;");
-      else if (c == '\n' && inTextarea==false)
-        ret.append("<BR>");
-      else
-        ret.append(c);
-    }
-    String retString = ret.toString();
-    if (inTextarea == false)
-        retString=setAnchors(retString);
+	/**
+	* Finds all urls in a given string and replaces them with HTML anchors.
+	* If boolean newWindow==true then target will be a new window, else no.
+	* If boolean cutLink>0 then cut the displayed link lenght cutLink.
+	*/
+	public static String setAnchors(String s, boolean newWindow, int cutLink){
 
-    return retString;
-  }
-  
+		StringBuffer buf = new StringBuffer();
+        
+		StringTokenizer st = new StringTokenizer(s, " \t\n\r\f", true);
+		while (st.hasMoreTokens()) {
+			String token = st.nextToken();
+			if (!isURL(token))
+				buf.append(token);
+			else{
+				StringBuffer _buf = new StringBuffer("<a ");
+				if (newWindow) _buf.append("target=\"_blank\" ");
+				_buf.append("href=\"");
+				_buf.append(token);
+				_buf.append("\">");
+				
+				if (cutLink<token.length())
+					_buf.append(token.substring(0, cutLink)).append("...");
+				else
+					_buf.append(token);
+					
+				_buf.append("</a>");
+				buf.append(_buf.toString());
+			}
+		}
+        
+		return buf.toString();
+	}
+      
     /**
     * Finds all urls in a given string and replaces them with HTML anchors.
     * If boolean newWindow==true then target will be a new window, else no.
     */
     public static String setAnchors(String s, boolean newWindow){
         
-        StringBuffer buf = new StringBuffer();
-        
-        StringTokenizer st = new StringTokenizer(s, " \t\n\r\f", true);
-        while (st.hasMoreTokens()) {
-            String token = st.nextToken();
-            if (!isURL(token))
-                buf.append(token);
-            else{
-                StringBuffer _buf = new StringBuffer("<a ");
-                if (newWindow) _buf.append("target=\"_blank\" ");
-                _buf.append("href=\"");
-                _buf.append(token);
-                _buf.append("\">");
-                _buf.append(token);
-                _buf.append("</a>");
-                buf.append(_buf.toString());
-            }
-        }
-        
-        return buf.toString();
+        return setAnchors(s, newWindow, 0);
     }
   
     /**
@@ -472,9 +506,10 @@ public class Util {
     */
     public static void main(String[] args){
         
-        String s = "kala http://www.neti.ee mees";
-        System.out.println(setAnchors(s));
-        
+     //   String s = "kala http://www.neti.ee mees";
+      //  System.out.println(setAnchors(s));
+        String s = Replace("ttrrrtttrrrtt", "tt", "jj");
+        System.out.println(s);
         /*try {
             System.out.println(digestHexDec("http://purl.org/dc/elements/1.1/subject", "md5"));
         }

@@ -9,6 +9,8 @@ import eionet.meta.*;
 import eionet.util.Util;
 
 public class TblSchema extends Schema {
+	
+	private String ROW_NS = "1";
     
     public TblSchema(DDSearchEngine searchEngine, PrintWriter writer){
         super(searchEngine, writer);
@@ -58,6 +60,15 @@ public class TblSchema extends Schema {
             }
         }
         
+        // add the namespace declaration for ns1, used by Row element
+		Namespace ns = searchEngine.getNamespace(ROW_NS);
+		if (ns != null){
+			ROW_NS = ROW_NS + ":";
+			addNamespace(ns);
+		}
+		else
+			ROW_NS = "";
+        
         writeElemStart(dsTable.getShortName());
         writeAnnotation(dsTable.getSimpleAttributes(), dsTable.getComplexAttributes());
         writeContent(dsTable);
@@ -65,12 +76,12 @@ public class TblSchema extends Schema {
     }
     
     private void writeContent(DsTable dsTable) throws Exception {
-        
+    	
         addString("\t<xs:complexType name=\"type" + dsTable.getShortName() + "\">");
         newLine();
         addString("\t\t<xs:sequence>");
         newLine();
-        addString("\t\t\t<xs:element name=\"Row\" minOccurs=\"1\" maxOccurs=\"unbounded\">");
+        addString("\t\t\t<xs:element name=\"ns" + ROW_NS + "Row\" minOccurs=\"1\" maxOccurs=\"unbounded\">");
         newLine();
         addString("\t\t\t\t<xs:complexType>");
         newLine();

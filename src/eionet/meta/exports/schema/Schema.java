@@ -371,8 +371,8 @@ public abstract class Schema implements SchemaIF{
     
     private void writeHeader(){
         
-        // writer.print("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
-        writer.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+         writer.print("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+        //writer.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         writer.print(lineTerminator);
         writer.print("<xs:schema targetNamespace=\"");        
         writer.print(targetNsUrl);

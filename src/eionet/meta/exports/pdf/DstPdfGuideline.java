@@ -159,8 +159,9 @@ public class DstPdfGuideline extends PdfHandout {
             DsTable dsTable = (DsTable)tables.get(i);
             // the tables guidelines will be added to the currnet chapter
             addElement(new Paragraph("\n"));
-            TblPdfGuideline tblGuideln = new TblPdfGuideline(searchEngine, (Section)chapter);
-            tblGuideln.write(dsTable.getID());
+            TblPdfGuideline tblGuideln =
+            	new TblPdfGuideline(searchEngine, (Section)chapter);
+            tblGuideln.write(dsTable.getID(), ds.getID());
         }
 
         // set the factsheet header
@@ -247,14 +248,14 @@ public class DstPdfGuideline extends PdfHandout {
         try{
             Class.forName("org.gjt.mm.mysql.Driver");
             Connection conn =
-            DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
-            //DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
+            //DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
+            DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
 
             String fileName = "x:\\projects\\datadict\\tmp\\ds_test_guideline.pdf";
             DstPdfGuideline guideline = new DstPdfGuideline(conn, new FileOutputStream(fileName));
             guideline.setVsPath("x:\\projects\\datadict\\visuals");
             guideline.setLogo("x:\\projects\\datadict\\images\\pdf_logo_small.png");
-            guideline.write("637");
+            guideline.write("1259");
             guideline.flush();
         }
         catch (Exception e){

@@ -17,6 +17,79 @@ public class PdfUtil {
     private static final float  MAX_IMG_WIDTH = 520;
     private static final float  MAX_IMG_HEIGHT = 600;
     
+	public static PdfPTable foreignKeys(Vector fks) throws Exception {
+		
+		int colCount = 4;
+		
+		// set up the table
+		PdfPTable table = new PdfPTable(colCount);
+		table.setHorizontalAlignment(Element.ALIGN_LEFT);
+		int headerwidths[] = {20, 20, 20 , 40}; // percentage
+		table.setWidthPercentage(100); // percentage
+        
+		// start adding rows and cells
+		int rowCount = 0;
+        
+		// add caption row
+		PdfPCell cell = new PdfPCell(new Phrase("Foreign keys",
+									 Fonts.get(Fonts.TBL_CAPTION)));
+									                             
+		cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+		cell.setPaddingLeft(5);
+		cell.setColspan(colCount);
+		cell.setBorder(Rectangle.NO_BORDER);
+        
+		table.addCell(cell);
+        
+		// add header row
+		Vector headers = new Vector();
+		headers.add("Element");
+		headers.add("Table");
+		headers.add("Cardinality");
+		headers.add("Definition");
+		for (int i=0; i<headers.size(); i++){
+			String header = (String)headers.get(i);
+			cell = new PdfPCell(new Phrase(header, Fonts.get(Fonts.TBL_HEADER)));
+			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+			cell.setPaddingLeft(5);
+			cell.setBorder(Rectangle.NO_BORDER);
+			cell.setGrayFill(0.4f);
+			table.addCell(cell);
+		}
+        
+		// add the fk rows
+		Vector fields = new Vector();
+		fields.add("elm_name");
+		fields.add("tbl_name");
+		fields.add("cardin");
+		fields.add("definition");
+		for (int i=0; fks!=null && i<fks.size(); i++){
+            
+			Hashtable fkRel = (Hashtable)fks.get(i);
+            
+			for (int t=0; t<fields.size(); t++){
+				
+				String value = (String)fkRel.get(fields.get(t));
+				
+				cell = new PdfPCell(new Phrase(value,
+									Fonts.get(Fonts.CELL_VALUE)));
+				cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+				cell.setPaddingLeft(5);
+				cell.setBorder(Rectangle.NO_BORDER);
+                
+				if (i % 2 == 1)
+					cell.setGrayFill(0.9f);
+                    
+				table.addCell(cell);
+			}
+		}
+        
+		if (table.size() > 0)
+			return table;
+		else
+			return null;
+	}
+    
     public static PdfPTable simpleAttributesTable(Vector attrs)
         throws Exception {
         
@@ -192,11 +265,11 @@ public class PdfUtil {
             return null;
         
         // set up the PDF table
-        PdfPTable table = new PdfPTable(3);
+        PdfPTable table = new PdfPTable(4);
         table.setHorizontalAlignment(Element.ALIGN_LEFT);
         
         // set the column widths
-        float headerwidths[] = {20, 30, 50}; // percentage
+        float headerwidths[] = {20, 30, 43, 7}; // percentage
         table.setWidths(headerwidths);
         table.setWidthPercentage(100); // percentage
         
@@ -212,14 +285,14 @@ public class PdfUtil {
             cell = new PdfPCell(new Phrase(caption, Fonts.get(Fonts.TBL_CAPTION)));
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
-            cell.setColspan(3);
+            cell.setColspan(4);
             cell.setBorder(Rectangle.NO_BORDER);
             
             table.addCell(cell);
         }
         
         // add header row
-        
+
         // element name
         cell = new PdfPCell(new Phrase("Element name", Fonts.get(Fonts.TBL_HEADER)));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -246,7 +319,15 @@ public class PdfUtil {
         cell.setGrayFill(0.4f);
         
         table.addCell(cell);
-        
+
+		// foreign key indicator column
+		cell = new PdfPCell(new Phrase("    ", Fonts.get(Fonts.TBL_HEADER)));
+		cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+		cell.setPaddingLeft(5);
+		cell.setBorder(Rectangle.NO_BORDER);
+		table.addCell(cell);
+
+        boolean wasFK = false;
         // add value rows
         for (int i=0; i<tblElems.size(); i++){
             
@@ -255,7 +336,7 @@ public class PdfUtil {
             String elemType = elem.getType();
             if (elemType.equals("AGG"))
                 continue;
-            
+
             // add short name
             cell = new PdfPCell(new Phrase(elem.getShortName(), Fonts.get(Fonts.CELL_VALUE)));
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -330,6 +411,36 @@ public class PdfUtil {
                 cell.setGrayFill(0.9f);
             
             table.addCell(cell);
+
+			// add foreign key indicator if the elem is part of an FK
+			Vector fks = elem.getFKRelations();
+			wasFK = fks!=null && fks.size()>0;
+			String phr = (fks!=null && fks.size()>0) ? "(FK)" : "    ";  
+			cell = new PdfPCell(new Phrase(phr, Fonts.get(Fonts.FK_INDICATOR)));
+			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+			cell.setPaddingLeft(5);
+			cell.setBorder(Rectangle.NO_BORDER);
+			table.addCell(cell);
+        }
+        
+        if (wasFK){
+        	String txt = " indicates that the element " +
+        	"is participating in a foreign key relationship!\n" +
+        	"Look for more in the element factsheet or dataset guideline.";
+
+			Phrase phr =  new Phrase();        	
+			Chunk cnk = new Chunk("(FK)", Fonts.get(Fonts.FK_INDICATOR));
+			phr.add(cnk);			
+			cnk = new Chunk(txt, Fonts.get(Fonts.CELL_VALUE));
+			phr.add(cnk);
+        	
+			cell = new PdfPCell(phr);
+			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+			cell.setPaddingLeft(5);
+			cell.setColspan(4);
+			cell.setBorder(Rectangle.NO_BORDER);
+        
+			table.addCell(cell);
         }
         
         if (table.size() > 0)

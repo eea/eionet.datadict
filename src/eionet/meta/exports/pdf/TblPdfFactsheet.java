@@ -101,7 +101,7 @@ public class TblPdfFactsheet extends PdfHandout {
         addElement(PdfUtil.simpleAttributesTable(v));
         addElement(new Phrase("\n"));
         
-        // write table elements, but first get their fixed values
+        // write table elements, but 1st get their fixed values & FK relations
         
         v = dsTable.getElements();
         if (v==null || v.size()==0)
@@ -112,6 +112,8 @@ public class TblPdfFactsheet extends PdfHandout {
             elem = (DataElement)v.get(i);
             Vector fxValues = searchEngine.getFixedValues(elem.getID(), "elem");
             elem.setFixedValues(fxValues);
+			Vector fks = searchEngine.getFKRelationsElm(elem.getID());
+			elem.setFKRelations(fks);
         }
         
         addElement(new Paragraph("Elements in this table:\n", Fonts.get(Fonts.HEADING_0)));

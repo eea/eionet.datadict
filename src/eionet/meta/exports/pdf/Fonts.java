@@ -32,6 +32,8 @@ public class Fonts {
     
     public static final String ANCHOR = "anchor";
     
+	public static final String FK_INDICATOR = "fk-indicator";
+    
     private static Hashtable fonts = null;
     
     private static void init(){
@@ -69,6 +71,12 @@ public class Fonts {
         font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
         font.setColor(new Color(255,0,0));
         fonts.put(WARNING, font);
+
+		// set fk indicator font
+		font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+		font.setColor(new Color(255,0,0));
+		fonts.put(FK_INDICATOR, font);
+
         
         // set Heading 0 font
         font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);

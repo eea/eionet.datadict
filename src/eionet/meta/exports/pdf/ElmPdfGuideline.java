@@ -28,14 +28,18 @@ public class ElmPdfGuideline {
         this.parentSection = parentSection;
     }
     
-    public void write(String elemID) throws Exception {
+	public void write(String elemID) throws Exception {
+		write(elemID, null);
+	}
+    
+    protected void write(String elemID, String tblID) throws Exception {
         
         if (Util.voidStr(elemID))
             throw new Exception("Data element ID not specified!");
         
         // Get the data element object. This will also give us the
         // element's simple attributes + tableID
-        DataElement elem = searchEngine.getDataElement(elemID);
+        DataElement elem = searchEngine.getDataElement(elemID, tblID);
         if (elem == null)
             throw new Exception("Data element not found!");
         
@@ -79,6 +83,7 @@ public class ElmPdfGuideline {
         Vector v = elem.getAttributes();
         
         // dataset name, table name
+        /* JH151003 - not needed, cause elm gdln is always part of a tbl gdln
         if (!Util.voidStr(tableID)){
             DsTable dsTable = searchEngine.getDatasetTable(tableID);
             if (dsTable != null){
@@ -96,6 +101,7 @@ public class ElmPdfGuideline {
                 v.add(0, hash);
             }
         }
+        */
         
         // short name
         hash = new Hashtable();
@@ -106,6 +112,13 @@ public class ElmPdfGuideline {
         addElement(PdfUtil.simpleAttributesTable(v));
         addElement(new Phrase("\n"));
         
+		// write foreign key reltaions if any exist
+		Vector fks = searchEngine.getFKRelationsElm(elem.getID());
+		if (fks!=null && fks.size()>0){
+			addElement(PdfUtil.foreignKeys(fks));
+			addElement(new Phrase("\n"));
+		}
+			 
         // write complex attributes, one table for each
         v = elem.getComplexAttributes();
         if (v!=null && v.size()>0){

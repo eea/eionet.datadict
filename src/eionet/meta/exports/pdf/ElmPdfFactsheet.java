@@ -96,6 +96,13 @@ public class ElmPdfFactsheet extends PdfHandout {
         addElement(PdfUtil.simpleAttributesTable(v));
         addElement(new Phrase("\n"));
         
+        // write foreign key reltaions if any exist
+        Vector fks = searchEngine.getFKRelationsElm(elem.getID());
+        if (fks!=null && fks.size()>0){
+			addElement(PdfUtil.foreignKeys(fks));
+			addElement(new Phrase("\n"));
+        }
+        
         // write complex attributes, one table for each
         v = elem.getComplexAttributes();
         if (v!=null && v.size()>0){

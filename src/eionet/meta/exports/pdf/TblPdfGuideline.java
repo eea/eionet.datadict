@@ -28,13 +28,17 @@ public class TblPdfGuideline {
         this.parentSection = parentSection;
     }
     
-    public void write(String tblID) throws Exception {
+	public void write(String tblID) throws Exception {
+		write(tblID, null);
+	}
+    
+    protected void write(String tblID, String dstID) throws Exception {
         
         if (Util.voidStr(tblID))
             throw new Exception("Table ID not specified");
         
         // get the table
-        DsTable dsTable = searchEngine.getDatasetTable(tblID);
+        DsTable dsTable = searchEngine.getDatasetTable(tblID, dstID);
         if (dsTable == null)
             throw new Exception("Table not found!");
             
@@ -48,18 +52,20 @@ public class TblPdfGuideline {
         dsTable.setElements(v);
         
         // get the dataset basic info
+        /* JH151003 - not needed, cause tbl gdln is always part of a dst gdln
         Dataset ds = null;
         if (!Util.voidStr(dsTable.getDatasetID())){
             ds = searchEngine.getDataset(dsTable.getDatasetID());
         }
+        */
         
-        write(dsTable, ds);
+        write(dsTable);
     }
     
     /**
     * Write a full guideline for a dataset table given by table object.
     */
-    private void write(DsTable dsTable, Dataset ds) throws Exception {
+    private void write(DsTable dsTable) throws Exception {
         
         if (dsTable==null)
             throw new Exception("Table object was null!");
@@ -76,12 +82,14 @@ public class TblPdfGuideline {
         Vector v = dsTable.getSimpleAttributes();
         
         // dataset short name
+        /* JH151003 - not needed, cause tbl gldn is always part of a dst gldn
         if (ds != null){
             hash = new Hashtable();
             hash.put("name", "Dataset");
             hash.put("value", ds.getShortName());
             v.add(0, hash);
         }
+        */
         
         // type
         String type = dsTable.getType();
@@ -119,8 +127,7 @@ public class TblPdfGuideline {
         addElement(PdfUtil.simpleAttributesTable(v));
         addElement(new Phrase("\n"));
         
-        // write table elements factlist, but first get their fixed values
-        
+        // write table elements factlist, but first get fixed values & fk rels        
         v = dsTable.getElements();
         if (v==null || v.size()==0)
             return;
@@ -130,6 +137,8 @@ public class TblPdfGuideline {
             elem = (DataElement)v.get(i);
             Vector fxValues = searchEngine.getFixedValues(elem.getID(), "elem");
             elem.setFixedValues(fxValues);
+			Vector fks = searchEngine.getFKRelationsElm(elem.getID());
+			elem.setFKRelations(fks);
         }
         
         addElement(new Paragraph("Elements in this table:\n", Fonts.get(Fonts.HEADING_0)));
@@ -140,7 +149,7 @@ public class TblPdfGuideline {
             elem = (DataElement)v.get(i);
             addElement(new Paragraph("\n"));
             ElmPdfGuideline elmGuideln = new ElmPdfGuideline(searchEngine, section);
-            elmGuideln.write(elem.getID());
+            elmGuideln.write(elem.getID(), dsTable.getID());
         }
     }
     

@@ -88,38 +88,47 @@ public class AttributeHandler {
             sqlGenerator.setTable("M_COMPLEX_ATTR");
         
         sqlGenerator.setField("SHORT_NAME", shortName);
-        sqlGenerator.setField("NAME", name);        
+        sqlGenerator.setField("NAME", name);
         
         if (definition != null) sqlGenerator.setField("DEFINITION", definition);
         if (ns_id != null) sqlGenerator.setField("NAMESPACE_ID", ns_id);
-        
+
         String dispOrder = req.getParameter("dispOrder");
         if (dispOrder != null && dispOrder.length() != 0)
             sqlGenerator.setField("DISP_ORDER", dispOrder);
+
+        String inherit = req.getParameter("inheritable");
+        if (inherit != null && inherit.length() != 0)
+            sqlGenerator.setField("INHERIT", inherit);
 
         String dispType = req.getParameter("dispType");
         if (type==null || type.equals(DElemAttribute.TYPE_SIMPLE)){
 
             sqlGenerator.setField("DISP_WHEN", getDisplayWhen());
             sqlGenerator.setField("OBLIGATION", obligation);
-            
+
             if (dispType == null || dispType.length() == 0) dispType = "NULL";
             sqlGenerator.setField("DISP_TYPE", dispType);
-            
+
             String dispWidth = req.getParameter("dispWidth");
             if (dispWidth != null && dispWidth.length() != 0)
                 sqlGenerator.setField("DISP_WIDTH", dispWidth);
-            
+
             String dispHeight = req.getParameter("dispHeight");
             if (dispHeight != null && dispHeight.length() != 0)
                 sqlGenerator.setField("DISP_HEIGHT", dispHeight);
+
+            String dispMultiple = req.getParameter("dispMultiple");
+            if (dispMultiple != null && dispMultiple.length() != 0)
+                sqlGenerator.setField("DISP_MULTIPLE", dispMultiple);
         }
         
         String sql = sqlGenerator.insertStatement();
-        ctx.log(sql);
+        log(sql);
         
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
+        stmt.close();
         
         setLastInsertID();
     }
@@ -138,13 +147,20 @@ public class AttributeHandler {
         sqlGenerator.setField("NAME", name);
         
         if (definition != null) sqlGenerator.setField("DEFINITION", definition);
+        if (ns_id != null) sqlGenerator.setField("NAMESPACE_ID", ns_id);
         
         String dispOrder = req.getParameter("dispOrder");
         if (dispOrder == null || dispOrder.length() == 0) dispOrder = "999";
         sqlGenerator.setField("DISP_ORDER", dispOrder);
-        
+
+        String inherit = req.getParameter("inheritable");
+        if (inherit != null && inherit.length() != 0)
+            sqlGenerator.setField("INHERIT", inherit);
+        else
+            sqlGenerator.setField("INHERIT", "0");
+
         if (type==null || type.equals(DElemAttribute.TYPE_SIMPLE)){
-            
+
             sqlGenerator.setField("OBLIGATION", obligation);
             sqlGenerator.setField("DISP_WHEN", getDisplayWhen());
             
@@ -161,19 +177,26 @@ public class AttributeHandler {
             String dispHeight = req.getParameter("dispHeight");
             if (dispHeight == null || dispHeight.length() == 0) dispHeight = "20";
             sqlGenerator.setField("DISP_HEIGHT", dispHeight);
+
+            String dispMultiple = req.getParameter("dispMultiple");
+            if (dispMultiple != null && dispMultiple.length() != 0)
+                sqlGenerator.setField("DISP_MULTIPLE", dispMultiple);
+            else
+                sqlGenerator.setField("DISP_MULTIPLE", "0");
         }
-        
+
         StringBuffer buf = new StringBuffer(sqlGenerator.updateStatement());
         if (type==null || type.equals(DElemAttribute.TYPE_SIMPLE))
             buf.append(" where M_ATTRIBUTE_ID=");
         else
             buf.append(" where M_COMPLEX_ATTR_ID=");
         buf.append(attr_id);
-        
-        ctx.log(buf.toString());
-        
+
+        log(buf.toString());
+
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
+        stmt.close();
     }
     
     private void delete() throws Exception {
@@ -189,7 +212,7 @@ public class AttributeHandler {
                 buf.append(simpleAttrs[i]);
             }
             
-            ctx.log(buf.toString());
+            log(buf.toString());
         
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(buf.toString());
@@ -207,7 +230,7 @@ public class AttributeHandler {
                 buf.append(complexAttrs[i]);
             }
             
-            ctx.log(buf.toString());
+            log(buf.toString());
         
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(buf.toString());
@@ -230,7 +253,7 @@ public class AttributeHandler {
             buf.append(attr_ids[i]);
         }
         
-        ctx.log(buf.toString());
+        log(buf.toString());
         
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
@@ -246,7 +269,7 @@ public class AttributeHandler {
             buf.append(attr_ids[i]);
         }
         
-        ctx.log(buf.toString());
+        log(buf.toString());
         
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(buf.toString());
@@ -263,7 +286,7 @@ public class AttributeHandler {
         }
         
         if (buf != null){
-            ctx.log(buf.toString());
+            log(buf.toString());
             
             stmt = conn.createStatement();
             stmt.executeUpdate(buf.toString());
@@ -276,10 +299,11 @@ public class AttributeHandler {
             buf.append(attr_ids[i]);
         }
         
-        ctx.log(buf.toString());
+        log(buf.toString());
         
         stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
+        stmt.close();
     }
     
     private void deleteFixedValues(String[] attr_ids) throws Exception {
@@ -314,7 +338,7 @@ public class AttributeHandler {
         
         String qry = "SELECT LAST_INSERT_ID()";
         
-        ctx.log(qry);
+        log(qry);
         
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);        

@@ -43,10 +43,12 @@ public abstract class BaseHandler {
     protected void init(){
     }*/
     
-    public void execute() throws Exception {
+    public final void execute() throws Exception {
         
         if (mode == null || !legalModes.contains(mode))
             throw new Exception("Handler mode not specified!");
+        
+        beforeExecute();
         
         if (mode.equalsIgnoreCase(ADD))
             insert();
@@ -55,9 +57,14 @@ public abstract class BaseHandler {
         }
         else if (mode.equalsIgnoreCase(DEL))
             delete();
+        
+		afterExecute();
     }
     
     //protected abstract String[] getThis();
+    
+	protected abstract void beforeExecute() throws Exception;
+	protected abstract void afterExecute() throws Exception;
     
     protected abstract void insert() throws Exception;
     
@@ -68,8 +75,6 @@ public abstract class BaseHandler {
     protected void setLastInsertID() throws SQLException {
         
         String qry = "SELECT LAST_INSERT_ID()";
-        
-        log(qry);
         
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);        

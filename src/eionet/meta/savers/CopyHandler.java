@@ -167,8 +167,33 @@ public class CopyHandler extends Object {
 		// copy classification items, including fixed values
         copyCsi(newID, srcElemID, "elem");
         
+        // copy fk relations
+		gen.clear();
+		gen.setTable("FK_RELATION");
+		gen.setField("REL_ID", "");
+		gen.setField("A_ID", newID);
+		copy(gen, "A_ID=" + srcElemID, false);
+		gen.clear();
+		gen.setTable("FK_RELATION");
+		gen.setField("REL_ID", "");
+		gen.setField("B_ID", newID);
+		copy(gen, "B_ID=" + srcElemID);
+		
         return newID;
     }
+    
+    public void copyFKRelations(String newID, String srcElemID)
+    													throws Exception{ 
+		// A side
+		StringBuffer buf = new StringBuffer().
+		append("select * from FK_RELATION where A_ID=").
+		append(srcElemID).append(" or B_ID=").append(srcElemID);
+		
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(buf.toString());
+		while (rs.next()){
+		}
+	}
     
     public void copyCsi(String newCompID, String compID, String compType) throws SQLException{
 
@@ -314,9 +339,9 @@ log(q);
         DsTable dsTable = searchEngine.getDatasetTable(tblID);
         if (dsTable==null)
             throw new Exception("Could not find the table to copy!");
-        
+
         // copy row in DS_TABLE table
-        SQLGenerator gen = new SQLGenerator();        
+        SQLGenerator gen = new SQLGenerator();
         gen.setTable("DS_TABLE");
         gen.setField("TABLE_ID", "");
         String newID = copy(gen, "TABLE_ID=" + tblID, false);
@@ -430,38 +455,43 @@ log(q);
     *
     */
     public void copyComplexAttrs(String newID, String oldID, String type)
+													throws SQLException{
+	    	copyComplexAttrs(newID, oldID, type, null, null);
+  	}
+    public void copyComplexAttrs(String newID, String oldID, String type, String newType, String mAttrID)
                                                     throws SQLException {
-                                                        
+
         System.out.println("======> copyComplexAttrs " + newID + " " + oldID + " " + type);
-        
+
         if (newID==null || oldID==null || type==null)
             return;
-            
+
         // get the attributes of the parent to copy and loop over them
-        Vector v = searchEngine.getComplexAttributes(oldID, type);
+        Vector v = searchEngine.getComplexAttributes(oldID, type, mAttrID);
         for (int i=0; v!=null && i<v.size(); i++){
-            
+
             DElemAttribute attr = (DElemAttribute)v.get(i);
             String attrID = attr.getID();
-		    
+
 		    // get the attribute fields
             Vector fields = searchEngine.getAttrFields(attrID);
             if (fields==null || fields.size()==0)
                 continue;
-		    
+
 		    // get the attribute rows
 		    Vector valueRows = attr.getRows();
             for (int j=0; valueRows!=null && j<valueRows.size(); j++){
-                
+
                 Hashtable rowHash = (Hashtable)valueRows.get(j);
                 String rowPos = (String)rowHash.get("position");
                 rowPos = rowPos==null ? "0" : rowPos;
-                
+
                 // insert a new row
-                
+                if (newType!=null)
+                    type=newType;
                 String rowID =
                 "md5('" + newID + type + attrID + rowPos + "')";
-                
+
                 SQLGenerator gen = new SQLGenerator();
 				gen.setTable("COMPLEX_ATTR_ROW");
 				gen.setField("PARENT_ID", newID);
@@ -472,7 +502,7 @@ log(q);
 
                 Statement stmt = conn.createStatement();
 				stmt.executeUpdate(gen.insertStatement());
-                
+
                 // get the value of each field in the given row
                 int insertedFields = 0;
                 for (int t=0; rowID!=null && t<fields.size(); t++){
@@ -500,6 +530,14 @@ log(q);
         }
     }
     
+    public void copyAttribute(String newID, String oldID, String newType, String oldType, String mAttrID)
+                                                    throws SQLException {
+        SQLGenerator gen = new SQLGenerator();
+        gen.setTable("ATTRIBUTE");
+        gen.setField("DATAELEM_ID", newID);
+        gen.setField("PARENT_TYPE", newType);
+        copy(gen, "M_ATTRIBUTE_ID=" + mAttrID + " and DATAELEM_ID=" + oldID + " and PARENT_TYPE='" + oldType + "'");
+    }
     /**
     *
     */
