@@ -213,7 +213,7 @@
 						%>
 					</td-->
 					<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<a href="namespace.jsp?ns_id=<%=ns_id%>&#38;mode=view">
+						<a href="namespace.jsp?ns_id=<%=ns_id%>&amp;mode=view">
 						<%=Util.replaceTags(displayName)%></a>
 					</td>
 					<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>

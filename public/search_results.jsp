@@ -500,14 +500,14 @@
 							%>
 						</td>
 						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-							<a href="data_element.jsp?delem_id=<%=delem_id%>&#38;type=<%=delem_type%>&#38;mode=view">
+							<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
 							<%=Util.replaceTags(delem_name)%></a>
 						</td>					
 						<%
 						/*if (ns != null){
 							%>
 							<td align="center" width="80pts">&#160;
-								<a href="namespace.jsp?ns_id=<%=ns.getID()%>&#38;mode=edit">
+								<a href="namespace.jsp?ns_id=<%=ns.getID()%>&amp;mode=edit">
 								<%=ns.getShortName()%></a>
 							</td>
 							<%
@@ -560,7 +560,7 @@
 							</td>
 						<% } %>
 						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-							<a href="data_element.jsp?delem_id=<%=oEntry.oID%>&#38;type=<%=oEntry.oType%>&#38;mode=view">
+							<a href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view">
 							<%=Util.replaceTags(oEntry.oShortName)%></a>
 						</td>					
 						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=oEntry.oType%></td>

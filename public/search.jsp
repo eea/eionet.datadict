@@ -371,7 +371,7 @@ else
 						%>
 						<tr valign="top">
 							<td width="100"><b>
-								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=edit">
+								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit">
 									<font color="black">Name</font></a></b>:</td>
 							<td width="300"><input type="text" size="40" name="attr_<%=attrID%>" value="<%=attrValue%>"/></td>
 						</tr>
@@ -383,7 +383,7 @@ else
 						%>
 						<tr valign="top">
 							<td align="right" style="padding-right:10">
-								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=edit">
+								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit">
 								<span class="help">?</span></a>&#160;<span class="mainfont"><b>Language</b></span>
 							</td>
 							<td colspan="2">
@@ -431,7 +431,7 @@ else
 						%>
 						<tr valign="top">
 							<td width="100"><b>
-								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=edit">
+								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit">
 								<font color="black">Definition</font></a></b>:
 							</td>
 							<td width="300"><input type="text" name="attr_<%=attrID%>" size="40"  value="<%=attrValue%>"/></td>
@@ -444,7 +444,7 @@ else
 						%>					
 						<tr name="r" style="display:none">
 							<td width="100"><b>
-								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=edit">
+								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit">
 								<font color="black">Keywords</font></a></b>:
 							</td>
 							<td width="300"><input type="text" name="attr_<%=attrID%>" size="40" /></td>
@@ -468,7 +468,7 @@ else
 								%>
 								<tr valign="top">
 									<td align="right" style="padding-right:10">
-										<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view"><span class="help">?</span></a>&#160;
+										<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view"><span class="help">?</span></a>&#160;
 										<span class="mainfont"><b><%=attrName%></b></span>
 									</td>
 									<td colspan="2">
@@ -495,7 +495,7 @@ else
 							%>
 							<tr valign="top">
 								<td align="right" style="padding-right:10">
-									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view"><span class="help">?</span></a>&#160;
+									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view"><span class="help">?</span></a>&#160;
 									<span class="mainfont"><b><%=attrName%></b></span>
 								</td>
 								<td>
@@ -517,7 +517,7 @@ else
 							%>
 							<tr valign="top">
 								<td width="150" align="right"><b>
-									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view"><span class="help">?</span></a>&#160;
+									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view"><span class="help">?</span></a>&#160;
 									<span class="mainfont"><%=attrName%></span>&#160;&#160;
 								</td>
 								<td>

@@ -179,7 +179,7 @@ if (disabled.equals("")){
 
 		<tr valign="bottom">
 			<td><font class="head00">Tables in 
-				<span class="title2"><a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><%=Util.replaceTags(dsName)%></a></span>
+				<span class="title2"><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a></span>
 			 dataset</td>
 		</tr>
 		
@@ -207,7 +207,7 @@ if (disabled.equals("")){
 						   <%=disabled%>
 						   value="Add new"
 						   class="smallbutton"
-						   onclick="window.location.replace('dstable.jsp?mode=add&ds_id=<%=dsID%>&#38;ds_name=<%=dsName%>&ctx=ds')"/>
+						   onclick="window.location.replace('dstable.jsp?mode=add&ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>&ctx=ds')"/>
 				</td>
 			</tr> <%
 		}

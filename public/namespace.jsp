@@ -344,7 +344,7 @@
 				<tr>
 					<td class="barfont" colspan="2">
 						<b>NB!</b><br/>This namespace was automatically created in the process of creating the
-						<a href="dstable.jsp?table_id=<%=namespace.getTable()%>&ds_id=<%=namespace.getDataset()%>&ds_name=<%=dsName%>&mode=view">corresponding table</a>
+						<a href="dstable.jsp?table_id=<%=namespace.getTable()%>&amp;ds_id=<%=namespace.getDataset()%>&amp;ds_name=<%=dsName%>&amp;mode=view">corresponding table</a>
 							and will also be automatically deleted when the latter will be deleted.
 					</td>
 				</tr><%
@@ -354,7 +354,7 @@
 				<tr>
 					<td class="barfont" colspan="2">
 						<b>NB!</b><br/>This namespace was automatically created in the process of creating the
-						<a href="dataset.jsp?ds_id=<%=namespace.getDataset()%>&mode=view">corresponding dataset</a>
+						<a href="dataset.jsp?ds_id=<%=namespace.getDataset()%>&amp;mode=view">corresponding dataset</a>
 							and will also be automatically deleted when the latter will be deleted.
 					</td>
 				</tr><%

@@ -1133,7 +1133,7 @@ String attrValue = null;
 						<%
 						if (dataset!=null && !mode.equals("add")){
 								%>
-								<font class="title2" color="#006666"><a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><%=Util.replaceTags(dataset.getShortName())%></a></font>
+								<font class="title2" color="#006666"><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dataset.getShortName())%></a></font>
 								<input type="hidden" name="ds_id" value="<%=dsID%>"/>
 								<%
 						}
@@ -1213,7 +1213,7 @@ String attrValue = null;
 						if (dsTable!=null && !mode.equals("add")){
 								%>
 								<font class="title2" color="#006666">
-								<a href="dstable.jsp?mode=view&table_id=<%=tableID%>&ds_id=<%=dsID%>"><%=Util.replaceTags(dsTable.getShortName())%></a></font>
+								<a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>"><%=Util.replaceTags(dsTable.getShortName())%></a></font>
 								<input type="hidden" name="table_id" value="<%=dsTable.getID()%>"/>
 								<%
 						}
@@ -1491,7 +1491,7 @@ String attrValue = null;
 				%>
 				<tr <% if (mode.equals("view") && displayed % 2 == 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" valign="top" style="padding-right:10">
-						<a href="javascript:openUrl('delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view')">
+						<a href="javascript:openUrl('delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view')">
 						<span class="help">?</span></a>&#160;
 						<span class="mainfont"><b><%=attribute.getShortName()%></b>
 							<%
@@ -1514,7 +1514,7 @@ String attrValue = null;
 						
 						if (dispType.equals("image")){%>
 							<span class="barfont" style="width:400">
-								<a target="_blank" href="imgattr.jsp?obj_id=<%=delem_id%>&obj_type=E&attr_id=<%=attribute.getID()%>&obj_name=<%=dataElement.getShortName()%>&attr_name=<%=attribute.getShortName()%>">image(s)</a>
+								<a target="_blank" href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=dataElement.getShortName()%>&amp;attr_name=<%=attribute.getShortName()%>">image(s)</a>
 							</span><%
 						}
 						// if mode is 'view', display a span, otherwise an input
@@ -1553,7 +1553,7 @@ String attrValue = null;
 								</select>
 								<% if (disabled.equals("")){ %>
 									<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
-									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&#38;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
+									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
 								
 								<%
 								}
@@ -1645,7 +1645,7 @@ String attrValue = null;
 									}
 									%>
 								</select>&#160;
-								<a target="_blank" href="fixed_values.jsp?mode=view&delem_id=<%=attrID%>&delem_name=<%=attribute.getShortName()%>&parent_type=attr">
+								<a target="_blank" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=attribute.getShortName()%>&amp;parent_type=attr">
 									<span class="help">?</span>
 								</a>
 								<%
@@ -1679,10 +1679,10 @@ String attrValue = null;
 					%>		
 					<tr valign="top" <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<td align="right" style="padding-right:10">
-							<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=COMPLEX&mode=view">
+							<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=COMPLEX&amp;mode=view">
 							<span class="help">?</span></a>&#160;
 							<span class="mainfont"><b>
-								<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&#38;mode=view&#38;parent_id=<%=delem_id%>&#38;parent_type=E&#38;parent_name=<%=delem_name%>&#38;table_id=<%=tableID%>&#38;dataset_id=<%=dsID%>')" title="Click here to view all the fields">
+								<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=delem_name%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>')" title="Click here to view all the fields">
 									<%=attrName%>
 								</a></b>
 							</span>
@@ -1766,7 +1766,7 @@ String attrValue = null;
 						%>
 						<tr valign="top">
 							<td align="right" style="padding-right:10">
-								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=COMPLEX&mode=view">
+								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=COMPLEX&amp;mode=view">
 								<span class="help">?</span></a>&#160;
 								<span class="mainfont"><b><%=attrName%></b></span>
 							</td>
@@ -1791,7 +1791,7 @@ String attrValue = null;
 			<tr>
 				<td>&#160;</td>
 				<td>
-					<b>*</b> <span class="smallfont"><a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=delem_id%>&#38;parent_type=E&#38;parent_name=<%=delem_name%>&#38;table_id=<%=tableID%>&#38;dataset_id=<%=dsID%>')">
+					<b>*</b> <span class="smallfont"><a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=delem_name%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>')">
 						<b>COMPLEX ATTRIBUTES</b></a></span>&#160;&#160;
 					<span class="smallfont" style="font-weight: normal">
 						&lt;&#160;click here to view/edit complex attributes specified for this data element
@@ -1892,7 +1892,7 @@ String attrValue = null;
 										%>
 										<tr>
 											<td valign="bottom" align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-												<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&#38;mode=<%=mode%>&delem_id=<%=delem_id%>&delem_name=<%=delem_name%>&parent_type=<%=type%>">
+												<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=type%>">
 													<%=Util.replaceTags(value)%>
 												</a></b>
 											</td>
@@ -1952,7 +1952,7 @@ String attrValue = null;
 			<tr height="5"><td colspan="2"></td></tr>
 			<tr>
 				<td>&#160;</td><td>
-					<b>*</b> <span class="smallfont"><a href="javascript:openUrl('fixed_values.jsp?delem_id=<%=delem_id%>&#38;delem_name=<%=delem_name%>&mode=view&parent_type=<%=type%>')">
+					<b>*</b> <span class="smallfont"><a href="javascript:openUrl('fixed_values.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;mode=view&amp;parent_type=<%=type%>')">
 						<b><%=upperCaseTitle%> VALUES</b></a></span>&#160;&#160;
 					<span class="smallfont" style="font-weight: normal">
 						<% if (user != null) %>
@@ -2050,7 +2050,7 @@ String attrValue = null;
 								%>
 								<tr>
 									<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-										<a href="data_element.jsp?delem_id=<%=fkElmID%>&#38;mode=view"><%=fkElmName%></a>
+										<a href="data_element.jsp?delem_id=<%=fkElmID%>&amp;mode=view"><%=fkElmName%></a>
 									</td>
 									<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 										<%=fkTblName%>
@@ -2072,7 +2072,7 @@ String attrValue = null;
 			<tr>
 				<td>&#160;</td>
 				<td colspan="2">
-					<b>*</b> <span class="smallfont"><a href="foreign_keys.jsp?delem_id=<%=delem_id%>&#38;delem_name=<%=delem_name%>&#38;ds_id=<%=dsID%>">
+					<b>*</b> <span class="smallfont"><a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;ds_id=<%=dsID%>">
 						<b>FOREIGN KEYS</b></a></span>&#160;&#160;
 					<span class="smallfont" style="font-weight: normal">
 						&lt;&#160;click here to edit the foreign key relations of this data element
@@ -2114,7 +2114,7 @@ String attrValue = null;
 									%>
 									<tr>
 										<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-											<a href="data_element.jsp?delem_id=<%=item.getComponentID()%>&#38;mode=view">
+											<a href="data_element.jsp?delem_id=<%=item.getComponentID()%>&amp;mode=view">
 												<%=Util.replaceTags(item.getValue())%>
 											</a>
 										</td>
@@ -2137,7 +2137,7 @@ String attrValue = null;
 				<tr>
 					<td>&#160;</td>
 					<td colspan="2">
-						<b>*</b> <span class="smallfont"><a href="javascript:openUrl('rel_elements.jsp?delem_id=<%=delem_id%>&#38;delem_name=<%=delem_name%>')">
+						<b>*</b> <span class="smallfont"><a href="javascript:openUrl('rel_elements.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>')">
 							<b>RELATED ELEMENTS</b></a></span>&#160;&#160;
 						<span class="smallfont" style="font-weight: normal">
 							&lt;&#160;click here to view/add/remove related data elements of this data element
@@ -2205,7 +2205,7 @@ String attrValue = null;
 						<span class="mainfont"><b>Templates</b></span>
 					</td>
 					<td colspan="2">
-						* <a target="_blank" href="GetSchema?comp_id=<%=delem_id%>&comp_type=ELM">Create an XML Schema</a>
+						* <a target="_blank" href="GetSchema?comp_id=<%=delem_id%>&amp;comp_type=ELM">Create an XML Schema</a>
 					</td>
 				</tr>
 				
@@ -2219,7 +2219,7 @@ String attrValue = null;
 			<tr>
 				<td colspan="3">
 					<a href="javascript:alert('Under repairement!')">Printable page</a>
-					<!--a href="javascript:printable('data_element_print.jsp?mode=print&delem_id=<%=delem_id%>&type=<%=type%>')">
+					<!--a href="javascript:printable('data_element_print.jsp?mode=print&amp;delem_id=<%=delem_id%>&amp;type=<%=type%>')">
 						Printable page
 					  </a-->
 				</td>

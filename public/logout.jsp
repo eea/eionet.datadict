@@ -113,7 +113,7 @@ Vector dataElements=null;
 							<tr valign="top">					
 								<td align="left" style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2" title="<%=dsFullName%>">
 									Dataset definition: &#160;
-									<a href="dataset.jsp?ds_id=<%=ds_id%>&#38;mode=view">
+									<a href="dataset.jsp?ds_id=<%=ds_id%>&amp;mode=view">
 									<%=Util.replaceTags(dsFullName)%></a>&#160;
 									<!--%=dsVersion%-->
 								</td>
@@ -193,7 +193,7 @@ Vector dataElements=null;
 							<tr valign="top">					
 								<td align="left" style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
 								Data element definition: &#160;
-								<a href="data_element.jsp?delem_id=<%=delem_id%>&#38;type=<%=delem_type%>&#38;mode=view">
+								<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
 								<%=Util.replaceTags(delem_name)%></a>
 								(<%=displayType%>)
 								in table: <%=Util.replaceTags(dispTbl)%>

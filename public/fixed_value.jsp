@@ -496,7 +496,7 @@ private String legalizeAlert(String in){
 				%>
 				<tr>
 					<td valign="top" style="padding-right:10" align="right"><b><%=attribute.getShortName()%></b>(<%=attribute.getObligation()%>)
-						<!--b><a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=edit">
+						<!--b><a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit">
 							<font color="black"><%=attribute.getShortName()%></font>
 						</a></b-->
 					</td>
@@ -577,7 +577,7 @@ private String legalizeAlert(String in){
 				%>
 				<tr>
 					<td align="right" valign="top" style="padding-right:10">
-						<a href="rel_element.jsp?delem_id=<%=delem_id%>&#38;delem_name=<%=delem_name%>&#38;child_id=<%=item.getID()%>">
+						<a href="rel_element.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;child_id=<%=item.getID()%>">
 						<span class="help">?</span></a>&#160;
 						<span class="mainfont"><b>
 							<%=Util.replaceTags(item.getValue())%>

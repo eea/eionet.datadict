@@ -122,7 +122,7 @@
 							<td>
 								<font color="red">
 									You have chosen to import fixed values (i.e. codes)<br/> for the
-									<a href="data_element.jsp?mode=view&delem_id=<%=delem_id%>"><%=elmName%></a> element!
+									<a href="data_element.jsp?mode=view&amp;delem_id=<%=delem_id%>"><%=elmName%></a> element!
 								</font>
 							</td>
 						</tr><%

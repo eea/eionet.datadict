@@ -867,7 +867,7 @@ private Vector getValues(String id){
 				%>
 				<tr <% if (mode.equals("view") && displayed % 2 == 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" valign="top" style="padding-right:10">
-						<a href="javascript:openUrl('delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view')"><span class="help">?</span></a>&#160;
+						<a href="javascript:openUrl('delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view')"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><!--%=attrNs%>:--><b><%=attribute.getShortName()%></b>
 							<%
 							if (!mode.equals("view")){
@@ -923,7 +923,7 @@ private Vector getValues(String id){
 								</select>
 								<% if (disabled.equals("")){ %>
 									<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
-									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&#38;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
+									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
 								
 								<%
 								}
@@ -1042,10 +1042,10 @@ private Vector getValues(String id){
 					%>		
 					<tr valign="top" <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<td align="right" style="padding-right:10">
-							<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=COMPLEX&mode=view">
+							<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=COMPLEX&amp;mode=view">
 							<span class="help">?</span></a>&#160;
 							<span class="mainfont"><b>
-								<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&#38;mode=view&#38;parent_id=<%=ds_id%>&#38;parent_type=DS&#38;parent_name=<%=ds_name%>&#38;ds=true')" title="Click here to view all the fields">
+								<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=ds_name%>&amp;ds=true')" title="Click here to view all the fields">
 									<%=attrName%>
 								</a></b>
 							</span>
@@ -1121,7 +1121,7 @@ private Vector getValues(String id){
 			<tr>
 				<td>&#160;</td>
 				<td>
-					<b>*</b> <span class="smallfont"><a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=ds_id%>&#38;parent_type=DS&#38;parent_name=<%=ds_name%>&#38;ds=true')">
+					<b>*</b> <span class="smallfont"><a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=ds_name%>&amp;ds=true')">
 						<b>COMPLEX ATTRIBUTES</b></a></span>&#160;&#160;
 					<span class="smallfont" style="font-weight: normal">
 						&lt;&#160;click here to view/edit complex attributes specified for this data element
@@ -1261,7 +1261,7 @@ private Vector getValues(String id){
 				<tr>
 					<td>&#160;</td>
 					<td colspan="2">
-						<b>*</b> <span class="smallfont"><a href="javascript:openUrl('dstables.jsp?ds_id=<%=ds_id%>&#38;ds_name=<%=ds_name%>')">
+						<b>*</b> <span class="smallfont"><a href="javascript:openUrl('dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=ds_name%>')">
 							<b>TABLES</b></a></span>&#160;&#160;
 						<span class="smallfont" style="font-weight: normal">
 							&lt;&#160;click here to specify/remove tables of this dataset
@@ -1333,8 +1333,8 @@ private Vector getValues(String id){
 					<span class="mainfont"><b>Documentation</b></span>
 				</td>
 				<td colspan="2">
-					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>&out_type=GDLN">Create technical specifications for this dataflow (PDF)</a> <BR>
-					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>">Create full Data Dictionary output for this dataflow (PDF)</a>
+					* <a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN">Create technical specifications for this dataflow (PDF)</a> <BR>
+					* <a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>">Create full Data Dictionary output for this dataflow (PDF)</a>
 				</td>
 			</tr>
 			
@@ -1366,7 +1366,7 @@ private Vector getValues(String id){
 					<span class="mainfont"><b>Templates</b></span>
 				</td>
 				<td colspan="2">
-					* <a target="_blank" href="GetSchema?comp_id=<%=ds_id%>&comp_type=DST">Create an XML Schema</a>					
+					* <a target="_blank" href="GetSchema?comp_id=<%=ds_id%>&amp;comp_type=DST">Create an XML Schema</a>					
 				</td>
 			</tr>
 			
@@ -1395,7 +1395,7 @@ private Vector getValues(String id){
 			<tr>
 				<td colspan="3">
 					<a href="javascript:alert('Under repairement!')">Printable page</a>
-					<!--a href="javascript:printable('dataset_print.jsp?ds_id=<%=ds_id%>&open=true')">
+					<!--a href="javascript:printable('dataset_print.jsp?ds_id=<%=ds_id%>&amp;open=true')">
 						Printable page
 					  </a-->
 				</td>

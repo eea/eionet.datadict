@@ -263,7 +263,7 @@
 						attrTypeDisp = "Complex";
 					%>
 					<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<a href="delem_attribute.jsp?attr_id=<%=attr_id%>&#38;type=<%=attrType%>&#38;mode=view">
+						<a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>&amp;mode=view">
 						<%=attr_name%></a>
 					</td>
 					<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=attrTypeDisp%></td>

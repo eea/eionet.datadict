@@ -394,7 +394,7 @@
 						<a href="search_dataset.jsp"><img src="images/search_ds.gif" border=0 alt="Search datasets"></a><br/>
 						<%
 						if (user!=null && user.isAuthentic()){%>					
-							<a href="datasets.jsp?SearchType=SEARCH&restore=true">
+							<a href="datasets.jsp?SearchType=SEARCH&amp;restore=true">
 								<img src="images/restore_dataset.gif" border=0 alt="Restore datasets">
 							</a><%
 						}
@@ -524,7 +524,7 @@
 						</td>
 						
 						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2" title="<%=dsFullName%>">
-							<a href="GetPrintout?format=PDF&obj_type=DST&out_type=GDLN&obj_id=<%=dataset.getID()%>">
+							<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;out_type=GDLN&amp;obj_id=<%=dataset.getID()%>">
 								<%=Util.replaceTags(dsFullName)%>
 							</a>
 						</td>					
@@ -589,7 +589,7 @@
 							}
 							%>
 							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"  title="<%=oEntry.oFullName%>">
-								<a href="GetPrintout?format=PDF&obj_type=DST&out_type=GDLN&obj_id=<%=oEntry.oID%>">
+								<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;out_type=GDLN&amp;obj_id=<%=oEntry.oID%>">
 									<%=Util.replaceTags(oEntry.oFName)%>
 								</a>
 							</td>					

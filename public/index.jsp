@@ -185,7 +185,7 @@
 										Namespaces can be dynamically added/removed to/from the system. To search for
 										namespaces, use the <a href="namespaces.jsp">Namespaces</a> button on the
 										left-hand pane.
-										The default namespace is <a href="namespace.jsp?ns_id=basens&mode=view">
+										The default namespace is <a href="namespace.jsp?ns_id=basens&amp;mode=view">
 										Data Dictionary's base namespace</a>. It should include data elements common
 										to all areas/topics. 
 										In some concept the namespace could present a table from dataset.
@@ -250,7 +250,7 @@
 							identified by its short name and the namespace it belongs to. Namespaces can also be dynamically
 							added/removed to/from the system. To search for namespaces, use the <a href="namespaces.jsp">Namespaces</a>
 							button under Search on the left-hand pane. The default namespace is
-							<a href="namespace.jsp?ns_id=basens&mode=edit">Data Dictionary's base namespace</a> and it
+							<a href="namespace.jsp?ns_id=basens&amp;mode=edit">Data Dictionary's base namespace</a> and it
 							should include data elements common to all areas/topics<br></br>
 							Guidelines have been provided in most of the user views, so please have a go!
 						</td>

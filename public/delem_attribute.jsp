@@ -342,7 +342,7 @@
 		}
 		
 		function openFxValues(){
-			//var url = "fixed_values.jsp?delem_id=<%=attr_id%>&#38;delem_name=<%=attr_shortname%>&#38;parent_type=attr";
+			//var url = "fixed_values.jsp?delem_id=<%=attr_id%>&amp;delem_name=<%=attr_shortname%>&amp;parent_type=attr";
 			var url = "fixed_values.jsp?mode=edit&delem_id=<%=attr_id%>&delem_name=<%=attr_shortname%>&parent_type=attr";
 			wCh1Values = window.open(url,"AllowableValues","height=600,width=800,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
 			if (window.focus) {wCh1Values.focus()}
@@ -742,7 +742,7 @@
 							<%
 							if (mode.equals("edit") && dispType!=null && dispType.equals("select")){
 								%>
-								&#160;<span class="smallfont"><a href="fixed_values.jsp?mode=edit&delem_id=<%=attr_id%>&delem_name=<%=attr_shortname%>&parent_type=attr">
+								&#160;<span class="smallfont"><a href="fixed_values.jsp?mode=edit&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=attr_shortname%>&amp;parent_type=attr">
 								<b>FIXED VALUES</b></a></span>
 								<%
 							}
@@ -757,7 +757,7 @@
 						<td align="right" style="padding-right:10">
 							<a target="_blank" href="attr_fields.html#fxv"><span class="help">?</span></a>&#160;
 							<span class="mainfont">
-								<a href="fixed_values.jsp?mode=view&delem_id=<%=attr_id%>&delem_name=<%=attr_shortname%>&parent_type=attr">
+								<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=attr_shortname%>&amp;parent_type=attr">
 									<b>Fixed values</b>
 								</a>
 							</span>
@@ -1184,7 +1184,7 @@
 			<tr valign="top">
 				<td></td>
 				<td>
-					<b>*</b> <span class="smallfont"><a href="m_attr_fields.jsp?attr_id=<%=attr_id%>&#38;attr_name=<%=attr_shortname%>">
+					<b>*</b> <span class="smallfont"><a href="m_attr_fields.jsp?attr_id=<%=attr_id%>&amp;attr_name=<%=attr_shortname%>">
 						<b>FIELDS</b></a></span>&#160;&#160;
 					<span class="smallfont" style="font-weight: normal">
 						&lt;&#160;click here to add/remove fields of this complex attribute

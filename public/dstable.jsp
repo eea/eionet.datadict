@@ -784,7 +784,7 @@ String attrValue = null;
 		if (false){ %>
 			<tr>
 				<td colspan="2">
-					<a href="dstables.jsp?ds_id=<%=dsID%>&ds_name=<%=dsName%>">&lt; back to dataset tables</a>
+					<a href="dstables.jsp?ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">&lt; back to dataset tables</a>
 				</td>
 			</tr>
 		<%
@@ -805,7 +805,7 @@ String attrValue = null;
 					if (dsID != null && dsID.length()!=0){ %>
 						<span class="head00">to</span>
 						<span class="title2">
-						<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><%=Util.replaceTags(dsName)%></a></span>
+						<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a></span>
 						<span class="head00">dataset</span> <%
 					}
 					%>
@@ -816,7 +816,7 @@ String attrValue = null;
 					<span class="head00">Edit table definition</span>
 					<!--span class="title2"><%=Util.replaceTags(dsTable.getShortName())%></span>
 					<span class="head00">table in</span>
-					<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a>
+					<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a>
 					<span class="head00">dataset</span-->
 				</td> <%
 			}
@@ -832,7 +832,7 @@ String attrValue = null;
 					<span class="head00">View definition of </span>
 					<span class="title2"><%=Util.replaceTags(dsTable.getShortName())%></span>
 					<span class="head00">table in</span>
-					<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a>
+					<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a>
 					<span class="head00">dataset</span>
 				</td-->
 				
@@ -970,7 +970,7 @@ String attrValue = null;
 					if (dsID != null && dsID.length()!=0){
 						%>
 						<font class="title2" color="#006666">
-							<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><%=Util.replaceTags(dsName)%></a>
+							<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a>
 						</font>
 						<%
 					}
@@ -1110,7 +1110,7 @@ String attrValue = null;
 				%>
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<a href="javascript:openUrl('delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view')"><span class="help">?</span></a>&#160;
+						<a href="javascript:openUrl('delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view')"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><!--%=attrNs%>:--><b><%=attribute.getShortName()%></b>
 							<%
 							//displayed++;
@@ -1134,7 +1134,7 @@ String attrValue = null;
 						
 						else if (dispType.equals("image")){%>
 							<span class="barfont" style="width:400">
-								<a target="_blank" href="imgattr.jsp?obj_id=<%=tableID%>&obj_type=T&attr_id=<%=attribute.getID()%>&obj_name=<%=dsTable.getShortName()%>&attr_name=<%=attribute.getShortName()%>">image(s)</a>
+								<a target="_blank" href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=dsTable.getShortName()%>&amp;attr_name=<%=attribute.getShortName()%>">image(s)</a>
 							</span><%
 						}
 						// if mode is 'view', display a span, otherwise an input						
@@ -1178,7 +1178,7 @@ String attrValue = null;
 								</select>
 								<% if (disabled.equals("")){ %>
 									<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
-									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&#38;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
+									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
 								
 								<%
 								}
@@ -1297,10 +1297,10 @@ String attrValue = null;
 					%>		
 					<tr valign="top" <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<td align="right" style="padding-right:10">
-							<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=COMPLEX&mode=view">
+							<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=COMPLEX&amp;mode=view">
 							<span class="help">?</span></a>&#160;
 							<span class="mainfont"><b>
-								<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&#38;mode=view&#38;parent_id=<%=tableID%>&#38;parent_type=T&#38;parent_name=<%=dsTable.getShortName()%>&#38;dataset_id=<%=dsID%>');" title="Click here to view all the fields">
+								<a href="javascript:complexAttr('complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=dsTable.getShortName()%>&amp;dataset_id=<%=dsID%>');" title="Click here to view all the fields">
 									<%=attrName%>
 								</a></b>
 							</span>
@@ -1372,7 +1372,7 @@ String attrValue = null;
 						%>
 						<tr valign="top">
 							<td align="right" style="padding-right:10">
-								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=COMPLEX&mode=view">
+								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=COMPLEX&amp;mode=view">
 								<span class="help">?</span></a>&#160;
 								<span class="mainfont"><b><%=attrName%></b></span>
 							</td>
@@ -1387,7 +1387,7 @@ String attrValue = null;
 			}
 			*/
 			%>
-			<tr><td>&#160;</td><td><br><span class="barfont" style="width:400">! General information can be found from <a href="dataset.jsp?ds_id=<%=dsID%>&mode=view">dataset</a> level</span></td></tr>
+			<tr><td>&#160;</td><td><br><span class="barfont" style="width:400">! General information can be found from <a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view">dataset</a> level</span></td></tr>
 			<%
 			if (!mode.equals("add") && !mode.equals("view")
 					|| (mode.equals("view") && user!=null)){ // if mode is not 'add'
@@ -1397,7 +1397,7 @@ String attrValue = null;
 				<tr>
 					<td>&#160;</td>
 					<td>
-						<b>*</b> <span class="smallfont"><a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=tableID%>&#38;parent_type=T&#38;parent_name=<%=dsTable.getShortName()%>&dataset_id=<%=dsID%>')">
+						<b>*</b> <span class="smallfont"><a href="javascript:complexAttrs('complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=dsTable.getShortName()%>&amp;dataset_id=<%=dsID%>')">
 							<b>COMPLEX ATTRIBUTES</b></a></span>&#160;&#160;
 						<span class="smallfont" style="font-weight: normal">
 							&lt;&#160;click here to view/edit complex attributes specified for this table
@@ -1487,7 +1487,7 @@ String attrValue = null;
 									</td>
 									<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 										<% if (elem.getType().equals("CH1")){ %>
-											<span class="barfont"><a href="fixed_values.jsp?mode=view&delem_id=<%=elem.getID()%>&#38;delem_name=<%=elem.getShortName()%>"><%=elemType%></a></span>
+											<span class="barfont"><a href="fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>"><%=elemType%></a></span>
 										<%} else{ %>
 											<span class="barfont"><%=elemType%></span>
 										<% } %>
@@ -1495,7 +1495,7 @@ String attrValue = null;
 									<td align="left" style="padding-right:10">
 										<%
 										if (fks){ %>
-											<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&delem_name=<%=elem.getShortName()%>&ds_id=<%=dsID%>">(FK)</a><%
+											<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>&amp;ds_id=<%=dsID%>">(FK)</a><%
 										}
 										%>
 									</td>
@@ -1600,7 +1600,7 @@ String attrValue = null;
 						<span class="mainfont"><b>Templates</b></span>
 					</td>
 					<td colspan="2">
-						* <a target="_blank" href="GetSchema?comp_id=<%=tableID%>&comp_type=TBL">Create an XML Schema</a>
+						* <a target="_blank" href="GetSchema?comp_id=<%=tableID%>&amp;comp_type=TBL">Create an XML Schema</a>
 					</td>
 				</tr>
 			

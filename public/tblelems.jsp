@@ -337,7 +337,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
     	if (false){ %>
 			<tr>
 				<td colspan="4">
-					<a href="dstable.jsp?mode=view&table_id=<%=tableID%>&ds_id=<%=dsID%>&ds_name=<%=dsName%>&ctx=<%=contextParam%>">
+					<a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>&amp;ctx=<%=contextParam%>">
 						&lt; back to table view
 					</a>
 				</td>
@@ -346,8 +346,8 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 		%>
 		<tr valign="bottom">
 			<td colspan="4">
-				<font class="head00">Elements in <span class="title2"><a href="dstable.jsp?mode=view&table_id=<%=tableID%>&ds_id=<%=dsID%>&ds_name=<%=dsName%>"><%=Util.replaceTags(tableName)%></a></span> table,
-				<span class="title2"><a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><%=Util.replaceTags(dsName)%></a></span> dataset.
+				<font class="head00">Elements in <span class="title2"><a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>"><%=Util.replaceTags(tableName)%></a></span> table,
+				<span class="title2"><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a></span> dataset.
 			</td>
 		</tr>
 		
@@ -511,7 +511,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 				</td>
 				<td align="left" style="padding-right:10">
 					<% if (elem.getType().equals("CH1")){ %>
-						<a href="javascript:clickLink('fixed_values.jsp?mode=view&delem_id=<%=elem.getID()%>&#38;delem_name=<%=elem.getShortName()%>')"><%=elemType%></a>
+						<a href="javascript:clickLink('fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>')"><%=elemType%></a>
 					<%} else{ %>
 						<%=elemType%>
 					<% } %>
@@ -519,7 +519,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 				<td align="left" style="padding-right:10">
 					<%
 					if (fks){ %>
-						<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&delem_name=<%=elem.getShortName()%>&ds_id=<%=dataset.getID()%>">(FK)</a><%
+						<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>&amp;ds_id=<%=dataset.getID()%>">(FK)</a><%
 					}
 					%>
 					<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5">

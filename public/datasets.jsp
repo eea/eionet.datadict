@@ -413,7 +413,7 @@
 						<a href="search_dataset.jsp"><img src="images/search_ds.gif" border=0 alt="Search datasets"></a><br/>
 						<%
 						if (user!=null && user.isAuthentic()){%>					
-							<a href="restore_datasets.jsp?SearchType=SEARCH&restore=true">
+							<a href="restore_datasets.jsp?SearchType=SEARCH&amp;restore=true">
 								<img src="images/restore_dataset.gif" border=0 alt="Restore datasets">
 							</a><%
 						}
@@ -650,7 +650,7 @@
 								%>
 							</td>
 							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"  title="<%=oEntry.oFullName%>">
-								<a <%=linkDisabled%> href="dataset.jsp?ds_id=<%=oEntry.oID%>&#38;mode=view">
+								<a <%=linkDisabled%> href="dataset.jsp?ds_id=<%=oEntry.oID%>&amp;mode=view">
 								<%=Util.replaceTags(oEntry.oFName)%></a>
 							</td>					
 							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>

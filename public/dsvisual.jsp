@@ -176,7 +176,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5"></td>
 						    <td bgcolor="#f0f0f0" width="1"></td>
 	          				<td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5"></td>
-						    <th class="light" width="50"><a href="dsvisual.jsp?ds_id=<%=ds_id%>&str_type=detailed">
+						    <th class="light" width="50"><a href="dsvisual.jsp?ds_id=<%=ds_id%>&amp;str_type=detailed">
 						    	<font color="#FFFFFF">Detailed</font></a>
 						    </th>
 						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5"></td>
@@ -186,7 +186,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 					else{ %>
 						<tr height="10">
 					        <td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5"></td>
-						    <th class="light" width="50"><a href="dsvisual.jsp?ds_id=<%=ds_id%>&str_type=simple">
+						    <th class="light" width="50"><a href="dsvisual.jsp?ds_id=<%=ds_id%>&amp;str_type=simple">
 						    	<font color="#FFFFFF">Simple</font></a>
 						    </th>
 						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5"></td>

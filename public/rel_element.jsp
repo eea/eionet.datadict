@@ -228,7 +228,7 @@ private String legalizeAlert(String in){
 				</td>
 				<td colspan="1" valign="top">
 					<font class="title2" color="#006666">
-						<a href="data_element.jsp?delem_id=<%=item.getComponentID()%>&#38;mode=view">
+						<a href="data_element.jsp?delem_id=<%=item.getComponentID()%>&amp;mode=view">
 							<%=Util.replaceTags(item.getValue())%>
 						</A>
 					</font>

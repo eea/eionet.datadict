@@ -468,7 +468,7 @@ private String legalizeAlert(String in){
 			%>
 			<tr>
 				<td valign="bottom" align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&#38;mode=<%=mode%>&delem_id=<%=delem_id%>&delem_name=<%=delem_name%>&parent_type=<%=typeParam%>">
+					<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>">
 						<%=Util.replaceTags(value)%>
 					</a></b>
 				</td>
@@ -576,7 +576,7 @@ private String legalizeAlert(String in){
 				</td>
 			<% } %>
 			<td valign="bottom" align="left" style="padding-left:5;padding-right:10">
-				<b><a href="javascript:clickLink('fixed_value.jsp?fxv_id=<%=fxvID%>&#38;mode=edit&delem_id=<%=delem_id%>&delem_name=<%=delem_name%>&parent_type=<%=typeParam%>')">
+				<b><a href="javascript:clickLink('fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=edit&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>')">
 					<%=Util.replaceTags(value)%>
 				</a></b>&#160;
 				<map name="map<%=i%>">
