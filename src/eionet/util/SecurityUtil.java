@@ -25,7 +25,8 @@ package eionet.util;
 
 import javax.servlet.http.*;
 import com.tee.xmlserver.*;
-import com.tee.uit.security.*; 
+import com.tee.uit.security.*;
+import java.util.*; 
 
 /**
  * This is a class containing several utility methods for keeping
@@ -138,4 +139,23 @@ public class SecurityUtil {
     	
     	return has;
     }
+    
+	/**
+	 * Check if given usr has prm permission on any of aclPath's children 
+	 */
+	public static boolean hasChildPerm(String usr, String aclPath, String prm)
+															throws Exception{
+		HashMap acls = AccessController.getAcls();
+		Iterator aclNames = acls.keySet().iterator();
+		while (aclNames.hasNext()){
+			String aclName = (String)aclNames.next();
+			if (!aclPath.startsWith(aclPath))
+				continue;
+			AccessControlListIF acl = (AccessControlListIF)acls.get(aclName);
+			if (acl.checkPermission(usr, prm))
+				return true;
+		}
+		
+		return false;
+	}
 }
