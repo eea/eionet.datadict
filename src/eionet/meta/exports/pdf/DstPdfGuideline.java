@@ -39,12 +39,12 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 	public DstPdfGuideline(Connection conn){
 		this.conn = conn;
 		searchEngine = new DDSearchEngine(conn);
+		setShowedAttributes();
 	}
 	
     public DstPdfGuideline(Connection conn, OutputStream os){
     	this(conn);
         this.os = os;
-		setShowedAttributes();
     }
     
 	private void cache(String dsID) throws Exception {
