@@ -92,7 +92,7 @@ public class Util {
         
         Date date = new Date(timestamp);
         String year = String.valueOf(1900 + date.getYear());
-        String month = String.valueOf(date.getMonth());
+        String month = String.valueOf(date.getMonth() + 1);
         month = (month.length() < 2) ? ("0" + month) : month;
         String day = String.valueOf(date.getDate());
         day = (day.length() < 2) ? ("0" + day) : day;
