@@ -1,6 +1,7 @@
-<%@page contentType="text/html" import="java.io.*,java.util.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%
+request.setCharacterEncoding("UTF-8");
 Vector releasedDatasets = (Vector)request.getAttribute("rlsd_datasets");
 %>
 	

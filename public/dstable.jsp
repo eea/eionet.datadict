@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%@ include file="history.jsp" %>
 
@@ -83,6 +83,8 @@ private String getAttributeValue(DataElement elem, String name, Vector mAttribut
 %>
 
 <%
+
+request.setCharacterEncoding("UTF-8");
 
 //
 ServletContext ctx=null;
@@ -434,7 +436,7 @@ String attrValue = null;
 <html>
 <head>
 	<title>Meta</title>
-	<meta http-equiv="Content-Type" content="text/html"/>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>	
 </head>
 <script language="javascript" src='script.js'></script>
@@ -773,7 +775,7 @@ String attrValue = null;
             
 			<div style="margin-left:30">
 	
-			<form name="form1" method="POST" action="dstable.jsp">
+			<form acceptcharset="UTF-8" name="form1" method="POST" action="dstable.jsp">
 			
 				<!--=======================-->
 				<!-- main table inside div -->

@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!private Vector elems=null;%>
 <%!private ServletContext ctx=null;%>
@@ -6,6 +6,8 @@
 <%@ include file="history.jsp" %>
 
 <%
+
+request.setCharacterEncoding("UTF-8");
 
 response.setHeader("Pragma", "no-cache");
 response.setHeader("Cache-Control", "no-cache");
@@ -93,7 +95,7 @@ if (disabled.equals("")){
 <html>
 <head>
 	<title>Meta</title>
-	<meta http-equiv="Content-Type" content="text/html"/>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 </head>
 
@@ -155,7 +157,7 @@ if (disabled.equals("")){
             
 <div style="margin-left:30">
 			
-<form name="form1" method="POST" action="foreign_keys.jsp">
+<form acceptcharset="UTF-8" name="form1" method="POST" action="foreign_keys.jsp">
 
 	<table width="500" cellspacing="0" cellpadding="0">
 

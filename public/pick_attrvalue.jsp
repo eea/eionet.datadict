@@ -1,8 +1,8 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.*"%>
 
 <%
+	request.setCharacterEncoding("UTF-8");
 	
-			
 	ServletContext ctx = getServletContext();			
 	String appName = ctx.getInitParameter("application-name");
 
@@ -45,7 +45,7 @@
 <html>
 	<head>
 		<title>Meta</title>
-		<meta http-equiv="Content-Type" content="text/html"/>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
 		<script language="javascript">
 
@@ -86,14 +86,14 @@
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form name="close" action="javascript:window.close()">
+		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
 
 <div>	
-	<form name="form1">
+	<form acceptcharset="UTF-8" name="form1">
 	<table>
 		<tr><td><b>Select attribute (<%=attrName%>) value:</b></td></tr>
 		<tr><td>&#160;</td></tr>

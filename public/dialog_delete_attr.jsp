@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 <%!private Vector objects=null;%>
 <%!
 ServletContext ctx = null;
@@ -7,8 +7,8 @@ ServletContext ctx = null;
 <%@ include file="history.jsp" %>
 
 <%
+	request.setCharacterEncoding("UTF-8");
 	
-
 	XDBApplication.getInstance(getServletContext());
 	AppUserIF user = SecurityUtil.getUser(request);
 	
@@ -70,7 +70,7 @@ ServletContext ctx = null;
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript">
@@ -104,7 +104,7 @@ ServletContext ctx = null;
             </jsp:include>            
 
             <div style="margin-left:30">
-            	<form name="form1" action="dialog_delete_attr.jsp" method="POST">
+            	<form acceptcharset="UTF-8" name="form1" action="dialog_delete_attr.jsp" method="POST">
 				<table width="500">
 	  			    <tr><td><font class="head00">Deleting attribute: <%=Util.replaceTags(short_name)%></font></td></tr>
 					<tr height="10"><td>&#160;</td></tr>

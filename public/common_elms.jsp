@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!static int iPageLen=0;%>
@@ -75,6 +75,8 @@
 }%>
 
 <%
+	request.setCharacterEncoding("UTF-8");
+	
 	// The following if block tries to identify if a login has happened in which
 	// case it will redirect the response to the query string in session. This
 	// happens regardless of weather it's a sorting request or search request.
@@ -172,7 +174,7 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
 	<script language="javascript">
@@ -223,7 +225,7 @@ if (popup){ %>
 		<h1>Data Dictionary</h1>
 		<hr/>
 		<div align="right">
-			<form name="close" action="javascript:window.close()">
+			<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
 				<input type="submit" class="smallbutton" value="Close"/>
 			</form>
 		</div>
@@ -520,7 +522,7 @@ else{ %>
 			
 		</table>
 		
-		<form name="sort_form" action="common_elms.jsp" method="GET">
+		<form acceptcharset="UTF-8" name="sort_form" action="common_elms.jsp" method="GET">
 			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
         	<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
 			<input name='SearchType' type='hidden' value='NoSearch'/>

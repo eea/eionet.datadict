@@ -1,8 +1,10 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,java.io.*,eionet.meta.*,com.tee.xmlserver.*,com.tee.uit.help.Helps,eionet.util.Util"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,java.io.*,eionet.meta.*,com.tee.xmlserver.*,com.tee.uit.help.Helps,eionet.util.Util"%>
 
 <%@ include file="history.jsp" %>
 
 <%
+
+request.setCharacterEncoding("UTF-8");
 
 Connection conn = null;
 DBPoolIF pool = null;
@@ -56,7 +58,7 @@ catch (Exception e){
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <link type="text/css" rel="stylesheet" href="boxes.css">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
@@ -95,7 +97,7 @@ catch (Exception e){
 						<%
 						if (errTrc!=null){
 							%>
-							<form name="errtrc" action="http://">
+							<form acceptcharset="UTF-8" name="errtrc" action="http://">
 								<input type="hidden" name="errtrc" value="<%=errTrc%>"/>
 							</form>
 							<%

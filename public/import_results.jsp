@@ -1,12 +1,12 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util"%>
 <%
-
+	request.setCharacterEncoding("UTF-8");
 	String resptext = (String)request.getAttribute("TEXT");
 %>
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
     <script language="javascript">
@@ -47,7 +47,7 @@
 		</td>
 	</tr>
 </table>
-<form name="form1" action="GetImportResults" method="POST">
+<form acceptcharset="UTF-8" name="form1" action="GetImportResults" method="POST">
 <%
 	String text=Util.Replace(resptext, "<br/>", "\n");
 

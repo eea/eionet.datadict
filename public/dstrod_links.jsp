@@ -1,6 +1,8 @@
-<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%
+
+request.setCharacterEncoding("UTF-8");
 
 response.setHeader("Pragma", "no-cache");
 response.setHeader("Cache-Control", "no-cache");
@@ -50,7 +52,7 @@ try{
 	<html>
 		<head>
 			<title>Data Dictionary</title>
-			<meta http-equiv="Content-Type" content="text/html"/>
+			<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 			<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 			<script language="javascript" src='script.js'></script>
 			<script language="javascript">
@@ -90,7 +92,7 @@ try{
 									<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 								</a>
 							</p>
-							<form name="rodlinks" action="dstrod_links.jsp" method="POST">
+							<form acceptcharset="UTF-8" name="rodlinks" action="dstrod_links.jsp" method="POST">
 								<table width="auto" cellspacing="0" cellpadding="0">
 									<tr>
 										<td colspan="3">

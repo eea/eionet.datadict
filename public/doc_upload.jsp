@@ -1,6 +1,9 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,com.tee.xmlserver.*"%>
 
 <%
+
+request.setCharacterEncoding("UTF-8");
+
 String dstID = request.getParameter("ds_id");
 if (dstID==null || dstID.length()==0) throw new ServletException("Dataset ID is missing!");
 String idf = request.getParameter("idf");
@@ -9,7 +12,7 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript">
@@ -37,7 +40,7 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form name="close" action="javascript:window.close()">
+		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
@@ -52,7 +55,7 @@ However, you can upload any other types of files as well. Data Dictionary will s
 their type as unknown. Whatever is the type of the file you upload, it can later be downloaded.
 </p>
 				
-<form name="form1" action="DocUpload" method="POST" enctype="multipart/form-data">
+<form acceptcharset="UTF-8" name="form1" action="DocUpload" method="POST" enctype="multipart/form-data">
 
 	<table width="500" cellspacing="0">
 		<tr>

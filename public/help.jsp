@@ -1,6 +1,8 @@
-<%@page contentType="text/html" import="com.tee.uit.help.Helps, java.sql.*, eionet.meta.*, com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="com.tee.uit.help.Helps, java.sql.*, eionet.meta.*, com.tee.xmlserver.*"%>
 
 <%
+
+request.setCharacterEncoding("UTF-8");
 
 String helpText = "";
 String width  = "400";
@@ -64,7 +66,7 @@ else{
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css" />
     <script language="javascript">
     
@@ -82,7 +84,7 @@ else{
 	<h1>Data Dictionary Help</h1>
 	<hr/>
 	<div align="right">
-		<form name="close" action="javascript:window.close()">
+		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>

@@ -1,6 +1,8 @@
-<%@page contentType="text/html" import="java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%
+
+request.setCharacterEncoding("UTF-8");
 
 String lastUpdated = (String)session.getAttribute("last-updated");
 if (lastUpdated==null){

@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!private Vector elems=null;%>
 <%!private ServletContext ctx=null;%>
@@ -47,6 +47,8 @@ private boolean isIn(Vector elems, String id){
 %>
 
 <%
+
+request.setCharacterEncoding("UTF-8");
 
 response.setHeader("Pragma", "no-cache");
 response.setHeader("Cache-Control", "no-cache");
@@ -206,7 +208,7 @@ int colCount = hasGIS ? 5 : 4;
 <html>
 <head>
 	<title>Meta</title>
-	<meta http-equiv="Content-Type" content="text/html"/>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 </head>
 
@@ -408,7 +410,7 @@ int colCount = hasGIS ? 5 : 4;
             
 <div style="margin-left:30">
 			
-<form name="form1" method="POST" action="tblelems.jsp">
+<form acceptcharset="UTF-8" name="form1" method="POST" action="tblelems.jsp">
 
 	<!-- page title & the add new part -->
 	
@@ -838,7 +840,7 @@ int colCount = hasGIS ? 5 : 4;
 	
 </form>
 
-<form name="common_elm_link_form" method="POST" action="tblelems.jsp">
+<form acceptcharset="UTF-8" name="common_elm_link_form" method="POST" action="tblelems.jsp">
 	<input type="hidden" name="link_elm" value=""/>
 	<input type="hidden" name="mode" value="add"/>
 	<input type="hidden" name="table_id" value="<%=tableID%>"/>

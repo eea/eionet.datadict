@@ -1,8 +1,10 @@
-<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%@ include file="history.jsp" %>
 
 <%
+
+request.setCharacterEncoding("UTF-8");
 
 ServletContext ctx = getServletContext();			
 String appName = ctx.getInitParameter("application-name");
@@ -88,7 +90,7 @@ String disabled = user == null ? "disabled" : "";
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
@@ -123,7 +125,7 @@ String disabled = user == null ? "disabled" : "";
             
 			<div style="margin-left:30">
 			
-			<form id="form1" method="POST" action="fk_relation.jsp">
+			<form acceptcharset="UTF-8" id="form1" method="POST" action="fk_relation.jsp">
 			
 			<table width="560">
 				<tr>

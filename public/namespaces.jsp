@@ -1,8 +1,10 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%@ include file="history.jsp" %>
 
 <%
+	request.setCharacterEncoding("UTF-8");
+	
 	ServletContext ctx = getServletContext();
 	String appName = ctx.getInitParameter("application-name");
 	
@@ -60,7 +62,7 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
@@ -110,7 +112,7 @@
             }
             %>
             
-			<form id="form1" method="POST" action="namespaces.jsp">
+			<form acceptcharset="UTF-8" id="form1" method="POST" action="namespaces.jsp">
 			
 		<table width="550">
 			<tr><td><font class="head00">Namespaces</font></td></tr>

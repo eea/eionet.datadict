@@ -35,6 +35,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 
 			<%
 			
+			request.setCharacterEncoding("UTF-8");
+			
 			String mode=null;
 			Vector mAttributes=null;
 			Vector attributes=null;
@@ -324,6 +326,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 <html>
 <head>
     <title>Data Dictionary</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css"/>
     <script type="text/javascript" language="javascript" src='script.js'></script>
     <script type="text/javascript" language="javascript" src='modal_dialog.js'></script>
@@ -652,7 +655,7 @@ private Vector getValues(String id, String mode, Vector attributes){
             
 			<div style="margin-left:30">
 						
-			<form name="form1" id="form1" method="POST" action="dataset.jsp">
+			<form acceptcharset="UTF-8" name="form1" id="form1" method="POST" action="dataset.jsp">
 			
 				<%
 				if (!mode.equals("add")){ %>

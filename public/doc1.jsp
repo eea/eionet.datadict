@@ -1,15 +1,16 @@
-<%@page contentType="text/html" import="java.util.*,com.tee.xmlserver.*,com.tee.uit.help.Helps"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,com.tee.xmlserver.*,com.tee.uit.help.Helps"%>
 
 <%@ include file="history.jsp" %>
 
 <%
+	request.setCharacterEncoding("UTF-8");
 	XDBApplication.getInstance(getServletContext());
 %>
 
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
 </head>

@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.io.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.io.*"%>
 
 <%!private static final int MAX_CELL_LEN=40;%>
 <%!private static final int MAX_ATTR_LEN=500;%>
@@ -134,6 +134,8 @@ private String legalizeAlert(String in){
 %>
 
 			<%
+			
+			request.setCharacterEncoding("UTF-8");
 
 			//
 			String mode=null;
@@ -540,7 +542,7 @@ private String legalizeAlert(String in){
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript" src='modal_dialog.js'></script>
@@ -990,7 +992,7 @@ if (popup){ %>
 		<h1>Data Dictionary</h1>
 		<hr/>
 		<div align="right">
-			<form name="close" action="javascript:window.close()">
+			<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
 				<input type="submit" class="smallbutton" value="Close"/>
 			</form>
 		</div>
@@ -1017,7 +1019,7 @@ else{ %>
 } // end if not popup else
 %>
 		        
-			<form name="form1" id="form1" method="POST" action="data_element.jsp">
+			<form acceptcharset="UTF-8" name="form1" id="form1" method="POST" action="data_element.jsp">
 			
 				<%
 				if (!mode.equals("add")){ %>

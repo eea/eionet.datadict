@@ -1,6 +1,8 @@
-<%@page contentType="text/html" import="java.util.Vector,com.tee.xmlserver.*, eionet.meta.MrProper"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.Vector,com.tee.xmlserver.*, eionet.meta.MrProper"%>
 
 <%
+	request.setCharacterEncoding("UTF-8");
+	
 	XDBApplication.getInstance(getServletContext());
 	AppUserIF user = SecurityUtil.getUser(request);
 	if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/cleanup", "x")){ %>
@@ -12,7 +14,7 @@
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript">

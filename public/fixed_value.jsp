@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private String mode=null;%>
 <%!private FixedValue fxv=null;%>
@@ -6,6 +6,9 @@
 <%@ include file="history.jsp" %>
 
 <%
+
+request.setCharacterEncoding("UTF-8");
+
 XDBApplication.getInstance(getServletContext());
 AppUserIF user = SecurityUtil.getUser(request);
 
@@ -165,7 +168,7 @@ try { // start the whole page try block
 <html>
 	<head>
 		<title>Meta</title>
-		<meta http-equiv="Content-Type" content="text/html"/>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
 	
@@ -288,7 +291,7 @@ try { // start the whole page try block
 															 "&delem_name=" + delem_name +
 															 "&parent_type=" + parent_type;
 	%>
-		<form name="form1" method="POST" action="fixed_value.jsp">
+		<form acceptcharset="UTF-8" name="form1" method="POST" action="fixed_value.jsp">
 			
 		<table width="auto" cellspacing="0" cellpadding="0">
 			

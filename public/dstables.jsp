@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private Vector tables=null;%>
 <%!private Vector attributes=null;%>
@@ -7,6 +7,8 @@
 <%@ include file="history.jsp" %>
 
 <%
+
+request.setCharacterEncoding("UTF-8");
 
 response.setHeader("Pragma", "no-cache");
 response.setHeader("Cache-Control", "no-cache");
@@ -127,7 +129,7 @@ if (disabled.equals("")){
 <html>
 <head>
 	<title>Meta</title>
-	<meta http-equiv="Content-Type" content="text/html"/>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 </head>
 
@@ -163,7 +165,7 @@ if (disabled.equals("")){
             
 <div style="margin-left:30">
 	
-<form name="form1" method="POST" action="dstables.jsp">
+<form acceptcharset="UTF-8" name="form1" method="POST" action="dstables.jsp">
 
 	<table width="440">
 

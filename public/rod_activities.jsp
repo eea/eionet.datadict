@@ -1,7 +1,7 @@
-<%@page contentType="text/html" import="java.util.*,eionet.meta.inservices.*,eionet.util.Props,eionet.util.PropsIF"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,eionet.meta.inservices.*,eionet.util.Props,eionet.util.PropsIF"%>
 
 <%
-
+request.setCharacterEncoding("UTF-8");
 Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 //if (activities==null) activities = (Vector)request.getAttribute(Attrs.ACTIVITIES);
 
@@ -10,7 +10,7 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta http-equiv="Content-Type" content="text/html"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	<script language="javascript">
 	
@@ -34,14 +34,14 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form name="close" action="javascript:window.close()">
+		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
 
 <div>
-	<form name="reload" action="InServices?client=webrod&method=reload_activities" method="GET">
+	<form acceptcharset="UTF-8" name="reload" action="InServices?client=webrod&method=reload_activities" method="GET">
 	<%
 	if (activities==null || activities.size()==0){ %>
 		<p>

@@ -19,7 +19,7 @@ if (userProtarea!=null && userProtarea.isAuthentic()) loggedIn = true;
 				<%
 				if (!loggedIn){ %>
 				
-					<form target="_blank" name="LOGIN" method="POST" action="Login">
+					<form acceptcharset="UTF-8" target="_blank" name="LOGIN" method="POST" action="Login">
 						<input type="hidden" name="target" value="blank"/>
 		  				<table border="0" width="100%" cellspacing="0" cellpadding="2">
 		                    <tr>
@@ -38,7 +38,7 @@ if (userProtarea!=null && userProtarea.isAuthentic()) loggedIn = true;
 		  			</form><%
   				}
   				else{ %>
-  					<form name="LOGOUT" method="POST" action="logout.jsp">
+  					<form acceptcharset="UTF-8" name="LOGOUT" method="POST" action="logout.jsp">
   						<input type="submit" value="Logout" class="loginbutton"/>&nbsp;(<%=userProtarea.getUserName()%>)
   					</form><%
 				}

@@ -1,8 +1,10 @@
-<%@page contentType="text/html" import="eionet.meta.*,java.sql.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,com.tee.xmlserver.*"%>
 
 <%@ include file="history.jsp" %>
 
 <%
+	request.setCharacterEncoding("UTF-8");
+	
 	XDBApplication.getInstance(getServletContext());
 	AppUserIF user = SecurityUtil.getUser(request);
 %>
@@ -10,7 +12,7 @@
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript">
@@ -264,7 +266,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 				<%
 				if (user!=null){
 					%>
-					<form name="Upload" action="DsVisualUpload" method="POST" enctype="multipart/form-data">
+					<form acceptcharset="UTF-8" name="Upload" action="DsVisualUpload" method="POST" enctype="multipart/form-data">
 
 						<table width="auto" cellspacing="0">
 							

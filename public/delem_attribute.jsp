@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.Util"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.Util"%>
 
 <%!private String type=null;%>
 <%!private String mode=null;%>
@@ -8,6 +8,8 @@
 <%@ include file="history.jsp" %>
 
 			<%
+			
+			request.setCharacterEncoding("UTF-8");
 			
 			ServletContext ctx = getServletContext();			
 			String appName = ctx.getInitParameter("application-name");
@@ -181,7 +183,7 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
@@ -380,7 +382,7 @@
             
 			<div style="margin-left:30">
 			
-			<form id="form1" name="form1" method="POST" action="delem_attribute.jsp">
+			<form acceptcharset="UTF-8" id="form1" name="form1" method="POST" action="delem_attribute.jsp">
 			
 			<% if (!mode.equals("add")){ %>
 				<input type="hidden" name="attr_id" value="<%=attr_id%>"/>

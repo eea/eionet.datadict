@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private Vector fixedValues=null;%>
 <%!private String mode=null;%>
@@ -30,6 +30,8 @@ private String legalizeAlert(String in){
 %>
 
 			<%
+			
+			request.setCharacterEncoding("UTF-8");
 			
 			XDBApplication.getInstance(getServletContext());
 			AppUserIF user = SecurityUtil.getUser(request);
@@ -169,7 +171,7 @@ private String legalizeAlert(String in){
 <html>
 	<head>
 		<title>Meta</title>
-		<meta http-equiv="Content-Type" content="text/html"/>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
 	
@@ -256,7 +258,7 @@ private String legalizeAlert(String in){
             
 <div style="margin-left:30">
 			
-<form name="form1" method="POST" action="fixed_values.jsp">
+<form acceptcharset="UTF-8" name="form1" method="POST" action="fixed_values.jsp">
 <table width="600">
 	
 	<tr valign="bottom">

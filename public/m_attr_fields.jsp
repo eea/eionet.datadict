@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!private Vector attrFields=null;%>
 
@@ -27,6 +27,8 @@ private String legalizeAlert(String in){
 %>
 
 			<%
+			
+			request.setCharacterEncoding("UTF-8");
 			
 			response.setHeader("Pragma", "no-cache");
 			response.setHeader("Cache-Control", "no-cache");
@@ -119,7 +121,7 @@ private String legalizeAlert(String in){
 <html>
 	<head>
 		<title>Meta</title>
-		<meta http-equiv="Content-Type" content="text/html"/>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<script language="javascript" src='script.js'></script>
@@ -193,7 +195,7 @@ private String legalizeAlert(String in){
             
 <div style="margin-left:30">
 
-<form name="form1" method="POST" action="m_attr_fields.jsp">
+<form acceptcharset="UTF-8" name="form1" method="POST" action="m_attr_fields.jsp">
 
 <table width="500">
 	<tr>

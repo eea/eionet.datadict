@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!private String mode=null;%>
 <%!private Hashtable attrField=null;%>
@@ -28,7 +28,9 @@ private String legalizeAlert(String in){
 %>
 
 			<%
-
+			
+			request.setCharacterEncoding("UTF-8");
+			
 			ServletContext ctx = getServletContext();	
 			
 			XDBApplication.getInstance(ctx);
@@ -137,7 +139,7 @@ private String legalizeAlert(String in){
 <html>
 	<head>
 		<title>Meta</title>
-		<meta http-equiv="Content-Type" content="text/html"/>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	</head>
 	
@@ -198,7 +200,7 @@ private String legalizeAlert(String in){
 	String backURL = "" + "/m_attr_fields.jsp?attr_id=" + attr_id + "&attr_name=" + attr_name;
 	
 	%>
-		<form name="form1" method="POST" action="m_attr_field.jsp">
+		<form acceptcharset="UTF-8" name="form1" method="POST" action="m_attr_field.jsp">
 			
 			<table width="auto" cellspacing="0" cellpadding="0">
 			

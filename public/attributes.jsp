@@ -1,10 +1,11 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
 
 <%!static int iPageLen=0;%>
 
 <%@ include file="history.jsp" %>
 
 <%
+	request.setCharacterEncoding("UTF-8");
 	ServletContext ctx = getServletContext();
 	String appName = ctx.getInitParameter("application-name");
 	
@@ -80,7 +81,7 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
@@ -88,13 +89,6 @@
 			var o = document.forms["form1"].searchUrl;
 			if (o!=null)
 				o.value=document.location.href;
-		}
-		
-		function submitForm(){
-			var b = confirm("This will delete all the attributes you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
-			if (b==true){
-				document.forms["form1"].submit();
-			}
 		}
 		
 		function goTo(mode){
@@ -131,7 +125,7 @@
             }
             %>
             
-			<form id="form1" method="POST" action="attributes.jsp" onsubmit="setLocation()">
+			<form acceptcharset="UTF-8" id="form1" method="POST" action="attributes.jsp">
 			
 		<table width="500">
 		
@@ -267,20 +261,6 @@
 				</th>
 			</tr>
 			
-			<%
-			if (false){
-			if (user != null && mode==null){
-				%>
-				<tr>
-					<td valign="bottom" align="right" style="padding-right:10;padding-bottom:3">
-						<input class="smallbutton" type="button" value="Delete" onclick="submitForm()"/>
-					</td>
-				</tr>
-				<%
-			}
-			}
-			%>
-			
 			<tr height="5"><td colspan="6"></td></tr>
 			
 			<%
@@ -321,28 +301,6 @@
 				
 				<tr>
 					<%
-					// it is disabled to delete several attributes at once. 
-					//Then it's easier to check, whether th attribute is used somewhere
-					if (false){
-					if (user != null && mode==null){
-						%>
-						<td align="right" style="padding-right:10">
-							<%
-							if (attrType.equals(DElemAttribute.TYPE_SIMPLE)){
-								%>
-								<input type="checkbox" style="height:13;width:13" name="simple_attr_id" value="<%=attr_id%>"/>
-								<%
-							}
-							else{
-								%>
-								<input type="checkbox" style="height:13;width:13" name="complex_attr_id" value="<%=attr_id%>"/>
-								<%							
-							}
-							%>
-						</td>
-						<%
-					}
-				}
 					if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
 						attrTypeDisp = "Complex";
 					%>

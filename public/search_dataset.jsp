@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,com.tee.xmlserver.*"%>
 
 <%@ include file="history.jsp" %>
 
@@ -46,7 +46,8 @@ private String setDefaultAttrs(String name){
 %>
 
 <%
-
+	request.setCharacterEncoding("UTF-8");
+	
 	XDBApplication.getInstance(getServletContext());
 	AppUserIF user = SecurityUtil.getUser(request);
 	
@@ -111,7 +112,7 @@ private String setDefaultAttrs(String name){
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
@@ -176,7 +177,7 @@ private String setDefaultAttrs(String name){
             </jsp:include>
             
 			<div style="margin-left:30">
-				<form name="form1" action="datasets.jsp" method="GET">
+				<form acceptcharset="UTF-8" name="form1" action="datasets.jsp" method="GET">
 				<table width="500">
 					<tr>
 						<td>

@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
@@ -83,7 +83,8 @@
 %>
 
 <%
-
+	request.setCharacterEncoding("UTF-8");
+	
 	response.setHeader("Pragma", "no-cache");
 	response.setHeader("Cache-Control", "no-cache");
 	response.setDateHeader("Expires", 0);
@@ -228,7 +229,7 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
@@ -343,7 +344,7 @@
         	}
             %>
             
-			<form id="form1" method="POST" action="restore_datasets.jsp" onsubmit="setLocation()">
+			<form acceptcharset="UTF-8" id="form1" method="POST" action="restore_datasets.jsp" onsubmit="setLocation()">
 			
 		<table width="700" border="0">
 		

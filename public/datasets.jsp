@@ -1,4 +1,4 @@
-	<%@page contentType="text/html" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+	<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
@@ -100,6 +100,7 @@
 }%>
 
 <%
+	request.setCharacterEncoding("UTF-8");
 
 	response.setHeader("Pragma", "no-cache");
 	response.setHeader("Cache-Control", "no-cache");
@@ -263,7 +264,7 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript" src='modal_dialog.js'></script>
@@ -380,7 +381,7 @@
         	}
             %>
             
-			<form id="form1" method="POST" action="datasets.jsp" onsubmit="setLocation()">
+			<form acceptcharset="UTF-8" id="form1" method="POST" action="datasets.jsp" onsubmit="setLocation()">
 			
 		<table width="700" border="0">
 		
@@ -809,7 +810,7 @@
 		
 		</form>
 		
-		<form name="sort_form" action="datasets.jsp" method="GET">
+		<form acceptcharset="UTF-8" name="sort_form" action="datasets.jsp" method="GET">
 			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
 	        <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
 			<input name='SearchType' type='hidden' value='NoSearch'/>

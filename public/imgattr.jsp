@@ -1,6 +1,8 @@
-<%@page contentType="text/html" import="eionet.meta.*,java.sql.*,java.util.*,com.tee.xmlserver.*,eionet.util.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,java.util.*,com.tee.xmlserver.*,eionet.util.*"%>
 
 <%
+	request.setCharacterEncoding("UTF-8");
+	
 	XDBApplication.getInstance(getServletContext());
 	AppUserIF user = SecurityUtil.getUser(request);
 	
@@ -10,7 +12,7 @@
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript">
@@ -165,14 +167,14 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form name="close" action="javascript:window.close()">
+		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
 
 <div>
-<form name="Upload" action="ImgUpload" method="POST" enctype="multipart/form-data">
+<form acceptcharset="UTF-8" name="Upload" action="ImgUpload" method="POST" enctype="multipart/form-data">
 
 	<table width="auto" cellspacing="0">
 	

@@ -1,5 +1,8 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
 <%!
+
+request.setCharacterEncoding("UTF-8");
+
 ServletContext ctx = null;
 boolean wc = false;
 Vector datasets=null;
@@ -43,7 +46,7 @@ Vector dataElements=null;
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript">
@@ -76,7 +79,7 @@ Vector dataElements=null;
             </jsp:include>            
 
             <div style="margin-left:30">
-            	<form name="form1" action="index.jsp" method="GET">
+            	<form acceptcharset="UTF-8" name="form1" action="index.jsp" method="GET">
 				<table width="500">
 				
 				  <%

@@ -1,8 +1,9 @@
-<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
 
 <%!private Vector selected=null;%>
 
 <%
+	request.setCharacterEncoding("UTF-8");
 	
 	ServletContext ctx = getServletContext();			
 	String appName = ctx.getInitParameter("application-name");
@@ -39,7 +40,7 @@
 <html>
 	<head>
 		<title>Meta</title>
-		<meta http-equiv="Content-Type" content="text/html"/>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
 		<script language="javascript">
 			function selectAttr(id, oControl) {
@@ -159,14 +160,14 @@
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form name="close" action="javascript:window.close()">
+		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
 
 <div>
-	<form name="form1" onsubmit="ok()">
+	<form acceptcharset="UTF-8" name="form1" onsubmit="ok()">
 	<table>
 		<%
 		if(dispType.equals("select") || dispType.equals("text")){
