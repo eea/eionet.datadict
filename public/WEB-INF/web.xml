@@ -95,6 +95,10 @@
 		<servlet-name>ImgUpload</servlet-name>
 		<servlet-class>eionet.meta.ImgUpload</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>HarvestingServlet</servlet-name>
+		<servlet-class>eionet.meta.HarvestingServlet</servlet-class>
+	</servlet>
 
 <!-- servlet mappings -->
 
@@ -138,7 +142,10 @@
 		<servlet-name>ImgUpload</servlet-name>
 		<url-pattern>/ImgUpload</url-pattern>
 	</servlet-mapping>
-
+	<servlet-mapping>
+		<servlet-name>HarvestingServlet</servlet-name>
+		<url-pattern>/HarvestingServlet</url-pattern>
+	</servlet-mapping>
 
 <!-- the application server might allow directory listing.
        The welcome-files are used to overcome workings of such feature 
