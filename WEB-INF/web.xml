@@ -30,11 +30,11 @@
 	</context-param>
 	<context-param>
 		<param-name>visuals-path</param-name>
-		<param-value>x:\projects\datadict\visuals</param-value>
+		<param-value>/prj/datadict/public/visuals</param-value>
 	</context-param>
 	<context-param>
 		<param-name>temp-file-path</param-name>
-		<param-value>X:\projects\datadict\tmp</param-value>
+		<param-value>/prj/datadict/tmp</param-value>
 	</context-param>
 
 <!-- servlets -->
@@ -70,31 +70,31 @@
 <!-- servlet mappings -->
 	<servlet-mapping>
 		<servlet-name>env</servlet-name>
-		<url-pattern>/public/env/*</url-pattern>
+		<url-pattern>/env/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Login</servlet-name>
-		<url-pattern>/public/Login</url-pattern>
+		<url-pattern>/Login</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Logout</servlet-name>
-		<url-pattern>/public/Logout</url-pattern>
+		<url-pattern>/Logout</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>GetSchema</servlet-name>
-		<url-pattern>/public/GetSchema</url-pattern>
+		<url-pattern>/GetSchema</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Import</servlet-name>
-		<url-pattern>/public/Import</url-pattern>
+		<url-pattern>/Import</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>DsVisualUpload</servlet-name>
-		<url-pattern>/public/DsVisualUpload</url-pattern>
+		<url-pattern>/DsVisualUpload</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>GetPrintout</servlet-name>
-		<url-pattern>/public/GetPrintout</url-pattern>
+		<url-pattern>/GetPrintout</url-pattern>
 	</servlet-mapping>
 
 <!-- the application server might allow directory listing.
@@ -132,7 +132,7 @@
       <web-resource-name>XslXmlFiles</web-resource-name>
       <description>app files</description>
       <url-pattern>/app/*</url-pattern>
-      <url-pattern>//public/images/*</url-pattern>
+      <url-pattern>/images/*</url-pattern>
       <http-method>GET</http-method>
       <http-method>POST</http-method>
     </web-resource-collection>
