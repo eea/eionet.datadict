@@ -252,7 +252,7 @@ private String setDefaultAttrs(String name){
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
 								</td>
 								<td>
-									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="../images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
+									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
 								</td>
 							</tr>
 							<%
@@ -274,7 +274,7 @@ private String setDefaultAttrs(String name){
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50" value=""/>
 								</td>
 								<td>
-									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="../images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
+									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
 								</td>
 							</tr>
 							<%
@@ -311,7 +311,7 @@ private String setDefaultAttrs(String name){
 							<input class="mediumbuttonb" type="reset" value="Reset"/>
 						</td>
 						<td align="right">
-							<a href="javascript:openAttributes();"><img src="../images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
+							<a href="javascript:openAttributes();"><img src="images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
 						</td>
 					</tr>
 				</table>

@@ -1177,8 +1177,8 @@ String attrValue = null;
 								%>
 								</select>
 								<% if (disabled.equals("")){ %>
-									<a href="javascript:rmvValue('<%=attrID%>')"><img src="../images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
-									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&#38;width=<%=width%>')"><img src="../images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
+									<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
+									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&#38;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
 								
 								<%
 								}
@@ -1592,39 +1592,6 @@ String attrValue = null;
 			}
 			
 			if (mode.equals("view")){
-				%>
-				<tr height="15"><td colspan="3"></td></tr>
-				<tr height="20" valign="top">
-					<td align="right" style="padding-right:10">
-						<span class="mainfont"><b>Documentation</b></span>
-					</td>
-					<td colspan="2">
-						* <a href="GetPrintout?format=PDF&obj_type=TBL&obj_id=<%=tableID%>&dstID=<%=dataset.getID()%>">
-							Create factsheet (PDF)
-						</a>
-					</td>
-				</tr>
-			
-				<%
-				String userAgent = request.getHeader("User-Agent");
-				if (userAgent != null && userAgent.length()!=0){
-					int isMSIE = userAgent.toUpperCase().indexOf("MSIE");
-					if (isMSIE != -1){
-						//if (! userAgent.substring(isMSIE + 4).trim().startsWith("6")){
-							%>
-							<tr height="20" valign="top">
-								<td></td>
-								<td colspan="2">
-									<span class="smallfont" style="font-weight: normal">
-										! If you see a blank page instead of the PDF, try setting off your Acrobat Reader's Web integration.
-										<br>Acrobat 6.0 is recommended.
-									</span>
-								</td>
-							</tr>
-							<%
-						//}
-					}
-				}
 				%>
 				
 				<tr height="15"><td colspan="3"></td></tr>

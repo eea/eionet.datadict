@@ -126,7 +126,7 @@
 							<p>
 								Data elements are the different attributes or kinds of information linked up to entity. In a tabular structure the data elements are
 							</p>
-						<p style="margin-left:30"><img src="../images/delem_description.gif"></p>
+						<p style="margin-left:30"><img src="images/delem_description.gif"></p>
 							<p>
 								There can be different kinds of data elements
 								<ul>

@@ -171,29 +171,29 @@ if (dsVisual!=null && dsVisual.length()!=0){
 					<%
 					if (type.equals("simple")){ %>
 						<tr height="10">
-					        <td bgcolor="#10847B" valign="top" align="left" width="5"><img src="../images/ltop.gif" width="5" height="5"></td>
+					        <td bgcolor="#10847B" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5"></td>
 						    <th width="50">Simple</th>
-						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="../images/rtop.gif" width="5" height="5"></td>
+						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5"></td>
 						    <td bgcolor="#f0f0f0" width="1"></td>
-	          				<td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="../images/ltop.gif" width="5" height="5"></td>
+	          				<td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5"></td>
 						    <th class="light" width="50"><a href="dsvisual.jsp?ds_id=<%=ds_id%>&str_type=detailed">
 						    	<font color="#FFFFFF">Detailed</font></a>
 						    </th>
-						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="../images/rtop.gif" width="5" height="5"></td>
+						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5"></td>
 	    					<td bgcolor="#f0f0f0">&#160;</td>
 						</tr> <%
 					}
 					else{ %>
 						<tr height="10">
-					        <td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="../images/ltop.gif" width="5" height="5"></td>
+					        <td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5"></td>
 						    <th class="light" width="50"><a href="dsvisual.jsp?ds_id=<%=ds_id%>&str_type=simple">
 						    	<font color="#FFFFFF">Simple</font></a>
 						    </th>
-						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="../images/rtop.gif" width="5" height="5"></td>
+						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5"></td>
 						    <td bgcolor="#f0f0f0" width="1"></td>
-	          				<td bgcolor="#10847B" valign="top" align="left" width="5"><img src="../images/ltop.gif" width="5" height="5"></td>
+	          				<td bgcolor="#10847B" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5"></td>
 						    <th width="50">Detailed</th>
-						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="../images/rtop.gif" width="5" height="5"></td>
+						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5"></td>
 	    					<td bgcolor="#f0f0f0">&#160;</td>
 						</tr> <%
 					}
@@ -224,12 +224,12 @@ if (dsVisual!=null && dsVisual.length()!=0){
 						<tr>
 							<td colspan="2">
 							<% if (imgVisual){ %>
-								<img src="../visuals/<%=dsVisual%>"/> <%
+								<img src="visuals/<%=dsVisual%>"/> <%
 							}
 							else{ %>
 								The file representing the dataset <%=type%> structure cannot be displayed on this web-page.
 								But you can see it by pressing the following link:<br/>
-								<a href="javascript:openStructure('../visuals/<%=dsVisual%>')"><%=dsVisual%></a> <%
+								<a href="javascript:openStructure('visuals/<%=dsVisual%>')"><%=dsVisual%></a> <%
 							} %>
 							</td>
 						</tr>

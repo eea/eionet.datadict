@@ -1,14 +1,14 @@
 <%@page import="java.util.*"%>
 <table cellspacing="0" cellpadding="0" width="100%" border="0">
     <tr>
-	<td align="bottom" width="20" background="/images/bar_filled.jpg" height="25">&#160;</td>
-	<td width="100%" background="/images/bar_filled.jpg" height="25">
+	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
+	<td width="100%" background="images/bar_filled.jpg" height="25">
             <table height="10" cellSpacing="0" cellPadding="0" border="0">
 		<tr>
 		    <td valign="bottom" align="left">
 			<a href="http://www.eionet.eu.int/"><span class="barfont">EIONET</span></a>
 		    </td>
-		    <td valign="bottom" width="28"><img src="/images/bar_hole.jpg"/></td>
+		    <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
 		    <td valign="BOTTOM" align="left">
             <%
             String oHName=request.getParameter("name");
@@ -17,12 +17,12 @@
                     <%if (oHName!=null) {%></A><%}%>
 		    </td>
         <%if (oHName!=null) {%>
-		    <td valign="bottom" width="28"><img src="/images/bar_hole.jpg"/></td>
+		    <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
 		    <td valign=BOTTOM nowrap="true" align="left">
 			<span class="barfont"><%=oHName%></span>
 		    </td>
         <%}%>
-		    <td valign="bottom" width="28"><img src="/images/bar_dot.jpg"/></td>
+		    <td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
 		</tr>
 	    </table>
 	</td></tr>
@@ -49,7 +49,7 @@
 						%>
 			        	<tr>
 			        		<td valign="bottom" align="right" width="100%" colspan="2" style="padding-top:2">
-								<a href="<%=upUrl%>"><img border="0" src="/images/up.gif"/></a>
+								<a href="<%=upUrl%>"><img border="0" src="images/up.gif"/></a>
 	       					</td>
 	       				</tr>
 	       				<%

@@ -1552,8 +1552,8 @@ String attrValue = null;
 								%>
 								</select>
 								<% if (disabled.equals("")){ %>
-									<a href="javascript:rmvValue('<%=attrID%>')"><img src="../images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
-									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&#38;width=<%=width%>')"><img src="../images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
+									<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
+									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&#38;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
 								
 								<%
 								}
@@ -1803,7 +1803,13 @@ String attrValue = null;
 			%>
 		
 		<!-- ALLOWABLE VALUES table -->
-		<% if (type!=null && type.equals("CH1") && !mode.equals("add") && !isBoolean){ // if CH1 and mode=add
+		
+		<% if (type!=null && !mode.equals("add") && !isBoolean){
+			
+			String initCaseTitle = type.equals("CH1") ? "Allowable" : "Suggested";
+			String lowerCaseTitle = type.equals("CH1") ? "allowable" : "suggested";
+			String upperCaseTitle = type.equals("CH1") ? "ALLOWABLE" : "SUGGESTED";
+			
 			boolean bShowLink=false;
 			if (mode.equals("view")){
 				fxvAttributes = new Vector();
@@ -1831,7 +1837,7 @@ String attrValue = null;
 					<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
-							<span class="mainfont"><b>Allowable values</b></span>
+							<span class="mainfont"><b><%=initCaseTitle%> values</b></span>
 						</td>
 						<td>
 							<table width="auto" cellspacing="0">
@@ -1865,7 +1871,7 @@ String attrValue = null;
 									if (i==30){	// it's possible to see only the first 30 values on element page
 										%>
 										<tr><td colspan="<%=fxvAttributes.size() + 1 %>">
-											<span class="barfont">... &#160; to view the whole list of allowable values, click the link below</span>
+											<span class="barfont">... &#160; to view the whole list of <%=lowerCaseTitle%> values, click the link below</span>
 										</td></tr>
 										<%
 										if (user == null) bShowLink=true;
@@ -1886,7 +1892,7 @@ String attrValue = null;
 										%>
 										<tr>
 											<td valign="bottom" align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-												<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&#38;mode=<%=mode%>&delem_id=<%=delem_id%>&delem_name=<%=delem_name%>&parent_type=elem">
+												<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&#38;mode=<%=mode%>&delem_id=<%=delem_id%>&delem_name=<%=delem_name%>&parent_type=<%=type%>">
 													<%=Util.replaceTags(value)%>
 												</a></b>
 											</td>
@@ -1946,11 +1952,11 @@ String attrValue = null;
 			<tr height="5"><td colspan="2"></td></tr>
 			<tr>
 				<td>&#160;</td><td>
-					<b>*</b> <span class="smallfont"><a href="javascript:openUrl('fixed_values.jsp?delem_id=<%=delem_id%>&#38;delem_name=<%=delem_name%>&mode=view')">
-						<b>ALLOWABLE VALUES</b></a></span>&#160;&#160;
+					<b>*</b> <span class="smallfont"><a href="javascript:openUrl('fixed_values.jsp?delem_id=<%=delem_id%>&#38;delem_name=<%=delem_name%>&mode=view&parent_type=<%=type%>')">
+						<b><%=upperCaseTitle%> VALUES</b></a></span>&#160;&#160;
 					<span class="smallfont" style="font-weight: normal">
 						<% if (user != null) %>
-							&lt;&#160;click here to view/add/remove fixed values of this data element
+							&lt;&#160;click here to view/add/remove <%=lowerCaseTitle%> values of this data element
 					</span>
 				</td>
 			</tr>
@@ -2191,38 +2197,6 @@ String attrValue = null;
 		}
 		
 			if (mode.equals("view")){
-				%>
-				<tr height="15"><td colspan="3"></td></tr>
-				<tr height="20" valign="top">
-					<td align="right" style="padding-right:10">
-						<span class="mainfont"><b>Documentation</b></span>
-					</td>
-					<td colspan="2">
-						* <a href="GetPrintout?format=PDF&obj_type=ELM&obj_id=<%=delem_id%>&dstID=<%=dataset.getID()%>">
-							Create factsheet (PDF)
-						</a>
-					</td>
-				</tr>
-			
-				<%
-				String userAgent = request.getHeader("User-Agent");
-				if (userAgent != null && userAgent.length()!=0){
-					int isMSIE = userAgent.toUpperCase().indexOf("MSIE");
-					if (isMSIE != -1){
-						//if (! userAgent.substring(isMSIE + 4).trim().startsWith("6")){
-							%>
-							<tr height="20" valign="top">
-								<td></td>
-								<td colspan="2">
-									<span class="smallfont" style="font-weight: normal">
-										! If you see a blank page instead of the PDF, try setting off your Acrobat Reader's Web browser integration.<br>Acrobat 6.0 is recommended.
-									</span>
-								</td>
-							</tr>
-							<%
-						//}
-					}
-				}
 				%>
 				
 				<tr height="15"><td colspan="3"></td></tr>

@@ -391,11 +391,11 @@
 						%>
 					</td>
 					<td align="right">
-						<a href="search_dataset.jsp"><img src="../images/search_ds.gif" border=0 alt="Search datasets"></a><br/>
+						<a href="search_dataset.jsp"><img src="images/search_ds.gif" border=0 alt="Search datasets"></a><br/>
 						<%
 						if (user!=null && user.isAuthentic()){%>					
 							<a href="datasets.jsp?SearchType=SEARCH&restore=true">
-								<img src="../images/restore_dataset.gif" border=0 alt="Restore datasets">
+								<img src="images/restore_dataset.gif" border=0 alt="Restore datasets">
 							</a><%
 						}
 						%>
@@ -427,10 +427,10 @@
 					<table border="0" width="auto">
 						<tr>
 							<th align="right">
-								<a href="javascript:showSortedList(1, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending by short name"/></a>
+								<a href="javascript:showSortedList(1, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by short name"/></a>
 							</th>
 							<th align="right">
-								<a href="javascript:showSortedList(1, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
+								<a href="javascript:showSortedList(1, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
 							</th>
 						</tr>
 					</table>

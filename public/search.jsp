@@ -215,7 +215,7 @@ if (contextParam == null || !contextParam.equals(POPUP)){
 else
 {
 %>
-<body style="background-color:#f0f0f0;background-image:url('../images/eionet_background2.jpg');background-repeat:repeat-y;"
+<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;"
 		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" onload="onLoad()">
 <%
 }
@@ -252,16 +252,16 @@ else
 			<br></br>
 			<table cellspacing="0" cellpadding="0" width="400" border="0">
 					<tr>
-	    		     	<td align="bottom" width="20" background="../images/bar_filled.jpg" height="25">&#160;</td>
-	          			<td width="600" background="../images/bar_filled.jpg" height="25">
+	    		     	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
+	          			<td width="600" background="images/bar_filled.jpg" height="25">
 		            		<table height="8" cellSpacing="0" cellPadding="0" border="0">
 		            			<tr>
 				         			<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-						            <td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
+						            <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
 						         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-									<td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
+									<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
 									<td valign="bottom" align="middle"><span class="barfont">Search</span></td>
-									<td valign="bottom" width="28"><img src="../images/bar_dot.jpg"/></td>
+									<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
 								</tr>				
 							</table>
 						</td>
@@ -502,7 +502,7 @@ else
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
 								</td>
 								<td>
-									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="../images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
+									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
 								</td>
 							</tr>
 							<%
@@ -524,7 +524,7 @@ else
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50" value=""/>
 								</td>
 								<td>
-									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="../images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
+									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
 								</td>
 							</tr>
 							<%
@@ -565,7 +565,7 @@ else
 						<%
 							if (contextParam == null || !contextParam.equals(POPUP)){
 						%>
-							<a href="javascript:openAttributes();"><img src="../images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
+							<a href="javascript:openAttributes();"><img src="images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
 						<%
 							}
 						%>

@@ -176,7 +176,7 @@
 					}
 					%>
 				</td>
-				<td align="right" colspan="3"><a href="search_table.jsp"><img src="../images/search_tbl.gif" border=0 alt="Search tables"></a></td>
+				<td align="right" colspan="3"><a href="search_table.jsp"><img src="images/search_tbl.gif" border=0 alt="Search tables"></a></td>
 			</tr>
 				
 			<tr height="5"><td colspan="6"></td></tr>
@@ -189,10 +189,10 @@
 					<table border="0" width="auto">
 						<tr>
 							<th align="right">
-								<a href="javascript:showSortedList(3, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending by full name"/></a>
+								<a href="javascript:showSortedList(3, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by full name"/></a>
 							</th>
 							<th align="right">
-								<a href="javascript:showSortedList(3, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending by full name"/></a>
+								<a href="javascript:showSortedList(3, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by full name"/></a>
 							</th>
 						</tr>
 					</table>
@@ -202,10 +202,10 @@
 					<table border="0" width="auto">
 						<tr>
 							<th align="right">
-								<a href="javascript:showSortedList(1, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending by short name"/></a>
+								<a href="javascript:showSortedList(1, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by short name"/></a>
 							</th>
 							<th align="right">
-								<a href="javascript:showSortedList(1, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
+								<a href="javascript:showSortedList(1, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
 							</th>
 						</tr>
 					</table>
@@ -215,10 +215,10 @@
 					<table border="0" width="auto">
 						<tr>
 							<th align="right">
-								<a href="javascript:showSortedList(2, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending by dataset name"/></a>
+								<a href="javascript:showSortedList(2, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by dataset name"/></a>
 							</th>
 							<th align="right">
-								<a href="javascript:showSortedList(2, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
+								<a href="javascript:showSortedList(2, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
 							</th>
 						</tr>
 					</table>

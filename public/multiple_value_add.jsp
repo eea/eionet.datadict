@@ -153,7 +153,7 @@
 		</script>
 	</head>
 
-<body style="background-color:#f0f0f0;background-image:url('../images/eionet_background2.jpg');background-repeat:repeat-y;"
+<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;"
 		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" onload="onLoad()">
 <div style="margin-left:30">
 	<br>

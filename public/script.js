@@ -9,8 +9,8 @@ if ((navigator.appName.substring(0,5) == "Netsc"
  out = new Image;
  gammel = new Image;
 
- over.src = "../images/on.gif";
- out.src = "../images/off.gif";
+ over.src = "images/on.gif";
+ out.src = "images/off.gif";
  
  gTarget = 'img1';
 }

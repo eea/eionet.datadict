@@ -543,19 +543,19 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 					<tr>
 					</tr>
 					<td>
-						<a href="javascript:moveFirst()"><img src="../images/move_first.gif" border="0" title="move selected row to top"/></a>			
+						<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" title="move selected row to top"/></a>			
 					</td></tr>
 					<td>
-						<a href="javascript:moveRowUp()"><img src="../images/move_up.gif" border="0" title="move selected row up"/></a>			
+						<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" title="move selected row up"/></a>			
 					</td></tr>
 					<tr><td>
-						<img src="../images/dot.gif"/>
+						<img src="images/dot.gif"/>
 					</td></tr>
 					<tr><td>
-						<a href="javascript:moveRowDown()"><img src="../images/move_down.gif" border="0" title="move selected row down"/></a>			
+						<a href="javascript:moveRowDown()"><img src="images/move_down.gif" border="0" title="move selected row down"/></a>			
 					</td>
 					<tr><td>
-						<a href="javascript:moveLast()"><img src="../images/move_last.gif" border="0" title="move selected row last"/></a>			
+						<a href="javascript:moveLast()"><img src="images/move_last.gif" border="0" title="move selected row last"/></a>			
 					</td>
 				</tr>
 			<% } %>

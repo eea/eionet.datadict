@@ -57,7 +57,7 @@
 			window.close();
 		}
 	</script>
-<body style="background-color:#f0f0f0;background-image:url('../images/eionet_background2.jpg');background-repeat:repeat-y;"
+<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;"
 		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
 <div style="margin-left:30">
 	<br></br>
@@ -69,16 +69,16 @@
 	<br></br>
 	<table cellspacing="0" cellpadding="0" width="400" border="0">
 			<tr>
-	         	<td align="bottom" width="20" background="../images/bar_filled.jpg" height="25">&#160;</td>
-	          	<td width="600" background="../images/bar_filled.jpg" height="25">
+	         	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
+	          	<td width="600" background="images/bar_filled.jpg" height="25">
 		            <table height="8" cellSpacing="0" cellPadding="0" border="0">
 		            	<tr>
 				         	<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-				            <td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
+				            <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
 				         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-							<td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
+							<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
 							<td valign="bottom" align="middle"><span class="barfont">Dataset history</span></td>
-							<td valign="bottom" width="28"><img src="../images/bar_dot.jpg"/></td>
+							<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
 						</tr>				
 					</table>
 				</td>

@@ -5,7 +5,7 @@ BODY {
   padding:0px 0px 0px 0px;
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 9pt;
-  background-image: url("/images/eionet_background.jpg");
+  background-image: url("images/eionet_background.jpg");
   background-repeat: repeat-y;
 }
 

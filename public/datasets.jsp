@@ -410,11 +410,11 @@
 						%>
 					</td>
 					<td align="right">
-						<a href="search_dataset.jsp"><img src="../images/search_ds.gif" border=0 alt="Search datasets"></a><br/>
+						<a href="search_dataset.jsp"><img src="images/search_ds.gif" border=0 alt="Search datasets"></a><br/>
 						<%
 						if (user!=null && user.isAuthentic()){%>					
 							<a href="restore_datasets.jsp?SearchType=SEARCH&restore=true">
-								<img src="../images/restore_dataset.gif" border=0 alt="Restore datasets">
+								<img src="images/restore_dataset.gif" border=0 alt="Restore datasets">
 							</a><%
 						}
 						%>
@@ -445,10 +445,10 @@
 					<table border="0" width="auto">
 						<tr>
 							<th align="right">
-								<a href="javascript:showSortedList(1, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending by short name"/></a>
+								<a href="javascript:showSortedList(1, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by short name"/></a>
 							</th>
 							<th align="right">
-								<a href="javascript:showSortedList(1, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
+								<a href="javascript:showSortedList(1, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
 							</th>
 						</tr>
 					</table>
@@ -459,10 +459,10 @@
 					<table border="0" width="auto">
 						<tr>
 							<th align="right">
-								<a href="javascript:showSortedList(2, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending"/></a>
+								<a href="javascript:showSortedList(2, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending"/></a>
 							</th>
 							<th align="right">
-								<a href="javascript:showSortedList(2, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending"/></a>
+								<a href="javascript:showSortedList(2, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending"/></a>
 							</th>
 						</tr>
 					</table>
@@ -503,6 +503,8 @@
 					String ds_name = Util.replaceTags(dataset.getShortName());
 					if (ds_name == null) ds_name = "unknown";
 					if (ds_name.length() == 0) ds_name = "empty";
+					
+					String dsLink = clickable ? "dataset.jsp?mode=view&ds_id=" + ds_id : "javascript:;";
 					
 					Vector tables = searchEngine.getDatasetTables(ds_id);
 					/*attributes = searchEngine.getAttributes(ds_id, "DS", DElemAttribute.TYPE_SIMPLE);
@@ -546,7 +548,7 @@
 										(dataset.isWorkingCopy() &&
 										workingUser!=null && user!=null &&
 										workingUser.equals(user.getUserName()));
-										
+					
 					%>
 				
 					<tr valign="top">
@@ -570,7 +572,7 @@
 						</td>
 						
 						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2" title="<%=dsFullName%>">
-							<a <%=linkDisabled%> href="dataset.jsp?ds_id=<%=ds_id%>&#38;mode=view">
+							<a <%=linkDisabled%> href="<%=dsLink%>">
 							<%=Util.replaceTags(dsFullName)%></a>
 						</td>					
 						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
@@ -585,7 +587,11 @@
 							for (int c=0; tables!=null && c<tables.size(); c++){
 				
 								DsTable table = (DsTable)tables.get(c);
-								String tableLink = "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + ds_id + "&ds_name=" + ds_name;
+								String tableLink = clickable ?
+												   "dstable.jsp?mode=view&table_id=" +
+												   table.getID() + "&ds_id=" + ds_id +
+												   "&ds_name=" + ds_name :
+												   "javascript:;";
 								
 								String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
 			    															  table.getShortName(), "tbl");
@@ -593,7 +599,9 @@
 								String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());
 								%>
 								<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
-								<a <%=linkDisabled%> href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a>								
+								<a <%=linkDisabled%> href="<%=tableLink%>">
+									<%=Util.replaceTags(table.getShortName())%>
+								</a>
 								<%
 								if (user!=null && tblWorkingUser!=null){ // mark checked-out tables
 									%>&#160;<font color="red">*</font> <%

@@ -72,13 +72,26 @@ private String legalizeAlert(String in){
 			
 			String parent_type = request.getParameter("parent_type");
 			if (parent_type == null)
-				parent_type = "elem";
-			else if (!parent_type.equals("elem") && !parent_type.equals("attr")){ %>
+				parent_type = "CH1";
+			else if (!parent_type.equals("CH1") && !parent_type.equals("CH2") && !parent_type.equals("attr")){ %>
 				<b>Unknown parent type!</b> <%
 				return;
 			}
 			
+			String valsType = "CH1";
+			if (!parent_type.equals("attr")){
+				valsType = parent_type;
+				parent_type = "elem";
+			}
+			String typeParam = parent_type.equals("attr") ? "attr" : valsType;
+			
+			String initCaseTitle = valsType.equals("CH1") ? "Allowable" : "Suggested";
+			String lowerCaseTitle = valsType.equals("CH1") ? "allowable" : "suggested";
+			String upperCaseTitle = valsType.equals("CH1") ? "ALLOWABLE" : "SUGGESTED";
+			
 			String dispParentType = parent_type.equals("elem") ? "element" : "attribute";
+			
+			
 			
 			String parentCSI = request.getParameter("parent_csi");
 			String prevParent = request.getParameter("prv_parent_csi");
@@ -331,10 +344,20 @@ private String legalizeAlert(String in){
             </center></P>
         </TD>
         <TD>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Allowable values"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
+        	<%
+        	if (valsType.equals("CH1")){ %>
+	            <jsp:include page="location.jsp" flush='true'>
+	                <jsp:param name="name" value="Allowable values"/>
+	                <jsp:param name="back" value="true"/>
+	            </jsp:include><%
+            }
+            else{ %>
+            	<jsp:include page="location.jsp" flush='true'>
+	                <jsp:param name="name" value="Suggested values"/>
+	                <jsp:param name="back" value="true"/>
+	            </jsp:include><%
+        	}
+        	%>
             
 <div style="margin-left:30">
 			
@@ -369,7 +392,7 @@ private String legalizeAlert(String in){
 	<tr valign="bottom">
 		<td colspan="2">
 			<span class="head00">
-				Allowable values of
+				<%=initCaseTitle%> values of
 				<span class="title2"><a href="<%=parentUrl%>"><%=Util.replaceTags(delem_name)%></a></span>
 				<span class="head00"><%=dispParentType%></span>
 			</span>
@@ -445,7 +468,7 @@ private String legalizeAlert(String in){
 			%>
 			<tr>
 				<td valign="bottom" align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&#38;mode=<%=mode%>&delem_id=<%=delem_id%>&delem_name=<%=delem_name%>&parent_type=<%=parent_type%>">
+					<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&#38;mode=<%=mode%>&delem_id=<%=delem_id%>&delem_name=<%=delem_name%>&parent_type=<%=typeParam%>">
 						<%=Util.replaceTags(value)%>
 					</a></b>
 				</td>
@@ -536,7 +559,7 @@ private String legalizeAlert(String in){
 		buf.append("&delem_name=");
 		buf.append(delem_name);
 		buf.append("&parent_type=");
-		buf.append(parent_type);
+		buf.append(typeParam);
 		buf.append("&parent_csi=");
 		buf.append(fxvID);
 		
@@ -553,13 +576,13 @@ private String legalizeAlert(String in){
 				</td>
 			<% } %>
 			<td valign="bottom" align="left" style="padding-left:5;padding-right:10">
-				<b><a href="javascript:clickLink('fixed_value.jsp?fxv_id=<%=fxvID%>&#38;mode=edit&delem_id=<%=delem_id%>&delem_name=<%=delem_name%>&parent_type=<%=parent_type%>')">
+				<b><a href="javascript:clickLink('fixed_value.jsp?fxv_id=<%=fxvID%>&#38;mode=edit&delem_id=<%=delem_id%>&delem_name=<%=delem_name%>&parent_type=<%=typeParam%>')">
 					<%=Util.replaceTags(value)%>
 				</a></b>&#160;
 				<map name="map<%=i%>">
 					<area alt="<%=alt%>" shape="rect" coords="0,0,18,10" href="javascript:clickLink('<%=buf.toString()%>')"></area>
 				</map>
-				<img border="0" src="../images/deeper.gif" height="10" width="18" usemap="#map<%=i%>"></img>
+				<img border="0" src="images/deeper.gif" height="10" width="18" usemap="#map<%=i%>"></img>
 			</td>
 			<%
 			for (int c=0; fxvAttributes!=null && c<fxvAttributes.size(); c++){
@@ -618,19 +641,19 @@ private String legalizeAlert(String in){
 						<tr>
 						</tr>
 						<td>
-							<a href="javascript:moveFirst()"><img src="../images/move_first.gif" border="0" title="move selected row to top"/></a>			
+							<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" title="move selected row to top"/></a>			
 						</td></tr>
 						<td>
-							<a href="javascript:moveRowUp()"><img src="../images/move_up.gif" border="0" title="move selected row up"/></a>			
+							<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" title="move selected row up"/></a>			
 						</td></tr>
 						<tr><td>
-							<img src="../images/dot.gif"/>
+							<img src="images/dot.gif"/>
 						</td></tr>
 						<tr><td>
-							<a href="javascript:moveRowDown()"><img src="../images/move_down.gif" border="0" title="move selected row down"/></a>			
+							<a href="javascript:moveRowDown()"><img src="images/move_down.gif" border="0" title="move selected row down"/></a>			
 						</td>
 						<tr><td>
-							<a href="javascript:moveLast()"><img src="../images/move_last.gif" border="0" title="move selected row last"/></a>			
+							<a href="javascript:moveLast()"><img src="images/move_last.gif" border="0" title="move selected row last"/></a>			
 						</td>
 					</tr><%
 		}
@@ -644,7 +667,7 @@ private String legalizeAlert(String in){
 
 <input type="hidden" name="delem_id" value="<%=delem_id%>"/>
 <input type="hidden" name="delem_name" value="<%=delem_name%>"/>
-<input type="hidden" name="parent_type" value="<%=parent_type%>"></input>
+<input type="hidden" name="parent_type" value="<%=typeParam%>"></input>
 <input type="hidden" name="mode" value="<%=mode%>"/>
 <input type="hidden" name="changed" value="0"/>
 

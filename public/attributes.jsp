@@ -268,22 +268,22 @@
 					</td>
 					<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=attrTypeDisp%></td>
 					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("DST")){ %><img src="../images/ok.gif"/><%}%>
+						<% if (attribute.displayFor("DST")){ %><img src="images/ok.gif"/><%}%>
 					</td>
 					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("TBL")){ %><img src="../images/ok.gif"/><%}%>
+						<% if (attribute.displayFor("TBL")){ %><img src="images/ok.gif"/><%}%>
 					</td>
 					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("AGG")){ %><img src="../images/ok.gif"/><%}%>
+						<% if (attribute.displayFor("AGG")){ %><img src="images/ok.gif"/><%}%>
 					</td>
 					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("CH1")){ %><img src="../images/ok.gif"/><%}%>
+						<% if (attribute.displayFor("CH1")){ %><img src="images/ok.gif"/><%}%>
 					</td>
 					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("CH2")){ %><img src="../images/ok.gif"/><%}%>
+						<% if (attribute.displayFor("CH2")){ %><img src="images/ok.gif"/><%}%>
 					</td>
 					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("FXV")){ %><img src="../images/ok.gif"/><%}%>
+						<% if (attribute.displayFor("FXV")){ %><img src="images/ok.gif"/><%}%>
 					</td>
 				</tr>
 				

@@ -922,8 +922,8 @@ private Vector getValues(String id){
 								%>
 								</select>
 								<% if (disabled.equals("")){ %>
-									<a href="javascript:rmvValue('<%=attrID%>')"><img src="../images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
-									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&#38;width=<%=width%>')"><img src="../images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
+									<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
+									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&#38;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
 								
 								<%
 								}
@@ -1142,12 +1142,12 @@ private Vector getValues(String id){
 					</td>
 					<td colspan="2">
 						<% if (imgVisual){ %>
-							<img src="../visuals/<%=dsVisual%>"/> <%
+							<img src="visuals/<%=dsVisual%>"/> <%
 						}
 						else{ %>
 							The file representing the dataset stucture cannot be displayed on this web-page.
 							But you can see it by pressing the following link:<br/>
-							<a href="javascript:openStructure('../visuals/<%=dsVisual%>')"><%=dsVisual%></a> <%
+							<a href="javascript:openStructure('visuals/<%=dsVisual%>')"><%=dsVisual%></a> <%
 						} %>
 					</td>
 				</tr>
@@ -1333,8 +1333,8 @@ private Vector getValues(String id){
 					<span class="mainfont"><b>Documentation</b></span>
 				</td>
 				<td colspan="2">
-					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>">Create technical specifications for this dataflow (PDF)</a> <BR>
-					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>&out_type=GDLN">Create full Data Dicrionary output for this dataflow (PDF)</a>
+					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>&out_type=GDLN">Create technical specifications for this dataflow (PDF)</a> <BR>
+					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>">Create full Data Dictionary output for this dataflow (PDF)</a>
 				</td>
 			</tr>
 			
