@@ -23,20 +23,20 @@
 
    <web-app id="/datadict/public" app-dir="datadict/public/">
 
-	    <classpath id="../WEB-INF/classes"/>
-		<classpath id="../WEB-INF/xmlserver.jar"/>
-		<classpath id="../WEB-INF/xerces.jar"/>
-		<classpath id="../WEB-INF/xalan.jar"/>
-		<classpath id="../WEB-INF/pja.jar"/>
-		<classpath id="../WEB-INF/pjatools.jar"/>
-		<classpath id="../WEB-INF/itext-0.99.jar"/>
+	    <classpath id="../WEB-INF/lib/classes"/>
+		<classpath id="../WEB-INF/lib/xmlserver.jar"/>
+		<classpath id="../WEB-INF/lib/xerces.jar"/>
+		<classpath id="../WEB-INF/lib/xalan.jar"/>
+		<classpath id="../WEB-INF/lib/pja.jar"/>
+		<classpath id="../WEB-INF/lib/pjatools.jar"/>
+		<classpath id="../WEB-INF/lib/itext-0.99.jar"/>
 
-		<classpath id="../WEB-INF/xmlrpc.jar"/>
-		<classpath id="../WEB-INF/uit-server.jar"/>
-		<classpath id="../WEB-INF/uit-definition.jar"/>
-		<classpath id="../WEB-INF/uit-security.jar"/>
-		<classpath id="../WEB-INF/eionet-dir.jar"/>
-		<classpath id="../WEB-INF/castor.jar"/>
+		<classpath id="../WEB-INF/lib/xmlrpc.jar"/>
+		<classpath id="../WEB-INF/lib/uit-server.jar"/>
+		<classpath id="../WEB-INF/lib/uit-definition.jar"/>
+		<classpath id="../WEB-INF/lib/uit-security.jar"/>
+		<classpath id="../WEB-INF/lib/eionet-dir.jar"/>
+		<classpath id="../WEB-INF/lib/castor.jar"/>
 
 		<context-param application-name="datadict"/>
 		<context-param authenticator="eionet.meta.DDuser"/>
@@ -55,6 +55,9 @@
 
 		<!-- servlet mappings -->
 
+		<servlet servlet-name="rpcrouter" servlet-class="com.tee.uit.servlets.XmlRpcRouter"/>
+	    <servlet-mapping url-pattern="/rpcrouter" servlet-name="rpcrouter"/>
+
 		<servlet servlet-name="Login" servlet-class="eionet.meta.LoginServlet"/>
 		<servlet-mapping url-pattern="/Login" servlet-name="Login"/>
 
@@ -72,6 +75,7 @@
 
 		<servlet servlet-name="GetPrintout" servlet-class="eionet.meta.GetPrintout"/>
 		<servlet-mapping url-pattern="/GetPrintout" servlet-name="GetPrintout"/>
+
 
 		<session-config>
 			<session-timeout>30</session-timeout>
