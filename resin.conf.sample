@@ -1,0 +1,56 @@
+<caucho.com>
+
+<log id="/" href="log/stderr.log"/>
+
+ <dbpool.sql id="datadict"
+		driver="org.gjt.mm.mysql.Driver"
+		url="jdbc:mysql://127.0.0.1:3306/DataDict"
+		user="dduser"
+		password="xxx"/>
+
+ <http-server character-encoding='ISO-8859-1'>
+  <app-dir>/home/www</app-dir>
+  <srun host='127.0.0.1' port='6802' />
+  <caucho-status>false</caucho-status>
+  <class-update-interval id='2'/>
+  <thread-min>3</thread-min>
+  <thread-max>150</thread-max>
+  <thread-keepalive id=100/>
+  <cache dir='cache' size='1024' entries='1024'/>
+	
+  <host id=''>
+   <access-log id='log/access.log' format='%h %l %u %t "%r" %s %b "%{Referer}i" "%{User-Agent}i"'/>
+   <error-log id='log/error.log'/>
+
+   <servlet-mapping url-pattern="*.jsp" servlet-name="com.caucho.jsp.JspServlet"/>
+
+   <web-app id="/datadict/public" app-dir=" datadict /public">
+
+    <classpath id="../WEB-INF/classes"/>
+    <classpath id="../WEB-INF/xmlserver.jar"/>
+    <classpath id="../WEB-INF/xerces.jar"/>
+    
+    <context-param application-name="contreg"/>
+    <context-param log-level="5"/>
+
+    <servlet-mapping url-pattern="*.jsp" servlet-name="com.caucho.jsp.JspServlet"/>
+    <servlet-mapping url-pattern="/servlet/*" servlet-name="invoker"/>
+
+    <cache-mapping url-pattern="*.gif*" expires="1d"/>
+    <cache-mapping url-pattern="*.jpeg" expires="1d"/>
+    <cache-mapping url-pattern="*.jpg" expires="1d"/>
+
+    <!-- SERVLET MAPPINGS -->
+
+    <servlet servlet-name="Import" servlet-class="eionet.meta.Import"/>
+    <servlet-mapping url-pattern="/Import" servlet-name="Import"/>
+				
+    <session-config>
+     <session-timeout>15</session-timeout>
+    </session-config>
+
+   </web-app>
+
+  </host>
+ </http-server>
+</caucho.com>

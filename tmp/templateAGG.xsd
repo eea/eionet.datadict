@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xhtml="http://www.w3.org/1999/xhtml" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="@ShortName" id="@Identifier">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				<xhtml:table>
+					<xhtml:caption>Simple metadata</xhtml:caption>
+					<xhtml:tr>
+						<xhtml:td>Name</xhtml:td>
+						<xhtml:td>@Name</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Version</xhtml:td>
+						<xhtml:td>@Version</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Definition</xhtml:td>
+						<xhtml:td>@Definition</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Keywords</xhtml:td>
+						<xhtml:td>@Keywords</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Responsible Organisation</xhtml:td>
+						<xhtml:td>@RespOrganisation</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Registration Status</xhtml:td>
+						<xhtml:td>@RegStatus</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Submitting organisation</xhtml:td>
+						<xhtml:td>@SubmitOrganisation</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Comments</xhtml:td>
+						<xhtml:td>@Comments</xhtml:td>
+					</xhtml:tr>
+				</xhtml:table>
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

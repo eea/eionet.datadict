@@ -1,0 +1,14 @@
+<project name="DataDict" default="compile" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property name="src" value="."/>
+  <property name="classes" value="../WEB-INF/classes"/>
+
+  <target name="compile">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}"
+           destdir="${classes}"
+	   classpath="../WEB-INF/xmlserver.jar;../WEB-INF/xerces.jar;../WEB-INF/jsdk22.jar;/prj/javaserv/resin1.1.6/lib/resin.jar"/>
+  </target>
+</project>
+

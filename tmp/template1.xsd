@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xhtml="http://www.w3.org/1999/xhtml"
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="@Name" id="@Identifier">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				<xhtml:table>
+					<xhtml:caption>Simple metadata</xhtml:caption>
+					<xhtml:tr>
+						<xhtml:th>Name</xhtml:th>
+						<xhtml:th>Value</xhtml:th>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Version</xhtml:td>
+						<xhtml:td>@Version</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Definition</xhtml:td>
+						<xhtml:td>@Definition</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Keywords</xhtml:td>
+						<xhtml:td>@Keywords</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Registration authority code</xhtml:td>
+						<xhtml:td>@RegistrationAuthorityCode</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Registration authority full name</xhtml:td>
+						<xhtml:td>@RegistrationAuthorityFullName</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Form of representation</xhtml:td>
+						<xhtml:td>@Representation</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Unit</xhtml:td>
+						<xhtml:td>@Unit</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>Datatype</xhtml:td>
+						<xhtml:td>@Datatype</xhtml:td>
+					</xhtml:tr>
+				</xhtml:table>
+				<xhtml:table>
+					<xhtml:caption>Complex metadata</xhtml:caption>
+					<xhtml:tr>
+						<xhtml:table>
+							<xhtml:caption>Synonymous names</xhtml:caption>
+							<xhtml:tr>
+								<xhtml:th>Name</xhtml:th>
+								<xhtml:th>Definition</xhtml:th>
+								<xhtml:th>Context</xhtml:th>
+							</xhtml:tr>
+						</xhtml:table>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:table>
+							<xhtml:caption>Classification schemes</xhtml:caption>
+							<xhtml:tr>
+								<xhtml:th>Name</xhtml:th>
+								<xhtml:th>Item(s)</xhtml:th>
+							</xhtml:tr>
+						</xhtml:table>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:table>
+							<xhtml:caption>Relations</xhtml:caption>
+							<xhtml:tr>
+								<xhtml:th>Related data reference</xhtml:th>
+								<xhtml:th>Type of relation</xhtml:th>
+							</xhtml:tr>
+						</xhtml:table>
+					</xhtml:tr>
+				</xhtml:table>
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>
