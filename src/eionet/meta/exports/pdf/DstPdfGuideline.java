@@ -897,6 +897,12 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 		
 		if (id==null || fn==null || conn==null) return;
 		
+		// first delete the old entry
+		StringBuffer buf = new StringBuffer().
+		append("delete from CACHE where OBJ_TYPE='dst' and ARTICLE='pdf' and OBJ_ID=").append(id);
+		conn.createStatement().executeUpdate(buf.toString());
+		
+		// now create the new entry
 		SQLGenerator gen = new SQLGenerator();
 		gen.setTable("CACHE");
 		gen.setFieldExpr("OBJ_ID", id);
