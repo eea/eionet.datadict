@@ -43,7 +43,8 @@ public class XFormServlet extends HttpServlet {
                 
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			res.setContentType("text/xml; charset=UTF-8");
-			writer = new PrintWriter(res.getOutputStream());
+			OutputStreamWriter osw = new OutputStreamWriter(res.getOutputStream(), "UTF-8");
+			writer = new PrintWriter(osw);
 
 			XFormIF xForm = new TblXForm(searchEngine, writer);
             
@@ -55,7 +56,9 @@ public class XFormServlet extends HttpServlet {
 			xForm.write(id);
 			xForm.flush(template);
 			writer.flush();
+			osw.flush();
 			writer.close();
+			osw.close();
 		}
 		catch (Exception e){
 			e.printStackTrace(System.out);

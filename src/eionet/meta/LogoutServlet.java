@@ -23,6 +23,8 @@ public class LogoutServlet extends HttpServlet {
  */
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         
+		req.setCharacterEncoding("UTF-8");
+		
         AppUserIF user = SecurityUtil.getUser(req);
         if (user != null){
             

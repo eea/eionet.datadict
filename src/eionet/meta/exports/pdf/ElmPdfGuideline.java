@@ -76,9 +76,8 @@ public class ElmPdfGuideline {
 		nr = nr==null ? "" : nr + " ";
 				
         Paragraph prg = new Paragraph();
-        prg.add(new Chunk(nr +
-        			elem.getShortName(), Fonts.get(Fonts.HEADING_3_ITALIC)));
-        prg.add(new Chunk(" data element", Fonts.get(Fonts.HEADING_3)));
+        prg.add(new Chunk(nr + elem.getShortName(), Fonts.getUnicode(12, Font.BOLDITALIC)));
+        prg.add(new Chunk(" data element", Fonts.getUnicode(12, Font.BOLD)));
         
         //section = parentSection.addSection(prg, 3);
         addElement(prg);

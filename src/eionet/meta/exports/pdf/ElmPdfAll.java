@@ -77,8 +77,8 @@ public class ElmPdfAll {
 				
         Paragraph prg = new Paragraph();
         prg.add(new Chunk(nr +
-        			elem.getShortName(), Fonts.get(Fonts.HEADING_3_ITALIC)));
-        prg.add(new Chunk(" column", Fonts.get(Fonts.HEADING_3)));
+        			elem.getShortName(), Fonts.getUnicode(12, Font.BOLDITALIC)));
+        prg.add(new Chunk(" column", Fonts.getUnicode(12, Font.BOLD)));
         
         addElement(prg);
         

@@ -110,12 +110,9 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 		nr = nr==null ? "" : nr + " ";
 		        
         Paragraph prg = new Paragraph();
-		prg.add(new Chunk(nr + "General information for ",
-					FontFactory.getFont(FontFactory.HELVETICA, 16)));
-		prg.add(new Chunk(dsName,
-				FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
-        prg.add(new Chunk(" dataset",
-        			FontFactory.getFont(FontFactory.HELVETICA, 16)));
+		prg.add(new Chunk(nr + "General information for ", Fonts.getUnicode(16)));
+		prg.add(new Chunk(dsName, Fonts.getUnicode(16, Font.BOLD)));
+        prg.add(new Chunk(" dataset", Fonts.getUnicode(16)));
         
         //chapter = new Chapter(prg, 1);
         
@@ -178,16 +175,11 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 		nr = sect.level(title, 1);
 		nr = nr==null ? "" : nr + " ";
 		prg = new Paragraph();
-		prg.add(new Chunk(nr,
-					 FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
-		prg.add(new Chunk("Overview of ",
-					 FontFactory.getFont(FontFactory.HELVETICA, 16)));
-		prg.add(new Chunk(dsName,
-					 FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
-		prg.add(new Chunk(" dataset tables",
-					 FontFactory.getFont(FontFactory.HELVETICA, 16)));
+		prg.add(new Chunk(nr, Fonts.getUnicode(16, Font.BOLD)));
+		prg.add(new Chunk("Overview of ", Fonts.getUnicode(16)));
+		prg.add(new Chunk(dsName, Fonts.getUnicode(16, Font.BOLD)));
+		prg.add(new Chunk(" dataset tables", Fonts.getUnicode(16)));
 		addElement(prg);
-        //addElement(new Phrase("Tables in this dataset:\n", Fonts.get(Fonts.HEADING_0)));
         
         Vector tables = ds.getTables();
         addElement(PdfUtil.tablesList(tables));
@@ -329,14 +321,10 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 					nr = nr==null ? "" : nr + " ";
 					
 					prg = new Paragraph();
-					prg.add(new Chunk(nr,
-						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-					prg.add(new Chunk("Codelists for ",
-						FontFactory.getFont(FontFactory.HELVETICA, 14)));
-					prg.add(new Chunk(tblName,
-						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-					prg.add(new Chunk(" table",
-						FontFactory.getFont(FontFactory.HELVETICA, 14)));
+					prg.add(new Chunk(nr, Fonts.getUnicode(14, Font.BOLD)));
+					prg.add(new Chunk("Codelists for ", Fonts.getUnicode(14)));
+					prg.add(new Chunk(tblName, Fonts.getUnicode(14, Font.BOLD)));
+					prg.add(new Chunk(" table", Fonts.getUnicode(14)));
 					
 					addElement(prg);
 					addElement(new Paragraph("\n"));
@@ -351,10 +339,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 				nr = nr==null ? "" : nr + " ";
 				
 				prg = new Paragraph();
-				prg.add(new Chunk(nr + elmName,
-					FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-				prg.add(new Chunk(" codelist",
-					FontFactory.getFont(FontFactory.HELVETICA, 14)));
+				prg.add(new Chunk(nr + elmName, Fonts.getUnicode(14, Font.BOLD)));
+				prg.add(new Chunk(" codelist", Fonts.getUnicode(14)));
 
 				addElement(prg);
 				addElement(new Paragraph("\n"));
@@ -401,14 +387,10 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 				nr = nr==null ? "" : nr + " ";
 
 				prg = new Paragraph();
-				prg.add(new Chunk(nr,
-					FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-				prg.add(new Chunk("Illustrations for ",
-					FontFactory.getFont(FontFactory.HELVETICA, 14)));
-				prg.add(new Chunk(tblName,
-					FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-				prg.add(new Chunk(" table",
-					FontFactory.getFont(FontFactory.HELVETICA, 14)));
+				prg.add(new Chunk(nr, Fonts.getUnicode(14, Font.BOLD)));
+				prg.add(new Chunk("Illustrations for ", Fonts.getUnicode(14)));
+				prg.add(new Chunk(tblName, Fonts.getUnicode(14, Font.BOLD)));
+				prg.add(new Chunk(" table", Fonts.getUnicode(14)));
 
 				addElement(prg);
 				addElement(new Paragraph("\n"));
@@ -453,14 +435,10 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 					nr = nr==null ? "" : nr + " ";
 					
 					prg = new Paragraph();
-					prg.add(new Chunk(nr,
-						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-					prg.add(new Chunk("Illustrations for ",
-						FontFactory.getFont(FontFactory.HELVETICA, 14)));
-					prg.add(new Chunk(tblName,
-						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-					prg.add(new Chunk(" table",
-						FontFactory.getFont(FontFactory.HELVETICA, 14)));
+					prg.add(new Chunk(nr, Fonts.getUnicode(14, Font.BOLD)));
+					prg.add(new Chunk("Illustrations for ", Fonts.getUnicode(14)));
+					prg.add(new Chunk(tblName, Fonts.getUnicode(14, Font.BOLD)));
+					prg.add(new Chunk(" table", Fonts.getUnicode(14)));
 					
 					addElement(prg);
 					addElement(new Paragraph("\n"));
@@ -475,10 +453,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 				nr = nr==null ? "" : nr + " ";
 				
 				prg = new Paragraph();
-				prg.add(new Chunk(nr + elmName,
-					FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-				prg.add(new Chunk(" illustrations",
-					FontFactory.getFont(FontFactory.HELVETICA, 14)));
+				prg.add(new Chunk(nr + elmName, Fonts.getUnicode(14, Font.BOLD)));
+				prg.add(new Chunk(" illustrations", Fonts.getUnicode(14)));
 
 				addElement(prg);
 				
@@ -534,13 +510,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         doc.add(prg);
         
         // dataset name
-        font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 26);
+        font = Fonts.getUnicode(26, Font.BOLD);
         prg = new Paragraph(dsName, font);
 		prg.setAlignment(Element.ALIGN_CENTER);
 		doc.add(prg);
 		
 		// dataset word
-        font = FontFactory.getFont(FontFactory.HELVETICA, 14);
+        font = Fonts.getUnicode(14);
 		prg = new Paragraph("dataset", font);
         prg.setAlignment(Element.ALIGN_CENTER);
         doc.add(prg);
@@ -606,7 +582,8 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 		Paragraph prg = new Paragraph();		
 		prg.add(new Chunk("Data Dictionary\n", font));
 		prg.setLeading(10*1.2f);
-		font = FontFactory.getFont(FontFactory.HELVETICA, 9);
+		
+		font = Fonts.getUnicode(9);
 		font.setColor(Color.lightGray);
 		prg.add(new Chunk("Dataset specification for " + dsName +
 								" * Version " + dsVersion, font));
@@ -646,7 +623,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 		if (sect==null)
 			return elems;
 		
-		Vector toc = sect.getTOCformatted("\t\t\t\t");
+		Vector toc = sect.getTOCformatted("    ");
 		if (toc==null || toc.size()==0)
 			return elems;
 		
@@ -658,7 +635,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 		
 		elems.add(new Paragraph("\n"));
 		
-		font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+		font = Fonts.getUnicode(10);
 		for (int i=0; i<toc.size(); i++){
 			String line = (String)toc.get(i);
 			elems.add(new Chunk(line + "\n", font));
@@ -684,13 +661,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
 		String submOrgName = (String)submitOrg.get("name");
 		if (!Util.voidStr(submOrgName)){
-			font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
+			font = Fonts.getUnicode(9, Font.BOLD);
 			font.setColor(Color.gray);
 			phr.add(new Chunk(submOrgName, font));
 	
 			String submOrgUrl = (String)submitOrg.get("url");
 			if (!Util.voidStr(submOrgUrl)){
-				font = FontFactory.getFont(FontFactory.HELVETICA, 9);
+				font = Fonts.getUnicode(9);
 				font.setColor(Color.lightGray);
 				phr.add(new Chunk("  *  " + submOrgUrl, font));
 			}
@@ -704,13 +681,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 		if (respOrg!=null){
 			String respOrgName = (String)respOrg.get("name");
 			if (!Util.voidStr(respOrgName) && !respOrgName.equals(submOrgName)){
-				font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
+				font = Fonts.getUnicode(9, Font.BOLD);
 				font.setColor(Color.gray);
 				phr.add(new Chunk("\n" + respOrgName, font));
 				
 				String respOrgUrl = (String)respOrg.get("url");
 				if (!Util.voidStr(respOrgUrl)){
-					font = FontFactory.getFont(FontFactory.HELVETICA, 9);
+					font = Fonts.getUnicode(9);
 					font.setColor(Color.lightGray);
 					phr.add(new Chunk("  *  " + respOrgUrl, font));
 				} 

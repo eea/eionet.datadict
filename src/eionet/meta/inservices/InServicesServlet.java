@@ -15,6 +15,8 @@ public class InServicesServlet extends HttpServlet {
 	public void service(HttpServletRequest req, HttpServletResponse res)
 											throws ServletException, IOException {
 												
+		req.setCharacterEncoding("UTF-8");
+																						
 		try{
 			act(req, res);
 		}

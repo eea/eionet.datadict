@@ -29,6 +29,8 @@ public class ImgUpload extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
+		req.setCharacterEncoding("UTF-8");
+						
 		res.setContentType("text/html");
         ServletContext ctx = getServletContext();
 		HttpSession session = req.getSession();

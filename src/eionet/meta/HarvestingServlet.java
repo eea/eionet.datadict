@@ -14,6 +14,8 @@ public class HarvestingServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse res)
                                 throws ServletException, IOException {
 		
+		req.setCharacterEncoding("UTF-8");
+									
 		ServletOutputStream out = res.getOutputStream();
 		res.setContentType("text/plain");
 		

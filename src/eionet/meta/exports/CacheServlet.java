@@ -38,6 +38,8 @@ public class CacheServlet extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse res)
 											throws ServletException, IOException {
 		
+		req.setCharacterEncoding("UTF-8");
+		
 		if (objTypes==null) setObjectTypes();
 		if (Util.nullString(cachePath))
 			throw new ServletException("Missing the path to cache directory!");

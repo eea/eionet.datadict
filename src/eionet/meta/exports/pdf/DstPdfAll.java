@@ -74,9 +74,8 @@ public class DstPdfAll extends PdfHandout {
 		nr = nr==null ? "" : nr + " ";
 		        
         Paragraph prg = new Paragraph();
-		prg.add(new Chunk(nr + dsName, Fonts.get(Fonts.HEADING_1)));  
-        prg.add(new Chunk(" dataset",
-        			FontFactory.getFont(FontFactory.HELVETICA, 16)));
+		prg.add(new Chunk(nr + dsName, Fonts.getUnicode(16, Font.BOLD)));  
+        prg.add(new Chunk(" dataset", Fonts.getUnicode(16)));
 		elmCount = addElement(prg);
         addElement(new Paragraph("\n"));
         
@@ -236,14 +235,10 @@ public class DstPdfAll extends PdfHandout {
 					nr = nr==null ? "" : nr + " ";
 					
 					prg = new Paragraph();
-					prg.add(new Chunk(nr,
-						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-					prg.add(new Chunk("Codelists for ",
-						FontFactory.getFont(FontFactory.HELVETICA, 14)));
-					prg.add(new Chunk(tblName,
-						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-					prg.add(new Chunk(" table",
-						FontFactory.getFont(FontFactory.HELVETICA, 14)));
+					prg.add(new Chunk(nr, Fonts.getUnicode(14, Font.BOLD)));
+					prg.add(new Chunk("Codelists for ", Fonts.getUnicode(14)));
+					prg.add(new Chunk(tblName, Fonts.getUnicode(14, Font.BOLD)));
+					prg.add(new Chunk(" table", Fonts.getUnicode(14)));
 					
 					addElement(prg);
 					addElement(new Paragraph("\n"));
@@ -258,10 +253,8 @@ public class DstPdfAll extends PdfHandout {
 				nr = nr==null ? "" : nr + " ";
 				
 				prg = new Paragraph();
-				prg.add(new Chunk(nr + elmName,
-					FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-				prg.add(new Chunk(" codelist",
-					FontFactory.getFont(FontFactory.HELVETICA, 14)));
+				prg.add(new Chunk(nr + elmName, Fonts.getUnicode(14, Font.BOLD)));
+				prg.add(new Chunk(" codelist", Fonts.getUnicode(14)));
 
 				addElement(prg);
 				addElement(new Paragraph("\n"));
@@ -315,14 +308,10 @@ public class DstPdfAll extends PdfHandout {
 					nr = nr==null ? "" : nr + " ";
 					
 					prg = new Paragraph();
-					prg.add(new Chunk(nr,
-						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-					prg.add(new Chunk("Illustrations for ",
-						FontFactory.getFont(FontFactory.HELVETICA, 14)));
-					prg.add(new Chunk(tblName,
-						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-					prg.add(new Chunk(" table",
-						FontFactory.getFont(FontFactory.HELVETICA, 14)));
+					prg.add(new Chunk(nr, Fonts.getUnicode(14, Font.BOLD)));
+					prg.add(new Chunk("Illustrations for ", Fonts.getUnicode(14)));
+					prg.add(new Chunk(tblName, Fonts.getUnicode(14, Font.BOLD)));
+					prg.add(new Chunk(" table", Fonts.getUnicode(14)));
 					
 					addElement(prg);
 					addElement(new Paragraph("\n"));
@@ -337,10 +326,8 @@ public class DstPdfAll extends PdfHandout {
 				nr = nr==null ? "" : nr + " ";
 				
 				prg = new Paragraph();
-				prg.add(new Chunk(nr + elmName,
-					FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-				prg.add(new Chunk(" illustrations",
-					FontFactory.getFont(FontFactory.HELVETICA, 14)));
+				prg.add(new Chunk(nr + elmName, Fonts.getUnicode(14, Font.BOLD)));
+				prg.add(new Chunk(" illustrations", Fonts.getUnicode(14)));
 
 				addElement(prg);
 				
@@ -396,13 +383,13 @@ public class DstPdfAll extends PdfHandout {
         doc.add(prg);
         
         // dataset name
-        font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 26);
+        font = Fonts.getUnicode(26, Font.BOLD);
         prg = new Paragraph(dsName, font);
 		prg.setAlignment(Element.ALIGN_CENTER);
 		doc.add(prg);
 		
 		// dataset word
-        font = FontFactory.getFont(FontFactory.HELVETICA, 14);
+        font = Fonts.getUnicode(14);
 		prg = new Paragraph("dataset", font);
         prg.setAlignment(Element.ALIGN_CENTER);
         doc.add(prg);
@@ -453,8 +440,8 @@ public class DstPdfAll extends PdfHandout {
     
 	protected void setHeader(String title) throws Exception {
         
-		Font bold = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
-		Font normal = FontFactory.getFont(FontFactory.HELVETICA, 9);
+		Font bold = Fonts.getUnicode(9, Font.BOLD);
+		Font normal = Fonts.getUnicode(9, Font.BOLD);
 		bold.setColor(Color.gray);
 		normal.setColor(Color.gray);
 				
@@ -498,7 +485,7 @@ public class DstPdfAll extends PdfHandout {
 		if (sect==null)
 			return elems;
 		
-		Vector toc = sect.getTOCformatted("\t\t\t\t");
+		Vector toc = sect.getTOCformatted("    ");
 		if (toc==null || toc.size()==0)
 			return elems;
 		
@@ -510,7 +497,7 @@ public class DstPdfAll extends PdfHandout {
 		
 		elems.add(new Paragraph("\n"));
 		
-		font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+		font = Fonts.getUnicode(10);
 		for (int i=0; i<toc.size(); i++){
 			String line = (String)toc.get(i);
 			elems.add(new Chunk(line + "\n", font));
@@ -544,14 +531,14 @@ public class DstPdfAll extends PdfHandout {
 		if (!Util.voidStr(submOrgName) &&
 			!submOrgName.trim().equals("European Environment Agency")){
 			if (!Util.voidStr(submOrgName)){
-				font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
+				font = Fonts.getUnicode(9, Font.BOLD);
 				font.setColor(Color.gray);
 				phr.add(new Chunk("\n" + submOrgName, font));
 			}
 			
 			String submOrgUrl = (String)submitOrg.get("url");
 			if (!Util.voidStr(submOrgUrl)){
-				font = FontFactory.getFont(FontFactory.HELVETICA, 9);
+				font = Fonts.getUnicode(9);
 				font.setColor(Color.lightGray);
 				phr.add(new Chunk("  *  " + submOrgUrl, font));
 			}

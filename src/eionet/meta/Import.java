@@ -42,6 +42,8 @@ public class Import extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
+		req.setCharacterEncoding("UTF-8");
+		
        req.getRequestDispatcher("import_results.jsp").forward(req, res);
     }
 
@@ -51,6 +53,8 @@ public class Import extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
+		req.setCharacterEncoding("UTF-8");
+						
         ServletContext ctx = getServletContext();
         
         // init response text and exception indicator

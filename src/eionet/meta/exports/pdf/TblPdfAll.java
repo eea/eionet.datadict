@@ -90,9 +90,8 @@ public class TblPdfAll {
 		nr = nr==null ? "" : nr + " ";
 		
         Paragraph prg = new Paragraph();
-        prg.add(new Chunk(nr + tblName, Fonts.get(Fonts.HEADING_2)));
-        prg.add(new Chunk(" table",
-        			FontFactory.getFont(FontFactory.HELVETICA, 14)));
+        prg.add(new Chunk(nr + tblName, Fonts.getUnicode(14, Font.BOLD)));
+        prg.add(new Chunk(" table", Fonts.getUnicode(14)));
         
         //section = parentSection.addSection(prg, 2);
         

@@ -28,6 +28,8 @@ public class DsVisualUpload extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
+		req.setCharacterEncoding("UTF-8");
+						
         ServletContext ctx = getServletContext();
         
         // authenticate user

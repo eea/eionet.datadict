@@ -6,6 +6,8 @@ import org.xml.sax.*;
 import java.util.*;
 import javax.xml.parsers.*;
 
+import eionet.util.UnicodeEscapes;
+
 /**
  * A Class class.
  * <P>
@@ -27,6 +29,9 @@ public class DatasetImportHandler extends BaseHandler{
     private boolean bTableStart=false;
     private String tableName;
     private String importName;
+    
+	private UnicodeEscapes unicodeEscapes = new UnicodeEscapes();
+	
   /**
    * Constructor
    */
@@ -93,8 +98,54 @@ public class DatasetImportHandler extends BaseHandler{
      */
     private String processFieldData(String data){
     	
-    	return processApos(data);
+    	//return processApos(data);
+		return processUnicodeEscapes(data);
     }
+
+	/**
+	 * Turns all UNICODE esacpes like &#000; and &nbsp; into correct UTF-8 chars 
+	 */
+	private String processUnicodeEscapes(String data){
+		
+		if (data==null || data.length()==0) return data;
+		StringBuffer buf = new StringBuffer();
+		for (int i=0; i<data.length(); i++){
+			
+			char c = data.charAt(i);
+			
+			if (c=='&'){
+				int j = data.indexOf(";", i);
+				if (j > i){
+					char cc = data.charAt(i+1);
+					int decimal = -1;
+					if (cc=='#'){
+						// handle Unicode decimal escape
+						String sDecimal = data.substring(i+2, j);
+						try{
+							decimal = Integer.parseInt(sDecimal);
+						}
+						catch (Exception e){}
+					}
+					else{
+						// handle entity
+						String ent = data.substring(i+1, j);
+						decimal = unicodeEscapes.getDecimal(ent);
+					}
+            
+					// if decimal found, use the corresponding char, otherwise stick to c.
+					if (decimal >= 0){
+						c = (char)decimal;
+						i = j;
+					}
+				}
+			}
+    
+			buf.append(c);
+		}
+		
+		return buf.toString();
+	}
+	
     
     /**
      * Substitutes &apos; entities with &#39;, because &apos; is not supported in older

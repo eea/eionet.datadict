@@ -146,4 +146,20 @@ public class Fonts {
             init();
         return (Font)fonts.get(style);
     }
+
+	public static Font getUnicode(){
+		return getUnicode(10, Font.NORMAL);
+	}
+
+	public static Font getUnicode(float size){
+		return getUnicode(size, Font.NORMAL);
+	}
+
+	public static Font getUnicode(float size, int style){
+		
+		if (fonts == null) init();
+		Font f =(Font)fonts.get(Fonts.CELL_VALUE);
+		BaseFont bf = f.getBaseFont();
+		return new Font(bf, size, style);
+	}
 }

@@ -24,6 +24,9 @@ public class DocDownload extends HttpServlet{
 	
 	protected void doGet(HttpServletRequest req, HttpServletResponse res)
 													throws ServletException, IOException {
+		
+		req.setCharacterEncoding("UTF-8");
+		
 		try{
 			//guard(req);
 			

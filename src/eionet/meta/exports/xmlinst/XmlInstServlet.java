@@ -42,7 +42,8 @@ public class XmlInstServlet extends HttpServlet {
                 
 	        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			res.setContentType("text/xml; charset=UTF-8");
-            writer = new PrintWriter(res.getOutputStream());
+			OutputStreamWriter osw = new OutputStreamWriter(res.getOutputStream(), "UTF-8");
+            writer = new PrintWriter(osw);
 
 			XmlInstIF xmlInst = null;
 			if (type.equals("tbl"))
@@ -60,6 +61,9 @@ public class XmlInstServlet extends HttpServlet {
 			xmlInst.write(id);
 			xmlInst.flush();
 	        writer.flush();
+	        osw.flush();
+	        writer.close();
+	        osw.close();
 	    }
 	    catch (Exception e){
 	        e.printStackTrace(System.out);

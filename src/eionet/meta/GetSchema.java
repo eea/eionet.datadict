@@ -54,7 +54,8 @@ public class GetSchema extends HttpServlet {
                 
 	        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 	        res.setContentType("text/xml; charset=UTF-8");
-            writer = new PrintWriter(res.getOutputStream());
+	        OutputStreamWriter osw = new OutputStreamWriter(res.getOutputStream(), "UTF-8");
+            writer = new PrintWriter(osw);
 
             SchemaIF schema = null;
             if (compType.equals(DST))
@@ -77,6 +78,9 @@ public class GetSchema extends HttpServlet {
             schema.flush();
     	    
 	        writer.flush();
+	        osw.flush();
+	        writer.close();
+	        osw.close();
 	    }
 	    catch (Exception e){
 	        e.printStackTrace(System.out);

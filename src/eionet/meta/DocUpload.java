@@ -35,6 +35,8 @@ public class DocUpload extends HttpServlet{
 	protected void doPost(HttpServletRequest req, HttpServletResponse res)
 													throws ServletException, IOException {
 		
+		req.setCharacterEncoding("UTF-8");
+														
 		try{
 			guard(req);
 			
