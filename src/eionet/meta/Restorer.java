@@ -364,7 +364,8 @@ public class Restorer {
 		buf.append("left outer join DATASET on ");
 		buf.append("DST2TBL.DATASET_ID=DATASET.DATASET_ID ");
 		buf.append("where DATAELEM.PARENT_NS=DS_TABLE.CORRESP_NS and ");
-		buf.append("DATASET.DELETED is null and ");		buf.append("DATAELEM.DATAELEM_ID=");
+		buf.append("DATASET.DELETED is null and ");
+		buf.append("DATAELEM.DATAELEM_ID=");
 		buf.append(elmID);
 		buf.append(" order by DS_TABLE.VERSION desc");
 		
