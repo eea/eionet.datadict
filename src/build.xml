@@ -15,7 +15,7 @@
 		../public/WEB-INF/lib/uit-security.jar;
 		../public/WEB-INF/lib/uit-client.jar;
 		../public/WEB-INF/lib/log4j.jar;
-		/var/lib/tomcat4/common/lib[servletapi4].jar"/>
+		/var/lib/tomcat4/common/lib/[servletapi4].jar"/>
   </target>
 </project>
 
