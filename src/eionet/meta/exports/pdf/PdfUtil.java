@@ -96,12 +96,13 @@ public class PdfUtil {
 		return simpleAttributesTable(attrs, null);
 	}
 	
-    public static PdfPTable simpleAttributesTable(Vector attrs, Vector show)
+    public static PdfPTable simpleAttributesTable(Vector attrs, Vector map)
         throws Exception {
         
-        if (attrs ==null || attrs.size() == 0 || show==null)
+        if (attrs ==null || attrs.size() == 0 || map==null)
             return null;
         
+        Vector show = (Vector)map.clone(); 
         // set up the table
         PdfPTable table = new PdfPTable(2);
         table.setHorizontalAlignment(Element.ALIGN_LEFT);

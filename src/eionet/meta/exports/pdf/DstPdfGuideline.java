@@ -323,7 +323,7 @@ public class DstPdfGuideline extends PdfHandout {
 					nr = sect.level("Illustrations", 1);
 					nr = nr==null ? "" : nr + " ";
 					prg = new Paragraph(nr +
-							"Images", Fonts.get(Fonts.HEADING_1));
+							"Illustrations", Fonts.get(Fonts.HEADING_1));
 					addElement(prg);
 					addElement(new Paragraph("\n"));
 					lv1added = true;
