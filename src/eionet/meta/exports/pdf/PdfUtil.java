@@ -1180,7 +1180,7 @@ public class PdfUtil {
 		return processLinks(s, font);
     }
     
-    private static String processUnicode(String s){
+    public static String processUnicode(String s){
     	
     	if (s==null) return null;
     		

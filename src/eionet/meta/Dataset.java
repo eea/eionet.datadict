@@ -218,6 +218,8 @@ public class Dataset {
     		}
     	}
     	
+    	if (flds!=null) hash.put("fields", flds);
+    	
     	return hash;
     }
 }

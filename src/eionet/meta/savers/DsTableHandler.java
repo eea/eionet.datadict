@@ -342,8 +342,6 @@ public class DsTableHandler extends BaseHandler {
         String[] del_IDs = req.getParameterValues("del_id");
         if (del_IDs==null || del_IDs.length==0) return;
         
-		System.out.println("===> del_IDs = " + del_IDs);
-        
         // get more data about each table
         StringBuffer buf = new StringBuffer();
         buf.append("select * from DS_TABLE where ");

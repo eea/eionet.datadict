@@ -1,4 +1,3 @@
-
 package eionet.meta.exports.pdf;
 
 import eionet.meta.*;
@@ -72,8 +71,7 @@ public class DstPdfGuideline extends PdfHandout {
         String s = ds.getAttributeValueByShortName("Name");
         dsName = Util.voidStr(s) ? ds.getShortName() : s;
         
-		s = ds.getAttributeValueByShortName("ETCVersion");
-		dsVersion = Util.voidStr(s) ? ds.getVersion() : s;
+		dsVersion = ds.getAttributeValueByShortName("Version");
         
         String title = "General information for " + dsName + " dataset";
 		String nr = sect.level(title, 1);
@@ -95,6 +93,19 @@ public class DstPdfGuideline extends PdfHandout {
         
         addElement(new Paragraph("\n"));
         
+        // set up complex attributes to retreive SubmitOrg, RespOrg and Contact information
+		Vector cattrs = ds.getComplexAttributes();
+		if (cattrs!=null && cattrs.size()>0){
+			DElemAttribute attr = null;
+			for (int i=0; i<cattrs.size(); i++){
+				attr = (DElemAttribute)cattrs.get(i);
+				attr.setFields(searchEngine.getAttrFields(attr.getID()));
+			}
+		}
+
+		this.submitOrg = ds.getCAttrByShortName("SubmitOrganisation");
+		this.respOrg   = ds.getCAttrByShortName("RespOrganisation");
+        
         // write simple attributes
         addElement(new Paragraph("Basic metadata:\n", Fonts.get(Fonts.HEADING_0)));
         
@@ -103,37 +114,26 @@ public class DstPdfGuideline extends PdfHandout {
         Hashtable hash = new Hashtable();
         hash.put("name", "Short name");
         hash.put("value", ds.getShortName());
-		attrs.add(0, hash);
-        
+		attrs.add(hash);
+		
         if (!Util.voidStr(dsVersion)){
             hash = new Hashtable();
             hash.put("name", "Version");
             hash.put("value", dsVersion);
-			attrs.add(1, hash);
+			attrs.add(hash);
+        }
+        
+        String contactInfo = getContactInfo();
+        if (contactInfo!=null){
+			hash = new Hashtable();
+			hash.put("name", "Contact information");
+			hash.put("value", contactInfo);
+			attrs.add(hash);
         }
 
         addElement(PdfUtil.simpleAttributesTable(attrs, showedAttrs));
         addElement(new Phrase("\n"));
         
-        // write complex attributes, one table for each
-		Vector v = ds.getComplexAttributes();
-		if (v!=null && v.size()>0){
-            
-			DElemAttribute attr = null;
-			for (int i=0; i<v.size(); i++){
-				attr = (DElemAttribute)v.get(i);
-				attr.setFields(searchEngine.getAttrFields(attr.getID()));
-			}
-            
-			/*for (int i=0; i<v.size(); i++){
-				addElement(PdfUtil.complexAttributeTable((DElemAttribute)v.get(i)));
-				addElement(new Phrase("\n"));
-			}*/
-		}
-		
-		this.submitOrg = ds.getCAttrByShortName("SubmitOrganisation");
-		this.respOrg   = ds.getCAttrByShortName("RespOrganisation");
-		
 		/* write image attributes
 		Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath);
 		if (imgAttrs!=null){
@@ -515,11 +515,13 @@ public class DstPdfGuideline extends PdfHandout {
 		doc.add(new Paragraph("\n\n"));
 		
 		// version
-		prg = new Paragraph();
-		prg.add(new Chunk("Version: ", font));
-		prg.add(new Chunk(dsVersion, font));
-		prg.setAlignment(Element.ALIGN_CENTER);
-		doc.add(prg);
+		if (dsVersion!=null){
+			prg = new Paragraph();
+			prg.add(new Chunk("Version: ", font));
+			prg.add(new Chunk(dsVersion, font));
+			prg.setAlignment(Element.ALIGN_CENTER);
+			doc.add(prg);
+		}
 		
 		// date
 		//prg = new Paragraph(getTitlePageDate());
@@ -695,8 +697,62 @@ public class DstPdfGuideline extends PdfHandout {
 		showedAttrs.add("Version");
 		showedAttrs.add("Definition");
 		showedAttrs.add("ShortDescription");
+		showedAttrs.add("Contact information");
 		showedAttrs.add("PlannedUpdFreq");
 		showedAttrs.add("Methodology");
+	}
+	
+	private String getContactInfo(Dataset dst){
+		
+		if (submitOrg==null) return null;
+		
+		DElemAttribute attr = dst.getAttributeByShortName("SubmitOrganisation");
+		if (attr==null) return null;
+		
+		Vector flds = attr.getFields();
+		if (flds==null || flds.size()==0)
+			return getContactInfo();
+		
+		StringBuffer buf = null;
+		for (int i=0; i<flds.size(); i++){
+			Hashtable fld = (Hashtable)flds.get(i);
+			String fldName  = (String)fld.get("name");
+			if (fldName!=null){
+				String fldValue = (String)submitOrg.get(fldName);
+				if (!Util.voidStr(fldValue)){
+					if (buf==null) buf = new StringBuffer();
+					if (buf.length()>0) buf.append("\n");
+					buf.append(fldValue);
+				}
+			}
+		}
+		
+		return buf==null ? null : buf.toString();
+	}
+	
+	private String getContactInfo(){
+		
+		if (submitOrg==null) return null;
+		
+		Vector flds = (Vector)submitOrg.get("fields");
+		if (flds==null || flds.size()==0)
+			return null;
+
+		StringBuffer buf = null;
+		for (int i=0; i<flds.size(); i++){
+			Hashtable fld = (Hashtable)flds.get(i);
+			String fldName  = (String)fld.get("name");
+			if (fldName!=null){
+				String fldValue = (String)submitOrg.get(fldName);
+				if (!Util.voidStr(fldValue)){
+					if (buf==null) buf = new StringBuffer();
+					if (buf.length()>0) buf.append("\n");
+					buf.append(fldValue);
+				}
+			}
+		}
+	
+		return buf==null ? null : buf.toString();
 	}
   
     public static void main(String[] args){

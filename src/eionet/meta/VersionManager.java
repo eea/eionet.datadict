@@ -727,7 +727,8 @@ public class VersionManager{
         if (submOrgAttr==null)
             throw new Exception("For '" +status+ "' status you must specify " +
                                 "SubmitOrganisation complex attribute!");
-                                
+        
+        /*                        
         submOrgAttr.setFields(searchEngine.getAttrFields(submOrgAttr.getID()));
         
         //check name
@@ -738,7 +739,7 @@ public class VersionManager{
         //check PhoneNr
         if (submOrgAttr.getFieldValueByName("PhoneNr")==null)
             throw new Exception("For '"+status+"' status you must specify " +
-                "'PhoneNr' field in SubmitOrganisation complex attribute!");
+                "'PhoneNr' field in SubmitOrganisation complex attribute!");*/
         
         if (!status.equals("Recorded"))
             return;
@@ -776,9 +777,9 @@ public class VersionManager{
         DElemAttribute submOrgAttr =
             tbl.getAttributeByShortName("SubmitOrganisation");
         if (submOrgAttr==null)
-            throw new Exception("For '" +status+ "' status you must specify " +
+            throw new Exception("For '" + status + "' status you must specify " +
                                 "SubmitOrganisation complex attribute!");
-                                
+        /*                        
         submOrgAttr.setFields(searchEngine.getAttrFields(submOrgAttr.getID()));
             //check name
         if (submOrgAttr.getFieldValueByName("name")==null)
@@ -788,7 +789,7 @@ public class VersionManager{
             //check PhoneNr
         if (submOrgAttr.getFieldValueByName("PhoneNr")==null)
             throw new Exception("For '"+status+"' status you must specify " +
-                "'PhoneNr' field in SubmitOrganisation complex attribute!");
+                "'PhoneNr' field in SubmitOrganisation complex attribute!");*/
         
         if (!status.equals("Recorded"))
             return;
@@ -826,10 +827,11 @@ public class VersionManager{
 		DElemAttribute submOrgAttr =
 			dst.getAttributeByShortName("SubmitOrganisation");
 		if (submOrgAttr==null)
-			throw new Exception("For '"+status+"' status you must specify " +
+			throw new Exception("For '" + status + "' status you must specify " +
                 "SubmitOrganisation complex attribute!");
-                
-		submOrgAttr.setFields(searchEngine.getAttrFields(submOrgAttr.getID()));
+		
+		/*submOrgAttr.setFields(searchEngine.getAttrFields(submOrgAttr.getID()));
+		
 			//check name
 		if (submOrgAttr.getFieldValueByName("name")==null)
 			throw new Exception("For '"+status+"' status you must specify " +
@@ -838,7 +840,7 @@ public class VersionManager{
 			//check PhoneNr
 		if (submOrgAttr.getFieldValueByName("PhoneNr")==null)
 			throw new Exception("For '"+status+"' status you must specify " +
-                "'PhoneNr' field in SubmitOrganisation complex attribute!");
+                "'PhoneNr' field in SubmitOrganisation complex attribute!");*/
     
 		if (!status.equals("Recorded"))
 			return;

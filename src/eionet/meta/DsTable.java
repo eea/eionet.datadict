@@ -36,6 +36,8 @@ public class DsTable implements Comparable {
     private String compStr = null;
     private boolean gis = false;
     
+    private int dstVersion = -1; 
+    
     /**
      * 
      * @param id
@@ -257,7 +259,15 @@ public class DsTable implements Comparable {
 	public boolean hasGIS(){
 		return gis;
 	}
+
+	public void setDstVersion(int ver){
+		this.dstVersion = ver;
+	}
     
+	public int getDstVersion(){
+		return dstVersion;
+	}
+	    
 	public int compareTo(Object o){
 		
 		if (!o.getClass().getName().endsWith("DsTable")) return 1;

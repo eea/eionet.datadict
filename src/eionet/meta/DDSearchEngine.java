@@ -1945,8 +1945,9 @@ public class DDSearchEngine {
         ResultSet rs = stmt.executeQuery("select M_ATTRIBUTE_ID from " +
                         "M_ATTRIBUTE where SHORT_NAME='Name'");
         String nameID = rs.next() ? rs.getString(1) : null;
-        
-        
+        stmt.close();
+		rs.close();
+		
         // now let's work with tables
         
         if (oper==null) oper=" like ";
@@ -2048,23 +2049,20 @@ public class DDSearchEngine {
         }
 
         StringBuffer buf =
-        new StringBuffer("select DS_TABLE.*, DATASET.* from ");
+        new StringBuffer("select distinct DS_TABLE.*, DATASET.* from ");
         buf.append(tables.toString());
         if (constraints.length()!=0){
             buf.append(" where ");
             buf.append(constraints.toString());
         }
-
-        buf.append(" order by DS_TABLE.IDENTIFIER, " +
-                   "DATASET.IDENTIFIER, DS_TABLE.VERSION desc, " +
-                   "DATASET.VERSION desc");
-
-        log(buf.toString());
         
-        stmt = null;
-        rs = null;
+		buf.append(" order by DATASET.IDENTIFIER, DATASET.VERSION desc, " +
+				   "DS_TABLE.IDENTIFIER, DS_TABLE.VERSION desc");
+
+        //log(buf.toString());
+        
         Vector v = new Vector();
-        
+		
         // preprare the statement for getting attributes
         PreparedStatement ps = null;
         if (nameID!=null){
@@ -2079,29 +2077,24 @@ public class DDSearchEngine {
         try{
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-
-            String prvTblIdf = null;
-            String prvDstIdf = null;
-
+            
+            boolean firstTime = true;
+            int curDatasetID = -1;
+			String curDatasetIdf = null;
+            
             while (rs.next()){
-
-                String tblIdf = rs.getString("DS_TABLE.IDENTIFIER");
-                String dstIdf = rs.getString("DATASET.IDENTIFIER");
-
-                // make sure you get the latest version of each tbl/dst
-                if (prvTblIdf!=null){
-                    if (tblIdf.equals(prvTblIdf)){
-                        if (prvDstIdf!=null && prvDstIdf.equals(dstIdf))
-                            continue;
-                        else if (prvDstIdf==null && dstIdf==null)
-                            continue;
-                    }
-                }
-
-                prvTblIdf = tblIdf;
-                prvDstIdf = dstIdf;
-
-                DsTable tbl = new DsTable(rs.getString("DS_TABLE.TABLE_ID"),
+            	
+            	int datasetID = rs.getInt("DATASET.DATASET_ID");
+				String datasetIdf = rs.getString("DATASET.IDENTIFIER");
+				
+				if (curDatasetIdf==null || !curDatasetIdf.equals(datasetIdf)){
+					curDatasetIdf = datasetIdf;
+					curDatasetID = datasetID;
+				}
+				else if (datasetID != curDatasetID)
+					continue;
+				
+				DsTable tbl = new DsTable(rs.getString("DS_TABLE.TABLE_ID"),
                                           rs.getString("DATASET.DATASET_ID"),
                                           rs.getString("DS_TABLE.SHORT_NAME"));
 
@@ -2110,6 +2103,7 @@ public class DDSearchEngine {
                 tbl.setParentNs(rs.getString("DS_TABLE.PARENT_NS"));
                 tbl.setDatasetName(rs.getString("DATASET.SHORT_NAME"));
 				tbl.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
+				tbl.setDstVersion(rs.getInt("DATASET.VERSION"));
 
                 // set the name if nameID was previously successfully found
                 if (nameID!=null){
@@ -2136,7 +2130,6 @@ public class DDSearchEngine {
         }
         
 		Collections.sort(v);
-
         return v;
     }
     
@@ -3383,6 +3376,18 @@ public class DDSearchEngine {
 		
 		return v;
 	}
+	
+	public String getAttrHelpByShortName(String shortName, String attrType){
+		if (shortName==null) return "";
+		if (attrType==null)
+			return getSimpleAttrHelpByShortName(shortName);
+		else if (attrType.equals(DElemAttribute.TYPE_SIMPLE))
+			return getSimpleAttrHelpByShortName(shortName);
+		else if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
+			return getComplexAttrHelpByShortName(shortName);
+		else
+			return getSimpleAttrHelpByShortName(shortName);
+	}
 
 	public String getAttrHelp(String attrID, String attrType){
 		if (attrID==null) return "";
@@ -3395,14 +3400,22 @@ public class DDSearchEngine {
 		else
 			return getSimpleAttrHelp(attrID);
 	}
-
+	
 	public String getSimpleAttrHelp(String attrID){
+		return getSimpleAttrHelp("M_ATTRIBUTE_ID", attrID);
+	}
+
+	public String getSimpleAttrHelpByShortName(String shortName){
+		return getSimpleAttrHelp("SHORT_NAME", Util.strLiteral(shortName));
+	}
+
+	public String getSimpleAttrHelp(String field, String value){
 		
 		StringBuffer help = new StringBuffer("");
-		if (attrID!=null){
+		if (field!=null && value!=null){
 			try{
 				ResultSet rs = conn.createStatement().executeQuery(
-						"select * from M_ATTRIBUTE where M_ATTRIBUTE_ID=" + attrID);
+						"select * from M_ATTRIBUTE where " + field + "=" + value);
 				if (rs.next()){
 					help.append("<br/><b>").append(rs.getString("SHORT_NAME")).
 					append("</b><br/><br/>").append(rs.getString("DEFINITION")); 
@@ -3414,14 +3427,22 @@ public class DDSearchEngine {
 		
 		return help.toString();
 	}
-
+	
 	public String getComplexAttrHelp(String attrID){
+		return getComplexAttrHelp("M_COMPLEX_ATTR_ID", attrID);
+	}
+
+	public String getComplexAttrHelpByShortName(String shortName){
+		return getComplexAttrHelp("SHORT_NAME", Util.strLiteral(shortName));
+	}
+
+	public String getComplexAttrHelp(String field, String value){
 		
 		StringBuffer help = new StringBuffer("");
-		if (attrID!=null){
+		if (field!=null && value!=null){
 			try{
 				ResultSet rs = conn.createStatement().executeQuery(
-					"select * from M_COMPLEX_ATTR where M_COMPLEX_ATTR_ID=" + attrID);
+					"select * from M_COMPLEX_ATTR where " + field + "=" + value);
 				if (rs.next()){
 					help.append("<br/><b>").append(rs.getString("SHORT_NAME")).
 					append("</b><br/><br/>").append(rs.getString("DEFINITION")); 
@@ -3456,11 +3477,13 @@ public class DDSearchEngine {
 			"jdbc:mysql://195.250.186.33:3306/dd", "dduser", "xxx");
 
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
-			AppUserIF testUser = new TestUser();
-			testUser.authenticate("tennoan", "tennoan");
+			AppUserIF testUser = new TestUser(false);
+			testUser.authenticate("heinlja", "ddd");
 			searchEngine.setUser(testUser);
 			
-			DataElement elm = searchEngine.getDataElement("9643");
+			Vector pars = new Vector();
+			Vector v = searchEngine.getDatasetTables(pars, null, null, null, null, "=", false);
+			System.out.println(v);
         }
         catch (Exception e){
             System.out.println(e.toString());
