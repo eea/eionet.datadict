@@ -104,14 +104,30 @@ public class DDSearchEngine {
                                     tableID, datasetID, wrkCopies, null);
     }
 
+	/**
+	* Get data elements, control over working copies & params oper
+	* 8 inputs
+	*/
+	public Vector getDataElements(Vector params,
+								  String type,
+								  String namespace,
+								  String short_name,
+								  String tableID,
+								  String datasetID,
+								  boolean wrkCopies,
+								  String oper) throws SQLException {
+		return getDataElements(params, type, namespace,
+					short_name, null, tableID, datasetID, wrkCopies, null);
+	}
     /**
     * Get data elements, control over working copies & params oper
-    * 8 inputs
+    * 9 inputs
     */
     public Vector getDataElements(Vector params,
                                   String type,
                                   String namespace,
                                   String short_name,
+								  String idfier,
                                   String tableID,
                                   String datasetID,
                                   boolean wrkCopies,
@@ -159,6 +175,18 @@ public class DDSearchEngine {
             else
                 constraints.append("'" + short_name + "'");
         }
+        
+		if (idfier!=null && idfier.length()!=0){
+			if (constraints.length()!=0) constraints.append(" and ");
+			constraints.append("DATAELEM.IDENTIFIER");
+			if (oper.trim().equalsIgnoreCase("match"))
+				oper=" like "; // cause identifier is not full text
+			constraints.append(oper);
+			if (oper.trim().equalsIgnoreCase("like"))
+				constraints.append("'%" + idfier + "%'");
+			else
+				constraints.append("'" + idfier + "'");
+		}
 
         if (tableID!=null && tableID.length()!=0){
             if (constraints.length()!=0) constraints.append(" and ");
@@ -248,10 +276,10 @@ public class DDSearchEngine {
         
          if (tableID!=null && tableID.length()!=0){
              buf.append(" order by TBL2ELEM.POSITION, " +
-                        "DATAELEM.SHORT_NAME, DATAELEM.PARENT_NS");
+                        "DATAELEM.IDENTIFIER, DATAELEM.PARENT_NS");
          }
          else{
-             buf.append(" order by DATAELEM.SHORT_NAME,DATAELEM.PARENT_NS");
+             buf.append(" order by DATAELEM.IDENTIFIER,DATAELEM.PARENT_NS");
          }
         
         log(buf.toString());
@@ -282,10 +310,6 @@ public class DDSearchEngine {
 
             while (rs.next()){
 
-                // JH300803 - for now we don't support aggregates
-                if (rs.getString("DATAELEM.TYPE").equals("AGG"))
-                    continue;
-                
                 int id = rs.getInt("DATAELEM.DATAELEM_ID");
                 String tblVersion = rs.getString("DS_TABLE.VERSION");
                 String tblID = rs.getString("TBL2ELEM.TABLE_ID");
@@ -310,7 +334,7 @@ public class DDSearchEngine {
                 
                 prvID = id;
                 
-                String shortName = rs.getString("DATAELEM.SHORT_NAME");
+                String idf = rs.getString("DATAELEM.IDENTIFIER");
                 String nsID = rs.getString("NAMESPACE.NAMESPACE_ID");
                 String version = rs.getString("DATAELEM.VERSION");
                 
@@ -324,7 +348,7 @@ public class DDSearchEngine {
                     String _nsID = elm.getNamespace()==null ?
                                   "!" : elm.getNamespace().getID();
                     
-                    if (elm.getShortName().equals(shortName) &&
+                    if (elm.getIdentifier().equals(idf) &&
                         _nsID!=null && _nsID.equals(nsID)){
                         
                         if (version.compareTo(elm.getVersion())>=0)
@@ -345,27 +369,15 @@ public class DDSearchEngine {
                 dataElement.setWorkingCopy(rs.getString("DATAELEM.WORKING_COPY"));
                 dataElement.setWorkingUser(rs.getString("DATAELEM.WORKING_USER"));
                 
-                /* JH141003 - not supporting aggregates right now
-                String childID = rs.getString("CONTENT.CHILD_ID");
-                if (childID != null){
-                    String childType = rs.getString("CONTENT.CHILD_TYPE");
-                    if (childType != null && childType.equalsIgnoreCase("seq"))
-                        dataElement.setSequence(childID);
-                    else if (childType != null && childType.equalsIgnoreCase("chc"))
-                        dataElement.setChoice(childID);
-                }
-                */
-                
                 Namespace ns = new Namespace(rs.getString("NAMESPACE.NAMESPACE_ID"),
                                             rs.getString("NAMESPACE.SHORT_NAME"),
                                             rs.getString("NAMESPACE.FULL_NAME"),
                                             null, //rs.getString("NAMESPACE.URL"),
                                             rs.getString("NAMESPACE.DEFINITION"));
                 dataElement.setNamespace(ns);
-                
                 dataElement.setTopNs(rs.getString("DATAELEM.TOP_NS"));
-
                 dataElement.setExtension(rs.getString("DATAELEM.EXTENDS"));
+				dataElement.setGIS(rs.getString("DATAELEM.GIS"));
                 dataElement.setTableID(tblID);
                 dataElement.setPosition(rs.getString("TBL2ELEM.POSITION"));
 
@@ -399,6 +411,8 @@ public class DDSearchEngine {
 	                if (skipByRegStatus(regStatus)) continue;
                 }
 				dataElement.setStatus(regStatus);
+				
+				dataElement.setIdentifier(rs.getString("DATAELEM.IDENTIFIER"));
 
                 v.add(dataElement);
             }
@@ -423,10 +437,10 @@ public class DDSearchEngine {
     }
     public DataElement getDataElement(String delem_id, String tblID, boolean bInheritAttributes)
     												throws SQLException {
-        
+
+		// if delem_id==null then only metadata on attributes is wanted,
+		// so we create a dummy DataElement with value-less attributes        
         if (delem_id == null || delem_id.length()==0){
-            // if delem_id==null, it means only metadata on attributes is wanted,
-            // so we create an identity-less DataElement, and all found attributes to it
             DataElement dataElement = new DataElement();
             Vector attributes = getDElemAttributes();
             for (int i=0; i<attributes.size(); i++)
@@ -434,27 +448,39 @@ public class DDSearchEngine {
             return dataElement;
         }
         
-        String qry =
-        "select DATAELEM.*, NAMESPACE.*, DS_TABLE.*, DATASET.DELETED, DATASET.DATASET_ID " +
-        //" CLASS2ELEM.DATACLASS_ID, CONTENT.CHILD_ID,CONTENT.CHILD_TYPE,TBL2ELEM.TABLE_ID " +
-        "from DATAELEM " +
-        //"left outer join CLASS2ELEM on DATAELEM.DATAELEM_ID=CLASS2ELEM.DATAELEM_ID " +
-        "left outer join NAMESPACE on DATAELEM.PARENT_NS=NAMESPACE.NAMESPACE_ID " +
-        //"left outer join CONTENT on DATAELEM.DATAELEM_ID=CONTENT.PARENT_ID " +
-        "left outer join TBL2ELEM on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID " +
-        "left outer join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID " +
-		"left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID " +
-		"left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +
-        "where DATAELEM.DATAELEM_ID=" + delem_id;
+        // a data element is really wanted
+        
+        StringBuffer buf = new StringBuffer().
+        append("select DATAELEM.*, NAMESPACE.*, TBL2ELEM.TABLE_ID, ").
+        append("DATASET.DELETED, DATASET.DATASET_ID ");
+        
+		if (!Util.nullString(tblID))
+			buf.append(", DS_TABLE.VERSION ");
+        buf.append("from DATAELEM left outer join NAMESPACE ").
+        append("on DATAELEM.PARENT_NS=NAMESPACE.NAMESPACE_ID ").
+        append("left outer join TBL2ELEM ").
+        append("on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID ");
+        
+		if (!Util.nullString(tblID)){
+			buf.append("left outer join DS_TABLE on ").
+			append("TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID ");
+		}
+		
+		buf.append("left outer join DST2TBL on ").
+		append("TBL2ELEM.TABLE_ID=DST2TBL.TABLE_ID ").
+		append("left outer join DATASET on ").
+		append("DST2TBL.DATASET_ID=DATASET.DATASET_ID ").
+        append("where DATAELEM.DATAELEM_ID=").
+        append(delem_id);
 
         if (Util.nullString(tblID))
-			qry = qry + " and DATASET.DELETED is null";
+			buf.append(" and DATASET.DELETED is null").
+			append(" order by DATASET.VERSION desc");
         else
-			qry = qry + " and DS_TABLE.TABLE_ID=" + tblID;
+			buf.append(" and TBL2ELEM.TABLE_ID=").append(tblID).
+			append(" order by DS_TABLE.VERSION desc");
 
-        qry = qry + " order by DS_TABLE.VERSION desc";
-
-        log(qry);
+        log(buf.toString());
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -463,51 +489,38 @@ public class DDSearchEngine {
         try{
 
             stmt = conn.createStatement();
-            rs = stmt.executeQuery(qry);
+            rs = stmt.executeQuery(buf.toString());
 
             if (rs.next()){
 
-                dataElement = new DataElement(rs.getString("DATAELEM.DATAELEM_ID"),
-                                            rs.getString("DATAELEM.SHORT_NAME"),
-                                            rs.getString("DATAELEM.TYPE"),
-                                            null);
+                dataElement =
+                	new DataElement(rs.getString("DATAELEM.DATAELEM_ID"),
+									rs.getString("DATAELEM.SHORT_NAME"),
+                                    rs.getString("DATAELEM.TYPE"), null);
 
-                dataElement.setTableID(rs.getString("DS_TABLE.TABLE_ID"));
+				Namespace ns =
+					new Namespace(rs.getString("NAMESPACE.NAMESPACE_ID"),
+								  rs.getString("NAMESPACE.SHORT_NAME"),
+								  rs.getString("NAMESPACE.FULL_NAME"),
+								  null, rs.getString("NAMESPACE.DEFINITION"));
+								  
+				dataElement.setNamespace(ns);
+                dataElement.setTableID(rs.getString("TBL2ELEM.TABLE_ID"));
                 dataElement.setVersion(rs.getString("DATAELEM.VERSION"));
                 dataElement.setStatus(rs.getString("DATAELEM.REG_STATUS"));
                 dataElement.setWorkingCopy(rs.getString("DATAELEM.WORKING_COPY"));
                 dataElement.setWorkingUser(rs.getString("DATAELEM.WORKING_USER"));
-
                 dataElement.setTopNs(rs.getString("DATAELEM.TOP_NS"));
-
-                /* JH 141003 - not supporting aggregates right now
-
-                String childID = rs.getString("CONTENT.CHILD_ID");
-                if (childID != null){
-                    String childType = rs.getString("CONTENT.CHILD_TYPE");
-                    if (childType != null && childType.equalsIgnoreCase("seq"))
-                        dataElement.setSequence(childID);
-                    else if (childType != null && childType.equalsIgnoreCase("chc"))
-                        dataElement.setChoice(childID);
-                }
-                */
-
-                Namespace ns = new Namespace(rs.getString("NAMESPACE.NAMESPACE_ID"),
-                                            rs.getString("NAMESPACE.SHORT_NAME"),
-                                            rs.getString("NAMESPACE.FULL_NAME"),
-                                            null, //rs.getString("NAMESPACE.URL"),
-                                            rs.getString("NAMESPACE.DEFINITION"));
-                dataElement.setNamespace(ns);
-
-                //dataElement.setDataClass(rs.getString("CLASS2ELEM.DATACLASS_ID"));
-
                 dataElement.setExtension(rs.getString("DATAELEM.EXTENDS"));
-
+				dataElement.setGIS(rs.getString("DATAELEM.GIS"));
+				dataElement.setIdentifier(rs.getString("DATAELEM.IDENTIFIER"));
                 dataElement.setDatasetID(rs.getString("DATASET.DATASET_ID"));
 
                 Vector attributes=null;
                 if (bInheritAttributes)
-                    attributes = getSimpleAttributes(delem_id, "E", dataElement.getTableID(), dataElement.getDatasetID());
+                    attributes = getSimpleAttributes(
+                    	delem_id, "E", dataElement.getTableID(),
+                    	dataElement.getDatasetID());
                 else
                     attributes = getSimpleAttributes(delem_id, "E");
                     
@@ -783,6 +796,7 @@ public class DDSearchEngine {
 
                     dataElement.setVersion(version);
                     dataElement.setStatus(rs.getString("DATAELEM.REG_STATUS"));
+					dataElement.setIdentifier(rs.getString("DATAELEM.IDENTIFIER"));
                     dataElement.setWorkingCopy(rs.getString("DATAELEM.WORKING_COPY"));
                     dataElement.setWorkingUser(rs.getString("DATAELEM.WORKING_USER"));
                     
@@ -923,41 +937,19 @@ public class DDSearchEngine {
     }
     
     public Vector getFixedValues(String delem_id) throws SQLException {
-        return getFixedValues(delem_id, "elem", true);
+        return getFixedValues(delem_id, "elem");
     }
 
-    public Vector getFixedValues(String delem_id, String parent_type) throws SQLException {
-        return getFixedValues(delem_id, parent_type, true);
-    }
+    public Vector getFixedValues(String delem_id, String parent_type)
+    												throws SQLException {
 
-    public Vector getFixedValues(String delem_id, boolean topLevel) throws SQLException {
-        return getFixedValues(delem_id, "elem", topLevel);
-    }
-    
-    public Vector getFixedValues(String delem_id, String parent_type, boolean topLevel) throws SQLException {
         StringBuffer buf = new StringBuffer();
-        /*buf.append("select * from FIXED_VALUE ");
-        buf.append("where DATAELEM_ID=");
-        buf.append(delem_id);
-        buf.append(" and PARENT_TYPE=" + Util.strLiteral(parent_type));*/
         
-        buf.append("select CS_ITEM.*");
-        if (topLevel){
-            buf.append(", CSI_RELATION.CHILD_CSI");
-            buf.append(", CSI_RELATION.REL_TYPE");
-        }
-        buf.append(" from CS_ITEM");
-        if (topLevel)
-            buf.append(" left outer join CSI_RELATION on (CS_ITEM.CSI_ID=CSI_RELATION.CHILD_CSI and CSI_RELATION.REL_TYPE='taxonomy')");
-        buf.append(" where COMPONENT_ID=");
-        buf.append(delem_id);
-        buf.append(" and CSI_TYPE='fxv'");
-        buf.append(" and COMPONENT_TYPE=" + Util.strLiteral(parent_type));
-
-        //buf.append(" ORDER BY CSI_VALUE");
-        buf.append(" ORDER BY POSITION, CSI_VALUE");
-
-        log(buf.toString());
+        buf.append("select * from FXV where OWNER_ID=").
+        append(delem_id).
+        append(" and OWNER_TYPE=").
+        append(Util.strLiteral(parent_type)).
+        append(" order by VALUE asc");
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -968,28 +960,18 @@ public class DDSearchEngine {
             rs = stmt.executeQuery(buf.toString());
 
             while (rs.next()){
-                /*
-                Hashtable hash = new Hashtable();
-                hash.put("value", rs.getString("FIXED_VALUE.VALUE"));
+            	
+				FixedValue fxv = new FixedValue(rs.getString("FXV_ID"),
+											rs.getString("OWNER_ID"),
+											rs.getString("VALUE"));
 
-                String reprElemName = rs.getString("DATAELEM.SHORT_NAME");
-                String reprNsName = rs.getString("NAMESPACE.SHORT_NAME");
-                String reprElem = "";
-                if (reprElemName!=null && reprNsName!=null)
-                    reprElem = reprNsName + ":" + reprElemName;
+				String isDefault = rs.getString("IS_DEFAULT");
+				if (isDefault!=null && isDefault.equalsIgnoreCase("Y"))
+					fxv.setDefault();
 
-                hash.put("repr_elem", reprElem);
-                v.add(hash);
-                */
-                //FixedValue fxv = getFixedValue(rs.getString("FIXED_VALUE.FIXED_VALUE_ID"));
-                if (topLevel && !Util.nullString(rs.getString("CSI_RELATION.CHILD_CSI")))
-                    continue;
-
-    /*            String rel_type=rs.getString("CSI_RELATION.REL_TYPE");
-                if (rel_type!=null)
-                    if (!rel_type.equals("taxonomy")) continue;
-    */
-                FixedValue fxv = getFixedValue(rs.getString("CSI_ID"));
+				fxv.setDefinition(rs.getString("DEFINITION"));
+				fxv.setShortDesc(rs.getString("SHORT_DESC"));
+				
                 v.add(fxv);
             }
         }
@@ -1002,6 +984,7 @@ public class DDSearchEngine {
 
         return v;
     }
+    
     public Vector getAttrFields(String attr_id) throws SQLException{
         return getAttrFields(attr_id, null);
     }
@@ -1103,7 +1086,11 @@ public class DDSearchEngine {
         return getComplexAttributes(parent_id, parent_type, attr_id, null, null);
     }
     
-    public Vector getComplexAttributes(String parent_id, String parent_type, String attr_id, String inheritTblID, String inheritDsID) throws SQLException {
+    public Vector getComplexAttributes(String parent_id,
+    								   String parent_type,
+    								   String attr_id,
+    								   String inheritTblID,
+    								   String inheritDsID) throws SQLException {
     	
         StringBuffer buf = new StringBuffer();
         buf.append("select ");
@@ -1166,8 +1153,6 @@ public class DDSearchEngine {
         buf.append("order by ATTR_ID, PARENT_TYPE, ROW_POS");
         
         log(buf.toString());
-        
-        String q = buf.toString(); 
         
         Statement stmt = null;
         ResultSet rs = null;
@@ -1270,6 +1255,7 @@ public class DDSearchEngine {
             addRowHash(attr, rowHash);
             v.add(attr);
         }
+        
         return v;
     }
     // initiated from getComplexAttributes
@@ -1567,7 +1553,7 @@ public class DDSearchEngine {
                                 user.getUserName() + "'");
         }
                                
-        buf.append(" order by DATASET.SHORT_NAME, DATASET.VERSION desc");
+        buf.append(" order by DATASET.IDENTIFIER, DATASET.VERSION desc");
 
         log(buf.toString());
 
@@ -1583,11 +1569,11 @@ public class DDSearchEngine {
             
             while (rs.next()){
                 
-                String shortName = rs.getString("SHORT_NAME");
+                String idf = rs.getString("IDENTIFIER");
                 
                 // make sure we get the latest version of the dataset
                 // JH101003 - unless were in 'restore' mode
-                if (!deleted && ds!=null && shortName.equals(ds.getShortName()))
+                if (!deleted && ds!=null && idf.equals(ds.getIdentifier()))
                     continue;
                 
                 ds = new Dataset(rs.getString("DATASET_ID"),
@@ -1599,6 +1585,7 @@ public class DDSearchEngine {
                 ds.setVisual(rs.getString("VISUAL"));
                 ds.setDetailedVisual(rs.getString("DETAILED_VISUAL"));
                 ds.setNamespaceID(rs.getString("CORRESP_NS"));
+				ds.setIdentifier(rs.getString("IDENTIFIER"));
                 
                 v.add(ds);
             }
@@ -1620,12 +1607,21 @@ public class DDSearchEngine {
     public Vector getDatasets(Vector params, String short_name, String version, String oper) throws SQLException {
         return getDatasets(params, short_name, version, oper, false);
     }
+
+	public Vector getDatasets(Vector params,
+							  String short_name,
+							  String version,
+							  String oper,
+							  boolean wrkCopies) throws SQLException {
+		return getDatasets(params, short_name, null, version, oper, wrkCopies);
+	}
     
     /**
     * get datasets by params, control oper & working copies
     */
     public Vector getDatasets(Vector params,
                               String short_name,
+							  String idfier,
                               String version,
                               String oper,
                               boolean wrkCopies) throws SQLException {
@@ -1656,6 +1652,17 @@ public class DDSearchEngine {
             else
                 constraints.append("'" + short_name + "'");
         }
+        
+		if (idfier!=null && idfier.length()!=0){
+			constraints.append(" and DATASET.IDENTIFIER");
+			if (oper.trim().equalsIgnoreCase("match")) oper=" like ";
+				//identifier is not fulltext index
+			constraints.append(oper);
+			if (oper.trim().equalsIgnoreCase("like"))
+				constraints.append("'%" + idfier + "%'");
+			else
+				constraints.append("'" + idfier + "'");
+		}
 
         if (version!=null && version.length()!=0){
             if (constraints.length()!=0) constraints.append(" and ");
@@ -1721,7 +1728,7 @@ public class DDSearchEngine {
             buf.append(constraints.toString());
         }
 
-        buf.append(" order by DATASET.SHORT_NAME, DATASET.VERSION desc");
+        buf.append(" order by DATASET.IDENTIFIER, DATASET.VERSION desc");
 
         log(buf.toString());
 
@@ -1746,10 +1753,10 @@ public class DDSearchEngine {
             Dataset ds = null;
             while (rs.next()){
 
-                String shortName = rs.getString("DATASET.SHORT_NAME");
+                String idf = rs.getString("DATASET.IDENTIFIER");
                 
                 // make sure we get the latest version of the dataset
-                if (ds!=null && shortName.equals(ds.getShortName()))
+                if (ds!=null && idf.equals(ds.getIdentifier()))
                     continue;
                 
                 ds = new Dataset(rs.getString("DATASET_ID"),
@@ -1770,6 +1777,7 @@ public class DDSearchEngine {
                 
                 String regStatus = rs.getString("REG_STATUS");
 				ds.setStatus(regStatus);
+				ds.setIdentifier(rs.getString("IDENTIFIER"));
                 
                 v.add(ds);
             }
@@ -1838,7 +1846,7 @@ public class DDSearchEngine {
 			append("ATTRIBUTE.PARENT_TYPE='T'");
         }
         
-        buf.append(" order by DS_TABLE.SHORT_NAME,DS_TABLE.VERSION desc");
+        buf.append(" order by DS_TABLE.IDENTIFIER,DS_TABLE.VERSION desc");
         
         log(buf.toString());
         
@@ -1854,15 +1862,15 @@ public class DDSearchEngine {
             while (rs.next()){
                 
                 // make sure you get the latest version
-                String shortName = rs.getString("DS_TABLE.SHORT_NAME");
+                String idf = rs.getString("DS_TABLE.IDENTIFIER");
                 if (dsTable!=null){
-                    if (shortName.equals(dsTable.getShortName()))
+                    if (idf.equals(dsTable.getIdentifier()))
                         continue;
                 }
                 
                 dsTable = new DsTable(rs.getString("DS_TABLE.TABLE_ID"),
-                                            dsID,//rs.getString("DATASET.DATASET_ID"),
-                                            shortName);
+                                      dsID,
+									  rs.getString("DS_TABLE.SHORT_NAME"));
                 
                 dsTable.setWorkingCopy(rs.getString("DS_TABLE.WORKING_COPY"));
 				dsTable.setWorkingUser(rs.getString("DS_TABLE.WORKING_USER"));
@@ -1872,6 +1880,7 @@ public class DDSearchEngine {
                 dsTable.setType(rs.getString("DS_TABLE.TYPE"));
                 dsTable.setNamespace(rs.getString("DS_TABLE.CORRESP_NS"));
                 dsTable.setParentNs(rs.getString("DS_TABLE.PARENT_NS"));
+				dsTable.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
                 
                 if (orderByFN){
 					dsTable.setName(rs.getString("ATTRIBUTE.VALUE"));
@@ -1904,12 +1913,26 @@ public class DDSearchEngine {
     public Vector getDatasetTables(Vector params, String short_name, String full_name, String definition, String oper) throws SQLException {
         return getDatasetTables(params, short_name, full_name, definition, oper, false);
     }
+
+	/**
+	*
+	*/
+	public Vector getDatasetTables(Vector params,
+								   String short_name,								   
+								   String full_name,
+								   String definition,
+								   String oper,
+								   boolean wrkCopies) throws SQLException {
+		return getDatasetTables(params, short_name, null,
+							full_name, definition, oper, wrkCopies);
+	}
     
     /**
     *
     */
     public Vector getDatasetTables(Vector params,
                                    String short_name,
+								   String idfier,
                                    String full_name,
                                    String definition,
                                    String oper,
@@ -1948,6 +1971,17 @@ public class DDSearchEngine {
             else
                 constraints.append("'" + short_name + "'");
         }
+        
+		if (idfier!=null && idfier.length()!=0){
+			constraints.append(" and DS_TABLE.IDENTIFIER");
+			if (oper.trim().equalsIgnoreCase("match"))
+				oper=" like "; //identifier is not fulltext index
+			constraints.append(oper);
+			if (oper.trim().equalsIgnoreCase("like"))
+				constraints.append("'%" + idfier + "%'");
+			else
+				constraints.append("'" + idfier + "'");
+		}
 
         if (full_name!=null && full_name.length()!=0){
             if (constraints.length()!=0) constraints.append(" and ");
@@ -2019,8 +2053,9 @@ public class DDSearchEngine {
             buf.append(constraints.toString());
         }
 
-        buf.append(" order by DS_TABLE.SHORT_NAME, " +
-                   "DATASET.SHORT_NAME, DS_TABLE.VERSION desc, DATASET.VERSION desc");
+        buf.append(" order by DS_TABLE.IDENTIFIER, " +
+                   "DATASET.IDENTIFIER, DS_TABLE.VERSION desc, " +
+                   "DATASET.VERSION desc");
 
         log(buf.toString());
         
@@ -2043,26 +2078,26 @@ public class DDSearchEngine {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
 
-            String prvTblName = null;
-            String prvDstName = null;
+            String prvTblIdf = null;
+            String prvDstIdf = null;
 
             while (rs.next()){
 
-                String tblName = rs.getString("DS_TABLE.SHORT_NAME");
-                String dstName = rs.getString("DATASET.SHORT_NAME");
+                String tblIdf = rs.getString("DS_TABLE.IDENTIFIER");
+                String dstIdf = rs.getString("DATASET.IDENTIFIER");
 
                 // make sure you get the latest version of each tbl/dst
-                if (prvTblName!=null){
-                    if (tblName.equals(prvTblName)){
-                        if (prvDstName!=null && prvDstName.equals(dstName))
+                if (prvTblIdf!=null){
+                    if (tblIdf.equals(prvTblIdf)){
+                        if (prvDstIdf!=null && prvDstIdf.equals(dstIdf))
                             continue;
-                        else if (prvDstName==null && dstName==null)
+                        else if (prvDstIdf==null && dstIdf==null)
                             continue;
                     }
                 }
 
-                prvTblName = tblName;
-                prvDstName = dstName;
+                prvTblIdf = tblIdf;
+                prvDstIdf = dstIdf;
 
                 DsTable tbl = new DsTable(rs.getString("DS_TABLE.TABLE_ID"),
                                           rs.getString("DATASET.DATASET_ID"),
@@ -2072,6 +2107,7 @@ public class DDSearchEngine {
                 tbl.setNamespace(rs.getString("DS_TABLE.CORRESP_NS"));
                 tbl.setParentNs(rs.getString("DS_TABLE.PARENT_NS"));
                 tbl.setDatasetName(rs.getString("DATASET.SHORT_NAME"));
+				tbl.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
 
                 // set the name if nameID was previously successfully found
                 if (nameID!=null){
@@ -2153,6 +2189,7 @@ public class DDSearchEngine {
                 dsTable.setParentNs(rs.getString("DS_TABLE.PARENT_NS"));
                 
                 dsTable.setDatasetName(rs.getString("DATASET.SHORT_NAME"));
+				dsTable.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
             }
         }
         finally{
@@ -2290,13 +2327,14 @@ public class DDSearchEngine {
 
     }
 
-    public String getDataElementID(String ns_id, String short_name) throws SQLException {
+    public String getDataElementID(String ns_id, String idfier) throws SQLException {
 
         if(ns_id == null || ns_id.length()==0) return null;
-        if(short_name == null || short_name.length()==0) return null;
+        if(idfier == null || idfier.length()==0) return null;
 
-        StringBuffer buf = new StringBuffer("select DATAELEM.DATAELEM_ID from DATAELEM where DATAELEM.SHORT_NAME='");
-        buf.append(short_name);
+        StringBuffer buf = new StringBuffer(
+	"select DATAELEM.DATAELEM_ID from DATAELEM where DATAELEM.IDENTIFIER='");
+        buf.append(idfier);
         buf.append("' AND DATAELEM.PARENT_NS=");
         buf.append(ns_id);
 
@@ -2331,13 +2369,8 @@ public class DDSearchEngine {
             return fxv;
         }
 
-        /*String qry =
-        "select FIXED_VALUE.* from FIXED_VALUE " +
-        "where FIXED_VALUE.FIXED_VALUE_ID=" + fxv_id;*/
-
         String qry =
-        "select * from CS_ITEM " +
-        "where CSI_ID=" + fxv_id;
+        "select * from FXV where FXV_ID=" + fxv_id;
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -2348,30 +2381,25 @@ public class DDSearchEngine {
             rs = stmt.executeQuery(qry);
 
             if (rs.next()){
-                /*fxv = new FixedValue(rs.getString("FIXED_VALUE.FIXED_VALUE_ID"),
-                                            rs.getString("FIXED_VALUE.DATAELEM_ID"),
-                                            rs.getString("FIXED_VALUE.VALUE"));*/
-
-                fxv = new FixedValue(rs.getString("CSI_ID"),
-                                            rs.getString("COMPONENT_ID"),
-                                            rs.getString("CSI_VALUE"),
-                                            rs.getString("POSITION"));
+                fxv = new FixedValue(rs.getString("FXV_ID"),
+                                     rs.getString("OWNER_ID"),
+                                     rs.getString("VALUE"));
 
                 String isDefault = rs.getString("IS_DEFAULT");
-                if (!Util.nullString(isDefault) && isDefault.equalsIgnoreCase("Y"))
+                if (isDefault!=null && isDefault.equalsIgnoreCase("Y"))
                     fxv.setDefault();
 
-                fxv.setCsID(rs.getString("CS_ID"));
+				fxv.setDefinition(rs.getString("DEFINITION"));
+				fxv.setShortDesc(rs.getString("SHORT_DESC"));
             }
             else return null;
 
-            qry =
+            /*qry =
             "select M_ATTRIBUTE.*, ATTRIBUTE.VALUE from M_ATTRIBUTE, ATTRIBUTE " +
             "where " +
             //"ATTRIBUTE.PARENT_TYPE='FV' and ATTRIBUTE.DATAELEM_ID=" + fxv_id + " and " +
             "ATTRIBUTE.PARENT_TYPE='CSI' and ATTRIBUTE.DATAELEM_ID=" + fxv_id + " and " +
             "ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID";
-
 
             stmt = conn.createStatement();
             rs = stmt.executeQuery(qry);
@@ -2387,24 +2415,7 @@ public class DDSearchEngine {
                                     rs.getString("M_ATTRIBUTE.DEFINITION"),
                                     rs.getString("M_ATTRIBUTE.OBLIGATION"));
                 fxv.addAttribute(attr);
-            }
-
-            qry = "select * from CS_ITEM" +
-            " RIGHT OUTER JOIN CSI_RELATION ON CS_ITEM.CSI_ID=CSI_RELATION.CHILD_CSI" +
-            " where CS_ITEM.CSI_TYPE='fxv' and CSI_RELATION.PARENT_CSI=" + fxv_id;
-
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(qry);
-
-            while (rs.next()){
-
-                CsiItem csiI = new CsiItem(rs.getString("CS_ITEM.CSI_ID"),
-                                        rs.getString("CS_ITEM.CSI_VALUE"),
-                                        rs.getString("CS_ITEM.COMPONENT_ID"),
-                                        rs.getString("CS_ITEM.COMPONENT_TYPE"));
-                csiI.setRelDescription(rs.getString("CSI_RELATION.REL_DESCRIPTION"));
-                fxv.addItem(csiI);
-            }
+            }*/
         }
         finally{
             try{
@@ -2415,6 +2426,7 @@ public class DDSearchEngine {
 
         return fxv;
     }
+    
     public Vector getRelatedElements(String delem_id, String parent_type) throws SQLException {
         return getRelatedElements(delem_id, parent_type, null, null);
     }
@@ -2475,67 +2487,6 @@ public class DDSearchEngine {
         return v;
     }
 
-    public Vector getAllFixedValues(String delem_id, String parent_type) throws SQLException {
-        Vector v = new Vector();
-        getAllFixedValues(delem_id, parent_type, null, 0, v);
-        return v;
-    }
-
-    private void getAllFixedValues(String delem_id, String parent_type, String parent_id, int level, Vector v) throws SQLException {
-
-        StringBuffer buf = new StringBuffer();
-
-        buf.append("select CS_ITEM.*");
-        buf.append(", CSI_RELATION.PARENT_CSI");
-        buf.append(", CSI_RELATION.REL_TYPE");
-        buf.append(" from CS_ITEM");
-        buf.append(" left outer join CSI_RELATION on (CS_ITEM.CSI_ID=CSI_RELATION.CHILD_CSI and CSI_RELATION.REL_TYPE='taxonomy')");
-        buf.append(" where COMPONENT_ID=");
-        buf.append(delem_id);
-        buf.append(" and CSI_TYPE='fxv'");
-        buf.append(" and COMPONENT_TYPE=" + Util.strLiteral(parent_type));
-        if(level>0 && parent_id != null){
-          buf.append(" and CSI_RELATION.PARENT_CSI=");
-          buf.append(parent_id);
-        }
-
-        //buf.append(" ORDER BY CSI_VALUE");
-        buf.append(" ORDER BY POSITION, CSI_VALUE");
-
-        log(buf.toString());
-
-        Statement stmt = null;
-        ResultSet rs = null;
-
-        try{
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(buf.toString());
-
-            level++;
-
-            while (rs.next()){
-
-                //String rel_type=rs.getString("CSI_RELATION.REL_TYPE");
-                //if (rel_type == null) rel_type="";
-                if (level==1 && !Util.nullString(rs.getString("CSI_RELATION.PARENT_CSI")))
-                    continue;
-
-                //if (level>1 && rel_type.equals("abstract")) continue;
-
-                String id =rs.getString("CSI_ID");
-                FixedValue fxv = getFixedValue(id);
-                fxv.setLevel(level);
-                v.add(fxv);
-                getAllFixedValues(delem_id, "elem", id, level, v);
-            }
-        }
-        finally{
-            try{
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-            } catch (SQLException sqle) {}
-        }
-    }
     private DElemAttribute getAttributeById(Vector v, String id){
 
         if (v == null) return null;
@@ -2587,36 +2538,17 @@ public class DDSearchEngine {
     /**
     *
     */
-    public Vector getElmHistory(String elmID) throws SQLException {
-        if (Util.nullString(elmID))
+    public Vector getElmHistory(String idfier, String parentNs, String ver)
+    												throws SQLException {
+        if (idfier==null || parentNs==null || ver==null)
             return null;
         
-        String q =
-        "select PARENT_NS, SHORT_NAME, VERSION from DATAELEM " +
-        "where DATAELEM_ID=" + elmID;
-        
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(q);
-        
-        String shortName = null;
-        String nsID = null;
-        String version = null;
-        
-        if (rs.next()){
-            shortName = rs.getString("SHORT_NAME");
-            nsID = rs.getString("PARENT_NS");
-            version = rs.getString("VERSION");
-        }
-        
-        if (shortName==null || nsID==null)
-            return null;
-        
-        q = "select VERSION, USER, DATE, DATAELEM_ID from DATAELEM " +
-            "where PARENT_NS=" + nsID + " and " +
-            "SHORT_NAME='" + shortName + "' and VERSION<" + version +
+        String q = "select VERSION, USER, DATE, DATAELEM_ID from DATAELEM " +
+            "where WORKING_COPY='N' and PARENT_NS=" + parentNs + " and " +
+            "IDENTIFIER='" + idfier + "' and VERSION<" + ver +
             " order by VERSION desc";
         
-        rs = stmt.executeQuery(q);
+        ResultSet rs = conn.createStatement().executeQuery(q);
         
         Vector v = new Vector();
         while (rs.next()){
@@ -2645,15 +2577,15 @@ public class DDSearchEngine {
     /**
     *
     */
-    public Vector getTblHistory(String tblName, String dstName, String version)
+    public Vector getTblHistory(String idfier, String dstName, String version)
                                                         throws SQLException {
         
         String q =
         "select distinct DS_TABLE.* from DS_TABLE " +
         "left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID " +
         "left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +
-        "where " +
-        "DS_TABLE.SHORT_NAME='" + tblName + "' and " +
+        "where DS_TABLE.WORKING_COPY='N' and " +
+        "DS_TABLE.IDENTIFIER='" + idfier + "' and " +
         "DATASET.SHORT_NAME='" + dstName + "' and " +
         "DS_TABLE.VERSION<" + version +
         " order by VERSION desc";
@@ -2688,11 +2620,11 @@ public class DDSearchEngine {
     /**
     *
     */
-    public Vector getDstHistory(String shortName, String version)
+    public Vector getDstHistory(String idfier, String version)
                                                 throws SQLException {
         
-        String q = "select * from DATASET where SHORT_NAME=" +
-        Util.strLiteral(shortName) +
+        String q = "select * from DATASET where WORKING_COPY='N' and " +
+        "IDENTIFIER=" + Util.strLiteral(idfier) +
 		" and VERSION<" + version +
 		" and (DELETED is null";
 		if (user!=null && user.getUserName()!=null)
@@ -3251,8 +3183,6 @@ public class DDSearchEngine {
 			vv.add(hash);				
 		}
 		
-		System.out.println(vv);
-		
 		// order the results by the NAME field
 		for (int i=1; i<vv.size(); i++){
 			Hashtable ih = (Hashtable)vv.get(i);
@@ -3399,6 +3329,27 @@ public class DDSearchEngine {
 				
 		return false;
 	}
+
+	/**
+	 * 
+	 * @param msg
+	 */
+	public boolean hasGIS(String tblID) throws SQLException{
+		
+		if (tblID==null) return false;
+		
+		StringBuffer buf = new StringBuffer("select count(*) ").
+		append("from DATAELEM left outer join TBL2ELEM on ").
+		append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID ").
+		append("where DATAELEM.GIS is not null and TBL2ELEM.TABLE_ID=").
+		append(tblID);
+		
+		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+		if (rs.next() && rs.getInt(1)>0)
+			return true;
+		else
+			return false;	
+	}
 	
     /**
     *
@@ -3418,17 +3369,19 @@ public class DDSearchEngine {
         try{
             Class.forName("com.mysql.jdbc.Driver");
             Connection conn =
-                DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
+                DriverManager.getConnection(
+			"jdbc:mysql://195.250.186.16:3306/dd", "root", "ABr00t");
 
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
 			AppUserIF testUser = new TestUser();
-			testUser.authenticate("jaanus", "jaanus");
+			testUser.authenticate("heinlja", "xxx");
 			searchEngine.setUser(testUser);
 			
-			//boolean f = searchEngine.isTblDeleted("2134");
-			//boolean f = searchEngine.isElmDeleted("12165");
-			Vector v = searchEngine.getHarvestedAttrs("12");
-			System.out.println(v);
+			System.out.println(searchEngine.hasGIS("1614"));
+			System.out.println(searchEngine.hasGIS("1648"));
+			System.out.println(searchEngine.hasGIS("1613"));
+			System.out.println(searchEngine.hasGIS("1312"));
+			System.out.println(searchEngine.hasGIS("1615"));
         }
         catch (Exception e){
             System.out.println(e.toString());

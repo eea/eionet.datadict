@@ -152,7 +152,7 @@ public class ElmPdfAll {
         }
         
         // write allowable values (for a factsheet levelling not needed I guess)
-        v = searchEngine.getAllFixedValues(elem.getID(), "elem");
+        v = searchEngine.getFixedValues(elem.getID(), "elem");
         if (v!=null && v.size()>0){
             addElement(new Phrase("! This data element may only have the " +
                                 "following fixed values:\n", Fonts.get(Fonts.HEADING_0)));

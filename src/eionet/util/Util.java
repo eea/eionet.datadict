@@ -23,6 +23,7 @@
  
 package eionet.util;
 
+import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.security.*;
@@ -442,6 +443,15 @@ public class Util {
         }
         
         return f;
+    }
+    
+    /*
+     * Return's a throwable's stack trace in a string 
+     */
+    public static String getStack(Throwable t){
+		ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+		t.printStackTrace(new PrintStream(bytesOut));
+		return bytesOut.toString();
     }
     
     /**

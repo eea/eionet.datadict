@@ -25,6 +25,7 @@ public class DatasetHandler extends BaseHandler {
     private String ds_id = null;
     private String[] ds_ids = null;
     private String ds_name = null;
+    private String idfier = null;
     private String lastInsertID = null;
     
     private boolean versioning = true;
@@ -51,6 +52,7 @@ public class DatasetHandler extends BaseHandler {
         this.ds_id = req.getParameter("ds_id");
         this.ds_ids = req.getParameterValues("ds_id");
         this.ds_name = req.getParameter("ds_name");
+		this.idfier = req.getParameter("idfier");
         
         if (ctx!=null){
 			String _versioning = ctx.getInitParameter("versioning");
@@ -126,15 +128,19 @@ public class DatasetHandler extends BaseHandler {
     
     private void insert() throws Exception {
     	
-        if (ds_name == null)
-            throw new SQLException("Short name must be specified!");
+        if (this.idfier == null)
+            throw new SQLException("Identifier must be specified!");
         
-        if (exists())
-            throw new SQLException("A dataset with this short name already exists!");
+        if (exists()) throw new SQLException(
+					"A dataset with this identifier already exists!");
             
+        if (Util.nullString(ds_name))
+        	ds_name = idfier;
+        	
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("DATASET");
-        gen.setField("SHORT_NAME", ds_name);
+        gen.setField("IDENTIFIER", idfier);
+		gen.setField("SHORT_NAME", ds_name);
         
         // new datasets we treat as working copies until checked in
         if (versioning){
@@ -155,17 +161,17 @@ public class DatasetHandler extends BaseHandler {
         
         // add acl
 		if (user!=null){
-			String aclPath = "/datasets/" + ds_name;
+			String aclPath = "/datasets/" + idfier;
 			HashMap acls = AccessController.getAcls();
 			if (!acls.containsKey(aclPath)){
-				String aclDesc = "Short name: " + ds_name;
+				String aclDesc = "Identifier: " + idfier;
 				AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
 			}
 		}
         
         // create the corresponding namespace
         // (this also sets the WORKING_USER)
-        String correspNS = createNamespace(ds_name);
+        String correspNS = createNamespace(idfier);
         if (correspNS!=null){
             gen.clear();
             gen.setTable("DATASET");
@@ -233,12 +239,26 @@ public class DatasetHandler extends BaseHandler {
                                     " where DATASET_ID=" + ds_id);
         }
         
+        // short name
+		if (!Util.nullString(ds_name)){
+			SQLGenerator gen = new SQLGenerator();
+			gen.setTable("DATASET");
+			gen.setField("SHORT_NAME", ds_name);
+			conn.createStatement().executeUpdate(gen.updateStatement() +
+									" where DATASET_ID=" + ds_id);
+		}
+        
         // if check-in, do the action and exit
         String checkIn = req.getParameter("check_in");
         if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
             
             VersionManager verMan = new VersionManager(conn, user);
 			verMan.setContext(ctx);
+			
+			String updVer = req.getParameter("upd_version");
+			if (updVer!=null && updVer.equalsIgnoreCase("true"))
+				verMan.updateVersion();
+							
             verMan.checkIn(ds_id, "dst",
                                     req.getParameter("reg_status"));
             return;
@@ -329,16 +349,16 @@ public class DatasetHandler extends BaseHandler {
         Vector  legal     = new Vector();
         HashSet delns     = new HashSet();
 		HashSet wrkCopies = new HashSet();
-		Hashtable shortNames = new Hashtable();
+		Hashtable identifiers = new Hashtable();
         VersionManager verMan = new VersionManager(conn, user);
 		verMan.setContext(ctx);
         while (rs.next()){
             
             String thisID = rs.getString("DATASET_ID");
-            String shortName = rs.getString("SHORT_NAME");
+			String idfier = rs.getString("IDENTIFIER");
             String wrkCopy   = rs.getString("WORKING_COPY");
             
-			shortNames.put(thisID, shortName);
+			identifiers.put(thisID, idfier);
             
             if (wrkCopy.equals("Y")){
                 nss.add(rs.getString("CORRESP_NS"));
@@ -346,7 +366,7 @@ public class DatasetHandler extends BaseHandler {
             }            	
             
             if (verMan.isLastDst(rs.getString("DATASET_ID"),
-                                     rs.getString("SHORT_NAME"))){
+                                     rs.getString("IDENTIFIER"))){
                 delns.add(rs.getString("CORRESP_NS"));
             }
                 
@@ -354,13 +374,13 @@ public class DatasetHandler extends BaseHandler {
             // in versioning mode
             if (wrkCopy.equals("N") && versioning){
                 String latestID = verMan.getLatestDstID(
-                        new Dataset(null, rs.getString("SHORT_NAME"), null));
+                        new Dataset(null, rs.getString("IDENTIFIER"), null));
                 if (latestID!=null && !latestID.equals(thisID))
                     throw new Exception("DatasetHandler: Cannot delete an " +
                                                 "intermediate version!");
             }
             else if (versioning)
-                origs.add(shortName);
+                origs.add(idfier);
             
             legal.add(thisID);
         }
@@ -413,12 +433,15 @@ public class DatasetHandler extends BaseHandler {
         
         // remove acls
 		for (int i=0; i<ds_ids.length; i++){
-			String shortName = (String)shortNames.get(ds_ids[i]);
-			if (shortName==null) continue; 
+			String identifier = (String)identifiers.get(ds_ids[i]);
+			if (identifier==null) continue; 
 			rs = stmt.executeQuery("select count(*) from DATASET " +
-							"where SHORT_NAME='" + shortName + "'");
+							"where IDENTIFIER='" + identifier + "'");
 			if (rs.next() && rs.getInt(1)>0) continue;
-			AccessController.removeAcl("/datasets/" + shortName);
+			try{
+				AccessController.removeAcl("/datasets/" + identifier);
+			}
+			catch (Exception e){}
 		}
         
         stmt.close();
@@ -430,10 +453,10 @@ public class DatasetHandler extends BaseHandler {
     /**
     *
     */
-    private String createNamespace(String ds_name) throws Exception{
+    private String createNamespace(String idfier) throws Exception{
         
-        String shortName  = ds_name + "_dst";
-        String fullName   = ds_name + " dataset";
+        String shortName  = idfier + "_dst";
+        String fullName   = idfier + " dataset";
         String definition = "The namespace of " + fullName;
         
         Parameters pars = new Parameters();        
@@ -646,7 +669,7 @@ public class DatasetHandler extends BaseHandler {
         
         String qry =
         "select count(*) as COUNT from DATASET " +
-        "where SHORT_NAME=" + com.tee.util.Util.strLiteral(ds_name);
+        "where IDENTIFIER=" + com.tee.util.Util.strLiteral(this.idfier);
         
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
@@ -677,7 +700,7 @@ public class DatasetHandler extends BaseHandler {
         int i=0;
         for (Iterator iter=originals.iterator(); iter.hasNext(); i++){
             if (i>0) buf.append(" or ");
-            buf.append("SHORT_NAME='" + (String)iter.next() + "'");
+            buf.append("IDENTIFIER='" + (String)iter.next() + "'");
         }
         buf.append(")");
         

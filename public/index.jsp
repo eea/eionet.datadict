@@ -132,7 +132,6 @@
 								<ul>
 									<li><b>Data element with quantitative values</b>: The most commonly used kind, where any answer can be loaded if within the value domain. Examples: data elements "Longitude" or pH,  which allows any measured number to be used, or data element "Sitename" allowing any text describing a site.</li>
 									<li><b>Data element with fixed values</b>: A data element where a predefined code list or other fixed values are the only accepted values. Examples: Station size with fixed values like Small, Large, etc.)</li>
-									<li><b>Aggregate data elements</b> (elements consisting of other elements (can be called sub-elements). The aggregate data elements do not contain data, only links to other data elements. An example is the data element "Station", having two elements - StationID and StationName. Such kinds of "sub-elements" are defined as other data elements.</li>
 								</ul>
 							</p>
 							<p>
@@ -178,18 +177,6 @@
 										and you can see (and save) them when pressing the relevant link at the bottom
 										of definition views.
 									</li>
-									<!--li>
-										Each data element belongs to a certain <b>namespace</b>. This enables data
-										elements to have same short names in different areas/topics. A data element
-										is uniquely identified by it's short name and the namespace to which it belongs.
-										Namespaces can be dynamically added/removed to/from the system. To search for
-										namespaces, use the <a href="namespaces.jsp">Namespaces</a> button on the
-										left-hand pane.
-										The default namespace is <a href="namespace.jsp?ns_id=basens&amp;mode=view">
-										Data Dictionary's base namespace</a>. It should include data elements common
-										to all areas/topics. 
-										In some concept the namespace could present a table from dataset.
-									</li-->
 								</ul>
 							</p>
 							<p>
@@ -210,52 +197,6 @@
 				}
 				%>
 				
-			<!--table>
-					<tr>
-						<td>
-							
-							Data Dictionary is a place where you can search and manage the definitions of
-							data elements that are passed around in the various data flows. Data
-							elements could be for example Station, Station Size, Longitude, etc. By
-							Station you would probably mean a geographical point of environmental measurements
-							and you would notice that it wouldn't have any values of its own. Instead it probably
-							consists of a set of other data elements like Station Size, Longitude, chemicals
-							that have been measured there. And while Longitude can be measured, Station Size
-							would probably have values from a pre-fixed set. So there are three types of different data elements and in
-							Data Dicitonary they are called:<br></br>
-						</td>
-					</tr>
-					<tr><td><b>* AGGREGATE DATA ELEMENTS</b> (elements consisting of other elements, e.g. Station)</td></tr>
-					<tr><td><b>* DATA ELEMENTS WITH FIXED VALUES</b> (e.g. Station size with fixed values like Small, Large, etc.)</td></tr>
-					<tr><td><b>* DATA ELEMENTS WITH QUANTITATIVE VALUES</b> (e.g. Longitude with values that are measured)</br></br></td></tr>
-					<tr>
-						<td>
-							For each type there is a different viewing/modifying form in Data Dictionary.
-							To get there, you must first search for data elements by pressing the
-							<a href="search.jsp">Data elements</a> button under Search on the left-hand pane.
-							Modifying, however, is enabled only if you have administrating rights and have logged
-							in by pressing the <a href="javascript:login()">Login</a> button on the left-hand pane.
-							Once you log in, you will be provided with additional functions on the left-hand pane, enabling
-							you to add new data element definitions. This you can do manually or you can import them
-							directly in XML Schema format. Each data element definition can be represented in
-							XML Schema format and you can see (and save) it when pressing 'view schema' links in
-							data element views.<br></br>
-							Each data element is defined by a set of attributes corresponding to
-							<a href="javascript:openSource('http://www.diffuse.org/meta.html#ISO11179')">ISO 11179 standard</a> for
-							describing data elements. However, the set is flexible and an administrator can dynamically
-							add/remove attributes from/to the system. To search for attributes, use the
-							<a href="attributes.jsp">Attributes</a> button under Search on the left-hand pane.<br></br>
-							Finally, each data element belongs into a certain namespace. This enables data elements
-							to have same short names in different areas/topics. So a data element is uniquely
-							identified by its short name and the namespace it belongs to. Namespaces can also be dynamically
-							added/removed to/from the system. To search for namespaces, use the <a href="namespaces.jsp">Namespaces</a>
-							button under Search on the left-hand pane. The default namespace is
-							<a href="namespace.jsp?ns_id=basens&amp;mode=edit">Data Dictionary's base namespace</a> and it
-							should include data elements common to all areas/topics<br></br>
-							Guidelines have been provided in most of the user views, so please have a go!
-						</td>
-					</tr>
-				</table-->
 				</div>
             </TD>
         </TR>

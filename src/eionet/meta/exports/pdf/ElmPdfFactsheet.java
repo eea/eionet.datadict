@@ -122,7 +122,7 @@ public class ElmPdfFactsheet extends PdfHandout {
         }
         
         // write allowable values (for a factsheet levelling not needed I guess)
-        v = searchEngine.getAllFixedValues(elem.getID(), "elem");
+        v = searchEngine.getFixedValues(elem.getID(), "elem");
         addElement(PdfUtil.fixedValuesTable(v, false));
         
         // write image attributes
@@ -140,9 +140,6 @@ public class ElmPdfFactsheet extends PdfHandout {
 			addElement(imgAttrs);
         }*/
 					
-        // write aggregate structure
-        // ... not implemented, as aggregates are currently out of focus
-        
         // set the factsheet header
         setHeader("data element factsheet");
     }

@@ -31,7 +31,7 @@
 				return;
 			}
 						
-			Vector v = searchEngine.getTblHistory(dsTable.getShortName(),
+			Vector v = searchEngine.getTblHistory(dsTable.getIdentifier(),
 												  dsTable.getDatasetName(),
 												  dsTable.getVersion());
 			

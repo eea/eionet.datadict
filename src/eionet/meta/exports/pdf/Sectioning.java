@@ -4,6 +4,9 @@ import java.util.*;
 
 public class Sectioning {
 	
+	public static final String MODE_ORD = "ord";
+	public static final String MODE_GIS = "gis";
+	
 	private static final String NR = "NR";
 	private static final String LEVEL = "LEVEL";
 	private static final String TITLE = "TITLE";
@@ -11,6 +14,10 @@ public class Sectioning {
 	private Vector toc = null;
 	private int[] levelCounters = null;
 	private int curLevel = 1;
+	private String mode = MODE_ORD;
+	
+	private String refCodelists     = "4";
+	private String refIllustrations = "5";
 	
 	public Sectioning(){
 		toc = new Vector();
@@ -122,6 +129,45 @@ public class Sectioning {
 		hash.put(NR, nr);
 		hash.put(LEVEL, new Integer(level));
 		toc.add(hash);
+	}
+	
+	public void setMode(String mode){
+		this.mode = mode;
+	}
+
+	public String getMode(){
+		return mode;
+	}
+	
+	protected Object clone() throws CloneNotSupportedException{
+		Sectioning sect = new Sectioning();
+		sect.curLevel = curLevel;
+		sect.mode = mode;
+		if (toc!=null)
+			sect.toc = (Vector)toc.clone();
+		if (levelCounters!=null){
+			sect.levelCounters = new int[levelCounters.length];
+			for (int i=0; i<levelCounters.length; i++)
+				sect.levelCounters[i] = levelCounters[i];
+		}
+			
+		return sect;
+	}
+	
+	public void setRefCodelists(String ref){
+		this.refCodelists = ref;
+	}
+
+	public String getRefCodelists(){
+		return this.refCodelists;
+	}
+
+	public void setRefIllustrations(String ref){
+		this.refIllustrations = ref;
+	}
+
+	public String getRefIllustrations(){
+		return this.refIllustrations;
 	}
 	
 	public static void main(String[] args) {

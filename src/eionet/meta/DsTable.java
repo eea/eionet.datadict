@@ -29,11 +29,19 @@ public class DsTable implements Comparable {
     private String datasetName = null;
     
     private String parentNS = null;
+	private String identifier = null;
     
     private String workingUser = null;
     
     private String compStr = null;
-
+    private boolean gis = false;
+    
+    /**
+     * 
+     * @param id
+     * @param dsID
+     * @param shortName
+     */
     public DsTable(String id, String dsID, String shortName){
         this.id = id;
         this.shortName = shortName;
@@ -171,6 +179,14 @@ public class DsTable implements Comparable {
     public String getParentNs(){
         return parentNS;
     }
+
+	public void setIdentifier(String identifier){
+		this.identifier = identifier;
+	}
+    
+	public String getIdentifier(){
+		return this.identifier;
+	}
     
 	public void setWorkingUser(String workingUser){
 		this.workingUser = workingUser;
@@ -232,6 +248,14 @@ public class DsTable implements Comparable {
     
 	public String getCompStr(){
 		return compStr;
+	}
+
+	public void setGIS(boolean gis){
+		this.gis = gis;
+	}
+    
+	public boolean hasGIS(){
+		return gis;
 	}
     
 	public int compareTo(Object o){

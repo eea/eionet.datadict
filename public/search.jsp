@@ -87,6 +87,7 @@ private String setDefaultAttrs(String name){
 	String sel_attr = request.getParameter("sel_attr");
 	String sel_type = request.getParameter("sel_type");
 	String short_name = request.getParameter("short_name");
+	String idfier = request.getParameter("idfier");
 	String type = request.getParameter("type");
 	String contextParam = request.getParameter("ctx");
     String sel_ds = request.getParameter("dataset");
@@ -101,6 +102,7 @@ private String setDefaultAttrs(String name){
 	if (sel_attr == null) sel_attr="";
 	if (sel_type == null) sel_type="";
 	if (short_name == null) short_name="";
+	if (idfier == null) idfier="";
 	if (type == null) type="";
 	if (sel_ds == null) sel_ds="";
 	if (search_precision == null) search_precision="substr";
@@ -195,10 +197,6 @@ private String setDefaultAttrs(String name){
 			if (o!=null){
 				var sel = o.selectedIndex;
 				if (sel>=0){
-					if (o.options[sel].value=="AGG"){
-						alert("Not supported right now!");
-						o.selectedIndex = 0;
-					}
 				}
 			}
 		}
@@ -286,15 +284,6 @@ else
 							<!--The criteria are divided into two:-->
 						</td>
 					</tr>
-					<!--tr>
-						<td>
-							<ul>
-								<li>specifiers that a data element must always have (Type, Short name, Namespace)</li>
-								<li>data element <a href="attributes.jsp">attributes</a>
-								that can be dynamically added/removed to/from the system (all the rest)</li>
-							</ul>
-						</td>
-					</tr-->
 					
 					<tr height"10"><td>&#160;</td></tr>
 					
@@ -311,7 +300,6 @@ else
 						<td colspan="2">
 							<select name="type" class="small" onchange="typeSelect()">
 								<option value="">All</option>
-								<!-- option value="AGG">Aggregate data element</option -->
 								<option value="CH1">Data element with fixed values (codes)</option>
 								<option value="CH2">Data element with quantitative values (e.g. measurements)</option>
 							</select>
@@ -353,11 +341,21 @@ else
 					
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
-							<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
+							<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
 							<span class="mainfont"><b>Short name</b></span>
 						</td>
 						<td colspan="2">
 							<input type="text" class="smalltext" size="50" name="short_name" value="<%=short_name%>"/>
+						</td>
+					</tr>
+					
+					<tr valign="top">
+						<td align="right" style="padding-right:10">
+							<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
+							<span class="mainfont"><b>Identifier</b></span>
+						</td>
+						<td colspan="2">
+							<input type="text" class="smalltext" size="50" name="idfier" value="<%=idfier%>"/>
 						</td>
 					</tr>
 					

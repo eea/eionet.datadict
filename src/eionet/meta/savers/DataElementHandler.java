@@ -28,6 +28,7 @@ public class DataElementHandler extends BaseHandler {
     private String delem_id = null;
     private String[] delem_ids = null;
     private String delem_name = null;
+	private String idfier = null;
     private String delem_class = null;
     private String lastInsertID = null;
     
@@ -85,6 +86,7 @@ public class DataElementHandler extends BaseHandler {
         this.delem_id = req.getParameter("delem_id");
         this.delem_ids = req.getParameterValues("delem_id");
         this.delem_name = req.getParameter("delem_name");
+		this.idfier = req.getParameter("idfier");
         this.delem_class = req.getParameter("delem_class");
         this.ns_id = req.getParameter("ns");
         this.table_id = req.getParameter("table_id");
@@ -164,7 +166,7 @@ public class DataElementHandler extends BaseHandler {
             gen.setFieldExpr("WORKING_USER", "NULL");
             String q = gen.updateStatement() + " where WORKING_USER='" +
                         user.getUserName() + "' and PARENT_NS=" +
-                        s.substring(0, pos) + " and SHORT_NAME='" +
+                        s.substring(0, pos) + " and IDENTIFIER='" +
                         s.substring(pos+1) + "'";
             stmt.executeUpdate(q);
         }
@@ -195,8 +197,7 @@ public class DataElementHandler extends BaseHandler {
             throw new Exception("DataElementHandler mode unspecified!");
 
         if (mode.equalsIgnoreCase("add")){
-            if (type==null || (!type.equalsIgnoreCase("AGG") &&
-                            !type.equalsIgnoreCase("CH1") &&
+            if (type==null || (!type.equalsIgnoreCase("CH1") &&
                             !type.equalsIgnoreCase("CH2")))
                 throw new Exception("DataElementHandler type unspecified!");
         }
@@ -243,12 +244,12 @@ public class DataElementHandler extends BaseHandler {
         }
 
         // make sure you have the necessary params
-        if (delem_name == null || ns_id == null)
-            throw new SQLException("Short name or namespace not specified!");
+        if (idfier == null || ns_id == null)
+            throw new SQLException("Identifier or namespace not specified!");
 
         // make sure such a data element doe not already exist
-        if (exists())
-            throw new SQLException("A data element with this name in this namespace already exists!");
+        if (exists()) throw new SQLException(
+					"Such a data element already exists!");
 
         // stuff needed if making a copy
         String copy_elem_id = req.getParameter("copy_elem_id");
@@ -270,9 +271,13 @@ public class DataElementHandler extends BaseHandler {
         
         // insert the element
         
+        if (Util.nullString(delem_name))
+			delem_name = idfier;
+        
         gen.clear();
         gen.setTable("DATAELEM");
-        gen.setField("SHORT_NAME", delem_name);
+        gen.setField("IDENTIFIER", idfier);
+		gen.setField("SHORT_NAME", delem_name);
         gen.setField("TYPE", type);
         gen.setField("PARENT_NS", ns_id);
         if (!Util.nullString(topNS))
@@ -281,6 +286,10 @@ public class DataElementHandler extends BaseHandler {
         String extension = req.getParameter("extends");
         if (extension != null && extension.length()!=0)
             gen.setFieldExpr("EXTENDS", extension);
+            
+		String gisType = req.getParameter("gis");
+		if (gisType!=null && !gisType.equals("nogis"))
+			gen.setField("GIS", gisType);
 
         // treat new elements as working copies until checked in
         if (versioning){
@@ -308,24 +317,48 @@ public class DataElementHandler extends BaseHandler {
 
     private void update() throws Exception {
         
-        // set the status
+		SQLGenerator gen = new SQLGenerator();
+		gen.setTable("DATAELEM");
+		
         String status = req.getParameter("reg_status");
-        if (!Util.nullString(status)){
-            SQLGenerator gen = new SQLGenerator();
-            gen.setTable("DATAELEM");
+        if (!Util.nullString(status))
             gen.setField("REG_STATUS", status);
-            conn.createStatement().executeUpdate(gen.updateStatement() + 
-                            " where DATAELEM_ID=" + delem_id);
-        }
         
+		String gisType = req.getParameter("gis");
+		System.out.println("GIS type = " + gisType);
+		if (gisType==null || gisType.equals("nogis"))
+			gen.setFieldExpr("GIS", "NULL");
+		else
+			gen.setField("GIS", gisType);
+		
+		if (!Util.nullString(gen.getValues()))
+			conn.createStatement().executeUpdate(gen.updateStatement() + 
+										" where DATAELEM_ID=" + delem_id);        
+        
+		// short name
+		if (!Util.nullString(delem_name)){
+			gen = new SQLGenerator();
+			gen.setTable("DATAELEM");
+			gen.setField("SHORT_NAME", delem_name);
+			conn.createStatement().executeUpdate(gen.updateStatement() +
+									" where DATAELEM_ID=" + delem_id);
+		}
+
         // if check-in, do the action and exit
         String checkIn = req.getParameter("check_in");
         if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
+        	
             VersionManager verMan = new VersionManager(conn, user);
 			verMan.setContext(ctx);
+			
             String verUpw = req.getParameter("ver_upw");
             if (verUpw!=null && verUpw.equalsIgnoreCase("false"))
             	verMan.setUpwardsVersioning(false);
+			
+			String updVer = req.getParameter("upd_version");
+			if (updVer!=null && updVer.equalsIgnoreCase("true"))
+				verMan.updateVersion();
+				
             verMan.checkIn(delem_id, "elm",
                                     req.getParameter("reg_status"));
             return;
@@ -397,7 +430,7 @@ public class DataElementHandler extends BaseHandler {
             // see if it's a working copy
             else if (wrkCopy){
                 originals.add(rs.getString("PARENT_NS") + "," +
-                                rs.getString("SHORT_NAME"));
+                                rs.getString("IDENTIFIER"));
                 wrkCopies.add(rs.getString("DATAELEM.DATAELEM_ID"));
                 topns.add(rs.getString("DATAELEM.TOP_NS"));
             }
@@ -592,12 +625,13 @@ public class DataElementHandler extends BaseHandler {
     
     private void deleteFixedValues() throws Exception {
         
-        StringBuffer buf = new StringBuffer();
-        buf.append("select distinct CSI_ID from CS_ITEM where CSI_TYPE='fxv' and COMPONENT_TYPE='elem' and (");
+        StringBuffer buf = new StringBuffer().
+        append("select distinct FXV_ID from FXV where ").
+        append("OWNER_TYPE='elem' and (");
         for (int i=0; i<delem_ids.length; i++){
             if (i>0)
                 buf.append(" or ");
-            buf.append("COMPONENT_ID=");
+            buf.append("OWNER_ID=");
             buf.append(delem_ids[i]);
         }
         buf.append(")");
@@ -606,7 +640,7 @@ public class DataElementHandler extends BaseHandler {
         ResultSet rs = stmt.executeQuery(buf.toString());
         Parameters pars = new Parameters();
         while (rs.next()){
-            pars.addParameterValue("del_id", rs.getString("CSI_ID"));
+            pars.addParameterValue("del_id", rs.getString("FXV_ID"));
         }
         stmt.close();
         
@@ -673,7 +707,7 @@ public class DataElementHandler extends BaseHandler {
         String position = req.getParameter("pos");
         if (Util.nullString(position))
             position = getTableElemPos();
-            
+		    
         gen.setField("POSITION", position);
 
         String sql = gen.insertStatement();
@@ -685,8 +719,9 @@ public class DataElementHandler extends BaseHandler {
     }
     private String getTableElemPos() throws SQLException{
 
-        StringBuffer buf = new StringBuffer("SELECT MAX(POSITION) FROM TBL2ELEM where TABLE_ID=");
-        buf.append(table_id);
+        StringBuffer buf = new StringBuffer().
+		append("select max(POSITION) from TBL2ELEM where TABLE_ID=").
+        append(table_id);
 
         log(buf.toString());
 
@@ -847,7 +882,7 @@ public class DataElementHandler extends BaseHandler {
             }
             
             if (!hasMatch)
-                throw new Exception("Unknown datatype for element " + this.delem_name);
+                throw new Exception("Unknown datatype for element " + idfier);
                 
             datatypeValue = value;
         }
@@ -937,8 +972,8 @@ public class DataElementHandler extends BaseHandler {
 
         // data element unique ID consists of SHORT_NAME and PARENT_NS
         StringBuffer buf = new StringBuffer();
-        buf.append("select count(*) as COUNT from DATAELEM where SHORT_NAME=");
-        buf.append(com.tee.util.Util.strLiteral(delem_name));
+        buf.append("select count(*) as COUNT from DATAELEM where IDENTIFIER=");
+        buf.append(com.tee.util.Util.strLiteral(idfier));
         buf.append(" and PARENT_NS=");
         buf.append(com.tee.util.Util.strLiteral(ns_id));
         
@@ -969,7 +1004,7 @@ public class DataElementHandler extends BaseHandler {
         SQLGenerator gen = new SQLGenerator();
 
         gen.setTable("DATAELEM");
-        gen.setField("SHORT_NAME", delem_name);
+        gen.setField("IDENTIFIER", idfier);
         gen.setField("PARENT_NS", ns_id);
         gen.setField("VERSION", "1");
         if (versioning==false){

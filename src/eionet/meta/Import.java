@@ -10,6 +10,7 @@ import java.util.*;
 import java.net.*;
 import eionet.meta.imp.*;
 import eionet.util.SecurityUtil;
+import eionet.util.Util;
 
 import com.tee.xmlserver.AppUserIF;
 import com.tee.uit.security.*;
@@ -210,13 +211,15 @@ public class Import extends HttpServlet {
             }
             catch (Exception e){
 
-                StringBuffer msg = new StringBuffer(e.toString());
+                StringBuffer msg = new StringBuffer();
                 int lineNumber = handler.getLine();
                 if (lineNumber>0)
-                    msg.append(" Line " + String.valueOf(lineNumber));
+                    msg.append(" Line ").append(String.valueOf(lineNumber)).
+                    append("\n");
 
-                responseText.append("<h1>Data Dictionary importer encountered an exception:" +
-                                    "</h1><br/>" + msg.toString() + "<br/><br/>");
+                msg.append(Util.getStack(e));
+                responseText.append("<h1>Data Dictionary importer encountered").                	append(" an exception:</h1><br/>").append(msg.toString()).
+                	append("<br/><br/>");
             }
             catch (OutOfMemoryError oome){
 

@@ -458,21 +458,21 @@ public class Restorer {
 		
 		if (Util.nullString(elmID)) return null;
 		
-		String shortName = null;
+		String idfier = null;
 		String parentNs = null;
 		Statement stmt = conn.createStatement();
-		String q = "select SHORT_NAME, PARENT_NS from DATAELEM where " +
+		String q = "select IDENTIFIER, PARENT_NS from DATAELEM where " +
 					"DATAELEM_ID=" + elmID;
 		ResultSet rs = stmt.executeQuery(q);		
 		if (rs.next()){
-			shortName = rs.getString("SHORT_NAME");
+			idfier = rs.getString("IDENTIFIER");
 			parentNs  = rs.getString("PARENT_NS");
 		}
 		
-		if (Util.nullString(shortName) || Util.nullString(parentNs)) return null;
+		if (Util.nullString(idfier) || Util.nullString(parentNs)) return null;
 		
-		q = "select max(VERSION) from DATAELEM where SHORT_NAME="
-				+ Util.strLiteral(shortName) + " and PARENT_NS=" + parentNs;		
+		q = "select max(VERSION) from DATAELEM where IDENTIFIER="
+				+ Util.strLiteral(idfier) + " and PARENT_NS=" + parentNs;		
 		rs = stmt.executeQuery(q);
 		if (rs.next())
 			return rs.getString(1);

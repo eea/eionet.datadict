@@ -14,7 +14,8 @@ import com.tee.xmlserver.AppUserIF;
 public class MrProper {
     
     public static final String FUNCTIONS_PAR = "functs";
-    public static final String DST_NAME = "dsname";
+    public static final String DST_NAME   = "dsname";
+	public static final String DST_IDFIER = "idfier";
 	public static final String VISUALS_PATH = "vispath";
     
     public static final String RLS_DST = "rls_dst";
@@ -123,7 +124,7 @@ public class MrProper {
 				if (fun.equals(ORPHAN_TBL))
 					orphanTables();
                 if (fun.equals(RLS_DST))
-                    releaseDataset(pars.getParameter(DST_NAME));
+                    releaseDataset(pars.getParameter(DST_IDFIER));
 				//if (fun.equals(CLN_VISUALS))
 				//	cleanVisuals(pars.getParameter(VISUALS_PATH));
             }
@@ -167,10 +168,10 @@ public class MrProper {
 		if (rmCrit==null)
 			return;
 		else if (rmCrit.equals("lid")){
-			String name = pars.getParameter("rm_name");
-			if (name!=null){
+			String idfier = pars.getParameter("rm_idfier");
+			if (idfier!=null){
 				buf.append("select DATASET_ID from DATASET where "); 
-				buf.append("SHORT_NAME=").append(Util.strLiteral(name));
+				buf.append("IDENTIFIER=").append(Util.strLiteral(idfier));
 			}
 		}
 		else if (rmCrit.equals("id")){
@@ -213,11 +214,11 @@ public class MrProper {
 		if (rmCrit==null)
 			return;
 		else if (rmCrit.equals("lid")){
-			String name = pars.getParameter("rm_name");
+			String idfier = pars.getParameter("rm_idfier");
 			String ns = pars.getParameter("rm_ns");
-			if (name!=null && ns!=null){
+			if (idfier!=null && ns!=null){
 				buf.append("select TABLE_ID from DS_TABLE where "); 
-				buf.append("SHORT_NAME=").append(Util.strLiteral(name));
+				buf.append("IDENTIFIER=").append(Util.strLiteral(idfier));
 				buf.append("and PARENT_NS=").append(ns);
 			}
 		}
@@ -260,11 +261,11 @@ public class MrProper {
 		if (rmCrit==null)
 			return;
 		else if (rmCrit.equals("lid")){
-			String name = pars.getParameter("rm_name");
+			String idfier = pars.getParameter("rm_idfier");
 			String ns = pars.getParameter("rm_ns");
-			if (name!=null && ns!=null){
+			if (idfier!=null && ns!=null){
 				buf.append("select DATAELEM_ID from DATAELEM where "); 
-				buf.append("SHORT_NAME=").append(Util.strLiteral(name));
+				buf.append("IDENTIFIER=").append(Util.strLiteral(idfier));
 				buf.append("and PARENT_NS=").append(ns);
 			}
 		}
@@ -306,13 +307,13 @@ public class MrProper {
     /**
     *
     */
-    private void releaseDataset(String shortName) throws Exception{
+    private void releaseDataset(String idifier) throws Exception{
         
-        if (Util.nullString(shortName))
-            throw new Exception("Dataset short name not given!");
+        if (Util.nullString(idifier))
+            throw new Exception("Dataset identifier not given!");
         
         String q = "select distinct CORRESP_NS from DATASET where " +
-                   "SHORT_NAME=" + Util.strLiteral(shortName);
+                   "IDENTIFIER=" + Util.strLiteral(idifier);
         
         String ns = null;
         Statement stmt = conn.createStatement();
@@ -583,7 +584,7 @@ public class MrProper {
 
 		// datasets
 		buf = new StringBuffer().
-		append("select * from DATASET where SHORT_NAME='accidents' order by DATE desc");
+		append("select * from DATASET order by DATE desc");
 		
 		odd = new Vector();
 		all = new HashSet();
@@ -654,7 +655,7 @@ public class MrProper {
         
         // get the wcs
         buf = new StringBuffer();
-		buf.append("select distinct SHORT_NAME, VERSION");
+		buf.append("select distinct IDENTIFIER, VERSION");
         if (!tblName.equals("DATASET"))
             buf.append(", PARENT_NS");
         buf.append(" from ");
@@ -665,7 +666,7 @@ public class MrProper {
         rs = stmt.executeQuery(buf.toString());
         while (rs.next()){
 			Hashtable hash = new Hashtable();
-			hash.put("SHORT_NAME", rs.getString("SHORT_NAME"));
+			hash.put("IDENTIFIER", rs.getString("IDENTIFIER"));
 			hash.put("VERSION", rs.getString("VERSION"));
 			if (!tblName.equals("DATASET"))
 				hash.put("PARENT_NS", rs.getString("PARENT_NS"));
@@ -683,8 +684,8 @@ public class MrProper {
             buf = new StringBuffer();
             buf.append("update ");
 			buf.append(tblName);
-			buf.append(" set WORKING_USER=NULL where SHORT_NAME=");
-			buf.append(Util.strLiteral((String)hash.get("SHORT_NAME")));
+			buf.append(" set WORKING_USER=NULL where IDENTIFIER");
+			buf.append(Util.strLiteral((String)hash.get("IDENTIFIER")));
 			buf.append(" and VERSION=");
 			buf.append((String)hash.get("VERSION"));
 			if (!tblName.equals("DATASET")){
@@ -708,7 +709,7 @@ public class MrProper {
 		append("select count(*) from DATAELEM where WORKING_COPY='N' and ").
 		//append("WORKING_USER=").append(Util.strLiteral(user.getUserName())).
 		append("WORKING_USER is not null and ").
-		append("SHORT_NAME=? and PARENT_NS=? and VERSION=? and ").
+		append("IDENTIFIER=? and PARENT_NS=? and VERSION=? and ").
 		append("DATE<?");
 
 		PreparedStatement pstmt= conn.prepareStatement(buf.toString());
@@ -721,7 +722,7 @@ public class MrProper {
     	
     	while (rs.next()){
     		// execute prep statement with qry for original
-			pstmt.setString(1, rs.getString("SHORT_NAME"));
+			pstmt.setString(1, rs.getString("IDENTIFIER"));
 			pstmt.setInt(2, rs.getInt("PARENT_NS"));
 			pstmt.setInt(3, rs.getInt("VERSION"));
 			pstmt.setLong(4, rs.getLong("DATE"));
@@ -752,7 +753,7 @@ public class MrProper {
 		append("select count(*) from DS_TABLE where WORKING_COPY='N' and ").
 		//append("WORKING_USER=").append(Util.strLiteral(user.getUserName())).
 		append("WORKING_USER is not null and ").
-		append(" and SHORT_NAME=? and PARENT_NS=? and VERSION=? and ").
+		append("IDENTIFIER=? and PARENT_NS=? and VERSION=? and ").
 		append("DATE<?");
 
 		pstmt= conn.prepareStatement(buf.toString());
@@ -764,7 +765,7 @@ public class MrProper {
     	
 		while (rs.next()){
 			// execute prep statement with qry for original
-			pstmt.setString(1, rs.getString("SHORT_NAME"));
+			pstmt.setString(1, rs.getString("IDENTIFIER"));
 			pstmt.setInt(2, rs.getInt("PARENT_NS"));
 			pstmt.setInt(3, rs.getInt("VERSION"));
 			pstmt.setLong(4, rs.getLong("DATE"));
@@ -795,7 +796,7 @@ public class MrProper {
 		append("select count(*) from DATASET where WORKING_COPY='N' and ").
 		//append("WORKING_USER=").append(Util.strLiteral(user.getUserName())).
 		append("WORKING_USER is not null and ").
-		append(" and SHORT_NAME=? and VERSION=? and ").
+		append("IDENTIFIER=? and VERSION=? and ").
 		append("DATE<?");
 
 		pstmt= conn.prepareStatement(buf.toString());
@@ -807,7 +808,7 @@ public class MrProper {
     	
 		while (rs.next()){
 			// execute prep statement with qry for original
-			pstmt.setString(1, rs.getString("SHORT_NAME"));
+			pstmt.setString(1, rs.getString("IDENTIFIER"));
 			pstmt.setInt(2, rs.getInt("VERSION"));
 			pstmt.setLong(3, rs.getLong("DATE"));
 			ResultSet rs2 = pstmt.executeQuery();

@@ -183,6 +183,7 @@ private Vector getValues(String id){
 			mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
 			searchEngine.setUser(user);
 			
+			String idfier = "";
 			String ds_name = "";
 			String version = "";
 			String dsVisual = null;
@@ -193,6 +194,11 @@ private Vector getValues(String id){
 				dataset = searchEngine.getDataset(ds_id);
 					
 				if (dataset!=null){
+					
+					idfier = dataset.getIdentifier();
+					if (idfier == null) idfier = "unknown";
+					if (idfier.length() == 0) idfier = "empty";
+					
 					ds_name = dataset.getShortName();
 					if (ds_name == null) ds_name = "unknown";
 					if (ds_name.length() == 0) ds_name = "empty";
@@ -240,7 +246,7 @@ private Vector getValues(String id){
 
 			String workingUser = null;
 			if (dataset!=null)
-				workingUser = verMan.getDstWorkingUser(dataset.getShortName());
+				workingUser = verMan.getDstWorkingUser(dataset.getIdentifier());
 			
 			// JH220803 - implementing check-in/check-out
 			if (mode.equals("edit") && user!=null && user.isAuthentic()){
@@ -294,6 +300,14 @@ private Vector getValues(String id){
 			if (complexAttrs == null) complexAttrs = new Vector();
 			tables = searchEngine.getDatasetTables(ds_id, true);
 			
+			// set a flag if element has history
+			boolean hasHistory = false;
+			if (mode.equals("edit") && dataset!=null){
+				Vector v = searchEngine.getDstHistory(dataset.getIdentifier(), dataset.getVersion() + 1);
+				if (v!=null && v.size()>0)
+					hasHistory = true;
+			}
+			
 			%>
 
 <html>
@@ -302,9 +316,10 @@ private Vector getValues(String id){
     <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
     <link type="text/css" rel="stylesheet" href="eionet.css">
     <script language="JavaScript" src='script.js'></script>
+    <script language="JavaScript" src='modal_dialog.js'></script>
     <script language="JavaScript">
     
-    	var dialogWin = null
+    	var dlgwin = null;
     
     	function openSchema(){
 			window.open("station.xsd",null, "height=400,width=600,status=no,toolbar=no,menubar=no,location=no,scrollbars=yes,top=100,left=100");
@@ -340,7 +355,7 @@ private Vector getValues(String id){
 				}
 				else{ %>
 					// now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
-					dialogWin = window.open("dst_del_dialog.html", "", "height=130,width=400,status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no,modal=yes");
+					dlgwn = window.open("dst_del_dialog.html", "", "height=130,width=400,status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no,modal=yes");
 					window.onfocus = checkModal;
 					
 					return;<%
@@ -354,14 +369,7 @@ private Vector getValues(String id){
 					return;
 				}
 				
-				if (hasWhiteSpace("ds_name")){
-					alert("Short name cannot contain any white space!");
-					return;
-				}
-				
-				var identifierInputName = document.forms["form1"].IdentifierInputName.value;
-						
-				if (identifierInputName!=null && hasWhiteSpace(identifierInputName)){
+				if (hasWhiteSpace("idfier")){
 					alert("Identifier cannot contain any white space!");
 					return;
 				}
@@ -374,17 +382,16 @@ private Vector getValues(String id){
 		}
 
 		function checkModal() {
-   			if (dialogWin!=null && !dialogWin.closed) 
-      			dialogWin.focus()
+   			if (dlgwn!=null && !dlgwn.closed) 
+      			dlgwn.focus()
 		}
 
 
 		function checkObligations(){
 			
-			var o = document.forms["form1"].delem_name;
-			if (o!=null){
+			var o = document.forms["form1"].ds_name;
+			if (o!=null)
 				if (o.value.length == 0) return false;
-			}
 			
 			var o = document.forms["form1"].version;
 			if (o!=null){
@@ -459,9 +466,24 @@ private Vector getValues(String id){
 		}
 		
 		function checkIn(){
+			
+			//openDialog("yesno_dialog.html", "Do you want to increment the dataset's internal version?", retVersionUpd,100, 400);
+			
+			submitCheckIn();
+		}
+		
+		function submitCheckIn(){
 			document.forms["form1"].elements["check_in"].value = "true";
 			document.forms["form1"].elements["mode"].value = "edit";
 			document.forms["form1"].submit();
+		}
+		
+		function retVersionUpd(){
+			var v = dialogWin.returnValue;
+			if (v==null) v=true;			
+			document.forms["form1"].elements["upd_version"].value = v;
+			
+			submitCheckIn();
 		}
 		
 		function viewHistory(){
@@ -683,7 +705,7 @@ private Vector getValues(String id){
 											 workingUser.equals(user.getUserName());
 									
 									if (editPrm){
-										if (dataset!=null && dataset.isWorkingCopy() ||
+										if ((dataset!=null && dataset.isWorkingCopy()) ||
 											(isLatest && topFree)   ||
 											(isLatest && inWorkByMe)){ %>
 											<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=ds_id%>')"/>&#160;<%
@@ -738,8 +760,8 @@ private Vector getValues(String id){
 			
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
-					<span class="mainfont"><b>Short name</b>
+					<a href="javascript:alert('Under construction!')">
+					<span class="help">?</span></a>&#160;<span class="mainfont"><b>Short name</b>
 						<%
 						displayed++;
 						if (!mode.equals("view")){
@@ -751,12 +773,18 @@ private Vector getValues(String id){
 					</span>
 				</td>
 				<td colspan="2">
-					<% if(!mode.equals("add")){ %>
-						<font class="title2" color="#006666"><%=Util.replaceTags(ds_name)%></font>
-						<input type="hidden" name="ds_name" value="<%=ds_name%>"/>
-					<% } else{ %>
-						<input class="smalltext" type="text" size="30" name="ds_name"></input>
-					<% } %>
+					<%
+					if(mode.equals("view")){ %>
+						<font class="title2" color="#006666"><%=Util.replaceTags(dataset.getShortName())%></font>
+						<input type="hidden" name="ds_name" value="<%=dataset.getShortName()%>"/><%
+					}
+					else if (mode.equals("add")){ %>
+						<input class="smalltext" type="text" size="30" name="ds_name"/><%
+					}
+					else { %>
+						<input class="smalltext" type="text" size="30" name="ds_name" value="<%=dataset.getShortName()%>"/><%
+					}
+					%>
 				</td>
 			</tr>
 			
@@ -789,8 +817,32 @@ private Vector getValues(String id){
 				<%
 			}
 			
-			// display Registration Status
 			%>
+			
+			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+				<td align="right" style="padding-right:10">
+					<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
+					<span class="mainfont"><b>Identifier</b>
+						<%
+						displayed++;
+						if (!mode.equals("view")){
+							%>
+							&#160;(M)
+							<%
+						}
+						%>
+					</span>
+				</td>
+				<td colspan="2">
+					<% if(!mode.equals("add")){ %>
+						<b><%=Util.replaceTags(idfier)%></b>
+						<input type="hidden" name="idfier" value="<%=idfier%>"/>
+					<% } else{ %>
+						<input class="smalltext" type="text" size="30" name="idfier"></input>
+					<% } %>
+				</td>
+			</tr>
+			
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" valign="top" style="padding-right:10">
 					<a target="_blank" href="statuses.html">
@@ -909,35 +961,35 @@ private Vector getValues(String id){
 							}
 						}
 						else{ // start display input
-							if (dispMultiple){
-								%>
-									<select <%=disabled%> name="attr_mult_<%=attrID%>" multiple="true" style="width:auto">
-								<%
-								for (int k=0; multiValues!=null && k<multiValues.size(); k++){
-									attrValue = (String)multiValues.get(k);
+							if (dispMultiple){ %>
+							
+								<select <%=disabled%> name="attr_mult_<%=attrID%>" multiple="true" style="width:auto"> <%
+
+									for (int k=0; multiValues!=null && k<multiValues.size(); k++){
+										attrValue = (String)multiValues.get(k);
+										%>
+										<option value="<%=attrValue%>"><%=attrValue%></option> <%
+									}
 									%>
-									<option value="<%=attrValue%>"><%=attrValue%></option>
-									<%
-								}											
-								%>
+									
 								</select>
-								<% if (disabled.equals("")){ %>
-									<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
-									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
 								
 								<%
+								if (disabled.equals("")){ %>
+									<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
+									<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a> <%
 								}
-								if (dispType.equals("select")){ %>							
-									<select class="small" name="hidden_attr_<%=attrID%>" style="display:none">
-										<%
+								
+								if (dispType.equals("select")){ %>
+								
+									<select class="small" name="hidden_attr_<%=attrID%>" style="display:none"> <%
 										Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
 										if (fxValues==null || fxValues.size()==0){ %>
 											<option selected value=""></option> <%
 										}
 										else{
 											for (int g=0; g<fxValues.size(); g++){
-												FixedValue fxValue = (FixedValue)fxValues.get(g);
-												%>
+												FixedValue fxValue = (FixedValue)fxValues.get(g); %>
 												<option value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
 											}
 										}
@@ -961,7 +1013,7 @@ private Vector getValues(String id){
 									</select> <%
 								}
 							}
-							else{
+							else{ // no multiple display
 						
 							if (dispType.equals("text")){
 								if (attrValue!=null){
@@ -1218,7 +1270,7 @@ private Vector getValues(String id){
 									tblName = tblName.length()>40 && tblName != null ? tblName.substring(0,40) + " ..." : tblName;
 									
 									String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
-			    															  table.getShortName(), "tbl");
+			    															  table.getIdentifier(), "tbl");
 
 									String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());
 									
@@ -1272,10 +1324,21 @@ private Vector getValues(String id){
 			
 		} // if mode is not 'add'
 		
+		if (!mode.equals("view")){ %>
+			<tr height="15"><td colspan="3"></td></tr><%
+		}
+		
+		if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy() && editPrm && hasHistory){%>
+			<tr height="15">
+				<td>&#160;</td>
+				<td colspan="2" style="padding-left:47">
+					<input type="checkbox" name="upd_version" value="true">Update version when checking in</input>
+				</td>
+			</tr><%
+		}
+		
 		if (!mode.equals("view")){
 			%>
-			
-			<tr height="15"><td colspan="3"></td></tr>
 			
 			<tr>
 				<td>&#160;</td>

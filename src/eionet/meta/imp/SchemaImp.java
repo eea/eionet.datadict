@@ -322,7 +322,7 @@ insert fixed values with FixedValuesHandler
 
         String ns_prefix;
         String delem_ref;
-        String delem_name;
+        String idfier;
         String delem_id;
         Namespace ns;
         Parameters paramsFields = new Parameters();
@@ -341,8 +341,8 @@ insert fixed values with FixedValuesHandler
             if (delem_ref.indexOf(":")==-1)throw new Exception("Bad format of subelement reference: " + subElem.toString());
 
             ns_prefix = delem_ref.substring(0, delem_ref.indexOf(":"));
-            delem_name = delem_ref.substring(delem_ref.indexOf(":") + 1);
-            delem_id= searchEngine.getDataElementID(getNamespaceID(null, ns_prefix), delem_name);
+			idfier = delem_ref.substring(delem_ref.indexOf(":") + 1);
+            delem_id= searchEngine.getDataElementID(getNamespaceID(null, ns_prefix), idfier);
 
             if (delem_id == null || delem_id.length()==0)
                 throw new Exception("Unknown subelement reference: " + delem_ref + "!<br>"); 

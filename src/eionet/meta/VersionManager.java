@@ -19,6 +19,7 @@ public class VersionManager{
     private DDSearchEngine searchEngine = null;
     private AppUserIF user = null;
     private boolean upwardsVersioning = true;
+	private boolean versionUpdate = false;
     
     /** possible registration statuses*/
     private Hashtable regStatuses = new Hashtable();
@@ -102,7 +103,7 @@ public class VersionManager{
      * @return  the name of the working user or null if it's missing
      * @exception   SQLException
      */
-    public String getWorkingUser(String ctxID, String shortName, String type)
+    public String getWorkingUser(String ctxID, String idfier, String type)
         throws SQLException {
         
         String tblName = null;
@@ -120,7 +121,7 @@ public class VersionManager{
             ctxField = "PARENT_NS";
         
         String qry = "select distinct WORKING_USER, VERSION from " + tblName +
-        " where SHORT_NAME='" + shortName + "'";
+        " where IDENTIFIER='" + idfier + "'";
         if (ctxField!=null)
             qry = qry + " and " + ctxField + "=" + ctxID;
         
@@ -155,12 +156,12 @@ public class VersionManager{
     /**
     *
     */
-    public String getTblWorkingUser(String tblName, String parentNs)
+    public String getTblWorkingUser(String idfier, String parentNs)
         throws SQLException {
             
         String q =
         "select distinct DS_TABLE.WORKING_USER from DS_TABLE " +
-        "where SHORT_NAME=" + com.tee.util.Util.strLiteral(tblName) +
+        "where IDENTIFIER=" + com.tee.util.Util.strLiteral(idfier) +
         " and WORKING_COPY='Y'";
         
         if (parentNs!=null)
@@ -178,11 +179,11 @@ public class VersionManager{
     /**
     *
     */
-    public String getDstWorkingUser(String shortName)
+    public String getDstWorkingUser(String idfier)
         throws SQLException {
         
         String q = "select distinct DATASET.WORKING_USER from DATASET " +
-        "where DATASET.SHORT_NAME='" + shortName + "' and " +
+        "where DATASET.IDENTIFIER='" + idfier + "' and " +
         "DATASET.WORKING_COPY='Y'";
         
         ResultSet rs = conn.createStatement().executeQuery(q);
@@ -199,7 +200,7 @@ public class VersionManager{
         String q =
         "select DATAELEM_ID from DATAELEM where WORKING_COPY='Y' and " +
         "PARENT_NS=" + elm.getNamespace().getID() + " and " +
-        "SHORT_NAME='" + elm.getShortName() + "'";
+        "IDENTIFIER='" + elm.getIdentifier() + "'";
         
         ResultSet rs = conn.createStatement().executeQuery(q);
         if (rs.next()){
@@ -217,7 +218,7 @@ public class VersionManager{
         String q =
         "select distinct TABLE_ID from DS_TABLE " +
         "where WORKING_COPY='Y' and " +
-        "SHORT_NAME='" + tbl.getShortName() + "' and " +
+        "IDENTIFIER='" + tbl.getIdentifier() + "' and " +
         "PARENT_NS=" + tbl.getParentNs();
         
         ResultSet rs = conn.createStatement().executeQuery(q);
@@ -235,7 +236,7 @@ public class VersionManager{
         String q =
         "select distinct DATASET_ID from DATASET " +
         "where WORKING_COPY='Y' and " +
-        "SHORT_NAME='" + dst.getShortName() + "'";
+        "IDENTIFIER='" + dst.getIdentifier() + "'";
         
         ResultSet rs = conn.createStatement().executeQuery(q);
         if (rs.next()){
@@ -448,18 +449,9 @@ public class VersionManager{
 		else
 			latestElm = loadElm(latestID);
         
-        if (newVersion==null){
-			if (requiresVersioning(status) ||
-				(latestElm!=null &&
-				!latestElm.getStatus().equals(elm.getStatus())))
-					newVersion = newVersion(elm, latestElm);
-			else
-				newVersion = elm.getVersion();
-        }
-        
-        // if the table was empty before this element's check-in,
-        // there will be no upwards versiongin done
-        boolean tblEmpty = tblEmpty(elm.getTableID(), true);
+		if (newVersion==null)
+			newVersion = versionUpdate ?
+						composeNewVersion(elm.getVersion()) : elm.getVersion();
         
         // update from working copy to acting copy
         SQLGenerator gen = new SQLGenerator();
@@ -544,18 +536,9 @@ public class VersionManager{
 		else
 			latestTbl = loadTbl(latestID);
         
-		if (newVersion==null){
-			if (requiresVersioning(status) ||
-				(latestTbl!=null &&
-				!latestTbl.getStatus().equals(tbl.getStatus())))
-					newVersion = newVersion(tbl, latestTbl);
-			else
-				newVersion = tbl.getVersion();
-		}
-        
-        // if the dataset was empty before this table's check-in,
-        // there will be no upwards versiongin done
-        boolean dstEmpty = dstEmpty(tbl.getDatasetID(), true);
+		if (newVersion==null)
+			newVersion = versionUpdate ?
+						composeNewVersion(tbl.getVersion()) : tbl.getVersion();
         
         // update from working copy to acting copy
         SQLGenerator gen = new SQLGenerator();
@@ -580,7 +563,7 @@ public class VersionManager{
         // part of unique ID, but the version however is. It is the new version
         // that creates a new element. In other cases the previous latest has
         // to be deleted. Status only effects if version is updated at all.
-        
+
         if (latestTbl!=null){
             if (newVersion.equals(tbl.getVersion())){
                 // delete the previous copy                
@@ -640,14 +623,9 @@ public class VersionManager{
 		else
 			latestDst = loadDst(latestID);
         
-		if (newVersion==null){
-			if (requiresVersioning(status) ||
-				(latestDst!=null &&
-				!latestDst.getStatus().equals(dst.getStatus())))
-					newVersion = newVersion(dst, latestDst);
-			else
-				newVersion = dst.getVersion();
-		}
+		if (newVersion==null)
+			newVersion = versionUpdate ?
+						composeNewVersion(dst.getVersion()) : dst.getVersion();
         
 		// update from working copy to acting copy
 		SQLGenerator gen = new SQLGenerator();
@@ -943,10 +921,12 @@ public class VersionManager{
         // get and set the element's complex attributes
         //elem.setComplexAttributes(searchEngine.getComplexAttributes(elmID, "E",null,elem.getTableID(),elem.getDatasetID()));
         //EK get also iinherited attributes
-        elem.setComplexAttributes(searchEngine.getComplexAttributes(elmID, "E",null,elem.getTableID(),elem.getDatasetID()));
+        elem.setComplexAttributes(
+        	searchEngine.getComplexAttributes(
+        		elmID, "E",null,elem.getTableID(),elem.getDatasetID()));
 
         // write allowable values (levelling not needed here)
-        elem.setFixedValues(searchEngine.getAllFixedValues(elmID, "elem"));
+        elem.setFixedValues(searchEngine.getFixedValues(elmID, "elem"));
         
         return elem;
     }
@@ -1495,7 +1475,7 @@ public class VersionManager{
         "where DATAELEM.WORKING_COPY='N' and " +
 		"DATASET.DELETED is null and " +
         "DATAELEM.PARENT_NS=" + copyElm.getNamespace().getID() + " and " +
-        "DATAELEM.SHORT_NAME='" + copyElm.getShortName() + "' " +
+        "DATAELEM.IDENTIFIER='" + copyElm.getIdentifier() + "' " +
         "order by DATAELEM.VERSION desc";
         
 		ResultSet rs = conn.createStatement().executeQuery(q);
@@ -1517,7 +1497,7 @@ public class VersionManager{
 		"where DS_TABLE.WORKING_COPY='N' and " +
 		"DATASET.DELETED is null and " +
 		"DS_TABLE.PARENT_NS=" + tbl.getParentNs() + " and " +
-		"DS_TABLE.SHORT_NAME='" + tbl.getShortName() + "' " +
+		"DS_TABLE.IDENTIFIER='" + tbl.getIdentifier() + "' " +
 		"order by DS_TABLE.VERSION desc";
 				
         ResultSet rs = conn.createStatement().executeQuery(q);
@@ -1535,7 +1515,7 @@ public class VersionManager{
 		String q =
 		"select * from DATASET where WORKING_COPY='N' and " +
 		"DELETED is null and " +
-		"SHORT_NAME='" + dst.getShortName() + "' order by VERSION desc";
+		"IDENTIFIER='" + dst.getIdentifier() + "' order by VERSION desc";
 
 		ResultSet rs = conn.createStatement().executeQuery(q);
 		if (rs.next())
@@ -1592,7 +1572,7 @@ public class VersionManager{
     /**
     *
     */
-    public boolean isLastElm(String id, String shortName, String parentNS)
+    public boolean isLastElm(String id, String idfier, String parentNS)
                                                         throws SQLException{
         
         String s =
@@ -1601,7 +1581,7 @@ public class VersionManager{
 		"left outer join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID " +
 		"left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID " +
 		"left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +        
-		"where DATAELEM.SHORT_NAME='" + shortName +
+		"where DATAELEM.IDENTIFIER='" + idfier +
 		"' and DATASET.DELETED is null and " +
         "DATAELEM.DATAELEM_ID<>" + id + " and ";
         
@@ -1624,14 +1604,14 @@ public class VersionManager{
     /**
     *
     */
-    public boolean isLastTbl(String id, String shortName, String parentNS)
+    public boolean isLastTbl(String id, String idfier, String parentNS)
                                                         throws SQLException{
         
         String s =
 		"select count(*) from DS_TABLE " +
 		"left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID " +
 		"left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +
-        "where DS_TABLE.SHORT_NAME='" + shortName +
+        "where DS_TABLE.IDENTIFIER='" + idfier +
 		"' and DATASET.DELETED is null and " +
         "DS_TABLE.TABLE_ID<>" + id + " and ";
         
@@ -1654,11 +1634,11 @@ public class VersionManager{
     /**
     *
     */
-    public boolean isLastDst(String id, String shortName)
+    public boolean isLastDst(String id, String idfier)
                                                         throws SQLException{
         
         String s = "select count(*) from DATASET " +
-        "where SHORT_NAME='" + shortName + "' and DELETED is null and " +
+        "where IDENTIFIER='" + idfier + "' and DELETED is null and " +
         "DATASET_ID<>" + id;
             
         boolean f = false;
@@ -1678,6 +1658,13 @@ public class VersionManager{
 	public void setContext(ServletContext ctx){
 		this.ctx = ctx;
 	}
+
+	/**
+	*
+	*/
+	public void updateVersion(){
+		this.versionUpdate = true;
+	}
     
     /**
     * main for testing
@@ -1688,17 +1675,9 @@ public class VersionManager{
             Class.forName("org.gjt.mm.mysql.Driver");
             Connection conn =
                 DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-            /*Connection conn =
-                DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");*/
                 
             AppUserIF testUser = new TestUser();
             testUser.authenticate("jaanus", "jaanus");
-            
-            VersionManager verMan = new VersionManager(conn, testUser);
-            DsTable tbl = new DsTable("2226", "", "CDDA");
-            tbl.setParentNs("265");
-            String id = verMan.getLatestTblID(tbl);
-            //boolean f = verMan.checkInElm("11536", "Card");
       }
         catch (Exception e){
             System.out.println(e.toString());

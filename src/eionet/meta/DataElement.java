@@ -23,8 +23,8 @@ public class DataElement {
     private String inSequenceID = null;
     private String inChoiceID = null;
     
-    private Namespace ns = null;
-    private String topNS = null;
+    private Namespace ns = null; // parent namespace
+    private String topNS = null; // top namespace
     
     private String tableID = null;
     private String datasetID = null;
@@ -44,8 +44,11 @@ public class DataElement {
     private String workingUser = null;
     private String workingCopy = null;
     
-	private Vector fks = new Vector();
+	private String gis = null;
+	private String identifier = null;
     
+	private Vector fks = new Vector();
+	
     public DataElement(){
     }
         
@@ -232,10 +235,16 @@ public class DataElement {
         this.maxOccurs = maxOccurs;
     }
     
+    /**
+     * Setter for PARENT namespace 
+     */
     public void setNamespace(Namespace ns){
         this.ns = ns;
     }
     
+    /**
+     * Getter for PARENT namespace
+     */
     public Namespace getNamespace(){
         return ns;
     }
@@ -336,6 +345,22 @@ public class DataElement {
     public String getStatus(){
         return this.status;
     }
+
+	public void setIdentifier(String identifier){
+		this.identifier = identifier;
+	}
+    
+	public String getIdentifier(){
+		return this.identifier;
+	}
+    
+	public void setGIS(String gis){
+		this.gis = gis;
+	}
+
+	public String getGIS(){
+		return this.gis;
+	}
     
     public void setFKRelations(Vector fks){
     	this.fks = fks;
@@ -343,6 +368,15 @@ public class DataElement {
     
 	public Vector getFKRelations(){
 		return this.fks;
+	}
+	
+	public static Vector getGisTypes(){
+		Vector v = new Vector();
+		v.add("");
+		v.add("class");
+		v.add("subclass");
+		v.add("subtype");
+		return v;
 	}
 	
 	public boolean hasImages(){

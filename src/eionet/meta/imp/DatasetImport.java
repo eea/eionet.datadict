@@ -13,6 +13,7 @@ import eionet.meta.savers.*;
 import javax.servlet.ServletContext;
 
 import com.tee.xmlserver.AppUserIF;
+import com.tee.util.*;
 
 /**
  * A Class class.
@@ -282,98 +283,109 @@ public class DatasetImport{
             if (parelem_id.equals(elem_id)){
                 tbl_id = (String)tbl2elem_par.getParameter("table_id");
                 par.addParameterValue("table_id", (String)tblID.get(tbl_id));
-                par.addParameterValue("pos", (String)tbl2elem_par.getParameter("pos"));
+                //par.addParameterValue("pos", (String)tbl2elem_par.getParameter("pos"));
                 break;
             }
         }
     }
-    private void saveFixedValues() throws Exception{
-        FixedValuesHandler fxvHandler;
-        Parameters par;
-        String delem_id=null;
-        String parent_id=null;
-        String parentType="elem";
-        String fxv_val=null;
-        fxvID = new Hashtable();  // stores keys - fxv id in xml; values - dataelem id in db
-        fxvElemID = new Hashtable();  // stores keys - fxv id in xml; values - dataelem id in db
-        boolean bHasParent = false;
+    
+	private void saveFixedValues() throws Exception{
+		FixedValuesHandler fxvHandler = null;
+		Parameters par;
+		String delem_id=null;
+		String parent_id=null;
+		String parentType="elem";
+		String fxv_val=null;
+		fxvID = new Hashtable();  // stores keys - fxv id in xml; values - dataelem id in db
+		fxvElemID = new Hashtable();  // stores keys - fxv id in xml; values - dataelem id in db
+		//boolean bHasParent = false;
 
-        Vector fxv_params = (Vector)all_params.get("FIXED_VALUE");
+		Vector fxv_params = (Vector)all_params.get("FIXED_VALUE");
 
-        if(fxv_params == null) return;
-        if(fxv_params.size()==0) return;
+		if(fxv_params == null) return;
+		if(fxv_params.size()==0) return;
 
-        fxv_count_all = fxv_params.size();
+		fxv_count_all = fxv_params.size();
 
-        for (int i=0; i< fxv_params.size(); i++){
-            par =(Parameters)fxv_params.get(i);
-            bHasParent=false;
+		for (int i=0; i< fxv_params.size(); i++){
+			par =(Parameters)fxv_params.get(i);
+			//bHasParent=false;
 
-            fxv_val = par.getParameter("new_value");
-            if (fxv_val == null) par.addParameterValue("new_value", "");
+			fxv_val = par.getParameter("new_value");
+			if (fxv_val == null) par.addParameterValue("new_value", "");
 
-            delem_id = par.getParameter("delem_id");
-            parent_id = par.getParameter("parent_id");
+			delem_id = par.getParameter("delem_id");
+			parent_id = par.getParameter("parent_id");
 
-            if (delem_id==null) delem_id="0";
-            if (delem_id.equals("0")) bHasParent=true;
-            if (delem_id.equals("")) bHasParent=true;
+			if (delem_id==null) delem_id="0";
+			
+			/*
+			if (delem_id.equals("0")) bHasParent=true;
+			if (delem_id.equals("")) bHasParent=true;
 
-            if (bHasParent==true){  // value is child element for another value
-                if (fxvID.containsKey(parent_id)){
-                    par.removeParameter("parent_id");
-                    par.addParameterValue("parent_csi", (String)fxvID.get(parent_id));
-                }
-                else{
-                    responseText.append("Fixed value parent id was not found for fixed value " +
-                    fxv_val + "<br>");
-                    continue;
-                }
-                if (fxvElemID.containsKey(parent_id)){
-                    delem_id=(String)fxvElemID.get(parent_id);
-                    par.removeParameter("delem_id");
-                    par.addParameterValue("delem_id", delem_id);
-                }
-                else{
-                    responseText.append("Fixed value parent id was not found for fixed value " +
-                    fxv_val + "<br>");
-                    continue;
-                }
-            }
-            else{   // value is on the top level
-                if (import_type.equalsIgnoreCase(TYPE_FXV))
-                {
-                  delemID.put(delem_id, import_parent_id);
-                }
-                
-                if (delemID.containsKey(delem_id)){
-                    delem_id = (String)delemID.get(delem_id);
-                    par.removeParameter("delem_id");
-                    par.addParameterValue("delem_id", delem_id);
-                }
-                else{
-                    responseText.append("Data element id was not found for fixed value " +
-                    fxv_val + "<br>");
-                    continue;
-                }
-            }
+			if (bHasParent==true){  // value is child element for another value
+				if (fxvID.containsKey(parent_id)){
+					par.removeParameter("parent_id");
+					par.addParameterValue("parent_csi", (String)fxvID.get(parent_id));
+				}
+				else{
+					responseText.append("Fixed value parent id was not found for fixed value " +
+					fxv_val + "<br>");
+					continue;
+				}
+				if (fxvElemID.containsKey(parent_id)){
+					delem_id=(String)fxvElemID.get(parent_id);
+					par.removeParameter("delem_id");
+					par.addParameterValue("delem_id", delem_id);
+				}
+				else{
+					responseText.append("Fixed value parent id was not found for fixed value " +
+					fxv_val + "<br>");
+					continue;
+				}
+			}
+			else{   // value is on the top level
+			*/
+			
+			if (import_type.equalsIgnoreCase(TYPE_FXV))
+			{
+			  delemID.put(delem_id, import_parent_id);
+			}
+            
+			if (delemID.containsKey(delem_id)){
+				delem_id = (String)delemID.get(delem_id);
+				par.removeParameter("delem_id");
+				par.addParameterValue("delem_id", delem_id);
+			}
+			else{
+				responseText.append("Data element id was not found for fixed value " +
+				fxv_val + "<br>");
+				continue;
+			}
+			//}
 
-            try{
-                par.addParameterValue("parent_type", parentType);
-                fxvHandler = new FixedValuesHandler(conn, par, ctx);
-                fxvHandler.setVersioning(false);
-                fxvHandler.execute();
-                fxv_count++;
-                fxvID.put(par.getParameter("id"), (String)fxvHandler.getLastInsertID());
-                fxvElemID.put(par.getParameter("id"), delem_id);
-             }
-            catch(Exception e){
-                responseText.append("Dataset import failed! Could not store fixed value into database - " +
-                fxv_val + "<br>");
-                responseText.append(e.toString() + "<br>");
-            }
-        }
-    }
+			try{
+				par.addParameterValue("parent_type", parentType);
+				
+				if (fxvHandler==null ||
+						!delem_id.equals(fxvHandler.getOwnerID())){
+					fxvHandler = new FixedValuesHandler(conn, par, ctx);
+					fxvHandler.setVersioning(false);
+				}
+				
+				fxvHandler.execute(par);
+				fxv_count++;
+				fxvID.put(par.getParameter("id"), (String)fxvHandler.getLastInsertID());
+				fxvElemID.put(par.getParameter("id"), delem_id);
+			 }
+			catch(Exception e){
+				responseText.append("Dataset import failed! Could not store fixed value into database - " +
+				fxv_val + "<br>");
+				responseText.append(e.toString() + "<br>");
+			}
+		}
+	}
+    
     private void saveComplexAttrs() throws Exception{
         AttrFieldsHandler saveHandler;
         Parameters par;
@@ -638,6 +650,7 @@ public class DatasetImport{
         //DATASET
         rowMap.add(getFieldMap("dataset_id", "ds_id", false, "dataset id in DATASET table"));
         rowMap.add(getFieldMap("short_name", "ds_name", false, "dataset short name in DATASET table"));
+		rowMap.add(getFieldMap("identifier", "idfier", false, "dataset identifier in DATASET table"));
         rowMap.add(getFieldMap("version", "version", false, "Dataset version in DATASET table"));
         tblMap.put("DATASET", rowMap);
         rowMap = new Vector();
@@ -646,6 +659,7 @@ public class DatasetImport{
         rowMap.add(getFieldMap("table_id", "tbl_id", false, "dataset table id in DS_TABLE table"));
         rowMap.add(getFieldMap("dataset_id", "ds_id", false, "dataset id in DS_TABLE table"));
         rowMap.add(getFieldMap("short_name", "short_name", false, "dataset table short name in DS_TABLE table"));
+		rowMap.add(getFieldMap("identifier", "idfier", false, "dataset table identifier in DS_TABLE table"));
         //rowMap.add(getFieldMap("name", "full_name", true, "dataset table full name in DS_TABLE table"));
         //rowMap.add(getFieldMap("definition", "definition", true, "Dataset table definition short name in DS_TABLE table"));
         tblMap.put("DS_TABLE", rowMap);
@@ -655,6 +669,8 @@ public class DatasetImport{
         rowMap.add(getFieldMap("dataelem_id", "delem_id", false, "data element id in DATAELEM table"));
         rowMap.add(getFieldMap("type", "type", false, "data element type in DATAELEM table"));
         rowMap.add(getFieldMap("short_name", "delem_name", false, "data element short name in DATAELEM table"));
+		rowMap.add(getFieldMap("identifier", "idfier", false, "data element identifier in DATAELEM table"));
+		rowMap.add(getFieldMap("gis", "gis", false, "GIS in DATAELEM table"));
  //       rowMap.add(getFieldMap("namespace_id", "ns", true, "data element namespace_id in DATAELEM table"));
         tblMap.put("DATAELEM", rowMap);
         rowMap = new Vector();
@@ -662,15 +678,17 @@ public class DatasetImport{
         //TBL2ELEM
         rowMap.add(getFieldMap("dataelem_id", "delem_id", false, "data element id in TBL2ELEM table"));
         rowMap.add(getFieldMap("table_id", "table_id", false, "dataset table id in TBL2ELEM"));
-        rowMap.add(getFieldMap("position", "pos", true, "position in TBL2ELEM table"));
+        //rowMap.add(getFieldMap("position", "pos", true, "position in TBL2ELEM table"));
         tblMap.put("TBL2ELEM", rowMap);
         rowMap = new Vector();
 
         //FIXED VALUE
         rowMap.add(getFieldMap("dataelem_id", "delem_id", true, "data element id in FIXED_VALUE table"));
-        rowMap.add(getFieldMap("parent_id", "parent_id", true, "parent fixed value id in FIXED_VALUE table"));
+        //rowMap.add(getFieldMap("parent_id", "parent_id", true, "parent fixed value id in FIXED_VALUE table"));
         rowMap.add(getFieldMap("fixed_value_id", "id", true, "id"));
         rowMap.add(getFieldMap("value", "new_value", true, "fixed value in FIXED_VALUE table"));
+		rowMap.add(getFieldMap("definition", "definition", true, "definition in FIXED_VALUE table"));
+		rowMap.add(getFieldMap("shortdescription", "short_desc", true, "shortdescription in FIXED_VALUE table"));
         tblMap.put("FIXED_VALUE", rowMap);
     }
     private void addUnknown(String table, Hashtable row){

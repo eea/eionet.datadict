@@ -427,10 +427,10 @@
 					<table border="0" width="auto">
 						<tr>
 							<th align="right">
-								<a href="javascript:showSortedList(1, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by short name"/></a>
+								<a href="javascript:showSortedList(1, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by name"/></a>
 							</th>
 							<th align="right">
-								<a href="javascript:showSortedList(1, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
+								<a href="javascript:showSortedList(1, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by name"/></a>
 							</th>
 						</tr>
 					</table>
@@ -493,7 +493,7 @@
 					
 					oResultSet.oElements.add(oEntry);
 					
-					String workingUser    = verMan.getDstWorkingUser(dataset.getShortName());
+					String workingUser    = verMan.getDstWorkingUser(dataset.getIdentifier());
 					String topWorkingUser = verMan.getWorkingUser(dataset.getNamespaceID());
 					
 					boolean canDelete = topWorkingUser==null ||
@@ -540,7 +540,7 @@
 								String tableLink = "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + ds_id + "&ds_name=" + ds_name;
 								
 								String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
-			    															  table.getShortName(), "tbl");
+			    															  table.getIdentifier(), "tbl");
 			
 								%>
 								<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->

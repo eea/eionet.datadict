@@ -204,9 +204,11 @@ public class PdfUtil {
 			for (int j=0; j<values.size(); j++){
 				
 				dispName = j>0 ? "" : dispName;
+				String value = PdfUtil.rmvCR((String)values.get(j));
+				
 	            nameCell = new PdfPCell(new Phrase(dispName,
 											Fonts.get(Fonts.ATTR_TITLE)));
-	            valueCell = new PdfPCell(processLinks((String)values.get(j),
+	            valueCell = new PdfPCell(processLinks(value,
 	            							Fonts.get(Fonts.CELL_VALUE)));
 				valueCell.setLeading(9*1.2f, 0);
 				
@@ -226,35 +228,6 @@ public class PdfUtil {
             
             rowCount++;
         }
-        
-		//if (!Util.voidStr(methodology)){
-		if (false){
-			String tail = null;
-			if (methodology.length()>2000){
-				tail = methodology.substring(2000);
-				methodology = methodology.substring(0, 2000);
-			}
-			
-			nameCell = new PdfPCell(new Phrase("Methodology",
-										Fonts.get(Fonts.ATTR_TITLE)));
-			valueCell = new PdfPCell(processLinks(methodology,
-										Fonts.get(Fonts.CELL_VALUE)));
-    
-			nameCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-			nameCell.setPaddingRight(5);
-			nameCell.setBorder(Rectangle.NO_BORDER);
-			valueCell.setBorder(Rectangle.NO_BORDER);
-    
-			if (rowCount % 2 != 1){
-				nameCell.setGrayFill(0.9f);
-				valueCell.setGrayFill(0.9f);
-			}
-			
-			System.out.println("Methodology height=" + valueCell.height());
-        
-			table.addCell(nameCell);
-			table.addCell(valueCell);
-		}
         
         if (table.size() > 0)
             return table;
@@ -443,18 +416,18 @@ public class PdfUtil {
 		table.addCell(cell);
 
         boolean wasFK = false;
+        
         // add value rows
+        
         for (int i=0; i<tblElems.size(); i++){
             
             DataElement elem = (DataElement)tblElems.get(i);
-            
             String elemType = elem.getType();
-            if (elemType.equals("AGG"))
-                continue;
 
+			String nr= "";
 			// sectioning
 			if (sect!=null){
-				String nr = sect==null ? null : sect.level(" ",3, false);
+				nr = sect==null ? null : sect.level(" ",3, false);
 				nr = nr==null ? " " : nr;
 				
 				cell = new PdfPCell(new Phrase(nr,Fonts.get(Fonts.CELL_VALUE)));
@@ -471,8 +444,8 @@ public class PdfUtil {
 	
 				table.addCell(cell);
 			}
-					 
-            // add short name + full name + public or internal + foreign key
+			
+            // add short name+full name+public or internal+foreign key+GIS
 			String s = elem.getAttributeValueByShortName("Name");
 			String name = Util.voidStr(s) ? elem.getShortName() : s;
             String shortName = elem.getShortName();
@@ -492,7 +465,11 @@ public class PdfUtil {
 			if (fks!=null && fks.size()>0)
 				phr.add(new Chunk("\nForeign key",
 					FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
-			
+			if (elem.getGIS()!=null){
+				phr.add(new Chunk("\n" + elem.getGIS(),
+					FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
+			}
+								
             cell = new PdfPCell(phr);
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
@@ -510,6 +487,7 @@ public class PdfUtil {
             // add definition
             String defin = elem.getAttributeValueByShortName("Definition");
 			defin = defin==null ? " " : defin;
+			
 			cell = new PdfPCell(new Phrase(defin, Fonts.get(Fonts.CELL_VALUE)));
 			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 			cell.setPaddingLeft(5);
@@ -518,7 +496,7 @@ public class PdfUtil {
 				cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
 			else
 				cell.setBorder(Rectangle.LEFT);
-    
+
 			if (i % 2 == 1)
 				cell.setGrayFill(0.9f);
 
@@ -530,7 +508,8 @@ public class PdfUtil {
 				method = method==null ? "" : method;
 				if (elem.hasImages()){
 					if (method.length()>0) method = method + "\n";
-					method = method + "Image(s): see section 5";
+					method = method + "Illustrations(s): see section " +
+						sect.getRefIllustrations();
 				}
 					 
 				cell = new PdfPCell(
@@ -565,7 +544,8 @@ public class PdfUtil {
 				if (sect==null)
 					datatype = datatype + ":\nsee below";
 				else
-					datatype = datatype + ":\nSee section 4";
+					datatype = datatype + ":\nsee section " +
+							sect.getRefCodelists();
             	
                 // list 4 first codes for example (from the highest level)
                 // if no codes found, let the datatype stay simply 'Code list'
@@ -690,7 +670,7 @@ public class PdfUtil {
 		table.setHorizontalAlignment(Element.ALIGN_LEFT);
         
 		// set the column widths
-		float headerwidths[] = {50, 50}; // percentage
+		float headerwidths[] = {33, 67}; // percentage
 		table.setWidths(headerwidths);
 		table.setWidthPercentage(100); // percentage
 		
@@ -721,7 +701,7 @@ public class PdfUtil {
 			String val = fxv.getValue();
 			if (Util.voidStr(val)) continue;
 			
-			String def = fxv.getAttributeValueByShortName("Definition");
+			String def = fxv.getDefinition();
 			def = def==null ? "" : def;
 			
 			// value cell
@@ -863,7 +843,7 @@ public class PdfUtil {
             table.addCell(cell);
             
             // definition
-            String definition = fxv.getAttributeValueByShortName("Definition");
+            String definition = fxv.getDefinition();
             if (Util.voidStr(definition))
                 definition = " ";
             cell = new PdfPCell(processLinks(definition, Fonts.get(Fonts.CELL_VALUE)));
@@ -1142,6 +1122,20 @@ public class PdfUtil {
         }
         
         return true;
+    }
+    
+    public static String rmvCR(String s){
+    	
+    	if (s==null) return s;
+    	
+		StringBuffer buf = new StringBuffer();
+		for (int i=0; i<s.length(); i++){
+			char c = s.charAt(i);
+			if (c!='\r')
+				buf.append(c);
+		}
+		
+		return buf.toString();
     }
     
     public static void main(String[] args){

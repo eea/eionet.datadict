@@ -133,7 +133,7 @@
             
 			<form id="form1" method="POST" action="attributes.jsp" onsubmit="setLocation()">
 			
-		<table width="600">
+		<table width="500">
 		
 			<tr><td><span class="head00">Attributes</span></td></tr>
 
@@ -163,10 +163,10 @@
 					boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
 					if (addPrm){
 						%>
-						<tr><td colspan="8" valign="top" align="left" style="padding-right:10;padding-top:3">
+						<tr><td colspan="6" valign="top" align="left" style="padding-right:10;padding-top:3">
 							<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
 						</td></tr>
-						<tr height="5"><td colspan="8"></td></tr>
+						<tr height="5"><td colspan="6"></td></tr>
 						<%
 					}
 				}
@@ -177,10 +177,8 @@
 				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Type</th>
 				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Datasets</th>
 				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Tables</th>
-				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Aggregate data elements</th>
 				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Data elements with fixed values</th>
 				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Data elements with quantitative values</th>
-				<th rowspan="2" valign="bottom" align="left" style="padding-right:10;padding-bottom:5;padding-top:5">Fixed values</th>
 			</tr>
 			
 			<%
@@ -197,7 +195,7 @@
 			}
 			%>
 			
-			<tr height="5"><td colspan="5"></td></tr>
+			<tr height="5"><td colspan="6"></td></tr>
 			
 			<%
 			// show all
@@ -274,16 +272,10 @@
 						<% if (attribute.displayFor("TBL")){ %><img src="images/ok.gif"/><%}%>
 					</td>
 					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("AGG")){ %><img src="images/ok.gif"/><%}%>
-					</td>
-					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<% if (attribute.displayFor("CH1")){ %><img src="images/ok.gif"/><%}%>
 					</td>
 					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<% if (attribute.displayFor("CH2")){ %><img src="images/ok.gif"/><%}%>
-					</td>
-					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("FXV")){ %><img src="images/ok.gif"/><%}%>
 					</td>
 				</tr>
 				

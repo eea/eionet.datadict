@@ -8,9 +8,9 @@
 			ServletContext ctx = getServletContext();			
 			String appName = ctx.getInitParameter("application-name");
 			
-			String elmID = request.getParameter("delem_id");
+			String elmID = request.getParameter("id");
 			if (elmID == null || elmID.length()==0){ %>
-				<b>Element ID is missing!</b> <%
+				<b>ID is missing!</b> <%
 				return;
 			}
 			
@@ -22,18 +22,16 @@
 			
 			conn = pool.getConnection();
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+			DataElement elm = searchEngine.getDataElement(elmID);
 			
-			Vector v = searchEngine.getElmHistory(elmID);
-			
-			if (v==null || v.size()==0){
-				%>
-				<b>No history found for this element!</b>
-				<%
+			Vector v = searchEngine.getElmHistory(elm.getIdentifier(),
+												  elm.getNamespace().getID(),
+												  elm.getVersion());
+			if (v==null || v.size()==0){ %>
+				<b>No history found for this element!</b> <%
 				return;
 			}
 			
-			DataElement dataElement = searchEngine.getDataElement(elmID);
-		
 			%>
 
 <html>
@@ -57,8 +55,8 @@
 </div>
 <form name="form1" method="POST" action="complex_attr.jsp">
         <h2>
-            History of <em><%=dataElement.getShortName()%></em>
-            below version <em><%=dataElement.getVersion()%></em>
+            History of <em><%=elm.getShortName()%></em>
+            below version <em><%=elm.getVersion()%></em>
         </h2>
         <p>
             Click on version to go to corresponding element view.<br/>

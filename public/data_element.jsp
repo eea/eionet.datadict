@@ -6,7 +6,7 @@
 <%!private DataElement newDataElement=null;%>
 <%!private Vector complexAttrs=null;%>
 <%!private Vector fixedValues=null;%>
-<%!private Vector fxvAttributes=null;%>
+<%!private static final int MAX_CELL_LEN=40;%>
 
 
 <%!
@@ -253,7 +253,7 @@ private String legalizeAlert(String in){
 							
 							String msg = e.getMessage();
 							
-							ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();							
+							ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
 							e.printStackTrace(new PrintStream(bytesOut));
 							String trace = bytesOut.toString(response.getCharacterEncoding());
 							
@@ -375,13 +375,19 @@ private String legalizeAlert(String in){
 			
 			// get the data element if not "add" mode
 			String delem_name = "";
+			String idfier = "";
+			
 			if (mode.equals("edit") || mode.equals("view")){
 				
 				dataElement = searchEngine.getDataElement(delem_id);
 					
 				if (dataElement!=null){
 					type = dataElement.getType();
-					//delem_name = dataElement.getAttributeValueByName("Name");
+					
+					idfier = dataElement.getIdentifier();
+					if (idfier == null) idfier = "unknown";
+					if (idfier.length() == 0) idfier = "empty";
+					
 					delem_name = dataElement.getShortName();
 					if (delem_name == null) delem_name = "unknown";
 					if (delem_name.length() == 0) delem_name = "empty";
@@ -396,6 +402,10 @@ private String legalizeAlert(String in){
 				return;
 			}
 			else if(mode.equals("add")){
+				
+				idfier = request.getParameter("idfier");
+				if (idfier==null) idfier="";
+				
 				delem_name = request.getParameter("delem_name");
 				if (delem_name==null) delem_name="";
 				
@@ -421,7 +431,7 @@ private String legalizeAlert(String in){
 			String workingUser = null;
 			if (dataElement!=null)
 				workingUser = verMan.getWorkingUser(dataElement.getNamespace().getID(),
-			    											dataElement.getShortName(), "elm");
+			    											dataElement.getIdentifier(), "elm");
 			if (mode.equals("edit") && user!=null && user.isAuthentic()){
 				// see if element is checked out
 				if (Util.voidStr(workingUser)){
@@ -532,7 +542,17 @@ private String legalizeAlert(String in){
 			
 			DElemAttribute attribute = null;
 			
-			%>
+			// set a flag if element has history
+			boolean hasHistory = false;
+			if (mode.equals("edit") && dataElement!=null){
+				Vector v = searchEngine.getElmHistory(dataElement.getIdentifier(),
+													  dataElement.getNamespace().getID(),
+													  dataElement.getVersion() + 1);
+				if (v!=null && v.size()>0)
+					hasHistory = true;
+			}
+			
+%>
 
 <html>
 <head>
@@ -554,27 +574,60 @@ private String legalizeAlert(String in){
 		
 		function checkIn(){
 			
+			<%
+			/*
+			if (hasHistory){
+			%>
+				openDialog("yesno_dialog.html", "Do you want to increment the element's internal version?",
+						   retVersionUpd,100, 400);
+				return; <%
+			}
+			else{
+				*/
+			%>
+				if (document.forms["form1"].elements["is_first"]){
+					if (document.forms["form1"].elements["is_first"].value=="true"){
+						openDialog("yesno_dialog.html",
+								   "Do you want to update parent table and dataset versions?",
+									retParentUpd,100, 400);
+						return;
+					}
+				}
+				
+				submitCheckIn();
+			<%
+			//}
+			%>
+		}
+		
+		function submitCheckIn(){
+			document.forms["form1"].elements["check_in"].value = "true";
+			submitForm('edit');
+		}
+		
+		function retVersionUpd(){
+			var v = dialogWin.returnValue;
+			if (v==null) v=true;
+			document.forms["form1"].elements["upd_version"].value = v;
+			
 			if (document.forms["form1"].elements["is_first"]){
 				if (document.forms["form1"].elements["is_first"].value=="true"){
-					openDialog("yesno_dialog.html", "Do you want to update parent table and dataset versions?",updateParent,100, 400);
+					openDialog("yesno_dialog.html",
+							   "Do you want to update parent table and dataset versions?",
+								retParentUpd,100, 400);
 					return;
 				}
 			}
-
-			document.forms["form1"].elements["check_in"].value = "true";
-			submitForm('edit');
 			
-			
-			//document.forms["form1"].elements["mode"].value = "edit";
-			//document.forms["form1"].submit();
+			submitCheckIn();
 		}
-		function updateParent(){
-			value = dialogWin.returnValue;
-			if (value==null)
-				value=true;
-			document.forms["form1"].elements["ver_upw"].value=value;
-			document.forms["form1"].elements["check_in"].value = "true";
-			submitForm('edit');
+		
+		function retParentUpd(){
+			var v = dialogWin.returnValue;
+			if (v==null) v=true;
+			document.forms["form1"].elements["ver_upw"].value = v;
+			
+			submitCheckIn();
 		}
 		
 		function submitForm(mode){
@@ -613,18 +666,12 @@ private String legalizeAlert(String in){
 					return;
 				}
 				
-				if (hasWhiteSpace("delem_name")){
-					alert("Short name cannot contain any white space!");
-					return;
-				}
-				
-				var identifierInputName = document.forms["form1"].IdentifierInputName.value;
-						
-				if (identifierInputName!=null && hasWhiteSpace(identifierInputName)){
+				if (hasWhiteSpace("idfier")){
 					alert("Identifier cannot contain any white space!");
 					return;
 				}
 			}
+			
 			slctAllValues();
 			
 			document.forms["form1"].elements["mode"].value = mode;
@@ -745,10 +792,14 @@ private String legalizeAlert(String in){
 			%>
 		}
 		
-		function viewHistory(){
-			var url = "elm_history.jsp?delem_id=<%=delem_id%>";
-			window.open(url,null,"height=400,width=400,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=yes,location=yes");
+		<%
+		if (dataElement!=null){%>
+			function viewHistory(){
+				var url = "elm_history.jsp?id=<%=dataElement.getID()%>";
+				window.open(url,null,"height=400,width=400,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=yes,location=yes");
+			}<%
 		}
+		%>			
 		
 		function fixType(){
 			
@@ -756,12 +807,6 @@ private String legalizeAlert(String in){
 			if (type == null || type.length==0)
 				return;
 				
-			if (type=='AGG'){
-				alert("Not supported right now!");
-				document.forms["form1"].typeSelect.selectedIndex = 0;
-				return;
-			}
-			
 			document.location.assign("data_element.jsp?mode=add&type=" + type);
 		}
 		
@@ -881,8 +926,8 @@ private String legalizeAlert(String in){
 		
 		function copyElem(){
 			
-			if (document.forms["form1"].elements["delem_name"].value==""){
-				alert("Short name cannot be empty!");
+			if (document.forms["form1"].elements["idfier"].value==""){
+				alert("Identifier cannot be empty!");
 				return;
 			}
 			var url='search.jsp?ctx=popup';
@@ -1069,14 +1114,13 @@ String attrValue = null;
 						</select> <%
 					}
 					else{
-						if(type.equals("AGG")){ %>
-							<b>AGGREGATE DATA ELEMENT</b>
-						<% }else if (type.equals("CH1")){ %>
+						
+						if (type.equals("CH1")){ %>
 							<b>DATA ELEMENT WITH FIXED VALUES</b>
 						<% }else if (type.equals("CH2")){ %>					
 							<b>DATA ELEMENT WITH QUANTITATIVE VALUES</b>
 						<% } else{ %>
-							<b>AGGREGATE DATA ELEMENT</b> <%
+							<b>DATA ELEMENT WITH QUANTITATIVE VALUES</b> <%
 						}
 					}
 					%>
@@ -1087,8 +1131,8 @@ String attrValue = null;
 			
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
-					<span class="mainfont"><b>Short name</b>
+					<a href="javascript:alert('Under construction!')">
+					<span class="help">?</span></a>&#160;<span class="mainfont"><b>Short name</b>
 						<%
 						displayed++;
 						if (!mode.equals("view")){
@@ -1100,20 +1144,24 @@ String attrValue = null;
 					</span>
 				</td>
 				<td colspan="2">
-					<% if(!mode.equals("add")){ %>
-						<font class="title2" color="#006666"><%=Util.replaceTags(delem_name)%></font>
-						<input type="hidden" name="delem_name" value="<%=delem_name%>"/>
-					<% } else{ %>
-						<input class="smalltext" class="smalltext" type="text" size="30" name="delem_name" onchange="form_changed('form1')" value="<%=delem_name%>"></input>
-					<% } %>
+					<%
+					if(mode.equals("view")){ %>
+						<font class="title2" color="#006666"><%=Util.replaceTags(dataElement.getShortName())%></font>
+						<input type="hidden" name="delem_name" value="<%=dataElement.getShortName()%>"/><%
+					}
+					else if (mode.equals("add")){ %>
+						<input class="smalltext" type="text" size="30" name="delem_name"/><%
+					}
+					else { %>
+						<input class="smalltext" type="text" size="30" name="delem_name" value="<%=dataElement.getShortName()%>"/><%
+					}
+					%>
 				</td>
 			</tr>
 			
-			
 			<%
 			Dataset dst = null;
-			boolean isAGG = type==null ? false : type.equals("AGG");
-			if (!isAGG && (mode.equals("add") || dataset!=null)){ %>
+			if (mode.equals("add") || dataset!=null){ %>
 			
 				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
@@ -1191,7 +1239,7 @@ String attrValue = null;
 			%>
 			
 			<%
-			if (!isAGG && (mode.equals("add") || dsTable!=null)){
+			if (mode.equals("add") || dsTable!=null){
 				
 				%>
 				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
@@ -1257,100 +1305,6 @@ String attrValue = null;
 				</tr>
 				<%
 			}
-			%>
-			
-			<%
-			
-			if (type!=null && type.equals("AGG")){
-				
-				if (mode.equals("add")){
-					
-					String disabled = user == null ? "disabled" : "";
-				
-					%>
-					<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<td align="right" style="padding-right:10">
-							<a href="javascript:openExtends()"><span class="help">?</span></a>&#160;
-							<span class="mainfont"><b>Extends</b>
-								<%
-								displayed++;
-								if (!mode.equals("view")){
-									%>
-									&#160;(O)
-									<%
-								}
-								%>
-							</span>
-						</td>
-						<td colspan="2">					
-							<select class="small" name="extends" <%=disabled%> >
-								<option value="">-- none --</option>
-								<%
-								
-								if (user != null){
-									
-									Vector dataElements = searchEngine.getDataElements();
-									String thisExtension = dataElement == null ? null : dataElement.getExtension();
-								
-									for (int i=0; dataElements!=null && i<dataElements.size(); i++){
-										
-										DataElement elem = (DataElement)dataElements.get(i);
-										
-										if (!elem.getType().equals("AGG"))
-											continue;
-										
-										String elemID = elem.getID();										
-										
-										if (thisExtension != null && thisExtension.equals(elemID)){
-											%>
-											<option selected value="<%=elemID%>"><%=elem.getShortName()%></option>
-											<%
-										}
-										else{
-											%>								
-											<option value="<%=elemID%>"><%=elem.getShortName()%></option>
-											<%
-										}
-									}
-								}
-								
-								%>
-							</select>
-						</td>
-					</tr>
-					<%
-				}
-				else{
-					String extensionID = dataElement.getExtension();
-					if (extensionID != null){
-						
-						DataElement extElem = searchEngine.getDataElement(extensionID);
-						String dispExtension = extElem.getShortName();
-						
-						%>
-						<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-							<td align="right" style="padding-right:10">
-								<a href="javascript:openExtends()"><span class="help">?</span></a>&#160;
-								<span class="mainfont"><b>Extends</b>
-									<%
-									displayed++;
-									if (!mode.equals("view")){
-										%>
-										&#160;(O)
-										<%
-									}
-									%>
-								</span>
-							</td>
-							<td colspan="2">
-								<font class="head0" color="#006666"><%=dispExtension%></font>
-							</td>
-						</tr>
-						<%
-					}
-				}
-			}
-			
 			
 			// display Version, if not "add" mode.
 			// Users cannot specify Version, it is always generated by the code.
@@ -1365,7 +1319,7 @@ String attrValue = null;
 				
 				boolean isFirst=false;
 				if (mode.equals("edit") && elmVersion.equals("1")){
-					isFirst = verMan.isLastElm(delem_id, delem_name, dsTable.getNamespace());
+					isFirst = verMan.isLastElm(delem_id, idfier, dsTable.getNamespace());
 				}
 				%>
 				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
@@ -1388,10 +1342,33 @@ String attrValue = null;
 				<input type="hidden" name="is_first" value="<%=isFirst%>">
 				<%
 			}
-			
-			// display Registration Status
-			
 			%>
+			
+			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+				<td align="right" style="padding-right:10">
+					<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
+					<span class="mainfont"><b>Identifier</b>
+						<%
+						displayed++;
+						if (!mode.equals("view")){
+							%>
+							&#160;(M)
+							<%
+						}
+						%>
+					</span>
+				</td>
+				<td colspan="2">
+					<% if(!mode.equals("add")){ %>
+						<b><%=Util.replaceTags(idfier)%></b>
+						<input type="hidden" name="idfier" value="<%=idfier%>"/>
+					<% } else{ %>
+						<input class="smalltext" type="text" size="30" name="idfier"
+										onchange="form_changed('form1')" value="<%=idfier%>"></input>
+					<% } %>
+				</td>
+			</tr>
+			
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" valign="top" style="padding-right:10">
 					<a target="_blank" href="statuses.html">
@@ -1423,7 +1400,49 @@ String attrValue = null;
 				</td>
 			</tr>
 			
-			<%			
+			<%
+			// the GIS attribute
+			String gisType = dataElement!=null ? dataElement.getGIS() : null;
+			if (!mode.equals("view") || gisType!=null){ %>
+				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+					<td align="right" valign="top" style="padding-right:10">
+						<a target="_blank" href="javascript:alert('?')">
+						<span class="help">?</span></a>&#160;
+						<span class="mainfont"><b>GIS type</b>
+							<% if (!mode.equals("view")){ %>
+								&#160;(O) <%
+							} 
+							displayed++;
+							%>
+						</span>
+					</td>
+					<td colspan="2">
+						<%
+						if (mode.equals("view")){ %>
+							<span class="barfont" style="width:400"><%=gisType%></span> <%
+						}
+						else{
+							String selected = gisType==null ? "selected" : "";
+							%>
+							<select name="gis">
+								<option value="nogis" <%=selected%>>-- no GIS element --</option><%
+								Vector gisTypes = DataElement.getGisTypes();
+								for (int i=0; i<gisTypes.size(); i++){
+									String gist = (String)gisTypes.get(i);
+									selected = gisType!=null && gist.equals(gisType) ? "selected" : "";
+									String gisDisp = gist.equals("") ? "[ ]" : gist;
+									%>
+									<option <%=selected%> value="<%=gist%>"><%=gisDisp%></option><%
+								} %>
+							</select><%
+						}
+						%>
+					</td>
+				</tr><%
+			}
+			%>
+			
+			<%
 			// dynamical display of attributes, really cool... I hope...
 			
 			boolean isBoolean = false;
@@ -1435,7 +1454,7 @@ String attrValue = null;
 				if (dispType == null)
 					continue;
 				
-				boolean dispFor = type==null ? attribute.displayFor("AGG") : attribute.displayFor(type);
+				boolean dispFor = type==null ? attribute.displayFor("CH2") : attribute.displayFor(type);
 				
 				if (!dispFor)
 					continue;
@@ -1451,7 +1470,7 @@ String attrValue = null;
 				
 				// if element is of CH1 type, don't display MinSize and MaxSize
 				if (attribute.getShortName().equalsIgnoreCase("MaxSize") || attribute.getShortName().equalsIgnoreCase("MinSize"))
-					if (type.equalsIgnoreCase("CH1"))
+					if (type!=null && type.equalsIgnoreCase("CH1"))
 						continue;
 				
 				if (mode.equals("view") && (attrValue==null || attrValue.length()==0) && !attrOblig.equals("M"))
@@ -1631,7 +1650,10 @@ String attrValue = null;
 											String isSelected = (fxValue.getDefault() && !selectedByValue) ? "selected" : "";
 											
 											if (attribute.getShortName().equalsIgnoreCase("Datatype")){
-												if (type.equals("CH2") && fxValue.getValue().equalsIgnoreCase("boolean")) continue;
+												if (type!=null &&
+													type.equals("CH2") &&
+													fxValue.getValue().equalsIgnoreCase("boolean"))
+													continue;
 											}
 
 											if (attrValue!=null && attrValue.equals(fxValue.getValue())){
@@ -1804,7 +1826,9 @@ String attrValue = null;
 		
 		<!-- ALLOWABLE VALUES table -->
 		
-		<% if (type!=null && !mode.equals("add") && !isBoolean){
+		<%
+		
+		if (type!=null && !mode.equals("add") && !isBoolean){
 			
 			String initCaseTitle = type.equals("CH1") ? "Allowable" : "Suggested";
 			String lowerCaseTitle = type.equals("CH1") ? "allowable" : "suggested";
@@ -1812,26 +1836,10 @@ String attrValue = null;
 			
 			boolean bShowLink=false;
 			if (mode.equals("view")){
-				fxvAttributes = new Vector();
+				
+				fixedValues = searchEngine.getFixedValues(delem_id, "elem");
 
-				for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
-					attribute = (DElemAttribute)mAttributes.get(i);
-					String dispType = attribute.getDisplayType();
-					if (dispType != null &&
-						attribute.displayFor("FXV")){
-					fxvAttributes.add(attribute);
-					}
-				}
-
-				//fixedValues = searchEngine.getFixedValues(delem_id, "elem", false);
-				fixedValues = searchEngine.getAllFixedValues(delem_id, "elem");
-				if (fixedValues == null) fixedValues = new Vector();
-
-				Vector fxvRelElems = searchEngine.getRelatedElements(delem_id, "elem", null, "CH1");
-				if (fxvRelElems == null) fxvRelElems = new Vector();
-				Vector relElemId = new Vector();
-		
-				if (fixedValues.size()>0){
+				if (fixedValues!=null && fixedValues.size()>0){
 				%>
 					<tr height="5"><td colspan="2"></td></tr>
 					<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
@@ -1842,26 +1850,9 @@ String attrValue = null;
 						<td>
 							<table width="auto" cellspacing="0">
 								<tr>
-									<th align="left" style="padding-left:5;padding-right:10" width="100">Value</th>
-									<%
-										for (int i=0; fxvAttributes!=null && i<fxvAttributes.size(); i++){
-											
-											attribute = (DElemAttribute)fxvAttributes.get(i);
-											%>
-											<th align="left" style="padding-left:5;padding-right:10" width="150"><%=attribute.getShortName()%></th>
-											<%
-										}
-										for (int i=0; fxvRelElems!=null && i<fxvRelElems.size(); i++){
-			
-											CsiItem item = (CsiItem)fxvRelElems.get(i);
-											String compID = item.getComponentID();
-											if (compID == null) continue;
-											relElemId.add(compID);
-											%>
-											<th align="left" style="padding-left:5;padding-right:10" width="150"><%=Util.replaceTags(item.getValue())%></th>
-											<%
-										}
-									%>
+									<th align="left" style="padding-left:5;padding-right:10">Value</th>
+									<th align="left" style="padding-left:5;padding-right:10">ShortDescription</th>
+									<th align="left" style="padding-left:5;padding-right:10">Definition</th>
 								</tr>
 	
 								<%
@@ -1869,68 +1860,60 @@ String attrValue = null;
 
 								for (int i=0; i<fixedValues.size(); i++){
 									if (i==30){	// it's possible to see only the first 30 values on element page
+									
 										%>
-										<tr><td colspan="<%=fxvAttributes.size() + 1 %>">
-											<span class="barfont">... &#160; to view the whole list of <%=lowerCaseTitle%> values, click the link below</span>
-										</td></tr>
+										<tr>
+											<td colspan="2">
+												<span class="barfont">
+													... &#160; to view the whole list of <%=lowerCaseTitle%> values,
+													click the link below
+												</span>
+											</td>
+										</tr>
 										<%
 										if (user == null) bShowLink=true;
 										break;
 									}
 									else{
+										
 										FixedValue fxv = (FixedValue)fixedValues.get(i);
 										String value = fxv.getValue();
 										String fxvID = fxv.getID();
 										int level=fxv.getLevel();
+										
+										String defin = fxv.getDefinition();
+										defin = defin==null ? "" : defin;
+										defin = defin.length()>MAX_CELL_LEN ?
+											defin.substring(0,MAX_CELL_LEN) + "..." : defin;
+			
+										String shortDesc = fxv.getShortDesc();
+										shortDesc = shortDesc==null ? "" : shortDesc;
+										shortDesc = shortDesc.length()>MAX_CELL_LEN ?
+											shortDesc.substring(0,MAX_CELL_LEN) + "..." : shortDesc;
+										
 										String fxvAttrValue = null;
 										String fxvAttrValueShort = null;
+										
 										String spaces="";
 										for (int j=1; j<level; j++){
 											spaces +="&#160;&#160;&#160;";
 										}
 										
 										%>
-										<tr>
-											<td valign="bottom" align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-												<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=type%>">
-													<%=Util.replaceTags(value)%>
-												</a></b>
+										
+										<tr <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+											<td valign="bottom" align="left" style="padding-left:5;padding-right:10">
+												<%=spaces%>
+												<b>
+												<a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=type%>"><%=Util.replaceTags(value)%></a>
+												</b>
 											</td>
-											<%
-											for (int c=0; fxvAttributes!=null && c<fxvAttributes.size(); c++){
-						
-												attribute = (DElemAttribute)fxvAttributes.get(c);
-						
-												fxvAttrValue = fxv.getAttributeValueByID(attribute.getID());
-												if (fxvAttrValue==null || fxvAttrValue.length()==0){
-												%>
-													<td valign="bottom" align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>></td>
-												<%
-												}
-												else{
-													if (fxvAttrValue.length()>35){
-														fxvAttrValueShort = fxvAttrValue.substring(0,35) + " ...";
-												}
-													else{
-														fxvAttrValueShort = fxvAttrValue;
-													}
-													%>
-													<td valign="bottom" align="left" title="<%=fxvAttrValue%>" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-														<span class="barfont"><%=Util.replaceTags(fxvAttrValueShort)%></span>
-													</td>
-													<%
-												}
-											}
-											for (int k=0; relElemId!=null && k<relElemId.size(); k++){
-												String component_id = (String)relElemId.get(k);
-												String relElemValue = component_id!=null ? fxv.getItemValueByComponentId(component_id):"";
-												%>
-													<td valign="bottom" align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-														<span class="barfont"><%=Util.replaceTags(relElemValue)%></span>
-													</td>
-												<%
-											}
-											%>
+											<td valign="bottom" align="left" title="<%=fxvAttrValue%>" style="padding-left:5;padding-right:10">
+												<span class="barfont"><%=Util.replaceTags(defin)%></span>
+											</td>
+											<td valign="bottom" align="left" title="<%=fxvAttrValue%>" style="padding-left:5;padding-right:10">
+												<span class="barfont"><%=Util.replaceTags(shortDesc)%></span>
+											</td>
 										</tr>
 									<%
 									}
@@ -1944,75 +1927,24 @@ String attrValue = null;
 					<%
 				}
 		 	}  	// end if (mode.equals("view"))
-		
+		 	
 			if (!mode.equals("add") && !mode.equals("view")
 					|| (mode.equals("view") && user!=null)
-					|| bShowLink){ // if mode is not 'add'
-			%>
-			<tr height="5"><td colspan="2"></td></tr>
-			<tr>
-				<td>&#160;</td><td>
-					<b>*</b> <span class="smallfont"><a href="javascript:openUrl('fixed_values.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;mode=view&amp;parent_type=<%=type%>')">
-						<b><%=upperCaseTitle%> VALUES</b></a></span>&#160;&#160;
-					<span class="smallfont" style="font-weight: normal">
-						<% if (user != null) %>
-							&lt;&#160;click here to view/add/remove <%=lowerCaseTitle%> values of this data element
-					</span>
-				</td>
-			</tr>
-		
-			<% 
-			}
-		} // end if CH1 and mode=add
-		%>
-		<%
-		if (type!=null && type.equals("AGG") && !mode.equals("add")){ // if AGG and mode is not 'add'
-		
-			String seqID = dataElement.getSequence();
-			String chcID = dataElement.getChoice();
-			
-			String extID = dataElement.getExtension();
-			
-			String uri = request.getRequestURI();
-			StringBuffer url = new StringBuffer(uri.substring(0, uri.lastIndexOf("/") + 1));
-			
-			if (seqID != null && chcID != null)
-				url.append("javascript:alert('A data element is expected to have only a sequence or only a choice of sub-elements, not both!");
-			else{
-				url.append("content.jsp?parent_type=elm");
-				url.append("&parent_id=" + delem_id);
-				url.append("&parent_name=" + delem_name);
-				
-				if (extID != null)
-					url.append("&ext_id=" + extID);
+					|| bShowLink){ %>
+				<tr height="5"><td colspan="2"></td></tr>
+				<tr>
+					<td>&#160;</td><td>
+						<b>*</b> <span class="smallfont"><a href="javascript:openUrl('fixed_values.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;mode=view&amp;parent_type=<%=type%>')">
+							<b><%=upperCaseTitle%> VALUES</b></a></span>&#160;&#160;
+						<span class="smallfont" style="font-weight: normal">
+							<% if (user != null) %>
+								&lt;&#160;click here to view/add/remove <%=lowerCaseTitle%> values of this data element
+						</span>
+					</td>
+				</tr> <% 
 			}
 			
-			if (seqID != null){				
-				url.append("&content_id=" + seqID);
-				url.append("&content_type=seq");
-			}
-			else if (chcID != null){
-				url.append("&content_id=" + chcID);
-				url.append("&content_type=chc");
-			}
-			
-			//url.append("')");
-				
-		%>
-			
-		<tr>
-			<td>&#160;</td>
-			<td colspan="2">
-				<b>*</b> <span class="smallfont"><a href="javascript:openUrl('<%=url.toString()%>')">
-					<b>SUBELEMENTS</b></a></span>&#160;&#160;
-				<span class="smallfont" style="font-weight: normal">
-					&lt;&#160;click here to view/add/remove subelements of this aggregate
-				</span>
-			</td>
-		</tr>
-			
-		<% 
-		} // if AGG and mode is not 'add'		
+		} 
 		%>
 		
 		<!-- FOREIGN KEYS -->
@@ -2147,9 +2079,21 @@ String attrValue = null;
 			<%
 			}
 		}
-		if (!mode.equals("view")){
-			%>	
-			<tr height="10"><td colspan="3"></td></tr>
+		
+		if (!mode.equals("view")){ %>
+			<tr height="10"><td colspan="2"></td></tr><%
+		}
+		
+		if (mode.equals("edit") && dataElement!=null && dataElement.isWorkingCopy() && user!=null && hasHistory){%>
+			<tr height="15">
+				<td>&#160;</td>
+				<td colspan="2" style="padding-left:47">
+					<input type="checkbox" name="upd_version" value="true">Update version when checking in</input>
+				</td>
+			</tr><%
+		}
+			
+		if (!mode.equals("view")){ %>	
 			<tr>
 				<td>&#160;</td>
 				<td colspan="2">
@@ -2245,6 +2189,8 @@ String attrValue = null;
 		<input type="hidden" name="changed" value="0">
 		
 		<input type="hidden" name="ver_upw" value="true">
+		<!-- input type="hidden" name="upd_version" value="false" -->
+		
 		<%
 		if (latestID!=null){%>
 			<input type="hidden" name="latest_id" value="<%=latestID%>"><%
@@ -2273,6 +2219,7 @@ String attrValue = null;
 }
 finally {
 	try { if (conn!=null) conn.close();
-	} catch (SQLException e) {}
+	} catch (SQLException e) {
+	}
 }
 %>

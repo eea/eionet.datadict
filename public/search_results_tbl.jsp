@@ -77,6 +77,7 @@
 	AppUserIF user = SecurityUtil.getUser(request);
 
 	String short_name = request.getParameter("short_name");
+	String idfier = request.getParameter("idfier");
 	String full_name = request.getParameter("full_name");
 	String definition = request.getParameter("definition");
 
@@ -218,7 +219,7 @@
 								<a href="javascript:showSortedList(2, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by dataset name"/></a>
 							</th>
 							<th align="right">
-								<a href="javascript:showSortedList(2, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
+								<a href="javascript:showSortedList(2, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by dataset name"/></a>
 							</th>
 						</tr>
 					</table>
@@ -277,7 +278,7 @@
 					String _wrkCopies = request.getParameter("wrk_copies");
 					wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
 
-					Vector dsTables = searchEngine.getDatasetTables(params, short_name, full_name, definition, oper, wrkCopies);
+					Vector dsTables = searchEngine.getDatasetTables(params, short_name, idfier, full_name, definition, oper, wrkCopies);
 		           
         		    if (dsTables == null || dsTables.size()==0){
 		            %>
@@ -357,7 +358,7 @@
                 															 
 						oResultSet.oElements.add(oEntry);
 						
-						String workingUser = verMan.getTblWorkingUser(table.getShortName(), dsNs);
+						String workingUser = verMan.getTblWorkingUser(table.getIdentifier(), dsNs);
 						String topWorkingUser = verMan.getWorkingUser(table.getParentNs());			
 						%>
 						<tr>

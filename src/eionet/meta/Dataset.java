@@ -21,6 +21,7 @@ public class Dataset {
     private String workingCopy = null;
     
     private String name = null;
+    private String identifier = null;
 
     public Dataset(String id, String shortName, String version){
         this.id = id;
@@ -164,6 +165,14 @@ public class Dataset {
     public String getName(){
         return name;
     }
+
+	public void setIdentifier(String identifier){
+		this.identifier = identifier;
+	}
+    
+	public String getIdentifier(){
+		return this.identifier;
+	}
     
     public Hashtable getCAttrByShortName(String shn){
 

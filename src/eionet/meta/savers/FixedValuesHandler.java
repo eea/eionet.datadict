@@ -10,48 +10,40 @@ import eionet.meta.*;
 import com.tee.util.*;
 
 public class FixedValuesHandler {
-
-    public static String ATTR_PREFIX = "attr_";
-    public static String ITEM_PREFIX = "item_";
-
-    public static String POS_PREFIX = "pos_";
-    public static String OLDPOS_PREFIX = "oldpos_";
+	
+	private static final String DEFAULT_OWNER_TYPE = "elem";
 
     private Connection conn = null;
     private Parameters req = null;
     private ServletContext ctx = null;
-    String mode = null;
-    String delem_id = null;
-    String delem_name = null;
-    String ns = null;
-    String fxv_id = null;
-    private String[] fxv_ids = null;
-    private String lastInsertID = null;    
-    private String parentType = "elem";
     
-    private String elmDatatype = null;
-    private HashSet prohibitedDatatypes = new HashSet();
+    private String mode = null;
+    private String ownerID = null;
+	private String ownerType = DEFAULT_OWNER_TYPE;
     
-    private boolean versioning = true;
-
+    private String lastInsertID = null;
+	private boolean versioning = true;    
+    private HashSet prhbDatatypes = new HashSet();
+    
+    private boolean allowed = true;
+	private boolean allowanceChecked = false;
+    
     public FixedValuesHandler(Connection conn, HttpServletRequest req, ServletContext ctx){
         this(conn, new Parameters(req), ctx);
     }
 
     public FixedValuesHandler(Connection conn, Parameters req, ServletContext ctx){
+    	
         this.conn = conn;
         this.req  = req;
         this.ctx  = ctx;
-        this.mode = req.getParameter("mode");
-        this.delem_id = req.getParameter("delem_id");
-        this.delem_name = req.getParameter("delem_name");
-        this.ns = req.getParameter("ns");
-        this.fxv_id = req.getParameter("fxv_id");
-        this.fxv_ids = req.getParameterValues("fxv_id");
-        String parentType = req.getParameter("parent_type");
-        if (!Util.nullString(parentType))
-            this.parentType = parentType;
         
+        mode = req.getParameter("mode");
+        ownerID = req.getParameter("delem_id");
+		String _ownerType = req.getParameter("parent_type");
+		if (!Util.nullString(_ownerType))
+			ownerType = _ownerType;
+		
         if (ctx!=null){
 	        String _versioning = ctx.getInitParameter("versioning");
 	        if (_versioning!=null && _versioning.equalsIgnoreCase("false"))
@@ -59,7 +51,7 @@ public class FixedValuesHandler {
     	}
             
         // set the prohibited datatypes of parent element
-        prohibitedDatatypes.add("BOOLEAN");
+        prhbDatatypes.add("BOOLEAN");
     }
 
     public FixedValuesHandler(Connection conn, HttpServletRequest req, ServletContext ctx, String mode){
@@ -71,323 +63,161 @@ public class FixedValuesHandler {
         this.versioning = f;
     }
     
-    public void execute() throws Exception {
-        if (mode==null || (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("edit") && !mode.equalsIgnoreCase("delete")) && !mode.equalsIgnoreCase("edit_positions"))
-            throw new Exception("FixedValuesHandler mode unspecified!");
+    public String getOwnerID(){
+    	return ownerID;
+    }
+    
+	public boolean execute(Parameters pars) throws Exception {
+		this.req = pars;
+		return execute();
+	}
+    
+    public boolean execute() throws Exception {
+    	
+    	if (!allowanceChecked)
+			 checkAllowance();
+    	else if (!allowed)
+    		return false; 
 
-        if (delem_id == null && !mode.equals("delete"))
-            throw new Exception("FixedValuesHandler delem_id unspecified!");
-
-		if (parentType.equals("CH1") || parentType.equals("CH2"))
-			parentType = "elem";
-		
-        if (!parentType.equals("elem") && !parentType.equals("attr"))
-            throw new Exception("FixedValuesHandler: unknown parent type!");
-
-        if (parentType.equals("elem")){
-            
-            // if in versioning mode, we cannot edit fixed-values of
-            // non-working copies
-            
-            DDSearchEngine searchEngine = new DDSearchEngine(conn);
-            boolean wc = true;
-            try{ wc = searchEngine.isWorkingCopy(delem_id, "elm"); }
-            catch (Exception e){}            
-            if (!wc && versioning)
-                throw new Exception("Cannot edit fixed values of a " +
-                            "non-working copy!");
-        }
-        
         if (mode.equalsIgnoreCase("add"))
             insert();
         else if (mode.equalsIgnoreCase("edit"))
             update();
-        else if (mode.equalsIgnoreCase("edit_positions"))
-            processPositions();
         else
             delete();
+        
+        return true;
     }
 
     private void insert() throws Exception {
 
-        // set the datatype of parent element
-        if (parentType.equalsIgnoreCase("elem")){
-            if (!Util.nullString(delem_id)){
-                try{
-                    DDSearchEngine eng = new DDSearchEngine(conn);
-                    DataElement elm = eng.getDataElement(delem_id);
-                    if (elm != null){
-                        elmDatatype = elm.getAttributeValueByShortName("Datatype");
-                        if (elmDatatype != null) elmDatatype = elmDatatype.toUpperCase();
-                    }
-                }
-                catch (Exception e){}
-            }
-        }
-        
-        // check if fixed values are not allowed for this element's datatype
-        if (prohibitedDatatypes.contains(this.elmDatatype))
-            return;
-
         String[] newValues = req.getParameterValues("new_value");
-        if (newValues!=null){
-
-            for (int i=0; i<newValues.length; i++){
-                if (exists(newValues[i]))
-                    throw new SQLException("This allowable value already exists!");
-
-                insertValue(newValues[i]);
-            }
-        }
-        
-        //There is only one fixed value in the Parameters, then it's possible to insert attributes
-        if (newValues!=null && newValues.length==1){
-            // JH140303 - both done in insertValue() now
-            // setLastInsertID();
-            // fxv_id = getLastInsertID();
-            processAttributes();
-        }
+        for (int i=0; newValues!=null && i<newValues.length; i++)
+            insertValue(newValues[i]);
     }
 
     private void insertValue(String value) throws Exception {
 
-        //String csID = req.getParameter("cs_id");
-        //if (Util.nullString(csID)){
-            
-        /*String csID = "";
-        if (!componentHasValues()){
-            
-            Parameters pars = new Parameters();
-            pars.addParameterValue("mode", "add");
-            StringBuffer buf = new StringBuffer("Fixed values for ");
-            buf.append(delem_id + " ");
-            buf.append(parentType.equals("elem") ? "element" : "attribute");
-            pars.addParameterValue("name", buf.toString());
-            pars.addParameterValue("type", "Fixed values");
-            pars.addParameterValue("version", "0.1");
-            pars.addParameterValue("version", buf.toString());
-            
-            ClsfSchemeHandler clsfSchemeHandler = new ClsfSchemeHandler(conn, pars, ctx);
-            clsfSchemeHandler.execute();
-            csID = clsfSchemeHandler.getLastInsertID();
-        }*/
-
         SQLGenerator gen = new SQLGenerator();
-        gen.setTable("CS_ITEM");
-
-        //gen.setField("CSI_ID", fxv_id);
-        //gen.setField("CS_ID", csID);
-        gen.setFieldExpr("COMPONENT_ID", delem_id);
-        gen.setField("CSI_TYPE", "fxv");
-        gen.setField("CSI_VALUE", value);
-        gen.setField("COMPONENT_TYPE", parentType);
+        gen.setTable("FXV");
+        gen.setFieldExpr("OWNER_ID", ownerID);
+		gen.setField("OWNER_TYPE", ownerType);
+        gen.setField("VALUE", value);
 
         String isDefault = req.getParameter("is_default");
-        if (!Util.nullString(isDefault) && isDefault.equalsIgnoreCase("true"))
+        if (isDefault!=null && isDefault.equalsIgnoreCase("true"))
             gen.setField("IS_DEFAULT", "Y");
-
-        String position = req.getParameter("pos");
-        if (Util.nullString(position))
-            position = getValuePos();
-
-        gen.setField("POSITION", position);
+        
+		String definition = req.getParameter("definition");
+		if (definition!=null) gen.setField("DEFINITION", definition);
+		String shortDesc = req.getParameter("short_desc");
+		if (shortDesc!=null) gen.setField("SHORT_DESC", shortDesc);
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(gen.insertStatement());
         setLastInsertID();
-        fxv_id = getLastInsertID();
-        
-        // if parent  has been specified, insert CSI_RELATION (levelled lists)
-        String parentCSI = req.getParameter("parent_csi");
-        if (!Util.nullString(parentCSI)){
-            gen.clear();
-            gen.setTable("CSI_RELATION");
-            gen.setFieldExpr("PARENT_CSI", parentCSI);
-            gen.setFieldExpr("CHILD_CSI", fxv_id);
-            stmt.executeUpdate(gen.insertStatement());
-        }
         
         stmt.close();
     }
+
+	private void update() throws SQLException {
+		
+		String fxvID = req.getParameter("fxv_id");
+		if (Util.nullString(fxvID))
+			return;
+
+		String isDefault = req.getParameter("is_default");
+		String definition = req.getParameter("definition");
+		String shortDesc = req.getParameter("short_desc");
+		
+		SQLGenerator gen = new SQLGenerator();
+		
+		if (isDefault!=null)
+			gen.setField("IS_DEFAULT", isDefault.equals("true") ? "Y" : "N");
+		if (definition!=null)
+			gen.setField("DEFINITION", definition);
+		if (definition!=null)
+			gen.setField("SHORT_DESC", shortDesc);
+
+		if (gen.getValues().length()==0) return;
+		
+		gen.setTable("FXV");
+		
+		StringBuffer buf = new StringBuffer(gen.updateStatement()).
+		append(" where FXV_ID=").append(fxvID);
+		Statement stmt = conn.createStatement();
+		stmt.executeUpdate(buf.toString());
+		stmt.close();
+	}
 
     private void delete() throws Exception {
 
-        this.fxv_ids = req.getParameterValues("del_id");
-        if (fxv_ids == null || fxv_ids.length == 0) return;
+        String[] fxvID = req.getParameterValues("del_id");
+        if (fxvID == null || fxvID.length == 0) return;
 
-        for (int i=0; i<fxv_ids.length; i++){
-            deleteValue(fxv_ids[i]);
+        for (int i=0; i<fxvID.length; i++){
+            deleteValue(fxvID[i]);
         }
-        
-        deleteAttributes();
-        deleteChildren();
-        deleteRelations();
     }
 
     private void deleteValue(String id) throws SQLException {
-        StringBuffer buf = new StringBuffer("delete from CS_ITEM where CSI_ID=");
-        buf.append(id);
-
-        log(buf.toString());
-
+        StringBuffer buf = new StringBuffer("delete from FXV where FXV_ID=").
+        append(id);
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
         stmt.close();
     }
     
-    private void update() throws SQLException {
+    private void checkAllowance() throws Exception {
+    	
+		allowanceChecked = true;
+		
+		// check if legal mode
+		if (mode==null || (!mode.equalsIgnoreCase("add") &&
+						   !mode.equalsIgnoreCase("edit") &&
+						   !mode.equalsIgnoreCase("delete")) &&
+						   !mode.equalsIgnoreCase("edit_positions"))
+			throw new Exception("FixedValuesHandler mode unspecified!");
 
-        String isDefault = req.getParameter("is_default");
-        if (!Util.nullString(isDefault)){
-            SQLGenerator gen = new SQLGenerator();
-            gen.setTable("CS_ITEM");
-            gen.setField("IS_DEFAULT", isDefault.equals("true") ? "Y" : "N");
+		// check if owner id specified
+		if (ownerID == null && !mode.equals("delete"))
+			throw new Exception("FixedValuesHandler delem_id unspecified!");
 
-            StringBuffer buf = new StringBuffer(gen.updateStatement());
-            buf.append(" where CSI_ID=");
-            buf.append(fxv_id);
+		// legalize owner type 
+		if (ownerType.equals("CH1") || ownerType.equals("CH2"))
+			ownerType = "elem";
 
-            log(buf.toString());
-
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(buf.toString());
-            stmt.close();
-        }
-
-        deleteAttributes();
-        processAttributes();
-
-        deleteItems();
-        processItems();
+		if (!ownerType.equals("elem") && !ownerType.equals("attr"))
+			throw new Exception("FixedValuesHandler: unknown parent type!");
+    	
+    	// for owners with type!="elem" fixed values always allowed
+		if (!ownerType.equals("elem"))
+			return;
+		
+		// if in versioning mode, we cannot edit fixed-values of
+		// non-working copies
+		DDSearchEngine searchEngine = new DDSearchEngine(conn);
+		boolean wc = true;
+		try{
+			wc = searchEngine.isWorkingCopy(ownerID, "elm");
+		}
+		catch (Exception e){}
+		            
+		if (!wc && versioning){
+			throw new Exception(
+				"Cannot edit fixed values of a non-working copy!");
+		}
+		
+		// get the element's datatype and check if fxvalues are allowed
+		DDSearchEngine eng = new DDSearchEngine(conn);
+		DataElement elm = eng.getDataElement(ownerID);
+		String dtype = elm==null ? "" :
+								   elm.getAttributeValueByShortName("Datatype");
+		dtype = dtype==null ? "" : dtype.toUpperCase();
+		if (prhbDatatypes.contains(dtype.toUpperCase()))
+			allowed = false;
     }
     
-    private void deleteAttributes() throws SQLException {
-
-        //StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where PARENT_TYPE='FV'");
-        StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where PARENT_TYPE='CSI'");
-        for (int i=0; i<fxv_ids.length; i++){
-            if (i==0)
-                buf.append(" AND (");
-            if (i>0)
-                buf.append(" or ");
-            buf.append("DATAELEM_ID=");
-            buf.append(fxv_ids[i]);
-            if (i==fxv_ids.length -1)
-                buf.append(")");
-        }
-
-        log(buf.toString());
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
-    }
-
-
-    private void processAttributes() throws SQLException {
-        Enumeration parNames = req.getParameterNames();
-        while (parNames.hasMoreElements()){
-            String parName = (String)parNames.nextElement();
-            if (!parName.startsWith(ATTR_PREFIX))
-                continue;
-            String attrValue = req.getParameter(parName);
-            if (attrValue.length()==0)
-                continue;
-            String attrID = parName.substring(ATTR_PREFIX.length());
-            insertAttribute(attrID, attrValue);
-        }
-    }
-
-
-    private void insertAttribute(String attrId, String value) throws SQLException {
-
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("ATTRIBUTE");
-        gen.setFieldExpr("M_ATTRIBUTE_ID", attrId);
-        gen.setFieldExpr("DATAELEM_ID", fxv_id);
-        //gen.setField("PARENT_TYPE", "FV");
-        gen.setField("PARENT_TYPE", "CSI");
-        gen.setField("VALUE", value);
-
-        String sql = gen.insertStatement();
-        log(sql);
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(sql);
-        stmt.close();
-    }
-
-    private void updateAttribute(String attrId, String value) throws SQLException {
-
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("ATTRIBUTE");
-        gen.setFieldExpr("M_ATTRIBUTE_ID", attrId);
-        gen.setFieldExpr("DATAELEM_ID", fxv_id);
-        //gen.setField("PARENT_TYPE", "FV");
-        gen.setField("PARENT_TYPE", "CSI");
-        gen.setField("VALUE", value);
-        
-        String sql = gen.updateStatement();
-        log(sql);
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(sql);
-        stmt.close();
-    }
-    
-    private void deleteRelations() throws SQLException {
-        StringBuffer buf = new StringBuffer("delete from CSI_RELATION where ");
-        for (int i=0; i<fxv_ids.length; i++){
-            if (i>0)
-                buf.append(" or ");
-            buf.append("PARENT_CSI=");
-            buf.append(fxv_ids[i]);
-            buf.append(" or CHILD_CSI=");
-            buf.append(fxv_ids[i]);
-        }
-
-        log(buf.toString());
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
-    }
-    
-    private void deleteChildren() throws SQLException {
-        
-        //get the children
-        StringBuffer buf = new StringBuffer("select distinct CHILD_CSI from CSI_RELATION where REL_TYPE='taxonomy' and ");
-        for (int i=0; i<fxv_ids.length; i++){
-            if (i>0)
-                buf.append(" or ");
-            buf.append("PARENT_CSI=");
-            buf.append(fxv_ids[i]);
-        }
-        log(buf.toString());
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
-        Vector children = new Vector();
-        while (rs.next()){
-            children.add(rs.getString("CHILD_CSI"));
-        }
-        stmt.close();
-        
-        // delete the children
-        
-        if (children.size() == 0) return;
-        
-        Parameters params = new Parameters();
-        params.addParameterValue("mode", "delete");
-        for (int i=0; i<children.size(); i++){
-            params.addParameterValue("del_id", (String)children.get(i));
-        }
-        
-        FixedValuesHandler fxvHandler = new FixedValuesHandler(conn, params, ctx);
-        try{ fxvHandler.execute(); } catch (Exception e){
-            throw new SQLException(e.toString());
-        }
-    }
-
     private void setLastInsertID() throws SQLException {
         
         String qry = "SELECT LAST_INSERT_ID()";
@@ -405,184 +235,6 @@ public class FixedValuesHandler {
     public String getLastInsertID(){
         return lastInsertID;
     }
-
-    public boolean exists(String value) throws SQLException {
-
-        String qry =
-        "select count(*) as COUNT from CS_ITEM where " +
-        "COMPONENT_ID=" + delem_id +
-        " AND CSI_VALUE=" + com.tee.util.Util.strLiteral(value) +
-        " AND COMPONENT_TYPE=" + com.tee.util.Util.strLiteral(parentType);
-
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(qry);
-
-        if (rs.next()){
-            if (rs.getInt("COUNT")>0){
-                return true;
-            }
-        }
-        
-        stmt.close();
-
-        return false;
-    }
-    
-    /**
-    * Function for checking if this component already has values
-    */
-    public boolean componentHasValues() throws SQLException {
-
-        String qry =
-        "select count(*) as COUNT from CS_ITEM where " +
-        "COMPONENT_ID=" + delem_id +
-        " AND COMPONENT_TYPE=" + com.tee.util.Util.strLiteral(parentType);
-
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(qry);
-
-        if (rs.next()){
-            if (rs.getInt("COUNT")>0){
-                return true;
-            }
-        }
-        
-        stmt.close();
-
-        return false;
-    }
-    private void deleteItems() throws SQLException {
-
-        StringBuffer buf = new StringBuffer("delete from CSI_RELATION where REL_TYPE='abstract' and PARENT_CSI=");
-        buf.append(fxv_id);
-
-        log(buf.toString());
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
-    }
-
-
-    private void processItems() throws SQLException {
-        Enumeration parNames = req.getParameterNames();
-        while (parNames.hasMoreElements()){
-            String parName = (String)parNames.nextElement();
-            if (!parName.startsWith(ITEM_PREFIX))
-                continue;
-            String itemValue = req.getParameter(parName);
-            if (itemValue.length()==0)
-                continue;
-            //String itemID = parName.substring(ITEM_PREFIX.length());
-            insertItem(itemValue);
-        }
-    }
-    private void insertItem(String childId) throws SQLException {
-
-        Parameters pars = new Parameters();
-        pars.addParameterValue("mode", "add");
-        pars.addParameterValue("parent_id", fxv_id);
-        pars.addParameterValue("child_id", childId);
-        pars.addParameterValue("rel_type", "abstract");
-        pars.addParameterValue("csi_type", "fxv");
-        pars.addParameterValue("component_type", "elem");
-
-        try{
-          CsiRelationHandler crHandler = new CsiRelationHandler(conn, pars, ctx);
-          crHandler.setVersioning(this.versioning);
-          crHandler.execute();
-        }
-        catch (Exception e){
-            throw new SQLException(e.toString());
-        }
-    }
-    private String getValuePos() throws SQLException{
-
-        String parentCSI = req.getParameter("parent_csi");
-        log("parent_csi:" + parentCSI);
-        StringBuffer buf = new StringBuffer("SELECT MAX(POSITION) FROM CS_ITEM ");
-        if (!Util.nullString(parentCSI)){
-            buf.append("left join CSI_RELATION on (CS_ITEM.CSI_ID=CSI_RELATION.CHILD_CSI and CSI_RELATION.REL_TYPE='taxonomy') ");
-            buf.append("where COMPONENT_ID=");
-            buf.append(delem_id);
-            buf.append(" and CSI_TYPE='fxv' and COMPONENT_TYPE='");
-            buf.append(parentType);
-            buf.append("' and parent_csi=");
-            buf.append(parentCSI);
-            /*buf.append("AS PARENTITEM left outer join CSI_RELATION on PARENTITEM.CSI_ID=CSI_RELATION.PARENT_CSI ");
-            buf.append("left outer join CS_ITEM AS CHILDITEM on CSI_RELATION.CHILD_CSI=CHILDITEM.CSI_ID ");
-            buf.append("left outer join DATAELEM on CHILDITEM.COMPONENT_ID=DATAELEM.DATAELEM_ID ");
-            buf.append("where PARENTITEM.COMPONENT_ID=");
-            buf.append(delem_id);
-            buf.append(" and PARENTITEM.COMPONENT_TYPE='");
-            buf.append(parentType);
-            buf.append("' and PARENTITEM.CSI_TYPE='elem' and DATAELEM.TYPE='CH1'");*/
-        }
-        else{ //first level values
-          buf.append("left join CSI_RELATION on (CS_ITEM.CSI_ID=CSI_RELATION.CHILD_CSI and CSI_RELATION.REL_TYPE='taxonomy') ");
-          buf.append("where COMPONENT_ID=");
-          buf.append(delem_id);
-          buf.append(" and CSI_TYPE='fxv' and COMPONENT_TYPE='");
-          buf.append(parentType);
-          buf.append("' and child_csi is null");
-        }
-
-        log(buf.toString());
-
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
-        rs.clearWarnings();
-
-        String pos=null;
-        if (rs.next())
-            pos = rs.getString(1);
-        stmt.close();
-        if (pos != null){
-            try {
-              int i = Integer.parseInt(pos) + 1;
-              return Integer.toString(i);
-            }
-            catch(Exception e){
-                return "1";
-            }
-        }
-
-        return "1";
-    }
-    private void processPositions() throws Exception {
-
-        String[] posIds = req.getParameterValues("pos_id");
-        String old_pos=null;
-        String pos=null;
-        String parName=null;
-        if (posIds==null || posIds.length==0) return;
-
-        for (int i=0; i<posIds.length; i++){
-            old_pos = req.getParameter(OLDPOS_PREFIX + posIds[i]);
-            pos = req.getParameter(POS_PREFIX + posIds[i]);
-            if (old_pos.length()==0 || pos.length()==0)
-                continue;
-            if (!old_pos.equals(pos))
-                updatePosition(posIds[i], pos);
-        }
-    }
-    private void updatePosition(String fxv_id, String pos) throws Exception {
-
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("CS_ITEM");
-        gen.setField("POSITION", pos);
-
-        StringBuffer buf = new StringBuffer(gen.updateStatement());
-        buf.append(" where CSI_ID=");
-        buf.append(fxv_id);
-
-        log(buf.toString());
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
-    }
-
     private void log(String msg){
         if (ctx != null)
             ctx.log(msg);
@@ -592,27 +244,20 @@ public class FixedValuesHandler {
 
         try{
             Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn =
-                DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
+            Connection conn = DriverManager.getConnection(
+				"jdbc:mysql://195.250.186.16:3306/DataDict", "root", "ABr00t");
 
-            String qry = "select distinct * from FIXED_VALUE";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(qry);
-
-            while (rs.next()){
-                Parameters pars = new Parameters();
-                pars.addParameterValue("mode", "add");
-                pars.addParameterValue("fxv_id", rs.getString("FIXED_VALUE_ID"));
-                pars.addParameterValue("delem_id", rs.getString("DATAELEM_ID"));
-                pars.addParameterValue("new_value", rs.getString("VALUE"));
-                pars.addParameterValue("parent_type", rs.getString("PARENT_TYPE"));
-                pars.addParameterValue("is_default", rs.getString("IS_DEFAULT"));
-                
-                FixedValuesHandler handler = new FixedValuesHandler(conn, pars, null);
-                handler.execute();
-            }
+            Parameters pars = new Parameters();
+            pars.addParameterValue("mode", "edit");
+            pars.addParameterValue("fxv_id", "2324");
+            pars.addParameterValue("delem_id", "9923");
+            pars.addParameterValue("parent_type", "elem");
+			//pars.addParameterValue("new_value", "kola1");
+			pars.addParameterValue("definition", "plaaplaatt");
+            pars.addParameterValue("short_desc", "plaaplaarrrr");
             
-            stmt.close();
+            FixedValuesHandler handler = new FixedValuesHandler(conn, pars, null);
+            handler.execute();
         }
         catch (Exception e){
             System.out.println(e.toString());

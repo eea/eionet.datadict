@@ -1,10 +1,8 @@
 <%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private Vector fixedValues=null;%>
-<%!private Vector mAttributes=null;%>
-<%!private Vector fxvAttributes=null;%>
-<%!private Vector fxvRelElems=null;%>
 <%!private String mode=null;%>
+<%!private static final int MAX_CELL_LEN=70;%>
 
 <%@ include file="history.jsp" %>
 
@@ -50,7 +48,7 @@ private String legalizeAlert(String in){
 	      			%>
 	      				<html>
 	      				<body>
-	      					<h1>Error</h1><b>Not authorized to post any data!</b>
+	      					<h1>Error</h1><b>Not authorized to & post any data!</b>
 	      				</body>
 	      				</html>
 	      			<%
@@ -91,15 +89,8 @@ private String legalizeAlert(String in){
 			
 			String dispParentType = parent_type.equals("elem") ? "element" : "attribute";
 			
-			
-			
-			String parentCSI = request.getParameter("parent_csi");
-			String prevParent = request.getParameter("prv_parent_csi");
-			
 			String delem_name = request.getParameter("delem_name");
 			if (delem_name == null) delem_name = "?";
-			
-			//String delem_ns = request.getParameter("ns");
 			
 			// handle the POST
 			
@@ -115,25 +106,11 @@ private String legalizeAlert(String in){
 						handler.execute();
 					}
 					catch (Exception e){
+						e.printStackTrace(System.out);
 						%>
 						<html><body>
 							<b><%=e.toString()%></b><br/>
-							<%
-							
-							/*String redirUrl = "";
-							redirUrl = redirUrl + "fixed_values.jsp?mode=edit&delem_id=" + delem_id +
-																 "&delem_name=" + delem_name +
-																 "&parent_type=" + parent_type + 
-																 "&mode=edit";
-																 
-																 //"&ns=" + delem_ns;
-							if (parentCSI!=null && parentCSI.length()!=0)
-								redirUrl = redirUrl + "&parent_csi=" + parentCSI;
-							if (prevParent!=null && prevParent.length()!=0)
-								redirUrl = redirUrl + "&prv_parent_csi=" + prevParent;
-								*/
-							%>
-							<a href="javascript:window.location.replace('<%=currentUrl%>')">&lt; back</a>
+							<a href="javascript:window.location.replace('<%=currentUrl%>')">< back</a>
 						</body></html>
 						<%
 						return;
@@ -144,27 +121,6 @@ private String legalizeAlert(String in){
 					} catch (SQLException e) {}
 				}
 				
-				/*
-				StringBuffer redirUrl = new StringBuffer("");
-				redirUrl.append("/fixed_values.jsp?mode=edit&delem_id=");
-				redirUrl.append(delem_id);
-				redirUrl.append("&delem_name=");
-				redirUrl.append(delem_name);
-				redirUrl.append("&parent_type=");
-				redirUrl.append(parent_type);
-				if (parentCSI!=null && parentCSI.length()!=0){
-					redirUrl.append("&parent_csi=");
-					redirUrl.append(parentCSI);
-				}				
-				if (prevParent!=null && prevParent.length()!=0){
-					redirUrl.append("&prv_parent_csi=");
-					redirUrl.append(prevParent);
-				}
-				*/
-				//redirUrl.append("&ns=");
-				//redirUrl.append(delem_ns);
-							
-				//response.sendRedirect(redirUrl.toString());
 				response.sendRedirect(currentUrl);
 				return;
 			}
@@ -180,38 +136,9 @@ private String legalizeAlert(String in){
 			conn = pool.getConnection();
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 
-			if (mode.equals("view")){
-				fixedValues = searchEngine.getAllFixedValues(delem_id, parent_type);
-			}
-			else{
-				if (parentCSI!=null && parentCSI.length()!=0)
-					fixedValues = searchEngine.getSubValues(parentCSI);
-				else
-					fixedValues = searchEngine.getFixedValues(delem_id, parent_type);
-			}
-
-			mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
-			
-			fxvAttributes = new Vector();
-			DElemAttribute attribute = null;
-
-			for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
-				attribute = (DElemAttribute)mAttributes.get(i);
-				String dispType = attribute.getDisplayType();
-				if (dispType != null &&
-						attribute.displayFor("FXV")){
-					fxvAttributes.add(attribute);
-				}
-			}
-
-
-
+			fixedValues = searchEngine.getFixedValues(delem_id, parent_type);
 			if (fixedValues == null) fixedValues = new Vector();
 
-			fxvRelElems = searchEngine.getRelatedElements(delem_id, "elem", null, "CH1");
-			if (fxvRelElems == null) fxvRelElems = new Vector();
-			Vector relElemId = new Vector();
-			
 			String disabled = user == null ? "disabled" : "";
 			
 			boolean isWorkingCopy = parent_type.equals("elem") ? searchEngine.isWorkingCopy(delem_id, "elm") : true;
@@ -362,33 +289,8 @@ private String legalizeAlert(String in){
 <div style="margin-left:30">
 			
 <form name="form1" method="POST" action="fixed_values.jsp">
-<table width="400">
+<table width="600">
 	
-	<%
-	
-	if (parentCSI != null && parentCSI.length()!=0){
-		StringBuffer buf = new StringBuffer();
-		buf.append("fixed_values.jsp?mode=edit&delem_id=");
-		buf.append(delem_id);
-		buf.append("&delem_name=");
-		buf.append(delem_name);
-		buf.append("&parent_type=");
-		buf.append(parent_type);
-		if (prevParent != null && prevParent.length()!=0){
-			buf.append("&parent_csi=");
-			buf.append(prevParent);
-		}
-		%>
-		<!--tr>
-			<td colspan="2">
-				<a href="javascript:window.location.replace('<%=buf.toString()%>')">&lt; back to upper level</a>
-			</td>
-		</tr>
-		<tr height="20"><td colspan="2"></td></tr-->
-		<%
-	}
-	%>
-			
 	<tr valign="bottom">
 		<td colspan="2">
 			<span class="head00">
@@ -431,25 +333,9 @@ private String legalizeAlert(String in){
 	%>
 	<table width="auto" cellspacing="0">
 		<tr>
-			<th align="left" style="padding-left:5;padding-right:10" width="100">Value</th>
-			<%
-				for (int i=0; fxvAttributes!=null && i<fxvAttributes.size(); i++){
-								
-					attribute = (DElemAttribute)fxvAttributes.get(i);
-					%>
-					<th align="left" style="padding-left:5;padding-right:10" width="150"><%=attribute.getShortName()%></th>
-					<%
-				}
-				for (int i=0; fxvRelElems!=null && i<fxvRelElems.size(); i++){
-					CsiItem item = (CsiItem)fxvRelElems.get(i);
-					String compID = item.getComponentID();
-					if (compID == null) continue;
-					relElemId.add(compID);
-					%>
-					<th align="left" style="padding-left:5;padding-right:10" width="150"><%=Util.replaceTags(item.getValue())%></th>
-					<%
-				}
-			%>
+			<th align="left" style="padding-left:5;padding-right:10">Value</th>
+			<th align="left" style="padding-left:5;padding-right:10">ShortDescription</th>
+			<th align="left" style="padding-left:5;padding-right:10">Definition</th>
 		</tr>
 		<%
 		String mode= (user == null) ? "print" : "edit";
@@ -465,55 +351,38 @@ private String legalizeAlert(String in){
 				spaces +="&#160;&#160;&#160;";
 			}
 			
-			%>
-			<tr>
-				<td valign="bottom" align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<%=spaces%> <b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>">
-						<%=Util.replaceTags(value)%>
-					</a></b>
-				</td>
-				<%
-				for (int c=0; fxvAttributes!=null && c<fxvAttributes.size(); c++){
+			String definition = fxv.getDefinition();
+			definition = definition==null ? "" : definition;
+			definition = definition.length()>MAX_CELL_LEN ? definition.substring(0,MAX_CELL_LEN) + "..." : definition;
 			
-					attribute = (DElemAttribute)fxvAttributes.get(c);
-				
-					fxvAttrValue = fxv.getAttributeValueByID(attribute.getID());
-					if (fxvAttrValue==null || fxvAttrValue.length()==0){
-					%>
-						<td valign="bottom" align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>></td>
-					<%
-					}
-					else{
-						if (fxvAttrValue.length()>35){
-							fxvAttrValueShort = fxvAttrValue.substring(0,35) + " ...";
-					}
-						else{
-							fxvAttrValueShort = fxvAttrValue;
-						}
-						%>
-						<td valign="bottom" align="left" title="<%=fxvAttrValue%>" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-							<span class="barfont"><%=Util.replaceTags(fxvAttrValueShort)%></span>
-						</td>
-					<%
-					}
-				}
-				for (int k=0; relElemId!=null && k<relElemId.size(); k++){
-					String component_id = (String)relElemId.get(k);
-					String relElemValue = component_id!=null ? fxv.getItemValueByComponentId(component_id):"";
-					%>
-						<td valign="bottom" align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-							<span class="barfont"><%=Util.replaceTags(relElemValue)%></span>
-						</td>
-					<%
-				}
-				%>
+			String shortDesc = fxv.getShortDesc();
+			shortDesc = shortDesc==null ? "" : shortDesc;
+			shortDesc = shortDesc.length()>MAX_CELL_LEN ? shortDesc.substring(0,MAX_CELL_LEN) + "..." : shortDesc;
+			
+			%>
+			
+			<tr <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+				<td valign="bottom" align="left" style="padding-left:5;padding-right:10">
+					<%=spaces%>
+					<b>
+					<a href="fixed_value.jsp?fxv_id=<%=fxvID%>&#amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>">
+						<%=Util.replaceTags(value)%>
+					</a>
+					</b>
+				</td>
+				<td valign="bottom" align="left" title="Definition" style="padding-left:5;padding-right:10">
+					<span class="barfont"><%=definition%></span>
+				</td>
+				<td valign="bottom" align="left" title="Definition" style="padding-left:5;padding-right:10">
+					<span class="barfont"><%=shortDesc%></span>
+				</td>
 			</tr>
 		<%
 		}
 		%>
 	</table>
 <%} else {%>
-<table width="auto" cellspacing="0"  border="0"><tr><td rowspan="2">	
+<table width="600" cellspacing="0"  border="0"><tr><td rowspan="2">	
 	<table width="auto" cellspacing="0" cellpadding="0" id="tbl">
   	<tr>
 		<% if (user != null) { %>
@@ -521,57 +390,28 @@ private String legalizeAlert(String in){
 				<input class="smallbutton" type="button" value="Remove" onclick="submitForm('delete')">
 			</td>
 		<% } %>
-		<th align="left" style="padding-left:5;padding-right:10">Value</th>
-		<%
-			for (int i=0; fxvAttributes!=null && i<fxvAttributes.size(); i++){
-				
-				attribute = (DElemAttribute)fxvAttributes.get(i);
-				%>
-				<th align="left" style="padding-right:10"><%=attribute.getShortName()%></th>
-				<%
-			}
-			for (int i=0; fxvRelElems!=null && i<fxvRelElems.size(); i++){
-	
-				CsiItem item = (CsiItem)fxvRelElems.get(i);
-				String compID = item.getComponentID();
-				if (compID == null) continue;
-				relElemId.add(compID);
-				%>
-				<th align="left" style="padding-right:10" width="150"><%=Util.replaceTags(item.getValue())%></th>
-			<%
-			}
-			%>
+		<th align="left" style="padding-left:5;padding-right:10" width="100">Value</th>
+		<th align="left" style="padding-right:10" width="500">Definition</th>
 	</tr>
 	<tbody>
 			
 	<%
 	for (int i=0; i<fixedValues.size(); i++){
+		
 		FixedValue fxv = (FixedValue)fixedValues.get(i);
 		String value = fxv.getValue();
 		String fxvID = fxv.getID();
 		String fxvAttrValue = null;
 		String fxvAttrValueShort = null;
 		
-		String alt = searchEngine.hasSubValues(fxvID) ? "go to sub-values" : "add sub-values";
-		StringBuffer buf = new StringBuffer();
-		buf.append("fixed_values.jsp?mode=edit&delem_id=");
-		buf.append(delem_id);
-		buf.append("&delem_name=");
-		buf.append(delem_name);
-		buf.append("&parent_type=");
-		buf.append(typeParam);
-		buf.append("&parent_csi=");
-		buf.append(fxvID);
-		
-		if (parentCSI != null && parentCSI.length()!=0){
-			buf.append("&prv_parent_csi=");
-			buf.append(parentCSI);
-		}
+		String definition = fxv.getDefinition();
+		definition = definition==null ? "" : definition;
+		definition = definition.length()>MAX_CELL_LEN ? definition.substring(0,MAX_CELL_LEN) + "..." : definition;
 		
 		%>
 		<tr id="<%=fxvID%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 			<% if (user != null) { %>
-				<td align="right" style="padding-right:10">
+				<td align="right" valign="top" style="padding-right:10">
 					<input type="checkbox" style="height:13;width:13" name="del_id" value="<%=fxvID%>" onclick="tbl_obj.clickOtherObject();"/>
 				</td>
 			<% } %>
@@ -579,45 +419,10 @@ private String legalizeAlert(String in){
 				<b><a href="javascript:clickLink('fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=edit&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>')">
 					<%=Util.replaceTags(value)%>
 				</a></b>&#160;
-				<map name="map<%=i%>">
-					<area alt="<%=alt%>" shape="rect" coords="0,0,18,10" href="javascript:clickLink('<%=buf.toString()%>')"></area>
-				</map>
-				<img border="0" src="images/deeper.gif" height="10" width="18" usemap="#map<%=i%>"></img>
 			</td>
-			<%
-			for (int c=0; fxvAttributes!=null && c<fxvAttributes.size(); c++){
-	
-				attribute = (DElemAttribute)fxvAttributes.get(c);
-				
-				fxvAttrValue = fxv.getAttributeValueByID(attribute.getID());
-				if (fxvAttrValue==null || fxvAttrValue.length()==0){
-				%>
-					<td align="center" width="100" onmouseover=""></td>
-				<%
-			}
-				else{
-					if (fxvAttrValue.length()>60) 
-						fxvAttrValueShort = fxvAttrValue.substring(0,60) + " ...";
-					else
-						fxvAttrValueShort = fxvAttrValue;
-
-					%>
-					<td align="left" style="padding-right:10" title="<%=fxvAttrValue%>">
-						<span class="barfont"><%=Util.replaceTags(fxvAttrValueShort)%></span>
-					</td>
-					<%
-				}
-			}
-			for (int k=0; relElemId!=null && k<relElemId.size(); k++){
-				String component_id = (String)relElemId.get(k);
-				String relElemValue = component_id!=null ? fxv.getItemValueByComponentId(component_id):"";
-				%>
-					<td align="left" style="padding-right:10">
-						<span class="barfont"><%=Util.replaceTags(relElemValue)%></span>
-					</td>
-				<%
-			}
-			%>
+			<td align="left" style="padding-right:10" title="Definition">
+				<span class="barfont"><%=Util.replaceTags(definition)%></span>
+			</td>
 			<td>
 				<input type="hidden" name="pos_id" value="<%=fxvID%>" size="5">
 				<input type="hidden" name="oldpos_<%=fxvID%>" value="<%=fxv.getPosition()%>" size="5">
@@ -631,7 +436,7 @@ private String legalizeAlert(String in){
 		</tbody>
 	</table>
 	</td>
-	<%
+	<%/*
 		if (user!=null && isWorkingCopy && fixedValues.size()>1){ %>
 			<td align="left" style="padding-right:10" valign="top" height="10">
 				<input type="button" <%=disabled%> value="Save" class="smallbutton" onclick="saveChanges()" title="save the new order of elements"/>
@@ -656,7 +461,7 @@ private String legalizeAlert(String in){
 							<a href="javascript:moveLast()"><img src="images/move_last.gif" border="0" title="move selected row last"/></a>			
 						</td>
 					</tr><%
-		}
+		}*/
 		%>
 		</table> 
 	</td></tr></table>
@@ -671,15 +476,8 @@ private String legalizeAlert(String in){
 <input type="hidden" name="mode" value="<%=mode%>"/>
 <input type="hidden" name="changed" value="0"/>
 
-<%
-if (parentCSI!=null && parentCSI.length()!=0){ %>
-	<input type="hidden" name="parent_csi" value="<%=parentCSI%>"/> <%
-}
-if (prevParent!=null && prevParent.length()!=0){ %>
-	<input type="hidden" name="prv_parent_csi" value="<%=prevParent%>"/> <%
-}
-%>
 </form>
+<br/><br/>
 </div>
 </body>
 </html>
@@ -689,6 +487,7 @@ if (prevParent!=null && prevParent.length()!=0){ %>
 }
 finally {
 	try { if (conn!=null) conn.close();
-	} catch (SQLException e) {}
+	} catch (SQLException e) {
+	}
 }
 %>

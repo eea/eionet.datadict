@@ -411,13 +411,14 @@ public class AttributeHandler extends BaseHandler {
     
     private String getDisplayWhen(){
         
-        // the default here is 7, because if no "dispWhen" has been set
-        // there is no point in storing an attribute that wouldn't be
-        // displayed anyway, so we rather display it for all then
+        // the default here is 2^typeWeights.size(), because if no
+        // "dispWhen" has been set there is no point in storing an
+        // attribute that wouldn't be displayed anyway, so we rather
+        // display it for all then
         
         String[] dispWhen = req.getParameterValues("dispWhen");
         if (dispWhen == null || dispWhen.length == 0)
-            return "7";
+            return String.valueOf(Math.pow(2, typeWeights.size()) - 1);
             
         int k = 0;
         for (int i=0; i<dispWhen.length; i++){
@@ -426,7 +427,7 @@ public class AttributeHandler extends BaseHandler {
                 k = k + weight.intValue();
         }
         
-        if (k == 0) k = 7;
+        if (k == 0) k = (int)Math.pow(2, typeWeights.size()) - 1;
         
         return String.valueOf(k);
     }

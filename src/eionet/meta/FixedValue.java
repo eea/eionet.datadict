@@ -5,17 +5,23 @@ import java.util.*;
 import com.tee.util.Util;
 
 public class FixedValue {
-    
+
     private String id = null;
     private String elem_id = null;
     private String value = null;
+    private String position = "0";
     private Vector attributes = new Vector();
-    
+    private Vector items = new Vector();
+
     private boolean isDefault = false;
     private String parent_type = "elem";
-    
+
     private String csID = null;
     private String type = null;
+    private int level = 0;
+    
+	private String definition = null;
+	private String shortDesc = null;
 
     public FixedValue(){
     }
@@ -29,6 +35,22 @@ public class FixedValue {
         this.elem_id = elem_id;
         this.value = value;
     }
+	public FixedValue(String id, String elem_id, String value, String position){
+        this (id, elem_id, value);
+        this.position = position;
+    }
+    
+    /**
+    * Overrides equals() in class Object.
+    */
+    public boolean equals(Object o) {
+        
+        if (!(o instanceof FixedValue))
+	        return false;
+        
+        // comapre the two attr values
+        return value.equals(((FixedValue)o).getValue());
+    }
 
     public String getID(){
         return id;
@@ -37,19 +59,25 @@ public class FixedValue {
     public String getValue(){
         return value;
     }
-    
+    public String getPosition(){
+        return position;
+    }
+    public void setPosition(String position){
+        this.position = position;
+    }
+
     public void setCsID(String csID){
         this.csID = csID;
     }
-    
+
     public String getCsID(){
         return this.csID;
     }
-    
+
     public void setType(String type){
         this.type = type;
     }
-    
+
     public String getType(){
         return this.type;
     }
@@ -130,24 +158,89 @@ public class FixedValue {
 
         return null;
     }
-    
+
     public void setDefault(){
         this.isDefault = true;
     }
-    
+
     public boolean getDefault(){
         return this.isDefault;
     }
-    
+
     public void setParentType(String type){
         if (!Util.nullString(type))
             parent_type = type;
     }
-    
+
     public String getParentType(){
         return parent_type;
     }
 
+    public void setLevel(int level){
+        this.level = level;
+    }
+    public int getLevel(){
+       return level;
+    }
+
+    public void addItem(Object item){
+        items.add(item);
+    }
+
+    public Vector getItems(){
+        return items;
+    }
+    public CsiItem getItemByComponentId(String id){
+
+        CsiItem item = null;
+        for (int i=0; i<items.size(); i++){
+            item = (CsiItem)items.get(i);
+            if (item.getComponentID().equalsIgnoreCase(id))
+                return item;
+        }
+
+        return null;
+    }
+
+    public String getItemValueByComponentId(String id){
+
+        CsiItem item = null;
+        for (int i=0; i<items.size(); i++){
+            item = (CsiItem)items.get(i);
+            if (item.getComponentID().equalsIgnoreCase(id))
+                return item.getValue();
+        }
+
+        return null;
+    }
+    public String getItemIdByComponentId(String id){
+
+        CsiItem item = null;
+        for (int i=0; i<items.size(); i++){
+            item = (CsiItem)items.get(i);
+            if (item.getComponentID().equalsIgnoreCase(id))
+                return item.getID();
+        }
+
+        return null;
+    }
+    
+    public void setDefinition(String definition){
+    	this.definition= definition;
+    }
+    
+	public String getDefinition(){
+		return definition;
+	}
+
+	public void setShortDesc(String shortDesc){
+		this.shortDesc = shortDesc;
+	}
+    
+	public String getShortDesc(){
+		return shortDesc;
+	}
+    
     public String toString(){
 
         StringBuffer buf = new StringBuffer();

@@ -23,6 +23,7 @@
 	String type = request.getParameter("type");
 	String ns_param = request.getParameter("ns");
 	String short_name = request.getParameter("short_name");
+	String idfier = request.getParameter("idfier");
 	String dataset = request.getParameter("dataset");
 		
 	String sel = request.getParameter("selected");
@@ -87,8 +88,7 @@
 	wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
 	
 	Vector dataElements = searchEngine.getDataElements(params, type, ns_param,
-									short_name, null, dataset, wrkCopies, oper);
-	//Vector dataElements = searchEngine.getDataElements(params, type, ns_param, short_name);	
+									short_name, idfier, null, dataset, wrkCopies, oper);
 
 %>
 
@@ -158,10 +158,7 @@
 				if (delem_type == null) delem_type = "unknown";
 				
 				String displayType = "unknown";
-				if (delem_type.equals("AGG")){
-					displayType = "Aggregate";
-				}
-				else if (delem_type.equals("CH1")){
+				if (delem_type.equals("CH1")){
 					displayType = "Fixed values";
 				}
 				else if (delem_type.equals("CH2")){

@@ -923,7 +923,6 @@
 					</td>
 					<td>					
 						<%
-						String aggChecked = (!mode.equals("add") && attribute.displayFor("AGG")) ? "checked" : "";
 						String ch1Checked = (!mode.equals("add") && attribute.displayFor("CH1")) ? "checked" : "";
 						String ch2Checked = (!mode.equals("add") && attribute.displayFor("CH2")) ? "checked" : "";
 						//String dclChecked = (!mode.equals("add") && attribute.displayFor("DCL")) ? "checked" : "";
@@ -936,11 +935,8 @@
 							%>
 							<span class="barfont" style="width:400">
 							<%
-							if (aggChecked.equals("checked")) { hasOne = true; %>
-								Aggregate data elements <%
-							}
 							if (ch1Checked.equals("checked")) { hasOne = true; %>
-								<br/>Data elements with fixed values <%
+								Data elements with fixed values <%
 							}
 							if (ch2Checked.equals("checked")) { hasOne = true; %>
 								<br/>Data elements with quanitative values <%
@@ -963,12 +959,10 @@
 						}
 						else {
 							%>							
-							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=aggChecked%> name="dispWhen" value="AGG"><span class="barfont">Aggregate data elements</span></input></br>
 							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=ch1Checked%> name="dispWhen" value="CH1"><span class="barfont">Data elements with fixed values</span></input></br>
 							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=ch2Checked%> name="dispWhen" value="CH2"><span class="barfont">Data elements with quanitative values</span></input></br>
 							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=dstChecked%> name="dispWhen" value="DST"><span class="barfont">Datasets</span></input></br>
 							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=tblChecked%> name="dispWhen" value="TBL"><span class="barfont">Dataset tables</span></input></br>
-							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=fxvChecked%> name="dispWhen" value="FXV"><span class="barfont">Fixed values</span></input></br>
 							<%
 						}
 						%>

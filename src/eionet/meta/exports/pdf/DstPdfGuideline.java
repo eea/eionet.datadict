@@ -13,7 +13,7 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 
 public class DstPdfGuideline extends PdfHandout {
-    
+	
     private int vsTableIndex = -1;
     private int elmCount = 0;
     
@@ -22,6 +22,7 @@ public class DstPdfGuideline extends PdfHandout {
 	private Hashtable tblElms = new Hashtable();
 	private Hashtable tblNames = new Hashtable();
 	private Hashtable submitOrg = new Hashtable();
+	private boolean hasGisTables = false;
 	
 //	private Chapter chapter = null;
     
@@ -48,6 +49,10 @@ public class DstPdfGuideline extends PdfHandout {
         DsTable tbl = null;
         for (int i=0; v!=null && i<v.size(); i++){
         	tbl = (DsTable)v.get(i);
+        	if (searchEngine.hasGIS(tbl.getID())){
+        		tbl.setGIS(true);
+        		this.hasGisTables = true;
+        	}
         	tbl.setSimpleAttributes(
         			searchEngine.getSimpleAttributes(tbl.getID(), "T"));
         }
@@ -74,8 +79,10 @@ public class DstPdfGuideline extends PdfHandout {
 		nr = nr==null ? "" : nr + " ";
 		        
         Paragraph prg = new Paragraph();
-		prg.add(new Chunk(nr + "General information for " + dsName,
-											Fonts.get(Fonts.HEADING_1)));  
+		prg.add(new Chunk(nr + "General information for ",
+					FontFactory.getFont(FontFactory.HELVETICA, 16)));
+		prg.add(new Chunk(dsName,
+				FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
         prg.add(new Chunk(" dataset",
         			FontFactory.getFont(FontFactory.HELVETICA, 16)));
         
@@ -104,7 +111,7 @@ public class DstPdfGuideline extends PdfHandout {
             hash.put("value", version);
 			attrs.add(1, hash);
         }
-        
+
 		showedAttrs.remove("Name");
 		showedAttrs.add(0, "Short name");
         addElement(PdfUtil.simpleAttributesTable(attrs, showedAttrs));
@@ -193,10 +200,22 @@ public class DstPdfGuideline extends PdfHandout {
 			prg = new Paragraph(nr + title, Fonts.get(Fonts.HEADING_1));
 			addElement(prg);
 		}
+		
+		Vector gisTables = new Vector();
+		if (this.hasGisTables){
+			this.sect.setRefCodelists("5");
+			this.sect.setRefIllustrations("6");
+		}
         
         // add full guidlines of tables
         for (int i=0; tables!=null && i<tables.size(); i++){
             DsTable dsTable = (DsTable)tables.get(i);
+            
+            if (dsTable.hasGIS()){
+            	gisTables.add(dsTable);
+            	continue;
+            }
+            
             // the tables guidelines will be added to the current chapter
             addElement(new Paragraph("\n"));
             TblPdfGuideline tblGuideln =
@@ -205,6 +224,26 @@ public class DstPdfGuideline extends PdfHandout {
             tblGuideln.write(dsTable.getID(), ds.getID());
             insertPageBreak();
         }
+        
+        if (gisTables.size()>0){
+			title = "GIS tables";
+			nr = sect.level(title, 1);
+			nr = nr==null ? "" : nr + " ";
+			prg = new Paragraph(nr + title, Fonts.get(Fonts.HEADING_1));
+			addElement(prg);
+        }
+        
+		for (int i=0; i<gisTables.size(); i++){
+			DsTable dsTable = (DsTable)gisTables.get(i);
+			// the tables guidelines will be added to the current chapter
+			addElement(new Paragraph("\n"));
+			TblPdfGuideline tblGuideln =
+				new TblPdfGuideline(searchEngine, this);//, (Section)chapter);
+			tblGuideln.setGIS(true);
+			tblGuideln.setVsPath(vsPath);
+			tblGuideln.write(dsTable.getID(), ds.getID());
+			insertPageBreak();
+		}
         
 		pageToPortrait();
         
@@ -305,18 +344,63 @@ public class DstPdfGuideline extends PdfHandout {
 		boolean lv1added = false;
 		
 		for (int i=0; tables!=null && i<tables.size(); i++){
+			
 			boolean lv2added = false;
 			DsTable tbl = (DsTable)tables.get(i);
+			Vector tblImgVector =
+				PdfUtil.imgAttributes(tbl.getSimpleAttributes(), vsPath);
+			if (tblImgVector!=null && tblImgVector.size()!=0){
+				
+				// add level 1 title
+				if (!lv1added){
+					nr = sect.level("Illustrations", 1);
+					nr = nr==null ? "" : nr + " ";
+					prg = new Paragraph(nr +
+							"Illustrations", Fonts.get(Fonts.HEADING_1));
+					addElement(prg);
+					addElement(new Paragraph("\n"));
+					lv1added = true;
+				}
+				
+				// add level 2 title
+				s = (String)tblNames.get(tbl.getID());
+				String tblName = Util.voidStr(s) ? tbl.getShortName() : s;
+				title = "Illustrations for " + tblName + " table";
+				nr = sect.level(title, 2, false);
+				nr = nr==null ? "" : nr + " ";
+
+				prg = new Paragraph();
+				prg.add(new Chunk(nr,
+					FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
+				prg.add(new Chunk("Illustrations for ",
+					FontFactory.getFont(FontFactory.HELVETICA, 14)));
+				prg.add(new Chunk(tblName,
+					FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
+				prg.add(new Chunk(" table",
+					FontFactory.getFont(FontFactory.HELVETICA, 14)));
+
+				addElement(prg);
+				addElement(new Paragraph("\n"));
+				lv2added = true;
+				
+				// add images vector
+				for (int u=0; u<tblImgVector.size(); u++){
+					com.lowagie.text.Image img =
+						(com.lowagie.text.Image)tblImgVector.get(u); 
+					addElement(img);
+				}
+				
+				addElement(new Paragraph("\n"));
+			}
+			
 			Vector elms = (Vector)tblElms.get(tbl.getID());
 			for (int j=0; elms!=null && j<elms.size(); j++){
 				
 				DataElement elm = (DataElement)elms.get(j);
-				//PdfPTable imgTable =
-				//PdfUtil.imgAttributes(elm.getAttributes(), vsPath);
-				//if (imgTable==null || imgTable.size()==0) continue;
-				Vector imgVector =
+				
+				Vector elmImgVector =
 					PdfUtil.imgAttributes(elm.getAttributes(), vsPath);
-				if (imgVector==null || imgVector.size()==0) continue; 				
+				if (elmImgVector==null || elmImgVector.size()==0) continue; 				
 				
 				// add 'Images' title
 				if (!lv1added){
@@ -368,9 +452,9 @@ public class DstPdfGuideline extends PdfHandout {
 				addElement(prg);
 				
 				// add images
-				for (int u=0; u<imgVector.size(); u++){
+				for (int u=0; u<elmImgVector.size(); u++){
 					com.lowagie.text.Image img =
-						(com.lowagie.text.Image)imgVector.get(u); 
+						(com.lowagie.text.Image)elmImgVector.get(u); 
 					addElement(img);
 					//addElement(imgTable);
 					//addElement(new Paragraph("\n"));

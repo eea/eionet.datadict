@@ -107,11 +107,6 @@ public class QueryString{
   }
   public static void main(String[] args){
 
-        String s = "/datadict/public/dstable.jsp?delem_id=113&type=AGG&mode=view";
-        String s2 = "/datadict/public/dstable.jsp?delem_id=113&type=AGG&mode=vieww";
-        QueryString qs2=new QueryString(s2);
-        QueryString qs=new QueryString(s);
-        System.out.println(qs.equals(qs2));
         //System.out.println(s);
         //System.out.println(qs.changeParam("ds_id","222"));
         //System.out.println(qs.addParam("aaa","j"));

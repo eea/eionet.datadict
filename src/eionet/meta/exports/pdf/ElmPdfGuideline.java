@@ -128,7 +128,7 @@ public class ElmPdfGuideline {
         hash.put("name", "Short name");
         hash.put("value", elem.getShortName());
         attrs.add(0, hash);
-        
+
         addElement(PdfUtil.simpleAttributesTable(attrs));
         addElement(new Phrase("\n"));
         
@@ -158,7 +158,7 @@ public class ElmPdfGuideline {
         }
         
         // write allowable values (for a factsheet levelling not needed I guess)
-        v = searchEngine.getAllFixedValues(elem.getID(), "elem");
+        v = searchEngine.getFixedValues(elem.getID(), "elem");
         if (v!=null && v.size()>0){
             addElement(new Phrase("! This data element may only have the " +
                                 "following fixed values:\n", Fonts.get(Fonts.HEADING_0)));
@@ -171,9 +171,6 @@ public class ElmPdfGuideline {
 			addElement(new Phrase("\n"));
 			addElement(imgAttrs);
 		}*/
-     
-        // write aggregate structure
-        // ... not implemented, as aggregates are currently out of focus
     }
     
 	private void addElement(Element elm){

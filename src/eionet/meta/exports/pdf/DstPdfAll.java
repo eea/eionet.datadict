@@ -90,7 +90,7 @@ public class DstPdfAll extends PdfHandout {
         hash.put("name", "Short name");
         hash.put("value", ds.getShortName());
 		attrs.add(0, hash);
-        
+
         String version = ds.getVersion();
         if (!Util.voidStr(version)){
             hash = new Hashtable();

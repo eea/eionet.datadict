@@ -26,7 +26,6 @@ public class DsTableHandler extends BaseHandler {
     
     private String nsID = null;
     private String dsID = null;
-    private String shortName = null;
 
     boolean copy = false; //making a copy, exists() not performed
     String version = null; //used only when making a copy
@@ -162,9 +161,9 @@ public class DsTableHandler extends BaseHandler {
             throw new Exception("DsTableHandler: ds_id not specified!");
 
         // get the table short name
-        String shortName = req.getParameter("short_name");
-        if (Util.nullString(shortName))
-            throw new Exception("DsTableHandler: table short name not found!");
+		String idfier = req.getParameter("idfier");
+        if (Util.nullString(idfier))
+            throw new Exception("DsTableHandler: table identifier not found!");
 
         // get the parent namespace and dataset name
         String parentNS = req.getParameter("parent_ns");
@@ -183,9 +182,8 @@ public class DsTableHandler extends BaseHandler {
                                     "the parent dataset's namespace!");
         
         // now make sure that such a table does not exist
-        if (exists(parentNS, shortName))
-            throw new Exception("DsTableHandler: a table with such a short " +
-                "name already exists in a dataset with such a short name!");
+        if (exists(parentNS, idfier)) throw new Exception(
+			"DsTableHandler: such a table already exists in such a dataset");
 
         SQLGenerator gen = new SQLGenerator();
         Statement stmt = conn.createStatement();
@@ -201,10 +199,14 @@ public class DsTableHandler extends BaseHandler {
         // all well, create the new table
         
         String type = req.getParameter("type");
+		String shn  = req.getParameter("short_name");
+		if (Util.nullString(shn))
+			shn = idfier;
 
         gen.clear();
         gen.setTable("DS_TABLE");
-        gen.setField("SHORT_NAME", shortName);
+        gen.setField("IDENTIFIER", idfier);
+		gen.setField("SHORT_NAME", shn);
         gen.setField("PARENT_NS", parentNS);
 
         // new tables we treat as working copies until checked in
@@ -231,7 +233,7 @@ public class DsTableHandler extends BaseHandler {
 
         // create the corresponding namespace
         if (!copy){
-            String correspNS = createNamespace(dsName, shortName);
+            String correspNS = createNamespace(dsName, idfier);
             if (correspNS==null)
                 throw new Exception("DsTableHandler: failed to create " +
                     "a corresponding namespace!");
@@ -295,44 +297,37 @@ public class DsTableHandler extends BaseHandler {
                             " where TABLE_ID=" + tableID);
         }
 
+		// short name
+		String shn = req.getParameter("short_name");
+		if (!Util.nullString(shn)){
+			SQLGenerator gen = new SQLGenerator();
+			gen.setTable("DS_TABLE");
+			gen.setField("SHORT_NAME", shn);
+			conn.createStatement().executeUpdate(gen.updateStatement() +
+									" where TABLE_ID=" + tableID);
+		}
+
         // if check-in, do the action and exit
         String checkIn = req.getParameter("check_in");
         if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
+        	
             VersionManager verMan = new VersionManager(conn, user);
 			verMan.setContext(ctx);
+			
 			String verUpw = req.getParameter("ver_upw");
 			if (verUpw!=null && verUpw.equalsIgnoreCase("false"))
 				verMan.setUpwardsVersioning(false);
+			
+			String updVer = req.getParameter("upd_version");
+			if (updVer!=null && updVer.equalsIgnoreCase("true"))
+				verMan.updateVersion();
+				
             verMan.checkIn(tableID, "tbl",
                                     req.getParameter("reg_status"));
             return;
         }
         
         lastInsertID = tableID;
-        
-      //  String fullName = req.getParameter("full_name");
-      //  String definition = req.getParameter("definition");
-        String type = req.getParameter("type");
-
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("DS_TABLE");
-        /*if (!Util.nullString(fullName))
-            gen.setField("NAME", fullName);
-        if (!Util.nullString(definition))
-            gen.setField("DEFINITION", definition);*/
-        if (!Util.nullString(type))
-            gen.setField("TYPE", type);
-
-        StringBuffer buf = new StringBuffer(gen.updateStatement());
-        buf.append("where TABLE_ID=");
-        buf.append(tableID);
-        
-        log(buf.toString());
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
-
         String[] delIDs = {tableID};
         deleteAttributes(delIDs);
         processAttributes();
@@ -387,7 +382,7 @@ public class DsTableHandler extends BaseHandler {
                 if (wrkCopy && !superUser)
                     topns.add(rs.getString("PARENT_NS"));
                 if (verMan.isLastTbl(rs.getString("TABLE_ID"),
-                                     rs.getString("SHORT_NAME"),
+                                     rs.getString("IDENTIFIER"),
                                      rs.getString("PARENT_NS"))){
                     delns.add(rs.getString("CORRESP_NS"));
                 }
@@ -396,11 +391,11 @@ public class DsTableHandler extends BaseHandler {
             else if (wrkCopy){
                 wrkCopies.add(rs.getString("DS_TABLE.TABLE_ID"));
                 originals.add(rs.getString("PARENT_NS") + "," +
-                              rs.getString("SHORT_NAME"));
+                              rs.getString("IDENTIFIER"));
                 topns.add(rs.getString("PARENT_NS"));
                 
                 if (verMan.isLastTbl(rs.getString("TABLE_ID"),
-                                     rs.getString("SHORT_NAME"),
+                                     rs.getString("IDENTIFIER"),
                                      rs.getString("PARENT_NS"))){
                     delns.add(rs.getString("CORRESP_NS"));
                 }
@@ -566,7 +561,7 @@ public class DsTableHandler extends BaseHandler {
             String parentNs = s.substring(0,pos);
             
             if (i>0) buf.append(" or ");
-            buf.append("(SHORT_NAME='");
+            buf.append("(IDENTIFIER='");
             buf.append(tblName);
             buf.append("' and PARENT_NS='");
             buf.append(parentNs);
@@ -593,11 +588,11 @@ public class DsTableHandler extends BaseHandler {
     /**
     *
     */
-    private String createNamespace(String dstName, String tblName)
+    private String createNamespace(String dstName, String idfier)
                                                     throws Exception{
         
-        String shortName  = tblName + "_tbl_" + dstName + "_dst";
-        String fullName   = tblName + " table in " + dstName + " dataset";
+        String shortName  = idfier + "_tbl_" + dstName + "_dst";
+        String fullName   = idfier + " table in " + dstName + " dataset";
         String definition = "The namespace of " + fullName;
         
         Parameters pars = new Parameters();        
@@ -755,14 +750,14 @@ public class DsTableHandler extends BaseHandler {
         return nsID;
     }
 
-    public boolean exists(String parentNS, String shortName) throws SQLException {
+    public boolean exists(String parentNS, String idfier) throws SQLException {
 
         if (copy)
             return false;
 
         String qry =
         "select count(*) as COUNT from DS_TABLE " +
-        "where DS_TABLE.SHORT_NAME=" + com.tee.util.Util.strLiteral(shortName) +
+        "where DS_TABLE.IDENTIFIER=" + com.tee.util.Util.strLiteral(idfier) +
         " and DS_TABLE.PARENT_NS=" + parentNS;
 
         Statement stmt = conn.createStatement();

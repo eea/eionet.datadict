@@ -1,13 +1,10 @@
 package eionet.meta.imp;
 
 import org.xml.sax.*;
-import org.xml.sax.helpers.*;
 import javax.xml.parsers.*;
 
 import java.util.Hashtable;
 import java.util.Vector;
-import java.util.StringTokenizer;
-import java.util.*;
 
 public class SchemaHandler extends BaseHandler{
 
@@ -285,8 +282,7 @@ public class SchemaHandler extends BaseHandler{
 
     public static void main(String[] args){
       StringBuffer errorBuff = new StringBuffer();
-     // String srcFile = "F:\\Projects\\DD\\tmp\\CountryCode.xsd";  //Fixed values
-      String srcFile = "F:\\Projects\\DD\\tmp\\BasinAGG.xsd";    //Aggregate
+	  String srcFile = "F:\\Projects\\DD\\tmp\\CountryCode.xsd";  //Fixed values
 
       try{
         SchemaHandler handler=new SchemaHandler();

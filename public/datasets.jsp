@@ -209,6 +209,7 @@
 			params.add(param);
 		}
 		String short_name = request.getParameter("short_name");
+		String idfier = request.getParameter("idfier");
 		String version = request.getParameter("version");
 
 		String _wrkCopies = request.getParameter("wrk_copies");
@@ -236,7 +237,7 @@
 			datasets = searchEngine.getDeletedDatasets();
 		}
 		else
-			datasets = searchEngine.getDatasets(params, short_name, version, oper, wrkCopies);
+			datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, wrkCopies);
 		
 		verMan = new VersionManager(conn, searchEngine, user);
 	}
@@ -445,10 +446,10 @@
 					<table border="0" width="auto">
 						<tr>
 							<th align="right">
-								<a href="javascript:showSortedList(1, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by short name"/></a>
+								<a href="javascript:showSortedList(1, 1)"><img src="images/sort_asc.gif" border="0" title="Sort ascending by name"/></a>
 							</th>
 							<th align="right">
-								<a href="javascript:showSortedList(1, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by short name"/></a>
+								<a href="javascript:showSortedList(1, -1)"><img src="images/sort_desc.gif" border="0"title="Sort descending by name"/></a>
 							</th>
 						</tr>
 					</table>
@@ -541,7 +542,7 @@
 					
 					oResultSet.oElements.add(oEntry);
 					
-					String workingUser    = verMan.getDstWorkingUser(dataset.getShortName());
+					String workingUser    = verMan.getDstWorkingUser(dataset.getIdentifier());
 					String topWorkingUser = verMan.getWorkingUser(dataset.getNamespaceID());
 					
 					boolean canDelete = topWorkingUser==null ||
@@ -594,7 +595,7 @@
 												   "javascript:;";
 								
 								String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
-			    															  table.getShortName(), "tbl");
+			    															  table.getIdentifier(), "tbl");
 
 								String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());
 								%>

@@ -168,10 +168,7 @@ Vector dataElements=null;
 							if (delem_type == null) delem_type = "unknown";
 					
 							String displayType = "unknown";
-							if (delem_type.equals("AGG")){
-								displayType = "Aggregate";
-							}
-							else if (delem_type.equals("CH1")){
+							if (delem_type.equals("CH1")){
 								displayType = "Fixed values";
 							}
 							else if (delem_type.equals("CH2")){

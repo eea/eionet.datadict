@@ -94,9 +94,8 @@ private String getAttributeIdByName(String name){
 				DElemAttribute attribute = (DElemAttribute)mAttributes.get(i);
 				
 				if (type.equals("")){		//search for all elements attributes
-					if (!attribute.displayFor("AGG") &&
-							!attribute.displayFor("CH1") &&
-							!attribute.displayFor("CH2")) continue;					
+					if (!attribute.displayFor("CH1") && !attribute.displayFor("CH2"))
+						continue;
 				}
 				else
 					if (!attribute.displayFor(type)) continue;

@@ -82,12 +82,14 @@ private String setDefaultAttrs(String name){
 	String sel_attr = request.getParameter("sel_attr");
 	String sel_type = request.getParameter("sel_type");
 	String short_name = request.getParameter("short_name");
+	String idfier = request.getParameter("idfier");
 	String search_precision = request.getParameter("search_precision");
 	
 	
 	if (sel_attr == null) sel_attr="";
 	if (sel_type == null) sel_type="";
 	if (short_name == null) short_name="";
+	if (idfier == null) idfier="";
 	if (search_precision == null) search_precision="substr";
 
 	///get inserted attributes
@@ -192,13 +194,24 @@ private String setDefaultAttrs(String name){
 				</table>
 				
 				<table width="auto" cellspacing="0">
+				
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
-							<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
+							<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;							
 							<span class="mainfont"><b>Short name</b></span>&#160;&#160;
 						</td>
 						<td colspan="2">
 							<input type="text" class="smalltext" size="50" name="short_name" value="<%=short_name%>"/>
+						</td>
+					</tr>
+					
+					<tr valign="top">
+						<td align="right" style="padding-right:10">
+							<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
+							<span class="mainfont"><b>Identifier</b></span>&#160;&#160;
+						</td>
+						<td colspan="2">
+							<input type="text" class="smalltext" size="50" name="idfier" value="<%=idfier%>"/>
 						</td>
 					</tr>
 
@@ -218,7 +231,7 @@ private String setDefaultAttrs(String name){
 								%>
 								<tr valign="top">
 									<td align="right" style="padding-right:10">
-										<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view"><span class="help">?</span></a>&#160;
+										<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view"><span class="help">?</span></a>&#160;
 										<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
 									</td>
 									<td colspan="2">
@@ -245,7 +258,7 @@ private String setDefaultAttrs(String name){
 							%>
 							<tr valign="top">
 								<td align="right" style="padding-right:10">
-									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=view"><span class="help">?</span></a>&#160;
+									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=view"><span class="help">?</span></a>&#160;
 									<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
 								</td>
 								<td>
@@ -267,7 +280,7 @@ private String setDefaultAttrs(String name){
 							%>
 							<tr valign="top">
 								<td align="right" style="padding-right:10">
-									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"><span class="help">?</span></a>&#160;
+									<a href="delem_attribute.jsp?attr_id=<%=attrID%>&#38;type=SIMPLE&mode=edit"><span class="help">?</span></a>&#160;
 									<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
 								</td>
 								<td>

@@ -165,8 +165,11 @@ public class CopyHandler extends Object {
         // copy rows in COMPLEX_ATTR_ROW, with lastInsertID
         copyComplexAttrs(newID, srcElemID, "E");
 
-		// copy classification items, including fixed values
+		// copy classification items
         copyCsi(newID, srcElemID, "elem");
+        
+        // copy fixed values
+		copyFxv(newID, srcElemID, "elem");
         
         // copy fk relations
 		gen.clear();
@@ -183,7 +186,38 @@ public class CopyHandler extends Object {
         return newID;
     }
     
-    public void copyCsi(String newCompID, String compID, String compType) throws SQLException{
+    /**
+	 * @param newOwner
+	 * @param oldOwner
+	 * @param ownerType
+	 */
+	private void copyFxv(String newOwner, String oldOwner, String ownerType)
+														throws SQLException{
+		
+		StringBuffer buf = new StringBuffer("select * from FXV where ").
+		append("OWNER_ID=").append(oldOwner).append(" and OWNER_TYPE=").
+		append(Util.strLiteral(ownerType));
+
+		SQLGenerator gen = new SQLGenerator();
+		gen.setTable("FXV");
+		gen.setFieldExpr("OWNER_ID", newOwner);
+		gen.setField("OWNER_TYPE", ownerType);
+		
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(buf.toString());
+		while (rs.next()){
+			gen.setField("VALUE", rs.getString("VALUE"));
+			gen.setField("IS_DEFAULT", rs.getString("IS_DEFAULT"));
+			gen.setField("DEFINITION", rs.getString("DEFINITION"));
+			gen.setField("SHORT_DESC", rs.getString("SHORT_DESC"));
+			stmt.executeUpdate(gen.insertStatement());
+		}
+		
+		stmt.close();
+	}
+	
+	public void copyCsi(String newCompID, String compID, String compType)
+														throws SQLException{
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -193,7 +227,6 @@ public class CopyHandler extends Object {
 
         stmt = conn.createStatement();
         rs = stmt.executeQuery(q);
-log(q);
         Hashtable csiIds = new Hashtable();
         SQLGenerator gen = new SQLGenerator();
 
@@ -514,11 +547,11 @@ log(q);
         
         try{
             Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn =
-                DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
+            Connection conn = DriverManager.getConnection(
+				"jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
             
             CopyHandler copyHandler = new CopyHandler(conn);
-            copyHandler.copyElem("11581", true, true);
+            copyHandler.copyFxv("9999999", "9922", "elem");
        }
         catch (Exception e){
             System.out.println(e.toString());

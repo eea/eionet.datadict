@@ -201,13 +201,13 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 				//mode = "edit";
 
 			if (mode=="add" 
-						&& document.forms["form1"].elements["delem_name"].value==""){
-				alert("Short name cannot be empty!");
+						&& document.forms["form1"].elements["idfier"].value==""){
+				alert("Identifier cannot be empty!");
 				return;
 			}
 			
-			if (mode=="add" && hasWhiteSpace("delem_name")){
-				alert("Short name cannot contain any white space!");
+			if (mode=="add" && hasWhiteSpace("idfier")){
+				alert("Identifier cannot contain any white space!");
 				return;
 			}
 				
@@ -274,8 +274,8 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 		}
 		function copyElem(){
 			
-			if (document.forms["form1"].elements["delem_name"].value==""){
-				alert("Short name cannot be empty!");
+			if (document.forms["form1"].elements["idfier"].value==""){
+				alert("Identifier cannot be empty!");
 				return;
 			}
 
@@ -296,10 +296,10 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 		function goToAddForm(){
 			
 			var url = "data_element.jsp?mode=add&table_id=<%=tableID%>&ds_id=<%=dsID%>";
-			short_name = document.forms["form1"].elements["delem_name"].value;
+			identifier = document.forms["form1"].elements["idfier"].value;
 			elem_type = document.forms["form1"].elements["type"].value;
 			
-			url +="&delem_name=" + short_name;
+			url +="&idfier=" + identifier;
 			url +="&type=" + elem_type;
 			document.location.assign(url);
 		}
@@ -389,10 +389,10 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 					<table width="auto">
 						<tr>
 							<td align="right">
-								<span class="barfont">Short name:</span>
+								<span class="barfont">Identifier:</span>
 							</td>
 							<td style="padding-left:5">
-								<input type="text" class="smalltext" width="10" name="delem_name"/>
+								<input type="text" class="smalltext" width="10" name="idfier"/>
 							</td>
 							<td align="right">
 								<input type="button" class="smallbutton" value="Add" onclick="goToAddForm()"/>
@@ -419,6 +419,20 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 		<tr height="10"><td colspan="2"></td></tr>
 	</table>
 	
+	<%
+	boolean hasGIS = false;
+	for (int i=0; elems!=null && i<elems.size(); i++){
+		DataElement elm = (DataElement)elems.get(i);
+		if (elm.getGIS()!=null){
+			hasGIS = true;
+			break;
+		}
+	}
+	
+	int colCount = hasGIS ? 6 : 5;
+	
+	%>
+	
 	<table width="auto" cellspacing="0"  border="0"><tr><td rowspan="2">	
 	<table width="auto" cellspacing="0" id="tbl">
 
@@ -433,6 +447,11 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 			</td>
 					
 			<th align="left" style="padding-left:5;padding-right:10">Short name</th>
+			<%
+			if (hasGIS){ %>
+				<th align="left" style="padding-right:10">GIS</th><%
+			}
+			%>
 			<th align="left" style="padding-right:10">Datatype</th>
 			<th align="left" style="padding-right:10">Elem Type</th>
 			<td align="left" style="padding-right:10"></td>
@@ -442,13 +461,14 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 		<%
 		
 		Hashtable types = new Hashtable();
-		types.put("AGG", "Aggregate");
 		types.put("CH1", "Fixed values");
 		types.put("CH2", "Quantitative");
 		
 		for (int i=0; elems!=null && i<elems.size(); i++){
 
 			DataElement elem = (DataElement)elems.get(i);
+			
+			String gis = elem.getGIS()!=null ?  gis = elem.getGIS() : "no GIS";
 			
 			String elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID() + "&ds_id=" + dsID + "&table_id=" + tableID + "&ctx=" + contextParam;
 			
@@ -470,7 +490,7 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 			String elemDefinition = elem.getAttributeValueByShortName("Definition");
 			
 			String workingUser = verMan.getWorkingUser(elem.getNamespace().getID(),
-			    											elem.getShortName(), "elm");
+			    											elem.getIdentifier(), "elm");
 			String ifDisabled = workingUser==null ? "" : "disabled";
 
 						%>
@@ -506,6 +526,13 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 						<a href="<%=elemLink%>"><%=Util.replaceTags(delem_name)%></a><%
 					} %>
 				</td>
+				<%
+				if (hasGIS){ %>
+					<td align="left" style="padding-right:10">
+						<%=gis%>
+					</td><%
+				}
+				%>
 				<td align="left" style="padding-right:10">
 					<%=datatype%>
 				</td>
@@ -530,7 +557,6 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 			<%
 		}
 		%>
-		</tbody>
 	</table>
 	</td>
 	<%
@@ -559,7 +585,16 @@ boolean isWorkingCopy = dsTable.isWorkingCopy();
 					</td>
 				</tr>
 			<% } %>
-		</table> 
+		</table>
+		
+		<%
+		if (hasGIS){ %>
+			<br/>
+			NB! Note that in table view this table is split into two:<br/>
+			one for Metadata elements and one for Elements.<%
+		}
+		%>
+	
 	</td></tr></table>
 	
 	<input type="hidden" name="mode" value="delete"/>

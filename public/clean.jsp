@@ -35,16 +35,16 @@
 			
 			if (document.forms["form1"].elements["rm_crit"][0].checked){
 				document.forms["form1"].elements["rm_id"].disabled = true;
-				document.forms["form1"].elements["rm_name"].disabled = false;
+				document.forms["form1"].elements["rm_idfier"].disabled = false;
 				document.forms["form1"].elements["rm_ns"].disabled = false;
 			}
 			else if (document.forms["form1"].elements["rm_crit"][1].checked){				
-				document.forms["form1"].elements["rm_name"].disabled = true;
+				document.forms["form1"].elements["rm_idfier"].disabled = true;
 				document.forms["form1"].elements["rm_ns"].disabled = true;
 				document.forms["form1"].elements["rm_id"].disabled = false;
 			}
 			else{
-				document.forms["form1"].elements["rm_name"].disabled = true;
+				document.forms["form1"].elements["rm_idfier"].disabled = true;
 				document.forms["form1"].elements["rm_ns"].disabled = true;
 				document.forms["form1"].elements["rm_id"].disabled = true;
 			}
@@ -122,11 +122,11 @@
 				<table width="500">
 					<tr>
 						<td colspan="3"><br></br><font class="head00">Cleanup functions</font><br></br>
-							<span class="caution">
+							<font color="red">
 							This is a function enabling you to clean the database from all kinds of
 							leftovers that might result from exceptional situations. Please use this
 							with great caution as you might accidentally delete some important data!
-							</span>
+							</font>
 						</td>
 				</tr>
 				</table>
@@ -139,10 +139,10 @@
 								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
 									   value="<%=MrProper.RLS_DST%>">
 									   <span class="smallfont">
-									   		Release the dataset with the given short name:
+									   		Release the dataset with the given Identifier:
 									   </span>
 								</input>
-								<input type="text" class="smalltext" name="<%=MrProper.DST_NAME%>"/>
+								<input type="text" class="smalltext" name="<%=MrProper.DST_IDFIER%>"/>
 							</td>
 						</tr>
 						<tr>
@@ -224,8 +224,8 @@
 											<td>&#160;</td>
 											<td  bgcolor="#D3D3D3">
 												<span class="smallfont">
-													<input type="radio" name="rm_crit" value="lid" onclick="rmCrit()"/>short name&#160;
-													<input type="text" class="smalltext" name="rm_name" disabled/>
+													<input type="radio" name="rm_crit" value="lid" onclick="rmCrit()"/>Identifier&#160;
+													<input type="text" class="smalltext" name="rm_idfier" disabled/>
 												</span>
 											</td>
 										</tr>

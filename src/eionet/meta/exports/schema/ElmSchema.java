@@ -60,7 +60,7 @@ public class ElmSchema extends Schema {
         if (elem.getType().equalsIgnoreCase("CH1")){
         		
 		    Vector fixedValues =
-		        searchEngine.getAllFixedValues(elem.getID(), "elem");
+		        searchEngine.getFixedValues(elem.getID(), "elem");
 		    elem.setFixedValues(fixedValues);
         }
         

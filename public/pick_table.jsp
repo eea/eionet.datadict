@@ -21,6 +21,7 @@
 	conn = pool.getConnection();
 
 	String short_name = request.getParameter("short_name");
+	String idfier = request.getParameter("idfier");
 	String full_name = request.getParameter("full_name");
 	String definition = request.getParameter("definition");
 
@@ -89,7 +90,7 @@
 	String _wrkCopies = request.getParameter("wrk_copies");
 	wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
 
-	Vector dsTables = searchEngine.getDatasetTables(params, short_name, full_name, definition, oper, wrkCopies);
+	Vector dsTables = searchEngine.getDatasetTables(params, short_name, idfier, full_name, definition, oper, wrkCopies);
 
 %>
 

@@ -232,7 +232,7 @@ if (disabled.equals("")){
 			<tr>
 				<td align="right" style="padding-right:10"><input type="checkbox" name="del_id" value="<%=item.getID()%>"/>
 				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<a href="rel_element.jsp?delem_id=<%=delemID%>&amp;delem_name=<%=delemName%>&amp;child_id=<%=item.getID()%>">
+					<a href="rel_element.jsp?delem_id=<%=delemID%>&#38;delem_name=<%=delemName%>&#38;child_id=<%=item.getID()%>">
 						<%=Util.replaceTags(item.getValue())%>
 					</a>
 				</td>

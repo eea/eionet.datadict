@@ -85,6 +85,7 @@
 	String type = request.getParameter("type");
 	String ns_param = request.getParameter("ns");
 	String short_name = request.getParameter("short_name");
+	String idfier = request.getParameter("idfier");
 	String dataset = request.getParameter("dataset");
 	
 	Integer oSortCol=null;
@@ -195,7 +196,7 @@
 		wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
 	
 		dataElements = searchEngine.getDataElements(params, type, ns_param,
-									short_name, null, dataset, wrkCopies, oper);
+									short_name, idfier, null, dataset, wrkCopies, oper);
 	}
 
 %>
@@ -432,10 +433,7 @@
 					if (delem_type == null) delem_type = "unknown";
 					
 					String displayType = "unknown";
-					if (delem_type.equals("AGG")){
-						displayType = "Aggregate";
-					}
-					else if (delem_type.equals("CH1")){
+					if (delem_type.equals("CH1")){
 						displayType = "Fixed values";
 					}
 					else if (delem_type.equals("CH2")){
@@ -470,7 +468,7 @@
 					oResultSet.oElements.add(oEntry);
 					
 					String workingUser = verMan.getWorkingUser(dataElement.getNamespace().getID(),
-		    											dataElement.getShortName(), "elm");					
+		    											dataElement.getIdentifier(), "elm");
 					String topWorkingUser = verMan.getWorkingUser(dataElement.getTopNs());
 					
 					boolean canDelete = topWorkingUser==null ||

@@ -11,13 +11,16 @@ parameters:
 	*/
 
 function openDialog(url, text, returnFunc, height, width) {
+
 	if (!dialogWin.win || (dialogWin.win && dialogWin.win.closed)) {
+
 		// Initialize properties of the modal dialog object.
 		dialogWin.text = text;
 		dialogWin.returnFunc = returnFunc;
 		
 		// Generate the dialog and make sure it has focus.
 		dialogWin.win = window.open(url, "", "height=" + height +",width="+width+",status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no,modal=yes");
+
 		window.onfocus = checkModal;
 		dialogWin.win.focus()
 	} else {

@@ -33,7 +33,7 @@
 
 			searchEngine.setUser(user);
 
-			Vector v = searchEngine.getDstHistory(dataset.getShortName(), dataset.getVersion());
+			Vector v = searchEngine.getDstHistory(dataset.getIdentifier(), dataset.getVersion());
 
 			if (v==null || v.size()==0){
 				%>
