@@ -125,6 +125,14 @@ public class ElmPdfFactsheet extends PdfHandout {
         v = searchEngine.getAllFixedValues(elem.getID(), "elem");
         addElement(PdfUtil.fixedValuesTable(v, false));
         
+        // write image attributes
+        Vector imgs = PdfUtil.imgAttributes(elem.getAttributes(), vsPath);
+		for (int u=0; u<imgs.size(); u++){
+			com.lowagie.text.Image img = (com.lowagie.text.Image)imgs.get(u); 
+			addElement(img);
+		}
+        //addElement(PdfUtil.imgAttributes(elem.getAttributes(), vsPath));
+        
         /* write image attributes
         Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath);
         if (imgAttrs!=null){

@@ -16,6 +16,10 @@ public abstract class PdfHandout implements PdfHandoutIF {
 	
 	public static final int PORTRAIT = 0;
 	public static final int LANDSCAPE = 1;
+	
+	private static final int YPOS_START = 780;
+	private static final int IMG_FIT_RATIO = 4;
+	private static final int IMG_FIT_RESERVE = 100;
     
     protected DDSearchEngine searchEngine = null;
     protected OutputStream os = null;
@@ -50,6 +54,9 @@ public abstract class PdfHandout implements PdfHandoutIF {
         Document document  = new Document();
         PdfWriter writer = PdfWriter.getInstance(document, os);
         
+		PageOutline pageEvent = new PageOutline();
+		writer.setPageEvent(pageEvent);
+        
 		//MyPageEvents events = new MyPageEvents();
 		//writer.setPageEvent(events);
 
@@ -78,11 +85,11 @@ public abstract class PdfHandout implements PdfHandoutIF {
         }
         
         int tblCounter = 0;
+		float yPos = YPOS_START;
         // add elements to the document
         for (int i=0; docElements!=null && i<docElements.size(); i++){
 
             Element elm = (Element)docElements.get(i);
-			//System.out.println("===> " + elm.toString());            
             
             if (pageBreaks.contains(new Integer(i))){
             	if (landscapes.contains(new Integer(i)))
@@ -117,7 +124,22 @@ public abstract class PdfHandout implements PdfHandoutIF {
 				System.out.println("===>");
             }*/
             
+			if (elm.getClass().getName().endsWith("ImgRaw")){
+				ImgRaw img = (ImgRaw)elm;				
+				float h = img.scaledHeight();
+				if (yPos < h + IMG_FIT_RESERVE){
+					if (yPos < (h - h/IMG_FIT_RATIO) + IMG_FIT_RESERVE)
+						document.newPage();
+					else{
+						float w = img.scaledWidth();
+						img.scaleToFit(w, h - h/IMG_FIT_RATIO);
+					}
+				}
+				elm = img;
+			}
+			
             document.add(elm);
+            yPos = pageEvent.getPosition();
         }
         
         document.close();
@@ -298,7 +320,6 @@ public abstract class PdfHandout implements PdfHandoutIF {
 		showedAttrs.add("Name");
 		showedAttrs.add("ShortDescription");
 		showedAttrs.add("Definition");
-		showedAttrs.add("Methodology");
 		showedAttrs.add("Datatype");
 		showedAttrs.add("MinSize");
 		showedAttrs.add("MaxSize");
@@ -312,6 +333,7 @@ public abstract class PdfHandout implements PdfHandoutIF {
 		showedAttrs.add("Descriptive_image");
 		showedAttrs.add("SubmitOrganisation");
 		showedAttrs.add("RespOrganisation");
+		showedAttrs.add("Methodology");
 	}
 	
 	protected Vector getShowedAttributes(){
@@ -369,5 +391,22 @@ class MyPageEvents extends PdfPageEventHelper {
 		template.setFontAndSize(bf, 8);
 		template.showText(String.valueOf(writer.getPageNumber() - 1));
 		template.endText();
+	}
+}
+
+class PageOutline extends PdfPageEventHelper {
+    
+	// the paragraph number
+	private float pos = 0;
+    
+	// we override only the onParagraph method
+	public void onParagraphEnd(PdfWriter writer,
+							   Document document,
+							   float position) {
+		pos = position;
+	}
+	
+	public float getPosition(){
+		return pos;
 	}
 }

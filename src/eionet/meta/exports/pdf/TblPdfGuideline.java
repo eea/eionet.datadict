@@ -146,7 +146,10 @@ public class TblPdfGuideline {
         hash.put("value", dsTable.getShortName());
         v.add(0, hash);
         
-        addElement(PdfUtil.simpleAttributesTable(v, owner.getShowedAttributes()));
+		Vector showedAttrs = owner.getShowedAttributes();
+		showedAttrs.remove("Name");
+		showedAttrs.add(0, "Short name");
+        addElement(PdfUtil.simpleAttributesTable(v, showedAttrs));
         addElement(new Phrase("\n"));
 
 		/* write image attributes

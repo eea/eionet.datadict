@@ -104,7 +104,9 @@ public class DstPdfGuideline extends PdfHandout {
             hash.put("value", version);
 			attrs.add(1, hash);
         }
-            
+        
+		showedAttrs.remove("Name");
+		showedAttrs.add(0, "Short name");
         addElement(PdfUtil.simpleAttributesTable(attrs, showedAttrs));
         addElement(new Phrase("\n"));
         
@@ -309,13 +311,16 @@ public class DstPdfGuideline extends PdfHandout {
 			for (int j=0; elms!=null && j<elms.size(); j++){
 				
 				DataElement elm = (DataElement)elms.get(j);
-				PdfPTable imgTable =
+				//PdfPTable imgTable =
+				//PdfUtil.imgAttributes(elm.getAttributes(), vsPath);
+				//if (imgTable==null || imgTable.size()==0) continue;
+				Vector imgVector =
 					PdfUtil.imgAttributes(elm.getAttributes(), vsPath);
-				if (imgTable==null || imgTable.size()==0) continue;
+				if (imgVector==null || imgVector.size()==0) continue; 				
 				
 				// add 'Images' title
 				if (!lv1added){
-					nr = sect.level("Images", 1);
+					nr = sect.level("Illustrations", 1);
 					nr = nr==null ? "" : nr + " ";
 					prg = new Paragraph(nr +
 							"Images", Fonts.get(Fonts.HEADING_1));
@@ -328,14 +333,14 @@ public class DstPdfGuideline extends PdfHandout {
 				if (!lv2added){
 					s = (String)tblNames.get(tbl.getID());
 					String tblName = Util.voidStr(s) ? tbl.getShortName() : s;
-					title = "Images for " + tblName + " table";
+					title = "Illustrations for " + tblName + " table";
 					nr = sect.level(title, 2, false);
 					nr = nr==null ? "" : nr + " ";
 					
 					prg = new Paragraph();
 					prg.add(new Chunk(nr,
 						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-					prg.add(new Chunk("Images for ",
+					prg.add(new Chunk("Illustrations for ",
 						FontFactory.getFont(FontFactory.HELVETICA, 14)));
 					prg.add(new Chunk(tblName,
 						FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
@@ -350,21 +355,26 @@ public class DstPdfGuideline extends PdfHandout {
 				// add element title
 				s = elm.getAttributeValueByShortName("Name");
 				String elmName = Util.voidStr(s) ? elm.getShortName() : s;
-				title = elmName + " images";
+				title = elmName + " illustrations";
 				nr = sect.level(title, 3, false);
 				nr = nr==null ? "" : nr + " ";
 				
 				prg = new Paragraph();
 				prg.add(new Chunk(nr + elmName,
 					FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
-				prg.add(new Chunk(" images",
+				prg.add(new Chunk(" illustrations",
 					FontFactory.getFont(FontFactory.HELVETICA, 14)));
 
 				addElement(prg);
 				
 				// add images
-				addElement(imgTable);
-				addElement(new Paragraph("\n"));
+				for (int u=0; u<imgVector.size(); u++){
+					com.lowagie.text.Image img =
+						(com.lowagie.text.Image)imgVector.get(u); 
+					addElement(img);
+					//addElement(imgTable);
+					//addElement(new Paragraph("\n"));
+				}
 			}
 		}
 	}
