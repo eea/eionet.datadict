@@ -8,8 +8,12 @@ public class DataElement {
     private String id = null;
     private String shortName = null;
     private String type = null;
+    private String version = null;
+    private String status = null;
     private String defUrl = null;
-    private Vector attributes = new Vector();
+    
+    private Vector simpleAttrs = new Vector();
+    private Vector complexAttrs = new Vector();
     
     private String parentID = null;
     private String position = null;
@@ -20,8 +24,10 @@ public class DataElement {
     private String inChoiceID = null;
     
     private Namespace ns = null;
+    private String topNS = null;
     
     private String tableID = null;
+    private String datasetID = null;
     
     private String dataClassID = null;
     
@@ -34,6 +40,11 @@ public class DataElement {
     private String choiceID = null;
     
     private String extendsID = null;
+    
+    private String workingUser = null;
+    private String workingCopy = null;
+    
+	private Vector fks = new Vector();
     
     public DataElement(){
     }
@@ -52,11 +63,18 @@ public class DataElement {
     public String getTableID(){
         return tableID;
     }
-    
+
     public void setTableID(String tableID){
         this.tableID = tableID;
     }
-    
+    public String getDatasetID(){
+        return datasetID;
+    }
+
+    public void setDatasetID(String datasetID){
+        this.datasetID = datasetID;
+    }
+
     public String getID(){
         return id;
     }
@@ -86,11 +104,28 @@ public class DataElement {
     }
     
     public void addAttribute(Object attr){
-        attributes.add(attr);
+        simpleAttrs.add(attr);
+    }
+    public void setAttributes(Vector attrs){
+        simpleAttrs = attrs;
+    }
+
+    public Vector getAttributes(){
+        return simpleAttrs;
     }
     
-    public Vector getAttributes(){
-        return attributes;
+    public Vector getVersioningAttributes(){
+        if (simpleAttrs==null)
+            return null;
+        
+        Vector set = new Vector();
+        for (int i=0; i<simpleAttrs.size(); i++){
+            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
+            if (attr.effectsVersion())
+                set.add(attr);
+        }
+        
+        return set;
     }
     
     public void setSubElements(Vector subElements){
@@ -120,8 +155,16 @@ public class DataElement {
     
     public DElemAttribute getAttributeByShortName(String name){
         
-        for (int i=0; i<attributes.size(); i++){
-            DElemAttribute attr = (DElemAttribute)attributes.get(i);
+        // look from simple attributes
+        for (int i=0; i<simpleAttrs.size(); i++){
+            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
+            if (attr.getShortName().equalsIgnoreCase(name))
+                return attr;
+        }
+        
+        // if it wasn't in the simple attributes, look from complex ones
+        for (int i=0; i<complexAttrs.size(); i++){
+            DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name))
                 return attr;
         }
@@ -131,8 +174,8 @@ public class DataElement {
     
     public DElemAttribute getAttributeByName(String name){
         
-        for (int i=0; i<attributes.size(); i++){
-            DElemAttribute attr = (DElemAttribute)attributes.get(i);
+        for (int i=0; i<simpleAttrs.size(); i++){
+            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getName().equalsIgnoreCase(name))
                 return attr;
         }
@@ -142,8 +185,8 @@ public class DataElement {
     
     public DElemAttribute getAttributeById(String id){
         
-        for (int i=0; i<attributes.size(); i++){
-            DElemAttribute attr = (DElemAttribute)attributes.get(i);
+        for (int i=0; i<simpleAttrs.size(); i++){
+            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getID().equalsIgnoreCase(id))
                 return attr;
         }
@@ -154,8 +197,8 @@ public class DataElement {
     public String getAttributeValueByShortName(String name){
         
         DElemAttribute attr = null;
-        for (int i=0; i<attributes.size(); i++){
-            attr = (DElemAttribute)attributes.get(i);
+        for (int i=0; i<simpleAttrs.size(); i++){
+            attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name))
                 return attr.getValue();
         }
@@ -166,8 +209,8 @@ public class DataElement {
     public String getAttributeValueByName(String name){
         
         DElemAttribute attr = null;
-        for (int i=0; i<attributes.size(); i++){
-            attr = (DElemAttribute)attributes.get(i);
+        for (int i=0; i<simpleAttrs.size(); i++){
+            attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getName().equalsIgnoreCase(name))
                 return attr.getValue();
         }
@@ -197,6 +240,14 @@ public class DataElement {
         return ns;
     }
     
+    public void setTopNs(String nsid){
+        this.topNS = nsid;
+    }
+    
+    public String getTopNs(){
+        return topNS;
+    }
+    
     public String getParentID(){
         return parentID;
     }
@@ -216,47 +267,104 @@ public class DataElement {
     public void setSequence(String sequenceID){
         this.sequenceID = sequenceID;
     }
-    
+
     public String getSequence(){
         return sequenceID;
     }
-    
+
     public void setChoice(String choiceID){
         this.choiceID = choiceID;
     }
-    
+
     public String getChoice(){
         return choiceID;
     }
-    
+
     public void setDataClass(String dataClassID){
         this.dataClassID = dataClassID;
     }
-    
+
     public String getDataClass(){
         return dataClassID;
     }
+
+    public void setPosition(String pos){
+        this.position = pos;
+    }
+    
+    public void setComplexAttributes(Vector v){
+        this.complexAttrs = v;
+    }
+    
+    public Vector getComplexAttributes(){
+        return this.complexAttrs;
+    }
+    
+    public void setVersion(String version){
+        this.version = version;
+    }
+    
+    public String getVersion(){
+        return this.version;
+    }
+    
+    public void setWorkingUser(String workingUser){
+        this.workingUser = workingUser;
+    }
+    
+    public String getWorkingUser(){
+        return this.workingUser;
+    }
+    
+    public void setWorkingCopy(String workingCopy){
+        this.workingCopy = workingCopy;
+    }
+    
+    public boolean isWorkingCopy(){
+        if (workingCopy==null)
+            return false;
+        else if (workingCopy.equals("Y"))
+            return true;
+        else
+            return false;
+    }
+    
+    public void setStatus(String status){
+        this.status = status;
+    }
+    
+    public String getStatus(){
+        return this.status;
+    }
+    
+    public void setFKRelations(Vector fks){
+    	this.fks = fks;
+    }
+    
+	public Vector getFKRelations(){
+		return this.fks;
+	}
     
     public String toString(){
-        
+
         StringBuffer buf = new StringBuffer();
-        
+
         buf.append("id=");
         buf.append(id);
         buf.append("\n");
-        
+
         buf.append("type=");
         buf.append(type);
         buf.append("\n");
-        
+
         buf.append("shortName=");
         buf.append(shortName);
         buf.append("\n");
-        
+
         buf.append("defUrl=");
         buf.append(defUrl);
         buf.append("\n");
-        
+
         if (ns != null){
             buf.append("xmlns:");
             buf.append(ns.getShortName());
@@ -266,8 +374,8 @@ public class DataElement {
         }
         
         buf.append("\nAttributes:\n");
-        for (int i=0; attributes!=null && i<attributes.size(); i++){
-            DElemAttribute attr = (DElemAttribute)attributes.get(i);
+        for (int i=0; simpleAttrs!=null && i<simpleAttrs.size(); i++){
+            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             buf.append(attr.getShortName());
             buf.append("=");
             buf.append(attr.getValue());

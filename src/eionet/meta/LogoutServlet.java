@@ -27,15 +27,16 @@ public class LogoutServlet extends HttpServlet {
         if (user != null){
             
             SecurityUtil.freeSession(req);
-            
+        }    
             res.setContentType("text/html");
             try {
                 PrintWriter out = res.getWriter();
-                out.print("<html><body><table width='100%' height='100%'><tr><td align='center'><b>Logging out...</b></td></tr></table><script>window.opener.document.location.reload(true); window.setTimeout('window.close()', 1000);</script></body></html>");
-                out.close();   
+                //out.print("<html><body><table width='100%' height='100%'><tr><td align='center'><b>Logging out...</b></td></tr></table><script>window.opener.document.location.reload(true); window.setTimeout('window.close()', 1000);</script></body></html>");
+                out.print("<html><body><table width='100%' height='100%'><tr><td align='center'><b>Logging out...</b></td></tr></table><script>window.opener.document.location='index.jsp'; window.setTimeout('window.close()', 1000);</script></body></html>");
+                out.close();
             } catch (IOException e) {
                 Logger.log("Writing page to response stream failed", e);
             }
-        }
+
     }
 }

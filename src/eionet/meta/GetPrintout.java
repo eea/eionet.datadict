@@ -12,6 +12,8 @@ import eionet.meta.exports.pdf.*;
 import com.tee.xmlserver.*;
 
 public class GetPrintout extends HttpServlet {
+	
+	public static final String PDF_LOGO_PATH = "images/pdf_logo.png";
     
     private static final String DEFAULT_HANDOUT_TYPE = PdfHandoutIF.FACTSHEET;
     
@@ -103,7 +105,7 @@ public class GetPrintout extends HttpServlet {
                 throw new Exception("Unknown handout type- " + outType);
             
             // set handout logo
-            handout.setLogo(ctx.getRealPath("../images/pdf_logo.png"));
+            handout.setLogo(ctx.getRealPath(PDF_LOGO_PATH));
             
             // write the handout
             handout.write(objID);

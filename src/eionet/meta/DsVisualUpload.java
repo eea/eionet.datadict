@@ -89,7 +89,8 @@ public class DsVisualUpload extends HttpServlet {
                     file.delete();
             }
             
-            res.sendRedirect(req.getContextPath() + "/dsvisual.jsp?ds_id=" + dsID + "&str_type=" + strType);
+            //res.sendRedirect(req.getContextPath() + "dsvisual.jsp?ds_id=" + dsID + "&str_type=" + strType);
+            res.sendRedirect("dsvisual.jsp?ds_id=" + dsID + "&str_type=" + strType);
             return;
         }
         
@@ -209,12 +210,14 @@ public class DsVisualUpload extends HttpServlet {
         }
         
         if (Util.nullString(dsID))
-            res.sendRedirect(req.getContextPath() + "/index.jsp");
+            //res.sendRedirect(req.getContextPath() + "/index.jsp");
+            res.sendRedirect("index.jsp");
         else
-            res.sendRedirect(req.getContextPath() +
-                            "/dsvisual.jsp?ds_id=" + dsID + "&str_type=" + strType);
+            //res.sendRedirect(req.getContextPath() +
+            //                "/dsvisual.jsp?ds_id=" + dsID + "&str_type=" + strType);
+            res.sendRedirect("dsvisual.jsp?ds_id=" + dsID + "&str_type=" + strType);
     }
-    
+
     private void writeToFile(RandomAccessFile raFile, InputStream in) throws Exception{
         
         byte[] buf = new byte[BUF_SIZE];
