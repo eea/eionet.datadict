@@ -122,11 +122,11 @@
 				<table width="500">
 					<tr>
 						<td colspan="3"><br></br><font class="head00">Cleanup functions</font><br></br>
-							<font color="red">
+							<span class="caution">
 							This is a function enabling you to clean the database from all kinds of
 							leftovers that might result from exceptional situations. Please use this
 							with great caution as you might accidentally delete some important data!
-							</font>
+							</span>
 						</td>
 				</tr>
 				</table>

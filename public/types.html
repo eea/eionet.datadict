@@ -1,61 +1,33 @@
 <html>
 <head>
-	<title>Meta</title>
+	<title>Table &amp; element types</title>
 	<link href="eionet.css" rel=stylesheet type=text/css>
 	<script language="JavaScript" src='script.js'></script>
 </head>
 
-<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;">
-<div style="margin-left:30;margin-top:30">
-
-	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-	<br></br>
-	<font color="#006666" face="Arial" size="2">
-		<strong><span class="head0"><script language="JavaScript">document.write(getDDVersionName())</script></span></strong>
-	</font>
-	<br></br>
-
-	<table cellspacing="0" cellpadding="0" width="500" border="0">
-			<tr>
-         	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
-          	<td width="500" background="images/bar_filled.jpg" height="25">
-            <table height="8" cellSpacing="0" cellPadding="0" border="0">
-            	<tr>
-		         	<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-		            <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-		         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-					<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-					<td valign="bottom" align="middle"><span class="barfont">Table & element types</span></td>
-					<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
-				</tr>
-			</table>
-			</td></tr>
-			<tr><td>&#160;</td></tr>
-			<tr><td>&#160;</td></tr>
-	</table>
-
-<table width="550" cellspacing="0">
-	<tr><td><b><font color="#006666">Data elememt types:</font></b></td></tr>
-	<tr height="5"><td></td></tr>
-	<tr>
-		<td><b>Elements with fixed values (codes)</b> - data elements with values from a pre-fixed set</td>
-	</tr>
-	<tr>
-		<td><b>Elements with measured values</b> - aka elements with quantitative values or simply measurements.</td>
-	</tr>
-	<tr height="10"><td>&#160;</td></tr>
-	<a name="tables"></a>
-	<tr><td><b><font color="#006666">Table types:</font></b></td></tr>
-	<tr height="5"><td></td></tr>
-	<tr>
-		<td><b>Normal</b> - tables that do not participate in any foreign key relationships with any other tables.</td>
-	</tr>
-	<tr>
-		<td><b>Lookup</b> - tables that participate on the "many" side of the one-to-many foreign key relationships between
-		tables in a single dataset. Hence the name lookup tables.</td>
-	</tr>
-	<tr height="10"><td>&#160;</td></tr>
-</table>
+<body class="popup">
+<div class="popuphead">
+	<h1>Data Dictionary</h1>
+	<hr/>
 </div>
+
+<h2>Table &amp; element types</h2>
+
+    <h3>Data element types:</h3>
+    <p>
+        <b>Elements with fixed values (codes)</b> - data elements with values from a pre-fixed set
+    </p>
+    <p>
+        <b>Elements with measured values</b> - aka elements with quantitative values or simply measurements.
+    </p>
+
+    <h3 id="tables">Table types:</h3>
+    <p>
+        <b>Normal</b> - tables that do not participate in any foreign key relationships with any other tables.
+    </p>
+    <p>
+        <b>Lookup</b> - tables that participate on the "many" side of the one-to-many foreign key relationships between
+        tables in a single dataset. Hence the name lookup tables.
+    </p>
 </body>
 </html>

@@ -1,120 +1,53 @@
 <html>
 <head>
-	<title>Meta</title>
+	<title>Registration statuses</title>
 	<link href="eionet.css" rel=stylesheet type=text/css>
 	<script language="JavaScript" src='script.js'></script>
 </head>
 
-<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;">
-<div style="margin-left:30;margin-top:30">
+<body class="popup">
+<div class="popuphead">
 
-	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-	<br></br>
-	<font color="#006666" face="Arial" size="2">
-		<strong><span class="head0"><script language="JavaScript">document.write(getDDVersionName())</script></span></strong>
-	</font>
-	<br></br>
-
-	<!-- table border="0" width="auto">
-		<tr>
-			<td width="618">
-				<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-				<br/>
-				<font color="#006666" face="Arial" size="2">
-					<strong>
-						<span class="head0">
-							<script language="JavaScript">document.write(getDDVersionName())</script>
-						</span>
-					</strong>
-				</font>
-			</td>
-			<td width="50">&#160;</td>
-			<td><img src="images/dd.gif" alt="" height="62" width="66" border="0"/></td>
-		</tr>
-		<tr height="10"><td colspan="3">&nbsp;</td></tr>
-	</table -->
-
-	<table cellspacing="0" cellpadding="0" width="500" border="0">
-			<tr>
-         	<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">&#160;</td>
-          	<td width="500" background="images/bar_filled.jpg" height="25">
-            <table height="8" cellSpacing="0" cellPadding="0" border="0">
-            	<tr>
-		         	<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-		            <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-		         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-					<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
-					<td valign="bottom" align="middle"><span class="barfont">Registration statuses</span></td>
-					<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
-				</tr>
-			</table>
-			</td></tr>
-			<tr><td>&#160;</td></tr>
-			<tr><td>&#160;</td></tr>
-	</table>
-
-<table width="auto">
-	<tr><td width="400"><font class="head00">Registration statuses</font></td></tr>
-	<tr height="10"><td width="400">&nbsp;</td></tr>
-</table>
-
-<table width="500">
-	<tr>
-		<td>
-			Each data definition in Data Dictionary (DD) goes through a life-cycle. Its phases are marked
-			by Registration Statuses. They are specified by the data definers and a definition can be
-			in one of the following statuses:
-		</td>
-	</tr>
-	<tr height="5"><td>&#160;</td></tr>
-	<tr><td ><b>Incomplete</b></td></tr>	
-	<tr>
-		<td>
-			Existing dataflows under consideration to be included in DD; new dataflows under development
-			where DD is used as a structuring tool; test dataflows. <font color="red">(At least metadata
-			attributes of Submitter organisation and Submitter phone number are required for this status!).<br/>
-			This status is not published for countries!
-			</font>
-		</td>
-	</tr>
-	<tr height="5"><td>&#160;</td></tr>
-	<tr><td><b>Candidate</b></td></tr>	
-	<tr>
-		<td>
-			Dataflows to be included in DD (of relevance to countries). This level is for opening discussions
-			between ETCs and EEA. <font color="red">(At least metadata attributes of Submitter organisation
-			and Submitter phone number are required for this status!).<br/>
-			This status is not published for countries!
-			</font>
-		</td>
-	</tr>
-	<tr height="5"><td>&#160;</td></tr>
-	<tr><td><b>Recorded</b></td></tr>	
-	<tr>
-		<td>
-			<font color="red">All mandatory metadata entered!</font> This level is for discussions between ETCs
-			and countries. <font color="red">So it is published for countries as well!</font>
-		</td>
-	</tr>
-	<tr height="5"><td>&#160;</td></tr>
-	<tr><td><b>Qualified</b></td></tr>	
-	<tr>
-		<td>
-			<font color="red">All mandatory metadata entered!</font> This level is for closing discussions between
-			ETCs and EEA. <font color="red">Not published for countries!</font>
-		</td>
-	</tr>
-	<tr height="5"><td>&#160;</td></tr>
-	<tr><td><b>Released</b></td></tr>	
-	<tr>
-		<td>
-			<font color="red">All mandatory metadata entered!</font> Accepted by ETCs and EEA. Released for countries
-			to use for download of technical guidelines and templates.<br/>
-			<font color="red">Naturally, it is published for countries too!</font>
-		</td>
-	</tr>
-	<tr height="10"><td>&#160;</td></tr>
-</table>
+	<h1>Data Dictionary</h1>
+	<hr/>
 </div>
+<h2>Registration statuses</h2>
+    <p>
+        Each data definition in Data Dictionary (DD) goes through a life-cycle. Its phases are marked
+        by Registration Statuses. They are specified by the data definers and a definition can be
+        in one of the following statuses:
+    </p>
+    <h3>Incomplete</h3>
+    <p>
+        Existing dataflows under consideration to be included in DD; new dataflows under development
+        where DD is used as a structuring tool; test dataflows. <span class="caution">(At least metadata
+        attributes of Submitter organisation and Submitter phone number are required for this status!).<br/>
+        This status is not published for countries!
+        </span>
+    </p>
+    <h3>Candidate</h3>	
+    <p>
+        Dataflows to be included in DD (of relevance to countries). This level is for opening discussions
+        between ETCs and EEA. <span class="caution">(At least metadata attributes of Submitter organisation
+        and Submitter phone number are required for this status!).<br/>
+        This status is not published for countries!
+        </span>
+    </p>
+    <h3>Recorded</h3>	
+    <p>
+        <span class="caution">All mandatory metadata entered!</span> This level is for discussions between ETCs
+        and countries. <span class="caution">So it is published for countries as well!</span>
+    </p>
+    <h3>Qualified</h3>	
+    <p>
+        <span class="caution">All mandatory metadata entered!</span> This level is for closing discussions between
+        ETCs and EEA. <span class="caution">Not published for countries!</span>
+    </p>
+    <h3>Released</h3>
+    <p>
+        <span class="caution">All mandatory metadata entered!</span> Accepted by ETCs and EEA. Released for countries
+        to use for download of technical guidelines and templates.<br/>
+        <span class="caution">Naturally, it is published for countries too!</span>
+    </p>
 </body>
 </html>

@@ -175,9 +175,9 @@ h2 {
 }
 
 /*
- * In headlines we don't change to italics, but change the colour
+ * We don't change to italics, but change the colour
  */
-h2 em {
+em {
     font-style: normal; 
     color: #006666;
 }
