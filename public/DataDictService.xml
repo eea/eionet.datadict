@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="./services.xsd">
+	<Service Name="DataDictService" Provider="eionet.meta.outservices.OutService">
+		<Methods>
+			<Method Name="getParametersByActivityID" Auth="false">
+					<Parameters>
+						<Parameter Name="raID" Type="STRING"/>
+					</Parameters>
+					<Value Type="ARRAY">
+						<Array Type="STRUCT"/>
+					</Value>
+			</Method>
+		</Methods>		
+	</Service>
+</Services>
