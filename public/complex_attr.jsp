@@ -1,23 +1,7 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
-
-<%!private final static String USER_SESSION_ATTRIBUTE="DataDictionaryUser";%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!
 
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
 
 private String legalizeAlert(String in){
         
@@ -40,8 +24,8 @@ private String legalizeAlert(String in){
 %>
 
 			<%
-			
-			DDuser user = getUser(request);
+			XDBApplication.getInstance(getServletContext());
+			AppUserIF user = SecurityUtil.getUser(request);
 			
 			ServletContext ctx = getServletContext();			
 			String appName = ctx.getInitParameter("application-name");
@@ -107,35 +91,51 @@ private String legalizeAlert(String in){
 			
 			String ds = request.getParameter("ds");
 			
-			if (request.getMethod().equals("POST")){
-				
-				AttrFieldsHandler handler = new AttrFieldsHandler(user.getConnection(), request, ctx);
-				
-				try{
-					handler.execute();
-				}
-				catch (Exception e){
-					%>
-					<html><body><b><%=e.toString()%></b></body></html>
-					<%
-					return;
-				}
-				
-				String redirUrl = request.getContextPath() + "/complex_attr.jsp?mode=edit&parent_id=" + parent_id +
+			String redirUrl = "complex_attr.jsp?mode=edit&parent_id=" + parent_id +
 															 "&parent_type=" + parent_type +
 															 "&parent_name=" + parent_name +
 															 "&parent_ns=" + parent_ns +
 															 "&attr_id=" + attr_id;
 				
-				if (ds != null)
-					redirUrl = redirUrl + "&ds=" + ds;
+			if (ds != null)
+				redirUrl = redirUrl + "&ds=" + ds;
+
+			if (request.getMethod().equals("POST")){
+				
+				Connection userConn = null;
+				
+				try{
+					userConn = user.getConnection();
+					AttrFieldsHandler handler = new AttrFieldsHandler(userConn, request, ctx);
+					
+					try{
+						handler.execute();
+					}
+					catch (Exception e){
+						%>
+						<html><body><b><%=e.toString()%></b></body></html>
+						<%
+						return;
+					}
+				}
+				finally{
+					try { if (userConn!=null) userConn.close();
+					} catch (SQLException e) {}
+				}
+				
 				
 				if (mode.equals("delete")) redirUrl = redirUrl + "&wasdel=true";
 				response.sendRedirect(redirUrl);
 				return;
 			}
 			
-			Connection conn = DBPool.getPool(appName).getConnection();
+			Connection conn = null;
+			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+			DBPoolIF pool = xdbapp.getDBPool();
+			
+			try { // start the whole page try block
+			
+			conn = pool.getConnection();
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			
 			Vector v = null;
@@ -149,6 +149,15 @@ private String legalizeAlert(String in){
 			
 			Vector attrFields = searchEngine.getAttrFields(attr_id);
 			
+			String _type = null;
+			if (parent_type.equals("E"))
+				_type="elm";
+			else if (parent_type.equals("DS"))
+				_type="dst";
+			else if (parent_type.equals("T"))
+				_type="tbl";
+			boolean isWorkingCopy = _type==null ? true : searchEngine.isWorkingCopy(parent_id, _type);
+
 			%>
 
 <html>
@@ -156,6 +165,7 @@ private String legalizeAlert(String in){
 		<title>Meta</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
+	    <script language="JavaScript" src='script.js'></script>
 	</head>
 	<script language="JavaScript">
 			function submitForm(mode){
@@ -168,7 +178,16 @@ private String legalizeAlert(String in){
 				document.forms["form1"].elements["mode"].value = mode;
 				document.forms["form1"].submit();
 			}
+			function goTo(mode){
+				if (mode == "edit"){
+					document.location.assign("<%=redirUrl%>");
+				}
+			}
 			
+			function openValues(id){
+				attrWindow=window.open("pick_attrvalue.jsp?attr_id=" + id + "&type=COMPLEX","Attribute_values","height=400,width=700,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
+				if (window.focus) {attrWindow.focus()}
+			}
 	</script>
 <body style="background-color:#f0f0f0;background-image:url('../images/eionet_background2.jpg');background-repeat:repeat-y;"
 		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
@@ -176,7 +195,9 @@ private String legalizeAlert(String in){
 	<br></br>
 	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
 	<br></br>
-	<font color="#006666" face="Arial" size="2"><strong><span class="head0">Prototype v1.0</span></strong></font>
+	<font color="#006666" face="Arial" size="2">
+		<strong><span class="head0"><script language="JavaScript">document.write(getDDVersionName())</script></span></strong>
+	</font>
 	<br></br>
 	<table cellspacing="0" cellpadding="0" width="400" border="0">
 			<tr>
@@ -198,7 +219,7 @@ private String legalizeAlert(String in){
 
 	<%
 	
-	String backURL = request.getContextPath() + "/complex_attrs.jsp?parent_id=" + parent_id +
+	String backURL = "complex_attrs.jsp?parent_id=" + parent_id +
 															 "&parent_type=" + parent_type +
 															 "&parent_name=" + parent_name +
 															 "&parent_ns=" + parent_ns;
@@ -220,12 +241,15 @@ private String legalizeAlert(String in){
 			return;
 		}
 		%>
-		<b>Attribute not found!</b></div></body></html>
+		<b>Attribute not found!</b><br>
+			<a href="javascript:history.back(-1)">
+				<b>< back</b>
+			</a></div>
+		</body></html>
 		<%
 		return;
 	}
 	
-	//String attrName = attribute.getNamespace().getShortName() + ":" + attribute.getShortName();
 	String attrName = attribute.getShortName();
 	int position = 0;
 	
@@ -235,7 +259,9 @@ private String legalizeAlert(String in){
 <form name="form1" method="POST" action="complex_attr.jsp">
 
 <table width="400">
-
+<%
+if (!mode.equals("view")){
+%>
 <tr>
 	<td colspan="2">
 		<span class="smallfont">
@@ -245,7 +271,9 @@ private String legalizeAlert(String in){
 		</span>
 	</td>
 </tr>
-
+<%
+}
+%>
 <tr height="10"><td colspan="2"></td></tr>
 
 <tr valign="bottom">
@@ -256,16 +284,15 @@ private String legalizeAlert(String in){
 				if (parent_type.equals("DS")){
 					%>Dataset: <%
 				}
+				else if (parent_type.equals("T")){
+					nsPrefix = parent_ns + ":";
+					%>Table: <%
+				}
 				else if (parent_type.equals("C")){
 					nsPrefix = parent_ns + ":";
 					%>Class: <%
 				}
 				else {
-					if (ds == null)
-						ctx.log("ds = NULL");
-					else
-						ctx.log("ds = " + ds);
-						
 					if (ds != null && ds.equals("true")){
 						%>Dataset: <%
 					} else {
@@ -275,13 +302,22 @@ private String legalizeAlert(String in){
 				}
 				%>
 			</span>
-			<span class="title2" color="#006666"><%=parent_name%></span>
+			<span class="title2" color="#006666"><%=Util.replaceTags(parent_name)%></span>
 		</td>
 	</tr>
 	
 	<tr valign="bottom">
-		<td colspan="2">
+		<td>
 			<span class="head00">Attribute: </span><span class="title2" color="#006666"><%=attrName%></span>
+		</td>
+		<td align="right">
+			<%
+				if (user != null && isWorkingCopy && mode.equals("view")){
+			%>
+					<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit')"/> 
+			<%
+				}
+			%>
 		</td>
 	</tr>
 	
@@ -289,11 +325,15 @@ private String legalizeAlert(String in){
 	
 </table>
 
+<%
+if (!mode.equals("view")){
+%>
 <div style="margin-left:5">
 <%
 	if (user!=null){
 		%>
 		<input class="smallbutton" type="button" value="Add" onclick="submitForm('add')">
+		<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')">
 		<%
 	}
 	else{
@@ -320,27 +360,36 @@ private String legalizeAlert(String in){
 </table>
 </div>
 </br>
+<%
+}
+%>
 <div style="margin-left:5">
 
 	<table cellpadding="0" cellspacing="0">
 	
 		<tr>
-			<td>
-				<%
-				if (user!=null && (rows!=null && rows.size()!=0)){
-					%>
-					<input class="smallbutton" type="button" value="Remove" onclick="submitForm('delete')">
+			<%
+			if (!mode.equals("view")){
+			%>
+				<td>
 					<%
-				}
-				else{
+					if (user!=null && (rows!=null && rows.size()!=0)){
+						%>
+						<input class="smallbutton" type="button" value="Remove" onclick="submitForm('delete')">
+						<%
+					}
+					else{
+						%>
+						<input class="smallbutton" type="button" value="Remove" disabled/>
+						<%
+					}
 					%>
-					<input class="smallbutton" type="button" value="Remove" disabled/>
-					<%
-				}
-				%>
-			</td>
+				</td>
+				<td width="10">&#160;</td>
+			<%
+			}
+			%>
 			
-			<td width="10">&#160;</td>
 			
 			<%
 			for (int t=0; t<attrFields.size(); t++){
@@ -363,8 +412,14 @@ private String legalizeAlert(String in){
 			if (pos >= position) position = pos +1;
 			%>
 			<tr>
-			<td align="right"><input type="checkbox" style="height:13;width:13" name="del_row" value="<%=row_id%>"/></td>
-			<td width="10">&#160;</td>
+			<%
+			if (!mode.equals("view")){
+			%>
+				<td align="right"><input type="checkbox" style="height:13;width:13" name="del_row" value="<%=row_id%>"/></td>
+				<td width="10">&#160;</td>
+			<%
+			}
+			%>
 			<%
 			
 			for (int t=0; t<attrFields.size(); t++){
@@ -373,7 +428,7 @@ private String legalizeAlert(String in){
 				String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 				if (fieldValue == null) fieldValue = " ";
 					%>
-					<td <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-right:10">&#160;<%=fieldValue%></td>
+					<td <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-right:10">&#160;<%=Util.replaceTags(fieldValue)%></td>
 					<%
 			}
 			
@@ -408,3 +463,12 @@ if (ds != null){
 </div>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

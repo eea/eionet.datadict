@@ -1,9 +1,10 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
-<%!private Vector attributes=null;%>
 <%!final static String oSearchCacheAttrName="search_cache";%>
+
+<%@ include file="history.jsp" %>
 
 <%!class c_SearchResultEntry implements Comparable {
     public String oID;
@@ -68,59 +69,12 @@
     }
 }%>
 
-<%!
-	private DDuser getUser(HttpServletRequest req) {
-	
-		DDuser user = null;
-	    
-	    HttpSession httpSession = req.getSession(false);
-	    if (httpSession != null) {
-	    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-		}
-	      
-	    if (user != null)
-	    	return user.isAuthentic() ? user : null;
-		else 
-	    	return null;
-	}			
-
-%>
-
 <%
-/*	
-	DDuser user = getUser(request);
-	
-	if (request.getMethod().equals("POST")){
-		
-		if (user == null){
-	      			%>
-	      				<html>
-	      				<body>
-	      					<h1>Error</h1><b>Not authorized to post any data!</b>
-	      				</body>
-	      				</html>
-	      			<%
-	      			return;
-      			}
-		
-			
-		DataElementHandler handler =
-					new DataElementHandler(user.getConnection(), request, ctx, "delete");
-				
-		handler.execute();
-		
-		String redirUrl = request.getParameter("searchUrl");
-		if (redirUrl != null && redirUrl.length()!=0){
-			ctx.log("redir= " + redirUrl);
-			response.sendRedirect(redirUrl);
-		}
-	}	
-*/	
-    
 	ServletContext ctx = getServletContext();
 	String appName = ctx.getInitParameter("application-name");
 	
-	DDuser user = getUser(request);
+	XDBApplication.getInstance(getServletContext());
+	AppUserIF user = SecurityUtil.getUser(request);
 
 	String short_name = request.getParameter("short_name");
 	String full_name = request.getParameter("full_name");
@@ -186,6 +140,7 @@
         <TD>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Search results"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 			<div style="margin-left:30">
@@ -198,20 +153,20 @@
 				<td><span class="head00">Dataset tables</span></td>
 			</tr>
 			<tr height="10"><td></td></tr>
+
 			<tr>
-				<td><span class="mainfont">
-					<% if (user != null){%>
-						To view or modify a dataset table, click its Short name in the list below.
-						To add a new dataset table, click the 'Add' button on top of the list.
-					<% } else { %>
-						To view a dataset table, click its Short name in the list below.
-					<% } %>
+				<td colspan="3"><span class="mainfont">					
+					<% if (user != null){ %>
+						Rows marked with <font color="red">*</font> indicate checked-out tables.<%
+					}
+					%>
 					</span>
 				</td>
 			</tr>
 		</table>
 		<table width="auto" cellspacing="0">
 			<tr>
+				<td align="right" style="padding-right:10">&#160;</td>
 				<td align="left" colspan="3" style="padding-bottom:5">
 					<% if (user != null){
 						%>
@@ -227,6 +182,7 @@
 			
 			
 			<tr>
+				<td align="right" style="padding-right:10">&#160;</td>
 				<th align="left" style="padding-left:5;padding-right:10">Short name</th>
 				<th align="right" style="padding-left:5;padding-right:5">
 					<table border="0" width="auto">
@@ -272,15 +228,31 @@
             <%-- Handle Request Parameters and queries --%>
             
             <%
+            
+            Connection conn = null;
+            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+			DBPoolIF pool = xdbapp.getDBPool();
+            
+			boolean wrkCopies = false;
+			
+            try { // start the whole page try block
+            
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
 	                        
 	            try {
 		            
-		            // we establish a database connection
-					Connection conn = DBPool.getPool(appName).getConnection();
-					
+		            // we establish a database connection and create a search engine
+					conn = pool.getConnection();
 					DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+					searchEngine.setUser(user);
 	
+					String srchType = request.getParameter("search_precision");
+					String oper="=";
+					if (srchType != null && srchType.equals("free"))
+						oper=" match ";
+					if (srchType != null && srchType.equals("substr"))
+						oper=" like ";
+
 					Vector params = new Vector();	
 					Enumeration parNames = request.getParameterNames();
 					while (parNames.hasMoreElements()){
@@ -291,16 +263,21 @@
 						String parValue = request.getParameter(parName);
 						if (parValue.length()==0)
 							continue;
-				
+						
 						DDSearchParameter param =
-							new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, " like ", "=");
+							new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
 		
-						param.addValue("'%" + parValue + "%'");
+			            if (oper!= null && oper.trim().equalsIgnoreCase("like"))
+							param.addValue("'%" + parValue + "%'");
+						else
+							param.addValue("'" + parValue + "'");
 						params.add(param);
 					}
+					
+					String _wrkCopies = request.getParameter("wrk_copies");
+					wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
 
-
-					Vector dsTables = searchEngine.getDatasetTables(params, short_name, full_name, definition);
+					Vector dsTables = searchEngine.getDatasetTables(params, short_name, full_name, definition, oper, wrkCopies);
 		           
         		    if (dsTables == null || dsTables.size()==0){
 		            %>
@@ -314,25 +291,34 @@
 					c_SearchResultSet oResultSet=new c_SearchResultSet();
 	        		oResultSet.oElements=new Vector(); 
 	        		session.setAttribute(oSearchCacheAttrName,oResultSet);
+	        		
+	        		// set up the version manager for checking check-outs
+	        		VersionManager verMan = new VersionManager(conn, searchEngine, user);
 
 					for (int i=0; i<dsTables.size(); i++){
 						DsTable table = (DsTable)dsTables.get(i);
 						String table_id = table.getID();
 						String table_name = table.getShortName();
 						String ds_id = table.getDatasetID();
-						Dataset ds = (Dataset)searchEngine.getDataset(ds_id);				
-						String ds_name = ds.getShortName();
+						String ds_name = null;
+						String dsNs = null;
+						if (ds_id!=null){
+							Dataset ds = (Dataset)searchEngine.getDataset(ds_id);
+							if (ds!=null){
+								ds_name = ds.getShortName();
+								dsNs = ds.getNamespaceID();
+							}
+						}
 				
 						if (table_name == null) table_name = "unknown";
 						if (table_name.length() == 0) table_name = "empty";
 				
-						if (ds_name == null) ds_name = "unknown";
-						if (ds_name.length() == 0) ds_name = "empty";
+						if (ds_name == null || ds_name.length() == 0) ds_name = "unknown";
 				
 						//String fullName = table.getName();
 						String tblName = "";
 		
-						attributes = searchEngine.getAttributes(table_id, "T", DElemAttribute.TYPE_SIMPLE);
+						Vector attributes = searchEngine.getAttributes(table_id, "T", DElemAttribute.TYPE_SIMPLE);
 		
 						for (int c=0; c<attributes.size(); c++){
 							attr = (DElemAttribute)attributes.get(c);
@@ -352,17 +338,26 @@
                 															 ds_name);
                 															 
 						oResultSet.oElements.add(oEntry);
-			
+						
+						String workingUser = verMan.getTblWorkingUser(table.getShortName(), dsNs);
+						String topWorkingUser = verMan.getWorkingUser(table.getParentNs());			
 						%>
 						<tr>
+							<td align="right" style="padding-right:10">
+								<%
+								if (user!=null && (workingUser!=null || topWorkingUser!=null)){ // mark checked-out tables
+			    					%> <font color="red">*</font> <%
+		    					}
+		    					%>
+		    				</td>
 							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-								<a href="<%=tableLink%>"><%=table_name%></a>
+								<a href="<%=tableLink%>"><%=Util.replaceTags(table_name)%></a>
 							</td>
 							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-								<%=ds_name%>
+								<%=Util.replaceTags(ds_name)%>
 							</td>
 							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=tblFullName%>" colspan="2">
-								<%=tblName%>
+								<%=Util.replaceTags(tblName)%>
 							</td>
 						</tr>
 						<%
@@ -372,8 +367,8 @@
 					<tr><td colspan="8">Total results: <%=dsTables.size()%></td></tr><%
 				}
 				catch(Exception e){
-					%><B>ERROR: <%=e%></B>
-				<%}
+					%><B>ERROR: <%=e%></B><%
+				}
 			}
 			else{
 				// No search - return from another result set or a total stranger...
@@ -393,13 +388,13 @@
 						%>
 						<tr>
 							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-								<a href="<%=tableLink%>"><%=oEntry.oShortName%></a>
+								<a href="<%=tableLink%>"><%=Util.replaceTags(oEntry.oShortName)%></a>
 							</td>
 							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-								<%=oEntry.oDsName%>
+								<%=Util.replaceTags(oEntry.oDsName)%>
 							</td>
 							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=oEntry.oFullName%>" colspan="2">
-								<%=oEntry.oName%>
+								<%=Util.replaceTags(oEntry.oName)%>
 							</td>
 						</tr>
 						<%
@@ -429,3 +424,12 @@
 </table>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

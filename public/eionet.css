@@ -155,6 +155,16 @@ background: #10847B;
 text-decoration: none; 
 }
 
+th.light {  font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 8pt;
+font-style: normal; 
+line-height: normal; 
+font-weight: bold; 
+color: #FFFFFF;
+background: #20B2AA;
+text-decoration: none; 
+}
+
 th a:link { color: #8080ff }
 th a:visited { color: #ff8080 }
 th a:active { color: #ff8080 }

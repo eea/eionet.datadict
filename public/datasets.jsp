@@ -1,47 +1,42 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
 <%!final static String oSearchCacheAttrName="search_cache";%>
 <%!final static String oSearchUrlAttrName="search_url";%>
-<%!
-	private DDuser getUser(HttpServletRequest req) {
-	
-		DDuser user = null;
-	    
-	    HttpSession httpSession = req.getSession(false);
-	    if (httpSession != null) {
-	    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-		}
-	      
-	    if (user != null)
-	    	return user.isAuthentic() ? user : null;
-		else 
-	    	return null;
-	}
-%>
+<%!private Vector attributes=null;%>
+
+<%@ include file="history.jsp" %>
+
 <%!class c_SearchResultEntry implements Comparable {
     public String oID;
     public String oShortName;
+    public String oFullName;
+    public String oFName;  //truncated full name
     public String oVersion;
     public Vector oTables;
 
     private String oCompStr=null;
     private int iO=0;
     
-    public c_SearchResultEntry(String _oID, String _oShortName, String _oVersion,Vector _oTables) {
+    public c_SearchResultEntry(String _oID, String _oShortName, String _oVersion, String _oFName, Vector _oTables) {
 	    
             oID	= _oID==null ? "" : _oID;
             oShortName	= _oShortName==null ? "" : _oShortName;
+            oFName	= _oFName==null ? "" : _oFName;
             oVersion	= _oVersion==null ? "" : _oVersion;
             oTables	= _oTables;
     		
+            oFullName = oFName;
+
+            if (oFName.length() > 60)
+				oFName = oFName.substring(0,60) + " ...";
 	};
     
     public void setComp(int i,int o) {
         switch(i) {
-            case 2: oCompStr=oVersion; break;
-            default: oCompStr=oShortName; break;
+            case 1: oCompStr=oFName; break;
+            default: oCompStr=oFName; break;
             }
         iO=o;
         }
@@ -95,13 +90,23 @@
 	
     Vector datasets=null;
     
-	DDuser user = getUser(request);
 	DDSearchEngine searchEngine = null;
 	
+	Connection conn = null;
+	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+	DBPoolIF pool = xdbapp.getDBPool();
+	
+	AppUserIF user = SecurityUtil.getUser(request);
+	
+	boolean wrkCopies = false;
+	
+	VersionManager verMan = null;
 
+	try { // start the whole page try block
+		
 	if (searchType != null && searchType.equals(TYPE_SEARCH)){
 		
-		Connection conn = DBPool.getPool(appName).getConnection();
+		conn = pool.getConnection();
 	
 		if (request.getMethod().equals("POST")){
 		
@@ -115,11 +120,21 @@
 	      			<%
 	      			return;
       			}
-		
-			DatasetHandler handler =
-					new DatasetHandler(user.getConnection(), request, ctx, "delete");
-				
-			handler.execute();
+	
+      		Connection userConn = null;
+      		DatasetHandler handler = null;
+      		
+      		try{
+	      		userConn = user.getConnection();
+				handler = new DatasetHandler(userConn, request, ctx, "delete");
+				handler.setUser(user);
+				handler.execute();
+			}
+			finally{
+				handler.cleanup();
+				try { if (userConn!=null) userConn.close();
+				} catch (SQLException e) {}
+			}
 		
 			//String redirUrl = request.getParameter("searchUrl");
 			String redirUrl = (String)session.getAttribute(oSearchUrlAttrName);
@@ -133,8 +148,16 @@
        	session.setAttribute(oSearchUrlAttrName, searchUrl);
 
        	searchEngine = new DDSearchEngine(conn, "", ctx);	
+       	searchEngine.setUser(user);
 
-		Vector params = new Vector();	
+		String srchType = request.getParameter("search_precision");
+		String oper="=";
+		if (srchType != null && srchType.equals("free"))
+			oper=" match ";
+		if (srchType != null && srchType.equals("substr"))
+			oper=" like ";
+
+								Vector params = new Vector();	
 		Enumeration parNames = request.getParameterNames();
 		while (parNames.hasMoreElements()){
 			String parName = (String)parNames.nextElement();
@@ -146,19 +169,24 @@
 				continue;
 			
 			DDSearchParameter param =
-				new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, " like ", "=");
+				new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
 		
-			param.addValue("'%" + parValue + "%'");
+            if (oper!= null && oper.trim().equalsIgnoreCase("like"))
+				param.addValue("'%" + parValue + "%'");
+			else
+				param.addValue("'" + parValue + "'");
 			params.add(param);
 		}
-	
 		String short_name = request.getParameter("short_name");
 		String version = request.getParameter("version");
 		Vector v = searchEngine.getSimpleAttributes("", "");
 
-		//String jama = searchEngine.getJama();
-		datasets = searchEngine.getDatasets(params, short_name, version);
-		//Vector datasets = searchEngine.getDatasets();	
+		String _wrkCopies = request.getParameter("wrk_copies");
+		wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
+		
+		datasets = searchEngine.getDatasets(params, short_name, version, oper, wrkCopies);
+		
+		verMan = new VersionManager(conn, searchEngine, user);
 	}	
 	
 %>
@@ -196,7 +224,16 @@
 		}
     	function deleteDataset(){
 	    	
-	    	var b = confirm("This will delete all the datasets you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
+	    	var b;
+	    	<%
+	    	if (wrkCopies){ %>
+	    		b = confirm("This will undo check-out of the selected working copies. They will be deleted and corresponding datasets will be released for others to edit. Click OK, if you want to continue. Otherwise click Cancel.");<%
+    		}
+    		else{ %>
+    			b = confirm("This will delete all the datasets you have selected. Click OK, if you want to continue. Otherwise click Cancel.");<%
+			}
+			%>
+			
 			if (b==false) return;
 			
 			document.forms["form1"].elements["mode"].value = "delete";
@@ -217,6 +254,7 @@
         <TD>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Datasets"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 			<div style="margin-left:30">
@@ -241,17 +279,17 @@
 				<td><font class="head00">Datasets</font></td>
 			</tr>
 			<tr height="10"><td></td></tr>
-			<tr>
-				<td>
-					<% if (user != null) { %>
-						To view or modify a dataset or its table, click on the corresponding titles.
-						To add a dataset, click the 'Add' button on top of the list. The left-most column enables
-						you to delete selected datasets.
-					<% } else { %>
-						To view a dataset or its table, click on the corresponding titles.
-					<% } %>
-				</td>
-			</tr>
+			
+			<%
+			if (user!=null){ %>
+				<tr>
+					<td colspan="3"><span class="mainfont">
+						A red wildcard (<font color="red">*</font>) means that the dataset is under work
+						and cannot be deleted. Otherwise checkboxes enable to delete selected datasets.
+					</td>
+				</tr><%
+			}
+			%>				
 			<tr height="5"><td colspan="2"></td></tr>
 		</table>
 		
@@ -279,7 +317,7 @@
 				<% } else {%>
 					<td></td>
 				<% } %>
-				<th align="left" style="padding-left:5;padding-right:10">Short name</th>
+				<th align="left" style="padding-left:5;padding-right:10">Dataset name</th>
 				<th align="right" style="padding-left:5;padding-right:5">
 					<table border="0" width="auto">
 						<tr>
@@ -304,38 +342,66 @@
 	        	oResultSet.oElements=new Vector(); 
 	        	session.setAttribute(oSearchCacheAttrName,oResultSet);
 	        	
+	        	DElemAttribute attr = null;
+	        	
 				for (int i=0; i<datasets.size(); i++){
 				
 					Dataset dataset = (Dataset)datasets.get(i);
+					
 					String ds_id = dataset.getID();
-					String ds_name = dataset.getShortName();
-					Vector tables = searchEngine.getDatasetTables(ds_id);
-				
 					String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
-				
+					String ds_name = Util.replaceTags(dataset.getShortName());
 					if (ds_name == null) ds_name = "unknown";
 					if (ds_name.length() == 0) ds_name = "empty";
+					
+					Vector tables = searchEngine.getDatasetTables(ds_id);
+					attributes = searchEngine.getAttributes(ds_id, "DS", DElemAttribute.TYPE_SIMPLE);
+		
+					String dsFullName=null;
+					for (int c=0; c<attributes.size(); c++){
+						attr = (DElemAttribute)attributes.get(c);
+       					if (attr.getName().equalsIgnoreCase("Name"))
+       						dsFullName = attr.getValue();
+					}
+					
+					if (dsFullName == null) dsFullName = ds_name;
+					if (dsFullName.length() == 0) dsFullName = ds_name;
+					if (dsFullName.length()>60)
+						dsFullName = dsFullName.substring(0,60) + " ...";
 				
 					c_SearchResultEntry oEntry = new c_SearchResultEntry(ds_id,
                															 ds_name,
                															 dsVersion,
+               															 dsFullName,
                 														 tables);
                 															 
 					oResultSet.oElements.add(oEntry);
+					
+					String workingUser    = verMan.getDstWorkingUser(dataset.getShortName());
+					String topWorkingUser = verMan.getWorkingUser(dataset.getNamespaceID());
+					
 					%>
 				
-					<tr valign="top">	
-						<% if (user != null){%>
-							<td align="right" style="padding-right:10">
-								<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>"/>
-							</td>
-						<% } else {%>
-							<td></td>
-						<% } %>
+					<tr valign="top">
+					
+						<td align="right" style="padding-right:10">
+							<%
+	    					if (user!=null){
+		    					
+		    					if (workingUser!=null || topWorkingUser!=null){ // mark checked-out datasets
+			    					%> <font color="red">*</font> <%
+		    					}
+	    					
+		    					if (workingUser==null && topWorkingUser==null){ %>
+									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>"/><%
+								}
+							}
+							%>
+						</td>
 						
-						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2" title="<%=dsFullName%>">
 							<a href="dataset.jsp?ds_id=<%=ds_id%>&#38;mode=view">
-							<%=ds_name%></a>
+							<%=Util.replaceTags(dsFullName)%></a>
 						</td>					
 						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 							<%=dsVersion%>
@@ -347,11 +413,19 @@
 				
 								DsTable table = (DsTable)tables.get(c);
 								String tableLink = "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + ds_id + "&ds_name=" + ds_name;
+								
+								String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
+			    															  table.getShortName(), "tbl");
 			
 								%>
 								<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
-								<a href="<%=tableLink%>"><%=table.getShortName()%></a><br/>
+								<a href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a>								
 								<%
+								if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
+									%>&#160;<font color="red">*</font> <%
+								}
+								%>
+								<br/><%
 							}
 							%>
 						</td>
@@ -383,9 +457,9 @@
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>"/>
 								</td>
 							<% } %>
-							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"  title="<%=oEntry.oFullName%>">
 								<a href="dataset.jsp?ds_id=<%=oEntry.oID%>&#38;mode=view">
-								<%=oEntry.oShortName%></a>
+								<%=Util.replaceTags(oEntry.oFName)%></a>
 							</td>					
 							<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 								<%=oEntry.oVersion%>
@@ -401,7 +475,7 @@
 			
 									%>
 									<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
-									<a href="<%=tableLink%>"><%=table.getShortName()%></a><br/>
+									<a href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a><br/>
 									<%
 								}
 								%>
@@ -434,3 +508,12 @@
 </table>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

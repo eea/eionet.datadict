@@ -1,9 +1,12 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
-<%!final static String oConnName="datadict";%>
 <%!private String mode=null;%>
 <%!private Vector mAttributes=null;%>
 <%!private FixedValue fxv=null;%>
+<%!private Vector relElems=null;%>
+<%!private Vector elemValues=null;%>
+
+<%@ include file="history.jsp" %>
 
 <%!
 private String getAttributeIdByName(String name){
@@ -37,20 +40,6 @@ private String getAttributeObligationById(String id){
     return null;
 }
 
-	private DDuser getUser(HttpServletRequest req) {
-	
-		DDuser user = null;
-	    
-	    HttpSession httpSession = req.getSession(false);
-	    if (httpSession != null) {
-	    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-		}
-	      
-	    if (user != null)
-	    	return user.isAuthentic() ? user : null;
-		else 
-	    	return null;
-	}
 
 private String legalizeAlert(String in){
         
@@ -75,7 +64,8 @@ private String legalizeAlert(String in){
 			<%
 			
 	
-			DDuser user = getUser(request);
+			XDBApplication.getInstance(getServletContext());
+			AppUserIF user = SecurityUtil.getUser(request);
 			
 			ServletContext ctx = getServletContext();			
 			String appName = ctx.getInitParameter("application-name");
@@ -137,55 +127,69 @@ private String legalizeAlert(String in){
 			
 			if (request.getMethod().equals("POST")){
 				
-				FixedValuesHandler handler = new FixedValuesHandler(user.getConnection(), request, ctx);
+				Connection userConn = null;
+				String redirUrl = "";
 				
-				
-				String redirUrl = request.getContextPath();
-
-				try {
-					handler.execute();
-				}
-				catch (Exception e){
-					%>
-					<html><body>
-						<b><%=e.toString()%></b><br>
-						<%
-						if (fxv_id != null && fxv_id.length()!=0)
-							redirUrl = redirUrl + "/fixed_value.jsp?mode=edit&fxv_id=" + fxv_id +
-															 "&delem_id=" + delem_id +
-															 "&delem_name=" + delem_name +
-															 "&parent_type=" + parent_type;
-															 //"&ns=" + ns;
+				try{
+					userConn = user.getConnection();
+					FixedValuesHandler handler = new FixedValuesHandler(userConn, request, ctx);
+					
+					try {
+						handler.execute();
+					}
+					catch (Exception e){
 						%>
-						<a href="javascript:window.location.replace('<%=redirUrl%>')">< back</a>
-						
-					</body></html>
-					<%
-					return;
-				}				
+						<html><body>
+							<b><%=e.toString()%></b><br>
+							<%
+							/*if (fxv_id != null && fxv_id.length()!=0)
+								redirUrl = redirUrl + "fixed_value.jsp?mode=edit&fxv_id=" + fxv_id +
+																 "&delem_id=" + delem_id +
+																 "&delem_name=" + delem_name +
+																 "&parent_type=" + parent_type;
+																 //"&ns=" + ns;
+							*/
+							%>
+							<a href="javascript:window.location.replace('<%=currentUrl%>')">< back</a>
+							
+						</body></html>
+						<%
+						return;
+					}
+				}
+				finally{
+					try { if (userConn!=null) userConn.close();
+					} catch (SQLException e) {}
+				}
 			
 				/* mode add is not needed currently
 				if (mode.equals("add")){
 					String id = handler.getLastInsertID();
 					if (id != null && id.length()!=0)
-						redirUrl = redirUrl + "/fixed_value.jsp?mode=edit&fxv_id=" + id +
+						redirUrl = redirUrl + "fixed_value.jsp?mode=edit&fxv_id=" + id +
 															 "&delem_id=" + delem_id +
 															 "&delem_name=" + delem_name +
 															 "&ns=" + ns;
 				}
 				*/
 				if (mode.equals("edit")){
-					redirUrl = redirUrl + "/fixed_value.jsp?mode=edit&fxv_id=" + fxv_id + 
+					redirUrl=currentUrl;
+					/*redirUrl = redirUrl + "fixed_value.jsp?mode=edit&fxv_id=" + fxv_id + 
 															 "&delem_id=" + delem_id +
 															 "&delem_name=" + delem_name +
 															 "&parent_type=" + parent_type;
-															 //"&ns=" + ns;
+					*/										 //"&ns=" + ns;
 				}
 				else if (mode.equals("delete")){
-					redirUrl = redirUrl + "/fixed_values.jsp?delem_id=" + delem_id +
+					String deleteUrl = history.gotoLastNotMatching("fixed_value.jsp");
+
+					if (deleteUrl!=null&&deleteUrl.length()>0) 
+						redirUrl=deleteUrl;
+					else 
+						redirUrl = redirUrl + "fixed_values.jsp?mode=edit&delem_id=" + delem_id +
 															 "&delem_name=" + delem_name +
 															 "&parent_type=" + parent_type;
-															 //"&ns=" + ns;
+					
 				}
 				
 				
@@ -194,7 +198,13 @@ private String legalizeAlert(String in){
 				return;
 			}
 			
-			Connection conn = DBPool.getPool(appName).getConnection();
+			Connection conn = null;
+			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+			DBPoolIF pool = xdbapp.getDBPool();
+			
+			try { // start the whole page try block
+			
+			conn = pool.getConnection();
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			
 			mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
@@ -223,6 +233,32 @@ private String legalizeAlert(String in){
 				
 			String disabled = user == null ? "disabled" : "";
 			
+			relElems = searchEngine.getRelatedElements(delem_id, "elem", null, "CH1");
+			if (relElems == null) relElems = new Vector();
+
+			
+			boolean isWorkingCopy = parent_type.equals("elem") ? searchEngine.isWorkingCopy(delem_id, "elm") : true;
+
+			//find parent url from history
+			String parentUrl="";
+			if (parent_type.equals("elem")){
+				parentUrl="data_element.jsp?mode=view&delem_id="+delem_id;
+				if (history!=null){
+					String elemUrl = history.getLastMatching("data_element.jsp");
+				
+					if (elemUrl.indexOf("delem_id=" + delem_id)>-1)
+						parentUrl = elemUrl;
+				}
+			}
+			else{
+				parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&type=SIMPLE&mode=edit";
+				if (history!=null){
+					String attrUrl = history.getLastMatching("delem_attribute.jsp");
+				
+					if (attrUrl.indexOf("delem_id=" + delem_id)>-1)
+						parentUrl = attrUrl;
+				}
+			}
 			%>
 
 <html>
@@ -337,7 +373,7 @@ private String legalizeAlert(String in){
 		}
 			
 	</script>
-<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0">
+<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onLoad="onLoad()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
@@ -349,12 +385,13 @@ private String legalizeAlert(String in){
         <TD>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Allowable value"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 <div style="margin-left:30">
 
 	<%
-	String backURL = request.getContextPath() + "/fixed_values.jsp?delem_id=" + delem_id +
+	String backURL = "" + "/fixed_values.jsp?delem_id=" + delem_id +
 															 "&delem_name=" + delem_name +
 															 "&parent_type=" + parent_type;
 															 //"&ns=" + ns;
@@ -370,11 +407,10 @@ private String legalizeAlert(String in){
 			</tr -->
 					
 			<tr height="20"><td colspan="2"></td></tr>
-			
 			<tr valign="bottom">
 				<td colspan="2">
 					<span class="head00">Allowable value of</span>
-					<span class="title2"><%=delem_name%></span>
+					<span class="title2"><a href="<%=parentUrl%>"><%=Util.replaceTags(delem_name)%></a></span>
 					<span class="head00"><%=dispParentType%></span>
 				</td>
 			</tr>
@@ -389,7 +425,7 @@ private String legalizeAlert(String in){
 				</td>
 				<td colspan="1" valign="top">
 					<% if(!mode.equals("add")){ %>
-						<font class="title2" color="#006666"><%=value%></font>
+						<font class="title2" color="#006666"><%=Util.replaceTags(value)%></font>
 						<input type="hidden" name="fxv_value" value="<%=value%>"/>
 					<% } else{ %>
 						<input class="smalltext" type="text" size="30" name="fxv_value"></input>
@@ -429,8 +465,6 @@ private String legalizeAlert(String in){
 				attrID = attribute.getID();
 				attrValue = getValue(attrID);
 				
-				String attrNs = attribute.getNamespace().getShortName();
-				
 				String width  = attribute.getDisplayWidth();
 				String height = attribute.getDisplayHeight();
 				
@@ -449,7 +483,7 @@ private String legalizeAlert(String in){
 					if (attrValue==null)
 						%>&#160;<%
 					else
-						%><%=attrValue%><%
+						%><%=Util.replaceTags(attrValue)%><%
 					continue;
 				}
 
@@ -468,7 +502,7 @@ private String legalizeAlert(String in){
 				else if (dispType.equals("textarea")){
 					if (attrValue!=null){
 						%>
-						<textarea <%=disabled%> class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>"><%=attrValue%></textarea>
+						<textarea <%=disabled%> class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>"><%=Util.replaceTags(attrValue, true)%></textarea>
 						<%
 					}
 					else{
@@ -506,6 +540,60 @@ private String legalizeAlert(String in){
 				<input type="hidden" name="oblig_<%=attrID%>" value="<%=attribute.getObligation()%>"/>
 				<%
 			}
+			for (int i=0; relElems!=null && i<relElems.size(); i++){
+			
+				CsiItem item = (CsiItem)relElems.get(i);
+			
+				String compID = item.getComponentID();
+				if (compID == null) continue;
+				
+				elemValues = searchEngine.getAllFixedValues(compID, "elem");
+				if (elemValues == null) elemValues = new Vector();
+
+				String selected_id = fxv.getItemIdByComponentId(compID);
+				%>
+				<tr>
+					<td align="right" valign="top" style="padding-right:10">
+						<a href="rel_element.jsp?delem_id=<%=delem_id%>&#38;delem_name=<%=delem_name%>&#38;child_id=<%=item.getID()%>">
+						<span class="help">?</span></a>&#160;
+						<span class="mainfont"><b>
+							<%=Util.replaceTags(item.getValue())%>
+						</b></span>
+					</td>
+					<td colspan="1" valign="top">
+						<%
+  				 		if (mode.equals("print")){
+							for (int n=0; n<elemValues.size(); n++){
+								FixedValue fxValue = (FixedValue)elemValues.get(n);
+								String id = fxValue.getID();
+								if(id.equals(selected_id)){
+									if (fxValue.getValue()==null)
+										%>&#160;<%
+									else
+										%><%=Util.replaceTags(fxValue.getValue())%><%
+									break;
+								}
+							}
+						}
+						else{
+						%>
+							<select <%=disabled%> class="small" name="item_<%=item.getID()%>">
+								<option value="">-- Not selected --</option>
+								<%
+								for (int n=0; n<elemValues.size(); n++){
+									FixedValue fxValue = (FixedValue)elemValues.get(n);
+										String id = fxValue.getID();
+									String isSelected = id.equals(selected_id) ? "selected" : "";
+									%>
+									<option <%=isSelected%> value="<%=id%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
+								}
+								%>
+							</select>
+						<% } %>
+					</td>
+				</tr>
+				<%
+			}
 			%>
 		
 		<tr height="10"><td colspan="2"></td></tr>
@@ -525,7 +613,7 @@ private String legalizeAlert(String in){
 				} // end if mode is "add"
 				
 				if (!mode.equals("add") && !mode.equals("print")){ // if mode is not "add" and not "print"
-					if (user==null){ %>									
+					if (user==null || !isWorkingCopy){ %>									
 						<input class="mediumbuttonb" type="button" value="Save" disabled="true"/>&#160;&#160;
 						<input class="mediumbuttonb" type="button" value="Delete" disabled="true"/>&#160;&#160;
 					<%} else {%>
@@ -557,3 +645,12 @@ private String legalizeAlert(String in){
 </table>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

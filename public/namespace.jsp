@@ -1,30 +1,12 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!private String mode=null;%>
 <%!private Namespace namespace=null;%>
 
-<%!
+<%@ include file="history.jsp" %>
 
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
-
-%>
 
 			<%
-			
-			//DDuser user = getUser(request);
 			
 			ServletContext ctx = getServletContext();			
 			String appName = ctx.getInitParameter("application-name");
@@ -32,7 +14,8 @@ private DDuser getUser(HttpServletRequest req) {
 			String urlPath = ctx.getInitParameter("basens-path");
 			if (urlPath == null) urlPath = "";
 			
-			DDuser user = getUser(request);
+			XDBApplication.getInstance(getServletContext());
+			AppUserIF user = SecurityUtil.getUser(request);
 			
 			/*DDuser user = new DDuser(DBPool.getPool(appName));
 	
@@ -56,30 +39,39 @@ private DDuser getUser(HttpServletRequest req) {
 			String ns_id = request.getParameter("ns_id");
 			
 			mode = request.getParameter("mode");
-			if (mode == null || mode.length()==0) { %>
-				<b>Mode paramater is missing!</b>
-				<%
-				return;
+			if (mode == null || mode.length()==0) {
+				mode = "view";
 			}
 			
 			if (request.getMethod().equals("POST")){
 				
-				NamespaceHandler handler = new NamespaceHandler(user.getConnection(), request, ctx);
-				handler.execute();
-				String id = handler.getLastInsertID();
+				Connection userConn = null;
+				String id = null;
 				
-				String redirUrl = request.getContextPath();
+				try{
+					userConn = user.getConnection();
+					NamespaceHandler handler = new NamespaceHandler(userConn, request, ctx);
+					handler.execute();
+					id = handler.getLastInsertID();
+				}
+				finally{
+					try { if (userConn!=null) userConn.close();
+					} catch (SQLException e) {}
+				}
+				
+				String redirUrl = "";
 				if (mode.equals("add")){					
 					if (id != null && id.length()!=0)
-						redirUrl = redirUrl + "/namespace.jsp?mode=edit&ns_id=" + id;
+						redirUrl = redirUrl + "namespace.jsp?mode=edit&ns_id=" + id;
 				}
 				else if (mode.equals("edit")){
-					redirUrl = redirUrl + "/namespace.jsp?mode=edit&ns_id=" + id;
+					redirUrl = currentUrl;
+					//redirUrl = redirUrl + "namespace.jsp?mode=edit&ns_id=" + id;
 				}
 				else if (mode.equals("delete")){
-					%>
-					<html><script>window.history.go(-1)</script></html>
-					<%
+					String	deleteUrl = history.gotoLastMatching("namespaces.jsp");
+					redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl:redirUrl + "/index.jsp";
+					//redirUrl = redirUrl + "index.jsp";
 				}
 				
 				response.sendRedirect(redirUrl);
@@ -91,13 +83,23 @@ private DDuser getUser(HttpServletRequest req) {
 				return;
 			}
 			
-			Connection conn = DBPool.getPool(appName).getConnection();
+			Connection conn = null;
+			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+			DBPoolIF pool = xdbapp.getDBPool();
+			
+			try { // start the whole page try block
+			
+			conn = pool.getConnection();
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+			
+			boolean nsEditable = false;
 			
 			if (!mode.equals("add")){
 				Vector v = searchEngine.getNamespaces(ns_id);
 				if (v!=null && v.size()!=0){
 					namespace = (Namespace)v.get(0);
+					if (!namespace.getID().equals("1") && namespace.getTable()==null && namespace.getDataset()==null)
+						nsEditable = true;
 				}
 				else{ %>
 					<b>Namespace was not found!</b> <%
@@ -190,13 +192,14 @@ private DDuser getUser(HttpServletRequest req) {
         <TD>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Namespace"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 			<div style="margin-left:30">
 			
 			<form id="form1" method="POST" action="namespace.jsp">
 			
-			<table width="500" cellspacing="0">
+			<table width="600" cellspacing="0">
 				<tr>
 					<%
 					if (mode.equals("add")){ %>
@@ -209,7 +212,7 @@ private DDuser getUser(HttpServletRequest req) {
 						<td><span class="head00">View namespace</span></td>
 						<td align="right">
 							<%
-							if (user!=null){ %>
+							if (user!=null && nsEditable){ %>
 								<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=ns_id%>')"/> <%
 							}
 							else{
@@ -242,7 +245,7 @@ private DDuser getUser(HttpServletRequest req) {
 				
 			</table>
 			
-			<table width="auto" cellspacing="0">
+			<table width="600" cellspacing="0"  cellpadding="0" border="0">
 			
 			<tr>
 				<td align="right" style="padding-right:10">
@@ -257,13 +260,14 @@ private DDuser getUser(HttpServletRequest req) {
 						%>
 					</span>
 				</td>
-				<td>
+				<td> 
 					<% if(!mode.equals("add")){
-						String shortName = namespace.getID(); //namespace.getShortName();
+						String shortName = namespace.getShortName();
 						if (shortName==null) shortName = "";
 						%>
-						<font class="title2" color="#006666"><%=shortName%></font>
-						<input type="hidden" name="ns_id" value="<%=shortName%>"/>
+						<font class="title2" color="#006666"><%=Util.replaceTags(shortName)%></font>
+						<input type="hidden" name="ns_id" value="<%=ns_id%>"/>
+						
 					<% } else{ %>
 						<input <%=disabled%> type="text" class="smalltext" size="10" name="ns_id"></input>
 					<% } %>
@@ -286,7 +290,7 @@ private DDuser getUser(HttpServletRequest req) {
 				<td>
 					<%
 					if(!mode.equals("add")){
-						String fullName = namespace.getFullName();
+						String fullName = Util.replaceTags(namespace.getFullName());
 						if (fullName==null) fullName = "";
 						if (mode.equals("edit")){ %>
 							<input <%=disabled%> type="text" class="smalltext" size="30" name="fullName" value="<%=fullName%>"></input> <%
@@ -333,7 +337,7 @@ private DDuser getUser(HttpServletRequest req) {
 				<td>
 					<%
 					if (!mode.equals("add")){
-						String description = namespace.getDescription();
+						String description = Util.replaceTags(namespace.getDescription());
 						if (description==null) description = "";
 						if (mode.equals("edit")){ %>
 							<textarea <%=disabled%> class="small" rows="3" cols="52" name="description"><%=description%></textarea> <%
@@ -347,6 +351,32 @@ private DDuser getUser(HttpServletRequest req) {
 					%>
 				</td>
 			</tr>
+			
+			<%
+			if (namespace.getTable()!=null){
+				Dataset ds = searchEngine.getDataset(namespace.getDataset());
+				String dsName = ds==null ? "" : ds.getShortName();
+				%>
+				<tr height="5"><td colspan="2">&#160;</td></tr>
+				<tr>
+					<td class="barfont" colspan="2">
+						<b>NB!</b><br/>This namespace was automatically created in the process of creating the
+						<a href="dstable.jsp?table_id=<%=namespace.getTable()%>&ds_id=<%=namespace.getDataset()%>&ds_name=<%=dsName%>&mode=view">corresponding table</a>
+							and will also be automatically deleted when the latter will be deleted.
+					</td>
+				</tr><%
+			}
+			else if (namespace.getDataset()!=null){ %>
+				<tr height="5"><td colspan="2">&#160;</td></tr>
+				<tr>
+					<td class="barfont" colspan="2">
+						<b>NB!</b><br/>This namespace was automatically created in the process of creating the
+						<a href="dataset.jsp?ds_id=<%=namespace.getDataset()%>&mode=view">corresponding dataset</a>
+							and will also be automatically deleted when the latter will be deleted.
+					</td>
+				</tr><%
+			}
+			%>
 		
 		<%
 		if (!mode.equals("view")){ %>
@@ -365,12 +395,12 @@ private DDuser getUser(HttpServletRequest req) {
 					} // end if mode is "add"
 					
 					if (!mode.equals("add")){ // if mode is not "add"
-						if (user==null){ %>									
+						if (user==null || !nsEditable){ %>									
 							<input type="button" class="mediumbuttonb" value="Save" disabled="true"/>&#160;&#160;
-							<input type="button" class="mediumbuttonb" value="Delete" disabled="true"/>&#160;&#160;
+							<!--input type="button" class="mediumbuttonb" value="Delete" disabled="true"/>&#160;&#160;-->
 						<%} else {%>
 							<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&#160;&#160;
-							<input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')"/>&#160;&#160;
+							<!--input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')"/>&#160;&#160; -->
 						<% }
 					} // end if mode is not "add"
 					
@@ -391,3 +421,12 @@ private DDuser getUser(HttpServletRequest req) {
 </table>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

@@ -26,6 +26,20 @@
     </tr>
 				</table>
 			</td></tr>
+	       		<%
+	            String back_button=request.getParameter("back");
+	            if (back_button!=null){
+	            	String back_url=(String)session.getAttribute("backUrl");
+    	        	if (back_url!=null) {
+						String back = back_url.length()<1 ? "javascript:history.back(-1)":back_url;	
+						%>
+			        	<tr><td valign="bottom" align="right" width="100%" colspan="2">
+							<a href="<%=back%>">&lt;back</a>
+	       				</td></tr>
+	       				<%
+       			}
+       			}
+       			%>
 		</table>
 
 <%-- for debugging, remove the two dashes from the <%-- below, put them back later when you're done --%>

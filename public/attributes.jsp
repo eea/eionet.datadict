@@ -1,68 +1,61 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
 
 <%!static int iPageLen=0;%>
 
-<%!
-	private DDuser getUser(HttpServletRequest req) {
-	
-		DDuser user = null;
-	    
-	    HttpSession httpSession = req.getSession(false);
-	    if (httpSession != null) {
-	    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-		}
-	      
-	    if (user != null)
-	    	return user.isAuthentic() ? user : null;
-		else 
-	    	return null;
-	}
-%>
+<%@ include file="history.jsp" %>
 
 <%
 	ServletContext ctx = getServletContext();
 	String appName = ctx.getInitParameter("application-name");
-	Connection conn = DBPool.getPool(appName).getConnection();
 	
-	DDuser user = getUser(request);
+	Connection conn = null;
+	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+	DBPoolIF pool = xdbapp.getDBPool();
 	
-	/*DDuser user = new DDuser(DBPool.getPool(appName));
+	try { // start the whole page try block
 	
-	String username = "root";
-	String password = "ABr00t";
-	boolean f = user.authenticate(username, password);*/
+	conn = pool.getConnection();
+	
+	AppUserIF user = SecurityUtil.getUser(request);
+	
 	
 	if (request.getMethod().equals("POST")){
 		
 		if (user == null){
-	      			%>
-	      				<html>
-	      				<body>
-	      					<h1>Error</h1><b>Not authorized to post any data!</b>
-	      				</body>
-	      				</html>
-	      			<%
-	      			return;
-      			}
+			%>
+				<html>
+				<body>
+					<h1>Error</h1><b>Not authorized to post any data!</b>
+				</body>
+				</html>
+			<%
+			return;
+		}
 		
+		Connection userConn = null;
 		
+		try{
+			userConn = user.getConnection();
+			AttributeHandler handler = new AttributeHandler(userConn, request, ctx, "delete");
+					
+			handler.execute();
 			
-		AttributeHandler handler =
-					new AttributeHandler(user.getConnection(), request, ctx, "delete");
-				
-		handler.execute();
-		
-		String redirUrl = request.getParameter("searchUrl");
-		if (redirUrl != null && redirUrl.length()!=0){
-			ctx.log("redir= " + redirUrl);
-			response.sendRedirect(redirUrl);
+			String redirUrl = request.getParameter("searchUrl");
+			if (redirUrl != null && redirUrl.length()!=0){
+				ctx.log("redir= " + redirUrl);
+				response.sendRedirect(redirUrl);
+			}
+		}
+		finally{
+			try { if (userConn!=null) userConn.close();
+			} catch (SQLException e) {}
 		}
 	}	
 	
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 	
-	Vector attributes = searchEngine.getDElemAttributes(DElemAttribute.TYPE_SIMPLE);
-	Vector complexAttributes = searchEngine.getDElemAttributes(DElemAttribute.TYPE_COMPLEX);
+	Vector attributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+	Vector complexAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_COMPLEX, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
 	for (int i=0; complexAttributes!=null && i<complexAttributes.size(); i++)
 		attributes.add(complexAttributes.get(i));
 
@@ -119,6 +112,7 @@
         <TD>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Attributes"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 			<div style="margin-left:30">
@@ -213,7 +207,6 @@
 				if (attr_name == null) attr_name = "unknown";
 				if (attr_name.length() == 0) attr_name = "empty";
 				String attr_oblig = attribute.getObligation();
-				//Namespace ns = attribute.getNamespace();
 				
 				String attrType = attribute.getType();
 				
@@ -243,7 +236,6 @@
 								<%
 							}
 							else{
-								attrTypeDisp = "Complex";
 								%>
 								<input type="checkbox" style="height:13;width:13" name="complex_attr_id" value="<%=attr_id%>"/>
 								<%							
@@ -252,6 +244,8 @@
 						</td>
 						<%
 					}
+					if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
+						attrTypeDisp = "Complex";
 					%>
 					<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<a href="delem_attribute.jsp?attr_id=<%=attr_id%>&#38;type=<%=attrType%>&#38;mode=view">
@@ -285,21 +279,6 @@
 		</table>
 		
 		<input type="hidden" name="searchUrl" value=""/>
-		<!--   Page footer NOT NEEDED -->
-		<!-- 
-		<%
-			if (attributes != null){
-				int iTotal = attributes.size();
-				%>
-				<jsp:include page="search_results_footer.jsp" flush='true'>
-					<jsp:param name="total" value="<%=iTotal%>"/>
-				    <jsp:param name="page_len" value="<%=iPageLen%>"/>
-					<jsp:param name="curr_page" value="<%=iCurrPage%>"/>
-			    </jsp:include>
-				<%
-			}
-		%>
-		-->
 		</form>
 			</div>
 			
@@ -308,3 +287,12 @@
 </table>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

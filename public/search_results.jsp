@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!static int iPageLen=0;%>
@@ -6,22 +6,8 @@
 <%!final static String oSearchCacheAttrName="search_cache";%>
 <%!final static String oSearchUrlAttrName="search_url";%>
 
-<%!
-	private DDuser getUser(HttpServletRequest req) {
-	
-		DDuser user = null;
-	    
-	    HttpSession httpSession = req.getSession(false);
-	    if (httpSession != null) {
-	    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-		}
-	      
-	    if (user != null)
-	    	return user.isAuthentic() ? user : null;
-		else 
-	    	return null;
-	}
-%>
+<%@ include file="history.jsp" %>
+
 <%!class c_SearchResultEntry implements Comparable {
     public String oID;
     public String oType;
@@ -47,8 +33,8 @@
     public void setComp(int i,int o) {
         switch(i) {
             case 2: oCompStr=oType; break;
-            case 3: oCompStr=oDsName; break;
-            case 4: oCompStr=oTblName; break;
+            case 3: oCompStr=oTblName; break;
+            case 4: oCompStr=oDsName; break;
             default: oCompStr=oShortName; break;
             }
         iO=o;
@@ -90,6 +76,7 @@
 	String type = request.getParameter("type");
 	String ns_param = request.getParameter("ns");
 	String short_name = request.getParameter("short_name");
+	String dataset = request.getParameter("dataset");
 	
 	Integer oSortCol=null;
     Integer oSortOrder=null;
@@ -106,14 +93,21 @@
 	
     Vector dataElements=null;
     
-	DDuser user = getUser(request);
-	DDSearchEngine searchEngine = null;
-	
+	XDBApplication.getInstance(getServletContext());
+	AppUserIF user = SecurityUtil.getUser(request);
 
+	DDSearchEngine searchEngine = null;
+	Connection conn = null;
+	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+	DBPoolIF pool = xdbapp.getDBPool();
+	
+	boolean wrkCopies = false;
+	
+	try { // start the whole page try block
+	
 	if (searchType != null && searchType.equals(TYPE_SEARCH)){
 
-
-       	Connection conn = DBPool.getPool(appName).getConnection();
+       	conn = pool.getConnection();
 
 	
 		if (request.getMethod().equals("POST")){
@@ -128,31 +122,41 @@
 	      			<%
 	      			return;
       			}
-		
-			/*DDuser user = new DDuser(DBPool.getPool(appName));
-	
-			String username = "root";
-			String password = "ABr00t";
-			boolean f = user.authenticate(username, password);*/
 			
-			DataElementHandler handler =
-					new DataElementHandler(user.getConnection(), request, ctx, "delete");
-				
-			handler.execute();
+      		Connection userConn = null;
+      		DataElementHandler handler = null;
+      		try{
+	      		userConn = user.getConnection();
+				handler = new DataElementHandler(userConn, request, ctx, "delete");
+				handler.setUser(user);
+				handler.execute();
+			}
+			finally{
+				handler.cleanup();
+				try { if (userConn!=null) userConn.close();
+				} catch (SQLException e) {}
+			}
 		
-			//String redirUrl = request.getParameter("searchUrl");
 			String redirUrl = (String)session.getAttribute(oSearchUrlAttrName);
 			if (redirUrl != null && redirUrl.length()!=0){
-				ctx.log("redir= " + redirUrl);
 				response.sendRedirect(redirUrl);
 				return;
 			}
-		}	
+		}
+		
 		String query = request.getQueryString() == null ? "" : request.getQueryString();
 		String searchUrl =  request.getRequestURI() + "?" + query;
        	session.setAttribute(oSearchUrlAttrName, searchUrl);
 	
 		searchEngine = new DDSearchEngine(conn, "", ctx);
+		searchEngine.setUser(user);
+	
+		String srchType = request.getParameter("search_precision");
+		String oper="=";
+		if (srchType != null && srchType.equals("free"))
+			oper=" match ";
+		if (srchType != null && srchType.equals("substr"))
+			oper=" like ";
 	
 		Vector params = new Vector();	
 		Enumeration parNames = request.getParameterNames();
@@ -166,13 +170,20 @@
 				continue;
 			
 			DDSearchParameter param =
-				new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, " like ", "=");
+				new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
 		
-			param.addValue("'%" + parValue + "%'");
+            if (oper!= null && oper.trim().equalsIgnoreCase("like"))
+				param.addValue("'%" + parValue + "%'");
+			else
+				param.addValue("'" + parValue + "'");
 			params.add(param);
 		}
+		
+		String _wrkCopies = request.getParameter("wrk_copies");
+		wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
 	
-		dataElements = searchEngine.getDataElements(params, type, ns_param, short_name);	
+		dataElements = searchEngine.getDataElements(params, type, ns_param,
+									short_name, null, dataset, wrkCopies, oper);
 	}
 /*  Not needed currently
 	int iCurrPage=0;
@@ -217,15 +228,25 @@
         		document.forms["form1"].submit();
     		}
 		}
+		
     	function deleteElement(){
-	    	
-	    	var b = confirm("This will delete all the data elements you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
+	    	var b;
+	    	<%
+	    	if (wrkCopies){ %>
+	    		b = confirm("This will undo check-out of the selected working copies. They will be deleted and corresponding elements will be released for others to edit. Click OK, if you want to continue. Otherwise click Cancel.");<%
+    		}
+    		else{ %>
+    			b = confirm("This will delete all the data elements you have selected. Click OK, if you want to continue. Otherwise click Cancel.");<%
+			}
+			%>
+    		
 			if (b==false) return;
 
 			document.forms["form1"].elements["mode"].value = "delete";			
 	    	document.forms["form1"].elements["SearchType"].value='<%=TYPE_SEARCH%>';
        		document.forms["form1"].submit();
     	}
+    	
     </script>
 </head>
 <body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0">
@@ -240,6 +261,7 @@
         <TD>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Search results"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 			<div style="margin-left:30">
@@ -263,14 +285,13 @@
 			<tr height="10"><td colspan="3"></td></tr>
 			<tr>
 				<td colspan="3"><span class="mainfont">
-					<% if (user != null){%>
-						To view or modify a data element, click its Short name in the list below.
-						To add a new data element, click the 'Add' button on top of the list.
-						The left-most column enables you to delete selected data elements.
-					<% } else { %>
-						To view a data element, click its Short name in the list below.
-					<% } %>
-					</span>
+					<%
+					if (user!=null){ %>
+						A red wildcard (<font color="red">*</font>) means that the element itself or
+						its parent dataset is under work and it cannot be deleted. Otherwise
+						checkboxes enable to delete selected elements.<%
+					}
+					%>
 				</td>
 			</tr>
 		</table>
@@ -292,11 +313,14 @@
 			</tr>
 			
 			<tr>
-				<% if (user != null){%>
-					<td align="right" style="padding-right:10">
-						<input type="button" value="Delete" class="smallbutton" onclick="deleteElement()"/>
-					</td>
-				<% } %>
+				<td align="right" style="padding-right:10">
+					<% if (user!=null){ %>
+						<input type="button" value="Delete" class="smallbutton" onclick="deleteElement()"/><%
+					}
+					else{ %>
+						&#160;<%
+					}%>
+				</td>
 				<th align="left" style="padding-left:5;padding-right:10">Short name</th>
 				<th align="right" style="padding-left:5;padding-right:5">
 					<table border="0" width="auto">
@@ -323,28 +347,28 @@
 						</tr>
 					</table>
 				</th>
-				<th align="left" style="padding-right:10">Dataset</th>
-				<th align="right" style="padding-left:5;padding-right:5">
-					<table border="0" width="auto">
-						<tr>
-							<th align="right">
-								<a href="javascript:showSortedList(3, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending by dataset name"/></a>
-							</th>
-							<th align="right">
-								<a href="javascript:showSortedList(3, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending by dataset name"/></a>
-							</th>
-						</tr>
-					</table>
-				</th>
 				<th align="left" style="padding-right:10">Table</th>
 				<th align="right" style="padding-left:5;padding-right:5">
 					<table border="0" width="auto">
 						<tr>
 							<th align="right">
-								<a href="javascript:showSortedList(4, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending by table name"/></a>
+								<a href="javascript:showSortedList(3, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending by table name"/></a>
 							</th>
 							<th align="right">
-								<a href="javascript:showSortedList(4, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending by table name"/></a>
+								<a href="javascript:showSortedList(3, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending by table name"/></a>
+							</th>
+						</tr>
+					</table>
+				</th>
+				<th align="left" style="padding-right:10">Dataset</th>
+				<th align="right" style="padding-left:5;padding-right:5">
+					<table border="0" width="auto">
+						<tr>
+							<th align="right">
+								<a href="javascript:showSortedList(4, 1)"><img src="../images/sort_asc.gif" border="0" title="Sort ascending by dataset name"/></a>
+							</th>
+							<th align="right">
+								<a href="javascript:showSortedList(4, -1)"><img src="../images/sort_desc.gif" border="0"title="Sort descending by dataset name"/></a>
 							</th>
 						</tr>
 					</table>
@@ -363,11 +387,14 @@
             	if (iEndNode>=dataElements.size()) 
 	            	iEndNode=dataElements.size();
             	for (int i=iBeginNode;i<iEndNode;i++) {*/
+            	
+				// init the VersionManager
+				VersionManager verMan = new VersionManager(conn, searchEngine, user);
 			
 				c_SearchResultSet oResultSet=new c_SearchResultSet();
 	        	oResultSet.oElements=new Vector(); 
 	        	session.setAttribute(oSearchCacheAttrName,oResultSet);
-
+	        	
 	        	for (int i=0; i<dataElements.size(); i++){
 					DataElement dataElement = (DataElement)dataElements.get(i);
 					String delem_id = dataElement.getID();
@@ -377,7 +404,7 @@
 					if (delem_name.length() == 0) delem_name = "empty";
 					String delem_type = dataElement.getType();
 					if (delem_type == null) delem_type = "unknown";
-				
+					
 					String displayType = "unknown";
 					if (delem_type.equals("AGG")){
 						displayType = "Aggregate";
@@ -388,8 +415,6 @@
 					else if (delem_type.equals("CH2")){
 						displayType = "Quantitative";
 					}
-				
-					Namespace ns = dataElement.getNamespace();
 				
 					String tblID = dataElement.getTableID();
 					DsTable tbl = null;
@@ -407,22 +432,35 @@
                 														 delem_name,
                 														 dispDs,
                 														 dispTbl,
-                														 ns.getShortName());
+                														 null);
                 															 
 					oResultSet.oElements.add(oEntry);
+					
+					String workingUser = verMan.getWorkingUser(dataElement.getNamespace().getID(),
+		    											dataElement.getShortName(), "elm");
+					
+					String topWorkingUser = verMan.getWorkingUser(dataElement.getTopNs());
 					%>
 				
 					<tr>
-						<% if (user != null){%>
-							<td align="right" style="padding-right:10">
-								<input type="checkbox" style="height:13;width:13" name="delem_id" value="<%=delem_id%>"/>
-								<input type="hidden" name="delem_name_<%=delem_id%>" value="<%=delem_name%>"/>
-								<input type="hidden" name="ns_name_<%=delem_id%>" value="<%=ns.getShortName()%>"/>
-							</td>
-						<% } %>
+						<td align="right" style="padding-right:10">
+							<%
+	    					if (user!=null){
+		    					
+		    					if (workingUser!=null || topWorkingUser!=null){ // mark checked-out elements
+			    					%> <font color="red">*</font> <%
+		    					}
+	    					
+		    					if (!dataElement.isWorkingCopy() && topWorkingUser==null){ %>
+									<input type="checkbox" style="height:13;width:13" name="delem_id" value="<%=delem_id%>"/>
+									<input type="hidden" name="delem_name_<%=delem_id%>" value="<%=delem_name%>"/> <%
+								}
+							}
+							%>
+						</td>
 						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
 							<a href="data_element.jsp?delem_id=<%=delem_id%>&#38;type=<%=delem_type%>&#38;mode=view">
-							<%=delem_name%></a>
+							<%=Util.replaceTags(delem_name)%></a>
 						</td>					
 						<%
 						/*if (ns != null){
@@ -440,8 +478,8 @@
 							}*/
 						%>
 						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=displayType%></td>
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=dispDs%></td>
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=dispTbl%></td>
+						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=Util.replaceTags(dispTbl)%></td>
+						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=Util.replaceTags(dispDs)%></td>
 					</tr>
 				
 				<%
@@ -475,11 +513,11 @@
 						<% } %>
 						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
 							<a href="data_element.jsp?delem_id=<%=oEntry.oID%>&#38;type=<%=oEntry.oType%>&#38;mode=view">
-							<%=oEntry.oShortName%></a>
+							<%=Util.replaceTags(oEntry.oShortName)%></a>
 						</td>					
 						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=oEntry.oType%></td>
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=oEntry.oDsName%></td>
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=oEntry.oTblName%></td>
+						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=Util.replaceTags(oEntry.oTblName)%></td>
+						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"><%=Util.replaceTags(oEntry.oDsName)%></td>
 					</tr>
 						<%
                 	}
@@ -527,3 +565,12 @@
 </table>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

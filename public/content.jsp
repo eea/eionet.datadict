@@ -1,23 +1,7 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
 
-<%!private final static String USER_SESSION_ATTRIBUTE="DataDictionaryUser";%>
 
 <%!
-
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
 
 private String legalizeAlert(String in){
         
@@ -45,7 +29,8 @@ response.setHeader("Pragma", "no-cache");
 response.setHeader("Cache-Control", "no-cache");
 response.setDateHeader("Expires", 0);
 
-DDuser user = getUser(request);
+XDBApplication.getInstance(getServletContext());
+AppUserIF user = SecurityUtil.getUser(request);
 
 ServletContext ctx = getServletContext();			
 String appName = ctx.getInitParameter("application-name");
@@ -87,7 +72,7 @@ if (parent_name == null) parent_name = "anonymous";
 String parent_ns = request.getParameter("parent_ns");
 if (parent_ns == null) parent_ns = "anonymous";
 
-StringBuffer redirUrl = new StringBuffer(request.getContextPath());
+StringBuffer redirUrl = new StringBuffer("");
 redirUrl.append("/contents.jsp?parent_id=");
 redirUrl.append(parent_id);
 redirUrl.append("&parent_name=");
@@ -135,13 +120,23 @@ if (extendsID != null){
 	redirUrl.append("&ext_id=");
 	redirUrl.append(extendsID);
 	
-	Connection conn = DBPool.getPool(appName).getConnection();
-	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+	Connection conn = null;
+	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+	DBPoolIF pool = xdbapp.getDBPool();
 	
-	DataElement extElem = searchEngine.getDataElement(extendsID);
-	if (extElem != null){
-		extChoice = extElem.getChoice();
-		extSequence = extElem.getSequence();
+	try{
+		conn = pool.getConnection();
+		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+		
+		DataElement extElem = searchEngine.getDataElement(extendsID);
+		if (extElem != null){
+			extChoice = extElem.getChoice();
+			extSequence = extElem.getSequence();
+		}
+	}
+	finally{
+		try { if (conn!=null) conn.close();
+		} catch (SQLException e) {}
 	}
 }
 
@@ -173,12 +168,13 @@ if (contentID != null || extChoice != null || extSequence != null || contentType
 		
 	
 %>
-
+<%@ include file="history.jsp" %>
 <html>
 	<head>
 		<title>Meta</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
+    	<script language="JavaScript" src='script.js'></script>
 	</head>
 	
 	<script language="JavaScript">
@@ -196,34 +192,21 @@ if (contentID != null || extChoice != null || extSequence != null || contentType
 			
 	</script>
 	
-<body style="background-color:#f0f0f0;background-image:url('../images/eionet_background2.jpg');background-repeat:repeat-y;"
-		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
-		
+<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onload="load()">
+<%@ include file="header.htm" %>
+<table border="0">
+    <tr valign="top">
+        <td nowrap="true" width="125">
+            <p><center>
+                <%@ include file="menu.jsp" %>
+            </center></P>
+        </TD>
+        <TD>
+            <jsp:include page="location.jsp" flush='true'>
+                <jsp:param name="name" value="Allowable value"/>
+                <jsp:param name="back" value="true"/>
+            </jsp:include>
 <div style="margin-left:30">
-
-	<br></br>
-	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-	<br></br>
-	<font color="#006666" face="Arial" size="2"><strong><span class="head0">Prototype v1.0</span></strong></font>
-	<br></br>
-	<table cellspacing="0" cellpadding="0" width="621" border="0">
-			<tr>
-         	<td align="bottom" width="20" background="../images/bar_filled.jpg" height="25">&#160;</td>
-          	<td width="600" background="../images/bar_filled.jpg" height="25">
-            <table height="8" cellSpacing="0" cellPadding="0" border="0">
-            	<tr>
-		         	<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-		            <td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
-		         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-					<td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
-					<td valign="bottom" align="middle"><span class="barfont">Data element</span></td>
-					<td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
-					<td valign="bottom" align="middle"><span class="barfont">SubElements</span></td>
-					<td valign="bottom" width="28"><img src="../images/bar_dot.jpg"/></td>
-				</tr>
-			</table>
-			</td></tr>
-	</table>
 	
 <form name="form1" method="POST" action="content.jsp">
 
@@ -278,5 +261,8 @@ if (contentID != null || extChoice != null || extSequence != null || contentType
 
 </form>
 </div>
+        </TD>
+</TR>
+</table>
 </body>
 </html>

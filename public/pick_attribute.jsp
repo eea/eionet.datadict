@@ -1,6 +1,5 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
 
-<%!final static String oConnName="datadict";%>
 <%!private Vector mAttributes=null;%>
 <%!private Vector selected=null;%>
 
@@ -40,7 +39,14 @@ private String getAttributeIdByName(String name){
 			i=sel.indexOf("|");
 		}
 	}
-	Connection conn = DBPool.getPool(appName).getConnection();
+	
+	Connection conn = null;
+	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+	DBPoolIF pool = xdbapp.getDBPool();
+	
+	try { // start the whole page try block
+	
+	conn = pool.getConnection();
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			
 	
@@ -141,3 +147,12 @@ private String getAttributeIdByName(String name){
 	</form>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

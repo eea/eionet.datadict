@@ -1,4 +1,6 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,com.tee.xmlserver.*"%>
+
+<%@ include file="history.jsp" %>
 
 <%!
 
@@ -41,29 +43,23 @@ private String setDefaultAttrs(String name){
 	return null;
 }
 
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
-
 %>
 
 <%
 
-	DDuser user = getUser(request);
+	XDBApplication.getInstance(getServletContext());
+	AppUserIF user = SecurityUtil.getUser(request);
+	
 	ctx = getServletContext();
 	String appName = ctx.getInitParameter("application-name");
-	Connection conn = DBPool.getPool(appName).getConnection();
+	
+	Connection conn = null;
+	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+	DBPoolIF pool = xdbapp.getDBPool();
+	
+	try { // start the whole page try block
+	
+	conn = pool.getConnection();
 
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 
@@ -75,6 +71,8 @@ private DDuser getUser(HttpServletRequest req) {
 
 	setDefaultAttrs("Name");
 	setDefaultAttrs("Definition");
+	setDefaultAttrs("Keywords");
+	setDefaultAttrs("EEAissue");
 
 	String attrID = null;
 	String attrValue = null;
@@ -84,11 +82,13 @@ private DDuser getUser(HttpServletRequest req) {
 	String sel_attr = request.getParameter("sel_attr");
 	String sel_type = request.getParameter("sel_type");
 	String short_name = request.getParameter("short_name");
+	String search_precision = request.getParameter("search_precision");
 	
 	
 	if (sel_attr == null) sel_attr="";
 	if (sel_type == null) sel_type="";
 	if (short_name == null) short_name="";
+	if (search_precision == null) search_precision="substr";
 
 	///get inserted attributes
 	String input_attr;
@@ -139,10 +139,26 @@ private DDuser getUser(HttpServletRequest req) {
 			submitForm('search_dataset.jsp');
 
 		}
+		function onLoad(){
+			<%
+				if (search_precision != null){
+    			%>
+					var sPrecision = '<%=search_precision%>';
+					var o = document.forms["form1"].search_precision;
+					for (i=0; o!=null && i<o.length; i++){
+						if (o[i].value == sPrecision){
+							o[i].checked = true;
+							break;
+						}
+					}			
+				<% 
+				}
+			%>
+		}
 		
 	</script>
 </head>
-<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onfocus="checkalert()">
+<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onfocus="checkalert()" onload="onLoad()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
@@ -154,6 +170,7 @@ private DDuser getUser(HttpServletRequest req) {
         <TD>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Search"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 			<div style="margin-left:30">
@@ -181,7 +198,7 @@ private DDuser getUser(HttpServletRequest req) {
 							<span class="mainfont"><b>Short name</b></span>&#160;&#160;
 						</td>
 						<td colspan="2">
-							<input type="text" class="smalltext" size="40" name="short_name" value="<%=short_name%>"/>
+							<input type="text" class="smalltext" size="50" name="short_name" value="<%=short_name%>"/>
 						</td>
 					</tr>
 
@@ -205,7 +222,7 @@ private DDuser getUser(HttpServletRequest req) {
 										<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
 									</td>
 									<td colspan="2">
-										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="40"  value="<%=attrValue%>"/>
+										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
 									</td>
 								</tr>
 								<%
@@ -232,7 +249,7 @@ private DDuser getUser(HttpServletRequest req) {
 									<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
 								</td>
 								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="40"  value="<%=attrValue%>"/>
+									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
 								</td>
 								<td>
 									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="../images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
@@ -254,7 +271,7 @@ private DDuser getUser(HttpServletRequest req) {
 									<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
 								</td>
 								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="40" value=""/>
+									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50" value=""/>
 								</td>
 								<td>
 									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="../images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
@@ -264,8 +281,28 @@ private DDuser getUser(HttpServletRequest req) {
 						}
 					}
 					%>
+                        <tr valign="bottom">
+                    		<td width="150">&#160;</td>
+                    		<td colspan="2">
+                    			<input type="radio" name="search_precision" value="substr" checked>Substring search</input>
+                    			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
+                    			<input type="radio" name="search_precision" value="free">Free text search</input>&#160;&#160;
+                    		</td>
+                        </tr>
 					
-					<tr height="10"><td colspan="3"></td></tr>
+					<%					
+					// if authenticated user, enable to get working copies only
+					if (user!=null && user.isAuthentic()){
+						%>
+						<tr valign="top">
+							<td width="150"></td>
+							<td colspan="2">
+								<input type="checkbox" name="wrk_copies" value="true"/><span class="smallfont" style="font-weight: normal">Working copies only</span>
+							</td>
+						</tr>
+						<%
+					}
+					%>
 					
 					<tr valign="top">
 						<td></td>
@@ -295,7 +332,7 @@ private DDuser getUser(HttpServletRequest req) {
 				<input type="hidden" name="sel_attr" value=""></input>			
 				<input type="hidden" name="sel_type" value=""></input>
 				<input type="hidden" name="type" value="DST"></input>
-				<!--// collect all the attributes already used in criterias -->
+				<!-- collect all the attributes already used in criterias -->
 				<input type="hidden" name="collect_attrs" value="<%=collect_attrs.toString()%>"></input>
                 <input name='SearchType' type='hidden' value='SEARCH'/>
 				</form>
@@ -305,3 +342,12 @@ private DDuser getUser(HttpServletRequest req) {
 </table>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

@@ -1,21 +1,6 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
-<%!
-	private DDuser getUser(HttpServletRequest req) {
-	
-		DDuser user = null;
-	    
-	    HttpSession httpSession = req.getSession(false);
-	    if (httpSession != null) {
-	    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-		}
-	      
-	    if (user != null)
-	    	return user.isAuthentic() ? user : null;
-		else 
-	    	return null;
-	}
-%>
+<%@ include file="history.jsp" %>
 
 <%
 	ServletContext ctx = getServletContext();
@@ -23,16 +8,16 @@
 	
 	String urlPath = ctx.getInitParameter("basens-path");
 	if (urlPath == null) urlPath = "";
+	
+	Connection conn = null;
+	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+	DBPoolIF pool = xdbapp.getDBPool();
+	
+	try { // start the whole page try block
 							
-	Connection conn = DBPool.getPool(appName).getConnection();
+	conn = pool.getConnection();
 	
-	DDuser user = getUser(request);
-	
-	/*DDuser user = new DDuser(DBPool.getPool(appName));
-	
-	String username = "root";
-	String password = "ABr00t";
-	boolean f = user.authenticate(username, password);*/
+	AppUserIF user = SecurityUtil.getUser(request);
 	
 	if (request.getMethod().equals("POST")){
 		
@@ -47,12 +32,18 @@
 	      			return;
       			}
 		
-		
-			
-		NamespaceHandler handler =
-					new NamespaceHandler(user.getConnection(), request, ctx, "delete");
-				
-		handler.execute();
+      	Connection userConn = null;
+		try{
+			userConn = user.getConnection();
+			NamespaceHandler handler =
+						new NamespaceHandler(userConn, request, ctx, "delete");
+					
+			handler.execute();
+		}
+		finally{
+			try { if (userConn!=null) userConn.close();
+			} catch (SQLException e) {}
+		}
 		
 		String redirUrl = request.getParameter("searchUrl");
 		if (redirUrl != null && redirUrl.length()!=0){
@@ -104,6 +95,7 @@
         <TD>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Namespaces"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 			<div style="margin-left:30">
@@ -120,14 +112,12 @@
             
 			<form id="form1" method="POST" action="namespaces.jsp">
 			
-		<table width="500">
+		<table width="550">
 			<tr><td><font class="head00">Namespaces</font></td></tr>
 			<tr height="10"><td></td></tr>
 			<tr>
 				<td>
-					To view or modify a namespace, click its Full name in the list below.
-					To add a new namespace, click the 'Add' button on top of the list.
-					The left-most column enables you to delete selected namespaces.
+					To view or modify a namespace, click its Full name. To add a new namespace, click 'Add'.
 				</td>
 			</tr>
 			<tr height="10"><td></td></tr>
@@ -136,7 +126,7 @@
 		<table width="auto" cellspacing="0">
 		
 			<tr>
-				<td></td>
+				<!--td></td-->
 				<td align="left" colspan="2" style="padding-bottom:5">
 					<% if (user != null){
 						%>
@@ -153,7 +143,7 @@
 			</tr>
 		
 			<tr>
-				<td  align="right" style="padding-right:10">
+				<!--td align="right" style="padding-right:10">
 					<% if (user != null){
 						%>
 						<input type="button" value="Delete" class="smallbutton" onclick="submitForm()"/>
@@ -165,7 +155,7 @@
 						<%
 					}
 					%>
-				</td>
+				</td-->
 				<th align="left" style="padding-left:5;padding-right:10">Full name</th>
 				<th align="left" style="padding-right:10">Description</th>
 			</tr>
@@ -206,15 +196,28 @@
 				%>
 				
 				<tr>
-					<td align="right" style="padding-right:10">
-						<input type="checkbox" style="height:13;width:13" name="ns_id" value="<%=ns_id%>"/>
-					</td>
+					<!--td align="right" style="padding-right:10">
+						<%
+						String tableID = namespace.getTable();
+						String dsID = namespace.getDataset();
+						if (ns_id.equals("1") || tableID != null || dsID!=null){
+							%>
+							<input type="checkbox" style="height:13;width:13" disabled/>
+							<%
+						}
+						else{
+							%>
+							<input type="checkbox" style="height:13;width:13" name="ns_id" value="<%=ns_id%>"/>
+							<%
+						}
+						%>
+					</td-->
 					<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<a href="namespace.jsp?ns_id=<%=ns_id%>&#38;mode=view">
-						<%=displayName%></a>
+						<%=Util.replaceTags(displayName)%></a>
 					</td>
 					<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<%=displayDescr%>
+						<%=Util.replaceTags(displayDescr)%>
 					</td>
 				</tr>
 				
@@ -234,3 +237,12 @@
 </table>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

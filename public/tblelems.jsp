@@ -1,8 +1,10 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!private Vector elems=null;%>
 <%!private ServletContext ctx=null;%>
 <%!private Vector mAttributes=null;%>
+
+<%@ include file="history.jsp" %>
 
 <%!
 
@@ -42,21 +44,6 @@ private boolean isIn(Vector elems, String id){
     return false;
 }
 
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
-
 %>
 
 <%
@@ -65,8 +52,8 @@ response.setHeader("Pragma", "no-cache");
 response.setHeader("Cache-Control", "no-cache");
 response.setDateHeader("Expires", 0);
 
-// check if the user is authorized
-DDuser user = getUser(request);
+XDBApplication.getInstance(getServletContext());
+AppUserIF user = SecurityUtil.getUser(request);
 if (request.getMethod().equals("POST")){
 	if (user == null){
 		%>
@@ -106,28 +93,40 @@ ctx = getServletContext();
 //handle the POST
 if (request.getMethod().equals("POST")){
 	
-	DataElementHandler handler = new DataElementHandler(user.getConnection(), request, ctx);
+	Connection userConn = null;
+	DataElementHandler handler = null;
 	
 	try{
-		handler.execute();
+		userConn = user.getConnection();
+		handler = new DataElementHandler(userConn, request, ctx);
+		handler.setUser(user);
+		try{
+			handler.execute();
+		}
+		catch (Exception e){
+			handler.cleanup();
+			%>
+			<html><body><b><%=e.toString()%></b></body></html> <%
+			return;
+		}
 	}
-	catch (Exception e){ %>
-		<html><body><b><%=e.toString()%></b></body></html> <%
-		return;
+	finally{
+		try { if (userConn!=null) userConn.close();
+		} catch (SQLException e) {}
 	}
 	
-	// build reload URL
-
-	StringBuffer redirUrl = new StringBuffer(request.getContextPath() + "/tblelems.jsp?table_id=");
-	redirUrl.append(tableID);
-	redirUrl.append("&ds_id=");
-	redirUrl.append(dsID);
-	redirUrl.append("&ds_name=");
-	redirUrl.append(dsName);
-	redirUrl.append("&ctx=");
-	redirUrl.append(contextParam);
+	String mode = request.getParameter("mode");	
+	if (mode.equals("add") || mode.equals("copy")){
+		response.sendRedirect("data_element.jsp?mode=view&delem_id=" + handler.getLastInsertID());
+	}
+	else{
+		String redirUrl = currentUrl;
+		String newTblID = handler.getNewTblID();
+		if (newTblID!=null)
+			redirUrl = "dstable.jsp?mode=view&table_id=" + newTblID;
+		response.sendRedirect(redirUrl);
+	}
 	
-	response.sendRedirect(redirUrl.toString());
 	return;
 }
 
@@ -136,7 +135,13 @@ if (request.getMethod().equals("POST")){
 
 String appName = ctx.getInitParameter("application-name");
 
-Connection conn = DBPool.getPool(appName).getConnection();
+Connection conn = null;
+XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+DBPoolIF pool = xdbapp.getDBPool();
+
+try { // start the whole page try block
+
+conn = pool.getConnection();
 DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 
 DsTable dsTable = searchEngine.getDatasetTable(tableID);
@@ -145,14 +150,15 @@ if (dsTable == null){ %>
 	return;
 }
 
-String tableNs = dsTable.getNamespace();
-if (tableNs == null){ %>
-	<b>Table namespace was not found!</b> <%
-	return;
-}
-
 elems = searchEngine.getDataElements(null, null, null, null, tableID);
 mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+
+Dataset dataset = searchEngine.getDataset(dsTable.getDatasetID());
+
+// JH180803
+// if the table is not a working copy, its complex attributes cannot be edited.
+// so here we set the falg it is a working copy or not
+boolean isWorkingCopy = dsTable.isWorkingCopy();
 	
 %>
 
@@ -164,6 +170,7 @@ mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, 
 </head>
 
 <script language="JavaScript" src='script.js'></script>
+<script language="JavaScript" src='dynamic_table.js'></script>
 
 <script language="JavaScript">
 		function submitForm(mode){
@@ -179,6 +186,12 @@ mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, 
 				//mode = "add";
 			//else
 				//mode = "edit";
+
+			if (mode=="add" 
+						&& document.forms["form1"].elements["delem_name"].value==""){
+				alert("Short name cannot be empty!");
+				return;
+			}
 			
 			if (mode=="add" && hasWhiteSpace("delem_name")){
 				alert("Short name cannot contain any white space!");
@@ -203,10 +216,73 @@ mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, 
 			
 			return false;
 		}
+
 		
+		function saveChanges(){
+			tbl_obj.insertNumbers("pos_");
+			submitForm("edit_tblelems");
+		}
+		function clickLink(sUrl){
+			if (getChanged()==1){
+				if(!confirm("This link leads you to the next page, but you have changed the order of elements.\n Are you sure you want to loose the changes?"))
+					return;
+			}
+			window.location=sUrl;
+		}
+		function start() {
+			tbl_obj=new dynamic_table("tbl"); //create dynamic_table object
+		}
+
+		//call to dynamic table methods. Originated from buttons or click on tr.
+		function sel_row(o){
+			tbl_obj.selectRow(o);
+		}
+		function moveRowUp(){
+			tbl_obj.moveup();
+			setChanged();
+		}
+		function moveRowDown(){
+			tbl_obj.movedown();
+			setChanged();
+		}
+		function moveFirst(){
+			tbl_obj.movefirst();
+			setChanged();
+		}
+		function moveLast(){
+			tbl_obj.movelast();
+			setChanged();
+		}
+		function setChanged(){
+			document.forms["form1"].elements["changed"].value = 1;
+		}
+		function getChanged(){
+			return document.forms["form1"].elements["changed"].value;
+		}
+		function copyElem(){
+			
+			if (document.forms["form1"].elements["delem_name"].value==""){
+				alert("Short name cannot be empty!");
+				return;
+			}
+
+						var url='search.jsp?ctx=popup';
+			//if (url != null) url = url + "&selected=" + selected;
+			
+			wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
+			if (window.focus) {wAdd.focus()}
+		}
+		function pickElem(id, name){
+			//alert(id);
+			document.forms["form1"].copy_elem_id.value=id;
+			document.forms["form1"].mode.value="copy";
+			submitForm('copy');
+
+			return true;
+		}
 </script>
 	
-<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0">
+<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onload="start()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
@@ -218,6 +294,7 @@ mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, 
         <TD>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Table elements"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 <div style="margin-left:30">
@@ -244,67 +321,98 @@ mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, 
 			</tr> <%
 		}
 		%>
-		
 		<tr valign="bottom">
 			<td colspan="4">
-				<font class="head00">Elements in <a href="dstable.jsp?mode=view&table_id=<%=tableID%>&ds_id=<%=dsID%>&ds_name=<%=dsName%>"><span class="title2"><%=tableName%></span></a> table,
-				<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><span class="title2"><%=dsName%></span></a> dataset.
+				<font class="head00">Elements in <a href="dstable.jsp?mode=view&table_id=<%=tableID%>&ds_id=<%=dsID%>&ds_name=<%=dsName%>"><span class="title2"><%=Util.replaceTags(tableName)%></span></a> table,
+				<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a> dataset.
 			</td>
 		</tr>
 		
 		<tr height="5"><td colspan="4"></td></tr>
 	</table>
-	<table width="auto" cellspacing="0" cellpadding="0"><tr><td>To view a data element, click on its Short name in the list below.</td></tr></table>
 	
-	<table width="auto" cellspacing="0" cellpadding="0">
-		<% if (user != null) { %>
-			<tr><td colspan="2">You can add a new element from here:</td></tr>
+	<table width="500" cellspacing="0" cellpadding="0">
+	
+		<tr>
+			<td colspan="2">				
+				<% if (user != null){ %>
+					A red wildcard (<font color="red">*</font>) means that the element is under work
+					and cannot be deleted. Otherwise checkboxes enable to delete selected elements.
+					To change the elements order, click on a row, use move buttons on the table's
+					right and click 'Save'.<%
+				}%>					
+			</td>
+		</tr>
 		
-			<tr height="5"><td colspan="2"></td></tr>
+		<%
+		// set the flag indicating if the top namespace is in use
+		VersionManager verMan = new VersionManager(conn, searchEngine, user);
+		String topWorkingUser = verMan.getWorkingUser(dsTable.getParentNs());
+		boolean topFree = topWorkingUser==null ? true : false;
 		
-			<tr>
- 				<td align="right"><span class="barfont">Short name:</span></td>
-				<td style="padding-left:5"><input type="text" class="smalltext" width="10" name="delem_name"/></td>
-			</tr>
-		
-			<tr>
-				<td align="right"><span class="barfont">Type:</span></td>
-				<td style="padding-left:5">
-					<select name="type" class="small">
-						<option selected value="CH2">Quantitative</option>
-						<option value="CH1">Fixed values</option>
-					</select>
-				</td>
-			</tr>
-		
-			<input type="hidden" name="ns" value="<%=tableNs%>"/>
-		
-			<tr height="5"><td colspan="2"></td></tr>
-		
-			<tr>
-				<td></td>
-				<td style="padding-left:5">
-					<input type="button" class="smallbutton" value="Add" onclick="submitForm('add')"/>
-				</td>
-			</tr>
-		<% } %>
+		String latestDstID = dataset==null ? null : verMan.getLatestDstID(dataset);
+		boolean dsLatest = Util.voidStr(latestDstID) ? true : latestDstID.equals(dataset.getID());
 
-				<tr height="10"><td colspan="2"></td></tr>
+		%>
+		
+		<%
+		if (user != null && topFree){ %>
+		
+			<tr height="5"><td colspan="2"></td></tr>
+		
+			<tr>
+				<td colspan="2">
+					<table width="auto">
+						<tr>
+							<td align="right">
+								<span class="barfont">Short name:</span>
+							</td>
+							<td style="padding-left:5">
+								<input type="text" class="smalltext" width="10" name="delem_name"/>
+							</td>
+							<td align="right">
+								<input type="button" class="smallbutton" value="Add" onclick="submitForm('add')"/>
+							</td>
+							<td align="right">
+								<input type="button" class="smallbutton" value="Copy" onclick="copyElem()" title="Copies new data element definition from existing data element"/>
+							</td>
+						</tr>
+						<tr>
+							<td align="right"><span class="barfont">Type:</span></td>
+							<td style="padding-left:5" colspan="2">
+								<select name="type" class="small">
+									<option selected value="CH2">Quantitative</option>
+									<option value="CH1">Fixed values</option>
+								</select>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<%
+		}
+		%>
+		<tr height="10"><td colspan="2"></td></tr>
 	</table>
 	
-	<table width="auto" cellspacing="0">
+	<table width="auto" cellspacing="0"  border="0"><tr><td rowspan="2">	
+	<table width="auto" cellspacing="0" id="tbl">
 
 		<tr>
-			<% if (user != null) { %>
-				<td align="right" style="padding-right:10">
-					<input type="button" <%=disabled%> value="Remove" class="smallbutton" onclick="submitForm('delete')"/>
-				</td>
-			<% } %>
+			<td align="right" style="padding-right:10">
+				<% if (user!=null && topFree && dsLatest){ %>
+					<input type="button" value="Delete" class="smallbutton" onclick="submitForm('delete')"/><%
+				}
+				else{ %>
+					&#160;<%
+				}%>
+			</td>
+					
 			<th align="left" style="padding-left:5;padding-right:10">Short name</th>
 			<th align="left" style="padding-right:10">Datatype</th>
-			<th align="left" style="padding-right:10">MaxSize</th>
-			<th align="left" style="padding-right:10">Type</th>
+			<th align="left" style="padding-right:10">Elem Type</th>
 		</tr>
+		<tbody>
 			
 		<%
 		
@@ -314,9 +422,13 @@ mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, 
 		types.put("CH2", "Quantitative");
 		
 		for (int i=0; elems!=null && i<elems.size(); i++){
-			
+
 			DataElement elem = (DataElement)elems.get(i);
+			
 			String elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID() + "&ds_id=" + dsID + "&table_id=" + tableID + "&ctx=" + contextParam;
+			
+			String delem_name=elem.getShortName();
+			if (delem_name.length() == 0) delem_name = "empty";
 			
 			String elemType = (String)types.get(elem.getType());
 			
@@ -325,42 +437,115 @@ mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, 
 			
 			String max_size = getAttributeValue(elem, "MaxSize");		
 			if (max_size == null) max_size="";
+			
+			String elemDefinition = elem.getAttributeValueByShortName("Definition");
+			
+			String workingUser = verMan.getWorkingUser(elem.getNamespace().getID(),
+			    											elem.getShortName(), "elm");
+			String ifDisabled = workingUser==null ? "" : "disabled";
 
 						%>
-			<tr>
-				<% if (user != null) { %>
-					<td align="right" style="padding-right:10"><input type="checkbox" style="height:13;width:13" name="delem_id" value="<%=elem.getID()%>"/>
-				<% } %>
-				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<a href="<%=elemLink%>"><%=elem.getShortName()%></a>
+			<tr id="<%=elem.getID()%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+			
+				<td align="right" style="padding-right:10" bgcolor="#f0f0f0">
+					<%
+					if (user!=null){
+						
+						if (workingUser!=null){ // mark checked-out elements
+							%> <font color="red">* </font> <%
+						}
+						
+						if (workingUser==null && topFree && dsLatest){ %>
+							<input onclick="tbl_obj.clickOtherObject();"
+									type="checkbox"
+									style="height:13;width:13" name="delem_id" value="<%=elem.getID()%>"/>
+							<%
+						}
+					}
+					%>
 				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+						
+<!--				<% if (user != null) {
+					%>
+					<td align="right" style="padding-right:10" bgcolor="#f0f0f0"><input <%=ifDisabled%> onclick="tbl_obj.clickOtherObject();" type="checkbox" style="height:13;width:13" name="delem_id" value="<%=elem.getID()%>"/>
+				<% } %> -->
+				
+				<td align="left" style="padding-left:5;padding-right:10">
+					<% if (elemDefinition!=null){ %>
+						<a title="<%=elemDefinition%>" href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
+					} else { %>
+						<a href="<%=elemLink%>"><%=Util.replaceTags(delem_name)%></a><%
+					} %>
+				</td>
+				<td align="left" style="padding-right:10">
 					<%=datatype%>
 				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<%=max_size%>
-				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+				<td align="left" style="padding-right:10">
 					<% if (elem.getType().equals("CH1")){ %>
-						<a href="fixed_values.jsp?delem_id=<%=elem.getID()%>&#38;delem_name=<%=elem.getShortName()%>"><%=elemType%></a>
+						<a href="javascript:clickLink('fixed_values.jsp?mode=view&delem_id=<%=elem.getID()%>&#38;delem_name=<%=elem.getShortName()%>')"><%=elemType%></a>
 					<%} else{ %>
 						<%=elemType%>
 					<% } %>
+				</td>
+				<td>
+					<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5">
+					<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPosition()%>" size="5">
+					<input type="hidden" name="pos_<%=elem.getID()%>" value="0" size="5">
 				</td>
 			</tr>
 			<%
 		}
 		%>
-
+		</tbody>
 	</table>
+	</td>
+	<%
+		if (user!=null && topFree && dsLatest && elems.size()>1){ %>
+		<td align="left" style="padding-right:10" valign="top" height="10">
+			<input type="button" <%=disabled%> value="Save" class="smallbutton" onclick="saveChanges()" title="save the new order of elements"/>
+		</td>
+		</tr><tr><td>
+				<table cellspacing="2" cellpadding="2" border="0">
+					<tr>
+					</tr>
+					<td>
+						<a href="javascript:moveFirst()"><img src="../images/move_first.gif" border="0" title="move selected row to top"/></a>			
+					</td></tr>
+					<td>
+						<a href="javascript:moveRowUp()"><img src="../images/move_up.gif" border="0" title="move selected row up"/></a>			
+					</td></tr>
+					<tr><td>
+						<img src="../images/dot.gif"/>
+					</td></tr>
+					<tr><td>
+						<a href="javascript:moveRowDown()"><img src="../images/move_down.gif" border="0" title="move selected row down"/></a>			
+					</td>
+					<tr><td>
+						<a href="javascript:moveLast()"><img src="../images/move_last.gif" border="0" title="move selected row last"/></a>			
+					</td>
+				</tr>
+			<% } %>
+		</table> 
+	</td></tr></table>
 	
 	<input type="hidden" name="mode" value="delete"/>
 	<input type="hidden" name="ds_id" value="<%=dsID%>"/>
 	<input type="hidden" name="ds_name" value="<%=dsName%>"/>
 	<input type="hidden" name="table_id" value="<%=tableID%>"/>
 	<input type="hidden" name="ctx" value="<%=contextParam%>"/>
+	<input type="hidden" name="changed" value="0"/>
+	<input type="hidden" name="copy_elem_id" value=""/>
 	
 </form>
 </div>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

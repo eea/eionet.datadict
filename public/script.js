@@ -150,3 +150,12 @@ function openChoiceHelp(){
 	alert("Choice is a group of data elements from which  o n l y  o n e  can appear in the XML document! A choice is naturally not ordered " +
 			"and it can contain as many elements as you like.");
 }
+function form_changed(form_name){
+	document.forms[form_name].elements["changed"].value="1";		
+}
+function confirm_saving(){
+	return confirm("You have unsaved data on the page! Are you sure you want to leave the page and loose the changes?");
+}
+function getDDVersionName(){
+	return "Version 1.2 Test";
+}

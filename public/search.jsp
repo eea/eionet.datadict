@@ -1,4 +1,4 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
 
 <%!final static String POPUP="popup";%>
 
@@ -44,30 +44,23 @@ private String setDefaultAttrs(String name){
 	return null;
 }
 
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
-
 %>
 
 <%
 
-	DDuser user = getUser(request);
+	XDBApplication.getInstance(getServletContext());
+	AppUserIF user = SecurityUtil.getUser(request);
 	
 	ctx = getServletContext();
 	String appName = ctx.getInitParameter("application-name");
-	Connection conn = DBPool.getPool(appName).getConnection();
+	
+	Connection conn = null;
+	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+	DBPoolIF pool = xdbapp.getDBPool();
+	
+	try { // start the whole page try block
+	
+	conn = pool.getConnection();
 
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 
@@ -83,6 +76,8 @@ private DDuser getUser(HttpServletRequest req) {
 	setDefaultAttrs("Name");
 	setDefaultAttrs("Definition");
 	setDefaultAttrs("Keywords");
+	setDefaultAttrs("EEAissue");
+
 
 	String attrID = null;
 	String attrValue = null;
@@ -94,7 +89,9 @@ private DDuser getUser(HttpServletRequest req) {
 	String short_name = request.getParameter("short_name");
 	String type = request.getParameter("type");
 	String contextParam = request.getParameter("ctx");
-
+    String sel_ds = request.getParameter("dataset");
+	String search_precision = request.getParameter("search_precision");
+	
 	String submitForm=null;
 	if (contextParam != null && contextParam.equals(POPUP))
 		submitForm = "pick_element.jsp";
@@ -105,6 +102,8 @@ private DDuser getUser(HttpServletRequest req) {
 	if (sel_type == null) sel_type="";
 	if (short_name == null) short_name="";
 	if (type == null) type="";
+	if (sel_ds == null) sel_ds="";
+	if (search_precision == null) search_precision="substr";
 
 
 	///get inserted attributes
@@ -119,6 +118,9 @@ private DDuser getUser(HttpServletRequest req) {
 			inputAttributes.put(attr_id, input_attr);
 			attr_ids.add(attr_id);
 		}
+	}
+	if (contextParam == null || !contextParam.equals(POPUP)){
+		%><%@ include file="history.jsp"%><%
 	}
 
 %>
@@ -141,6 +143,7 @@ private DDuser getUser(HttpServletRequest req) {
 		function openAttributes(){
 			var type = document.forms["form1"].type.value;
 			var selected = document.forms["form1"].collect_attrs.value;
+			
 			attrWindow=window.open('pick_attribute.jsp?type=' + type + "&selected=" + selected,"Search","height=450,width=300,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
 			if (window.focus) {attrWindow.focus()}
 		}
@@ -171,7 +174,35 @@ private DDuser getUser(HttpServletRequest req) {
 				<% 
 				}
 			%>
+			<%
+				if (search_precision != null){
+    			%>
+					var sPrecision = '<%=search_precision%>';
+					var o = document.forms["form1"].search_precision;
+					for (i=0; o!=null && i<o.length; i++){
+						if (o[i].value == sPrecision){
+							o[i].checked = true;
+							break;
+						}
+					}			
+				<% 
+				}
+			%>
 		}
+		
+		function typeSelect(){
+			var o = document.forms["form1"].type;			
+			if (o!=null){
+				var sel = o.selectedIndex;
+				if (sel>=0){
+					if (o.options[sel].value=="AGG"){
+						alert("Not supported right now!");
+						o.selectedIndex = 0;
+					}
+				}
+			}
+		}
+		
 	</script>
 </head>
 <%
@@ -185,7 +216,7 @@ else
 {
 %>
 <body style="background-color:#f0f0f0;background-image:url('../images/eionet_background2.jpg');background-repeat:repeat-y;"
-		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" onload="onLoad()">
 <%
 }
 %>
@@ -209,6 +240,7 @@ else
 			%>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Search"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 			<%
@@ -269,7 +301,7 @@ else
 					<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
 				</table>
 				
-				<table width="auto" cellspacing="0">
+				<table width="auto" cellspacing="0" border="0">
 
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
@@ -277,11 +309,34 @@ else
 							<span class="mainfont"><b>Type</b></span>
 						</td>
 						<td colspan="2">
-							<select name="type" class="small">
+							<select name="type" class="small" onchange="typeSelect()">
 								<option value="">All</option>
 								<option value="AGG">Aggregate data element</option>
 								<option value="CH1">Data element with fixed values</option>
 								<option value="CH2">Data element with quantitative values</option>
+							</select>
+						</td>
+					</tr>
+
+					<tr valign="top">
+						<td align="right" style="padding-right:10">
+							<a href="javascript:openDataset()"><span class="help">?</span></a>&#160;
+							<span class="mainfont"><b>Dataset</b></span>
+						</td>
+						<td colspan="2">
+							<select name="dataset" class="small">
+								<option value="">All</option>
+								<option value="-1" <% if (sel_ds.equals("-1"))%>selected<%;%>>Not defined</option>
+								<%
+								Vector datasets = searchEngine.getDatasets();
+								for (int i=0; datasets!=null && i<datasets.size(); i++){
+									Dataset ds = (Dataset)datasets.get(i);
+									String selected = (sel_ds!=null && sel_ds.equals(ds.getID())) ? "selected" : "";
+									%>
+									<option <%=selected%> value="<%=ds.getID()%>"><%=Util.replaceTags(ds.getShortName())%></option>
+									<%
+								}
+								%>
 							</select>
 						</td>
 					</tr>
@@ -292,28 +347,9 @@ else
 							<span class="mainfont"><b>Short name</b></span>
 						</td>
 						<td colspan="2">
-							<input type="text" class="smalltext" size="40" name="short_name" value="<%=short_name%>"/>
+							<input type="text" class="smalltext" size="50" name="short_name" value="<%=short_name%>"/>
 						</td>
 					</tr>
-					
-					<!--tr>
-						<td width="100"><b>
-							<a href="javascript:openNamespace()"><font color="black">Namespace</font></a></b>:
-						</td>
-						<td width="300">
-							<select name="ns">
-								<option value="">All</option>
-								<%
-								for (int i=0; i<namespaces.size(); i++){
-									Namespace ns = (Namespace)namespaces.get(i);
-									%>
-									<option value="<%=ns.getID()%>"><%=ns.getShortName()%> - <%=ns.getUrl()%></option>
-									<%
-								}
-								%>
-							</select>
-						</td>
-					</tr-->
 					
 					<%
 					/*
@@ -426,7 +462,7 @@ else
 										<span class="mainfont"><b><%=attrName%></b></span>
 									</td>
 									<td colspan="2">
-										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="40"  value="<%=attrValue%>"/>
+										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
 									</td>
 								</tr>
 								<%
@@ -453,7 +489,7 @@ else
 									<span class="mainfont"><b><%=attrName%></b></span>
 								</td>
 								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="40"  value="<%=attrValue%>"/>
+									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
 								</td>
 								<td>
 									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="../images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
@@ -475,7 +511,7 @@ else
 									<span class="mainfont"><%=attrName%></span>&#160;&#160;
 								</td>
 								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="40" value=""/>
+									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50" value=""/>
 								</td>
 								<td>
 									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="../images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
@@ -483,6 +519,27 @@ else
 							</tr>
 							<%
 						}
+					}
+					%>
+                        <tr valign="bottom">
+                    		<td width="150">&#160;</td>
+                    		<td colspan="2">
+                    			<input type="radio" name="search_precision" value="substr" checked>Substring search</input>
+                    			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
+                    			<input type="radio" name="search_precision" value="free">Free text search</input>&#160;&#160;
+                    		</td>
+                        </tr>
+					<%					
+					// if authenticated user, enable to get working copies only
+					if (user!=null && user.isAuthentic()){
+						%>
+						<tr valign="top">
+							<td width="150"></td>
+							<td colspan="2">
+								<input type="checkbox" name="wrk_copies" value="true"/><span class="smallfont" style="font-weight: normal">Working copies only</span>
+							</td>
+						</tr>
+						<%
 					}
 					%>
 					
@@ -494,8 +551,14 @@ else
 							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('<%=submitForm%>')"/>
 							<input class="mediumbuttonb" type="reset" value="Reset"/>
 						</td>
-						<td align="right">
+						<td align="left">
+						<%
+							if (contextParam == null || !contextParam.equals(POPUP)){
+						%>
 							<a href="javascript:openAttributes();"><img src="../images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
+						<%
+							}
+						%>
 						</td>
 					</tr>
 					
@@ -525,10 +588,22 @@ else
 				%>
 				<input type="hidden" name="sel_attr" value=""></input>			
 				<input type="hidden" name="sel_type" value=""></input>
-				<!--// collect all the attributes already used in criterias -->
+				
+				<!-- collect all the attributes already used in criterias -->
+				
 				<input type="hidden" name="collect_attrs" value="<%=collect_attrs.toString()%>"></input>
                 <input name='SearchType' type='hidden' value='SEARCH'/>
                 <input name='ctx' type='hidden' value='<%=contextParam%>'/>
+                
+                <%
+                String selected = request.getParameter("selected");
+                if (selected!=null && selected.length()!=0){
+	                %>
+	                <input name='selected' type='hidden' value='<%=selected%>'/>
+	                <%
+                }                
+                %>
+                
 				</form>
 			</div>
         </TD>
@@ -536,3 +611,12 @@ else
 </table>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

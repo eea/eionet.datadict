@@ -1,24 +1,10 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
-<%!private final static String USER_SESSION_ATTRIBUTE="DataDictionaryUser";%>
 <%!private Vector attrFields=null;%>
 
-<%!
+<%@ include file="history.jsp" %>
 
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
+<%!
 
 private String legalizeAlert(String in){
         
@@ -42,7 +28,13 @@ private String legalizeAlert(String in){
 
 			<%
 			
-			DDuser user = getUser(request);
+			response.setHeader("Pragma", "no-cache");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setDateHeader("Expires", 0);
+			
+			XDBApplication.getInstance(getServletContext());
+			AppUserIF user = SecurityUtil.getUser(request);
+
 			
 			ServletContext ctx = getServletContext();			
 			String appName = ctx.getInitParameter("application-name");
@@ -76,37 +68,52 @@ private String legalizeAlert(String in){
 			String attr_name = request.getParameter("attr_name");
 			if (attr_name == null) attr_name = "?";
 			
-			String attr_ns = request.getParameter("attr_ns");
-			if (attr_ns == null) attr_ns = "?";
-			
+		
 			if (request.getMethod().equals("POST")){
-				
-				MAttrFieldsHandler handler = new MAttrFieldsHandler(user.getConnection(), request, ctx);
-				
+
+				Connection userConn = null;
+								
 				try{
-					handler.execute();
+					userConn = user.getConnection();
+					
+					MAttrFieldsHandler handler = new MAttrFieldsHandler(userConn, request, ctx);
+					
+					try{
+						handler.execute();
+					}
+					catch (Exception e){
+						%>
+						<html><body><b><%=e.toString()%></b></body></html>
+						<%
+						return;
+					}
 				}
-				catch (Exception e){
-					%>
-					<html><body><b><%=e.toString()%></b></body></html>
-					<%
-					return;
+				finally{
+					try { if (userConn!=null) userConn.close();
+					} catch (SQLException e) {}
 				}
-				
-				String redirUrl = request.getContextPath() +
-									"/m_attr_fields.jsp?attr_id=" + attr_id + "&attr_name=" + attr_name + "&attr_ns=" + attr_ns;
-				
+					
+				//String redirUrl = "" +
+				//					"/m_attr_fields.jsp?attr_id=" + attr_id + "&attr_name=" + attr_name;
+				String redirUrl = currentUrl;
 				response.sendRedirect(redirUrl);
 				return;
 			}
 			
-			Connection conn = DBPool.getPool(appName).getConnection();
+			Connection conn = null;
+			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+			DBPoolIF pool = xdbapp.getDBPool();
+			
+			try { // start the whole page try block
+			
+			conn = pool.getConnection();
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			
 			attrFields = searchEngine.getAttrFields(attr_id);
 			
 			if (attrFields == null) attrFields = new Vector();
 			
+			String disabled = user == null ? "disabled" : "";
 			%>
 
 <html>
@@ -115,50 +122,81 @@ private String legalizeAlert(String in){
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
 	</head>
+	<script language="JavaScript" src='script.js'></script>
+	<script language="JavaScript" src='dynamic_table.js'></script>
 	<script language="JavaScript">
-			function submitForm(mode){
+		function submitForm(mode){
 				
-				if (mode == "delete"){
-					var b = confirm("This will delete all the fields you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
-					if (b==false) return;
-				}
-			
-				document.forms["form1"].elements["mode"].value = mode;
-				document.forms["form1"].submit();
+			if (mode == "delete"){
+				var b = confirm("This will delete all the fields you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
+				if (b==false) return;
 			}
-	</script>
-<body style="background-color:#f0f0f0;background-image:url('../images/eionet_background2.jpg');background-repeat:repeat-y;"
-		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+			
+			document.forms["form1"].elements["mode"].value = mode;
+			document.forms["form1"].submit();
+		}
+		function start() {
+			tbl_obj=new dynamic_table("tbl"); //create dynamic_table object
+		}
+
+		//call to dynamic table methods. Originated from buttons or click on tr.
+		function sel_row(o){
+			tbl_obj.selectRow(o);
+		}
+		function moveRowUp(){
+			tbl_obj.moveup();
+			setChanged();
+		}
+		function moveRowDown(){
+			tbl_obj.movedown();
+			setChanged();
+		}
+		function moveFirst(){
+			tbl_obj.movefirst();
+			setChanged();
+		}
+		function moveLast(){
+			tbl_obj.movelast();
+			setChanged();
+		}
+		function setChanged(){
+			document.forms["form1"].elements["changed"].value = 1;
+		}
+		function getChanged(){
+			return document.forms["form1"].elements["changed"].value;
+		}
+		function saveChanges(){
+			tbl_obj.insertNumbers("pos_");
+			submitForm("edit_pos");
+		}
+		function clickLink(sUrl){
+			if (getChanged()==1){
+				if(!confirm("This link leads you to the next page, but you have changed the order of elements.\n Are you sure you want to loose the changes?"))
+					return;
+			}
+			window.location=sUrl;
+		}	</script>
+<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onload="start()">
+<%@ include file="header.htm" %>
+<table border="0">
+    <tr valign="top">
+        <td nowrap="true" width="125">
+            <p><center>
+                <%@ include file="menu.jsp" %>
+            </center></P>
+        </TD>
+        <TD>
+            <jsp:include page="location.jsp" flush='true'>
+                <jsp:param name="name" value="Complex attribute fields"/>
+                <jsp:param name="back" value="true"/>
+            </jsp:include>
+            
 <div style="margin-left:30">
-	<br></br>
-	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-	<br></br>
-	<font color="#006666" face="Arial" size="2"><strong><span class="head0">Prototype v1.0</span></strong></font>
-	<br></br>
-	<table cellspacing="0" cellpadding="0" width="400" border="0">
-			<tr>
-         	<td align="bottom" width="20" background="../images/bar_filled.jpg" height="25">&#160;</td>
-          	<td width="600" background="../images/bar_filled.jpg" height="25">
-            <table height="8" cellSpacing="0" cellPadding="0" border="0">
-            	<tr>
-		         	<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-		            <td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
-		         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-					<td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
-					<td valign="bottom" align="middle"><span class="barfont">Complex attribute</span></td>
-					<td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
-					<td valign="bottom" align="middle"><span class="barfont">Fields</span></td>
-					<td valign="bottom" width="28"><img src="../images/bar_dot.jpg"/></td>
-				</tr>
-			</table>
-			</td></tr>
-			<tr><td>&#160;</td></tr>
-	</table>
 
 <form name="form1" method="POST" action="m_attr_fields.jsp">
 <table width="400">
 	<tr valign="bottom">
-		<td colspan="2"><font class="head00">Fields of <font class="title2" color="#006666"><%=attr_ns%>:<%=attr_name%></font></font></td>
+		<td colspan="2"><font class="head00">Fields of <font class="title2" color="#006666"><%=attr_name%></font></font></td>
 	</tr>
 	<tr height="10"><td colspan="2"></td></tr>
 	<tr height="10"><td colspan="2"><font class="smallFont">Enter a new field here:</font><br></br></td></tr>
@@ -188,25 +226,19 @@ private String legalizeAlert(String in){
 	</tr>
 	<tr height="10"><td colspan="2"></td></tr>
 </table>
-<table width="440">
+<table width="auto" cellspacing="0"  border="0"><tr><td rowspan="2">	
+<table width="auto" id="tbl">
 	<tr>
-		<td width="40">
-			<%
-			if (user!=null){
-				%>
-				<input type="button" value="Remove" style="font-family:Arial;font-size:10px;font-weight:bold" onclick="submitForm('delete')">
-				<%
-			}
-			else{
-				%>
-				<input type="button" value="Remove" style="font-family:Arial;font-size:10px;font-weight:bold" onclick="submitForm('delete')" disabled="true"/>
-				<%
-			}
-			%>
-		</td>
+		<% if (user != null) { %>
+			<td align="right" style="padding-right:10">
+				<input type="button" <%=disabled%> value="Remove" class="smallbutton" onclick="submitForm('delete')"/>
+			</td>
+		<% } %>
 		<th width="100">Name</th>
 		<th width="300">Definition</th>
+		<th width="50">Priority</th>
 	</tr>
+	<tbody>	
 	
 	<%
 	
@@ -218,21 +250,66 @@ private String legalizeAlert(String in){
 		String id = (String)hash.get("id");
 		String name = (String)hash.get("name");
 		String definition = (String)hash.get("definition");
-		if (definition.length()>20) definition = definition.substring(0,20) + " ...";
+		if (definition.length()>50) definition = definition.substring(0,50) + " ...";
+		
+		String fieldLink = "m_attr_field.jsp?mode=edit&attr_id=" + attr_id + "&attr_name=" + attr_name + "&field_id=" + id;
 		
 		int pos = Integer.parseInt((String)hash.get("position"));
 		if (pos >= position) position = pos +1;
 			
+		String priority = (String)hash.get("priority");
+		String pri = (priority!=null && priority.equals(DElemAttribute.FIELD_PRIORITY_HIGH)) ? "High" : "Low";
 		%>
-		<tr>
-			<td align="center" width="40"><input type="checkbox" style="height:13;width:13" name="del_field" value="<%=id%>"/></td>
-			<td align="center" width="100"><%=name%></td>
-			<td align="center" width="300" onmouseover=""><%=definition%></td>
+		<tr id="<%=id%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+			<% if (user != null) { %>
+				<td align="center" width="40"><input type="checkbox" style="height:13;width:13" name="del_field" value="<%=id%>" onclick="tbl_obj.clickOtherObject();"/></td>
+			<% } %>
+			<td align="center" width="100">
+				<a href="javascript:clickLink('<%=fieldLink%>')"><%=Util.replaceTags(name)%></a>
+			</td>
+			<td align="center" width="300" onmouseover=""><%=Util.replaceTags(definition)%></td>
+			<td align="center" width="50" onmouseover=""><%=pri%></td>
+			<td width="0" style="display:none">
+				<input type="hidden" name="pos_id" value="<%=id%>" size="5">
+				<input type="hidden" name="oldpos_<%=id%>" value='<%=(String)hash.get("position")%>' size="5">
+				<input type="hidden" name="pos_<%=id%>" value="0" size="5">
+			</td>
 		</tr>
 		<%
 	}
 	%>
-	
+	</tbody>	
+</table>
+	</td>
+	<%
+		if (user!=null && attrFields.size()>1){ %>
+		<td align="left" style="padding-right:10" valign="top" height="10">
+			<input type="button" value="Save" class="smallbutton" onclick="saveChanges()" title="save the new order of fields"/>
+		</td>
+		</tr><tr><td>
+				<table cellspacing="2" cellpadding="2" border="0">
+					<tr>
+					</tr>
+					<td>
+						<a href="javascript:moveFirst()"><img src="../images/move_first.gif" border="0" title="move selected row to top"/></a>			
+					</td></tr>
+					<td>
+						<a href="javascript:moveRowUp()"><img src="../images/move_up.gif" border="0" title="move selected row up"/></a>			
+					</td></tr>
+					<tr><td>
+						<img src="../images/dot.gif"/>
+					</td></tr>
+					<tr><td>
+						<a href="javascript:moveRowDown()"><img src="../images/move_down.gif" border="0" title="move selected row down"/></a>			
+					</td>
+					<tr><td>
+						<a href="javascript:moveLast()"><img src="../images/move_last.gif" border="0" title="move selected row last"/></a>			
+						</td>
+					</tr>
+				<% } %>
+			</table> 
+		</td>
+	</tr>
 </table>
 
 <input type="hidden" name="mode" value="add"></input>
@@ -240,8 +317,19 @@ private String legalizeAlert(String in){
 
 <input type="hidden" name="attr_id" value="<%=attr_id%>"/>
 <input type="hidden" name="attr_name" value="<%=attr_name%>"/>
-<input type="hidden" name="attr_ns" value="<%=attr_ns%>"></input>
+<input type="hidden" name="changed" value="0"/>
 </form>
 </div>
+        </TD>
+</TR>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

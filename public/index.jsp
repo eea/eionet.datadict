@@ -1,6 +1,11 @@
-<%@page contentType="text/html" import="java.util.*"%>
+<%@page contentType="text/html" import="java.util.*,com.tee.xmlserver.*"%>
+
+<%@ include file="history.jsp" %>
 
 <%
+
+	XDBApplication.getInstance(getServletContext());
+	
 	String page_id = request.getParameter("page");
 
 	if (page_id==null || page_id.length()==0)
@@ -42,6 +47,7 @@
            		<%} else{ %>
 	                <jsp:include page="location.jsp" flush='true'>
             			<jsp:param name="name" value="<%=page_name%>"/>
+            			<jsp:param name="back" value="true"/>
 		            </jsp:include>
 	            <% } %>
 
@@ -54,7 +60,7 @@
 							<td>
 								<br/>
 								<font class="head00">Content of the Data dictionary </font><br></br>
-								The Data Dictionary is a central service for storing technical specifications of the data requested in reporting obligations. The Data Dictionary provides descriptions of data file structures, such as definition of data sets, tables, data elements, nomenclature, allowable values and other technical requirements. <br></br>
+								The Data Dictionary is a central service for storing technical specifications of the data requested in reporting obligations. The Data Dictionary provides descriptions of data file structures, such as definition of data sets, tables, data elements, nomenclature, allowable values and other technical requirements. <br>
 							</td>
 						</tr>
 						<tr>
@@ -65,7 +71,6 @@
 									<li><a href="search_results_tbl.jsp?SearchType=SEARCH">Tables within data sets</a></li>
 									<li><a href="search_results.jsp?SearchType=SEARCH">Data elements</a></li>
 								</ul>
-								<br>
 							</td>
 						</tr>
 						<tr>
@@ -78,7 +83,6 @@
 									<li>Download parameter files. (to come)</li>
 									<li>Editing (only for selected personnel). Additional functions will be added after login.</li>
 								</ul>
-								<br>
 							</td>
 						</tr>
 						<tr>
@@ -158,7 +162,6 @@
 									<li><b>Data element with fixed values</b>: A data element where a predefined code list or other fixed values are the only accepted values. Examples: Station size with fixed values like Small, Large, etc.)</li>
 									<li><b>Aggregate data elements</b> (elements consisting of other elements (can be called sub-elements). The aggregate data elements do not contain data, only links to other data elements. An example is the data element "Station", having two elements - StationID and StationName. Such kinds of "sub-elements" are defined as other data elements.</li>
 								</ul>
-								<br>
 							</td>
 						</tr>
 						<tr>
@@ -171,7 +174,6 @@
 									<li>Allowable values: If a pre-coded list is to be used, the allowable values will correspond to this list.</li>
 									<li>Multiplicity: How many answers you allow for each case/object.</li>
 								</ul>
-								<br>
 							</td>
 						</tr>
 						<tr>
@@ -204,7 +206,6 @@
 									The default namespace is <a href="namespace.jsp?ns_id=basens&mode=view">Data Dictionary's base namespace</a>. It should include data elements common to all areas/topics. 
 									In some concept the namespace could present a table from dataset.</li>
 								</ul>
-								<br>
 							</td>
 						</tr>
 						<tr>

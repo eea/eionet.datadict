@@ -1,27 +1,10 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
 <%!private Vector tables=null;%>
 <%!private Vector attributes=null;%>
 <%!ServletContext ctx=null;%>
 
-<%!
-
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
-
-%>
+<%@ include file="history.jsp" %>
 
 <%
 
@@ -29,8 +12,11 @@ response.setHeader("Pragma", "no-cache");
 response.setHeader("Cache-Control", "no-cache");
 response.setDateHeader("Expires", 0);
 
+
+XDBApplication.getInstance(getServletContext());
+
 // check if the user is authorized
-DDuser user = getUser(request);
+AppUserIF user = SecurityUtil.getUser(request);
 if (request.getMethod().equals("POST")){
 	if (user == null){
 		%>
@@ -58,22 +44,34 @@ ctx = getServletContext();
 //handle the POST
 if (request.getMethod().equals("POST")){
 	
-	DsTableHandler handler = new DsTableHandler(user.getConnection(), request, ctx);
+	Connection userConn = null;
+	DsTableHandler handler = null;
 	
 	try{
-		handler.execute();
+		userConn = user.getConnection();
+		handler = new DsTableHandler(userConn, request, ctx);
+		handler.setUser(user);
+		
+		try{
+			handler.execute();
+		}
+		catch (Exception e){
+			handler.cleanup();
+			%>
+			<html><body><b><%=e.toString()%></b></body></html> <%
+			return;
+		}
 	}
-	catch (Exception e){ %>
-		<html><body><b><%=e.toString()%></b></body></html> <%
-		return;
+	finally{
+		try { if (userConn!=null) userConn.close();
+		} catch (SQLException e) {}
 	}
-	
-	// build reload URL
 
-	StringBuffer redirUrl = new StringBuffer(request.getContextPath() + "/dstables.jsp?ds_id=");
-	redirUrl.append(dsID);
-	
-	response.sendRedirect(redirUrl.toString());
+	String redirUrl = currentUrl;
+	String newDstID = handler.getNewDstID();
+	if (newDstID!=null)
+		redirUrl = "dataset.jsp?mode=view&ds_id=" + newDstID;
+	response.sendRedirect(redirUrl);
 	return;
 }
 
@@ -82,7 +80,13 @@ if (request.getMethod().equals("POST")){
 
 String appName = ctx.getInitParameter("application-name");
 
-Connection conn = DBPool.getPool(appName).getConnection();
+Connection conn = null;
+XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+DBPoolIF pool = xdbapp.getDBPool();
+
+try { // start the whole page try block
+
+conn = pool.getConnection();
 DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 
 Dataset dataset = searchEngine.getDataset(dsID);
@@ -94,6 +98,21 @@ if (dataset == null){ %>
 tables = searchEngine.getDatasetTables(dsID);
 
 DElemAttribute attr = null;
+
+VersionManager verMan = new VersionManager(conn, searchEngine, user);
+String topWorkingUser = verMan.getWorkingUser(dataset.getNamespaceID());
+boolean topFree = topWorkingUser==null ? true : false;
+
+if (disabled.equals("")){
+	if (!topFree) disabled = "disabled";
+}
+
+String latestDstID = dataset==null ? null : verMan.getLatestDstID(dataset);
+boolean dsLatest = Util.voidStr(latestDstID) ? true : latestDstID.equals(dataset.getID());
+
+if (disabled.equals("")){
+	if (!dsLatest) disabled = "disabled";
+}
 	
 %>
 
@@ -131,6 +150,7 @@ DElemAttribute attr = null;
         <TD>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Dataset tables"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 <div style="margin-left:30">
@@ -148,10 +168,21 @@ DElemAttribute attr = null;
 		%>
 
 		<tr valign="bottom">
-			<td colspan="4"><font class="head00">Tables in 
-				<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><span class="title2"><%=dsName%></span></a>
+			<td><font class="head00">Tables in 
+				<a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><span class="title2"><%=Util.replaceTags(dsName)%></span></a>
 			 dataset</td>
 		</tr>
+		
+		<%
+		if (user!=null){ %>
+			<tr>
+				<td>
+					A red wildcard (<font color="red">*</font>) means that the table is under work
+					and cannot be deleted. Otherwise checkboxes enable to remove selected tables.
+				</td>
+			</tr><%
+		}
+		%>
 		
 	</table>
 
@@ -203,12 +234,28 @@ DElemAttribute attr = null;
 			
 			String tblFullDef = tblDef;
 			tblDef = tblDef.length()>40 && tblDef != null ? tblDef.substring(0,40) + " ..." : tblDef;
+			
+			String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
+														  table.getShortName(), "tbl");
 
-						%>
+			%>
 			<tr>
-				<td align="right" style="padding-right:10"><input type="checkbox" style="height:13;width:13" name="del_id" value="<%=table.getID()%>"/>
+				<td align="right" style="padding-right:10">
+					<%
+					if (user!=null){
+						
+						if (tblWorkingUser!=null){ // mark checked-out tables
+							%> <font color="red">* </font> <%
+						}
+					
+						if (tblWorkingUser==null && topFree){ %>
+							<input type="checkbox" style="height:13;width:13" name="del_id" value="<%=table.getID()%>"/><%
+						}
+					}
+					%>					
+				</td>
 				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<a href="<%=tableLink%>"><%=table.getShortName()%></a>
+					<a href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a>
 				</td>
 				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=tblFullName%>">
 					<%=tblName%>
@@ -233,3 +280,12 @@ DElemAttribute attr = null;
 </div>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

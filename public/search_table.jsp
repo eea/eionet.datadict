@@ -1,4 +1,7 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,com.tee.xmlserver.*"%>
+
+<%!final static String POPUP="popup";%>
+
 
 <%!
 
@@ -9,21 +12,6 @@ ServletContext ctx = null;
 private String sel_attr = null;
 private Hashtable inputAttributes=null;
 
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
-			    
 private String getAttributeIdByName(String name){
 	
 	for (int i=0; i<attrs.size(); i++){
@@ -57,11 +45,19 @@ private String setDefaultAttrs(String name){
 %>
 
 <%
-	DDuser user = getUser(request);
+	XDBApplication.getInstance(getServletContext());
+	AppUserIF user = SecurityUtil.getUser(request);
 	
 	ctx = getServletContext();
 	String appName = ctx.getInitParameter("application-name");
-	Connection conn = DBPool.getPool(appName).getConnection();
+	
+	Connection conn = null;
+	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+	DBPoolIF pool = xdbapp.getDBPool();
+	
+	try { // start the whole page try block
+	
+	conn = pool.getConnection();
 
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 
@@ -85,13 +81,22 @@ private String setDefaultAttrs(String name){
 	String short_name = request.getParameter("short_name");
 	String full_name = request.getParameter("full_name");
 	String definition = request.getParameter("definition");
+	String search_precision = request.getParameter("search_precision");
+	String contextParam = request.getParameter("ctx");
 
 	
+	String submitForm=null;
+	if (contextParam != null && contextParam.equals(POPUP))
+		submitForm = "pick_table.jsp";
+	else
+		submitForm = "search_results_tbl.jsp";
+
 	if (sel_attr == null) sel_attr="";
 	if (sel_type == null) sel_type="";
 	if (short_name == null) short_name="";
 	if (full_name == null) full_name="";
 	if (definition == null) definition="";
+	if (search_precision == null) search_precision="substr";
 
 	///get inserted attributes
 	String input_attr;
@@ -105,6 +110,9 @@ private String setDefaultAttrs(String name){
 			inputAttributes.put(attr_id, input_attr);
 			attr_ids.add(attr_id);
 		}
+	}
+	if (contextParam == null || !contextParam.equals(POPUP)){
+		%><%@ include file="history.jsp"%><%
 	}
 
 %>
@@ -143,23 +151,89 @@ private String setDefaultAttrs(String name){
 
 		}
 		
+		function onLoad(){
+			<%
+				if (search_precision != null){
+    			%>
+					var sPrecision = '<%=search_precision%>';
+					var o = document.forms["form1"].search_precision;
+					for (i=0; o!=null && i<o.length; i++){
+						if (o[i].value == sPrecision){
+							o[i].checked = true;
+							break;
+						}
+					}			
+				<% 
+				}
+			%>
+		}
 	</script>
 </head>
-<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onfocus="checkalert()">
-<%@ include file="header.htm" %>
+<%
+if (contextParam == null || !contextParam.equals(POPUP)){
+%>
+	<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onfocus="checkalert()" onload="onLoad()">
+	<%@ include file="header.htm" %>
+<%
+}
+else
+{
+%>
+	<body style="background-color:#f0f0f0;background-image:url('../images/eionet_background2.jpg');background-repeat:repeat-y;"
+		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" onload="onLoad()">
+<%
+}
+%>
 <table border="0">
     <tr valign="top">
+		<%
+			if (contextParam == null || !contextParam.equals(POPUP)){
+		%>
         <td nowrap="true" width="125">
             <p><center>
                 <%@ include file="menu.jsp" %>
             </center></P>
         </TD>
+		<%
+		}
+		%>
         <TD>
+			<div style="margin-left:30">
+			<%
+				if (contextParam == null || !contextParam.equals(POPUP)){
+			%>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Search"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
+			<%
+			}
+			else{
+			%>
+			<br></br>
+			<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
+			<br></br>
+			<table cellspacing="0" cellpadding="0" width="400" border="0">
+					<tr>
+	    		     	<td align="bottom" width="20" background="../images/bar_filled.jpg" height="25">&#160;</td>
+	          			<td width="600" background="../images/bar_filled.jpg" height="25">
+		            		<table height="8" cellSpacing="0" cellPadding="0" border="0">
+		            			<tr>
+				         			<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
+						            <td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
+						         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
+									<td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
+									<td valign="bottom" align="middle"><span class="barfont">Search</span></td>
+									<td valign="bottom" width="28"><img src="../images/bar_dot.jpg"/></td>
+								</tr>				
+							</table>
+						</td>
+					</tr>			
+			</table>
+			<%
+			}	
+			%>
             
-			<div style="margin-left:30">
 				<form name="form1" action="search_results_tbl.jsp" method="GET">
 				<table width="500">
 					<tr><td><font class="head00">Search for a dataset table:</font></td></tr>
@@ -170,10 +244,22 @@ private String setDefaultAttrs(String name){
 							To find out more about the search criteria provided below, please
 							click on their titles.  It is possible to add more criteria by clicking
 							the '+' button underneath. To remove added criteria, use the '-' buttons
-							appearing next to them.
+							appearing next to them. <br>
+							Please use dataset search page, for searching tables using dataset attributes as search criteria:
 						</td>
 					</tr>
-					<tr height"10"><td>&#160;</td></tr>
+					<%
+						if (contextParam == null || !contextParam.equals(POPUP)){
+					%>
+						<tr>
+							<td align="right">
+								 <a href="search_dataset.jsp"><img src="../images/search_ds.gif" border=0 alt="Search datasets"></a>
+							</td>
+						</tr>
+						<!--tr height"10"><td>&#160;</td></tr-->
+					<%
+					}
+					%>
 					<tr><td colspan="3" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
 				</table>
 				
@@ -184,7 +270,7 @@ private String setDefaultAttrs(String name){
 							<span class="mainfont"><b>Short name</b></span>&#160;&#160;
 						</td>
 						<td colspan="2">
-							<input type="text" class="smalltext" size="40" name="short_name" value="<%=short_name%>"/>
+							<input type="text" class="smalltext" size="50" name="short_name" value="<%=short_name%>"/>
 						</td>
 					</tr>
 
@@ -206,6 +292,7 @@ private String setDefaultAttrs(String name){
 							<input type="text" class="smalltext" size="40" name="definition" value="<%=definition%>"/>
 						</td>
 					</tr-->
+					
 					<%
 					//get default attributes, which are always on the page (defined above)
 					if (def_attrs!=null){
@@ -226,7 +313,7 @@ private String setDefaultAttrs(String name){
 										<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
 									</td>
 									<td colspan="2">
-										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="40"  value="<%=attrValue%>"/>
+										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
 									</td>
 								</tr>
 								<%
@@ -253,7 +340,7 @@ private String setDefaultAttrs(String name){
 									<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
 								</td>
 								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="40"  value="<%=attrValue%>"/>
+									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50"  value="<%=attrValue%>"/>
 								</td>
 								<td>
 									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="../images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
@@ -275,7 +362,7 @@ private String setDefaultAttrs(String name){
 									<span class="mainfont"><b><%=attrName%></b></span>&#160;&#160;
 								</td>
 								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="40" value=""/>
+									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="50" value=""/>
 								</td>
 								<td>
 									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="../images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
@@ -286,20 +373,52 @@ private String setDefaultAttrs(String name){
 					}
 					%>
 					
+                    <tr valign="bottom">
+                		<td width="150">&#160;</td>
+                		<td colspan="2">
+                			<input type="radio" name="search_precision" value="substr" checked>Substring search</input>
+                			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
+                			<input type="radio" name="search_precision" value="free">Free text search</input>&#160;&#160;
+                		</td>
+                    </tr>
+                    
+                    <%					
+					// if authenticated user, enable to get working copies only
+					if (user!=null && user.isAuthentic()){
+						%>
+						<tr valign="top">
+							<td width="150"></td>
+							<td colspan="2">
+								<input type="checkbox" name="wrk_copies" value="true"/><span class="smallfont" style="font-weight: normal">Working copies only</span>
+							</td>
+						</tr>
+						<%
+					}
+					%>
+					
 					<tr height="10"><td colspan="3"></td></tr>
 					
 					<tr valign="top">
 						<td></td>
 						<td>
-							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('search_results_tbl.jsp')"/>
+							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('<%=submitForm%>')"/>
 							<input class="mediumbuttonb" type="reset" value="Reset"/>
 						</td>
 						<td align="right">
-							<a href="javascript:openAttributes();"><img src="../images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
+							<%
+								if (contextParam == null || !contextParam.equals(POPUP)){
+							%>
+								<a href="javascript:openAttributes();"><img src="../images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
+							<%
+							}
+							%>
 						</td>
 					</tr>
 				</table>
 				
+				<%
+					if (contextParam == null || !contextParam.equals(POPUP)){
+				%>
 				<% if (user != null) { %>
 					<table width="500">			
 						<tr height"10"><td>&#160;</td></tr>				
@@ -314,13 +433,16 @@ private String setDefaultAttrs(String name){
 				<%
 				}
 				%>
+				<%
+				}
+				%>
 				
 				
 				<input type="hidden" name="sel_attr" value=""></input>			
 				<input type="hidden" name="sel_type" value=""></input>
 				<input type="hidden" name="type" value="TBL"></input>
                 <input name='SearchType' type='hidden' value='SEARCH'/>
-				<!--// collect all the attributes already used in criterias -->
+				<!-- collect all the attributes already used in criterias -->
 				<input type="hidden" name="collect_attrs" value="<%=collect_attrs.toString()%>"></input>
 				</form>
 			</div>
@@ -329,3 +451,13 @@ private String setDefaultAttrs(String name){
 </table>
 </body>
 </html>
+
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

@@ -1,24 +1,9 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 
-<%!private final static String USER_SESSION_ATTRIBUTE="DataDictionaryUser";%>
 <%!private Vector complexAttrs=null;%>
 
 <%!
 
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
 
 private String legalizeAlert(String in){
         
@@ -41,8 +26,8 @@ private String legalizeAlert(String in){
 %>
 
 			<%
-			
-			DDuser user = getUser(request);
+			XDBApplication.getInstance(getServletContext());
+			AppUserIF user = SecurityUtil.getUser(request);
 			
 			ServletContext ctx = getServletContext();			
 			String appName = ctx.getInitParameter("application-name");
@@ -89,20 +74,28 @@ private String legalizeAlert(String in){
 			String ds = request.getParameter("ds");
 			
 			if (request.getMethod().equals("POST")){
-				
-				AttrFieldsHandler handler = new AttrFieldsHandler(user.getConnection(), request, ctx);
-				
+
+				Connection userConn = null;				
 				try{
-					handler.execute();
+					userConn = user.getConnection();
+					AttrFieldsHandler handler = new AttrFieldsHandler(userConn, request, ctx);
+					
+					try{
+						handler.execute();
+					}
+					catch (Exception e){
+						%>
+						<html><body><b><%=e.toString()%></b></body></html>
+						<%
+						return;
+					}
 				}
-				catch (Exception e){
-					%>
-					<html><body><b><%=e.toString()%></b></body></html>
-					<%
-					return;
+				finally{
+					try { if (userConn!=null) userConn.close();
+					} catch (SQLException e) {}
 				}
 				
-				String redirUrl = request.getContextPath() + "/complex_attrs.jsp?parent_id=" + parent_id +
+				String redirUrl = "complex_attrs.jsp?parent_id=" + parent_id +
 															 "&parent_type=" + parent_type +
 															 "&parent_name=" + parent_name +
 															 "&parent_ns=" + parent_ns;
@@ -111,7 +104,13 @@ private String legalizeAlert(String in){
 				return;
 			}
 			
-			Connection conn = DBPool.getPool(appName).getConnection();
+			Connection conn = null;
+			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+        	DBPoolIF pool = xdbapp.getDBPool();
+			
+			try { // start the whole page try block
+			
+			conn = pool.getConnection();
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			
 			Vector mComplexAttrs = searchEngine.getDElemAttributes(DElemAttribute.TYPE_COMPLEX);
@@ -134,6 +133,18 @@ private String legalizeAlert(String in){
 				}
 			}
 			
+			// JH170803
+			// if the parent is not a working copy, its complex attributes cannot be edited.
+			// so here we set the falg it is a working copy or not
+			String _type = null;
+			if (parent_type.equals("E"))
+				_type="elm";
+			else if (parent_type.equals("DS"))
+				_type="dst";
+			else if (parent_type.equals("T"))
+				_type="tbl";
+			boolean isWorkingCopy = _type==null ? true : searchEngine.isWorkingCopy(parent_id, _type);
+			
 			%>
 
 <html>
@@ -141,6 +152,7 @@ private String legalizeAlert(String in){
 		<title>Meta</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
+	    <script language="JavaScript" src='script.js'></script>
 	</head>
 	<script language="JavaScript">
 			function submitForm(mode){
@@ -154,11 +166,11 @@ private String legalizeAlert(String in){
 				document.forms["form1"].submit();
 			}
 			
-			<% String redirUrl = request.getContextPath(); %>
+			<% String redirUrl = ""; %>
 			
 			function addNew(){
 				var id = document.forms["form1"].elements["new_attr_id"].value;
-				var url = "<%=redirUrl%>" + "/complex_attr.jsp?mode=add&attr_id=" + id + 
+				var url = "<%=redirUrl%>" + "complex_attr.jsp?mode=add&attr_id=" + id + 
 							"&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>";
 				
 				<%
@@ -173,7 +185,7 @@ private String legalizeAlert(String in){
 			}
 			
 			function edit(id){
-				var url = "<%=redirUrl%>" + "/complex_attr.jsp?mode=edit&attr_id=" + id + 
+				var url = "<%=redirUrl%>" + "complex_attr.jsp?mode=edit&attr_id=" + id + 
 							"&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>";
 				<%
 				if (ds!=null && ds.equals("true")){
@@ -193,7 +205,9 @@ private String legalizeAlert(String in){
 	<br></br>
 	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
 	<br></br>
-	<font color="#006666" face="Arial" size="2"><strong><span class="head0">Prototype v1.0</span></strong></font>
+	<font color="#006666" face="Arial" size="2">
+		<strong><span class="head0"><script language="JavaScript">document.write(getDDVersionName())</script></span></strong>
+	</font>
 	<br></br>
 	<table cellspacing="0" cellpadding="0" width="400" border="0">
 		<tr>
@@ -224,7 +238,7 @@ private String legalizeAlert(String in){
 	<tr valign="bottom">
 		<td colspan="2">
 			<span class="head00">Complex attributes of </span>
-			<span class="title2" color="#006666"><%=parent_name%></span>
+			<span class="title2" color="#006666"><%=Util.replaceTags(parent_name)%></span>
 		</td>
 	</tr>
 	<tr height="10"><td colspan="2"></td></tr>
@@ -240,7 +254,7 @@ private String legalizeAlert(String in){
 		<tr height="10">
 			<td colspan="2">
 			<%
-			if (user!=null){
+			if (user!=null && isWorkingCopy){
 				%>
 				<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')"/>
 				<%
@@ -272,7 +286,7 @@ private String legalizeAlert(String in){
 					for (int i=0; i<mComplexAttrs.size(); i++){
 						DElemAttribute attr = (DElemAttribute)mComplexAttrs.get(i);
 						String attrID = attr.getID();
-						String attrName = attr.getNamespace().getShortName() + ":" + attr.getShortName();
+						String attrName = attr.getShortName();
 						%>
 						<option value="<%=attrID%>"><%=attrName%></option>
 						<%
@@ -281,7 +295,7 @@ private String legalizeAlert(String in){
 				</select>&#160;
 				
 				<%
-				if (user != null){
+				if (user != null && isWorkingCopy){
 					%>
 					<input class="smallbutton" type="button" value="Add new" onclick="addNew()"/>
 					<%
@@ -308,7 +322,6 @@ private String legalizeAlert(String in){
 		
 		DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
 		String attrID = attr.getID();
-		//String attrName = attr.getNamespace().getShortName() + ":" + attr.getShortName();
 		String attrName = attr.getShortName();
 		
 		Vector attrFields = searchEngine.getAttrFields(attrID);
@@ -327,7 +340,7 @@ private String legalizeAlert(String in){
 			<tr>
 				<td valign="top" style="padding-right:3;padding-top:3;border-right-width:1;border-right-style:groove;border-right-color:#808080;">
 					<%
-					if (user != null){
+					if (user != null && isWorkingCopy){
 						%>
 						<input class="smallbutton" type="button" value="Edit" onClick="edit('<%=attrID%>')"/>
 						<%
@@ -347,7 +360,6 @@ private String legalizeAlert(String in){
 						
 						for (int t=0; t<attrFields.size(); t++){
 							Hashtable hash = (Hashtable)attrFields.get(t);
-							ctx.log(hash.toString());
 							String name = (String)hash.get("name");
 							%>
 							<th align="left" style="padding-right:10"><%=name%></th>
@@ -371,7 +383,7 @@ private String legalizeAlert(String in){
 								String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 								if (fieldValue == null) fieldValue = " ";
 								%>
-								<td style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=fieldValue%></td>
+								<td style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=Util.replaceTags(fieldValue)%></td>
 								<%
 							}
 							%>
@@ -409,3 +421,12 @@ if (ds != null){
 </div>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

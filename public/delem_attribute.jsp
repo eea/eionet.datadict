@@ -1,33 +1,13 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
 
-<%!final static String oConnName="datadict";%>
 <%!private String type=null;%>
 <%!private String mode=null;%>
 <%!private DElemAttribute attribute=null;%>
-<%!private Vector namespaces=null;%>
+<%!private Vector attrFields=null;%>
 
-<%!
-
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
-
-%>
+<%@ include file="history.jsp" %>
 
 			<%
-			
-			//DDuser user = getUser(request);
 			
 			ServletContext ctx = getServletContext();			
 			String appName = ctx.getInitParameter("application-name");
@@ -35,13 +15,8 @@ private DDuser getUser(HttpServletRequest req) {
 		    String urlPath = ctx.getInitParameter("basens-path");
 			if (urlPath == null) urlPath = "";
 
-			DDuser user = getUser(request);
-			
-			/*DDuser user = new DDuser(DBPool.getPool(appName));
-	
-			String username = "root";
-			String password = "ABr00t";
-			boolean f = user.authenticate(username, password);*/
+			XDBApplication.getInstance(ctx);
+			AppUserIF user = SecurityUtil.getUser(request);
 			
 			if (request.getMethod().equals("POST")){
       			if (user == null){
@@ -81,39 +56,62 @@ private DDuser getUser(HttpServletRequest req) {
 			
 			if (request.getMethod().equals("POST")){
 				
-				AttributeHandler handler = new AttributeHandler(user.getConnection(), request, ctx);
+				Connection userConn = null;
+				String redirUrl = "";
 				
-				handler.execute();
-				
-				String redirUrl = request.getContextPath();
-				
-				if (mode.equals("add")){
-					String id = handler.getLastInsertID();
-					if (id != null && id.length()!=0)
-						redirUrl = redirUrl + "/delem_attribute.jsp?mode=edit&attr_id=" + id + "&type=" + type;
+				try{
+					userConn = user.getConnection();
+					AttributeHandler handler = new AttributeHandler(userConn, request, ctx);
+					handler.execute();
+					
+					if (mode.equals("add")){
+						String id = handler.getLastInsertID();
+						if (id != null && id.length()!=0)
+							redirUrl = redirUrl + "delem_attribute.jsp?mode=edit&attr_id=" + id + "&type=" + type;
+
+						if (history!=null){
+							int idx = history.getCurrentIndex();
+							if (backUrl.indexOf("mode=add")>0){ 
+								history.remove(idx-1);
+								idx--;
+							}
+							if (idx>0)
+								history.remove(idx);
+						}
+					}
+					else if (mode.equals("edit")){
+						redirUrl = currentUrl;
+						//redirUrl = redirUrl + "delem_attribute.jsp?mode=edit&attr_id=" + attr_id + "&type=" + type;
+					}
+					else if (mode.equals("delete")){
+						String	deleteUrl = history.gotoLastMatching("attributes.jsp");
+						redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl:redirUrl + "/index.jsp";
+						//redirUrl = redirUrl + "delem_attribute.jsp?mode=add&type=SIMPLE";
+						//redirUrl = redirUrl + "index.jsp";
+					}
 				}
-				else if (mode.equals("edit")){
-					redirUrl = redirUrl + "/delem_attribute.jsp?mode=edit&attr_id=" + attr_id + "&type=" + type;
-				}
-				else if (mode.equals("delete")){
-					//redirUrl = redirUrl + "/delem_attribute.jsp?mode=add&type=SIMPLE";
-					%>
-					<html><script>window.history.go(-1)</script></html>
-					<%
+				finally{
+					try { if (userConn!=null) userConn.close();
+					} catch (SQLException e) {}
 				}
 				
 				response.sendRedirect(redirUrl);
 				return;
 			}
 			
-			Connection conn = DBPool.getPool(appName).getConnection();
+			Connection conn = null;
+			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+			DBPoolIF pool = xdbapp.getDBPool();
+			
+			try { // start the whole page try block
+			
+			conn = pool.getConnection();
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			
 			String attr_name = null;
 			String attr_shortname = null;
+			Namespace attrNamespace = null;
 			
-			Namespace namespace = null;
-
 			if (!mode.equals("add")){
 				Vector v = searchEngine.getDElemAttributes(attr_id,type);
 				if (v!=null && v.size()!=0)
@@ -124,16 +122,18 @@ private DDuser getUser(HttpServletRequest req) {
 					attr_shortname = attribute.getShortName();
 					if (attr_name == null) attr_name = "unknown";
 					if (attr_shortname == null) attr_shortname = "unknown";
-					namespace = attribute.getNamespace();
+					
+					attrNamespace = attribute.getNamespace();
+						
+					if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
+						attrFields = searchEngine.getAttrFields(attr_id);
+						if (attrFields == null) attrFields = new Vector();
+					}
 				}
 				else{ %>
 					<b>Attribute was not found!</b> <%
 					return;
 				}
-			}
-			else{				
-				namespaces = searchEngine.getNamespaces();
-				if (namespaces == null) namespaces = new Vector();
 			}
 			
 			String disabled = user == null ? "disabled" : "";
@@ -305,9 +305,15 @@ private DDuser getUser(HttpServletRequest req) {
 		
 		function openFxValues(){
 			//var url = "fixed_values.jsp?delem_id=<%=attr_id%>&#38;delem_name=<%=attr_shortname%>&#38;parent_type=attr";
-			var url = "fixed_values.jsp?delem_id=<%=attr_id%>&delem_name=<%=attr_shortname%>&parent_type=attr";
+			var url = "fixed_values.jsp?mode=edit&delem_id=<%=attr_id%>&delem_name=<%=attr_shortname%>&parent_type=attr";
 			wCh1Values = window.open(url,"AllowableValues","height=600,width=800,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
 			if (window.focus) {wCh1Values.focus()}
+		}
+		
+		function helpNamespace(){
+			alert('Context is required to produce the XMLSchema exports of data defintions. ' +
+					'Basically it defines the context in which you define this attribute. Attributes can be roughly ' +
+					'divided into two contexts: those originating from ISO11179 and those specific to Data Dictionary.');
 		}
     </script>
 </head>
@@ -323,6 +329,7 @@ private DDuser getUser(HttpServletRequest req) {
         <TD>
             <jsp:include page="location.jsp" flush='true'>
                 <jsp:param name="name" value="Attribute"/>
+                <jsp:param name="back" value="true"/>
             </jsp:include>
             
 			<div style="margin-left:30">
@@ -394,7 +401,7 @@ private DDuser getUser(HttpServletRequest req) {
 				
 				<tr height="5"><td colspan="2"></td></tr>
 				
-				<tr><td <td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
+				<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
 				
 			</table>
 			
@@ -491,6 +498,76 @@ private DDuser getUser(HttpServletRequest req) {
 					<% } else { %>
 						<span class="barfont" style="width:400"><%=attr_name%></span>
 					<% } %>
+				</td>
+			</tr>
+			
+			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>	
+				<td align="right" style="padding-right:10">
+					<a href="javascript:helpNamespace()"><span class="help">?</span></a>&#160;
+					<span class="mainfont"><b>Context</b>
+						<%
+						displayed++;
+						if (!mode.equals("view")){
+							%>
+							&#160;(M)
+							<%
+						}
+						%>
+					</span>
+				</td>
+				<td>
+					<%
+					if (mode.equals("view")){
+						
+						String nsName = attrNamespace==null ? null : attrNamespace.getFullName();
+						if (nsName==null){
+							if (attrNamespace==null)
+								nsName = "";
+							else
+								nsName = attrNamespace.getShortName();
+						}
+						if (nsName == null) nsName = "";
+						
+						%>
+						<span class="barfont" style="width:400"><%=nsName%></span> <%
+					}
+					else{
+						%>
+						<select <%=disabled%> class="small" name="ns">
+							<%
+							Vector namespaces = searchEngine.getNamespaces();
+							for (int k=0; namespaces!=null && k<namespaces.size(); k++){
+								Namespace ns = (Namespace)namespaces.get(k);
+								
+								if (ns.getTable()!=null || ns.getDataset()!=null || (ns.getID()!=null && ns.getID().equals("1")))
+									continue;
+									
+								String nsName = null;
+								if (ns!=null) nsName = ns.getFullName();
+								if (nsName == null) nsName = ns.getShortName();
+								if (nsName == null) nsName = "";
+								
+								if (nsName.indexOf("attributes") < 0)
+									continue;
+								
+								String ifSelected = "";
+								if (attrNamespace!=null){
+									if (attrNamespace.getID().equals(ns.getID())){
+										ifSelected = "selected";
+									}
+								}
+								else if (nsName.indexOf("Data Dictionary") != -1)
+									ifSelected = "selected";
+									
+								%>
+								<option <%=ifSelected%> value="<%=ns.getID()%>"><%=nsName%></option>
+								<%
+							}
+							%>
+						</select>
+						<%
+					}
+					%>
 				</td>
 			</tr>
 			
@@ -616,7 +693,7 @@ private DDuser getUser(HttpServletRequest req) {
 							<%
 							if (mode.equals("edit") && dispType!=null && dispType.equals("select")){
 								%>
-								&#160;<span class="smallfont"><a href="fixed_values.jsp?delem_id=<%=attr_id%>&delem_name=<%=attr_shortname%>&parent_type=attr">
+								&#160;<span class="smallfont"><a href="fixed_values.jsp?mode=edit&delem_id=<%=attr_id%>&delem_name=<%=attr_shortname%>&parent_type=attr">
 								<b>FIXED VALUES</b></a></span>
 								<%
 							}
@@ -624,6 +701,45 @@ private DDuser getUser(HttpServletRequest req) {
 						%>
 					</td>
 				</tr>
+				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+					<td align="right" style="padding-right:10">
+						<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+						<span class="mainfont"><b>Display multiple</b>
+						<%
+							displayed++;
+								if (!mode.equals("view")){
+									%>
+									&#160;(O)
+									<%
+								}
+							%>
+						</span>
+					</td>
+					<td>
+						<%
+						if (!mode.equals("add")){
+							String multi = attribute.getDisplayMultiple();
+							String checked = (multi.equals("1")) ? "checked":"";
+							String checked_text = (multi.equals("1")) ? "True":"False";
+							if (mode.equals("edit")){
+								%>
+								<input <%=disabled%> <%=checked%> type="checkbox" class="smalltext" name="dispMultiple" value="1"></input>
+								<%
+							}
+							else{
+								%>
+								<span class="barfont" style="width:400"><%=checked_text%></span>
+								<%
+							}
+						}
+					else {
+						%>
+						<input <%=disabled%> type="checkbox" class="smalltext" name="dispMultiple" value="1"></input>
+						<%
+					}
+					%>
+				</td>
+			</tr>
 				<%
 			}
 			%>
@@ -829,17 +945,60 @@ private DDuser getUser(HttpServletRequest req) {
 			
 		<% if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX) && !mode.equals("add")){ // if COMPLEX and mode=add
 		%>
-			
 		<tr valign="top">
-			<td></td>
+			<td align="right" style="padding-right:10">
+				<span class="mainfont"><b>Fields</b></span>
+			</td>
 			<td>
-				<b>*</b> <span class="smallfont"><a href="javascript:fields('m_attr_fields.jsp?attr_id=<%=attr_id%>&#38;attr_name=<%=attr_shortname%>&#38;attr_ns=<%=namespace.getShortName()%>')">
-					<b>FIELDS</b></a></span>&#160;&#160;
-				<span class="smallfont" style="font-weight: normal">
-					&lt;&#160;click here to view/add/remove fields of this complex attribute
-				</span>
+				<table>
+					<tr>
+						<th width="100">Name</th>
+						<th width="300">Definition</th>
+					</tr>
+					<%
+	
+					//String position = String.valueOf(attrFields.size() + 1);
+					int position = 0;
+					if (attrFields!=null){
+						for (int i=0; i<attrFields.size(); i++){
+							Hashtable hash = (Hashtable)attrFields.get(i);
+							String id = (String)hash.get("id");
+							String name = (String)hash.get("name");
+							String definition = (String)hash.get("definition");
+							if (definition.length()>50) definition = definition.substring(0,50) + " ...";
+							String fieldLink = "m_attr_field.jsp?mode=view&attr_id=" + attr_id + "&attr_name=" + attr_name + "&attr_ns=basens&field_id=" + id;
+			
+							int pos = Integer.parseInt((String)hash.get("position"));
+							if (pos >= position) position = pos +1;
+			
+							%>
+							<tr <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+								<td align="center" width="100"><a href="<%=fieldLink%>"><%=name%></a></td>
+								<td align="center" width="300" onmouseover=""><%=definition%></td>
+							</tr>
+							<%
+						}
+					}
+					%>
+				</table>
 			</td>
 		</tr>
+		<%
+		if (user!=null){
+			%>
+			<tr valign="top">
+				<td></td>
+				<td>
+					<b>*</b> <span class="smallfont"><a href="m_attr_fields.jsp?attr_id=<%=attr_id%>&#38;attr_name=<%=attr_shortname%>">
+						<b>FIELDS</b></a></span>&#160;&#160;
+					<span class="smallfont" style="font-weight: normal">
+						&lt;&#160;click here to add/remove fields of this complex attribute
+					</span>
+				</td>
+			</tr>
+			<%
+		}
+		%>
 			
 		<% } // end if COMPLEX and mode=add
 	
@@ -894,3 +1053,12 @@ private DDuser getUser(HttpServletRequest req) {
 	</script>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>

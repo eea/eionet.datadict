@@ -1,10 +1,11 @@
-<%@page contentType="text/html" import="java.util.*,com.caucho.sql.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*"%>
+<%@page contentType="text/html" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 
-<%!private final static String USER_SESSION_ATTRIBUTE="DataDictionaryUser";%>
 
 <%!private final static String CONTENTS_PREV_URL="CONTENTS_PREV_URL";%>
 <%!private final static String ELM_CONTENTS_NAME="ELM_CONTENTS_NAME";%>
 <%!private final static String CONTENTS_HISTORY="CONTENTS_HISTORY";%>
+
+<%@ include file="history.jsp" %>
 
 <%!
 
@@ -24,20 +25,6 @@ private boolean isIn(Vector elems, String id){
     return false;
 }
 
-private DDuser getUser(HttpServletRequest req) {
-	
-	DDuser user = null;
-    
-    HttpSession httpSession = req.getSession(false);
-    if (httpSession != null) {
-    	user = (DDuser)httpSession.getAttribute(USER_SESSION_ATTRIBUTE);
-	}
-      
-    if (user != null)
-    	return user.isAuthentic() ? user : null;
-	else 
-    	return null;
-}
 
 private String legalizeAlert(String in){
         
@@ -67,7 +54,8 @@ response.setHeader("Pragma", "no-cache");
 response.setHeader("Cache-Control", "no-cache");
 response.setDateHeader("Expires", 0);
 
-DDuser user = getUser(request);
+XDBApplication.getInstance(getServletContext());
+AppUserIF user = SecurityUtil.getUser(request);
 
 ServletContext ctx = getServletContext();			
 String appName = ctx.getInitParameter("application-name");
@@ -116,6 +104,8 @@ String contentType = request.getParameter("content_type");
 
 // -> deal with them God damned back urls
 
+
+/*
 String backUrl = null;
 String thisUrl = null;
 boolean reloadOpener = false;
@@ -157,7 +147,7 @@ else{
 		//sess.setAttribute(CONTENTS_PREV_URL, backUrl);
 	}
 }
-
+*/
 // <- end of dealing with those annoying back urls
 
 // check if we are defining an anonymous choice or a sequence
@@ -225,25 +215,33 @@ String wasext = request.getParameter("wasext");
 if (request.getMethod().equals("POST")){
 	
 	String prevContentID = contentID;
-	
-	SubElemsHandler handler =
-		new SubElemsHandler(user.getConnection(), request, ctx);
+	Connection userConn = null;
 	
 	try{
-		handler.execute();
-		contentID = handler.getContentID();
+		userConn = user.getConnection();
+		SubElemsHandler handler = new SubElemsHandler(userConn, request, ctx);
+		
+		try{
+			handler.execute();
+			contentID = handler.getContentID();
+		}
+		catch (Exception e){
+			%>
+			<html><body><b><%=e.toString()%></b></body></html>
+			<%
+			return;
+		}
 	}
-	catch (Exception e){
-		%>
-		<html><body><b><%=e.toString()%></b></body></html>
-		<%
-		return;
+	finally{
+		try { if (userConn!=null) userConn.close();
+		} catch (SQLException e) {}
 	}
 	
-	String redirUrl = request.getParameter("thisUrl");
+	//String redirUrl = request.getParameter("thisUrl");
+	String redirUrl = currentUrl;
 	if (redirUrl == null){
 	
-		StringBuffer buf = new StringBuffer(request.getContextPath() + "/contents.jsp?");
+		StringBuffer buf = new StringBuffer("" + "/contents.jsp?");
 		
 		buf.append("wasPost=true");
 		
@@ -264,12 +262,22 @@ if (request.getMethod().equals("POST")){
 		redirUrl = buf.toString();
 	}
 	else if (contentID != null && (prevContentID==null || !prevContentID.equals(contentID))){
-		Vector history = (Vector)sess.getAttribute(CONTENTS_HISTORY);
+		/*Vector history = (Vector)sess.getAttribute(CONTENTS_HISTORY);
 		if (history != null){
 			history.remove(redirUrl);
 			sess.setAttribute(CONTENTS_HISTORY, history);
 		}
-		
+		*/
+		if (history!=null){
+			int idx = history.getCurrentIndex();
+			if (backUrl.indexOf("content.jsp")>0){ //EK  if user added first sub object 
+				history.remove(idx-1);
+				idx--;
+		}
+			if (idx>0)
+				history.remove(idx);
+		}
+		//ctx.log("ja siia");
 		redirUrl = redirUrl + "&content_id=" + contentID;
 		if (contentType != null){
 			int i = redirUrl.indexOf("&content_type=seq");
@@ -278,11 +286,16 @@ if (request.getMethod().equals("POST")){
 				redirUrl = redirUrl + "&content_type=" + contentType;
 		}
 	}
-	else if (contentID==null && prevContentID!=null){
+	else if (contentID==null && prevContentID!=null){   //EK kui contenti ei ole lisatud
 		
-		ctx.log("tulime siia");
+		//ctx.log("tulime siia");
 		
-		Vector history = (Vector)sess.getAttribute(CONTENTS_HISTORY);
+		if (history!=null){
+			int idx = history.getCurrentIndex();
+			if (idx>0)
+				history.remove(idx);
+		}
+		/*Vector history = (Vector)sess.getAttribute(CONTENTS_HISTORY);
 		
 		if (parent_type.equals("elm")){
 			sess.setAttribute(CONTENTS_HISTORY, new Vector());
@@ -293,7 +306,7 @@ if (request.getMethod().equals("POST")){
 				sess.setAttribute(CONTENTS_HISTORY, history);
 			}
 		}
-			
+		*/	
 		String s = new String("&content_id=" + prevContentID);
 		int i = redirUrl.indexOf(s);
 		if (i != -1)
@@ -301,11 +314,11 @@ if (request.getMethod().equals("POST")){
 		
 		String origContentType = request.getParameter("orig_content_type");
 		if (origContentType!=null){
-			ctx.log("check0: " + origContentType);
+			//ctx.log("check0: " + origContentType);
 		}
 		
 		if (origContentType != null && extContentType != null && !origContentType.equals(extContentType)){
-			ctx.log("check1: " + origContentType + " " + extContentType);
+			//ctx.log("check1: " + origContentType + " " + extContentType);
 			s = new String("&content_type=" + origContentType);
 			i = redirUrl.indexOf(s);
 			if (i != -1){
@@ -316,6 +329,8 @@ if (request.getMethod().equals("POST")){
 	}
 	
 	// -> this is for checking if a sub was deleted or a new one added, the opener needs to be reloaded then
+	
+	/* EK 030711
 	if (parent_type.equals("elm")){
 		if (prevContentID==null){
 			if (contentID!=null)
@@ -327,7 +342,7 @@ if (request.getMethod().equals("POST")){
 			else if (!prevContentID.equals(contentID))
 				redirUrl = redirUrl + "&opener=true";
 		}
-	}
+	}*/
 	// <-
 				
 	
@@ -341,7 +356,13 @@ if (request.getMethod().equals("POST")){
 
 // <- deal with POST
 
-Connection conn = DBPool.getPool(appName).getConnection();
+Connection conn = null;
+XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+DBPoolIF pool = xdbapp.getDBPool();
+
+try { // start the whole page try block
+	
+conn = pool.getConnection();
 DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 
 Vector dataElements = searchEngine.getDataElements(); // ask for all data elements
@@ -373,6 +394,10 @@ if (extElems != null && extElemCount > 0){
 
 int position = 0;
 
+StringBuffer collect_elems=new StringBuffer();
+if (parent_type.equals("elm"))
+	collect_elems.append(parent_id + "|");
+
 %>
 
 <html>
@@ -380,10 +405,20 @@ int position = 0;
 		<title>Meta</title>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
-	</head>
 	
+    	<script language="JavaScript" src='script.js'></script>
+	</head>
 	<script language="JavaScript">
 			function submitForm(mode){
+				if (mode=="add"){
+					if (checkElement()==false)
+						return false;
+				}
+				if (mode=="delete"){
+					var b = confirm("This will delete all the subelements you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
+					if (b==false) return;
+				}
+
 				document.forms["form1"].elements["mode"].value = mode;
 				document.forms["form1"].submit();
 			}
@@ -401,41 +436,73 @@ int position = 0;
 			
 			function load(){
 				<% 
-				if (reloadOpener){
+				/*if (reloadOpener){
 					%>
 					window.opener.location.reload(false);
 					<%
-				}
+				}*/
 				%>
+			}
+			function openAdd(url){
+			
+				var selected = document.forms["form1"].collect_elems.value;
+				if (url != null) url = url + "&selected=" + selected;
+				wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
+				if (window.focus) {wAdd.focus()}
+			}
+			function pickElem(id, name){
+				document.forms["form1"].child.value=id;
+				n = document.getElementById("child_name");
+				while (name.indexOf(">")!=-1) {
+					name=name.replace(">", "&gt;");
+				}
+				while (name.indexOf("<")!=-1) {
+					name=name.replace("<", "&lt;");
+				}
+				n.innerHTML = name;
+
+				return true;
+			
+			}
+			//checks, if element is selected
+			function checkElement(){
+				for (i=0; i<document.forms["form1"].childType.length;i++){
+					if (document.forms["form1"].childType[i].value == "elm"){
+						if (document.forms["form1"].childType[i].checked == true){
+							if (document.forms["form1"].child.value == "0"){
+								alert("Data element is not selected!");
+								return false;
+							}
+						}
+						
+					}
+				}
+				if (document.forms["form1"].parent_type.value != "elm"){
+					if (document.forms["form1"].child.value == "0"){
+						alert("Data element is not selected!");
+						return false;
+					}
+				}
+				return true;
 			}
 	</script>
 	
-<body style="background-color:#f0f0f0;background-image:url('../images/eionet_background2.jpg');background-repeat:repeat-y;"
-		topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" onload="load()">
+<body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onload="load()">
+<%@ include file="header.htm" %>
+<table border="0">
+    <tr valign="top">
+        <td nowrap="true" width="125">
+            <p><center>
+                <%@ include file="menu.jsp" %>
+            </center></P>
+        </TD>
+        <TD>
+            <jsp:include page="location.jsp" flush='true'>
+                <jsp:param name="name" value="Allowable value"/>
+                <jsp:param name="back" value="true"/>
+            </jsp:include>
+            
 <div style="margin-left:30">
-	<br></br>
-	<font color="#006666" size="5" face="Arial"><strong><span class="head2">Data Dictionary</span></strong></font>
-	<br></br>
-	<font color="#006666" face="Arial" size="2"><strong><span class="head0">Prototype v1.0</span></strong></font>
-	<br></br>
-	<table cellspacing="0" cellpadding="0" width="621" border="0">
-			<tr>
-         	<td align="bottom" width="20" background="../images/bar_filled.jpg" height="25">&#160;</td>
-          	<td width="600" background="../images/bar_filled.jpg" height="25">
-            <table height="8" cellSpacing="0" cellPadding="0" border="0">
-            	<tr>
-		         	<td valign="bottom" align="middle"><span class="barfont">EIONET</span></td>
-		            <td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
-		         	<td valign="bottom" align="middle"><span class="barfont">Data Dictionary</span></td>
-					<td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
-					<td valign="bottom" align="middle"><span class="barfont">Data element</span></td>
-					<td valign="bottom" width="28"><img src="../images/bar_hole.jpg"/></td>
-					<td valign="bottom" align="middle"><span class="barfont">SubElements</span></td>
-					<td valign="bottom" width="28"><img src="../images/bar_dot.jpg"/></td>
-				</tr>
-			</table>
-			</td></tr>
-	</table>
 	
 <form name="form1" method="POST" action="contents.jsp">
 
@@ -448,7 +515,7 @@ int position = 0;
 	%>
 
 	<tr valign="bottom">
-		<td colspan="4"><font class="head00">Subelements of <font class="title2" color="#006666"><%=dispName%></font></font></td>
+		<td colspan="4"><font class="head00">Subelements of <font class="title2" color="#006666"><%=Util.replaceTags(dispName)%></font></font></td>
 	</tr>
 	
 	<%
@@ -493,7 +560,7 @@ int position = 0;
 			%>
 			<tr valign="bottom">
 				<td colspan="4">
-					This data element extends the contents of <b><%=extElem.getNamespace().getShortName()%>:<%=extElem.getShortName()%></b>.
+					This data element extends the contents of <b><%=extElem.getShortName()%></b>.
 					Since no contents have  been specified for the latter, none is also displayed in the list below. However, this
 					data element can still have its own contents which have been specified to form a <a href="<%=help%>"><font color="black">
 					<b><%=type%></b></font></a> and are displayed below. If you don't see any, none have been specified. You can add a new
@@ -512,7 +579,7 @@ int position = 0;
 			%>
 			<tr valign="bottom">
 				<td colspan="4">
-					This data element extends the contents of <b><%=extElem.getNamespace().getShortName()%>:<%=extElem.getShortName()%></b>
+					This data element extends the contents of <b><%=extElem.getShortName()%></b>
 					which are displayed in the beginning of the subelements list below, in <font color="#006666">light green</font>
 					color. They have been specified to form a <a href="<%=help%>"><font color="black"><b><%=type%></b></font></a> and you
 					can not remove them. The contents of this data element itself will become an addition to the base element's
@@ -536,7 +603,7 @@ int position = 0;
 			%>
 			<tr valign="bottom">
 				<td colspan="4">
-					This data element extends the contents of <b><%=extElem.getNamespace().getShortName()%>:<%=extElem.getShortName()%></b>
+					This data element extends the contents of <b><%=extElem.getShortName()%></b>
 					which are displayed in the beginning of the subelements list below, in <font color="#006666">light green</font>
 					color. They have been specified to form a <a href="<%=help%>"><font color="black"><b><%=type%></b></font></a> and you
 					can not remove them. The contents of this data element itself have previously been specified to form a 
@@ -555,7 +622,7 @@ int position = 0;
 			%>
 			<tr valign="bottom">
 				<td colspan="4">
-					This data element extends the contents of <b><%=extElem.getNamespace().getShortName()%>:<%=extElem.getShortName()%></b>
+					This data element extends the contents of <b><%=extElem.getShortName()%></b>
 					which are displayed in the beginning of the subelements list below, in <font color="#006666">light green</font>
 					color. They have been specified to form a <a href="<%=help%>"><font color="black"><b><%=type%></b></font></a> and you
 					can not remove them. The contents of this data element itself act as an addition to the base element's
@@ -568,7 +635,7 @@ int position = 0;
 			<%
 		}
 	}
-	
+	/*
 	if (backUrl != null){
 		%>
 		<tr valign="bottom">
@@ -576,7 +643,7 @@ int position = 0;
 		</tr>
 		<%
 	}
-	
+	*/
 	//if (!parent_type.equals("elm")){
 	
 	%>
@@ -644,32 +711,9 @@ if (!(contentID!=null && origContentType!=null && !origContentType.equals(extCon
 					}
 					%>
 					
-					<select class="small" name="child" style="width:320">
-					<%
-					for (int i=0; dataElements!=null && i<dataElements.size(); i++){
-						
-						DataElement elem = (DataElement)dataElements.get(i);
-						
-						String elemID = elem.getID();
-						String elemName = elem.getShortName();
-						if (elemName == null) elemName = "unknown";
-						if (elemName.length()==0) elemName = "empty";
-						
-						Namespace ns = elem.getNamespace();
-						String nsName = ns == null ? "unknown" : ns.getShortName();
-						if (nsName == null) nsName = "unknown";
-						if (nsName.length()==0) nsName = "empty";
-						
-						elemName = nsName + ":" + elemName;
-						
-						if (subElems== null || subElems.size()==0 || (!isIn(subElems, elemID) && !elemID.equals(parent_id))){
-							%>
-							<option value="<%=elemID%>"><%=elemName%></option>
-							<%
-						}
-					}
-					%>
-					</select>
+					<input name="child" type="hidden" value="0"/>
+					<span id="child_name">element is not selected</span>
+					<a href="javascript:openAdd('search.jsp?ctx=popup')">select</a>
 			</br>			
 		</td>
 		<% if (contentType.equals("seq")){ %>
@@ -753,18 +797,14 @@ if (!(contentID!=null && origContentType!=null && !origContentType.equals(extCon
 		if (elem != null){
 			
 			childID = elem.getID();
+			collect_elems.append(childID + "|");
 			childType = "elm";
 			
 			String elemName = elem.getShortName();
 			if (elemName == null) elemName = "unknown";
 			if (elemName.length()==0) elemName = "empty";
 				
-			Namespace ns = elem.getNamespace();
-			String nsName = ns == null ? "unknown" : ns.getShortName();
-			if (nsName == null) nsName = "unknown";
-			if (nsName.length()==0) nsName = "empty";
-				
-			childName = nsName + ":" + elemName;
+			childName = elemName;
 			
 			childMinOcc = elem.getMinOccurs();
 			childMaxOcc = elem.getMaxOccurs();
@@ -844,7 +884,7 @@ if (!(contentID!=null && origContentType!=null && !origContentType.equals(extCon
 				<% if (childType.equals("elm") || i<extElemCount){
 					%>
 					<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<font color="<%=color%>"><%=childName%></font>&#160;<a href="<%=childLink%>"><span class="info"><b>(i)<b></span></a>
+						<font color="<%=color%>"><%=Util.replaceTags(childName)%></font>&#160;<a href="<%=childLink%>"><span class="info"><b>(i)<b></span></a>
 					</td>
 					<%
 				}
@@ -880,7 +920,7 @@ if (!(contentID!=null && origContentType!=null && !origContentType.equals(extCon
 				<% if (childType.equals("elm") || i<extElemCount){
 					%>
 						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-							<font color="<%=color%>"><%=childName%></font>&#160;&#160;<a href="<%=childLink%>"><span class="info"><b>(i)<b></span></a>
+							<font color="<%=color%>"><%=Util.replaceTags(childName)%></font>&#160;&#160;<a href="<%=childLink%>"><span class="info"><b>(i)<b></span></a>
 						</td>
 					<%
 				}
@@ -905,7 +945,7 @@ if (!(contentID!=null && origContentType!=null && !origContentType.equals(extCon
 <input type="hidden" name="position" value="<%=String.valueOf(position)%>"></input>
 
 <%
-if (backUrl != null){
+/*if (backUrl != null){
 	%>
 	<input type="hidden" name="backUrl" value="<%=backUrl%>"></input>
 	<%
@@ -915,7 +955,8 @@ if (thisUrl != null){
 	%>
 	<input type="hidden" name="thisUrl" value="<%=thisUrl%>"></input>
 	<%
-}
+}*/
+
 
 if (parent_id != null){ %>
 	<input type="hidden" name="parent_id" value="<%=parent_id%>"></input> <%
@@ -957,8 +998,21 @@ if (extSequenceID != null){ %>
 	<input type="hidden" name="ext_seq_id" value="<%=extSequenceID%>"></input> <%
 }
 %>
+<input type="hidden" name="collect_elems" value="<%=collect_elems.toString()%>"></input>
 
 </form>
 </div>
+        </TD>
+</TR>
+</table>
 </body>
 </html>
+
+<%
+// end the whole page try block
+}
+finally {
+	try { if (conn!=null) conn.close();
+	} catch (SQLException e) {}
+}
+%>
