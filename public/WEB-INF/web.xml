@@ -53,78 +53,59 @@
 		<param-value>/prj/datadict/tmp</param-value>
 	</context-param>
 
-
 <!-- servlets -->
 
 	<servlet>
 		<servlet-name>env</servlet-name>
 		<servlet-class>com.tee.util.EnvServlet</servlet-class>
 	</servlet>
-
 	<servlet>
 		<servlet-name>rpcrouter</servlet-name>
 		<servlet-class>com.tee.uit.servlets.XmlRpcRouter</servlet-class>
 	</servlet>
-
-	<servlet>
-		<servlet-name>DocUpload</servlet-name>
-		<servlet-class>eionet.meta.DocUpload</servlet-class>
-	</servlet>
-
-	<servlet>
-		<servlet-name>DocDownload</servlet-name>
-		<servlet-class>eionet.meta.DocDownload</servlet-class>
-	</servlet>
-
-	<servlet>
-		<servlet-name>GetXmlInstance</servlet-name>
-		<servlet-class>eionet.meta.exports.xmlinst.XmlInstServlet</servlet-class>
-	</servlet>
-
-	<servlet>
-		<servlet-name>GetXForm</servlet-name>
-		<servlet-class>eionet.meta.exports.xforms.XFormServlet</servlet-class>
-	</servlet>
-
-	<servlet>
-		<servlet-name>XlsServlet</servlet-name>
-		<servlet-class>eionet.meta.exports.xls.XlsServlet</servlet-class>
-	</servlet>
-
-	<servlet>
-		<servlet-name>CacheServlet</servlet-name>
-		<servlet-class>eionet.meta.exports.CacheServlet</servlet-class>
-	</servlet>
-
 	<servlet>
 		<servlet-name>Login</servlet-name>
 		<servlet-class>eionet.meta.LoginServlet</servlet-class>
 	</servlet>
-
 	<servlet>
 		<servlet-name>Logout</servlet-name>
 		<servlet-class>eionet.meta.LogoutServlet</servlet-class>
 	</servlet>
-
+	<servlet>
+		<servlet-name>DocUpload</servlet-name>
+		<servlet-class>eionet.meta.DocUpload</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>DocDownload</servlet-name>
+		<servlet-class>eionet.meta.DocDownload</servlet-class>
+	</servlet>
 	<servlet>
 		<servlet-name>GetSchema</servlet-name>
 		<servlet-class>eionet.meta.GetSchema</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>Import</servlet-name>
-		<servlet-class>eionet.meta.Import</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>DsVisualUpload</servlet-name>
-		<servlet-class>eionet.meta.DsVisualUpload</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>GetPrintout</servlet-name>
 		<servlet-class>eionet.meta.GetPrintout</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>GetImportResults</servlet-name>
-		<servlet-class>eionet.meta.GetImportResults</servlet-class>
+		<servlet-name>GetXmlInstance</servlet-name>
+		<servlet-class>eionet.meta.exports.xmlinst.XmlInstServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>GetXForm</servlet-name>
+		<servlet-class>eionet.meta.exports.xforms.XFormServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>XlsServlet</servlet-name>
+		<servlet-class>eionet.meta.exports.xls.XlsServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>CacheServlet</servlet-name>
+		<servlet-class>eionet.meta.exports.CacheServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>DsVisualUpload</servlet-name>
+		<servlet-class>eionet.meta.DsVisualUpload</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>ImgUpload</servlet-name>
@@ -133,6 +114,18 @@
 	<servlet>
 		<servlet-name>HarvestingServlet</servlet-name>
 		<servlet-class>eionet.meta.HarvestingServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>InServicesServlet</servlet-name>
+		<servlet-class>eionet.meta.inservices.InServicesServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>Import</servlet-name>
+		<servlet-class>eionet.meta.Import</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>GetImportResults</servlet-name>
+		<servlet-class>eionet.meta.GetImportResults</servlet-class>
 	</servlet>
 
 <!-- servlet mappings -->
@@ -146,12 +139,28 @@
 		<url-pattern>/rpcrouter</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
+		<servlet-name>Login</servlet-name>
+		<url-pattern>/Login</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Logout</servlet-name>
+		<url-pattern>/Logout</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
 		<servlet-name>DocUpload</servlet-name>
 		<url-pattern>/DocUpload</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>DocDownload</servlet-name>
 		<url-pattern>/DocDownload</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>GetSchema</servlet-name>
+		<url-pattern>/GetSchema</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>GetPrintout</servlet-name>
+		<url-pattern>/GetPrintout</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>GetXmlInstance</servlet-name>
@@ -170,40 +179,28 @@
 		<url-pattern>/GetCache</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>Login</servlet-name>
-		<url-pattern>/Login</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>Logout</servlet-name>
-		<url-pattern>/Logout</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>GetSchema</servlet-name>
-		<url-pattern>/GetSchema</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>Import</servlet-name>
-		<url-pattern>/Import</url-pattern>
+		<servlet-name>ImgUpload</servlet-name>
+		<url-pattern>/ImgUpload</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>DsVisualUpload</servlet-name>
 		<url-pattern>/DsVisualUpload</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>GetPrintout</servlet-name>
-		<url-pattern>/GetPrintout</url-pattern>
+		<servlet-name>HarvestingServlet</servlet-name>
+		<url-pattern>/HarvestingServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>InServicesServlet</servlet-name>
+		<url-pattern>/InServices</url-pattern>
+	</servlet-mapping>	
+	<servlet-mapping>
+		<servlet-name>Import</servlet-name>
+		<url-pattern>/Import</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>GetImportResults</servlet-name>
 		<url-pattern>/GetImportResults</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>ImgUpload</servlet-name>
-		<url-pattern>/ImgUpload</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>HarvestingServlet</servlet-name>
-		<url-pattern>/HarvestingServlet</url-pattern>
 	</servlet-mapping>
 
 <!-- the application server might allow directory listing.
