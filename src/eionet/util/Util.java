@@ -23,6 +23,7 @@
  
 package eionet.util;
 
+import java.net.*;
 import java.util.*;
 import java.security.*;
 
@@ -52,7 +53,7 @@ public class Util {
     
     /**
      * A method for calculating and formatting the current
-     * date and time into a String.
+     * date and time into a String for a log.
      */
      
     public static String logTime(){
@@ -75,6 +76,35 @@ public class Util {
         time = time + ":" + minutes;
         time = time + ":" + seconds;
         time = time + "] ";
+        
+        return time;
+    }
+    
+    /**
+     * A method for formatting the given timestamp into a String
+     * for history.
+     */
+     
+    public static String historyDate(long timestamp){
+        
+        Date date = new Date(timestamp);
+        String year = String.valueOf(1900 + date.getYear());
+        String month = String.valueOf(date.getMonth());
+        month = (month.length() < 2) ? ("0" + month) : month;
+        String day = String.valueOf(date.getDate());
+        day = (day.length() < 2) ? ("0" + day) : day;
+        String hours = String.valueOf(date.getHours());
+        hours = (hours.length() < 2) ? ("0" + hours) : hours;
+        String minutes = String.valueOf(date.getMinutes());
+        minutes = (minutes.length() < 2) ? ("0" + minutes) : minutes;
+        String seconds = String.valueOf(date.getSeconds());
+        seconds = (seconds.length() < 2) ? ("0" + seconds) : seconds;
+        
+        String time = year;
+        time = time + "/" + month;
+        time = time + "/" + day;
+        time = time + " " + hours;
+        time = time + ":" + minutes;
         
         return time;
     }
@@ -192,16 +222,16 @@ public class Util {
         
         Date nextDate = cal.getTime();
         Date currDate = new Date();
-        
+
         System.out.println(nextDate.toString());
         System.out.println(currDate.toString());
-        
+
         long nextTime = cal.getTime().getTime();
         long currTime = (new Date()).getTime();
-        
+
         return nextTime-currTime;
     }
-    
+
     /**
      * A method for counting occurances of a substring in a string.
      */
@@ -272,8 +302,8 @@ public class Util {
     
     public static String strLiteral(String in) {
     in = (in != null ? in : "");
-    StringBuffer ret = new StringBuffer("'"); 
-      
+    StringBuffer ret = new StringBuffer("'");
+
     for (int i = 0; i < in.length(); i++) {
       char c = in.charAt(i);
       if (c == '\'')
@@ -282,14 +312,170 @@ public class Util {
         ret.append(c);
     }
     ret.append('\'');
-      
+
     return ret.toString();
   }
 
- 
+    /**
+     * A method for replacing < > tags in string for web layout
+     */
+    public static String replaceTags(String in) {
+        return replaceTags(in, false);
+    }
+    public static String replaceTags(String in, boolean inTextarea) {
+    in = (in != null ? in : "");
+
+
+    StringBuffer ret = new StringBuffer();
+
+    for (int i = 0; i < in.length(); i++) {
+      char c = in.charAt(i);
+      if (c == '<')
+        ret.append("&lt;");
+      else if (c == '>')
+        ret.append("&gt;");
+      else if (c == '\n' && inTextarea==false)
+        ret.append("<BR>");
+      else
+        ret.append(c);
+    }
+    String retString = ret.toString();
+    if (inTextarea == false)
+        retString=setAnchors(retString);
+
+    return retString;
+  }
+  
+    /**
+    * Finds all urls in a given string and replaces them with HTML anchors.
+    * If boolean newWindow==true then target will be a new window, else no.
+    */
+    public static String setAnchors(String s, boolean newWindow){
+        
+        StringBuffer buf = new StringBuffer();
+        
+        StringTokenizer st = new StringTokenizer(s, " \t\n\r\f", true);
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            if (!isURL(token))
+                buf.append(token);
+            else{
+                StringBuffer _buf = new StringBuffer("<a ");
+                if (newWindow) _buf.append("target=\"_blank\" ");
+                _buf.append("href=\"");
+                _buf.append(token);
+                _buf.append("\">");
+                _buf.append(token);
+                _buf.append("</a>");
+                buf.append(_buf.toString());
+            }
+        }
+        
+        return buf.toString();
+    }
+  
+    /**
+    * Finds all urls in a given string and replaces them with HTML anchors
+    * with target being a new window.
+    */
+    public static String setAnchors(String s){
+        
+        return setAnchors(s, true);
+    }
+    
+    /**
+    * Checks if the given string is a well-formed URL
+    */
+    public static boolean isURL(String s){
+        try {
+            URL url = new URL(s);
+        }
+        catch (MalformedURLException e){
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+    *
+    */
+    public static boolean implementsIF(Class c, String ifName){
+        
+        boolean f = false;
+        Class[] ifs = c.getInterfaces();
+        for (int i=0; ifs!=null && i<ifs.length; i++){
+            Class ifClass = ifs[i];
+            if (ifClass.getName().endsWith(ifName))
+                return true;
+        }
+        
+        return f;
+    }
+    
+    /**
+    * Converts HTML/XML escape sequences (a la &#147; or &amp;)
+    * in the given to UNICODE.
+    */
+    public static String escapesToUnicode(String literal) {
+        
+        return literal;
+        
+        /*if (literal == null)
+            return null;
+        
+        UnicodeEscapes unicodeEscapes = null;
+        
+        StringBuffer buf = new StringBuffer();
+        for (int i=0; i<literal.length(); i++){
+            
+            char c = literal.charAt(i);
+            
+            if (c=='&'){
+                int j = literal.indexOf(";", i);
+                if (j > i){
+                    char cc = literal.charAt(i+1);
+                    int decimal = -1;
+                    if (cc=='#'){
+                        // handle Unicode decimal escape
+                        String sDecimal = literal.substring(i+2, j);
+                        
+                        try{
+                            decimal = Integer.parseInt(sDecimal);
+                        }
+                        catch (Exception e){}
+                    }
+                    else{
+                        // handle entity
+                        String ent = literal.substring(i+1, j);
+                        if (unicodeEscapes == null)
+                            unicodeEscapes = new UnicodeEscapes();
+                        decimal = unicodeEscapes.getDecimal(ent);
+                    }
+                    
+                    if (decimal >= 0){
+                        // if decimal was found, use the corresponding char. otherwise stick to c.
+                        c = (char)decimal;
+                        i = j;
+                    }
+                }
+            }
+            
+            buf.append(c);
+        }
+        
+        return buf.toString();*/
+    }
+    
+    /**
+    * main
+    */
     public static void main(String[] args){
         
-        try {
+        String s = "kala http://www.neti.ee mees";
+        System.out.println(setAnchors(s));
+        
+        /*try {
             System.out.println(digestHexDec("http://purl.org/dc/elements/1.1/subject", "md5"));
         }
         catch (GeneralSecurityException e){
@@ -323,6 +509,6 @@ public class Util {
         
         System.out.println(sDigest);
         System.out.println(sDigest2);
-        System.out.println("bye");
+        System.out.println("bye");*/
     }
 }
