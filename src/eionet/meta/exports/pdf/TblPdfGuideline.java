@@ -21,6 +21,7 @@ public class TblPdfGuideline {
 	private Parameters params = null;
 	private DstPdfGuideline owner = null;
 	private boolean hasGIS = false;
+	protected Vector showedAttrs = new Vector();
 	
 	// methods
 	/////////////
@@ -36,6 +37,7 @@ public class TblPdfGuideline {
         this.searchEngine = searchEngine;
         //this.parentSection = parentSection;
         this.owner = owner;
+		setShowedAttributes();
     }
     
 	public void write(String tblID) throws Exception {
@@ -148,9 +150,6 @@ public class TblPdfGuideline {
         hash.put("value", dsTable.getShortName());
         v.add(0, hash);
 
-		Vector showedAttrs = owner.getShowedAttributes();
-		showedAttrs.remove("Name");
-		showedAttrs.add(0, "Short name");
         addElement(PdfUtil.simpleAttributesTable(v, showedAttrs));
         addElement(new Phrase("\n"));
 
@@ -263,6 +262,14 @@ public class TblPdfGuideline {
 	
 	public void setGIS(boolean hasGIS){
 		this.hasGIS = hasGIS;
+	}
+	
+	protected void setShowedAttributes(){
+		
+		showedAttrs.add("Short name");
+		showedAttrs.add("Definition");
+		showedAttrs.add("ShortDescription");
+		showedAttrs.add("Methodology");
 	}
    
     public static void main(String[] args){

@@ -22,6 +22,7 @@ public class DstPdfGuideline extends PdfHandout {
 	private Hashtable tblElms = new Hashtable();
 	private Hashtable tblNames = new Hashtable();
 	private Hashtable submitOrg = new Hashtable();
+	private Hashtable respOrg = new Hashtable();
 	private boolean hasGisTables = false;
 	
 //	private Chapter chapter = null;
@@ -52,6 +53,7 @@ public class DstPdfGuideline extends PdfHandout {
         	if (searchEngine.hasGIS(tbl.getID())){
         		tbl.setGIS(true);
         		this.hasGisTables = true;
+        		System.out.println("===> tulin write()-st");
         	}
         	tbl.setSimpleAttributes(
         			searchEngine.getSimpleAttributes(tbl.getID(), "T"));
@@ -112,8 +114,6 @@ public class DstPdfGuideline extends PdfHandout {
 			attrs.add(1, hash);
         }
 
-		showedAttrs.remove("Name");
-		showedAttrs.add(0, "Short name");
         addElement(PdfUtil.simpleAttributesTable(attrs, showedAttrs));
         addElement(new Phrase("\n"));
         
@@ -134,6 +134,7 @@ public class DstPdfGuideline extends PdfHandout {
 		}
 		
 		this.submitOrg = ds.getCAttrByShortName("SubmitOrganisation");
+		this.respOrg   = ds.getCAttrByShortName("RespOrganisation");
 		
 		/* write image attributes
 		Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath);
@@ -646,36 +647,57 @@ public class DstPdfGuideline extends PdfHandout {
 		font.setColor(Color.gray);
 		
 		Phrase phr = new Phrase();
-		phr.add(new Chunk("European Environment Agency  *  ", font));
 
-		font = FontFactory.getFont(FontFactory.HELVETICA, 9);
-		font.setColor(Color.lightGray);
-		phr.add(new Chunk("http://www.eea.eu.int     ", font));
-		phr.setLeading(10*1.2f);
-		
 		String submOrgName = (String)submitOrg.get("name");
-		if (!Util.voidStr(submOrgName) &&
-			!submOrgName.trim().equals("European Environment Agency")){
-			if (!Util.voidStr(submOrgName)){
-				font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
-				font.setColor(Color.gray);
-				phr.add(new Chunk("\n" + submOrgName, font));
-			}
-			
+		if (!Util.voidStr(submOrgName)){
+			font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
+			font.setColor(Color.gray);
+			phr.add(new Chunk(submOrgName, font));
+	
 			String submOrgUrl = (String)submitOrg.get("url");
 			if (!Util.voidStr(submOrgUrl)){
 				font = FontFactory.getFont(FontFactory.HELVETICA, 9);
 				font.setColor(Color.lightGray);
 				phr.add(new Chunk("  *  " + submOrgUrl, font));
 			}
+			
+			phr.add(new Chunk("     ", font));
+			phr.setLeading(10*1.2f);
+		}
+		else
+			submOrgName = "";
+		
+		if (respOrg!=null){
+			String respOrgName = (String)respOrg.get("name");
+			if (!Util.voidStr(respOrgName) && !respOrgName.equals(submOrgName)){
+				font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
+				font.setColor(Color.gray);
+				phr.add(new Chunk("\n" + respOrgName, font));
+				
+				String respOrgUrl = (String)submitOrg.get("url");
+				if (!Util.voidStr(respOrgUrl)){
+					font = FontFactory.getFont(FontFactory.HELVETICA, 9);
+					font.setColor(Color.lightGray);
+					phr.add(new Chunk("  *  " + respOrgUrl, font));
+				} 
+			}
 		}
 		
 		phr.add(new Chunk("   ", font));
 		
 		footer = new HeaderFooter(phr, true);
-		//footer.setAlignment(Element.ALIGN_LEFT);
 		footer.setAlignment(Element.ALIGN_RIGHT);
 		footer.setBorder(com.lowagie.text.Rectangle.TOP);
+	}
+	
+	protected void setShowedAttributes(){
+		
+		showedAttrs.add("Short name");
+		showedAttrs.add("Version");
+		showedAttrs.add("Definition");
+		showedAttrs.add("ShortDescription");
+		showedAttrs.add("PlannedUpdFreq");
+		showedAttrs.add("Methodology");
 	}
   
     public static void main(String[] args){

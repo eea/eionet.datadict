@@ -459,9 +459,9 @@ public class PdfUtil {
 			if (pori!=null && pori.equalsIgnoreCase("undefined")) pori = null;
 			
 			Phrase phr = new Phrase();
-			phr.add(new Chunk(name + "\n",
+			phr.add(process(name + "\n",
 				FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
-			phr.add(new Chunk("(" + shortName + ")\n",
+			phr.add(process("(" + shortName + ")\n",
 										Fonts.get(Fonts.CELL_VALUE)));
 			if (!Util.voidStr(pori))
 				phr.add(new Chunk("\n" + pori,
@@ -549,7 +549,11 @@ public class PdfUtil {
 						dataspecs.append("Codelist");
 				}
 				else{
-					dataspecs = new StringBuffer("Codelist:\nsee ");
+					if (dataspecs.length()>0)
+						dataspecs.append(" codelist:\nsee ");
+					else
+						dataspecs.append("Codelist:\nsee ");
+						
 					if (sect==null)
 						dataspecs.append("below");
 					else
@@ -565,7 +569,8 @@ public class PdfUtil {
 								{"MaxSize", "Maximum size: "},
 								{"MinValue", "Minimum value: "},
 								{"MaxValue", "Maximum value: "},
-								{"DecimalPrecision", "Decimal precision: "}};
+								{"DecimalPrecision", "Decimal precision: "},
+								{"Unit", "Unit: "}};
 					for (int k=0; k<ss.length; k++){
 						String value =
 							elem.getAttributeValueByShortName(ss[k][0]);
@@ -578,7 +583,7 @@ public class PdfUtil {
 					dataspecs = new StringBuffer(" ");
             }
             
-            cell = new PdfPCell(new Phrase(dataspecs.toString(),
+            cell = new PdfPCell(process(dataspecs.toString(),
             								Fonts.get(Fonts.CELL_VALUE)));
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
