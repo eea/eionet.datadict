@@ -40,6 +40,14 @@
 				return;
 			}
 			
+			if (mode.equals("add")){
+				boolean addPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
+				if (!addPrm){ %>
+					<b>Not allowed!</b> <%
+					return;
+				}
+			}
+			
 			if (!mode.equals("add") && (attr_id == null || attr_id.length()==0)){ %>
 				<b>Attribute ID is missing!</b> <%
 				return;
@@ -48,11 +56,28 @@
 			String type = request.getParameter("type");
 			if (type!=null && type.length()==0)
 				type = null;
-			/*if (type == null || type.length()==0) { %>
-				<b>Type paramater is missing!</b>
-				<%
+			
+			String idPrefix = "";
+			if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
+				idPrefix = "c";
+			else if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE))
+				idPrefix = "s";
+			
+			// check permissions
+			boolean editPrm = false;
+			boolean deletePrm = false;
+			if (!mode.equals("add")){
+				editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/attributes/" + idPrefix + attr_id, "u");
+				deletePrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/attributes/" + idPrefix + attr_id, "d");
+			}
+			if (mode.equals("edit") && !editPrm){ %>
+				<b>Not allowed!</b> <%
 				return;
-			}*/
+			}
+			if (mode.equals("delete") && !deletePrm){ %>
+				<b>Not allowed!</b> <%
+				return;
+			}
 			
 			if (request.getMethod().equals("POST")){
 				
@@ -75,6 +100,7 @@
 					}
 
 					AttributeHandler handler = new AttributeHandler(userConn, request, ctx);
+					handler.setUser(user);
 					handler.execute();
 					
 					if (mode.equals("add")){
@@ -150,7 +176,6 @@
 			}
 			
 			String disabled = user == null ? "disabled" : "";
-			
 			%>
 
 <html>
@@ -328,6 +353,14 @@
 					'Basically it defines the context in which you define this attribute. Attributes can be roughly ' +
 					'divided into two contexts: those originating from ISO11179 and those specific to Data Dictionary.');
 		}
+		
+		function harvest(){
+			var msg = "This might take a couple of minutes, depending on the harvestign connection speed and " +	
+						"the amount of objects to harvest!";
+			wHarvest = window.open("HarvestingServlet","Harvest","height=200,width=300,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
+			if (window.focus) {wHarvest.focus()}
+		}
+		
     </script>
 </head>
 <body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onload="onLoad()">
@@ -379,7 +412,7 @@
 						<td><span class="head00">View attribute definition</span></td>
 						<td align="right">
 							<%
-							if (user!=null){ %>
+							if (user!=null && editPrm){ %>
 								<input type="button" class="smallbutton" value="Edit" onclick="goToEdit()"/> <%
 							}
 							else{
@@ -427,7 +460,7 @@
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
 				
-					<a href="javascript:openAttrType()"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="attr_fields.html#type"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Type</b>
 						<%
 						displayed++;
@@ -465,7 +498,7 @@
 			
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:openAttrShortName()"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="attr_fields.html#short_name"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Short name</b>
 						<%
 						displayed++;
@@ -491,7 +524,7 @@
 			
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:openAttrName()"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="attr_fields.html#name"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Name</b>
 						<%
 						displayed++;
@@ -516,7 +549,7 @@
 			
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>	
 				<td align="right" style="padding-right:10">
-					<a href="javascript:helpNamespace()"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="attr_fields.html#context"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Context</b>
 						<%
 						displayed++;
@@ -586,7 +619,7 @@
 			
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>	
 				<td align="right" style="padding-right:10">
-					<a href="javascript:openAttrDefinition()"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="attr_fields.html#definition"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Definition</b>
 						<%
 						displayed++;
@@ -628,7 +661,7 @@
 				
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>	
 					<td align="right" style="padding-right:10">
-						<a href="javascript:openAttrObligation()"><span class="help">?</span></a>&#160;
+						<a target="_blank" href="attr_fields.html#obligation"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><b>Obligation</b>
 							<%
 							displayed++;
@@ -669,7 +702,7 @@
 				
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+						<a target="_blank" href="attr_fields.html#disp_type"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><b>Display type</b>
 							<%
 							displayed++;
@@ -722,7 +755,7 @@
 				%>
 					<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 						<td align="right" style="padding-right:10">
-							<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+							<a target="_blank" href="attr_fields.html#fxv"><span class="help">?</span></a>&#160;
 							<span class="mainfont"><b>Fixed values</b></span>
 						</td>
 						<td>
@@ -745,7 +778,7 @@
 				%>
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+						<a target="_blank" href="attr_fields.html#disp_mult"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><b>Display multiple</b>
 						<%
 							displayed++;
@@ -787,7 +820,7 @@
 			%>
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" valign="top" style="padding-right:10">
-					<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="attr_fields.html#inherit"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Inheritance</b>
 						<%
 						displayed++;
@@ -830,7 +863,7 @@
 			
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="attr_fields.html#disp_order"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Display order</b>
 						<%
 						displayed++;
@@ -872,7 +905,7 @@
 			
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" valign="top" style="padding-right:10">
-						<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+						<a target="_blank" href="attr_fields.html#disp_for"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><b>Display for</b>
 							<%
 							displayed++;
@@ -946,7 +979,7 @@
 				%>
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+						<a target="_blank" href="attr_fields.html#dispw"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><b>Display width</b>
 							<%
 							displayed++;
@@ -988,7 +1021,7 @@
 				%>
 				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+						<a target="_blank" href="attr_fields.html#disph"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><b>Display height</b>
 							<%
 							displayed++;
@@ -1025,8 +1058,81 @@
 				</tr>
 				<%
 			}
-			%>
+			
+			
+			// start HARVESTER LINK
+			
+			boolean dispHarvesterID = false;
+			String harvesterID = null;
+			if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
 				
+				if (!mode.equals("add"))
+					harvesterID = attribute.getHarvesterID();
+					
+				if (mode.equals("view")){
+					if (!Util.voidStr(harvesterID))
+						dispHarvesterID = true;
+				}
+				else
+					dispHarvesterID = true;
+			}
+			
+			if (dispHarvesterID){
+				
+				Vector harvesters = null;
+				if (!mode.equals("view"))
+					harvesters = searchEngine.getHarvesters();
+				
+				%>
+			
+				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+					<td align="right" style="padding-right:10">
+						<a target="_blank" href="attr_fields.html"><span class="help">?</span></a>&#160;
+						<span class="mainfont"><b>Linked harvester</b>
+							<%
+							displayed++;
+							if (!mode.equals("view")){
+								%>
+								&#160;(O)
+								<%
+							}
+							%>
+						</span>
+					</td>
+					<td>
+						<%
+						if (!mode.equals("view")){							
+							String noLinkSelected = Util.voidStr(harvesterID) ? "selected" : "";
+							%>
+							<select class="small" name="harv_id">
+								<option <%=noLinkSelected%> value="null">-- no link --</option>
+								<%
+								for (int i=0; harvesters!=null && i<harvesters.size(); i++){
+									String harvID = (String)harvesters.get(i);
+									String selected = "";
+									if (!Util.voidStr(harvesterID) && harvesterID.equals(harvID))
+										selected = "selected";
+									%>
+									<option <%=selected%> value="<%=harvID%>"><%=harvID%></option><%
+								}
+								%>
+							</select><%
+							
+							if (user!=null && user.isAuthentic()){ %>
+								<input type="button" class="smallbutton" value="Harvest" onclick="harvest()"/><%
+							}
+						}
+						else { %>
+							<span class="barfont" style="width:400"><%=harvesterID%></span> <%
+						}
+						%>
+					</td>
+				</tr>
+				<%
+			}
+			
+			// end HARVESTER LINK
+			%>
 			
 		<% if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX) && !mode.equals("add")){ // if COMPLEX and mode=add
 		%>

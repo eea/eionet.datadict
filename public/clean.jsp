@@ -3,6 +3,10 @@
 <%
 	XDBApplication.getInstance(getServletContext());
 	AppUserIF user = SecurityUtil.getUser(request);
+	if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/cleanup", "x")){ %>
+		<b>Not allowed!</b><%
+		return;
+	}
 %>
 
 <html>
@@ -12,8 +16,38 @@
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="JavaScript" src='script.js'></script>
 	<SCRIPT LANGUAGE="JavaScript">
+	
+		var idsCleared = false;
+		
 		function submitForm(){
 			document.forms["form1"].submit();
+		}
+		
+		function clearIds(){
+			
+			if (idsCleared == false){
+				document.forms["form1"].elements["rm_id"].value="";
+				idsCleared = true;
+			}
+		}
+		
+		function rmCrit(){
+			
+			if (document.forms["form1"].elements["rm_crit"][0].checked){
+				document.forms["form1"].elements["rm_id"].disabled = true;
+				document.forms["form1"].elements["rm_name"].disabled = false;
+				document.forms["form1"].elements["rm_ns"].disabled = false;
+			}
+			else if (document.forms["form1"].elements["rm_crit"][1].checked){				
+				document.forms["form1"].elements["rm_name"].disabled = true;
+				document.forms["form1"].elements["rm_ns"].disabled = true;
+				document.forms["form1"].elements["rm_id"].disabled = false;
+			}
+			else{
+				document.forms["form1"].elements["rm_name"].disabled = true;
+				document.forms["form1"].elements["rm_ns"].disabled = true;
+				document.forms["form1"].elements["rm_id"].disabled = true;
+			}
 		}
 	</SCRIPT>
 </head>
@@ -166,13 +200,80 @@
 							<td>
 								<%
 								
-								String disabled = clnPrm ? "" : "disabled";
+								String disabled = "";//clnPrm ? "" : "disabled";
 								%>
 								<input type="button" <%=disabled%>
 									   class="smallbuttonb" value="Action" onclick="submitForm()">
 								</input>
 							</td>
 						</tr>
+						
+						<%
+						if (request.getParameter("smersh")!=null){ %>
+							<tr height="10"><td>&#160;</td></tr>
+							<tr>
+								<td>
+									<table cellspacing="0" cellpadding="0">
+										<tr>
+											<td colspan="2">&#160;</td>
+											<td bgcolor="#D3D3D3">
+												<span class="smallfont">
+													<input type="radio" name="rm_obj_type" value="dst">datasets</input>
+												</span>
+											</td>
+											<td>&#160;</td>
+											<td  bgcolor="#D3D3D3">
+												<span class="smallfont">
+													<input type="radio" name="rm_crit" value="lid" onclick="rmCrit()"/>short name&#160;
+													<input type="text" class="smalltext" name="rm_name" disabled/>
+												</span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
+									   				value="<%=MrProper.RMV_OBJECTS%>"/>
+											</td>
+											<td style="padding-left:5;padding-right:5"><span class="smallfont">Remove</span></td>
+											<td bgcolor="#D3D3D3">
+												<span class="smallfont">
+													<input type="radio" name="rm_obj_type" value="tbl">tables</input>
+												</span>
+											</td>
+											<td style="padding-left:5;padding-right:5"><span class="smallfont">with</span></td>
+											<td  bgcolor="#D3D3D3">
+												<span class="smallfont">
+													&#160;&#160;&#160;&#160;&#160;&#160;& parent ns&#160;
+													<input type="text" class="smalltext" name="rm_ns" disabled/>
+												</span>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="2">&#160;</td>
+											<td bgcolor="#D3D3D3">
+												<span class="smallfont">
+													<input type="radio" name="rm_obj_type" value="elm">elements</input>
+												</span>
+											</td>
+											<td>&#160;</td>
+											<td  bgcolor="#D3D3D3">
+												<span class="smallfont">
+													<input type="radio" name="rm_crit" value="id" onclick="rmCrit()"/>ids&#160;
+													<input type="text"
+														   class="smalltext"
+														   name="rm_id"
+														   value="(delimited by space)"
+														   onclick="clearIds()"
+														   disabled/>
+												</span>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<%
+						}
+						%>
 					</table>
 				</FORM>
 	            </div> <%

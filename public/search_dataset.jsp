@@ -194,7 +194,7 @@ private String setDefaultAttrs(String name){
 				<table width="auto" cellspacing="0">
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
-							<a href="javascript:openShortName()"><span class="help">?</span></a>&#160;
+							<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
 							<span class="mainfont"><b>Short name</b></span>&#160;&#160;
 						</td>
 						<td colspan="2">

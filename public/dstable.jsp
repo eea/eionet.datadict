@@ -127,10 +127,48 @@ if (!mode.equals("add") && (tableID == null || tableID.length()==0)){ %>
 	return;
 }
 
+String dsID = request.getParameter("ds_id");
+
+// check permissions
+
+boolean wPrm = false;
+boolean editPrm = false;
+boolean deletePrm = false;
+if (!mode.equals("add")){
+	wPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/tables/" + tableID, "w");
+	editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/tables/" + tableID, "u");
+	deletePrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/tables/" + tableID, "d");
+}
+if (mode.equals("edit") && !editPrm){ %>
+	<b>Not allowed!</b> <%
+	return;
+}
+if ((mode.equals("delete") || mode.equals("restore")) && !deletePrm){ %>
+	<b>Not allowed!</b> <%
+	return;
+}
+
+if (mode.equals("add")){
+	if (request.getParameter("ds_id")!=null){
+		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsID, "w")){ %>
+			<b>Not allowed!</b><%
+			return;
+		}
+	}
+	else{
+		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/tables", "i")){ %>
+			<b>Not allowed!</b><%
+			return;
+		}
+	}
+}
+
+// ...
+
 String contextParam = request.getParameter("ctx");
 if (contextParam == null) contextParam = "";
 
-String dsID = request.getParameter("ds_id");
+
 /*if (!mode.equals("add") && (dsID == null || dsID.length()==0)){
 	%>
 	<b>Dataset ID is missing!</b>
@@ -208,8 +246,12 @@ if (request.getMethod().equals("POST")){
 			// if this was check in & new version was created , send to "view" mode
 			QueryString qs = new QueryString(currentUrl);
 			String checkIn = request.getParameter("check_in");			
-        	if (checkIn!=null && checkIn.equalsIgnoreCase("true"))
+        	if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
 	        	qs.changeParam("mode", "view");
+	        	
+	        	//JH041203 - remove previous url (with edit mode) from history
+				history.remove(history.getCurrentIndex());
+        	}
 	        else
 	        	qs.changeParam("mode", "edit");
 	        
@@ -231,7 +273,20 @@ if (request.getMethod().equals("POST")){
 				redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl:redirUrl + "/index.jsp";
 			}
 		}
-	
+		else if (mode.equals("restore")){
+			
+			String restoredID = handler.getRestoredID();
+			if (restoredID!=null)
+				redirUrl = redirUrl + "dstable.jsp?mode=view&table_id=" + restoredID;
+			else{
+				String[] pages={"datasets.jsp","search_results_tbl.jsp","dataset.jsp","dstables.jsp"};
+				String deleteUrl = history.gotoLastMatching(pages);
+				redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl:redirUrl + "/index.jsp";
+			}
+		}
+		else if (mode.equals("force_status")){
+			redirUrl = redirUrl + "dstable.jsp?mode=view&table_id=" + tableID;
+		}
 	}
 	finally{
 		try { if (userConn!=null) userConn.close();
@@ -298,20 +353,35 @@ if (dataset==null && (mode.equals("view") || mode.equals("edit"))){ %>
 
 VersionManager verMan = new VersionManager(conn, searchEngine, user);
 
+// find out if it's the latest version of such table
+String latestID = dsTable==null ? null : verMan.getLatestTblID(dsTable);
+boolean isLatest = Util.voidStr(latestID) ? true : latestID.equals(dsTable.getID());
+
+//
 String workingUser = null;
 if (dsTable!=null){
 	workingUser = verMan.getTblWorkingUser(dsTable.getShortName(), dsNs);
 }
 
+// implementing check-out/check-in
 if (mode.equals("edit") && user!=null && user.isAuthentic()){
 	
 	// see if table is checked out
 	if (Util.voidStr(workingUser)){
 	    // table not checked out, create working copy
+	    // but first make sure it's the latest version
+	    if (!isLatest){ %>
+	    	<b>Trying to check out a version that is not the latest!</b><%
+	    	return;
+	    }
+	    
 	    String copyID = verMan.checkOut(tableID, "tbl");
 	    if (!tableID.equals(copyID)){
 		    
 		    // send to copy if created successfully
+		    // but first remove previous url (edit original) from history
+			history.remove(history.getCurrentIndex());
+			
 		    String qryStr = "mode=edit";
 		    qryStr+= "&table_id=" + copyID;
 		    qryStr+= "&ds_id=" + dsID;
@@ -332,6 +402,9 @@ if (mode.equals("edit") && user!=null && user.isAuthentic()){
 	    // If it's not the working copy, send the user to it
 	    String copyID = verMan.getWorkingCopyID(dsTable);
 	    if (copyID!=null && !copyID.equals(tableID)){
+		    
+		    // first remove previous url (edit original) from history
+			history.remove(history.getCurrentIndex());
 		    
 			String qryStr = "mode=edit";
 			qryStr+= "&table_id=" + copyID;
@@ -357,10 +430,6 @@ if (complexAttrs == null) complexAttrs = new Vector();
 if (!mode.equals("add"))
 	elems = searchEngine.getDataElements(null, null, null, null, tableID);
 
-
-// find out if it's the latest version of such table
-String latestID = dsTable==null ? null : verMan.getLatestTblID(dsTable);
-boolean isLatest = Util.voidStr(latestID) ? true : latestID.equals(dsTable.getID());
 
 // find out if the table's latest dataset is also the latest such dataset
 if (isLatest){
@@ -617,9 +686,11 @@ String attrValue = null;
 			document.forms["form1"].submit();
 		}
 		function updateParent(){
-			value = dialogWin.returnValue;
-			if (value==null)
-				value=true;
+			var v = dialogWin.returnValue;
+			if (v==null)
+				v=true;
+				
+			document.forms["form1"].elements["ver_upw"].value = v;
 			document.forms["form1"].elements["check_in"].value = "true";
 			document.forms["form1"].elements["mode"].value = "edit";
 			document.forms["form1"].submit();
@@ -657,6 +728,24 @@ String attrValue = null;
 			}
 			else
 				document.location=url;
+		}
+		
+		function restore(){
+			var b = confirm("This operation will create a new copy this table and its dataset. Click OK, if you want to continue. Otherwise click Cancel.");
+			if (b==false) return;
+	    	document.forms["form1"].elements["mode"].value = "restore";
+       		document.forms["form1"].submit();
+    	}
+    	
+    	function forceStatus(status){
+			var b = confirm("This will force the '" + status + "' to lower levels as well, affecting all " +
+								"data elements within this table. Click OK, if you " +
+								"still want to continue. Otherwise click Cancel.");			
+			if (b==false) return;
+			
+			document.forms["form1"].elements["mode"].value = "force_status";
+			document.forms["form1"].elements["force_status"].value = status;
+			document.forms["form1"].submit();
 		}
 </script>
 
@@ -719,6 +808,9 @@ String attrValue = null;
 		
 		<tr>
 			<%
+			
+			boolean topFree = false;
+			
 			if (mode.equals("add")){ %>
 				<td colspan="2">
 					<span class="head00">Add a new table definition</span>
@@ -745,7 +837,7 @@ String attrValue = null;
 				
 				// set the flag indicating if the top namespace is in use
 				String topWorkingUser = verMan.getWorkingUser(dsTable.getParentNs());
-				boolean topFree = topWorkingUser==null ? true : false;
+				topFree = topWorkingUser==null ? true : false;
 			
 				%>
 				<td><span class="head00">View table definition</span></td>
@@ -762,18 +854,27 @@ String attrValue = null;
 					<%
 					if (user!=null && dsTable!=null){
 						
+						boolean isDeleted = searchEngine.isTblDeleted(dsTable.getID());
+						if (isDeleted && topFree && deletePrm){ %>
+							<input type="button" class="smallbutton" value="Restore" onclick="restore()"/>&#160;<%
+						}
+						
 						boolean inWorkByMe = workingUser==null ?
 											 false :
 											 workingUser.equals(user.getUserName());
-											 
-						if (dsTable.isWorkingCopy() ||
-							(isLatest && topFree)   ||
-							(isLatest && inWorkByMe)){ %>
-							<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=tableID%>')"/>&#160;<%
+						
+						if (editPrm){		 
+							if (dsTable.isWorkingCopy() ||
+								(isLatest && topFree)   ||
+								(isLatest && inWorkByMe)){ %>
+								<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=tableID%>')"/>&#160;<%
+							}
 						}
 						
-						if (!dsTable.isWorkingCopy() && isLatest && topFree){ %>
-							<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/> <%
+						if (deletePrm){
+							if (!dsTable.isWorkingCopy() && isLatest && topFree){ %>
+								<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/> <%
+							}
 						}
 					}
 					else{
@@ -815,7 +916,7 @@ String attrValue = null;
 		
 		<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 			<td align="right" style="padding-right:10">
-				<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+				<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
 				<span class="mainfont"><b>Short name</b>
 					<%
 					displayed++;
@@ -841,7 +942,7 @@ String attrValue = null;
 		if (mode.equals("add") && Util.voidStr(request.getParameter("ds_id"))){ %>
 			<tr valign="top">
 				<td align="right" style="padding-right:10">
-					<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="identification.html#dataset"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Dataset</b>&#160;(M)</span>
 				</td>
 				<td>
@@ -862,7 +963,7 @@ String attrValue = null;
 			%>
 			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="identification.html#dataset"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Dataset</b>
 						<%
 						if (!mode.equals("view")){
@@ -889,67 +990,9 @@ String attrValue = null;
 		}
 		%>
 		
-		<!--tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-			<td align="right" style="padding-right:10">
-				<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
-				<span class="mainfont"><b>Full name</b>
-					<%
-					displayed++;
-					if (!mode.equals("view")){
-						%>
-						&#160;(O)
-						<%
-					}
-					%>
-				</span>
-			</td>
-			<td>
-				<%
-				if(!mode.equals("add")){
-					String name = (dsTable.getName() == null) ? "" : dsTable.getName();
-					if(mode.equals("edit")){ %>
-						<input <%=disabled%> type="text" class="smalltext" size="30" name="full_name" value="<%=name%>"></input> <%
-					}else{ %>
-						<span class="barfont" style="width:400"><%=name%></span> <%
-					}
-				} else{ %>
-					<input <%=disabled%> type="text" class="smalltext" size="30" name="full_name"></input> <%
-				}
-				%>
-			</td>
-		</tr>
-		
 		<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 			<td align="right" style="padding-right:10">
-				<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
-				<span class="mainfont"><b>Definition</b>
-					<%
-					displayed++;
-					if (!mode.equals("view")){
-						%>
-						&#160;(O)
-						<%
-					}
-					%>
-				</span>
-			</td>
-			<td>
-				<% if (!mode.equals("add")){
-					String definition = (dsTable.getDefinition() == null) ? "" : dsTable.getDefinition();
-					if(mode.equals("edit")){ %>
-						<textarea <%=disabled%> class="small" rows="3" cols="42" name="definition"><%=definition%></textarea> <%
-					}else{ %>
-						<span class="barfont" style="width:400"><%=definition%></span> <%
-					}
-				}else{ %>
-						<textarea <%=disabled%> class="small" rows="3" cols="42" name="definition"></textarea>
-				<% } %>
-			</td>
-		</tr-->
-		
-		<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-			<td align="right" style="padding-right:10">
-				<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+				<a target="_blank" href="types.html"><span class="help">?</span></a>&#160;
 				<span class="mainfont"><b>Type</b>
 					<%
 					if (!mode.equals("view")){
@@ -988,7 +1031,6 @@ String attrValue = null;
 		// First make sure you don't display Version for a status that doesn't require it.
 		
 		String regStatus = dsTable!=null ? dsTable.getStatus() : null;
-		//verMan = new VersionManager();
 		
 		if (!mode.equals("add")){
 			String tblVersion = dsTable.getVersion();
@@ -1001,7 +1043,7 @@ String attrValue = null;
 			%>
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:alert('Help is under construction!')"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="identification.html#version"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Version</b>
 						<%
 						displayed++;
@@ -1024,7 +1066,7 @@ String attrValue = null;
 		%>
 		<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 			<td align="right" valign="top" style="padding-right:10">
-				<a href="javascript:alert('Help is under construction!')">
+				<a target="_blank" href="statuses.html">
 				<span class="help">?</span></a>&#160;
 				<span class="mainfont"><b>Registration status</b>
 					<% if (!mode.equals("view")){ %>
@@ -1037,17 +1079,24 @@ String attrValue = null;
 			<td colspan="2">
 				<%
 				if (mode.equals("view")){ %>
-					<span class="barfont" style="width:400"><%=regStatus%></span> <%
+					<span class="barfont" style="width:400"><%=regStatus%>
+						<%
+						if (user!=null && topFree && wPrm){ %>
+							&#160;&#160;&#160;
+							<a href="javascript:forceStatus('<%=regStatus%>')">&gt; force status to lower levels...</a><%
+						}
+						%>
+					</span>
+					<%
 				}
 				else{ %>
 					<select name="reg_status" onchange="form_changed('form1')"> <%
-						Hashtable regStatuses = verMan.getRegStatuses();
-						Enumeration e = regStatuses.keys();
-						while (e!=null && e.hasMoreElements()){
-							String stat = (String)e.nextElement();
-							String selected = stat.equals(regStatus) ? "selected" : ""; %>
-							<option <%=selected%> value="<%=stat%>"><%=stat%></option><%
-						} %>
+						Vector regStatuses = verMan.getRegStatusesOrdered();
+							for (int i=0; i<regStatuses.size(); i++){
+								String stat = (String)regStatuses.get(i);
+								String selected = stat.equals(regStatus) ? "selected" : ""; %>
+								<option <%=selected%> value="<%=stat%>"><%=stat%></option><%
+							} %>
 					</select><%
 				}
 				%>
@@ -1455,7 +1504,7 @@ String attrValue = null;
 								if (max_size == null) max_size="";
 								
 								// see if the element is part of any foreign key relations
-								Vector _fks = searchEngine.getFKRelationsElm(elem.getID());
+								Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
 								boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
 								
 								String elemDefinition = elem.getAttributeValueByShortName("Definition");
@@ -1597,7 +1646,9 @@ String attrValue = null;
 						<span class="mainfont"><b>Documentation</b></span>
 					</td>
 					<td colspan="2">
-						* <a href="GetPrintout?format=PDF&obj_type=TBL&obj_id=<%=tableID%>">Create factsheet (PDF)</a>
+						* <a href="GetPrintout?format=PDF&obj_type=TBL&obj_id=<%=tableID%>&dstID=<%=dataset.getID()%>">
+							Create factsheet (PDF)
+						</a>
 					</td>
 				</tr>
 			
@@ -1673,6 +1724,8 @@ if (latestID!=null){%>
 	<input type="hidden" name="latest_id" value="<%=latestID%>"><%
 }
 %>
+
+<input type="hidden" name="force_status" value=""/>
 	
 </form>
 </div>

@@ -191,15 +191,49 @@ private String legalizeAlert(String in){
 				return;
 			}
 			
+			String dsID = request.getParameter("ds_id");
+			String tableID = request.getParameter("table_id");
+			
+			// check permissions
+			
+			boolean editPrm = false;
+			boolean deletePrm = false;
+			if (!mode.equals("add")){
+				editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delem_id, "u");
+				deletePrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delem_id, "d");
+			}
+			if (mode.equals("edit") && !editPrm){ %>
+				<b>Not allowed!</b> <%
+				return;
+			}
+			if ((mode.equals("delete") || mode.equals("restore")) && !deletePrm){ %>
+				<b>Not allowed!</b> <%
+				return;
+			}
+			
+			if (mode.equals("add")){
+				if (tableID != null){
+					if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/tables/" + tableID, "w")){ %>
+						<b>Not allowed!</b><%
+						return;
+					}
+				}
+				else{
+					if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")){ %>
+						<b>Not allowed!</b><%
+						return;
+					}
+				}
+			}
+			
+			// ...
+			
 			String type = request.getParameter("type");
 			if (type!=null && type.length()==0)
 				type = null;
 			
 			String contextParam = request.getParameter("ctx");
 			if (contextParam == null) contextParam = "";
-			
-			String dsID = request.getParameter("ds_id");
-			String tableID = request.getParameter("table_id");
 			
 			String s = request.getParameter("pick");
 			boolean wasPick = (s==null || !s.equals("true")) ? false : true;
@@ -261,8 +295,12 @@ private String legalizeAlert(String in){
 						// if this was check in & new version was created , send to "view" mode
 						QueryString qs = new QueryString(currentUrl);
 						String checkIn = request.getParameter("check_in");			
-			        	if (checkIn!=null && checkIn.equalsIgnoreCase("true"))
+			        	if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
 				        	qs.changeParam("mode", "view");
+				        	
+				        	//JH041203 - remove previous url (with edit mode) from history
+							history.remove(history.getCurrentIndex());
+			        	}
 				        else
 				        	qs.changeParam("mode", "edit");
 				        
@@ -310,6 +348,18 @@ private String legalizeAlert(String in){
 						
 						if (dsID != null) redirUrl = redirUrl + "&ds_id=" + dsID;
 						if (tableID != null) redirUrl = redirUrl + "&table_id=" + tableID;
+					}
+					else if (mode.equals("restore")){
+						
+						String restoredID = handler.getRestoredID();
+						if (restoredID!=null)
+							redirUrl = redirUrl + "data_element.jsp?mode=view&delem_id=" + restoredID;
+						else{
+							String	deleteUrl = history.gotoLastNotMatching("data_element.jsp");
+							redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ?
+										deleteUrl :
+										redirUrl + "index.jsp";
+						}
 					}
 				}
 				finally{
@@ -389,9 +439,19 @@ private String legalizeAlert(String in){
 				// see if element is checked out
 				if (Util.voidStr(workingUser)){
 				    // element not checked out, create working copy
+				    // but first make sure it's the latest version
+				    if (!isLatest){ %>
+				    	<b>Trying to check out a version that is not the latest!</b><%
+				    	return;
+				    }
+				    
 				    String copyID = verMan.checkOut(delem_id, "elm");
 				    if (!delem_id.equals(copyID)){
+					    
 					    // send to copy if created successfully
+					    // but first remove previous url (edit original) from history					    
+						history.remove(history.getCurrentIndex());
+						
 					    String qryStr = "mode=edit&type=" + type;
 					    qryStr+= "&delem_id=" + copyID;
 				        response.sendRedirect("data_element.jsp?" + qryStr);
@@ -409,6 +469,10 @@ private String legalizeAlert(String in){
 				    // If it's not the working copy, send the user to it
 				    String copyID = verMan.getWorkingCopyID(dataElement);
 				    if (copyID!=null && !copyID.equals(delem_id)){
+					    
+					    // first remove previous url (edit original) from history
+						history.remove(history.getCurrentIndex());
+						
 						String qryStr = "mode=edit&type=" + type;
 						qryStr+= "&delem_id=" + verMan.getWorkingCopyID(dataElement);
 						response.sendRedirect("data_element.jsp?" + qryStr);
@@ -427,9 +491,7 @@ private String legalizeAlert(String in){
 			if (dataElement!=null){
 				tableID = dataElement.getTableID();
 				if (tableID!=null){
-					
 					dsTable = searchEngine.getDatasetTable(tableID);
-						
 					if (dsTable!=null){
 						dsID = dsTable.getDatasetID();
 						if (dsID!=null){							
@@ -458,7 +520,7 @@ private String legalizeAlert(String in){
 			if (isLatest){
 				if (dsTable!=null){
 					String latestTblId = verMan.getLatestTblID(dsTable);
-					if (!latestTblId.equals(dsTable.getID()))
+					if (latestTblId!=null && !latestTblId.equals(dsTable.getID()))
 						isLatest = false;
 				}
 			}
@@ -467,7 +529,7 @@ private String legalizeAlert(String in){
 			if (isLatest){
 				if (dataset!=null){
 					String latestDstId = verMan.getLatestDstID(dataset);
-					if (!latestDstId.equals(dataset.getID()))
+					if (latestDstId!=null && !latestDstId.equals(dataset.getID()))
 						isLatest = false;
 				}
 			}
@@ -858,6 +920,13 @@ private String legalizeAlert(String in){
 			else
 				document.location=url;
 		}
+		
+		function restore(){
+			var b = confirm("This operation will create a new copy this element and its table and its dataset. Click OK, if you want to continue. Otherwise click Cancel.");
+			if (b==false) return;
+	    	document.forms["form1"].elements["mode"].value = "restore";
+       		document.forms["form1"].submit();
+    	}
 	</script>
 </head>
 
@@ -878,7 +947,6 @@ String attrValue = null;
 	        </center></P>
 	    </TD>
         <TD>
-        
 		        <jsp:include page="location.jsp" flush='true'>
 		            <jsp:param name="name" value="Data Element"/>
 		            <jsp:param name="back" value="true"/>
@@ -916,18 +984,27 @@ String attrValue = null;
 							<%
 							if (user!=null && dataElement!=null){
 								
+								boolean isDeleted = searchEngine.isElmDeleted(dataElement.getID());
+								if (isDeleted && topFree && deletePrm){ %>
+									<input type="button" class="smallbutton" value="Restore" onclick="restore()"/>&#160;<%
+								}
+								
 								boolean inWorkByMe = workingUser==null ?
 											 false :
 											 workingUser.equals(user.getUserName());
-											 
-								if (dataElement.isWorkingCopy() ||
-									(isLatest && topFree)       ||
-									(isLatest && inWorkByMe)){ %>
-									<input type="button" class="smallbutton" value="Edit" onclick="edit()"/>&#160;<%
+								
+								if (editPrm){
+									if (dataElement.isWorkingCopy() ||
+										(isLatest && topFree)       ||
+										(isLatest && inWorkByMe)){ %>
+										<input type="button" class="smallbutton" value="Edit" onclick="edit()"/>&#160;<%
+									}
 								}
 								
-								if (!dataElement.isWorkingCopy() && isLatest && topFree){ %>
-									<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
+								if (deletePrm){
+									if (!dataElement.isWorkingCopy() && isLatest && topFree){ %>
+										<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
+									}
 								}
 							}
 							else{
@@ -976,7 +1053,7 @@ String attrValue = null;
 			
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:openType()"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="types.html"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Type</b>
 						<%
 						displayed++;
@@ -1017,7 +1094,7 @@ String attrValue = null;
 			
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:openShortName()"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Short name</b>
 						<%
 						displayed++;
@@ -1047,7 +1124,7 @@ String attrValue = null;
 			
 				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+						<a target="_blank" href="identification.html#dataset"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><b>Dataset</b>
 							<%
 							displayed++;
@@ -1123,7 +1200,7 @@ String attrValue = null;
 				%>
 				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
+						<a target="_blank" href="identification.html#table"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><b>Table</b>
 							<%
 							displayed++;
@@ -1284,6 +1361,7 @@ String attrValue = null;
 			// First make sure you don't display Version for a status that doesn't require it.
 			
 			String regStatus = dataElement!=null ? dataElement.getStatus() : null;
+			
 			if (verMan==null) verMan = new VersionManager();
 			
 			if (!mode.equals("add")){
@@ -1296,7 +1374,7 @@ String attrValue = null;
 				%>
 				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<a href="javascript:alert('Help is under construction!')"><span class="help">?</span></a>&#160;
+						<a target="_blank" href="identification.html#version"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><b>Version</b>
 							<%
 							displayed++;
@@ -1320,7 +1398,7 @@ String attrValue = null;
 			%>
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" valign="top" style="padding-right:10">
-					<a href="javascript:alert('Help is under construction!')">
+					<a target="_blank" href="statuses.html">
 					<span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Registration status</b>
 						<% if (!mode.equals("view")){ %>
@@ -1337,10 +1415,9 @@ String attrValue = null;
 					}
 					else{ %>
 						<select name="reg_status" onchange="form_changed('form1')"> <%
-							Hashtable regStatuses = verMan.getRegStatuses();
-							Enumeration e = regStatuses.keys();
-							while (e!=null && e.hasMoreElements()){
-								String stat = (String)e.nextElement();
+							Vector regStatuses = verMan.getRegStatusesOrdered();
+							for (int i=0; i<regStatuses.size(); i++){
+								String stat = (String)regStatuses.get(i);
 								String selected = stat.equals(regStatus) ? "selected" : ""; %>
 								<option <%=selected%> value="<%=stat%>"><%=stat%></option><%
 							} %>
@@ -1936,7 +2013,7 @@ String attrValue = null;
 		
 		<%
 		if (mode.equals("view")){
-			Vector fKeys = searchEngine.getFKRelationsElm(delem_id);
+			Vector fKeys = searchEngine.getFKRelationsElm(delem_id, dataset.getID());
 			if (fKeys.size()>0){
 				%>
 				<tr height="5"><td colspan="2"></td></tr>
@@ -2121,7 +2198,9 @@ String attrValue = null;
 						<span class="mainfont"><b>Documentation</b></span>
 					</td>
 					<td colspan="2">
-						* <a href="GetPrintout?format=PDF&obj_type=ELM&obj_id=<%=delem_id%>">Create factsheet (PDF)</a>
+						* <a href="GetPrintout?format=PDF&obj_type=ELM&obj_id=<%=delem_id%>&dstID=<%=dataset.getID()%>">
+							Create factsheet (PDF)
+						</a>
 					</td>
 				</tr>
 			

@@ -20,6 +20,8 @@
     private String oCompStr=null;
     private int iO=0;
     
+    private boolean delPrm = false;
+    
     public c_SearchResultEntry(String _oID, String _oShortName, String _oVersion, String _oFName, Vector _oTables) {
 	    
             oID	= _oID==null ? "" : _oID;
@@ -49,7 +51,14 @@
     public int compareTo(Object oC1) {
         return iO*oCompStr.compareToIgnoreCase(oC1.toString());
     }
+
+    public void setDelPrm(boolean b){
+	    delPrm = b;
+    }
     
+    public boolean getDelPrm(){
+	    return delPrm;
+    }
 }%>
 
 <%!class c_SearchResultSet {
@@ -69,7 +78,9 @@
         }
         return false;
     }
-}%>
+}
+
+%>
 
 <%
 
@@ -116,16 +127,18 @@
 	
 		if (request.getMethod().equals("POST")){
 		
-			if (user == null){
-	      			%>
-	      				<html>
-	      				<body>
-	      					<h1>Error</h1><b>Not authorized to post any data!</b>
-	      				</body>
-	      				</html>
-	      			<%
-	      			return;
-      			}
+			if (user==null){ %>
+				<b>Not allowed!</b> <%
+				return;
+			}
+			else{
+				String[] ds_ids = request.getParameterValues("ds_id");
+				for (int i=0; ds_ids!=null && i<ds_ids.length; i++){
+					if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds_ids[i], "d")){ %>
+						<b>Not allowed!</b><%
+					}
+				}
+			}
 	
       		Connection userConn = null;
       		DatasetHandler handler = null;
@@ -215,6 +228,15 @@
 		
 		verMan = new VersionManager(conn, searchEngine, user);
 	}	
+
+// prepare Vector of deletion rights for each dataset
+Vector delPrms = new Vector();
+for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
+	Dataset dst = (Dataset)datasets.get(i);
+	if (SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dst.getID(), "d")){
+		delPrms.add(dst.getID());
+	}
+}
 	
 %>
 
@@ -269,11 +291,18 @@
        		document.forms["form1"].submit();
     	}
     	
-    	function restoreDataset(){
-	    	//alert("Not supported right now!");
+    	function restoreDataset(){	    	
 	    	document.forms["form1"].elements["mode"].value = "restore";
 	    	document.forms["form1"].elements["SearchType"].value='<%=TYPE_SEARCH%>';
        		document.forms["form1"].submit();
+    	}
+    	
+    	function deleteForGood(){
+	    	document.forms["form1"].elements["complete"].value = "true";
+	    	var b = confirm("This will delete the selected datasets permanently! Click OK, if you want to continue. " +
+							"Otherwise click Cancel.");
+			if (b==false) return;
+			deleteDatasetReady();
     	}
     </script>
 </head>
@@ -384,7 +413,8 @@
 						if (!restore){%>
 							<input type="button" value="Delete" class="smallbutton" onclick="deleteDataset()"/><%
 						}
-						else{%>
+						else if (delPrms.size()>0){ %>
+							<input type="button" value="Delete" class="smallbutton" onclick="deleteForGood()"/><br/>
 							<input type="button" value="Restore" class="smallbutton" onclick="restoreDataset()"/><%
 						}
 						%>
@@ -452,6 +482,9 @@
                															 dsFullName,
                 														 tables);
                 															 
+					boolean delPrm = delPrms.contains(ds_id);
+					oEntry.setDelPrm(delPrm);
+					
 					oResultSet.oElements.add(oEntry);
 					
 					String workingUser    = verMan.getDstWorkingUser(dataset.getShortName());
@@ -468,7 +501,8 @@
 					
 						<td align="right" style="padding-right:10">
 							<%
-	    					if (user!=null){
+	    					//if (user!=null){
+		    				if (delPrms.contains(ds_id)){
 		    					
 		    					if (topWorkingUser!=null){ // mark checked-out datasets
 			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
@@ -535,11 +569,14 @@
 
                         %>
 						<tr valign="top">	
-							<% if (user != null){%>
+							<%
+							//if (user != null){
+							if (oEntry.getDelPrm()){ %>
 								<td align="right" style="padding-right:10">
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>"/>
-								</td>
-							<% } %>
+								</td> <%
+							}
+							%>
 							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"  title="<%=oEntry.oFullName%>">
 								<a href="GetPrintout?format=PDF&obj_type=DST&out_type=GDLN&obj_id=<%=oEntry.oID%>">
 									<%=Util.replaceTags(oEntry.oFName)%>
@@ -585,10 +622,11 @@
 		<input type="hidden" name="mode" value="view"/>
 		
 		<!-- Special input for 'delete' mode only. Inidcates if dataset(s) should be deleted completely. -->
-		<input type="hidden" name="complete" value="false"/>
+		<input type="hidden" name="complete" value="true"/>
 		
 		</form>
-			</div>
+		
+		</div>
 			
 		</TD>
 </TR>

@@ -28,6 +28,7 @@ ServletContext ctx = null;
 			userConn = user.getConnection();
 
 			AttributeHandler handler = new AttributeHandler(userConn, request, ctx);
+			handler.setUser(user);
 			handler.execute();
 
 			String	deleteUrl = history.gotoLastMatching("attributes.jsp");

@@ -314,6 +314,11 @@ private String legalizeAlert(String in){
 		function getChanged(){
 			return document.forms["form1"].elements["changed"].value;
 		}
+		
+		function importCodes(){
+			var url = "import.jsp?mode=FXV&delem_id=<%=delem_id%>&short_name=<%=delem_name%>";
+			document.location.assign(url);
+		}
 	</script>
 	
 <body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0" onload="start()">
@@ -388,9 +393,10 @@ private String legalizeAlert(String in){
 		<% if (user != null) { %>
 			<tr height="10"><td colspan="2"><font class="mainfont">Enter a new value here:</font></td></tr>
 			<tr>
-				<td colspan="2" width="300">
+				<td colspan="1" width="300">
 					<input class="smalltext" type="text" size="20" name="new_value"></input>
-					<input class="smallbutton" type="button" value="Add" onclick="submitForm('add')">
+					<input class="smallbutton" type="button" value="Add" onclick="submitForm('add')"/>&#160;
+					<input class="smallbutton" type="button" value="Import..." onclick="importCodes()"/>
 				</td>
 			</tr>
 		<% } %>

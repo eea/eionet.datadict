@@ -249,7 +249,7 @@
 			
 			<tr>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:openNsShortName()"><span class="help">?</span></a>&#160;
+					<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Short name</b>
 						<%
 						if (!mode.equals("view")){
@@ -276,7 +276,7 @@
 			
 			<tr <% if (mode.equals("view")) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:openNsName()"><span class="help">?</span></a>&#160;
+					<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Name</b>
 						<%
 						if (!mode.equals("view")){
@@ -304,26 +304,9 @@
 				</td>
 			</tr>
 			
-			<!--tr>
-				<td align="right" style="padding-right:10">
-					<b><a href="javascript:openNsURL()"><font color="black">URL</font></a></b>:&#160;(M)
-				</td>
-				<td colspan="2">
-					<% if(!mode.equals("add")){
-						String url = namespace.getUrl();
-						if (url==null) url = "";
-						if (url.startsWith("/")) url = urlPath + url;
-						%>		
-						<input <%=disabled%> type="text" size="60" name="url" value="<%=url%>"></input>
-					<% } else{ %>
-						<input <%=disabled%> type="text" size="60" name="url"></input>
-					<% } %>
-				</td>
-			</tr-->
-			
 			<tr>	
 				<td align="right" style="padding-right:10">
-					<a href="javascript:openNsDescr()"><span class="help">?</span></a>&#160;
+					<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Description</b>
 						<%
 						if (!mode.equals("view")){

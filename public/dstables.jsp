@@ -44,6 +44,19 @@ ctx = getServletContext();
 //handle the POST
 if (request.getMethod().equals("POST")){
 	
+	if (user==null){ %>
+		<b>Not allowed!</b> <%
+		return;
+	}
+	else{
+		String[] del_ids = request.getParameterValues("del_ids");
+		for (int i=0; del_ids!=null && i<del_ids.length; i++){
+			if (!SecurityUtil.hasPerm(user.getUserName(), "/tables/" + del_ids[i], "d")){ %>
+				<b>Not allowed!</b><%
+			}
+		}
+	}
+	
 	Connection userConn = null;
 	DsTableHandler handler = null;
 	
@@ -188,21 +201,30 @@ if (disabled.equals("")){
 
 	<table width="auto" cellspacing="0">
 	
-		<tr>
-			<td colspan="5" align="right">
-				<input type="button"
-					   <%=disabled%>
-					   value="Add new"
-					   class="smallbutton"
-					   onclick="window.location.replace('dstable.jsp?mode=add&ds_id=<%=dsID%>&#38;ds_name=<%=dsName%>&ctx=ds')"/>
-			</td>
-		</tr>
+		<%
+		boolean wPrm = user==null ? false : SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsID, "w");
+		if (wPrm){ %>
+			<tr>
+				<td colspan="5" align="right">
+					<input type="button"
+						   <%=disabled%>
+						   value="Add new"
+						   class="smallbutton"
+						   onclick="window.location.replace('dstable.jsp?mode=add&ds_id=<%=dsID%>&#38;ds_name=<%=dsName%>&ctx=ds')"/>
+				</td>
+			</tr> <%
+		}
+		%>
 		
 		<tr><td colspan="5"></td></tr>
 
 		<tr>
 			<td align="right" style="padding-right:10">
-				<input type="button" <%=disabled%> value="Remove" class="smallbutton" onclick="submitForm('delete')"/>
+				<%
+				if (wPrm){ %>
+					<input type="button" <%=disabled%> value="Remove" class="smallbutton" onclick="submitForm('delete')"/><%
+				}
+				%>
 			</td>				
 			<th align="left" style="padding-left:5;padding-right:10">Short name</th>
 			<th align="left" style="padding-right:10">Full name</th>
@@ -214,6 +236,7 @@ if (disabled.equals("")){
 		for (int i=0; tables!=null && i<tables.size(); i++){
 			
 			DsTable table = (DsTable)tables.get(i);
+			
 			String tableLink = "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=ds";
 			
 			String tblName = "";
@@ -238,14 +261,19 @@ if (disabled.equals("")){
 			String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
 														  table.getShortName(), "tbl");
 
+			String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());
+			
 			%>
 			<tr>
 				<td align="right" style="padding-right:10">
 					<%
-					if (user!=null){
+					if (user!=null && wPrm){
 						
 						if (tblWorkingUser!=null){ // mark checked-out tables
 							%> <font title="<%=tblWorkingUser%>" color="red">* </font> <%
+						}
+						else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
+							%> <font title="<%=tblElmWorkingUser%>" color="red">* </font> <%
 						}
 					
 						if (tblWorkingUser==null && topFree){ %>

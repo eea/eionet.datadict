@@ -69,7 +69,7 @@
 								<ul>
 									<li><a href="datasets.jsp?SearchType=SEARCH">Datasets</a></li>
 									<li><a href="search_results_tbl.jsp?SearchType=SEARCH">Tables within datasets</a></li>
-									<li><a href="search_results.jsp?SearchType=SEARCH">Data elements</a></li>
+									<li><a href="search.jsp">Data elements</a></li>
 								</ul>
 							</td>
 						</tr>
@@ -191,34 +191,62 @@
 							<td>
 								<br/>
 								<font class="head00">Data Dictionary - administrative tools - login mode</font><br></br>
-								&nbsp;&nbsp;<b>Adding or revising the content</b><br>
+								<b>Adding or revising the content</b><br>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								Revision and definitions of new datasets is handled by persons who have obtained administration rights and have logged in by pressing the <a href="javascript:login()">Login</a> button.
+								Revision and definitions of new datasets is handled by persons who have obtained
+								administration rights and have logged in by pressing the <a href="javascript:login()">Login</a> button.
 								<ul>
-									<li><b>Revision</b> of data definitions: Once you log in, you will be provided with additional functions on the left-hand pane, enabling you to add new data element definitions or revise content. This you can do manually, by writing into the forms on the web pages.</li>
-									<li>You can <b>import data</b> definitions them directly in XML format. EEA has developed an Access database for preparation of the definition information, the database exporting XML files that can then be imported into the Data Dictionary. </li>
-									<li>Each data element definition can be <b>represented in XML Schema</b> format and you can see (and save) it when pressing 'view schema' links in data element views. </li>
-									<li>Each data element belongs to a certain <b>namespace</b>. This enables data elements to have same short names in different areas/topics. A data element is uniquely identified by it's short name and the namespace to which it belongs.  
-									Namespaces can be dynamically added/removed to/from the system. To search for namespaces, use the <a href="namespaces.jsp">Namespaces</a> button on the left-hand pane. 
-									The default namespace is <a href="namespace.jsp?ns_id=basens&mode=view">Data Dictionary's base namespace</a>. It should include data elements common to all areas/topics. 
-									In some concept the namespace could present a table from dataset.</li>
+									<li>
+										<b>Revision</b> of data definitions: Once you log in, you will be provided
+										with additional functions on the left-hand pane, enabling you to add new data
+										definitions or revise content. This you can do manually, by writing into
+										the forms on the web pages.
+									</li>
+									<li>
+										You can <b>import data</b> definitions directly in XML format. EEA has
+										developed an MSAccess database for preparation of the data definitions,
+										which you can then generate into XML format which in turn can then be
+										imported into Data Dictionary database.
+									</li>
+									<li>
+										Each data definition can be <b>represented in XML Schema</b> format
+										and you can see (and save) them when pressing the relevant link at the bottom
+										of definition views.
+									</li>
+									<!--li>
+										Each data element belongs to a certain <b>namespace</b>. This enables data
+										elements to have same short names in different areas/topics. A data element
+										is uniquely identified by it's short name and the namespace to which it belongs.
+										Namespaces can be dynamically added/removed to/from the system. To search for
+										namespaces, use the <a href="namespaces.jsp">Namespaces</a> button on the
+										left-hand pane.
+										The default namespace is <a href="namespace.jsp?ns_id=basens&mode=view">
+										Data Dictionary's base namespace</a>. It should include data elements common
+										to all areas/topics. 
+										In some concept the namespace could present a table from dataset.
+									</li-->
 								</ul>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<b>&nbsp;&nbsp;Adding or revising the definition structure </b>
+								<b>Adding or revising the definition structure </b>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								Each data element is defined by a set of attributes (fields) corresponding to <a href="javascript:openSource('http://www.diffuse.org/meta.html#ISO11179')">ISO 11179 standard</a> for describing data elements. 
-								The set of attributes used to describe the datasets, tables and data elements will be relatively stable. 
-								However, the system is flexible and an administrator can dynamically <b>add/remove attributes</b> from/to the system. 
-								To search for attributes, use the <a href="attributes.jsp">Attributes</a> button on the left-hand pane.
+								Each dataset, table and data element is defined by a set of attributes.
+								A lot of them correspond to <a target="_blank"
+								href="http://www.diffuse.org/meta.html#ISO11179">
+								ISO 11179 standard</a> for describing data elements. 
+								Data Dictionary attribute set will be relatively stable. 
+								However, the system is flexible and an administrator can dynamically
+								<b>add/remove attributes</b> from/to the system. 
+								To search for attributes, administrator can use the <b>Attributes</b>
+								button on the left-hand pane.
 							</td>
 						</tr>
 					</table>

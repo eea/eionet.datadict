@@ -305,7 +305,7 @@ else
 
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
-							<a href="javascript:openType()"><span class="help">?</span></a>&#160;
+							<a target="_blank" href="types.html"><span class="help">?</span></a>&#160;
 							<span class="mainfont"><b>Type</b></span>
 						</td>
 						<td colspan="2">
@@ -353,7 +353,7 @@ else
 					
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
-							<a href="javascript:openShortName()"><span class="help">?</span></a>&#160;
+							<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
 							<span class="mainfont"><b>Short name</b></span>
 						</td>
 						<td colspan="2">
@@ -578,7 +578,7 @@ else
 				%>
 				
 				<!-- table for 'Add' -->
-				<% if (user != null) { %>
+				<% if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")) { %>
 					<table width="500">
 						<tr height"10"><td>&#160;</td></tr>
 						<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>	

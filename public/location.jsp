@@ -37,7 +37,23 @@
 							<a href="<%=back%>">&lt;back</a>
 	       				</td></tr>
 	       				<%
+       				}
        			}
+       			
+	            // JH041203 - up link
+	            String up = request.getParameter("up");
+	            up = null;
+	            if (up!=null){
+	            	String upUrl=(String)session.getAttribute("upUrl");
+    	        	if (upUrl!=null) {
+						%>
+			        	<tr>
+			        		<td valign="bottom" align="right" width="100%" colspan="2" style="padding-top:2">
+								<a href="<%=upUrl%>"><img border="0" src="../images/up.gif"/></a>
+	       					</td>
+	       				</tr>
+	       				<%
+       				}
        			}
        			%>
 		</table>

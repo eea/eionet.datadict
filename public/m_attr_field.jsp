@@ -237,7 +237,7 @@ private String legalizeAlert(String in){
 					<textarea <%=disabled%> class="small" rows="5" cols="60" name="definition"><%=Util.replaceTags(definition, true)%></textarea>
 				</td>
 			</tr>
-			<tr>				
+			<tr>
 				<td align="right" style="padding-right:10" valign="top">
 					<!--a href="javascript:openPriority()"><span class="help">?</span></a>&#160;-->
 					<span class="mainfont"><b>Priority</b></span>
@@ -249,6 +249,37 @@ private String legalizeAlert(String in){
 					</select>
 				</td>
 			</tr>
+			<%
+			Vector harvFlds = searchEngine.getHarvesterFieldsByAttr(attr_id, false);
+			if (harvFlds!=null && harvFlds.size()>0){
+				%>
+				<tr>
+					<td align="right" style="padding-right:10" valign="top">
+						<span class="mainfont"><b>Linked harvester field</b></span>
+					</td>
+					<td colspan="1" valign="top">
+						<%
+						String harvFld = (String)attrField.get("harv_fld");
+						String noLinkSelected = Util.voidStr(harvFld) ? "selected" : "";					
+						%>
+						<select <%=disabled%> name="harv_fld" class="small">
+							<option <%=noLinkSelected%> value="null">-- no link --</option>
+							<%
+							if (!Util.voidStr(harvFld)){ %>
+								<option selected value="<%=harvFld%>"><%=harvFld%></option><%
+							}
+							
+							for (int i=0; harvFlds!=null && i<harvFlds.size(); i++){
+								String _harvFld = (String)harvFlds.get(i);
+								%>
+								<option value="<%=_harvFld%>"><%=_harvFld%></option> <%
+							}
+							%>
+						</select>
+					</td>
+				</tr><%
+			}
+			%>
 		
 		<tr height="10"><td colspan="2"></td></tr>
 		

@@ -168,8 +168,7 @@
 			<tr>
 				<td align="right" style="padding-right:10">&#160;</td>
 				<td align="left" colspan="3" style="padding-bottom:5">
-					<% if (user != null){
-						%>
+					<% if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/tables", "i")){ %>
 						<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
 						<%
 					}
@@ -297,6 +296,16 @@
 
 					for (int i=0; i<dsTables.size(); i++){
 						DsTable table = (DsTable)dsTables.get(i);
+						
+						String regStatus = table!=null ? table.getStatus() : null;			
+						// for countries show only Recorded & Released
+						/*if (regStatus!=null){
+							if (user==null || !user.isAuthentic()){
+								if (regStatus.equals("Incomplete") || regStatus.equals("Candidate") || regStatus.equals("Qualified"))
+									continue;
+							}
+						}*/
+						
 						String table_id = table.getID();
 						String table_name = table.getShortName();
 						String ds_id = table.getDatasetID();

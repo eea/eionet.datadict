@@ -17,7 +17,10 @@
 	conn = pool.getConnection();
 	
 	AppUserIF user = SecurityUtil.getUser(request);
-	
+	if (user==null || !user.isAuthentic()){ %>
+		<b>Not allowed!</b><%
+		return;
+	}
 	
 	if (request.getMethod().equals("POST")){
 		
@@ -37,6 +40,7 @@
 		try{
 			userConn = user.getConnection();
 			AttributeHandler handler = new AttributeHandler(userConn, request, ctx, "delete");
+			handler.setUser(user);
 					
 			handler.execute();
 			
@@ -156,12 +160,15 @@
 		
 				<%
 				if (user != null && mode==null){
-					%>
-					<tr><td colspan="8" valign="top" align="left" style="padding-right:10;padding-top:3">
-						<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
-					</td></tr>
-					<tr height="5"><td colspan="8"></td></tr>
-					<%
+					boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
+					if (addPrm){
+						%>
+						<tr><td colspan="8" valign="top" align="left" style="padding-right:10;padding-top:3">
+							<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
+						</td></tr>
+						<tr height="5"><td colspan="8"></td></tr>
+						<%
+					}
 				}
 			
 				%>

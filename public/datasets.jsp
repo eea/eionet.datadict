@@ -20,6 +20,8 @@
     private String oCompStr=null;
     private int iO=0;
     
+    private boolean delPrm = false;
+    
     public c_SearchResultEntry(String _oID, String _oShortName, String _oVersion, String _oFName, Vector _oTables) {
 	    
             oID	= _oID==null ? "" : _oID;
@@ -48,6 +50,14 @@
 
     public int compareTo(Object oC1) {
         return iO*oCompStr.compareToIgnoreCase(oC1.toString());
+    }
+    
+    public void setDelPrm(boolean b){
+	    delPrm = b;
+    }
+    
+    public boolean getDelPrm(){
+	    return delPrm;
     }
     
 }%>
@@ -116,16 +126,18 @@
 	
 		if (request.getMethod().equals("POST")){
 		
-			if (user == null){
-	      			%>
-	      				<html>
-	      				<body>
-	      					<h1>Error</h1><b>Not authorized to post any data!</b>
-	      				</body>
-	      				</html>
-	      			<%
-	      			return;
-      			}
+			if (user==null){ %>
+				<b>Not allowed!</b> <%
+				return;
+			}
+			else{
+				String[] ds_ids = request.getParameterValues("ds_id");
+				for (int i=0; ds_ids!=null && i<ds_ids.length; i++){
+					if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds_ids[i], "d")){ %>
+						<b>Not allowed!</b><%
+					}
+				}
+			}
 	
       		Connection userConn = null;
       		DatasetHandler handler = null;
@@ -214,7 +226,15 @@
 			datasets = searchEngine.getDatasets(params, short_name, version, oper, wrkCopies);
 		
 		verMan = new VersionManager(conn, searchEngine, user);
-	}	
+	}
+	
+// prepare Vector of deletion rights for each dataset
+Vector delPrms = new Vector();
+for (int i=0; user!=null && datasets!=null && i<datasets.size(); i++){
+	Dataset dst = (Dataset)datasets.get(i);
+	if (SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dst.getID(), "d"))
+		delPrms.add(dst.getID());
+}
 	
 %>
 
@@ -304,9 +324,17 @@
 			<%
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
             
-	            if (datasets == null || datasets.size()==0){
-		            %>
-	    	        <b>No results found!</b></div></TD></TR></table></body></html>
+	            if (datasets == null || datasets.size()==0){ %>		            
+	    	        <b>No results found!</b>
+	    	        <%
+	    	        if (user==null || !user.isAuthentic()){ %>
+	    	        	<br/>
+	    	        		This might be due to fact that you have not been authorized and there are<br/>
+	    	        		no datasets at the moment ready to be published for non-authorized users.
+	    	        	<br/><%
+    	        	}
+    	        	%>
+	    	        </div></TD></TR></table></body></html>
 	        	    <%
 	            	return;
 	            }
@@ -361,9 +389,12 @@
 					<td></td>
 					<td colspan="3" align="left" style="padding-bottom:5">
 						<% if (user != null){
-							%>
-							<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
-							<%
+							
+							AccessControlListIF acl = AccessController.getAcl("/datasets");
+							if (acl.checkPermission(user.getUserName(), "i")){ %>
+							
+								<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/><%
+							}
 						}
 						%>
 					</td>
@@ -387,8 +418,9 @@
 				<% if (user != null){%>
 					<td align="right" style="padding-right:10">
 						<%
-						if (!restore){%>
-							<input type="button" value="Delete" class="smallbutton" onclick="deleteDataset()"/><%
+						if (!restore){
+							String _disabled = delPrms.size()>0 ? "" : "disabled"; %>
+							<input type="button" value="Delete" class="smallbutton" <%=_disabled%> onclick="deleteDataset()"/><%
 						}
 						else{%>
 							<input type="button" value="Restore" class="smallbutton" onclick="restoreDataset()"/><%
@@ -429,6 +461,15 @@
 				
 					Dataset dataset = (Dataset)datasets.get(i);
 					
+					String regStatus = dataset!=null ? dataset.getStatus() : null;			
+					// for countries show only Recorded & Released
+					/*if (regStatus!=null){
+						if (user==null || !user.isAuthentic()){
+							if (regStatus.equals("Incomplete") || regStatus.equals("Candidate") || regStatus.equals("Qualified"))
+								continue;
+						}
+					}*/
+					
 					String ds_id = dataset.getID();
 					String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
 					String ds_name = Util.replaceTags(dataset.getShortName());
@@ -457,7 +498,9 @@
                															 dsVersion,
                															 dsFullName,
                 														 tables);
-                															 
+					boolean delPrm = delPrms.contains(ds_id);
+					oEntry.setDelPrm(delPrm);
+					
 					oResultSet.oElements.add(oEntry);
 					
 					String workingUser    = verMan.getDstWorkingUser(dataset.getShortName());
@@ -474,12 +517,13 @@
 					
 						<td align="right" style="padding-right:10">
 							<%
-	    					if (user!=null){
+	    					//if (user!=null){
+							if (delPrms.contains(ds_id)){
 		    					
 		    					if (topWorkingUser!=null){ // mark checked-out datasets
 			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
 		    					}
-	    					
+		    					
 		    					if (canDelete){ %>
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>"/><%
 								}
@@ -504,13 +548,17 @@
 								
 								String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
 			    															  table.getShortName(), "tbl");
-			
+
+								String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());
 								%>
 								<!--a href="javascript:openTables('<%=tableLink%>')"><%=table.getShortName()%></a><br/-->
 								<a href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a>								
 								<%
-								if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
+								if (user!=null && tblWorkingUser!=null){ // mark checked-out tables
 									%>&#160;<font color="red">*</font> <%
+								}
+								else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
+									%> <font title="<%=tblElmWorkingUser%>" color="red">* </font> <%
 								}
 								%>
 								<br/><%
@@ -540,11 +588,15 @@
 
                         %>
 						<tr valign="top">	
-							<% if (user != null){%>
+							<%
+							//if (user != null){
+							if (oEntry.getDelPrm()){
+								%>
 								<td align="right" style="padding-right:10">
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>"/>
-								</td>
-							<% } %>
+								</td> <%
+							}
+							%>
 							<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2"  title="<%=oEntry.oFullName%>">
 								<a href="dataset.jsp?ds_id=<%=oEntry.oID%>&#38;mode=view">
 								<%=Util.replaceTags(oEntry.oFName)%></a>

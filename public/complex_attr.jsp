@@ -153,8 +153,6 @@ private String legalizeAlert(String in){
 				v = searchEngine.getComplexAttributes(parent_id, parent_type, attr_id, table_id, dataset_id);
 			
 			DElemAttribute attribute = (v==null || v.size()==0) ? null : (DElemAttribute)v.get(0);
-			boolean inherit = attribute.getInheritable().equals("0") ? false:true;
-			
 			
 			Vector attrFields = searchEngine.getAttrFields(attr_id);
 			
@@ -194,6 +192,26 @@ private String legalizeAlert(String in){
 			
 			function openValues(id){
 				attrWindow=window.open("pick_attrvalue.jsp?attr_id=" + id + "&type=COMPLEX","Attribute_values","height=400,width=700,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
+				if (window.focus) {attrWindow.focus()}
+			}
+			
+			function openHarvested(id){
+				<%
+				StringBuffer buf = new StringBuffer("pick_harvattr.jsp?attr_id=");
+				buf.append(attr_id);
+				buf.append("&parent_id=");
+				buf.append(parent_id);
+				buf.append("&parent_type=");
+				buf.append(parent_type);
+				%>
+				
+				var link = "<%=buf.toString()%>";
+				link = link + "&position=" + document.forms["form1"].elements["position"].value;
+				
+				attrWindow=window.open(link,
+										"HarvestedAttributes",
+										"height=400,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
+										
 				if (window.focus) {attrWindow.focus()}
 			}
 	</script>
@@ -259,6 +277,9 @@ private String legalizeAlert(String in){
 		<%
 		return;
 	}
+	
+	boolean inherit = attribute.getInheritable().equals("0") ? false:true;
+	String harvesterID = attribute.getHarvesterID();
 	
 	String attrName = attribute.getShortName();
 	int position = 0;
@@ -360,9 +381,12 @@ if (!mode.equals("view")){
 <%
 	if (user!=null){
 		%>
-		<input class="smallbutton" type="button" value="Add" onclick="submitForm('add')">
-		<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')">
+		<input class="smallbutton" type="button" value="Add"  onclick="submitForm('add')">&#160;
+		<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')">&#160;
 		<%
+		if (harvesterID!=null && harvesterID.length()>0){ %>
+			<input class="smallbutton" type="button" value="Get"  onclick="openHarvested('<%=attr_id%>')"><%
+		}
 	}
 	else{
 		%>
@@ -512,6 +536,8 @@ if (!mode.equals("view")){
 <input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
 
 <input type="hidden" name="position" value="<%=String.valueOf(position)%>"></input>
+
+<input type="hidden" name="reloadUrl" value="<%=redirUrl%>"></input>
 
 <%
 if (ds != null){

@@ -38,6 +38,8 @@ if (delemName == null || delemName.length()==0) delemName = "unknown";
 
 String disabled = user == null ? "disabled" : "";
 
+String dstID = request.getParameter("ds_id");
+
 ctx = getServletContext();
 
 //handle the POST
@@ -83,7 +85,7 @@ try { // start the whole page try block
 conn = pool.getConnection();
 DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 
-elems = searchEngine.getFKRelationsElm(delemID);
+elems = searchEngine.getFKRelationsElm(delemID, dstID);
 
 StringBuffer collect_elems=new StringBuffer();
 
@@ -120,7 +122,7 @@ disabled="";
 		function openAdd(url){
 			
 			<%
-			String selDS = request.getParameter("ds_id");
+			String selDS = dstID;
 			if (selDS!=null){%>
 				if (url != null) url = url + "&dataset=" + <%=selDS%>;<%
 			}

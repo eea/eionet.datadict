@@ -77,6 +77,23 @@ private Vector getValues(String id){
 				return;
 			}
 			
+			if (mode.equals("add")){
+				if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
+					<b>Not allowed!</b> <%
+					return;
+				}
+			}
+			if (mode.equals("edit")){
+				if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds_id, "u")){ %>
+					<b>Not allowed!</b> <%
+					return;
+				}
+			}
+
+			boolean wPrm = false;
+			if (!mode.equals("add"))
+				wPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds_id, "w");
+
 			//// HANDLE THE POST //////////////////////
 			
 			if (request.getMethod().equals("POST")){
@@ -137,8 +154,11 @@ private Vector getValues(String id){
 					String unlock  = request.getParameter("unlock");
 					
 					String newMode = "edit";
-					if (checkIn!=null && checkIn.equalsIgnoreCase("true"))
+					if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
 						newMode = "view";
+						//JH041203 - remove previous url (with edit mode) from history
+						history.remove(history.getCurrentIndex());
+					}
 					else if (unlock!=null && !unlock.equals("false"))
 						newMode = "view";
 					
@@ -148,6 +168,9 @@ private Vector getValues(String id){
 				else if (mode.equals("delete")){
 					String deleteUrl = history.gotoLastMatching("datasets.jsp");
 					redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ? deleteUrl:redirUrl + "/index.jsp";
+				}
+				else if (mode.equals("force_status")){
+					redirUrl = redirUrl + "dataset.jsp?mode=view&ds_id=" + ds_id;
 				}
 				
 				response.sendRedirect(redirUrl);
@@ -222,9 +245,17 @@ private Vector getValues(String id){
 				// see if dataset is checked out
 				if (Util.voidStr(workingUser)){
 				    // dataset not checked out, create working copy
+				    // but first make sure it's the latest version
+				    if (!isLatest){ %>
+				    	<b>Trying to check out a version that is not the latest!</b><%
+				    	return;
+				    }
+				    
 				    String copyID = verMan.checkOut(ds_id, "dst");
 				    if (!ds_id.equals(copyID)){
 					    // send to copy if created successfully
+					    // But remove previous url (edit original) from history
+					    history.remove(history.getCurrentIndex());
 					    String qryStr = "mode=edit";
 					    qryStr+= "&ds_id=" + copyID;
 				        response.sendRedirect("dataset.jsp?" + qryStr);
@@ -238,10 +269,12 @@ private Vector getValues(String id){
 				    return;
 			    }
 			    else if (dataset!=null && !dataset.isWorkingCopy()){
-				    // dataset is checked out by THIS user.
-				    // If it's not the working copy, send the user to it
+				    // Dataset is checked out by THIS user.
+				    // If it's not the working copy, send the user to it.				    
 				    String copyID = verMan.getWorkingCopyID(dataset);
 				    if (copyID!=null && !copyID.equals(ds_id)){
+					    // Before resending, remove previous url (edit original) from history.
+					    history.remove(history.getCurrentIndex());
 						String qryStr = "mode=edit";
 						qryStr+= "&ds_id=" + copyID;
 						response.sendRedirect("dataset.jsp?" + qryStr);
@@ -581,6 +614,17 @@ private Vector getValues(String id){
 		}
 		%>
 		
+		function forceStatus(status){
+			var b = confirm("This will force the '" + status + "' to lower levels as well, affecting all " +
+								"tables and data elements within this dataset. Click OK, if you " +
+								"still want to continue. Otherwise click Cancel.");				
+			if (b==false) return;
+			
+			document.forms["form1"].elements["mode"].value = "force_status";
+			document.forms["form1"].elements["force_status"].value = status;
+			document.forms["form1"].submit();
+		}
+		
     </script>
 </head>
 <body marginheight ="0" marginwidth="0" leftmargin="0" topmargin="0">
@@ -635,15 +679,20 @@ private Vector getValues(String id){
 									boolean inWorkByMe = workingUser==null ?
 											 false :
 											 workingUser.equals(user.getUserName());
-											 
-									if (dataset!=null && dataset.isWorkingCopy() ||
-										(isLatest && topFree)   ||
-										(isLatest && inWorkByMe)){ %>
-										<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=ds_id%>')"/>&#160;<%
+									
+									String aclp = "/datasets/" + ds_id;
+									if (SecurityUtil.hasPerm(user.getUserName(), aclp, "u")){
+										if (dataset!=null && dataset.isWorkingCopy() ||
+											(isLatest && topFree)   ||
+											(isLatest && inWorkByMe)){ %>
+											<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=ds_id%>')"/>&#160;<%
+										}
 									}
 									
-									if (dataset!=null && !dataset.isWorkingCopy() && isLatest && topFree){ %>
-										<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/> <%
+									if (SecurityUtil.hasPerm(user.getUserName(), aclp, "d")){
+										if (dataset!=null && !dataset.isWorkingCopy() && isLatest && topFree){ %>
+											<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/> <%
+										}
 									}
 								}
 								else{
@@ -688,7 +737,7 @@ private Vector getValues(String id){
 			
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:openShortName()"><span class="help">?</span></a>&#160;
+					<a target="_blank" href="identification.html"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Short name</b>
 						<%
 						displayed++;
@@ -716,14 +765,13 @@ private Vector getValues(String id){
 			// First make sure you don't display Version for a status that doesn't require it.
 			
 			String regStatus = dataset!=null ? dataset.getStatus() : null;
-			//verMan = new VersionManager();
 			
 			if (!mode.equals("add")){
 				String dstVersion = dataset.getVersion();
 				%>
 				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<td align="right" style="padding-right:10">
-						<a href="javascript:alert('Help is under construction!')"><span class="help">?</span></a>&#160;
+						<a target="_blank" href="identification.html#version"><span class="help">?</span></a>&#160;
 						<span class="mainfont"><b>Version</b>
 							<%
 							displayed++;
@@ -744,7 +792,7 @@ private Vector getValues(String id){
 			%>
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" valign="top" style="padding-right:10">
-					<a href="javascript:alert('Help is under construction!')">
+					<a target="_blank" href="statuses.html">
 					<span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Registration status</b>
 						<% if (!mode.equals("view")){ %>
@@ -757,14 +805,21 @@ private Vector getValues(String id){
 				<td colspan="2">
 					<%
 					if (mode.equals("view")){ %>
-						<span class="barfont" style="width:400"><%=regStatus%></span> <%
+						<span class="barfont" style="width:400">
+							<%=regStatus%>
+							<%
+							if (user!=null && topWorkingUser==null && wPrm){ %>
+								&#160;&#160;&#160;
+								<a href="javascript:forceStatus('<%=regStatus%>')">&gt; force status to lower levels...</a><%
+							}
+							%>
+						</span><%
 					}
 					else{ %>
 						<select name="reg_status" onchange="form_changed('form1')"> <%
-							Hashtable regStatuses = verMan.getRegStatuses();
-							Enumeration e = regStatuses.keys();
-							while (e!=null && e.hasMoreElements()){
-								String stat = (String)e.nextElement();
+							Vector regStatuses = verMan.getRegStatusesOrdered();
+							for (int i=0; i<regStatuses.size(); i++){
+								String stat = (String)regStatuses.get(i);
 								String selected = stat.equals(regStatus) ? "selected" : ""; %>
 								<option <%=selected%> value="<%=stat%>"><%=stat%></option><%
 							} %>
@@ -1165,14 +1220,21 @@ private Vector getValues(String id){
 									String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
 			    															  table.getShortName(), "tbl");
 
+									String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());
+									
 									%>
 									<tr>
 										<td align="right" style="padding-right:5" bgcolor="#f0f0f0">
+										
 											<%
 											if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
 												%> <font title="<%=tblWorkingUser%>" color="red">* </font> <%
 											}
+											else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
+												%> <font title="<%=tblElmWorkingUser%>" color="red">* </font> <%
+											}
 											%>
+											
 										</td>
 										<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 											<a href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a>
@@ -1222,10 +1284,12 @@ private Vector getValues(String id){
 				<td>&#160;</td>
 				<td colspan="2">
 				
-					<% 
+					<%
+					
+					boolean iPrm = user==null ? false : SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i");
 					
 					if (mode.equals("add")){ // if mode is "add"
-						if (user==null){ %>									
+						if (!iPrm){ %>
 							<input class="mediumbuttonb" type="button" value="Add" disabled="true"/>&#160;
 						<%} else {%>
 							<input class="mediumbuttonb" type="button" value="Add" onclick="submitForm('add')"/>&#160;
@@ -1233,28 +1297,32 @@ private Vector getValues(String id){
 					} // end if mode is "add"
 					
 					if (!mode.equals("add")){ // if mode is not "add"
-							if (user==null){ %>									
-								<input type="button" class="mediumbuttonb" value="Save" disabled="true"/>&#160;&#160;
-								<%
-								if (!dataset.isWorkingCopy()){ %>
-									<input class="mediumbuttonb" type="button" value="Delete" disabled="true"/>&#160;&#160;<%
-								}
-								else{ %>
-									<input class="mediumbuttonb" type="button" value="Check in" onclick="checkIn()" disabled="true"/>&#160;&#160;
-									<input class="mediumbuttonb" type="button" value="Undo check-out" disabled="true"/>&#160;&#160;<%
-								}
-							} else {%>
-								<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&#160;&#160;
-								<%
-								if (!dataset.isWorkingCopy()){ %>
-									<input class="mediumbuttonb" type="button" value="Delete" onclick="submitForm('delete')"/>&#160;&#160;<%
-								}
-								else{ %>
-									<input class="mediumbuttonb" type="button" value="Check in" onclick="checkIn()"/>&#160;&#160;
-									<input class="mediumbuttonb" type="button" value="Undo check-out" onclick="submitForm('delete')"/>&#160;&#160;<%
-								}
+					
+						String aclp = "/datasets/" + ds_id;
+						boolean uPrm = user==null ? false : SecurityUtil.hasPerm(user.getUserName(), aclp, "u");
+					
+						if (!uPrm){ %>
+							<input type="button" class="mediumbuttonb" value="Save" disabled="true"/>&#160;&#160;
+							<%
+							if (!dataset.isWorkingCopy()){ %>
+								<input class="mediumbuttonb" type="button" value="Delete" disabled="true"/>&#160;&#160;<%
 							}
-						} // end if mode is not "add"
+							else{ %>
+								<input class="mediumbuttonb" type="button" value="Check in" onclick="checkIn()" disabled="true"/>&#160;&#160;
+								<input class="mediumbuttonb" type="button" value="Undo check-out" disabled="true"/>&#160;&#160;<%
+							}
+						} else {%>
+							<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&#160;&#160;
+							<%
+							if (!dataset.isWorkingCopy()){ %>
+								<input class="mediumbuttonb" type="button" value="Delete" onclick="submitForm('delete')"/>&#160;&#160;<%
+							}
+							else{ %>
+								<input class="mediumbuttonb" type="button" value="Check in" onclick="checkIn()"/>&#160;&#160;
+								<input class="mediumbuttonb" type="button" value="Undo check-out" onclick="submitForm('delete')"/>&#160;&#160;<%
+							}
+						}
+					} // end if mode is not "add"
 					
 					%>
 					
@@ -1272,9 +1340,7 @@ private Vector getValues(String id){
 				</td>
 				<td colspan="2">
 					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>">Create dataset factsheet (PDF)</a> <BR>
-					<!--&#160;|&#160;-->
 					* <a href="GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>&out_type=GDLN">Create full dataset specification (PDF)</a>
-					<!-- a href="javascript:openSource('GetPrintout?format=PDF&obj_type=DST&obj_id=<%=ds_id%>')">Get factsheet (PDF)</a -->
 				</td>
 			</tr>
 			
@@ -1353,6 +1419,8 @@ private Vector getValues(String id){
 		
 		<!-- Special input for 'delete' mode only. Inidcates if dataset(s) should be deleted completely. -->
 		<input type="hidden" name="complete" value="false"/>
+		
+		<input type="hidden" name="force_status" value=""/>
 		
 	</table>
 	</form>

@@ -234,6 +234,7 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 							
 							<%							
 							boolean found = false;
+							int displayed = 0;
 							for (int i=0; attrs!=null && i<attrs.size(); i++){	
 								DElemAttribute attr = (DElemAttribute)attrs.get(i);
 								if (attr.getID().equals(attrID)){									
@@ -241,6 +242,9 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 									for (int j=0; values!=null && j<values.size(); j++){
 										found = true;
 										String value = (String)values.get(j);
+										if (displayed==0){ %>
+											<tr><td colspan="2">Please note that you can only add images of JPG, GIF and PNG!</td></tr> <%
+										}
 										%>
 										<tr>
 											<td valign="top">
@@ -251,6 +255,7 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 											</td>
 										</tr>
 										<tr height="10"><td colspan="2">&#160;</td></tr> <%
+										displayed++;
 									}
 								}
 							}
@@ -260,6 +265,7 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 									<td align="left" colspan="2">
 										<b>
 											No images found! You can add by using the form above.<br/>
+											Please note that you can only add images of JPG, GIF or PNG.<br/>
 											If you're not authorized or the object is not a working copy,<br/>
 											the form is disabled.
 										</b>

@@ -19,6 +19,8 @@
     private String oCompStr=null;
     private int iO=0;
     
+    boolean delPrm = false;
+    
     public c_SearchResultEntry(String _oID,String _oType,String _oShortName,String _oDsName,String _oTblName, String _oNs) {
 	    
             oID	= _oID==null ? "" : _oID;
@@ -48,6 +50,13 @@
         return iO*oCompStr.compareToIgnoreCase(oC1.toString());
     }
     
+    public void setDelPrm(boolean b){
+	    delPrm = b;
+    }
+    
+    public boolean getDelPrm(){
+	    return delPrm;
+    }
 }%>
 
 <%!class c_SearchResultSet {
@@ -112,16 +121,18 @@
 	
 		if (request.getMethod().equals("POST")){
 		
-			if (user == null){
-	      			%>
-	      				<html>
-	      				<body>
-	      					<h1>Error</h1><b>Not authorized to post any data!</b>
-	      				</body>
-	      				</html>
-	      			<%
-	      			return;
-      			}
+			if (user==null){ %>
+				<b>Not allowed!</b> <%
+				return;
+			}
+			else{
+				String[] delem_ids = request.getParameterValues("delem_id");
+				for (int i=0; delem_ids!=null && i<delem_ids.length; i++){
+					if (!SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delem_ids[i], "d")){ %>
+						<b>Not allowed!</b> <%
+					}
+				}
+			}
 			
       		Connection userConn = null;
       		DataElementHandler handler = null;
@@ -185,6 +196,15 @@
 		dataElements = searchEngine.getDataElements(params, type, ns_param,
 									short_name, null, dataset, wrkCopies, oper);
 	}
+
+// prepare Vector of deletion rights for each element
+Vector delPrms = new Vector();
+for (int i=0; user!=null && dataElements!=null && i<dataElements.size(); i++){
+	DataElement elm = (DataElement)dataElements.get(i);
+	if (SecurityUtil.hasPerm(user.getUserName(), "/elements/" + elm.getID(), "d"))
+		delPrms.add(elm.getID());
+}
+
 /*  Not needed currently
 	int iCurrPage=0;
     try {
@@ -295,7 +315,7 @@
 			<tr>
 				<td></td>
 				<td align="left" colspan="8" style="padding-bottom:5">
-					<% if (user != null){
+					<% if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")){
 						%>
 						<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
 						<%
@@ -306,8 +326,9 @@
 			
 			<tr>
 				<td align="right" style="padding-right:10">
-					<% if (user!=null){ %>
-						<input type="button" value="Delete" class="smallbutton" onclick="deleteElement()"/><%
+					<% if (user!=null){
+						String _disabled = delPrms.size()>0 ? "" : "disabled"; %>
+						<input type="button" value="Delete" class="smallbutton" <%=_disabled%> onclick="deleteElement()"/><%
 					}
 					else{ %>
 						&#160;<%
@@ -388,7 +409,18 @@
 	        	session.setAttribute(oSearchCacheAttrName,oResultSet);
 	        	
 	        	for (int i=0; i<dataElements.size(); i++){
+		        	
 					DataElement dataElement = (DataElement)dataElements.get(i);
+					
+					String regStatus = dataElement!=null ? dataElement.getStatus() : null;
+					// for countries show only Recorded & Released
+					/*if (regStatus!=null){
+						if (user==null || !user.isAuthentic()){
+							if (regStatus.equals("Incomplete") || regStatus.equals("Candidate") || regStatus.equals("Qualified"))
+								continue;
+						}
+					}*/
+			
 					String delem_id = dataElement.getID();
 					//String delem_name = dataElement.getAttributeValueByName("Name");
 					String delem_name = dataElement.getShortName();
@@ -425,6 +457,9 @@
                 														 dispDs,
                 														 dispTbl,
                 														 null);                															 
+					boolean delPrm = delPrms.contains(delem_id);
+					oEntry.setDelPrm(delPrm);
+					
 					oResultSet.oElements.add(oEntry);
 					
 					String workingUser = verMan.getWorkingUser(dataElement.getNamespace().getID(),
@@ -440,7 +475,8 @@
 					<tr>
 						<td align="right" style="padding-right:10">
 							<%
-	    					if (user!=null){
+	    					//if (user!=null){
+		    				if (delPrms.contains(delem_id)){
 		    					
 		    					if (topWorkingUser!=null){ // mark checked-out elements
 			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
@@ -501,7 +537,11 @@
 					<tr>
 						<% if (user != null){%>
 							<td align="right" style="padding-right:10">
-								<input type="checkbox" style="height:13;width:13" name="delem_id" value="<%=oEntry.oID%>"/>
+								<%
+								if (oEntry.getDelPrm()){ %>
+									<input type="checkbox" style="height:13;width:13" name="delem_id" value="<%=oEntry.oID%>"/><%
+								}
+								%>
 								<input type="hidden" name="delem_name_<%=oEntry.oID%>" value="<%=oEntry.oShortName%>"/>
 								<input type="hidden" name="ns_name_<%=oEntry.oID%>" value="<%=oEntry.oNs%>"/>
 							</td>
