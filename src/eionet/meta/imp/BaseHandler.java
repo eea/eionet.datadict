@@ -4,7 +4,9 @@ package eionet.meta.imp;
 
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
-import javax.xml.parsers.*;
+
+import com.tee.xmlserver.AppUserIF;
+
 /**
  * A Class class.
  * <P>
@@ -15,6 +17,9 @@ public class BaseHandler extends DefaultHandler {
     private boolean errorOrWarning;   //true, if any error found
     private StringBuffer errorBuff;   // error description
     private Locator locator = null;
+    
+    protected AppUserIF user = null;
+    
   /**
    * Constructor
    */
@@ -44,5 +49,9 @@ public class BaseHandler extends DefaultHandler {
         errorOrWarning = true;
         errorBuff.append(err);
     }
+    
+	public void setUser(AppUserIF user){
+		this.user = user;
+	}
 }
 

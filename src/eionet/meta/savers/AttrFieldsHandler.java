@@ -6,11 +6,12 @@ import javax.servlet.http.*;
 import java.util.*;
 
 import com.tee.util.*;
+import eionet.meta.DDSearchEngine;
 
 public class AttrFieldsHandler {
-    
+
     public static final String FLD_PREFIX = "field_";
-    
+
     private Connection conn = null;
     //private HttpServletRequest req = null;
     private Parameters req = null;
@@ -21,11 +22,15 @@ public class AttrFieldsHandler {
     String m_attr_id = null;
     String[] del_rows = null;
     String[] del_attrs = null;
+
+    private boolean versioning = true;
     
+    private String harvAttrID = null;
+
     public AttrFieldsHandler(Connection conn, HttpServletRequest req, ServletContext ctx){
         this(conn, new Parameters(req), ctx);
     }
-    
+
     public AttrFieldsHandler(Connection conn, Parameters req, ServletContext ctx){
         this.conn = conn;
         this.req  = req;
@@ -36,18 +41,52 @@ public class AttrFieldsHandler {
         this.m_attr_id = req.getParameter("attr_id");
         this.del_rows = req.getParameterValues("del_row");
         this.del_attrs = req.getParameterValues("del_attr");
+        
+		harvAttrID = req.getParameter("harv_attr_id");
+
+        if (ctx!=null){
+	        String _versioning = ctx.getInitParameter("versioning");
+	        if (_versioning!=null && _versioning.equalsIgnoreCase("false"))
+	            setVersioning(false);
+        }
     }
-    
+
     public AttrFieldsHandler(Connection conn, HttpServletRequest req, ServletContext ctx, String mode){
         this(conn, req, ctx);
         this.mode = mode;
     }
-    
+
+    public void setVersioning(boolean f){
+        this.versioning = f;
+    }
+
     public void execute() throws Exception {
-        
+    	
         if (mode==null || (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("delete")))
             throw new Exception("AttrFieldsHandler mode unspecified!");
         
+        if (parent_type!=null){
+            
+            // if in versioning mode, we cannot edit attributes of
+            // non-working copies
+                
+            String _type = null;
+            if (parent_type.equals("E"))
+                _type = "elm";
+            else if (parent_type.equals("T"))
+                _type = "tbl";
+            else if (parent_type.equals("DS"))
+                _type = "dst";
+
+            DDSearchEngine searchEngine = new DDSearchEngine(conn);
+            boolean wc = true;
+            try{ wc = searchEngine.isWorkingCopy(parent_id, _type); }
+            catch (Exception e){}
+            if (!wc && versioning)
+                throw new Exception("Cannot edit attributes of a " +
+                        "non-working copy!");
+        }
+
         if (mode.equalsIgnoreCase("add")){
             if (m_attr_id == null) throw new Exception("AttrFieldsHandler: attribute id not specified!");
             if (parent_id == null) throw new Exception("AttrFieldsHandler: parent id not specified!");
@@ -62,65 +101,75 @@ public class AttrFieldsHandler {
             delete();
         }
     }
-    
+
     private void insert() throws Exception {
-        
+    	
         Enumeration params = req.getParameterNames();
         if (params == null || !params.hasMoreElements()) return;
-        
+
+        if (Util.nullString(harvAttrID) && !hasFields()) return;
+
         String row_id = insertRow();
-        insertFields(row_id, params);
+		if (Util.nullString(harvAttrID))
+        	insertFields(row_id, params);
     }
-    
+
     private String insertRow() throws SQLException {
-        
+
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("COMPLEX_ATTR_ROW");
-        
+
         gen.setField("M_COMPLEX_ATTR_ID", m_attr_id);
         gen.setField("PARENT_ID", parent_id);
         gen.setField("PARENT_TYPE", parent_type);
-        
+
         String position = req.getParameter("position");
         if (position == null || position.length()==0) position = "0";
         gen.setField("POSITION", position);
-        
-        
+
+
         String rowID = "md5('" + parent_id + parent_type + m_attr_id + position + "')";
         gen.setFieldExpr("ROW_ID", rowID);
         
+        if (!Util.nullString(harvAttrID))
+			gen.setField("HARV_ATTR_ID", harvAttrID);
+
         String sql = gen.insertStatement();
-        
-        ctx.log(sql);
-        
+
+        log(sql);
+
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
-        
+        stmt.close();
+
         return rowID;
     }
-    
+
     private void insertFields(String row_id, Enumeration params) throws SQLException {
-        
+
         if (row_id == null) return;
-        
+
         do {
             String parName = (String)params.nextElement();
             if (!parName.startsWith(FLD_PREFIX)) continue;
-            
+
+            if (Util.nullString(req.getParameter(parName))) continue;
+
             String fieldID = parName.substring(FLD_PREFIX.length());
-            
+
             SQLGenerator gen = new SQLGenerator();
             gen.setTable("COMPLEX_ATTR_FIELD");
-            
+
             gen.setFieldExpr("ROW_ID", row_id);
-            gen.setField("M_COMPLEX_ATTR_FIELD_ID", fieldID);            
+            gen.setField("M_COMPLEX_ATTR_FIELD_ID", fieldID);
             gen.setField("VALUE", req.getParameter(parName));
-            
+
             String sql = gen.insertStatement();
-            ctx.log(sql);
-        
+            log(sql);
+
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(sql);
+            stmt.close();
         }
         while (params.hasMoreElements());
     }
@@ -155,11 +204,13 @@ public class AttrFieldsHandler {
         
         Statement stmt = conn.createStatement();
         
-        ctx.log(bufRow.toString());
+        log(bufRow.toString());
         stmt.executeUpdate(bufRow.toString());
         
-        ctx.log(bufFld.toString());
+        log(bufFld.toString());
         stmt.executeUpdate(bufFld.toString());
+        
+        stmt.close();
     }
     
     private void setDelRows() throws SQLException {
@@ -189,12 +240,28 @@ public class AttrFieldsHandler {
         while (rs.next()){
             v.add(rs.getString("ROW_ID"));
         }
-        
+
+        stmt.close();
+
         del_rows = new String[v.size()];
         for (int i=0; i<v.size(); i++)
             del_rows[i] = (String)v.get(i);
     }
-    
+    private boolean hasFields(){
+        Enumeration pars = req.getParameterNames();
+        do {
+            String parName = (String)pars.nextElement();
+            if (!parName.startsWith(FLD_PREFIX)) continue;
+
+            if (Util.nullString(req.getParameter(parName))) continue;
+
+            return true;
+        }
+        while (pars.hasMoreElements());
+
+        return false;
+
+    }
     private void log(String msg){
         if (ctx != null)
             ctx.log(msg);

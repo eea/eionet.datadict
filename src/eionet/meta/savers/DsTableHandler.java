@@ -9,8 +9,9 @@ import eionet.meta.*;
 
 import com.tee.util.*;
 import com.tee.xmlserver.AppUserIF;
+import com.tee.uit.security.*;
 
-public class DsTableHandler {
+public class DsTableHandler extends BaseHandler {
 
     public static String ATTR_PREFIX = "attr_";
     public static String ATTR_MULT_PREFIX = "attr_mult_";
@@ -18,11 +19,6 @@ public class DsTableHandler {
     public static String INHERIT_ATTR_PREFIX = "inherit_";
     public static String INHERIT_COMPLEX_ATTR_PREFIX = "inherit_complex_";
 
-    private Connection conn = null;
-    //private HttpServletRequest req = null;
-    private Parameters req = null;
-    private ServletContext ctx = null;
-    
     private String mode = null;
     private String lastInsertID = null;
 
@@ -31,8 +27,6 @@ public class DsTableHandler {
     private String nsID = null;
     private String dsID = null;
     private String shortName = null;
-
-    AppUserIF user = null;
 
     boolean copy = false; //making a copy, exists() not performed
     String version = null; //used only when making a copy
@@ -48,7 +42,12 @@ public class DsTableHandler {
 	HashSet topns = new HashSet();
 	
 	/** for storing dataset ID returned by VersionManager.deleteTbl() */
-		private String newDstID = null;
+	private String newDstID = null;
+	
+	/** for storing restored table ID returned by Restorer.restoreTbl() */
+	private String restoredID = null;
+	
+	private boolean importMode = false;
 
 	/**
 	 * 
@@ -77,6 +76,10 @@ public class DsTableHandler {
         this(conn, req, ctx);
         this.mode = mode;
     }
+    
+	public void setImport(boolean importMode){
+		this.importMode = importMode;
+	}
     
     public void setVersioning(boolean f){
         this.versioning = f;
@@ -132,6 +135,8 @@ public class DsTableHandler {
 
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
                            !mode.equalsIgnoreCase("edit") &&
+						   !mode.equalsIgnoreCase("restore") &&
+						   !mode.equalsIgnoreCase("force_status") &&
                            !mode.equalsIgnoreCase("delete")))
             throw new Exception("DsTableHandler mode unspecified!");
 
@@ -139,8 +144,14 @@ public class DsTableHandler {
             insert();
         else if (mode.equalsIgnoreCase("edit"))
             update();
-        else
+		else if (mode.equalsIgnoreCase("restore"))
+			restore();
+		else if (mode.equalsIgnoreCase("force_status"))
+			forceStatus();
+        else{
             delete();
+            cleanVisuals();
+        }
     }
     
     private void insert() throws Exception {
@@ -217,6 +228,14 @@ public class DsTableHandler {
         // insert the table
         stmt.executeUpdate(gen.insertStatement());
         setLastInsertID();
+
+		// add acl
+		if (user!=null){
+			String aclPath = "/tables/" + getLastInsertID();
+			String aclDesc =
+				"Short name=" + shortName + ", parentNS=" + parentNS;
+			AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
+		}
         
         // create the corresponding namespace
         if (!copy){
@@ -248,6 +267,7 @@ public class DsTableHandler {
         if (copy_tbl_id != null && copy_tbl_id.length()!=0){
 
             CopyHandler copier = new CopyHandler(conn, ctx);
+			copier.setUser(user);
 
             gen.clear();
             gen.setTable("ATTRIBUTE");
@@ -287,6 +307,7 @@ public class DsTableHandler {
         String checkIn = req.getParameter("check_in");
         if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
             VersionManager verMan = new VersionManager(conn, user);
+			verMan.setContext(ctx);
 			String verUpw = req.getParameter("ver_upw");
 			if (verUpw!=null && verUpw.equalsIgnoreCase("false"))
 				verMan.setUpwardsVersioning(false);
@@ -350,6 +371,7 @@ public class DsTableHandler {
         Vector wrkCopies = new Vector();
         HashSet delns = new HashSet();
         VersionManager verMan = new VersionManager(conn, user);
+		verMan.setContext(ctx);
         while (rs.next()){
             
             // if table in work by another user, throw something
@@ -440,10 +462,30 @@ public class DsTableHandler {
         }
         stmt.executeUpdate(buf.toString());
         stmt.close();
+
+		// remove acls
+		for (int i=0; i<del_IDs.length; i++){
+			try{
+				AccessController.removeAcl("/tables/" + del_IDs[i]);
+			}
+			catch (Exception e){}
+		}
         
         // release originals and top namespaces
         cleanup();
     }
+    
+    /**
+     * 
+     */
+	private void restore() throws Exception {
+    	
+		String tableID = req.getParameter("table_id");
+		if (Util.nullString(tableID)) return;
+		Restorer restorer = new Restorer(conn);
+		restorer.setUser(user);
+		this.restoredID = restorer.restoreTbl(tableID); 
+	}
     
     /*
      * 
@@ -585,23 +627,19 @@ public class DsTableHandler {
         return nsHandler.getLastInsertID();
     }
 
-    /**
-    *
-    */
-    private void deleteDsTable(String table_id) throws SQLException {
-        StringBuffer buf = new StringBuffer("delete from DS_TABLE where TABLE_ID=");
-        buf.append(table_id);
-
-        log(buf.toString());
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
-    }
-
     private void deleteAttributes(String[] del_IDs) throws SQLException {
+    	
+		// find out image attributes, so to skip them later
+		StringBuffer buf = new StringBuffer("select M_ATTRIBUTE_ID ");
+		buf.append("from M_ATTRIBUTE where DISP_TYPE='image'");
+		
+		Vector imgAttrs = new Vector();
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(buf.toString());
+		while (rs.next())
+			imgAttrs.add(rs.getString(1));
 
-        StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where (");
+        buf = new StringBuffer("delete from ATTRIBUTE where (");
         for (int i=0; i<del_IDs.length; i++){
             if (i>0)
                 buf.append(" or ");
@@ -610,10 +648,14 @@ public class DsTableHandler {
         }
 
         buf.append(") and PARENT_TYPE='T'");
+        
+		// skip image attributes        
+		for (int i=0; i<imgAttrs.size(); i++)
+			buf.append(" and M_ATTRIBUTE_ID<>").append((String)imgAttrs.get(i));
 
         log(buf.toString());
 
-        Statement stmt = conn.createStatement();
+        stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
         stmt.close();
     }
@@ -676,12 +718,14 @@ public class DsTableHandler {
               attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
               if (dsID==null) continue;
               CopyHandler ch = new CopyHandler(conn, ctx);
+              ch.setUser(user);
               ch.copyAttribute(lastInsertID, dsID, "T", "DS", attrID);
             }
             else if (parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)){
               attrID = parName.substring(INHERIT_COMPLEX_ATTR_PREFIX.length());
               if (dsID==null) continue;
               CopyHandler ch = new CopyHandler(conn, ctx);
+			  ch.setUser(user);
               ch.copyComplexAttrs(lastInsertID, dsID, "DS", "T", attrID);
             }
         }
@@ -788,11 +832,39 @@ public class DsTableHandler {
     public void setUser(AppUserIF user){
         this.user = user;
     }
-
-    private void log(String msg){
-        if (ctx != null)
-            ctx.log(msg);
+    
+    public String getRestoredID(){
+    	return this.restoredID;
     }
+
+	/**
+	 * @param frcStatus
+	 */
+	private void forceStatus() throws SQLException{
+		
+		String tblID = req.getParameter("table_id");
+		String frcStatus = req.getParameter("force_status");
+		if (tblID==null || frcStatus==null)
+			return;
+
+		// get all data elements in this table
+		HashSet elms = new HashSet();
+		String s =
+		"select distinct DATAELEM_ID from TBL2ELEM where TABLE_ID=" + tblID;
+		
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(s);
+		while (rs.next())
+			elms.add(rs.getString(1));
+		
+		// force status to elements
+		s = "update DATAELEM set REG_STATUS='" +
+					frcStatus + "' where DATAELEM_ID=";
+		Iterator iter = elms.iterator();
+		while (iter.hasNext())
+			stmt.executeUpdate(s + (String)iter.next());
+	}
+
     public static void main(String[] args){
 
         try{
@@ -805,8 +877,9 @@ public class DsTableHandler {
 
             Parameters pars = new Parameters();
             pars.addParameterValue("mode", "delete");
-            pars.addParameterValue("del_id", "1990");
-            pars.addParameterValue("del_id", "1991");
+            pars.addParameterValue("del_id", "2283");
+			pars.addParameterValue("del_id", "2281");
+			pars.addParameterValue("del_id", "2279");
 
             DsTableHandler handler = new DsTableHandler(conn, pars, null);
             handler.setUser(testUser);

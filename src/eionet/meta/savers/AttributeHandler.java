@@ -5,14 +5,13 @@ import java.sql.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import eionet.meta.DElemAttribute;
-import com.tee.util.*;
 
-public class AttributeHandler {
+import com.tee.util.*;
+import com.tee.xmlserver.AppUserIF;
+import com.tee.uit.security.*;
+
+public class AttributeHandler extends BaseHandler {
     
-    private Connection conn = null;
-    //private HttpServletRequest req = null;
-    private Parameters req = null;
-    private ServletContext ctx = null;
     private String mode = null;
     private String type = null;
     private String attr_id = null;
@@ -75,11 +74,13 @@ public class AttributeHandler {
             insert();
         else if (mode.equalsIgnoreCase("edit"))
             update();
-        else
+        else{
             delete();
+            cleanVisuals();
+        }
     }
     
-    private void insert() throws SQLException {
+    private void insert() throws Exception {
         
         SQLGenerator sqlGenerator = new SQLGenerator();
         if (type==null || type.equals(DElemAttribute.TYPE_SIMPLE))
@@ -123,14 +124,33 @@ public class AttributeHandler {
                 sqlGenerator.setField("DISP_MULTIPLE", dispMultiple);
         }
         
+		if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
+			String harvesterID = req.getParameter("harv_id");
+			if (harvesterID != null && !harvesterID.equals("null"))
+				sqlGenerator.setField("HARVESTER_ID", harvesterID);
+		}
+        
         String sql = sqlGenerator.insertStatement();
         log(sql);
         
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
-        stmt.close();
+		setLastInsertID();
+		
+		String idPrefix = "";
+		if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
+			idPrefix = "c";
+		else if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE))
+			idPrefix = "s";
         
-        setLastInsertID();
+        // add acl
+		if (user!=null){
+			String aclPath = "/attributes/" + idPrefix + getLastInsertID();
+			String aclDesc = "Short name: " + shortName;
+			AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
+		}
+
+        stmt.close();
     }
     
     private void update() throws SQLException {
@@ -184,6 +204,14 @@ public class AttributeHandler {
             else
                 sqlGenerator.setField("DISP_MULTIPLE", "0");
         }
+        
+		String harvesterID = req.getParameter("harv_id");
+		if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){			
+			if (harvesterID != null && !harvesterID.equals("null"))
+				sqlGenerator.setField("HARVESTER_ID", harvesterID);
+			else
+				sqlGenerator.setFieldExpr("HARVESTER_ID", "NULL");
+		}
 
         StringBuffer buf = new StringBuffer(sqlGenerator.updateStatement());
         if (type==null || type.equals(DElemAttribute.TYPE_SIMPLE))
@@ -192,10 +220,23 @@ public class AttributeHandler {
             buf.append(" where M_COMPLEX_ATTR_ID=");
         buf.append(attr_id);
 
-        log(buf.toString());
-
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
+        
+        // if this is a compelx attribute and harvester link is being
+        // removed, set all links to harvested rows to NULL as well
+		if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){			
+			if (harvesterID == null || harvesterID.equals("null")){
+				sqlGenerator = new SQLGenerator();
+				sqlGenerator.setTable("COMPLEX_ATTR_ROW");
+				sqlGenerator.setFieldExpr("HARV_ATTR_ID", "NULL");
+				buf = new StringBuffer(sqlGenerator.updateStatement());
+				buf.append(" where M_COMPLEX_ATTR_ID=").append(attr_id);
+				
+				stmt.executeUpdate(buf.toString());
+			}
+		}
+				
         stmt.close();
     }
     
@@ -238,6 +279,22 @@ public class AttributeHandler {
             
             deleteComplexAttributeValues(complexAttrs);
         }
+        
+		// remove acls
+		for (int i=0; simpleAttrs!=null && i<simpleAttrs.length; i++){
+			try{
+				AccessController.removeAcl("/attributes/s" + simpleAttrs[i]);
+			}
+			catch (Exception e){}
+		}
+		
+		for (int i=0; complexAttrs!=null && i<complexAttrs.length; i++){
+			try{
+				AccessController.removeAcl("/attributes/c" + complexAttrs[i]);
+			}
+			catch (Exception e){}
+		}
+
     }
     
     private void deleteSimpleAttributeValues(String[] attr_ids) throws SQLException {
@@ -374,8 +431,8 @@ public class AttributeHandler {
         return String.valueOf(k);
     }
     
-    private void log(String msg){
-        if (ctx != null)
-            ctx.log(msg);
-    }
+	public void setUser(AppUserIF user){
+		this.user = user;
+	}
+
 }

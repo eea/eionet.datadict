@@ -7,6 +7,7 @@ import eionet.meta.*;
 import javax.servlet.*;
 import com.tee.util.*;
 import com.tee.xmlserver.AppUserIF;
+import com.tee.uit.security.*;
 
 public class CopyHandler extends Object {
 
@@ -101,13 +102,13 @@ public class CopyHandler extends Object {
     }
     
 	public String copyElem(String srcElemID, boolean tbl2elem)
-													throws SQLException{
+													throws Exception{
 		return copyElem(srcElemID, false, tbl2elem); 
 	}
     
     public String copyElem(String srcElemID,
     					   boolean workingCopy,
-    					   boolean tbl2elem) throws SQLException{
+    					   boolean tbl2elem) throws Exception{
 
         if (srcElemID==null) return null;
 
@@ -118,6 +119,14 @@ public class CopyHandler extends Object {
 
         if (newID==null)
             return null;
+
+		// add acl
+		if (user!=null){
+			String aclp = "/elements/" + newID;
+			String aclDesc = "Copy of " + srcElemID;
+			AccessController.addAcl(aclp, user.getUserName(), aclDesc);
+		}
+
 
 		// make it a working copy if needed
 		if (workingCopy){
@@ -181,19 +190,6 @@ public class CopyHandler extends Object {
 		
         return newID;
     }
-    
-    public void copyFKRelations(String newID, String srcElemID)
-    													throws Exception{ 
-		// A side
-		StringBuffer buf = new StringBuffer().
-		append("select * from FK_RELATION where A_ID=").
-		append(srcElemID).append(" or B_ID=").append(srcElemID);
-		
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
-		while (rs.next()){
-		}
-	}
     
     public void copyCsi(String newCompID, String compID, String compType) throws SQLException{
 
@@ -280,54 +276,6 @@ log(q);
     
     /**
     *
-    *
-    public String copyTbl(String tblID,
-                          boolean workingCopy,
-                          boolean elmRelations)throws Exception{
-
-        if (tblID==null) return null;
-
-        // get the table to copy
-        DsTable dsTable = searchEngine.getDatasetTable(tblID);
-        if (dsTable==null)
-            throw new Exception("Could not find the table to copy!");
-        
-        // use DsTableHandler to make the copy
-        
-        Parameters pars = new Parameters();
-        pars.addParameterValue("mode", "copy");
-        pars.addParameterValue("ds_id", dsTable.getDatasetID());
-        pars.addParameterValue("short_name", dsTable.getShortName());
-        if (dsTable.getVersion() != null)
-            pars.addParameterValue("version", dsTable.getVersion());
-        
-        DsTableHandler handler = new DsTableHandler(conn, pars, null);
-        handler.setUser(user);
-        handler.execute();
-        String newID = handler.getLastInsertID();
-        
-        // copy simple attributes
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("ATTRIBUTE");
-        gen.setField("DATAELEM_ID", newID);
-        copy(gen, "DATAELEM_ID=" + tblID + " and PARENT_TYPE='T'");
-        
-        // copy complex attributes
-        copyComplexAttrs(newID, tblID, "T");
-        
-        // if needed, copy the tbl-elm relations
-        if (elmRelations){
-            gen.clear();
-            gen.setTable("TBL2ELEM");
-            gen.setField("TABLE_ID", newID);
-            copy(gen, "TABLE_ID=" + tblID);
-        }
-        
-        return newID;
-    }*/
-    
-    /**
-    *
     */
     public String copyTbl(String tblID,
                           boolean workingCopy,
@@ -347,6 +295,13 @@ log(q);
         String newID = copy(gen, "TABLE_ID=" + tblID, false);
         if (newID==null)
             return null;
+
+		// add acl
+		if (user!=null){
+			String aclp = "/tables/" + newID;
+			String aclDesc = "Copy of " + tblID;
+			AccessController.addAcl(aclp, user.getUserName(), aclDesc);
+		}
         
         Statement stmt = conn.createStatement();
         
@@ -408,6 +363,15 @@ log(q);
         gen.setField("DATASET_ID", "");
         String newID = copy(gen, "DATASET_ID=" + dstID, false);
         
+        if (newID==null) return null;
+
+		// add acl
+		if (user!=null){
+			String aclp = "/datasets/" + newID;
+			String aclDesc = "Copy of " + dstID;
+			AccessController.addAcl(aclp, user.getUserName(), aclDesc);
+		}
+        
         // make it a working copy if needed
         if (workingCopy){
             gen.clear();
@@ -461,8 +425,6 @@ log(q);
     public void copyComplexAttrs(String newID, String oldID, String type, String newType, String mAttrID)
                                                     throws SQLException {
 
-        System.out.println("======> copyComplexAttrs " + newID + " " + oldID + " " + type);
-
         if (newID==null || oldID==null || type==null)
             return;
 
@@ -499,9 +461,18 @@ log(q);
 				gen.setField("M_COMPLEX_ATTR_ID", attrID);
                 gen.setFieldExpr("ROW_ID", rowID);
                 gen.setFieldExpr("POSITION", rowPos);
-
+                
+				// JH131103 - here we need to know if the attribute is linked to
+				// an harevsted one
+				String harvAttrID = (String)rowHash.get("harv_attr_id");				
+                if (harvAttrID!=null)
+					gen.setField("HARV_ATTR_ID", harvAttrID);
+                
                 Statement stmt = conn.createStatement();
 				stmt.executeUpdate(gen.insertStatement());
+				
+				if (harvAttrID!=null)
+					continue;
 
                 // get the value of each field in the given row
                 int insertedFields = 0;

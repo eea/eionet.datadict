@@ -13,15 +13,13 @@ import eionet.meta.TestUser;
 import eionet.meta.VersionManager;
 import eionet.meta.Dataset;
 
-public class DatasetHandler {
+import com.tee.uit.security.*;
+import eionet.util.SecurityUtil;
+
+public class DatasetHandler extends BaseHandler {
 
     public static String ATTR_PREFIX = "attr_";
     public static String ATTR_MULT_PREFIX = "attr_mult_";
-    
-    private Connection conn = null;
-    //private HttpServletRequest req = null;
-    private Parameters req = null;
-    private ServletContext ctx = null;
     
     private String mode = null;
     private String ds_id = null;
@@ -29,8 +27,8 @@ public class DatasetHandler {
     private String ds_name = null;
     private String lastInsertID = null;
     
-    private AppUserIF user = null;
     private boolean versioning = true;
+	private boolean importMode = false;
     
 	/** indicates if top namespace needs to be released after an exception*/
 	private boolean doCleanup = false;
@@ -70,6 +68,10 @@ public class DatasetHandler {
         this.user = user;
     }
     
+	public void setImport(boolean importMode){
+		this.importMode = importMode;
+	}
+    
     public void setVersioning(boolean f){
         this.versioning = f;
     }
@@ -102,6 +104,7 @@ public class DatasetHandler {
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
 						  !mode.equalsIgnoreCase("edit") &&
                           !mode.equalsIgnoreCase("restore") &&
+						  !mode.equalsIgnoreCase("force_status") &&
                           !mode.equalsIgnoreCase("delete")))
             throw new Exception("DatasetHandler mode unspecified!");
             
@@ -113,11 +116,22 @@ public class DatasetHandler {
             update();
 		else if (mode.equalsIgnoreCase("restore"))
 			restore();
-        else
+		else if (mode.equalsIgnoreCase("force_status"))
+			forceStatus();
+        else{
             delete();
+            cleanVisuals();
+        }
     }
     
     private void insert() throws Exception {
+    	
+    	// check permissions
+		AccessControlListIF acl = AccessController.getAcl("/datasets");
+		if (!importMode){
+			if (user==null || !acl.checkPermission(user.getUserName(), "i"))
+				throw new Exception("Not allowed!");
+		}
         
         if (ds_name == null)
             throw new SQLException("Short name must be specified!");
@@ -146,6 +160,13 @@ public class DatasetHandler {
         stmt.executeUpdate(gen.insertStatement());
         setLastInsertID();
         
+        // add acl
+        if (user!=null){
+	        String aclPath = "/datasets/" + getLastInsertID();
+	        String aclDesc = "Short name: " + ds_name;
+			AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
+        }
+        
         // create the corresponding namespace
         // (this also sets the WORKING_USER)
         String correspNS = createNamespace(ds_name);
@@ -165,6 +186,13 @@ public class DatasetHandler {
     
     private void update() throws Exception {
     	
+    	if (ds_id==null) throw new Exception("Dataset ID missing!");
+
+		// check permissions
+		String aclp = "/datasets/" + ds_id;
+		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), aclp, "u"))
+			throw new Exception("Not allowed!");
+    	
 		// see if it's just an unlock
 		String unlock = req.getParameter("unlock");
 		if (unlock!=null && !unlock.equals("false")){
@@ -175,7 +203,7 @@ public class DatasetHandler {
 			unlockNamespace(unlock);
 			return;
 		}
-        
+		
         lastInsertID = ds_id;
 
         String dsVisual = req.getParameter("visual");
@@ -219,6 +247,7 @@ public class DatasetHandler {
         if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
             
             VersionManager verMan = new VersionManager(conn, user);
+			verMan.setContext(ctx);
             verMan.checkIn(ds_id, "dst",
                                     req.getParameter("reg_status"));
             return;
@@ -228,7 +257,48 @@ public class DatasetHandler {
         processAttributes();
     }
     
-    private void restore() throws Exception {
+    /**
+	 * @param frcStatus
+	 */
+	private void forceStatus() throws SQLException{
+		
+		if (ds_id==null) return;
+		String frcStatus = req.getParameter("force_status");
+		if (frcStatus==null) return;
+		
+		// get all tables and data elements in dataset
+		HashSet tbls = new HashSet();
+		HashSet elms = new HashSet();
+		StringBuffer buf = new StringBuffer().
+		append("select distinct DST2TBL.TABLE_ID, TBL2ELEM.DATAELEM_ID ").
+		append("from DST2TBL left outer join TBL2ELEM on ").
+		append("DST2TBL.TABLE_ID=TBL2ELEM.TABLE_ID where DST2TBL.DATASET_ID=").
+		append(ds_id);
+		
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(buf.toString());
+		while (rs.next()){
+			tbls.add(rs.getString("DST2TBL.TABLE_ID"));
+			elms.add(rs.getString("TBL2ELEM.DATAELEM_ID"));
+		} 
+		
+		// force status to tables
+		String s = "update DS_TABLE set REG_STATUS='" +
+					frcStatus + "' where TABLE_ID=";
+		Iterator iter = tbls.iterator();
+		while (iter.hasNext())
+			stmt.executeUpdate(s + (String)iter.next());
+			
+		// force status to elements
+		s = "update DATAELEM set REG_STATUS='" +
+					frcStatus + "' where DATAELEM_ID=";
+		iter = elms.iterator();
+		while (iter.hasNext())
+			stmt.executeUpdate(s + (String)iter.next());
+		
+	}
+
+	private void restore() throws Exception {
     	
 		if (ds_ids==null || ds_ids.length==0)
 			return;
@@ -249,7 +319,16 @@ public class DatasetHandler {
         
         if (ds_ids==null || ds_ids.length==0)
             return;
-        
+
+		// check permissions
+		AccessControlListIF acl = null;
+		String aclp = "/datasets/";
+		for (int i=0; i<ds_ids.length; i++){
+			aclp = aclp + ds_id;
+			if (user==null || !SecurityUtil.hasPerm(user.getUserName(), aclp, "d"))
+				throw new Exception("Not allowed!");
+		}
+		            
         // find out which of ds_ids are not working copies
         // and if they're not the latest versions, throw
         // an exception
@@ -269,6 +348,7 @@ public class DatasetHandler {
         HashSet delns     = new HashSet();
 		HashSet wrkCopies = new HashSet();
         VersionManager verMan = new VersionManager(conn, user);
+		verMan.setContext(ctx);
         while (rs.next()){
             
             String thisID = rs.getString("DATASET_ID");
@@ -294,7 +374,7 @@ public class DatasetHandler {
                     throw new Exception("DatasetHandler: Cannot delete an " +
                                                 "intermediate version!");
             }
-            else
+            else if (versioning)
                 origs.add(shortName);
             
             legal.add(thisID);
@@ -347,6 +427,14 @@ public class DatasetHandler {
         stmt.executeUpdate(buf.toString());
         stmt.close();
         
+        // remove acls
+		for (int i=0; i<ds_ids.length; i++){
+			try{
+				AccessController.removeAcl("/datasets/" + ds_ids[i]);
+			}
+			catch (Exception e){}
+		}
+        
         // release the originals and namespaces
         cleanup();
     }
@@ -366,7 +454,7 @@ public class DatasetHandler {
         pars.addParameterValue("fullName", fullName);
         pars.addParameterValue("description", definition);
         
-        if (user!=null && user.isAuthentic()){
+        if (versioning && user!=null && user.isAuthentic()){
             pars.addParameterValue("wrk_user", user.getUserName());
         }
         
@@ -377,8 +465,18 @@ public class DatasetHandler {
     }
     
     private void deleteAttributes() throws SQLException {
-        
-        StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where (");
+
+		// find out image attributes, so to skip them later
+		StringBuffer buf = new StringBuffer("select M_ATTRIBUTE_ID ");
+		buf.append("from M_ATTRIBUTE where DISP_TYPE='image'");
+		
+		Vector imgAttrs = new Vector();
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(buf.toString());
+		while (rs.next())
+			imgAttrs.add(rs.getString(1));
+
+        buf = new StringBuffer("delete from ATTRIBUTE where (");
         for (int i=0; i<ds_ids.length; i++){
             if (i>0)
                 buf.append(" or ");
@@ -387,10 +485,14 @@ public class DatasetHandler {
         }
         
         buf.append(") and PARENT_TYPE='DS'");
-        
+
+		// skip image attributes        
+		for (int i=0; i<imgAttrs.size(); i++)
+			buf.append(" and M_ATTRIBUTE_ID<>").append((String)imgAttrs.get(i));
+       
         log(buf.toString());
         
-        Statement stmt = conn.createStatement();
+        stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
         stmt.close();
     }
@@ -519,73 +621,6 @@ public class DatasetHandler {
         stmt.close();
 	}
     
-    /*private void deleteTablesElems() throws Exception {
-        
-        // we can only delete the tables that exist ONLY within those
-        // datasets found legal for deletion (and residing in ds_ids)
-        
-        // first get all tables belonging to these datasets
-        HashSet tables = new HashSet();
-        StringBuffer buf = new StringBuffer();
-        buf.append("select distinct TABLE_ID from DST2TBL where ");
-        for (int i=0; i<ds_ids.length; i++){
-            if (i>0) buf.append(" or ");
-            buf.append("DATASET_ID=");
-            buf.append(ds_ids[i]);
-        }
-
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
-        while (rs.next())
-            tables.add(rs.getString("TABLE_ID"));
-        
-        // no prune out those tables belonging into other datasets as well
-        buf = new StringBuffer();
-        buf.append("select count(*) from DST2TBL where TABLE_ID=?");
-        for (int i=0; i<ds_ids.length; i++){
-            buf.append(" and DATASET_ID<>");
-            buf.append(ds_ids[i]);
-        }
-        
-        PreparedStatement ps = conn.prepareStatement(buf.toString());        
-        Iterator iter = tables.iterator();
-        while (iter.hasNext()){
-            ps.setInt(1, Integer.parseInt((String)iter.next()));
-            rs = ps.executeQuery();
-            if (rs.next()){
-                if (rs.getInt(1) > 0)
-                    iter.remove();
-            }
-        }
-        
-        ps.close();
-        
-        // Now the tables HashSet should contain only those we can delete.        
-        
-        if (tables.size() == 0) return;
-        
-        Parameters params = new Parameters();
-        params.addParameterValue("mode", "delete");
-        for (Iterator itr=tables.iterator(); itr.hasNext(); )
-            params.addParameterValue("del_id", (String)itr.next());
-                
-        DsTableHandler tableHandler = new DsTableHandler(conn, params, ctx);
-        tableHandler.setUser(user);
-        tableHandler.setVersioning(versioning);
-        tableHandler.execute();
-        
-		// finally delete the dst-tbl relations.
-		buf = new StringBuffer();
-		buf.append("delete from DST2TBL where ");
-		for (int i=0; i<ds_ids.length; i++){
-			if (i>0) buf.append(" or ");
-			buf.append("DATASET_ID=");
-			buf.append(ds_ids[i]);
-		}
-		stmt.executeUpdate(buf.toString());
-		stmt.close();
-    }*/
-    
     private void deleteNamespaces() throws SQLException{
         
         StringBuffer buf = new StringBuffer("delete from NAMESPACE where ");
@@ -677,11 +712,6 @@ public class DatasetHandler {
 //		return (AccessControlListIF)acls.get(name);
 //  	}
     
-    private void log(String msg){
-        if (ctx != null)
-            ctx.log(msg);
-    }
-    
     public static void main(String[] args){
         
         try{
@@ -698,9 +728,9 @@ public class DatasetHandler {
             pars.addParameterValue("mode", "delete");
 			pars.addParameterValue("complete", "true");
 						
-            pars.addParameterValue("ds_id", "1221");
-			pars.addParameterValue("ds_id", "1225");
-			pars.addParameterValue("ds_id", "1228");
+            pars.addParameterValue("ds_id", "1437");
+			pars.addParameterValue("ds_id", "1431");
+			pars.addParameterValue("ds_id", "1430");
             
             DatasetHandler handler = new DatasetHandler(conn, pars, null);
             handler.setUser(testUser);

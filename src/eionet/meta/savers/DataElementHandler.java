@@ -10,8 +10,9 @@ import eionet.meta.*;
 
 import com.tee.util.*;
 import com.tee.xmlserver.*;
+import com.tee.uit.security.*;
 
-public class DataElementHandler {
+public class DataElementHandler extends BaseHandler {
 
     public static String ATTR_PREFIX = "attr_";
     public static String ATTR_MULT_PREFIX = "attr_mult_";
@@ -22,10 +23,6 @@ public class DataElementHandler {
     public static String POS_PREFIX = "pos_";
     public static String OLDPOS_PREFIX = "oldpos_";
 
-    private Connection conn = null;
-    //private HttpServletRequest req = null;
-    private Parameters req = null;
-    private ServletContext ctx = null;
     private String mode = null;
     private String type = null;
     private String delem_id = null;
@@ -48,8 +45,6 @@ public class DataElementHandler {
     
     private DDSearchEngine searchEngine = null;
     
-    private AppUserIF user = null;
-    
     private boolean checkInResult = false;
     
     boolean versioning = true;
@@ -68,6 +63,11 @@ public class DataElementHandler {
     
     /** for storing table ID returned by VersionManager.deleteElm() */
     private String newTblID = null;
+
+	/** for storing restored elm ID returned by Restorer.restoreElm() */
+	private String restoredID = null;
+	
+	private boolean importMode = false;
 
     /**
     *
@@ -119,6 +119,10 @@ public class DataElementHandler {
     
     public void setUser(AppUserIF user){
         this.user = user;
+    }
+    
+    public void setImport(boolean importMode){
+    	this.importMode = importMode;
     }
     
     public void setVersioning(boolean f){
@@ -186,6 +190,7 @@ public class DataElementHandler {
                           !mode.equalsIgnoreCase("edit") &&
                           !mode.equalsIgnoreCase("delete") &&
                           !mode.equalsIgnoreCase("copy") &&
+						  !mode.equalsIgnoreCase("restore") &&
                           !mode.equalsIgnoreCase("edit_tblelems")))
             throw new Exception("DataElementHandler mode unspecified!");
 
@@ -204,8 +209,12 @@ public class DataElementHandler {
             update();
         else if (mode.equalsIgnoreCase("edit_tblelems"))
             processTableElems();
-        else
+        else if (mode.equalsIgnoreCase("restore"))
+        	restore();
+        else{
             delete();
+            cleanVisuals();
+        }
     }
     
     /**
@@ -228,6 +237,7 @@ public class DataElementHandler {
         // make sure we don't try to add under a checked-out namespace
         if (topNS!=null){
 			VersionManager verMan = new VersionManager(conn, user);
+			verMan.setContext(ctx);
 			if (verMan.getWorkingUser(topNS) != null)
 				throw new Exception("Cannot add to a dataset in work!");
         }
@@ -285,7 +295,16 @@ public class DataElementHandler {
             gen.setField("REG_STATUS", status);
         
         stmt.executeUpdate(gen.insertStatement());
+		setLastInsertID();
+		
         stmt.close();
+
+		// add acl
+		if (user!=null){
+			String aclPath = "/elements/" + getLastInsertID();
+			String aclDesc = "Short name=" + delem_name + ", parentNS=" + ns_id;
+			AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
+		}
 
         // process other stuff
         setLastInsertID();
@@ -310,6 +329,7 @@ public class DataElementHandler {
         String checkIn = req.getParameter("check_in");
         if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
             VersionManager verMan = new VersionManager(conn, user);
+			verMan.setContext(ctx);
             String verUpw = req.getParameter("ver_upw");
             if (verUpw!=null && verUpw.equalsIgnoreCase("false"))
             	verMan.setUpwardsVersioning(false);
@@ -390,8 +410,10 @@ public class DataElementHandler {
             }
             else{
                 // deletion of non-working copies is handled by verMan
-                if (verMan==null)
+                if (verMan==null){
                     verMan = new VersionManager(conn, user);
+					verMan.setContext(ctx);
+                }
                 this.newTblID = verMan.deleteElm(rs.getString("DATAELEM_ID"));
             }
         }
@@ -429,10 +451,29 @@ public class DataElementHandler {
         }
         stmt.executeUpdate(buf.toString());
         stmt.close();
-        
+
+		// remove acls
+		for (int i=0; i<delem_ids.length; i++){
+			try{
+				AccessController.removeAcl("/elements/" + delem_ids[i]);
+			}
+			catch (Exception e){}
+		}
+
         // release originals and top namespaces
 		cleanup();
     }
+
+	/**
+	 * 
+	 */
+	private void restore() throws Exception {
+    	
+		if (Util.nullString(delem_id)) return;
+		Restorer restorer = new Restorer(conn);
+		restorer.setUser(user);
+		this.restoredID = restorer.restoreElm(delem_id); 
+	}
 
     private void deleteContentDefinition() throws SQLException {
         
@@ -447,8 +488,18 @@ public class DataElementHandler {
     }
     
     private void deleteAttributes() throws SQLException {
+    	
+    	// find out image attributes, so to skip them later
+		StringBuffer buf = new StringBuffer("select M_ATTRIBUTE_ID ");
+		buf.append("from M_ATTRIBUTE where DISP_TYPE='image'");
+		
+		Vector imgAttrs = new Vector();
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(buf.toString());
+		while (rs.next())
+			imgAttrs.add(rs.getString(1));
         
-        StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where (");
+        buf = new StringBuffer("delete from ATTRIBUTE where (");
         for (int i=0; i<delem_ids.length; i++){
             if (i>0)
                 buf.append(" or ");
@@ -458,9 +509,12 @@ public class DataElementHandler {
 
         buf.append(") and PARENT_TYPE='E'");
 
+		// skip image attributes        
+        for (int i=0; i<imgAttrs.size(); i++)
+        	buf.append(" and M_ATTRIBUTE_ID<>").append((String)imgAttrs.get(i));
+
         log(buf.toString());
 
-        Statement stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
         stmt.close();
     }
@@ -758,12 +812,14 @@ public class DataElementHandler {
               attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
               if (table_id==null) continue;
               CopyHandler ch = new CopyHandler(conn, ctx);
+              ch.setUser(user);
               ch.copyAttribute(lastInsertID, table_id, "E", "T", attrID);
             }
             else if (parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)){
               attrID = parName.substring(INHERIT_COMPLEX_ATTR_PREFIX.length());
               if (table_id==null) continue;
               CopyHandler ch = new CopyHandler(conn, ctx);
+			  ch.setUser(user);
               ch.copyComplexAttrs(lastInsertID, table_id, "T", "E", attrID);
             }
         }
@@ -914,12 +970,12 @@ public class DataElementHandler {
 
         return false;
     }
-    private void copyElem(String copyElemID) throws SQLException{
+    private void copyElem(String copyElemID) throws Exception{
 
         if (copyElemID==null) return;
 
         CopyHandler copier = new CopyHandler(conn, ctx);
-
+		copier.setUser(user);
         lastInsertID = copier.copyElem(copyElemID, false);
 
         if (lastInsertID==null)
@@ -949,14 +1005,14 @@ public class DataElementHandler {
         insertTableElem();
 
     }
-    private void log(String msg){
-        if (ctx != null)
-            ctx.log(msg);
-    }
 
     public boolean getCheckInResult(){
         return this.checkInResult;
     }
+    
+	public String getRestoredID(){
+		return this.restoredID;
+	}
     
 	public static void main(String[] args){
         
@@ -970,7 +1026,7 @@ public class DataElementHandler {
             
 			Parameters pars = new Parameters();
 			pars.addParameterValue("mode", "delete");
-			pars.addParameterValue("delem_id", "11800");
+			pars.addParameterValue("delem_id", "12158");
             
 			DataElementHandler handler =
 								new DataElementHandler(conn, pars, null);
