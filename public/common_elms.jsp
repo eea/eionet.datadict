@@ -375,6 +375,8 @@ else{ %>
 					String status = dataElement.getStatus();
 					String checkInNo = dataElement.getVersion();
 					
+					String workingUser = verMan.getWorkingUser(null, dataElement.getIdentifier(), "elm");
+					
 					c_SearchResultEntry oEntry = new c_SearchResultEntry(delem_id,
                															 displayType,
                 														 delem_name,
@@ -383,6 +385,8 @@ else{ %>
                 														 null);                															 
 					oEntry.status = status;
 					oEntry.checkInNo = checkInNo;
+					oEntry.topWorkingUser = workingUser;
+					
 					oResultSet.oElements.add(oEntry);
 					String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
 					
@@ -401,6 +405,11 @@ else{ %>
 		    						<%=Util.replaceTags(delem_name)%>
 		    					</a><%
 	    					}
+	    					
+	    					if (userHasEditRights && workingUser!=null){ %>
+	    						<font title="<%=workingUser%>" color="red">*</font><%
+	    					}
+	    					
 							%>
 						</td>
 						<td width="20%" class="<%=styleClass%>">
@@ -452,6 +461,10 @@ else{ %>
 									<a href="javascript:pickElem(<%=oEntry.oID%>, <%=displayed+1%>)">
 			    						<%=Util.replaceTags(oEntry.oShortName)%>
 			    					</a><%
+								}
+								
+								if (userHasEditRights && oEntry.topWorkingUser!=null){ %>
+									<font title="<%=oEntry.topWorkingUser%>" color="red">*</font><%
 								}
 								%>
 							</td>						

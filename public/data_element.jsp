@@ -450,8 +450,12 @@ private String legalizeAlert(String in){
 				workingUser = verMan.getWorkingUser(dataElement.getNamespace().getID(),
 			    											dataElement.getIdentifier(), "elm");
 			if (mode.equals("edit") && user!=null){
+				
+				System.out.println("===> 1");
+				
 				// see if element is checked out
 				if (Util.voidStr(workingUser)){
+					
 				    // element not checked out, create working copy
 				    // but first make sure it's the latest version
 				    if (!isLatest){
@@ -484,9 +488,15 @@ private String legalizeAlert(String in){
 				    return;
 			    }
 			    else if (dataElement!=null && !dataElement.isWorkingCopy()){
+				    
+				    System.out.println("===> 2");
+				    
 				    // element is checked out by THIS user.
 				    // If it's not the working copy, send the user to it
 				    String copyID = verMan.getWorkingCopyID(dataElement);
+				    
+				    System.out.println("===> 3, copyID = " + copyID);
+				    
 				    if (copyID!=null && !copyID.equals(delem_id)){
 					    
 					    // first remove previous url (edit original) from history
@@ -862,10 +872,38 @@ private String legalizeAlert(String in){
 		
 		function copyElem(){
 			
-			if (document.forms["form1"].elements["idfier"].value==""){
-				alert("Identifier cannot be empty!");
+			if (hasWhiteSpace("idfier")){
+				alert("Identifier cannot contain any white space!");
 				return;
 			}
+			
+			if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
+				alert("Identifier must start with a letter or underscore to be valid for usage as an XML tag!");
+				return;
+			}
+			
+			<%
+			if (!elmCommon){ %>
+				var ds = document.forms["form1"].elements["ds_id"].value;
+				if (ds==null || ds==""){
+					alert('Dataset not specified!');
+					return;
+				}
+				
+				var tbl = document.forms["form1"].elements["table_id"].value;
+				if (tbl==null || tbl==""){
+					alert('Table not specified!');
+					return;
+				}<%
+			}
+			%>
+			
+			if (!checkObligations()){
+				alert("You have not specified one of the mandatory atttributes!");
+				return;
+			}
+			
+			forceAttrMaxLen();
 			
 			var type;
 			var url="search.jsp?ctx=popup&noncommon";
@@ -989,7 +1027,7 @@ String attrValue = null;
 									
 									// set some helper flags
 									String topWorkingUser = verMan.getWorkingUser(dataElement.getTopNs());
-									boolean topFree = topWorkingUser==null ? true : false;
+									boolean topFree = elmCommon ? workingUser==null : topWorkingUser==null;
 									boolean inWorkByMe = workingUser==null ? false : workingUser.equals(user.getUserName());
 									
 									/*System.out.println("===> editPrm = " + editPrm);

@@ -172,17 +172,19 @@ public class VersionManager{
     *
     */
     public String getWorkingCopyID(DataElement elm) throws SQLException {
-        String q =
-        "select DATAELEM_ID from DATAELEM where WORKING_COPY='Y' and " +
-        "PARENT_NS=" + elm.getNamespace().getID() + " and " +
-        "IDENTIFIER='" + elm.getIdentifier() + "'";
-        
-        ResultSet rs = conn.createStatement().executeQuery(q);
-        if (rs.next()){
-            return rs.getString(1);
-        }
-        
-        return null;
+    	
+    	String parentNsID = elm.getNamespace()==null ? null : elm.getNamespace().getID();
+    	
+    	StringBuffer buf = new StringBuffer().
+    	append("select DATAELEM_ID from DATAELEM where WORKING_COPY='Y' and IDENTIFIER=").
+    	append(Util.strLiteral(elm.getIdentifier()));
+    	if (parentNsID!=null) buf.append(" and PARENT_NS=").append(parentNsID);
+    	
+        ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+        if (rs.next())
+        	return rs.getString(1);
+        else
+        	return null;
     }
     
     /**
