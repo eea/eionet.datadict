@@ -60,9 +60,6 @@ public class GetPrintout extends HttpServlet {
         if (Util.voidStr(objID))
             throw new ServletException("Object ID not specified!");
         
-        // get handout type
-        String handoutType = PdfHandoutIF.FACTSHEET;
-        
         // get the path of images
         String visualsPath = ctx.getInitParameter("visuals-path");
 		// get the path of cache

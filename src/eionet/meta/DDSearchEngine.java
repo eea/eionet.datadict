@@ -3,6 +3,8 @@ package eionet.meta;
 import java.sql.*;
 import javax.servlet.*;
 import java.util.*;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
 import com.tee.util.*;
 import com.tee.xmlserver.AppUserIF;
@@ -380,6 +382,7 @@ public class DDSearchEngine {
 				dataElement.setGIS(rs.getString("DATAELEM.GIS"));
                 dataElement.setTableID(tblID);
                 dataElement.setPosition(rs.getString("TBL2ELEM.POSITION"));
+				dataElement.setRodParam(rs.getBoolean("DATAELEM.IS_ROD_PARAM"));
 
                 if (bAttributes){
                     prepStmt.setInt(1, id);
@@ -516,6 +519,7 @@ public class DDSearchEngine {
 				dataElement.setGIS(rs.getString("DATAELEM.GIS"));
 				dataElement.setIdentifier(rs.getString("DATAELEM.IDENTIFIER"));
                 dataElement.setDatasetID(rs.getString("DATASET.DATASET_ID"));
+				dataElement.setRodParam(rs.getBoolean("DATAELEM.IS_ROD_PARAM"));
 
                 Vector attributes=null;
                 if (bInheritAttributes)
@@ -677,44 +681,6 @@ public class DDSearchEngine {
         
         return v;
     }
-    
-    /*public Vector getSubElements(String delem_id) throws SQLException {
-        
-        StringBuffer buf =
-            new StringBuffer("select distinct NAMESPACE.*, RELATION.*, DATAELEM.* from DATAELEM left outer join RELATION on DATAELEM_ID=CHILD_ID left outer join NAMESPACE on DATAELEM.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID ");
-        buf.append("where ");
-        buf.append("RELATION.PARENT_ID=");
-        buf.append(delem_id);
-        buf.append(" order by RELATION.POSITION");
-        
-        log(buf.toString());
-        
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
-        
-        Vector v = new Vector();
-        
-        
-        while (rs.next()){
-            DataElement dataElement = new DataElement(rs.getString("RELATION.CHILD_ID"),
-                                                      rs.getString("DATAELEM.SHORT_NAME"), null);
-            
-            Namespace ns = new Namespace(rs.getString("NAMESPACE.NAMESPACE_ID"),
-                                         rs.getString("NAMESPACE.SHORT_NAME"),
-                                         rs.getString("NAMESPACE.FULL_NAME"),
-                                         rs.getString("NAMESPACE.URL"),
-                                         rs.getString("NAMESPACE.DEFINITION"));                                         
-            dataElement.setNamespace(ns);
-            
-            dataElement.setRelation(rs.getString("RELATION.PARENT_ID"),
-                                    rs.getString("RELATION.POSITION"),
-                                    rs.getString("RELATION.MIN_OCCURS"),
-                                    rs.getString("RELATION.MAX_OCCURS"));
-            v.add(dataElement);
-        }
-        
-        return v;
-    }*/
     
     public Vector getSequence(String id) throws SQLException {
         return getSubElements(SEQUENCE_TYPE, id);
@@ -3376,7 +3342,7 @@ public class DDSearchEngine {
 		
 		return v;
 	}
-	
+
 	public String getAttrHelpByShortName(String shortName, String attrType){
 		if (shortName==null) return "";
 		if (attrType==null)
@@ -3516,6 +3482,127 @@ public class DDSearchEngine {
 		return lastUpdated;
 	}
 	
+	public Vector getRodLinks(String dstID) throws Exception{
+		
+		if (Util.nullString(dstID)) throw new Exception("getRodLinks(): dstID missing!");
+		
+		Vector v = new Vector();
+		
+		StringBuffer buf =
+		new StringBuffer("select distinct ROD_ACTIVITIES.* from DST2ROD, ROD_ACTIVITIES where ").
+		append("DST2ROD.ACTIVITY_ID=ROD_ACTIVITIES.ACTIVITY_ID and DST2ROD.DATASET_ID=").
+		append(dstID);
+		
+		Statement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(buf.toString());
+			while (rs.next()){
+				Hashtable hash = new Hashtable();
+				String raID = rs.getString("ACTIVITY_ID");
+				hash.put("ra-id", raID);
+				hash.put("ra-title", rs.getString("ACTIVITY_TITLE"));
+				hash.put("li-id", rs.getString("LEGINSTR_ID"));
+				hash.put("li-title", rs.getString("LEGINSTR_TITLE"));
+				
+				String raURL = Props.getProperty(PropsIF.INSERV_ROD_RA_URLPATTERN);
+				int i = raURL.indexOf(PropsIF.INSERV_ROD_RA_IDPATTERN);
+				if (i==-1) throw new Exception("Invalid property " + PropsIF.INSERV_ROD_RA_URLPATTERN);
+				raURL = new StringBuffer(raURL).
+				replace(i, i + PropsIF.INSERV_ROD_RA_IDPATTERN.length(), raID).toString();
+				
+				hash.put("ra-url", raURL);
+				
+				v.add(hash);
+			}
+		}
+		finally{
+			try{
+				if (stmt!=null) stmt.close();
+				if (rs!=null) rs.close();
+			}
+			catch (SQLException sqle){}
+		}
+		return v;
+	}
+
+	public Vector getParametersByActivityID(String raID) throws Exception{
+		
+		if (Util.nullString(raID))
+			throw new Exception("getParametersByActivityID(): activity ID missing!");
+		
+		Vector result = new Vector();
+		
+		StringBuffer qryDatasets = new StringBuffer().
+		append("select distinct DATASET.DATASET_ID, DATASET.SHORT_NAME, DATASET.IDENTIFIER, ").
+		append("DATASET.VERSION from DST2ROD, DATASET where DST2ROD.ACTIVITY_ID=").append(raID).
+		append(" and DST2ROD.DATASET_ID=DATASET.DATASET_ID and DATASET.DELETED is null ").
+		append("order by DATASET.IDENTIFIER asc, DATASET.VERSION desc");
+		
+		StringBuffer qryParameters = new StringBuffer().
+		append("select distinct DATAELEM.DATAELEM_ID, DATAELEM.TYPE, DATAELEM.SHORT_NAME, ").
+		append("DS_TABLE.SHORT_NAME from DST2TBL ").
+		append("left outer join DS_TABLE on DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID ").
+		append("left outer join TBL2ELEM on DST2TBL.TABLE_ID=TBL2ELEM.TABLE_ID ").
+		append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID ").
+		append("where DST2TBL.DATASET_ID=? and DS_TABLE.TABLE_ID is not null and ").
+		append("DATAELEM.DATAELEM_ID is not null and DATAELEM.IS_ROD_PARAM='true' ").
+		append("order by DS_TABLE.SHORT_NAME, DATAELEM.SHORT_NAME");
+		
+		Statement stmt = null;
+		ResultSet rsParams = null;
+		ResultSet rsDatasets = null;
+		PreparedStatement pstmt = null;
+		try{
+			pstmt = conn.prepareStatement(qryParameters.toString());
+			stmt = conn.createStatement();
+			rsDatasets = stmt.executeQuery(qryDatasets.toString());
+			String curDstIdf = null;
+			while (rsDatasets.next()){
+				String dstIdf = rsDatasets.getString("DATASET.IDENTIFIER");
+				if (curDstIdf!=null && curDstIdf.equals(dstIdf))
+					continue;
+				curDstIdf = dstIdf;
+				
+				String dstName = rsDatasets.getString("DATASET.SHORT_NAME");
+				int dstID = rsDatasets.getInt("DATASET.DATASET_ID");
+				pstmt.setInt(1,dstID);
+				rsParams = pstmt.executeQuery();
+				while(rsParams.next()){
+					Hashtable hash = new Hashtable();
+					hash.put("elm-name", rsParams.getString("DATAELEM.SHORT_NAME"));
+					hash.put("tbl-name", rsParams.getString("DS_TABLE.SHORT_NAME"));
+					hash.put("dst-name", dstName);
+					
+					String elmID = rsParams.getString("DATAELEM.DATAELEM_ID");
+					String elmUrl = Props.getProperty(PropsIF.OUTSERV_ELM_URLPATTERN);
+					int i = elmUrl.indexOf(PropsIF.OUTSERV_ELM_IDPATTERN);
+					if (i==-1) throw new Exception(
+									"Invalid property " + PropsIF.OUTSERV_ELM_URLPATTERN);
+					elmUrl = new StringBuffer(elmUrl).
+					replace(i, i + PropsIF.OUTSERV_ELM_IDPATTERN.length(), elmID).toString();
+					
+					hash.put("elm-url", elmUrl);
+					
+					result.add(hash);
+				}
+			}
+		}
+		finally{
+			try{
+				if (stmt!=null) stmt.close();
+				if (pstmt!=null) pstmt.close();
+				if (rsParams!=null) rsParams.close();
+				if (rsDatasets!=null) rsDatasets.close();
+				
+			}
+			catch (SQLException sqle){}
+		}
+		
+		return result;
+	}
+	
     /**
     *
     */
@@ -3536,14 +3623,19 @@ public class DDSearchEngine {
             Connection conn =
                 DriverManager.getConnection(
 			"jdbc:mysql://195.250.186.33:3306/dd", "dduser", "xxx");
-
+			
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
 			AppUserIF testUser = new TestUser(false);
 			testUser.authenticate("heinlja", "ddd");
 			searchEngine.setUser(testUser);
 			
-			String s = searchEngine.getLastUpdated();
-			System.out.println(s);
+			Vector v = searchEngine.getParametersByActivityID("14");
+			System.out.println(v.size());
+			for (int i=0; i<v.size(); i++){
+				System.out.println("================================================");
+				Hashtable hash = (Hashtable)v.get(i);
+				System.out.println(hash.get("elm-name") + " # " + hash.get("tbl-name") + " # " + hash.get("dst-name"));
+			}
         }
         catch (Exception e){
             System.out.println(e.toString());

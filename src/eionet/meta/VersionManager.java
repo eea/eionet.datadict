@@ -478,7 +478,9 @@ public class VersionManager{
         // to be deleted. Status only effects if version is updated at all.
         
         if (latestElm!=null){
-            if (newVersion.equals(elm.getVersion())){
+        	
+        	// JH240804 - added !versionUpdate to make sure the previous copy is deleted
+            if (!versionUpdate || newVersion.equals(elm.getVersion())){
                 // delete the previous copy                
                 Parameters params = new Parameters();
                 params.addParameterValue("mode", "delete");
@@ -565,7 +567,8 @@ public class VersionManager{
         // to be deleted. Status only effects if version is updated at all.
 
         if (latestTbl!=null){
-            if (newVersion.equals(tbl.getVersion())){
+			// JH240804 - added !versionUpdate to make sure the previous copy is deleted
+            if (!versionUpdate || newVersion.equals(tbl.getVersion())){
                 // delete the previous copy                
                 Parameters params = new Parameters();
                 params.addParameterValue("mode", "delete");
@@ -653,7 +656,8 @@ public class VersionManager{
         
 		if (latestDst!=null){
 			
-			if (newVersion.equals(dst.getVersion())){
+			// JH240804 - added !versionUpdate to make sure the previous copy is deleted 
+			if (!versionUpdate || newVersion.equals(dst.getVersion())){
 				// delete the previous copy                
 				Parameters params = new Parameters();
 				params.addParameterValue("mode", "delete");

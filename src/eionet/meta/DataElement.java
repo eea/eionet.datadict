@@ -46,6 +46,8 @@ public class DataElement {
     
 	private String gis = null;
 	private String identifier = null;
+	
+	private boolean isRodParam = true;
     
 	private Vector fks = new Vector();
 	
@@ -360,6 +362,14 @@ public class DataElement {
 
 	public String getGIS(){
 		return this.gis;
+	}
+	
+	public void setRodParam(boolean isRodParam){
+		this.isRodParam = isRodParam;
+	}
+
+	public boolean isRodParameter(){
+		return isRodParam;
 	}
     
     public void setFKRelations(Vector fks){
