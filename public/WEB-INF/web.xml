@@ -128,10 +128,6 @@
 		<servlet-class>eionet.meta.GetImportResults</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>GetImportResults</servlet-name>
-		<servlet-class>eionet.meta.GetImportResults</servlet-class>
-	</servlet>
-	<servlet>
 		<servlet-name>CodelistServlet</servlet-name>
 		<servlet-class>eionet.meta.exports.codelist.CodelistServlet</servlet-class>
 	</servlet>
