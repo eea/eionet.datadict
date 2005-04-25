@@ -127,6 +127,14 @@
 		<servlet-name>GetImportResults</servlet-name>
 		<servlet-class>eionet.meta.GetImportResults</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>GetImportResults</servlet-name>
+		<servlet-class>eionet.meta.GetImportResults</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>CodelistServlet</servlet-name>
+		<servlet-class>eionet.meta.exports.codelist.CodelistServlet</servlet-class>
+	</servlet>
 
 <!-- servlet mappings -->
 
@@ -201,6 +209,10 @@
 	<servlet-mapping>
 		<servlet-name>GetImportResults</servlet-name>
 		<url-pattern>/GetImportResults</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>CodelistServlet</servlet-name>
+		<url-pattern>/CodelistServlet</url-pattern>
 	</servlet-mapping>
 
 <!-- the application server might allow directory listing.
