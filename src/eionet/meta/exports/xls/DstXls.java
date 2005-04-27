@@ -16,6 +16,8 @@ import org.apache.poi.hssf.usermodel.*;
 
 public class DstXls extends Xls implements XlsIF, CachableIF{
 	
+	private Vector tables = new Vector();
+	
 	public DstXls(){
 		fileName = "dataset.xls";
 		wb = new HSSFWorkbook();
@@ -46,7 +48,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
 		}
 
 		addTables(dstID);
-		setSchemaUrl("DST" + dstID);
+		setSchemaUrls(dstID, tables);
 	}
 
 	public void write() throws Exception{
@@ -69,7 +71,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
 		Dataset dst = searchEngine.getDataset(dstID);
 		if (dst==null) throw new Exception("Dataset " + dstID + " not found!");
 		fileName = dst.getShortName() + FILE_EXT;
-		Vector tables = searchEngine.getDatasetTables(dstID);
+		tables = searchEngine.getDatasetTables(dstID);
 		for (int i=0; tables!=null && i<tables.size(); i++){
 			addTable((DsTable)tables.get(i));
 		}

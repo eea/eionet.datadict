@@ -34,11 +34,53 @@ public abstract class Xls implements XlsIF{
 	
 	protected String fileName = "xls.xls";
 	
+	/*
+	 * 
+	 */
 	protected void setSchemaUrl(String id) throws Exception{
 		
 		// first make sure we have the schema url
 		String schemaUrl = Props.getProperty(PropsIF.XLS_SCHEMA_URL);
 		if (Util.voidStr(schemaUrl))
+			throw new Exception("Missing " + PropsIF.XLS_SCHEMA_URL + " property!");
+	
+		// create the sheet
+		sheet = wb.createSheet(Props.getProperty(PropsIF.XLS_SCHEMA_URL_SHEET));
+	
+		// create the warning rows
+		row = sheet.createRow(0);
+		HSSFCell cell = row.createCell((short)0);
+		cell.setCellValue("Please do not delete or modify this sheet!!!");
+		cell.setCellStyle(getStyle(WarningStyle.class));
+	
+		row = sheet.createRow(1);
+		cell = row.createCell((short)0);
+		cell.setCellValue("It is used for converting this file back to XML!");
+		cell.setCellStyle(getStyle(WarningStyle.class));
+	
+		row = sheet.createRow(2);
+		cell = row.createCell((short)0);
+		cell.setCellValue("Without this possibility your work cannot be used!");
+		cell.setCellStyle(getStyle(WarningStyle.class));
+	
+	
+		// create the row with the schema url
+		row = sheet.createRow(3);
+		cell = row.createCell((short)0);
+		cell.setCellValue(schemaUrl + id);
+	}
+	
+	/*
+	 * creates the extra sheet where XML Schema urls of tables are written to,
+	 * relevant on DST level only
+	 */
+	protected void setSchemaUrls(String dstID, Vector tables) throws Exception{
+		
+		if (tables==null || tables.size()==0) return;
+		
+		// first make sure we have the schema url base
+		String schemaUrlBase = Props.getProperty(PropsIF.XLS_SCHEMA_URL);
+		if (Util.voidStr(schemaUrlBase))
 			throw new Exception("Missing " + PropsIF.XLS_SCHEMA_URL + " property!");
 		
 		// create the sheet
@@ -60,11 +102,34 @@ public abstract class Xls implements XlsIF{
 		cell.setCellValue("Without this possibility your work cannot be used!");
 		cell.setCellStyle(getStyle(WarningStyle.class));
 		
-		
-		// create the row with the schema url
+		// dataset schema url		
 		row = sheet.createRow(3);
 		cell = row.createCell((short)0);
-		cell.setCellValue(schemaUrl + id);
+		cell.setCellValue(schemaUrlBase + "DST" + dstID);
+		
+		// create the rows with the table schema urls
+		// header row
+		row = sheet.createRow(4);
+		cell = row.createCell((short)0);
+		cell.setCellValue("TableID");
+		cell.setCellStyle(getStyle(WarningStyle.class));
+		cell = row.createCell((short)1);
+		cell.setCellValue("SchemaURL");
+		cell.setCellStyle(getStyle(WarningStyle.class));
+		
+		// rows from loop
+		int rowIndex = 5;
+		for (int i=0; i<tables.size(); i++){
+			DsTable tbl = (DsTable)tables.get(i);
+			String id = tbl.getID();
+			String idfier = tbl.getIdentifier();
+			
+			row = sheet.createRow(rowIndex++);
+			cell = row.createCell((short)0);
+			cell.setCellValue(idfier);
+			cell = row.createCell((short)1);
+			cell.setCellValue(schemaUrlBase + "TBL" + id);
+		}
 	}
 
 	protected HSSFCellStyle getStyle(Class styleClass) throws Exception {
