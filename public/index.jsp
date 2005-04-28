@@ -52,6 +52,12 @@ catch (Exception e){
 	if (trace!=null)
 		request.setAttribute("DD_ERR_TRC", trace);
 }
+finally{
+	try{
+		if (conn!=null) conn.close();
+	}
+	catch (SQLException e){}
+}
 
 	
 %>

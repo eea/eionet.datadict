@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.Vector,com.tee.xmlserver.*, eionet.meta.MrProper"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.Vector,com.tee.xmlserver.*,eionet.meta.MrProper,java.sql.Connection,java.sql.SQLException"%>
 
 <%
 	request.setCharacterEncoding("UTF-8");
@@ -74,20 +74,30 @@
             // POST
             if (request.getMethod().equals("POST")){
 	            
-	            // init db connection & MrProper
-	            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-				DBPoolIF pool = xdbapp.getDBPool();
-	            MrProper mrProper = new MrProper(pool.getConnection());
-	            mrProper.setContext(getServletContext());
-	            mrProper.setUser(user);
-	            
-	            // execute mrProper
-	            mrProper.execute(request);
-	            
-	            // get results
-	            Vector results = mrProper.getResponse();
-	            if (results.size()==0)
-	            	results.add("No results got back!");
+	            Connection conn = null;
+	            Vector results = new Vector();
+	            try{
+		            // init db connection & MrProper
+		            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+					DBPoolIF pool = xdbapp.getDBPool();
+					conn = pool.getConnection();
+		            MrProper mrProper = new MrProper(conn);
+		            mrProper.setContext(getServletContext());
+		            mrProper.setUser(user);
+		            
+		            // execute mrProper
+		            mrProper.execute(request);
+		            
+		            // get results
+		            results = mrProper.getResponse();
+		            if (results.size()==0) results.add("No results got back!");
+				}
+				finally{
+					try{
+						if (conn!=null) conn.close();
+					}
+					catch (SQLException e){}
+				}
 	            
 	            %>
 	            <div style="margin-left:30">

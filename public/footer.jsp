@@ -29,6 +29,12 @@ if (lastUpdated==null){
 	catch (Exception e){
 		lastUpdated = "???";
 	}
+	finally{
+		try {
+			if (conn!=null) conn.close();
+		}
+		catch (SQLException e) {}
+	}
 }
 
 %>
