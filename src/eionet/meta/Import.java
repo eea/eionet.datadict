@@ -8,6 +8,10 @@ import org.xml.sax.*;
 import java.io.*;
 import java.util.*;
 import java.net.*;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import eionet.meta.imp.*;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
@@ -150,6 +154,8 @@ public class Import extends HttpServlet {
 
         // if no exceptions, get the data and save to file, parse
         if (!bException){
+        	
+        	Connection userConn = user.getConnection();
 
             try{
                 // get the data and save to file
@@ -176,8 +182,7 @@ public class Import extends HttpServlet {
                 if (!handler.hasError()){
 
                     DatasetImport dbImport =
-                        new DatasetImport((DatasetImportHandler)handler,
-                                        user.getConnection(), ctx, type);
+                        new DatasetImport((DatasetImportHandler)handler, userConn, ctx, type);
 					dbImport.setUser(user);
                     dbImport.setImportType(type);
                     if (type.equals("FXV")) {
@@ -214,9 +219,16 @@ public class Import extends HttpServlet {
                 responseText.append("<h1>Data Dictionary importer encountered an exception:" +
                                     "</h1><br/>" + msg.toString() + "<br/><br/>");
             }
-            if (type.equals("FXV"))
-            {
-              		responseText.append("<br><br><a href='data_element.jsp?mode=view&delem_id=" + delem_id + "'>Back to data element</a>");
+            finally{
+            	try{
+            		if (userConn!=null) userConn.close();
+            	}
+            	catch (SQLException e){}
+            }
+            
+            // if was fixed values import explicitly, add a link back to the element
+            if (type.equals("FXV")){
+				responseText.append("<br><br><a href='data_element.jsp?mode=view&delem_id=" + delem_id + "'>Back to data element</a>");
             }
         }
 

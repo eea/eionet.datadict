@@ -48,65 +48,70 @@ public abstract class DDHarvester implements HarvesterIF{
 		Enumeration flds = hash.keys();
 		if (flds==null || !flds.hasMoreElements()) return;
 		
+		if (harvesterID==null || harvestingTime==0)
+			throw new Exception("Failed to find the harvesting ID and time!");
+		
 		getConnection();
 		if (conn==null || conn.isClosed())
 			throw new Exception("Failed to get the DB connection!");
 		
-		if (harvesterID==null || harvestingTime==0)
-			throw new Exception("Failed to find the harvesting ID and time!");
-		
-		// store in HARV_ATTR
-		
-		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("HARV_ATTR");
-		
-		String[] ids = new String[3];
-		ids[0] = id;
-		ids[1] = harvesterID;
-		ids[2] = String.valueOf(harvestingTime);
-		String md5key = getMD5(ids);
-		
-		ids = new String[2];
-		ids[0] = id;
-		ids[1] = harvesterID;
-		String logID = getMD5(ids);
-		
-		gen.setField("HARV_ATTR_ID", id);
-		gen.setField("HARVESTER_ID", harvesterID);
-		gen.setField("HARVESTED", String.valueOf(harvestingTime));
-		gen.setFieldExpr("MD5KEY", md5key);
-		gen.setFieldExpr("LOGICAL_ID", logID);
-		conn.createStatement().executeUpdate(gen.insertStatement());
-		
-		// store in HARV_ATTR_FIELD
-		
-		do{ // using a do-while cause hasMoreElements() has been called already
-			String fldName  = (String)flds.nextElement();
-			HashSet fldValues = new HashSet();
-						
-			Object o = hash.get(fldName);
-			if (o==null) o = "";
+		try{
+			// store in HARV_ATTR
 			
-			if (o.getClass().getName().endsWith("Vector")){
-				for (int i=0; i<((Vector)o).size(); i++)
-					fldValues.add(((Vector)o).get(i));						
-			}
-			else if (o.getClass().getName().endsWith("String"))
-				fldValues.add(o);
-			else
-				continue; //FIX ME! should through an exception
+			SQLGenerator gen = new SQLGenerator();
+			gen.setTable("HARV_ATTR");
 			
-			Iterator iter = fldValues.iterator();
-			while (iter.hasNext()){
-				gen.clear();
-				gen.setTable("HARV_ATTR_FIELD");
-				gen.setFieldExpr("HARV_ATTR_MD5", md5key);						
-				gen.setField("FLD_NAME", fldName);
-				gen.setField("FLD_VALUE", (String)iter.next());
-				conn.createStatement().executeUpdate(gen.insertStatement());
-			}
-						
-		} while (flds.hasMoreElements());
+			String[] ids = new String[3];
+			ids[0] = id;
+			ids[1] = harvesterID;
+			ids[2] = String.valueOf(harvestingTime);
+			String md5key = getMD5(ids);
+			
+			ids = new String[2];
+			ids[0] = id;
+			ids[1] = harvesterID;
+			String logID = getMD5(ids);
+			
+			gen.setField("HARV_ATTR_ID", id);
+			gen.setField("HARVESTER_ID", harvesterID);
+			gen.setField("HARVESTED", String.valueOf(harvestingTime));
+			gen.setFieldExpr("MD5KEY", md5key);
+			gen.setFieldExpr("LOGICAL_ID", logID);
+			conn.createStatement().executeUpdate(gen.insertStatement());
+			
+			// store in HARV_ATTR_FIELD
+			
+			do{ // using a do-while cause hasMoreElements() has been called already
+				String fldName  = (String)flds.nextElement();
+				HashSet fldValues = new HashSet();
+							
+				Object o = hash.get(fldName);
+				if (o==null) o = "";
+				
+				if (o.getClass().getName().endsWith("Vector")){
+					for (int i=0; i<((Vector)o).size(); i++)
+						fldValues.add(((Vector)o).get(i));						
+				}
+				else if (o.getClass().getName().endsWith("String"))
+					fldValues.add(o);
+				else
+					continue; //FIX ME! should through an exception
+				
+				Iterator iter = fldValues.iterator();
+				while (iter.hasNext()){
+					gen.clear();
+					gen.setTable("HARV_ATTR_FIELD");
+					gen.setFieldExpr("HARV_ATTR_MD5", md5key);						
+					gen.setField("FLD_NAME", fldName);
+					gen.setField("FLD_VALUE", (String)iter.next());
+					conn.createStatement().executeUpdate(gen.insertStatement());
+				}
+							
+			} while (flds.hasMoreElements());
+		}
+		finally{
+			closeConnection();
+		}
 	}
 	
 	public void harvest() throws Exception{
@@ -164,6 +169,13 @@ public abstract class DDHarvester implements HarvesterIF{
 				Props.getProperty(PropsIF.DBUSR),
 				Props.getProperty(PropsIF.DBPSW));
 		}
+	}
+
+	private void closeConnection(){
+		try{
+			if (conn!=null) conn.close();
+		}
+		catch (SQLException e){}
 	}
 	
 	private String getMD5(String[] flds){

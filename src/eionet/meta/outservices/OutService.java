@@ -18,9 +18,14 @@ public class OutService {
 	
 	public Vector getParametersByActivityID(String raID) throws Exception{
 		
-		if (conn==null) getConnection();
-		DDSearchEngine searchEngine = new DDSearchEngine(conn);
-		return searchEngine.getParametersByActivityID(raID);
+		try{
+			if (conn==null) getConnection();
+			DDSearchEngine searchEngine = new DDSearchEngine(conn);
+			return searchEngine.getParametersByActivityID(raID);
+		}
+		finally{
+			closeConnection();
+		}
 	}
 	
 	private void getConnection() throws Exception{

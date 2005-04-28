@@ -30,6 +30,8 @@ public class ImgUpload extends HttpServlet {
                     throws ServletException, java.io.IOException {
 
 		req.setCharacterEncoding("UTF-8");
+		
+		Connection conn = null;
 						
 		res.setContentType("text/html");
         ServletContext ctx = getServletContext();
@@ -95,16 +97,21 @@ public class ImgUpload extends HttpServlet {
                 XDBApplication xdbapp =
                 			XDBApplication.getInstance(getServletContext());
                 DBPoolIF pool = XDBApplication.getDBPool();            
-                Connection conn = pool.getConnection();
+                conn = pool.getConnection();
                 Statement stmt = conn.createStatement();
                 
                 for (int i=0; i<fileNames.length; i++)
                 	stmt.executeUpdate(s + Util.strLiteral(fileNames[i]));
                 
-                conn.close();
             }
             catch (Exception e){
                 throw new ServletException(e.toString());
+            }
+            finally{
+            	try{
+            		if (conn!=null) conn.close();
+            	}
+            	catch (SQLException e){}
             }
             
 			for (int i=0; i<fileNames.length; i++){
@@ -202,7 +209,7 @@ public class ImgUpload extends HttpServlet {
             // getting the DB pool through XmlServer
             XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
             DBPoolIF pool = XDBApplication.getDBPool();            
-            Connection conn = pool.getConnection();
+            conn = pool.getConnection();
             Statement stmt = conn.createStatement();         
             
 			SQLGenerator gen = new SQLGenerator();
@@ -213,11 +220,16 @@ public class ImgUpload extends HttpServlet {
 			gen.setField("VALUE", fileName);
 			
             stmt.executeUpdate(gen.insertStatement());
-            conn.close();
         }
         catch (Exception e){
             throw new ServletException(e.toString());
         }
+		finally{
+			try{
+				if (conn!=null) conn.close();
+			}
+			catch (SQLException e){}
+		}
         
 		res.sendRedirect("imgattr.jsp?" + qryStr);
     }

@@ -31,6 +31,7 @@ public class DsVisualUpload extends HttpServlet {
 		req.setCharacterEncoding("UTF-8");
 						
         ServletContext ctx = getServletContext();
+		Connection conn = null;
         
         // authenticate user
         AppUserIF user = SecurityUtil.getUser(req);
@@ -75,14 +76,19 @@ public class DsVisualUpload extends HttpServlet {
                 // JH 300603 - getting the DB pool through XmlServer
                 XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
                 DBPoolIF pool = XDBApplication.getDBPool();            
-                Connection conn = pool.getConnection();
+                conn = pool.getConnection();
                 
                 DatasetHandler dsHandler = new DatasetHandler(conn, pars, ctx);
                 dsHandler.execute();
-                conn.close();
             }
             catch (Exception e){
                 throw new ServletException(e.toString());
+            }
+            finally{
+            	try{
+            		if (conn!=null) conn.close();
+            	}
+            	catch(SQLException e){}
             }
             
             if (!Util.nullString(dsVisual)){
@@ -201,14 +207,19 @@ public class DsVisualUpload extends HttpServlet {
             // JH 300603 - getting the DB pool through XmlServer
             XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
             DBPoolIF pool = XDBApplication.getDBPool();            
-            Connection conn = pool.getConnection();
+            conn = pool.getConnection();
                 
             DatasetHandler dsHandler = new DatasetHandler(conn, pars, ctx);
             dsHandler.execute();
-            conn.close();
         }
         catch (Exception e){
             throw new ServletException(e.toString());
+        }
+        finally{
+        	try{
+        		if (conn!=null) conn.close();
+        	}
+        	catch (SQLException e){}
         }
         
         if (Util.nullString(dsID))
