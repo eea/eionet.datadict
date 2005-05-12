@@ -1571,10 +1571,10 @@ else{ %>
 								    		}
 								    		%>
 											
-								    		<!-- GIS, relevant for non-common elements only -->
+								    		<!-- GIS -->
 								    		<%
 								    		String gisType = dataElement!=null ? dataElement.getGIS() : null;
-											if (!elmCommon && !mode.equals("view") || gisType!=null){ %>
+											if (!mode.equals("view") || gisType!=null){ %>
 									    		<tr>
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 														GIS type
