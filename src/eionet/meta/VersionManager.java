@@ -1325,7 +1325,8 @@ public class VersionManager{
 	public boolean isFirstCommonElm(String idf) throws SQLException{
 		
 		StringBuffer buf = new StringBuffer().
-		append("select count(*) from DATAELEM where IDENTIFIER=").append(Util.strLiteral(idf));
+		append("select count(*) from DATAELEM where IDENTIFIER=").append(Util.strLiteral(idf)).
+		append(" and PARENT_NS is null");
 		
 		Statement stmt = null;
 		ResultSet rs = null;

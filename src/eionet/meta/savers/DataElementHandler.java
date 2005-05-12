@@ -291,7 +291,7 @@ public class DataElementHandler extends BaseHandler {
         if (!elmCommon) gen.setField("PARENT_NS", ns_id);
         if (!Util.nullString(topNS)) gen.setField("TOP_NS", topNS);
             
-		String gisType = elmCommon ? null : req.getParameter("gis");
+		String gisType = req.getParameter("gis");
 		if (gisType!=null && gisType.length()==0 && importMode)
 			gisType = null;
 		if (gisType!=null && !gisType.equals("nogis"))
@@ -373,13 +373,11 @@ public class DataElementHandler extends BaseHandler {
 		}
 		
 		// set the gis type (relevant for common elements only)
-		if (!elmCommon){
-			String gisType = req.getParameter("gis");
-			if (gisType==null || gisType.equals("nogis"))
-				gen.setFieldExpr("GIS", "NULL");
-			else
-				gen.setField("GIS", gisType);
-		}
+		String gisType = req.getParameter("gis");
+		if (gisType==null || gisType.equals("nogis"))
+			gen.setFieldExpr("GIS", "NULL");
+		else
+			gen.setField("GIS", gisType);
         
 		// short name
 		if (!Util.nullString(delem_name))
@@ -985,6 +983,8 @@ public class DataElementHandler extends BaseHandler {
 			buf.append(" and PARENT_NS=");
 			buf.append(com.tee.util.Util.strLiteral(ns_id));
 		}
+		else
+			buf.append(" and PARENT_NS is null");
     
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(buf.toString());
