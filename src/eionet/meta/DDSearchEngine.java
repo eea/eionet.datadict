@@ -88,7 +88,8 @@ public class DDSearchEngine {
 	append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ").
 	append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ").
 	append("where ").
-	append("TBL2ELEM.TABLE_ID=").append(tableID).append(" and DATASET.DELETED is null").
+	append("TBL2ELEM.TABLE_ID=").append(tableID).append(" and DATASET.DELETED is null and ").
+	append("DATAELEM.WORKING_COPY='N'"). // JH200505 - don't want working copies coming up here
 	append(" order by TBL2ELEM.POSITION asc");
 	
 	// log the monster query
@@ -2013,6 +2014,7 @@ public class DDSearchEngine {
         }
             
         buf.append("where DS_TABLE.CORRESP_NS is not null and ").
+        append("DS_TABLE.WORKING_COPY='N' and "). // JH200505 - don't want working copies
         append("DST2TBL.DATASET_ID=").append(dsID);
         
         if (orderByFN){
