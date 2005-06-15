@@ -384,7 +384,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 				}
 				
 				if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
-					alert("Identifier must start with a letter or underscore to be valid for usage as an XML tag!");
+					alert("Identifier not valid for usage as an XML tag! " +
+						  "In the first character only underscore or latin characters are allowed! " +
+						  "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
 					return;
 				}
 				
@@ -607,13 +609,27 @@ private Vector getValues(String id, String mode, Vector attributes){
 		
 		function validForXMLTag(str){
 			
-			if (str!=null && str.length>0){
-				var ch = str.charCodeAt(0);
-				if (ch==95 || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))
-					return true;
+			// if empty string not allowed for XML tag
+			if (str==null || str.length==0){
+				return false;
 			}
 			
-			return false;
+			// check the first character (only underscore or A-Z or a-z allowed)
+			var ch = str.charCodeAt(0);
+			if (!(ch==95 || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))){
+				return false;
+			}
+			
+			// check the rets of characters ((only underscore or hyphen or dot or 0-9 or A-Z or a-z allowed))
+			if (str.length==1) return true;
+			for (var i=1; i<str.length; i++){
+				ch = str.charCodeAt(i);
+				if (!(ch==95 || ch==45 || ch==46 || (ch>=48 && ch<=57) || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))){
+					return false;
+				}
+			}
+			
+			return true;
 		}
 		
 		<%
