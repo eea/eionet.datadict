@@ -70,7 +70,10 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
 		
 		Dataset dst = searchEngine.getDataset(dstID);
 		if (dst==null) throw new Exception("Dataset " + dstID + " not found!");
-		fileName = dst.getShortName() + FILE_EXT;
+		// fileName = dst.getShortName() + FILE_EXT;
+		// for the fileName we now use Identifier, cause short name might contain characters
+		// illegal for a filename
+		fileName = dst.getIdentifier() + FILE_EXT;  
 		tables = searchEngine.getDatasetTables(dstID);
 		for (int i=0; tables!=null && i<tables.size(); i++){
 			addTable((DsTable)tables.get(i));

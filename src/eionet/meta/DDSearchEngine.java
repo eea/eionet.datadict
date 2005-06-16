@@ -2356,6 +2356,7 @@ public class DDSearchEngine {
                 dsTable.setParentNs(rs.getString("DS_TABLE.PARENT_NS"));
                 
                 dsTable.setDatasetName(rs.getString("DATASET.SHORT_NAME"));
+				dsTable.setDstIdentifier(rs.getString("DATASET.IDENTIFIER"));
 				dsTable.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
             }
         }

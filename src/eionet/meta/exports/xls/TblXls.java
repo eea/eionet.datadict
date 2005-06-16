@@ -68,7 +68,10 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
 		
 		DsTable tbl = searchEngine.getDatasetTable(tblID);
 		if (tbl==null) throw new Exception("Table " + tblID + " not found!");
-		fileName = tbl.getDatasetName() + "_" + tbl.getShortName() + FILE_EXT;
+		// fileName = tbl.getDatasetName() + "_" + tbl.getShortName() + FILE_EXT;
+		// for the fileName we now use Identifier, cause short name might contain characters
+		// illegal for a filename
+		fileName = tbl.getDstIdentifier() + "_" + tbl.getIdentifier() + FILE_EXT;
 		
 		tbl.setGIS(searchEngine.hasGIS(tbl.getID()));
 		sheet = wb.createSheet(tbl.getIdentifier());
