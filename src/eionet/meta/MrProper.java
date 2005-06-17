@@ -415,7 +415,7 @@ public class MrProper {
         "on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID " +
         "left outer join DS_TABLE " +
         "on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID " +
-        "where DS_TABLE.SHORT_NAME is null";
+        "where DATAELEM.PARENT_NS is not null and DS_TABLE.SHORT_NAME is null";
         
         v = new Vector();
         rs = stmt.executeQuery(q);
