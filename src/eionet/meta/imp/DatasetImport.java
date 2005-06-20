@@ -72,6 +72,7 @@ public class DatasetImport{
     private String import_parent_id=null; // this can be delem_id, table_id or dataset_id depends on the import_type
     
     private AppUserIF user = null;
+	private String date = null;
     
   /**
    * Constructor
@@ -186,6 +187,7 @@ public class DatasetImport{
             try{
                 dsHandler = new DatasetHandler(conn, par, ctx);
 				dsHandler.setUser(user);
+				dsHandler.setDate(date);
                 dsHandler.setVersioning(false);
 				dsHandler.setImport(true);
                 dsHandler.execute();
@@ -193,9 +195,10 @@ public class DatasetImport{
                 dsID.put((String)par.getParameter("ds_id"), (String)dsHandler.getLastInsertID());
              }
              catch(Exception e){
-                 responseText.append("Dataset import failed! Could not store dataset into database - " +
+				responseText.append("Dataset import failed! Could not store dataset into database - " +
                 par.getParameter("ds_name") + "<br>");
-                 responseText.append(e.toString() + "<br>");
+                responseText.append(e.toString() + "<br>");
+                e.printStackTrace(System.out);
              }
         }
       //  responseText.append(dsID.toString());
@@ -226,6 +229,7 @@ public class DatasetImport{
             try{
                 tblHandler = new DsTableHandler(conn, par, ctx);
 				tblHandler.setUser(user);
+				tblHandler.setDate(date);
                 tblHandler.setVersioning(false);
 				tblHandler.setImport(true);
                 tblHandler.execute();
@@ -259,6 +263,7 @@ public class DatasetImport{
             try{
                 delemHandler = new DataElementHandler(conn, par, ctx);
 				delemHandler.setUser(user);
+				delemHandler.setDate(date);
                 delemHandler.setVersioning(false);
 				delemHandler.setImport(true);
                 delemHandler.execute();
@@ -762,6 +767,10 @@ public class DatasetImport{
     public void setUser(AppUserIF user){
     	this.user = user;
     }
+
+	public void setDate(String unixTimestampMillisec){
+		this.date = unixTimestampMillisec;
+	}
     
     public static void main(String[] args){
     	
@@ -790,6 +799,7 @@ public class DatasetImport{
 				testUser.authenticate("jaanus", "jaanus");
 				
 				dbImport.setUser(testUser);
+				dbImport.setDate(String.valueOf(System.currentTimeMillis()));
 				dbImport.setImportType("DST");
 				dbImport.execute();
 				

@@ -30,6 +30,7 @@ public class DatasetHandler extends BaseHandler {
     
     private boolean versioning = true;
 	private boolean importMode = false;
+	private String date = null;
     
 	/** indicates if top namespace needs to be released after an exception*/
 	private boolean doCleanup = false;
@@ -138,12 +139,17 @@ public class DatasetHandler extends BaseHandler {
         gen.setField("IDENTIFIER", idfier);
 		gen.setField("SHORT_NAME", ds_name);
         
-        // new datasets we treat as working copies until checked in
+        // New datasets we treat as working copies until checked in.
+        // Unless we are inserting from Import Tool (in which case versioning==false).
         if (versioning){
             gen.setField("WORKING_COPY", "Y");
             if (user!=null && user.isAuthentic())
                 gen.setField("WORKING_USER", user.getUserName());
             gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+        }
+        else{
+			if (user!=null) gen.setField("USER", user.getUserName());
+			if (date!=null) gen.setFieldExpr("DATE", date);
         }
         
         // set the status
@@ -702,6 +708,13 @@ public class DatasetHandler extends BaseHandler {
 		}
         
 		return String.valueOf(k);
+	}
+
+	/*
+	 * 
+	 */
+	public void setDate(String unixTimestampMillisec){
+		this.date = unixTimestampMillisec;
 	}
 	
     public static void main(String[] args){

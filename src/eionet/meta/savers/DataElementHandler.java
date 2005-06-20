@@ -50,6 +50,7 @@ public class DataElementHandler extends BaseHandler {
     
     boolean versioning = true;
     boolean superUser = false;
+	private String date = null;
     
     /** indicates if top namespace needs to be released after an exception*/
     private boolean doCleanup = false;
@@ -297,11 +298,16 @@ public class DataElementHandler extends BaseHandler {
 		if (gisType!=null && !gisType.equals("nogis"))
 			gen.setField("GIS", gisType);
 
-        // treat new elements as working copies until checked in
+        // Treat new elements as working copies until checked in.
+		// Unless we are inserting from Import Tool (in which case versioning==false).
         if (versioning){
             gen.setField("WORKING_COPY", "Y");
             if (user!=null && user.isAuthentic())
                 gen.setField("WORKING_USER", user.getUserName());
+        }
+        else{
+			if (user!=null) gen.setField("USER", user.getUserName());
+			if (date!=null) gen.setFieldExpr("DATE", date);
         }
         
 		// set the status
@@ -1018,6 +1024,13 @@ public class DataElementHandler extends BaseHandler {
 	
 	public String getLatestCommonElmID(){
 		return latestCommonElmID;
+	}
+	
+	/*
+	 * 
+	 */
+	public void setDate(String unixTimestampMillisec){
+		this.date = unixTimestampMillisec;
 	}
 	
 	public static void main(String[] args){

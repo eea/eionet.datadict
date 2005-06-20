@@ -32,6 +32,7 @@ public class DsTableHandler extends BaseHandler {
     
     boolean versioning = true;
     boolean superUser = false;
+	private String date = null;
     
 	/** indicates if top namespace needs to be released after an exception*/
     private boolean doCleanup = false;
@@ -215,11 +216,16 @@ public class DsTableHandler extends BaseHandler {
         gen.setField("PARENT_NS", parentNS);
 
         // new tables we treat as working copies until checked in
+		// Unless we are inserting from Import Tool (in which case versioning==false).
         if (versioning){
             gen.setField("WORKING_COPY", "Y");
             if (user!=null && user.isAuthentic())
                 gen.setField("WORKING_USER", user.getUserName());
             gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+        }
+        else{
+			if (user!=null) gen.setField("USER", user.getUserName());
+			if (date!=null) gen.setFieldExpr("DATE", date);
         }
 
         if (!Util.nullString(type))
@@ -796,6 +802,13 @@ public class DsTableHandler extends BaseHandler {
     public String getRestoredID(){
     	return this.restoredID;
     }
+
+	/*
+	 * 
+	 */
+	public void setDate(String unixTimestampMillisec){
+		this.date = unixTimestampMillisec;
+	}
 
     public static void main(String[] args){
 

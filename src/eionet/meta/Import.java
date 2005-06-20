@@ -184,6 +184,7 @@ public class Import extends HttpServlet {
                     DatasetImport dbImport =
                         new DatasetImport((DatasetImportHandler)handler, userConn, ctx, type);
 					dbImport.setUser(user);
+					dbImport.setDate(String.valueOf(System.currentTimeMillis()));
                     dbImport.setImportType(type);
                     if (type.equals("FXV")) {
                         dbImport.setParentID(delem_id);

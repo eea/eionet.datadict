@@ -130,7 +130,7 @@ public class MrProper {
             }
             catch (Exception e){
 				wasExc = true;
-				log(e.toString());
+				log(eionet.util.Util.getStack(e));
                 response.add((String)funNames.get(fun) +
                                 " failed: <b>" + e.toString() + "</b>");
                 continue;
@@ -268,7 +268,10 @@ public class MrProper {
 				append("IDENTIFIER=").append(Util.strLiteral(idfier));
 			}
 			
-			if (!Util.nullString(ns)) buf.append(" and PARENT_NS=").append(ns);
+			if (!Util.nullString(ns))
+				buf.append(" and PARENT_NS=").append(ns);
+			else
+				buf.append(" and PARENT_NS is null");
 		}
 		else if (rmCrit.equals("id")){
 			String id = pars.getParameter("rm_id");
@@ -396,7 +399,7 @@ public class MrProper {
 		"select distinct TBL2ELEM.TABLE_ID from TBL2ELEM " +
 		"left outer join DS_TABLE " +
 		"on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID " +
-		"where DS_TABLE.SHORT_NAME is null";
+		"where DS_TABLE.IDENTIFIER is null";
 
 		Vector v = new Vector();
 		Statement stmt = conn.createStatement();
@@ -415,7 +418,7 @@ public class MrProper {
         "on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID " +
         "left outer join DS_TABLE " +
         "on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID " +
-        "where DATAELEM.PARENT_NS is not null and DS_TABLE.SHORT_NAME is null";
+        "where DATAELEM.PARENT_NS is not null and DS_TABLE.IDENTIFIER is null";
         
         v = new Vector();
         rs = stmt.executeQuery(q);
@@ -457,7 +460,7 @@ public class MrProper {
 		"select distinct DST2TBL.DATASET_ID from DST2TBL " +
 		"left outer join DATASET " +
 		"on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +
-		"where DATASET.SHORT_NAME is null";
+		"where DATASET.IDENTIFIER is null";
 		
 		Vector v = new Vector();
 		Statement stmt = conn.createStatement();
@@ -476,7 +479,7 @@ public class MrProper {
         "on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID " +
         "left outer join DATASET " +
         "on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +
-        "where DATASET.SHORT_NAME is null";
+        "where DATASET.IDENTIFIER is null";
         
         v = new Vector();
         rs = stmt.executeQuery(q);
@@ -521,12 +524,9 @@ public class MrProper {
 			if (rs.getString("WORKING_COPY").equals("Y"))
 				continue;
 			
-			String parentNs = rs.getString("PARENT_NS");
-			if (parentNs==null) parentNs="";
-			
-			Hashtable hash = new Hashtable();			
-			hash.put("SHORT_NAME", rs.getString("SHORT_NAME"));
-			hash.put("PARENT_NS", parentNs);
+			HashMap hash = new HashMap();			
+			hash.put("IDENTIFIER", rs.getString("IDENTIFIER"));
+			hash.put("PARENT_NS", rs.getString("PARENT_NS"));
 			hash.put("VERSION", rs.getString("VERSION"));
 			if (all.contains(hash))
 				odd.add(rs.getString("DATAELEM_ID"));
@@ -558,12 +558,9 @@ public class MrProper {
 			if (rs.getString("WORKING_COPY").equals("Y"))
 				continue;
 
-			String parentNs = rs.getString("PARENT_NS");
-			if (parentNs==null) parentNs="";
-			
-			Hashtable hash = new Hashtable();
-			hash.put("SHORT_NAME", rs.getString("SHORT_NAME"));
-			hash.put("PARENT_NS", parentNs);
+			HashMap hash = new HashMap();
+			hash.put("IDENTIFIER", rs.getString("IDENTIFIER"));
+			hash.put("PARENT_NS", rs.getString("PARENT_NS"));
 			hash.put("VERSION", rs.getString("VERSION"));
 			if (all.contains(hash))
 				odd.add(rs.getString("TABLE_ID"));
@@ -596,8 +593,8 @@ public class MrProper {
 			if (rs.getString("WORKING_COPY").equals("Y"))
 				continue;
 			
-			Hashtable hash = new Hashtable();
-			hash.put("SHORT_NAME", rs.getString("SHORT_NAME"));
+			HashMap hash = new HashMap();
+			hash.put("IDENTIFIER", rs.getString("IDENTIFIER"));
 			hash.put("VERSION", rs.getString("VERSION"));
 			if (all.contains(hash))
 				odd.add(rs.getString("DATASET_ID"));
@@ -634,7 +631,7 @@ public class MrProper {
         
         // get the locked non-wcs
         StringBuffer buf = new StringBuffer();
-		buf.append("select distinct SHORT_NAME, VERSION");
+		buf.append("select distinct IDENTIFIER, VERSION");
         if (!tblName.equals("DATASET"))
             buf.append(", PARENT_NS");
         buf.append(" from ");
@@ -645,11 +642,10 @@ public class MrProper {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(buf.toString());
         while (rs.next()){
-        	Hashtable hash = new Hashtable();
-            hash.put("SHORT_NAME", rs.getString("SHORT_NAME"));
+        	HashMap hash = new HashMap();
+            hash.put("IDENTIFIER", rs.getString("IDENTIFIER"));
 			hash.put("VERSION", rs.getString("VERSION"));
-			String pns = rs.getString("PARENT_NS");
-			if (pns!=null && !tblName.equals("DATASET")) hash.put("PARENT_NS", pns);
+			if (!tblName.equals("DATASET")) hash.put("PARENT_NS", rs.getString("PARENT_NS"));
             v.add(hash);
         }
         
@@ -666,18 +662,17 @@ public class MrProper {
         HashSet wcs = new HashSet();
         rs = stmt.executeQuery(buf.toString());
         while (rs.next()){
-			Hashtable hash = new Hashtable();
+			HashMap hash = new HashMap();
 			hash.put("IDENTIFIER", rs.getString("IDENTIFIER"));
 			hash.put("VERSION", rs.getString("VERSION"));
-			String pns = rs.getString("PARENT_NS");
-			if (pns!=null && !tblName.equals("DATASET")) hash.put("PARENT_NS", pns);
+			if (!tblName.equals("DATASET")) hash.put("PARENT_NS", rs.getString("PARENT_NS"));
 			wcs.add(hash);
         }
         
         // loop over locked objects, delete those not present in WC hash 
         for (int i=0; i<v.size(); i++){
             
-            Hashtable hash = (Hashtable)v.get(i);
+            HashMap hash = (HashMap)v.get(i);
             
             if (wcs.contains(hash)) // if has a WC then skip
             	continue;
@@ -690,8 +685,13 @@ public class MrProper {
 			buf.append(" and VERSION=");
 			buf.append((String)hash.get("VERSION"));
 			
-			String pns = (String)hash.get("PARENT_NS");
-			if (pns!=null && !tblName.equals("DATASET"))buf.append(" and PARENT_NS=").append(pns);
+			if (!tblName.equals("DATASET")){
+				String pns = (String)hash.get("PARENT_NS");
+				if (pns!=null)
+					buf.append(" and PARENT_NS=").append(pns);
+				else
+					buf.append(" and PARENT_NS is null");
+			}
 			
             stmt.executeUpdate(buf.toString());
         }
@@ -867,7 +867,26 @@ public class MrProper {
     */
     public static void main(String[] args){
     	
-        MrProper mrProper = null;
+    	try{
+    		
+    		HashSet set = new HashSet();
+    		
+	    	HashMap hash1 = new HashMap();
+	    	hash1.put("kala", null);
+			hash1.put("mees", "auto");
+			set.add(hash1);
+			
+			HashMap hash2 = new HashMap();
+			hash2.put("kala", null);
+			hash2.put("mees", "auto");
+			
+			System.out.println(set.contains(hash2));
+    	}
+    	catch (Throwable t){
+    		t.printStackTrace(System.out);
+    	}
+    	
+        /*MrProper mrProper = null;
         
         try{
             Class.forName("org.gjt.mm.mysql.Driver");
@@ -884,9 +903,6 @@ public class MrProper {
             Parameters pars = new Parameters();
 			pars.addParameterValue(FUNCTIONS_PAR, MrProper.RLS_NOWC);
             //pars.addParameterValue(FUNCTIONS_PAR, RMV_MULT_VERS);
-			/*pars.addParameterValue("rm_obj_type", "dst");
-			pars.addParameterValue("rm_crit", "id");
-			pars.addParameterValue("rm_id", "1428 1222 1219 1220 1249 1429");*/
             
             mrProper.execute(pars);
             
@@ -896,6 +912,6 @@ public class MrProper {
             System.out.println(e.toString());
         }
         finally{
-        }
+        }*/
     }
 }
