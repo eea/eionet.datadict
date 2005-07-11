@@ -326,6 +326,19 @@ public class DataElementHandler extends BaseHandler {
 		stmt.executeUpdate(gen.insertStatement());
 		setLastInsertID();
 		
+		// add acl
+		if (user!=null){
+			String aclPath = "/elements/" + idfier;
+			HashMap acls = AccessController.getAcls();
+			if (!acls.containsKey(aclPath)){
+				String aclDesc = "Identifier: " + idfier;
+				try{
+					AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
+				}
+				catch (Exception e){}
+			}
+		}
+		
         stmt.close();
 
         // process other stuff
@@ -508,7 +521,19 @@ public class DataElementHandler extends BaseHandler {
 		deleteWithoutVersionManager();
         
         // set the ID of the new latest ID if the element is common
-        if (elmCommon) setLatestCommonElmID(req.getParameter("idfier"));
+        String idfier = req.getParameter("idfier");
+        if (elmCommon) setLatestCommonElmID(idfier);
+        
+		// remove acl
+		buf = new StringBuffer("select count(*) from DATAELEM where PARENT_NS is null and ").
+		append("IDENTIFIER=").append(Util.strLiteral(idfier));
+		rs = stmt.executeQuery(buf.toString());
+		if (!rs.next() || rs.getInt(1)<=0){
+			try{
+				AccessController.removeAcl("/elements/" + idfier);
+			}
+			catch (Exception e){}
+		}
     }
     
     private void deleteWithoutVersionManager() throws Exception{

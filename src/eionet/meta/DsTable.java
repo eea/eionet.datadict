@@ -28,7 +28,9 @@ public class DsTable implements Comparable {
     private Vector simpleAttrs = new Vector();
     private Vector complexAttrs = new Vector();
     
-    private int dstVersion = -1; 
+    private int dstVersion = -1;
+    
+	private String owner = null;  
     
     /**
      * 
@@ -234,6 +236,14 @@ public class DsTable implements Comparable {
 
 	public void setDstIdentifier(String dstIdentifier){
 		this.dstIdentifier = dstIdentifier;
+	}
+	
+	public String getOwner(){
+		return owner;
+	}
+
+	public void setOwner(String owner){
+		this.owner = owner;
 	}
 
 	public int compareTo(Object o){

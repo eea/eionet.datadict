@@ -2069,22 +2069,42 @@ else{ %>
 											}
 																						
 											String title = type.equals("CH1") ? "Allowable values" : "Suggested values";
+											String helpAreaName = type.equals("CH1") ? "allowable_values_link" : "suggested_values_link";
 											%>
 										
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 											
 												<!-- title & link part -->
 												<tr>
-													<td width="34%">
+													<%
+													if (!mode.equals("view")){ %>
+														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
+													}
+													else{ %>
+														<td width="34%"><%
+													}
+													%>
 														<b><%=title%><a name="values"></a></b>
 													</td>
 													
 													<%
+													if (!mode.equals("view")){
+														%>
+														<td width="4%" class="simple_attr_help">
+															<a target="_blank" href="help.jsp?screen=element&amp;area=<%=helpAreaName%>" onclick="pop(this.href)">
+																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+															</a>
+														</td>
+														<td width="4%" class="simple_attr_help">
+															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
+														</td><%
+													}
+													
 													// the link
 													String valuesLink = "fixed_values.jsp?delem_id=" + delem_id + "&amp;delem_name=" + delem_name + "&amp;mode=view&amp;parent_type=" + type;
 													if (mode.equals("edit") && user!=null){
 														%>
-														<td class="barfont" width="66%">
+														<td width="<%=valueWidth%>%" class="barfont_bordered">
 															[Click <a href="<%=valuesLink%>"><b>HERE</b></a> to manage <%=title.toLowerCase()%> of this element]
 														</td><%
 													}
@@ -2184,17 +2204,36 @@ else{ %>
 											
 												<!-- title & link part -->
 												<tr>
-													<td width="34%">
+													<%
+													if (!mode.equals("view")){ %>
+														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
+													}
+													else{ %>
+														<td width="34%"><%
+													}
+													%>
 														<b>Foreign key relations<a name="fkeys"></a></b>
 													</td>
 													
 													<%
+													if (!mode.equals("view")){
+														%>
+														<td width="4%" class="simple_attr_help">
+															<a target="_blank" href="help.jsp?screen=element&amp;area=fks_link" onclick="pop(this.href)">
+																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+															</a>
+														</td>
+														<td width="4%" class="simple_attr_help">
+															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
+														</td><%
+													}
+													
 													// the link
 													if (mode.equals("edit") && user!=null){
 														String origID = verMan.getLatestElmID(dataElement);
 														if (origID!=null && origID.length()>0) origID = "&orig_id=" + origID;
 														%>
-														<td class="barfont" width="66%">
+														<td width="<%=valueWidth%>%" class="barfont_bordered">
 															[Click <a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;ds_id=<%=dsID%><%=origID%>"><b>HERE</b></a> to manage foreign keys of this element]
 														</td><%
 													}
@@ -2273,8 +2312,9 @@ else{ %>
 													<td width="100%" colspan="2">
 														<table border="1" width="100%" bordercolorlight="#C0C0C0" cellspacing="0" cellpadding="2" bordercolordark="#C0C0C0">
 															<tr>
-																<th width="50%" class="tbl_elms">Table</th>
-																<th width="50%" class="tbl_elms">Dataset</th>
+																<th width="43%" class="tbl_elms">Table</th>
+																<th width="43%" class="tbl_elms">Dataset</th>
+																<th width="14%" class="tbl_elms">Owner</th>
 															</tr>
 															<%
 															// rows
@@ -2291,18 +2331,24 @@ else{ %>
 																	tblLink = "dstable.jsp?mode=view&table_id=" + tbl.getID();
 																	dstLink = "dataset.jsp?mode=view&ds_id=" + tbl.getDatasetID();
 																}
+																
+																String owner = tbl.getOwner();
+																owner = owner==null ? "Not specified" : owner;
 																	
 																%>
 																<tr>
-																	<td width="50%" class="tbl_elms">
+																	<td width="43%" class="tbl_elms">
 																		<a target="_blank" href="<%=tblLink%>">
 																			<%=Util.replaceTags(tbl.getShortName())%>
 																		</a>
 																	</td>
-																	<td width="50%" class="tbl_elms">
+																	<td width="43%" class="tbl_elms">
 																		<a target="_blank" href="<%=dstLink%>">
 																			<%=tbl.getDatasetName()%>
 																		</a>
+																	</td>
+																	<td width="14%" class="tbl_elms">
+																		<%=owner%>
 																	</td>
 																</tr><%
 															}
@@ -2329,14 +2375,33 @@ else{ %>
 											
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 												<tr>
-													<td width="34%">
+													<%
+													if (!mode.equals("view")){ %>
+														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
+													}
+													else{ %>
+														<td width="34%"><%
+													}
+													%>
 														<b>Complex attributes<a name="cattrs"></a></b>
 													</td>
 													
 													<%
+													if (!mode.equals("view")){
+														%>
+														<td width="4%" class="simple_attr_help">
+															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href)">
+																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+															</a>
+														</td>
+														<td width="4%" class="simple_attr_help">
+															<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
+														</td><%
+													}
+													
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
-														<td class="barfont" width="66%">
+														<td width="<%=valueWidth%>%" class="barfont_bordered">
 															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=delem_name%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this element]
 														</td><%
 													}

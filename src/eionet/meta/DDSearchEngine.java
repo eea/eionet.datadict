@@ -3660,7 +3660,31 @@ public class DDSearchEngine {
 	
 	public Vector getReferringTables(String elmID) throws SQLException{
 		
-		StringBuffer qry = new StringBuffer("select DS_TABLE.*, ").
+		// JH110705 - first get the owners of datasets (we need to display them)
+		StringBuffer qry = new StringBuffer("select * from ACLS where PARENT_NAME='/datasets'");
+		
+		Hashtable owners = new Hashtable();
+		Statement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(qry.toString());
+			while (rs.next()){
+				String idf = rs.getString("ACL_NAME");
+				String own = rs.getString("OWNER");
+				if (idf!=null && own!=null) owners.put(idf, own);
+			}
+		}
+		finally{
+			try{
+				if (stmt!=null) stmt.close();
+				if (rs!=null) rs.close();
+			}
+			catch (SQLException e){}
+		}
+		
+		// and now get the referring tables
+		qry = new StringBuffer("select DS_TABLE.*, ").
 		append("DATASET.DATASET_ID,DATASET.IDENTIFIER,DATASET.SHORT_NAME,DATASET.REG_STATUS ").
 		append("from TBL2ELEM ").
 		append("left outer join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID ").
@@ -3673,8 +3697,6 @@ public class DDSearchEngine {
 		append("DS_TABLE.IDENTIFIER asc, DS_TABLE.VERSION desc");
 		
 		Vector result = new Vector();
-		Statement stmt = null;
-		ResultSet rs = null;
 		try{
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(qry.toString());
@@ -3716,9 +3738,11 @@ public class DDSearchEngine {
 
 				tbl.setNamespace(rs.getString("DS_TABLE.CORRESP_NS"));
 				tbl.setParentNs(rs.getString("DS_TABLE.PARENT_NS"));
-				tbl.setDatasetName(rs.getString("DATASET.SHORT_NAME"));
-				tbl.setIdentifier(rs.getString("DATASET.IDENTIFIER"));
 				tbl.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
+				
+				tbl.setDatasetName(rs.getString("DATASET.SHORT_NAME"));
+				tbl.setDstIdentifier(dstIdf);
+				if (dstIdf!=null) tbl.setOwner((String)owners.get(dstIdf));
 				
 				tbl.setCompStr(tbl.getShortName());
 				result.add(tbl);
