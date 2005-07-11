@@ -1455,12 +1455,37 @@ private Vector getValues(String id, String mode, Vector attributes){
 												<%@ include file="hor_separator.jsp" %><%
 												separ1displayed = true;
 											}
+											
 											%>
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
-												<tr>													
-													<td width="34%" valign="top"><a name="model"></a><b>Data model</b></td>
-													<td width="66%" class="barfont">
-														<%
+												<tr>
+													<%
+													if (!mode.equals("view")){ %>
+														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
+													}
+													else{ %>
+														<td width="34%" valign="top"><%
+													}
+													%>
+														<a name="model"></a><b>Data model</b>
+													</td>
+													
+													<%
+													if (!mode.equals("view")){ %>
+														<td width="4%" class="simple_attr_help">
+															<a target="_blank" href="help.jsp?screen=dataset&amp;area=data_model_link" onclick="pop(this.href)">
+																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+															</a>
+														</td>
+														<td width="4%" class="simple_attr_help">
+															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
+														</td>
+														<td width="<%=valueWidth%>%" class="barfont_bordered"><%
+													}
+													else{ %>
+														<td width="66%" class="barfont"><%
+													}
+													
 														// thumbnail
 														if (mode.equals("view") && dataset.getVisual()!=null){
 															
@@ -1631,11 +1656,33 @@ private Vector getValues(String id, String mode, Vector attributes){
 											
 												<!-- title & link part -->
 												<tr>
-													<td width="34%">
+													<%
+													if (!mode.equals("view")){ %>
+														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
+													}
+													else{ %>
+														<td width="34%"><%
+													}
+													%>
 														<b>Obligations in ROD<a name="rodlinks"></a></b>
 													</td>
-													<td width="66%" class="barfont">
-														<%
+													
+													<%
+													if (!mode.equals("view")){ %>
+														<td width="4%" class="simple_attr_help">
+															<a target="_blank" href="help.jsp?screen=dataset&amp;area=rod_links_link" onclick="pop(this.href)">
+																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+															</a>
+														</td>
+														<td width="4%" class="simple_attr_help">
+															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
+														</td>
+														<td width="<%=valueWidth%>%" class="barfont_bordered"><%
+													}
+													else{ %>
+														<td width="66%" class="barfont"><%
+													}
+													
 														// the link
 														if (mode.equals("edit") && user!=null){
 															String dstrodLink = "dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&dst_id=" + dataset.getID() + "&dst_name=" + dataset.getShortName();
@@ -1705,14 +1752,33 @@ private Vector getValues(String id, String mode, Vector attributes){
 											
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 												<tr>
-													<td width="34%">
+													<%
+													if (!mode.equals("view")){ %>
+														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
+													}
+													else{ %>
+														<td width="34%"><%
+													}
+													%>
 														<b>Complex attributes<a name="cattrs"></a></b>
 													</td>
 													
 													<%
+													if (!mode.equals("view")){
+														%>
+														<td width="4%" class="simple_attr_help">
+															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href)">
+																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+															</a>
+														</td>
+														<td width="4%" class="simple_attr_help">
+															<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
+														</td><%
+													}
+													
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
-														<td class="barfont" width="66%">
+														<td width="<%=valueWidth%>%" class="barfont_bordered">
 															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=ds_name%>&amp;ds=true"><b>HERE</b></a> to manage complex attributes of this dataset]
 														</td><%
 													}

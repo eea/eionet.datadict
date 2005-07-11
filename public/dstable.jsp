@@ -1742,14 +1742,33 @@ String attrValue = null;
 											
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 												<tr>
-													<td width="34%">
+													<%
+													if (!mode.equals("view")){ %>
+														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
+													}
+													else{ %>
+														<td width="34%"><%
+													}
+													%>
 														<b>Complex attributes<a name="cattrs"></a></b>
 													</td>
 													
 													<%
+													if (!mode.equals("view")){
+														%>
+														<td width="4%" class="simple_attr_help">
+															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href)">
+																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+															</a>
+														</td>
+														<td width="4%" class="simple_attr_help">
+															<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
+														</td><%
+													}
+													
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
-														<td class="barfont" width="66%">
+														<td width="<%=valueWidth%>%" class="barfont_bordered">
 															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=dsTable.getShortName()%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this table]
 														</td><%
 													}

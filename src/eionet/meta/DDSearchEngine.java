@@ -1270,6 +1270,7 @@ public class DDSearchEngine {
         buf.append("M_COMPLEX_ATTR.SHORT_NAME as ATTR_NAME, ");
         buf.append("M_COMPLEX_ATTR.INHERIT as INHERIT, ");
 		buf.append("M_COMPLEX_ATTR.HARVESTER_ID as HARVESTER_ID, ");
+		buf.append("M_COMPLEX_ATTR.OBLIGATION as OBLIGATION, ");
         buf.append("NAMESPACE.SHORT_NAME as NS, ");
         buf.append("COMPLEX_ATTR_ROW.POSITION as ROW_POS, ");
         buf.append("COMPLEX_ATTR_ROW.ROW_ID as ROW_ID, ");
@@ -1365,7 +1366,7 @@ public class DDSearchEngine {
                                             null,
                                             rs.getString("ATTR_NAME"),
                                             DElemAttribute.TYPE_COMPLEX,
-                                            null);
+                                            null,null,rs.getString("OBLIGATION"));
                     attr.setInheritable(rs.getString("INHERIT"));
 					attr.setHarvesterID(rs.getString("HARVESTER_ID"));
                     

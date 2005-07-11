@@ -234,10 +234,22 @@ private String legalizeAlert(String in){
         Complex attributes of <em><%=Util.replaceTags(parent_name)%></em>
     </h2>
 
-<table width="400">
+<table width="600">
 
 	<tr>
-		<td colspan="2" align="right">
+		<td class="mnd_opt_cnd" width="60%">
+			<table border="0" width="100%" cellspacing="0">
+				<tr>
+					<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16"/></td>
+					<td width="17%">Mandatory</td>
+					<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16"/></td>
+					<td width="15%">Optional</td>
+					<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16"/></td>
+					<td width="56%">Conditional</td>
+        		</tr>
+      		</table>
+		</td>
+		<td align="right">
 			<a target="_blank" href="help.jsp?screen=complex_attrs&area=pagehelp" onclick="pop(this.href)">
 				<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/>
 			</a>
@@ -245,32 +257,13 @@ private String legalizeAlert(String in){
 	</tr>
 
 	<%
-	if (complexAttrs.size() == 0){
+	if (complexAttrs==null || complexAttrs.size() == 0){
 		%>
 		<tr height="10"><td colspan="2">None found!</td></tr>
 		<%
 	}
-	else{
-		%>
-		<tr height="10">
-			<td colspan="2">
-			<%
-			if (user!=null && isWorkingCopy){
-				%>
-				<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')"/>
-				<%
-			}
-			else{
-				%>
-				<input class="smallbutton" type="button" value="Remove selected" disabled/>
-				<%
-			}
-			%>
-			</td>
-		</tr>
-		<%
-	}
 	%>
+	
 	
 	<tr height="5"><td colspan="2"></td></tr>
 	<%
@@ -288,8 +281,15 @@ private String legalizeAlert(String in){
 						DElemAttribute attr = (DElemAttribute)mComplexAttrs.get(i);
 						String attrID = attr.getID();
 						String attrName = attr.getShortName();
+						
+						String attrOblig = attr.getObligation();
+						String obligStr  = "(O)";
+						if (attrOblig.equalsIgnoreCase("M"))
+							obligStr = "(M)";
+						else if (attrOblig.equalsIgnoreCase("C"))
+							obligStr = "(C)";
 						%>
-						<option value="<%=attrID%>"><%=attrName%></option>
+						<option value="<%=attrID%>"><%=attrName%>&nbsp;&nbsp;&nbsp;<%=obligStr%></option>
 						<%
 					}
 					%>
@@ -297,10 +297,12 @@ private String legalizeAlert(String in){
 				
 				<%
 				if (user != null && isWorkingCopy){ %>
-					<input class="smallbutton" type="button" value="Add new" onclick="addNew()"/> <%
+					<input class="smallbutton" type="button" value="Add new" onclick="addNew()"/>&nbsp;
+					<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')"/><%
 				}
 				else{ %>
-					<input class="smallbutton" type="button" value="Add new" disabled /> <%
+					<input class="smallbutton" type="button" value="Add new" disabled />&nbsp;
+					<input class="smallbutton" type="button" value="Remove selected" disabled/><%
 				}
 				%>
 				
@@ -324,15 +326,24 @@ private String legalizeAlert(String in){
 		
 		Vector attrFields = searchEngine.getAttrFields(attrID);
 		
+		String attrOblig = attr.getObligation();
+		String obligStr  = "optional";
+		if (attrOblig.equalsIgnoreCase("M"))
+			obligStr = "mandatory";
+		else if (attrOblig.equalsIgnoreCase("C"))
+			obligStr = "conditional";
+		
+		String obligImg = obligStr + ".gif";
+		
 		%>
 		
 		<table cellspacing="0">
 			<tr>
-				<td align="right" style="border-bottom-width:1;border-bottom-style:groove;border-bottom-color:#808080;border-right-width:1;border-right-style:groove;border-right-color:#808080;">
+				<td align="right" valign="center" style="border-bottom-width:1;border-bottom-style:groove;border-bottom-color:#808080;border-right-width:1;border-right-style:groove;border-right-color:#808080;">
 					<input type="checkbox" style="height:13;width:13" name="del_attr" value="<%=attrID%>"/>
 				</td>
-				<td style="border-bottom-width:1;border-bottom-style:groove;border-bottom-color:#808080;">
-					<b>&#160;<%=attrName%></b>
+				<td style="border-bottom-width:1;border-bottom-style:groove;border-bottom-color:#808080;" valign="center">
+					<b>&#160;<%=attrName%></b>&nbsp;&nbsp;&nbsp;<img border="0" src="images/<%=obligImg%>" width="16" height="16" alt="<%=obligStr%>"/>
 				</td>
 			</tr>
 			<tr>

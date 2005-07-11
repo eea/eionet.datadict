@@ -219,6 +219,15 @@ td {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	text-decoration: none;
 }
 
+td.barfont_bordered {
+	border: 1px solid #C0C0C0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 7pt;
+	font-style: normal;
+	line-height: normal;
+	text-decoration: none;
+}
+
 td.small {  font-family: Verdana, Arial, Helvetica, sans-serif; 
 	font-size: 8pt; 
 	font-style: normal; 
@@ -262,9 +271,7 @@ td.search_result_odd {
 
 td.simple_attr_title {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
-	border-left: 1px solid #C0C0C0;
-	border-right: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
+	border: 1px solid #C0C0C0;
 	vertical-align: top;
 }
 
@@ -283,9 +290,7 @@ td.simple_attr_value_big {  font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
 td.simple_attr_help {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-	border-left: 1px solid #C0C0C0;
-	border-right: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
+	border: 1px solid #C0C0C0;
 	vertical-align: top;
 	text-align: center;
 }
