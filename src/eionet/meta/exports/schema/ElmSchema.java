@@ -9,7 +9,7 @@ import eionet.meta.*;
 import eionet.util.Util;
 
 public class ElmSchema extends Schema {
-    
+	
     public ElmSchema(DDSearchEngine searchEngine, PrintWriter writer){
         super(searchEngine, writer);
     }
@@ -49,11 +49,17 @@ public class ElmSchema extends Schema {
 		// set target namespace (being the parent table's namespace)
 		//String parentNsID = elem.getNamespace().getID(); 
 		//if (parentNsID!=null) setTargetNsUrl(parentNsID);
-		Namespace parentNs = elem.getNamespace();
-		if (parentNs==null || Util.voidStr(parentNs.getID()))
-			this.targetNsUrl = this.appContext + "elements/" + elem.getIdentifier();
+		
+		String cNamespaceID = getContainerNamespaceID();
+		if (Util.voidStr(cNamespaceID)){
+			Namespace parentNs = elem.getNamespace();
+			if (parentNs==null || Util.voidStr(parentNs.getID()))
+				this.targetNsUrl = this.appContext + "elements/" + elem.getIdentifier();
+			else
+				setTargetNsUrl(parentNs.getID());
+		}
 		else
-			setTargetNsUrl(parentNs.getID());
+			setTargetNsUrl(cNamespaceID);
 
         //writeElemStart(elem.getShortName());
 		writeElemStart(elem.getIdentifier());
@@ -121,7 +127,7 @@ public class ElmSchema extends Schema {
         addString("</xs:simpleType>");
         newLine();
     }
-    
+
     public static void main(String[] args){
         
         Connection conn = null;

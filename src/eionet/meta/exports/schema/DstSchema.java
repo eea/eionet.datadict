@@ -61,10 +61,11 @@ public class DstSchema extends Schema {
         writeElemEnd();
     }
     
-    private void writeContent(Dataset ds) throws Exception {
+    protected void writeContent(Dataset ds) throws Exception {
         
         //addString("\t<xs:complexType name=\"type" + ds.getShortName() + "\">");
-		addString("\t<xs:complexType name=\"type" + ds.getIdentifier() + "\">");
+		//addString("\t<xs:complexType name=\"type" + ds.getIdentifier() + "\">");
+		addString("\t<xs:complexType>");
         newLine();
         
         String tab = "\t\t";

@@ -6,6 +6,13 @@ import java.util.*;
 import eionet.meta.*;
 import eionet.util.Util;
 
+/*
+ * 
+ * @author jaanus
+ *
+ * To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ */
 public abstract class Schema implements SchemaIF{
     
     protected DDSearchEngine searchEngine = null;
@@ -27,6 +34,12 @@ public abstract class Schema implements SchemaIF{
     
     protected Hashtable nonAnnotationAttributes = new Hashtable();
     
+    private int containerness = NOT_IN_CONTAINER;
+	private String containerNamespaceID = null;
+    
+    /*
+     * 
+     */
     public Schema(DDSearchEngine searchEngine, PrintWriter writer){
         
         this.searchEngine = searchEngine;
@@ -93,6 +106,21 @@ public abstract class Schema implements SchemaIF{
             namespaces.add(nsDeclaration.toString());
     }
     
+	protected void addContainerImport(String tblID){
+		
+		StringBuffer importClause = new StringBuffer("<xs:import namespace=\"");
+		String url = appContext + "namespace.jsp?ns_id=" + this.referredNsID;
+		importClause.append(url);
+		importClause.append("\" schemaLocation=\"");
+        
+		importClause.append(appContext + "GetContainerSchema?id=" + GetSchema.TBL + tblID);
+        
+		importClause.append("\"/>");
+        
+		if (!imports.contains(importClause.toString()))
+			imports.add(importClause.toString());
+	}
+    
     protected void addImport(String compID, String compType){
         
         StringBuffer importClause = new StringBuffer("<xs:import namespace=\"");
@@ -120,9 +148,11 @@ public abstract class Schema implements SchemaIF{
     public void flush() throws Exception{
         
         // write schema header
-        writeHeader();
+        if (containerness==NOT_IN_CONTAINER || containerness==FIRST_IN_CONTAINER)
+        	writeHeader();
+        	
         // write imports
-        writeImports();
+		writeImports();
         
         // write content
         for (int i=0; i<content.size(); i++){
@@ -130,7 +160,8 @@ public abstract class Schema implements SchemaIF{
         }
         
         // write schema footer
-        writeFooter();
+		if (containerness==NOT_IN_CONTAINER || containerness==LAST_IN_CONTAINER)
+        	writeFooter();
     }
     
     protected void writeElemStart(String shortName){
@@ -239,7 +270,13 @@ public abstract class Schema implements SchemaIF{
                     
                 Namespace ns = elem.getNamespace();
                 
-                addImport(elem.getID(), GetSchema.ELM);
+                // JH120705 - instead of importing schemas of all elements we now import
+                // a single schema where the parent table's corresponding namespace is the
+                // target namespace and which includes declarations of all elements inside
+                // that table. So its kind of like a single container of schemas of all elements.
+                // see addImport() reference in TblSchema.java.
+                // addImport(elem.getID(), GetSchema.ELM);
+                
                 // addNamespace(ns); - substituted with parent's namespace, i.e. referredNs
                 // which is added already in parent's write() method
                     
@@ -326,6 +363,22 @@ public abstract class Schema implements SchemaIF{
         writer.print(lineTerminator);
         writer.print("</xs:schema>");
     }
+    
+	protected PrintWriter getWriter(){
+		return writer;
+	}
+	
+	public void setContainerness(int i){
+		this.containerness = i;
+	}
+
+	public void setContainerNamespaceID(String nsID){
+		this.containerNamespaceID = nsID;
+	}
+
+	public String getContainerNamespaceID(){
+		return containerNamespaceID;
+	}
     
     protected String escape(String s){
         

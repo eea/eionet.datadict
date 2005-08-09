@@ -87,7 +87,8 @@ public class DstXmlInst extends XmlInst {
 
 	protected String getSchemaLocation(String nsID, String id){
 		StringBuffer buf = new StringBuffer().
-		append(this.appContext).append("GetSchema?id=DST").append(id);
+		append(appContext).append("namespace.jsp?ns_id=").append(nsID).append(" ").
+		append(appContext).append("GetSchema?id=DST").append(id);
 		
 		return buf.toString();
 	}

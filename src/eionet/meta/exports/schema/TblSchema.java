@@ -46,7 +46,7 @@ public class TblSchema extends Schema {
     /**
     * Write a schema for a given object.
     */
-    private void write(DsTable dsTable) throws Exception{
+    protected void write(DsTable dsTable) throws Exception{
 
 		// set target namespace (being the parent dataset's namespace)
 		String parentNsID = dsTable.getParentNs(); 
@@ -76,12 +76,16 @@ public class TblSchema extends Schema {
         writeAnnotation(dsTable.getSimpleAttributes(), dsTable.getComplexAttributes());
         writeContent(dsTable);
         writeElemEnd();
+        
+        // JH120705 - add import of the container of schemas of all elements inside this table
+		addContainerImport(dsTable.getID());
     }
     
-    private void writeContent(DsTable dsTable) throws Exception {
+	protected void writeContent(DsTable dsTable) throws Exception {
     	
         //addString("\t<xs:complexType name=\"type" + dsTable.getShortName() + "\">");
-		addString("\t<xs:complexType name=\"type" + dsTable.getIdentifier() + "\">");
+		//addString("\t<xs:complexType name=\"type" + dsTable.getIdentifier() + "\">");
+		addString("\t<xs:complexType>");
         newLine();
         addString("\t\t<xs:sequence>");
         newLine();

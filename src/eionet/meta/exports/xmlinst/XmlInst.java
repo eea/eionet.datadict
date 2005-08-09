@@ -93,7 +93,8 @@ public abstract class XmlInst implements XmlInstIF {
 	}
 
 	private void writeSchemaLocation(){
-		writer.print(" xsi:noNamespaceSchemaLocation=\"" + schemaLocation + "\"");
+		//writer.print(" xsi:noNamespaceSchemaLocation=\"" + schemaLocation + "\"");
+		writer.print(" xsi:schemaLocation=\"" + schemaLocation + "\"");
 	}
 	
 	private void writeHeader(){

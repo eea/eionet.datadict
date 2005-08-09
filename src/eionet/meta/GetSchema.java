@@ -44,6 +44,10 @@ public class GetSchema extends HttpServlet {
 			else
 				throw new Exception("Malformed schema ID!");
 			
+	        String servletPath = req.getServletPath();
+			boolean isContainerSchema =
+			servletPath!=null && servletPath.trim().startsWith("/GetContainerSchema");
+	        
 	        ServletContext ctx = getServletContext();
 	        String appName = ctx.getInitParameter("application-name");
 
@@ -58,14 +62,22 @@ public class GetSchema extends HttpServlet {
             writer = new PrintWriter(osw);
 
             SchemaIF schema = null;
-            if (compType.equals(DST))
-                schema = new DstSchema(searchEngine, writer);
-            else if (compType.equals(TBL))
-                schema = new TblSchema(searchEngine, writer);
-            else if (compType.equals(ELM))
-                schema = new ElmSchema(searchEngine, writer);
-            else
-                throw new Exception("Invalid component type!");
+            if (!isContainerSchema){
+	            if (compType.equals(DST))
+	                schema = new DstSchema(searchEngine, writer);
+	            else if (compType.equals(TBL))
+	                schema = new TblSchema(searchEngine, writer);
+	            else if (compType.equals(ELM))
+	                schema = new ElmSchema(searchEngine, writer);
+	            else
+	                throw new Exception("Invalid component type!");
+            }
+            else{
+				if (compType.equals(TBL))
+					schema = new ElmsContainerSchema(searchEngine, writer);
+				else
+					throw new Exception("Invalid component type for a container schema!");
+            }
                 
             schema.setIdentitation("\t");
             
