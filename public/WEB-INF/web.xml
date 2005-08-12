@@ -163,6 +163,10 @@
 		<url-pattern>/GetSchema</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
+		<servlet-name>GetSchema</servlet-name>
+		<url-pattern>/GetContainerSchema</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
 		<servlet-name>GetPrintout</servlet-name>
 		<url-pattern>/GetPrintout</url-pattern>
 	</servlet-mapping>
