@@ -75,8 +75,17 @@ public class ElmSchema extends Schema {
     private void writeSimpleContent(DataElement elem) throws Exception {
         
         String dataType = (String)nonAnnotationAttributes.get("Datatype");
-        String minSize = (String)nonAnnotationAttributes.get("MinSize");
-        String maxSize = (String)nonAnnotationAttributes.get("MaxSize");
+        String minSize  = (String)nonAnnotationAttributes.get("MinSize");
+        String maxSize  = (String)nonAnnotationAttributes.get("MaxSize");
+		String minValue = (String)nonAnnotationAttributes.get("MinValue");
+		String maxValue = (String)nonAnnotationAttributes.get("MaxValue");
+		String decPrec  = (String)nonAnnotationAttributes.get("DecimalPrecision");
+		
+		if (Util.skipAttributeByDatatype("MinSize", dataType)) minSize = null;
+		if (Util.skipAttributeByDatatype("MaxSize", dataType)) maxSize = null;
+		if (Util.skipAttributeByDatatype("minValue", dataType)) minValue = null;
+		if (Util.skipAttributeByDatatype("maxValue", dataType)) maxValue = null;
+		if (Util.skipAttributeByDatatype("DecimalPrecision", dataType)) decPrec = null;
         
         addString("\t");
         addString("<xs:simpleType>");
@@ -100,11 +109,38 @@ public class ElmSchema extends Schema {
             
             if (!Util.voidStr(maxSize)){
                 addString("\t\t\t");
-                addString("<xs:maxLength value=\"");
+                if (dataType.equalsIgnoreCase("string"))
+                	addString("<xs:maxLength value=\"");
+                else
+					addString("<xs:totalDigits value=\"");
                 addString(maxSize);
                 addString("\"/>");
                 newLine();
             }
+
+			if (!Util.voidStr(minValue)){
+				addString("\t\t\t");
+				addString("<xs:minInclusive value=\"");
+				addString(minValue);
+				addString("\"/>");
+				newLine();
+			}
+
+			if (!Util.voidStr(maxValue)){
+				addString("\t\t\t");
+				addString("<xs:maxInclusive value=\"");
+				addString(maxValue);
+				addString("\"/>");
+				newLine();
+			}
+
+			if (!Util.voidStr(decPrec)){
+				addString("\t\t\t");
+				addString("<xs:fractionDigits value=\"");
+				addString(decPrec);
+				addString("\"/>");
+				newLine();
+			}
             
             Vector fixedValues = elem.getFixedValues();
             for (int k=0; fixedValues!= null && k<fixedValues.size(); k++){

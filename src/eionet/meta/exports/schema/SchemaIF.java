@@ -14,6 +14,7 @@ public interface SchemaIF {
 	public static final int IN_CONTAINER = 1;
 	public static final int FIRST_IN_CONTAINER = 2;
 	public static final int LAST_IN_CONTAINER = 3;
+	public static final int FIRST_AND_LAST_IN_CONTAINER = 4;
     
     /**
     * Write a schema for an object given by ID.

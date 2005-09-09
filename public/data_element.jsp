@@ -795,6 +795,32 @@ private String legalizeAlert(String in){
 				document.location.assign("data_element.jsp?mode=add&type=" + type);<%
 			}%>
 		}
+
+		function changeDatatype(){
+			<%
+			if (type!=null && type.equals("CH1")){ %>
+				return;<%
+			}
+			else{
+				String datatypeID = getAttributeIdByName("Datatype", mAttributes);
+				if (datatypeID!=null && datatypeID.length()>0) datatypeID = "attr_" + datatypeID;
+				%>
+				var elmDataType = document.forms["form1"].<%=datatypeID%>.value;
+				if (elmDataType == null || elmDataType.length==0)
+					return;
+					
+				<%
+				//String reLocation = elmCommon ? "data_element.jsp?mode=add&common=true" : "data_element.jsp?mode=add";				
+				//if (type!=null && type.length()>0) reLocation = reLocation + "&type=" + type;
+				
+				String reLocation = "data_element.jsp?" + request.getQueryString();
+				if (!reLocation.endsWith("&")) reLocation = reLocation + "&";
+				%>
+				
+				document.location.assign("<%=reLocation%>elm_datatype=" + elmDataType);<%
+			}
+			%>
+		}
 		
 		function rmvValue(id){
 
@@ -1663,6 +1689,16 @@ else{ %>
 													<%isOdd = Util.isOdd(++displayed);%>
 									    		</tr><%
 								    		}
+								    		
+								    		String elmDataType = "string";
+								    		if (mode.equals("add")){
+									    		String _elmDataType = request.getParameter("elm_datatype");
+									    		if (_elmDataType!=null && _elmDataType.length()>0) elmDataType = _elmDataType;
+								    		}
+								    		else{
+									    		String _elmDataType = dataElement==null ? null : dataElement.getAttributeValueByShortName("Datatype");
+									    		if (_elmDataType!=null && _elmDataType.length()>0) elmDataType = _elmDataType;
+								    		}
 								    		%>
 								    		
 								    		<!-- dynamic attributes -->
@@ -1682,8 +1718,15 @@ else{ %>
 												if (!dispFor)
 													continue;
 												
+												if (Util.skipAttributeByDatatype(attribute.getShortName(), elmDataType)) continue;
+												
 												attrID = attribute.getID();
-												attrValue = getValue(attrID, mode, dataElement, newDataElement);
+												
+												if (attribute.getShortName().equalsIgnoreCase("Datatype"))
+													attrValue = elmDataType;
+												else
+													attrValue = getValue(attrID, mode, dataElement, newDataElement);
+													
 												String attrOblig = attribute.getObligation();
 												String obligImg  = "optional.gif";
 												if (attrOblig.equalsIgnoreCase("M"))
@@ -1692,9 +1735,9 @@ else{ %>
 													obligImg = "conditional.gif";
 												
 												// set isBoolean if the element is of boolean datatype
-												if (attribute.getShortName().equalsIgnoreCase("Datatype"))
-													if (attrValue!=null && attrValue.equalsIgnoreCase("boolean"))
-														isBoolean = true;
+												if (attribute.getShortName().equalsIgnoreCase("Datatype")){
+													if (attrValue!=null && attrValue.equalsIgnoreCase("boolean")) isBoolean = true;
+												}
 												
 												// if element is of CH1 type, don't display MinSize and MaxSize
 												if (attribute.getShortName().equalsIgnoreCase("MaxSize") || attribute.getShortName().equalsIgnoreCase("MinSize"))
@@ -1786,7 +1829,7 @@ else{ %>
 															}
 														}
 														// if view mode, display simple text
-														else if (mode.equals("view")){ %>
+														else if (mode.equals("view") || (mode.equals("edit") && attribute.getShortName().equalsIgnoreCase("Datatype"))){ %>
 															<%=Util.replaceTags(attrValue)%><%
 														}
 														// if non-view mode, display input
@@ -1884,8 +1927,15 @@ else{ %>
 																		<%
 																	}
 																}
-																else if (dispType.equals("select")){ %>							
-																	<select <%=disabled%> class="small" name="attr_<%=attrID%>" onchange="form_changed('form1')">
+																else if (dispType.equals("select")){
+																	String onchange = "";
+																	if (attribute.getShortName().equalsIgnoreCase("Datatype"))
+																		onchange = " onchange=\"changeDatatype()\"";
+																	else
+																		onchange = " onchange=\"form_changed('form1')\"";
+																	
+																	%>							
+																	<select <%=disabled%> class="small" name="attr_<%=attrID%>"<%=onchange%>>
 																		<%
 																		Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
 																		if (fxValues==null || fxValues.size()==0){ %>

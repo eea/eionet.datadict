@@ -51,6 +51,9 @@ public abstract class Schema implements SchemaIF{
         this.nonAnnotationAttributes.put("Datatype", "");
         this.nonAnnotationAttributes.put("MinSize", "");
         this.nonAnnotationAttributes.put("MaxSize", "");
+		this.nonAnnotationAttributes.put("MinValue", "");
+		this.nonAnnotationAttributes.put("MaxValue", "");
+		this.nonAnnotationAttributes.put("DecimalPrecision", "");
     }
     
     public void setIdentitation(String identitation){
@@ -148,8 +151,12 @@ public abstract class Schema implements SchemaIF{
     public void flush() throws Exception{
         
         // write schema header
-        if (containerness==NOT_IN_CONTAINER || containerness==FIRST_IN_CONTAINER)
-        	writeHeader();
+        if (containerness==NOT_IN_CONTAINER ||
+        	containerness==FIRST_IN_CONTAINER ||
+        	containerness==FIRST_AND_LAST_IN_CONTAINER){
+        		
+        		writeHeader();
+        }
         	
         // write imports
 		writeImports();
@@ -160,8 +167,12 @@ public abstract class Schema implements SchemaIF{
         }
         
         // write schema footer
-		if (containerness==NOT_IN_CONTAINER || containerness==LAST_IN_CONTAINER)
-        	writeFooter();
+		if (containerness==NOT_IN_CONTAINER ||
+			containerness==LAST_IN_CONTAINER ||
+			containerness==FIRST_AND_LAST_IN_CONTAINER){
+				
+        		writeFooter();
+		}
     }
     
     protected void writeElemStart(String shortName){

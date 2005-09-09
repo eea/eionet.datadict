@@ -36,9 +36,13 @@ public class ElmsContainerSchema extends TblSchema {
 			DataElement elm = (DataElement)elms.get(i);
 			ElmSchema elmSchema = new ElmSchema(searchEngine, getWriter());
 			
-			if (i==0)
-				cness = FIRST_IN_CONTAINER;
-			else if (i==elms.size()-1)
+			if (i==0){
+				if (elms.size()>1)
+					cness = FIRST_IN_CONTAINER;
+				else
+					cness = FIRST_AND_LAST_IN_CONTAINER;
+			}
+			else if ((i+1)==elms.size())
 				cness = LAST_IN_CONTAINER;
 			else
 				cness = IN_CONTAINER;
