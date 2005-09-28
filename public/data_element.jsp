@@ -814,6 +814,14 @@ private String legalizeAlert(String in){
 				//if (type!=null && type.length()>0) reLocation = reLocation + "&type=" + type;
 				
 				String reLocation = "data_element.jsp?" + request.getQueryString();
+				int i = reLocation.indexOf("elm_datatype=");
+				if (i>=0){
+					StringBuffer buf = new StringBuffer(reLocation.substring(0,i));
+					int j = reLocation.indexOf("&", i);
+					if (j>=0) buf.append(reLocation.substring(j+1));
+					reLocation = buf.toString();
+				}
+				
 				if (!reLocation.endsWith("&")) reLocation = reLocation + "&";
 				%>
 				
