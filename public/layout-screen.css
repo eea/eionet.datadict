@@ -1,0 +1,535 @@
+@media screen { /* To prevent PocketPC from loading the stylesheet */
+
+/* Page head styles */
+#pagehead {
+	height: 138px;
+	background-image:url('images/treeeionet.png');
+	background-repeat: no-repeat;
+}
+ 
+/* Site title and site tagline start */
+#identification {
+	position: absolute;
+	left: 150px;
+	top: 35px;
+	right: 50px
+}
+
+#logo {
+	float:right
+}
+
+.sitetitle {
+	color: #006666;
+	font-size: 14pt;
+	font-weight: bold;
+}
+
+.sitetagline {
+	color: #006666;
+	font-size: 10pt;
+	font-weight: bold;
+}
+/* Site title and site tagline end */
+
+/* The box where the content is */
+#workarea {
+	margin-left: 150px;
+	padding-left:0;
+	margin-right: 10px;
+	background-color: white;
+	border: 1px solid black;
+}
+
+#dataflowpage #workarea {
+	background-color: transparent;
+}
+
+#pagefoot {
+	clear:both;
+	margin-left: 150px;
+	padding-left:0px;
+	padding-right: 2px;
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 0.8em;
+	text-align: center; 
+}
+
+/* fonts, colour-schemes etc. */
+body {
+	margin:0px;
+	padding:0px;
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 80%; 
+	font-style: normal; 
+	line-height: normal; 
+	background: #f0f0f0 url('images/background_orange.png') repeat-y;
+}
+
+/* Anchors */
+a:link {
+	color: #024176
+}
+
+a:visited {
+	color: #A30A21
+}
+
+a:active {
+	color: #A30A21
+} 
+
+/* Remove the border around images */
+
+a img {
+	border: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+p {
+	padding-left:4px;
+	padding-right:4px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: Arial, Helvetica, sans-serif; 
+	font-style: normal; 
+	font-weight: bold; 
+	text-decoration: none
+	padding-left:4px;
+}
+
+h1 {
+	font-size: 1.4em; 
+	line-height: 120%; 
+	border-bottom: 1px solid black;
+	background-color: #DCDCDC;
+	margin-top:0;
+	padding-top: 0.5em;
+}
+
+.section {
+	border-bottom: 1px solid black;
+}
+
+h2 {
+	font-size: 1.3em; 
+	line-height: normal; 
+	border-bottom: 1px solid black;
+	background-color: #DCDCDC;
+	margin-top:0;
+	padding-top: 0.5em;
+}
+
+h3 {
+	font-size: 1.2em; 
+	line-height: normal; 
+}
+
+h4, h5, h6 {
+	line-height: normal; 
+}
+
+kbd {
+	font-weight: bold;
+}
+
+label {
+	font-weight: bold;
+}
+
+/* Lists */
+
+ul {
+	list-style: url("images/smalldiamond.gif");
+}
+
+/* Tables */
+table {
+	empty-cells: show;
+}
+
+td {
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 1em; 
+	font-style: normal; 
+	line-height: normal; 
+	text-decoration: none;
+	padding-left:5px;
+}
+
+th {
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 1em; 
+	font-style: normal; 
+	line-height: normal; 
+	font-weight: bold; 
+	color: #FFFFFF;
+	background: #10847B;
+	text-align: left;
+	text-decoration: none; 
+	padding:0em 1em;
+/*	vertical-align: top;  */
+}
+
+.zebradark {
+	background-color: #D3D3D3;
+}
+
+.zebralight {
+	background-color: transparent;
+}
+
+/* Tables end */
+
+/*
+ * The globalnav is for buttons that exist on all pages.
+ * They are shown on the left
+ */
+#globalnav {
+	position: absolute;
+	left: 0;
+	top: 143px;
+	width: 130px;
+	margin: 0px;
+}
+
+#globalnav h2 {
+	color: black;
+	border: none;
+	background-color: transparent;
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 9pt; 
+	font-style: normal; 
+	line-height: normal; 
+	padding-top:10px;
+	margin-bottom: 0px;
+	font-weight: bold;
+	text-align: center; 
+	text-decoration: none;
+}
+
+#globalnav ul {
+	list-style: none;
+	list-style-image: none; /* bug in IE */
+	padding-left: 5px;
+	margin:0px 0px 0px 10px;
+}
+
+#globalnav li {
+	font-size: 9px;
+	font-family: sans-serif;
+	font-weight: bold;
+	width:100px;
+	height:13px;
+	line-height: 100%;
+	vertical-align: bottom;
+	color:#ffffff;
+	border: none;
+	margin: 0px;
+	white-space: nowrap;
+}
+#globalnav li a {
+	display:block;
+	font-weight: bold;
+	text-decoration: none;
+	color:#ffffff;
+	width:80px;
+	height:13px;
+	padding: 0px 6px 0px 20px;
+	background: url('images/greybuttonred.gif') no-repeat left top;
+	border: none;
+	margin: 0px;
+}
+
+#globalnav li a:hover {
+	background: url('images/greybuttonred.gif') no-repeat left top;
+	background-position: 0% -26px;
+}
+
+/* The .operations is for the blue buttons to the right of the page */
+
+#operations {
+	float: right;
+	top: 0px;
+	margin: 20px 0px 0px 15px;
+}
+
+#operations ul {
+	list-style: none;
+	list-style-image: none; /* bug in IE */
+	margin: 0px;
+}
+
+#operations li {
+	font-size:.75em;
+	font-family: AvenirLight, sans-serif;
+	font-weight: bold;
+	color: #ffffff;
+	line-height: 100%;
+	white-space: nowrap;
+}
+
+#operations li a {
+	display:block;
+	font-weight: bold;
+	text-decoration: none;
+	color: #ffffff;
+	width: 111px;
+	height: 17px;
+	padding: 4px 0px 0px 9px;
+	background: url('images/emptybluebutton.png') no-repeat;
+}
+
+/* Tabbed menus - as used on the front page */
+#tabbedmenu {
+	float: left;
+	width: 100%;
+	border-bottom: thin solid #ff9400;
+	font-size: 0.9em;
+	line-height: normal;
+}
+#tabbedmenu ul {
+	margin: 0;
+	padding: 10px 10px 0;
+	list-style: none;
+	list-style-image: none; /* bug in IE */
+}
+#tabbedmenu li {
+	float: left;
+	background: url("images/tableft.gif") no-repeat left top;
+	margin: 0;
+	padding: 0 0 0 9px;
+	white-space: nowrap;
+}
+#tabbedmenu a {
+	display:block;
+	text-decoration: none;
+	font-weight: bold;
+	color: black;
+	background:url("images/tabright.gif") no-repeat right top;
+	padding:5px 15px 4px 6px;
+}
+#tabbedmenu #currenttab {
+	background-image:url("images/tableft_on.gif");
+}
+#tabbedmenu #currenttab a {
+	text-decoration: none;
+	font-weight: bold;
+	background-image:url("images/tabright_on.gif");
+	padding-bottom:5px;
+}
+#tabbedmenu #currenttab span {
+	display:block;
+	text-decoration: none;
+	font-weight: bold;
+	background:url("images/tabright_on.gif") no-repeat right top;
+	padding:5px 15px 4px 6px;
+}
+
+/* Breadcrumb trail */
+.breadcrumbtrail {
+	position: absolute;
+	left: 130px;
+	right:0;
+	top: 113px;
+	font-size: 0.8em;
+	font-family: verdana, arial, helvetica, sans-serif;
+	color: black;
+	height: 25px;
+	background: url('images/bar_filled.png');
+	background-repeat: repeat-x;
+}
+
+
+.breadcrumbhead {
+	float: left;
+	width: 20px;
+	font-size: 1px;
+	visibility: hidden;
+}
+
+.breadcrumbtail {
+	float:right;
+	width:1px;
+}
+
+.breadcrumbitem {
+	float: left;
+	padding-right: 28px;
+	height: 13px;
+	margin-right: 3px;
+	background-image: url("images/bar_hole.png");
+	background-repeat: no-repeat;
+	background-position: 100% 0px;
+	padding-top: 12px;
+}
+
+.breadcrumbitemlast {
+	float: left;
+	padding-right: 28px;
+	height: 13px;
+	margin-right: 3px;
+	background-image: url("images/bar_dot.png");
+	background-repeat: no-repeat;
+	background-position: 100% 0px;
+	padding-top: 12px;
+}
+
+.breadcrumbtrail a {
+	font-weight: bold;
+	color: black;
+	text-decoration: none;
+}
+
+.breadcrumbtrail a:hover {
+	color: #707070;
+}
+ 
+
+/*
+ * Popups don't have left or right columns. Instead we
+ * indent the text a bit
+ */
+.popup {
+	margin:30px;
+	background-image: none;
+	background-color: white;
+}
+
+.popuphead hr {
+	background-color: #ff9400;
+	height: 15px;
+	border: none;
+}
+
+
+.smallFont {
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 10px; 
+	font-style: normal; 
+	line-height: normal; 
+	text-decoration: none;
+}
+
+.back {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-style: normal; 
+	line-height: normal; 
+	font-weight: bold; 
+	color:#FFFFFF;
+	background-color:#FFFFFF;
+	text-decoration: none;
+}
+
+/*
+ * We don't change to italics, but change the colour
+ */
+em {
+	font-style: normal;
+	color: #006666;
+}
+
+img#selected_order {
+	border-width: 1px;
+	border-color: red;
+	border-style: solid;
+}
+
+th.selected { 
+	border-width: 2px;
+	border-color: red;
+}
+
+/*
+ * Admonitions
+ */
+.caution {
+	color: red;
+	border-width: 1px;
+}
+
+.error {
+	font-style: bold;
+}
+
+.metavalue {
+	width: 500px;
+	color: black;
+	padding-left:5;
+}
+
+.relvalue {
+	width: 500px;
+	color: red;
+	padding-left:5;
+}
+
+.metalabel {
+	width: 100px;
+	color: black;
+	font-weight: bold;
+	text-transform: capitalize;
+}
+
+.srch_rslt_col {
+	padding-left:7;
+}
+
+.srch_rslt_hdr {
+	padding-left:5;
+}
+
+input[type="submit"], input[type="reset"] {
+	color: #FFFFFF;
+	background: #10847B;
+}
+
+#searchbtn {
+	width: 7em; /* space enough for "Searching" */
+}
+
+#dataflowform label {
+	display: block;
+	float: left;
+	padding: 1em;
+}
+
+/* The feedback box after form submit*/
+#feedback {
+	margin-left:5px;
+	margin-right:5px;
+	padding: 3px 5px;
+	border: 2px dashed gray;
+}
+
+/* styles for sortable tables */
+.sortable {
+	font-size: 1em;
+	line-height:normal;
+	border: 1px solid #10847B;
+}
+.sortable th {
+	background: #10847B;
+	border: 2px outset #999;
+	margin:2px;
+	padding: 0;
+	white-space: nowrap;
+	vertical-align: top;
+}
+.sortable thead a:link, .sortable thead a:visited, .sortable thead span {
+	display:block;
+	text-decoration: none;
+	font-weight: bold;
+	color: #FFFFFF;
+	padding:1px 0.5em;
+}
+
+.sortable thead th a:hover {
+	color:white;
+	background: #3EA99F;
+}
+
+} /* screen media */
