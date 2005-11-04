@@ -7,6 +7,19 @@
 	background-repeat: no-repeat;
 }
  
+#pagehead form {
+	position: absolute;
+	display: inline;
+	left: 10px;
+	top: 121px;
+}
+
+#pagehead input {
+	font-size: 70%;
+	background-color: #ff9400;
+	width: 100px;
+}
+
 /* Site title and site tagline start */
 #identification {
 	position: absolute;
@@ -34,15 +47,10 @@
 
 /* The box where the content is */
 #workarea {
+	clear: right;
 	margin-left: 150px;
 	padding-left:0;
 	margin-right: 10px;
-	background-color: white;
-	border: 1px solid black;
-}
-
-#dataflowpage #workarea {
-	background-color: transparent;
 }
 
 #pagefoot {
@@ -57,6 +65,7 @@
 
 /* fonts, colour-schemes etc. */
 body {
+  width: 775px;
 	margin:0px;
 	padding:0px;
 	font-family: Arial, Helvetica, sans-serif; 
@@ -482,21 +491,6 @@ th.selected {
 	padding-left:5;
 }
 
-input[type="submit"], input[type="reset"] {
-	color: #FFFFFF;
-	background: #10847B;
-}
-
-#searchbtn {
-	width: 7em; /* space enough for "Searching" */
-}
-
-#dataflowform label {
-	display: block;
-	float: left;
-	padding: 1em;
-}
-
 /* The feedback box after form submit*/
 #feedback {
 	margin-left:5px;
@@ -530,6 +524,27 @@ input[type="submit"], input[type="reset"] {
 .sortable thead th a:hover {
 	color:white;
 	background: #3EA99F;
+}
+
+/* Frontpage boxes */
+.TeaserBox {
+        font-size: 8pt; 
+}
+
+.TeaserBox h2 {
+	background: #F09000 url(images/dd_bgr_cell_head.jpg) no-repeat;
+	font-family: Verdana, Tahoma, Geneva, Arial, Helvetica, sans-serif;
+  border:none;
+  text-align: center;
+  padding-top: .2em;
+  padding-bottom: .2em;
+  margin-bottom: 0;
+	font-size: 10pt; 
+	font-style: normal; 
+	line-height: normal; 
+	font-weight: bold; 
+	color: #FFFFFF;
+	text-decoration: none; 
 }
 
 } /* screen media */

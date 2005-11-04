@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,java.io.*,eionet.meta.*,com.tee.xmlserver.*,com.tee.uit.help.Helps,eionet.util.Util"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%@ include file="history.jsp" %>
 
@@ -61,35 +62,29 @@ finally{
 
 	
 %>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <link type="text/css" rel="stylesheet" href="boxes.css">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <script language="javascript" src='script.js'></script>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+    <link type="text/css" rel="stylesheet" href="boxes.css"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <script type="text/javascript" src='script.js'></script>
 </head>
 <body>
-    <%@ include file="header.htm" %>
-    <table border="0" cellspacing="0" cellpadding="0">
-        <tr valign="top">
-            <td nowrap="nowrap" width="130">
-                <p><center>
-                    <%@ include file="menu.jsp" %>
-                </center></p>
-            </td>
-            <td>
                	<% if (page_name == null){%>
-	                <jsp:include page="location.jsp" flush='true'/>
+	                <jsp:include page="nlocation.jsp" flush='true'/>
            		<%} else{ %>
-	                <jsp:include page="location.jsp" flush='true'>
+	                <jsp:include page="nlocation.jsp" flush='true'>
             			<jsp:param name="name" value="<%=page_name%>"/>
             			<jsp:param name="back" value="true"/>
 		            </jsp:include>
 	            <% } %>
+    <%@ include file="nmenu.jsp" %>
+<div id="workarea">
 
-				<div style="margin-left:20">
 				
 					<%
 					
@@ -103,7 +98,7 @@ finally{
 						<%
 						if (errTrc!=null){
 							%>
-							<form acceptcharset="UTF-8" name="errtrc" action="http://">
+							<form name="errtrc" action="http://">
 								<input type="hidden" name="errtrc" value="<%=errTrc%>"/>
 							</form>
 							<%
@@ -113,29 +108,22 @@ finally{
 					else{
 						%>
 					
-						<table border="0" cellspacing="0" cellpadding="0">
-							<tr height="10"><td></td></tr>					
-							<tr>
-								<td width="620" style="border: 1 dotted #C0C0C0">												
-									<table border="0" width="100%" cellspacing="4" cellpadding="0">
+								<div style="width:620px; padding: 3px; margin-top:10px;border: 1px dotted #C0C0C0">												
+									<div style="margin-bottom:10px">
 									
 										<!-- released data definitions part -->
 										
-					                	<tr>
-					                  		<td width="100%" colspan="2">
 					                    		<jsp:include page="released_datasets.jsp" flush="true">
 				                    			</jsp:include>
-					                  		</td>
-					                	</tr>
-					                	<tr>
-					                  		<td width="101%" colspan="2" height="10"></td>
-					                	</tr>
+									</div>
 					                	
-					                	<tr>
+									<table cellpadding="0" cellspacing="4">
+										<tr>
 					                	
 					                		<!-- the login part -->
-					                		
-					                  		<jsp:include page="protarea.jsp" flush="true"></jsp:include>
+																<td width="50%" style="border: 1px solid #FF9900" valign="top">
+																	<jsp:include page="protarea.jsp" flush="true"></jsp:include>
+					                  		</td>
 					                  		
 					                  		<!-- the support part -->
 					                  		
@@ -158,9 +146,7 @@ finally{
 		                  					</td>
 										</tr>
 									</table>
-								</td>
-							</tr>
-						</table>
+						</div>
 						
 						<jsp:include page="footer.jsp" flush="true">
 						</jsp:include>
@@ -170,9 +156,5 @@ finally{
 					%>
 								
 				</div>
-            </td>
-        </tr>
-    </table>
-    
 </body>
 </html>

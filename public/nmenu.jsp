@@ -8,17 +8,19 @@
 			<li><a href="search.jsp">Data elements</a></li>
 		</ul>
 
-	<h2>Administration</h2>
-    <ul>
 	<%
 		AppUserIF _user = SecurityUtil.getUser(request);
 		if (_user!=null && _user.isAuthentic()) {
 			%>
+	<h2>Logged in as<br/><%=_user.getUserName()%></h2>
+    <ul>
 			<li><a href="logout.jsp">Logout</a></li>
 			<%
 		}
 		else{
 			%>
+	<h2>Not logged in</h2>
+    <ul>
 			<li><a href="javascript:login()">Login</a></li>
 			<%
 		}

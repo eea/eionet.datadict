@@ -6,20 +6,12 @@ AppUserIF userProtarea = SecurityUtil.getUser(request);
 if (userProtarea!=null && userProtarea.isAuthentic()) loggedIn = true;
 %>
 
-<td width="50%" style="border: 1px solid #FF9900" valign="top">	
-	<table border="0" width="100%" cellspacing="0" cellpadding="2">
-		<tr height="20">
-			<td align="center" width="100%" valign="top" class="front_page_prot_area" >
-				Protected area
-  			</td>
-		</tr>
-		<tr>
-			<td width="100%" valign="top" align="left">
-				
+<div id="login_box" class="TeaserBox" width="302">
+			<h2>Protected area</h2>
 				<%
 				if (!loggedIn){ %>
 				
-					<form acceptcharset="UTF-8" target="_blank" name="LOGIN" method="POST" action="Login">
+					<form target="_blank" name="LOGIN" method="post" action="Login">
 						<input type="hidden" name="target" value="blank"/>
 		  				<table border="0" width="100%" cellspacing="0" cellpadding="2">
 		                    <tr>
@@ -38,13 +30,10 @@ if (userProtarea!=null && userProtarea.isAuthentic()) loggedIn = true;
 		  			</form><%
   				}
   				else{ %>
-  					<form acceptcharset="UTF-8" name="LOGOUT" method="POST" action="logout.jsp">
+  					<form name="LOGOUT" method="post" action="logout.jsp">
   						<input type="submit" value="Logout" class="loginbutton"/>&nbsp;(<%=userProtarea.getUserName()%>)
   					</form><%
 				}
   				%>
   				
-			</td>
-		</tr>
-	</table>
-</td>
+	</div>
