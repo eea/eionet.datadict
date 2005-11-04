@@ -112,21 +112,13 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
 	font-size: 1.4em; 
 	line-height: 120%; 
-	border-bottom: 1px solid black;
-	background-color: #DCDCDC;
 	margin-top:0;
 	padding-top: 0.5em;
-}
-
-.section {
-	border-bottom: 1px solid black;
 }
 
 h2 {
 	font-size: 1.3em; 
 	line-height: normal; 
-	border-bottom: 1px solid black;
-	background-color: #DCDCDC;
 	margin-top:0;
 	padding-top: 0.5em;
 }
