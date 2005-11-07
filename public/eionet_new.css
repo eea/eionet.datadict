@@ -624,3 +624,22 @@ a.disabled{
 .error {
     font-style: bold;
 }
+
+.navbutton, .navbutton:visited {
+  display:block;
+  font-size: 9px;
+  font-weight: normal;
+	text-transform: uppercase;
+  text-decoration: none;
+  color:black;
+/* IE6 is in quirks mode when this CSS file is referenced
+   Therefore the width is set "incorrectly"
+*/
+  width:113px;
+  height:15px;
+	text-align: right;
+  padding: 0px 8px 0px 0px;
+  background: url('images/empty.jpg') no-repeat left top;
+  border: none;
+  margin: 0px 3px 0px 0px;
+}

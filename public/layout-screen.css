@@ -53,6 +53,18 @@
 	margin-right: 10px;
 }
 
+#outerframe {
+	width: 620px;
+	padding: 3px;
+	margin-top: 10px;
+	border: 1px dotted #C0C0C0;
+}
+
+#innerframe {
+	border: 1px solid #FF9900;
+	padding: 3px;
+}
+
 #pagefoot {
 	clear:both;
 	margin-left: 150px;
@@ -537,6 +549,25 @@ th.selected {
 	font-weight: bold; 
 	color: #FFFFFF;
 	text-decoration: none; 
+}
+
+.navbuttons {
+	float: right;
+}
+.navbutton, .navbutton:visited {
+	display: block;
+	font-size: 9px;
+	font-weight: normal;
+	text-transform: uppercase;
+	text-decoration: none;
+	color:black;
+	width:105px;
+	height:15px;
+	text-align: right;
+	padding: 0px 8px 0px 0px;
+	background: url('images/empty.jpg') no-repeat left top;
+	border: none;
+	margin: 0px 3px 0px 0px;
 }
 
 } /* screen media */

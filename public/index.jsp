@@ -108,7 +108,7 @@ finally{
 					else{
 						%>
 					
-								<div style="width:620px; padding: 3px; margin-top:10px;border: 1px dotted #C0C0C0">												
+								<div id="outerframe">												
 									<div style="margin-bottom:10px">
 									
 										<!-- released data definitions part -->

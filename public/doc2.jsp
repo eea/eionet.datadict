@@ -10,7 +10,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Data Dictionary</title>
+    <title>Documentation</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
     <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
@@ -25,8 +25,8 @@
 	            </jsp:include>
     <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-  <div style="width:620px; padding: 3px; margin-top:10px;border: 1px dotted #C0C0C0">
-    <div style="border: 1px solid #FF9900;padding: 3px;">
+	<div id="outerframe">
+		<div id="innerframe">
 				<%=Helps.get("doc2", "text")%>
 		</div>				
   </div>				

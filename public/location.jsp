@@ -51,7 +51,7 @@
 			%>
         	<tr>
         		<td align="right" colspan="2">
-					<a href="<%=back%>">&lt;back</a>
+					<a class="navbutton" href="<%=back%>">&lt;back</a>
 				</td>
 			</tr> <%
 		}
