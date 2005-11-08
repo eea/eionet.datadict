@@ -16,6 +16,12 @@
 						<Array Type="STRUCT"/>
 					</Value>
 			</Method>
+			<Method Name="getDSTables" Auth="false">
+					<Parameters/>						
+					<Value Type="ARRAY">
+						<Array Type="STRUCT"/>
+					</Value>
+			</Method>						
 		</Methods>		
 	</Service>
 </Services>

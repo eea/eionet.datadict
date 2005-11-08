@@ -131,6 +131,10 @@
 		<servlet-name>CodelistServlet</servlet-name>
 		<servlet-class>eionet.meta.exports.codelist.CodelistServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>GetTableDef</servlet-name>
+		<servlet-class>eionet.meta.exports.xmlmeta.TblXmlMetaServlet</servlet-class>
+	</servlet>
 
 <!-- servlet mappings -->
 
@@ -214,6 +218,10 @@
 		<servlet-name>CodelistServlet</servlet-name>
 		<url-pattern>/CodelistServlet</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>GetTableDef</servlet-name>
+		<url-pattern>/GetTableDef</url-pattern>
+	</servlet-mapping>	
 
 <!-- the application server might allow directory listing.
        The welcome-files are used to overcome workings of such feature 
