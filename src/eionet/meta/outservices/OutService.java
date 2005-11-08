@@ -13,9 +13,15 @@ public class OutService {
 	
 	Connection conn = null;
 	
+	/*
+	 * 
+	 */
 	public OutService(){
 	}
 	
+	/*
+	 * 
+	 */
 	public Vector getParametersByActivityID(String raID) throws Exception{
 		
 		try{
@@ -27,7 +33,26 @@ public class OutService {
 			closeConnection();
 		}
 	}
+
+	/*
+	 * This one returns the IDs and titles of all ogligations that have
+	 * a released dataset definition present in DD
+	 */
+	public Vector getObligationsWithDatasets() throws Exception{
+		
+		try{
+			if (conn==null) getConnection();
+			DDSearchEngine searchEngine = new DDSearchEngine(conn);
+			return searchEngine.getObligationsWithDatasets();
+		}
+		finally{
+			closeConnection();
+		}
+	}
 	
+	/*
+	 * 
+	 */
 	private void getConnection() throws Exception{
 		Class.forName(Props.getProperty(PropsIF.DBDRV));
 		this.conn = DriverManager.getConnection(
@@ -36,6 +61,9 @@ public class OutService {
 			Props.getProperty(PropsIF.DBPSW));
 	}
 	
+	/*
+	 * 
+	 */
 	private void closeConnection(){
 		try{ if (conn!=null) conn.close(); } catch (SQLException e){}
 	}

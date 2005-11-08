@@ -40,6 +40,9 @@ public interface PropsIF {
 	
 	public static final String OUTSERV_ELM_URLPATTERN = "outserv.elm-details-url";
 	public static final String OUTSERV_ELM_IDPATTERN  = "<ELM_ID>";
+	public static final String OUTSERV_ROD_OBLIG_URL = "outserv.rod-obligation-url";
+	public static final String OUTSERV_PRED_IDENTIFIER = "outserv.pred-identifier";
+	public static final String OUTSERV_PRED_TITLE = "outserv.pred-title";
 	
 	public static final String JSP_URL_PREFIX = "jsp.url-prefix";
 	

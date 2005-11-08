@@ -809,13 +809,40 @@ public class Util {
 		
 		return result;
 	}
-	
+
+	/*
+	 * 
+	 */
+	public static String getObligationID(String obligDetailsUrl){
+		
+		if (obligDetailsUrl==null || obligDetailsUrl.length()==0) return null;
+		
+		String obligationID = "";
+		String s = new String("id=");
+		int j = obligDetailsUrl.indexOf(s);
+		if (j<0) return null;
+		int k = obligDetailsUrl.indexOf("&", j);
+		if (k<0)
+			obligationID = obligDetailsUrl.substring(j+s.length());
+		else
+			obligationID = obligDetailsUrl.substring(j+s.length(), k);
+		
+		try{
+			int oid = Integer.parseInt(obligationID);
+		}
+		catch (NumberFormatException nfe){
+			return null;
+		}
+		
+		return obligationID;
+	}
+
     /**
     * main
     */
     public static void main(String[] args){
 
-    	String s = escapeXML("kala&mees<naine>uku'masing&#1456;delta&#rr;gamma&amp;beeta&quot;joota\"");
-		System.out.println(s);
+    	String s = Util.getObligationID("http://rod.eionet.eu.int/show.jsv?id=32&mode=A&aid=170");
+		System.out.println("|" + s + "|");
     }
 }

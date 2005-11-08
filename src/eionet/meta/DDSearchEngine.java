@@ -19,10 +19,23 @@ public class DDSearchEngine {
     private ServletContext ctx = null;
     private String sessionID = "";
     
+	private String rodObligUrl = "http://rod.eionet.eu.int/obligations/";
+	private String predIdentifier = "http://purl.org/dc/elements/1.1/identifier";
+	private String predTitle = "http://purl.org/dc/elements/1.1/title";
+    
     private AppUserIF user = null;
 
     public DDSearchEngine(Connection conn){
         this.conn = conn;
+        
+		String s = Props.getProperty(PropsIF.OUTSERV_ROD_OBLIG_URL);
+		if (s!=null && s.length()>0) rodObligUrl = s;
+		
+		s = Props.getProperty(PropsIF.OUTSERV_PRED_IDENTIFIER);
+		if (s!=null && s.length()>0) predIdentifier = s;
+
+		s = Props.getProperty(PropsIF.OUTSERV_PRED_TITLE);
+		if (s!=null && s.length()>0) predTitle = s;
     }
     
     public DDSearchEngine(Connection conn, String sessionID){
@@ -3657,7 +3670,117 @@ public class DDSearchEngine {
 		
 		return result;
 	}
+
+	/*
+	 * This one returns the IDs and titles of all ogligations that have
+	 * a released dataset definition present in DD
+	 */
+	public Vector getObligationsWithDatasets() throws Exception{
+		
+		Vector obligations = new Vector();
+		
+		Vector datasets = getDatasets(null, null, null, null, null, false);
+		Vector releasedDatasets = new Vector();
+		for (int i=0; datasets!=null && i<datasets.size(); i++){
+			Dataset dst = (Dataset)datasets.get(i);
+			String status = dst.getStatus();
+			if (status==null || !status.equals("Released")) continue;
+			
+			// see from ROD links
+			Vector rodLinks = getRodLinks(dst.getID());
+			for (int j=0; rodLinks!=null && j<rodLinks.size(); j++){
+				Hashtable rodLink = (Hashtable)rodLinks.get(j);
+				String obligID = (String)rodLink.get("ra-id");
+				String obligTitle = (String)rodLink.get("ra-title");
+				if (obligTitle==null) obligTitle = "";
+				if (obligID!=null && obligID.length()>0){
+					
+					obligID = rodObligUrl + obligID;
+					
+					Hashtable hash = new Hashtable();
+					hash.put(predIdentifier, obligID.trim());
+					hash.put(predTitle, obligTitle.trim());
+					
+					if (!obligations.contains(hash))
+						obligations.add(hash);
+				}
+			}
+			
+			// see from the ROD complex attribute
+			if (obligations.size()==0){
+				Vector v = getComplexAttrValueRowHashes("ROD", dst.getID(), "DS");
+				for (int k=0; v!=null && k<v.size(); k++){
+					Hashtable valueRowHash = (Hashtable)v.get(k);
+					
+					String obligID = null;
+					String obligUrl = (String)valueRowHash.get("url");
+					if (obligUrl!=null && obligUrl.length()>0)
+						obligID = eionet.util.Util.getObligationID(obligUrl);
+					
+					String obligTitle = (String)valueRowHash.get("name");
+					if (obligTitle==null) obligTitle = "";
+					if (obligID!=null && obligID.length()>0){
+						
+						obligID = rodObligUrl + obligID;
+						
+						Hashtable hash = new Hashtable();
+						hash.put(predIdentifier, obligID.trim());
+						hash.put(predTitle, obligTitle.trim());
 	
+						if (!obligations.contains(hash))
+							obligations.add(hash);
+					}
+				}
+			}
+		}
+		
+		return obligations;
+	}
+	
+	/*
+	 * 
+	 */
+	public Vector getComplexAttrValueRowHashes(String attrShortName,
+						String parentID, String parentType) throws Exception{
+		
+		Vector result = new Vector();
+		
+		Vector complexAttrs = getComplexAttributes(parentID, parentType);
+		for (int i=0; complexAttrs!=null && i<complexAttrs.size(); i++){
+			DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
+			String attrID = attr.getID();
+			String sname = attr.getShortName();
+			if (sname==null || !sname.equalsIgnoreCase(attrShortName)) continue;
+			
+			Vector attrFields = getAttrFields(attrID);
+			Vector rows = attr.getRows();
+			for (int j=0; rows!=null && j<rows.size(); j++){
+				Hashtable rowHash = (Hashtable)rows.get(j);
+				Hashtable resultHash = new Hashtable();
+				for (int t=0; t<attrFields.size(); t++){
+					
+					Hashtable fieldHash = (Hashtable)attrFields.get(t);
+					String fieldID = (String)fieldHash.get("id");
+					String fieldValue = null;
+					if (fieldID!=null) fieldValue = (String)rowHash.get(fieldID);
+					String fieldName = (String)fieldHash.get("name");
+					
+					if (fieldName==null  || fieldName.length()==0) continue;
+					if (fieldValue==null || fieldValue.trim().length()==0) continue;
+					
+					resultHash.put(fieldName, fieldValue); 
+				}
+				
+				if (resultHash.size()>0) result.add(resultHash);
+			}
+		}
+		
+		return result;
+	}
+	
+	/*
+	 * 
+	 */
 	public Vector getReferringTables(String elmID) throws SQLException{
 		
 		// JH110705 - first get the owners of datasets (we need to display them)
@@ -3817,24 +3940,18 @@ public class DDSearchEngine {
             Class.forName("com.mysql.jdbc.Driver");
             Connection conn =
                 DriverManager.getConnection(
-			"jdbc:mysql://195.250.186.33:3306/dd", "dduser", "xxx");
+			"jdbc:mysql://localhost:3306/datadict", "root", "ABr00t");
 			
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
 			AppUserIF testUser = new TestUser(false);
 			testUser.authenticate("heinlja", "ddd");
 			searchEngine.setUser(testUser);
 			
-			Vector v = searchEngine.getCommonElements(null,null,null,null,false,null);
-			System.out.println(v.size());
-			System.out.println("=============================================");
+			Vector v = searchEngine.getObligationsWithDatasets();
 			for (int i=0; v!=null && i<v.size(); i++){
-				DataElement elm = (DataElement)v.get(i);
-				String commonornot = null;
-				if (elm.getNamespace()!=null && elm.getNamespace().getID()!=null)
-					commonornot = "non-common";
-				else
-					commonornot = "common";
-				System.out.println(elm.getID() + "-" + elm.getIdentifier() + "-" + commonornot);
+				System.out.println("================================>");
+				System.out.println(v.get(i).toString());
+				System.out.println("================================>");
 			}
         }
         catch (Exception e){
