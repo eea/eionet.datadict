@@ -576,6 +576,42 @@ private String legalizeAlert(String in){
 		}
 		
 		function submitCheckIn(){
+
+			<%
+			if (!elmCommon && dataset!=null && dataset.getStatus().equals("Released")){ %>
+				var b = confirm("Please note that you are checking in a non-common element definition in a dataset definition that is in Released status! " +
+								"This will create a new version of that dataset definition and it will be automatically released for public view. " +
+								"If you want to continue, click OK. Otherwise click Cancel.");
+				if (b==false) return;<%
+			}
+			
+			String latestRegStatus = elmCommon ? searchEngine.getLatestRegStatus(dataElement) : "";
+			if (latestRegStatus.equals("Released")){ %>
+				var b = confirm("Please note that you are checking your changes into a common element definition that was in Released status prior to checking out! " +
+				"By force, this will create a new version of that definition! If you want to continue, click OK. Otherwise click Cancel.");
+				if (b==false) return;<%
+			}
+			%>
+			
+			var i;
+			var stat = "";
+			var optn;
+			var optns = document.forms["form1"].elements["reg_status"].options;
+			for (i=0; optns!=null && i<optns.length; i++){
+				optn = optns[i];
+				if (optn.selected){
+					stat = optn.value;
+					break;
+				}
+			}
+			
+			if (stat=="Released"){
+				var b = confirm("You are checking in with Released status! This will automatically release your changes into public view. " +
+							    "If you want to continue, click OK. Otherwise click Cancel.");
+				if (b==false) return;
+			}
+
+
 			document.forms["form1"].elements["check_in"].value = "true";
 			submitForm('edit');
 		}
@@ -1235,14 +1271,30 @@ else{ %>
 						// update version checkbox
 						boolean brandNew = dataElement!=null && elmCommon && verMan.isFirstCommonElm(dataElement.getIdentifier());
 						if (mode.equals("edit") && dataElement!=null && dataElement.isWorkingCopy() && user!=null){
+							
+							boolean allowOverwrite = false;
+							if (elmCommon && !latestRegStatus.equals("Released"))
+								allowOverwrite = true;
+							else if (!elmCommon && (dataset==null || !dataset.getStatus().equals("Released")))
+								allowOverwrite = true;
+							
 							String updVerText = elmCommon ?
 												"Update this element definition's CheckInNo when checking in" :
 												"Update the dataset definition's CheckInNo when checking in";
+							
+							String hidden = "";
+							StringBuffer checkbox = new StringBuffer("<input type=\"checkbox\" value=\"true\" name=\"");
+							if (allowOverwrite)
+								checkbox.append("upd_version\"");
+							else{
+								checkbox.append("upd_version_DISABLED\" checked=\"true\" disabled=\"true\"");
+								hidden = "<input type=\"hidden\" name=\"upd_version\" value=\"true\"/>";
+							}
+							checkbox.append(">&nbsp;").append(updVerText).append("</input>");
+							
 							if (!brandNew){ %>
 								<tr>
-									<td align="right" class="smallfont_light" colspan="2">
-										<input type="checkbox" name="upd_version" value="true">&nbsp;<%=updVerText%></input>
-									</td>
+									<td align="right" class="smallfont_light" colspan="2"><%=checkbox%><%=hidden%></td>
 								</tr><%
 							}
 							else{ %>

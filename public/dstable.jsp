@@ -720,6 +720,16 @@ String attrValue = null;
 		}
 		
 		function submitCheckIn(){
+
+			<%
+			if (dataset!=null && dataset.getStatus().equals("Released")){ %>
+				var b = confirm("Please note that you are checking in a table definition in a dataset definition that is in Released status! " +
+								"This will create a new version of that dataset definition and it will be automatically released for public view. " +
+								"If you want to continue, click OK. Otherwise click Cancel.");
+				if (b==false) return;<%
+			}
+			%>
+			
 			document.forms["form1"].elements["check_in"].value = "true";
 			document.forms["form1"].elements["mode"].value = "edit";
 			document.forms["form1"].submit();
@@ -936,10 +946,23 @@ String attrValue = null;
 						
 						<%
 						// update version checkbox
-						if (mode.equals("edit") && dsTable!=null && dsTable.isWorkingCopy() && user!=null){%>
+						if (mode.equals("edit") && dsTable!=null && dsTable.isWorkingCopy() && user!=null){ %>
 							<tr>
 								<td align="right" class="smallfont_light" colspan="2">
-									<input type="checkbox" name="upd_version" value="true">&nbsp;Update the dataset definition's CheckInNo when checking in</input>
+									
+									<%
+									if (dataset==null || !dataset.getStatus().equals("Released")){ %>
+										<input type="checkbox" name="upd_version" value="true">
+											&nbsp;Update the dataset definition's CheckInNo when checking in
+										</input><%
+									}
+									else{ %>
+										<input type="checkbox" name="upd_version_DISABLED" checked="true" disabled="true">
+											&nbsp;Update the dataset definition's CheckInNo when checking in
+										</input>
+										<input type="hidden" name="upd_version" value="true"/><%
+									}
+									%>
 								</td>
 							</tr><%
 						}

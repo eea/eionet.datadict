@@ -460,20 +460,38 @@ private Vector getValues(String id, String mode, Vector attributes){
 				return false;
 		}
 
-		function checkIn(){			
+		function checkIn(){
 			submitCheckIn();
 		}
 		
 		function submitCheckIn(){
 			<%
-			if (regStatus!=null && regStatus.equals("Released")){ %>
-				var b = confirm("Please note that you are checking in a dataset definition with Released status! " +
-								"This will automatically release the definition for public view. " +
-								"If you want to continue, click OK. Otherwise click Cancel.");
+			String latestRegStatus = dataset!=null ? searchEngine.getLatestRegStatus(dataset) : "";
+			if (latestRegStatus.equals("Released")){ %>
+				var b = confirm("Please note that you are checking your changes into a dataset definition that was in Released status prior to checking out! " +
+								"By force, this will create a new version of that definition! If you want to continue, click OK. Otherwise click Cancel.");
 				if (b==false) return;<%
 			}
 			%>
 			
+			var i;
+			var stat = "";
+			var optn;
+			var optns = document.forms["form1"].elements["reg_status"].options;
+			for (i=0; optns!=null && i<optns.length; i++){
+				optn = optns[i];
+				if (optn.selected){
+					stat = optn.value;
+					break;
+				}
+			}
+			
+			if (stat=="Released"){
+				var b = confirm("You are checking in with Released status! This will automatically release your changes into public view. " +
+							    "If you want to continue, click OK. Otherwise click Cancel.");
+				if (b==false) return;
+			}
+
 			document.forms["form1"].elements["check_in"].value = "true";
 			document.forms["form1"].elements["mode"].value = "edit";
 			document.forms["form1"].submit();
@@ -822,10 +840,23 @@ private Vector getValues(String id, String mode, Vector attributes){
 						
 						<%
 						// update version checkbox
-						if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy() && editPrm && hasHistory){ %>
+						if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy() && editPrm && hasHistory){
+							%>
 							<tr>
 								<td align="right" class="smallfont_light" colspan="2">
-									<input type="checkbox" name="upd_version" value="true">&nbsp;Update the definition's CheckInNo when checking in</input>
+									<%
+									if (!latestRegStatus.equals("Released")){ %>
+										<input type="checkbox" name="upd_version" value="true">
+											&nbsp;Update the definition's CheckInNo when checking in
+										</input><%
+									}
+									else{ %>
+										<input type="checkbox" name="upd_version_DISABLED" checked="true" disabled="true">
+											&nbsp;Update the definition's CheckInNo when checking in
+										</input>
+										<input type="hidden" name="upd_version" value="true"/><%
+									}
+									%>
 								</td>
 							</tr><%
 						}
