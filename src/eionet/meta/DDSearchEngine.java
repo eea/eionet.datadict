@@ -1677,6 +1677,7 @@ public class DDSearchEngine {
 	}
 
     public Dataset getDataset(String datasetID) throws SQLException {
+    	
         Vector v = getDatasets(datasetID, false, false);
         if (v==null || v.size()==0)
             return null;
@@ -3920,7 +3921,52 @@ public class DDSearchEngine {
         
 		return v;
 	}
-	
+
+	/*
+	 * 
+	 */
+	public String getLatestRegStatus(Dataset dst) throws SQLException{
+		
+		String result = "";
+		if (dst==null) return result;
+		String idfier = dst.getIdentifier();
+		if (idfier==null || idfier.length()==0) return result;
+		
+		StringBuffer buf = new StringBuffer("select REG_STATUS from DATASET where IDENTIFIER=");
+		buf.append(Util.strLiteral(idfier)).append(" and WORKING_COPY='N' order by VERSION desc");
+		
+		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+		if (rs!=null && rs.next()){
+			String s = rs.getString(1);
+			if (s!=null) result = s;
+		}
+		
+		return result;
+	}
+
+	/*
+	 * 
+	 */
+	public String getLatestRegStatus(DataElement elm) throws SQLException{
+		
+		String result = "";
+		if (elm==null) return result;
+		String idfier = elm.getIdentifier();
+		if (idfier==null || idfier.length()==0) return result;
+		
+		StringBuffer buf = new StringBuffer("select REG_STATUS from DATAELEM where IDENTIFIER=");
+		buf.append(Util.strLiteral(idfier)).
+		append(" and PARENT_NS is null and WORKING_COPY='N' order by VERSION desc");
+		
+		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+		if (rs!=null && rs.next()){
+			String s = rs.getString(1);
+			if (s!=null) result = s;
+		}
+		
+		return result;
+	}
+		
     /**
     *
     */
