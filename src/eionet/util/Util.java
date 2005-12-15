@@ -28,6 +28,10 @@ import java.net.*;
 import java.util.*;
 import java.security.*;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 //import eionet.meta.Log;
 
 /**
@@ -835,6 +839,26 @@ public class Util {
 		}
 		
 		return obligationID;
+	}
+	
+	/*
+	 * 
+	 */
+	public static void forward2errorpage(
+				HttpServletRequest request, HttpServletResponse response, Throwable t, String backURL) throws ServletException, IOException{
+
+		String msg = t.getMessage();
+							
+		ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();							
+		t.printStackTrace(new PrintStream(bytesOut));
+		
+		String trace = bytesOut.toString(response.getCharacterEncoding());
+						
+		request.setAttribute("DD_ERR_MSG", msg);
+		request.setAttribute("DD_ERR_TRC", trace);
+		request.setAttribute("DD_ERR_BACK_LINK", backURL);
+						
+		request.getRequestDispatcher("error.jsp").forward(request, response);
 	}
 
     /**
