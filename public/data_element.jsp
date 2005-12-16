@@ -591,26 +591,28 @@ private String legalizeAlert(String in){
 				"By force, this will create a new version of that definition! If you want to continue, click OK. Otherwise click Cancel.");
 				if (b==false) return;<%
 			}
-			%>
 			
-			var i;
-			var stat = "";
-			var optn;
-			var optns = document.forms["form1"].elements["reg_status"].options;
-			for (i=0; optns!=null && i<optns.length; i++){
-				optn = optns[i];
-				if (optn.selected){
-					stat = optn.value;
-					break;
+			if (elmCommon){
+				%>
+				var i;
+				var stat = "";
+				var optn;
+				var optns = document.forms["form1"].elements["reg_status"].options;
+				for (i=0; optns!=null && i<optns.length; i++){
+					optn = optns[i];
+					if (optn.selected){
+						stat = optn.value;
+						break;
+					}
 				}
+				
+				if (stat=="Released"){
+					var b = confirm("You are checking in with Released status! This will automatically release your changes into public view. " +
+								    "If you want to continue, click OK. Otherwise click Cancel.");
+					if (b==false) return;
+				}<%
 			}
-			
-			if (stat=="Released"){
-				var b = confirm("You are checking in with Released status! This will automatically release your changes into public view. " +
-							    "If you want to continue, click OK. Otherwise click Cancel.");
-				if (b==false) return;
-			}
-
+			%>
 
 			document.forms["form1"].elements["check_in"].value = "true";
 			submitForm('edit');
