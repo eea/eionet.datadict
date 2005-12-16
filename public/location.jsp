@@ -41,36 +41,6 @@
 	    	</table>
 		</td>
 	</tr>
-	
-	<%
-    String back_button=request.getParameter("back");
-    if (back_button!=null){
-    	String back_url=(String)session.getAttribute("backUrl");
-    	if (back_url!=null){
-			String back = back_url.length()<1 ? "javascript:history.back(-1)":back_url;	
-			%>
-        	<tr>
-        		<td align="right" colspan="2">
-					<a class="navbutton" href="<%=back%>">&lt;back</a>
-				</td>
-			</tr> <%
-		}
-	}
-       			
-    // up link
-    /*String up = request.getParameter("up");
-    if (up!=null){
-    	String upUrl=(String)session.getAttribute("upUrl");
-    	if (upUrl!=null){ %>
-        	<tr>
-        		<td valign="bottom" align="right" width="100%" colspan="2" style="padding-top:2">
-					<a href="<%=upUrl%>"><img border="0" src="images/up.gif"/></a>
-				</td>
-			</tr> <%
-		}
-	}*/
-	%>
-	
 </table>
 
 
