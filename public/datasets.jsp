@@ -1,4 +1,5 @@
-	<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
@@ -261,14 +262,18 @@
 	
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="javascript" src='script.js'></script>
-    <script language="javascript" src='modal_dialog.js'></script>
-    <script language="javascript">
+    <title>Datasets - Data Dictionary</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <script type="text/javascript" src='script.js'></script>
+    <script type="text/javascript" src='modal_dialog.js'></script>
+    <script type="text/javascript" language="javascript">
+    // <![CDATA[
 		function setLocation(){
 			var o = document.forms["form1"].searchUrl;
 			if (o!=null)
@@ -337,26 +342,17 @@
 		    		document.forms["form1"].elements["del_button"].disabled = false;
     		}
     	}
-    	
+    // ]]>
     </script>
 </head>
 <body onload="doLoad()">
-<%@ include file="header.htm" %>
-<table border="0">
-    <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
-        <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Datasets"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
-            
-			<div style="margin-left:30">
-			
+                  <jsp:include page="nlocation.jsp" flush='true'>
+                  <jsp:param name="name" value="Datasets"/>
+                  <jsp:param name="back" value="true"/>
+                </jsp:include>
+    <%@ include file="nmenu.jsp" %>
+<div id="workarea">
+
 			<%
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
             
@@ -381,55 +377,47 @@
         	}
             %>
             
-			<form acceptcharset="UTF-8" id="form1" method="POST" action="datasets.jsp" onsubmit="setLocation()">
-			
-		<table width="700" border="0">
-		
-			<tr>
-				<td>
+				
+				<!-- search, restore, page help buttons -->
+				
+				<div style="float:right">
+					<a target="_blank" href="help.jsp?screen=datasets&amp;area=pagehelp" onclick="pop(this.href)"><img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/></a><br/>
+					<a href="search_dataset.jsp"><img src="images/search.jpg" border="0" alt="Search datasets"/></a><br/>
 					<%
-					if (!restore && wrkCopies){ %>
-						<font class="head00">Working copies of dataset definitions</font><%
-					}
-					else if (!restore){%>
-						<font class="head00">Datasets</font><%
-					}
-					else{%>
-						<font class="head00">Restore datasets</font><%
+					if (user!=null && user.isAuthentic() && !restore){%>
+						<a href="restore_datasets.jsp?SearchType=SEARCH&amp;restore=true">
+							<img src="images/restore.jpg" border="0" alt="Restore datasets"/>
+						</a><%
 					}
 					%>
-				</td>
-			</tr>
+				</div>
+					<%
+					if (!restore && wrkCopies){ %>
+						<h1>Working copies of dataset definitions</h1><%
+					}
+					else if (!restore){%>
+						<h1>Datasets</h1><%
+					}
+					else{%>
+						<h1>Restore datasets</h1><%
+					}
+					%>
+			
+		
 			
 			<%
 			if (user==null){ %>
-				<tr>	
-					<td class="barfont">
-		        		<br/>
+				<p>	
 		        		NB! For un-authenticated users dataset definitions whose Registration status<br/>
-		        		is not <i>Recorded</i> or <i>Released</i> are displayed as inacessible.
-			        </td>
-			    </tr><%
+		        		is not <em>Recorded</em> or <em>Released</em> are displayed as inacessible.
+			  </p><%
 		    }
 			%>
 			
-		</table>
-		
-		<table width="700" cellspacing="0" border="0" cellpadding="2">
-		
-			<%
-			// Set the colspan. Users with no edit rights must not see the CheckInNo
-			boolean userHasEditRights = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
-			int colSpan = userHasEditRights ? 5 : 3;
-			%>
-		
+			<form id="form1" method="POST" action="datasets.jsp" onsubmit="setLocation()">
 			<!-- the buttons part -->
-		
-			<tr>
-			
 				<!-- update buttons -->
-				
-				<td colspan="2" align="left" style="padding-bottom:5">
+				<div style="padding-bottom:5">
 					<%
 					if (user != null){
 						if (!wrkCopies && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>							
@@ -443,25 +431,22 @@
 						}
 					}
 					%>
-				</td>
-				
-				<!-- search, restore, page help buttons -->
-				
-				<td align="right" colspan="<%=String.valueOf(colSpan-2)%>">
-					<a target="_blank" href="help.jsp?screen=datasets&area=pagehelp" onclick="pop(this.href)"><img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/></a><br/>
-					<a href="search_dataset.jsp"><img src="images/search.jpg" border="0" alt="Search datasets"></a><br/>
-					<%
-					if (user!=null && user.isAuthentic() && !restore){%>
-						<a href="restore_datasets.jsp?SearchType=SEARCH&amp;restore=true">
-							<img src="images/restore.jpg" border="0" alt="Restore datasets">
-						</a><%
-					}
-					%>
-				</td>
-			</tr>
 		
+				</div>
+		
+		<table class="sortable" width="700" cellspacing="0" border="0" cellpadding="2">
+		
+			<%
+			// Set the colspan. Users with no edit rights must not see the CheckInNo
+			boolean userHasEditRights = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
+			int colSpan = userHasEditRights ? 5 : 3;
+			%>
+		
+		
+			
+				
 			<!-- the table itself -->
-		
+	   <thead>	
 			<tr>
 				<%
 				if (userHasEditRights){ %>
@@ -476,7 +461,7 @@
 			            <jsp:param name="title" value="Dataset"/>
 			            <jsp:param name="mapName" value="Dataset"/>
 			            <jsp:param name="sortColNr" value="1"/>
-			            <jsp:param name="help" value="help.jsp?screen=datasets&area=dataset"/>
+			            <jsp:param name="help" value="help.jsp?screen=datasets&amp;area=dataset"/>
 			        </jsp:include>
 				</th>
 				<%
@@ -488,8 +473,8 @@
 									<b>CheckInNo</b>
 								</td>
 								<td align="left" width="50%">
-									<a target="_blank" href="help.jsp?screen=dataset&area=check_in_no" onclick="pop(this.href)">
-										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+									<a target="_blank" href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href)">
+										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help" />
 									</a>
 								</td>
 							</tr>
@@ -502,24 +487,26 @@
 			            <jsp:param name="title" value="Status"/>
 			            <jsp:param name="mapName" value="Status"/>
 			            <jsp:param name="sortColNr" value="2"/>
-			            <jsp:param name="help" value="help.jsp?screen=dataset&area=regstatus"/>
+			            <jsp:param name="help" value="help.jsp?screen=dataset&amp;area=regstatus"/>
 			        </jsp:include>
 				</th>
-				<th width="40%" style="border-right: 1px solid #FF9900">
+				<th width="40%">
 					<table width="100%">
 						<tr>
 							<td align="right" width="50%">
 								<b>Tables</b>
 							</td>
 							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=datasets&area=tables" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								<a target="_blank" href="help.jsp?screen=datasets&amp;area=tables" onclick="pop(this.href)">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help" />
 								</a>
 							</td>
 						</tr>
 					</table>
 				</th>
 			</tr>
+      </thead>
+      <tbody>
 			
 			<%
 			
@@ -557,7 +544,7 @@
 					if (ds_name == null) ds_name = "unknown";
 					if (ds_name.length() == 0) ds_name = "empty";
 					
-					String dsLink = clickable ? "dataset.jsp?mode=view&ds_id=" + ds_id : "javascript:;";
+					String dsLink = clickable ? "dataset.jsp?mode=view&amp;ds_id=" + ds_id : "#";
 					
 					Vector tables = searchEngine.getDatasetTables(ds_id);
 					/*attributes = searchEngine.getAttributes(ds_id, "DS", DElemAttribute.TYPE_SIMPLE);
@@ -605,11 +592,12 @@
 					String statusImg   = "images/" + Util.getStatusImage(regStatus);
 					String statusTxt   = Util.getStatusRadics(regStatus);
 					String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+					String oddevenClass  = i % 2 != 0 ? "zebraodd" : "zebraeven";
 					
 					String alertReleased = regStatus.equals("Released") ? "onclick='alertReleased(" + ds_id + ")'" : "";
 					%>
 				
-					<tr valign="top">
+					<tr valign="top" class="<%=oddevenClass%>">
 						<%
 						if (delPrm){ %>
 							<td width="3%" align="right" class="<%=styleClass%>">
@@ -643,7 +631,7 @@
 									<%=dsVersion%><%
 								}
 								else{ %>
-									<a disabled href="javascript:;" style="text-decoration:none"><%=dsVersion%></a><%
+									<a disabled href="#" style="text-decoration:none"><%=dsVersion%></a><%
 								}
 								%>
 							</td><%
@@ -659,16 +647,16 @@
 							}
 							%>
 						</td>
-						<td width="45%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+						<td width="45%" class="<%=styleClass%>">
 							<%
 							for (int c=0; tables!=null && c<tables.size(); c++){
 				
 								DsTable table = (DsTable)tables.get(c);
 								String tableLink = clickable ?
-												   "dstable.jsp?mode=view&table_id=" +
-												   table.getID() + "&ds_id=" + ds_id +
-												   "&ds_name=" + ds_name :
-												   "javascript:;";
+												   "dstable.jsp?mode=view&amp;table_id=" +
+												   table.getID() + "&amp;ds_id=" + ds_id +
+												   "&amp;ds_name=" + ds_name :
+												   "#";
 								
 								String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
 			    															  table.getIdentifier(), "tbl");
@@ -699,10 +687,11 @@
 					<%
 				}
 				%>
-        	    <tr><td colspan="<%=String.valueOf(colSpan)%>">&#160;</td></tr>
-				<tr><td colspan="<%=String.valueOf(colSpan)%>">Total results: <%=datasets.size()%></td></tr><%
+		</tbody>	
+		</table>
+				<p>Total results: <%=datasets.size()%></p><%
 			}
-			else{
+			else {
 				
 				// No search - return from another result set or a total stranger...
                 c_SearchResultSet oResultSet=(c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
@@ -720,14 +709,15 @@
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                         
                         String linkDisabled = oEntry.clickable ? "" : "class=\"disabled\"";
-                        String dsLink = oEntry.clickable ? "dataset.jsp?mode=view&ds_id=" + oEntry.oID : "javascript:;";
+                        String dsLink = oEntry.clickable ? "dataset.jsp?mode=view&amp;ds_id=" + oEntry.oID : "#";
                         String statusImg = "images/" + Util.getStatusImage(oEntry.getRegStatus());
                         String statusTxt   = Util.getStatusRadics(oEntry.getRegStatus());
                         String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+					              String oddevenClass  = i % 2 != 0 ? "zebraodd" : "zebraeven";
                         String alertReleased = oEntry.getRegStatus().equals("Released") ? "onclick='alertReleased(" + oEntry.oID + ")'" : "";
                         
                         %>
-						<tr valign="top">
+						<tr valign="top" class="<%=oddevenClass%>">
 						
 							<%
 							if (oEntry.getDelPrm()){
@@ -764,13 +754,13 @@
 								%>
 							</td>
 							
-							<td width="45%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+							<td width="45%" class="<%=styleClass%>">
 								<%
 								Vector tables = oEntry.oTables;
 								for (int c=0; tables!=null && c<tables.size(); c++){
 				
 									DsTable table = (DsTable)tables.get(c);
-									String tableLink = oEntry.clickable ? "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + oEntry.oID + "&ds_name=" + oEntry.oShortName : "javascript:;";
+									String tableLink = oEntry.clickable ? "dstable.jsp?mode=view&amp;table_id=" + table.getID() + "&amp;ds_id=" + oEntry.oID + "&amp;ds_name=" + oEntry.oShortName : "#";
 									if (wrkCopies){ %>
 										<%=Util.replaceTags(table.getShortName())%><%
 									}
@@ -784,14 +774,13 @@
 					<%
 					}
                 	%>
-                	<tr><td colspan="<%=String.valueOf(colSpan)%>">&#160;</td></tr>
-					<tr><td colspan="<%=String.valueOf(colSpan)%>">Total results: <%=oResultSet.oElements.size()%></td></tr><%
+		</tbody>	
+		</table>
+					<p>Total results: <%=oResultSet.oElements.size()%></p><%
                 }
 
             }
 			%>
-			
-		</table>
 		
 		<input name="was_del_prm" type="hidden" value="<%=wasDelPrm%>"/>
 		<input type="hidden" name="searchUrl" value=""/>
@@ -799,7 +788,7 @@
 		
 		<input type="hidden" name="mode" value="view"/>
 		
-		<!-- Special input for 'delete' mode only. Inidcates if dataset(s) should be deleted completely. -->
+		<!-- Special input for 'delete' mode only. Indicates if dataset(s) should be deleted completely. -->
 		<input type="hidden" name="complete" value="false"/>
 		
 		<%
@@ -810,7 +799,7 @@
 		
 		</form>
 		
-		<form acceptcharset="UTF-8" name="sort_form" action="datasets.jsp" method="GET">
+		<form name="sort_form" action="datasets.jsp" method="get">
 			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
 	        <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
 			<input name='SearchType' type='hidden' value='NoSearch'/>
@@ -826,9 +815,6 @@
 			
 			</div>
 			
-		</td>
-</tr>
-</table>
 </body>
 </html>
 

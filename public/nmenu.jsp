@@ -30,11 +30,11 @@
 		
 		<%
 			if (SecurityUtil.hasPerm(_user.getUserName(), "/import", "x")){ %>
-					<a href="import.jsp">Import datasets</a> <%
+					<li><a href="import.jsp">Import datasets</a></li> <%
 			}
 
 			if (SecurityUtil.hasPerm(_user.getUserName(), "/cleanup", "x")){ %>
-				<a href="clean.jsp">Cleanup</a> <%
+				<li><a href="clean.jsp">Cleanup</a></li> <%
 			}
 		}
 		%>

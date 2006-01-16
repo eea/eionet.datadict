@@ -58,11 +58,15 @@
 	padding: 3px;
 	margin-top: 10px;
 	border: 1px dotted #C0C0C0;
+  border-radius: 5px; /* CSS3 */
+  -moz-border-radius: 5px; /* Mozilla */
 }
 
 #innerframe {
-	border: 1px solid #FF9900;
 	padding: 3px;
+	border: 1px solid #FF9900;
+  border-radius: 5px; /* CSS3 */
+  -moz-border-radius: 5px; /* Mozilla */
 }
 
 #pagefoot {
@@ -178,8 +182,6 @@ th {
 	font-style: normal; 
 	line-height: normal; 
 	font-weight: bold; 
-	color: #FFFFFF;
-	background: #10847B;
 	text-align: left;
 	text-decoration: none; 
 	padding:0em 1em;
@@ -503,6 +505,14 @@ th.selected {
 	border: 2px dashed gray;
 }
 
+/* Data tables have borders */
+table.datatable {
+  border-collapse: collapse;
+}
+.datatable td, .datatable th  {
+  border: 1px solid black;
+}
+
 /* styles for sortable tables */
 .sortable {
 	font-size: 1em;
@@ -510,8 +520,8 @@ th.selected {
 	border: 1px solid #10847B;
 }
 .sortable th {
-	background: #10847B;
-	border: 2px outset #999;
+	background: white;
+	border: 2px outset #cccccc;
 	margin:2px;
 	padding: 0;
 	white-space: nowrap;
@@ -521,13 +531,28 @@ th.selected {
 	display:block;
 	text-decoration: none;
 	font-weight: bold;
-	color: #FFFFFF;
+	color: black;
 	padding:1px 0.5em;
 }
 
 .sortable thead th a:hover {
-	color:white;
-	background: #3EA99F;
+	color:#333;
+}
+
+table.sortable tbody td {
+  border: 1px solid #c0c0c0;
+  border-collapse: collapse; /* Really should be on .sortable */
+}
+table.sortable tbody td a {
+  text-decoration: none;
+}
+/* Temporary start */
+table.sortable table tr td {
+  border: none;
+}
+/* Temporary end */
+tbody tr.zebraodd {
+  background-color: #CCCCCC;
 }
 
 /* Frontpage boxes */
@@ -568,6 +593,10 @@ th.selected {
 	background: url('images/empty.jpg') no-repeat left top;
 	border: none;
 	margin: 0px 3px 0px 0px;
+}
+
+a.disabled{
+  color:gray;
 }
 
 } /* screen media */
