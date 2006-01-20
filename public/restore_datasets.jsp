@@ -233,6 +233,7 @@
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
+		// <![CDATA[
 		function setLocation(){
 			var o = document.forms["form1"].searchUrl;
 			if (o!=null)
@@ -313,6 +314,7 @@
 	    		document.forms["form1"].elements["rst_button"].disabled = false;
     		}
     	}
+		// ]]>
     </script>
 </head>
 <body onload="doLoad()">

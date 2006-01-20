@@ -146,6 +146,7 @@ private String legalizeAlert(String in){
 	<script language="javascript" src='script.js'></script>
 	
 	<script language="javascript">
+	// <![CDATA[
 
 		function submitForm(mode){
 			
@@ -178,6 +179,7 @@ private String legalizeAlert(String in){
 			%>
 		}
 		
+	// ]]>
 	</script>
 <body onload="onLoad()">
 <%@ include file="header.htm" %>

@@ -16,6 +16,7 @@
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript">
+	// <![CDATA[
 
 	function submitForm(mode){
 		
@@ -81,6 +82,7 @@
 	function openStructure(url){
 		window.open(url,null,"height=600,width=800,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=yes,location=yes");
 	}
+	// ]]>
 	</script>
 </head>
 

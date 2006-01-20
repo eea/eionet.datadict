@@ -136,6 +136,7 @@ if (disabled.equals("")){
 <script language="javascript" src='script.js'></script>
 
 <script language="javascript">
+// <![CDATA[
 		function submitForm(mode){
 			
 			if (mode=="delete"){
@@ -146,6 +147,7 @@ if (disabled.equals("")){
 			document.forms["form1"].elements["mode"].value = mode;
 			document.forms["form1"].submit();
 		}
+// ]]>
 </script>
 	
 <body>

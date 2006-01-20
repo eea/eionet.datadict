@@ -127,6 +127,7 @@ private String legalizeAlert(String in){
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript" src='dynamic_table.js'></script>
 	<script language="javascript">
+	// <![CDATA[
 		function submitForm(mode){
 				
 			if (mode == "delete"){
@@ -177,7 +178,9 @@ private String legalizeAlert(String in){
 					return;
 			}
 			window.location=sUrl;
-		}	</script>
+		}
+		// ]]>
+		</script>
 <body onload="start()">
 <%@ include file="header.htm" %>
 <table border="0">

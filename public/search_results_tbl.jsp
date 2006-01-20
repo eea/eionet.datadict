@@ -131,6 +131,7 @@
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
 	<script language="javascript">
+	// <![CDATA[
 
 		function setLocation(){
 			var o = document.forms["form1"].searchUrl;
@@ -151,6 +152,7 @@
         		document.forms["sort_form"].submit();
     		}
 		}
+	// ]]>
 	</script>
 </head>
 <body>

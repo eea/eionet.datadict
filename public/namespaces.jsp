@@ -66,6 +66,7 @@
     <link type="text/css" rel="stylesheet" href="eionet.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
+		// <![CDATA[
 		function submitForm(){
 			
 			var b = confirm("This will delete all the namespaces you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
@@ -83,6 +84,7 @@
 				document.location.assign('namespace.jsp?mode=add');
 			}
 		}
+		// ]]>
     </script>
 </head>
 <body>

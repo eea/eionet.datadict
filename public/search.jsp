@@ -129,6 +129,7 @@ private String setDefaultAttrs(String name){
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
+		// <![CDATA[
 		attrWindow=null;
 
 		function submitForm(action){
@@ -196,6 +197,7 @@ private String setDefaultAttrs(String name){
 			}
 		}
 		
+	// ]]>
 	</script>
 </head>
 

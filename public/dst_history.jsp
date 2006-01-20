@@ -54,10 +54,12 @@
 	    <script language="javascript" src='script.js'></script>
 	</head>
 	<script language="javascript">
+	// <![CDATA[
 		function view(id){
 			window.opener.location="dataset.jsp?mode=view&ds_id=" + id;
 			window.close();
 		}
+	// ]]>
 	</script>
 <body class="popup">
 

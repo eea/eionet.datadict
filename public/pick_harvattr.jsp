@@ -69,12 +69,14 @@
 		<html>
 			<head>
 				<script language="javascript">
+				// <![CDATA[
 				var s = opener.document.forms["form1"].elements["reloadUrl"].value;
 				if (s!=null)
 					opener.location.assign(s);
 				else
 					opener.location.reload(true);
 				window.close();
+				// ]]>
 				</script>
 			</head>
 		</html>
@@ -105,6 +107,7 @@
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
 		<script language="javascript">
+		// <![CDATA[
 
 			function closeme(){
 				window.close();
@@ -138,6 +141,7 @@
 					alert("You have closed the main window.\n\nNo action will be taken on the choices in this dialog box.")
 				}
 			}
+		// ]]>
 		</script>
 	</head>
 

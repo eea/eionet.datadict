@@ -187,6 +187,7 @@
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
+		// <![CDATA[
     
 		function submitForm(mode){
 			
@@ -363,6 +364,7 @@
 			if (window.focus) {wHarvest.focus()}
 		}
 		
+		// ]]>
     </script>
 </head>
 <body onload="onLoad()">

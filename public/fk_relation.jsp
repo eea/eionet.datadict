@@ -94,6 +94,7 @@ String disabled = user == null ? "disabled" : "";
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
+		// <![CDATA[
     
 		function submitForm(mode){
 			
@@ -106,6 +107,7 @@ String disabled = user == null ? "disabled" : "";
 			document.forms["form1"].submit();
 		}
 		
+		// ]]>
     </script>
 </head>
 <body>

@@ -61,6 +61,7 @@ private String getAttributeIdByName(String name){
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
 		<script language="javascript">
+		// <![CDATA[
 			function selectAttr(id, oControl) {
 				if (opener && !opener.closed) {
 					window.opener.selAttr(id, 'add');
@@ -76,6 +77,7 @@ private String getAttributeIdByName(String name){
 			function closeme(){
 				window.close()
 			}
+		// ]]>
 		</script>
 	</head>
     <script language="javascript" for="window" event="onload">    	

@@ -51,6 +51,7 @@ Vector dataElements=null;
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript">
+	// <![CDATA[
 		function onLoad(){
 			<%
 			if (wc==false){
@@ -60,6 +61,7 @@ Vector dataElements=null;
 			}
 			%>
 		}
+	// ]]>
 	</script>
 </head>
 <body onload="onLoad()">

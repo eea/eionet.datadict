@@ -101,6 +101,7 @@
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
 		<script language="javascript">
+		// <![CDATA[
 			function pickTable(id, i, name) {
 				if (opener && !opener.closed) {
 					if (window.opener.pickTable(id, name)==true)  //window opener should have function pickTABLE with 2 params - tbl id & tbl name
@@ -120,6 +121,7 @@
 			function closeme(){
 				window.close()
 			}
+		// ]]>
 		</script>
 	</head>
     <script language="javascript" for="window" event="onload">    	

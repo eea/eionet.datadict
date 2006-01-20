@@ -179,6 +179,7 @@ private String legalizeAlert(String in){
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	    <script language="javascript" src='script.js'></script>
 	<script language="javascript">
+	// <![CDATA[
 			function submitForm(mode){
 				
 				if (mode == "delete"){
@@ -239,6 +240,7 @@ private String legalizeAlert(String in){
 		    	window.resizeTo(700, 600);
 			}
 			
+	// ]]>
 	</script>
 	</head>
 <body class="popup" onload="doLoad()">

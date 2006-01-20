@@ -48,6 +48,7 @@
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
 		<script language="javascript">
+		// <![CDATA[
 
 			function closeme(){
 				window.close()
@@ -77,6 +78,7 @@
 				}
 				closeme()
 			}
+		// ]]>
 		</script>
 	</head>
 

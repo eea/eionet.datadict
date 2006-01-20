@@ -13,6 +13,7 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	<script language="javascript">
+	// <![CDATA[
 	
 		function select(raID, raTitle,liID, liTitle){
 			window.opener.submitAdd(raID, raTitle,liID, liTitle);
@@ -26,6 +27,7 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
     	function resize(){
 	    	window.resizeTo(600, 600);
     	}
+	// ]]>
 	</script>
 </head>
 

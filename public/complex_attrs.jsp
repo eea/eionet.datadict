@@ -166,6 +166,7 @@ private String legalizeAlert(String in){
 	    <script language="javascript" src='script.js'></script>
 	</head>
 	<script language="javascript">
+	// <![CDATA[
 			function submitForm(mode){
 				
 				if (mode == "delete"){
@@ -217,6 +218,7 @@ private String legalizeAlert(String in){
 		    	window.resizeTo(700, 700);
 			}
 			
+	// ]]>
 	</script>
 <body class="popup" onload="load()">
 <div class="popuphead">

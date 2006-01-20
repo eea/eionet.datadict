@@ -120,6 +120,7 @@
     <link type="text/css" rel="stylesheet" href="eionet.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
+		// <![CDATA[
     
 		function submitForm(mode){
 			
@@ -180,6 +181,7 @@
 			}
 		}
 
+		// ]]>
     </script>
 </head>
 <body>

@@ -34,6 +34,7 @@
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript">
+	// <![CDATA[
 
 	function submitForm(){
 
@@ -88,6 +89,7 @@
 			document.forms["Upload"].submit();
 		}
 	}
+	// ]]>
 	</script>
 </head>
 <body>

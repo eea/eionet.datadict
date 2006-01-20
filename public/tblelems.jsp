@@ -217,6 +217,7 @@ int colCount = hasGIS ? 5 : 4;
 <script language="javascript" src='modal_dialog.js'></script>
 
 <script language="javascript">
+// <![CDATA[
 		function submitForm(mode){
 			
 			if (mode=="delete"){
@@ -412,6 +413,7 @@ int colCount = hasGIS ? 5 : 4;
 			return true;
 		}
 		
+// ]]>
 </script>
 	
 <body onload="start()">

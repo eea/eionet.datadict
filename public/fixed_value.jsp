@@ -175,6 +175,7 @@ try { // start the whole page try block
 	<script language="javascript" src='script.js'></script>
 	
 	<script language="javascript">
+	// <![CDATA[
 
 		function submitForm(mode){
 			
@@ -258,6 +259,7 @@ try { // start the whole page try block
 			%>
 		}
 			
+	// ]]>
 	</script>
 <body onload="onLoad()">
 <%@ include file="header.htm" %>

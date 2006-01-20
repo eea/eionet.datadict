@@ -74,6 +74,7 @@ ServletContext ctx = null;
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript">
+	// <![CDATA[
 		function deleteAttr(){
 				
 			document.forms["form1"].submit();
@@ -83,6 +84,7 @@ ServletContext ctx = null;
 			back = "<%=history.getBackUrl()%>";
 			document.location.assign(back);
 		}
+	// ]]>
 	</script>
 
 </head>

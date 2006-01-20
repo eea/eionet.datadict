@@ -18,6 +18,7 @@
 	<link type="text/css" rel="stylesheet" href="eionet.css">
 	<script language="javascript" src='script.js'></script>
 	<script language="javascript">
+	// <![CDATA[
 	
 		var idsCleared = false;
 		
@@ -51,6 +52,7 @@
 				document.forms["form1"].elements["rm_id"].disabled = true;
 			}
 		}
+	// ]]>
 	</script>
 </head>
 <body>

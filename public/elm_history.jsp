@@ -41,10 +41,12 @@
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	    <script language="javascript" src='script.js'></script>
 	<script language="javascript">
+	// <![CDATA[
 		function view(id){
 			window.opener.location="data_element.jsp?mode=view&delem_id=" + id;
 			window.close();
 		}
+	// ]]>
 	</script>
 	</head>
 <body class="popup">

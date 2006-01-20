@@ -56,6 +56,7 @@ try{
 			<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 			<script language="javascript" src='script.js'></script>
 			<script language="javascript">
+			// <![CDATA[
 				function submitAdd(raID, raTitle, liID, liTitle){
 					
 					document.forms["rodlinks"].elements["mode"].value = "add";
@@ -65,6 +66,7 @@ try{
 					document.forms["rodlinks"].elements["li_title"].value = liTitle;
 					document.forms["rodlinks"].submit();
 				}
+			// ]]>
 			</script>
 		</head>
 		<body>

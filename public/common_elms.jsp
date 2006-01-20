@@ -178,6 +178,7 @@
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
 	<script language="javascript">
+	// <![CDATA[
     	function showSortedList(clmn,ordr) {
     		if ((document.forms["sort_form"].elements["sort_column"].value != clmn)
        			|| (document.forms["sort_form"].elements["sort_order"].value != ordr)) {
@@ -213,6 +214,7 @@
 			<%
 		}
 		%>
+		// ]]>
     </script>
 </head>
 

@@ -442,6 +442,7 @@ String attrValue = null;
 <script language="javascript" src='script.js'></script>
 <script language="javascript" src='modal_dialog.js'></script>
 <script language="javascript">
+// <![CDATA[
     
 		function submitForm(mode){
 			
@@ -780,6 +781,7 @@ String attrValue = null;
 			
 			return true;
 		}
+// ]]>
 </script>
 
 <body>

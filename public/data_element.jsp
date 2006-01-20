@@ -547,6 +547,7 @@ private String legalizeAlert(String in){
     <script language="javascript" src='script.js'></script>
     <script language="javascript" src='modal_dialog.js'></script>
     <script language="javascript">
+		// <![CDATA[
     
     	function forceAttrMaxLen(){
 	    	var i = 0;
@@ -1064,6 +1065,7 @@ private String legalizeAlert(String in){
 			return true;
 		}
 				
+	// ]]>
 	</script>
 </head>
 
