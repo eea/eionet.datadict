@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private String currentUrl=null;%>
 
@@ -322,16 +323,20 @@ private Vector getValues(String id, String mode, Vector attributes){
 			String regStatus = dataset!=null ? dataset.getStatus() : null;
 			%>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css"/>
-    <script type="text/javascript" language="javascript" src='script.js'></script>
-    <script type="text/javascript" language="javascript" src='modal_dialog.js'></script>
-    <script type="text/javascript" language="javascript">
-    
+    <title>Dataset - Data Dictionary</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+<link type="text/css" rel="stylesheet" href="eionet_new.css"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <script type="text/javascript" src='script.js'></script>
+    <script type="text/javascript" src='modal_dialog.js'></script>
+    <script type="text/javascript">
+    // <![CDATA[
+
 		function deleteDatasetReady(){
 			document.forms["form1"].elements["mode"].value = "delete";
 			document.forms["form1"].submit();
@@ -668,40 +673,18 @@ private Vector getValues(String id, String mode, Vector attributes){
 			}<%
 		}
 		%>
-		
+   // ]]>
     </script>
 </head>
 <body>
-<%@ include file="header.htm" %>
-
-<table border="0">
-    <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
-        <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Dataset"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
-            
-			<div style="margin-left:30">
-						
-			<form acceptcharset="UTF-8" name="form1" id="form1" method="POST" action="dataset.jsp">
-			
+                  <jsp:include page="nlocation.jsp" flush='true'>
+                  <jsp:param name="name" value="Dataset"/>
+                  <jsp:param name="back" value="true"/>
+                </jsp:include>
+    <%@ include file="nmenu.jsp" %>
+<div id="workarea">
 				<%
-				if (!mode.equals("add")){ %>
-					<input type="hidden" name="ds_id" value="<%=ds_id%>"/><%
-				}
-				else { %>
-					<input type="hidden" name="dummy"/><%
-				}
-				
-				String topWorkingUser = null;
-				boolean topFree = false;
-				
+
 				String verb = "View";
 				if (mode.equals("add"))
 					verb = "Add";
@@ -709,16 +692,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 					verb = "Edit";
 					
 				%>
-				
-				<!--=======================-->
-				<!-- main table inside div -->
-				<!--=======================-->
-				
-				<table border="0" width="620" cellspacing="0" cellpadding="0">
-				
-					<!-- main table head -->
-					<tr>
-						<td colspan="2" align="right">
+			<div style="float:right">
 							<%
 							String hlpScreen = "dataset";
 							if (mode.equals("edit"))
@@ -729,15 +703,13 @@ private Vector getValues(String id, String mode, Vector attributes){
 							<a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)" target="_blank">
 								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 							</a>
-						</td>
-					</tr>
-	                <tr>
-						<td width="72%" height="40" class="head1">
-							<%=verb%> dataset definition
-						</td>
-						<td width="28%" height="40" align="right">
+      </div>
 						
+			<div style="clear:right; float:right">
 							<%
+							String topWorkingUser = null;
+							boolean topFree = false;
+				
 							if (mode.equals("view") && dataset!=null){
 								if (user!=null){
 									// set the flag indicating if the corresponding namespace is in use
@@ -770,19 +742,33 @@ private Vector getValues(String id, String mode, Vector attributes){
 								<span class="wrkcopy">Working copy</span><%
 							}
 							%>
-														
-						</td>
-	                </tr>
+      </div>
+							<h1><%=verb%> dataset definition</h1>
+						
+			<form name="form1" id="form1" method="post" action="dataset.jsp">
+			
+				<%
+				if (!mode.equals("add")){ %>
+					<input type="hidden" name="ds_id" value="<%=ds_id%>"/><%
+				}
+				else { %>
+					<input type="hidden" name="dummy"/><%
+				}
+				
+				%>
+				
+				<!--=======================-->
+				<!-- main table inside div -->
+				<!--=======================-->
+				
+				
 	                
 	                <!-- mandatory/optional/conditional bar -->
 	                
 	                <%
 					if (!mode.equals("view")){ %>
 					
-						<tr><td width="100%" height="10" colspan="2" ></td></tr>
-						<tr>
-							<td width="100%" class="mnd_opt_cnd" colspan="2" >
-								<table border="0" width="100%" cellspacing="0">
+								<table class="mnd_opt_cnd" border="0" width="100%" cellspacing="0" style="margin-top:10px; background: #ffffff; border:1px solid #FF9900">
 									<tr>
 										<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
 										<td width="17%">Mandatory</td>
@@ -790,15 +776,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 										<td width="15%">Optional</td>
 										<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
 										<td width="56%">Conditional</td>
-                            		</tr>
-		                            <tr>
+									</tr>
+									<tr>
 										<td width="100%" colspan="6">
 											<b>NB! Edits will be lost if you leave the page without saving!</b>
 										</td>
-		                            </tr>
-                          		</table>
-                        	</td>
-						</tr><%
+									</tr>
+								</table>
+						<%
 					}	
 					%>
 	                
@@ -806,9 +791,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 					
 					<%
 					if (mode.equals("add") || mode.equals("edit")){ %>					
-						<tr>
-							<tr><td width="100%" colspan="2" height="10"></td></tr>
-							<td width="100%" align="right" colspan="2">
+							<div style="margin-top:10px; text-align:right;" >
 							<%
 								// add case
 								if (mode.equals("add")){
@@ -835,39 +818,33 @@ private Vector getValues(String id, String mode, Vector attributes){
 									}
 								}
 							%>
-							</td>
-						</tr>
 						
 						<%
 						// update version checkbox
-						if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy() && editPrm && hasHistory){
+						if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy() && editPrm && hasHistory) {
 							%>
-							<tr>
-								<td align="right" class="smallfont_light" colspan="2">
+							<br/>
+								<span class="smallfont_light">
 									<%
 									if (!latestRegStatus.equals("Released")){ %>
-										<input type="checkbox" name="upd_version" value="true">
-											&nbsp;Update the definition's CheckInNo when checking in
-										</input><%
+										<input type="checkbox" id="upd_version" name="upd_version" value="true"/>
+											&nbsp;<label for="upd_version">Update the definition's CheckInNo when checking in
+										</label><%
 									}
 									else{ %>
-										<input type="checkbox" name="upd_version_DISABLED" checked="true" disabled="true">
-											&nbsp;Update the definition's CheckInNo when checking in
-										</input>
+										<input type="checkbox" id="upd_version" name="upd_version_DISABLED" checked="checked" disabled="disabled"/>
+											&nbsp;<label for="upd_version">Update the definition's CheckInNo when checking in</label>
 										<input type="hidden" name="upd_version" value="true"/><%
 									}
 									%>
-								</td>
-							</tr><%
-						}
+								</span>
+							<%
+						} %>
+						</div>
+						<%
 					}
 					%>
 	                
-	                <!-- main table body -->
-	                
-					<tr>
-						<td width="100%" colspan="2" height="10">
-							<table border="0" width="100%" cellspacing="0" cellpadding="3">
 		                    
 		                    	<!-- quick links -->
 		                    	
@@ -886,7 +863,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 			                    	
 			                    	request.setAttribute("quicklinks", quicklinks);
 			                    	%>
-		                    		<jsp:include page="quicklinks.jsp" flush="true">
+		                    		<jsp:include page="nquicklinks.jsp" flush="true">
 		                    		</jsp:include>
 						            <%
 								}
@@ -908,9 +885,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 									
 									if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispUploadAndCache || dispDocs){
 				                    	%>
-			                    		<tr><td width="100%" height="10"></td></tr>
-										<tr>
-											<td width="100%" style="border: 1px solid #FF9900">
+											<div style="border: 1px solid #FF9900; margin-top: 10px;">
 												<table border="0" width="100%" cellspacing="0">
 													
 													<%
@@ -1021,20 +996,18 @@ private Vector getValues(String id, String mode, Vector attributes){
 													}
 													%>
 												</table>
-											</td>
-										</tr><%
+									</div>
+										<%
 									}
 								}
 								%>
 								
 								<!-- start dotted -->
 								
-								<tr><td width="100%" height="10"></td></tr>
-								<tr>
-									<td width="100%" style="border: 1 dotted #C0C0C0">
-									
+									<div id="outerframe">
+
 										<!-- attributes -->
-										
+
 										<%
 										int displayed = 0;
 										int colspan = mode.equals("view") ? 3 : 4;
@@ -1043,8 +1016,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 										
 										String isOdd = Util.isOdd(displayed);
 										%>
-										
-										<table border="0" width="100%" cellspacing="0" cellpadding="3">
+
+										<table class="datatable">
 								  		
 								  			<!-- static attributes -->
 								  			
@@ -1084,7 +1057,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		
 								    		<!-- RegistrationStatus -->
 								    		
-								    		<tr>
+								    		<tr class="stribe<%=isOdd%>">
 												<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 													RegistrationStatus
 												</td>
@@ -1110,7 +1083,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 															Vector regStatuses = verMan.getRegStatuses();
 															for (int i=0; i<regStatuses.size(); i++){
 																String stat = (String)regStatuses.get(i);
-																String selected = stat.equals(regStatus) ? "selected" : ""; %>
+																String selected = stat.equals(regStatus) ? "selected='selected'" : ""; %>
 																<option <%=selected%> value="<%=stat%>"><%=stat%></option><%
 															} %>
 														</select><%
@@ -1125,9 +1098,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		<%
 								    		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
 								    		if (mode.equals("view") && jspUrlPrefix!=null){
-									    		String refUrl = jspUrlPrefix + "dataset.jsp?mode=view&ds_idf=" + dataset.getIdentifier();
+									    		String refUrl = jspUrlPrefix + "dataset.jsp?mode=view&amp;ds_idf=" + dataset.getIdentifier();
 									    		%>
-									    		<tr>
+								    		  <tr class="stribe<%=isOdd%>">
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 														Reference URL
 													</td>
@@ -1157,10 +1130,15 @@ private Vector getValues(String id, String mode, Vector attributes){
 												
 												String attrOblig = attribute.getObligation();
 												String obligImg  = "optional.gif";
-												if (attrOblig.equalsIgnoreCase("M"))
+												String obligTxt  = "optional";
+												if (attrOblig.equalsIgnoreCase("M")) {
 													obligImg = "mandatory.gif";
-												else if (attrOblig.equalsIgnoreCase("C"))
+													obligTxt  = "mandatory";
+												}
+												else if (attrOblig.equalsIgnoreCase("C")) {
 													obligImg = "conditional.gif";
+													obligTxt  = "conditional";
+												}
 												
 												if (!attribute.displayFor("DST")) continue;
 												
@@ -1185,7 +1163,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												
 												%>
 												
-												<tr>
+								    		<tr class="stribe<%=isOdd%>">
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 														<%=attribute.getShortName()%>
 													</td>
@@ -1197,14 +1175,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<%
 													if (colspan==4){%>
 														<td width="4%" class="simple_attr_help<%=isOdd%>">
-															<img border="0" src="images/<%=obligImg%>" width="16" height="16"/>
+															<img border="0" src="images/<%=obligImg%>" alt="<%=obligTxt%>" width="16" height="16"/>
 														</td><%
 													}
 													%>
 													
 													<!-- dynamic attribute value display -->
 													
-													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+													<td width="<%=valueWidth%>%" style="word-wrap:break-word;wrap-option: emergency" class="simple_attr_value<%=isOdd%>">
 														<%
 														
 														// if mode is 'view', display simple a text, otherwise an input						
@@ -1245,7 +1223,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																	<select class="small" name="hidden_attr_<%=attrID%>" style="display:none"> <%
 																		Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
 																		if (fxValues==null || fxValues.size()==0){ %>
-																			<option selected value=""></option> <%
+																			<option selected="selected" value=""></option> <%
 																		}
 																		else{
 																			for (int g=0; g<fxValues.size(); g++){
@@ -1261,7 +1239,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		<%
 																		Vector attrValues = searchEngine.getSimpleAttributeValues(attrID);
 																		if (attrValues==null || attrValues.size()==0){ %>
-																			<option selected value=""></option> <%
+																			<option selected="selected" value=""></option> <%
 																		}
 																		else{
 																			for (int g=0; g<attrValues.size(); g++){
@@ -1304,17 +1282,17 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		<%
 																		Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
 																		if (fxValues==null || fxValues.size()==0){ %>
-																			<option selected value=""></option> <%
+																			<option selected="selected" value=""></option> <%
 																		}
 																		else{
 																			boolean selectedByValue = false;
 																			for (int g=0; g<fxValues.size(); g++){
 																				FixedValue fxValue = (FixedValue)fxValues.get(g);
 																				
-																				String isSelected = (fxValue.getDefault() && !selectedByValue) ? "selected" : "";
+																				String isSelected = (fxValue.getDefault() && !selectedByValue) ? "selected='selected'" : "";
 																				
 																				if (attrValue!=null && attrValue.equals(fxValue.getValue())){
-																					isSelected = "selected";
+																					isSelected = "selected='selected'";
 																					selectedByValue = true;
 																				}
 																				
@@ -1355,11 +1333,11 @@ private Vector getValues(String id, String mode, Vector attributes){
 											
 											<%
 											if (!mode.equals("add") && editPrm){
-												String checkedPDF = dataset.displayCreateLink("PDF") ? "checked" : "";
-												String checkedXLS = dataset.displayCreateLink("XLS") ? "checked" : "";
-												String checkedXmlSchema = dataset.displayCreateLink("XMLSCHEMA") ? "checked" : "";
+												String checkedPDF = dataset.displayCreateLink("PDF") ? "checked='checked'" : "";
+												String checkedXLS = dataset.displayCreateLink("XLS") ? "checked='checked'" : "";
+												String checkedXmlSchema = dataset.displayCreateLink("XMLSCHEMA") ? "checked='checked'" : "";
 												%>
-									    		<tr>
+								    		  <tr class="stribe<%=isOdd%>">
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 														Public outputs
 													</td>
@@ -1378,26 +1356,26 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
 														<%
 														if(mode.equals("view")){ %>
-															<input type="checkbox" disabled="disabled" <%=checkedPDF%>>
+															<input type="checkbox" disabled="disabled" <%=checkedPDF%>/>
 																<span class="barfont">Technical specification in PDF format</span>
-															</input><br/>
-															<input type="checkbox" disabled="disabled" <%=checkedXLS%>>
+															<br/>
+															<input type="checkbox" disabled="disabled" <%=checkedXLS%>/>
 																<span class="barfont">MS Excel template</span>
-															</input><br/>
-															<input type="checkbox" disabled="disabled" <%=checkedXmlSchema%>>
+															<br/>
+															<input type="checkbox" disabled="disabled" <%=checkedXmlSchema%>/>
 																<span class="barfont">The definition on XML Schema format</span>
-															</input><%
+															<%
 														}
 														else{ %>
-															<input type="checkbox" name="disp_create_links" value="PDF" <%=checkedPDF%>>
+															<input type="checkbox" name="disp_create_links" value="PDF" <%=checkedPDF%>/>
 																<span class="barfont">Technical specification in PDF format</span>
-															</input><br/>
-															<input type="checkbox" name="disp_create_links" value="XLS" <%=checkedXLS%>>
+															<br/>
+															<input type="checkbox" name="disp_create_links" value="XLS" <%=checkedXLS%>/>
 																<span class="barfont">MS Excel template</span>
-															</input><br/>
-															<input type="checkbox" name="disp_create_links" value="XMLSCHEMA" <%=checkedXmlSchema%>>
+															<br/>
+															<input type="checkbox" name="disp_create_links" value="XMLSCHEMA" <%=checkedXmlSchema%>/>
 																<span class="barfont">The definition on XML Schema format</span>
-															</input><%
+															<%
 														}
 														%>
 													</td>
@@ -1411,7 +1389,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		// display only in non-add mode and for users with edit prm
 								    		if (!mode.equals("add") && editPrm){
 												String dstVersion = dataset.getVersion(); %>
-									    		<tr>
+								    		  <tr class="stribe<%=isOdd%>">
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 														CheckInNo
 													</td>
@@ -1437,7 +1415,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		%>
 								    		
 								    		<!-- Identifier -->
-								    		<tr>
+								    		<tr class="stribe<%=isOdd%>">
 												<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 													Identifier
 												</td>
@@ -1460,7 +1438,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														<input type="hidden" name="idfier" value="<%=idfier%>"/><%
 													}
 													else{ %>
-														<input class="smalltext" type="text" size="30" name="idfier"></input><%
+														<input class="smalltext" type="text" size="30" name="idfier"/><%
 													}
 													%>
 												</td>
@@ -1521,7 +1499,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														if (mode.equals("view") && dataset.getVisual()!=null){
 															
 															if (imgVisual){ %>
-																<a target="_blank" href="visuals/<%=dsVisual%>" onFocus="blur()" onclick="pop(this.href)">
+																<a target="_blank" href="visuals/<%=dsVisual%>" onfocus="blur()" onclick="pop(this.href)">
 																	<img src="visuals/<%=dsVisual%>" border="0" height="100px" width="100px"/>
 																</a><br/>
 																[Click thumbnail to view large version of the data model]<%
@@ -1599,9 +1577,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 																	
 																	String tableLink = "";
 																	if (latestRequested)
-																		tableLink = "dstable.jsp?mode=view&table_idf=" + table.getIdentifier() + "&pns=" + dataset.getNamespaceID();
+																		tableLink = "dstable.jsp?mode=view&amp;table_idf=" + table.getIdentifier() + "&amp;pns=" + dataset.getNamespaceID();
 																	else
-																		tableLink = "dstable.jsp?mode=view&table_id=" + table.getID();
+																		tableLink = "dstable.jsp?mode=view&amp;table_id=" + table.getID();
 											
 																	String tblName = "";
 																	attributes = searchEngine.getAttributes(table.getID(), "T", DElemAttribute.TYPE_SIMPLE);
@@ -1716,7 +1694,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													
 														// the link
 														if (mode.equals("edit") && user!=null){
-															String dstrodLink = "dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&dst_id=" + dataset.getID() + "&dst_name=" + dataset.getShortName();
+															String dstrodLink = "dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
 															%>
 															[Click <a href="<%=dstrodLink%>"><b>HERE</b></a> to manage the dataset's links to ROD]
 															<%
@@ -1891,19 +1869,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 										}
 										%>
 										
-									</td>
-								</tr>
+									</div>
 								<!-- end dotted -->
 								
-							</table>
-						</td>
-					</tr>
-					
-					<!-- end main table body -->
-					
-				</table>
 				
-				<!-- end main table -->
 				
 				
 				<!-- various hidden inputs -->
@@ -1911,13 +1880,13 @@ private Vector getValues(String id, String mode, Vector attributes){
 				<input type="hidden" name="mode" value="<%=mode%>"/>
 				<input type="hidden" name="check_in" value="false"/>
 				<input type="hidden" name="unlock" value="false"/>
-				<input type="hidden" name="changed" value="0">
-				<!-- Special input for 'delete' mode only. Inidcates if dataset(s) should be deleted completely. -->
+				<input type="hidden" name="changed" value="0"/>
+				<!-- Special input for 'delete' mode only. Indicates if dataset(s) should be deleted completely. -->
 				<input type="hidden" name="complete" value="false"/>
 				
 				<%
 				if (latestID!=null){%>
-					<input type="hidden" name="latest_id" value="<%=latestID%>"><%
+					<input type="hidden" name="latest_id" value="<%=latestID%>"/><%
 				}
 				%>
 				
@@ -1927,9 +1896,6 @@ private Vector getValues(String id, String mode, Vector attributes){
 			</jsp:include>
 			
 			</div>
-        </td>
-	</tr>
-</table>
 </body>
 </html>
 

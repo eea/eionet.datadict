@@ -58,15 +58,15 @@
 	padding: 3px;
 	margin-top: 10px;
 	border: 1px dotted #C0C0C0;
-  border-radius: 5px; /* CSS3 */
-  -moz-border-radius: 5px; /* Mozilla */
+  border-radius: 6px; /* CSS3 */
+  -moz-border-radius: 6px; /* Mozilla */
 }
 
 #innerframe {
 	padding: 3px;
 	border: 1px solid #FF9900;
-  border-radius: 5px; /* CSS3 */
-  -moz-border-radius: 5px; /* Mozilla */
+  border-radius: 6px; /* CSS3 */
+  -moz-border-radius: 6px; /* Mozilla */
 }
 
 #pagefoot {
@@ -76,6 +76,15 @@
 	padding-right: 2px;
 	font-family: Verdana, Arial, Helvetica, sans-serif; 
 	font-size: 0.8em;
+	text-align: center; 
+}
+
+/* Temporary */
+#footer {
+  margin-bottom: 1em;
+  font-family: Verdana, Arial, "MS Sans Serif", sans-serif;
+  font-size: 0.8em;
+  font-style: normal;
 	text-align: center; 
 }
 
@@ -510,7 +519,8 @@ table.datatable {
   border-collapse: collapse;
 }
 .datatable td, .datatable th  {
-  border: 1px solid black;
+  border: 1px solid #C0C0C0;
+  padding: 3px;
 }
 
 /* styles for sortable tables */
@@ -551,8 +561,13 @@ table.sortable table tr td {
   border: none;
 }
 /* Temporary end */
+
 tbody tr.zebraodd {
   background-color: #CCCCCC;
+}
+
+.datatable .odd {
+  background-color: #FFFFFF;
 }
 
 /* Frontpage boxes */

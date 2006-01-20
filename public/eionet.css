@@ -310,3 +310,12 @@ select.small {
 .error {
     font-style: bold;
 }
+/* Temporary */
+#footer {
+  margin-bottom: 1em;
+  font-family: Verdana, Arial, "MS Sans Serif", sans-serif;
+  font-size: 0.8em;
+  font-style: normal;
+  text-align: center;
+}
+
