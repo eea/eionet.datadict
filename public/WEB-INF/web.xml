@@ -135,6 +135,10 @@
 		<servlet-name>GetTableDef</servlet-name>
 		<servlet-class>eionet.meta.exports.xmlmeta.TblXmlMetaServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>MdbServlet</servlet-name>
+		<servlet-class>eionet.meta.exports.mdb.MdbServlet</servlet-class>
+	</servlet>
 
 <!-- servlet mappings -->
 
@@ -222,6 +226,10 @@
 		<servlet-name>GetTableDef</servlet-name>
 		<url-pattern>/GetTableDef</url-pattern>
 	</servlet-mapping>	
+	<servlet-mapping>
+		<servlet-name>MdbServlet</servlet-name>
+		<url-pattern>/GetMdb</url-pattern>
+	</servlet-mapping>
 
 <!-- the application server might allow directory listing.
        The welcome-files are used to overcome workings of such feature 

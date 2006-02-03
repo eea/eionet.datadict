@@ -878,6 +878,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 			                    	boolean dispAll = editPrm;
 			                    	boolean dispPDF = dataset!=null && dataset.displayCreateLink("PDF");
 									boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
+									boolean dispMDB = dataset!=null && dataset.displayCreateLink("MDB");
 									boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
 									boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
 									boolean dispUploadAndCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
@@ -939,6 +940,18 @@ private Vector getValues(String id, String mode, Vector attributes){
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a href="GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt="XLS icon"/></a>
+															</td>
+														</tr><%
+													}
+
+													// MS Access link
+													if (dispAll || dispMDB){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Create an MS Access template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a href="GetMdb?dstID=<%=ds_id%>"><img border="0" src="images/icon_mdb.jpg" width="16" height="18" alt="MDB icon"/></a>
 															</td>
 														</tr><%
 													}
@@ -1335,7 +1348,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 											if (!mode.equals("add") && editPrm){
 												String checkedPDF = dataset.displayCreateLink("PDF") ? "checked='checked'" : "";
 												String checkedXLS = dataset.displayCreateLink("XLS") ? "checked='checked'" : "";
-												String checkedXmlSchema = dataset.displayCreateLink("XMLSCHEMA") ? "checked='checked'" : "";
+												String checkedMDB = dataset.displayCreateLink("MDB") ? "checked='checked'" : "";
+												String checkedXmlSchema = dataset.displayCreateLink("XMLSCHEMA") ? "checked='checked'" : "";												
 												%>
 								    		  <tr class="stribe<%=isOdd%>">
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
@@ -1362,6 +1376,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 															<input type="checkbox" disabled="disabled" <%=checkedXLS%>/>
 																<span class="barfont">MS Excel template</span>
 															<br/>
+															<input type="checkbox" disabled="disabled" <%=checkedMDB%>/>
+																<span class="barfont">MS Access template</span>
+															<br/>
 															<input type="checkbox" disabled="disabled" <%=checkedXmlSchema%>/>
 																<span class="barfont">The definition on XML Schema format</span>
 															<%
@@ -1373,6 +1390,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 															<input type="checkbox" name="disp_create_links" value="XLS" <%=checkedXLS%>/>
 																<span class="barfont">MS Excel template</span>
 															<br/>
+															<input type="checkbox" name="disp_create_links" value="MDB" <%=checkedMDB%>/>
+																<span class="barfont">MS Access template</span>
+															<br/>															
 															<input type="checkbox" name="disp_create_links" value="XMLSCHEMA" <%=checkedXmlSchema%>/>
 																<span class="barfont">The definition on XML Schema format</span>
 															<%
