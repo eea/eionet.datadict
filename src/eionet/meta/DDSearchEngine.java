@@ -3966,7 +3966,22 @@ public class DDSearchEngine {
 		
 		return result;
 	}
+
+	/**
+	*
+	*/
+	public String getDatasetIdentifier(String dstID) throws SQLException {
 		
+		StringBuffer buf = new StringBuffer("select IDENTIFIER from DATASET where DATASET_ID=");
+		buf.append(dstID);
+		
+		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+		if (rs!=null && rs.next())
+			return rs.getString(1);
+		else
+			return null;
+	}
+			
     /**
     *
     */

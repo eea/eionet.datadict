@@ -241,7 +241,7 @@ public class Dataset {
 	 */
 	public boolean displayCreateLink(String linkID){
 
-		// if not a single create link should be displayed the obviously return false
+		// if not a single create link should be displayed then obviously return false
 		if (displayCreateLinks == 0) return false;
 
 		Hashtable weights = Dataset.getCreateLinkWeights();
@@ -265,6 +265,7 @@ public class Dataset {
 			createLinkWeights.put("XLS", new Integer(2));
 			createLinkWeights.put("XMLINST", new Integer(4));
 			createLinkWeights.put("XMLSCHEMA", new Integer(8));
+			createLinkWeights.put("MDB", new Integer(16));
 		}
 		
 		return createLinkWeights;
