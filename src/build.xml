@@ -6,16 +6,22 @@
 
   <target name="compile">
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${classes}"
+    <javac srcdir="${src}" destdir="${classes}" source="1.4"
 		classpath="../public/WEB-INF/lib/xmlserver.jar;
+		../public/WEB-INF/lib/castor.jar;
+		../public/WEB-INF/lib/jackcess-1.0.jar;
+		../public/WEB-INF/lib/itext-0.99.jar;
+		../public/WEB-INF/lib/commons-collections-3.0.jar;
+		../public/WEB-INF/lib/commons-lang-1.0.jar;
+		../public/WEB-INF/lib/commons-logging-api.jar;
 		../public/WEB-INF/lib/xerces.jar;
 		../public/WEB-INF/lib/pja.jar;
-		../public/WEB-INF/lib/itext-0.99.jar;
 		../public/WEB-INF/lib/eionet-dir.jar;
 		../public/WEB-INF/lib/uit-security.jar;
 		../public/WEB-INF/lib/uit-client.jar;
 		../public/WEB-INF/lib/uit-help.jar;
 		../public/WEB-INF/lib/log4j.jar;
+		../public/WEB-INF/lib/servlet.jar;
 		../public/WEB-INF/lib/poi-2.5-final-20040302.jar;
 		/var/lib/tomcat4/common/lib/[servletapi4].jar"/>
   </target>
