@@ -67,8 +67,8 @@ finally{
     <title>Data Dictionary</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
-    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
     <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
     <link type="text/css" rel="stylesheet" href="boxes.css"/>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
     <script type="text/javascript" src='script.js'></script>
