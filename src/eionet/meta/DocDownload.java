@@ -39,7 +39,15 @@ public class DocDownload extends HttpServlet{
 			if (!file.exists() || file.isDirectory())
 				throw new Exception("The file does not exist!");
 			
+			String fileName = file.getName();
+			if (fileName==null) fileName = "unknown.unknown";
+
 			res.setContentType(mimeType);
+
+			StringBuffer strBuf = new StringBuffer("attachment; filename=\"").
+			append(fileName).append("\"");
+			res.setHeader("Content-Disposition", strBuf.toString());
+			
 			writeFile(file, res);
 		}
 		catch (Exception e){
@@ -120,7 +128,8 @@ public class DocDownload extends HttpServlet{
 			mimeType = "text/xml";
 		else if (s.endsWith(".xsd"))
 			mimeType = "text/xml";
-
+		else if (s.endsWith(".mdb"))
+			mimeType = "application/vnd.ms-access";
 	}
 
 	private void guard(HttpServletRequest req) throws Exception{
@@ -148,5 +157,4 @@ public class DocDownload extends HttpServlet{
 			}
 		}
 	}
-
 }
