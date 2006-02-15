@@ -606,6 +606,8 @@ public class Util {
 			return "icon_xml.jpg";
 		else if (s.endsWith(".xsd"))
 			return "icon_xml.jpg";
+		else if (s.endsWith(".mdb"))
+			return "icon_mdb.jpg";		
 		else
 			return "icon_unknown.gif";
 	}
