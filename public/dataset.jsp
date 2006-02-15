@@ -948,10 +948,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 													if (dispAll || dispMDB){ %>
 														<tr>
 															<td width="73%" valign="middle" align="left">
-																Create an MS Access template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
+																Create validation metadata for MS Access template&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td width="27%" valign="middle" align="left">
-																<a href="GetMdb?dstID=<%=ds_id%>"><img border="0" src="images/icon_mdb.jpg" width="16" height="18" alt="MDB icon"/></a>
+																<a href="GetMdb?dstID=<%=ds_id%>&vmdonly=true"><img border="0" src="images/icon_mdb.jpg" width="16" height="18" alt="MDB icon"/></a>
 															</td>
 														</tr><%
 													}
@@ -981,7 +981,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														<tr>
 															<td width="73%" valign="middle" align="left"><%=title%></td>
 															<td width="27%" valign="middle" align="left">
-																<a target="_blank" href="DocDownload?file=<%=md5%>"><img border="0" src="images/<%=icon%>" width="16" height="18" alt="icon"/></a>
+																<a href="DocDownload?file=<%=md5%>"><img border="0" src="images/<%=icon%>" width="16" height="18" alt="icon"/></a>
 																<%
 																if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){
 																	%>&nbsp;<a target="_blank" href="DocUpload?delete=<%=md5%>&amp;idf=<%=dataset.getIdentifier()%>"><img border="0" src="images/delete.gif" width="14" height="14"/></a><%
@@ -1376,9 +1376,6 @@ private Vector getValues(String id, String mode, Vector attributes){
 															<input type="checkbox" disabled="disabled" <%=checkedXLS%>/>
 																<span class="barfont">MS Excel template</span>
 															<br/>
-															<input type="checkbox" disabled="disabled" <%=checkedMDB%>/>
-																<span class="barfont">MS Access template</span>
-															<br/>
 															<input type="checkbox" disabled="disabled" <%=checkedXmlSchema%>/>
 																<span class="barfont">The definition on XML Schema format</span>
 															<%
@@ -1390,9 +1387,6 @@ private Vector getValues(String id, String mode, Vector attributes){
 															<input type="checkbox" name="disp_create_links" value="XLS" <%=checkedXLS%>/>
 																<span class="barfont">MS Excel template</span>
 															<br/>
-															<input type="checkbox" name="disp_create_links" value="MDB" <%=checkedMDB%>/>
-																<span class="barfont">MS Access template</span>
-															<br/>															
 															<input type="checkbox" name="disp_create_links" value="XMLSCHEMA" <%=checkedXmlSchema%>/>
 																<span class="barfont">The definition on XML Schema format</span>
 															<%
