@@ -9,7 +9,7 @@
     <javac srcdir="${src}" destdir="${classes}" source="1.4"
 		classpath="../public/WEB-INF/lib/xmlserver.jar;
 		../public/WEB-INF/lib/castor.jar;
-		../public/WEB-INF/lib/jackcess-1.0.jar;
+		../public/WEB-INF/lib/jackcess-1.1.2.jar;
 		../public/WEB-INF/lib/itext-0.99.jar;
 		../public/WEB-INF/lib/commons-collections-3.0.jar;
 		../public/WEB-INF/lib/commons-lang-1.0.jar;

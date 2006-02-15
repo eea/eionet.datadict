@@ -37,6 +37,11 @@ public class MdbServlet extends HttpServlet {
 			if (dstID==null || dstID.length()==0)
 				throw new MdbException("Missing request parameter: dstID");
 
+			boolean vmdOnly = false;
+			String strVmdOnly = req.getParameter("vmdonly");
+			if (strVmdOnly!=null && strVmdOnly.equals("true"))
+				vmdOnly = true;
+
 			ServletContext ctx = getServletContext();
 			String filePath = ctx.getInitParameter("doc-path");
 			if (filePath==null)
@@ -48,11 +53,13 @@ public class MdbServlet extends HttpServlet {
 			DBPoolIF pool = XDBApplication.getDBPool();            
 			conn = pool.getConnection();
 			
-			file = Mdb.getCached(conn, dstID, filePath);
+			if (!vmdOnly)
+				file = Mdb.getCached(conn, dstID, filePath);
+				
 			if (file==null || !file.exists()){
 				cacheUsed = false;
 				String fullPath = filePath + dstID + "-" + req.getSession().getId() + ".mdb";
-				file = Mdb.getNew(conn, dstID, fullPath);
+				file = Mdb.getNew(conn, dstID, fullPath, vmdOnly);
 			}
 			
 			if (file==null || !file.exists())
@@ -61,7 +68,7 @@ public class MdbServlet extends HttpServlet {
 			os = res.getOutputStream();
 			in = new FileInputStream(file);
 			
-			String downloadFileName = Mdb.getFileNameFor(conn, dstID);
+			String downloadFileName = Mdb.getFileNameFor(conn, dstID, vmdOnly);
 			StringBuffer strBuf = new StringBuffer("attachment; filename=\"").
 			append(downloadFileName).append("\"");
 			res.setHeader("Content-Disposition", strBuf.toString());

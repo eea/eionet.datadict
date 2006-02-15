@@ -11,8 +11,6 @@ import eionet.meta.DDSearchEngine;
 import eionet.meta.exports.CachableIF;
 import eionet.util.*;
 
-import com.healthmarketscience.jackcess.DataTypes;
-
 /**
  * @author jaanus
  */
@@ -23,7 +21,7 @@ public class Mdb implements CachableIF {
 	
 	/** */
 	private static Hashtable mdbTypeMappings = null;
-	private static byte DEFAULT_MDB_TYPE = DataTypes.TEXT;
+	public static int DEFAULT_MDB_TYPE = Types.VARCHAR;
 	
 	/** */
 	private String cachePath = null;
@@ -58,6 +56,18 @@ public class Mdb implements CachableIF {
 	 */
 	public boolean isCached(String id) throws Exception {
 		throw new Exception("This method is not implemented");
+	}
+
+	/*
+	 * 
+	 */
+	public static File getUploaded(Connection conn, String dstID, String cachePath) throws Exception{
+		
+		if (conn==null) throw new MdbException("SQL connection not given");
+		if (dstID==null) throw new MdbException("Dataset ID not given");
+		if (cachePath==null) throw new MdbException("Cache path not given");
+		
+		return getCached(new DDSearchEngine(conn), dstID, cachePath);
 	}
 	
 	/*
@@ -97,11 +107,19 @@ public class Mdb implements CachableIF {
 				return file;
 		}
 	}
-	
+
 	/*
 	 * 
 	 */
 	public static File getNew(Connection conn, String dstID, String fullPath) throws Exception{
+		return Mdb.getNew(conn, dstID, fullPath, false);
+	}
+	
+	/*
+	 * 
+	 */
+	public static File getNew(Connection conn, String dstID, String fullPath, boolean vmdOnly)
+																					throws Exception{
 
 		if (conn==null) throw new MdbException("SQL connection not given");
 		if (dstID==null) throw new MdbException("Dataset ID not given");
@@ -119,10 +137,10 @@ public class Mdb implements CachableIF {
 		
 		File file = null;
 		if (!createInBackground)
-			file = MdbFile.create(conn, dstID, fullPath);
+			file = MdbFile.create(conn, dstID, fullPath, vmdOnly);			
 		else{
 			file = new File(fullPath);
-			createInBackground(dstID, fullPath);
+			createInBackground(dstID, fullPath, vmdOnly);
 		}
 		
 		if (file!=null && !file.exists())
@@ -130,11 +148,18 @@ public class Mdb implements CachableIF {
 		else
 			return file;
 	}
-	
+
 	/*
 	 * 
 	 */
 	private static void createInBackground(String dstID, String fullPath) throws Exception{
+		createInBackground(dstID, fullPath, false);
+	}	
+	/*
+	 * 
+	 */
+	private static void createInBackground(String dstID, String fullPath, boolean vmdOnly)
+																					throws Exception{
 		
 		String executable = Props.getProperty(PROP_EXECUTABLE);
 		if (executable==null) throw new MdbException("Could not get property: " + PROP_EXECUTABLE);
@@ -142,10 +167,11 @@ public class Mdb implements CachableIF {
 		if (dstID==null) throw new MdbException("Dataset ID not given");
 		if (fullPath==null) throw new MdbException("Full file path not given");
 		
-		String[] command = new String[3];
+		String[] command = new String[4];
 		command[0] = executable;
 		command[1] = dstID;
 		command[2] = fullPath;
+		command[3] = String.valueOf(vmdOnly);
 		
 		Process process = Runtime.getRuntime().exec(command);
 		
@@ -215,19 +241,19 @@ public class Mdb implements CachableIF {
 	/*
 	 * 
 	 */
-	public static String getFileNameFor(Connection conn, String dstID) throws Exception{
-		
+	public static String getFileNameFor(Connection conn, String dstID, boolean vmdOnly)
+																				throws Exception{		
 		if (conn==null) throw new MdbException("SQL connection not given");
 		if (dstID==null) throw new MdbException("Dataset ID not given");
 		
-		return getFileNameFor(new DDSearchEngine(conn), dstID);
+		return getFileNameFor(new DDSearchEngine(conn), dstID, vmdOnly);
 	}
 
 	/*
 	 * 
 	 */
-	public static String getFileNameFor(DDSearchEngine searchEgnine, String dstID) throws Exception{
-		
+	public static String getFileNameFor(DDSearchEngine searchEgnine, String dstID, boolean vmdOnly)
+																					throws Exception{		
 		if (searchEgnine==null) throw new MdbException("DDSearchEngine not given");
 		if (dstID==null) throw new MdbException("Dataset ID not given");
 		
@@ -238,6 +264,8 @@ public class Mdb implements CachableIF {
 		else
 			result.append(dstIdf);
 		
+		if (vmdOnly) result.append(" - VALIDATION METADATA");
+		
 		result.append(".mdb");
 		return result.toString();
 	}
@@ -245,14 +273,21 @@ public class Mdb implements CachableIF {
 	/*
 	 * 
 	 */
-	public static byte getMdbType(String elmDataType){
+	public static int getVmdColumnType(String vmdColumnName){
+		return Types.VARCHAR;
+	}
+	
+	/*
+	 * 
+	 */
+	public static int getMdbType(String elmDataType){
 		
 		if (elmDataType==null) return DEFAULT_MDB_TYPE;
 		if (mdbTypeMappings==null) initElmTypeMappings();
 		
-		Byte b = (Byte)mdbTypeMappings.get(elmDataType);
-		if (b!=null)
-			return b.byteValue();
+		Integer integer = (Integer)mdbTypeMappings.get(elmDataType);
+		if (integer!=null)
+			return integer.intValue();
 		else
 			return DEFAULT_MDB_TYPE;
 	}
@@ -264,10 +299,10 @@ public class Mdb implements CachableIF {
 		
 		mdbTypeMappings = new Hashtable();
 		
-		mdbTypeMappings.put("string", new Byte(DataTypes.TEXT));
-		mdbTypeMappings.put("boolean", new Byte(DataTypes.BOOLEAN));
-		mdbTypeMappings.put("integer", new Byte(DataTypes.INT));
-		mdbTypeMappings.put("date", new Byte(DataTypes.TEXT));
-		mdbTypeMappings.put("float", new Byte(DataTypes.FLOAT));
+		mdbTypeMappings.put("string", new Integer(Types.VARCHAR));
+		mdbTypeMappings.put("boolean", new Integer(Types.BOOLEAN));
+		mdbTypeMappings.put("integer", new Integer(Types.INTEGER));
+		mdbTypeMappings.put("date", new Integer(Types.DATE));
+		mdbTypeMappings.put("float", new Integer(Types.FLOAT));
 	}
 }
