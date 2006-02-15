@@ -50,27 +50,29 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 <p class="head00">Upload document</p>
 <p>
 This is a function enabling you to upload documents relevant to the given dataset.
-Data Dictionary recognizes the following document types: <b>doc, rtf, xls, ppt, zip, txt, html</b>.
-However, you can upload any other types of files as well. Data Dictionary will simply display
-their type as unknown. Whatever is the type of the file you upload, it can later be downloaded.
+Data Dictionary recognizes the following document types: <b>doc, rtf, xls, ppt, mdb, zip, txt, html</b>.
+However, you can upload any other types of files as well. Their type will simply be displayed as
+unknown. But whatever is the type of the file you upload, it can later be downloaded.
 </p>
 				
 <form acceptcharset="UTF-8" name="form1" action="DocUpload" method="POST" enctype="multipart/form-data">
 
-	<table width="500" cellspacing="0">
+	<table width="660" cellspacing="0">
 		<tr>
+			<td class="head0">Location:</td>
 			<td align="left">
 				<input type="file" name="file" size="40"/>
 			</td>
 		</tr>
 		<tr>
+			<td class="head0">Title:</td>
 			<td align="left">
-				<input type="text" class="smalltext" name="title" size="40"/>
+				<input type="text" class="smalltext" name="title" size="40"/><span class="smallfont_light">(if left empty, file name will serve as title)</span>
 			</td>
 		</tr>
-		<tr height="10"><td></td></tr>
+		<tr height="10"><td colspan="2"></td></tr>
 		<tr>
-			<td align="left">
+			<td align="left" colspan="2">
 				<input type="button" class="mediumbuttonb" value="Upload" onclick="submitForm()"/>&#160;&#160;
 				<input type="reset"  class="mediumbuttonb" value="Clear"/>
 			</td>
