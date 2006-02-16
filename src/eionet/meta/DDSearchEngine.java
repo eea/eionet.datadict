@@ -3190,9 +3190,9 @@ public class DDSearchEngine {
 
 		PreparedStatement pstmt = conn.prepareStatement(q);
 		
-		Enumeration enum = harvAttrs.keys();
-		while (enum.hasMoreElements()){
-			String md5key = (String)enum.nextElement();
+		Enumeration enumer = harvAttrs.keys();
+		while (enumer.hasMoreElements()){
+			String md5key = (String)enumer.nextElement();
 			String harvAttrID = (String)harvAttrs.get(md5key);
 			
 			Hashtable hash = new Hashtable();
