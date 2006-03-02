@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!final static String POPUP="popup";%>
 
@@ -122,13 +123,16 @@ private String setDefaultAttrs(String name){
 
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="javascript" src='script.js'></script>
-    <script language="javascript">
+    <title>Search elements - Data Dictionary</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <script type="text/javascript" src='script.js'></script>
+    <script type="text/javascript" language="javascript">
 		// <![CDATA[
 		attrWindow=null;
 
@@ -204,36 +208,23 @@ private String setDefaultAttrs(String name){
 <%
 if (contextParam == null || !contextParam.equals(POPUP)){ %>
 	<body onfocus="checkalert()" onload="onLoad()">
-	<%@ include file="header.htm" %><%
+	<%
 }
 else{ %>
 	<body class="popup" onload="onLoad()"> <%
 }
 %>
 
-<table border="0">
-    <tr valign="top">
 		<%
 			if (contextParam == null || !contextParam.equals(POPUP)){
 		%>
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
+                  <jsp:include page="nlocation.jsp" flush='true'>
+                  <jsp:param name="name" value="Search dataelements"/>
+                  <jsp:param name="back" value="true"/>
+                </jsp:include>
+    <%@ include file="nmenu.jsp" %>
 		<%
-		}
-		%>
-        <td>
-        
-        	<%
-			if (contextParam == null || !contextParam.equals(POPUP)){ %>
-	            <jsp:include page="location.jsp" flush='true'>
-	                <jsp:param name="name" value="Search"/>
-	                <jsp:param name="back" value="true"/>
-	            </jsp:include> <%
-			}
-			else{ %>
+		} else{ %>
 				<div class="popuphead">
 					<h1>Data Dictionary</h1>
 					<hr/>
@@ -241,20 +232,14 @@ else{ %>
 			}	
 			%>
 			
-			<div style="margin-left:30">
-				<form acceptcharset="UTF-8" name="form1" action="search_results.jsp" method="GET">
-				
-				<table width="520">
-					<tr>
-						<td><font class="head00">Search for a data element definition</font></td>
-						<td align="right">
-							<a target="_blank" href="help.jsp?screen=search_element&area=pagehelp" onclick="pop(this.href)">
+			<div id="workarea">
+				<div style="width:200px; float: right">
+							<a target="_blank" href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href)">
 								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 							</a>
-						</td>
-					</tr>
-					<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-				</table>
+				</div>
+				<h1>Search for a data element definition</h1>
+				<form acceptcharset="UTF-8" name="form1" action="search_results.jsp" method="get">
 				
 				<table width="auto" cellspacing="0" border="0">
 
@@ -263,8 +248,8 @@ else{ %>
 							<b>Type</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=element&area=type" onclick="pop(this.href)">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href)">
+								<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -289,8 +274,8 @@ else{ %>
 								<b>Dataset</b>
 							</td>
 							<td>
-								<a target="_blank" href="help.jsp?screen=table&area=dataset" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href)">
+									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 								</a>
 							</td>
 							<td colspan="2">
@@ -318,8 +303,8 @@ else{ %>
 							<b>Short name</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
+								<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -332,8 +317,8 @@ else{ %>
 							<b>Identifier</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&area=identifier" onclick="pop(this.href)">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
+								<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -366,7 +351,7 @@ else{ %>
 								<span class="mainfont"><b>Language</b></span>
 							</td>
 							<td align="right" style="padding-right:10">
-								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>&#160;
+								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"><img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/></a>&#160;
 							</td>
 							<td colspan="2">
 								<select name="attr_<%=attrID%>" class="small">
@@ -454,7 +439,7 @@ else{ %>
 									</td>
 									<td>
 										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+											<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 										</a>
 									</td>
 									<td colspan="2">
@@ -486,7 +471,7 @@ else{ %>
 								</td>
 								<td>
 									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 									</a>
 								</td>
 								<td>
@@ -512,7 +497,7 @@ else{ %>
 								</td>
 								<td>
 									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 									</a>
 								</td>
 								<td>
@@ -530,9 +515,9 @@ else{ %>
 					<tr valign="bottom">
 						<td width="150" colspan="2">&nbsp;</td>
                 		<td colspan="2" class="smallfont_light">
-                			<input type="radio" name="search_precision" value="substr" checked="checked">Substring search</input>
-                			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
-                			<input type="radio" name="search_precision" value="free">Free text search</input>&#160;&#160;
+                			<input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked"/><label for="ssubstr">Substring search</label>
+                			<input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>&#160;&#160;
+                			<input type="radio" name="search_precision" id="sfree" value="free"/><label for="sfree">Free text search</label>&#160;&#160;
                 		</td>
                     </tr>
                     
@@ -544,8 +529,8 @@ else{ %>
 						<tr>
 							<td colspan="2">&nbsp;</td>
 							<td colspan="2" align="left" class="smallfont_light">
-								<input type="radio" name="common" value="false" checked="checked">Non-common elements</input>
-								<input type="radio" name="common" value="true">Common elements</input>
+								<input type="radio" name="common" value="false" id="snoncom" checked="checked"/><label for="snoncom">Non-common elements</label>
+								<input type="radio" name="common" id="scom" value="true"/><label for="scom">Common elements</label>
 							</td>
 						</tr><%
 					}
@@ -622,12 +607,12 @@ else{ %>
 				<%
 				}
 				%>
-				<input type="hidden" name="sel_attr" value=""></input>			
-				<input type="hidden" name="sel_type" value=""></input>
+				<input type="hidden" name="sel_attr" value=""/>
+				<input type="hidden" name="sel_type" value=""/>
 				
 				<!-- collect all the attributes already used in criterias -->
 				
-				<input type="hidden" name="collect_attrs" value="<%=collect_attrs.toString()%>"></input>
+				<input type="hidden" name="collect_attrs" value="<%=collect_attrs.toString()%>"/>
                 <input name='SearchType' type='hidden' value='SEARCH'/>
                 <input name="ctx" type="hidden" value="<%=contextParam%>"/>
                 
@@ -655,9 +640,6 @@ else{ %>
                 
 				</form>
 			</div>
-        </td>
-</tr>	
-</table>
 </body>
 </html>
 
