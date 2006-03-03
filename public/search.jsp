@@ -233,10 +233,10 @@ else{ %>
 			%>
 			
 			<div id="workarea">
-				<div style="width:200px; float: right">
-							<a target="_blank" href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href)">
-								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-							</a>
+				<div id="operations">
+					<ul>
+							<li><a target="_blank" href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href)" title="Get some help on this page">Page help</a></li>
+					</ul>
 				</div>
 				<h1>Search for a data element definition</h1>
 				<form acceptcharset="UTF-8" name="form1" action="search_results.jsp" method="get">

@@ -380,16 +380,16 @@
 				
 				<!-- search, restore, page help buttons -->
 				
-				<div style="float:right">
-					<a target="_blank" href="help.jsp?screen=datasets&amp;area=pagehelp" onclick="pop(this.href)"><img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/></a><br/>
-					<a href="search_dataset.jsp"><img src="images/search.jpg" border="0" alt="Search datasets"/></a><br/>
+				<div id="operations">
+				<ul>
+					<li><a target="_blank" href="help.jsp?screen=datasets&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+					<li><a href="search_dataset.jsp" title="Search datasets">Search</a></li>
 					<%
 					if (user!=null && user.isAuthentic() && !restore){%>
-						<a href="restore_datasets.jsp?SearchType=SEARCH&amp;restore=true">
-							<img src="images/restore.jpg" border="0" alt="Restore datasets"/>
-						</a><%
+						<li><a href="restore_datasets.jsp?SearchType=SEARCH&amp;restore=true" title="Restore datasets">Restore</a></li><%
 					}
 					%>
+				</ul>
 				</div>
 					<%
 					if (!restore && wrkCopies){ %>
@@ -414,7 +414,7 @@
 		    }
 			%>
 			
-			<form id="form1" method="POST" action="datasets.jsp" onsubmit="setLocation()">
+			<form id="form1" method="post" action="datasets.jsp" onsubmit="setLocation()">
 			<!-- the buttons part -->
 				<!-- update buttons -->
 				<div style="padding-bottom:5">

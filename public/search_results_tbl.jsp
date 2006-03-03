@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
@@ -124,13 +125,16 @@
 	boolean wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;	
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="javascript" src='script.js'></script>
-	<script language="javascript">
+	<title>Table - Data Dictionary</title>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+	<link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+	<link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+	<script type="text/javascript" src='script.js'></script>
+	<script type="text/javascript" language="javascript">
 	// <![CDATA[
 
 		function setLocation(){
@@ -156,28 +160,25 @@
 	</script>
 </head>
 <body>
-<%@ include file="header.htm" %>
-<table border="0">
-    <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
-        <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Search results"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
-            
-			<div style="margin-left:30">
+	<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:param name="name" value="Search results"/>
+		<jsp:param name="back" value="true"/>
+	</jsp:include>
+	<%@ include file="nmenu.jsp" %>
+
+		<div id="workarea">
 			
             
-			<form acceptcharset="UTF-8" id="form1" method="POST" action="search_results_tbl.jsp" onsubmit="setLocation()">
+				<!-- search buttons -->
+				
+				<div id="operations">
+					<ul>
+					<li><a target="_blank" href="help.jsp?screen=tables&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+					<li><a href="search_table.jsp">Search</a></li>
+					</ul>
+				</div>
 			
-		<table width="700" cellspacing="0">
-			<tr>
-				<td class="head00">
+			<h1>
 					<%
 					if (wrkCopies){ %>
 						Working copies of table definitions<%
@@ -186,25 +187,19 @@
 						Dataset tables<%
 					}
 					%>
-				</td>
-			</tr>
-			<tr><td>&nbsp;</td></tr>
+			</h1>
 			<%
 			if (user==null){ %>
-				<tr>	
-					<td class="barfont">
-		        		<br/><br/>
+				<p>	
     		    		NB! For un-authenticated users the definitions from datasets whose Registration status
-    		    		is not <i>Recorded</i> or <i>Released</i> are not listed.<br/>
+    		    		is not <em>Recorded</em> or <em>Released</em> are not listed.<br/>
     		    		To see which datasets have such a Registration status, go to the
     		    		<a href="datasets.jsp?SearchType=SEARCH">datasets list</a>.
-			        </td>
-			    </tr><%
+				</p><%
 		    }
 			%>
-			<tr><td>&nbsp;</td></tr>
-		</table>
 		
+		<form acceptcharset="UTF-8" id="form1" method="post" action="search_results_tbl.jsp" onsubmit="setLocation()">
 		
 		<table width="700" cellspacing="0" border="0" cellpadding="2">
 		
@@ -214,7 +209,7 @@
 			
 				<!-- update buttons -->
 				
-				<td colspan="2" align="left" style="padding-bottom:5">
+				<td colspan="2" align="left" style="padding-bottom:5px">
 					<%
 					boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
 					if (dstPrm){ %>
@@ -224,16 +219,6 @@
 					%>					
 				</td>
 				
-				<!-- search buttons -->
-				
-				<td align="right" colspan="1">
-					<a target="_blank" href="help.jsp?screen=tables&area=pagehelp" onclick="pop(this.href)">
-						<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page">
-					</a>
-					<a href="search_table.jsp">
-						<img src="images/search.jpg" border="0" alt="Search tables">
-					</a>
-				</td>
 			</tr>
 			
 			<!-- the table itself -->
@@ -478,10 +463,6 @@
 		
 			</div>
 			
-		</td>
-</tr>
-</table>
-</body>
 </html>
 
 <%
