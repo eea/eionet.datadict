@@ -486,6 +486,7 @@ public class DataElementHandler extends BaseHandler {
             	String origID = rs.getString("IDENTIFIER");
             	String pns = rs.getString("PARENT_NS");
             	if (!Util.nullString(pns)) origID = origID + "," + pns;
+            	originals.add(origID);
             	// remember the top ns
             	if (!elmCommon) topns.add(rs.getString("DATAELEM.TOP_NS"));
             }
