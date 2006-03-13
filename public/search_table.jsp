@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!final static String POPUP="popup";%>
 
@@ -121,13 +122,16 @@ private String setDefaultAttrs(String name){
 
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="javascript" src='script.js'></script>
-    <script language="javascript">
+    <title>Search tables - Data Dictionary</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <script type="text/javascript" src='script.js'></script>
+    <script type="text/javascript" language="javascript">
 		// <![CDATA[
 		attrWindow=null;
 
@@ -179,35 +183,23 @@ private String setDefaultAttrs(String name){
 <%
 if (contextParam == null || !contextParam.equals(POPUP)){ %>
 	<body onfocus="checkalert()" onload="onLoad()">
-	<%@ include file="header.htm" %> <%
+<%
 }
 else { %>
 	<body class="popup" onload="onLoad()">
 <%
 }
 %>
-<table border="0">
-    <tr valign="top">
 		<%
 			if (contextParam == null || !contextParam.equals(POPUP)){
 		%>
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
+                  <jsp:include page="nlocation.jsp" flush='true'>
+                  <jsp:param name="name" value="Search"/>
+                  <jsp:param name="back" value="true"/>
+                </jsp:include>
+    <%@ include file="nmenu.jsp" %>
 		<%
 		}
-		%>
-        <td>
-			<%
-			if (contextParam == null || !contextParam.equals(POPUP)){ %>
-			
-	            <jsp:include page="location.jsp" flush='true'>
-	                <jsp:param name="name" value="Search"/>
-	                <jsp:param name="back" value="true"/>
-	            </jsp:include> <%
-			}
 			else{ %>
 			
 				<div class="popuphead">
@@ -217,31 +209,25 @@ else { %>
 			}	
 			%>
 			
-			<div style="margin-left:30">
-            
-				<form acceptcharset="UTF-8" name="form1" action="search_results_tbl.jsp" method="GET">
-				<table width="500">
-					<tr>
-						<td><font class="head00">Search for a dataset table definition</font></td>
-						<td align="right">
-							<a target="_blank" href="help.jsp?screen=search_table&area=pagehelp" onclick="pop(this.href)">
-								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-							</a>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td>
-					</tr>
-				</table>
+				<div id="workarea">
+
+        <div id="operations">
+          <ul>
+              <li><a target="_blank" href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href)" title="Get some help on this page">Page help</a></li>
+          </ul>
+        </div>
+
+				<h1>Search for a dataset table definition</h1>
+				<form name="form1" action="search_results_tbl.jsp" method="get"
+ style="border-top:#008B8B solid 1pt;">
 				
 				<table width="auto" cellspacing="0">
-				
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
 							<b>Short name</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>
@@ -255,7 +241,7 @@ else { %>
 							<b>Identifier</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&area=identifier" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
 							</a>
 						</td>
@@ -378,9 +364,9 @@ else { %>
                     <tr valign="bottom">
                 		<td width="150" colspan="2">&#160;</td>
                     	<td colspan="2">
-                			<input type="radio" name="search_precision" value="substr" checked="checked">Substring search</input>
-                			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
-                			<input type="radio" name="search_precision" value="free">Free text search</input>&#160;&#160;
+                			<input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked"/><label for="ssubstr">Substring search</label>
+                			<input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>&#160;&#160;
+                			<input type="radio" name="search_precision" id="sfree" value="free"/><label for="sfree">Free text search</label>&#160;&#160;
                 		</td>
                     </tr>
                     
@@ -442,17 +428,14 @@ else { %>
 				%>
 				
 				
-				<input type="hidden" name="sel_attr" value=""></input>			
-				<input type="hidden" name="sel_type" value=""></input>
-				<input type="hidden" name="type" value="TBL"></input>
+				<input type="hidden" name="sel_attr" value=""/>			
+				<input type="hidden" name="sel_type" value=""/>
+				<input type="hidden" name="type" value="TBL"/>
                 <input name='SearchType' type='hidden' value='SEARCH'/>
 				<!-- collect all the attributes already used in criterias -->
-				<input type="hidden" name="collect_attrs" value="<%=collect_attrs.toString()%>"></input>
+				<input type="hidden" name="collect_attrs" value="<%=collect_attrs.toString()%>"/>
 				</form>
 			</div>
-        </td>
-</tr>
-</table>
 </body>
 </html>
 
