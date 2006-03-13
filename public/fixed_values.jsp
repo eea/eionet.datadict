@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private Vector fixedValues=null;%>
 <%!private String mode=null;%>
@@ -149,7 +150,7 @@ private String legalizeAlert(String in){
 			//find parent url from history
 			String parentUrl="";
 			if (parent_type.equals("elem")){
-				parentUrl="data_element.jsp?mode=view&delem_id="+delem_id;
+				parentUrl="data_element.jsp?mode=view&amp;delem_id="+delem_id;
 				if (history!=null){
 					String elemUrl = history.getLastMatching("data_element.jsp");
 				
@@ -158,7 +159,7 @@ private String legalizeAlert(String in){
 				}
 			}
 			else{
-				parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&type=SIMPLE&mode=" + mode;
+				parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&amp;type=SIMPLE&amp;mode=" + mode;
 				if (history!=null){
 					String attrUrl = history.getLastMatching("delem_attribute.jsp");
 				
@@ -168,15 +169,17 @@ private String legalizeAlert(String in){
 			}
 			%>
 
-<html>
-	<head>
-		<title>Meta</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	</head>
-	
-	<script language="javascript" src='script.js'></script>
-	<script language="javascript">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>Data Dictionary - Fixed values</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+    <link type="text/css" rel="stylesheet" href="boxes.css"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <script type="text/javascript" src='script.js'></script>
+	<script type="text/javascript">
 	// <![CDATA[
 	
 		function submitForm(mode){
@@ -232,61 +235,37 @@ private String legalizeAlert(String in){
 		}
 	// ]]>
 	</script>
-	
+</head>
 <body>
-<%@ include file="header.htm" %>
-<table border="0">
-    <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
-        <td>
         	<%
         	if (valsType.equals("CH1")){ %>
-	            <jsp:include page="location.jsp" flush='true'>
+	            <jsp:include page="nlocation.jsp" flush='true'>
 	                <jsp:param name="name" value="Allowable values"/>
 	                <jsp:param name="back" value="true"/>
 	            </jsp:include><%
             }
             else{ %>
-            	<jsp:include page="location.jsp" flush='true'>
+            	<jsp:include page="nlocation.jsp" flush='true'>
 	                <jsp:param name="name" value="Suggested values"/>
 	                <jsp:param name="back" value="true"/>
 	            </jsp:include><%
         	}
         	%>
             
-<div style="margin-left:30">
-			
-<form acceptcharset="UTF-8" name="form1" method="POST" action="fixed_values.jsp">
-<table width="600">
-	
-	<tr valign="bottom">
-		<td>
-			<span class="head00">
-				<%=initCaseTitle%> values of
-				<span class="title2"><a href="<%=parentUrl%>"><%=Util.replaceTags(delem_name)%></a></span>
-				<span class="head00"><%=dispParentType%></span>
-			</span>
-		</td>
-		
+    <%@ include file="nmenu.jsp" %>
+<div id="workarea">
 		<%
 		String hlpScreen = mode.equals("view") ? "fixed_values_view" : "fixed_values_edit";
 		%>
-		
-		<td align="right">
-			<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp" onclick="pop(this.href)">
-				<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/>
-			</a>
-		</td>
-		
-	</tr>
-	<tr height="10"><td colspan="2"></td></tr>
-	<tr><td align="left">
-		</td>
-	</tr>
+        <div id="operations">
+        <ul>
+					<li><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+				</ul>
+				</div>
+		<h1><%=initCaseTitle%> values of <a href="<%=parentUrl%>"><%=Util.replaceTags(delem_name)%></a> <%=dispParentType%></h1>
+			
+<form name="form1" method="post" action="fixed_values.jsp">
+<table width="600">
 	<% if (mode.equals("view")){
 		if (user!=null && isWorkingCopy){ %>
 			<tr>

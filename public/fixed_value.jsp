@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private String mode=null;%>
 <%!private FixedValue fxv=null;%>
@@ -133,14 +134,14 @@ try { // start the whole page try block
 		}
 	}
 		
-	String disabled = user == null ? "disabled" : "";
+	String disabled = user == null ? "disabled='disabled'" : "";
 	
 	boolean isWorkingCopy = parent_type.equals("elem") ? searchEngine.isWorkingCopy(delem_id, "elm") : true;
 
 	//find parent url from history
 	String parentUrl="";
 	if (parent_type.equals("elem")){
-		parentUrl="data_element.jsp?mode=view&delem_id="+delem_id;
+		parentUrl="data_element.jsp?mode=view&amp;delem_id="+delem_id;
 		if (history!=null){
 			String elemUrl = history.getLastMatching("data_element.jsp");
 		
@@ -165,16 +166,17 @@ try { // start the whole page try block
 	}
 %>
 
-<html>
-	<head>
-		<title>Meta</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	</head>
-	
-	<script language="javascript" src='script.js'></script>
-	
-	<script language="javascript">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>Data Dictionary - Fixed value</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+    <link type="text/css" rel="stylesheet" href="boxes.css"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <script type="text/javascript" src='script.js'></script>
+	<script type="text/javascript">
 	// <![CDATA[
 
 		function submitForm(mode){
@@ -261,63 +263,42 @@ try { // start the whole page try block
 			
 	// ]]>
 	</script>
+</head>
 <body onload="onLoad()">
-<%@ include file="header.htm" %>
-<table border="0">
-    <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
-        <td>
         	<%
         	if (valsType.equals("CH1")){ %>
-	            <jsp:include page="location.jsp" flush='true'>
+	            <jsp:include page="nlocation.jsp" flush='true'>
 	                <jsp:param name="name" value="Allowable value"/>
 	                <jsp:param name="back" value="true"/>
 	            </jsp:include><%
             }
             else{ %>
-            	<jsp:include page="location.jsp" flush='true'>
+            	<jsp:include page="nlocation.jsp" flush='true'>
 	                <jsp:param name="name" value="Suggested value"/>
 	                <jsp:param name="back" value="true"/>
 	            </jsp:include><%
         	}
         	%>
             
-<div style="margin-left:30">
+    <%@ include file="nmenu.jsp" %>
+<div id="workarea">
 
 	<%
 	String backURL = "" + "/fixed_values.jsp?delem_id=" + delem_id +
 															 "&delem_name=" + delem_name +
 															 "&parent_type=" + parent_type;
 	%>
-		<form acceptcharset="UTF-8" name="form1" method="POST" action="fixed_value.jsp">
 			
+		<div id="operations">
+		<ul>
+			<li><a target="_blank" href="help.jsp?screen=fixed_value&amp;area=pagehelp" title="Get some help on this page" onclick="pop(this.href)">Page help</a></li>
+
+		</ul>
+		</div>
+    <h1><%=initCaseTitle%> value of <a href="<%=parentUrl%>"><%=Util.replaceTags(delem_name)%></a> <%=dispParentType%></h1>
+			
+		<form name="form1" method="post" action="fixed_value.jsp">
 		<table width="auto" cellspacing="0" cellpadding="0">
-			
-			<tr height="20"><td colspan="2"></td></tr>
-			<tr valign="bottom">
-				<td colspan="2">
-					<span class="head00"><%=initCaseTitle%> value of</span>
-					<span class="title2"><a href="<%=parentUrl%>"><%=Util.replaceTags(delem_name)%></a></span>
-					<span class="head00"><%=dispParentType%></span>
-				</td>
-			</tr>
-			
-			<tr height="20">
-				<td colspan="2"></td>
-			</tr>
-			
-			<tr height="20">
-				<td align="right" colspan="2">
-					<a target="_blank" href="help.jsp?screen=fixed_value&area=pagehelp" onclick="pop(this.href)">
-						<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/>
-					</a>
-				</td>
-			</tr>
-			
 			<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
 			
 			<tr>				
@@ -342,7 +323,7 @@ try { // start the whole page try block
 					</td>
 					<td colspan="1" valign="top">
 						<select <%=disabled%> class="small" name="is_default">
-							<option selected value="false">No</option>
+							<option selected="selected" value="false">No</option>
 							<option value="true">Yes</option>
 						</select>
 					</td>
@@ -367,8 +348,6 @@ try { // start the whole page try block
 					<textarea class="small" rows="3" cols="60" name="short_desc"><%=fxv.getShortDesc()%></textarea>
 				</td>
 			</tr>
-		
-			<tr height="10"><td colspan="2"></td></tr>
 		
 		<tr>
 			<td>&#160;</td>
@@ -399,9 +378,9 @@ try { // start the whole page try block
 			</td>
 		</tr>
 		
-		<input type="hidden" name="mode" value="<%=mode%>"/>
 		
 	</table>
+	<input type="hidden" name="mode" value="<%=mode%>"/>
 	<input type="hidden" name="fxv_id" value="<%=fxv_id%>"/>
 	<input type="hidden" name="del_id" value="<%=fxv_id%>"/>
 	<input type="hidden" name="delem_id" value="<%=delem_id%>"/>
@@ -411,9 +390,6 @@ try { // start the whole page try block
 	
 	</form>
 </div>
-        </td>
-</tr>
-</table>
 </body>
 </html>
 
