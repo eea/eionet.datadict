@@ -965,7 +965,6 @@ String attrValue = null;
 	                
 					<tr>
 						<td width="100%" colspan="2" height="10">
-							<table border="0" width="100%" cellspacing="0" cellpadding="3">
 		                    
 		                    	<!-- quick links -->
 		                    	
@@ -980,12 +979,13 @@ String attrValue = null;
 			                    	
 			                    	request.setAttribute("quicklinks", quicklinks);
 			                    	%>
-		                    		<jsp:include page="quicklinks.jsp" flush="true">
+		                    		<jsp:include page="nquicklinks.jsp" flush="true">
 		                    		</jsp:include>
 						            <%
 								}
 								%>
 								
+							<table border="0" width="100%" cellspacing="0" cellpadding="3">
 								<!-- schema, MS Excel template, XForm, XmlInst, etc -->
 								
 								<%

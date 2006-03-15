@@ -6,7 +6,7 @@
 	background-image:url('images/treeeionet.png');
 	background-repeat: no-repeat;
 }
- 
+
 #pagehead form {
 	position: absolute;
 	display: inline;
@@ -25,7 +25,7 @@
 	position: absolute;
 	left: 150px;
 	top: 35px;
-	right: 50px
+	right: 50px;
 }
 
 #logo {
@@ -58,15 +58,15 @@
 	padding: 3px;
 	margin-top: 10px;
 	border: 1px dotted #C0C0C0;
-  border-radius: 6px; /* CSS3 */
-  -moz-border-radius: 6px; /* Mozilla */
+	border-radius: 6px;/* CSS3 */
+	-moz-border-radius: 6px;/* Mozilla */
 }
 
 #innerframe {
 	padding: 3px;
 	border: 1px solid #FF9900;
-  border-radius: 6px; /* CSS3 */
-  -moz-border-radius: 6px; /* Mozilla */
+	border-radius: 6px;/* CSS3 */
+	-moz-border-radius: 6px;/* Mozilla */
 }
 
 #pagefoot {
@@ -74,29 +74,29 @@
 	margin-left: 150px;
 	padding-left:0px;
 	padding-right: 2px;
-	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 0.8em;
-	text-align: center; 
+	text-align: center;
 }
 
 /* Temporary */
 #footer {
-  margin-bottom: 1em;
-  font-family: Verdana, Arial, "MS Sans Serif", sans-serif;
-  font-size: 0.8em;
-  font-style: normal;
-	text-align: center; 
+	margin-bottom: 1em;
+	font-family: Verdana, Arial, "MS Sans Serif", sans-serif;
+	font-size: 0.8em;
+	font-style: normal;
+	text-align: center;
 }
 
 /* fonts, colour-schemes etc. */
 body {
-  width: 775px;
+	width: 775px;
 	margin:0px;
 	padding:0px;
-	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 80%; 
-	font-style: normal; 
-	line-height: normal; 
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 80%;
+	font-style: normal;
+	line-height: normal;
 	background: #f0f0f0 url('images/background_orange.png') repeat-y;
 }
 
@@ -127,34 +127,34 @@ p {
 }
 
 h1, h2, h3, h4, h5, h6 {
-	font-family: Arial, Helvetica, sans-serif; 
-	font-style: normal; 
-	font-weight: bold; 
+	font-family: Arial, Helvetica, sans-serif;
+	font-style: normal;
+	font-weight: bold;
 	text-decoration: none
 	padding-left:4px;
 }
 
 h1 {
-	font-size: 1.4em; 
-	line-height: 120%; 
+	font-size: 1.4em;
+	line-height: 120%;
 	margin-top:0;
 	padding-top: 0.5em;
 }
 
 h2 {
-	font-size: 1.3em; 
-	line-height: normal; 
+	font-size: 1.3em;
+	line-height: normal;
 	margin-top:0;
 	padding-top: 0.5em;
 }
 
 h3 {
-	font-size: 1.2em; 
-	line-height: normal; 
+	font-size: 1.2em;
+	line-height: normal;
 }
 
 h4, h5, h6 {
-	line-height: normal; 
+	line-height: normal;
 }
 
 kbd {
@@ -177,10 +177,10 @@ table {
 }
 
 td {
-	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 1em; 
-	font-style: normal; 
-	line-height: normal; 
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	font-style: normal;
+	line-height: normal;
 	text-decoration: none;
 	padding-left:5px;
 }
@@ -196,9 +196,9 @@ td {
 /* Tables end */
 
 /*
- * The globalnav is for buttons that exist on all pages.
- * They are shown on the left
- */
+* The globalnav is for buttons that exist on all pages.
+* They are shown on the left
+*/
 #globalnav {
 	position: absolute;
 	left: 0;
@@ -211,20 +211,20 @@ td {
 	color: black;
 	border: none;
 	background-color: transparent;
-	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 9pt; 
-	font-style: normal; 
-	line-height: normal; 
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+	font-style: normal;
+	line-height: normal;
 	padding-top:10px;
 	margin-bottom: 0px;
 	font-weight: bold;
-	text-align: center; 
+	text-align: center;
 	text-decoration: none;
 }
 
 #globalnav ul {
 	list-style: none;
-	list-style-image: none; /* bug in IE */
+	list-style-image: none;/* bug in IE */
 	padding-left: 5px;
 	margin:0px 0px 0px 10px;
 }
@@ -270,7 +270,7 @@ td {
 
 #operations ul {
 	list-style: none;
-	list-style-image: none; /* bug in IE */
+	list-style-image: none;/* bug in IE */
 	margin: 0px;
 }
 
@@ -290,8 +290,8 @@ td {
 	color: black;
 	width: 104px;
 	height: 15px;
-  text-align: right;
-  text-transform: uppercase;
+	text-align: right;
+	text-transform: uppercase;
 	padding: 4px 5px 0px 4px;
 	background: url('images/empty.jpg') no-repeat;
 }
@@ -308,7 +308,7 @@ td {
 	margin: 0;
 	padding: 10px 10px 0;
 	list-style: none;
-	list-style-image: none; /* bug in IE */
+	list-style-image: none;/* bug in IE */
 }
 #tabbedmenu li {
 	float: left;
@@ -400,12 +400,12 @@ td {
 .breadcrumbtrail a:hover {
 	color: #707070;
 }
- 
+
 
 /*
- * Popups don't have left or right columns. Instead we
- * indent the text a bit
- */
+* Popups don't have left or right columns. Instead we
+* indent the text a bit
+*/
 .popup {
 	margin:30px;
 	background-image: none;
@@ -420,27 +420,27 @@ td {
 
 
 .smallFont {
-	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 10px; 
-	font-style: normal; 
-	line-height: normal; 
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-style: normal;
+	line-height: normal;
 	text-decoration: none;
 }
 
 .back {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
-	font-style: normal; 
-	line-height: normal; 
-	font-weight: bold; 
+	font-style: normal;
+	line-height: normal;
+	font-weight: bold;
 	color:#FFFFFF;
 	background-color:#FFFFFF;
 	text-decoration: none;
 }
 
 /*
- * We don't change to italics, but change the colour
- */
+* We don't change to italics, but change the colour
+*/
 em {
 	font-style: normal;
 	color: #006666;
@@ -452,14 +452,15 @@ img#selected_order {
 	border-style: solid;
 }
 
-th.selected { 
+th.selected {
+
 	border-width: 2px;
 	border-color: red;
 }
 
 /*
- * Admonitions
- */
+* Admonitions
+*/
 .caution {
 	color: red;
 	border-width: 1px;
@@ -472,13 +473,13 @@ th.selected {
 .metavalue {
 	width: 500px;
 	color: black;
-	padding-left:5;
+	padding-left:5px;
 }
 
 .relvalue {
 	width: 500px;
 	color: red;
-	padding-left:5;
+	padding-left:5px;
 }
 
 .metalabel {
@@ -489,64 +490,68 @@ th.selected {
 }
 
 .srch_rslt_col {
-	padding-left:7;
+	padding-left:7px;
 }
 
 .srch_rslt_hdr {
-	padding-left:5;
+	padding-left:5px;
 }
 
 /*
- * <td> styles
- */
+* <td> styles
+*/
 
 td.short_name {
-  font-weight: bold;
-  border: 1px solid #C0C0C0;
-  vertical-align: top;
-  background: #FFB652;
+	font-weight: bold;
+	border: 1px solid #C0C0C0;
+	vertical-align: top;
+	background: #FFB652;
 }
 
 td.short_name_value {
-  font-size: 12pt;
-  font-weight: bold;
-  border: 1px solid #C0C0C0;
-  vertical-align: top;
-  background: #FFB652;
+	font-size: 12pt;
+	font-weight: bold;
+	border: 1px solid #C0C0C0;
+	vertical-align: top;
+	background: #FFB652;
 }
 
-td.search_result {  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 10pt;
-  font-style: normal;
-  line-height: normal;
-  text-decoration: none;
-  border-left: 1px solid #C0C0C0;
-  border-bottom: 1px solid #C0C0C0;
+td.search_result {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-style: normal;
+	line-height: normal;
+	text-decoration: none;
+	border-left: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
 }
 
 td.search_result_odd {
-  font-size: 10pt;
-  font-style: normal;
-  line-height: normal;
-  text-decoration: none;
-  border-left: 1px solid #C0C0C0;
-  border-bottom: 1px solid #C0C0C0;
-  background: #CCCCCC;
+	font-size: 10pt;
+	font-style: normal;
+	line-height: normal;
+	text-decoration: none;
+	border-left: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+	background: #CCCCCC;
 }
 
-td.simple_attr_title {  font-family: Verdana, Arial, Helvetica, sans-serif;
+td.simple_attr_title {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	border: 1px solid #C0C0C0;
 	vertical-align: top;
 }
 
-td.simple_attr_value {  font-family: Verdana, Arial, Helvetica, sans-serif; 
+td.simple_attr_value {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	border-right: 1px solid #C0C0C0;
 	border-bottom: 1px solid #C0C0C0;
 	vertical-align: top;
 }
 
-td.simple_attr_value_big {  font-family: Verdana, Arial, Helvetica, sans-serif;
+td.simple_attr_value_big {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	font-size: 12pt;
 	border-right: 1px solid #C0C0C0;
@@ -554,13 +559,15 @@ td.simple_attr_value_big {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	vertical-align: top;
 }
 
-td.simple_attr_help {  font-family: Verdana, Arial, Helvetica, sans-serif; 
+td.simple_attr_help {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	border: 1px solid #C0C0C0;
 	vertical-align: top;
 	text-align: center;
 }
 
-td.simple_attr_title_odd {  font-family: Verdana, Arial, Helvetica, sans-serif;
+td.simple_attr_title_odd {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	border-left: 1px solid #C0C0C0;
 	border-right: 1px solid #C0C0C0;
@@ -569,14 +576,16 @@ td.simple_attr_title_odd {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	background: #FFFFFF;
 }
 
-td.simple_attr_value_odd {  font-family: Verdana, Arial, Helvetica, sans-serif; 
+td.simple_attr_value_odd {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	border-right: 1px solid #C0C0C0;
 	border-bottom: 1px solid #C0C0C0;
 	vertical-align: top;
 	background: #FFFFFF;
 }
 
-td.simple_attr_value_big_odd {  font-family: Verdana, Arial, Helvetica, sans-serif;
+td.simple_attr_value_big_odd {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	font-size: 12pt;
 	border-right: 1px solid #C0C0C0;
@@ -585,7 +594,8 @@ td.simple_attr_value_big_odd {  font-family: Verdana, Arial, Helvetica, sans-ser
 	background: #FFFFFF;
 }
 
-td.simple_attr_help_odd {  font-family: Verdana, Arial, Helvetica, sans-serif; 
+td.simple_attr_help_odd {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	border-left: 1px solid #C0C0C0;
 	border-right: 1px solid #C0C0C0;
 	border-bottom: 1px solid #C0C0C0;
@@ -594,137 +604,133 @@ td.simple_attr_help_odd {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	background: #FFFFFF;
 }
 
-td.tbl_elms {  font-family: Verdana, Arial, Helvetica, sans-serif;
-font-size: 7pt;
-font-style: normal;
-line-height: normal;
-font-weight: normal;
-border-left: 1px solid #C0C0C0;
-border-bottom: 1px solid #C0C0C0;
-background: #FFFFFF;
-text-decoration: none;
-vertical-align: top;
+td.tbl_elms {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 7pt;
+	font-style: normal;
+	line-height: normal;
+	font-weight: normal;
+	border-left: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+	background: #FFFFFF;
+	text-decoration: none;
+	vertical-align: top;
 }
 
-td.complex_attr_title {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-font-weight: bold;
-border-left: 1px solid #C0C0C0;
-border-top: 1px solid #C0C0C0;
-border-bottom: 1px solid #C0C0C0;
-vertical-align: top;
+td.complex_attr_title {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	border-left: 1px solid #C0C0C0;
+	border-top: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+	vertical-align: top;
 }
 
-td.complex_attr_help {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-font-weight: bold;
-border-left: 1px solid #C0C0C0;
-border-top: 1px solid #C0C0C0;
-border-bottom: 1px solid #C0C0C0;
-text-align: center;
-vertical-align: top;
+td.complex_attr_help {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	border-left: 1px solid #C0C0C0;
+	border-top: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+	text-align: center;
+	vertical-align: top;
 }
 
-td.complex_attr_value {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-border-left: 1px solid #C0C0C0;
-border-top: 1px solid #C0C0C0;
-border-bottom: 1px solid #C0C0C0;
-vertical-align: top;
+td.complex_attr_value {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	border-left: 1px solid #C0C0C0;
+	border-top: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+	vertical-align: top;
 }
 
-td.complex_attr_title_odd {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-font-weight: bold;
-border-left: 1px solid #C0C0C0;
-border-top: 1px solid #C0C0C0;
-border-bottom: 1px solid #C0C0C0;
-background: #FFFFFF;
-vertical-align: top;
+td.complex_attr_title_odd {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	border-left: 1px solid #C0C0C0;
+	border-top: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+	background: #FFFFFF;
+	vertical-align: top;
 }
 
-td.complex_attr_help_odd {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-font-weight: bold;
-border-left: 1px solid #C0C0C0;
-border-top: 1px solid #C0C0C0;
-border-bottom: 1px solid #C0C0C0;
-background: #FFFFFF;
-text-align: center;
-vertical-align: top;
+td.complex_attr_help_odd {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	border-left: 1px solid #C0C0C0;
+	border-top: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+	background: #FFFFFF;
+	text-align: center;
+	vertical-align: top;
 }
 
-td.complex_attr_value_odd {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-border-left: 1px solid #C0C0C0;
-border-top: 1px solid #C0C0C0;
-border-bottom: 1px solid #C0C0C0;
-background: #FFFFFF;
-vertical-align: top;
+td.complex_attr_value_odd {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	border-left: 1px solid #C0C0C0;
+	border-top: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+	background: #FFFFFF;
+	vertical-align: top;
 }
 
-td.dst_tbls {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-font-size: 10pt;
-font-style: normal; 
-line-height: normal; 
-border-left: 1px solid #C0C0C0;
-border-top: 1px solid #C0C0C0;
-border-bottom: 1px solid #C0C0C0;
-background: #FFFFFF;
-text-decoration: none;
-text-align: left;
+td.dst_tbls {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-style: normal;
+	line-height: normal;
+	border-left: 1px solid #C0C0C0;
+	border-top: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+	background: #FFFFFF;
+	text-decoration: none;
+	text-align: left;
 }
 
 td.mnd_opt_cnd {
-  background-color: #FFFFFF;
-  border: 1px solid #FF9900;
+	background-color: #FFFFFF;
+	border: 1px solid #FF9900;
 }
 
 td.front_page {
-	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
-	font-style: normal; 
-	line-height: normal; 
-	font-weight: bold; 
+	font-style: normal;
+	line-height: normal;
+	font-weight: bold;
 	color: #FFFFFF;
 	background-image: url("images/dd_bgr_cell_head.jpg");
 }
 
 td.front_page_prot_area {
-	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
-	font-style: normal; 
-	line-height: normal; 
-	font-weight: bold; 
+	font-style: normal;
+	line-height: normal;
+	font-weight: bold;
 	background-image: url("images/dd_bgr_cell_head.jpg");
 }
 
 td.login {
-	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
-	font-style: normal; 
-	line-height: normal; 
-	font-weight: bold; 
+	font-style: normal;
+	line-height: normal;
+	font-weight: bold;
 	color: #FFFFFF;
 	background: #993300;
 }
 
 /*
- * <th> styles
- */
+* <th> styles
+*/
 
 th {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 1em; 
-  font-style: normal;
-  line-height: normal;
-  font-weight: bold;
-  background: #FFFFFF;
-  text-decoration: none;
-  border-left: 1px solid #FF9900;
-  border-top: 1px solid #FF9900;
-  border-bottom: 1px solid #FF9900;
-}
-
-th.small {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-	font-size: 8pt;
-	font-style: normal; 
-	line-height: normal; 
-	font-weight: bold; 
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	font-style: normal;
+	line-height: normal;
+	font-weight: bold;
 	background: #FFFFFF;
 	text-decoration: none;
 	border-left: 1px solid #FF9900;
@@ -732,32 +738,47 @@ th.small {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	border-bottom: 1px solid #FF9900;
 }
 
-th.tbl_elms {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-font-size: 7pt;
-font-style: normal; 
-line-height: normal; 
-font-weight: bold;
-border-left: 1px solid #C0C0C0;
-border-top: 1px solid #C0C0C0;
-border-bottom: 1px solid #C0C0C0;
-color: #FFFFFF;
-background: #808080;
-text-decoration: none;
-text-align: left;
+th.small {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-style: normal;
+	line-height: normal;
+	font-weight: bold;
+	background: #FFFFFF;
+	text-decoration: none;
+	border-left: 1px solid #FF9900;
+	border-top: 1px solid #FF9900;
+	border-bottom: 1px solid #FF9900;
 }
 
-th.dst_tbls {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-font-size: 10pt;
-font-style: normal; 
-line-height: normal; 
-font-weight: bold;
-border-left: 1px solid #C0C0C0;
-border-top: 1px solid #C0C0C0;
-border-bottom: 1px solid #C0C0C0;
-color: #FFFFFF;
-background: #666666;
-text-decoration: none;
-text-align: left;
+th.tbl_elms {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 7pt;
+	font-style: normal;
+	line-height: normal;
+	font-weight: bold;
+	border-left: 1px solid #C0C0C0;
+	border-top: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+	color: #FFFFFF;
+	background: #808080;
+	text-decoration: none;
+	text-align: left;
+}
+
+th.dst_tbls {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-style: normal;
+	line-height: normal;
+	font-weight: bold;
+	border-left: 1px solid #C0C0C0;
+	border-top: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+	color: #FFFFFF;
+	background: #666666;
+	text-decoration: none;
+	text-align: left;
 }
 
 
@@ -771,11 +792,11 @@ text-align: left;
 
 /* Data tables have borders */
 table.datatable {
-  border-collapse: collapse;
+	border-collapse: collapse;
 }
 .datatable td, .datatable th  {
-  border: 1px solid #C0C0C0;
-  padding: 3px;
+	border: 1px solid #C0C0C0;
+	padding: 3px;
 }
 
 /* styles for sortable tables */
@@ -805,45 +826,45 @@ table.datatable {
 }
 
 table.sortable tbody td {
-  border: 1px solid #c0c0c0;
-  border-collapse: collapse; /* Really should be on .sortable */
+	border: 1px solid #c0c0c0;
+	border-collapse: collapse;
 }
 table.sortable tbody td a {
-  text-decoration: none;
+	text-decoration: none;
 }
 /* Temporary start */
 table.sortable table tr td {
-  border: none;
+	border: none;
 }
 /* Temporary end */
 
 tbody tr.zebraodd {
-  background-color: #CCCCCC;
+	background-color: #CCCCCC;
 }
 
 .datatable .odd {
-  background-color: #FFFFFF;
+	background-color: #FFFFFF;
 }
 
 /* Frontpage boxes */
 .TeaserBox {
-        font-size: 8pt; 
+	font-size: 8pt;
 }
 
 .TeaserBox h2 {
 	background: #F09000 url(images/dd_bgr_cell_head.jpg) no-repeat;
 	font-family: Verdana, Tahoma, Geneva, Arial, Helvetica, sans-serif;
-  border:none;
-  text-align: center;
-  padding-top: .2em;
-  padding-bottom: .2em;
-  margin-bottom: 0;
-	font-size: 10pt; 
-	font-style: normal; 
-	line-height: normal; 
-	font-weight: bold; 
+	border:none;
+	text-align: center;
+	padding-top: .2em;
+	padding-bottom: .2em;
+	margin-bottom: 0;
+	font-size: 10pt;
+	font-style: normal;
+	line-height: normal;
+	font-weight: bold;
 	color: #FFFFFF;
-	text-decoration: none; 
+	text-decoration: none;
 }
 
 .navbuttons {
@@ -865,8 +886,8 @@ tbody tr.zebraodd {
 	margin: 0px 3px 0px 0px;
 }
 
-a.disabled{
-  color:gray;
+a.disabled {
+	color:gray;
 }
 
 } /* screen media */
