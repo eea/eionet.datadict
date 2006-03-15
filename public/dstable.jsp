@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%@ include file="history.jsp" %>
 
@@ -433,15 +434,17 @@ String attrValue = null;
 
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<title>Meta</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>	
-</head>
-<script language="javascript" src='script.js'></script>
-<script language="javascript" src='modal_dialog.js'></script>
-<script language="javascript">
+		<title>Search elements - Dataset table</title>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+		<link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+		<link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+		<script type="text/javascript" src='script.js'></script>
+		<script type="text/javascript" src='modal_dialog.js'></script>
+<script type="text/javascript">
 // <![CDATA[
     
 		function submitForm(mode){
@@ -783,34 +786,29 @@ String attrValue = null;
 		}
 // ]]>
 </script>
-
+</head>
 <body>
 
-<%@ include file="header.htm" %>
-
-<table border="0">
-    <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
-        <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Dataset table"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
+			<jsp:include page="nlocation.jsp" flush='true'>
+					<jsp:param name="name" value="Dataset table"/>
+					<jsp:param name="back" value="true"/>
+			</jsp:include>
+		<%@ include file="nmenu.jsp" %>
             
-			<div style="margin-left:30">
+			<div id="workarea">
+					<div id="operations">
+						<ul>
+						<%
+						String hlpScreen = "table";
+						if (mode.equals("edit"))
+							hlpScreen = "table_edit";
+						else if (mode.equals("add"))
+							hlpScreen = "table_add";
+						%>
+							<li><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)" title="Get some help on this page">Page help</a></li>
+						</ul>
+					</div>
 	
-			<form acceptcharset="UTF-8" name="form1" method="POST" action="dstable.jsp">
-			
-				<!--=======================-->
-				<!-- main table inside div -->
-				<!--=======================-->
-				
-				<table border="0" width="620" cellspacing="0" cellpadding="0">
-				
 					<!-- main table head -->
 					
 					<%
@@ -822,31 +820,22 @@ String attrValue = null;
 					else if (mode.equals("edit"))
 						verb = "Edit";
 					%>
-					
+				<h1><%=verb%> table definition
+					<%
+					if (mode.equals("add") && dsID != null && dsID.length()!=0){ %>
+						to <a target="_blank" onclick="pop(this.href)" href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a> dataset<%
+					}
+					%>
+				</h1>
+			<form name="form1" method="post" action="dstable.jsp">
+			
+				<!--=======================-->
+				<!-- main table inside div -->
+				<!--=======================-->
+				
+				<table border="0" width="620" cellspacing="0" cellpadding="0">
 					<tr>
-						<td colspan="2" align="right">
-							<%
-							String hlpScreen = "table";
-							if (mode.equals("edit"))
-								hlpScreen = "table_edit";
-							else if (mode.equals("add"))
-								hlpScreen = "table_add";
-							%>
-							<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp" onclick="pop(this.href)">
-								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-							</a>
-						</td>
-					</tr>
-					<tr>
-						<td width="72%" height="40" class="head1">
-							<%=verb%> table definition
-							<%
-							if (mode.equals("add") && dsID != null && dsID.length()!=0){ %>
-								to <a target="_blank" onclick="pop(this.href)" href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a> dataset<%
-							}
-							%>
-						</td>
-						<td width="28%" height="40" align="right">
+						<td colspan="2" height="40" align="right">
 							<%
 							if (mode.equals("view") && dsTable!=null){
 								if (user!=null){
@@ -891,11 +880,11 @@ String attrValue = null;
 							<td width="100%" class="mnd_opt_cnd" colspan="2" >
 								<table border="0" width="100%" cellspacing="0">
 									<tr>
-										<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16"/></td>
+										<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
 										<td width="17%">Mandatory</td>
-										<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16"/></td>
+										<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
 										<td width="15%">Optional</td>
-										<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16"/></td>
+										<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
 										<td width="56%">Conditional</td>
                             		</tr>
 		                            <tr>
@@ -930,7 +919,7 @@ String attrValue = null;
 								}
 								// edit case
 								else if (mode.equals("edit")){
-									String isDisabled = user==null ? "disabled" : "";
+									String isDisabled = user==null ? "disabled='disabled'" : "";
 									%>
 									<input type="button" class="mediumbuttonb" value="Save" <%=isDisabled%> onclick="submitForm('edit')"/>&nbsp;
 									<%
@@ -1037,7 +1026,7 @@ String attrValue = null;
 																Create an instance XML for this table
 															</td>
 															<td width="27%" valign="middle" align="left">
-																<a target="_blank" href="GetXmlInstance?id=<%=tableID%>&type=tbl">
+																<a target="_blank" href="GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
 																</a>
 															</td>
@@ -1062,10 +1051,10 @@ String attrValue = null;
 													if (dispAll || dispXLS){ %>
 														<tr>
 															<td width="73%" valign="middle" align="left">
-																Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/></a>
+																Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&amp;area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
 															</td>
 															<td width="27%" valign="middle" align="left">
-																<a href="GetXls?obj_type=tbl&obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
+																<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
 															</td>
 														</tr><%
 													}
@@ -1090,7 +1079,7 @@ String attrValue = null;
 														<tr height="20">
 															<td colspan="2" valign="bottom" align="left">
 																<span class="barfont">
-																	[ <a target="_blank" onclick="pop(this.href)" href="GetCache?obj_id=<%=tableID%>&obj_type=tbl&idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
+																	[ <a target="_blank" onclick="pop(this.href)" href="GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
 																</span>
 															</td>
 														</tr>
@@ -1108,7 +1097,7 @@ String attrValue = null;
 								<!-- start dotted -->
 								<tr><td width="100%" height="10"></td></tr>
 								<tr>
-									<td width="100%" style="border: 1 dotted #C0C0C0">
+									<td width="100%" style="border: 1px dotted #C0C0C0">
 									
 										<!-- attributes -->
 									
@@ -1129,8 +1118,8 @@ String attrValue = null;
 								    		<tr>
 												<td width="<%=titleWidth%>%" class="short_name">Short name</td>
 												<td width="4%" class="short_name">
-													<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
+														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
 												</td>
 												<%
@@ -1165,8 +1154,8 @@ String attrValue = null;
 													Dataset
 												</td>
 												<td width="4%" class="simple_attr_help<%=isOdd%>">
-													<a target="_blank" href="help.jsp?screen=table&area=dataset" onclick="pop(this.href)">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+													<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href)">
+														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
 												</td>
 												<%
@@ -1198,9 +1187,9 @@ String attrValue = null;
 													else if (dsID != null && dsID.length()!=0){
 														String link = "";
 														if (latestRequested)
-															link = "dataset.jsp?mode=view&ds_idf=" + dataset.getIdentifier();
+															link = "dataset.jsp?mode=view&amp;ds_idf=" + dataset.getIdentifier();
 														else
-															link = "dataset.jsp?mode=view&ds_id=" + dsID;
+															link = "dataset.jsp?mode=view&amp;ds_id=" + dsID;
 														%>
 														<a href="<%=link%>">
 															<b><%=Util.replaceTags(dsName)%></b>
@@ -1216,16 +1205,16 @@ String attrValue = null;
 								    		<%
 								    		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
 								    		if (mode.equals("view") && jspUrlPrefix!=null){
-									    		String refUrl = jspUrlPrefix + "dstable.jsp?mode=view&table_idf=" +
-									    						dsTable.getIdentifier() + "&pns=" + dsTable.getParentNs();
+									    		String refUrl = jspUrlPrefix + "dstable.jsp?mode=view&amp;table_idf=" +
+									    						dsTable.getIdentifier() + "&amp;pns=" + dsTable.getParentNs();
 									    		%>
 									    		<tr>
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 														Reference URL
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<a target="_blank" href="help.jsp?screen=dataset&area=refurl" onclick="pop(this.href)">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href)">
+															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 														</a>
 													</td>
 													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
@@ -1305,7 +1294,7 @@ String attrValue = null;
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 														</a>
 													</td>
 													<%
@@ -1470,7 +1459,7 @@ String attrValue = null;
 																		%>
 																	</select>
 																	<a target="_blank" onclick="pop(this.href)" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=attribute.getShortName()%>&amp;parent_type=attr">
-																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 																	</a>
 																	<%
 																}
@@ -1481,12 +1470,12 @@ String attrValue = null;
 															
 														} // end display input
 														%>
+														<input type="hidden" name="oblig_<%=attrID%>" value="<%=attribute.getObligation()%>"/>
 													</td>
 													<!-- end dynamic attribute value display -->
 													
 													<%isOdd = Util.isOdd(++displayed);%>
 											    </tr>
-											    <input type="hidden" name="oblig_<%=attrID%>" value="<%=attribute.getObligation()%>"/>
 											    <%
 										    }
 										    %>
@@ -1497,8 +1486,8 @@ String attrValue = null;
 													Identifier
 												</td>
 												<td width="4%" class="simple_attr_help<%=isOdd%>">
-													<a target="_blank" href="help.jsp?screen=dataset&area=identifier" onclick="pop(this.href)">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
+														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
 												</td>
 												<%
@@ -1578,7 +1567,7 @@ String attrValue = null;
 														<%
 														// elements link
 														if (user!=null && editPrm && topFree){
-															String elemLink = "tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ds_idf=" + dsIdf;
+															String elemLink = "tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
 															%>
 															<td class="barfont" width="66%">
 																[Click <a href="<%=elemLink%>"><b>HERE</b></a> to manage all elements of this table]
@@ -1631,12 +1620,12 @@ String attrValue = null;
 																		
 																		String elemLink = "";
 																		if (latestRequested){
-																			elemLink = "data_element.jsp?mode=view&delem_idf=" + elem.getIdentifier();
+																			elemLink = "data_element.jsp?mode=view&amp;delem_idf=" + elem.getIdentifier();
 																			if (!elmCommon)
-																				elemLink = elemLink + "&pns=" + elem.getNamespace().getID();
+																				elemLink = elemLink + "&amp;pns=" + elem.getNamespace().getID();
 																		}
 																		else
-																			elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID();
+																			elemLink = "data_element.jsp?mode=view&amp;delem_id=" + elem.getID();
 																			
 																		String elemDefinition = elem.getAttributeValueByShortName("Definition");
 																		String linkTitle = elemDefinition==null ? "" : elemDefinition;
@@ -1687,7 +1676,7 @@ String attrValue = null;
 																			<!-- gis type -->
 																			<%
 																			if (curMode.equals("GIS")){
-																				gisType = (gisType==null || gisType.length()==0) ? "&nbsp" : gisType;
+																				gisType = (gisType==null || gisType.length()==0) ? "&nbsp;" : gisType;
 																				%>
 																				<td width="<%=widthType%>" class="tbl_elms">
 																					<%=gisType%>
@@ -1826,7 +1815,7 @@ String attrValue = null;
 																		</td>
 																		<td width="4%" class="complex_attr_help<%=isOdd%>">
 																			<a target="_blank" onclick="pop(this.href)" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
-																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																			</a>
 																		</td>
 																		<td width="63%" class="complex_attr_value<%=isOdd%>">
@@ -1895,7 +1884,7 @@ String attrValue = null;
 				<%
 				String latestID = dsTable==null ? null : verMan.getLatestTblID(dsTable);
 				if (latestID!=null){%>
-					<input type="hidden" name="latest_id" value="<%=latestID%>"><%
+					<input type="hidden" name="latest_id" value="<%=latestID%>"/><%
 				}
 				
 				if (dsID!=null && dsID.length()>0){ %>
@@ -1922,7 +1911,7 @@ String attrValue = null;
 				%>
 				
 				<input type="hidden" name="copy_tbl_id" value=""/>
-				<input type="hidden" name="changed" value="0">
+				<input type="hidden" name="changed" value="0"/>
 				
 			</form>
 			
@@ -1930,9 +1919,6 @@ String attrValue = null;
 			</jsp:include>
 			
 			</div>			
-		</td>
-	</tr>
-</table>
 
 </body>
 </html>
