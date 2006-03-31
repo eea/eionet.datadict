@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!static int iPageLen=0;%>
@@ -9,6 +10,7 @@
 <%!private int reqno = 0;%>
 
 <%@ include file="history.jsp" %>
+<%@ include file="sorting.jsp" %>
 
 <%!class c_SearchResultEntry implements Comparable {
     public String oID;
@@ -171,11 +173,13 @@
 
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Data Dictionary</title>
+    <title>Search results - Data Dictionary</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
+	<link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
     <script language="javascript" src='script.js'></script>
 	<script language="javascript">
 	// <![CDATA[
@@ -235,22 +239,14 @@ if (popup){ %>
 	<div><%
 }
 else{ %>
-	<body>
-	<%@ include file="header.htm" %>
-	<table border="0">
-	    <tr valign="top">
-	        <td nowrap="nowrap" width="125">
-	            <p><center>
-	                <%@ include file="menu.jsp" %>
-	            </center></p>
-	        </td>
-	        <td>
-	            <jsp:include page="location.jsp" flush='true'>
-	                <jsp:param name="name" value="Search results"/>
-	                <jsp:param name="back" value="true"/>
-	            </jsp:include>
-	            
-				<div style="margin-left:30"><%
+		<body>
+		<jsp:include page="nlocation.jsp" flush='true'>
+			<jsp:param name="name" value="Search results"/>
+			<jsp:param name="back" value="true"/>
+		</jsp:include>
+    	<%@ include file="nmenu.jsp" %>
+		<div id="workarea">
+		<%
 }
             
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
@@ -267,80 +263,72 @@ else{ %>
 	    	        	<br/><%
     	        	}
     	        	%>
-	            	</div></td></tr></table></body></html>
+	            	</div></body></html>
 	            	<%
 	            	return;
             	}
             }
             %>
             
-			<span class="head00">Search results</span><br/><br/>
+			<div id="operations">
+            	<ul>
+            		<li><a target="_blank" href="help.jsp?screen=elements&area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+            	</ul>
+            </div>
+            
+			<h1>Search results</h1>
 		
-			<table width="700" cellspacing="0" border="0" cellpadding="2">
+			<!-- result table -->
 			
-			<%
-			boolean userHasEditRights = user!=null &&
-										(SecurityUtil.hasPerm(user.getUserName(), "/elements" , "u") ||
-										SecurityUtil.hasPerm(user.getUserName(), "/elements" , "i"));
-			int colSpan = userHasEditRights ? 4 : 3;
-			%>
-		
-			<!-- the tab row -->
-		
-			<tr>
-				<td align="right" colspan="<%=colSpan%>">
-					<a target="_blank" href="help.jsp?screen=elements&area=pagehelp" onclick="pop(this.href)">
-						<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page">
-					</a><br/>
-				</td>
-			</tr>
+			<table width="700" cellspacing="0" border="0" cellpadding="2" class="sortable">
 			
-			<!-- the table itself -->
-		
+				<%
+				boolean userHasEditRights = user!=null &&
+											(SecurityUtil.hasPerm(user.getUserName(), "/elements" , "u") ||
+											SecurityUtil.hasPerm(user.getUserName(), "/elements" , "i"));
+				int colSpan = userHasEditRights ? 4 : 3;
+				%>
+				
+			<thead>
 			<tr>
 				<th width="35%">
-					<jsp:include page="thsortable.jsp" flush="true">
-			            <jsp:param name="title" value="Element"/>
-			            <jsp:param name="mapName" value="Element"/>
-			            <jsp:param name="sortColNr" value="1"/>
-			            <jsp:param name="help" value="help.jsp?screen=elements&area=element"/>
-			        </jsp:include>
+					<%
+					String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
+					String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
+					%>
+					<a title="Element" href="<%=sortedLink%>">
+	                      Element&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					</a>
 				</th>
 				<th width="20%">
-					<jsp:include page="thsortable.jsp" flush="true">
-			            <jsp:param name="title" value="Type"/>
-			            <jsp:param name="mapName" value="Type"/>
-			            <jsp:param name="sortColNr" value="2"/>
-			            <jsp:param name="help" value="help.jsp?screen=element&area=type"/>
-			        </jsp:include>
+					<%
+					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
+					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
+					%>
+					<a title="Type" href="<%=sortedLink%>">
+	                      Type&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					</a>
 				</th>
 				<%
 				if (userHasEditRights){ %>
 					<th width="20%">
-						<table width="100%">
-							<tr>
-								<td align="right" width="50%">
-									<b>CheckInNo</b>
-								</td>
-								<td align="left" width="50%">
-									<a target="_blank" href="help.jsp?screen=dataset&area=check_in_no" onclick="pop(this.href)">
-										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
-									</a>
-								</td>
-							</tr>
-						</table>
+						CheckInNo
 					</th><%
 				}
 				%>
 				<th width="25%" style="border-right: 1px solid #FF9900">
-					<jsp:include page="thsortable.jsp" flush="true">
-			            <jsp:param name="title" value="Status"/>
-			            <jsp:param name="mapName" value="Status"/>
-			            <jsp:param name="sortColNr" value="3"/>
-			            <jsp:param name="help" value="help.jsp?screen=dataset&area=regstatus"/>
-			        </jsp:include>
+					<%
+					sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
+					sortedLink = getSortedLink(3, oSortCol, oSortOrder);
+					%>
+					<a title="Status" href="<%=sortedLink%>">
+	                      Status&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					</a>
+
 				</th>
 			</tr>
+			</thead>
+			<tbody>
 				
 			<%
 			int displayed = 0;
@@ -522,6 +510,7 @@ else{ %>
             }
 			%>
 			
+			</tbody>
 		</table>
 		
 		<form acceptcharset="UTF-8" name="sort_form" action="common_elms.jsp" method="GET">

@@ -7,6 +7,7 @@
 <%!final static String oSearchUrlAttrName="tbl_search_url";%>
 
 <%@ include file="history.jsp" %>
+<%@ include file="sorting.jsp" %>
 
 <%!class c_SearchResultEntry implements Comparable {
     public String oID;
@@ -127,7 +128,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<title>Table - Data Dictionary</title>
+	<title>Tables - Data Dictionary</title>
 	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 	<link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
 	<link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
@@ -161,7 +162,7 @@
 </head>
 <body>
 	<jsp:include page="nlocation.jsp" flush='true'>
-		<jsp:param name="name" value="Search results"/>
+		<jsp:param name="name" value="Tables"/>
 		<jsp:param name="back" value="true"/>
 	</jsp:include>
 	<%@ include file="nmenu.jsp" %>
@@ -201,54 +202,51 @@
 		
 		<form acceptcharset="UTF-8" id="form1" method="post" action="search_results_tbl.jsp" onsubmit="setLocation()">
 		
-		<table width="700" cellspacing="0" border="0" cellpadding="2">
+		<div style="padding-bottom:5">
+			<%
+			boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
+			if (dstPrm){ %>
+				<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
+				<%
+			}
+			%>
+		</div>
 		
-			<!-- the buttons part -->
+		<!-- the result table -->		
+		<table width="700" cellspacing="0" border="0" cellpadding="2" class="sortable">
 		
-			<tr>
-			
-				<!-- update buttons -->
-				
-				<td colspan="2" align="left" style="padding-bottom:5px">
-					<%
-					boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
-					if (dstPrm){ %>
-						<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
-						<%
-					}
-					%>					
-				</td>
-				
-			</tr>
-			
-			<!-- the table itself -->
-		
+			<thead>
 			<tr>
 				<th width="37%">
-					<jsp:include page="thsortable.jsp" flush="true">
-			            <jsp:param name="title" value="Table"/>
-			            <jsp:param name="mapName" value="Table"/>
-			            <jsp:param name="sortColNr" value="3"/>
-			            <jsp:param name="help" value="help.jsp?screen=tables&area=table"/>
-			        </jsp:include>
+					<%
+					String sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
+					String sortedLink = getSortedLink(3, oSortCol, oSortOrder);
+					%>
+					<a title="Table" href="<%=sortedLink%>">
+	                      Table&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					</a>
 				</th>
 				<th width="35%" style="border-left:0">
-					<jsp:include page="thsortable.jsp" flush="true">
-			            <jsp:param name="title" value="Short name"/>
-			            <jsp:param name="mapName" value="ShortName"/>
-			            <jsp:param name="sortColNr" value="1"/>
-			            <jsp:param name="help" value="help.jsp?screen=tables&area=shortname"/>
-			        </jsp:include>
+					<%
+					sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
+					sortedLink = getSortedLink(1, oSortCol, oSortOrder);
+					%>
+					<a title="Short name" href="<%=sortedLink%>">
+	                      Short name&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					</a>
 				</th>
 				<th width="25%" style="border-left:0" style="border-right: 1px solid #FF9900">
-					<jsp:include page="thsortable.jsp" flush="true">
-			            <jsp:param name="title" value="Dataset"/>
-			            <jsp:param name="mapName" value="Dataset"/>
-			            <jsp:param name="sortColNr" value="2"/>
-			            <jsp:param name="help" value="help.jsp?screen=tables&area=dataset"/>
-			        </jsp:include>
+					<%
+					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
+					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
+					%>
+					<a title="Dataset" href="<%=sortedLink%>">
+	                      Dataset&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					</a>
 				</th>
 			</tr>
+			</thead>
+			<tbody>
 			
             <%
             
@@ -443,7 +441,7 @@
             	}
 			}
 			%>
-			
+			</tbody>
 		</table>
 		
 		<input type="hidden" name="searchUrl" value=""/>

@@ -9,6 +9,7 @@
 <%!private boolean restore = false;%>
 
 <%@ include file="history.jsp" %>
+<%@ include file="sorting.jsp" %>
 
 <%!class c_SearchResultEntry implements Comparable {
     public String oID;
@@ -370,7 +371,7 @@
 					}
     	        	%>
     	        	
-	    	        </div></td></tr></table></body></html>
+	    	        </div></body></html>
 	        	    <%
 	            	return;
 	            }
@@ -456,53 +457,31 @@
 				else{ %>
 					<th width="32%"><%
 				}
+				String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
+				String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
 				%>
-					<jsp:include page="thsortable.jsp" flush="true">
-			            <jsp:param name="title" value="Dataset"/>
-			            <jsp:param name="mapName" value="Dataset"/>
-			            <jsp:param name="sortColNr" value="1"/>
-			            <jsp:param name="help" value="help.jsp?screen=datasets&amp;area=dataset"/>
-			        </jsp:include>
+					<a title="Dataset" href="<%=sortedLink%>">
+						Dataset&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					</a>
 				</th>
 				<%
 				if (userHasEditRights){ %>
 					<th width="10%">
-						<table width="100%">
-							<tr>
-								<td align="right" width="50%">
-									<b>CheckInNo</b>
-								</td>
-								<td align="left" width="50%">
-									<a target="_blank" href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href)">
-										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help" />
-									</a>
-								</td>
-							</tr>
-						</table>
+						CheckInNo
 					</th><%
 				}
 				%>
 				<th width="15%">
-					<jsp:include page="thsortable.jsp" flush="true">
-			            <jsp:param name="title" value="Status"/>
-			            <jsp:param name="mapName" value="Status"/>
-			            <jsp:param name="sortColNr" value="2"/>
-			            <jsp:param name="help" value="help.jsp?screen=dataset&amp;area=regstatus"/>
-			        </jsp:include>
+					<%
+					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
+					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
+					%>
+					<a title="Status" href="<%=sortedLink%>">
+	                      Status&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					</a>
 				</th>
 				<th width="40%">
-					<table width="100%">
-						<tr>
-							<td align="right" width="50%">
-								<b>Tables</b>
-							</td>
-							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=datasets&amp;area=tables" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help" />
-								</a>
-							</td>
-						</tr>
-					</table>
+					Tables
 				</th>
 			</tr>
       </thead>

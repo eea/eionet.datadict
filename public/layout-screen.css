@@ -527,6 +527,7 @@ td.search_result {
 }
 
 td.search_result_odd {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	font-style: normal;
 	line-height: normal;
@@ -822,7 +823,8 @@ table.datatable {
 }
 
 .sortable thead th a:hover {
-	color:#333;
+	color: #696969;
+	background: #F5F5F5;
 }
 
 table.sortable tbody td {

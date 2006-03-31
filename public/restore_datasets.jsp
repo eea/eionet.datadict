@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
@@ -7,6 +8,7 @@
 <%!private boolean restore = false;%>
 
 <%@ include file="history.jsp" %>
+<%@ include file="sorting.jsp" %>
 
 <%!class c_SearchResultEntry implements Comparable {
     public String oID;
@@ -226,11 +228,13 @@
 
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Data Dictionary</title>
+    <title>Restore datasets - Data Dictionary</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
+    <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
 		// <![CDATA[
@@ -318,142 +322,82 @@
     </script>
 </head>
 <body onload="doLoad()">
-<%@ include file="header.htm" %>
-<table border="0">
-    <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></P>
-        </td>
-        <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Datasets"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
-            
-			<div style="margin-left:30">
+
+	<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:param name="name" value="Restore datasets"/>
+        <jsp:param name="back" value="true"/>
+	</jsp:include>
+    <%@ include file="nmenu.jsp" %>
+	<div id="workarea">
 			
-			<%
-			if (searchType != null && searchType.equals(TYPE_SEARCH)){
+		<%
+		if (searchType != null && searchType.equals(TYPE_SEARCH)){
+        
+            if (datasets == null || datasets.size()==0){
+	            %>
+    	        <b>No results found!</b></div></body></html>
+        	    <%
+            	return;
+            }
+    	}
+    	%>
+    	
+		<div id="operations">
+        	<ul>
+        		<li><a target="_blank" href="help.jsp?screen=restore_datasets&area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+        	</ul>
+		</div>
+
+    	
+    	<%
+		if (!restore){%>
+			<h1>Datasets</h1><%
+		}
+		else{%>
+			<h1>Restore datasets</h1><%
+		}
+		%>
             
-	            if (datasets == null || datasets.size()==0){
-		            %>
-	    	        <b>No results found!</b></div></td></tr></table></body></html>
-	        	    <%
-	            	return;
-	            }
-        	}
-            %>
-            
-			<form acceptcharset="UTF-8" id="form1" method="POST" action="restore_datasets.jsp" onsubmit="setLocation()">
-			
-		<table width="700" border="0">
+		<form acceptcharset="UTF-8" id="form1" method="POST" action="restore_datasets.jsp" onsubmit="setLocation()">
 		
-			<tr>
-				<td>
-					<%
-					if (!restore){%>
-						<font class="head00">Datasets</font><%
-					}
-					else{%>
-						<font class="head00">Restore datasets</font><%
-					}
-					%>
-				</td>
-			</tr>
-			<tr height="10"><td></td></tr>
-			
+		<div style="padding-bottom:5">
 			<%
-			if (false){ %>
-				<tr>
-					<%
-					if (!restore){%>
-						<td colspan="3"><span class="mainfont">
-							A red wildcard (<font color="red">*</font>) means that the definition of the dataset is under work
-							and cannot be deleted. Otherwise checkboxes enable to delete selected datasets.
-						</td><%
-					}
-					else{%>
-						<td colspan="3"><span class="mainfont">
-							Checkboxes and 'Restore' button enable to restore the selected datasets.
-							Clicking on dataset will generate PDF where you can see the details.
-						</td><%
-					}
-					%>
-				</tr><%
+			if (user != null){
+				if (restore){ %>
+					<input type="button" name="rst_button" value="Restore selected" class="smallbutton" disabled onclick="restoreDataset()"/>&nbsp;<%
+					
+				}
+				%>
+				<input type="button" name="del_button" value="Delete selected" class="smallbutton" disabled onclick="deleteDataset()"/><%
 			}
-			%>				
-			<tr height="10"><td colspan="2"></td></tr>
-		</table>
+			%>
+		</div>
+
+		<!--  result table -->			
+		<table width="700" cellspacing="0" border="0" cellpadding="2" class="sortable">
 		
-		<table width="700" cellspacing="0" border="0" cellpadding="2">
-		
-			<!-- the buttons part -->
-		
-			<tr>
-				
-				<td colspan="3" align="left" style="padding-bottom:5">
-					<% if (user != null){
-						if (restore){ %>
-							<input type="button" name="rst_button" value="Restore selected" class="smallbutton" disabled onclick="restoreDataset()"/>&nbsp;<%
-							
-						}
-						%>
-						<input type="button" name="del_button" value="Delete selected" class="smallbutton" disabled onclick="deleteDataset()"/><%
-					}
-					%>
-				</td>
-				<td align="right">
-					<a target="_blank" href="help.jsp?screen=restore_datasets&area=pagehelp" onclick="pop(this.href)">
-						<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page">
-					</a><br/>
-				</td>
-				
-			</tr>
-			
-			<!-- the table itself -->
-		
+			<thead>
 			<tr>
 				<th width="3%">&nbsp;</th>
 				<th width="30%" style="border-left: 0">
-					<jsp:include page="thsortable.jsp" flush="true">
-			            <jsp:param name="title" value="Dataset"/>
-			            <jsp:param name="mapName" value="Dataset"/>
-			            <jsp:param name="sortColNr" value="1"/>
-			            <jsp:param name="help" value="help.jsp?screen=datasets&area=dataset"/>
-			        </jsp:include>
+					<%
+					String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
+					String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
+					%>
+					<a title="Dataset" href="<%=sortedLink%>">
+	                      Dataset&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					</a>
 				</th>
 				<!--th width="20%">Version</th-->
 				<th width="10%">
-					<table width="100%">
-						<tr>
-							<td align="right" width="60%">
-								<b>CheckInNo</b>
-							</td>
-							<td align="left" width="40%">
-								<a target="_blank" href="help.jsp?screen=datasets&area=version" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
-								</a>
-							</td>
-						</tr>
-					</table>
+					CheckInNo
 				</th>
 				<th width="47%" style="border-right: 1px solid #FF9900">
-					<table width="100%">
-						<tr>
-							<td align="right" width="50%">
-								<b>Tables</b>
-							</td>
-							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=datasets&area=tables" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
-								</a>
-							</td>
-						</tr>
-					</table>
+					Tables
 				</th>
 			</tr>
+			</thead>
+			<tbody>
 		
 			<%
 			
@@ -637,7 +581,7 @@
 
             }
 			%>
-			
+			</tbody>
 		</table>
 		
 		<input name="was_del_prm" type="hidden" value="<%=wasDelPrm%>"/>

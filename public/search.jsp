@@ -216,23 +216,25 @@ else{ %>
 %>
 
 		<%
-			if (contextParam == null || !contextParam.equals(POPUP)){
-		%>
-                  <jsp:include page="nlocation.jsp" flush='true'>
-                  <jsp:param name="name" value="Search dataelements"/>
-                  <jsp:param name="back" value="true"/>
-                </jsp:include>
-    <%@ include file="nmenu.jsp" %>
+		if (contextParam == null || !contextParam.equals(POPUP)){ %>
+			<jsp:include page="nlocation.jsp" flush='true'>
+				<jsp:param name="name" value="Search dataelements"/>
+				<jsp:param name="back" value="true"/>
+			</jsp:include>
+    		<%@ include file="nmenu.jsp" %>
+    		<div id="workarea">
 		<%
-		} else{ %>
-				<div class="popuphead">
-					<h1>Data Dictionary</h1>
-					<hr/>
-				</div><%
+		}
+		else{ %>
+			<div class="popuphead">
+				<h1>Data Dictionary</h1>
+				<hr/>
+			</div>
+			<div><%
 			}	
 			%>
 			
-			<div id="workarea">
+			
 				<div id="operations">
 					<ul>
 							<li><a target="_blank" href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href)" title="Get some help on this page">Page help</a></li>
