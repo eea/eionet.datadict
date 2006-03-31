@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="com.tee.uit.help.Helps, java.sql.*, eionet.meta.*, com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
 
@@ -63,13 +64,14 @@ else{
 
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
     <link type="text/css" rel="stylesheet" href="eionet_new.css" />
-    <script language="javascript">
-    
+    <script type="text/javascript">
+      // <![CDATA[
+
     	function load(){
 	    	resize();
     	}
@@ -77,6 +79,7 @@ else{
     	function resize(){
 	    	window.resizeTo(<%=width%>, <%=height%>);
     	}
+      // ]]>
     </script>
 </head>
 <body class="popup" onload="load()">
@@ -84,7 +87,7 @@ else{
 	<h1>Data Dictionary Help</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
