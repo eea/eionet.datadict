@@ -425,10 +425,10 @@
 							<input type="button" class="smallbutton" value="Add new" onclick="goTo('add')"/><%
 						}
 						if (!restore && !wrkCopies){ %>
-							&nbsp;<input type="button" name="del_button" value="Delete selected" class="smallbutton" disabled onclick="deleteDataset()"/><%
+							&nbsp;<input type="button" name="del_button" value="Delete selected" class="smallbutton" disabled="disabled" onclick="deleteDataset()"/><%
 						}
 						else if (restore){%>
-							&nbsp;<input type="button" name="rst_button" value="Restore selected" class="smallbutton" disabled onclick="restoreDataset()"/><%
+							&nbsp;<input type="button" name="rst_button" value="Restore selected" class="smallbutton" disabled="disabled" onclick="restoreDataset()"/><%
 						}
 					}
 					%>
@@ -459,9 +459,10 @@
 				}
 				String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 				String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
+				String sortedAlt  = getSortedAlt(sortedImg);
 				%>
 					<a title="Dataset" href="<%=sortedLink%>">
-						Dataset&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+						Dataset&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt="<%=sortedAlt%>"/>
 					</a>
 				</th>
 				<%
@@ -475,9 +476,10 @@
 					<%
 					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
+					sortedAlt  = getSortedAlt(sortedImg);
 					%>
 					<a title="Status" href="<%=sortedLink%>">
-	                      Status&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+	                      Status&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt="<%=sortedAlt%>"/>
 					</a>
 				</th>
 				<th width="40%">
@@ -619,7 +621,7 @@
 						<td width="12%" class="<%=styleClass%>">
 							<%
 							if (clickable){ %>
-								<img border="0" src="<%=statusImg%>" width="56" height="12"/><%
+								<img border="0" src="<%=statusImg%>" width="56" height="12" alt="<%=regStatus%>"/><%
 							}
 							else{ %>
 								<span style="color:gray;text-decoration:none;font-size:8pt"><b><%=statusTxt%></b></span><%
@@ -725,7 +727,7 @@
 							<td width="12%" class="<%=styleClass%>">
 								<%
 								if (oEntry.clickable){ %>
-									<img border="0" src="<%=statusImg%>" width="56" height="12"/><%
+									<img border="0" src="<%=statusImg%>" width="56" height="12" alt="<%=oEntry.getRegStatus()%>"/><%
 								}
 								else{ %>
 									<span style="color:gray;text-decoration:none;font-size:8pt"><b><%=statusTxt%></b></span><%

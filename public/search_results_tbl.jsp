@@ -200,7 +200,7 @@
 		    }
 			%>
 		
-		<form acceptcharset="UTF-8" id="form1" method="post" action="search_results_tbl.jsp" onsubmit="setLocation()">
+		<form id="form1" method="post" action="search_results_tbl.jsp" onsubmit="setLocation()">
 		
 		<div style="padding-bottom:5">
 			<%
@@ -235,7 +235,7 @@
 	                      Short name&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
-				<th width="25%" style="border-left:0" style="border-right: 1px solid #FF9900">
+				<th width="25%" style="border-left:0; border-right: 1px solid #FF9900">
 					<%
 					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
@@ -350,7 +350,7 @@
 						String tblFullName = tblName;
 						tblName = tblName.length()>60 && tblName != null ? tblName.substring(0,60) + " ..." : tblName;
 
-						tableLink = "dstable.jsp?mode=view&table_id=" + table_id + "&ds_id=" + ds_id + "&ds_name=" + ds_name;
+						tableLink = "dstable.jsp?mode=view&amp;table_id=" + table_id + "&amp;ds_id=" + ds_id + "&amp;ds_name=" + ds_name;
 
 						c_SearchResultEntry oEntry = new c_SearchResultEntry(table_id,
                 															 ds_id,
@@ -412,7 +412,7 @@
                     for (int i=0;i<oResultSet.oElements.size();i++) {
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
 
-                        tableLink = "dstable.jsp?mode=view&table_id=" + oEntry.oID + "&ds_id=" + oEntry.oDsID + "&ds_name=" + oEntry.oDsName;
+                        tableLink = "dstable.jsp?mode=view&amp;table_id=" + oEntry.oID + "&amp;ds_id=" + oEntry.oDsID + "&amp;ds_name=" + oEntry.oDsName;
                         
                         String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
 						%>
@@ -453,14 +453,14 @@
 
 		</form>
 		
-		<form acceptcharset="UTF-8" name="sort_form" action="search_results_tbl.jsp" method="GET">
+		<form accept-charset="UTF-8" name="sort_form" action="search_results_tbl.jsp" method="get">
 			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
         	<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
 			<input name='SearchType' type='hidden' value='NoSearch'/>
 		</form>
 		
 			</div>
-			
+	</body>
 </html>
 
 <%

@@ -25,4 +25,16 @@ public String getSortedLink(int curColNr, Integer oSortCol, Integer oSortOrder){
 	
 	return sortLink.toString();
 }
+
+public String getSortedAlt(String sortedImg){
+	
+	if (sortedImg==null)
+		return "";
+	else if (sortedImg.endsWith("sortup.gif"))
+		return "Sorted up";
+	else if (sortedImg.endsWith("sortdown.gif"))
+		return "Sorted down";
+	else
+		return "";
+}
 %>

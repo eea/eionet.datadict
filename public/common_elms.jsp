@@ -176,12 +176,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
     <title>Search results - Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
 	<link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
     <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
-    <script language="javascript" src='script.js'></script>
-	<script language="javascript">
+    <script type="text/javascript" src='script.js'></script>
+	<script type="text/javascript">
 	// <![CDATA[
     	function showSortedList(clmn,ordr) {
     		if ((document.forms["sort_form"].elements["sort_column"].value != clmn)
@@ -231,7 +231,7 @@ if (popup){ %>
 		<h1>Data Dictionary</h1>
 		<hr/>
 		<div align="right">
-			<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+			<form name="close" action="javascript:window.close()">
 				<input type="submit" class="smallbutton" value="Close"/>
 			</form>
 		</div>
@@ -272,7 +272,7 @@ else{ %>
             
 			<div id="operations">
             	<ul>
-            		<li><a target="_blank" href="help.jsp?screen=elements&area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+            		<li><a target="_blank" href="help.jsp?screen=elements&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
             	</ul>
             </div>
             
@@ -513,7 +513,7 @@ else{ %>
 			</tbody>
 		</table>
 		
-		<form acceptcharset="UTF-8" name="sort_form" action="common_elms.jsp" method="GET">
+		<form name="sort_form" action="common_elms.jsp" method="get">
 			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
         	<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
 			<input name='SearchType' type='hidden' value='NoSearch'/>
@@ -525,10 +525,6 @@ else{ %>
 		</form>
 		
 			</div>
-			
-		</td>
-</tr>
-</table>
 </body>
 </html>
 

@@ -231,12 +231,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
     <title>Restore datasets - Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
     <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
     <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
-    <script language="javascript" src='script.js'></script>
-    <script language="javascript">
+    <script type="text/javascript" src='script.js'></script>
+    <script type="text/javascript">
 		// <![CDATA[
 		function setLocation(){
 			var o = document.forms["form1"].searchUrl;
@@ -344,7 +344,7 @@
     	
 		<div id="operations">
         	<ul>
-        		<li><a target="_blank" href="help.jsp?screen=restore_datasets&area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+        		<li><a target="_blank" href="help.jsp?screen=restore_datasets&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
         	</ul>
 		</div>
 
@@ -358,17 +358,17 @@
 		}
 		%>
             
-		<form acceptcharset="UTF-8" id="form1" method="POST" action="restore_datasets.jsp" onsubmit="setLocation()">
+		<form id="form1" method="post" action="restore_datasets.jsp" onsubmit="setLocation()">
 		
 		<div style="padding-bottom:5">
 			<%
 			if (user != null){
 				if (restore){ %>
-					<input type="button" name="rst_button" value="Restore selected" class="smallbutton" disabled onclick="restoreDataset()"/>&nbsp;<%
+					<input type="button" name="rst_button" value="Restore selected" class="smallbutton" disabled="disabled" onclick="restoreDataset()"/>&nbsp;<%
 					
 				}
 				%>
-				<input type="button" name="del_button" value="Delete selected" class="smallbutton" disabled onclick="deleteDataset()"/><%
+				<input type="button" name="del_button" value="Delete selected" class="smallbutton" disabled="disabled" onclick="deleteDataset()"/><%
 			}
 			%>
 		</div>
@@ -598,10 +598,6 @@
 		</form>
 		
 		</div>
-			
-		</td>
-</tr>
-</table>
 </body>
 </html>
 
