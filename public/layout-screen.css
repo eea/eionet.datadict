@@ -794,10 +794,28 @@ th.dst_tbls {
 /* Data tables have borders */
 table.datatable {
 	border-collapse: collapse;
+	margin: 1em 0.5em;
 }
+.datatable th, .datatable th[scope="col"], .datatable th.scope-col {
+	text-align: center;
+}
+.datatable th.scope-row { /* IE6 doesn't understand [scope="row"] */
+	text-align: left;
+}
+.datatable th[scope="row"] {
+	text-align: left;
+}
+
+.datatable .number {
+	text-align: right;
+}
+.datatable .sum {
+	font-weight: bold;
+}
+
 .datatable td, .datatable th  {
-	border: 1px solid #C0C0C0;
-	padding: 3px;
+	border: 1px solid black;
+	padding: 0.3em;
 }
 
 /* styles for sortable tables */

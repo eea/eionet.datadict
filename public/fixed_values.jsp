@@ -297,11 +297,11 @@ private String legalizeAlert(String in){
 </table>
 <% if (mode.equals("view")){
 	%>
-	<table width="auto" cellspacing="0">
+	<table width="auto" cellspacing="0" class="datatable">
 		<tr>
-			<th align="left" style="padding-left:5;padding-right:10">Value</th>
-			<th align="left" style="padding-left:5;padding-right:10">Definition</th>
-			<th align="left" style="padding-left:5;padding-right:10;border-right:1px solid #FF9900">ShortDescription</th>			
+			<th scope="col" class="scope-col">Value</th>
+			<th scope="col" class="scope-col">Definition</th>
+			<th scope="col" class="scope-col">ShortDescription</th>
 		</tr>
 		<%
 		String mode= (user == null) ? "print" : "edit";
@@ -327,8 +327,8 @@ private String legalizeAlert(String in){
 			
 			%>
 			
-			<tr <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-				<td valign="bottom" align="left" style="padding-left:5;padding-right:10">
+			<tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
+				<td valign="bottom" align="left">
 					<%=spaces%>
 					<b>
 					<a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>">
@@ -336,10 +336,10 @@ private String legalizeAlert(String in){
 					</a>
 					</b>
 				</td>
-				<td valign="bottom" align="left" title="Definition" style="padding-left:5;padding-right:10">
+				<td valign="bottom" align="left" title="Definition">
 					<%=definition%>
 				</td>
-				<td valign="bottom" align="left" title="ShortDescription" style="padding-left:5;padding-right:10">
+				<td valign="bottom" align="left" title="ShortDescription">
 					<%=shortDesc%>
 				</td>				
 			</tr>
