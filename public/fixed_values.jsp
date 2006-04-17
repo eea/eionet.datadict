@@ -47,7 +47,7 @@ private String legalizeAlert(String in){
 			boolean f = user.authenticate(username, password);*/
 			
 			if (request.getMethod().equals("POST")){
-      			if (user == null){
+						if (user == null){
 	      			%>
 	      				<html>
 	      				<body>
@@ -56,7 +56,7 @@ private String legalizeAlert(String in){
 	      				</html>
 	      			<%
 	      			return;
-      			}
+						}
 			}						
 			
 			String delem_id = request.getParameter("delem_id");
@@ -171,14 +171,14 @@ private String legalizeAlert(String in){
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Data Dictionary - Fixed values</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-    <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
-    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
-    <link type="text/css" rel="stylesheet" href="boxes.css"/>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-    <script type="text/javascript" src='script.js'></script>
+	<title>Data Dictionary - Fixed values</title>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+	<link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+	<link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+	<link type="text/css" rel="stylesheet" href="boxes.css"/>
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+	<script type="text/javascript" src='script.js'></script>
 	<script type="text/javascript">
 	// <![CDATA[
 	
@@ -197,7 +197,7 @@ private String legalizeAlert(String in){
 			document.forms["form1"].submit();
 		}
 		
-    	function edit(){
+			function edit(){
 	    	<%
 	    	String modeString = new String("mode=view&");
 	    	String qryStr = request.getQueryString();
@@ -257,31 +257,33 @@ private String legalizeAlert(String in){
 		<%
 		String hlpScreen = mode.equals("view") ? "fixed_values_view" : "fixed_values_edit";
 		%>
-        <div id="operations">
-        <ul>
+				<div id="operations">
+				<ul>
 					<li><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
 				</ul>
 				</div>
 		<h1><%=initCaseTitle%> values of <a href="<%=parentUrl%>"><%=Util.replaceTags(delem_name)%></a> <%=dispParentType%></h1>
 			
 <form name="form1" method="post" action="fixed_values.jsp">
-<table width="600">
 	<% if (mode.equals("view")){
 		if (user!=null && isWorkingCopy){ %>
+		<table width="600">
 			<tr>
 				<td colspan="2" align="right">
 					<input type="button" class="smallbutton" value="Edit" onclick="edit()"/>
 				</td>
 			</tr>
+		</table>
 		<%
 		}
 	
-	 } else {%>
+	} else {%>
 		<% if (user != null) { %>
+		<table width="600">
 			<tr height="10"><td colspan="2"><font class="mainfont">Enter a new value here:</font></td></tr>
 			<tr>
 				<td colspan="1" width="300">
-					<input class="smalltext" type="text" size="20" name="new_value"></input>
+					<input class="smalltext" type="text" size="20" name="new_value"/>
 					<input class="smallbutton" type="button" value="Add" onclick="submitForm('add')"/>&#160;
 					<%
 					if (!valsType.equals("AGG")){ %>
@@ -290,14 +292,12 @@ private String legalizeAlert(String in){
 					%>
 				</td>
 			</tr>
+		</table>
 		<% } %>
 	<% } %>
-			
-	<tr height="5"><td colspan="2"></td></tr>
-</table>
 <% if (mode.equals("view")){
 	%>
-	<table width="auto" cellspacing="0" class="datatable">
+	<table class="datatable">
 		<tr>
 			<th scope="col" class="scope-col">Value</th>
 			<th scope="col" class="scope-col">Definition</th>
@@ -328,18 +328,16 @@ private String legalizeAlert(String in){
 			%>
 			
 			<tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
-				<td valign="bottom" align="left">
+				<td>
 					<%=spaces%>
-					<b>
 					<a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>">
 						<%=Util.replaceTags(value)%>
 					</a>
-					</b>
 				</td>
-				<td valign="bottom" align="left" title="Definition">
+				<td>
 					<%=definition%>
 				</td>
-				<td valign="bottom" align="left" title="ShortDescription">
+				<td>
 					<%=shortDesc%>
 				</td>				
 			</tr>
@@ -359,8 +357,8 @@ private String legalizeAlert(String in){
 		</tr>
 		<tr height="3"><td colspan="3"></td></tr>
 	<% } %>	
-  	<tr>
-  		<th>&#160;</th>
+		<tr>
+			<th>&#160;</th>
 		<th align="left" style="padding-left:5;padding-right:10;border-left:0" width="100">Value</th>
 		<th align="left" style="padding-left:5;padding-right:10;border-right:1px solid #FF9900" width="500">Definition</th>
 	</tr>
@@ -443,7 +441,7 @@ private String legalizeAlert(String in){
 
 <input type="hidden" name="delem_id" value="<%=delem_id%>"/>
 <input type="hidden" name="delem_name" value="<%=delem_name%>"/>
-<input type="hidden" name="parent_type" value="<%=typeParam%>"></input>
+<input type="hidden" name="parent_type" value="<%=typeParam%>"/>
 <input type="hidden" name="mode" value="<%=mode%>"/>
 <input type="hidden" name="changed" value="0"/>
 

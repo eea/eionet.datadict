@@ -5,7 +5,7 @@
 }
 #pagehead form {
   display:none;
-}
+};
 
 #logo {
 	float:right
@@ -86,32 +86,64 @@ h4, h5, h6 {
 	line-height: normal; 
 }
 
-table {
+td, th {
+	font-family: Avenir, Helvetica, sans-serif; 
+	font-size: 10pt; 
+	font-style: normal; 
+	line-height: normal; 
+	text-decoration: none;
 	empty-cells: show;
 }
 
-td {
-	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 10pt; 
-	font-style: normal; 
-	line-height: normal; 
-	text-decoration: none;
-}
-
 th {
-	color: #666666;
-	font-family: Arial, Helvetica, sans-serif; 
-	font-size: 10pt; 
-	font-style: normal; 
 	font-weight: bold; 
-	line-height: normal; 
-	text-decoration: none;
 	text-align: left;
-/*
-     vertical-align: top;
- */
 }
 
+.datatable {
+	font-family: Avenir, Helvetica, sans-serif; 
+	font-size: 10pt; 
+	margin: 1em 0.5em;
+	border-collapse: collapse;
+	border-top:    2pt solid black;
+	border-bottom: 2pt solid black;
+	empty-cells: show;
+}
+
+.datatable td {
+	border-bottom: 1pt solid black;
+	padding: 0.3em;
+}
+
+.datatable th {
+	color: black;
+	font-weight: bold; 
+	text-align: center;
+	border-bottom: 2pt solid black;
+	padding: 0.3em;
+}
+
+.datatable th.scope-row { /* IE6 doesn't understand [scope="row"] */
+	text-align: left;
+	border-bottom: 1pt solid black;
+}
+
+.datatable th[scope="row"] {
+	text-align: left;
+	border-bottom: 1pt solid black;
+}
+
+.datatable .number {
+	text-align: right;
+}
+
+.datatable .center {
+	text-align: center;
+}
+
+.datatable .sum {
+	font-weight: bold;
+}
 .zebradark {
 	background-color: #D3D3D3;
 }
