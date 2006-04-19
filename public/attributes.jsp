@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!static int iPageLen=0;%>
 
@@ -78,14 +79,17 @@
     String mode = request.getParameter("mode");
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="javascript" src='script.js'></script>
-    <script language="javascript">
-		// <![CDATA[
+  <title>Data Dictionary - Attributes</title>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+  <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+  <script type="text/javascript" src='script.js'></script>
+  <script type="text/javascript">
+  // <![CDATA[
 		function setLocation(){
 			var o = document.forms["form1"].searchUrl;
 			if (o!=null)
@@ -101,22 +105,12 @@
     </script>
 </head>
 <body>
-<%@ include file="header.htm" %>
-<table border="0">
-    <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
-        <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Attributes"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
-            
-			<div style="margin-left:30">
-			
+	<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:param name="name" value="Attributes"/>
+		<jsp:param name="back" value="true"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
+<div id="workarea">
 			<%
             
             if (attributes == null || attributes.size()==0){
@@ -127,143 +121,87 @@
             }
             %>
             
-			<form acceptcharset="UTF-8" id="form1" method="POST" action="attributes.jsp">
+			<form id="form1" method="post" action="attributes.jsp">
 			
-		<table width="500">
-		
-			<tr><td><span class="head00">Attributes</span></td></tr>
+				<div id="operations">
+					<ul>
+						<li><a target="_blank" href="help.jsp?screen=attributes&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+					</ul>
+				</div>
 
-			<tr height="5"><td></td></tr>
-			<tr>
-				<td>
-					<span class="mainfont">
-						This is a list of all definition attributes used in Data Dictionary.
-						Every attribute is uniquely identifed by its short name. Click page help
-						and question marks in column headers to to find out more.
-						To view <% if (user != null && mode==null){ %> or modify <%}%> an attribute's
-						definition, click its short name.
-						<% if (false && user != null && mode==null){ %>
-							To add a new attribute, click the 'Add' button on top of the list.
-							The left-most column enables you to delete selected attributes.
-						<%}%>
-					</span>
-				</td>
-			</tr>
-			<tr height="5"><td></td></tr>
-			
-		</table>
-		
-		<table width="auto" cellspacing="0" cellpadding="0" border="0">
+		<h1>Attributes</h1>
+		<p>
+			This is a list of all definition attributes used in Data Dictionary.
+			Every attribute is uniquely identifed by its short name. Click page help
+			and question marks in column headers to to find out more.
+			To view <% if (user != null && mode==null){ %> or modify <%}%> an attribute's
+			definition, click its short name.
+			<% if (false && user != null && mode==null){ %>
+				To add a new attribute, click the 'Add' button on top of the list.
+				The left-most column enables you to delete selected attributes.
+			<%}%>
+		</p>
 		
 				<%
 				if (user != null && mode==null){
 					boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
 					if (addPrm){
 						%>
-						<tr>
-							<td colspan="5" valign="top" align="left" style="padding-right:10;padding-top:3">
+							<div style="padding:3px 10px">
 								<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
-							</td>
-							<td>
-								<a href="help.jsp?screen=attributes&area=pagehelp" onclick="pop(this.href)" target="_blank">
-									<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-								</a>
-							</td>
-						</tr>
-						<tr height="5"><td colspan="6"></td></tr>
+							</div>
 						<%
 					}
 				}
 			
 				%>
+
+
+		<table class="datatable">
+			<col style="width:14em"/>
+			<col style="width:7em"/>
+			<col style="width:6em"/>
+			<col style="width:6em"/>
+			<col style="width:6em"/>
+			<col style="width:6em"/>
 			<tr>
-				<th rowspan="2">
-					<table width="100%">
-						<tr>
-							<td align="right" width="50%">
-								<b>Short name</b>
-							</td>
-							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=shortname" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+				<th scope="col" class="scope-col">
+								Short name
+								<a target="_blank" href="help.jsp?screen=attributes&amp;area=shortname" onclick="pop(this.href)">
+									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 								</a>
-							</td>
-						</tr>
-					</table>
 				</th>
-				<th rowspan="2">
-					<table width="100%">
-						<tr>
-							<td align="right" width="50%">
-								<b>Type</b>
-							</td>
-							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=type" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+				<th scope="col" class="scope-col">
+								Type
+								<a target="_blank" href="help.jsp?screen=attributes&amp;area=type" onclick="pop(this.href)">
+									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 								</a>
-							</td>
-						</tr>
-					</table>
 				</th>
-				<th rowspan="2">
-					<table width="100%">
-						<tr>
-							<td align="right" width="50%">
-								<b>Datasets</b>
-							</td>
-							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=datasets" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+				<th scope="col" class="scope-col">
+								Datasets
+								<a target="_blank" href="help.jsp?screen=attributes&amp;area=datasets" onclick="pop(this.href)">
+									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 								</a>
-							</td>
-						</tr>
-					</table>
 				</th>
-				<th rowspan="2">
-					<table width="100%">
-						<tr>
-							<td align="right" width="50%">
-								<b>Tables</b>
-							</td>
-							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=tables" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+				<th scope="col" class="scope-col">
+								Tables
+								<a target="_blank" href="help.jsp?screen=attributes&amp;area=tables" onclick="pop(this.href)">
+									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 								</a>
-							</td>
-						</tr>
-					</table>
 				</th>
-				<th rowspan="2">
-					<table width="100%">
-						<tr>
-							<td align="left" width="50%">
-								<b>Data elements with fixed values</b>
-							</td>
-							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=elmfxv" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+				<th scope="col" class="scope-col">
+								Data elements with fixed values
+								<a target="_blank" href="help.jsp?screen=attributes&amp;area=elmfxv" onclick="pop(this.href)">
+									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 								</a>
-							</td>
-						</tr>
-					</table>
 				</th>
-				<th rowspan="2">
-					<table width="100%">
-						<tr>
-							<td align="left" width="50%">
-								<b>Data elements with quantitative values</b>
-							</td>
-							<td align="left" width="50%">
-								<a target="_blank" href="help.jsp?screen=attributes&area=elmquant" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+				<th scope="col" class="scope-col">
+								Data elements with quantitative values
+								<a target="_blank" href="help.jsp?screen=attributes&amp;area=elmquant" onclick="pop(this.href)">
+									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
 								</a>
-							</td>
-						</tr>
-					</table>
 				</th>
 			</tr>
-			
-			<tr height="5"><td colspan="6"></td></tr>
 			
 			<%
 			// show all
@@ -301,27 +239,27 @@
 				String attrTypeDisp = "Simple";
 				%>
 				
-				<tr>
+				<tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
 					<%
 					if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
 						attrTypeDisp = "Complex";
 					%>
-					<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+					<td>
 						<a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>&amp;mode=view">
 						<%=attr_name%></a>
 					</td>
-					<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=attrTypeDisp%></td>
-					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("DST")){ %><img src="images/ok.gif"/><%}%>
+					<td><%=attrTypeDisp%></td>
+					<td>
+						<% if (attribute.displayFor("DST")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
 					</td>
-					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("TBL")){ %><img src="images/ok.gif"/><%}%>
+					<td>
+						<% if (attribute.displayFor("TBL")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
 					</td>
-					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("CH1")){ %><img src="images/ok.gif"/><%}%>
+					<td>
+						<% if (attribute.displayFor("CH1")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
 					</td>
-					<td align="left" width="50" style="padding-right:10;padding-left:3" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<% if (attribute.displayFor("CH2")){ %><img src="images/ok.gif"/><%}%>
+					<td>
+						<% if (attribute.displayFor("CH2")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
 					</td>
 				</tr>
 				
@@ -334,10 +272,6 @@
 		<input type="hidden" name="searchUrl" value=""/>
 		</form>
 			</div>
-			
-		</td>
-</tr>
-</table>
 </body>
 </html>
 
