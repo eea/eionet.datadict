@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.Util"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private String type=null;%>
 <%!private String mode=null;%>
@@ -177,18 +178,20 @@
 				}
 			}
 			
-			String disabled = user == null ? "disabled" : "";
+			String disabled = user == null ? "disabled='disabled'" : "";
 			%>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="javascript" src='script.js'></script>
-    <script language="javascript">
-		// <![CDATA[
-    
+  <title>Data Dictionary - Attribute</title>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <script type="text/javascript" src='script.js'></script>
+  <script type="text/javascript">
+  // <![CDATA[
 		function submitForm(mode){
 			
 			if (mode == "delete"){
@@ -368,44 +371,32 @@
     </script>
 </head>
 <body onload="onLoad()">
-<%@ include file="header.htm" %>
-<table border="0">
-    <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
-        <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Attribute"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
-            
-			<div style="margin-left:30">
-			
-			<form acceptcharset="UTF-8" id="form1" name="form1" method="POST" action="delem_attribute.jsp">
+		<jsp:include page="nlocation.jsp" flush='true'>
+			<jsp:param name="name" value="Attribute"/>
+			<jsp:param name="back" value="true"/>
+		</jsp:include>
+	<%@ include file="nmenu.jsp" %>
+<div id="workarea">
+
+			<form id="form1" name="form1" method="post" action="delem_attribute.jsp">
 			
 			<% if (!mode.equals("add")){ %>
-				<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
+				<input type="hidden" name="attr_id" value="<%=attr_id%>" />
 				<%
 				
 				if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE)){
 					%>
-					<input type="hidden" name="simple_attr_id" value="<%=attr_id%>"/>
+					<input type="hidden" name="simple_attr_id" value="<%=attr_id%>" />
 					<%
 				}
 				else{
 					%>
-					<input type="hidden" name="complex_attr_id" value="<%=attr_id%>"/>
+					<input type="hidden" name="complex_attr_id" value="<%=attr_id%>" />
 					<%							
 				}
 				
 			} %>
 			
-			<table width="500" cellspacing="0">
-				<tr>
-					<td colspan="2" align="right">
 						<%
 						String hlpScreen = "simple_attr_def_";
 						if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
@@ -425,81 +416,77 @@
 							hlpScreen = hlpScreen + "view";
 							
 						%>
-						<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp" onclick="pop(this.href)">
-							<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-						</a>
-					</td>
-				</tr>
-				<tr>
+            <div id="operations">
+              <ul>
+                <li><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+							<%
+							if (user!=null && mode.equals("view") && editPrm){ %>
+								<li><a href="javascript:goToEdit()">Edit</a></li>
+							<% }%>
+              </ul>
+            </div>
+
+
 					<%
 					if (mode.equals("add")){ %>
-						<td colspan="2"><span class="head00">Add an attribute definition</span></td> <%
+						<h1>Add an attribute definition</h1> <%
 					}
 					else if (mode.equals("edit")){ %>
-						<td colspan="2"><span class="head00">Edit attribute definition</span></td> <%
+						<h1>Edit attribute definition</h1> <%
 					}
 					else{ %>
-						<td><span class="head00">View attribute definition</span></td>
-						<td align="right">
-							<%
-							if (user!=null && editPrm){ %>
-								<input type="button" class="smallbutton" value="Edit" onclick="goToEdit()"/> <%
-							}
-							else{
-								%>&#160;
-<!--								<input type="button" class="smallbutton" value="Edit" disabled/ -->
-							<%
-							}
-							%>
-						</td> <%
+						<h1>View attribute definition</h1>
+						<%
 					}
 					%>
-				</tr>
 				
 				<%
 				if (!mode.equals("view")){ %>
 				
-					<tr height="5"><td colspan="2"></td></tr>
 				
-					<tr>
-						<td colspan="2"><span class="Mainfont">
+					<p>
 						(M), (O) and (C) behind the titles stand for Mandatory, Optional and Conditional.
+					</p>
 						<%
 						if (type==null){ %>
-							<br/><br/><b>NB! Please select the attribute type first. Otherwise your entries will be lost.
-							Also, for simple attributes more inputs will be displayed.</b> <%
+							<p><b>NB! Please select the attribute type first. Otherwise your entries will be lost.
+							Also, for simple attributes more inputs will be displayed.</b></p> <%
 						}
-						%>
-						</span></td>
-					</tr> <%
 				}
 				%>
 				
-				<tr height="5"><td colspan="2"></td></tr>
 				
-				<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-				
-			</table>
+      <div style="clear: both; border-top:#008B8B solid 1pt;"></div>
 			
 			<%
 			int displayed = 0;
+			
+			if (mode.equals("view")){
+				%>
+				<table class="datatable">
+				<col style="width:10em"/>
+				<col style="width:35em"/>
+				<%
+			} else {
+			%>
+				<table class="formtable">
+				<col style="width:8em"/>
+				<col style="width:2em"/>
+				<col style="width:35em"/>
+				<%
+			}
 			%>
 			
-			<table width="auto" cellspacing="0">
-			
-			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-				<td align="right" style="padding-right:10">
-				
-					<span class="mainfont"><b>Type</b>
+			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+				<th scope="row" class="scope-row">Type</th>
 						<%
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							&#160;(M)
+							<td>(M)</td>
 							<%
 						}
 						%>
-					</span>
 				</td>
 				<td>
 					<%
@@ -523,70 +510,59 @@
 				</td>
 			</tr>
 			
-			<tr height="10"><td colspan="2"></td></tr>
-			
-			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-				<td align="right" style="padding-right:10">
-					<span class="mainfont"><b>Short name</b>
+			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+				<th scope="row" class="scope-row">Short name</th>
 						<%
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							&#160;(M)
+							<td>(M)</td>
 							<%
 						}
 						%>
-					</span>
-				</td>
 				<td>
 					<% if(!mode.equals("add")){ %>
-						<font class="title2" color="#006666"><%=attr_shortname%></font>
-						<input type="hidden" name="short_name" value="<%=attr_shortname%>"/>
+						<em><%=attr_shortname%></em>
+						<input type="hidden" name="short_name" value="<%=attr_shortname%>" />
 					<% } else{ %>
-						<input type="text" class="smalltext" size="30" name="short_name"></input>
+						<input type="text" class="smalltext" size="30" name="short_name" />
 					<% } %>
 				</td>
 			</tr>
 			
 
 			
-			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-				<td align="right" style="padding-right:10">
-					<span class="mainfont"><b>Name</b>
+			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+				<th scope="row" class="scope-row">Name</th>
 						<%
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							&#160;(M)
+							<td>(M)</td>
 							<%
 						}
 						%>
-					</span>
-				</td>
 				<td>
 					<% if(mode.equals("edit")){ %>						
-						<input <%=disabled%> type="text" class="smalltext" size="30" name="name" value="<%=attr_name%>"></input>
+						<input <%=disabled%> type="text" class="smalltext" size="30" name="name" value="<%=attr_name%>" />
 					<% } else if (mode.equals("add")){ %>
-						<input <%=disabled%> type="text" class="smalltext" size="30" name="name"></input>
+						<input <%=disabled%> type="text" class="smalltext" size="30" name="name" />
 					<% } else { %>
-						<span class="Mainfont" style="width:400"><%=attr_name%></span>
+						<%=attr_name%>
 					<% } %>
 				</td>
 			</tr>
 			
-			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>	
-				<td align="right" style="padding-right:10">
-					<span class="mainfont"><b>Context</b>
+			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>	
+				<th scope="row" class="scope-row">Context</th>
 						<%
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							&#160;(M)
+							<td>(M)</td>
 							<%
 						}
 						%>
-					</span>
-				</td>
 				<td>
 					<%
 					if (mode.equals("view")){
@@ -601,7 +577,7 @@
 						if (nsName == null) nsName = "";
 						
 						%>
-						<span class="Mainfont" style="width:400"><%=nsName%></span> <%
+						<%=nsName%> <%
 					}
 					else{
 						%>
@@ -643,19 +619,16 @@
 				</td>
 			</tr>
 			
-			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>	
-				<td align="right" style="padding-right:10">
-					<span class="mainfont"><b>Definition</b>
+			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>	
+				<th scope="row" class="scope-row">Definition</th>
 						<%
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							&#160;(O)
+							<td>(O)</td>
 							<%
 						}
 						%>
-					</span>
-				</td>
 				<td>
 					<%
 					if (!mode.equals("add")){
@@ -667,7 +640,7 @@
 						}
 						else{
 							%>
-							<span class="Mainfont" style="width:400"><%=definition%></span>
+							<%=definition%>
 							<%
 						}
 					}
@@ -684,19 +657,16 @@
 			if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
 				%>
 				
-				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>	
-					<td align="right" style="padding-right:10">
-						<span class="mainfont"><b>Obligation</b>
+				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>	
+					<th scope="row" class="scope-row">Obligation</th>
 							<%
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								&#160;(M)
+								<td>(M)</td>
 								<%
 							}
 							%>
-						</span>
-					</td>
 					<td>
 						<%
 						if (mode.equals("view")){
@@ -708,13 +678,13 @@
 							else if (obligation != null && obligation.equals("C"))
 								dispOblig = "Conditional";
 							%>
-							<span class="Mainfont" style="width:400"><%=dispOblig%></span>
+							<%=dispOblig%>
 							<%
 						}
 						else{
 							%>
 							<select <%=disabled%> class="small" name="obligation">
-								<option selected="true" value="M">Mandatory</option>
+								<option selected="selected" value="M">Mandatory</option>
 								<option value="O">Optional</option>
 								<option value="C">Conditional</option>
 							</select>
@@ -724,19 +694,16 @@
 					</td>
 				</tr>
 				
-				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<td align="right" style="padding-right:10">
-						<span class="mainfont"><b>Display type</b>
+				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+					<th scope="row" class="scope-row">Display type</th>
 							<%
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								&#160;(O)
+								<td>(O)</td>
 								<%
 							}
 							%>
-						</span>
-					</td>
 					<td>
 						<%
 						if (mode.equals("view")){
@@ -750,7 +717,7 @@
 							else if (dispType.equals("image"))
 								dispDispType = "Image";
 							%>
-							<span class="Mainfont" style="width:400"><%=dispDispType%></span>
+							<%=dispDispType%>
 							<%
 						}
 						else{
@@ -776,14 +743,12 @@
 				<%
 				if (mode.equals("view") && dispType!=null && dispType.equals("select")){
 				%>
-					<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-						<td align="right" style="padding-right:10">
-							<span class="mainfont">
+					<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+						<th scope="row" class="scope-row">
 								<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=attr_shortname%>&amp;parent_type=attr">
-									<b>Fixed values</b>
+									Fixed values
 								</a>
-							</span>
-						</td>
+						</th>
 						<td>
 						<%
 							displayed++;
@@ -792,7 +757,7 @@
 								for (int g=0; g<fxValues.size(); g++){
 									FixedValue fxValue = (FixedValue)fxValues.get(g);
 									%>
-									<span class="Mainfont" style="width:400"><%=Util.replaceTags(fxValue.getValue())%></span><br/>
+									<%=Util.replaceTags(fxValue.getValue())%><br/>
 									<%
 								}
 							}
@@ -802,39 +767,36 @@
 				<%
 				}
 				%>
-				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<td align="right" style="padding-right:10">
-						<span class="mainfont"><b>Display multiple</b>
+				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+					<th scope="row" class="scope-row">Display multiple</th>
 						<%
 							displayed++;
 								if (!mode.equals("view")){
 									%>
-									&#160;(O)
+									<td>(O)</td>
 									<%
 								}
 							%>
-						</span>
-					</td>
 					<td>
 						<%
 						if (!mode.equals("add")){
 							String multi = attribute.getDisplayMultiple();
-							String checked = (multi.equals("1")) ? "checked":"";
+							String checked = (multi.equals("1")) ? "checked='checked'":"";
 							String checked_text = (multi.equals("1")) ? "True":"False";
 							if (mode.equals("edit")){
 								%>
-								<input <%=disabled%> <%=checked%> type="checkbox" class="smalltext" name="dispMultiple" value="1"></input>
+								<input <%=disabled%> <%=checked%> type="checkbox" class="smalltext" name="dispMultiple" value="1" />
 								<%
 							}
 							else{
 								%>
-								<span class="Mainfont" style="width:400"><%=checked_text%></span>
+								<%=checked_text%>
 								<%
 							}
 						}
 					else {
 						%>
-						<input <%=disabled%> type="checkbox" class="smalltext" name="dispMultiple" value="1"></input>
+						<input <%=disabled%> type="checkbox" class="smalltext" name="dispMultiple" value="1" />
 						<%
 					}
 					%>
@@ -843,19 +805,16 @@
 				<%
 			}
 			%>
-			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-				<td align="right" valign="top" style="padding-right:10">
-					<span class="mainfont"><b>Inheritance</b>
+			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+				<th scope="row" class="scope-row">Inheritance</th>
 						<%
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							&#160;(O)
+							<td>(O)</td>
 							<%
 						}
 						%>
-					</span>
-				</td>
 				<td>
 					<%
 					String inh_text[]=new String[3];
@@ -871,13 +830,13 @@
 					}						
 					if (mode.equals("view")){
 						%>
-						<span class="Mainfont" style="width:400"><%=inh_text[chk]%></span>
+						<%=inh_text[chk]%>
 						<%
 					}
 					else{
 						for (int i=0;i<3;i++){
 						%>
-							<input value="<%=i%>" <%=disabled%> <% if (i==chk) %>checked<%;%> type="radio" class="smalltext" name="inheritable"><%=inh_text[i]%></input><br/>
+							<input value="<%=i%>" <%=disabled%> <% if (i==chk) %>checked<%;%> type="radio" class="smalltext" name="inheritable" /><%=inh_text[i]%><br/>
 						<%
 						}
 					}
@@ -885,19 +844,16 @@
 				</td>
 			</tr>
 			
-			<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-				<td align="right" style="padding-right:10">
-					<span class="mainfont"><b>Display order</b>
+			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+				<th scope="row" class="scope-row">Display order</th>
 						<%
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							&#160;(O)
+							<td>(O)</td>
 							<%
 						}
 						%>
-					</span>
-				</td>
 				<td>
 					<%
 					if (!mode.equals("add")){
@@ -905,18 +861,18 @@
 						String dispOrder = (i==999) ? "" : String.valueOf(i);
 						if (mode.equals("edit")){
 							%>
-							<input <%=disabled%> type="text" class="smalltext" size="5" name="dispOrder" value="<%=dispOrder%>"></input>
+							<input <%=disabled%> type="text" class="smalltext" size="5" name="dispOrder" value="<%=dispOrder%>" />
 							<%
 						}
 						else{
 							%>
-							<span class="Mainfont" style="width:400"><%=dispOrder%></span>
+							<%=dispOrder%>
 							<%
 						}
 					}
 					else {
 						%>
-						<input <%=disabled%> type="text" class="smalltext" size="5" name="dispOrder"></input>
+						<input <%=disabled%> type="text" class="smalltext" size="5" name="dispOrder" />
 						<%
 					}
 					%>
@@ -926,19 +882,16 @@
 			<%
 			if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){ %>
 			
-				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<td align="right" valign="top" style="padding-right:10">
-						<span class="mainfont"><b>Display for</b>
+				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+					<th scope="row" class="scope-row">Display for</th>
 							<%
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								&#160;(M)
+								<td>(M)</td>
 								<%
 							}
 							%>
-						</span>
-					</td>
 					<td>					
 						<%
 						String ch1Checked = (!mode.equals("add") && attribute.displayFor("CH1")) ? "checked" : "";
@@ -950,9 +903,6 @@
 						
 						if (mode.equals("view")){
 							boolean hasOne = false;
-							%>
-							<span class="Mainfont" style="width:400">
-							<%
 							if (ch1Checked.equals("checked")) { hasOne = true; %>
 								Data elements with fixed values <%
 							}
@@ -971,16 +921,13 @@
 							if (!hasOne){ %>
 								Not specified<%
 							}
-							%>
-							</span>
-							<%
 						}
 						else {
 							%>							
-							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=ch1Checked%> name="dispWhen" value="CH1"><span class="Mainfont">Data elements with fixed values</span></input></br>
-							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=ch2Checked%> name="dispWhen" value="CH2"><span class="Mainfont">Data elements with quanitative values</span></input></br>
-							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=dstChecked%> name="dispWhen" value="DST"><span class="Mainfont">Datasets</span></input></br>
-							<input <%=disabled%> type="checkbox" style="height:13;width:13" <%=tblChecked%> name="dispWhen" value="TBL"><span class="Mainfont">Dataset tables</span></input></br>
+							<input <%=disabled%> type="checkbox" <%=ch1Checked%> name="dispWhen" id="dispCH1" value="CH1"><label for="dispCH1">Data elements with fixed values</label><br/>
+							<input <%=disabled%> type="checkbox" <%=ch2Checked%> name="dispWhen" id="dispCH2" value="CH2"><label for="dispCH2">Data elements with quanitative values</label><br/>
+							<input <%=disabled%> type="checkbox" <%=dstChecked%> name="dispWhen" id="dispDST" value="DST"><label for="dispDST">Datasets</label><br/>
+							<input <%=disabled%> type="checkbox" <%=tblChecked%> name="dispWhen" id="dispTBL" value="TBL"><label for="dispTBL">Dataset tables</label><br/>
 							<%
 						}
 						%>
@@ -993,37 +940,34 @@
 			<%
 			if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
 				%>
-				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<td align="right" style="padding-right:10">
-						<span class="mainfont"><b>Display width</b>
+				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+					<th scope="row" class="scope-row">Display width</th>
 							<%
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								&#160;(O)
+								<td>(O)</td>
 								<%
 							}
 							%>
-						</span>
-					</td>
 					<td>
 						<%
 						if (!mode.equals("add")){
 							String dispWidth = attribute.getDisplayWidth();
 							if (mode.equals("edit")){
 								%>
-								<input <%=disabled%> type="text" class="smalltext" size="5" name="dispWidth" value="<%=dispWidth%>"></input>
+								<input <%=disabled%> type="text" class="smalltext" size="5" name="dispWidth" value="<%=dispWidth%>" />
 								<%
 							}
 							else{
 								%>
-								<span class="Mainfont" style="width:400"><%=dispWidth%></span>
+								<%=dispWidth%>
 								<%
 							}
 						}
 						else {
 							%>
-							<input <%=disabled%> type="text" class="smalltext" size="5" name="dispWidth"></input>
+							<input <%=disabled%> type="text" class="smalltext" size="5" name="dispWidth" />
 							<%
 						}
 						%>
@@ -1034,37 +978,34 @@
 			
 			if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
 				%>
-				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<td align="right" style="padding-right:10">
-						<span class="mainfont"><b>Display height</b>
+				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+					<th scope="row" class="scope-row">Display height</th>
 							<%
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								&#160;(O)
+								<td>(O)</td>
 								<%
 							}
 							%>
-						</span>
-					</td>
 					<td>
 						<%
 						if (!mode.equals("add")){
 							String dispHeight = attribute.getDisplayHeight();
 							if (mode.equals("edit")){
 								%>
-								<input <%=disabled%> type="text" class="smalltext" size="5" name="dispHeight" value="<%=dispHeight%>"></input>
+								<input <%=disabled%> type="text" class="smalltext" size="5" name="dispHeight" value="<%=dispHeight%>" />
 								<%
 							}
 							else{
 								%>
-								<span class="Mainfont" style="width:400"><%=dispHeight%></span>
+								<%=dispHeight%>
 								<%
 							}
 						}
 						else {
 							%>
-							<input <%=disabled%> type="text" class="smalltext" size="5" name="dispHeight"></input>
+							<input <%=disabled%> type="text" class="smalltext" size="5" name="dispHeight" />
 							<%
 						}
 						%>
@@ -1099,19 +1040,16 @@
 				
 				%>
 			
-				<tr valign="top" <% if (mode.equals("view") && displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<td align="right" style="padding-right:10">
-						<span class="mainfont"><b>Linked harvester</b>
+				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+					<th scope="row" class="scope-row">Linked harvester</th>
 							<%
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								&#160;(O)
+								<td>(O)</td>
 								<%
 							}
 							%>
-						</span>
-					</td>
 					<td>
 						<%
 						if (!mode.equals("view")){							
@@ -1132,11 +1070,12 @@
 							</select><%
 							
 							if (user!=null && user.isAuthentic()){ %>
-								<input type="button" class="smallbutton" value="Harvest" onclick="harvest()"/><%
+								<input type="button" class="smallbutton" value="Harvest" onclick="harvest()" /><%
 							}
 						}
 						else { %>
-							<span class="Mainfont" style="width:400"><%=harvesterID%></span> <%
+							<%=harvesterID%>
+						<%
 						}
 						%>
 					</td>
@@ -1149,15 +1088,18 @@
 			
 		<% if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX) && !mode.equals("add")){ // if COMPLEX and mode=add
 		%>
-		<tr valign="top">
-			<td align="right" style="padding-right:10">
-				<span class="mainfont"><b>Fields</b></span>
-			</td>
+		<tr>
+			<th scope="row" class="scope-row">Fields</th>
+			<% if (!mode.equals("view")){ %>
+			<td></td>
+			<% } %>
 			<td>
-				<table>
+				<table class="datatable">
+					<col style="width:100px"/>
+					<col style="width:200px"/>
 					<tr>
-						<th width="100">Name</th>
-						<th width="300">Definition</th>
+						<th scope="col">Name</th>
+						<th scope="col">Definition</th>
 					</tr>
 					<%
 	
@@ -1176,9 +1118,9 @@
 							if (pos >= position) position = pos +1;
 			
 							%>
-							<tr <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-								<td align="center" width="100"><a href="<%=fieldLink%>"><%=name%></a></td>
-								<td align="center" width="300" onmouseover=""><%=definition%></td>
+							<tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
+								<td align="center"><a href="<%=fieldLink%>"><%=name%></a></td>
+								<td align="center" onmouseover=""><%=definition%></td>
 							</tr>
 							<%
 						}
@@ -1190,8 +1132,11 @@
 		<%
 		if (user!=null){
 			%>
-			<tr valign="top">
+			<tr>
 				<td></td>
+				<% if (!mode.equals("view")){ %>
+				<td></td>
+				<% } %>
 				<td>
 					<b>*</b> <span class="smallfont"><a href="m_attr_fields.jsp?attr_id=<%=attr_id%>&amp;attr_name=<%=attr_shortname%>">
 						<b>FIELDS</b></a></span>&#160;&#160;
@@ -1207,28 +1152,27 @@
 		<% } // end if COMPLEX and mode=add
 	
 		if (!mode.equals("view")){ %>
-			<tr height="10"><td colspan="2"></td></tr>
-			<tr valign="top">
-				<td></td>
-				<td>
+			<tr height="10"><td colspan="3"></td></tr>
+			<tr>
+				<td colspan="3" style="text-align:center">
 				
 					<% 
 					
 					if (mode.equals("add")){ // if mode is "add"
 						if (user==null){ %>									
-							<input type="button" class="mediumbuttonb" value="Add" disabled="true"/>&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Add" disabled="disabled" />&#160;&#160;
 						<%} else {%>
-							<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')" />&#160;&#160;
 						<% }
 					} // end if mode is "add"
 					
 					if (!mode.equals("add")){ // if mode is not "add"
 						if (user==null){ %>									
-							<input type="button" class="mediumbuttonb" value="Save" disabled="true"/>&#160;&#160;
-							<input type="button" class="mediumbuttonb" value="Delete" disabled="true"/>&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Save" disabled="disabled" />&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Delete" disabled="disabled" />&#160;&#160;
 						<%} else {%>
-							<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&#160;&#160;
-							<input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')"/>&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')" />&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')" />&#160;&#160;
 						<% }
 					} // end if mode is not "add"
 					
@@ -1239,19 +1183,16 @@
 		}
 		
 		if (type!=null){ %>
-			<input type="hidden" name="type" value="<%=type%>"/> <%
+			<input type="hidden" name="type" value="<%=type%>" /> <%
 		}
 		%>
-		<input type="hidden" name="mode" value="<%=mode%>"/>
+		<input type="hidden" name="mode" value="<%=mode%>" />
 		
-		<input type="hidden" name="ns" value="basens"/>
+		<input type="hidden" name="ns" value="basens" />
 		
 	</table>
 	</form>
 </div>
-        </td>
-</tr>
-</table>
 	<script>
 //			alert("vorm");
 	</script>

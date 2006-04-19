@@ -126,6 +126,18 @@
 				<div id="operations">
 					<ul>
 						<li><a target="_blank" href="help.jsp?screen=attributes&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+				<%
+				if (user != null && mode==null){
+					boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
+					if (addPrm){
+						%>
+						<li><a href="javascript:goTo('add')">Add</a></li>
+						<%
+					}
+				}
+			
+				%>
+
 					</ul>
 				</div>
 
@@ -142,21 +154,6 @@
 			<%}%>
 		</p>
 		
-				<%
-				if (user != null && mode==null){
-					boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
-					if (addPrm){
-						%>
-							<div style="padding:3px 10px">
-								<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
-							</div>
-						<%
-					}
-				}
-			
-				%>
-
-
 		<table class="datatable">
 			<col style="width:14em"/>
 			<col style="width:7em"/>

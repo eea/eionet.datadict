@@ -161,10 +161,6 @@ kbd {
 	font-weight: bold;
 }
 
-label {
-	font-weight: bold;
-}
-
 /* Lists */
 
 ul {
@@ -739,6 +735,11 @@ th {
 	border-bottom: 1px solid #FF9900;
 }
 
+.formtable th {
+	border: none;
+	background: transparent;
+}
+
 th.small {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
@@ -792,11 +793,12 @@ th.dst_tbls {
 }
 
 /* Data tables have borders */
-table.datatable {
+.datatable {
 	border-collapse: collapse;
 	margin: 1em 0.5em;
 }
-.datatable th, .datatable th[scope="col"], .datatable th.scope-col {
+.datatable th, th[scope="col"], th.scope-col {
+  background: transparent;
 	text-align: center;
 }
 .datatable th.scope-row { /* IE6 doesn't understand [scope="row"] */
@@ -818,6 +820,16 @@ table.datatable {
 	padding: 0.3em;
 }
 
+/* Tables for arranging formulars */
+.formtable {
+	border-collapse: collapse;
+}
+.formtable th.scope-row { /* IE6 doesn't understand [scope="row"] */
+	text-align: right;
+}
+.formtable th[scope="row"] {
+	text-align: right;
+}
 /* styles for sortable tables */
 .sortable {
 	font-size: 1em;
