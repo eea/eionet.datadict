@@ -66,8 +66,8 @@ else{
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
+		<%@ include file="headerinfo.txt" %>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
     <link type="text/css" rel="stylesheet" href="eionet_new.css" />
     <script type="text/javascript">
       // <![CDATA[

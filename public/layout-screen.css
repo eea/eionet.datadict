@@ -728,7 +728,7 @@ th {
 	font-style: normal;
 	line-height: normal;
 	font-weight: bold;
-	background: #FFFFFF;
+/*	background: #FFFFFF;*/
 	text-decoration: none;
 	border-left: 1px solid #FF9900;
 	border-top: 1px solid #FF9900;
@@ -818,6 +818,7 @@ th.dst_tbls {
 .datatable td, .datatable th  {
 	border: 1px solid black;
 	padding: 0.3em;
+	vertical-align: top;
 }
 
 /* Tables for arranging formulars */
@@ -830,6 +831,9 @@ th.dst_tbls {
 .formtable th[scope="row"] {
 	text-align: right;
 }
+.formtable td, .formtable th  {
+	vertical-align: top;
+}
 /* styles for sortable tables */
 .sortable {
 	font-size: 1em;
@@ -837,9 +841,9 @@ th.dst_tbls {
 	border: 1px solid #10847B;
 }
 .sortable th {
-	background: white;
-	border: 2px outset #cccccc;
-	margin:2px;
+	background: #ccc;
+	border: 2px outset #999;
+	margin: 0;
 	padding: 0;
 	white-space: nowrap;
 	vertical-align: top;
@@ -853,8 +857,8 @@ th.dst_tbls {
 }
 
 .sortable thead th a:hover {
-	color: #696969;
-	background: #F5F5F5;
+	color: white;
+	background: #aaa;
 }
 
 table.sortable tbody td {

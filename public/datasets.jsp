@@ -265,13 +265,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
+		<%@ include file="headerinfo.txt" %>
     <title>Datasets - Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-    <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
-    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-    <script type="text/javascript" src='script.js'></script>
     <script type="text/javascript" src='modal_dialog.js'></script>
     <script type="text/javascript" language="javascript">
     // <![CDATA[

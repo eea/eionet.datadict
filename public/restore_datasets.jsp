@@ -230,14 +230,10 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Restore datasets - Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-    <link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
-    <link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
-    <script type="text/javascript" src='script.js'></script>
-    <script type="text/javascript">
-		// <![CDATA[
+	<%@ include file="headerinfo.txt" %>
+	<title>Restore datasets - Data Dictionary</title>
+	<script type="text/javascript">
+	// <![CDATA[
 		function setLocation(){
 			var o = document.forms["form1"].searchUrl;
 			if (o!=null)
