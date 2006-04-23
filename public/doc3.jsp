@@ -24,9 +24,9 @@
 				<%=Helps.get("doc3", "text")%>
 		</div>				
   </div>				
+</div>
 				<jsp:include page="footer.jsp" flush="true">
 				</jsp:include>
 								
-</div>
 </body>
 </html>

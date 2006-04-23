@@ -1909,11 +1909,11 @@ String attrValue = null;
 				<input type="hidden" name="changed" value="0"/>
 				
 			</form>
+			</div>			
 			
 			<jsp:include page="footer.jsp" flush="true">
 			</jsp:include>
 			
-			</div>			
 
 </body>
 </html>

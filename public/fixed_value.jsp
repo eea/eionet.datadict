@@ -384,6 +384,8 @@ try { // start the whole page try block
 	
 	</form>
 </div>
+      <jsp:include page="footer.jsp" flush="true">
+      </jsp:include>
 </body>
 </html>
 

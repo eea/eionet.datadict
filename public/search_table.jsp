@@ -431,6 +431,8 @@ else { %>
 				<input type="hidden" name="collect_attrs" value="<%=collect_attrs.toString()%>"/>
 				</form>
 			</div>
+      <jsp:include page="footer.jsp" flush="true">
+      </jsp:include>
 </body>
 </html>
 

@@ -39,7 +39,7 @@ if (lastUpdated==null){
 
 %>
 
-<div id="footer">
+<div id="pagefoot">
 					<p>
               <a href="mailto:dd@eionet.eu.int">E-mail</a> |
 							<a href="doc1.jsp">Disclaimer</a> |

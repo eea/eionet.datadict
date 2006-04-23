@@ -786,10 +786,10 @@
 			%>
 		</form>
 		
+			</div> <!-- workarea -->
+			
 			<jsp:include page="footer.jsp" flush="true">
 			</jsp:include>
-			
-			</div> <!-- workarea -->
 			
 </body>
 </html>

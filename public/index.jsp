@@ -143,13 +143,13 @@ finally{
 									</table>
 						</div>
 						
-						<jsp:include page="footer.jsp" flush="true">
-						</jsp:include>
-						
 						<%
 					} // end of excpetions if/else
 					%>
 								
 				</div>
+
+						<jsp:include page="footer.jsp" flush="true">
+						</jsp:include>
 </body>
 </html>

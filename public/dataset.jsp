@@ -1901,10 +1901,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 				
 			</form>
 			
+			</div>
+			
 			<jsp:include page="footer.jsp" flush="true">
 			</jsp:include>
-			
-			</div>
 </body>
 </html>
 
