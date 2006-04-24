@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 			<%
 			
@@ -67,13 +68,12 @@
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
 
-<form acceptcharset="UTF-8" name="form1" method="POST" action="complex_attr.jsp">
     <span class="head00">
         History of <em><%=dataset.getShortName()%></em>
         below CheckInNo <em><%=dataset.getVersion()%></em>
@@ -126,7 +126,6 @@
 		%>
 
 	</table>
-</form>
 </body>
 </html>
 
