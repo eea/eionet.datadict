@@ -474,15 +474,14 @@
 			
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
 				<th scope="row" class="scope-row">Type</th>
-						<%
-						displayed++;
-						if (!mode.equals("view")){
-							%>
-							<td>(M)</td>
-							<%
-						}
-						%>
-				</td>
+				<%
+				displayed++;
+				if (!mode.equals("view")){
+					%>
+					<td>(M)</td>
+					<%
+				}
+				%>
 				<td>
 					<%
 					if (mode.equals("add") && type==null){ %>
@@ -1107,7 +1106,7 @@
 							String name = (String)hash.get("name");
 							String definition = (String)hash.get("definition");
 							if (definition.length()>50) definition = definition.substring(0,50) + " ...";
-							String fieldLink = "m_attr_field.jsp?mode=view&attr_id=" + attr_id + "&attr_name=" + attr_name + "&attr_ns=basens&field_id=" + id;
+							String fieldLink = "m_attr_field.jsp?mode=view&amp;attr_id=" + attr_id + "&amp;attr_name=" + attr_name + "&amp;attr_ns=basens&amp;field_id=" + id;
 			
 							int pos = Integer.parseInt((String)hash.get("position"));
 							if (pos >= position) position = pos +1;
@@ -1176,21 +1175,19 @@
 				</td>
 			</tr> <%
 		}
-		
+		%>
+	</table>
+	
+		<%
 		if (type!=null){ %>
 			<input type="hidden" name="type" value="<%=type%>" /> <%
 		}
 		%>
-		<input type="hidden" name="mode" value="<%=mode%>" />
-		
+		<input type="hidden" name="mode" value="<%=mode%>" />		
 		<input type="hidden" name="ns" value="basens" />
 		
-	</table>
 	</form>
 </div>
-	<script>
-//			alert("vorm");
-	</script>
 			<jsp:include page="footer.jsp" flush="true">
 			</jsp:include>
 </body>

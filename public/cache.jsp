@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*, eionet.util.Util"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
 
@@ -13,9 +14,9 @@ Vector entries = (Vector)request.getAttribute("entries");
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
     <link type="text/css" rel="stylesheet" href="eionet_new.css" />
-    <script language="javascript">
+    <script type="text/javascript">
     
     	function submitForm(action){
 	    	document.forms["form1"].elements["action"].value = action;
@@ -37,14 +38,14 @@ Vector entries = (Vector)request.getAttribute("entries");
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
 <div>
 
-<form acceptcharset="UTF-8" name="form1" action="GetCache" method="POST">
+<form name="form1" action="GetCache" method="post">
 	<table width="500" cellpadding="1" cellspacing="0">
 	
 		<tr>

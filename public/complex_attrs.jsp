@@ -1,4 +1,5 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.net.URL,java.net.URLEncoder,java.net.MalformedURLException"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private Vector complexAttrs=null;%>
 
@@ -159,13 +160,12 @@ private String legalizeAlert(String in){
 			%>
 
 <html>
-	<head>
-		<title>Complex attributes</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	    <script language="javascript" src='script.js'></script>
-	</head>
-	<script language="javascript">
+<head>
+	<title>Complex attributes</title>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="script.js"></script>
+	<script type="text/javascript">
 	// <![CDATA[
 			function submitForm(mode){
 				
@@ -220,18 +220,19 @@ private String legalizeAlert(String in){
 			
 	// ]]>
 	</script>
+</head>
 <body class="popup" onload="load()">
 <div class="popuphead">
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
 
-<form acceptcharset="UTF-8" name="form1" method="POST" action="complex_attrs.jsp">
+<form name="form1" method="post" action="complex_attrs.jsp">
     <h2>
         Complex attributes of <em><%=Util.replaceTags(parent_name)%></em>
     </h2>
@@ -242,17 +243,17 @@ private String legalizeAlert(String in){
 		<td class="mnd_opt_cnd" width="60%">
 			<table border="0" width="100%" cellspacing="0">
 				<tr>
-					<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16"/></td>
+					<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
 					<td width="17%">Mandatory</td>
-					<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16"/></td>
+					<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
 					<td width="15%">Optional</td>
-					<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16"/></td>
+					<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
 					<td width="56%">Conditional</td>
         		</tr>
       		</table>
 		</td>
 		<td align="right">
-			<a target="_blank" href="help.jsp?screen=complex_attrs&area=pagehelp" onclick="pop(this.href)">
+			<a target="_blank" href="help.jsp?screen=complex_attrs&amp;area=pagehelp" onclick="pop(this.href)">
 				<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/>
 			</a>
 		</td>
@@ -267,11 +268,11 @@ private String legalizeAlert(String in){
 	%>
 	
 	
-	<tr height="5"><td colspan="2"></td></tr>
+	<tr><td colspan="2">&nbsp;</td></tr>
 	<%
 	if (mComplexAttrs.size() != 0){
 		%>
-		<tr height="10">
+		<tr>
 			<td colspan="2">
 			<%
 			if (user!=null){ %>
@@ -311,7 +312,7 @@ private String legalizeAlert(String in){
 			</td>
 		</tr>
 		
-		<tr height="5"><td colspan="2"></td></tr>
+		<tr><td colspan="2">&nbsp;</td></tr>
 		
 		<%
 	}
@@ -341,10 +342,10 @@ private String legalizeAlert(String in){
 		
 		<table cellspacing="0">
 			<tr>
-				<td align="right" valign="center" style="border-bottom-width:1;border-bottom-style:groove;border-bottom-color:#808080;border-right-width:1;border-right-style:groove;border-right-color:#808080;">
+				<td align="right" valign="middle" style="border-bottom-width:1;border-bottom-style:groove;border-bottom-color:#808080;border-right-width:1;border-right-style:groove;border-right-color:#808080;">
 					<input type="checkbox" style="height:13;width:13" name="del_attr" value="<%=attrID%>"/>
 				</td>
-				<td style="border-bottom-width:1;border-bottom-style:groove;border-bottom-color:#808080;" valign="center">
+				<td style="border-bottom-width:1;border-bottom-style:groove;border-bottom-color:#808080;" valign="middle">
 					<b>&#160;<%=attrName%></b>&nbsp;&nbsp;&nbsp;<img border="0" src="images/<%=obligImg%>" width="16" height="16" alt="<%=obligStr%>"/>
 				</td>
 			</tr>
@@ -396,8 +397,12 @@ private String legalizeAlert(String in){
 								String fieldID = (String)hash.get("id");
 								String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 								if (fieldValue == null) fieldValue = " ";
+								System.out.println("=================================================");
+								System.out.println("enne: " + fieldValue);
+								fieldValue = Util.replaceTags(fieldValue);
+								System.out.println("pärast: " + fieldValue);
 								%>
-								<td class="small" style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=Util.replaceTags(fieldValue)%></td>
+								<td class="small" style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=fieldValue%></td>
 								<%
 							}
 							%>
@@ -408,8 +413,8 @@ private String legalizeAlert(String in){
 					</table>
 				</td>
 			</tr>
-			<tr height="5">
-				<td colspan="2"></td>
+			<tr>
+				<td colspan="2">&nbsp;</td>
 			</tr>
 		</table>
 		<%

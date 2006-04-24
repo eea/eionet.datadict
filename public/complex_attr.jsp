@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!
 
@@ -103,15 +104,15 @@ private String legalizeAlert(String in){
 			String table_id = request.getParameter("table_id");
 			if (table_id == null) table_id = "";
 
-			String redirUrl = "complex_attr.jsp?mode=edit&parent_id=" + parent_id +
-															 "&parent_type=" + parent_type +
-															 "&parent_name=" + parent_name +
-															 "&parent_ns=" + parent_ns +
-															 "&attr_id=" + attr_id+
-															 "&table_id=" + table_id+
-															 "&dataset_id=" + dataset_id;
+			String redirUrl = "complex_attr.jsp?mode=edit&amp;parent_id=" + parent_id +
+															 "&amp;parent_type=" + parent_type +
+															 "&amp;parent_name=" + parent_name +
+															 "&amp;parent_ns=" + parent_ns +
+															 "&amp;attr_id=" + attr_id+
+															 "&amp;table_id=" + table_id+
+															 "&amp;dataset_id=" + dataset_id;
 			if (ds != null)
-				redirUrl = redirUrl + "&ds=" + ds;
+				redirUrl = redirUrl + "&amp;ds=" + ds;
 
 			if (request.getMethod().equals("POST")){
 				
@@ -175,10 +176,10 @@ private String legalizeAlert(String in){
 <html>
 	<head>
 		<title>Complex attribute</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	    <script language="javascript" src='script.js'></script>
-	<script language="javascript">
+	    <script type="text/javascript" src="script.js"></script>
+	<script type="text/javascript">
 	// <![CDATA[
 			function submitForm(mode){
 				
@@ -249,7 +250,7 @@ private String legalizeAlert(String in){
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
@@ -258,13 +259,13 @@ private String legalizeAlert(String in){
 	<%
 	
 	String backURL = "complex_attrs.jsp?parent_id=" + parent_id +
-															 "&parent_type=" + parent_type +
-															 "&parent_name=" + parent_name +
-															 "&parent_ns=" + parent_ns +
-															 "&table_id=" + table_id+
-															 "&dataset_id=" + dataset_id;
+															 "&amp;parent_type=" + parent_type +
+															 "&amp;parent_name=" + parent_name +
+															 "&amp;parent_ns=" + parent_ns +
+															 "&amp;table_id=" + table_id+
+															 "&amp;dataset_id=" + dataset_id;
 	if (ds != null)
-		backURL = backURL + "&ds=" + ds;
+		backURL = backURL + "&amp;ds=" + ds;
 		
 	if (mode.equals("add")){
 		if (attrFields == null || attrFields.size()==0){
@@ -317,7 +318,7 @@ private String legalizeAlert(String in){
 	
 	%>
 		
-<form acceptcharset="UTF-8" name="form1" method="POST" action="complex_attr.jsp">
+<form name="form1" method="post" action="complex_attr.jsp">
 
 <table width="400">
 <%
@@ -335,7 +336,7 @@ if (!mode.equals("view")){
 <%
 }
 %>
-	<tr height="10"><td colspan="2"></td></tr>
+	<tr><td colspan="2">&nbsp;</td></tr>
 
 	<tr valign="bottom">
 		<td>
@@ -363,7 +364,7 @@ if (!mode.equals("view")){
 				}
 				%>
 			</span>
-			<span class="title2" color="#006666"><%=Util.replaceTags(parent_name)%></span>
+			<span class="title2"><%=Util.replaceTags(parent_name)%></span>
 		</td>
 		
 		<%
@@ -371,7 +372,7 @@ if (!mode.equals("view")){
 		%>
 		
 		<td align="right">
-			<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp" onclick="pop(this.href)">
+			<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)">
 				<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/>
 			</a>
 		</td>
@@ -379,7 +380,7 @@ if (!mode.equals("view")){
 	
 	<tr valign="bottom">
 		<td>
-			<span class="head00">Attribute: </span><span class="title2" color="#006666"><%=attrName%></span>
+			<span class="head00">Attribute: </span><span class="title2"><%=attrName%></span>
 		</td>
 		<td align="right">
 			<%
@@ -390,7 +391,7 @@ if (!mode.equals("view")){
 		</td>
 	</tr>
 	
-	<tr height="10"><td colspan="2"></td></tr>
+	<tr><td colspan="2">&nbsp;</td></tr>
 	
 </table>
 
@@ -401,11 +402,11 @@ if (!mode.equals("view")){
 <%
 	if (user!=null){
 		%>
-		<input class="smallbutton" type="button" name="addbutton" value="Add"  onclick="submitForm('add')">&nbsp;
-		<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')">&nbsp;
+		<input class="smallbutton" type="button" name="addbutton" value="Add"  onclick="submitForm('add')" />&nbsp;
+		<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')" />&nbsp;
 		<%
 		if (harvesterID!=null && harvesterID.length()>0){ %>
-			<input class="smallbutton" type="button" value="Get"  onclick="openHarvested('<%=attr_id%>')"><%
+			<input class="smallbutton" type="button" value="Get"  onclick="openHarvested('<%=attr_id%>')" /><%
 		}
 	}
 	else{
@@ -433,7 +434,7 @@ if (!mode.equals("view")){
 	%>
 </table>
 </div>
-</br>
+<br/>
 <%
 }
 %>
@@ -449,7 +450,7 @@ if (!mode.equals("view")){
 					<%
 					if (user!=null && (rows!=null && rows.size()!=0)){
 						%>
-						<input class="smallbutton" type="button" value="Remove" onclick="submitForm('delete')">
+						<input class="smallbutton" type="button" value="Remove" onclick="submitForm('delete')" />
 						<%
 					}
 					else{
