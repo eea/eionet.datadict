@@ -86,11 +86,18 @@ public class Props implements PropsIF{
 		defaultProps.put(XFORM_TEMPLATE_URL,"http://cdr-ewn.eionet.eu.int/webq/GetXFormTemplate");
 		defaultProps.put(INSERV_ROD_RA_URLPATTERN,"http://rod.eionet.eu.int/show.jsv?id=<RA_ID>&mode=A");
 		defaultProps.put(XLS_SCHEMA_URL_SHEET, "DO_NOT_DELETE_THIS_SHEET");
+		defaultProps.put(DD_RDF_SCHEMA_URL, "http://dd.eionet.eu.int/schema.rdf#");
+		defaultProps.put(PREDICATE_RDF_TYPE, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+		defaultProps.put(PREDICATE_RDF_LABEL, "http://www.w3.org/2000/01/rdf-schema#label");
 	}
 	
+	/**
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args){
 		
-		String kala = Props.getProperty("kala");
-		System.out.println(kala);
+		String dbDrv = Props.getProperty(DBDRV);
+		System.out.println(dbDrv);
 	}
 }

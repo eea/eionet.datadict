@@ -3,8 +3,13 @@ package eionet.meta;
 
 import java.util.*;
 import eionet.util.Util;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
-public class DataElement {
+/*
+ * 
+ */
+public class DataElement implements Comparable{
     
     private String id = null;
     private String shortName = null;
@@ -34,8 +39,14 @@ public class DataElement {
     private Vector complexAttrs = new Vector();
     private Vector fixedValues = null;
 	private Vector fks = new Vector();
-	
-    public DataElement(){
+
+	private int sortOrder = 1;
+	private String sortString = null;
+
+    /*
+     * 
+     */
+	public DataElement(){
     }
         
     public DataElement(String id, String shortName, String type){
@@ -341,4 +352,53 @@ public class DataElement {
 				return "/datasets/" + dstIdentifier + "/tables/" + tblIdentifier;
 		}
 	}
+
+	/*
+	 * 
+	 */
+	public void setComparation(String sortString, int sortOrder) {
+		
+        this.sortString = sortString;
+        this.sortOrder = sortOrder; 
+	}
+
+	/*
+	 *  (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+    public String toString(){
+        return this.sortString;
+    }
+
+	/*
+	 * 
+	 */
+    public int compareTo(Object o) {
+        return this.sortOrder*this.sortString.compareTo(o.toString());
+    }
+    
+    /*
+     * 
+     */
+    public String getReferenceURL(){
+    	
+    	if (getIdentifier()==null)
+    		return null;
+    		
+		StringBuffer buf = new StringBuffer();
+		
+		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+		if (jspUrlPrefix!=null)
+			buf.append(jspUrlPrefix);
+		
+		buf.append("data_element.jsp?mode=view&delem_idf=");
+		buf.append(getIdentifier());
+		
+		if (getNamespace()!=null && getNamespace().getID()!=null){
+			buf.append("&pns=");
+			buf.append(getNamespace().getID());
+		}
+		
+		return buf.toString();
+    }
 }

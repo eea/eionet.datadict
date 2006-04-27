@@ -46,6 +46,10 @@ public interface PropsIF {
 	
 	public static final String JSP_URL_PREFIX = "jsp.url-prefix";
 	
+	public static final String DD_RDF_SCHEMA_URL = "dd.rdf-schema.url";
+	public static final String PREDICATE_RDF_TYPE = "predicate.rdf-type";
+	public static final String PREDICATE_RDF_LABEL = "predicate.rdf-label";
+	
 	/** defaults */
 	
 }

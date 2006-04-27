@@ -8,11 +8,17 @@ import javax.servlet.ServletContext;
 import com.tee.util.*;
 import com.tee.xmlserver.AppUserIF;
 
+import eionet.meta.notif.*;
 import eionet.meta.savers.*;
 
 import com.tee.uit.security.*;
 import eionet.util.SecurityUtil;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
+/*
+ * 
+ */
 public class VersionManager{
     
     private Connection conn = null;
@@ -502,6 +508,34 @@ public class VersionManager{
             stmt.executeUpdate(gen.updateStatement() + " where NAMESPACE_ID=" + topNS);
         }
         
+        // if common element, send UNS notification for common element,
+        // otherwise send UNS notification for the dataset and table
+        if (elmCommon){
+            String eventType = latestID!=null && latestID.length()>0 ?
+            		Subscribe.COMMON_ELEMENT_CHANGED_EVENT :
+            		Subscribe.NEW_COMMON_ELEMENT_EVENT;
+        	UNSEventSender.definitionChanged(elm, eventType, user==null ? null : user.getUserName());
+        }
+        else{
+        	String tblID = elm.getTableID();
+        	if (tblID!=null){
+        		DsTable tbl = loadTbl(tblID);
+        		if (tbl!=null){
+        			UNSEventSender.definitionChanged(tbl, Subscribe.TABLE_CHANGED_EVENT,
+        					user==null ? null : user.getUserName());
+        			
+        			String dstIdentifier = tbl.getDstIdentifier();
+        	        if (dstIdentifier!=null){
+        	        	Dataset dst = new Dataset(null, null, null);
+        	        	dst.setIdentifier(dstIdentifier);
+        	        	UNSEventSender.definitionChanged(dst,
+        	        			Subscribe.DATASET_CHANGED_EVENT,
+        	        			user==null ? null : user.getUserName());
+        	        }
+        		}
+        	}
+        }
+        
         return true;
     }
     
@@ -590,6 +624,21 @@ public class VersionManager{
                     " where NAMESPACE_ID=" + topNS);
         }
         
+        // send UNS notification(for dataset too)
+        String eventType = latestID!=null && latestID.length()>0 ?
+        		Subscribe.TABLE_CHANGED_EVENT :
+        		Subscribe.NEW_TABLE_EVENT;
+        UNSEventSender.definitionChanged(tbl, eventType, user==null ? null : user.getUserName());
+        
+        // send UNS notification for the dataset too
+        String dstIdentifier = tbl.getDstIdentifier();
+        if (dstIdentifier!=null){
+        	Dataset dst = new Dataset(null, null, null);
+        	dst.setIdentifier(dstIdentifier);
+        	UNSEventSender.definitionChanged(dst,
+        			Subscribe.DATASET_CHANGED_EVENT, user==null ? null : user.getUserName());
+        }
+
         return true;
     }
     
@@ -674,6 +723,12 @@ public class VersionManager{
             stmt.executeUpdate(gen.updateStatement() +
                     " where NAMESPACE_ID=" + topNS);
         }
+        
+        // send UNS notification
+        String eventType = latestID!=null && latestID.length()>0 ?
+        		Subscribe.DATASET_CHANGED_EVENT :
+        		Subscribe.NEW_DATASET_EVENT;
+    	UNSEventSender.definitionChanged(dst, eventType, user==null ? null : user.getUserName());
 		
 		return true;
     }

@@ -2,6 +2,9 @@
 package eionet.meta;
 
 import java.util.*;
+
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.Util;
 
 public class DsTable implements Comparable {
@@ -143,7 +146,7 @@ public class DsTable implements Comparable {
     public String getDatasetName(){
         return this.datasetName;
     }
-    
+
     public void setParentNs(String nsid){
         this.parentNS = nsid;
     }
@@ -285,4 +288,29 @@ public class DsTable implements Comparable {
 		else
 			return "/datasets/" + dstIdentifier + "/tables/" + identifier;
 	}
+
+    /*
+     * 
+     */
+    public String getReferenceURL(){
+    	
+    	if (getIdentifier()==null)
+    		return null;
+    		
+		StringBuffer buf = new StringBuffer();
+		
+		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+		if (jspUrlPrefix!=null)
+			buf.append(jspUrlPrefix);
+		
+		buf.append("dstable.jsp?mode=view&table_idf=");
+		buf.append(getIdentifier());
+		
+		if (getParentNs()!=null){
+			buf.append("&pns=");
+			buf.append(getParentNs());
+		}
+		
+		return buf.toString();
+    }
 }

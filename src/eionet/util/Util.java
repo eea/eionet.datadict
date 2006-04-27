@@ -385,6 +385,22 @@ public class Util {
 	        ret.append("&lt;");
 	      else if (c == '>')
 	        ret.append("&gt;");
+	      else if (c == '\"')
+	          ret.append("&quot;");
+	      else if (c == '\"')
+	    	  ret.append("&#039;");
+	      else if (c == '\\')
+	          ret.append("&#092;");
+	      else if (c == '&'){
+	    	  String s = "amp;";
+	    	  int kk = in.length();
+	    	  int kkk = i+s.length();
+	    	  String sss = in.substring(i+1, i+s.length());
+	    	  if (in.length()>i+s.length() && in.substring(i+1, i+1+s.length()).equals(s))
+	    		  ret.append(c);
+	    	  else
+	    		  ret.append("&amp;");
+	      }
 	      else if (c == '\n' && inTextarea==false)
 	        ret.append("<br/>");
 		  else if (c == '\r' && in.charAt(i+1)=='\n' && inTextarea==false){
@@ -862,7 +878,7 @@ public class Util {
 						
 		request.getRequestDispatcher("error.jsp").forward(request, response);
 	}
-
+	
     /**
     * main
     */

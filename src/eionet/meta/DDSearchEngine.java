@@ -2297,6 +2297,7 @@ public class DDSearchEngine {
                 tbl.setNamespace(rs.getString("DS_TABLE.CORRESP_NS"));
                 tbl.setParentNs(rs.getString("DS_TABLE.PARENT_NS"));
                 tbl.setDatasetName(rs.getString("DATASET.SHORT_NAME"));
+                tbl.setDstIdentifier(dstIdf);
 				tbl.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
 				
                 // set the name if nameID was previously successfully found

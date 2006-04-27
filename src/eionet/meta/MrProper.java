@@ -326,7 +326,7 @@ public class MrProper {
             ns = rs.getString(1);
         
         if (ns!=null)
-            stmt.execute("update NAMESPACE set WORKING_USER=NULL " +
+            stmt.executeUpdate("update NAMESPACE set WORKING_USER=NULL " +
                          "where NAMESPACE_ID=" + ns);
         stmt.close();
     }

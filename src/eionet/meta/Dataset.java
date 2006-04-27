@@ -3,8 +3,15 @@ package eionet.meta;
 
 import java.util.*;
 
-public class Dataset {
-    
+import eionet.util.Props;
+import eionet.util.PropsIF;
+
+/*
+ * 
+ */
+public class Dataset implements Comparable{
+	
+    /** */
     private String id = null;
     private String shortName = null;
     private String version = null;
@@ -25,8 +32,14 @@ public class Dataset {
     
     private int displayCreateLinks = -1;
 	private static Hashtable createLinkWeights = null;
+	
+	private int sortOrder = 1;
+	private String sortString = null;
 
-    public Dataset(String id, String shortName, String version){
+    /*
+     * 
+     */
+	public Dataset(String id, String shortName, String version){
         this.id = id;
         this.shortName = shortName;
         this.version = version;
@@ -270,4 +283,48 @@ public class Dataset {
 		
 		return createLinkWeights;
 	}
+	
+	/*
+	 * 
+	 */
+	public void setComparation(String sortString, int sortOrder) {
+		
+        this.sortString = sortString;
+        this.sortOrder = sortOrder; 
+	}
+
+	/*
+	 *  (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+    public String toString(){
+        return this.sortString;
+    }
+
+	/*
+	 * 
+	 */
+    public int compareTo(Object o) {
+        return this.sortOrder*this.sortString.compareTo(o.toString());
+    }
+
+    /*
+     * 
+     */
+    public String getReferenceURL(){
+    	
+    	if (getIdentifier()==null)
+    		return null;
+    		
+		StringBuffer buf = new StringBuffer();
+		
+		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+		if (jspUrlPrefix!=null)
+			buf.append(jspUrlPrefix);
+		
+		buf.append("dataset.jsp?mode=view&ds_idf=");
+		buf.append(getIdentifier());
+		
+		return buf.toString();
+    }
 }
