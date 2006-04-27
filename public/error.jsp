@@ -12,12 +12,10 @@
 
 <html>
 <head>
-	<title>Data Dictionary</title>
+	<title>Error - Data Dictionary</title>
 	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-	<link type="text/css" rel="stylesheet" href="eionet.css">
+	<link type="text/css" rel="stylesheet" href="eionet.css"/>
 	<script language="javascript" src='script.js'></script>
-	<script language="javascript">
-	</script>
 </head>
 
 <%
@@ -51,7 +49,7 @@ else{
 }
 %>
 
-    <div>
+    <div style="margin-left:30">
     	<form acceptcharset="UTF-8" name="form1" action="index.jsp" method="GET">
 		<table width="500">
 		

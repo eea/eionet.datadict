@@ -687,18 +687,19 @@ private Vector getValues(String id, String mode, Vector attributes){
 					verb = "Edit";
 					
 				%>
-			<div style="float:right">
-							<%
-							String hlpScreen = "dataset";
-							if (mode.equals("edit"))
-								hlpScreen = "dataset_edit";
-							else if (mode.equals("add"))
-								hlpScreen = "dataset_add";
-							%>
-							<a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)" target="_blank">
-								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-							</a>
-      </div>
+			<div id="operations">
+				<%
+				String hlpScreen = "dataset";
+				if (mode.equals("edit"))
+					hlpScreen = "dataset_edit";
+				else if (mode.equals("add"))
+					hlpScreen = "dataset_add";
+				%>
+				<ul>
+					<li><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)" target="_blank">Page help</a></li>
+					
+				</ul>
+      		</div>
 						
 			<div style="clear:right; float:right">
 							<%
@@ -737,7 +738,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								<span class="wrkcopy">Working copy</span><%
 							}
 							%>
-      </div>
+      		</div>
 							<h1><%=verb%> dataset definition</h1>
 						
 			<form name="form1" id="form1" method="post" action="dataset.jsp">

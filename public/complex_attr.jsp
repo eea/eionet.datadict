@@ -104,15 +104,15 @@ private String legalizeAlert(String in){
 			String table_id = request.getParameter("table_id");
 			if (table_id == null) table_id = "";
 
-			String redirUrl = "complex_attr.jsp?mode=edit&amp;parent_id=" + parent_id +
-															 "&amp;parent_type=" + parent_type +
-															 "&amp;parent_name=" + parent_name +
-															 "&amp;parent_ns=" + parent_ns +
-															 "&amp;attr_id=" + attr_id+
-															 "&amp;table_id=" + table_id+
-															 "&amp;dataset_id=" + dataset_id;
+			String redirUrl = "complex_attr.jsp?mode=edit&parent_id=" + parent_id +
+															 "&parent_type=" + parent_type +
+															 "&parent_name=" + parent_name +
+															 "&parent_ns=" + parent_ns +
+															 "&attr_id=" + attr_id+
+															 "&table_id=" + table_id+
+															 "&dataset_id=" + dataset_id;
 			if (ds != null)
-				redirUrl = redirUrl + "&amp;ds=" + ds;
+				redirUrl = redirUrl + "&ds=" + ds;
 
 			if (request.getMethod().equals("POST")){
 				
@@ -567,8 +567,6 @@ if (!mode.equals("view")){
 <input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
 
 <input type="hidden" name="position" value="<%=String.valueOf(position)%>"></input>
-
-<input type="hidden" name="reloadUrl" value="<%=redirUrl%>"></input>
 
 <%
 if (ds != null){

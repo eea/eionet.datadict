@@ -616,7 +616,9 @@ private String legalizeAlert(String in){
 			%>
 
 			document.forms["form1"].elements["check_in"].value = "true";
-			submitForm('edit');
+			var b = submitForm('edit');
+			if (b==false)
+				document.forms["form1"].elements["check_in"].value = "false";
 		}
 		
 		function submitForm(mode){
@@ -628,13 +630,13 @@ private String legalizeAlert(String in){
 					var ds = document.forms["form1"].elements["ds_id"].value;
 					if (ds==null || ds==""){
 						alert('Dataset not specified!');
-						return;
+						return false;
 					}
 					
 					var tbl = document.forms["form1"].elements["table_id"].value;
 					if (tbl==null || tbl==""){
 						alert('Table not specified!');
-						return;
+						return false;
 					}<%
 				}
 				%>
@@ -666,18 +668,19 @@ private String legalizeAlert(String in){
 				}
 				%>
 				
-				if (confirm("<%=confirmDelTxt%>")==false) return;
+				if (confirm("<%=confirmDelTxt%>")==false)
+					return false;
 				
 				<%
 				if (dataElement!=null && dataElement.isWorkingCopy()){ %>
 					document.forms["form1"].elements["upd_version"].value = "false";
 					deleteReady();
-					return;<%
+					return false;<%
 				}
 				else if (!elmCommon){ %>
 					// now ask if the deletion should also result in the dataset's new version being created				
 					openNoYes("yesno_dialog.html", "Do you want to update the dataset definition's CheckInNo with this deletion?", delDialogReturn,100, 400);
-					return;<%
+					return false;<%
 				}
 				%>
 			}
@@ -688,19 +691,19 @@ private String legalizeAlert(String in){
 				
 				if (!checkObligations()){
 					alert("You have not specified one of the mandatory atttributes!");
-					return;
+					return false;
 				}
 				
 				if (hasWhiteSpace("idfier")){
 					alert("Identifier cannot contain any white space!");
-					return;
+					return false;
 				}
 				
 				if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
 					alert("Identifier not valid for usage as an XML tag! " +
 						  "In the first character only underscore or latin characters are allowed! " +
 						  "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
-					return;
+					return false;
 				}
 			}
 			
@@ -708,6 +711,7 @@ private String legalizeAlert(String in){
 			
 			document.forms["form1"].elements["mode"].value = mode;
 			document.forms["form1"].submit();
+			return true;
 		}
 		
 		function delDialogReturn(){
@@ -800,22 +804,33 @@ private String legalizeAlert(String in){
 					  			"element definition! Click OK, if you want to continue. Otherwise click Cancel.");
 				if (b == false) return;<%
 			}
-				
-	    	String modeString = new String("mode=view&");
-	    	String qryStr = request.getQueryString();
-	    	int modeStart = qryStr.indexOf(modeString);
-	    	if (modeStart == -1){
-		    	modeString = new String("mode=view");
-		    	modeStart = qryStr.indexOf(modeString);
-	    	}
-	    	
-	    	if (modeStart != -1){
-		    	StringBuffer buf = new StringBuffer(qryStr.substring(0, modeStart));
-		    	buf.append("mode=edit&");
-		    	buf.append(qryStr.substring(modeStart + modeString.length()));
-		    	%>
-				document.location.assign("data_element.jsp?<%=buf.toString()%>");
+			
+			String qryStr = request.getQueryString();
+			// if no query string or it does not contain "delem_id=" and it's not "add" mode,
+			// then it means it must be a refernce URL, and so in that case
+			// construct new location url from scratch,
+			// else construct on the basis of query string
+			if (!mode.equals("add") && (qryStr==null || qryStr.indexOf("delem_id=")<0)){
+				%>
+				document.location.assign("data_element.jsp?mode=edit&delem_id=" + <%=dataElement.getID()%>);
 				<%
+			}			
+			else{
+		    	String modeString = new String("mode=view&");	    	
+		    	int modeStart = qryStr.indexOf(modeString);
+		    	if (modeStart == -1){
+			    	modeString = new String("mode=view");
+			    	modeStart = qryStr.indexOf(modeString);
+		    	}
+		    	
+		    	if (modeStart != -1){
+			    	StringBuffer buf = new StringBuffer(qryStr.substring(0, modeStart));
+			    	buf.append("mode=edit&");
+			    	buf.append(qryStr.substring(modeStart + modeString.length()));
+			    	%>
+					document.location.assign("data_element.jsp?<%=buf.toString()%>");
+					<%
+				}
 			}
 			%>
 		}
@@ -1733,7 +1748,7 @@ else{ %>
 								    		<%
 								    		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
 								    		if (mode.equals("view") && jspUrlPrefix!=null){
-									    		String refUrl = jspUrlPrefix + "data_element.jsp?mode=view&delem_idf=" + dataElement.getIdentifier();
+									    		String refUrl = jspUrlPrefix + "data_element.jsp?mode=view&amp;delem_idf=" + dataElement.getIdentifier();
 									    		if (dataElement.getNamespace()!=null && dataElement.getNamespace().getID()!=null)
 									    			refUrl = refUrl + "&pns=" + dataElement.getNamespace().getID();
 									    		%>
