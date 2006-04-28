@@ -327,7 +327,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 <head>
 		<%@ include file="headerinfo.txt" %>
     <title>Dataset - Data Dictionary</title>
-<link type="text/css" rel="stylesheet" href="eionet_new.css"/>
+	<link type="text/css" rel="stylesheet" href="eionet_new.css"/>
     <script type="text/javascript" src='modal_dialog.js'></script>
     <script type="text/javascript">
     // <![CDATA[
@@ -697,7 +697,13 @@ private Vector getValues(String id, String mode, Vector attributes){
 				%>
 				<ul>
 					<li><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)" target="_blank">Page help</a></li>
-					
+					<%
+					if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null){
+						%>
+						<li><a href="Subscribe?dataset=<%=dataset.getIdentifier()%>">Subscribe</a></li>
+						<%
+					}
+					%>
 				</ul>
       		</div>
 						
@@ -740,7 +746,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 							%>
       		</div>
 							<h1><%=verb%> dataset definition</h1>
-						
+							
+			<div style="clear:both">
+			<br/>
 			<form name="form1" id="form1" method="post" action="dataset.jsp">
 			
 				<%
@@ -858,6 +866,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 			                    		quicklinks.add("Obligations in ROD | rodlinks");
 			                    	
 			                    	request.setAttribute("quicklinks", quicklinks);
+			                    	System.out.println("======> okokokok");
 			                    	%>
 		                    		<jsp:include page="nquicklinks.jsp" flush="true">
 		                    		</jsp:include>
@@ -1901,6 +1910,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 				%>
 				
 			</form>
+			</div>
 			
 			</div>
 			

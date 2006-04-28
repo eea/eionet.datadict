@@ -437,7 +437,8 @@ String attrValue = null;
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
-	<title>Search elements - Dataset table</title>
+	<title>Dataset table - Data Dictionary</title>
+	<link type="text/css" rel="stylesheet" href="eionet_new.css"/>
 	<script type="text/javascript" src='modal_dialog.js'></script>
 	<script type="text/javascript">
 // <![CDATA[
@@ -799,12 +800,18 @@ String attrValue = null;
 							hlpScreen = "table_edit";
 						else if (mode.equals("add"))
 							hlpScreen = "table_add";
+							
 						%>
 							<li><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)" title="Get some help on this page">Page help</a></li>
+							<%
+							if (mode.equals("view") && user!=null && dsTable!=null && dsTable.getIdentifier()!=null && dataset!=null && dataset.getIdentifier()!=null){
+								%>
+								<li><a href="Subscribe?table=<%=dataset.getIdentifier()%>%2F<%=dsTable.getIdentifier()%>">Subscribe</a></li>
+								<%
+							}
+							%>
 						</ul>
 					</div>
-	
-					<!-- main table head -->
 					
 					<%
 					boolean topFree = false;
@@ -815,6 +822,44 @@ String attrValue = null;
 					else if (mode.equals("edit"))
 						verb = "Edit";
 					%>
+					
+					<!-- The buttons displayed in view mode -->
+					<div style="clear:right; float:right">
+						<%
+						if (mode.equals("view") && dsTable!=null){
+							if (user!=null){
+								// set the flag indicating if the top namespace is in use
+								String topWorkingUser = verMan.getWorkingUser(dsTable.getParentNs());
+								topFree = topWorkingUser==null ? true : false;
+								boolean inWorkByMe = workingUser==null ? false : workingUser.equals(user.getUserName());
+								
+								if (editPrm){		 
+									if (dsTable.isWorkingCopy() ||
+										(isLatestDst && topFree)   ||
+										(isLatestDst && inWorkByMe)){
+											
+										%>
+										<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=tableID%>')"/><%
+									}
+								}
+								
+								if (deletePrm){
+									if (!dsTable.isWorkingCopy() && isLatestDst && topFree){ %>
+										<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
+									}
+								}
+							}
+						}
+						// the working copy part
+						else if (dsTable!=null && dsTable.isWorkingCopy()){ %>
+							<span class="wrkcopy">Working copy</span><%
+						}
+						%>
+					</div>
+	
+					<!-- main table head -->
+					
+					
 				<h1><%=verb%> table definition
 					<%
 					if (mode.equals("add") && dsID != null && dsID.length()!=0){ %>
@@ -822,6 +867,9 @@ String attrValue = null;
 					}
 					%>
 				</h1>
+			
+			<div style="clear:both">
+			<br/>
 			<form name="form1" method="post" action="dstable.jsp">
 			
 				<!--=======================-->
@@ -829,40 +877,6 @@ String attrValue = null;
 				<!--=======================-->
 				
 				<table border="0" width="620" cellspacing="0" cellpadding="0">
-					<tr>
-						<td colspan="2" height="40" align="right">
-							<%
-							if (mode.equals("view") && dsTable!=null){
-								if (user!=null){
-									// set the flag indicating if the top namespace is in use
-									String topWorkingUser = verMan.getWorkingUser(dsTable.getParentNs());
-									topFree = topWorkingUser==null ? true : false;
-									boolean inWorkByMe = workingUser==null ? false : workingUser.equals(user.getUserName());
-									
-									if (editPrm){		 
-										if (dsTable.isWorkingCopy() ||
-											(isLatestDst && topFree)   ||
-											(isLatestDst && inWorkByMe)){
-												
-											%>
-											<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=tableID%>')"/><%
-										}
-									}
-									
-									if (deletePrm){
-										if (!dsTable.isWorkingCopy() && isLatestDst && topFree){ %>
-											<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
-										}
-									}
-								}
-							}
-							// the working copy part
-							else if (dsTable!=null && dsTable.isWorkingCopy()){ %>
-								<span class="wrkcopy">Working copy</span><%
-							}
-							%>
-						</td>
-					</tr>
 					
 					
 					<!-- mandatory/optional/conditional bar -->
@@ -1909,6 +1923,7 @@ String attrValue = null;
 				<input type="hidden" name="changed" value="0"/>
 				
 			</form>
+			</div>
 			</div>			
 			
 			<jsp:include page="footer.jsp" flush="true">

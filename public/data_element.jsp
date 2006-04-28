@@ -541,7 +541,8 @@ private String legalizeAlert(String in){
 
 <html>
 <head>
-    <title>Data Dictionary</title>
+	<%@ include file="headerinfo.txt" %>
+    <title>Data element - Data Dictionary</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
@@ -1106,27 +1107,101 @@ if (popup){ %>
 	</div>
 	<div><%
 }
-else{ %>
+else{
+	%>
 	<body>
-	<%@ include file="header.htm" %>
-	<table border="0">
-    	<tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
-        <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Data element"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
-		        
-			<div style="margin-left:30"><%
-} // end if not popup else
+		<jsp:include page="nlocation.jsp" flush='true'>
+          <jsp:param name="name" value="Data element"/>
+          <jsp:param name="back" value="true"/>
+        </jsp:include>
+		<%@ include file="nmenu.jsp" %>
+		<div id="workarea">
+<%
+} // end if not popup
 %>
-		        
-			<form acceptcharset="UTF-8" name="form1" id="form1" method="POST" action="data_element.jsp">
+			<div id="operations">
+				<%
+				String hlpScreen = "element";
+				if (mode.equals("edit"))
+					hlpScreen = "element_edit";
+				else if (mode.equals("add"))
+					hlpScreen = "element_add";
+				%>
+				<ul>
+					<li><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+					<%
+					if (mode.equals("view") && user!=null && dataElement!=null && elmCommon && dataElement.getIdentifier()!=null){
+						%>
+						<li><a href="Subscribe?common_element=<%=dataElement.getIdentifier()%>">Subscribe</a></li>
+						<%
+					}
+					%>
+				</ul>
+			</div>
+			
+			<!-- The buttons displayed in view mode -->
+			<div style="clear:right; float:right">
+				<%
+				// the buttons displayed in view mode
+				if (!popup && mode.equals("view") && dataElement!=null){
+					if (user!=null){
+						
+						// set some helper flags
+						String topWorkingUser = verMan.getWorkingUser(dataElement.getTopNs());
+						boolean topFree = elmCommon ? workingUser==null : topWorkingUser==null;
+						boolean inWorkByMe = workingUser==null ? false : workingUser.equals(user.getUserName());
+						
+						/*System.out.println("===> editPrm = " + editPrm);
+						System.out.println("===> dataElement.isWorkingCopy() = " + dataElement.isWorkingCopy());
+						System.out.println("===> topFree = " + topFree);
+						System.out.println("===> isLatest = " + isLatest);
+						System.out.println("===> inWorkByMe = " + inWorkByMe);*/
+						
+						if (editPrm){
+							if (dataElement.isWorkingCopy() ||
+								(isLatest && topFree) ||
+								(isLatest && inWorkByMe)){ %>
+								<input type="button" class="smallbutton" value="Edit" onclick="edit()"/><%
+							}
+						}
+						
+						/*System.out.println("===> deletePrm = " + deletePrm);
+						System.out.println("===> dataElement.isWorkingCopy() = " + dataElement.isWorkingCopy());
+						System.out.println("===> isLatest = " + isLatest);
+						System.out.println("===> topFree = " + topFree);*/
+						
+						if (deletePrm){
+							if (!dataElement.isWorkingCopy() && isLatest && topFree){ %>
+								<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
+							}
+						}
+						
+						if (elmCommon && editPrm){ %>
+							<input type="button" class="smallbutton" value="History" onclick="popNovr('elm_history.jsp?id=<%=dataElement.getID()%>')"/> <%
+						}
+					}
+				}
+				// the working copy part
+				else if (!popup && dataElement!=null && dataElement.isWorkingCopy()){ %>
+					<span class="wrkcopy">Working copy</span><%
+				}
+				%>
+			</div>
+			
+			<%
+			String verb = "View";
+			if (mode.equals("add"))
+				verb = "Add";
+			else if (mode.equals("edit"))
+				verb = "Edit";	
+				
+			String sCommon = elmCommon ? "common" : "";
+			%>
+			<h1><%=verb%> <%=sCommon%> element definition</h1>
+		    
+			<div style="clear:both">
+			<br/>
+			<form name="form1" id="form1" method="POST" action="data_element.jsp">
 			
 				<%
 				if (!mode.equals("add")){ %>
@@ -1136,14 +1211,6 @@ else{ %>
 					<input type="hidden" name="dummy"/><%
 				}
 				
-				String verb = "View";
-				if (mode.equals("add"))
-					verb = "Add";
-				else if (mode.equals("edit"))
-					verb = "Edit";	
-				
-				String sCommon = elmCommon ? "common" : "";
-				
 				%>
 				
 				<!--=======================-->
@@ -1151,77 +1218,7 @@ else{ %>
 				<!--=======================-->
 				
 				<table border="0" width="620" cellspacing="0" cellpadding="0">
-				
-					<!-- main table head -->
-					
-					<tr>
-						<td colspan="2" align="right">
-							<%
-							String hlpScreen = "element";
-							if (mode.equals("edit"))
-								hlpScreen = "element_edit";
-							else if (mode.equals("add"))
-								hlpScreen = "element_add";
-							%>
-							<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&area=pagehelp" onclick="pop(this.href)">
-								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-							</a>
-						</td>
-					</tr>
-	                <tr>
-						<td width="72%" height="40" class="head1">
-							<%=verb%> <%=sCommon%> element definition
-						</td>
-						<td width="28%" height="40" align="right">
-							<%
-							// the buttons displayed in view mode
-							if (!popup && mode.equals("view") && dataElement!=null){
-								if (user!=null){
-									
-									// set some helper flags
-									String topWorkingUser = verMan.getWorkingUser(dataElement.getTopNs());
-									boolean topFree = elmCommon ? workingUser==null : topWorkingUser==null;
-									boolean inWorkByMe = workingUser==null ? false : workingUser.equals(user.getUserName());
-									
-									/*System.out.println("===> editPrm = " + editPrm);
-									System.out.println("===> dataElement.isWorkingCopy() = " + dataElement.isWorkingCopy());
-									System.out.println("===> topFree = " + topFree);
-									System.out.println("===> isLatest = " + isLatest);
-									System.out.println("===> inWorkByMe = " + inWorkByMe);*/
-									
-									if (editPrm){
-										if (dataElement.isWorkingCopy() ||
-											(isLatest && topFree) ||
-											(isLatest && inWorkByMe)){ %>
-											<input type="button" class="smallbutton" value="Edit" onclick="edit()"/><%
-										}
-									}
-									
-									/*System.out.println("===> deletePrm = " + deletePrm);
-									System.out.println("===> dataElement.isWorkingCopy() = " + dataElement.isWorkingCopy());
-									System.out.println("===> isLatest = " + isLatest);
-									System.out.println("===> topFree = " + topFree);*/
-									
-									if (deletePrm){
-										if (!dataElement.isWorkingCopy() && isLatest && topFree){ %>
-											<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
-										}
-									}
-									
-									if (elmCommon && editPrm){ %>
-										<input type="button" class="smallbutton" value="History" onclick="popNovr('elm_history.jsp?id=<%=dataElement.getID()%>')"/> <%
-									}
-								}
-							}
-							// the working copy part
-							else if (!popup && dataElement!=null && dataElement.isWorkingCopy()){ %>
-								<span class="wrkcopy">Working copy</span><%
-							}
-							%>							
-						</td>
-	                </tr>
-	                
-	                
+				               
 	                <!-- mandatory/optional/conditional bar -->
 	                
 	                <%
@@ -1253,7 +1250,8 @@ else{ %>
 					<!-- add, save, check-in, undo check-out buttons -->
 					
 					<%
-					if (mode.equals("add") || mode.equals("edit")){ %>				
+					if (mode.equals("add") || mode.equals("edit")){
+						%>				
 						<tr>
 							<tr><td width="100%" colspan="2" height="10"></td></tr>
 							<td width="100%" align="right" colspan="2">
@@ -1285,7 +1283,6 @@ else{ %>
 							%>
 							</td>
 						</tr>
-						
 						<%
 						// update version checkbox
 						boolean brandNew = dataElement!=null && elmCommon && verMan.isFirstCommonElm(dataElement.getIdentifier());
@@ -1316,8 +1313,10 @@ else{ %>
 									<td align="right" class="smallfont_light" colspan="2"><%=checkbox%><%=hidden%></td>
 								</tr><%
 							}
-							else{ %>
-								<input type="hidden" name="upd_version" value="false"/><%
+							else{
+								%>
+								<input type="hidden" name="upd_version" value="false"/>
+								<%
 							}
 						}
 					}
@@ -2664,6 +2663,7 @@ else{ %>
 				%>
 				
 			</form>
+			</div>
 			
 			<%
 			if (!popup){ %>
@@ -2673,9 +2673,6 @@ else{ %>
 			%>
 			
 			</div>
-		</td>
-	</tr>
-</table>
 
 </body>
 </html>
