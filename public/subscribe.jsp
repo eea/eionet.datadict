@@ -151,19 +151,19 @@ finally {
 					<tr>
 						<td>&nbsp;</td>
 						<td>
-							<input type="checkbox" name="new_datasets" id="new_datasets"/><label for="new_datasets">New datasets</label
+							<input type="checkbox" name="new_datasets" id="new_datasets"/><label for="new_datasets">New datasets</label>
 						</td>
 					</tr>
 					<tr>
 						<td>&nbsp;</td>
 						<td>
-							<input type="checkbox" name="new_tables" id="new_tables"/><label for="new_tables">New tables</label
+							<input type="checkbox" name="new_tables" id="new_tables"/><label for="new_tables">New tables</label>
 						</td>
 					</tr>
 					<tr>
 						<td>&nbsp;</td>
 						<td>
-							<input type="checkbox" name="new_common_elems" id="new_common_elems"/><label for="new_common_elems">New common elements</label
+							<input type="checkbox" name="new_common_elems" id="new_common_elems"/><label for="new_common_elems">New common elements</label>
 						</td>
 					</tr>
 					<tr>
@@ -173,7 +173,7 @@ finally {
 					</tr>
 					<tr>
 						<td>
-							<label for="dataset"><strong>Dataset:<strong></label>
+							<label for="dataset"><strong>Dataset:</strong></label>
 						</td>
 						<td>
 							<%
@@ -203,7 +203,7 @@ finally {
 					</tr>
 					<tr>
 						<td>
-							<label for="table"><strong>Table:<strong></label>
+							<label for="table"><strong>Table:</strong></label>
 						</td>
 						<td>
 							<%
@@ -240,7 +240,7 @@ finally {
 					</tr>
 					<tr>
 						<td>
-							<label for="common_element"><strong>Common element:<strong></label>
+							<label for="common_element"><strong>Common element:</strong></label>
 						</td>
 						<td>
 							<%
