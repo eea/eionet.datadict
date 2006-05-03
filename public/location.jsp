@@ -2,16 +2,16 @@
 
 <table cellspacing="0" cellpadding="0" width="100%" border="0">
 	<tr>
-		<td align="bottom" width="20" background="images/bar_filled.jpg" height="25">
+		<td valign="bottom" width="20" style="background:url(images/bar_filled.jpg);" height="25">
 			&#160;
 		</td>
-		<td background="images/bar_filled.jpg" height="25">
-            <table height="10" cellSpacing="0" cellPadding="0" border="0">
+		<td style="background:url(images/bar_filled.jpg);" height="25">
+            <table style="height: 10px;" cellspacing="0" cellpadding="0" border="0">
 				<tr>
 		    		<td valign="bottom" align="left" style="padding-left:20">
 						<a href="http://www.eionet.eu.int/"><span class="barfont">EIONET</span></a>
 		    		</td>
-		    		<td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
+		    		<td valign="bottom" width="28"><img src="images/bar_hole.jpg" alt=""/></td>
 		    		<td valign="bottom" align="left">
 			            <%
 			            String oHName=request.getParameter("name");
@@ -29,14 +29,14 @@
 		    		
 			        <%
 			        if (oHName!=null){ %>
-					    <td valign="bottom" width="28"><img src="images/bar_hole.jpg"/></td>
+					    <td valign="bottom" width="28"><img src="images/bar_hole.jpg" alt=""/></td>
 					    <td valign="bottom" nowrap="nowrap" align="left">
 							<span class="barfont"><%=oHName%></span>
 					    </td><%
 					}
 					%>
 			        
-		    		<td valign="bottom" width="28"><img src="images/bar_dot.jpg"/></td>
+		    		<td valign="bottom" width="28"><img src="images/bar_dot.jpg" alt=""/></td>
 				</tr>
 	    	</table>
 		</td>

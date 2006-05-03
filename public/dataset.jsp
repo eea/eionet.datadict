@@ -956,7 +956,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																Create validation metadata for MS Access template&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td width="27%" valign="middle" align="left">
-																<a href="GetMdb?dstID=<%=ds_id%>&vmdonly=true"><img border="0" src="images/icon_mdb.jpg" width="16" height="18" alt="MDB icon"/></a>
+																<a href="GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true"><img border="0" src="images/icon_mdb.jpg" width="16" height="18" alt="MDB icon"/></a>
 															</td>
 														</tr><%
 													}
@@ -969,7 +969,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a target="_blank" href="CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST">
-																	<img border="0" src="images/icon_txt.gif" width="16" height="18"/>
+																	<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
 																</a>
 															</td>
 														</tr><%
@@ -1000,7 +1000,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													// display the "Upload document" and "Manage cache" links
 													if (dispAll || dispUploadAndCache){
 														%>
-														<tr height="20">
+														<tr style="height:20px;">
 															<td colspan="2" valign="bottom" align="left">
 																<span class="barfont">
 																	[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Upload a document ...</a> ]
@@ -1333,13 +1333,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 															
 														} // end display input
 														%>
+														<input type="hidden" name="oblig_<%=attrID%>" value="<%=attribute.getObligation()%>"/>
 													</td>
 													
 													<!-- end of dynamic attribute value display -->
 													
 													<%isOdd = Util.isOdd(++displayed);%>
 									    		</tr>
-									    		<input type="hidden" name="oblig_<%=attrID%>" value="<%=attribute.getObligation()%>"/>
+									    		
 									    		
 									    		<!-- end of dynamic attribute row -->
 												
@@ -1478,12 +1479,6 @@ private Vector getValues(String id, String mode, Vector attributes){
 										<%
 										if ((mode.equals("edit") && user!=null) || (mode.equals("view") && dataset.getVisual()!=null)){
 											
-											// horizontal separator 1
-											if (!separ1displayed){ %>
-												<%@ include file="hor_separator.jsp" %><%
-												separ1displayed = true;
-											}
-											
 											%>
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 												<tr>
@@ -1550,16 +1545,11 @@ private Vector getValues(String id, String mode, Vector attributes){
 										if (mode.equals("view") && tables!=null && tables.size()>0 || mode.equals("view") && user!=null && editPrm && topFree){
 											
 											colspan = user==null ? 1 : 2;
-											
-											// horizontal separator 1
-											if (!separ1displayed){ %>
-												<%@ include file="hor_separator.jsp" %><%
-												separ1displayed = true;
-											}
+
 											%>
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 												
-												<tr height="10"><td colspan="<%=String.valueOf(colspan)%>"></td></tr>
+												<tr style="height:10px;"><td colspan="<%=String.valueOf(colspan)%>"></td></tr>
 												<tr>
 													<td width="34%">
 														<b>Dataset tables<a name="tables"></a></b>
@@ -1581,7 +1571,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													%>
 													<tr>
 										      			<td width="100%" colspan="<%=String.valueOf(colspan)%>">
-															<table border="1" width="100%" cellspacing="0" bordercolorlight="#C0C0C0" bordercolordark="#C0C0C0">
+															<table border="1" width="100%" cellspacing="0" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0;">
 													        
 																<tr>
 																	<th width="50%" class="dst_tbls">Full name</th>
@@ -1668,18 +1658,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 										<%
 										if ((mode.equals("edit") && user!=null) || (mode.equals("view") && rodLinks!=null && rodLinks.size()>0)){
 											
-											// horizontal separator 1
-											if (!separ1displayed){ %>
-												<%@ include file="hor_separator.jsp" %><%
-												separ1displayed = true;
-											}
-											
 											%>
 										
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 											
 												<% if (mode.equals("view")){ %>
-													<tr height="10"><td width="100%" colspan="2"></td></tr><%
+													<tr style="height:10px;"><td width="100%" colspan="2"></td></tr><%
 												} %>
 											
 												<!-- title & link part -->
@@ -1727,7 +1711,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												if (mode.equals("view") && rodLinks!=null && rodLinks.size()>0){%>
 													<tr>
 														<td width="100%" colspan="2">
-															<table border="1" width="100%" bordercolorlight="#C0C0C0" cellspacing="0" cellpadding="2" bordercolordark="#C0C0C0">
+															<table border="1" width="100%" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0;" cellspacing="0" cellpadding="2">
 																<tr>
 																	<th width="20%" class="tbl_elms">Obligation</th>
 																	<th width="40%" class="tbl_elms">Legal instrument</th>
@@ -1775,9 +1759,6 @@ private Vector getValues(String id, String mode, Vector attributes){
 											colspan = user==null ? 1 : 2;
 											%>
 											
-											<!-- horizontal separator 2 -->
-											<%@ include file="hor_separator.jsp" %>
-											
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 												<tr>
 													<%
@@ -1819,7 +1800,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													%>
 													<tr>
 											  			<td width="100%" colspan="<%=String.valueOf(colspan)%>">
-															<table border="1" width="100%" cellspacing="0" bordercolorlight="#C0C0C0" bordercolordark="#C0C0C0">
+															<table border="1" width="100%" cellspacing="0" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0;">
 													        	<%
 													        	displayed = 1;
 													        	isOdd = Util.isOdd(displayed);

@@ -177,7 +177,7 @@ private String setDefaultAttrs(String name){
 
 <%
 if (contextParam == null || !contextParam.equals(POPUP)){ %>
-	<body onfocus="checkalert()" onload="onLoad()">
+	<body onclick="checkalert()" onload="onLoad()">
 <%
 }
 else { %>
@@ -223,7 +223,7 @@ else { %>
 						</td>
 						<td>
 							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -237,7 +237,7 @@ else { %>
 						</td>
 						<td>
 							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -284,7 +284,7 @@ else { %>
 									</td>
 									<td>
 										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>
 									<td colspan="2">
@@ -315,7 +315,7 @@ else { %>
 								</td>
 								<td>
 									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 									</a>
 								</td>
 								<td>
@@ -341,7 +341,7 @@ else { %>
 								</td>
 								<td>
 										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>
 								<td>
@@ -379,7 +379,7 @@ else { %>
 					}
 					%>
 					
-					<tr height="10"><td colspan="4"></td></tr>
+					<tr style="height:10px;"><td colspan="4"></td></tr>
 					
 					<tr valign="top">
 						<td colspan="2"></td>
@@ -406,7 +406,7 @@ else { %>
 				boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
 				if (dstPrm) { %>
 					<table width="500">			
-						<tr height"10"><td>&#160;</td></tr>				
+						<tr style="height:10px;"><td>&#160;</td></tr>				
 						<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
 						<tr>
 							<td valign="bottom">

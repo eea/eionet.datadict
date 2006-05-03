@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.Vector,com.tee.xmlserver.*,eionet.meta.MrProper,java.sql.Connection,java.sql.SQLException"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
@@ -14,10 +15,10 @@
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="javascript" src='script.js'></script>
-	<script language="javascript">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+	<link type="text/css" rel="stylesheet" href="eionet.css"/>
+	<script language="javascript" src='script.js' type="text/javascript"></script>
+	<script language="javascript" type="text/javascript">
 	// <![CDATA[
 	
 		var idsCleared = false;
@@ -62,9 +63,9 @@
 <table border="0">
     <tr valign="top">
 		<td nowrap="nowrap" width="125">
-            <p><center>
+            <center>
                 <%@ include file="menu.jsp" %>
-            </center></p>
+            </center>
         </td>
         <td>
             <jsp:include page="location.jsp" flush='true'>
@@ -145,80 +146,66 @@
 				</tr>
 				</table>
 				
-				<form name="form1" action="clean.jsp" method="POST">
+				<form name="form1" action="clean.jsp" method="post">
 				
 					<table width="auto" cellspacing="0">
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
-									   value="<%=MrProper.RLS_DST%>">
+								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RLS_DST%>"/>
 									   <span class="smallfont">
 									   		Release the dataset with the given Identifier:
 									   </span>
-								</input>
 								<input type="text" class="smalltext" name="<%=MrProper.DST_IDFIER%>"/>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
-									   value="<%=MrProper.ORPHAN_ELM%>">
+								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.ORPHAN_ELM%>"/>
 									   <span class="smallfont">
 									   	Delete all elements without parent tables.
 									   </span>
-								</input>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
-									   value="<%=MrProper.ORPHAN_TBL%>">
+								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.ORPHAN_TBL%>"/>
 									   <span class="smallfont">
 									   	Delete all tables without parent datasets.
 									   </span>
-								</input>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
-									   value="<%=MrProper.RLS_NOWC%>">
+								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RLS_NOWC%>"/>
 									   <span class="smallfont">
 									   	Release locked objects which actually don't have a working copy.
 									   </span>
-								</input>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
-									   value="<%=MrProper.RMV_WC_NORIG%>">
+								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RMV_WC_NORIG%>"/>
 									   <span class="smallfont">
 									   	Remove working copies which do not have any associated originals.
 									   </span>
-								</input>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
-									   value="<%=MrProper.RMV_MULT_VERS%>">
+								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RMV_MULT_VERS%>"/>
 									   <span class="smallfont">
 									   	Remove multiple versions by leaving only the latest by timestamp.
 									   </span>
-								</input>
 							</td>
 						</tr>
-						<tr height="10"><td>&#160;</td></tr>
+						<tr style="height:10px;"><td>&#160;</td></tr>
 						<tr>
 							<td>
 								<%
 								
 								String disabled = "";//clnPrm ? "" : "disabled";
 								%>
-								<input type="button" <%=disabled%>
-									   class="smallbuttonb" value="Action" onclick="submitForm()">
-								</input>
+								<input type="button" <%=disabled%> class="smallbuttonb" value="Action" onclick="submitForm()"/>
 							</td>
 						</tr>
 						

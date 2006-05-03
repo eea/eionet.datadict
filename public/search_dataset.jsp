@@ -1,6 +1,8 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%@ include file="history.jsp" %>
+
 
 <%!
 
@@ -112,10 +114,10 @@ private String setDefaultAttrs(String name){
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
-    <script language="javascript" src='script.js'></script>
-    <script language="javascript">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link type="text/css" rel="stylesheet" href="eionet_new.css"/>
+    <script language="javascript" src='script.js' type="text/javascript"></script>
+    <script language="javascript" type="text/javascript">
 		// <![CDATA[
 		attrWindow=null;
 
@@ -163,14 +165,14 @@ private String setDefaultAttrs(String name){
 	// ]]>
 	</script>
 </head>
-<body onfocus="checkalert()" onload="onLoad()">
+<body onclick="checkalert()" onload="onLoad()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
         <td nowrap="nowrap" width="125">
-            <p><center>
+            <center>
                 <%@ include file="menu.jsp" %>
-            </center></p>
+            </center>
         </td>
         <td>
             <jsp:include page="location.jsp" flush='true'>
@@ -179,14 +181,14 @@ private String setDefaultAttrs(String name){
             </jsp:include>
             
 			<div style="margin-left:30">
-				<form acceptcharset="UTF-8" name="form1" action="datasets.jsp" method="GET">
+				<form name="form1" action="datasets.jsp" method="get">
 				<table width="500">
 					<tr>
 						<td>
 							<font class="head00">Search for a dataset definition</font>
 						</td>
 						<td align="right">
-							<a target="_blank" href="help.jsp?screen=search_dataset&area=pagehelp" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href)">
 								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 							</a>
 						</td>
@@ -201,8 +203,8 @@ private String setDefaultAttrs(String name){
 							<b>Short name</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -215,8 +217,8 @@ private String setDefaultAttrs(String name){
 							<b>Identifier</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&area=identifier" onclick="pop(this.href)">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -244,7 +246,7 @@ private String setDefaultAttrs(String name){
 									</td>
 									<td>
 										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>
 									<td colspan="2">
@@ -275,7 +277,7 @@ private String setDefaultAttrs(String name){
 								</td>
 								<td>
 									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 									</a>
 								</td>
 								<td>
@@ -301,7 +303,7 @@ private String setDefaultAttrs(String name){
 								</td>
 								<td>
 									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 									</a>
 								</td>
 								<td>
@@ -318,9 +320,9 @@ private String setDefaultAttrs(String name){
                         <tr valign="bottom">
                     		<td width="150" colspan="2">&#160;</td>
                     		<td colspan="2">
-                    			<input type="radio" name="search_precision" value="substr" checked="checked">Substring search</input>
-                    			<input type="radio" name="search_precision" value="exact">Exact search</input>&#160;&#160;
-                    			<input type="radio" name="search_precision" value="free">Free text search</input>&#160;&#160;
+                    			<input type="radio" name="search_precision" value="substr" checked="checked"/>Substring search
+                    			<input type="radio" name="search_precision" value="exact"/>Exact search &#160;&#160;
+                    			<input type="radio" name="search_precision" value="free"/>Free text search &#160;&#160;
                     		</td>
                         </tr>
 					
@@ -354,7 +356,7 @@ private String setDefaultAttrs(String name){
 				<%
 				if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
 					<table width="500">
-						<tr height"10"><td>&#160;</td></tr>
+						<tr style="height:10px;"><td>&#160;</td></tr>
 						<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
 						<tr>
 							<td valign="bottom">

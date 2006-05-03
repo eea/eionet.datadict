@@ -36,22 +36,22 @@
   	
 	    <tr><td>&nbsp;</td></tr>
 	    <tr><td align="left"><span class="head0">Administration</span></td></tr>
-		<tr><td align="right"><a onmouseout="Out('img4')" onmouseover="Over('img4')" href="attributes.jsp"><img alt="" border="0" src="images/off.gif" name="img4" width="16" height="13" /><img border="0" src="images/button_attributes.gif" width="84" height="13" /></a></td></tr>
+		<tr><td align="right"><a onmouseout="Out('img4')" onmouseover="Over('img4')" href="attributes.jsp"><img alt="" border="0" src="images/off.gif" name="img4" width="16" height="13" /><img border="0" src="images/button_attributes.gif" width="84" height="13" alt=""/></a></td></tr>
 		
 		<%
     	if (SecurityUtil.hasPerm(_user.getUserName(), "/import", "x")){ %>
-			<tr><td align="right"><a onmouseout="Out('img6')" onmouseover="Over('img6')" href="import.jsp"><img alt="" border="0" src="images/off.gif" name="img6" width="16" height="13" /><img border="0" src="images/import.gif" width="84" height="13" /></a></td></tr> <%
+			<tr><td align="right"><a onmouseout="Out('img6')" onmouseover="Over('img6')" href="import.jsp"><img alt="" border="0" src="images/off.gif" name="img6" width="16" height="13" /><img border="0" src="images/import.gif" width="84" height="13" alt=""/></a></td></tr> <%
 		}
 
 		if (SecurityUtil.hasPerm(_user.getUserName(), "/cleanup", "x")){ %>
-			<tr><td align="right"><a onmouseout="Out('img7')" onmouseover="Over('img7')" href="clean.jsp"><img alt="" border="0" src="images/off.gif" name="img7" width="16" height="13" /><img border="0" src="images/button_cleanup.gif" width="84" height="13" /></a></td></tr> <%
+			<tr><td align="right"><a onmouseout="Out('img7')" onmouseover="Over('img7')" href="clean.jsp"><img alt="" border="0" src="images/off.gif" name="img7" width="16" height="13" /><img border="0" src="images/button_cleanup.gif" width="84" height="13" alt=""/></a></td></tr> <%
 		}
 	}
 	%>
 	
 	<tr><td>&nbsp;</td></tr>
 	<tr><td align="left"><span class="head0">Reportnet</span></td></tr>
-	<tr><td align="right"><a onmouseout="Out('img8')" onmouseover="Over('img8')" href="http://cr.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img8" width="16" height="13" /><img border="0" src="images/dd_but_CR.jpg" width="84" height="13" /></a></td></tr>
+	<tr><td align="right"><a onmouseout="Out('img8')" onmouseover="Over('img8')" href="http://cr.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img8" width="16" height="13" /><img border="0" src="images/dd_but_CR.jpg" width="84" height="13" alt=""/></a></td></tr>
 	<tr><td align="right"><a onmouseout="Out('img9')" onmouseover="Over('img9')" href="http://dd.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img9" width="16" height="13" /><img border="0" src="images/dd_but_DD.jpg" width="84" height="13" alt="DD" /></a></td></tr>
 	<tr><td align="right"><a onmouseout="Out('img10')" onmouseover="Over('img10')" href="http://cdr.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img10" width="16" height="13" /><img border="0" src="images/dd_but_CDR.jpg" width="84" height="13" alt="CDR" /></a></td></tr>
 	<tr><td align="right"><a onmouseout="Out('img11')" onmouseover="Over('img11')" href="http://rod.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img11" width="16" height="13" /><img border="0" src="images/dd_but_ROD.jpg" width="84" height="13" alt="ROD" /></a></td></tr>

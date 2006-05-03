@@ -202,7 +202,7 @@ private String setDefaultAttrs(String name){
 
 <%
 if (contextParam == null || !contextParam.equals(POPUP)){ %>
-	<body onfocus="checkalert()" onload="onLoad()">
+	<body onFocus="checkalert()" onload="onLoad()">
 	<%
 }
 else{ %>
@@ -545,7 +545,7 @@ else{ %>
 					%>
 					
                     
-					<tr height="10"><td colspan="4"></td></tr>
+					<tr style="height:10px;"><td colspan="4"></td></tr>
 					
 					<tr valign="top">
 						<td colspan="2"></td>
@@ -577,7 +577,7 @@ else{ %>
 									 SecurityUtil.hasChildPerm(user.getUserName(), "/elements", "i"));
 					if (dstPrm) { %>
 					<table width="520">
-						<tr height"10">
+						<tr style="height:10px;">
 							<td colspan="2">&#160;</td>
 						</tr>
 						<tr>

@@ -1022,7 +1022,7 @@ String attrValue = null;
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a target="_blank" href="GetSchema?id=TBL<%=tableID%>">
-																	<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
 															</td>
 														</tr><%
@@ -1036,7 +1036,7 @@ String attrValue = null;
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a target="_blank" href="GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
-																	<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
 															</td>
 														</tr><%
@@ -1050,7 +1050,7 @@ String attrValue = null;
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a target="_blank" href="GetXForm?id=<%=tableID%>">
-																	<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
 															</td>
 														</tr><%
@@ -1063,7 +1063,7 @@ String attrValue = null;
 																Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&amp;area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
 															</td>
 															<td width="27%" valign="middle" align="left">
-																<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18"/></a>
+																<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt=""/></a>
 															</td>
 														</tr><%
 													}
@@ -1076,7 +1076,7 @@ String attrValue = null;
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a target="_blank" href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL">
-																	<img border="0" src="images/icon_txt.gif" width="16" height="18"/>
+																	<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
 																</a>
 															</td>
 														</tr><%
@@ -1085,7 +1085,7 @@ String attrValue = null;
 													// display the link about cache
 													if (dispAll || dispCache){
 														%>
-														<tr height="20">
+														<tr style="height:20px;">
 															<td colspan="2" valign="bottom" align="left">
 																<span class="barfont">
 																	[ <a target="_blank" onclick="pop(this.href)" href="GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
@@ -1534,11 +1534,6 @@ String attrValue = null;
 										<%
 										if (mode.equals("view") && elems!=null && elems.size()>0 || mode.equals("view") && user!=null && editPrm && topFree){
 											
-											// horizontal separator 1
-											if (!separ1displayed){ %>
-												<%@ include file="hor_separator.jsp" %><%
-												separ1displayed = true;
-											}
 											
 											colspan = user==null ? 1 : 2;
 											
@@ -1567,7 +1562,7 @@ String attrValue = null;
 												%>
 												<table border="0" width="100%" cellspacing="0" cellpadding="3">
 													
-													<tr height="10"><td colspan="<%=String.valueOf(colspan)%>"></td></tr>
+													<tr style="height:10px;"><td colspan="<%=String.valueOf(colspan)%>"></td></tr>
 													<tr>
 														<td width="34%">
 															<b><%=title%><a name="elements"></a></b>
@@ -1601,7 +1596,7 @@ String attrValue = null;
 														%>
 														<tr>
 											      			<td width="100%" colspan="<%=String.valueOf(colspan)%>">
-											      				<table border="1" width="100%" bordercolorlight="#C0C0C0" cellspacing="0" cellpadding="2" bordercolordark="#C0C0C0">
+											      				<table border="1" width="100%" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0;" cellspacing="0" cellpadding="2">
 																	<tr>
 																		<th width="<%=widthShortName%>" class="tbl_elms">Short name</th>
 																		<%
@@ -1718,21 +1713,21 @@ String attrValue = null;
 											      		
 											      		<%
 											      		if (user!=null && elems!=null && elems.size()>0 && hasMarkedElems){%>
-															<tr height="10">
+															<tr style="height:10px;">
 																<td width="100%" class="barfont" colspan="<%=String.valueOf(colspan)%>">
 																	(a red wildcard stands for checked-out element)
 																</td>
 															</tr><%
 														}
 														if (user!=null && elems!=null && elems.size()>0 && hasForeignKeys){%>
-															<tr height="10">
+															<tr style="height:10px;">
 																<td width="100%" class="barfont" colspan="<%=String.valueOf(colspan)%>">
 																	(the <u><b><i>(FK)</i></b></u> link indicates the element participating in a foreign key relation)
 																</td>
 															</tr><%
 														}
 														if (elems!=null && elems.size()>0 && hasCommonElms){%>
-															<tr height="10">
+															<tr style="height:10px;">
 																<td width="100%" class="barfont" colspan="<%=String.valueOf(colspan)%>">
 																	(the <span class="commonelm"><sup>C</sup></span> sign marks a common element)
 																</td>
@@ -1760,8 +1755,6 @@ String attrValue = null;
 											colspan = user==null ? 1 : 2;
 											%>
 											
-											<!-- horizontal separator 2 -->
-											<%@ include file="hor_separator.jsp" %>
 											
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 												<tr>
@@ -1804,7 +1797,7 @@ String attrValue = null;
 													%>
 													<tr>
 											  			<td width="100%" colspan="<%=String.valueOf(colspan)%>">
-															<table border="1" width="100%" cellspacing="0" bordercolorlight="#C0C0C0" bordercolordark="#C0C0C0">
+															<table border="1" width="100%" cellspacing="0" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0;">
 													        	<%
 													        	displayed = 1;
 													        	isOdd = Util.isOdd(displayed);
