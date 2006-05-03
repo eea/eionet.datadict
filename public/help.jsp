@@ -68,7 +68,7 @@ else{
 <head>
 		<%@ include file="headerinfo.txt" %>
     <title>Data Dictionary</title>
-    <link type="text/css" rel="stylesheet" href="eionet_new.css" />
+    <link type="text/css" rel="stylesheet" href="eionet_new.css" title="Default" />
     <script type="text/javascript">
       // <![CDATA[
 

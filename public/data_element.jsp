@@ -544,7 +544,7 @@ private String legalizeAlert(String in){
 	<%@ include file="headerinfo.txt" %>
     <title>Data element - Data Dictionary</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
+    <link type="text/css" rel="stylesheet" href="eionet_new.css" title="Default"/>
     <script language="javascript" src='script.js'></script>
     <script language="javascript" src='modal_dialog.js'></script>
     <script language="javascript">

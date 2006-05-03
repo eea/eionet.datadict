@@ -66,7 +66,7 @@ finally{
 <head>
 	<%@ include file="headerinfo.txt" %>
 	<title>Data Dictionary</title>
-	<link type="text/css" rel="stylesheet" href="boxes.css"/>
+	<link type="text/css" rel="stylesheet" href="boxes.css" title="Default"/>
 </head>
 <body>
                	<% if (page_name == null){%>
