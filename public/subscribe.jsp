@@ -151,19 +151,19 @@ finally {
 					<tr>
 						<td>&nbsp;</td>
 						<td>
-							<input type="checkbox" name="new_datasets"/><label for="new_datasets">New datasets</label
+							<input type="checkbox" name="new_datasets" id="new_datasets"/><label for="new_datasets">New datasets</label
 						</td>
 					</tr>
 					<tr>
 						<td>&nbsp;</td>
 						<td>
-							<input type="checkbox" name="new_tables"/><label for="new_datasets">New tables</label
+							<input type="checkbox" name="new_tables" id="new_tables"/><label for="new_tables">New tables</label
 						</td>
 					</tr>
 					<tr>
 						<td>&nbsp;</td>
 						<td>
-							<input type="checkbox" name="new_common_elems"/><label for="new_datasets">New common elements</label
+							<input type="checkbox" name="new_common_elems" id="new_common_elems"/><label for="new_common_elems">New common elements</label
 						</td>
 					</tr>
 					<tr>
@@ -184,7 +184,7 @@ finally {
 							}
 							else{
 								%>
-								<select name="dataset">
+								<select name="dataset" id="dataset">
 									<option value="_none_">-- none --</option>
 									<option value="_all_">-- All datasets --</option>
 									<%
@@ -214,7 +214,7 @@ finally {
 							}
 							else{
 								%>
-								<select name="table">
+								<select name="table" id="table">
 									<option value="_none_">-- none --</option>
 									<option value="_all_">-- All tables --</option>
 									<%
@@ -251,7 +251,7 @@ finally {
 							}
 							else{
 								%>
-								<select name="common_element">
+								<select name="common_element" id="common_element">
 									<option value="_none_">-- none --</option>
 									<option value="_all_">-- All common elements --</option>
 									<%

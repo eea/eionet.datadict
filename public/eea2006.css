@@ -1,0 +1,33 @@
+/* styles that aren't in the central style sheet */
+#outerframe {
+	width: 620px;
+	padding: 3px;
+	margin-top: 10px;
+	border: 1px dotted #91aa73;
+	border-radius: 6px;/* CSS3 */
+	-moz-border-radius: 6px;/* Mozilla */
+}
+
+#innerframe {
+	padding: 3px;
+	border: 1px solid #d8e1ce;
+	border-radius: 6px;/* CSS3 */
+	-moz-border-radius: 6px;/* Mozilla */
+}
+
+/*
+* Popups don't have left or right columns. Instead we
+* indent the text a bit
+*/
+.popup {
+	margin:30px;
+	background-image: none;
+	background-color: white;
+}
+
+.popuphead hr {
+	background-color: #d8e1ce;
+	height: 15px;
+	border: none;
+}
+
