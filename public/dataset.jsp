@@ -327,7 +327,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 <head>
 		<%@ include file="headerinfo.txt" %>
     <title>Dataset - Data Dictionary</title>
-	<link type="text/css" rel="stylesheet" href="eionet_new.css" title="Default"/>
+	<xlink type="text/css" rel="stylesheet" href="eionet_new.css" title="Default"/>
     <script type="text/javascript" src='modal_dialog.js'></script>
     <script type="text/javascript">
     // <![CDATA[

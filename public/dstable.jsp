@@ -1119,7 +1119,7 @@ String attrValue = null;
 										String isOdd = Util.isOdd(displayed);
 										%>
 										
-										<table border="0" width="100%" cellspacing="0" cellpadding="3">
+										<table class="datatable" border="0" width="100%" cellspacing="0" cellpadding="3">
 								  		
 								  			<!-- static attributes -->
 								  			
@@ -1158,7 +1158,7 @@ String attrValue = null;
 								    		</tr>
 								    		
 								    		<!-- dataset -->
-								    		<tr>
+								    		<tr class="stribe<%=isOdd%>">
 								    			<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 													Dataset
 												</td>
@@ -1217,7 +1217,7 @@ String attrValue = null;
 									    		String refUrl = jspUrlPrefix + "dstable.jsp?mode=view&amp;table_idf=" +
 									    						dsTable.getIdentifier() + "&amp;pns=" + dsTable.getParentNs();
 									    		%>
-									    		<tr>
+									    		<tr class="stribe<%=isOdd%>">
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 														Reference URL
 													</td>
@@ -1297,7 +1297,7 @@ String attrValue = null;
 									    		
 									    		%>								    		
 								    		
-											    <tr>
+											    <tr class="stribe<%=isOdd%>">
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 														<%=attribute.getShortName()%>
 													</td>
@@ -1490,7 +1490,7 @@ String attrValue = null;
 										    %>
 										    
 								    		<!-- Identifier -->
-								    		<tr>
+								    		<tr class="stribe<%=isOdd%>">
 												<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
 													Identifier
 												</td>

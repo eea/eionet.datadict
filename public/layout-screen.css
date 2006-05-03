@@ -795,7 +795,7 @@ th.dst_tbls {
 /* Data tables have borders */
 .datatable {
 	border-collapse: collapse;
-	margin: 1em 0.5em;
+/*	margin: 1em 0.5em;*/
 }
 .datatable th, th[scope="col"], th.scope-col {
   background: transparent;
@@ -816,7 +816,7 @@ th.dst_tbls {
 }
 
 .datatable td, .datatable th  {
-	border: 1px solid black;
+	border: 1px solid #C0C0C0;
 	padding: 0.3em;
 	vertical-align: top;
 }

@@ -472,7 +472,7 @@
 			}
 			%>
 			
-			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
+			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebraodd" <%;%>>
 				<th scope="row" class="scope-row">Type</th>
 				<%
 				displayed++;
