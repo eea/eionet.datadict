@@ -21,6 +21,7 @@
 		../public/WEB-INF/lib/uit-client.jar;
 		../public/WEB-INF/lib/uit-help.jar;
 		../public/WEB-INF/lib/log4j.jar;
+		../public/WEB-INF/lib/xmlrpc-2.0.jar;
 		../public/WEB-INF/lib/servlet.jar;
 		../public/WEB-INF/lib/poi-2.5-final-20040302.jar;
 		/var/lib/tomcat4/common/lib/[servletapi4].jar"/>
