@@ -1363,7 +1363,7 @@ else{
 									//user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u")
 									if (!popup && (dispAll || dispXmlSchema)){ %>
 							<table border="0" width="620" cellspacing="0" cellpadding="3">
-										<tr height="10"><td width="100%"></td></tr>
+										<tr style="height:10px;"><td width="100%"></td></tr>
 										<tr>
 											<td width="100%" style="border: 1px solid #FF9900">
 												<table border="0" width="100%" cellspacing="0">
@@ -1373,7 +1373,7 @@ else{
 														</td>
 														<td width="27%" valign="middle" align="left">
 															<a target="_blank" href="GetSchema?id=ELM<%=delem_id%>">
-																<img border="0" src="images/icon_xml.jpg" width="16" height="18"/>
+																<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 															</a>
 														</td>
 													</tr>
@@ -1385,7 +1385,7 @@ else{
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
-																	<img border="0" src="images/icon_txt.gif" width="16" height="18"/>
+																	<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
 																</a>
 															</td>
 														</tr><%
@@ -1428,6 +1428,9 @@ else{
 												</td>
 											</tr>
 										</table>
+									</td>
+								</tr>
+								</table>
 								
 								
 								<!-- start dotted -->
@@ -2178,12 +2181,6 @@ else{
 										<%										
 										boolean key = (mode.equals("edit") && user!=null) || (mode.equals("view") && fixedValues!=null && fixedValues.size()>0);
 										if (type!=null && !isBoolean && key){
-											
-											// horizontal separator 1
-											if (!separ1displayed){ %>
-												<%@ include file="hor_separator.jsp" %><%
-												separ1displayed = true;
-											}
 																						
 											String title = type.equals("CH1") ? "Allowable values" : "Suggested values";
 											String helpAreaName = type.equals("CH1") ? "allowable_values_link" : "suggested_values_link";
@@ -2309,12 +2306,7 @@ else{
 										<%
 										if (!elmCommon &&
 											((mode.equals("edit") && user!=null) || (mode.equals("view") && fKeys!=null && fKeys.size()>0))){
-											
-											// horizontal separator 1
-											if (!separ1displayed){ %>
-												<%@ include file="hor_separator.jsp" %><%
-												separ1displayed = true;
-											}
+
 											
 											%>										
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
@@ -2407,12 +2399,7 @@ else{
 										
 										<%
 										if (elmCommon && mode.equals("view") && refTables!=null && refTables.size()>0){
-											
-											// horizontal separator 1
-											if (!separ1displayed){ %>
-												<%@ include file="hor_separator.jsp" %><%
-												separ1displayed = true;
-											}
+
 											
 											%>										
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
@@ -2486,9 +2473,7 @@ else{
 											
 											colspan = user==null ? 1 : 2;
 											%>
-											
-											<!-- horizontal separator 2 -->
-											<%@ include file="hor_separator.jsp" %>
+
 											
 											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 												<tr>
