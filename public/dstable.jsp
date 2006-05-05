@@ -1002,12 +1002,13 @@ String attrValue = null;
 									
 									boolean dispAll = editPrm;
 									boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
+									boolean dispODS = dataset!=null && dataset.displayCreateLink("ODS");
 									boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
 									boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
 									boolean dispXForm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xfrm");
 									boolean dispCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
 									
-									if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispXForm || dispCache){
+									if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispXForm || dispCache || dispODS){
 										%>
 										<tr><td width="100%" height="10"></td></tr>
 										<tr>
@@ -1064,6 +1065,18 @@ String attrValue = null;
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt=""/></a>
+															</td>
+														</tr><%
+													}
+
+													// OpenDocument spreadsheet template link
+													if (dispAll || dispODS){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Create an OpenDocument spreadsheet template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&amp;area=ods"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a href="GetOds?type=tbl&amp;id=<%=tableID%>"><img border="0" src="images/icon_ods.gif" alt=""/></a>
 															</td>
 														</tr><%
 													}

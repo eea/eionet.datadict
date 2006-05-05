@@ -883,13 +883,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 			                    	boolean dispAll = editPrm;
 			                    	boolean dispPDF = dataset!=null && dataset.displayCreateLink("PDF");
 									boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
+									boolean dispODS = dataset!=null && dataset.displayCreateLink("ODS");
 									boolean dispMDB = dataset!=null && dataset.displayCreateLink("MDB");
 									boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
 									boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
 									boolean dispUploadAndCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
 									boolean dispDocs = docs!=null && docs.size()>0;
 									
-									if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispUploadAndCache || dispDocs){
+									if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispUploadAndCache || dispDocs || dispMDB || dispODS){
 				                    	%>
 											<div style="border: 1px solid #FF9900; margin-top: 10px;">
 												<table border="0" width="100%" cellspacing="0">
@@ -945,6 +946,18 @@ private Vector getValues(String id, String mode, Vector attributes){
 															</td>
 															<td width="27%" valign="middle" align="left">
 																<a href="GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt="XLS icon"/></a>
+															</td>
+														</tr><%
+													}
+
+													// OpenDocument spreadsheet link
+													if (dispAll || dispODS){ %>
+														<tr>
+															<td width="73%" valign="middle" align="left">
+																Create an OpenDocument spreadsheet template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=ods" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
+															</td>
+															<td width="27%" valign="middle" align="left">
+																<a href="GetOds?type=dst&amp;id=<%=ds_id%>"><img border="0" src="images/icon_ods.gif" alt="ODS icon"/></a>
 															</td>
 														</tr><%
 													}
@@ -1354,6 +1367,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 											if (!mode.equals("add") && editPrm){
 												String checkedPDF = dataset.displayCreateLink("PDF") ? "checked='checked'" : "";
 												String checkedXLS = dataset.displayCreateLink("XLS") ? "checked='checked'" : "";
+												String checkedODS = dataset.displayCreateLink("ODS") ? "checked='checked'" : "";
 												String checkedMDB = dataset.displayCreateLink("MDB") ? "checked='checked'" : "";
 												String checkedXmlSchema = dataset.displayCreateLink("XMLSCHEMA") ? "checked='checked'" : "";												
 												%>
@@ -1394,7 +1408,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																<span class="barfont">MS Excel template</span>
 															<br/>
 															<input type="checkbox" name="disp_create_links" value="XMLSCHEMA" <%=checkedXmlSchema%>/>
-																<span class="barfont">The definition on XML Schema format</span>
+																<span class="barfont">The definition on XML Schema format</span>															
 															<%
 														}
 														%>

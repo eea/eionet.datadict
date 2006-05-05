@@ -53,6 +53,11 @@
 		<param-value>/prj/datadict/tmp</param-value>
 	</context-param>
 
+	<context-param>
+		<param-name>ods-path</param-name>
+		<param-value>/prj/datadict/opendoc/ods</param-value>
+	</context-param>
+
 <!-- servlets -->
 
 	<servlet>
@@ -138,6 +143,14 @@
 	<servlet>
 		<servlet-name>MdbServlet</servlet-name>
 		<servlet-class>eionet.meta.exports.mdb.MdbServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>Subscribe</servlet-name>
+		<servlet-class>eionet.meta.notif.Subscribe</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>OdsServlet</servlet-name>
+		<servlet-class>eionet.meta.exports.ods.OdsServlet</servlet-class>
 	</servlet>
 
 <!-- servlet mappings -->
@@ -229,6 +242,14 @@
 	<servlet-mapping>
 		<servlet-name>MdbServlet</servlet-name>
 		<url-pattern>/GetMdb</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Subscribe</servlet-name>
+		<url-pattern>/Subscribe</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>OdsServlet</servlet-name>
+		<url-pattern>/GetOds</url-pattern>
 	</servlet-mapping>
 
 <!-- the application server might allow directory listing.

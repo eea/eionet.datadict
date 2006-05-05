@@ -279,6 +279,7 @@ public class Dataset implements Comparable{
 			createLinkWeights.put("XMLINST", new Integer(4));
 			createLinkWeights.put("XMLSCHEMA", new Integer(8));
 			createLinkWeights.put("MDB", new Integer(16));
+			createLinkWeights.put("ODS", new Integer(32));
 		}
 		
 		return createLinkWeights;
