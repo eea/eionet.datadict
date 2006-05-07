@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private Vector selected=null;%>
 
@@ -40,9 +41,9 @@
 <html>
 	<head>
 		<title>Meta</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
-		<script language="javascript">
+		<script language="javascript" type="text/javascript">
 		// <![CDATA[
 			function selectAttr(id, oControl) {
 				if (opener && !opener.closed) {
@@ -162,14 +163,14 @@
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
 
 <div>
-	<form acceptcharset="UTF-8" name="form1" onsubmit="ok()">
+	<form name="form1" onsubmit="ok()" action="">
 	<table>
 		<%
 		if(dispType.equals("select") || dispType.equals("text")){
@@ -177,7 +178,7 @@
 			<tr><td><b>Select value:</b></td></tr>
 			<tr><td>&#160;</td></tr>
 			<tr><td>
-				<select class="small" name="val" multiple="true">
+				<select class="small" name="val" multiple="multiple">
 				</select>
 			</td></tr>
 			<tr><td>&#160;</td></tr>
@@ -191,7 +192,7 @@
 				<%
 				if (dispType.equals("text")){
 				%>
-					<input class="smalltext" class="smalltext" type="text" size="<%=width%>" name="text_val"/>
+					<input class="smalltext" type="text" size="<%=width%>" name="text_val"/>
 				<%
 				}
 				else if(dispType.equals("textarea")){
@@ -206,10 +207,11 @@
 		}
 		%>
 	</table>
-	<input class="mediumbuttonb" type="button" value="OK" onclick="ok()"></input>
-	<input class="mediumbuttonb" type="button" value="Cancel" onclick="closeme()"></input>
-	<input type="hidden" name="attr_id" value="<%=attr_id%>"></input>
+	<input class="mediumbuttonb" type="button" value="OK" onclick="ok()"/>
+	<input class="mediumbuttonb" type="button" value="Cancel" onclick="closeme()"/>
+	<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
 	</form>
+</div>
 </body>
 </html>
 

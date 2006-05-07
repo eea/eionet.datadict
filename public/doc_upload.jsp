@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
 
@@ -12,10 +13,10 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="javascript" src='script.js'></script>
-	<script language="javascript">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+	<link type="text/css" rel="stylesheet" href="eionet.css"/>
+	<script language="javascript" src='script.js' type="text/javascript"></script>
+	<script language="javascript" type="text/javascript">
 	
 		function submitForm(){
 			
@@ -25,7 +26,7 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 				return;
 			}
 			
-			qryStr = "ds_id=<%=dstID%>&idf=<%=idf%>&title=" + document.forms["form1"].elements["title"].value + "&file=" + f;
+			qryStr = "ds_id=<%=dstID%>&amp;idf=<%=idf%>&amp;title=" + document.forms["form1"].elements["title"].value + "&amp;file=" + f;
 			document.forms["form1"].action = document.forms["form1"].action + "?" + qryStr;
 			document.forms["form1"].submit();
 		}
@@ -40,7 +41,7 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
@@ -55,7 +56,7 @@ However, you can upload any other types of files as well. Their type will simply
 unknown. But whatever is the type of the file you upload, it can later be downloaded.
 </p>
 				
-<form acceptcharset="UTF-8" name="form1" action="DocUpload" method="POST" enctype="multipart/form-data">
+<form name="form1" action="DocUpload" method="post" enctype="multipart/form-data">
 
 	<table width="660" cellspacing="0">
 		<tr>
@@ -70,7 +71,7 @@ unknown. But whatever is the type of the file you upload, it can later be downlo
 				<input type="text" class="smalltext" name="title" size="40"/><span class="smallfont_light">(if left empty, file name will serve as title)</span>
 			</td>
 		</tr>
-		<tr height="10"><td colspan="2"></td></tr>
+		<tr style="height:10px;"><td colspan="2"></td></tr>
 		<tr>
 			<td align="left" colspan="2">
 				<input type="button" class="mediumbuttonb" value="Upload" onclick="submitForm()"/>&#160;&#160;

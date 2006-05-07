@@ -50,18 +50,19 @@
 <html>
 	<head>
 		<title>Dataset history</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	    <script language="javascript" src='script.js'></script>
+	    <script language="javascript" src='script.js' type="text/javascript"></script>
+	    <script language="javascript" type="text/javascript">
+		// <![CDATA[
+			function view(id){
+				window.opener.location="dataset.jsp?mode=view&ds_id=" + id;
+				window.close();
+			}
+		// ]]>
+		</script>
 	</head>
-	<script language="javascript">
-	// <![CDATA[
-		function view(id){
-			window.opener.location="dataset.jsp?mode=view&ds_id=" + id;
-			window.close();
-		}
-	// ]]>
-	</script>
+	
 <body class="popup">
 
 <div class="popuphead">
@@ -83,7 +84,7 @@
     	<tr><td colspan="3">&nbsp;</td></tr>
     	<tr>
     		<td align="right" colspan="3">
-    			<a target="_blank" href="help.jsp?screen=history&area=pagehelp" onclick="pop(this.href)">
+    			<a target="_blank" href="help.jsp?screen=history&amp;area=pagehelp" onclick="pop(this.href)">
 					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 				</a>
     		</td>

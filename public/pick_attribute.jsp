@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private Vector mAttributes=null;%>
 <%!private Vector selected=null;%>
@@ -58,9 +59,9 @@ private String getAttributeIdByName(String name){
 <html>
 	<head>
 		<title>Meta</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
-		<script language="javascript">
+		<script language="javascript" type="text/javascript">
 		// <![CDATA[
 			function selectAttr(id, oControl) {
 				if (opener && !opener.closed) {
@@ -80,21 +81,19 @@ private String getAttributeIdByName(String name){
 		// ]]>
 		</script>
 	</head>
-    <script language="javascript" for="window" event="onload">    	
-	</script>
-
+   
 <body class="popup">
 <div class="popuphead">
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
   <h2>Select attributes:</h2>
-	<form acceptcharset="UTF-8" name="form1">
+	<form name="form1" action="">
 	<table>
 			<%
 			for (int i=0; i<mAttributes.size(); i++){

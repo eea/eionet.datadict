@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private String mode=null;%>
 <%!private Namespace namespace=null;%>
@@ -116,10 +117,10 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet.css">
-    <script language="javascript" src='script.js'></script>
-    <script language="javascript">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link type="text/css" rel="stylesheet" href="eionet.css"/>
+    <script language="javascript" src='script.js' type="text/javascript"></script>
+    <script language="javascript" type="text/javascript">
 		// <![CDATA[
     
 		function submitForm(mode){
@@ -189,9 +190,9 @@
 <table border="0">
     <tr valign="top">
         <td nowrap="nowrap" width="125">
-            <p><center>
+            <center>
                 <%@ include file="menu.jsp" %>
-            </center></p>
+            </center>
         </td>
         <td>
             <jsp:include page="location.jsp" flush='true'>
@@ -201,7 +202,7 @@
             
 			<div style="margin-left:30">
 			
-			<form acceptcharset="UTF-8" id="form1" method="POST" action="namespace.jsp">
+			<form id="form1" method="post" action="namespace.jsp">
 			
 			<table width="600" cellspacing="0">
 				<tr>
@@ -233,7 +234,7 @@
 				<%
 				if (!mode.equals("view")){ %>
 				
-					<tr height="5"><td colspan="2"></td></tr>
+					<tr style="height:5px;"><td colspan="2"></td></tr>
 				
 					<tr>
 						<td colspan="2"><span class="Mainfont">
@@ -243,9 +244,9 @@
 				}
 				%>
 				
-				<tr height="5"><td colspan="2"></td></tr>
+				<tr style="height:5px;"><td colspan="2"></td></tr>
 				
-				<tr><td <td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
+				<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
 				
 			</table>
 			
@@ -344,7 +345,7 @@
 				Dataset ds = searchEngine.getDataset(namespace.getDataset());
 				String dsName = ds==null ? "" : ds.getShortName();
 				%>
-				<tr height="5"><td colspan="2">&#160;</td></tr>
+				<tr style="height:5px;"><td colspan="2">&#160;</td></tr>
 				<tr>
 					<td class="barfont" colspan="2">
 						<b>NB!</b><br/>This namespace was automatically created in the process of creating the
@@ -354,7 +355,7 @@
 				</tr><%
 			}
 			else if (namespace.getDataset()!=null){ %>
-				<tr height="5"><td colspan="2">&#160;</td></tr>
+				<tr style="height:5px;"><td colspan="2">&#160;</td></tr>
 				<tr>
 					<td class="barfont" colspan="2">
 						<b>NB!</b><br/>This namespace was automatically created in the process of creating the
@@ -367,7 +368,7 @@
 		
 		<%
 		if (!mode.equals("view")){ %>
-			<tr height="20"><td colspan="2"></td></tr>
+			<tr style="height:20px;"><td colspan="2"></td></tr>
 			
 			<tr>
 				<td></td>
@@ -398,9 +399,8 @@
 		}
 		%>
 		
-		<input type="hidden" name="mode" value="<%=mode%>"/>
-		
 	</table>
+	<input type="hidden" name="mode" value="<%=mode%>"/>
 	</form>
 </div>
         </td>

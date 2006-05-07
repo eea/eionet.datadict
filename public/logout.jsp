@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%!
 
 ServletContext ctx = null;
@@ -47,10 +48,10 @@ Vector dataElements=null;
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="javascript" src='script.js'></script>
-	<script language="javascript">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+	<link type="text/css" rel="stylesheet" href="eionet.css"/>
+	<script language="javascript" src='script.js' type="text/javascript"></script>
+	<script language="javascript" type="text/javascript">
 	// <![CDATA[
 		function onLoad(){
 			<%
@@ -71,9 +72,9 @@ Vector dataElements=null;
 <table border="0">
     <tr valign="top">
 		<td nowrap="nowrap" width="125">
-            <p><center>
+            <center>
                 <%@ include file="menu.jsp" %>
-            </center></p>
+            </center>
         </td>
         <td>
             <jsp:include page="location.jsp" flush='true'>
@@ -82,16 +83,16 @@ Vector dataElements=null;
             </jsp:include>            
 
             <div style="margin-left:30">
-            	<form acceptcharset="UTF-8" name="form1" action="index.jsp" method="GET">
+            	<form name="form1" action="index.jsp" method="get">
 				<table width="500">
 				
 				  <%
 				  if (wc){
 				  %>
 	  			    <tr><td><font class="head00">Logging out</font></td></tr>
-					<tr height="10"><td>&#160;</td></tr>
+					<tr style="height:10px;"><td>&#160;</td></tr>
 					
-					<tr height="30"><td>You have checked out the following objects: </td></tr>
+					<tr style="height:30px;"><td>You have checked out the following objects: </td></tr>
 					<% 
 					// DATASETS
 					int d=0;
@@ -148,7 +149,7 @@ Vector dataElements=null;
 							String tblFullName = tblName;
 							tblName = tblName.length()>60 && tblName != null ? tblName.substring(0,60) + " ..." : tblName;
 
-							String tableLink = "dstable.jsp?mode=view&table_id=" + table_id + "&ds_id=" + ds_id + "&ds_name=" + ds_name;
+							String tableLink = "dstable.jsp?mode=view&amp;table_id=" + table_id + "&amp;ds_id=" + ds_id + "&amp;ds_name=" + ds_name;
 							d++;
 							%>
 							<tr valign="top">					
@@ -208,10 +209,10 @@ Vector dataElements=null;
 					%>
 					
 					<tr><td align="left">&#160;</td></tr>
-					<tr height="30"><td><b>!Be aware that if you leave these objects as checked out, any other user cannot edit these or their parent objects.
+					<tr style="height:30px;"><td><b>!Be aware that if you leave these objects as checked out, any other user cannot edit these or their parent objects.
 						If you still want to log out, please click 'Logout' button below:</b>
 					</td></tr>
-					<tr height="30"><td align="left">
+					<tr style="height:30px;"><td align="left">
 						<input type="button" onclick="logout()" value="Logout" class="smallbutton"/>
 					</td></tr>
 				  <%

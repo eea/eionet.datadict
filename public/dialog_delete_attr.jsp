@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%!private Vector objects=null;%>
 <%!
 ServletContext ctx = null;
@@ -70,10 +71,10 @@ ServletContext ctx = null;
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="javascript" src='script.js'></script>
-	<script language="javascript">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+	<link type="text/css" rel="stylesheet" href="eionet.css"/>
+	<script language="javascript" src='script.js' type="text/javascript"></script>
+	<script language="javascript" type="text/javascript">
 	// <![CDATA[
 		function deleteAttr(){
 				
@@ -95,9 +96,9 @@ ServletContext ctx = null;
 <table border="0">
     <tr valign="top">
 		<td nowrap="nowrap" width="125">
-            <p><center>
+            <center>
                 <%@ include file="menu.jsp" %>
-            </center></p>
+            </center>
         </td>
         <td>
             <jsp:include page="location.jsp" flush='true'>
@@ -106,13 +107,13 @@ ServletContext ctx = null;
             </jsp:include>            
 
             <div style="margin-left:30">
-            	<form acceptcharset="UTF-8" name="form1" action="dialog_delete_attr.jsp" method="POST">
+            	<form name="form1" action="dialog_delete_attr.jsp" method="post">
 				<table width="500">
 	  			    <tr><td><font class="head00">Deleting attribute: <%=Util.replaceTags(short_name)%></font></td></tr>
-					<tr height="10"><td>&#160;</td></tr>
+					<tr style="height:10px;"><td>&#160;</td></tr>
 					
-					<tr height="30"><td>Are you sure you want to delete the attribute, because it is part of the following objects' definitions: </td></tr>
-					<tr height="10"><td>&#160;</td></tr>
+					<tr style="height:30px;"><td>Are you sure you want to delete the attribute, because it is part of the following objects' definitions: </td></tr>
+					<tr style="height:10px;"><td>&#160;</td></tr>
 					<% 
 					// DATASETS
 					int d=0;
@@ -167,9 +168,9 @@ ServletContext ctx = null;
 					%>
 					
 					<tr><td align="left">&#160;</td></tr>
-					<tr height="30"><td><b>!Be aware that if you delete this attribute, it affects all these objects' definitions.</b>
+					<tr style="height:30px;"><td><b>!Be aware that if you delete this attribute, it affects all these objects' definitions.</b>
 					</td></tr>
-					<tr height="30"><td align="left">
+					<tr style="height:30px;"><td align="left">
 						<input type="button" onclick="cancel();" value="Cancel" class="mediumbuttonb"/>
 						<input type="button" onclick="deleteAttr();" value="Delete" class="mediumbuttonb"/>
 					</td></tr>

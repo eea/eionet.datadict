@@ -6,7 +6,7 @@ AppUserIF userProtarea = SecurityUtil.getUser(request);
 if (userProtarea!=null && userProtarea.isAuthentic()) loggedIn = true;
 %>
 
-<div id="login_box" class="TeaserBox" width="302">
+<div id="login_box" class="TeaserBox" style="width:302px;">
 			<h2>Protected area</h2>
 				<%
 				if (!loggedIn){ %>

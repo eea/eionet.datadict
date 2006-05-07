@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private Vector attrFields=null;%>
 
@@ -121,74 +122,75 @@ private String legalizeAlert(String in){
 <html>
 	<head>
 		<title>Meta</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	</head>
-	<script language="javascript" src='script.js'></script>
-	<script language="javascript" src='dynamic_table.js'></script>
-	<script language="javascript">
-	// <![CDATA[
-		function submitForm(mode){
+	
+		<script language="javascript" src='script.js' type="text/javascript"></script>
+		<script language="javascript" src='dynamic_table.js' type="text/javascript"></script>
+		<script language="javascript" type="text/javascript">
+		// <![CDATA[
+			function submitForm(mode){
+					
+				if (mode == "delete"){
+					var b = confirm("This will delete all the fields you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
+					if (b==false) return;
+				}
 				
-			if (mode == "delete"){
-				var b = confirm("This will delete all the fields you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
-				if (b==false) return;
+				document.forms["form1"].elements["mode"].value = mode;
+				document.forms["form1"].submit();
 			}
-			
-			document.forms["form1"].elements["mode"].value = mode;
-			document.forms["form1"].submit();
-		}
-		function start() {
-			tbl_obj=new dynamic_table("tbl"); //create dynamic_table object
-		}
-
-		//call to dynamic table methods. Originated from buttons or click on tr.
-		function sel_row(o){
-			tbl_obj.selectRow(o);
-		}
-		function moveRowUp(){
-			tbl_obj.moveup();
-			setChanged();
-		}
-		function moveRowDown(){
-			tbl_obj.movedown();
-			setChanged();
-		}
-		function moveFirst(){
-			tbl_obj.movefirst();
-			setChanged();
-		}
-		function moveLast(){
-			tbl_obj.movelast();
-			setChanged();
-		}
-		function setChanged(){
-			document.forms["form1"].elements["changed"].value = 1;
-		}
-		function getChanged(){
-			return document.forms["form1"].elements["changed"].value;
-		}
-		function saveChanges(){
-			tbl_obj.insertNumbers("pos_");
-			submitForm("edit_pos");
-		}
-		function clickLink(sUrl){
-			if (getChanged()==1){
-				if(!confirm("This link leads you to the next page, but you have changed the order of elements.\n Are you sure you want to loose the changes?"))
-					return;
+			function start() {
+				tbl_obj=new dynamic_table("tbl"); //create dynamic_table object
 			}
-			window.location=sUrl;
-		}
-		// ]]>
-		</script>
+	
+			//call to dynamic table methods. Originated from buttons or click on tr.
+			function sel_row(o){
+				tbl_obj.selectRow(o);
+			}
+			function moveRowUp(){
+				tbl_obj.moveup();
+				setChanged();
+			}
+			function moveRowDown(){
+				tbl_obj.movedown();
+				setChanged();
+			}
+			function moveFirst(){
+				tbl_obj.movefirst();
+				setChanged();
+			}
+			function moveLast(){
+				tbl_obj.movelast();
+				setChanged();
+			}
+			function setChanged(){
+				document.forms["form1"].elements["changed"].value = 1;
+			}
+			function getChanged(){
+				return document.forms["form1"].elements["changed"].value;
+			}
+			function saveChanges(){
+				tbl_obj.insertNumbers("pos_");
+				submitForm("edit_pos");
+			}
+			function clickLink(sUrl){
+				if (getChanged()==1){
+					if(!confirm("This link leads you to the next page, but you have changed the order of elements.\n Are you sure you want to loose the changes?"))
+						return;
+				}
+				window.location=sUrl;
+			}
+			// ]]>
+			</script>
+	</head>
 <body onload="start()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
         <td nowrap="nowrap" width="125">
-            <p><center>
+            <center>
                 <%@ include file="menu.jsp" %>
-            </center></p>
+            </center>
         </td>
         <td>
             <jsp:include page="location.jsp" flush='true'>
@@ -198,31 +200,32 @@ private String legalizeAlert(String in){
             
 <div style="margin-left:30">
 
-<form acceptcharset="UTF-8" name="form1" method="POST" action="m_attr_fields.jsp">
+<form name="form1" method="post" action="m_attr_fields.jsp">
 
 <table width="500">
 	<tr>
 		<td>
-			<span class="head00">Fields of <span class="title2" color="#006666"><%=attr_name%></span></span>
+			<span class="head00">Fields of <span class="title2" style="color:#006666;"><%=attr_name%></span></span>
 		</td>		
 		<td align="right">
-			<a target="_blank" href="help.jsp?screen=complex_attr_fields&area=pagehelp" onclick="pop(this.href)">
+			<a target="_blank" href="help.jsp?screen=complex_attr_fields&amp;area=pagehelp" onclick="pop(this.href)">
 				<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 			</a>
 		</td>
+	</tr>
 </table>
 
 <table width="auto">
-	<tr height="20"><td colspan="2"></td></tr>
+	<tr style="height:20px;"><td colspan="2"></td></tr>
 	<tr><td colspan="2" class="smallFont">Enter a new field here:</td></tr>
 	<tr>
 		<td class="small" align="left">Name:</td>
 		<td>
-			<input type="text" size="20" name="new_field"></input>&#160;
+			<input type="text" size="20" name="new_field"/>&#160;
 			<%
 			if (user!=null){
 				%>
-				<input type="button" value="Add" style="font-family:Arial;font-size:10px;font-weight:bold" onclick="submitForm('add')">
+				<input type="button" value="Add" style="font-family:Arial;font-size:10px;font-weight:bold" onclick="submitForm('add')"/>
 				<%
 			}
 			else{
@@ -239,11 +242,12 @@ private String legalizeAlert(String in){
 			<textarea rows="2" cols="30" name="definition"></textarea>
 		</td>
 	</tr>
-	<tr height="10"><td colspan="2"></td></tr>
+	<tr style="height:10px;"><td colspan="2"></td></tr>
 </table>
 
 <table width="auto" cellspacing="0" cellpadding="0" border="0"><tr><td rowspan="2">	
 <table width="auto" id="tbl" cellspacing="0" cellpadding="0" >
+	<thead>
 	<%
 	if (user != null) { %>
 		<tr>
@@ -252,16 +256,18 @@ private String legalizeAlert(String in){
 				<input type="button" value="Save order" class="smallbutton" onclick="saveChanges()" title="save the order of the fields"/>
 			</td>
 		</tr>
-		<tr height="3"><td colspan="4"></td></tr>
+		<tr style="height:3px;"><td colspan="4"></td></tr>
 		<%
 	}
 	%>
+	
 	<tr>
 		<th>&nbsp;</th>
 		<th style="padding-left:5;padding-right:5;border-left:0">Name</th>
 		<th style="padding-left:5;padding-right:5">Definition</th>
 		<th style="padding-left:5;padding-right:5;border-right:1px solid #FF9900">Priority</th>
 	</tr>
+	</thead>
 	<tbody id="tbl_body">	
 	
 	<%
@@ -276,7 +282,7 @@ private String legalizeAlert(String in){
 		String definition = (String)hash.get("definition");
 		if (definition.length()>50) definition = definition.substring(0,50) + " ...";
 		
-		String fieldLink = "m_attr_field.jsp?mode=edit&attr_id=" + attr_id + "&attr_name=" + attr_name + "&field_id=" + id;
+		String fieldLink = "m_attr_field.jsp?mode=edit&amp;attr_id=" + attr_id + "&amp;attr_name=" + attr_name + "&amp;field_id=" + id;
 		
 		int pos = Integer.parseInt((String)hash.get("position"));
 		if (pos >= position) position = pos +1;
@@ -284,7 +290,7 @@ private String legalizeAlert(String in){
 		String priority = (String)hash.get("priority");
 		String pri = (priority!=null && priority.equals(DElemAttribute.FIELD_PRIORITY_HIGH)) ? "High" : "Low";
 		%>
-		<tr id="<%=id%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+		<tr id="tr<%=id%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 			<%
 			if (user != null){ %>
 				<td align="right" style="padding-left:5;padding-right:5">
@@ -304,9 +310,9 @@ private String legalizeAlert(String in){
 				<%=pri%>
 			</td>
 			<td width="0" style="display:none">
-				<input type="hidden" name="pos_id" value="<%=id%>" size="5">
-				<input type="hidden" name="oldpos_<%=id%>" value='<%=(String)hash.get("position")%>' size="5">
-				<input type="hidden" name="pos_<%=id%>" value="0" size="5">
+				<input type="hidden" name="pos_id" value="<%=id%>" size="5"/>
+				<input type="hidden" name="oldpos_<%=id%>" value='<%=(String)hash.get("position")%>' size="5"/>
+				<input type="hidden" name="pos_<%=id%>" value="0" size="5"/>
 			</td>
 		</tr>
 		<%
@@ -321,21 +327,31 @@ private String legalizeAlert(String in){
 		</tr><tr><td>
 				<table cellspacing="2" cellpadding="2" border="0">
 					<tr>
+						<td></td>
 					</tr>
-					<td>
-						<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" title="move selected row to top"/></a>			
-					</td></tr>
-					<td>
-						<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" title="move selected row up"/></a>			
-					</td></tr>
-					<tr><td>
-						<img src="images/dot.gif"/>
-					</td></tr>
-					<tr><td>
-						<a href="javascript:moveRowDown()"><img src="images/move_down.gif" border="0" title="move selected row down"/></a>			
-					</td>
-					<tr><td>
-						<a href="javascript:moveLast()"><img src="images/move_last.gif" border="0" title="move selected row last"/></a>			
+					<tr>
+						<td>
+							<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" title="move selected row to top" alt=""/></a>			
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" title="move selected row up" alt=""/></a>			
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<img src="images/dot.gif" alt=""/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="javascript:moveRowDown()"><img src="images/move_down.gif" border="0" title="move selected row down" alt=""/></a>			
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="javascript:moveLast()"><img src="images/move_last.gif" border="0" title="move selected row last" alt=""/></a>			
 						</td>
 					</tr>
 				<% } %>
@@ -344,8 +360,8 @@ private String legalizeAlert(String in){
 	</tr>
 </table>
 
-<input type="hidden" name="mode" value="add"></input>
-<input type="hidden" name="position" value="<%=String.valueOf(position)%>"></input>
+<input type="hidden" name="mode" value="add"/>
+<input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
 
 <input type="hidden" name="attr_id" value="<%=attr_id%>"/>
 <input type="hidden" name="attr_name" value="<%=attr_name%>"/>
@@ -354,6 +370,7 @@ private String legalizeAlert(String in){
 </div>
         </td>
 </tr>
+</table>
 </body>
 </html>
 

@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private String mode=null;%>
 <%!private Hashtable attrField=null;%>
@@ -139,56 +140,57 @@ private String legalizeAlert(String in){
 <html>
 	<head>
 		<title>Meta</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	</head>
 	
-	<script language="javascript" src='script.js'></script>
 	
-	<script language="javascript">
-	// <![CDATA[
-
-		function submitForm(mode){
-			
-			if (mode == "delete"){
-				var b = confirm("This value will be deleted! Click OK, if you want to continue. Otherwise click Cancel.");
-				if (b==false) return;
+		<script language="javascript" src='script.js' type="text/javascript"></script>
+		
+		<script language="javascript" type="text/javascript">
+		// <![CDATA[
+	
+			function submitForm(mode){
+				
+				if (mode == "delete"){
+					var b = confirm("This value will be deleted! Click OK, if you want to continue. Otherwise click Cancel.");
+					if (b==false) return;
+				}
+				
+				
+				document.forms["form1"].elements["mode"].value = mode;
+				document.forms["form1"].submit();
+			}
+			function openPriority(){
+				alert("Click the checkbox, if the field has high priority. Otherwise it has low priority.");
+			}
+			function onLoad(){
+				<%
+					if (priority != null){
+	    			%>
+						var pri = '<%=priority%>';
+						var o = document.forms["form1"].priority;
+						for (i=0; o!=null && i<o.options.length; i++){
+							if (o.options[i].value == pri){
+								o.selectedIndex = i;
+								break;
+							}
+						}			
+					<% 
+					}
+				%>
 			}
 			
-			
-			document.forms["form1"].elements["mode"].value = mode;
-			document.forms["form1"].submit();
-		}
-		function openPriority(){
-			alert("Click the checkbox, if the field has high priority. Otherwise it has low priority.");
-		}
-		function onLoad(){
-			<%
-				if (priority != null){
-    			%>
-					var pri = '<%=priority%>';
-					var o = document.forms["form1"].priority;
-					for (i=0; o!=null && i<o.options.length; i++){
-						if (o.options[i].value == pri){
-							o.selectedIndex = i;
-							break;
-						}
-					}			
-				<% 
-				}
-			%>
-		}
-		
-	// ]]>
-	</script>
+		// ]]>
+		</script>
+	</head>
 <body onload="onLoad()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
         <td nowrap="nowrap" width="125">
-            <p><center>
+            <center>
                 <%@ include file="menu.jsp" %>
-            </center></p>
+            </center>
         </td>
         <td>
             <jsp:include page="location.jsp" flush='true'>
@@ -202,7 +204,7 @@ private String legalizeAlert(String in){
 	String backURL = "" + "/m_attr_fields.jsp?attr_id=" + attr_id + "&attr_name=" + attr_name;
 	
 	%>
-		<form acceptcharset="UTF-8" name="form1" method="POST" action="m_attr_field.jsp">
+		<form name="form1" method="post" action="m_attr_field.jsp">
 			
 			<table width="auto" cellspacing="0" cellpadding="0">
 			
@@ -212,7 +214,7 @@ private String legalizeAlert(String in){
 				</td>
 			</tr -->
 					
-			<tr height="20"><td colspan="2"></td></tr>
+			<tr style="height:20px;"><td colspan="2"></td></tr>
 			<tr valign="bottom">
 				<td colspan="2">
 					<span class="head00">Field of</span>
@@ -221,9 +223,9 @@ private String legalizeAlert(String in){
 				</td>
 			</tr>
 			
-			<tr height="20" valign="bottom">
+			<tr style="height:20px;" valign="bottom">
 				<td valign="bottom" align="right" colspan="2">
-					<a target="_blank" href="help.jsp?screen=complex_attr_field&area=pagehelp" onclick="pop(this.href)">
+					<a target="_blank" href="help.jsp?screen=complex_attr_field&amp;area=pagehelp" onclick="pop(this.href)">
 						<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 					</a>
 				</td>
@@ -291,7 +293,7 @@ private String legalizeAlert(String in){
 			}
 			%>
 		
-		<tr height="10"><td colspan="2"></td></tr>
+		<tr style="height:10px;"><td colspan="2"></td></tr>
 		
 		<tr>
 			<td>&#160;</td>

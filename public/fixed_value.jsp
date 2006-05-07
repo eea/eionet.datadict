@@ -156,7 +156,7 @@ try { // start the whole page try block
 	}
 	else{
 		String mm = mode.equals("print") ? "view" : mode;
-		parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&type=SIMPLE&mode=" + mm;
+		parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&amp;type=SIMPLE&amp;mode=" + mm;
 		if (history!=null){
 			String attrUrl = history.getLastMatching("delem_attribute.jsp");
 		

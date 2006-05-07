@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!private Vector selected=null;%>
@@ -43,7 +44,7 @@
 	
 	String sel = request.getParameter("selected");
 	
-	String backUrl = "search_table.jsp?ctx=popup&selected=" + sel;
+	String backUrl = "search_table.jsp?ctx=popup&amp;selected=" + sel;
 	String id=null;
 	selected= new Vector();
 	if (sel!=null && sel.length()>0){
@@ -98,9 +99,9 @@
 <html>
 	<head>
 		<title>Meta</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
-		<script language="javascript">
+		<script language="javascript" type="text/javascript">
 		// <![CDATA[
 			function pickTable(id, i, name) {
 				if (opener && !opener.closed) {
@@ -124,8 +125,8 @@
 		// ]]>
 		</script>
 	</head>
-    <script language="javascript" for="window" event="onload">    	
-	</script>
+    <!--script language="javascript" for="window" event="onload">    	
+	</script-->
 
 <body class="popup">
 
@@ -133,23 +134,25 @@
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
 
 <div>
-	<form acceptcharset="UTF-8" name="form1">
+	<form name="form1" action="">
 		<p><b>Select dataset table:</b></p>
 		
 		<table id="tbl">
-			<tr><td colspan="4" align="right"><a href="<%=backUrl%>">back to search</a></td></tr>
-			<tr>
-				<th align="left" style="padding-left:5;padding-right:10">Short name</th>
-				<th align="left" style="padding-right:10">Dataset</th>
-				<th align="left" style="padding-right:10">Full name</th>
-			</tr>
+			<thead>
+				<tr><td colspan="4" align="right"><a href="<%=backUrl%>">back to search</a></td></tr>
+				<tr>
+					<th align="left" style="padding-left:5;padding-right:10">Short name</th>
+					<th align="left" style="padding-right:10">Dataset</th>
+					<th align="left" style="padding-right:10">Full name</th>
+				</tr>
+			</thead>
 			<tbody>
  			<%
         		    if (dsTables == null || dsTables.size()==0){
@@ -210,6 +213,7 @@
 		</table>
 		<br/>
  	</form>
+</div>
 </body>
 </html>
 

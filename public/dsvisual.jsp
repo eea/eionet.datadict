@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%@ include file="history.jsp" %>
 
@@ -12,10 +13,10 @@
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="javascript" src='script.js'></script>
-	<script language="javascript">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+	<link type="text/css" rel="stylesheet" href="eionet.css"/>
+	<script language="javascript" src='script.js' type="text/javascript"></script>
+	<script language="javascript" type="text/javascript">
 	// <![CDATA[
 
 	function submitForm(mode){
@@ -144,9 +145,9 @@ if (dsVisual!=null && dsVisual.length()!=0){
 <table border="0">
     <tr valign="top">
 		<td nowrap="nowrap" width="125">
-            <p><center>
+            <center>
                 <%@ include file="menu.jsp" %>
-            </center></p>
+            </center>
         </td>
         <td>
             <jsp:include page="location.jsp" flush='true'>
@@ -157,7 +158,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
             	<div style="margin-left:30">
             
 				<table width="500">
-					<tr height="20"><td colspan="2"></td></tr>
+					<tr style="height:20px;"><td colspan="2"></td></tr>
 					<tr>
 						<td>
 							<font class="head00">
@@ -167,43 +168,43 @@ if (dsVisual!=null && dsVisual.length()!=0){
 							</font>
 						</td>
 						<td align="right">
-							<a target="_blank" href="help.jsp?screen=dataset_model&area=pagehelp" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset_model&amp;area=pagehelp" onclick="pop(this.href)">
 								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 							</a>
 						</td>
 					</tr>
 					
-					<tr height="5"><td colspan="2"></td></tr>
+					<tr style="height:5px;"><td colspan="2"></td></tr>
 				</table>
 				
 				<table width="500" cellpadding="0" cellspacing="0" border="0">
 					
 					<%
 					if (type.equals("simple")){ %>
-						<tr height="10">
-					        <td bgcolor="#10847B" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5"></td>
+						<tr style="height:10px;">
+					        <td bgcolor="#10847B" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5" alt=""/></td>
 						    <th width="50">Simple</th>
-						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5"></td>
+						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5" alt=""/></td>
 						    <td bgcolor="#f0f0f0" width="1"></td>
-	          				<td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5"></td>
+	          				<td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5" alt=""/></td>
 						    <th class="light" width="50"><a href="dsvisual.jsp?ds_id=<%=ds_id%>&amp;str_type=detailed">
 						    	<font color="#FFFFFF">Detailed</font></a>
 						    </th>
-						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5"></td>
+						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5" alt=""/></td>
 	    					<td bgcolor="#f0f0f0">&#160;</td>
 						</tr> <%
 					}
 					else{ %>
-						<tr height="10">
-					        <td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5"></td>
+						<tr style="height:10px;">
+					        <td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5" alt=""/></td>
 						    <th class="light" width="50"><a href="dsvisual.jsp?ds_id=<%=ds_id%>&amp;str_type=simple">
 						    	<font color="#FFFFFF">Simple</font></a>
 						    </th>
-						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5"></td>
+						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5" alt=""/></td>
 						    <td bgcolor="#f0f0f0" width="1"></td>
-	          				<td bgcolor="#10847B" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5"></td>
+	          				<td bgcolor="#10847B" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5" alt=""/></td>
 						    <th width="50">Detailed</th>
-						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5"></td>
+						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5" alt=""/></td>
 	    					<td bgcolor="#f0f0f0">&#160;</td>
 						</tr> <%
 					}
@@ -234,7 +235,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 						<tr>
 							<td colspan="2">
 							<% if (imgVisual){ %>
-								<img src="visuals/<%=dsVisual%>"/> <%
+								<img src="visuals/<%=dsVisual%>" alt=""/> <%
 							}
 							else{ %>
 								The file representing the dataset <%=type%> structure cannot be displayed on this web-page.
@@ -247,7 +248,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 						<%
 						if (user!=null){
 							%>
-							<tr height="5"><td colspan="2"></td></tr>
+							<tr style="height:5px;"><td colspan="2"></td></tr>
 							<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
 							
 							<tr>
@@ -268,13 +269,13 @@ if (dsVisual!=null && dsVisual.length()!=0){
 				<%
 				if (user!=null){
 					%>
-					<form acceptcharset="UTF-8" name="Upload" action="DsVisualUpload" method="POST" enctype="multipart/form-data">
+					<form name="Upload" action="DsVisualUpload" method="post" enctype="multipart/form-data">
 
 						<table width="auto" cellspacing="0">
 							
 							<tr>
 								<td align="left" style="padding-right:5">
-									<input type="radio" name="fileORurl" value="file" checked="true"></input>&#160;File:</td>
+									<input type="radio" name="fileORurl" value="file" checked="checked"></input>&#160;File:</td>
 								<td align="left">
 									<input type="file" class="smalltext" name="file_input" size="40"/>
 								</td>
@@ -287,7 +288,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 									<input type="text" class="smalltext" name="url_input" size="52"></input>
 								</td>
 							</tr>
-							<tr height="10"><td colspan="2"></td></tr>
+							<tr style="height:10px;"><td colspan="2"></td></tr>
 							<tr>
 								<td></td>
 								<td align="left">
@@ -311,11 +312,11 @@ if (dsVisual!=null && dsVisual.length()!=0){
 					<%
 				}
 				%>
+
+			</div>
 		</td>
 	</tr>
 </table>
-</div>
-</center>
 </body>
 </html>
 

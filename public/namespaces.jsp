@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%@ include file="history.jsp" %>
 
@@ -62,10 +63,10 @@
 <html>
 <head>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet.css">
-    <script language="javascript" src='script.js'></script>
-    <script language="javascript">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link type="text/css" rel="stylesheet" href="eionet.css"/>
+    <script language="javascript" src='script.js' type="text/javascript"></script>
+    <script language="javascript" type="text/javascript">
 		// <![CDATA[
 		function submitForm(){
 			
@@ -92,9 +93,9 @@
 <table border="0">
     <tr valign="top">
         <td nowrap="nowrap" width="125">
-            <p><center>
+            <center>
                 <%@ include file="menu.jsp" %>
-            </center></p>
+            </center>
         </td>
         <td>
             <jsp:include page="location.jsp" flush='true'>
@@ -114,17 +115,17 @@
             }
             %>
             
-			<form acceptcharset="UTF-8" id="form1" method="POST" action="namespaces.jsp">
+			<form id="form1" method="post" action="namespaces.jsp">
 			
 		<table width="550">
 			<tr><td><font class="head00">Namespaces</font></td></tr>
-			<tr height="10"><td></td></tr>
+			<tr style="height:10px;"><td></td></tr>
 			<tr>
 				<td>
 					To view or modify a namespace, click its Full name. To add a new namespace, click 'Add'.
 				</td>
 			</tr>
-			<tr height="10"><td></td></tr>
+			<tr style="height:10px;"><td></td></tr>
 		</table>
 		
 		<table width="auto" cellspacing="0">

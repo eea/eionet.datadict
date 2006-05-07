@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private Vector elems=null;%>
 <%!private ServletContext ctx=null;%>
@@ -139,13 +140,13 @@ if (request.getMethod().equals("POST")){
 		
 		String mode = request.getParameter("mode");	
 		if (mode.equals("add") || mode.equals("copy")){
-			response.sendRedirect("data_element.jsp?mode=view&delem_id=" + elmHandler.getLastInsertID());
+			response.sendRedirect("data_element.jsp?mode=view&amp;delem_id=" + elmHandler.getLastInsertID());
 		}
 		else{
 			String redirUrl = currentUrl;
 			String newTblID = elmHandler.getNewTblID();
 			if (newTblID!=null)
-				redirUrl = "dstable.jsp?mode=view&table_id=" + newTblID;
+				redirUrl = "dstable.jsp?mode=view&amp;table_id=" + newTblID;
 			response.sendRedirect(redirUrl);
 		}
 		
@@ -208,15 +209,15 @@ int colCount = hasGIS ? 5 : 4;
 <html>
 <head>
 	<title>Meta</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-</head>
 
-<script language="javascript" src='script.js'></script>
-<script language="javascript" src='dynamic_table.js'></script>
-<script language="javascript" src='modal_dialog.js'></script>
 
-<script language="javascript">
+<script language="javascript" src='script.js' type="text/javascript"></script>
+<script language="javascript" src='dynamic_table.js' type="text/javascript"></script>
+<script language="javascript" src='modal_dialog.js' type="text/javascript"></script>
+
+<script language="javascript" type="text/javascript">
 // <![CDATA[
 		function submitForm(mode){
 			
@@ -415,15 +416,16 @@ int colCount = hasGIS ? 5 : 4;
 		
 // ]]>
 </script>
+</head>
 	
 <body onload="start()">
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
         <td nowrap="nowrap" width="125">
-            <p><center>
+            <center>
                 <%@ include file="menu.jsp" %>
-            </center></p>
+            </center>
         </td>
         <td>
             <jsp:include page="location.jsp" flush='true'>
@@ -433,7 +435,7 @@ int colCount = hasGIS ? 5 : 4;
             
 <div style="margin-left:30">
 			
-<form acceptcharset="UTF-8" name="form1" method="POST" action="tblelems.jsp">
+<form name="form1" method="post" action="tblelems.jsp">
 
 	<!-- page title & the add new part -->
 	
@@ -443,6 +445,7 @@ int colCount = hasGIS ? 5 : 4;
 		
 		<tr>
 			<td>
+				<br/>
 				<span class="head00">
 					Elements in
 					<span class="title2">
@@ -461,13 +464,13 @@ int colCount = hasGIS ? 5 : 4;
 			</td>
 			
 			<td align="right">
-				<a target="_blank" href="help.jsp?screen=table_elements&area=pagehelp" onclick="pop(this.href)">
+				<a target="_blank" href="help.jsp?screen=table_elements&amp;area=pagehelp" onclick="pop(this.href)">
 					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 				</a>
 			</td>
 		</tr>
 		
-		<tr height="10"><td colspan="2"></td></tr>
+		<tr style="height:10px;"><td colspan="2"></td></tr>
 	
 		<%
 		// set the flag indicating if the top namespace is in use
@@ -488,12 +491,12 @@ int colCount = hasGIS ? 5 : 4;
 								<span class="barfont">Identifier:</span>
 							</td>
 							<td align="right">
-								<a target="_blank" href="help.jsp?screen=dataset&area=identifier" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 								</a>
 							</td>
 							<td style="padding-left:5">
-								<input type="text" class="smalltext" width="10" name="idfier"/>
+								<input type="text" class="smalltext" style="width:145px;" name="idfier"/>
 							</td>
 							<td align="right">
 								<input type="button" class="smallbutton" value="Add" onclick="goToAddForm()"
@@ -511,13 +514,13 @@ int colCount = hasGIS ? 5 : 4;
 						<tr>
 							<td align="right"><span class="barfont">Type:</span></td>
 							<td>
-								<a target="_blank" href="help.jsp?screen=element&area=type" onclick="pop(this.href)">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href)">
+									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 								</a>
 							</td>
 							<td style="padding-left:5" colspan="4">
 								<select name="type" class="small">
-									<option selected value="CH2">Quantitative</option>
+									<option selected="selected" value="CH2">Quantitative</option>
 									<option value="CH1">Fixed values (codes)</option>
 								</select>
 							</td>
@@ -529,7 +532,7 @@ int colCount = hasGIS ? 5 : 4;
 		}
 		%>
 		
-		<tr height="10"><td colspan="2"></td></tr>
+		<tr style="height:10px;"><td colspan="2"></td></tr>
 	</table>
 
 		
@@ -581,8 +584,8 @@ int colCount = hasGIS ? 5 : 4;
 										<b>Short name</b>
 									</td>
 									<td align="left" width="50%">
-										<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
-											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>
 								</tr>
@@ -598,8 +601,8 @@ int colCount = hasGIS ? 5 : 4;
 											<b>GIS</b>
 										</td>
 										<td align="left" width="50%">
-											<a target="_blank" href="help.jsp?screen=element&area=GIS" onclick="pop(this.href)">
-												<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+											<a target="_blank" href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href)">
+												<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 											</a>
 										</td>
 									</tr>
@@ -616,7 +619,7 @@ int colCount = hasGIS ? 5 : 4;
 									</td>
 									<td align="left" width="50%">
 										<a target="_blank" href="help.jsp?attrshn=Datatype&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>
 								</tr>
@@ -630,8 +633,8 @@ int colCount = hasGIS ? 5 : 4;
 										<b>Element type</b>
 									</td>
 									<td align="left" width="50%">
-										<a target="_blank" href="help.jsp?screen=element&area=type" onclick="pop(this.href)">
-											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+										<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href)">
+											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>
 								</tr>
@@ -672,9 +675,9 @@ int colCount = hasGIS ? 5 : 4;
 						
 						String elemLink = null;
 						if (!elmCommon)
-							elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID() + "&ds_id=" + dsID + "&table_id=" + tableID;
+							elemLink = "data_element.jsp?mode=view&amp;delem_id=" + elem.getID() + "&amp;ds_id=" + dsID + "&amp;table_id=" + tableID;
 						else
-							elemLink = "data_element.jsp?mode=view&delem_id=" + elem.getID();
+							elemLink = "data_element.jsp?mode=view&amp;delem_id=" + elem.getID();
 						
 						// see if the element is part of any foreign key relations
 						Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
@@ -691,7 +694,7 @@ int colCount = hasGIS ? 5 : 4;
 						
 						<!-- element row -->
 						
-						<tr id="<%=elem.getID()%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+						<tr id="tr<%=elem.getID()%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 		
 							<td align="right" style="padding-right:10" bgcolor="#f0f0f0">
 								<%
@@ -759,38 +762,38 @@ int colCount = hasGIS ? 5 : 4;
 								<%} else{ %>
 									<%=elemType%>
 								<% } %>
+								<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5"/>
+								<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>" size="5"/>
+								<input type="hidden" name="pos_<%=elem.getID()%>" value="0" size="5"/>
 							</td>
-							
-							<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5">
-							<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>" size="5">
-							<input type="hidden" name="pos_<%=elem.getID()%>" value="0" size="5">
+						
 						</tr>
 						<%
 					} // end elements display loop
 					%>
 					
-					<tr height="10">
+					<tr style="height:10px;">
 						<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>"></td>
 					</tr>
 					
 					<%
 					// explanations about red asterisks, fks and c-signs
 					if (user!=null && elems!=null && elems.size()>0 && hasMarkedElems){%>
-						<tr height="10">
+						<tr style="height:10px;">
 							<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>">
 								(a red wildcard stands for checked-out element)
 							</td>
 						</tr><%
 					}
 					if (user!=null && elems!=null && elems.size()>0 && hasForeignKeys){%>
-						<tr height="10">
+						<tr style="height:10px;">
 							<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>">
 								(the <u><b><i>(FK)</i></b></u> link indicates the element participating in a foreign key relation)
 							</td>
 						</tr><%
 					}
 					if (elems!=null && elems.size()>0 && hasCommonElms){%>
-						<tr height="10">
+						<tr style="height:10px;">
 							<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>">
 								(the <span class="commonelm"><sup>C</sup></span> sign marks a common element)
 							</td>
@@ -806,33 +809,43 @@ int colCount = hasGIS ? 5 : 4;
 			
 			<%
 			if (user!=null && topFree && dsLatest && elems.size()>1 && dstPrm){ %>
-				<td align="left" style="padding-right:10" valign="center" height="10">
+				<td align="left" style="padding-right:10" valign="middle" height="10">
 					<table cellspacing="2" cellpadding="2" border="0">
 						<tr>
 							<td>
-								<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" title="move selected row to top"/></a>
+								<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" alt="" title="move selected row to top"/></a>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" title="move selected row up"/></a>
+								<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" alt="" title="move selected row up"/></a>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<img src="images/dot.gif"/>
+								<img src="images/dot.gif" alt=""/>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<a href="javascript:moveRowDown()"><img src="images/move_down.gif" border="0" title="move selected row down"/></a>			
+								<a href="javascript:moveRowDown()"><img alt="" src="images/move_down.gif" border="0" title="move selected row down"/></a>			
 							</td>
+						</tr>
 						<tr>
 							<td>
-								<a href="javascript:moveLast()"><img src="images/move_last.gif" border="0" title="move selected row last"/></a>			
+								<a href="javascript:moveLast()"><img alt="" src="images/move_last.gif" border="0" title="move selected row last"/></a>			
 							</td>
 						</tr>
 					</table>
+					<input type="hidden" name="mode" value="delete"/>
+					<input type="hidden" name="ds_id" value="<%=dsID%>"/>
+					<input type="hidden" name="ds_name" value="<%=dsName%>"/>
+					<input type="hidden" name="ds_idf" value="<%=dsIdf%>"/>
+					<input type="hidden" name="table_id" value="<%=tableID%>"/>
+					<input type="hidden" name="changed" value="0"/>
+					<input type="hidden" name="copy_elem_id" value=""/>
+					
+					<input type="hidden" name="upd_version" value="false"/>
 				</td><%
 			}
 			%>
@@ -851,19 +864,11 @@ int colCount = hasGIS ? 5 : 4;
 	%>
 		
 	
-	<input type="hidden" name="mode" value="delete"/>
-	<input type="hidden" name="ds_id" value="<%=dsID%>"/>
-	<input type="hidden" name="ds_name" value="<%=dsName%>"/>
-	<input type="hidden" name="ds_idf" value="<%=dsIdf%>"/>
-	<input type="hidden" name="table_id" value="<%=tableID%>"/>
-	<input type="hidden" name="changed" value="0"/>
-	<input type="hidden" name="copy_elem_id" value=""/>
 	
-	<input type="hidden" name="upd_version" value="false"/>
 	
 </form>
 
-<form acceptcharset="UTF-8" name="common_elm_link_form" method="POST" action="tblelems.jsp">
+<form name="common_elm_link_form" method="post" action="tblelems.jsp">
 	<input type="hidden" name="link_elm" value=""/>
 	<input type="hidden" name="mode" value="add"/>
 	<input type="hidden" name="table_id" value="<%=tableID%>"/>
@@ -874,6 +879,9 @@ int colCount = hasGIS ? 5 : 4;
 </form>
 
 </div>
+</td>
+</tr>
+</table>
 </body>
 </html>
 

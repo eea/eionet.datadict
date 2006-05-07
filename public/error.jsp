@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
@@ -13,9 +14,9 @@
 <html>
 <head>
 	<title>Error - Data Dictionary</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 	<link type="text/css" rel="stylesheet" href="eionet.css"/>
-	<script language="javascript" src='script.js'></script>
+	<script language="javascript" src='script.js' type="text/javascript"></script>
 </head>
 
 <%
@@ -26,7 +27,7 @@ if (isPopup){
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
@@ -34,13 +35,14 @@ if (isPopup){
 }
 else{
 	%>
+	<body>
 	<%@ include file="header.htm"%>
 	<table border="0">
     	<tr valign="top">
 			<td nowrap="nowrap" width="125">
-            	<p><center>
+            	<center>
                 	<%@ include file="menu.jsp" %>
-            	</center></p>
+            	</center>
         	</td>
         	<td>
 	            <jsp:include page="location.jsp" flush='true'>
@@ -50,7 +52,7 @@ else{
 %>
 
     <div style="margin-left:30">
-    	<form acceptcharset="UTF-8" name="form1" action="index.jsp" method="GET">
+    	<form name="form1" action="index.jsp" method="get">
 		<table width="500">
 		
 			<%
@@ -64,18 +66,26 @@ else{
 				backLink = backLink==null ? "javascript:history.back()" : backLink;
 			%>
 			
-			<tr height="30"><td>&#160;</td></tr>
+			<tr style="height:30px;"><td>&#160;</td></tr>
 			<tr><td><font class="head00"><u>Error:</u></font></td></tr>
 			<tr><td><b><%=msg%></b></td></tr>
-			<tr height="10"><td>&#160;</td></tr>
+			<tr style="height:10px;">
+				<td>&#160;
+					<input type="hidden" name="trc" value="<%=trc%>"/>
+				</td>
+			</tr>
 			
 			<%
 			if (!isPopup){ %>
-				<tr><td><a href="<%=backLink%>">&lt; back</a></td></tr><%
+				<tr>
+					<td>
+						<a href="<%=backLink%>">&lt; back</a>
+					</td>
+				</tr><%
 			}
 			%>
 			
-			<input type="hidden" name="trc" value="<%=trc%>"/>
+			
 			
 		</table>
 		</form>
