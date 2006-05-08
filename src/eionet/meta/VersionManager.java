@@ -266,31 +266,42 @@ public class VersionManager{
             throw new Exception("Check-out attempt by an unauthorized user!");
         
         String userName = user.getUserName();
-        
-        // set the original's WORKING_USER
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("DATAELEM");
-        gen.setField("WORKING_USER", userName);
-        String q = gen.updateStatement() + " where DATAELEM_ID=" + elmID;
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(q);
-        
-        // set the WORKING_USER of top namespace
-        q = "select TOP_NS from DATAELEM where DATAELEM_ID=" + elmID;
-        ResultSet rs = stmt.executeQuery(q);
-        String topNS = rs.next() ? rs.getString(1) : null;
-        if (topNS!=null){
-            gen.clear();
-            gen.setTable("NAMESPACE");
-            gen.setField("WORKING_USER", userName);
-            q = gen.updateStatement() + " where NAMESPACE_ID=" + topNS;
-            stmt.executeUpdate(q);
+        String newID = null;
+        String topNS = null;
+        try{        	
+	        // set the original's WORKING_USER
+	        SQLGenerator gen = new SQLGenerator();
+	        gen.setTable("DATAELEM");
+	        gen.setField("WORKING_USER", userName);
+	        String q = gen.updateStatement() + " where DATAELEM_ID=" + elmID;
+	        Statement stmt = conn.createStatement();
+	        stmt.executeUpdate(q);
+	        
+	        // set the WORKING_USER of top namespace
+	        q = "select TOP_NS from DATAELEM where DATAELEM_ID=" + elmID;
+	        ResultSet rs = stmt.executeQuery(q);
+	        topNS = rs.next() ? rs.getString(1) : null;
+	        if (topNS!=null){
+	            gen.clear();
+	            gen.setTable("NAMESPACE");
+	            gen.setField("WORKING_USER", userName);
+	            q = gen.updateStatement() + " where NAMESPACE_ID=" + topNS;
+	            stmt.executeUpdate(q);
+	        }
+	        
+			// copy element
+			CopyHandler copyHandler = new CopyHandler(conn);
+			copyHandler.setUser(user);
+			newID = copyHandler.copyElem(elmID, true, !elmCommon);
         }
-        
-		// copy element
-		CopyHandler copyHandler = new CopyHandler(conn);
-		copyHandler.setUser(user);
-		String newID = copyHandler.copyElem(elmID, true, !elmCommon);
+        catch (Exception e){
+        	try{
+        		cleanupCheckout(elmID, "DATAELEM", topNS, newID);
+        	}
+        	catch (Throwable t){        		
+        	}        	
+        	throw e;
+        }
         
         return newID;
     }
@@ -307,30 +318,42 @@ public class VersionManager{
         if (user==null || !user.isAuthentic())
             throw new Exception("Check-out attempt by an unauthorized user!");
         
-        // set the original's WORKING_USER
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("DS_TABLE");
-        gen.setField("WORKING_USER", user.getUserName());
-        String q = gen.updateStatement() + " where TABLE_ID=" + tblID;
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(q);
-        
-        // set the WORKING_USER of top namespace
-        q = "select PARENT_NS from DS_TABLE where TABLE_ID=" + tblID;
-        ResultSet rs = stmt.executeQuery(q);
-        String topNS = rs.next() ? rs.getString(1) : null;
-        if (topNS!=null){
-            gen.clear();
-            gen.setTable("NAMESPACE");
-            gen.setField("WORKING_USER", user.getUserName());
-            q = gen.updateStatement() + " where NAMESPACE_ID=" + topNS;
-            stmt.executeUpdate(q);
+        String newID = null;
+        String topNS = null;
+        try{
+	        // set the original's WORKING_USER
+	        SQLGenerator gen = new SQLGenerator();
+	        gen.setTable("DS_TABLE");
+	        gen.setField("WORKING_USER", user.getUserName());
+	        String q = gen.updateStatement() + " where TABLE_ID=" + tblID;
+	        Statement stmt = conn.createStatement();
+	        stmt.executeUpdate(q);
+	        
+	        // set the WORKING_USER of top namespace
+	        q = "select PARENT_NS from DS_TABLE where TABLE_ID=" + tblID;
+	        ResultSet rs = stmt.executeQuery(q);
+	        topNS = rs.next() ? rs.getString(1) : null;
+	        if (topNS!=null){
+	            gen.clear();
+	            gen.setTable("NAMESPACE");
+	            gen.setField("WORKING_USER", user.getUserName());
+	            q = gen.updateStatement() + " where NAMESPACE_ID=" + topNS;
+	            stmt.executeUpdate(q);
+	        }
+	        
+	        // copy table
+	        CopyHandler copyHandler = new CopyHandler(conn);
+	        copyHandler.setUser(user);
+	        newID = copyHandler.copyTbl(tblID, true, true);
         }
-        
-        // copy table
-        CopyHandler copyHandler = new CopyHandler(conn);
-        copyHandler.setUser(user);
-        String newID = copyHandler.copyTbl(tblID, true, true);
+        catch (Exception e){
+        	try{
+        		cleanupCheckout(tblID, "DS_TABLE", topNS, newID);
+        	}
+        	catch (Throwable t){        		
+        	}        	
+        	throw e;
+        }
         
         return newID;
     }
@@ -346,32 +369,102 @@ public class VersionManager{
     	
     	if (dstID==null) throw new Exception("Dataset ID missing!"); 
     	
-		// set the working user of the original
-		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("DATASET");
-		gen.setField("WORKING_USER", user.getUserName());
-		conn.createStatement().executeUpdate(gen.updateStatement() +
-					" where DATASET_ID=" + dstID);
+    	String newID = null;
+    	String topNS = null;
+    	try{
+			// set the working user of the original
+			SQLGenerator gen = new SQLGenerator();
+			gen.setTable("DATASET");
+			gen.setField("WORKING_USER", user.getUserName());
+			conn.createStatement().executeUpdate(gen.updateStatement() +
+						" where DATASET_ID=" + dstID);
+			
+			// set the WORKING_USER of top namespace
+	        String q = "select CORRESP_NS from DATASET where DATASET_ID=" + dstID;
+	        Statement stmt = conn.createStatement();
+	        ResultSet rs = stmt.executeQuery(q);
+	        topNS = rs.next() ? rs.getString(1) : null;
+	        if (topNS!=null){
+	            gen.clear();
+	            gen.setTable("NAMESPACE");
+	            gen.setField("WORKING_USER", user.getUserName());
+	            q = gen.updateStatement() + " where NAMESPACE_ID=" + topNS;
+	            stmt.executeUpdate(q);
+	        }
+	        
+			// copy the dataset
+			CopyHandler copyHandler = new CopyHandler(conn);
+			copyHandler.setUser(user);
+			newID = copyHandler.copyDst(dstID, true, true, false);
+    	}
+        catch (Exception e){
+        	try{
+        		cleanupCheckout(dstID, "DATASET", topNS, newID);
+        	}
+        	catch (Throwable t){        		
+        	}        	
+        	throw e;
+        }
 		
-		// set the WORKING_USER of top namespace
-        String q = "select CORRESP_NS from DATASET where DATASET_ID=" + dstID;
+		return newID;
+    }
+    
+    /**
+     * 
+     *
+     */
+    private void cleanupCheckout(String objID, String objTable, String topNS, String newID)
+    																		throws Exception{    	
+    	// reset the original's WORKING_USER
+		SQLGenerator gen = new SQLGenerator();
+        gen.setTable(objTable);
+        gen.setFieldExpr("WORKING_USER", "NULL");
+        StringBuffer buf = new StringBuffer(gen.updateStatement());
+        buf.append(" where ");
+        if (objTable.equals("DS_TABLE"))
+        	buf.append("TABLE_ID");
+        else{
+        	buf.append(objTable);
+        	buf.append("_ID");
+        }
+        buf.append("=");
+        buf.append(objID);
+        
         Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(q);
-        String topNS = rs.next() ? rs.getString(1) : null;
+        stmt.executeUpdate(buf.toString());
+        
+        // reset the WORKING_USER of top namespace
         if (topNS!=null){
             gen.clear();
             gen.setTable("NAMESPACE");
-            gen.setField("WORKING_USER", user.getUserName());
-            q = gen.updateStatement() + " where NAMESPACE_ID=" + topNS;
-            stmt.executeUpdate(q);
+            gen.setFieldExpr("WORKING_USER", "NULL");
+            buf = new StringBuffer(gen.updateStatement());
+            buf.append(" where NAMESPACE_ID=");
+            buf.append(topNS);
+            stmt.executeUpdate(buf.toString());
         }
         
-		// copy the dataset
-		CopyHandler copyHandler = new CopyHandler(conn);
-		copyHandler.setUser(user);
-		String newID = copyHandler.copyDst(dstID, true, true, false);
-		
-		return newID;
+        // destroy the copy
+        if (newID==null)
+        	return;
+        
+        MrProper mrProper = new MrProper(conn);
+        mrProper.setContext(ctx);
+        mrProper.setUser(user);
+        
+        Parameters pars = new Parameters();
+        String objType = null;
+        if (objTable.equals("DATASET"))
+        	objType = "dst";
+        else if (objTable.equals("DS_TABLE"))
+        	objType = "tbl";
+        if (objTable.equals("DATAELEM"))
+        	objType = "elm";
+        pars.addParameterValue("rm_obj_type", objType);
+        pars.addParameterValue("rm_crit", "id");
+        pars.addParameterValue("rm_id", newID);
+        
+    	mrProper.removeObj(pars);
     }
     
     /**

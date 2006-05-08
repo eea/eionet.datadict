@@ -143,7 +143,7 @@ public class MrProper {
 	/**
 	 * 
 	 */
-	private void removeObj(Parameters pars) throws Exception {
+	public void removeObj(Parameters pars) throws Exception {
 		String objType = pars.getParameter("rm_obj_type");
 		if (objType==null)
 			return;
