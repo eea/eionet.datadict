@@ -4,6 +4,7 @@
  */
 package eionet.meta.notif;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -249,7 +250,11 @@ public class Subscribe extends HttpServlet{
 	 * @throws Exception
 	 */
 	public static void subscribeToCommonElement(Vector users, String commonElmIdfier)
-																			throws Exception{		
+																			throws Exception{
+		// we don't do this when in development environment (assume it's Win32)
+		if (File.separatorChar == '\\')
+			return;
+			
 		if (users==null || users.size()==0 || commonElmIdfier==null)
 			return;
 
