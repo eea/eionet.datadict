@@ -931,6 +931,7 @@ public class DDSearchEngine {
 				elm.setRodParam(rs.getBoolean("DATAELEM.IS_ROD_PARAM"));
 				elm.setWorkingCopy(rs.getString("DATAELEM.WORKING_COPY"));
 				elm.setWorkingUser(rs.getString("DATAELEM.WORKING_USER"));
+				elm.setUser(rs.getString("DATAELEM.USER"));
 												
 				elm.setNamespace(
 					new Namespace(rs.getString("DATAELEM.PARENT_NS"), null, null, null, null));
@@ -3976,6 +3977,25 @@ public class DDSearchEngine {
 		StringBuffer buf = new StringBuffer("select IDENTIFIER from DATASET where DATASET_ID=");
 		buf.append(dstID);
 		
+		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+		if (rs!=null && rs.next())
+			return rs.getString(1);
+		else
+			return null;
+	}
+	
+	/**
+	 * 
+	 * @param elmID
+	 * @return
+	 */
+	public String getElmOwner(String elmIdfier) throws SQLException{
+		
+		StringBuffer buf = new StringBuffer("select OWNER from ACLS where PARENT_NAME='/elements' ");
+		buf.append(" and ACL_NAME='");
+		buf.append(elmIdfier);
+		buf.append("'");
+
 		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
 		if (rs!=null && rs.next())
 			return rs.getString(1);

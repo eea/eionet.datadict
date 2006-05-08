@@ -43,12 +43,16 @@ public class Subscribe extends HttpServlet{
 	public static final String NEW_COMMON_ELEMENT_EVENT = "New common element";
 
 	/** */
-	public static String predEventType = null;
-	public static String channelName = null;
-	public static String serverURL = null;
-    private Hashtable predsMap = null;
-    private Hashtable eventsMap = null;
-    private HashSet eventTypes = null;
+	private static String predEventType = null;
+	private static String channelName = null;
+	private static String serverURL = null;
+	
+	private static String unsUsername = null;
+	private static String unsPassword = null;
+	
+    private static Hashtable predsMap = null;
+    private static Hashtable eventsMap = null;
+    private static boolean initialized = false;
 
 	/*
 	 *  (non-Javadoc)
@@ -56,28 +60,12 @@ public class Subscribe extends HttpServlet{
 	 */
 	public void init() throws ServletException{
 		try{
-			
-			eventTypes = new HashSet();
-			eventTypes.add("Definition changed");
-			
-            predEventType = Props.getProperty(PROP_UNS_EVENTTYPE_PREDICATE);
-            serverURL = Props.getProperty(PROP_UNS_XMLRPC_SERVER_URL);
-            channelName = Props.getProperty(PROP_UNS_CHANNEL_NAME);
-            
-    		predsMap = new Hashtable();
-    		predsMap.put("dataset", Props.getProperty(PROP_UNS_DATASET_PREDICATE));
-    		predsMap.put("table", Props.getProperty(PROP_UNS_TABLE_PREDICATE));
-    		predsMap.put("common_element", Props.getProperty(PROP_UNS_COMMONELEM_PREDICATE));
-
-    		eventsMap = new Hashtable();
-    		eventsMap.put("dataset", DATASET_CHANGED_EVENT);
-    		eventsMap.put("table", TABLE_CHANGED_EVENT);
-    		eventsMap.put("common_element", COMMON_ELEMENT_CHANGED_EVENT);
-
+			if (initialized==false)
+				initialize();
 		}
-		catch (Throwable t) {
-            t.printStackTrace(System.out);
-            throw new ServletException(t);
+		catch (Exception e) {
+            e.printStackTrace(System.out);
+            throw new ServletException(e);
         }
 	}
 
@@ -153,8 +141,7 @@ public class Subscribe extends HttpServlet{
 		        	
 				// set up the xml-rpc server object
 	        	XmlRpcClient server = new XmlRpcClient(serverURL);
-				server.setBasicAuthentication(Props.getProperty(PROP_UNS_USERNAME),
-						Props.getProperty(PROP_UNS_PASSWORD));
+				server.setBasicAuthentication(unsUsername, unsPassword);
 	        	
 	            // make subscription
 				Vector params = new Vector();
@@ -180,6 +167,105 @@ public class Subscribe extends HttpServlet{
 			req.getRequestDispatcher("error.jsp").forward(req, res);
         }
     }
+	
+	/**
+	 * 
+	 *
+	 */
+	private static void initialize() throws Exception{
+		
+		try{
+            predEventType = Props.getProperty(PROP_UNS_EVENTTYPE_PREDICATE);
+            serverURL = Props.getProperty(PROP_UNS_XMLRPC_SERVER_URL);
+            channelName = Props.getProperty(PROP_UNS_CHANNEL_NAME);
+            
+    		predsMap = new Hashtable();
+    		predsMap.put("dataset", Props.getProperty(PROP_UNS_DATASET_PREDICATE));
+    		predsMap.put("table", Props.getProperty(PROP_UNS_TABLE_PREDICATE));
+    		predsMap.put("common_element", Props.getProperty(PROP_UNS_COMMONELEM_PREDICATE));
+
+    		eventsMap = new Hashtable();
+    		eventsMap.put("dataset", DATASET_CHANGED_EVENT);
+    		eventsMap.put("table", TABLE_CHANGED_EVENT);
+    		eventsMap.put("common_element", COMMON_ELEMENT_CHANGED_EVENT);
+    		
+    		unsUsername = Props.getProperty(PROP_UNS_USERNAME);
+			unsPassword = Props.getProperty(PROP_UNS_PASSWORD);
+		}
+		catch (Throwable t) {
+            t.printStackTrace(System.out);
+            throw new Exception(t);
+        }
+		
+		initialized = true;
+	}
+	
+	/**
+	 * 
+	 * @param users
+	 * @param filters
+	 * @throws Exception
+	 */
+	public static void subscribe(String user, Vector filters) throws Exception{
+		Vector v = new Vector();
+		v.add(user);
+		subscribe(v, filters);
+	}
+	
+	/**
+	 * 
+	 * @param channelName
+	 * @param userName
+	 * @param filters
+	 * @throws Exception
+	 */
+	public static void subscribe(Vector users, Vector filters) throws Exception{
+		
+		if (users==null || users.size()==0 || filters==null || filters.size()==0)
+			return;
+		
+		if (initialized==false)
+			initialize();
+		
+		// set up the xml-rpc server object
+    	XmlRpcClient server = new XmlRpcClient(serverURL);
+		server.setBasicAuthentication(unsUsername, unsPassword);
+    	
+        // make subscription
+		for (int i=0; i<users.size(); i++){
+			Vector params = new Vector();
+			params = new Vector();
+	        params.add(channelName);
+	        params.add(users.get(i));
+	        params.add(filters);            
+	        String s = (String) server.execute("makeSubscription", params);
+		}
+	}
+
+	/**
+	 * 
+	 * @param users
+	 * @param commonElmIdfier
+	 * @throws Exception
+	 */
+	public static void subscribeToCommonElement(Vector users, String commonElmIdfier)
+																			throws Exception{		
+		if (users==null || users.size()==0 || commonElmIdfier==null)
+			return;
+
+		if (initialized==false)
+			initialize();
+
+		String predicate = (String)predsMap.get("common_element");
+		if (predicate!=null){
+			Vector filters = new Vector();
+			Hashtable filter = new Hashtable();
+			filter.put(predEventType, COMMON_ELEMENT_CHANGED_EVENT);
+			filter.put(predicate, commonElmIdfier);
+			filters.add(filter);
+			subscribe(users, filters);
+		}
+	}
 	
 	/*
 	 * 

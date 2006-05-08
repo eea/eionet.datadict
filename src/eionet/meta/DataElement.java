@@ -34,6 +34,8 @@ public class DataElement implements Comparable{
 
 	private Namespace ns = null; // parent namespace
 	private String topNS = null; // top namespace
+	
+	private String user = null; // element creator
     
     private Vector simpleAttrs = new Vector();
     private Vector complexAttrs = new Vector();
@@ -401,4 +403,20 @@ public class DataElement implements Comparable{
 		
 		return buf.toString();
     }
+
+	/**
+	 * 
+	 * @return
+	 */
+    public String getUser() {
+		return user;
+	}
+
+	/**
+	 * 
+	 * @param user
+	 */
+    public void setUser(String user) {
+		this.user = user;
+	}
 }

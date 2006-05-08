@@ -511,6 +511,17 @@ public class VersionManager{
         // if common element, send UNS notification for common element,
         // otherwise send UNS notification for the dataset and table
         if (elmCommon){
+        	
+        	// before we send notification, we make sure certain users are subscribed        	
+        	try{
+    			Vector mustBeSubscribed = getMustBeSubscribedUsers(elm, latestElm);
+    			if (mustBeSubscribed!=null)
+    				Subscribe.subscribeToCommonElement(mustBeSubscribed, elm.getIdentifier());
+    		}
+    		catch (Throwable t){
+    			t.printStackTrace(System.out);
+    		}
+        	
             String eventType = latestID!=null && latestID.length()>0 ?
             		Subscribe.COMMON_ELEMENT_CHANGED_EVENT :
             		Subscribe.NEW_COMMON_ELEMENT_EVENT;
@@ -1414,6 +1425,39 @@ public class VersionManager{
 	*/
 	public void updateVersion(){
 		this.versionUpdate = true;
+	}
+	
+	/**
+	 * 
+	 */
+	private Vector getMustBeSubscribedUsers(DataElement elm, DataElement latestElm)
+																		throws SQLException{		
+		Vector result = new Vector();
+		
+		// add owner of this element
+		String owner = searchEngine.getElmOwner(elm.getIdentifier());
+		if (owner!=null)
+			result.add(owner);
+		
+		// add owners of datasets of referring tables
+		Vector refTables = searchEngine.getReferringTables(elm.getID());
+		for (int i=0; refTables!=null && i<refTables.size(); i++){
+			DsTable tbl = (DsTable)refTables.get(i);
+			String tblOwner = tbl.getOwner();
+			if (tblOwner!=null && !result.contains(tblOwner))
+				result.add(tblOwner);
+		}
+		
+		// add creator of latestElm
+		String latestCreator = latestElm.getUser();
+		if (latestCreator!=null && !result.contains(latestCreator))
+			result.add(latestCreator);
+		
+		// finally, remove the currently changing user as he doesn't need a notification anyway
+		if (user!=null && user.getUserName()!=null)
+			result.remove(user.getUserName());
+		
+		return result.size()>0 ? result : null;
 	}
     
     /**
