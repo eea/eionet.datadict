@@ -2647,11 +2647,6 @@ else{
 <%
 // end the whole page try block
 }
-catch (Throwable t){
-	System.out.println("=========================================");
-	t.printStackTrace(System.out);
-	System.out.println("=========================================");
-}
 finally {
 	try { if (conn!=null) conn.close();
 	} catch (SQLException e) {
