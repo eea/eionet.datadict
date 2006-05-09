@@ -3,7 +3,7 @@
 		<link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" title="Default" />
 		<link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
 		<link rel="alternate stylesheet" type="text/css"
-	href="http://www.eionet.eu.int/styles/eea2006/layout-screen.css"
+	href="http://www.eionet.europa.eu/styles/eea2006/layout-screen.css"
 	media="screen" title="EEA 2006 style" />
 		<link rel="alternate stylesheet" type="text/css"
 	href="eea2006.css" media="screen" title="EEA 2006 style" />

@@ -1347,7 +1347,7 @@ else{
 			                    	
 			                    	request.setAttribute("quicklinks", quicklinks);
 			                    	%>
-		                    		<jsp:include page="nquicklinks.jsp" flush="true">
+		                    		<jsp:include page="quicklinks.jsp" flush="true">
 		                    		</jsp:include>
 						            <%
 								}

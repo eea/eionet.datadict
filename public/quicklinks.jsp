@@ -4,11 +4,7 @@
 Vector links = (Vector)request.getAttribute("quicklinks");
 if (links!=null && links.size()>0){
 	%>
-	<tr>
-		<td width="100%" style="border: 1px solid #FF9900" bgcolor="#FFFFFF">
-			<table border="0" width="100%" cellspacing="0" cellpadding="2">
-				<tr>
-					<td width="100%" class="barfont">
+		<div class="barfont" style="border: 1px solid #FF9900; background-color:#FFFFFF; padding: 3px">
 						<b>Quick links</b><%
 						
 						for (int i=0; i<links.size(); i++){
@@ -20,10 +16,6 @@ if (links!=null && links.size()>0){
 							&nbsp;|&nbsp;<a href="#<%=name%>"><%=dispName%></a><%
 						}
 						%>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr><%
+		</div><%
 }
 %>

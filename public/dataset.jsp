@@ -868,7 +868,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 			                    	request.setAttribute("quicklinks", quicklinks);
 			                    	System.out.println("======> okokokok");
 			                    	%>
-		                    		<jsp:include page="nquicklinks.jsp" flush="true">
+		                    		<jsp:include page="quicklinks.jsp" flush="true">
 		                    		</jsp:include>
 						            <%
 								}
