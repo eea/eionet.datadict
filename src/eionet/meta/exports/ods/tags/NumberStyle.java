@@ -6,26 +6,16 @@
  */
 package eionet.meta.exports.ods.tags;
 
-import eionet.util.XmlTag;
-
 /**
  * 
  * @author jaanus
  */
-public class NumberStyle extends XmlTag {
+public class NumberStyle{
 	
 	/** */
 	private String styleName = null;
 	private String decimalPlaces = null;
 	private String minIntegerDigits = null;	
-
-	/*
-	 *  (non-Javadoc)
-	 * @see eionet.util.XmlTag#getTagName()
-	 */
-	public String getTagName(){
-		return "number:number-style";
-	}
 
 	/**
 	 * 
@@ -33,7 +23,6 @@ public class NumberStyle extends XmlTag {
 	 */
 	public void setStyleName(String styleName){
 		this.styleName = styleName;
-		setAttribute("style:name", styleName);
 	}
 	
 	/**
@@ -50,19 +39,6 @@ public class NumberStyle extends XmlTag {
 	 */
 	public void setMinIntegerDigits(String minIntegerDigits) {
 		this.minIntegerDigits = minIntegerDigits;
-	}
-	
-	/*
-	 *  (non-Javadoc)
-	 * @see eionet.util.XmlTag#getContent()
-	 */
-	public String getContent(){
-		
-		XmlTag content = new XmlTag();
-		content.setTagName("number:number");
-		content.setAttribute("number:decimal-places", decimalPlaces);
-		content.setAttribute("number:min-integer-digits", minIntegerDigits);
-		return content.toString();
 	}
 	
 	/*
@@ -103,17 +79,5 @@ public class NumberStyle extends XmlTag {
 		buf.append(intoStr.substring(i + officeAutomaticStyles.length()));
 		
 		return buf.toString();
-	}
-	
-	/**
-	 * 
-	 */
-	public static void main(String[] args){
-		
-		NumberStyle ns = new NumberStyle();
-		ns.setStyleName("N1");
-		ns.setDecimalPlaces("4");
-		ns.setMinIntegerDigits("1");
-		System.out.println(ns.toString());
 	}
 }

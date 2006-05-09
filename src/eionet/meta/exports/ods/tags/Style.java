@@ -7,25 +7,16 @@
 package eionet.meta.exports.ods.tags;
 
 import java.util.Hashtable;
-import eionet.util.XmlTag;
 
 /**
  * 
  * @author jaanus
  */
-public class Style extends XmlTag{
+public class Style{
 	
 	/** */
 	private String styleName = null;
 	private String dataStyleName = null;
-
-	/*
-	 *  (non-Javadoc)
-	 * @see eionet.util.XmlTag#getTagName()
-	 */
-	public String getTagName(){
-		return "style:style";
-	}
 
 	/**
 	 * 
@@ -33,7 +24,6 @@ public class Style extends XmlTag{
 	 */
 	public void setStyleName(String styleName){
 		this.styleName = styleName;
-		setAttribute("style:name", styleName);
 	}
 	
 	/**
@@ -42,21 +32,8 @@ public class Style extends XmlTag{
 	 */
 	public void setDataStyleName(String dataStyleName){
 		this.dataStyleName = dataStyleName;
-		setAttribute("style:data-style-name", dataStyleName);
 	}
 	
-	/*
-	 *  (non-Javadoc)
-	 * @see eionet.util.XmlTag#getDefaultAttributes()
-	 */
-	public Hashtable getDefaultAttributes(){
-		
-		Hashtable defaultAttrs = new Hashtable();
-		defaultAttrs.put("style:family", "table-cell");
-		defaultAttrs.put("style:parent-style-name", "Default");
-		return defaultAttrs;
-	}
-
 	/*
 	 *  (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -97,15 +74,5 @@ public class Style extends XmlTag{
 		buf.append(intoStr.substring(i));
 		
 		return buf.toString();
-	}
-
-	/**
-	 * 
-	 */
-	public static void main(String[] args){
-		
-		Style s = new Style();
-		s.setStyleName("ce3");
-		System.out.println(s.toString());
 	}
 }
