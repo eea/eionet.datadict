@@ -1,6 +1,6 @@
 <%@page import="java.util.*"%>
 <div id="pagehead">
-<form action="http://search.eionet.eu.int/search" method="get">
+<form action="http://search.eionet.europa.eu/search" method="get">
 <input onfocus="if(this.value=='Search DD')this.value='';"
        onblur="if(this.value=='')this.value='Search DD';"
        title="Search Eionet sites with Google"
@@ -11,8 +11,8 @@
 <input value="UTF-8" name="oe" type="hidden"/>
 <input value="xml_no_dtd" name="output" type="hidden"/>
 <input value="Eionet" name="proxystylesheet" type="hidden"/>
-<input value="dd.eionet.eu.int" name="domains" type="hidden"/>
-<input value="dd.eionet.eu.int" name="as_sitesearch" type="hidden"/>
+<input value="dd.eionet.europa.eu" name="domains" type="hidden"/>
+<input value="dd.eionet.europa.eu" name="as_sitesearch" type="hidden"/>
 </form>
  <div id="identification">
   <a href="/"><img src="images/logo.png" alt="Logo" id="logo" border="0" /></a>
@@ -21,7 +21,7 @@
  </div>
 <div class="breadcrumbtrail">
  <div class="breadcrumbhead">You are here:</div>
- <div class="breadcrumbitem"><a href="http://www.eionet.eu.int">EIONET</a></div>
+ <div class="breadcrumbitem"><a href="http://www.eionet.europa.eu">EIONET</a></div>
 
 <%
    String oHName=request.getParameter("name");

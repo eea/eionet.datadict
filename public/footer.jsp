@@ -41,13 +41,13 @@ if (lastUpdated==null){
 
 <div id="pagefoot">
 					<p>
-              <a href="mailto:dd@eionet.eu.int">E-mail</a> |
+              <a href="mailto:dd@eionet.europa.eu">E-mail</a> |
 							<a href="doc1.jsp">Disclaimer</a> |
 							Last updated: <%=lastUpdated%> |
-              <a href="mailto:helpdesk@eionet.eu.int?subject=Feedback from the Data Dictionary website">Feedback</a>
+              <a href="mailto:helpdesk@eionet.europa.eu?subject=Feedback from the Data Dictionary website">Feedback</a>
 					</p>
           <p>
-            <a href="http://www.eea.eu.int" style="font-weight:bold">European
+            <a href="http://www.eea.europa.eu" style="font-weight:bold">European
               Environment Agency</a><br/>
               Kgs. Nytorv 6, DK-1050 Copenhagen K, Denmark - Phone: +45 3336 7100
           </p>

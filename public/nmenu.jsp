@@ -47,9 +47,9 @@ AppUserIF _user = SecurityUtil.getUser(request);
 
 	<h2>Reportnet services</h2>
 	<ul>
-        <li><a href="http://cr.eionet.eu.int">Content Registry</a></li>
-		<li><a href="http://rod.eionet.eu.int/" title="Reporting Obligations">ROD Obligations</a></li>
-		<li><a href="http://cdr.eionet.eu.int/" title="Central Data Repository">CDR Repository</a></li>
-		<li><a href="http://dd.eionet.eu.int/">Data Dictionary</a></li>
+        <li><a href="http://cr.eionet.europa.eu">Content Registry</a></li>
+		<li><a href="http://rod.eionet.europa.eu/" title="Reporting Obligations">ROD Obligations</a></li>
+		<li><a href="http://cdr.eionet.europa.eu/" title="Central Data Repository">CDR Repository</a></li>
+		<li><a href="http://dd.eionet.europa.eu/">Data Dictionary</a></li>
 	</ul>
 </div>
