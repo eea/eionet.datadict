@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private Vector tables=null;%>
 <%!private Vector attributes=null;%>
@@ -129,13 +130,12 @@ if (disabled.equals("")){
 <html>
 <head>
 	<title>Meta</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-</head>
 
-<script language="javascript" src='script.js'></script>
+<script language="javascript" src='script.js' type="text/javascript"></script>
 
-<script language="javascript">
+<script language="javascript" type="text/javascript">
 // <![CDATA[
 		function submitForm(mode){
 			
@@ -149,15 +149,17 @@ if (disabled.equals("")){
 		}
 // ]]>
 </script>
+
+</head>
 	
 <body>
 <%@ include file="header.htm" %>
 <table border="0">
     <tr valign="top">
         <td nowrap="nowrap" width="125">
-            <p><center>
+            <center>
                 <%@ include file="menu.jsp" %>
-            </center></p>
+            </center>
         </td>
         <td>
             <jsp:include page="location.jsp" flush='true'>
@@ -167,7 +169,7 @@ if (disabled.equals("")){
             
 <div style="margin-left:30">
 	
-<form acceptcharset="UTF-8" name="form1" method="POST" action="dstables.jsp">
+<form name="form1" method="post" action="dstables.jsp">
 
 	<table width="440">
 
@@ -181,8 +183,8 @@ if (disabled.equals("")){
 
 		<tr valign="bottom">
 			<td><font class="head00">Tables in 
-				<span class="title2"><a href="dataset.jsp?ds_id=<%=dsID%>&mode=view"><%=Util.replaceTags(dsName)%></a></span>
-			 dataset</td>
+				<span class="title2"><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a></span>
+			 dataset</font></td>
 		</tr>
 		
 	</table>
@@ -197,19 +199,19 @@ if (disabled.equals("")){
 			if (dstPrm){ %>		
 				<td colspan="3">
 					<input type="button" <%=disabled%> value="Add new" class="smallbutton"
-						   onclick="window.location.replace('dstable.jsp?mode=add&ds_id=<%=dsID%>&#38;ds_name=<%=dsName%>&ctx=ds')"/>
+						   onclick="window.location.replace('dstable.jsp?mode=add&amp;ds_id=<%=dsID%>&#38;ds_name=<%=Util.replaceTags(dsName)%>&amp;ctx=ds')"/>
 					<input type="button" <%=disabled%> value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/>
 				</td><%
 			}
 			%>
 			<td align="right">
-				<a target="_blank" href="help.jsp?screen=dataset_tables&area=pagehelp" onclick="pop(this.href)">
+				<a target="_blank" href="help.jsp?screen=dataset_tables&amp;area=pagehelp" onclick="pop(this.href)">
 					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 				</a>
 			</td>
 		</tr>
 		
-		<tr height="5"><td colspan="4"></td></tr>
+		<tr style="height:5px;"><td colspan="4"></td></tr>
 
 		<tr>
 			<th align="right" style="padding-right:10">&nbsp;</th>
@@ -221,7 +223,7 @@ if (disabled.equals("")){
 						</td>
 						<td align="left" width="50%">
 							<a target="_blank" href="help.jsp?attrshn=Name&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 							</a>
 						</td>
 					</tr>
@@ -234,8 +236,8 @@ if (disabled.equals("")){
 							<b>Short name</b>
 						</td>
 						<td align="left" width="50%">
-							<a target="_blank" href="help.jsp?screen=dataset&area=short_name" onclick="pop(this.href)">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 							</a>
 						</td>
 					</tr>
@@ -249,7 +251,7 @@ if (disabled.equals("")){
 						</td>
 						<td align="left" width="50%">
 							<a target="_blank" href="help.jsp?attrshn=Definition&amp;attrtype=SIMPLE" onclick="pop(this.href)">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 							</a>
 						</td>
 					</tr>
@@ -263,7 +265,7 @@ if (disabled.equals("")){
 			
 			DsTable table = (DsTable)tables.get(i);
 			
-			String tableLink = "dstable.jsp?mode=view&table_id=" + table.getID() + "&ds_id=" + dsID + "&ds_name=" + dsName + "&ctx=ds";
+			String tableLink = "dstable.jsp?mode=view&amp;table_id=" + table.getID() + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ctx=ds";
 			
 			String tblName = "";
 			String tblDef = "";
@@ -296,10 +298,10 @@ if (disabled.equals("")){
 					if (user!=null && dstPrm){
 						
 						if (tblWorkingUser!=null){ // mark checked-out tables
-							%> <font title="<%=tblWorkingUser%>" color="red">* </font> <%
+							%> <font title="<%=Util.replaceTags(tblWorkingUser)%>" color="red">* </font> <%
 						}
 						else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
-							%> <font title="<%=tblElmWorkingUser%>" color="red">* </font> <%
+							%> <font title="<%=Util.replaceTags(tblElmWorkingUser)%>" color="red">* </font> <%
 						}
 					
 						if (tblWorkingUser==null && topFree){ %>
@@ -311,11 +313,15 @@ if (disabled.equals("")){
 				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
 				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=tblFullName%>">
+				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullName)%>">
 					<%=Util.replaceTags(table.getShortName())%>
 				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=tblFullDef%>">
-					<%=tblDef%>
+				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullDef)%>">
+					<%=Util.replaceTags(tblDef)%>
+					<input type="hidden" name="mode" value="delete"/>
+					<input type="hidden" name="ds_id" value="<%=dsID%>"/>
+					<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dataset.getShortName())%>"/>
+					<input type="hidden" name="ds_idf" value="<%=Util.replaceTags(dataset.getIdentifier())%>"/>
 				</td>
 			</tr>
 			<%
@@ -324,13 +330,13 @@ if (disabled.equals("")){
 
 	</table>
 	
-	<input type="hidden" name="mode" value="delete"/>
-	<input type="hidden" name="ds_id" value="<%=dsID%>"/>
-	<input type="hidden" name="ds_name" value="<%=dataset.getShortName()%>"/>
-	<input type="hidden" name="ds_idf" value="<%=dataset.getIdentifier()%>"/>
+	
 	
 </form>
 </div>
+</td>
+</tr>
+</table>
 </body>
 </html>
 
