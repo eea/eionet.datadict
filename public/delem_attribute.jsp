@@ -343,8 +343,8 @@
 		}
 		
 		function openFxValues(){
-			//var url = "fixed_values.jsp?delem_id=<%=attr_id%>&amp;delem_name=<%=attr_shortname%>&amp;parent_type=attr";
-			var url = "fixed_values.jsp?mode=edit&delem_id=<%=attr_id%>&delem_name=<%=attr_shortname%>&parent_type=attr";
+			//var url = "fixed_values.jsp?delem_id=<%=attr_id%>&amp;delem_name=<%=Util.replaceTags(attr_shortname)%>&amp;parent_type=attr";
+			var url = "fixed_values.jsp?mode=edit&delem_id=<%=attr_id%>&delem_name=<%=Util.replaceTags(attr_shortname)%>&parent_type=attr";
 			wCh1Values = window.open(url,"AllowableValues","height=600,width=800,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
 			if (window.focus) {wCh1Values.focus()}
 		}
@@ -413,7 +413,7 @@
 						%>
             <div id="operations">
               <ul>
-                <li><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+                <li><a target="_blank" href="help.jsp?screen=<%=Util.replaceTags(hlpScreen)%>&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
 							<%
 							if (user!=null && mode.equals("view") && editPrm){ %>
 								<li><a href="javascript:goToEdit()">Edit</a></li>
@@ -516,8 +516,8 @@
 						%>
 				<td>
 					<% if(!mode.equals("add")){ %>
-						<em><%=attr_shortname%></em>
-						<input type="hidden" name="short_name" value="<%=attr_shortname%>" />
+						<em><%=Util.replaceTags(attr_shortname)%></em>
+						<input type="hidden" name="short_name" value="<%=Util.replaceTags(attr_shortname)%>" />
 					<% } else{ %>
 						<input type="text" class="smalltext" size="30" name="short_name" />
 					<% } %>
@@ -538,11 +538,11 @@
 						%>
 				<td>
 					<% if(mode.equals("edit")){ %>						
-						<input <%=disabled%> type="text" class="smalltext" size="30" name="name" value="<%=attr_name%>" />
+						<input <%=disabled%> type="text" class="smalltext" size="30" name="name" value="<%=Util.replaceTags(attr_name)%>" />
 					<% } else if (mode.equals("add")){ %>
 						<input <%=disabled%> type="text" class="smalltext" size="30" name="name" />
 					<% } else { %>
-						<%=attr_name%>
+						<%=Util.replaceTags(attr_name)%>
 					<% } %>
 				</td>
 			</tr>
@@ -571,7 +571,7 @@
 						if (nsName == null) nsName = "";
 						
 						%>
-						<%=nsName%> <%
+						<%=Util.replaceTags(nsName)%> <%
 					}
 					else{
 						%>
@@ -595,14 +595,14 @@
 								String ifSelected = "";
 								if (attrNamespace!=null){
 									if (attrNamespace.getID().equals(ns.getID())){
-										ifSelected = "selected";
+										ifSelected = "selected=\"selected\"";
 									}
 								}
 								else if (nsName.indexOf("Data Dictionary") != -1)
-									ifSelected = "selected";
+									ifSelected = "selected=\"selected\"";
 									
 								%>
-								<option <%=ifSelected%> value="<%=ns.getID()%>"><%=nsName%></option>
+								<option <%=ifSelected%> value="<%=ns.getID()%>"><%=Util.replaceTags(nsName)%></option>
 								<%
 							}
 							%>
@@ -629,12 +629,12 @@
 						String definition = (attribute.getDefinition() == null) ? "" : attribute.getDefinition();
 						if (mode.equals("edit")){
 							%>
-							<textarea <%=disabled%> class="small" rows="5" cols="52" name="definition"><%=definition%></textarea>
+							<textarea <%=disabled%> class="small" rows="5" cols="52" name="definition"><%=Util.replaceTags(definition)%></textarea>
 							<%
 						}
 						else{
 							%>
-							<%=definition%>
+							<%=Util.replaceTags(definition)%>
 							<%
 						}
 					}
@@ -718,7 +718,7 @@
 							%>
 							<select <%=disabled%> class="small" name="dispType">
 								<option value="">- Do not display at all -</option>
-								<option selected value="text">Text box</option>
+								<option selected="selected" value="text">Text box</option>
 								<option value="textarea">Text area</option>
 								<option value="select">Select box</option>
 								<option value="image">Image</option>
@@ -726,7 +726,7 @@
 							<%
 							if (mode.equals("edit") && dispType!=null && dispType.equals("select")){
 								%>
-								&#160;<span class="smallfont"><a href="fixed_values.jsp?mode=edit&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=attr_shortname%>&amp;parent_type=attr">
+								&#160;<span class="smallfont"><a href="fixed_values.jsp?mode=edit&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=Util.replaceTags(attr_shortname)%>&amp;parent_type=attr">
 								<b>FIXED VALUES</b></a></span>
 								<%
 							}
@@ -739,7 +739,7 @@
 				%>
 					<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
 						<th scope="row" class="scope-row">
-								<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=attr_shortname%>&amp;parent_type=attr">
+								<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=Util.replaceTags(attr_shortname)%>&amp;parent_type=attr">
 									Fixed values
 								</a>
 						</th>
@@ -784,7 +784,7 @@
 							}
 							else{
 								%>
-								<%=checked_text%>
+								<%=Util.replaceTags(checked_text)%>
 								<%
 							}
 						}
@@ -830,7 +830,7 @@
 					else{
 						for (int i=0;i<3;i++){
 						%>
-							<input value="<%=i%>" <%=disabled%> <% if (i==chk) %>checked<%;%> type="radio" class="smalltext" name="inheritable" /><%=inh_text[i]%><br/>
+							<input value="<%=i%>" <%=disabled%> <% if (i==chk) %>checked="checked"<%;%> type="radio" class="smalltext" name="inheritable" /><%=inh_text[i]%><br/>
 						<%
 						}
 					}
@@ -855,12 +855,12 @@
 						String dispOrder = (i==999) ? "" : String.valueOf(i);
 						if (mode.equals("edit")){
 							%>
-							<input <%=disabled%> type="text" class="smalltext" size="5" name="dispOrder" value="<%=dispOrder%>" />
+							<input <%=disabled%> type="text" class="smalltext" size="5" name="dispOrder" value="<%=Util.replaceTags(dispOrder)%>" />
 							<%
 						}
 						else{
 							%>
-							<%=dispOrder%>
+							<%=Util.replaceTags(dispOrder)%>
 							<%
 						}
 					}
@@ -888,28 +888,28 @@
 							%>
 					<td>					
 						<%
-						String ch1Checked = (!mode.equals("add") && attribute.displayFor("CH1")) ? "checked" : "";
-						String ch2Checked = (!mode.equals("add") && attribute.displayFor("CH2")) ? "checked" : "";
+						String ch1Checked = (!mode.equals("add") && attribute.displayFor("CH1")) ? "checked=\"checked\"" : "";
+						String ch2Checked = (!mode.equals("add") && attribute.displayFor("CH2")) ? "checked=\"checked\"" : "";
 						//String dclChecked = (!mode.equals("add") && attribute.displayFor("DCL")) ? "checked" : "";
-						String dstChecked = (!mode.equals("add") && attribute.displayFor("DST")) ? "checked" : "";
-						String tblChecked = (!mode.equals("add") && attribute.displayFor("TBL")) ? "checked" : "";
-						String fxvChecked = (!mode.equals("add") && attribute.displayFor("FXV")) ? "checked" : "";
+						String dstChecked = (!mode.equals("add") && attribute.displayFor("DST")) ? "checked=\"checked\"" : "";
+						String tblChecked = (!mode.equals("add") && attribute.displayFor("TBL")) ? "checked=\"checked\"" : "";
+						String fxvChecked = (!mode.equals("add") && attribute.displayFor("FXV")) ? "checked=\"checked\"" : "";
 						
 						if (mode.equals("view")){
 							boolean hasOne = false;
-							if (ch1Checked.equals("checked")) { hasOne = true; %>
+							if (ch1Checked.equals("checked=\"checked\"")) { hasOne = true; %>
 								Data elements with fixed values <%
 							}
-							if (ch2Checked.equals("checked")) { hasOne = true; %>
+							if (ch2Checked.equals("checked=\"checked\"")) { hasOne = true; %>
 								<br/>Data elements with quanitative values <%
 							}
-							if (dstChecked.equals("checked")) { hasOne = true; %>
+							if (dstChecked.equals("checked=\"checked\"")) { hasOne = true; %>
 								<br/>Datasets <%
 							}
-							if (tblChecked.equals("checked")) { hasOne = true; %>
+							if (tblChecked.equals("checked=\"checked\"")) { hasOne = true; %>
 								<br/>Dataset tables <%
 							}
-							if (fxvChecked.equals("checked")) { hasOne = true; %>
+							if (fxvChecked.equals("checked=\"checked\"")) { hasOne = true; %>
 								<br/>Fixed values <%
 							}
 							if (!hasOne){ %>
@@ -918,10 +918,10 @@
 						}
 						else {
 							%>							
-							<input <%=disabled%> type="checkbox" <%=ch1Checked%> name="dispWhen" id="dispCH1" value="CH1"><label for="dispCH1">Data elements with fixed values</label><br/>
-							<input <%=disabled%> type="checkbox" <%=ch2Checked%> name="dispWhen" id="dispCH2" value="CH2"><label for="dispCH2">Data elements with quanitative values</label><br/>
-							<input <%=disabled%> type="checkbox" <%=dstChecked%> name="dispWhen" id="dispDST" value="DST"><label for="dispDST">Datasets</label><br/>
-							<input <%=disabled%> type="checkbox" <%=tblChecked%> name="dispWhen" id="dispTBL" value="TBL"><label for="dispTBL">Dataset tables</label><br/>
+							<input <%=disabled%> type="checkbox" <%=ch1Checked%> name="dispWhen" id="dispCH1" value="CH1"/><label for="dispCH1">Data elements with fixed values</label><br/>
+							<input <%=disabled%> type="checkbox" <%=ch2Checked%> name="dispWhen" id="dispCH2" value="CH2"/><label for="dispCH2">Data elements with quanitative values</label><br/>
+							<input <%=disabled%> type="checkbox" <%=dstChecked%> name="dispWhen" id="dispDST" value="DST"/><label for="dispDST">Datasets</label><br/>
+							<input <%=disabled%> type="checkbox" <%=tblChecked%> name="dispWhen" id="dispTBL" value="TBL"/><label for="dispTBL">Dataset tables</label><br/>
 							<%
 						}
 						%>
@@ -1047,7 +1047,7 @@
 					<td>
 						<%
 						if (!mode.equals("view")){							
-							String noLinkSelected = Util.voidStr(harvesterID) ? "selected" : "";
+							String noLinkSelected = Util.voidStr(harvesterID) ? "selected=\"selected\"" : "";
 							%>
 							<select class="small" name="harv_id">
 								<option <%=noLinkSelected%> value="null">-- no link --</option>
@@ -1056,7 +1056,7 @@
 									String harvID = (String)harvesters.get(i);
 									String selected = "";
 									if (!Util.voidStr(harvesterID) && harvesterID.equals(harvID))
-										selected = "selected";
+										selected = "selected=\"selected\"";
 									%>
 									<option <%=selected%> value="<%=harvID%>"><%=harvID%></option><%
 								}
@@ -1113,8 +1113,8 @@
 			
 							%>
 							<tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
-								<td align="center"><a href="<%=fieldLink%>"><%=name%></a></td>
-								<td align="center" onmouseover=""><%=definition%></td>
+								<td align="center"><a href="<%=fieldLink%>"><%=Util.replaceTags(name)%></a></td>
+								<td align="center" onmouseover=""><%=Util.replaceTags(definition)%></td>
 							</tr>
 							<%
 						}
@@ -1132,7 +1132,7 @@
 				<td></td>
 				<% } %>
 				<td>
-					<b>*</b> <span class="smallfont"><a href="m_attr_fields.jsp?attr_id=<%=attr_id%>&amp;attr_name=<%=attr_shortname%>">
+					<b>*</b> <span class="smallfont"><a href="m_attr_fields.jsp?attr_id=<%=attr_id%>&amp;attr_name=<%=Util.replaceTags(attr_shortname)%>">
 						<b>FIELDS</b></a></span>&#160;&#160;
 					<span class="smallfont" style="font-weight: normal">
 						&lt;&#160;click here to add/remove fields of this complex attribute
@@ -1146,7 +1146,7 @@
 		<% } // end if COMPLEX and mode=add
 	
 		if (!mode.equals("view")){ %>
-			<tr height="10"><td colspan="3"></td></tr>
+			<tr style="height:10px;"><td colspan="3"></td></tr>
 			<tr>
 				<td colspan="3" style="text-align:center">
 				

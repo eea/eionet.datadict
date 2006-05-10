@@ -380,8 +380,8 @@
 					String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 					String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
 					%>
-					<a title="Dataset" href="<%=sortedLink%>">
-	                      Dataset&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					<a title="Dataset" href="<%=Util.replaceTags(sortedLink)%>">
+	                      Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 				<!--th width="20%">Version</th-->
@@ -469,19 +469,19 @@
 		    				if (delPrm){
 		    					
 		    					if (topWorkingUser!=null){ // mark checked-out datasets
-			    					%> <font title="<%=topWorkingUser%>" color="red">*</font> <%
+			    					%> <font title="<%=Util.replaceTags(topWorkingUser)%>" color="red">*</font> <%
 		    					}
 	    					
 		    					if (canDelete){ %>
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>"/>
-									<input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=dataset.getIdentifier()%>"/>
+									<input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=Util.replaceTags(dataset.getIdentifier())%>"/>
 									<%
 								}
 							}
 							%>
 						</td>
 						
-						<td width="30%" class="<%=styleClass%>" title="<%=dsFullName%>">
+						<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(dsFullName)%>">
 							<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;out_type=GDLN&amp;obj_id=<%=dataset.getID()%>">
 								<%=Util.replaceTags(dsFullName)%>
 							</a>
@@ -539,12 +539,12 @@
 								%>
 								<td width="3%" align="right" class="<%=styleClass%>">
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>"/>
-									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=oEntry.oIdentifier%>"/>
+									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier)%>"/>
 								</td> <%
 							}
 							%>
 							
-							<td width="30%" class="<%=styleClass%>" title="<%=oEntry.oFullName%>">
+							<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(oEntry.oFullName)%>">
 								<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;out_type=GDLN&amp;obj_id=<%=oEntry.oID%>">
 									<%=Util.replaceTags(oEntry.oFName)%>
 								</a>

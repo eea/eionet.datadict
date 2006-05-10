@@ -217,8 +217,8 @@
 					String sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
 					String sortedLink = getSortedLink(3, oSortCol, oSortOrder);
 					%>
-					<a title="Table" href="<%=sortedLink%>">
-	                      Table&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					<a title="Table" href="<%=Util.replaceTags(sortedLink)%>">
+	                      Table&nbsp;<img src="<%=Util.replaceTags(sortedImg)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 				<th width="35%" style="border-left:0">
@@ -226,8 +226,8 @@
 					sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(1, oSortCol, oSortOrder);
 					%>
-					<a title="Short name" href="<%=sortedLink%>">
-	                      Short name&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					<a title="Short name" href="<%=Util.replaceTags(sortedLink)%>">
+	                      Short name&nbsp;<img src="<%=Util.replaceTags(sortedImg)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 				<th width="25%" style="border-left:0; border-right: 1px solid #FF9900">
@@ -235,8 +235,8 @@
 					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
 					%>
-					<a title="Dataset" href="<%=sortedLink%>">
-	                      Dataset&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					<a title="Dataset" href="<%=Util.replaceTags(sortedLink)%>">
+	                      Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 			</tr>
@@ -303,11 +303,11 @@
 			        		    // see if this is a search or just listing all the tables
 			        		    if (Util.voidStr(request.getParameter("search_precision"))){ // listing all the tables
 				        		    %>
-				        		    <b>No table definitions were found<%=msgTrailer%>!</b><%
+				        		    <b>No table definitions were found<%=Util.replaceTags(msgTrailer)%>!</b><%
 			        		    }
 			        		    else{ // a search
 			        		    	%>
-			        		    	<b>No table definitions matching the search criteria were found<%=msgTrailer%>!</b><%
+			        		    	<b>No table definitions matching the search criteria were found<%=Util.replaceTags(msgTrailer)%>!</b><%
 			        		    }
 			        		    %>
 			        		</td>
@@ -366,7 +366,7 @@
 								<%
 								// mark tables in a locked dataset
 								if (dstPrm && topWorkingUser!=null){ %>
-									<font title="<%=topWorkingUser%>" color="red">*</font><%
+									<font title="<%=Util.replaceTags(topWorkingUser)%>" color="red">*</font><%
 			    				}
 			    				%>
 							</td>
@@ -378,7 +378,7 @@
 								<%
 								// mark locked datasets
 								if (dstPrm && topWorkingUser!=null){ %>
-									<font title="<%=topWorkingUser%>" color="red">*</font><%
+									<font title="<%=Util.replaceTags(topWorkingUser)%>" color="red">*</font><%
 			    				}
 			    				%>
 							</td>
@@ -417,7 +417,7 @@
 								<%
 								// mark tables in a locked dataset
 								if (dstPrm && oEntry.topWorkingUser!=null){ %>
-									<font title="<%=oEntry.topWorkingUser%>" color="red">*</font><%
+									<font title="<%=Util.replaceTags(oEntry.topWorkingUser)%>" color="red">*</font><%
 			    				}
 			    				%>
 							</td>

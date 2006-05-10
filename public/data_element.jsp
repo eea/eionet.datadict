@@ -669,7 +669,7 @@ private String legalizeAlert(String in){
 				}
 				%>
 				
-				if (confirm("<%=confirmDelTxt%>")==false)
+				if (confirm("<%=Util.replaceTags(confirmDelTxt)%>")==false)
 					return false;
 				
 				<%
@@ -880,7 +880,7 @@ private String legalizeAlert(String in){
 				if (!reLocation.endsWith("&")) reLocation = reLocation + "&";
 				%>
 				
-				document.location.assign("<%=reLocation%>elm_datatype=" + elmDataType);<%
+				document.location.assign("<%=Util.replaceTags(reLocation)%>elm_datatype=" + elmDataType);<%
 			}
 			%>
 		}
@@ -1132,7 +1132,7 @@ else{
 					<%
 					if (mode.equals("view") && user!=null && dataElement!=null && elmCommon && dataElement.getIdentifier()!=null){
 						%>
-						<li><a href="Subscribe?common_element=<%=dataElement.getIdentifier()%>">Subscribe</a></li>
+						<li><a href="Subscribe?common_element=<%=Util.replaceTags(dataElement.getIdentifier())%>">Subscribe</a></li>
 						<%
 					}
 					%>
@@ -1225,11 +1225,11 @@ else{
 					
 								<table border="0" width="620" class="mnd_opt_cnd" cellspacing="0">
 									<tr>
-										<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16"/></td>
+										<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
 										<td width="17%">Mandatory</td>
-										<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16"/></td>
+										<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
 										<td width="15%">Optional</td>
-										<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16"/></td>
+										<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
 										<td width="56%">Conditional</td>
                             		</tr>
 		                            <tr>
@@ -1248,8 +1248,9 @@ else{
 					if (mode.equals("add") || mode.equals("edit")){
 						%>				
 				<table border="0" width="620" cellspacing="0" cellpadding="0">
-						<tr>
+						
 							<tr><td width="100%" colspan="2" height="10"></td></tr>
+							<tr>
 							<td width="100%" align="right" colspan="2">
 							<%
 								// add case
@@ -1302,7 +1303,7 @@ else{
 								checkbox.append("upd_version_DISABLED\" checked=\"true\" disabled=\"true\"");
 								hidden = "<input type=\"hidden\" name=\"upd_version\" value=\"true\"/>";
 							}
-							checkbox.append(">&nbsp;").append(updVerText).append("</input>");
+							checkbox.append("/>").append("&nbsp;"+updVerText);
 							
 							if (!brandNew){ %>
 								<tr>
@@ -1392,12 +1393,18 @@ else{
 													}
 													%>
 												</table>
+											</td>
+										</tr>
+								</table>
 										<%
 									}
 								}
 								%>
 								
 								<!-- type -->
+								<table border="0" width="620" cellspacing="0" cellpadding="3">
+								<tr>
+									<td>
 										<table border="0" width="620" cellspacing="0" cellpadding="3">
 											<tr>
 												<td width="7%"><b>Type</b></td>
@@ -1462,7 +1469,7 @@ else{
 												if (colspan==4){
 													%>
 													<td width="4%" class="short_name">
-														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
@@ -1470,13 +1477,13 @@ else{
 													<%
 													if(mode.equals("view")){ %>
 														<%=Util.replaceTags(dataElement.getShortName())%>
-														<input type="hidden" name="delem_name" value="<%=dataElement.getShortName()%>"/><%
+														<input type="hidden" name="delem_name" value="<%=Util.replaceTags(dataElement.getShortName())%>"/><%
 													}
 													else if (mode.equals("add")){ %>
 														<input class="smalltext" type="text" size="30" name="delem_name"/><%
 													}
 													else { %>
-														<input class="smalltext" type="text" size="30" name="delem_name" value="<%=dataElement.getShortName()%>"/><%
+														<input class="smalltext" type="text" size="30" name="delem_name" value="<%=Util.replaceTags(dataElement.getShortName())%>"/><%
 													}
 													%>
 												</td>
@@ -1505,7 +1512,7 @@ else{
 														<%
 														if (colspan==4){%>
 															<td width="4%" class="simple_attr_help<%=isOdd%>">
-																<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+																<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 															</td><%
 														}
 														%>
@@ -1533,7 +1540,7 @@ else{
 																<select class="small" name="ds_id" onchange="submitPick('<%%>')"> <%
 																
 																	if (dst==null){ %>
-																		<option selected value="">-- select a dataset --</option><%
+																		<option selected="selected" value="">-- select a dataset --</option><%
 																	}
 																	
 																	Vector datasets = searchEngine.getDatasets();
@@ -1548,7 +1555,7 @@ else{
 																			continue;
 																		
 																		boolean isTheOne = dst==null ? false : dst.getID().equals(ds.getID());
-																		String selected = isTheOne ? "selected" : "";
+																		String selected = isTheOne ? "selected=\"selected\"" : "";
 																		// String selected = (dsID!=null && dataset!=null && dsID.equals(ds.getID())) ? "selected" : "";
 																		%>
 																		<option <%=selected%> value="<%=ds.getID()%>"><%=Util.replaceTags(ds.getShortName())%></option>
@@ -1581,7 +1588,7 @@ else{
 														<%
 														if (colspan==4){%>
 															<td width="4%" class="simple_attr_help<%=isOdd%>">
-																<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+																<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 															</td><%
 														}
 														%>
@@ -1611,7 +1618,7 @@ else{
 																	<%
 																	if (dst!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dst.getIdentifier(), "u")){
 																		if (tbl==null){ %>
-																			<option selected value="">-- select a table --</option>
+																			<option selected="selected" value="">-- select a table --</option>
 																			<%
 																		}
 																		
@@ -1619,7 +1626,7 @@ else{
 																		for (int i=0; tables!=null && i<tables.size(); i++){
 																			DsTable tb = (DsTable)tables.get(i);
 																			boolean isTheOne = tbl==null ? false : tbl.getID().equals(tb.getID());
-																			String selected = isTheOne ? "selected" : "";
+																			String selected = isTheOne ? "selected=\"selected\"" : "";
 																			%>
 																			<option <%=selected%> value="<%=tb.getID()%>"><%=Util.replaceTags(tb.getShortName())%></option>
 																			<%
@@ -1658,22 +1665,22 @@ else{
 													<%
 													if (colspan==4){%>
 														<td width="4%" class="simple_attr_help<%=isOdd%>">
-															<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+															<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
 													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
 														<%
 														if (mode.equals("view")){ %>
-															<%=regStatus%><%
+															<%=Util.replaceTags(regStatus)%><%
 														}
 														else{ %>
 															<select name="reg_status" onchange="form_changed('form1')"> <%
 																Vector regStatuses = verMan.getRegStatuses();
 																for (int i=0; i<regStatuses.size(); i++){
 																	String stat = (String)regStatuses.get(i);
-																	String selected = stat.equals(regStatus) ? "selected" : ""; %>
-																	<option <%=selected%> value="<%=stat%>"><%=stat%></option><%
+																	String selected = stat.equals(regStatus) ? "selected=\"selected\"" : ""; %>
+																	<option <%=selected%> value="<%=Util.replaceTags(stat)%>"><%=Util.replaceTags(stat)%></option><%
 																} %>
 															</select><%
 														}
@@ -1701,7 +1708,7 @@ else{
 													<%
 													if (colspan==4){%>
 														<td width="4%" class="simple_attr_help<%=isOdd%>">
-															<img border="0" src="images/optional.gif" width="16" height="16"/>
+															<img border="0" src="images/optional.gif" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
@@ -1710,20 +1717,20 @@ else{
 														if (mode.equals("view")){
 															gisType = (gisType==null || gisType.length()==0) ? "&nbsp" : gisType;
 															%>
-															<%=gisType%><%
+															<%=Util.replaceTags(gisType)%><%
 														}
 														else{
-															String selected = gisType==null ? "selected" : "";
+															String selected = gisType==null ? "selected=\"selected\"" : "";
 															%>
 															<select name="gis">
 																<option value="nogis" <%=selected%>>-- no GIS element --</option><%
 																Vector gisTypes = DataElement.getGisTypes();
 																for (int i=0; i<gisTypes.size(); i++){
 																	String gist = (String)gisTypes.get(i);
-																	selected = gisType!=null && gist.equals(gisType) ? "selected" : "";
+																	selected = gisType!=null && gist.equals(gisType) ? "selected=\"selected\"" : "";
 																	String gisDisp = gist.equals("") ? "[ ]" : gist;
 																	%>
-																	<option <%=selected%> value="<%=gist%>"><%=gisDisp%></option><%
+																	<option <%=selected%> value="<%=Util.replaceTags(gist)%>"><%=Util.replaceTags(gisDisp)%></option><%
 																} %>
 															</select><%
 														}
@@ -1858,7 +1865,7 @@ else{
 												%>
 								    			<tr class="stribe<%=isOdd%>">
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
-														<%=attribute.getShortName()%>
+														<%=Util.replaceTags(attribute.getShortName())%>
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
@@ -1868,7 +1875,7 @@ else{
 													<%
 													if (colspan==4){%>
 														<td width="4%" class="simple_attr_help<%=isOdd%>">
-															<img border="0" src="images/<%=obligImg%>" width="16" height="16"/>
+															<img border="0" src="images/<%=Util.replaceTags(obligImg)%>" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
@@ -1885,8 +1892,8 @@ else{
 															}
 															// thumbnail
 															if (mode.equals("view") && !Util.voidStr(attrValue)){ %>
-																<a target="_blank" href="visuals/<%=attrValue%>" onFocus="blur()" onclick="pop(this.href)">
-																	<img src="visuals/<%=attrValue%>" border="0" height="100px" width="100px"/>
+																<a target="_blank" href="visuals/<%=Util.replaceTags(attrValue)%>" onFocus="blur()" onclick="pop(this.href)">
+																	<img src="visuals/<%=Util.replaceTags(attrValue)%>" border="0" height="100px" width="100px" alt=""/>
 																</a><br/><%
 															}
 															// link
@@ -1894,7 +1901,7 @@ else{
 																String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
 																%>
 																<span class="barfont">
-																	[Click <a target="_blank" onclick="pop(this.href)" href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=dataElement.getShortName()%>&amp;attr_name=<%=attribute.getShortName()%>"><b>HERE</b></a> to <%=actionText%>]
+																	[Click <a target="_blank" onclick="pop(this.href)" href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dataElement.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>"><b>HERE</b></a> to <%=Util.replaceTags(actionText)%>]
 																</span><%
 															}
 														}
@@ -1914,7 +1921,7 @@ else{
 																					"Inherited from parent level: ";
 																					
 																if (sInhText.startsWith("Inherited")){ %>
-																		<%=sInhText%><%=inheritedValue%><br/><%
+																		<%=Util.replaceTags(sInhText)%><%=Util.replaceTags(inheritedValue)%><br/><%
 																}
 															}
 															
@@ -1925,15 +1932,15 @@ else{
 																	for (int k=0; multiValues!=null && k<multiValues.size(); k++){
 																		attrValue = (String)multiValues.get(k);
 																		%>
-																		<option value="<%=attrValue%>"><%=attrValue%></option><%
+																		<option value="<%=Util.replaceTags(attrValue)%>"><%=Util.replaceTags(attrValue)%></option><%
 																	}
 																	%>
 																</select>
 																
 																<%
 																if (disabled.equals("")){ %>
-																	<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
-																	<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a><%
+																	<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value" alt=""/></a>
+																	<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=Util.replaceTags(dispType)%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value" alt=""/></a><%
 																}
 																
 																if (dispType.equals("select")){ %>							
@@ -1941,13 +1948,13 @@ else{
 																		<%
 																		Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
 																		if (fxValues==null || fxValues.size()==0){ %>
-																			<option selected value=""></option> <%
+																			<option selected="selected" value=""></option> <%
 																		}
 																		else{
 																			for (int g=0; g<fxValues.size(); g++){
 																				FixedValue fxValue = (FixedValue)fxValues.get(g);
 																				%>
-																				<option value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
+																				<option value="<%=Util.replaceTags(fxValue.getValue())%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
 																			}
 																		}
 																		%>
@@ -1958,12 +1965,12 @@ else{
 																		<%
 																		Vector attrValues = searchEngine.getSimpleAttributeValues(attrID);
 																		if (attrValues==null || attrValues.size()==0){ %>
-																			<option selected value=""></option> <%
+																			<option selected="selected" value=""></option> <%
 																		}
 																		else{
 																			for (int g=0; g<attrValues.size(); g++){
 																				%>
-																				<option value="<%=(String)attrValues.get(g)%>"><%=Util.replaceTags((String)attrValues.get(g))%></option> <%
+																				<option value="<%=Util.replaceTags((String)attrValues.get(g))%>"><%=Util.replaceTags((String)attrValues.get(g))%></option> <%
 																			}
 																		}
 																		%>
@@ -1976,12 +1983,12 @@ else{
 																if (dispType.equals("text")){
 																	if (attrValue!=null){
 																		%>
-																		<input <%=disabled%> class="smalltext" class="smalltext" type="text" size="<%=width%>" name="attr_<% if (dispMultiple)%> mult_<%;%><%=attrID%>" value="<%=attrValue%>" onchange="form_changed('form1')"/>
+																		<input <%=disabled%> class="smalltext" type="text" size="<%=width%>" name="attr_<% if (dispMultiple)%> mult_<%;%><%=attrID%>" value="<%=Util.replaceTags(attrValue)%>" onchange="form_changed('form1')"/>
 																		<%
 																	}
 																	else{
 																		%>
-																		<input <%=disabled%> class="smalltext" class="smalltext" type="text" size="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"/>
+																		<input <%=disabled%> class="smalltext" type="text" size="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"/>
 																		<%
 																	}
 																}
@@ -2009,14 +2016,14 @@ else{
 																		<%
 																		Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
 																		if (fxValues==null || fxValues.size()==0){ %>
-																			<option selected value=""></option> <%
+																			<option selected="selected" value=""></option> <%
 																		}
 																		else{
 																			boolean selectedByValue = false;
 																			for (int g=0; g<fxValues.size(); g++){
 																				FixedValue fxValue = (FixedValue)fxValues.get(g);
 																				
-																				String isSelected = (fxValue.getDefault() && !selectedByValue) ? "selected" : "";
+																				String isSelected = (fxValue.getDefault() && !selectedByValue) ? "selected=\"selected\"" : "";
 																				
 																				if (attribute.getShortName().equalsIgnoreCase("Datatype")){
 																					if (type!=null &&
@@ -2026,17 +2033,17 @@ else{
 																				}
 									
 																				if (attrValue!=null && attrValue.equals(fxValue.getValue())){
-																					isSelected = "selected";
+																					isSelected = "selected=\"selected\"";
 																					selectedByValue = true;
 																				}
 																				
 																				%>
-																				<option <%=isSelected%> value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
+																				<option <%=isSelected%> value="<%=Util.replaceTags(fxValue.getValue())%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
 																			}
 																		}
 																		%>
 																	</select>
-																	<a target="_blank" onclick="pop(this.href)" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=attribute.getShortName()%>&amp;parent_type=attr">
+																	<a target="_blank" onclick="pop(this.href)" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
 																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 																	</a>
 																	<%
@@ -2047,7 +2054,7 @@ else{
 															}
 														} // end display input
 														%>
-												<input type="hidden" name="oblig_<%=attrID%>" value="<%=attribute.getObligation()%>"/>
+												<input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation())%>"/>
 													</td>
 													<!-- end dynamic attribute value display -->
 													
@@ -2074,7 +2081,7 @@ else{
 												<%
 												if (colspan==4){%>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<img border="0" src="images/optional.gif" width="16" height="16"/>
+														<img border="0" src="images/optional.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
@@ -2089,7 +2096,7 @@ else{
 														<select name="is_rod_param" onchange="form_changed('form1')">
 															<%
 															for (int ii=0; ii<options.length; ii++){
-																String selected = isRodParam==options[ii] ? "selected" : "";
+																String selected = isRodParam==options[ii] ? "selected=\"selected\"" : "";
 																%>
 																<option <%=selected%> value="<%=options[ii]%>"><%=options[ii]%></option><%
 															}
@@ -2121,7 +2128,7 @@ else{
 													<%
 													if (colspan==4){%>
 														<td width="4%" class="simple_attr_help<%=isOdd%>">
-															<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+															<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
@@ -2149,7 +2156,7 @@ else{
 												<%
 												if (colspan==4){%>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
@@ -2157,10 +2164,10 @@ else{
 													<%
 													if(!mode.equals("add")){ %>
 														<b><%=Util.replaceTags(idfier)%></b>
-														<input type="hidden" name="idfier" value="<%=idfier%>"/><%
+														<input type="hidden" name="idfier" value="<%=Util.replaceTags(idfier)%>"/><%
 													}
 													else{ %>
-														<input class="smalltext" type="text" size="30" name="idfier" onchange="form_changed('form1')" value="<%=idfier%>"/><%
+														<input class="smalltext" type="text" size="30" name="idfier" onchange="form_changed('form1')" value="<%=Util.replaceTags(idfier)%>"/><%
 													}
 													%>
 												</td>
@@ -2198,14 +2205,14 @@ else{
 														<td width="34%"><%
 													}
 													%>
-														<b><%=title%><a name="values"></a></b>
+														<b><%=Util.replaceTags(title)%><a name="values"></a></b>
 													</td>
 													
 													<%
 													if (!mode.equals("view")){
 														%>
 														<td width="4%" class="simple_attr_help">
-															<a target="_blank" href="help.jsp?screen=element&amp;area=<%=helpAreaName%>" onclick="pop(this.href)">
+															<a target="_blank" href="help.jsp?screen=element&amp;area=<%=Util.replaceTags(helpAreaName)%>" onclick="pop(this.href)">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 															</a>
 														</td>
@@ -2219,7 +2226,7 @@ else{
 													if (mode.equals("edit") && user!=null){
 														%>
 														<td width="<%=valueWidth%>%" class="barfont_bordered">
-															[Click <a href="<%=valuesLink%>"><b>HERE</b></a> to manage <%=title.toLowerCase()%> of this element]
+															[Click <a href="<%=valuesLink%>"><b>HERE</b></a> to manage <%=Util.replaceTags(title.toLowerCase())%> of this element]
 														</td><%
 													}
 													%>
@@ -2343,7 +2350,7 @@ else{
 														if (origID!=null && origID.length()>0) origID = "&orig_id=" + origID;
 														%>
 														<td width="<%=valueWidth%>%" class="barfont_bordered">
-															[Click <a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;ds_id=<%=dsID%><%=origID%>"><b>HERE</b></a> to manage foreign keys of this element]
+															[Click <a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;ds_id=<%=dsID%><%=origID%>"><b>HERE</b></a> to manage foreign keys of this element]
 														</td><%
 													}
 													%>
@@ -2380,7 +2387,7 @@ else{
 																			</a>
 																		</td>
 																		<td width="50%" class="tbl_elms">
-																			<%=fkTblName%>
+																			<%=Util.replaceTags(fkTblName)%>
 																		</td>
 																	</tr><%
 																}
@@ -2428,12 +2435,12 @@ else{
 																String tblLink = "";
 																String dstLink = "";
 																if (latestRequested){
-																	tblLink = "dstable.jsp?mode=view&table_idf=" + tbl.getIdentifier() + "&pns=" + tbl.getParentNs();
-																	dstLink = "dataset.jsp?mode=view&ds_idf=" + tbl.getDstIdentifier();
+																	tblLink = "dstable.jsp?mode=view&amp;table_idf=" + tbl.getIdentifier() + "&amp;pns=" + tbl.getParentNs();
+																	dstLink = "dataset.jsp?mode=view&amp;ds_idf=" + tbl.getDstIdentifier();
 																}
 																else{
-																	tblLink = "dstable.jsp?mode=view&table_id=" + tbl.getID();
-																	dstLink = "dataset.jsp?mode=view&ds_id=" + tbl.getDatasetID();
+																	tblLink = "dstable.jsp?mode=view&amp;table_id=" + tbl.getID();
+																	dstLink = "dataset.jsp?mode=view&amp;ds_id=" + tbl.getDatasetID();
 																}
 																
 																String owner = tbl.getOwner();
@@ -2448,11 +2455,11 @@ else{
 																	</td>
 																	<td width="43%" class="tbl_elms">
 																		<a target="_blank" href="<%=dstLink%>">
-																			<%=tbl.getDatasetName()%>
+																			<%=Util.replaceTags(tbl.getDatasetName())%>
 																		</a>
 																	</td>
 																	<td width="14%" class="tbl_elms">
-																		<%=owner%>
+																		<%=Util.replaceTags(owner)%>
 																	</td>
 																</tr><%
 															}
@@ -2504,7 +2511,7 @@ else{
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
 														<td width="<%=valueWidth%>%" class="barfont_bordered">
-															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=delem_name%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this element]
+															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this element]
 														</td><%
 													}
 													%>
@@ -2530,8 +2537,8 @@ else{
 																	
 																	<tr>
 																		<td width="29%" class="complex_attr_title<%=isOdd%>">
-																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=delem_name%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
-																				<%=attrName%>
+																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
 																		<td width="4%" class="complex_attr_help<%=isOdd%>">

@@ -26,7 +26,7 @@ Vector releasedDatasets = (Vector)request.getAttribute("rlsd_datasets");
 			<tr>				
 				<td width="70%" valign="top" align="left">
 					<a href="dataset.jsp?mode=view&amp;ds_id=<%=dst.getID()%>">
-						<%=name%>
+						<%=Util.replaceTags(name)%>
 					</a>
 				</td>
 				<td width="23%" valign="top" align="left">

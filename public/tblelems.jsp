@@ -449,7 +449,7 @@ int colCount = hasGIS ? 5 : 4;
 				<span class="head00">
 					Elements in
 					<span class="title2">
-						<a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">
+						<a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=Util.replaceTags(dsName)%>">
 							<%=Util.replaceTags(tableName)%>
 						</a>
 					</span>
@@ -704,7 +704,7 @@ int colCount = hasGIS ? 5 : 4;
 										%>
 										<input onclick="tbl_obj.clickOtherObject();"
 												type="checkbox"
-												style="height:13;width:13" name="<%=name%>" value="<%=elem.getID()%>"/>
+												style="height:13;width:13" name="<%=Util.replaceTags(name)%>" value="<%=elem.getID()%>"/>
 										<%
 									}
 								}
@@ -715,13 +715,13 @@ int colCount = hasGIS ? 5 : 4;
 								<%
 								// red asterisk
 								if (workingUser!=null){ %>
-									<font title="<%=workingUser%>" color="red">* </font><%
+									<font title="<%=Util.replaceTags(workingUser)%>" color="red">* </font><%
 									hasMarkedElems = true;
 								}
 									
 								// short name
 								if (elemDefinition!=null){ %>
-									<a title="<%=elemDefinition%>" href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
+									<a title="<%=Util.replaceTags(elemDefinition)%>" href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
 								}
 								else { %>
 									<a href="<%=elemLink%>"><%=Util.replaceTags(delem_name)%></a><%
@@ -736,7 +736,7 @@ int colCount = hasGIS ? 5 : 4;
 								if (fks){ %>
 									&nbsp;
 									<span class="barfont">
-										<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>&amp;ds_id=<%=dsID%>">
+										<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>&amp;ds_id=<%=dsID%>">
 											<b><i>(FK)</i></b>
 										</a>
 									</span><%
@@ -747,20 +747,20 @@ int colCount = hasGIS ? 5 : 4;
 							<%
 							if (hasGIS){ %>
 								<td align="left" style="padding-right:10">
-									<%=gis%>
+									<%=Util.replaceTags(gis)%>
 								</td><%
 							}
 							%>
 							
 							<td align="left" style="padding-right:10">
-								<%=datatype%>
+								<%=Util.replaceTags(datatype)%>
 							</td>
 							
 							<td align="left" style="padding-right:10">
 								<% if (elem.getType().equals("CH1")){ %>
-									<a href="javascript:clickLink('fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>')"><%=elemType%></a>
+									<a href="javascript:clickLink('fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>')"><%=Util.replaceTags(elemType)%></a>
 								<%} else{ %>
-									<%=elemType%>
+									<%=Util.replaceTags(elemType)%>
 								<% } %>
 								<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5"/>
 								<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>" size="5"/>
@@ -839,8 +839,8 @@ int colCount = hasGIS ? 5 : 4;
 					</table>
 					<input type="hidden" name="mode" value="delete"/>
 					<input type="hidden" name="ds_id" value="<%=dsID%>"/>
-					<input type="hidden" name="ds_name" value="<%=dsName%>"/>
-					<input type="hidden" name="ds_idf" value="<%=dsIdf%>"/>
+					<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName)%>"/>
+					<input type="hidden" name="ds_idf" value="<%=Util.replaceTags(dsIdf)%>"/>
 					<input type="hidden" name="table_id" value="<%=tableID%>"/>
 					<input type="hidden" name="changed" value="0"/>
 					<input type="hidden" name="copy_elem_id" value=""/>
@@ -873,8 +873,8 @@ int colCount = hasGIS ? 5 : 4;
 	<input type="hidden" name="mode" value="add"/>
 	<input type="hidden" name="table_id" value="<%=tableID%>"/>
 	<input type="hidden" name="ds_id" value="<%=dsID%>"/>
-	<input type="hidden" name="ds_name" value="<%=dsName%>"/>
-	<input type="hidden" name="ds_idf" value="<%=dsIdf%>"/>
+	<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName)%>"/>
+	<input type="hidden" name="ds_idf" value="<%=Util.replaceTags(dsIdf)%>"/>
 	<input type="hidden" name="elmpos" value="<%=maxPos+1%>"/>
 </form>
 

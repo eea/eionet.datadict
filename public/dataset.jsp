@@ -327,7 +327,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 <head>
 		<%@ include file="headerinfo.txt" %>
     <title>Dataset - Data Dictionary</title>
-	<xlink type="text/css" rel="stylesheet" href="eionet_new.css" title="Default"/>
+	<link type="text/css" rel="stylesheet" href="eionet_new.css" title="Default"/>
     <script type="text/javascript" src='modal_dialog.js'></script>
     <script type="text/javascript">
     // <![CDATA[
@@ -700,7 +700,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 					<%
 					if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null){
 						%>
-						<li><a href="Subscribe?dataset=<%=dataset.getIdentifier()%>">Subscribe</a></li>
+						<li><a href="Subscribe?dataset=<%=Util.replaceTags(dataset.getIdentifier())%>">Subscribe</a></li>
 						<%
 					}
 					%>
@@ -745,7 +745,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 							}
 							%>
       		</div>
-							<h1><%=verb%> dataset definition</h1>
+							<h1><%=Util.replaceTags(verb)%> dataset definition</h1>
 							
 			<div style="clear:both">
 			<br/>
@@ -997,12 +997,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 														String title = (String)hash.get("title");
 														%>
 														<tr>
-															<td width="73%" valign="middle" align="left"><%=title%></td>
+															<td width="73%" valign="middle" align="left"><%=Util.replaceTags(title)%></td>
 															<td width="27%" valign="middle" align="left">
-																<a href="DocDownload?file=<%=md5%>"><img border="0" src="images/<%=icon%>" width="16" height="18" alt="icon"/></a>
+																<a href="DocDownload?file=<%=Util.replaceTags(md5)%>"><img border="0" src="images/<%=Util.replaceTags(icon)%>" width="16" height="18" alt="icon"/></a>
 																<%
 																if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){
-																	%>&nbsp;<a target="_blank" href="DocUpload?delete=<%=md5%>&amp;idf=<%=dataset.getIdentifier()%>"><img border="0" src="images/delete.gif" width="14" height="14"/></a><%
+																	%>&nbsp;<a target="_blank" href="DocUpload?delete=<%=Util.replaceTags(md5)%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>"><img border="0" src="images/delete.gif" width="14" height="14"/></a><%
 																}
 																%>
 															</td>
@@ -1016,10 +1016,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 														<tr style="height:20px;">
 															<td colspan="2" valign="bottom" align="left">
 																<span class="barfont">
-																	[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Upload a document ...</a> ]
+																	[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>" onclick="pop(this.href)">Upload a document ...</a> ]
 																</span>
 																<span class="barfont">
-																	[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=dataset.getIdentifier()%>" onclick="pop(this.href)">Open cache ...</a> ]
+																	[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>" onclick="pop(this.href)">Open cache ...</a> ]
 																</span>
 															</td>
 														</tr>
@@ -1072,13 +1072,13 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<%
 													if (mode.equals("view")){ %>
 														<%=Util.replaceTags(dataset.getShortName())%>
-														<input type="hidden" name="ds_name" value="<%=dataset.getShortName()%>"/><%
+														<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dataset.getShortName())%>"/><%
 													}
 													else if (mode.equals("add")){%>
 														<input class="smalltext" type="text" size="30" name="ds_name"/><%
 													}
 													else{ %>
-														<input class="smalltext" type="text" size="30" name="ds_name" value="<%=dataset.getShortName()%>"/><%
+														<input class="smalltext" type="text" size="30" name="ds_name" value="<%=Util.replaceTags(dataset.getShortName())%>"/><%
 													}
 													%>
 												</td>
@@ -1107,7 +1107,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
 													<%
 													if (mode.equals("view")){ %>														
-														<%=regStatus%><%
+														<%=Util.replaceTags(regStatus)%><%
 													}
 													else{ %>
 														<select name="reg_status" onchange="form_changed('form1')"> <%
@@ -1115,7 +1115,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 															for (int i=0; i<regStatuses.size(); i++){
 																String stat = (String)regStatuses.get(i);
 																String selected = stat.equals(regStatus) ? "selected='selected'" : ""; %>
-																<option <%=selected%> value="<%=stat%>"><%=stat%></option><%
+																<option <%=selected%> value="<%=Util.replaceTags(stat)%>"><%=Util.replaceTags(stat)%></option><%
 															} %>
 														</select><%
 													}
@@ -1196,7 +1196,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												
 								    		<tr class="stribe<%=isOdd%>">
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
-														<%=attribute.getShortName()%>
+														<%=Util.replaceTags(attribute.getShortName())%>
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
@@ -1206,7 +1206,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<%
 													if (colspan==4){%>
 														<td width="4%" class="simple_attr_help<%=isOdd%>">
-															<img border="0" src="images/<%=obligImg%>" alt="<%=obligTxt%>" width="16" height="16"/>
+															<img border="0" src="images/<%=Util.replaceTags(obligImg)%>" alt="<%=Util.replaceTags(obligTxt)%>" width="16" height="16"/>
 														</td><%
 													}
 													%>
@@ -1221,7 +1221,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 															if (dispMultiple){
 																for (int k=0; multiValues!=null && k<multiValues.size(); k++){
 																	attrValue = (String)multiValues.get(k);
-																	%><%if (k>0)%>, <%;%><%=attrValue%><%
+																	%><%if (k>0)%>, <%;%><%=Util.replaceTags(attrValue)%><%
 																}
 															}
 															else{ %>
@@ -1237,7 +1237,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																	for (int k=0; multiValues!=null && k<multiValues.size(); k++){
 																		attrValue = (String)multiValues.get(k);
 																		%>
-																		<option value="<%=attrValue%>"><%=attrValue%></option> <%
+																		<option value="<%=Util.replaceTags(attrValue)%>"><%=Util.replaceTags(attrValue)%></option> <%
 																	}
 																	%>
 																	
@@ -1245,8 +1245,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 																
 																<%
 																if (disabled.equals("")){ %>
-																	<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
-																	<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a> <%
+																	<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value" alt=""/></a>
+																	<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=Util.replaceTags(dispType)%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value" alt=""/></a> <%
 																}
 																
 																if (dispType.equals("select")){ %>
@@ -1259,7 +1259,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		else{
 																			for (int g=0; g<fxValues.size(); g++){
 																				FixedValue fxValue = (FixedValue)fxValues.get(g); %>
-																				<option value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
+																				<option value="<%=Util.replaceTags(fxValue.getValue())%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
 																			}
 																		}
 																		%>
@@ -1275,7 +1275,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		else{
 																			for (int g=0; g<attrValues.size(); g++){
 																				%>
-																				<option value="<%=(String)attrValues.get(g)%>"><%=Util.replaceTags((String)attrValues.get(g))%></option> <%
+																				<option value="<%=Util.replaceTags((String)attrValues.get(g))%>"><%=Util.replaceTags((String)attrValues.get(g))%></option> <%
 																			}
 																		}
 																		%>
@@ -1287,7 +1287,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																if (dispType.equals("text")){
 																	if (attrValue!=null){
 																		%>
-																		<input <%=disabled%> class="smalltext" type="text" size="<%=width%>" name="attr_<%=attrID%>" value="<%=attrValue%>" onchange="form_changed('form1')"/>
+																		<input <%=disabled%> class="smalltext" type="text" size="<%=width%>" name="attr_<%=attrID%>" value="<%=Util.replaceTags(attrValue)%>" onchange="form_changed('form1')"/>
 																		<%
 																	}
 																	else{
@@ -1328,12 +1328,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 																				}
 																				
 																				%>
-																				<option <%=isSelected%> value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
+																				<option <%=isSelected%> value="<%=Util.replaceTags(fxValue.getValue())%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
 																			}
 																		}
 																		%>
 																	</select>
-																	<a target="_blank" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=attribute.getShortName()%>&amp;parent_type=attr" onclick="pop(this.href)">
+																	<a target="_blank" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr" onclick="pop(this.href)">
 																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																	</a>
 																	<%
@@ -1346,7 +1346,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 															
 														} // end display input
 														%>
-														<input type="hidden" name="oblig_<%=attrID%>" value="<%=attribute.getObligation()%>"/>
+														<input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation())%>"/>
 													</td>
 													
 													<!-- end of dynamic attribute value display -->
@@ -1440,7 +1440,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													}
 													%>
 													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
-														<%=dstVersion%>
+														<%=Util.replaceTags(dstVersion)%>
 													</td>
 													
 													<%isOdd = Util.isOdd(++displayed);%>
@@ -1469,7 +1469,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<%
 													if(!mode.equals("add")){ %>
 														<b><%=Util.replaceTags(idfier)%></b>
-														<input type="hidden" name="idfier" value="<%=idfier%>"/><%
+														<input type="hidden" name="idfier" value="<%=Util.replaceTags(idfier)%>"/><%
 													}
 													else{ %>
 														<input class="smalltext" type="text" size="30" name="idfier"/><%
@@ -1527,15 +1527,15 @@ private Vector getValues(String id, String mode, Vector attributes){
 														if (mode.equals("view") && dataset.getVisual()!=null){
 															
 															if (imgVisual){ %>
-																<a target="_blank" href="visuals/<%=dsVisual%>" onfocus="blur()" onclick="pop(this.href)">
-																	<img src="visuals/<%=dsVisual%>" border="0" height="100px" width="100px"/>
+																<a target="_blank" href="visuals/<%=Util.replaceTags(dsVisual)%>" onfocus="blur()" onclick="pop(this.href)">
+																	<img src="visuals/<%=Util.replaceTags(dsVisual)%>" border="0" height="100px" width="100px"/>
 																</a><br/>
 																[Click thumbnail to view large version of the data model]<%
 															}
 															else{ %>
 																The file representing the dataset stucture cannot be displayed on this web-page.
 																But you can see it by pressing the following link:<br/>
-																<a href="javascript:openStructure('visuals/<%=dsVisual%>')"><%=dsVisual%></a> <%
+																<a href="javascript:openStructure('visuals/<%=Util.replaceTags(dsVisual)%>')"><%=Util.replaceTags(dsVisual)%></a> <%
 															}
 														}
 														
@@ -1573,7 +1573,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													// tables link
 													if (user!=null && editPrm && topFree){ %>
 														<td class="barfont" width="66%">
-															[Click <a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=ds_name%>"><b>HERE</b></a> to manage tables of this dataset]
+															[Click <a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.replaceTags(ds_name)%>"><b>HERE</b></a> to manage tables of this dataset]
 														</td><%
 													}
 													%>
@@ -1628,16 +1628,16 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		<td width="50%" class="dst_tbls">
 																			<%
 																			if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
-																				%> <font title="<%=tblWorkingUser%>" color="red">* </font><%
+																				%> <font title="<%=Util.replaceTags(tblWorkingUser)%>" color="red">* </font><%
 																				hasMarkedTables = true;
 																			}
 																			else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
-																				%> <font title="<%=tblElmWorkingUser%>" color="red">* </font><%
+																				%> <font title="<%=Util.replaceTags(tblElmWorkingUser)%>" color="red">* </font><%
 																				hasMarkedTables = true;
 																			}
 																			%>
-																			<a href="<%=tableLink%>" title="<%=escapedName%>">
-																				<%=escapedName%>
+																			<a href="<%=tableLink%>" title="<%=Util.replaceTags(escapedName)%>">
+																				<%=Util.replaceTags(escapedName)%>
 																			</a>
 																		</td>
 																		<td width="50%" class="dst_tbls">
@@ -1749,7 +1749,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																			<%=Util.replaceTags(liTitle)%>
 																		</td>
 																		<td width="40%" class="tbl_elms">
-																			<a target="_blank" href="<%=raDetails%>"><%=Util.replaceTags(raDetails)%></a>
+																			<a target="_blank" href="<%=Util.replaceTags(raDetails)%>"><%=Util.replaceTags(raDetails)%></a>
 																		</td>																		
 																	</tr><%
 																}
@@ -1802,7 +1802,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
 														<td width="<%=valueWidth%>%" class="barfont_bordered">
-															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=ds_name%>&amp;ds=true"><b>HERE</b></a> to manage complex attributes of this dataset]
+															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true"><b>HERE</b></a> to manage complex attributes of this dataset]
 														</td><%
 													}
 													%>
@@ -1828,8 +1828,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 																	
 																	<tr>
 																		<td width="29%" class="complex_attr_title<%=isOdd%>">
-																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=ds_name%>&amp;ds=true" title="Click here to view all the fields">
-																				<%=attrName%>
+																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
+																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
 																		<td width="4%" class="complex_attr_help<%=isOdd%>">
@@ -1891,7 +1891,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 				
 				<!-- various hidden inputs -->
 				
-				<input type="hidden" name="mode" value="<%=mode%>"/>
+				<input type="hidden" name="mode" value="<%=Util.replaceTags(mode)%>"/>
 				<input type="hidden" name="check_in" value="false"/>
 				<input type="hidden" name="unlock" value="false"/>
 				<input type="hidden" name="changed" value="0"/>

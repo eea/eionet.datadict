@@ -912,14 +912,14 @@ String attrValue = null;
 					
 					<%
 					if (mode.equals("add") || mode.equals("edit")){ %>				
+						<tr><td width="100%" colspan="2" height="10"></td></tr>
 						<tr>
-							<tr><td width="100%" colspan="2" height="10"></td></tr>
 							<td width="100%" align="right" colspan="2">
 							<%
 								// add case
 								if (mode.equals("add")){
 									if (user==null){ %>
-										<input type="button" class="mediumbuttonb" value="Add" disabled="true"/><%
+										<input type="button" class="mediumbuttonb" value="Add" disabled="disabled"/><%
 									}
 									else { %>
 										<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
@@ -952,14 +952,13 @@ String attrValue = null;
 									
 									<%
 									if (dataset==null || !dataset.getStatus().equals("Released")){ %>
-										<input type="checkbox" name="upd_version" value="true">
+										<input type="checkbox" name="upd_version" value="true"/>
 											&nbsp;Update the dataset definition's CheckInNo when checking in
-										</input><%
+									<%
 									}
 									else{ %>
-										<input type="checkbox" name="upd_version_DISABLED" checked="true" disabled="true">
+										<input type="checkbox" name="upd_version_DISABLED" checked="checked" disabled="disabled"/>
 											&nbsp;Update the dataset definition's CheckInNo when checking in
-										</input>
 										<input type="hidden" name="upd_version" value="true"/><%
 									}
 									%>
@@ -1148,7 +1147,7 @@ String attrValue = null;
 												if (colspan==4){
 													%>
 													<td width="4%" class="short_name">
-														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
@@ -1156,13 +1155,13 @@ String attrValue = null;
 													<%
 													if (mode.equals("view")){ %>
 														<%=Util.replaceTags(dsTable.getShortName())%>
-														<input type="hidden" name="short_name" value="<%=dsTable.getShortName()%>"/><%
+														<input type="hidden" name="short_name" value="<%=Util.replaceTags(dsTable.getShortName())%>"/><%
 													}
 													else if (mode.equals("add")){%>
 														<input class="smalltext" type="text" size="30" name="short_name"/><%
 													}
 													else{ %>
-														<input class="smalltext" type="text" size="30" name="short_name" value="<%=dsTable.getShortName()%>"/><%
+														<input class="smalltext" type="text" size="30" name="short_name" value="<%=Util.replaceTags(dsTable.getShortName())%>"/><%
 													}
 													%>
 												</td>
@@ -1183,7 +1182,7 @@ String attrValue = null;
 												<%
 												if (colspan==4){%>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
@@ -1312,7 +1311,7 @@ String attrValue = null;
 								    		
 											    <tr class="stribe<%=isOdd%>">
 													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
-														<%=attribute.getShortName()%>
+														<%=Util.replaceTags(attribute.getShortName())%>
 													</td>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
@@ -1322,7 +1321,7 @@ String attrValue = null;
 													<%
 													if (colspan==4){%>
 														<td width="4%" class="simple_attr_help<%=isOdd%>">
-															<img border="0" src="images/<%=obligImg%>" width="16" height="16"/>
+															<img border="0" src="images/<%=Util.replaceTags(obligImg)%>" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
@@ -1339,8 +1338,8 @@ String attrValue = null;
 															}
 															// thumbnail
 															if (mode.equals("view") && !Util.voidStr(attrValue)){ %>
-																<a target="_blank" href="visuals/<%=attrValue%>" onFocus="blur()" onclick="pop(this.href)">
-																	<img src="visuals/<%=attrValue%>" border="0" height="100px" width="100px"/>
+																<a target="_blank" href="visuals/<%=Util.replaceTags(attrValue)%>" onFocus="blur()" onclick="pop(this.href)">
+																	<img src="visuals/<%=Util.replaceTags(attrValue)%>" border="0" height="100px" width="100px" alt=""/>
 																</a><br/><%
 															}
 															// link
@@ -1348,7 +1347,7 @@ String attrValue = null;
 																String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
 																%>
 																<span class="barfont">
-																	[Click <a target="_blank" onclick="pop(this.href)" href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=dsTable.getShortName()%>&amp;attr_name=<%=attribute.getShortName()%>"><b>HERE</b></a> to <%=actionText%>]
+																	[Click <a target="_blank" onclick="pop(this.href)" href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>"><b>HERE</b></a> to <%=Util.replaceTags(actionText)%>]
 																</span><%
 															}
 														}
@@ -1369,7 +1368,7 @@ String attrValue = null;
 																					"Inherited from parent level: ";
 																					
 																if (sInhText.startsWith("Inherited")){ %>
-																	<%=sInhText%><%=inheritedValue%><br/><%
+																	<%=sInhText%><%=Util.replaceTags(inheritedValue)%><br/><%
 																}
 															}
 															
@@ -1377,19 +1376,21 @@ String attrValue = null;
 															if (dispMultiple && !dispType.equals("image")){
 								
 																%>
-																<select <%=disabled%> name="attr_mult_<%=attrID%>" multiple="true" style="width:auto">
+																<select <%=disabled%> name="attr_mult_<%=attrID%>" multiple="multiple" style="width:auto">
 																<%
-																		for (int k=0; multiValues!=null && k<multiValues.size(); k++){
-																			attrValue = (String)multiValues.get(k);
-																			%>
-																			<option value="<%=attrValue%>"><%=attrValue%></option>
-																		<%
-																}	
+						
+																			for (int k=0; multiValues!=null && k<multiValues.size(); k++){
+																				attrValue = (String)multiValues.get(k);
+																				%>
+																				<option value="<%=Util.replaceTags(attrValue)%>"><%=Util.replaceTags(attrValue)%></option>
+																			<%
+																			}	
+
 																%>
 																</select>
 																<% if (disabled.equals("")){ %>
-																	<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value"/></a>
-																	<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value"/></a>
+																	<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value" alt=""/></a>
+																	<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=dispType%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value" alt=""/></a>
 																
 																<%
 																}
@@ -1405,7 +1406,7 @@ String attrValue = null;
 																			for (int g=0; g<fxValues.size(); g++){
 																				FixedValue fxValue = (FixedValue)fxValues.get(g);
 																				%>
-																				<option value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
+																				<option value="<%=Util.replaceTags(fxValue.getValue())%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
 																			}
 																		}
 																		%>
@@ -1423,7 +1424,7 @@ String attrValue = null;
 																		else{
 																			for (int g=0; g<attrValues.size(); g++){
 																				%>
-																				<option value="<%=(String)attrValues.get(g)%>"><%=Util.replaceTags((String)attrValues.get(g))%></option> <%
+																				<option value="<%=Util.replaceTags((String)attrValues.get(g))%>"><%=Util.replaceTags((String)attrValues.get(g))%></option> <%
 																			}
 																		}
 																		%>
@@ -1475,12 +1476,12 @@ String attrValue = null;
 																					selectedByValue = true;
 																				}
 																				%>
-																				<option <%=isSelected%> value="<%=fxValue.getValue()%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
+																				<option <%=isSelected%> value="<%=Util.replaceTags(fxValue.getValue())%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
 																			}
 																		}
 																		%>
 																	</select>
-																	<a target="_blank" onclick="pop(this.href)" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=attribute.getShortName()%>&amp;parent_type=attr">
+																	<a target="_blank" onclick="pop(this.href)" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
 																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 																	</a>
 																	<%
@@ -1492,7 +1493,7 @@ String attrValue = null;
 															
 														} // end display input
 														%>
-														<input type="hidden" name="oblig_<%=attrID%>" value="<%=attribute.getObligation()%>"/>
+														<input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation())%>"/>
 													</td>
 													<!-- end dynamic attribute value display -->
 													
@@ -1515,7 +1516,7 @@ String attrValue = null;
 												<%
 												if (colspan==4){%>
 													<td width="4%" class="simple_attr_help<%=isOdd%>">
-														<img border="0" src="images/mandatory.gif" width="16" height="16"/>
+														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
@@ -1523,7 +1524,7 @@ String attrValue = null;
 													<%
 													if(!mode.equals("add")){ %>
 														<b><%=Util.replaceTags(dsTable.getIdentifier())%></b>
-														<input type="hidden" name="idfier" value="<%=dsTable.getIdentifier()%>"/><%
+														<input type="hidden" name="idfier" value="<%=Util.replaceTags(dsTable.getIdentifier())%>"/><%
 													}
 													else{ %>
 														<input <%=disabled%> type="text" class="smalltext" size="30" name="idfier"/><%
@@ -1578,7 +1579,7 @@ String attrValue = null;
 													<tr style="height:10px;"><td colspan="<%=String.valueOf(colspan)%>"></td></tr>
 													<tr>
 														<td width="34%">
-															<b><%=title%><a name="elements"></a></b>
+															<b><%=Util.replaceTags(title)%><a name="elements"></a></b>
 														</td>
 														
 														<%
@@ -1666,11 +1667,11 @@ String attrValue = null;
 																				// red wildcard
 																				if (user!=null && elemWorkingUser!=null){ // mark checked-out elements
 																					hasMarkedElems = true;
-																					%> <font title="<%=elemWorkingUser%>" color="red">* </font> <%
+																					%> <font title="<%=Util.replaceTags(elemWorkingUser)%>" color="red">* </font> <%
 																				}
 																				// short name and link
 																				%>
-																				<a href="<%=elemLink%>" title="<%=linkTitle%>">
+																				<a href="<%=elemLink%>" title="<%=Util.replaceTags(linkTitle)%>">
 																					<%=Util.replaceTags(elem.getShortName())%>
 																				</a>
 																				
@@ -1683,7 +1684,7 @@ String attrValue = null;
 																				// FK inidcator
 																				if (fks){ %>
 																					&nbsp;
-																					<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>&amp;ds_id=<%=dsID%>">
+																					<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>&amp;ds_id=<%=dsID%>">
 																						<b><i>(FK)</i></b>
 																					</a><%
 																					hasForeignKeys = true;
@@ -1702,18 +1703,18 @@ String attrValue = null;
 																			%>
 																			<!-- datatype -->
 																			<td width="<%=widthDatatype%>" class="tbl_elms">
-																				<%=datatype%>
+																				<%=Util.replaceTags(datatype)%>
 																			</td>
 																			<!-- element type -->
 																			<td width="<%=widthElemtype%>" class="tbl_elms">
 																				<%
 																				if (elem.getType().equals("CH1")){ %>
-																					<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=elem.getShortName()%>">
-																						<%=elemType%>
+																					<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>">
+																						<%=Util.replaceTags(elemType)%>
 																					</a> <%
 																				}
 																				else{ %>
-																					<%=elemType%><%
+																					<%=Util.replaceTags(elemType)%><%
 																				}
 																				%>
 																			</td>
@@ -1798,7 +1799,7 @@ String attrValue = null;
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
 														<td width="<%=valueWidth%>%" class="barfont_bordered">
-															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=dsTable.getShortName()%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this table]
+															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this table]
 														</td><%
 													}
 													%>
@@ -1824,8 +1825,8 @@ String attrValue = null;
 																	
 																	<tr>
 																		<td width="29%" class="complex_attr_title<%=isOdd%>">
-																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=dsTable.getShortName()%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
-																				<%=attrName%>
+																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
 																		<td width="4%" class="complex_attr_help<%=isOdd%>">
@@ -1893,7 +1894,7 @@ String attrValue = null;
 				
 				<!-- end main table -->
 				
-				<input type="hidden" name="mode" value="<%=mode%>"/>
+				<input type="hidden" name="mode" value="<%=Util.replaceTags(mode)%>"/>
 				<input type="hidden" name="check_in" value="false"/>
 				
 				<%
@@ -1907,7 +1908,7 @@ String attrValue = null;
 				} %>
 				
 				<% if (dsName!=null && dsName.length()>0){ %>
-					<input type="hidden" name="ds_name" value="<%=dsName%>"/> <%
+					<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName)%>"/> <%
 				}
 				else{ %>
 					<input type="hidden" name="ds_name"/><%
