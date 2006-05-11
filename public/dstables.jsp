@@ -298,10 +298,10 @@ if (disabled.equals("")){
 					if (user!=null && dstPrm){
 						
 						if (tblWorkingUser!=null){ // mark checked-out tables
-							%> <font title="<%=Util.replaceTags(tblWorkingUser)%>" color="red">* </font> <%
+							%> <font title="<%=Util.replaceTags(tblWorkingUser, true)%>" color="red">* </font> <%
 						}
 						else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
-							%> <font title="<%=Util.replaceTags(tblElmWorkingUser)%>" color="red">* </font> <%
+							%> <font title="<%=Util.replaceTags(tblElmWorkingUser, true)%>" color="red">* </font> <%
 						}
 					
 						if (tblWorkingUser==null && topFree){ %>
@@ -313,15 +313,15 @@ if (disabled.equals("")){
 				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
 				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullName)%>">
+				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullName, true)%>">
 					<%=Util.replaceTags(table.getShortName())%>
 				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullDef)%>">
+				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullDef, true)%>">
 					<%=Util.replaceTags(tblDef)%>
 					<input type="hidden" name="mode" value="delete"/>
 					<input type="hidden" name="ds_id" value="<%=dsID%>"/>
-					<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dataset.getShortName())%>"/>
-					<input type="hidden" name="ds_idf" value="<%=Util.replaceTags(dataset.getIdentifier())%>"/>
+					<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dataset.getShortName(), true)%>"/>
+					<input type="hidden" name="ds_idf" value="<%=dataset.getIdentifier()%>"/>
 				</td>
 			</tr>
 			<%

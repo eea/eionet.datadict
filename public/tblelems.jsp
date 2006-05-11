@@ -715,13 +715,13 @@ int colCount = hasGIS ? 5 : 4;
 								<%
 								// red asterisk
 								if (workingUser!=null){ %>
-									<font title="<%=Util.replaceTags(workingUser)%>" color="red">* </font><%
+									<font title="<%=Util.replaceTags(workingUser, true)%>" color="red">* </font><%
 									hasMarkedElems = true;
 								}
 									
 								// short name
 								if (elemDefinition!=null){ %>
-									<a title="<%=Util.replaceTags(elemDefinition)%>" href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
+									<a title="<%=Util.replaceTags(elemDefinition, true)%>" href="<%=elemLink%>"><%=Util.replaceTags(elem.getShortName())%></a><%
 								}
 								else { %>
 									<a href="<%=elemLink%>"><%=Util.replaceTags(delem_name)%></a><%
@@ -839,8 +839,8 @@ int colCount = hasGIS ? 5 : 4;
 					</table>
 					<input type="hidden" name="mode" value="delete"/>
 					<input type="hidden" name="ds_id" value="<%=dsID%>"/>
-					<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName)%>"/>
-					<input type="hidden" name="ds_idf" value="<%=Util.replaceTags(dsIdf)%>"/>
+					<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName, true)%>"/>
+					<input type="hidden" name="ds_idf" value="<%=Util.replaceTags(dsIdf, true)%>"/>
 					<input type="hidden" name="table_id" value="<%=tableID%>"/>
 					<input type="hidden" name="changed" value="0"/>
 					<input type="hidden" name="copy_elem_id" value=""/>
@@ -873,8 +873,8 @@ int colCount = hasGIS ? 5 : 4;
 	<input type="hidden" name="mode" value="add"/>
 	<input type="hidden" name="table_id" value="<%=tableID%>"/>
 	<input type="hidden" name="ds_id" value="<%=dsID%>"/>
-	<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName)%>"/>
-	<input type="hidden" name="ds_idf" value="<%=Util.replaceTags(dsIdf)%>"/>
+	<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName, true)%>"/>
+	<input type="hidden" name="ds_idf" value="<%=Util.replaceTags(dsIdf, true)%>"/>
 	<input type="hidden" name="elmpos" value="<%=maxPos+1%>"/>
 </form>
 

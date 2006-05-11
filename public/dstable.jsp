@@ -1155,7 +1155,7 @@ String attrValue = null;
 													<%
 													if (mode.equals("view")){ %>
 														<%=Util.replaceTags(dsTable.getShortName())%>
-														<input type="hidden" name="short_name" value="<%=Util.replaceTags(dsTable.getShortName())%>"/><%
+														<input type="hidden" name="short_name" value="<%=Util.replaceTags(dsTable.getShortName(),true)%>"/><%
 													}
 													else if (mode.equals("add")){%>
 														<input class="smalltext" type="text" size="30" name="short_name"/><%
@@ -1493,7 +1493,7 @@ String attrValue = null;
 															
 														} // end display input
 														%>
-														<input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation())%>"/>
+														<input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation(),true)%>"/>
 													</td>
 													<!-- end dynamic attribute value display -->
 													
@@ -1524,7 +1524,7 @@ String attrValue = null;
 													<%
 													if(!mode.equals("add")){ %>
 														<b><%=Util.replaceTags(dsTable.getIdentifier())%></b>
-														<input type="hidden" name="idfier" value="<%=Util.replaceTags(dsTable.getIdentifier())%>"/><%
+														<input type="hidden" name="idfier" value="<%=dsTable.getIdentifier()%>"/><%
 													}
 													else{ %>
 														<input <%=disabled%> type="text" class="smalltext" size="30" name="idfier"/><%
@@ -1894,7 +1894,7 @@ String attrValue = null;
 				
 				<!-- end main table -->
 				
-				<input type="hidden" name="mode" value="<%=Util.replaceTags(mode)%>"/>
+				<input type="hidden" name="mode" value="<%=mode%>"/>
 				<input type="hidden" name="check_in" value="false"/>
 				
 				<%
@@ -1908,7 +1908,7 @@ String attrValue = null;
 				} %>
 				
 				<% if (dsName!=null && dsName.length()>0){ %>
-					<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName)%>"/> <%
+					<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName,true)%>"/> <%
 				}
 				else{ %>
 					<input type="hidden" name="ds_name"/><%

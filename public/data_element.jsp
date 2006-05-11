@@ -1477,7 +1477,7 @@ else{
 													<%
 													if(mode.equals("view")){ %>
 														<%=Util.replaceTags(dataElement.getShortName())%>
-														<input type="hidden" name="delem_name" value="<%=Util.replaceTags(dataElement.getShortName())%>"/><%
+														<input type="hidden" name="delem_name" value="<%=Util.replaceTags(dataElement.getShortName(),true)%>"/><%
 													}
 													else if (mode.equals("add")){ %>
 														<input class="smalltext" type="text" size="30" name="delem_name"/><%
@@ -2054,7 +2054,7 @@ else{
 															}
 														} // end display input
 														%>
-												<input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation())%>"/>
+												<input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation(),true)%>"/>
 													</td>
 													<!-- end dynamic attribute value display -->
 													
@@ -2164,7 +2164,7 @@ else{
 													<%
 													if(!mode.equals("add")){ %>
 														<b><%=Util.replaceTags(idfier)%></b>
-														<input type="hidden" name="idfier" value="<%=Util.replaceTags(idfier)%>"/><%
+														<input type="hidden" name="idfier" value="<%=Util.replaceTags(idfier,true)%>"/><%
 													}
 													else{ %>
 														<input class="smalltext" type="text" size="30" name="idfier" onchange="form_changed('form1')" value="<%=Util.replaceTags(idfier)%>"/><%
@@ -2205,7 +2205,7 @@ else{
 														<td width="34%"><%
 													}
 													%>
-														<b><%=Util.replaceTags(title)%><a name="values"></a></b>
+														<b><%=title%><a name="values"></a></b>
 													</td>
 													
 													<%
@@ -2288,10 +2288,10 @@ else{
 																				<%=Util.replaceTags(value)%>
 																			</a>
 																		</td>
-																		<td width="40%" class="tbl_elms" title="<%=Util.replaceTags(defin)%>">
+																		<td width="40%" class="tbl_elms" title="<%=Util.replaceTags(defin,true)%>">
 																			<%=Util.replaceTags(dispDefin)%>
 																		</td>
-																		<td width="40%" class="tbl_elms" title="<%=Util.replaceTags(shortDesc)%>">
+																		<td width="40%" class="tbl_elms" title="<%=Util.replaceTags(shortDesc,true)%>">
 																			<%=Util.replaceTags(dispShortDesc)%>
 																		</td>																		
 																	</tr><%

@@ -1072,7 +1072,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<%
 													if (mode.equals("view")){ %>
 														<%=Util.replaceTags(dataset.getShortName())%>
-														<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dataset.getShortName())%>"/><%
+														<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dataset.getShortName(),true)%>"/><%
 													}
 													else if (mode.equals("add")){%>
 														<input class="smalltext" type="text" size="30" name="ds_name"/><%
@@ -1346,7 +1346,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 															
 														} // end display input
 														%>
-														<input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation())%>"/>
+														<input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation(),true)%>"/>
 													</td>
 													
 													<!-- end of dynamic attribute value display -->
@@ -1469,7 +1469,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<%
 													if(!mode.equals("add")){ %>
 														<b><%=Util.replaceTags(idfier)%></b>
-														<input type="hidden" name="idfier" value="<%=Util.replaceTags(idfier)%>"/><%
+														<input type="hidden" name="idfier" value="<%=Util.replaceTags(idfier,true)%>"/><%
 													}
 													else{ %>
 														<input class="smalltext" type="text" size="30" name="idfier"/><%
@@ -1628,15 +1628,15 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		<td width="50%" class="dst_tbls">
 																			<%
 																			if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
-																				%> <font title="<%=Util.replaceTags(tblWorkingUser)%>" color="red">* </font><%
+																				%> <font title="<%=Util.replaceTags(tblWorkingUser,true)%>" color="red">* </font><%
 																				hasMarkedTables = true;
 																			}
 																			else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
-																				%> <font title="<%=Util.replaceTags(tblElmWorkingUser)%>" color="red">* </font><%
+																				%> <font title="<%=Util.replaceTags(tblElmWorkingUser,true)%>" color="red">* </font><%
 																				hasMarkedTables = true;
 																			}
 																			%>
-																			<a href="<%=tableLink%>" title="<%=Util.replaceTags(escapedName)%>">
+																			<a href="<%=tableLink%>" title="<%=Util.replaceTags(escapedName,true)%>">
 																				<%=Util.replaceTags(escapedName)%>
 																			</a>
 																		</td>
@@ -1891,7 +1891,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 				
 				<!-- various hidden inputs -->
 				
-				<input type="hidden" name="mode" value="<%=Util.replaceTags(mode)%>"/>
+				<input type="hidden" name="mode" value="<%=mode%>"/>
 				<input type="hidden" name="check_in" value="false"/>
 				<input type="hidden" name="unlock" value="false"/>
 				<input type="hidden" name="changed" value="0"/>

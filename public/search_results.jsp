@@ -323,8 +323,8 @@ else{ %>
 					String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 					String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
 					%>
-					<a title="Element" href="<%=Util.replaceTags(sortedLink)%>">
-	                      Element&nbsp;<img src="<%=Util.replaceTags(sortedImg)%>" width="12" height="12" alt=""/>
+					<a title="Element" href="<%=Util.replaceTags(sortedLink, true)%>">
+	                      Element&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 				<th width="25%">
@@ -332,8 +332,8 @@ else{ %>
 					sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(3, oSortCol, oSortOrder);
 					%>
-					<a title="Table" href="<%=Util.replaceTags(sortedLink)%>">
-	                      Table&nbsp;<img src="<%=Util.replaceTags(sortedImg)%>" width="12" height="12" alt=""/>
+					<a title="Table" href="<%=Util.replaceTags(sortedLink, true)%>">
+	                      Table&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 				<th width="22%">
@@ -341,8 +341,8 @@ else{ %>
 					sortedImg  = getSortedImg(4, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(4, oSortCol, oSortOrder);
 					%>
-					<a title="Dataset" href="<%=Util.replaceTags(sortedLink)%>">
-	                      Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg)%>" width="12" height="12" alt=""/>
+					<a title="Dataset" href="<%=Util.replaceTags(sortedLink, true)%>">
+	                      Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 				<th width="20%" style="border-right: 1px solid #FF9900">
@@ -350,8 +350,8 @@ else{ %>
 					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
 					%>
-					<a title="Type" href="<%=Util.replaceTags(sortedLink)%>">
-	                      Type&nbsp;<img src="<%=Util.replaceTags(sortedImg)%>" width="12" height="12" alt=""/>
+					<a title="Type" href="<%=Util.replaceTags(sortedLink, true)%>">
+	                      Type&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 			</tr>
@@ -426,7 +426,7 @@ else{ %>
 								<%
 								// mark elements in a locked dataset
 								if (dstPrm && topWorkingUser!=null){ %>
-									<font title="<%=Util.replaceTags(topWorkingUser)%>" color="red">*</font><%
+									<font title="<%=Util.replaceTags(topWorkingUser, true)%>" color="red">*</font><%
 			    				}
 		    				}
 		    				else{ %>
@@ -477,7 +477,7 @@ else{ %>
 									<%
 									// mark elements in a locked dataset
 									if (dstPrm && oEntry.topWorkingUser!=null){ %>
-										<font title="<%=Util.replaceTags(oEntry.topWorkingUser)%>" color="red">*</font><%
+										<font title="<%=Util.replaceTags(oEntry.topWorkingUser, true)%>" color="red">*</font><%
 				    				}
 			    				}
 			    				else{ %>

@@ -456,8 +456,8 @@
 				String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
 				String sortedAlt  = getSortedAlt(sortedImg);
 				%>
-					<a title="Dataset" href="<%=Util.replaceTags(sortedLink)%>">
-						Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt)%>"/>
+					<a title="Dataset" href="<%=Util.replaceTags(sortedLink,true)%>">
+						Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
 					</a>
 				</th>
 				<%
@@ -473,8 +473,8 @@
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
 					sortedAlt  = getSortedAlt(sortedImg);
 					%>
-					<a title="Status" href="<%=Util.replaceTags(sortedLink)%>">
-	                      Status&nbsp;<img src="<%=Util.replaceTags(sortedImg)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt)%>"/>
+					<a title="Status" href="<%=Util.replaceTags(sortedLink,true)%>">
+	                      Status&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
 					</a>
 				</th>
 				<th width="40%">
@@ -579,11 +579,11 @@
 							<td width="3%" align="right" class="<%=styleClass%>">
 								<%
 		    					if (topWorkingUser!=null){ // mark checked-out datasets
-			    					%> <font title="<%=Util.replaceTags(topWorkingUser)%>" color="red">*</font> <%
+			    					%> <font title="<%=Util.replaceTags(topWorkingUser,true)%>" color="red">*</font> <%
 		    					}
 		    					else if (canDelete){ %>
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" <%=Util.replaceTags(alertReleased)%>/>
-									<input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=Util.replaceTags(dataset.getIdentifier())%>"/>
+									<input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=dataset.getIdentifier()%>"/>
 									<%
 								}
 								else{ %>
@@ -594,8 +594,8 @@
 						}
 						%>
 						
-						<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(dsFullName)%>">
-							<a <%=linkDisabled%> href="<%=Util.replaceTags(dsLink)%>">
+						<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(dsFullName,true)%>">
+							<a <%=linkDisabled%> href="<%=Util.replaceTags(dsLink,true)%>">
 							<%=Util.replaceTags(dsFullName)%></a>
 						</td>
 						
@@ -652,7 +652,7 @@
 									%>&#160;<font color="red">*</font> <%
 								}
 								else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
-									%> <font title="<%=Util.replaceTags(tblElmWorkingUser)%>" color="red">* </font> <%
+									%> <font title="<%=Util.replaceTags(tblElmWorkingUser,true)%>" color="red">* </font> <%
 								}
 								%>
 								<br/><%
@@ -701,12 +701,12 @@
 								%>
 								<td width="3%" align="right" class="<%=styleClass%>">
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" <%=Util.replaceTags(alertReleased)%>/>
-									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier)%>"/>
+									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier,true)%>"/>
 								</td><%
 							}
 							%>
 							
-							<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(oEntry.oFullName)%>">
+							<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(oEntry.oFullName,true)%>">
 								<a <%=linkDisabled%> href="<%=Util.replaceTags(dsLink)%>">
 								<%=Util.replaceTags(oEntry.oFName)%></a>
 							</td>

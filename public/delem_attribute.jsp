@@ -517,7 +517,7 @@
 				<td>
 					<% if(!mode.equals("add")){ %>
 						<em><%=Util.replaceTags(attr_shortname)%></em>
-						<input type="hidden" name="short_name" value="<%=Util.replaceTags(attr_shortname)%>" />
+						<input type="hidden" name="short_name" value="<%=Util.replaceTags(attr_shortname,true)%>" />
 					<% } else{ %>
 						<input type="text" class="smalltext" size="30" name="short_name" />
 					<% } %>
