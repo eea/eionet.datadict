@@ -1671,7 +1671,7 @@ String attrValue = null;
 																				}
 																				// short name and link
 																				%>
-																				<a href="<%=elemLink%>" title="<%=Util.replaceTags(linkTitle)%>">
+																				<a href="<%=elemLink%>" title="<%=Util.replaceTags(linkTitle, true)%>">
 																					<%=Util.replaceTags(elem.getShortName())%>
 																				</a>
 																				
