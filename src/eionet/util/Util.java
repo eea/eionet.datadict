@@ -393,10 +393,8 @@ public class Util {
 	          ret.append("&#092;");
 	      else if (c == '&'){
 	    	  String s = "amp;";
-	    	  int kk = in.length();
-	    	  int kkk = i+s.length();
-	    	  String sss = in.substring(i+1, i+s.length());
-	    	  if (in.length()>i+s.length() && in.substring(i+1, i+1+s.length()).equals(s))
+	    	  boolean b = in.length() >= i+1+s.length();
+	    	  if (b && in.substring(i+1, i+1+s.length()).equals(s))
 	    		  ret.append(c);
 	    	  else
 	    		  ret.append("&amp;");
@@ -413,7 +411,7 @@ public class Util {
 	    
 	    String retString = ret.toString();
 	    if (inTextarea == false) retString=setAnchors(retString, true, 50);
-	
+	    
 	    return retString;
 	}
 	
