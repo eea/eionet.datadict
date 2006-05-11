@@ -51,9 +51,9 @@
 	
 	<tr><td>&nbsp;</td></tr>
 	<tr><td align="left"><span class="head0">Reportnet</span></td></tr>
-	<tr><td align="right"><a onmouseout="Out('img8')" onmouseover="Over('img8')" href="http://cr.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img8" width="16" height="13" /><img border="0" src="images/dd_but_CR.jpg" width="84" height="13" alt=""/></a></td></tr>
-	<tr><td align="right"><a onmouseout="Out('img9')" onmouseover="Over('img9')" href="http://dd.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img9" width="16" height="13" /><img border="0" src="images/dd_but_DD.jpg" width="84" height="13" alt="DD" /></a></td></tr>
-	<tr><td align="right"><a onmouseout="Out('img10')" onmouseover="Over('img10')" href="http://cdr.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img10" width="16" height="13" /><img border="0" src="images/dd_but_CDR.jpg" width="84" height="13" alt="CDR" /></a></td></tr>
-	<tr><td align="right"><a onmouseout="Out('img11')" onmouseover="Over('img11')" href="http://rod.eionet.eu.int"><img alt="" border="0" src="images/off.gif" name="img11" width="16" height="13" /><img border="0" src="images/dd_but_ROD.jpg" width="84" height="13" alt="ROD" /></a></td></tr>
+	<tr><td align="right"><a onmouseout="Out('img8')" onmouseover="Over('img8')" href="http://cr.eionet.europa.eu"><img alt="" border="0" src="images/off.gif" name="img8" width="16" height="13" /><img border="0" src="images/dd_but_CR.jpg" width="84" height="13" alt=""/></a></td></tr>
+	<tr><td align="right"><a onmouseout="Out('img9')" onmouseover="Over('img9')" href="http://dd.eionet.europa.eu"><img alt="" border="0" src="images/off.gif" name="img9" width="16" height="13" /><img border="0" src="images/dd_but_DD.jpg" width="84" height="13" alt="DD" /></a></td></tr>
+	<tr><td align="right"><a onmouseout="Out('img10')" onmouseover="Over('img10')" href="http://cdr.eionet.europa.eu"><img alt="" border="0" src="images/off.gif" name="img10" width="16" height="13" /><img border="0" src="images/dd_but_CDR.jpg" width="84" height="13" alt="CDR" /></a></td></tr>
+	<tr><td align="right"><a onmouseout="Out('img11')" onmouseover="Over('img11')" href="http://rod.eionet.europa.eu"><img alt="" border="0" src="images/off.gif" name="img11" width="16" height="13" /><img border="0" src="images/dd_but_ROD.jpg" width="84" height="13" alt="ROD" /></a></td></tr>
 
 </table>
