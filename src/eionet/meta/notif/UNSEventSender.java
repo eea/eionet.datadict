@@ -258,7 +258,7 @@ public class UNSEventSender {
 			}
 			
 			// DEBUG
-			//logTriples(rdfTriples);
+			logTriples(rdfTriples);
 			
 			makeCall(rdfTriples);
 		}
@@ -282,7 +282,7 @@ public class UNSEventSender {
         Vector params = new Vector();
         params.add(channelName);
         params.add(rdfTriples);
-
+        
         String result = (String) server.execute("sendNotification", params);
         if (result.length()>0)
         	System.out.println("sendNotification result: " + result);
@@ -295,9 +295,13 @@ public class UNSEventSender {
 		
 		for (int i=0; triples!=null && i<triples.size(); i++){
 			Vector triple = (Vector)triples.get(i);
-			System.out.println("========================= triple " + i);
-			System.out.println(triple);
+			for (int j=0; triple!=null && j<triple.size(); j++){
+				if (j>0)System.out.print(" | ");
+				System.out.print(triple.get(j));				
+			}
+			System.out.println();
 		}
+		System.out.println();
 	}
 	
 	/*
@@ -306,6 +310,7 @@ public class UNSEventSender {
 	public static void main(String[] args){
 		
 		try{
+			String s = System.getProperty("os.name");
 //			DataElement elm = new DataElement();
 //			elm.setIdentifier("Percentile10");
 //			elm.setNamespace(new Namespace("11", null, null, null, null));
@@ -321,8 +326,6 @@ public class UNSEventSender {
 			Dataset dst = new Dataset(null, null, null);
 			dst.setIdentifier("CLC2000");
 			definitionChanged(dst, Subscribe.DATASET_CHANGED_EVENT, "heinlja");
-			
-			//definitionChanged("http://dd.eionet.eu.int/schema.rdf#commonelem", "Percentile10");
 		}
 		catch (Exception e){
 			e.printStackTrace(System.out);
