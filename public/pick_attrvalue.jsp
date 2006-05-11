@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
@@ -45,9 +46,9 @@
 <html>
 	<head>
 		<title>Meta</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 		<link href="eionet.css" rel="stylesheet" type="text/css"/>
-		<script language="javascript">
+		<script language="javascript" type="text/javascript">
 		// <![CDATA[
 
 			function closeme(){
@@ -88,16 +89,16 @@
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
 
 <div>	
-	<form acceptcharset="UTF-8" name="form1">
+	<form name="form1" action="">
 	<table>
-		<tr><td><b>Select attribute (<%=attrName%>) value:</b></td></tr>
+		<tr><td><b>Select attribute (<%=Util.replaceTags(attrName)%>) value:</b></td></tr>
 		<tr><td>&#160;</td></tr>
 		<tr>
 			<%
@@ -107,10 +108,10 @@
 					String name = (String)hash.get("name");
 					String f_id = (String)hash.get("id");
 						%>
-						<th align="left" style="padding-right:10">&#160;<%=name%>
-							<input type="hidden" name="field_ids" value="<%=f_id%>"
+						<th align="left" style="padding-right:10">&#160;<%=Util.replaceTags(name)%>
+							<input type="hidden" name="field_ids" value="<%=f_id%>"/>
+							<input type="hidden" name="field_<%=f_id%>" value=" "/>
 						</th>
-						<input type="hidden" name="field_<%=f_id%>" value=" "></input>
 						<%
 				}
 			}
@@ -176,6 +177,7 @@
 	</table>
 	<!--input type="hidden" name="type" value="<%=type%>"></input-->
 	</form>
+</div>
 </body>
 </html>
 

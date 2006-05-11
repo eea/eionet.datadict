@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
 
@@ -52,10 +53,10 @@ try{
 	<html>
 		<head>
 			<title>Data Dictionary</title>
-			<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+			<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 			<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-			<script language="javascript" src='script.js'></script>
-			<script language="javascript">
+			<script language="javascript" src='script.js' type="text/javascript"></script>
+			<script language="javascript" type="text/javascript">
 			// <![CDATA[
 				function submitAdd(raID, raTitle, liID, liTitle){
 					
@@ -74,9 +75,9 @@ try{
 			<table border="0">
 			    <tr valign="top">
 			        <td nowrap="nowrap" width="125">
-			            <p><center>
+			            <center>
 			                <%@ include file="menu.jsp" %>
-			            </center></p>
+			            </center>
 			        </td>
 			        <td>
 			            <jsp:include page="location.jsp" flush='true'>
@@ -87,18 +88,18 @@ try{
 						<div style="margin-left:30">
 							<br/><br/>
 							<span class="head00">
-								ROD obligations corresponding to <a href="dataset.jsp?mode=edit&ds_id=<%=dstID%>"><%=dstName%><a> dataset
+								ROD obligations corresponding to <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset
 							</span>
 							<p align="right">
-								<a target="_blank" href="help.jsp?screen=dataset_rod&area=pagehelp" onclick="pop(this.href)">
+								<a target="_blank" href="help.jsp?screen=dataset_rod&amp;area=pagehelp" onclick="pop(this.href)">
 									<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 								</a>
 							</p>
-							<form acceptcharset="UTF-8" name="rodlinks" action="dstrod_links.jsp" method="POST">
+							<form name="rodlinks" action="dstrod_links.jsp" method="post">
 								<table width="auto" cellspacing="0" cellpadding="0">
 									<tr>
 										<td colspan="3">
-											<input type="button" class="smallbutton" value="Add new" onclick="pop('InServices?client=webrod&method=get_activities')"/>
+											<input type="button" class="smallbutton" value="Add new" onclick="pop('InServices?client=webrod&amp;method=get_activities')"/>
 											<%
 											if (rodLinks!=null && rodLinks.size()>0){ %>
 												<input type="submit" class="smallbutton" value="Remove selected"/><%
@@ -127,12 +128,12 @@ try{
 												<input type="checkbox" name="del_id" value="<%=raID%>"/>
 											</td>
 											<td style="padding-left:5;padding-right:10" <%=colorAttr%>>
-												<%=raTitle%>
+												<%=Util.replaceTags(raTitle)%>
 											</td>
 											<td style="padding-left:5;padding-right:10" <%=colorAttr%>>
-												<a target="_blank" href="<%=raDetails%>"><%=raDetails%></a>
+												<a target="_blank" href="<%=Util.replaceTags(raDetails, true)%>"><%=Util.replaceTags(raDetails)%></a>
 											</td>
-										<tr>
+										</tr>
 										<%
 										displayed++;
 									}
@@ -141,8 +142,8 @@ try{
 								
 								<input type="hidden" name="mode" value="rmv"/>
 								<input type="hidden" name="dst_id" value="<%=dstID%>"/>
-								<input type="hidden" name="dst_idf" value="<%=dstIdf%>"/>
-								<input type="hidden" name="dst_name" value="<%=dstName%>"/>
+								<input type="hidden" name="dst_idf" value="<%=Util.replaceTags(dstIdf, true)%>"/>
+								<input type="hidden" name="dst_name" value="<%=Util.replaceTags(dstName, true)%>"/>
 								
 								<input type="hidden" name="ra_id" value=""/>
 								<input type="hidden" name="ra_title" value=""/>

@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,java.util.*,com.tee.xmlserver.*,eionet.util.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
@@ -12,10 +13,10 @@
 <html>
 <head>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-	<link type="text/css" rel="stylesheet" href="eionet.css">
-	<script language="javascript" src='script.js'></script>
-	<script language="javascript">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+	<link type="text/css" rel="stylesheet" href="eionet.css"/>
+	<script language="javascript" src='script.js' type="text/javascript"></script>
+	<script language="javascript" type="text/javascript">
 	// <![CDATA[
 
 	function submitForm(mode){
@@ -58,16 +59,16 @@
 		}
 
 		if (ok == true){
-			var trailer = "?fileORurl=" + radio + "&url_input=" + url + "&file_input=" + file;
-			trailer = trailer + "&obj_id=" + document.forms["Upload"].elements["obj_id"].value;
+			var trailer = "?fileORurl=" + radio + "&amp;url_input=" + url + "&amp;file_input=" + file;
+			trailer = trailer + "&amp;obj_id=" + document.forms["Upload"].elements["obj_id"].value;
 			
 			var oType = document.forms["Upload"].elements["obj_type"];
 			if (oType != null)
-				trailer = trailer + "&obj_type=" + oType.value;
+				trailer = trailer + "&amp;obj_type=" + oType.value;
 				
 			var oAttrID = document.forms["Upload"].elements["attr_id"];
 			if (oAttrID != null)
-				trailer = trailer + "&attr_id=" + oAttrID.value;
+				trailer = trailer + "&amp;attr_id=" + oAttrID.value;
 				
 			document.forms["Upload"].action = document.forms["Upload"].action + trailer;
 			document.forms["Upload"].submit();
@@ -123,11 +124,11 @@ String titleType = "";
 // set the title type and link
 if (objType.equals("E")){
 	titleType = " element";
-	titleLink = "data_element.jsp?mode=view&delem_id=" + objID;
+	titleLink = "data_element.jsp?mode=view&amp;delem_id=" + objID;
 }
 else if (objType.equals("T")){
 	titleType = " table";
-	titleLink = "dstable.jsp?mode=view&table_id=" + objID;
+	titleLink = "dstable.jsp?mode=view&amp;table_id=" + objID;
 }
 else if (objType.equals("DS")){%>
 	<b>No images allowed for datasets! Instead use their data model feature.</b> <%
@@ -169,21 +170,20 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 	<h1>Data Dictionary</h1>
 	<hr/>
 	<div align="right">
-		<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+		<form name="close" action="javascript:window.close()">
 			<input type="submit" class="smallbutton" value="Close"/>
 		</form>
 	</div>
 </div>
 
 <div>
-<form acceptcharset="UTF-8" name="Upload" action="ImgUpload" method="POST" enctype="multipart/form-data">
+<form name="Upload" action="ImgUpload" method="post" enctype="multipart/form-data">
 
 	<table width="auto" cellspacing="0">
 	
 		<tr>
 			<td class="head00" colspan="2">
-					<%=attrName%> of <a href="<%=titleLink%>"><font color="#006666"><%=objName%></font></a> <%=titleType%>
-				</font>
+					<%=Util.replaceTags(attrName)%> of <a href="<%=Util.replaceTags(titleLink, true)%>"><font color="#006666"><%=Util.replaceTags(objName)%></font></a> <%=Util.replaceTags(titleType)%>
 			</td>
 		</tr>
 		
@@ -191,7 +191,7 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 		
 		<tr>
 			<td align="left" style="padding-right:5">
-				<input type="radio" name="fileORurl" value="file" checked="true"></input>&#160;File:</td>
+				<input type="radio" name="fileORurl" value="file" checked="checked"></input>&#160;File:</td>
 			<td align="left">
 				<input type="file" class="smalltext" name="file_input" size="40"/>
 			</td>
@@ -232,10 +232,10 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 					%>
 					<tr>
 						<td valign="top">
-							<input type="checkbox" name="file_name" value="<%=value%>"/>
+							<input type="checkbox" name="file_name" value="<%=Util.replaceTags(value, true)%>"/>
 						</td>
 						<td align="left">
-							<img src="visuals/<%=value%>"/>
+							<img src="visuals/<%=Util.replaceTags(value, true)%>"/>
 						</td>
 					</tr>
 					<tr height="10"><td colspan="2">&#160;</td></tr> <%
@@ -267,7 +267,7 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 	
 	<input type="hidden" name="mode" value="add"/>
 	
-	<input type="hidden" name="redir_url" value="imgattr.jsp?<%=request.getQueryString()%>"/>
+	<input type="hidden" name="redir_url" value="imgattr.jsp?<%=Util.replaceTags(request.getQueryString(), true)%>"/>
 	
 </form>
 </div>
