@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private Vector mAttributes=null;%>
@@ -116,7 +116,7 @@ private String getAttributeIdByName(String name){
 				<tr>
 					<td align="left" width="300pts">	
 						<a href='#' onclick='selectAttr(<%=attr_id%>, this)'>
-							<%=attr_name%>
+							<%=Util.replaceTags(attr_name)%>
 						</a>
 					</td>
 				</tr>

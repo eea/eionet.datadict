@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!static int iPageLen=0;%>
@@ -238,9 +238,9 @@
 					%>
 					<td>
 						<a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>&amp;mode=view">
-						<%=attr_name%></a>
+						<%=Util.replaceTags(attr_name)%></a>
 					</td>
-					<td><%=attrTypeDisp%></td>
+					<td><%=Util.replaceTags(attrTypeDisp)%></td>
 					<td>
 						<% if (attribute.displayFor("DST")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
 					</td>

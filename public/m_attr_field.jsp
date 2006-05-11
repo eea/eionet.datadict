@@ -278,13 +278,13 @@ private String legalizeAlert(String in){
 							<option <%=noLinkSelected%> value="null">-- no link --</option>
 							<%
 							if (!Util.voidStr(harvFld)){ %>
-								<option selected value="<%=harvFld%>"><%=harvFld%></option><%
+								<option selected value="<%=Util.replaceTags(harvFld, true)%>"><%=Util.replaceTags(harvFld)%></option><%
 							}
 							
 							for (int i=0; harvFlds!=null && i<harvFlds.size(); i++){
 								String _harvFld = (String)harvFlds.get(i);
 								%>
-								<option value="<%=_harvFld%>"><%=_harvFld%></option> <%
+								<option value="<%=Util.replaceTags(_harvFld, true)%>"><%=Util.replaceTags(_harvFld)%></option> <%
 							}
 							%>
 						</select>
@@ -319,7 +319,7 @@ private String legalizeAlert(String in){
 	<input type="hidden" name="field_id" value="<%=field_id%>"/>
 	<input type="hidden" name="del_field" value="<%=field_id%>"/>
 	<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
-	<input type="hidden" name="attr_name" value="<%=attr_name%>"/>
+	<input type="hidden" name="attr_name" value="<%=Util.replaceTags(attr_name, true)%>"/>
 	
 	</form>
 </div>

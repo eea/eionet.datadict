@@ -298,9 +298,9 @@
 						String fullName = Util.replaceTags(namespace.getFullName());
 						if (fullName==null) fullName = "";
 						if (mode.equals("edit")){ %>
-							<input <%=disabled%> type="text" class="smalltext" size="30" name="fullName" value="<%=fullName%>"></input> <%
+							<input <%=disabled%> type="text" class="smalltext" size="30" name="fullName" value="<%=Util.replaceTags(fullName, true)%>"></input> <%
 						} else { %>
-							<span class="barfont" style="width:400"><%=fullName%></span> <%
+							<span class="barfont" style="width:400"><%=Util.replaceTags(fullName)%></span> <%
 						}
 					} else{ %>
 						<input <%=disabled%> type="text" class="smalltext" size="30" name="fullName"></input> <%
@@ -328,9 +328,9 @@
 						String description = Util.replaceTags(namespace.getDescription());
 						if (description==null) description = "";
 						if (mode.equals("edit")){ %>
-							<textarea <%=disabled%> class="small" rows="3" cols="52" name="description"><%=description%></textarea> <%
+							<textarea <%=disabled%> class="small" rows="3" cols="52" name="description"><%=Util.replaceTags(description)%></textarea> <%
 						} else { %>
-							<span class="barfont" style="width:400"><%=description%></span> <%
+							<span class="barfont" style="width:400"><%=Util.replaceTags(description)%></span> <%
 						}
 					}
 					else{ %>
@@ -349,7 +349,7 @@
 				<tr>
 					<td class="barfont" colspan="2">
 						<b>NB!</b><br/>This namespace was automatically created in the process of creating the
-						<a href="dstable.jsp?table_id=<%=namespace.getTable()%>&amp;ds_id=<%=namespace.getDataset()%>&amp;ds_name=<%=dsName%>&amp;mode=view">corresponding table</a>
+						<a href="dstable.jsp?table_id=<%=namespace.getTable()%>&amp;ds_id=<%=namespace.getDataset()%>&amp;ds_name=<%=Util.replaceTags(dsName)%>&amp;mode=view">corresponding table</a>
 							and will also be automatically deleted when the latter will be deleted.
 					</td>
 				</tr><%

@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,eionet.meta.inservices.*,eionet.util.Props,eionet.util.PropsIF"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,eionet.meta.inservices.*,eionet.util.Props,eionet.util.PropsIF,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
@@ -94,7 +94,7 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 				%>
 				<tr>
 					<td style="padding-left:5;padding-right:10" <%=colorAttr%>>
-						<a href="javascript:select('<%=raID%>', '<%=raTitle%>', '<%=liID%>', '<%=liTitle%>')"><%=raTitle%></a>
+						<a href="javascript:select('<%=raID%>', '<%=raTitle%>', '<%=liID%>', '<%=liTitle%>')"><%=Util.replaceTags(raTitle)%></a>
 					</td>
 					<td style="padding-left:5;padding-right:10" <%=colorAttr%>>
 						<a target="_blank" href="<%=raURL%>"><%=raURL%>

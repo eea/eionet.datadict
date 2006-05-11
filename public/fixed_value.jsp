@@ -289,7 +289,7 @@ try { // start the whole page try block
 
 		</ul>
 		</div>
-    <h1><%=initCaseTitle%> value of <a href="<%=parentUrl%>"><%=Util.replaceTags(delem_name)%></a> <%=dispParentType%></h1>
+    <h1><%=Util.replaceTags(initCaseTitle)%> value of <a href="<%=Util.replaceTags(parentUrl, true)%>"><%=Util.replaceTags(delem_name)%></a> <%=dispParentType%></h1>
 			
 		<form name="form1" method="post" action="fixed_value.jsp">
 		<table width="auto" cellspacing="0" cellpadding="0">
@@ -302,7 +302,7 @@ try { // start the whole page try block
 				<td colspan="1" valign="top">
 					<% if(!mode.equals("add")){ %>
 						<font class="title2" color="#006666"><%=Util.replaceTags(value)%></font>
-						<input type="hidden" name="fxv_value" value="<%=value%>"/>
+						<input type="hidden" name="fxv_value" value="<%=Util.replaceTags(value, true)%>"/>
 					<% } else{ %>
 						<input class="smalltext" type="text" size="30" name="fxv_value"></input>
 					<% } %>
@@ -330,7 +330,7 @@ try { // start the whole page try block
 					<b><font color="black">Definition</font></b>(O)
 				</td>
 				<td valign="top">
-					<textarea class="small" rows="3" cols="60" name="definition"><%=fxv.getDefinition()%></textarea>
+					<textarea class="small" rows="3" cols="60" name="definition"><%=Util.replaceTags(fxv.getDefinition(), true)%></textarea>
 				</td>
 			</tr>
 			
@@ -339,7 +339,7 @@ try { // start the whole page try block
 					<b><font color="black">Short description</font></b>(O)
 				</td>
 				<td valign="top">
-					<textarea class="small" rows="3" cols="60" name="short_desc"><%=fxv.getShortDesc()%></textarea>
+					<textarea class="small" rows="3" cols="60" name="short_desc"><%=Util.replaceTags(fxv.getShortDesc(), true)%></textarea>
 				</td>
 			</tr>
 		
@@ -378,9 +378,9 @@ try { // start the whole page try block
 	<input type="hidden" name="fxv_id" value="<%=fxv_id%>"/>
 	<input type="hidden" name="del_id" value="<%=fxv_id%>"/>
 	<input type="hidden" name="delem_id" value="<%=delem_id%>"/>
-	<input type="hidden" name="delem_name" value="<%=delem_name%>"/>
+	<input type="hidden" name="delem_name" value="<%=Util.replaceTags(delem_name, true)%>"/>
 	
-	<input type="hidden" name="parent_type" value="<%=valsType%>"/>
+	<input type="hidden" name="parent_type" value="<%=Util.replaceTags(valsType, true)%>"/>
 	
 	</form>
 </div>

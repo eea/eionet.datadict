@@ -205,7 +205,7 @@ private String legalizeAlert(String in){
 <table width="500">
 	<tr>
 		<td>
-			<span class="head00">Fields of <span class="title2" style="color:#006666;"><%=attr_name%></span></span>
+			<span class="head00">Fields of <span class="title2" style="color:#006666;"><%=Util.replaceTags(attr_name)%></span></span>
 		</td>		
 		<td align="right">
 			<a target="_blank" href="help.jsp?screen=complex_attr_fields&amp;area=pagehelp" onclick="pop(this.href)">
@@ -364,7 +364,7 @@ private String legalizeAlert(String in){
 <input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
 
 <input type="hidden" name="attr_id" value="<%=attr_id%>"/>
-<input type="hidden" name="attr_name" value="<%=attr_name%>"/>
+<input type="hidden" name="attr_name" value="<%=Util.replaceTags(attr_name, true)%>"/>
 <input type="hidden" name="changed" value="0"/>
 </form>
 </div>

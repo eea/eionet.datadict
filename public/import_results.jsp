@@ -41,7 +41,7 @@
 						<tr style="height:10px;"><td colspan="3"><a href="javascript:openPDF()">Save import results into PDF file</a></td></tr>
 						<tr style="height:10px;"><td colspan="3"></td></tr>
 						<tr>
-							<td colspan="3"><b><%=resptext%></b></td>
+							<td colspan="3"><b><%=Util.replaceTags(resptext)%></b></td>
 						</tr>
 					</table>
 				</div>
@@ -53,7 +53,7 @@
 	String text=Util.Replace(resptext, "<br/>", "\n");
 
 %>
-<input type="hidden" name="text" value="<%=text%>"></input>
+<input type="hidden" name="text" value="<%=Util.replaceTags(text, true)%>"></input>
 </form>
 </body>
 </html>

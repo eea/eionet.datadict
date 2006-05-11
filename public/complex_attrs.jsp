@@ -278,7 +278,7 @@ private String legalizeAlert(String in){
 			if (user!=null){ %>
 				<select class="small" name="new_attr_id"> <%
 			} else{ %>
-				<select class="small" name="new_attr_id" disabled> <%
+				<select class="small" name="new_attr_id" disabled="disabled"> <%
 			}
 					for (int i=0; i<mComplexAttrs.size(); i++){
 						DElemAttribute attr = (DElemAttribute)mComplexAttrs.get(i);
@@ -292,7 +292,7 @@ private String legalizeAlert(String in){
 						else if (attrOblig.equalsIgnoreCase("C"))
 							obligStr = "(C)";
 						%>
-						<option value="<%=attrID%>"><%=attrName%>&nbsp;&nbsp;&nbsp;<%=obligStr%></option>
+						<option value="<%=attrID%>"><%=Util.replaceTags(attrName)%>&nbsp;&nbsp;&nbsp;<%=Util.replaceTags(obligStr)%></option>
 						<%
 					}
 					%>
@@ -304,8 +304,8 @@ private String legalizeAlert(String in){
 					<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')"/><%
 				}
 				else{ %>
-					<input class="smallbutton" type="button" value="Add new" disabled />&nbsp;
-					<input class="smallbutton" type="button" value="Remove selected" disabled/><%
+					<input class="smallbutton" type="button" value="Add new" disabled="disabled" />&nbsp;
+					<input class="smallbutton" type="button" value="Remove selected" disabled="disabled"/><%
 				}
 				%>
 				
@@ -346,7 +346,7 @@ private String legalizeAlert(String in){
 					<input type="checkbox" style="height:13;width:13" name="del_attr" value="<%=attrID%>"/>
 				</td>
 				<td style="border-bottom-width:1;border-bottom-style:groove;border-bottom-color:#808080;" valign="middle">
-					<b>&#160;<%=attrName%></b>&nbsp;&nbsp;&nbsp;<img border="0" src="images/<%=obligImg%>" width="16" height="16" alt="<%=obligStr%>"/>
+					<b>&#160;<%=Util.replaceTags(attrName)%></b>&nbsp;&nbsp;&nbsp;<img border="0" src="images/<%=Util.replaceTags(obligImg, true)%>" width="16" height="16" alt="<%=Util.replaceTags(obligStr, true)%>"/>
 				</td>
 			</tr>
 			<tr>
@@ -377,7 +377,7 @@ private String legalizeAlert(String in){
 							if (t == attrFields.size()-1)
 								style = style + ";border-right:1px solid #FF9900";
 							%>
-							<th align="left" class="small" style="<%=style%>"><%=name%></th>
+							<th align="left" class="small" style="<%=style%>"><%=Util.replaceTags(name)%></th>
 							<%
 						}
 						
@@ -402,7 +402,7 @@ private String legalizeAlert(String in){
 								fieldValue = Util.replaceTags(fieldValue);
 								System.out.println("pärast: " + fieldValue);
 								%>
-								<td class="small" style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=fieldValue%></td>
+								<td class="small" style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=Util.replaceTags(fieldValue)%></td>
 								<%
 							}
 							%>
@@ -424,7 +424,7 @@ private String legalizeAlert(String in){
 <input type="hidden" name="mode" value="delete"/>
 
 <input type="hidden" name="parent_id" value="<%=parent_id%>"/>
-<input type="hidden" name="parent_name" value="<%=parent_name%>"/>
+<input type="hidden" name="parent_name" value="<%=Util.replaceTags(parent_name, true)%>"/>
 <input type="hidden" name="parent_type" value="<%=parent_type%>"/>
 <input type="hidden" name="parent_ns" value="<%=parent_ns%>"/>
 <input type="hidden" name="table_id" value="<%=table_id%>"/>

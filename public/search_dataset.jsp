@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,com.tee.xmlserver.*,eionet.util.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%@ include file="history.jsp" %>
@@ -208,7 +208,7 @@ private String setDefaultAttrs(String name){
 							</a>
 						</td>
 						<td colspan="2">
-							<input type="text" class="smalltext" size="59" name="short_name" value="<%=short_name%>"/>
+							<input type="text" class="smalltext" size="59" name="short_name" value="<%=Util.replaceTags(short_name, true)%>"/>
 						</td>
 					</tr>
 					
@@ -242,7 +242,7 @@ private String setDefaultAttrs(String name){
 								%>
 								<tr valign="top">
 									<td align="right" style="padding-right:10">
-										<b><%=attrName%></b>
+										<b><%=Util.replaceTags(attrName)%></b>
 									</td>
 									<td>
 										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
@@ -250,7 +250,7 @@ private String setDefaultAttrs(String name){
 										</a>
 									</td>
 									<td colspan="2">
-										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=attrValue%>"/>
+										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.replaceTags(attrValue, true)%>"/>
 									</td>
 								</tr>
 								<%
@@ -273,7 +273,7 @@ private String setDefaultAttrs(String name){
 							%>
 							<tr valign="top">
 								<td align="right" style="padding-right:10">
-									<b><%=attrName%></b>
+									<b><%=Util.replaceTags(attrName)%></b>
 								</td>
 								<td>
 									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
@@ -281,7 +281,7 @@ private String setDefaultAttrs(String name){
 									</a>
 								</td>
 								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value="<%=attrValue%>"/>
+									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value="<%=Util.replaceTags(attrValue, true)%>"/>
 								</td>
 								<td>
 									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
@@ -299,7 +299,7 @@ private String setDefaultAttrs(String name){
 							%>
 							<tr valign="top">
 								<td align="right" style="padding-right:10">
-									<b><%=attrName%></b>
+									<b><%=Util.replaceTags(attrName)%></b>
 								</td>
 								<td>
 									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
@@ -370,7 +370,7 @@ private String setDefaultAttrs(String name){
 				<input type="hidden" name="sel_type" value=""></input>
 				<input type="hidden" name="type" value="DST"></input>
 				<!-- collect all the attributes already used in criterias -->
-				<input type="hidden" name="collect_attrs" value="<%=collect_attrs.toString()%>"></input>
+				<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"></input>
                 <input name='SearchType' type='hidden' value='SEARCH'/>
 				</form>
 			</div>

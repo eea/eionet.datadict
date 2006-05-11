@@ -191,7 +191,7 @@ finally {
 									for (int i=0; i<datasets.size(); i++){
 										Dataset dst = (Dataset)datasets.get(i);
 										%>
-										<option value="<%=dst.getIdentifier()%>"><%=dst.getShortName()%></option>
+										<option value="<%=dst.getIdentifier()%>"><%=Util.replaceTags(dst.getShortName())%></option>
 										<%
 									}
 									%>
@@ -228,7 +228,7 @@ finally {
 										if (dstIdf!=null && dstIdf.length()>0)
 											value = dstIdf + "/" + value;
 										%>
-										<option value="<%=value%>"><%=text%></option>
+										<option value="<%=value%>"><%=Util.replaceTags(text)%></option>
 										<%
 									}
 									%>
@@ -258,7 +258,7 @@ finally {
 									for (int i=0; i<commonElms.size(); i++){
 										DataElement elm = (DataElement)commonElms.get(i);
 										%>
-										<option value="<%=elm.getIdentifier()%>"><%=elm.getShortName()%></option>
+										<option value="<%=elm.getIdentifier()%>"><%=Util.replaceTags(elm.getShortName())%></option>
 										<%
 									}
 									%>

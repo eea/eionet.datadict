@@ -256,7 +256,7 @@ private String legalizeAlert(String in){
 					<li><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
 				</ul>
 				</div>
-		<h1><%=initCaseTitle%> values of <a href="<%=parentUrl%>"><%=Util.replaceTags(delem_name)%></a> <%=dispParentType%></h1>
+		<h1><%=Util.replaceTags(initCaseTitle)%> values of <a href="<%=Util.replaceTags(parentUrl, true)%>"><%=Util.replaceTags(delem_name)%></a> <%=dispParentType%></h1>
 			
 <form name="form1" method="post" action="fixed_values.jsp">
 	<% if (mode.equals("view")){
@@ -324,15 +324,15 @@ private String legalizeAlert(String in){
 			<tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
 				<td>
 					<%=spaces%>
-					<a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>">
+					<a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;parent_type=<%=typeParam%>">
 						<%=Util.replaceTags(value)%>
 					</a>
 				</td>
 				<td>
-					<%=definition%>
+					<%=Util.replaceTags(definition)%>
 				</td>
 				<td>
-					<%=shortDesc%>
+					<%=Util.replaceTags(shortDesc)%>
 				</td>				
 			</tr>
 		<%
@@ -379,7 +379,7 @@ private String legalizeAlert(String in){
 				</td>
 			<% } %>
 			<td valign="bottom" align="left" style="padding-left:5;padding-right:10">
-				<b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=edit&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=delem_name%>&amp;parent_type=<%=typeParam%>">
+				<b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=edit&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;parent_type=<%=typeParam%>">
 					<%=Util.replaceTags(value)%>
 				</a></b>&#160;
 			</td>
@@ -434,7 +434,7 @@ private String legalizeAlert(String in){
 
 
 <input type="hidden" name="delem_id" value="<%=delem_id%>"/>
-<input type="hidden" name="delem_name" value="<%=delem_name%>"/>
+<input type="hidden" name="delem_name" value="<%=Util.replaceTags(delem_name)%>"/>
 <input type="hidden" name="parent_type" value="<%=typeParam%>"/>
 <input type="hidden" name="mode" value="<%=mode%>"/>
 <input type="hidden" name="changed" value="0"/>

@@ -133,8 +133,8 @@ String disabled = user == null ? "disabled" : "";
 				<tr>
 					<td>
 						This is the foreign key relation between elements
-						<font color="#006666"><%=(String)fkRel.get("a_name")%></font> and
-						<font color="#006666"><%=(String)fkRel.get("b_name")%></font>.<br/>
+						<font color="#006666"><%=Util.replaceTags((String)fkRel.get("a_name"))%></font> and
+						<font color="#006666"><%=Util.replaceTags((String)fkRel.get("b_name"))%></font>.<br/>
 						The relation is direction-less, so it doesn't matter which
 						exactly is A or B.
 					</td>
@@ -158,12 +158,12 @@ String disabled = user == null ? "disabled" : "";
 			
 			<tr>
 				<td align="right" style="padding-right:10"><span class="mainfont"><b>Element A</b></span></td>
-				<td><font class="title2" color="#006666"><%=(String)fkRel.get("a_name")%></font></td>
+				<td><font class="title2" color="#006666"><%=Util.replaceTags((String)fkRel.get("a_name"))%></font></td>
 			</tr>
 			
 			<tr>
 				<td align="right" style="padding-right:10"><span class="mainfont"><b>Element B</b></span></td>
-				<td> <font class="title2" color="#006666"><%=(String)fkRel.get("b_name")%></font></td>
+				<td> <font class="title2" color="#006666"><%=Util.replaceTags((String)fkRel.get("b_name"))%></font></td>
 			</tr>
 			
 			<tr>
@@ -184,7 +184,7 @@ String disabled = user == null ? "disabled" : "";
 						for (int i=0; i<cardins.size(); i++){
 							String cardin = (String)cardins.get(i);
 							String selected = aCardin.equals(cardin) ? "selected" : ""; %>
-							<option <%=selected%> value="<%=cardin%>"><%=cardin%></option><%
+							<option <%=selected%> value="<%=Util.replaceTags(cardin, true)%>"><%=Util.replaceTags(cardin)%></option><%
 						}
 						%>
 					</select>&#160;to&#160;
@@ -194,7 +194,7 @@ String disabled = user == null ? "disabled" : "";
 						for (int i=0; i<cardins.size(); i++){
 							String cardin = (String)cardins.get(i);
 							String selected = bCardin.equals(cardin) ? "selected" : ""; %>
-							<option <%=selected%> value="<%=cardin%>"><%=cardin%></option><%
+							<option <%=selected%> value="<%=Util.replaceTags(cardin, true)%>"><%=Util.replaceTags(cardin)%></option><%
 						}
 						%>
 					</select>&nbsp;
@@ -213,7 +213,7 @@ String disabled = user == null ? "disabled" : "";
 					<textarea <%=disabled%>
 							  class="small"
 							  rows="3" cols="52"
-							  name="definition"><%=(String)fkRel.get("definition")%></textarea>
+							  name="definition"><%=Util.replaceTags((String)fkRel.get("definition"), true)%></textarea>
 				</td>
 			</tr>
 			

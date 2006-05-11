@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.Vector,com.tee.xmlserver.*,eionet.meta.MrProper,java.sql.Connection,java.sql.SQLException"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.Vector,com.tee.xmlserver.*,eionet.meta.MrProper,eionet.util.Util,java.sql.Connection,java.sql.SQLException"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
@@ -116,7 +116,7 @@
 		            	for (int i=0; i<results.size(); i++){
 			            	String sss = (String)results.get(i);
 			            	%>
-			            	<tr><td>&gt; <%=sss%></td></tr><%
+			            	<tr><td>&gt; <%=Util.replaceTags(sss)%></td></tr><%
 		            	}
 		            	%>
 		            	

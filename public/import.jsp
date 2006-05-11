@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,eionet.util.Util,com.tee.xmlserver.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
@@ -139,7 +139,7 @@
 							<td colspan="2">
 								<font color="red">
 									You have chosen to import fixed values (i.e. codes)<br/> for the
-									<a href="data_element.jsp?mode=view&amp;delem_id=<%=delem_id%>"><%=elmName%></a> element!
+									<a href="data_element.jsp?mode=view&amp;delem_id=<%=delem_id%>"><%=Util.replaceTags(elmName)%></a> element!
 								</font>
 							</td>
 						</tr><%

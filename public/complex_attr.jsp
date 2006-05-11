@@ -380,7 +380,7 @@ if (!mode.equals("view")){
 	
 	<tr valign="bottom">
 		<td>
-			<span class="head00">Attribute: </span><span class="title2"><%=attrName%></span>
+			<span class="head00">Attribute: </span><span class="title2"><%=Util.replaceTags(attrName)%></span>
 		</td>
 		<td align="right">
 			<%
@@ -424,7 +424,7 @@ if (!mode.equals("view")){
 			String name = (String)hash.get("name");
 			%>
 			<tr>
-				<td class="small" width="100" align="right"><b><%=name%></b>:</td>
+				<td class="small" width="100" align="right"><b><%=Util.replaceTags(name)%></b>:</td>
 				<td>
 					<input class="smalltext" type="text" name="<%=AttrFieldsHandler.FLD_PREFIX%><%=id%>"/>
 				</td>
@@ -474,7 +474,7 @@ if (!mode.equals("view")){
 					if (t == attrFields.size()-1)
 						style = style + ";border-right:1px solid #FF9900";
 					%>
-					<th class="small" align="left" style="<%=style%>"><%=name%></th>
+					<th class="small" align="left" style="<%=style%>"><%=Util.replaceTags(name)%></th>
 					<%
 			}
 			%>
@@ -554,13 +554,13 @@ if (!mode.equals("view")){
 </div>
 
 <input type="hidden" name="allowToAdd" value="<%=nonInheritedCount==0%>"/>
-<input type="hidden" name="attrName" value="<%=attrName%>"/>
+<input type="hidden" name="attrName" value="<%=Util.replaceTags(attrName, true)%>"/>
 
 <input type="hidden" name="mode" value="<%=mode%>"/>
 
 <input type="hidden" name="attr_id" value="<%=attr_id%>"/>
 <input type="hidden" name="parent_id" value="<%=parent_id%>"/>
-<input type="hidden" name="parent_name" value="<%=parent_name%>"/>
+<input type="hidden" name="parent_name" value="<%=Util.replaceTags(parent_name, true)%>"/>
 <input type="hidden" name="parent_type" value="<%=parent_type%>"/>
 <input type="hidden" name="parent_ns" value="<%=parent_ns%>"/>
 <input type="hidden" name="table_id" value="<%=table_id%>"/>

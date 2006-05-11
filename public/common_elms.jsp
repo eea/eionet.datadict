@@ -292,8 +292,8 @@ else{ %>
 					String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 					String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
 					%>
-					<a title="Element" href="<%=sortedLink%>">
-	                      Element&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					<a title="Element" href="<%=Util.replaceTags(sortedLink, true)%>">
+	                      Element&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 				<th width="20%">
@@ -301,8 +301,8 @@ else{ %>
 					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
 					%>
-					<a title="Type" href="<%=sortedLink%>">
-	                      Type&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					<a title="Type" href="<%=Util.replaceTags(sortedLink, true)%>">
+	                      Type&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 				<%
@@ -317,8 +317,8 @@ else{ %>
 					sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(3, oSortCol, oSortOrder);
 					%>
-					<a title="Status" href="<%=sortedLink%>">
-	                      Status&nbsp;<img src="<%=sortedImg%>" width="12" height="12" alt=""/>
+					<a title="Status" href="<%=Util.replaceTags(sortedLink, true)%>">
+	                      Status&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 
 				</th>
@@ -388,7 +388,7 @@ else{ %>
 									<%=Util.replaceTags(delem_name)%>
 								</a><%
 								if (userHasEditRights && workingUser!=null){ %>
-		    						<font title="<%=workingUser%>" color="red">*</font><%
+		    						<font title="<%=Util.replaceTags(workingUser, true)%>" color="red">*</font><%
 		    					}
 							}
 							else{ %>
@@ -399,7 +399,7 @@ else{ %>
 					    						<%=Util.replaceTags(delem_name)%>
 					    					</a><%
 					    					if (userHasEditRights && workingUser!=null){ %>
-					    						<font title="<%=workingUser%>" color="red">*</font><%
+					    						<font title="<%=Util.replaceTags(workingUser, true)%>" color="red">*</font><%
 					    					}
 					    					%>
 					    				</td>
@@ -412,7 +412,7 @@ else{ %>
 							%>
 						</td>
 						<td width="20%" class="<%=styleClass%>">
-							<%=displayType%>
+							<%=Util.replaceTags(displayType)%>
 						</td>
 						<%
 						if (userHasEditRights){ %>
@@ -422,7 +422,7 @@ else{ %>
 						}
 						%>
 						<td width="25%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
-							<%=status%>
+							<%=Util.replaceTags(status)%>
 						</td>
 					</tr><%
 					displayed++;
@@ -457,7 +457,7 @@ else{ %>
 									</a>
 									<%
 									if (userHasEditRights && oEntry.topWorkingUser!=null){ %>
-										<font title="<%=oEntry.topWorkingUser%>" color="red">*</font><%
+										<font title="<%=Util.replaceTags(oEntry.topWorkingUser, true)%>" color="red">*</font><%
 									}
 								}
 								else{ %>
@@ -469,7 +469,7 @@ else{ %>
 						    					</a>
 						    					<%
 												if (userHasEditRights && oEntry.topWorkingUser!=null){ %>
-													<font title="<%=oEntry.topWorkingUser%>" color="red">*</font><%
+													<font title="<%=Util.replaceTags(oEntry.topWorkingUser, true)%>" color="red">*</font><%
 												}
 												%>
 						    				</td>
@@ -492,7 +492,7 @@ else{ %>
 							}
 							%>
 							<td width="25%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
-								<%=oEntry.status%>
+								<%=Util.replaceTags(oEntry.status)%>
 							</td>
 						</tr>
 						<%

@@ -76,7 +76,7 @@
 </div>
 
     <span class="head00">
-        History of <em><%=dataset.getShortName()%></em>
+        History of <em><%=Util.replaceTags(dataset.getShortName())%></em>
         below CheckInNo <em><%=dataset.getVersion()%></em>
     </span>
     <table width="auto" cellspacing="0" id="tbl">

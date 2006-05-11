@@ -163,7 +163,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 						<td>
 							<font class="head00">
 								Data model of
-								<font class="title2" color="#006666"><%=dataset.getShortName()%></font>
+								<font class="title2" color="#006666"><%=Util.replaceTags(dataset.getShortName())%></font>
 								Dataset
 							</font>
 						</td>
@@ -235,12 +235,12 @@ if (dsVisual!=null && dsVisual.length()!=0){
 						<tr>
 							<td colspan="2">
 							<% if (imgVisual){ %>
-								<img src="visuals/<%=dsVisual%>" alt=""/> <%
+								<img src="visuals/<%=Util.replaceTags(dsVisual, true)%>" alt=""/> <%
 							}
 							else{ %>
 								The file representing the dataset <%=type%> structure cannot be displayed on this web-page.
 								But you can see it by pressing the following link:<br/>
-								<a href="javascript:openStructure('visuals/<%=dsVisual%>')"><%=dsVisual%></a> <%
+								<a href="javascript:openStructure('visuals/<%=Util.replaceTags(dsVisual, true)%>')"><%=Util.replaceTags(dsVisual)%></a> <%
 							} %>
 							</td>
 						</tr>
@@ -302,7 +302,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 						<%
 						if (dsVisual != null && dsVisual.length()!=0){
 							%>
-							<input type="hidden" name="visual" value="<%=dsVisual%>"/>
+							<input type="hidden" name="visual" value="<%=Util.replaceTags(dsVisual, true)%>"/>
 							<%
 						}
 						%>

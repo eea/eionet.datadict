@@ -62,7 +62,7 @@
 </div>
 
     <span class="head00">
-        History of <em><%=elm.getShortName()%></em>
+        History of <em><%=Util.replaceTags(elm.getShortName())%></em>
         below CheckInNo <em><%=elm.getVersion()%></em>
     </span>
 

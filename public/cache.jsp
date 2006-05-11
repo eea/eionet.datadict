@@ -77,10 +77,10 @@ Vector entries = (Vector)request.getAttribute("entries");
 			%>
 			<tr>
 				<td width="3%">
-					<input type="checkbox" name="article" value="<%=article%>"/>
+					<input type="checkbox" name="article" value="<%=Util.replaceTags(article, true)%>"/>
 				</td>
 				<td width="67%" style="padding-left:10">
-					<%=text%>
+					<%=Util.replaceTags(text)%>
 				</td>
 				<td width="30%" style="padding-left:10">
 					<%=date%>
