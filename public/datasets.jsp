@@ -619,7 +619,7 @@
 								<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" alt="<%=Util.replaceTags(regStatus)%>"/><%
 							}
 							else{ %>
-								<span style="color:gray;text-decoration:none;font-size:8pt"><b><%=Util.replaceTags(statusTxt)%></b></span><%
+								<span style="color:gray;text-decoration:none;font-size:8pt"><b><%=statusTxt%></b></span><%
 							}
 							%>
 						</td>
@@ -725,7 +725,7 @@
 									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" alt="<%=Util.replaceTags(oEntry.getRegStatus())%>"/><%
 								}
 								else{ %>
-									<span style="color:gray;text-decoration:none;font-size:8pt"><b><%=Util.replaceTags(statusTxt)%></b></span><%
+									<span style="color:gray;text-decoration:none;font-size:8pt"><b><%=statusTxt%></b></span><%
 								}
 								%>
 							</td>
