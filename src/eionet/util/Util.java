@@ -392,9 +392,16 @@ public class Util {
 	      else if (c == '\\')
 	          ret.append("&#092;");
 	      else if (c == '&'){
-	    	  String s = "amp;";
-	    	  boolean b = in.length() >= i+1+s.length();
-	    	  if (b && in.substring(i+1, i+1+s.length()).equals(s))
+	    	  boolean startsEscapeSequence = false;
+	    	  int j = in.indexOf(';', i);
+	    	  if (j>0){
+	    		  String s = in.substring(i,j+1);
+	    		  UnicodeEscapes unicodeEscapes = new UnicodeEscapes();
+	    		  if (unicodeEscapes.isXHTMLEntity(s) || unicodeEscapes.isNumericHTMLEscapeCode(s))
+	    			  startsEscapeSequence = true;
+	    	  }
+	    	  
+	    	  if (startsEscapeSequence)
 	    		  ret.append(c);
 	    	  else
 	    		  ret.append("&amp;");
@@ -411,7 +418,7 @@ public class Util {
 	    
 	    String retString = ret.toString();
 	    if (inTextarea == false) retString=setAnchors(retString, true, 50);
-	    
+
 	    return retString;
 	}
 	
