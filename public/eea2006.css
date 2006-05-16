@@ -37,7 +37,7 @@
 }
 
 .TeaserBox h2 {
-  background-color: #91aa73 ;
+  background-color: #91aa73;
   font-family: Verdana, Tahoma, Geneva, Arial, Helvetica, sans-serif;
   border:none;
   text-align: center;
@@ -52,4 +52,19 @@
   text-decoration: none;
 }
 /* Boxes on index.jsp end */
+
+#quickbar {
+  border: 1px solid #91aa73;
+  background-color:#FFFFFF;
+  padding: 3px;
+  font-family: Verdana, Arial, "MS Sans Serif", sans-serif;
+  font-size: 7pt;
+  font-style: normal;
+  line-height: normal;
+  text-decoration: none
+}
+#createbox {
+  border: 1px solid #91aa73;
+  margin-top: 10px;
+}
 

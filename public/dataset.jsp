@@ -892,7 +892,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 									
 									if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispUploadAndCache || dispDocs || dispMDB || dispODS){
 				                    	%>
-											<div style="border: 1px solid #FF9900; margin-top: 10px;">
+											<div id="createbox">
 												<table border="0" width="100%" cellspacing="0">
 													
 													<%

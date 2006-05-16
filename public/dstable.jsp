@@ -993,7 +993,6 @@ String attrValue = null;
 								}
 								%>
 								
-							<table border="0" width="100%" cellspacing="0" cellpadding="3">
 								<!-- schema, MS Excel template, XForm, XmlInst, etc -->
 								
 								<%
@@ -1009,9 +1008,7 @@ String attrValue = null;
 									
 									if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispXForm || dispCache || dispODS){
 										%>
-										<tr><td width="100%" height="10"></td></tr>
-										<tr>
-											<td width="100%" style="border: 1px solid #FF9900">
+										<div id="createbox">
 												<table border="0" width="100%" cellspacing="0">
 													<%
 													// XML Schema link
@@ -1109,17 +1106,15 @@ String attrValue = null;
 													%>
 													
 												</table>
-											</td>
-										</tr><%
+										</div>
+										<%
 									}
 								}
 								%>
 														
 								<!-- start dotted -->
-								<tr><td width="100%" height="10"></td></tr>
-								<tr>
-									<td width="100%" style="border: 1px dotted #C0C0C0">
-									
+								<div id="outerframe">
+
 										<!-- attributes -->
 									
 										<%
@@ -1882,15 +1877,13 @@ String attrValue = null;
 									</td>
 								</tr>
 								
-								<!-- end dotted -->
 								
 							</table>
-						</td>
-					</tr>
 					
 					<!-- end main table body -->
 					
-				</table>
+								<!-- end dotted -->
+				</div>
 				
 				<!-- end main table -->
 				

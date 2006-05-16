@@ -926,4 +926,18 @@ a.disabled {
 	color:gray;
 }
 
+#quickbar {
+  border: 1px solid #FF9900;
+  background-color:#FFFFFF;
+  padding: 3px;
+  font-family: Verdana, Arial, "MS Sans Serif", sans-serif;
+  font-size: 7pt;
+  font-style: normal;
+  line-height: normal;
+  text-decoration: none
+}
+#createbox {
+  border: 1px solid #FF9900;
+  margin-top: 10px;
+}
 } /* screen media */
