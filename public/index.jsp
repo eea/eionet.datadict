@@ -66,7 +66,6 @@ finally{
 <head>
 	<%@ include file="headerinfo.txt" %>
 	<title>Data Dictionary</title>
-	<link type="text/css" rel="stylesheet" href="boxes.css" title="Default"/>
 </head>
 <body>
                	<% if (page_name == null){%>
@@ -112,17 +111,17 @@ finally{
 				                    			</jsp:include>
 									</div>
 					                	
-									<table cellpadding="0" cellspacing="4">
+									<table id="boxes">
 										<tr>
 					                	
 					                		<!-- the login part -->
-																<td width="50%" style="border: 1px solid #FF9900" valign="top">
+																<td class="box">
 																	<jsp:include page="protarea.jsp" flush="true"></jsp:include>
 					                  		</td>
 					                  		
 					                  		<!-- the support part -->
 					                  		
-					                  		<td width="50%" style="border: 1px solid #FF9900" valign="top">
+					                  		<td class="box">
 					                  			<%=Helps.get("front_page", "support")%>
 					                  		</td>
 					                	</tr>
@@ -130,13 +129,13 @@ finally{
 					                	
 					                		<!-- the documentation part -->
 					                		
-					                  		<td width="50%" style="border: 1px solid #FF9900" valign="top">
+					                  		<td class="box">
 												<%=Helps.get("front_page", "documentation")%>
 					                  		</td>
 					                  		
 					                  		<!-- the news part -->
 					                  		
-					                  		<td width="50%" style="border: 1px solid #FF9900" valign="top">
+					                  		<td class="box">
 												<%=Helps.get("front_page", "news")%>
 		                  					</td>
 										</tr>

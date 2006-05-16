@@ -409,35 +409,6 @@ td.mnd_opt_cnd {
   border: 1px solid #FF9900;
 }
 
-td.front_page {
-	font-family: Verdana, Arial, Helvetica, sans-serif; 
-	font-size: 10pt;
-	font-style: normal; 
-	line-height: normal; 
-	font-weight: bold; 
-	color: #FFFFFF;
-	background-image: url("images/dd_bgr_cell_head.jpg");
-}
-
-td.front_page_prot_area {
-	font-family: Verdana, Arial, Helvetica, sans-serif; 
-	font-size: 10pt;
-	font-style: normal; 
-	line-height: normal; 
-	font-weight: bold; 
-	background-image: url("images/dd_bgr_cell_head.jpg");
-}
-
-td.login {
-	font-family: Verdana, Arial, Helvetica, sans-serif; 
-	font-size: 10pt;
-	font-style: normal; 
-	line-height: normal; 
-	font-weight: bold; 
-	color: #FFFFFF;
-	background: #993300;
-}
-
 /*
  * <th> styles
  */
