@@ -876,7 +876,7 @@ String attrValue = null;
 				<!-- main table inside div -->
 				<!--=======================-->
 				
-				<table border="0" width="620" cellspacing="0" cellpadding="0">
+				<table border="0" cellspacing="0" cellpadding="0">
 					
 					
 					<!-- mandatory/optional/conditional bar -->
@@ -1874,6 +1874,8 @@ String attrValue = null;
 										%>
 										<!-- end complex attributes -->
 								        
+								<!-- end dotted -->
+				</div>
 									</td>
 								</tr>
 								
@@ -1882,8 +1884,6 @@ String attrValue = null;
 					
 					<!-- end main table body -->
 					
-								<!-- end dotted -->
-				</div>
 				
 				<!-- end main table -->
 				

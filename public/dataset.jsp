@@ -1528,7 +1528,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 															
 															if (imgVisual){ %>
 																<a target="_blank" href="visuals/<%=Util.replaceTags(dsVisual)%>" onfocus="blur()" onclick="pop(this.href)">
-																	<img src="visuals/<%=Util.replaceTags(dsVisual)%>" border="0" height="100px" width="100px"/>
+																	<img src="visuals/<%=Util.replaceTags(dsVisual)%>" border="0" height="100px" width="100px" alt="thumbnail"/>
 																</a><br/>
 																[Click thumbnail to view large version of the data model]<%
 															}
