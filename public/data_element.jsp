@@ -1363,81 +1363,64 @@ else{
 									boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
 									//user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u")
 									if (!popup && (dispAll || dispXmlSchema)){ %>
-							<table border="0" width="620" cellspacing="0" cellpadding="3">
-										<tr style="height:10px;"><td width="100%"></td></tr>
+								<div id="createbox">
+									<table border="0" width="100%" cellspacing="0">
 										<tr>
-											<td width="100%" style="border: 1px solid #FF9900">
-												<table border="0" width="100%" cellspacing="0">
-													<tr>
-														<td width="73%" valign="middle" align="left">
-															Create an XML Schema for this element
-														</td>
-														<td width="27%" valign="middle" align="left">
-															<a target="_blank" href="GetSchema?id=ELM<%=delem_id%>">
-																<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
-															</a>
-														</td>
-													</tr>
-													<%
-													if (dataElement.getType().equals("CH1") && fixedValues!=null && fixedValues.size()>0){%>
-														<tr>
-															<td width="73%" valign="middle" align="left">
-																Get a comma-separated codelist of this element
-															</td>
-															<td width="27%" valign="middle" align="left">
-																<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
-																	<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
-																</a>
-															</td>
-														</tr><%
-													}
-													%>
-												</table>
+											<td width="73%" valign="middle" align="left">
+												Create an XML Schema for this element
+											</td>
+											<td width="27%" valign="middle" align="left">
+												<a target="_blank" href="GetSchema?id=ELM<%=delem_id%>">
+													<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
+												</a>
 											</td>
 										</tr>
-								</table>
+										<%
+										if (dataElement.getType().equals("CH1") && fixedValues!=null && fixedValues.size()>0){%>
+											<tr>
+												<td width="73%" valign="middle" align="left">
+													Get a comma-separated codelist of this element
+												</td>
+												<td width="27%" valign="middle" align="left">
+													<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
+														<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
+													</a>
+												</td>
+											</tr><%
+										}
+										%>
+									</table>
+								</div>
 										<%
 									}
 								}
 								%>
 								
 								<!-- type -->
-								<table border="0" width="620" cellspacing="0" cellpadding="3">
-								<tr>
-									<td>
-										<table border="0" width="620" cellspacing="0" cellpadding="3">
-											<tr>
-												<td width="7%"><b>Type</b></td>
-												<td width="6%">
-													<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href)">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
-													</a>
-												</td>
-												<td width="88%">
-													<%
-													if (mode.equals("add") && (type==null || type.length()==0)){ %>
-														<select class="small" name="typeSelect" onchange="fixType()">
-															<option value="">-- Select element type --</option>
-															<option value="CH1">Data element with fixed values (codes)</option>
-															<option value="CH2">Data element with quantitative values (e.g. measurements)</option>
-														</select> <%
-													}
-													else{														
-														if (type.equals("CH1")){ %>
-															<b>DATA ELEMENT WITH FIXED VALUES</b>
-														<% }else if (type.equals("CH2")){ %>					
-															<b>DATA ELEMENT WITH QUANTITATIVE VALUES</b>
-														<% } else{ %>
-															<b>DATA ELEMENT WITH QUANTITATIVE VALUES</b> <%
-														}
-													}
-													%>
-												</td>
-											</tr>
-										</table>
-									</td>
-								</tr>
-								</table>
+								<div style="margin: 3px">
+										<b>Type:</b>
+											<%
+											if (mode.equals("add") && (type==null || type.length()==0)){ %>
+												<select class="small" name="typeSelect" onchange="fixType()">
+													<option value="">-- Select element type --</option>
+													<option value="CH1">Data element with fixed values (codes)</option>
+													<option value="CH2">Data element with quantitative values (e.g. measurements)</option>
+												</select> <%
+											}
+											else{														
+												if (type.equals("CH1")){ %>
+													<b>DATA ELEMENT WITH FIXED VALUES</b>
+												<% }else if (type.equals("CH2")){ %>					
+													<b>DATA ELEMENT WITH QUANTITATIVE VALUES</b>
+												<% } else{ %>
+													<b>DATA ELEMENT WITH QUANTITATIVE VALUES</b> <%
+												}
+											}
+											%>
+											<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href)">
+												<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
+											</a>
+								</div>
 								
 								
 								<!-- start dotted -->
