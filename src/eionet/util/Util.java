@@ -370,12 +370,32 @@ public class Util {
   }
 
     /**
-     * A method for replacing < > tags in string for web layout
+     * 
+     * @param in
+     * @return
      */
-    public static String replaceTags(String in) {
-        return replaceTags(in, false);
+    public static String replaceTags(String in){
+        return replaceTags(in, false, false);
     }
-    public static String replaceTags(String in, boolean inTextarea) {
+    
+    /**
+     * 
+     * @param in
+     * @param dontCreateHTMLAnchors
+     * @return
+     */
+    public static String replaceTags(String in, boolean dontCreateHTMLAnchors){
+    	return replaceTags(in, dontCreateHTMLAnchors, false);
+    }
+    
+    /**
+     * 
+     * @param in
+     * @param inTextarea
+     * @return
+     */
+    public static String replaceTags(
+    		String in, boolean dontCreateHTMLAnchors, boolean dontCreateHTMLLineBreaks){
     	
 	    in = (in != null ? in : "");
 	    StringBuffer ret = new StringBuffer();
@@ -406,9 +426,9 @@ public class Util {
 	    	  else
 	    		  ret.append("&amp;");
 	      }
-	      else if (c == '\n' && inTextarea==false)
+	      else if (c == '\n' && dontCreateHTMLLineBreaks==false)
 	        ret.append("<br/>");
-		  else if (c == '\r' && in.charAt(i+1)=='\n' && inTextarea==false){
+		  else if (c == '\r' && in.charAt(i+1)=='\n' && dontCreateHTMLLineBreaks==false){
 			ret.append("<br/>");
 			i = i + 1;
 		  }
@@ -417,7 +437,8 @@ public class Util {
 	    }
 	    
 	    String retString = ret.toString();
-	    if (inTextarea == false) retString=setAnchors(retString, true, 50);
+	    if (dontCreateHTMLAnchors==false)
+	    	retString=setAnchors(retString, true, 50);
 
 	    return retString;
 	}
