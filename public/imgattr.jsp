@@ -183,7 +183,7 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 	
 		<tr>
 			<td class="head00" colspan="2">
-					<%=Util.replaceTags(attrName)%> of <a href="<%=Util.replaceTags(titleLink, true)%>"><font color="#006666"><%=Util.replaceTags(objName)%></font></a> <%=Util.replaceTags(titleType)%>
+					<%=Util.replaceTags(attrName)%> of <a href="<%=Util.replaceTags(titleLink, true)%>"><font color="#006666"><%=Util.replaceTags(objName, true)%></font></a> <%=Util.replaceTags(titleType)%>
 			</td>
 		</tr>
 		

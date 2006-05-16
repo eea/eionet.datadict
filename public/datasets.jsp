@@ -596,7 +596,7 @@
 						
 						<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(dsFullName,true)%>">
 							<a <%=linkDisabled%> href="<%=Util.replaceTags(dsLink,true)%>">
-							<%=Util.replaceTags(dsFullName)%></a>
+							<%=Util.replaceTags(dsFullName, true)%></a>
 						</td>
 						
 						<%
@@ -709,8 +709,8 @@
 							%>
 							
 							<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(oEntry.oFullName,true)%>">
-								<a <%=linkDisabled%> href="<%=Util.replaceTags(dsLink)%>">
-								<%=Util.replaceTags(oEntry.oFName)%></a>
+								<a <%=linkDisabled%> href="<%=Util.replaceTags(dsLink, true)%>">
+								<%=Util.replaceTags(oEntry.oFName, true)%></a>
 							</td>
 							
 							<%

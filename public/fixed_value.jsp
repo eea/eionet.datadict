@@ -289,7 +289,7 @@ try { // start the whole page try block
 
 		</ul>
 		</div>
-    <h1><%=Util.replaceTags(initCaseTitle)%> value of <a href="<%=Util.replaceTags(parentUrl, true)%>"><%=Util.replaceTags(delem_name)%></a> <%=dispParentType%></h1>
+    <h1><%=Util.replaceTags(initCaseTitle)%> value of <a href="<%=Util.replaceTags(parentUrl, true)%>"><%=Util.replaceTags(delem_name, true)%></a> <%=dispParentType%></h1>
 			
 		<form name="form1" method="post" action="fixed_value.jsp">
 		<table width="auto" cellspacing="0" cellpadding="0">

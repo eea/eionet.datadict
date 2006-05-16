@@ -131,7 +131,7 @@ try{
 												<%=Util.replaceTags(raTitle)%>
 											</td>
 											<td style="padding-left:5;padding-right:10" <%=colorAttr%>>
-												<a target="_blank" href="<%=Util.replaceTags(raDetails, true)%>"><%=Util.replaceTags(raDetails)%></a>
+												<a target="_blank" href="<%=Util.replaceTags(raDetails, true)%>"><%=Util.replaceTags(raDetails, true)%></a>
 											</td>
 										</tr>
 										<%

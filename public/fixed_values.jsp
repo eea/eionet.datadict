@@ -256,7 +256,7 @@ private String legalizeAlert(String in){
 					<li><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
 				</ul>
 				</div>
-		<h1><%=Util.replaceTags(initCaseTitle)%> values of <a href="<%=Util.replaceTags(parentUrl, true)%>"><%=Util.replaceTags(delem_name)%></a> <%=dispParentType%></h1>
+		<h1><%=Util.replaceTags(initCaseTitle)%> values of <a href="<%=Util.replaceTags(parentUrl, true)%>"><%=Util.replaceTags(delem_name, true)%></a> <%=dispParentType%></h1>
 			
 <form name="form1" method="post" action="fixed_values.jsp">
 	<% if (mode.equals("view")){
