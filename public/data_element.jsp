@@ -1893,7 +1893,7 @@ else{
 															// thumbnail
 															if (mode.equals("view") && !Util.voidStr(attrValue)){ %>
 																<a target="_blank" href="visuals/<%=Util.replaceTags(attrValue)%>" onFocus="blur()" onclick="pop(this.href)">
-																	<img src="visuals/<%=Util.replaceTags(attrValue)%>" border="0" height="100px" width="100px" alt=""/>
+																	<img src="visuals/<%=Util.replaceTags(attrValue)%>" border="0" height="100" width="100" alt=""/>
 																</a><br/><%
 															}
 															// link
