@@ -616,10 +616,12 @@
 						<td width="12%" class="<%=styleClass%>">
 							<%
 							if (clickable){ %>
-								<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" alt="<%=Util.replaceTags(regStatus)%>"/><%
+								<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
 							}
 							else{ %>
-								<span style="color:gray;text-decoration:none;font-size:8pt"><b><%=statusTxt%></b></span><%
+								<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=regStatus%>">
+									<strong><%=statusTxt%></strong>
+								</span><%
 							}
 							%>
 						</td>
@@ -722,10 +724,12 @@
 							<td width="12%" class="<%=styleClass%>">
 								<%
 								if (oEntry.clickable){ %>
-									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" alt="<%=Util.replaceTags(oEntry.getRegStatus())%>"/><%
+									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.getRegStatus()%>" alt="<%=oEntry.getRegStatus()%>"/><%
 								}
 								else{ %>
-									<span style="color:gray;text-decoration:none;font-size:8pt"><b><%=statusTxt%></b></span><%
+									<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=oEntry.getRegStatus()%>">
+										<strong><%=statusTxt%></strong>
+									</span><%
 								}
 								%>
 							</td>
