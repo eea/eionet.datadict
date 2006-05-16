@@ -1978,7 +1978,7 @@ else{
 																else if (dispType.equals("textarea")){
 																	if (attrValue!=null){
 																		%>
-																		<textarea <%=disabled%> class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"><%=Util.replaceTags(attrValue, true)%></textarea>
+																		<textarea <%=disabled%> class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"><%=Util.replaceTags(attrValue, true, true)%></textarea>
 																		<%
 																	}
 																	else{

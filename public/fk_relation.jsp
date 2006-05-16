@@ -213,7 +213,7 @@ String disabled = user == null ? "disabled" : "";
 					<textarea <%=disabled%>
 							  class="small"
 							  rows="3" cols="52"
-							  name="definition"><%=Util.replaceTags((String)fkRel.get("definition"), true)%></textarea>
+							  name="definition"><%=Util.replaceTags((String)fkRel.get("definition"), true, true)%></textarea>
 				</td>
 			</tr>
 			

@@ -328,7 +328,7 @@
 						String description = Util.replaceTags(namespace.getDescription());
 						if (description==null) description = "";
 						if (mode.equals("edit")){ %>
-							<textarea <%=disabled%> class="small" rows="3" cols="52" name="description"><%=Util.replaceTags(description)%></textarea> <%
+							<textarea <%=disabled%> class="small" rows="3" cols="52" name="description"><%=Util.replaceTags(description, true, true)%></textarea> <%
 						} else { %>
 							<span class="barfont" style="width:400"><%=Util.replaceTags(description)%></span> <%
 						}

@@ -246,7 +246,7 @@ private String legalizeAlert(String in){
 					<b><font color="black">Definition</font></b>
 				</td>
 				<td colspan="1" valign="top">
-					<textarea <%=disabled%> class="small" rows="5" cols="60" name="definition"><%=Util.replaceTags(definition, true)%></textarea>
+					<textarea <%=disabled%> class="small" rows="5" cols="60" name="definition"><%=Util.replaceTags(definition, true, true)%></textarea>
 				</td>
 			</tr>
 			<tr>

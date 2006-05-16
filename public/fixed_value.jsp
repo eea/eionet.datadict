@@ -330,7 +330,7 @@ try { // start the whole page try block
 					<b><font color="black">Definition</font></b>(O)
 				</td>
 				<td valign="top">
-					<textarea class="small" rows="3" cols="60" name="definition"><%=Util.replaceTags(fxv.getDefinition(), true)%></textarea>
+					<textarea class="small" rows="3" cols="60" name="definition"><%=Util.replaceTags(fxv.getDefinition(), true, true)%></textarea>
 				</td>
 			</tr>
 			
@@ -339,7 +339,7 @@ try { // start the whole page try block
 					<b><font color="black">Short description</font></b>(O)
 				</td>
 				<td valign="top">
-					<textarea class="small" rows="3" cols="60" name="short_desc"><%=Util.replaceTags(fxv.getShortDesc(), true)%></textarea>
+					<textarea class="small" rows="3" cols="60" name="short_desc"><%=Util.replaceTags(fxv.getShortDesc(), true, true)%></textarea>
 				</td>
 			</tr>
 		

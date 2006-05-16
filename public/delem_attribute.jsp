@@ -628,7 +628,7 @@
 						String definition = (attribute.getDefinition() == null) ? "" : attribute.getDefinition();
 						if (mode.equals("edit")){
 							%>
-							<textarea <%=disabled%> class="small" rows="5" cols="52" name="definition"><%=Util.replaceTags(definition)%></textarea>
+							<textarea <%=disabled%> class="small" rows="5" cols="52" name="definition"><%=Util.replaceTags(definition, true, true)%></textarea>
 							<%
 						}
 						else{
