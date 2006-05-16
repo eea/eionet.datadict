@@ -428,8 +428,9 @@ else{ %>
 					displayed++;
 				}
 				%>
-               	<tr><td colspan="<%=colSpan%>">&nbsp;</td></tr>
-				<tr><td colspan="<%=colSpan%>">Total results: <%=dataElements.size()%></td></tr><%
+			</tbody>
+		</table>
+		<p>Total results: <%=dataElements.size()%></p><%
 			}
 			else{
 				// No search - return from another result set or a total stranger...
@@ -499,15 +500,14 @@ else{ %>
 						displayed++;
                 	}
                 	%>
-                	<tr><td colspan="<%=colSpan%>">&nbsp;</td></tr>
-					<tr><td colspan="<%=colSpan%>">Total results: <%=oResultSet.oElements.size()%></td></tr><%
+			</tbody>
+		</table>
+		<p>Total results: <%=oResultSet.oElements.size()%></p><%
                 }
 
             }
 			%>
 			
-			</tbody>
-		</table>
 		
 		<form name="sort_form" action="common_elms.jsp" method="get">
 			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>

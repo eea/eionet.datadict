@@ -449,8 +449,9 @@ else{ %>
 					displayed++;
 				}
 				%>
-               	<tr><td colspan="4">&#160;</td></tr>
-				<tr><td colspan="4">Total results: <%=dataElements.size()%></td></tr><%
+			</tbody>
+		</table>
+		<p>Total results: <%=dataElements.size()%></p><%
 			}
 			else{
 				// No search - return from another result set or a total stranger...
@@ -501,14 +502,13 @@ else{ %>
 						displayed++;
                 	}
                 	%>
-                	<tr><td colspan="4">&#160;</td></tr>
-					<tr><td colspan="4">Total results: <%=oResultSet.oElements.size()%></td></tr><%
+			</tbody>
+		</table>
+		<p>Total results: <%=oResultSet.oElements.size()%></p><%
                 }
 
             }
 			%>
-			</tbody>
-		</table>
 		
 		<input type="hidden" name="searchUrl" />
 		<input name='SearchType' type='hidden' value='<%=TYPE_SEARCH%>'/>

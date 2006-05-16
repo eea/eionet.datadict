@@ -667,7 +667,7 @@
 				%>
 		</tbody>	
 		</table>
-				<p>Total results: <%=datasets.size()%></p><%
+		<p>Total results: <%=datasets.size()%></p><%
 			}
 			else {
 				
@@ -756,7 +756,7 @@
                 	%>
 		</tbody>	
 		</table>
-					<p>Total results: <%=oResultSet.oElements.size()%></p><%
+		<p>Total results: <%=oResultSet.oElements.size()%></p><%
                 }
 
             }

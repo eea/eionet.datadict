@@ -451,20 +451,19 @@
 				%>
 				
 				
-      <div style="clear: both; border-top:#008B8B solid 1pt;"></div>
 			
 			<%
 			int displayed = 0;
 			
 			if (mode.equals("view")){
 				%>
-				<table class="datatable">
+				<table class="datatable" style="clear:right">
 				<col style="width:10em"/>
 				<col style="width:35em"/>
 				<%
 			} else {
 			%>
-				<table class="formtable">
+				<table class="formtable" style="clear:right">
 				<col style="width:9em"/>
 				<col style="width:2em"/>
 				<col style="width:35em"/>

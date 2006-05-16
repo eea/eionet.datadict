@@ -512,8 +512,9 @@
 					<%
 				}
 				%>
-        	    <tr><td colspan="4">&#160;</td></tr>
-				<tr><td colspan="4">Total results: <%=datasets.size()%></td></tr><%
+			</tbody>
+		</table>
+		<p>Total results: <%=datasets.size()%></p><%
 			}
 			else{
 				// No search - return from another result set or a total stranger...
@@ -571,14 +572,13 @@
 					<%
 					}
                 	%>
-                	<tr><td colspan="4">&#160;</td></tr>
-					<tr><td colspan="4">Total results: <%=oResultSet.oElements.size()%></td></tr><%
+			</tbody>
+		</table>
+		<p>Total results: <%=oResultSet.oElements.size()%></p><%
                 }
 
             }
 			%>
-			</tbody>
-		</table>
 		
 		<input name="was_del_prm" type="hidden" value="<%=wasDelPrm%>"/>
 		<input type="hidden" name="searchUrl" value=""/>
