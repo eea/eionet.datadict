@@ -1749,7 +1749,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																			<%=Util.replaceTags(liTitle)%>
 																		</td>
 																		<td width="40%" class="tbl_elms">
-																			<a target="_blank" href="<%=Util.replaceTags(raDetails)%>"><%=Util.replaceTags(raDetails)%></a>
+																			<a target="_blank" href="<%=raDetails%>"><%=raDetails%></a>
 																		</td>																		
 																	</tr><%
 																}
