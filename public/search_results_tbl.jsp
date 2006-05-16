@@ -209,10 +209,12 @@
 		
 		<!-- the result table -->		
 		<table width="700" cellspacing="0" border="0" cellpadding="2" class="sortable">
-		
+		 <col style="width:37%"/>
+		 <col style="width:35%"/>
+		 <col style="width:25%"/>
 			<thead>
 			<tr>
-				<th width="37%">
+				<th>
 					<%
 					String sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
 					String sortedLink = getSortedLink(3, oSortCol, oSortOrder);
@@ -221,7 +223,7 @@
 	                      Table&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
-				<th width="35%" style="border-left:0">
+				<th style="border-left:0">
 					<%
 					sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(1, oSortCol, oSortOrder);
@@ -230,7 +232,7 @@
 	                      Short name&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
-				<th width="25%" style="border-left:0; border-right: 1px solid #FF9900">
+				<th style="border-left:0; border-right: 1px solid #FF9900">
 					<%
 					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
@@ -361,7 +363,7 @@
 						
 						%>
 						<tr>
-		    				<td width="37%" class="<%=styleClass%>">
+		    				<td class="<%=styleClass%>">
 								<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
 								<%
 								// mark tables in a locked dataset
@@ -370,10 +372,10 @@
 			    				}
 			    				%>
 							</td>
-							<td width="35%" class="<%=styleClass%>">
+							<td class="<%=styleClass%>">
 								<%=Util.replaceTags(table_name)%>
 							</td>
-							<td width="25%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+							<td class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
 								<%=Util.replaceTags(ds_name)%>
 								<%
 								// mark locked datasets
@@ -386,8 +388,9 @@
 						<%
 					}
 					%>
-    	           	<tr><td colspan="3">&#160;</td></tr>
-					<tr><td colspan="3">Total results: <%=dsTables.size()%></td></tr><%
+			</tbody>
+		</table>
+		<p>Total results: <%=dsTables.size()%></p><%
 				}
 				catch(Exception e){
 					%><b>ERROR: <%=e%></b><%
@@ -412,7 +415,7 @@
                         String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
 						%>
 						<tr>
-							<td width="37%" class="<%=styleClass%>">
+							<td class="<%=styleClass%>">
 								<a href="<%=tableLink%>"><%=Util.replaceTags(oEntry.oName)%></a>
 								<%
 								// mark tables in a locked dataset
@@ -421,36 +424,33 @@
 			    				}
 			    				%>
 							</td>
-							<td width="35%" class="<%=styleClass%>">
+							<td class="<%=styleClass%>">
 								<%=Util.replaceTags(oEntry.oShortName)%>								
 							</td>
-							<td width="25%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+							<td class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
 								<%=Util.replaceTags(oEntry.oDsName)%>
 							</td>
 						</tr>
 						<%
                 	}
                 	%>
-                	<tr><td colspan="3">&#160;</td></tr>
-					<tr><td colspan="3">Total results: <%=oResultSet.oElements.size()%></td></tr><%
+			</tbody>
+		</table>
+		<p>Total results: <%=oResultSet.oElements.size()%></p><%
             	}
 			}
 			%>
-			</tbody>
-		</table>
 		
 		<input type="hidden" name="searchUrl" value=""/>
-        
-		<input name='SearchType' type='hidden' value='<%=TYPE_SEARCH%>'/>
-          <br/>
+		<input type='hidden' name='SearchType' value='<%=TYPE_SEARCH%>'/>
 
 		<!--   Page footer  -->
 
 		</form>
 		
-		<form accept-charset="UTF-8" name="sort_form" action="search_results_tbl.jsp" method="get">
+		<form name="sort_form" action="search_results_tbl.jsp" method="get">
 			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
-        	<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
+			<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
 			<input name='SearchType' type='hidden' value='NoSearch'/>
 		</form>
 		
