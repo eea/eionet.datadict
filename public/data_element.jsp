@@ -1438,7 +1438,7 @@ else{
 										String isOdd = Util.isOdd(displayed);
 										%>
 										
-										<table class="datatable" border="0" width="100%" cellspacing="0" cellpadding="3">
+										<table class="datatable">
 								  		
 								  			<!-- short name -->								  			
 								    		<tr>

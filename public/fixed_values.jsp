@@ -292,11 +292,14 @@ private String legalizeAlert(String in){
 <% if (mode.equals("view")){
 	%>
 	<table class="datatable">
+		<thead>
 		<tr>
 			<th scope="col" class="scope-col">Value</th>
 			<th scope="col" class="scope-col">Definition</th>
 			<th scope="col" class="scope-col">ShortDescription</th>
 		</tr>
+		</thead>
+		<tbody>
 		<%
 		String mode= (user == null) ? "print" : "edit";
 		for (int i=0; i<fixedValues.size(); i++){
@@ -321,7 +324,7 @@ private String legalizeAlert(String in){
 			
 			%>
 			
-			<tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
+			<tr <% if (i % 2 != 0) %> class="zebraodd" <% else %> class="zebraeven" <%; %>>
 				<td>
 					<%=spaces%>
 					<a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;parent_type=<%=typeParam%>">
@@ -338,6 +341,7 @@ private String legalizeAlert(String in){
 		<%
 		}
 		%>
+		</tbody>
 	</table>
 <%} else {%>
 <table width="600" cellspacing="0"  border="0"><tr><td rowspan="2">	
