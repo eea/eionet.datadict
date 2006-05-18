@@ -660,7 +660,7 @@ public class Util {
 	 * and with as little code as possible.
 	 */
 	public static String isOdd(int displayed){
-		String isOdd = (displayed % 2 != 0) ? "_odd" : "";
+		String isOdd = (displayed % 2 != 0) ? "odd" : "even";
 		return isOdd;
 	}
 

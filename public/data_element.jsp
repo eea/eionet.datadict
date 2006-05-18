@@ -1483,23 +1483,23 @@ else{
 									    		// dataset
 									    		
 												if (mode.equals("add") || dataset!=null){ %>
-										    		<tr class="stribe<%=isOdd%>">
-										    			<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+										    		<tr class="zebra<%=isOdd%>">
+										    			<td width="<%=titleWidth%>%" class="simple_attr_title">
 															Dataset
 														</td>
-														<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<td width="4%" class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href)">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 															</a>
 														</td>
 														<%
 														if (colspan==4){%>
-															<td width="4%" class="simple_attr_help<%=isOdd%>">
+															<td width="4%" class="simple_attr_help">
 																<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 															</td><%
 														}
 														%>
-														<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+														<td width="<%=valueWidth%>%" class="simple_attr_value">
 															<%
 															String link = "";
 															if (latestRequested)
@@ -1559,23 +1559,23 @@ else{
 									    		// table
 									    		
 												if (mode.equals("add") || dsTable!=null){ %>
-													<tr class="stribe<%=isOdd%>">
-										    			<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+													<tr class="zebra<%=isOdd%>">
+										    			<td width="<%=titleWidth%>%" class="simple_attr_title">
 															Table
 														</td>
-														<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<td width="4%" class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=element&amp;area=table" onclick="pop(this.href)">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 															</a>
 														</td>
 														<%
 														if (colspan==4){%>
-															<td width="4%" class="simple_attr_help<%=isOdd%>">
+															<td width="4%" class="simple_attr_help">
 																<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 															</td><%
 														}
 														%>
-														<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+														<td width="<%=valueWidth%>%" class="simple_attr_value">
 															<%
 															// the case when table has been specified and mode is view or edit
 															if (dsTable!=null && !mode.equals("add")){
@@ -1636,23 +1636,23 @@ else{
 								    		<%
 								    		if (elmCommon){
 									    		%>
-									    		<tr class="stribe<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+									    		<tr class="zebra<%=isOdd%>">
+													<td width="<%=titleWidth%>%" class="simple_attr_title">
 														RegistrationStatus
 													</td>
-													<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<td width="4%" class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
-														<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<td width="4%" class="simple_attr_help">
 															<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
-													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+													<td width="<%=valueWidth%>%" class="simple_attr_value">
 														<%
 														if (mode.equals("view")){ %>
 															<%=Util.replaceTags(regStatus)%><%
@@ -1679,23 +1679,23 @@ else{
 								    		<%
 								    		String gisType = dataElement!=null ? dataElement.getGIS() : null;
 											if (!mode.equals("view") || gisType!=null){ %>
-									    		<tr class="stribe<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+									    		<tr class="zebra<%=isOdd%>">
+													<td width="<%=titleWidth%>%" class="simple_attr_title">
 														GIS type
 													</td>
-													<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<td width="4%" class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
-														<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<td width="4%" class="simple_attr_help">
 															<img border="0" src="images/optional.gif" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
-													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+													<td width="<%=valueWidth%>%" class="simple_attr_value">
 														<%
 														if (mode.equals("view")){
 															gisType = (gisType==null || gisType.length()==0) ? "&nbsp" : gisType;
@@ -1733,16 +1733,16 @@ else{
 									    		if (dataElement.getNamespace()!=null && dataElement.getNamespace().getID()!=null)
 									    			refUrl = refUrl + "&amp;pns=" + dataElement.getNamespace().getID();
 									    		%>
-									    		<tr class="stribe<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+									    		<tr class="zebra<%=isOdd%>">
+													<td width="<%=titleWidth%>%" class="simple_attr_title">
 														Reference URL
 													</td>
-													<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<td width="4%" class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 														</a>
 													</td>
-													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+													<td width="<%=valueWidth%>%" class="simple_attr_value">
 														<span class="barfont"><a target="_blank" href="<%=refUrl%>"><%=refUrl%></a></span>
 													</td>
 													
@@ -1846,18 +1846,18 @@ else{
 												}
 				
 												%>
-								    			<tr class="stribe<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+								    			<tr class="zebra<%=isOdd%>">
+													<td width="<%=titleWidth%>%" class="simple_attr_title">
 														<%=Util.replaceTags(attribute.getShortName())%>
 													</td>
-													<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<td width="4%" class="simple_attr_help">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
-														<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<td width="4%" class="simple_attr_help">
 															<img border="0" src="images/<%=Util.replaceTags(obligImg)%>" width="16" height="16" alt=""/>
 														</td><%
 													}
@@ -1865,7 +1865,7 @@ else{
 													
 													<!-- dynamic attribute value display -->
 													
-													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>"><%
+													<td width="<%=valueWidth%>%" class="simple_attr_value"><%
 													
 														// handle image attribute first
 														if (dispType.equals("image")){
@@ -2052,23 +2052,23 @@ else{
 								    		<%
 								    		boolean isRodParam = mode.equals("add") ? true : dataElement.isRodParameter();
 								    		%>
-								    		<tr class="stribe<%=isOdd%>">
-												<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+								    		<tr class="zebra<%=isOdd%>">
+												<td width="<%=titleWidth%>%" class="simple_attr_title">
 													Is ROD parameter
 												</td>
-												<td width="4%" class="simple_attr_help<%=isOdd%>">
+												<td width="4%" class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=element&amp;area=is_rod_param" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
-													<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<td width="4%" class="simple_attr_help">
 														<img border="0" src="images/optional.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
-												<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+												<td width="<%=valueWidth%>%" class="simple_attr_value">
 													<%
 													if (mode.equals("view")){ %>
 														<%=isRodParam%><%
@@ -2099,23 +2099,23 @@ else{
 								    		if (elmCommon && !mode.equals("add")){
 												String elmVersion = dataElement.getVersion();
 												%>												
-									    		<tr class="stribe<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+									    		<tr class="zebra<%=isOdd%>">
+													<td width="<%=titleWidth%>%" class="simple_attr_title">
 														CheckInNo
 													</td>
-													<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<td width="4%" class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
-														<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<td width="4%" class="simple_attr_help">
 															<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
-													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+													<td width="<%=valueWidth%>%" class="simple_attr_value">
 														<%=elmVersion%>
 													</td>
 													
@@ -2127,23 +2127,23 @@ else{
 								    		
 								    		<!-- Identifier -->
 								    		
-								    		<tr class="stribe<%=isOdd%>">
-												<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+								    		<tr class="zebra<%=isOdd%>">
+												<td width="<%=titleWidth%>%" class="simple_attr_title">
 													Identifier
 												</td>
-												<td width="4%" class="simple_attr_help<%=isOdd%>">
+												<td width="4%" class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
-													<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<td width="4%" class="simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
-												<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+												<td width="<%=valueWidth%>%" class="simple_attr_value">
 													<%
 													if(!mode.equals("add")){ %>
 														<b><%=Util.replaceTags(idfier)%></b>

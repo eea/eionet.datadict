@@ -533,71 +533,43 @@ td.search_result_odd {
 }
 
 td.simple_attr_title {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
-	border: 1px solid #C0C0C0;
 	vertical-align: top;
 }
 
 td.simple_attr_value {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	border-right: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
 	vertical-align: top;
 }
 
 td.simple_attr_value_big {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	font-size: 12pt;
-	border-right: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
 	vertical-align: top;
 }
 
 td.simple_attr_help {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	border: 1px solid #C0C0C0;
 	vertical-align: top;
 	text-align: center;
 }
 
 td.simple_attr_title_odd {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
-	border-left: 1px solid #C0C0C0;
-	border-right: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
 	vertical-align: top;
-	background: #FFFFFF;
 }
 
 td.simple_attr_value_odd {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	border-right: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
 	vertical-align: top;
-	background: #FFFFFF;
 }
 
 td.simple_attr_value_big_odd {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	font-size: 12pt;
-	border-right: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
 	vertical-align: top;
-	background: #FFFFFF;
 }
 
 td.simple_attr_help_odd {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	border-left: 1px solid #C0C0C0;
-	border-right: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
 	vertical-align: top;
 	text-align: center;
-	background: #FFFFFF;
 }
 
 td.tbl_elms {
@@ -613,7 +585,7 @@ td.tbl_elms {
 	vertical-align: top;
 }
 
-td.complex_attr_title {
+td.complex_attr_titleeven {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	border-left: 1px solid #C0C0C0;
@@ -622,7 +594,7 @@ td.complex_attr_title {
 	vertical-align: top;
 }
 
-td.complex_attr_help {
+td.complex_attr_helpeven {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	border-left: 1px solid #C0C0C0;
@@ -632,7 +604,7 @@ td.complex_attr_help {
 	vertical-align: top;
 }
 
-td.complex_attr_value {
+td.complex_attr_valueeven {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	border-left: 1px solid #C0C0C0;
 	border-top: 1px solid #C0C0C0;
@@ -640,7 +612,7 @@ td.complex_attr_value {
 	vertical-align: top;
 }
 
-td.complex_attr_title_odd {
+td.complex_attr_titleodd {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	border-left: 1px solid #C0C0C0;
@@ -650,7 +622,7 @@ td.complex_attr_title_odd {
 	vertical-align: top;
 }
 
-td.complex_attr_help_odd {
+td.complex_attr_helpodd {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	border-left: 1px solid #C0C0C0;
@@ -661,7 +633,7 @@ td.complex_attr_help_odd {
 	vertical-align: top;
 }
 
-td.complex_attr_value_odd {
+td.complex_attr_valueodd {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	border-left: 1px solid #C0C0C0;
 	border-top: 1px solid #C0C0C0;
@@ -845,7 +817,7 @@ table.sortable table tr td {
 /* Temporary end */
 
 tbody tr.zebraodd {
-	background-color: #CCCCCC;
+	background-color: #ffffff;
 }
 
 .datatable .odd {

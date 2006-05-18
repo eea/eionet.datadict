@@ -1126,7 +1126,7 @@ String attrValue = null;
 										String isOdd = Util.isOdd(displayed);
 										%>
 										
-										<table class="datatable" border="0" width="100%" cellspacing="0" cellpadding="3">
+										<table class="datatable" width="100%">
 								  		
 								  			<!-- static attributes -->
 								  			
@@ -1165,23 +1165,23 @@ String attrValue = null;
 								    		</tr>
 								    		
 								    		<!-- dataset -->
-								    		<tr class="stribe<%=isOdd%>">
-								    			<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+								    		<tr class="zebra<%=isOdd%>">
+								    			<td width="<%=titleWidth%>%" class="simple_attr_title">
 													Dataset
 												</td>
-												<td width="4%" class="simple_attr_help<%=isOdd%>">
+												<td width="4%" class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
-													<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<td width="4%" class="simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
-												<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+												<td width="<%=valueWidth%>%" class="simple_attr_value">
 													<%
 													// add case
 													if (mode.equals("add") && Util.voidStr(request.getParameter("ds_id"))){ %>
@@ -1224,16 +1224,16 @@ String attrValue = null;
 									    		String refUrl = jspUrlPrefix + "dstable.jsp?mode=view&amp;table_idf=" +
 									    						dsTable.getIdentifier() + "&amp;pns=" + dsTable.getParentNs();
 									    		%>
-									    		<tr class="stribe<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+									    		<tr class="zebra<%=isOdd%>">
+													<td width="<%=titleWidth%>%" class="simple_attr_title">
 														Reference URL
 													</td>
-													<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<td width="4%" class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 														</a>
 													</td>
-													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+													<td width="<%=valueWidth%>%" class="simple_attr_value">
 														<span class="barfont"><a target="_blank" href="<%=refUrl%>"><%=refUrl%></a></span>
 													</td>
 													
@@ -1304,18 +1304,18 @@ String attrValue = null;
 									    		
 									    		%>								    		
 								    		
-											    <tr class="stribe<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+											    <tr class="zebra<%=isOdd%>">
+													<td width="<%=titleWidth%>%" class="simple_attr_title">
 														<%=Util.replaceTags(attribute.getShortName())%>
 													</td>
-													<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<td width="4%" class="simple_attr_help">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
-														<td width="4%" class="simple_attr_help<%=isOdd%>">
+														<td width="4%" class="simple_attr_help">
 															<img border="0" src="images/<%=Util.replaceTags(obligImg)%>" width="16" height="16" alt=""/>
 														</td><%
 													}
@@ -1323,7 +1323,7 @@ String attrValue = null;
 													
 													<!-- dynamic attribute value display -->
 													
-													<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>"><%
+													<td width="<%=valueWidth%>%" class="simple_attr_value"><%
 													
 														// handle image attribute first
 														if (dispType.equals("image")){
@@ -1499,23 +1499,23 @@ String attrValue = null;
 										    %>
 										    
 								    		<!-- Identifier -->
-								    		<tr class="stribe<%=isOdd%>">
-												<td width="<%=titleWidth%>%" class="simple_attr_title<%=isOdd%>">
+								    		<tr class="zebra<%=isOdd%>">
+												<td width="<%=titleWidth%>%" class="simple_attr_title">
 													Identifier
 												</td>
-												<td width="4%" class="simple_attr_help<%=isOdd%>">
+												<td width="4%" class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
-													<td width="4%" class="simple_attr_help<%=isOdd%>">
+													<td width="4%" class="simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
-												<td width="<%=valueWidth%>%" class="simple_attr_value<%=isOdd%>">
+												<td width="<%=valueWidth%>%" class="simple_attr_value">
 													<%
 													if(!mode.equals("add")){ %>
 														<b><%=Util.replaceTags(dsTable.getIdentifier())%></b>
