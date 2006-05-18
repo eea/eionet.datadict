@@ -62,9 +62,8 @@
 
 <html>
 <head>
+	<%@ include file="headerinfo.txt" %>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-    <link type="text/css" rel="stylesheet" href="eionet.css"/>
     <script language="javascript" src='script.js' type="text/javascript"></script>
     <script language="javascript" type="text/javascript">
 		// <![CDATA[
@@ -89,19 +88,15 @@
     </script>
 </head>
 <body>
-<%@ include file="header.htm" %>
+<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:param name="name" value="Namespaces"/>
+		<jsp:param name="back" value="true"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
+<div id="workarea">
 <table border="0">
     <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <center>
-                <%@ include file="menu.jsp" %>
-            </center>
-        </td>
         <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Namespaces"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
             
 			<div style="margin-left:30">
 			
@@ -240,6 +235,7 @@
 		</td>
 </tr>
 </table>
+</div>
 </body>
 </html>
 

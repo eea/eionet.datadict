@@ -37,9 +37,8 @@
 
 <html>
 	<head>
+		<%@ include file="headerinfo.txt" %>
 		<title>Element history</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	    <script language="javascript" src='script.js'></script>
 	<script language="javascript">
 	// <![CDATA[

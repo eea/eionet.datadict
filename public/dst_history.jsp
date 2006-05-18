@@ -49,9 +49,8 @@
 
 <html>
 	<head>
+		<%@ include file="headerinfo.txt" %>
 		<title>Dataset history</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	    <script language="javascript" src='script.js' type="text/javascript"></script>
 	    <script language="javascript" type="text/javascript">
 		// <![CDATA[

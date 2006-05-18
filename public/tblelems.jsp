@@ -208,10 +208,8 @@ int colCount = hasGIS ? 5 : 4;
 
 <html>
 <head>
+	<%@ include file="headerinfo.txt" %>
 	<title>Meta</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-
 
 <script language="javascript" src='script.js' type="text/javascript"></script>
 <script language="javascript" src='dynamic_table.js' type="text/javascript"></script>
@@ -419,19 +417,15 @@ int colCount = hasGIS ? 5 : 4;
 </head>
 	
 <body onload="start()">
-<%@ include file="header.htm" %>
+	<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:param name="name" value="Table elements"/>
+        <jsp:param name="back" value="true"/>
+	</jsp:include>
+    <%@ include file="nmenu.jsp" %>
+<div id="workarea">
 <table border="0">
     <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <center>
-                <%@ include file="menu.jsp" %>
-            </center>
-        </td>
         <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Table elements"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
             
 <div style="margin-left:30">
 			
@@ -882,6 +876,7 @@ int colCount = hasGIS ? 5 : 4;
 </td>
 </tr>
 </table>
+</div>
 </body>
 </html>
 

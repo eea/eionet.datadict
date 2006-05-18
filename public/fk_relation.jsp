@@ -89,9 +89,8 @@ String disabled = user == null ? "disabled" : "";
 
 <html>
 <head>
+	<%@ include file="headerinfo.txt" %>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link type="text/css" rel="stylesheet" href="eionet_new.css">
     <script language="javascript" src='script.js'></script>
     <script language="javascript">
 		// <![CDATA[
@@ -111,20 +110,16 @@ String disabled = user == null ? "disabled" : "";
     </script>
 </head>
 <body>
-<%@ include file="header.htm" %>
+	<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:param name="name" value="Foreign key relation"/>
+		<jsp:param name="back" value="true"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
+<div id="workarea">
 <table border="0">
     <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
         <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Foreign key relation"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
-            
+           
 			<div style="margin-left:30">
 			
 			<form acceptcharset="UTF-8" id="form1" method="POST" action="fk_relation.jsp">
@@ -236,6 +231,7 @@ String disabled = user == null ? "disabled" : "";
 </td>
 </tr>
 </table>
+</div>
 </body>
 </html>
 

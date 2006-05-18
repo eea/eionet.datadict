@@ -175,9 +175,8 @@ private String legalizeAlert(String in){
 
 <html>
 	<head>
+		<%@ include file="headerinfo.txt" %>
 		<title>Complex attribute</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 	    <script type="text/javascript" src="script.js"></script>
 	<script type="text/javascript">
 	// <![CDATA[

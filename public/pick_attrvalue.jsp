@@ -45,9 +45,8 @@
 
 <html>
 	<head>
+		<%@ include file="headerinfo.txt" %>
 		<title>Meta</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-		<link href="eionet.css" rel="stylesheet" type="text/css"/>
 		<script language="javascript" type="text/javascript">
 		// <![CDATA[
 

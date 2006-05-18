@@ -139,13 +139,9 @@ private String legalizeAlert(String in){
 
 <html>
 	<head>
+		<%@ include file="headerinfo.txt" %>
 		<title>Meta</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-		<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	
-	
 		<script language="javascript" src='script.js' type="text/javascript"></script>
-		
 		<script language="javascript" type="text/javascript">
 		// <![CDATA[
 	
@@ -184,19 +180,15 @@ private String legalizeAlert(String in){
 		</script>
 	</head>
 <body onload="onLoad()">
-<%@ include file="header.htm" %>
+	<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:param name="name" value="Allowable value"/>
+		<jsp:param name="back" value="true"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
+<div id="workarea">
 <table border="0">
     <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <center>
-                <%@ include file="menu.jsp" %>
-            </center>
-        </td>
         <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Allowable value"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
             
 <div style="margin-left:30">
 
@@ -326,6 +318,7 @@ private String legalizeAlert(String in){
         </td>
 </tr>
 </table>
+</div>
 </body>
 </html>
 

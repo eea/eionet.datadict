@@ -94,9 +94,8 @@ if (disabled.equals("")){
 
 <html>
 <head>
+	<%@ include file="headerinfo.txt" %>
 	<title>Meta</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <script language="javascript" src='script.js'></script>
@@ -143,19 +142,15 @@ if (disabled.equals("")){
 </script>
 	
 <body>
-<%@ include file="header.htm" %>
+	<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:param name="name" value="Foreign keys"/>
+		<jsp:param name="back" value="true"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
+<div id="workarea">
 <table border="0">
     <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <p><center>
-                <%@ include file="menu.jsp" %>
-            </center></p>
-        </td>
         <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Foreign keys"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
             
 <div style="margin-left:30">
 			

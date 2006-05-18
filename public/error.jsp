@@ -36,18 +36,15 @@ if (isPopup){
 else{
 	%>
 	<body>
-	<%@ include file="header.htm"%>
+	<jsp:include page="nlocation.jsp" flush='true'>
+			<jsp:param name="name" value="Error"/>
+			<jsp:param name="back" value="true"/>
+		</jsp:include>
+	<%@ include file="nmenu.jsp" %>
+<div id="workarea">
 	<table border="0">
     	<tr valign="top">
-			<td nowrap="nowrap" width="125">
-            	<center>
-                	<%@ include file="menu.jsp" %>
-            	</center>
-        	</td>
         	<td>
-	            <jsp:include page="location.jsp" flush='true'>
-	                <jsp:param name="name" value="Error"/>
-	            </jsp:include><%
 }
 %>
 
@@ -95,7 +92,8 @@ else{
 if (!isPopup){ %>            
 	</td>
 	</tr>
-	</table><%
+	</table>
+	</div><%
 }
 %>
 

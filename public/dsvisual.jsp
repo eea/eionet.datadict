@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,eionet.util.Util,java.sql.*,com.tee.xmlserver.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%@ include file="history.jsp" %>
@@ -12,9 +12,8 @@
 
 <html>
 <head>
+	<%@ include file="headerinfo.txt" %>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-	<link type="text/css" rel="stylesheet" href="eionet.css"/>
 	<script language="javascript" src='script.js' type="text/javascript"></script>
 	<script language="javascript" type="text/javascript">
 	// <![CDATA[
@@ -140,20 +139,16 @@ if (dsVisual!=null && dsVisual.length()!=0){
 %>
 
 <body>
-<%@ include file="header.htm"%>
 
+<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:param name="name" value="Dataset Model"/>
+		<jsp:param name="back" value="true"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
+<div id="workarea">
 <table border="0">
     <tr valign="top">
-		<td nowrap="nowrap" width="125">
-            <center>
-                <%@ include file="menu.jsp" %>
-            </center>
-        </td>
         <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Dataset model"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
             
             	<div style="margin-left:30">
             
@@ -183,7 +178,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 					if (type.equals("simple")){ %>
 						<tr style="height:10px;">
 					        <td bgcolor="#10847B" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5" alt=""/></td>
-						    <th width="50">Simple</th>
+						    <th class="light" width="50">Simple</th>
 						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5" alt=""/></td>
 						    <td bgcolor="#f0f0f0" width="1"></td>
 	          				<td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5" alt=""/></td>
@@ -203,7 +198,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5" alt=""/></td>
 						    <td bgcolor="#f0f0f0" width="1"></td>
 	          				<td bgcolor="#10847B" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5" alt=""/></td>
-						    <th width="50">Detailed</th>
+						    <th class="light" width="50">Detailed</th>
 						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5" alt=""/></td>
 	    					<td bgcolor="#f0f0f0">&#160;</td>
 						</tr> <%
@@ -317,6 +312,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 		</td>
 	</tr>
 </table>
+</div>
 </body>
 </html>
 

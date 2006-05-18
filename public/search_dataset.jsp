@@ -113,9 +113,8 @@ private String setDefaultAttrs(String name){
 
 <html>
 <head>
+	<%@ include file="headerinfo.txt" %>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-    <link type="text/css" rel="stylesheet" href="eionet_new.css"/>
     <script language="javascript" src='script.js' type="text/javascript"></script>
     <script language="javascript" type="text/javascript">
 		// <![CDATA[
@@ -166,19 +165,15 @@ private String setDefaultAttrs(String name){
 	</script>
 </head>
 <body onclick="checkalert()" onload="onLoad()">
-<%@ include file="header.htm" %>
+	<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:param name="name" value="Search"/>
+		<jsp:param name="back" value="true"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
+<div id="workarea">
 <table border="0">
     <tr valign="top">
-        <td nowrap="nowrap" width="125">
-            <center>
-                <%@ include file="menu.jsp" %>
-            </center>
-        </td>
         <td>
-            <jsp:include page="location.jsp" flush='true'>
-                <jsp:param name="name" value="Search"/>
-                <jsp:param name="back" value="true"/>
-            </jsp:include>
             
 			<div style="margin-left:30">
 				<form name="form1" action="datasets.jsp" method="get">
@@ -377,6 +372,7 @@ private String setDefaultAttrs(String name){
         </td>
 </tr>
 </table>
+</div>
 </body>
 </html>
 

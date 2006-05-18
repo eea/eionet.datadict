@@ -12,9 +12,8 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 %>
 <html>
 <head>
+	<%@ include file="headerinfo.txt" %>
 	<title>Data Dictionary</title>
-	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-	<link type="text/css" rel="stylesheet" href="eionet.css"/>
 	<script language="javascript" src='script.js' type="text/javascript"></script>
 	<script language="javascript" type="text/javascript">
 	

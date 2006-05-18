@@ -10,10 +10,9 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 
 <html>
 <head>
+	<%@ include file="headerinfo.txt" %>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-	<link href="eionet_new.css" rel="stylesheet" type="text/css"/>
-	<script language="javascript" type="text/javascript">
+    <script language="javascript" type="text/javascript">
 	// <![CDATA[
 	
 		function select(raID, raTitle,liID, liTitle){

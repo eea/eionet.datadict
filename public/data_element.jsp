@@ -544,7 +544,6 @@ private String legalizeAlert(String in){
 <head>
 	<%@ include file="headerinfo.txt" %>
     <title>Data element - Data Dictionary</title>
-    <link type="text/css" rel="stylesheet" href="eionet_new.css" title="Default"/>
     <script type="text/javascript" src='script.js'></script>
     <script type="text/javascript" src='modal_dialog.js'></script>
     <script type="text/javascript">
@@ -880,7 +879,7 @@ private String legalizeAlert(String in){
 				if (!reLocation.endsWith("&")) reLocation = reLocation + "&";
 				%>
 				
-				document.location.assign("<%=Util.replaceTags(reLocation)%>elm_datatype=" + elmDataType);<%
+				document.location.assign("<%=reLocation%>elm_datatype=" + elmDataType);<%
 			}
 			%>
 		}
