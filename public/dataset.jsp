@@ -1055,7 +1055,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 											<!-- short name -->
 								    		<tr>
 												<td width="<%=titleWidth%>%" class="short_name">Short name</td>
-												<td width="4%" class="short_name">
+												<td width="4%" class="short_name simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 													</a>
@@ -1063,7 +1063,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												<%
 												if (colspan==4){
 													%>
-													<td width="4%" class="short_name">
+													<td width="4%" class="short_name simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
 													</td><%
 												}
@@ -1562,18 +1562,18 @@ private Vector getValues(String id, String mode, Vector attributes){
 
 											%>
 												
-												<div>
-														<b>Dataset tables<a name="tables"></a></b>
+												<h2>
+														Dataset tables<a name="tables"></a>
 													
 													<%
 													// tables link
 													if (user!=null && editPrm && topFree){ %>
-														<span>
+														<span class="barfont">
 															[Click <a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.replaceTags(ds_name)%>"><b>HERE</b></a> to manage tables of this dataset]
 														</span><%
 													}
 													%>
-												</div>
+												</h2>
 												
 												<%
 												// tables table
@@ -1660,39 +1660,25 @@ private Vector getValues(String id, String mode, Vector attributes){
 											
 											%>
 										
-											<table border="0" width="100%" cellspacing="0" cellpadding="3">
-											
-												<% if (mode.equals("view")){ %>
-													<tr style="height:10px;"><td width="100%" colspan="2"></td></tr><%
-												} %>
 											
 												<!-- title & link part -->
-												<tr>
-													<%
-													if (!mode.equals("view")){ %>
-														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
-													}
-													else{ %>
-														<td width="34%"><%
-													}
-													%>
+												<h2>
 														<b>Obligations in ROD<a name="rodlinks"></a></b>
-													</td>
 													
 													<%
 													if (!mode.equals("view")){ %>
-														<td width="4%" class="simple_attr_help">
+														<span class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=dataset&amp;area=rod_links_link" onclick="pop(this.href)">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 															</a>
-														</td>
-														<td width="4%" class="simple_attr_help">
+														</span>
+														<span class="simple_attr_help">
 															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
-														</td>
-														<td width="<%=valueWidth%>%" class="barfont_bordered"><%
+														</span>
+														<span class="barfont_bordered"><%
 													}
 													else{ %>
-														<td width="66%" class="barfont"><%
+														<span class="barfont"><%
 													}
 													
 														// the link
@@ -1703,14 +1689,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 															<%
 														}
 														%>
-													</td>
-												</tr>
+													</span>
+												</h2>
 												
 												<!-- table part -->
 												<%
 												if (mode.equals("view") && rodLinks!=null && rodLinks.size()>0){%>
-													<tr>
-														<td width="100%" colspan="2">
 															<table border="1" width="100%" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0;" cellspacing="0" cellpadding="2">
 																<tr>
 																	<th width="20%" class="tbl_elms">Obligation</th>
@@ -1741,12 +1725,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 																}
 																%>
 															</table>
-														</td>
-													</tr><%
+													<%
 												}
-												%>
-											</table>
-											<%
 										}
 										%>
 										
@@ -1759,47 +1739,35 @@ private Vector getValues(String id, String mode, Vector attributes){
 											colspan = user==null ? 1 : 2;
 											%>
 											
-											<table border="0" width="100%" cellspacing="0" cellpadding="3">
-												<tr>
-													<%
-													if (!mode.equals("view")){ %>
-														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
-													}
-													else{ %>
-														<td width="34%"><%
-													}
-													%>
+												<h2>
 														<b>Complex attributes<a name="cattrs"></a></b>
-													</td>
 													
 													<%
 													if (!mode.equals("view")){
 														%>
-														<td width="4%" class="simple_attr_help">
+														<span class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href)">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 															</a>
-														</td>
-														<td width="4%" class="simple_attr_help">
+														</span>
+														<span class="simple_attr_help">
 															<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
-														</td><%
+														</span><%
 													}
 													
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
-														<td width="<%=valueWidth%>%" class="barfont_bordered">
+														<span width="<%=valueWidth%>%" class="barfont_bordered">
 															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true"><b>HERE</b></a> to manage complex attributes of this dataset]
-														</td><%
+														</span><%
 													}
 													%>
-												</tr>
+												</h2>
 												
 												<%
 												// the table
 												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 													%>
-													<tr>
-											  			<td width="100%" colspan="<%=String.valueOf(colspan)%>">
 															<table border="1" width="100%" cellspacing="0" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0;">
 													        	<%
 													        	displayed = 1;
@@ -1812,18 +1780,18 @@ private Vector getValues(String id, String mode, Vector attributes){
 																	Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
 																	%>
 																	
-																	<tr>
-																		<td width="29%" class="complex_attr_title<%=isOdd%>">
+																	<tr class="zebra<%=isOdd%>">
+																		<td width="29%" class="complex_attr_title">
 																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
-																		<td width="4%" class="complex_attr_help<%=isOdd%>">
+																		<td width="4%" class="complex_attr_help">
 																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href)">
 																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																			</a>
 																		</td>
-																		<td width="63%" class="complex_attr_value<%=isOdd%>">
+																		<td width="63%" class="complex_attr_value">
 																			<%
 																			StringBuffer rowValue=null;
 																			Vector rows = attr.getRows();
@@ -1857,12 +1825,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 																}
 																%>
 													        </table>
-														</td>
-													</tr>
 													<%
 												}
 												%>	
-											</table>
 											
 											<!-- end complex attributes -->
 											<%

@@ -1133,7 +1133,7 @@ String attrValue = null;
 											<!-- short name -->								  			
 								    		<tr>
 												<td width="<%=titleWidth%>%" class="short_name">Short name</td>
-												<td width="4%" class="short_name">
+												<td width="4%" class="short_name simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
@@ -1141,7 +1141,7 @@ String attrValue = null;
 												<%
 												if (colspan==4){
 													%>
-													<td width="4%" class="short_name">
+													<td width="4%" class="short_name simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
@@ -1569,25 +1569,21 @@ String attrValue = null;
 												boolean hasForeignKeys = false;
 												boolean hasCommonElms = false;
 												%>
-												<table border="0" width="100%" cellspacing="0" cellpadding="3">
 													
-													<tr style="height:10px;"><td colspan="<%=String.valueOf(colspan)%>"></td></tr>
-													<tr>
-														<td width="34%">
-															<b><%=Util.replaceTags(title)%><a name="elements"></a></b>
-														</td>
+													<h2>
+															<%=Util.replaceTags(title)%><a name="elements"></a>
 														
 														<%
 														// elements link
 														if (user!=null && editPrm && topFree){
 															String elemLink = "tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
 															%>
-															<td class="barfont" width="66%">
+															<span class="barfont">
 																[Click <a href="<%=elemLink%>"><b>HERE</b></a> to manage all elements of this table]
-															</td><%
+															</span><%
 														}
 														%>
-													</tr>
+													</h2>
 													
 													<%
 													// elements (or GIS elements) table
@@ -1603,8 +1599,6 @@ String attrValue = null;
 														types.put("CH1", "Fixed values");
 														types.put("CH2", "Quantitative");
 														%>
-														<tr>
-											      			<td width="100%" colspan="<%=String.valueOf(colspan)%>">
 											      				<table border="1" width="100%" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0;" cellspacing="0" cellpadding="2">
 																	<tr>
 																		<th width="<%=widthShortName%>" class="tbl_elms">Short name</th>
@@ -1717,30 +1711,22 @@ String attrValue = null;
 																	}
 																	%>
 																</table>
-											      			</td>
-											      		</tr>
 											      		
 											      		<%
 											      		if (user!=null && elems!=null && elems.size()>0 && hasMarkedElems){%>
-															<tr style="height:10px;">
-																<td width="100%" class="barfont" colspan="<%=String.valueOf(colspan)%>">
+															<div class="barfont">
 																	(a red wildcard stands for checked-out element)
-																</td>
-															</tr><%
+															</div><%
 														}
 														if (user!=null && elems!=null && elems.size()>0 && hasForeignKeys){%>
-															<tr style="height:10px;">
-																<td width="100%" class="barfont" colspan="<%=String.valueOf(colspan)%>">
+															<div class="barfont">
 																	(the <u><b><i>(FK)</i></b></u> link indicates the element participating in a foreign key relation)
-																</td>
-															</tr><%
+															</div><%
 														}
 														if (elems!=null && elems.size()>0 && hasCommonElms){%>
-															<tr style="height:10px;">
-																<td width="100%" class="barfont" colspan="<%=String.valueOf(colspan)%>">
+															<div class="barfont">
 																	(the <span class="commonelm"><sup>C</sup></span> sign marks a common element)
-																</td>
-															</tr><%
+															</div><%
 														}
 													}
 													else if (mode.equals("edit")){
@@ -1749,8 +1735,6 @@ String attrValue = null;
 														// So we break the loop here.
 														break;
 													}
-													%>													
-												</table><%
 											}
 										}
 										%>
@@ -1765,47 +1749,35 @@ String attrValue = null;
 											%>
 											
 											
-											<table border="0" width="100%" cellspacing="0" cellpadding="3">
-												<tr>
-													<%
-													if (!mode.equals("view")){ %>
-														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
-													}
-													else{ %>
-														<td width="34%"><%
-													}
-													%>
-														<b>Complex attributes<a name="cattrs"></a></b>
-													</td>
+												<h2>
+														Complex attributes<a name="cattrs"></a>
 													
 													<%
 													if (!mode.equals("view")){
 														%>
-														<td width="4%" class="simple_attr_help">
+														<span class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href)">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 															</a>
-														</td>
-														<td width="4%" class="simple_attr_help">
+														</span>
+														<span class="simple_attr_help">
 															<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
-														</td><%
+														</span><%
 													}
 													
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
-														<td width="<%=valueWidth%>%" class="barfont_bordered">
+														<span class="barfont_bordered">
 															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this table]
-														</td><%
+														</span><%
 													}
 													%>
-												</tr>
+												</h2>
 												
 												<%
 												// the table
 												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 													%>
-													<tr>
-											  			<td width="100%" colspan="<%=String.valueOf(colspan)%>">
 															<table border="1" width="100%" cellspacing="0" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0;">
 													        	<%
 													        	displayed = 1;
@@ -1818,18 +1790,18 @@ String attrValue = null;
 																	Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
 																	%>
 																	
-																	<tr>
-																		<td width="29%" class="complex_attr_title<%=isOdd%>">
+																	<tr class="zebra<%=isOdd%>">
+																		<td width="29%" class="complex_attr_title">
 																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
-																		<td width="4%" class="complex_attr_help<%=isOdd%>">
+																		<td width="4%" class="complex_attr_help">
 																			<a target="_blank" onclick="pop(this.href)" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
 																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																			</a>
 																		</td>
-																		<td width="63%" class="complex_attr_value<%=isOdd%>">
+																		<td width="63%" class="complex_attr_value">
 																			<%
 																			StringBuffer rowValue=null;
 																			Vector rows = attr.getRows();
@@ -1863,13 +1835,8 @@ String attrValue = null;
 																}
 																%>
 													        </table>
-														</td>
-													</tr>
 													<%
 												}
-												%>	
-											</table>
-											<%
 										}
 										%>
 										<!-- end complex attributes -->

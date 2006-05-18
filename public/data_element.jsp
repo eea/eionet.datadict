@@ -1443,7 +1443,7 @@ else{
 								  			<!-- short name -->								  			
 								    		<tr>
 												<td width="<%=titleWidth%>%" class="short_name">Short name</td>
-												<td width="4%" class="short_name">
+												<td width="4%" class="short_name simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 													</a>
@@ -1451,7 +1451,7 @@ else{
 												<%
 												if (colspan==4){
 													%>
-													<td width="4%" class="short_name">
+													<td width="4%" class="short_name simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
@@ -2176,50 +2176,38 @@ else{
 											String helpAreaName = type.equals("CH1") ? "allowable_values_link" : "suggested_values_link";
 											%>
 										
-											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 											
 												<!-- title & link part -->
-												<tr>
-													<%
-													if (!mode.equals("view")){ %>
-														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
-													}
-													else{ %>
-														<td width="34%"><%
-													}
-													%>
-														<b><%=title%><a name="values"></a></b>
-													</td>
+												<h2>
+														<%=title%><a name="values"></a>
 													
 													<%
 													if (!mode.equals("view")){
 														%>
-														<td width="4%" class="simple_attr_help">
+														<span class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=element&amp;area=<%=Util.replaceTags(helpAreaName)%>" onclick="pop(this.href)">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 															</a>
-														</td>
-														<td width="4%" class="simple_attr_help">
+														</span>
+														<span class="simple_attr_help">
 															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
-														</td><%
+														</span><%
 													}
 													
 													// the link
 													String valuesLink = "fixed_values.jsp?delem_id=" + delem_id + "&amp;delem_name=" + delem_name + "&amp;mode=view&amp;parent_type=" + type;
 													if (mode.equals("edit") && user!=null){
 														%>
-														<td width="<%=valueWidth%>%" class="barfont_bordered">
+														<span class="barfont_bordered">
 															[Click <a href="<%=valuesLink%>"><b>HERE</b></a> to manage <%=Util.replaceTags(title.toLowerCase())%> of this element]
-														</td><%
+														</span><%
 													}
 													%>
-												</tr>
+												</h2>
 												
 												<!-- table part -->
 												<%
 												if (mode.equals("view") && fixedValues!=null && fixedValues.size()>0){%>
-													<tr>
-														<td width="100%" colspan="2">
 															<table border="1" width="100%" style="border-color:#c0c0c0" cellspacing="0" cellpadding="2">
 																<tr>
 																	<th width="20%" class="tbl_elms">Value</th>
@@ -2281,12 +2269,8 @@ else{
 																}
 																%>
 															</table>
-														</td>
-													</tr><%
+													<%
 												}
-												%>
-											</table>
-											<%
 										}
 										%>
 										
@@ -2299,32 +2283,21 @@ else{
 
 											
 											%>										
-											<table border="0" width="100%" cellspacing="0" cellpadding="3">
-											
 												<!-- title & link part -->
-												<tr>
-													<%
-													if (!mode.equals("view")){ %>
-														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
-													}
-													else{ %>
-														<td width="34%"><%
-													}
-													%>
-														<b>Foreign key relations<a name="fkeys"></a></b>
-													</td>
+												<h2>
+														Foreign key relations<a name="fkeys"></a>
 													
 													<%
 													if (!mode.equals("view")){
 														%>
-														<td width="4%" class="simple_attr_help">
+														<span class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=element&amp;area=fks_link" onclick="pop(this.href)">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 															</a>
-														</td>
-														<td width="4%" class="simple_attr_help">
+														</span>
+														<span class="simple_attr_help">
 															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
-														</td><%
+														</span><%
 													}
 													
 													// the link
@@ -2332,18 +2305,16 @@ else{
 														String origID = verMan.getLatestElmID(dataElement);
 														if (origID!=null && origID.length()>0) origID = "&orig_id=" + origID;
 														%>
-														<td width="<%=valueWidth%>%" class="barfont_bordered">
+														<span class="barfont_bordered">
 															[Click <a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;ds_id=<%=dsID%><%=origID%>"><b>HERE</b></a> to manage foreign keys of this element]
-														</td><%
+														</span><%
 													}
 													%>
-												</tr>
+												</h2>
 												
 												<!-- table part -->
 												<%												
 												if (mode.equals("view") && fKeys!=null && fKeys.size()>0){%>
-													<tr>
-														<td width="100%" colspan="2">
 															<table border="1" width="100%" style="border-color:#c0c0c0" cellspacing="0" cellpadding="2">
 																<tr>
 																	<th width="50%" class="tbl_elms">Element</th>
@@ -2376,12 +2347,8 @@ else{
 																}
 																%>
 															</table>
-														</td>
-													</tr><%
+													<%
 												}
-												%>
-											</table>
-											<%
 										}
 										%>
 										
@@ -2392,18 +2359,13 @@ else{
 
 											
 											%>										
-											<table border="0" width="100%" cellspacing="0" cellpadding="3">
 											
 												<!-- title part -->
-												<tr>
-													<td width="100%">
-														<b>Tables using this common element<a name="fkeys"></a></b>
-													</td>
-												</tr>
+												<h2>
+														Tables using this common element<a name="fkeys"></a>
+												</h2>
 												
 												<!-- table part -->
-												<tr>
-													<td width="100%" colspan="2">
 														<table border="1" width="100%" style="border-color:#c0c0c0" cellspacing="0" cellpadding="2">
 															<tr>
 																<th width="43%" class="tbl_elms">Table</th>
@@ -2448,9 +2410,6 @@ else{
 															}
 															%>
 														</table>
-													</td>
-												</tr>
-											</table>
 											<%
 										}
 										%>
@@ -2465,47 +2424,35 @@ else{
 											%>
 
 											
-											<table border="0" width="100%" cellspacing="0" cellpadding="3">
-												<tr>
-													<%
-													if (!mode.equals("view")){ %>
-														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
-													}
-													else{ %>
-														<td width="34%"><%
-													}
-													%>
-														<b>Complex attributes<a name="cattrs"></a></b>
-													</td>
+												<h2>
+														Complex attributes<a name="cattrs"></a>
 													
 													<%
 													if (!mode.equals("view")){
 														%>
-														<td width="4%" class="simple_attr_help">
+														<span class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href)">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 															</a>
-														</td>
-														<td width="4%" class="simple_attr_help">
+														</span>
+														<span class="simple_attr_help">
 															<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
-														</td><%
+														</span><%
 													}
 													
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
-														<td width="<%=valueWidth%>%" class="barfont_bordered">
+														<span class="barfont_bordered">
 															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this element]
-														</td><%
+														</span><%
 													}
 													%>
-												</tr>
+												</h2>
 												
 												<%
 												// the table
 												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 													%>
-													<tr>
-											  			<td width="100%" colspan="<%=String.valueOf(colspan)%>">
 															<table border="1" width="100%" cellspacing="0" style="border-color:#c0c0c0">
 													        	<%
 													        	displayed = 1;
@@ -2518,18 +2465,18 @@ else{
 																	Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
 																	%>
 																	
-																	<tr>
-																		<td width="29%" class="complex_attr_title<%=isOdd%>">
+																	<tr class="zebra<%=isOdd%>">
+																		<td width="29%" class="complex_attr_title">
 																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
-																		<td width="4%" class="complex_attr_help<%=isOdd%>">
+																		<td width="4%" class="complex_attr_help">
 																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href)">
 																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 																			</a>
 																		</td>
-																		<td width="63%" class="complex_attr_value<%=isOdd%>">
+																		<td width="63%" class="complex_attr_value">
 																			<%
 																			StringBuffer rowValue=null;
 																			Vector rows = attr.getRows();
@@ -2563,12 +2510,9 @@ else{
 																}
 																%>
 													        </table>
-														</td>
-													</tr>
 													<%
 												}
 												%>	
-											</table>
 											<%
 										}
 										%>
