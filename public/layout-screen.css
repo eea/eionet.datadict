@@ -413,6 +413,11 @@ td {
 	border: none;
 }
 
+.popuphead h1 {
+  color: #006666;
+  font-size: 14pt;
+  font-weight: bold;
+}
 
 .smallFont {
 	font-family: Arial, Helvetica, sans-serif;
@@ -695,6 +700,13 @@ th.small {
 	border-bottom: 1px solid #FF9900;
 }
 
+td.small {  font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 8pt; 
+	font-style: normal; 
+	line-height: normal; 
+	text-decoration: none;
+}
+
 th.tbl_elms {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 7pt;
@@ -887,5 +899,98 @@ a.disabled {
 	border: 1px solid #FF9900;
 	margin-top: 10px;
 }
+
+.head00 {  font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 10pt;
+font-style: normal; 
+line-height: normal; 
+font-weight: bold; 
+text-decoration: none; }
+
+.smallfont {
+  font-family: Verdana, Arial, MS Sans Serif; 
+  font-size: 7pt;
+  font-style: normal; 
+  line-height: normal;
+  font-weight: bold;
+  text-decoration: none; }
+  
+input.smalltext {  font-family: Verdana, Arial, MS Sans Serif; 
+font-size: 8pt;
+font-style: normal; 
+line-height: normal;
+text-decoration: none; }
+
+input.smallbuttonb {  font-family: Verdana, Arial, MS Sans Serif; 
+font-size: 7pt;
+font-style: normal; 
+line-height: normal;
+font-weight: bold;
+text-decoration: none; }
+
+input.mediumbuttonb {  font-family: Arial, "MS Sans Serif", sans-serif; 
+font-size: 8pt;
+font-style: normal; 
+line-height: normal;
+font-weight: bold;
+text-decoration: none; }
+
+.title2 { font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 10pt; 
+font-style: normal; 
+line-height: normal; 
+font-weight: bold; 
+text-decoration: none; 
+color: #006666; } 
+
+.wrkcopy {
+  color: #FF9900;
+  font-size: 12pt;
+  font-weight: bold;
+}
+
+.smallfont_light {
+  font-family: Verdana, Arial, "MS Sans Serif", sans-serif; 
+  font-size: 8pt;
+  font-style: normal; 
+  line-height: normal;
+  text-decoration: none;
+}
+
+.barfont {
+  font-family: Verdana, Arial, "MS Sans Serif", sans-serif;
+  font-size: 7pt;
+  font-style: normal;
+  line-height: normal;
+  text-decoration: none
+}
+
+td.barfont_bordered {
+	border: 1px solid #C0C0C0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 7pt;
+	font-style: normal;
+	line-height: normal;
+	text-decoration: none;
+}
+
+.commonelm{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-style: italic;
+	font-weight: bold;
+	color: #024176;
+}
+
+th.light {  font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 8pt;
+font-style: normal; 
+line-height: normal; 
+font-weight: bold; 
+color: #FFFFFF;
+background: #20B2AA;
+text-decoration: none; 
+border: 0px;
+}
+
 
 } /* screen media */
