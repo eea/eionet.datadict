@@ -324,7 +324,7 @@ private String legalizeAlert(String in){
 			
 			%>
 			
-			<tr <% if (i % 2 != 0) %> class="zebraodd" <% else %> class="zebraeven" <%; %>>
+			<tr <% if (i % 2 != 0) %> class="zebraeven" <% else %> class="zebraodd" <%; %>>
 				<td>
 					<%=spaces%>
 					<a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=<%=mode%>&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;parent_type=<%=typeParam%>">
