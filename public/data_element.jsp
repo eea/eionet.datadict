@@ -1363,12 +1363,12 @@ else{
 									//user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u")
 									if (!popup && (dispAll || dispXmlSchema)){ %>
 								<div id="createbox">
-									<table border="0" width="100%" cellspacing="0">
+									<table class="datatable1">
 										<tr>
-											<td width="73%" valign="middle" align="left">
+											<td width="73%">
 												Create an XML Schema for this element
 											</td>
-											<td width="27%" valign="middle" align="left">
+											<td width="27%">
 												<a target="_blank" href="GetSchema?id=ELM<%=delem_id%>">
 													<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 												</a>
@@ -1377,10 +1377,10 @@ else{
 										<%
 										if (dataElement.getType().equals("CH1") && fixedValues!=null && fixedValues.size()>0){%>
 											<tr>
-												<td width="73%" valign="middle" align="left">
+												<td width="73%">
 													Get a comma-separated codelist of this element
 												</td>
-												<td width="27%" valign="middle" align="left">
+												<td width="27%">
 													<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
 														<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
 													</a>
@@ -2207,11 +2207,11 @@ else{
 												<!-- table part -->
 												<%
 												if (mode.equals("view") && fixedValues!=null && fixedValues.size()>0){%>
-															<table border="1" width="100%" style="border-color:#c0c0c0" cellspacing="0" cellpadding="2">
+															<table class="datatable3">
 																<tr>
-																	<th width="20%" class="tbl_elms">Value</th>
-																	<th width="40%" class="tbl_elms">Definition</th>
-																	<th width="40%" class="tbl_elms">ShortDescription</th>																	
+																	<th width="20%">Value</th>
+																	<th width="40%">Definition</th>
+																	<th width="40%">ShortDescription</th>																	
 																</tr>
 																<%
 																// rows
@@ -2253,15 +2253,15 @@ else{
 																	
 																	%>
 																	<tr>
-																		<td width="20%" class="tbl_elms">
+																		<td width="20%">
 																			<a href="<%=valueLink%>">
 																				<%=Util.replaceTags(value)%>
 																			</a>
 																		</td>
-																		<td width="40%" class="tbl_elms" title="<%=Util.replaceTags(defin,true)%>">
+																		<td width="40%" title="<%=Util.replaceTags(defin,true)%>">
 																			<%=Util.replaceTags(dispDefin)%>
 																		</td>
-																		<td width="40%" class="tbl_elms" title="<%=Util.replaceTags(shortDesc,true)%>">
+																		<td width="40%" title="<%=Util.replaceTags(shortDesc,true)%>">
 																			<%=Util.replaceTags(dispShortDesc)%>
 																		</td>																		
 																	</tr><%
@@ -2314,10 +2314,10 @@ else{
 												<!-- table part -->
 												<%												
 												if (mode.equals("view") && fKeys!=null && fKeys.size()>0){%>
-															<table border="1" width="100%" style="border-color:#c0c0c0" cellspacing="0" cellpadding="2">
+															<table class="datatable3">
 																<tr>
-																	<th width="50%" class="tbl_elms">Element</th>
-																	<th width="50%" class="tbl_elms">Table</th>
+																	<th width="50%">Element</th>
+																	<th width="50%">Table</th>
 																</tr>
 																<%
 																// rows
@@ -2334,12 +2334,12 @@ else{
 																		
 																	%>
 																	<tr>
-																		<td width="50%" class="tbl_elms">
+																		<td width="50%">
 																			<a href="data_element.jsp?delem_id=<%=fkElmID%>&amp;mode=view">
 																				<%=Util.replaceTags(fkElmName)%>
 																			</a>
 																		</td>
-																		<td width="50%" class="tbl_elms">
+																		<td width="50%">
 																			<%=Util.replaceTags(fkTblName)%>
 																		</td>
 																	</tr><%
@@ -2365,11 +2365,11 @@ else{
 												</h2>
 												
 												<!-- table part -->
-														<table border="1" width="100%" style="border-color:#c0c0c0" cellspacing="0" cellpadding="2">
+														<table class="datatable3">
 															<tr>
-																<th width="43%" class="tbl_elms">Table</th>
-																<th width="43%" class="tbl_elms">Dataset</th>
-																<th width="14%" class="tbl_elms">Owner</th>
+																<th width="43%">Table</th>
+																<th width="43%">Dataset</th>
+																<th width="14%">Owner</th>
 															</tr>
 															<%
 															// rows
@@ -2392,17 +2392,17 @@ else{
 																	
 																%>
 																<tr>
-																	<td width="43%" class="tbl_elms">
+																	<td width="43%">
 																		<a target="_blank" href="<%=tblLink%>">
 																			<%=Util.replaceTags(tbl.getShortName())%>
 																		</a>
 																	</td>
-																	<td width="43%" class="tbl_elms">
+																	<td width="43%">
 																		<a target="_blank" href="<%=dstLink%>">
 																			<%=Util.replaceTags(tbl.getDatasetName())%>
 																		</a>
 																	</td>
-																	<td width="14%" class="tbl_elms">
+																	<td width="14%">
 																		<%=Util.replaceTags(owner)%>
 																	</td>
 																</tr><%
@@ -2452,7 +2452,7 @@ else{
 												// the table
 												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 													%>
-															<table border="1" width="100%" cellspacing="0" style="border-color:#c0c0c0">
+															<table class="datatable4">
 													        	<%
 													        	displayed = 1;
 													        	isOdd = Util.isOdd(displayed);
@@ -2465,17 +2465,17 @@ else{
 																	%>
 																	
 																	<tr class="zebra<%=isOdd%>">
-																		<td width="29%" class="complex_attr_title">
+																		<td width="29%">
 																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
-																		<td width="4%" class="complex_attr_help">
+																		<td width="4%">
 																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href)">
 																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="help"/>
 																			</a>
 																		</td>
-																		<td width="63%" class="complex_attr_value">
+																		<td width="63%">
 																			<%
 																			StringBuffer rowValue=null;
 																			Vector rows = attr.getRows();

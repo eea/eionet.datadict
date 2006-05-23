@@ -1008,15 +1008,15 @@ String attrValue = null;
 									if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispXForm || dispCache || dispODS){
 										%>
 										<div id="createbox">
-												<table border="0" width="100%" cellspacing="0">
+												<table class="datatable1">
 													<%
 													// XML Schema link
 													if (dispAll || dispXmlSchema){ %>
 														<tr>
-															<td width="73%" valign="middle" align="left">
+															<td width="73%">
 																Create an XML Schema for this table
 															</td>
-															<td width="27%" valign="middle" align="left">
+															<td width="27%">
 																<a target="_blank" href="GetSchema?id=TBL<%=tableID%>">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
@@ -1027,10 +1027,10 @@ String attrValue = null;
 													// XML Instance link
 													if (dispAll || dispXmlInstance){ %>
 														<tr>
-															<td width="73%" valign="middle" align="left">
+															<td width="73%">
 																Create an instance XML for this table
 															</td>
-															<td width="27%" valign="middle" align="left">
+															<td width="27%">
 																<a target="_blank" href="GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
@@ -1041,10 +1041,10 @@ String attrValue = null;
 													// XForm link
 													if (dispAll || dispXForm){ %>
 														<tr>
-															<td width="73%" valign="middle" align="left">
+															<td width="73%">
 																Create an XForm for this table
 															</td>
-															<td width="27%" valign="middle" align="left">
+															<td width="27%">
 																<a target="_blank" href="GetXForm?id=<%=tableID%>">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
@@ -1055,10 +1055,10 @@ String attrValue = null;
 													// MS Excel link
 													if (dispAll || dispXLS){ %>
 														<tr>
-															<td width="73%" valign="middle" align="left">
+															<td width="73%">
 																Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&amp;area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
 															</td>
-															<td width="27%" valign="middle" align="left">
+															<td width="27%">
 																<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt=""/></a>
 															</td>
 														</tr><%
@@ -1067,10 +1067,10 @@ String attrValue = null;
 													// OpenDocument spreadsheet template link
 													if (dispAll || dispODS){ %>
 														<tr>
-															<td width="73%" valign="middle" align="left">
+															<td width="73%">
 																Create an OpenDocument spreadsheet template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&amp;area=ods"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
 															</td>
-															<td width="27%" valign="middle" align="left">
+															<td width="27%">
 																<a href="GetOds?type=tbl&amp;id=<%=tableID%>"><img border="0" src="images/icon_ods.gif" alt=""/></a>
 															</td>
 														</tr><%
@@ -1079,10 +1079,10 @@ String attrValue = null;
 													// codelist
 													if (dispAll || dispXmlSchema){ %>
 														<tr>
-															<td width="73%" valign="middle" align="left">
+															<td width="73%">
 																Get the comma-separated codelists of this table
 															</td>
-															<td width="27%" valign="middle" align="left">
+															<td width="27%">
 																<a target="_blank" href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL">
 																	<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
 																</a>
@@ -1094,7 +1094,7 @@ String attrValue = null;
 													if (dispAll || dispCache){
 														%>
 														<tr style="height:20px;">
-															<td colspan="2" valign="bottom" align="left">
+															<td colspan="2">
 																<span class="barfont">
 																	[ <a target="_blank" onclick="pop(this.href)" href="GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
 																</span>
@@ -1598,16 +1598,16 @@ String attrValue = null;
 														types.put("CH1", "Fixed values");
 														types.put("CH2", "Quantitative");
 														%>
-											      				<table border="1" width="100%" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0;" cellspacing="0" cellpadding="2">
+											      				<table class="datatable3">
 																	<tr>
-																		<th width="<%=widthShortName%>" class="tbl_elms">Short name</th>
+																		<th width="<%=widthShortName%>">Short name</th>
 																		<%
 																		if (curMode.equals("GIS")){ %>
-																			<th width="<%=widthType%>" class="tbl_elms">GIS type</th><%
+																			<th width="<%=widthType%>">GIS type</th><%
 																		}
 																		%>
-																		<th width="<%=widthDatatype%>" class="tbl_elms">Datatype</th>
-																		<th width="<%=widthElemtype%>" class="tbl_elms">Element type</th>
+																		<th width="<%=widthDatatype%>">Datatype</th>
+																		<th width="<%=widthElemtype%>">Element type</th>
 																	</tr>
 																	
 																	<%
@@ -1650,7 +1650,7 @@ String attrValue = null;
 																		%>
 																		<tr>
 																			<!-- short name -->
-																			<td width="<%=widthShortName%>" class="tbl_elms">
+																			<td width="<%=widthShortName%>">
 																				<%
 																				// red wildcard
 																				if (user!=null && elemWorkingUser!=null){ // mark checked-out elements
@@ -1684,17 +1684,17 @@ String attrValue = null;
 																			if (curMode.equals("GIS")){
 																				gisType = (gisType==null || gisType.length()==0) ? "&nbsp;" : gisType;
 																				%>
-																				<td width="<%=widthType%>" class="tbl_elms">
+																				<td width="<%=widthType%>">
 																					<%=gisType%>
 																				</td><%
 																			}
 																			%>
 																			<!-- datatype -->
-																			<td width="<%=widthDatatype%>" class="tbl_elms">
+																			<td width="<%=widthDatatype%>">
 																				<%=Util.replaceTags(datatype)%>
 																			</td>
 																			<!-- element type -->
-																			<td width="<%=widthElemtype%>" class="tbl_elms">
+																			<td width="<%=widthElemtype%>">
 																				<%
 																				if (elem.getType().equals("CH1")){ %>
 																					<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>">
@@ -1777,7 +1777,7 @@ String attrValue = null;
 												// the table
 												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 													%>
-															<table border="1" width="100%" cellspacing="0" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0;">
+															<table class="datatable4">
 													        	<%
 													        	displayed = 1;
 													        	isOdd = Util.isOdd(displayed);
@@ -1790,17 +1790,17 @@ String attrValue = null;
 																	%>
 																	
 																	<tr class="zebra<%=isOdd%>">
-																		<td width="29%" class="complex_attr_title">
+																		<td width="29%">
 																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
-																		<td width="4%" class="complex_attr_help">
+																		<td width="4%">
 																			<a target="_blank" onclick="pop(this.href)" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
 																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																			</a>
 																		</td>
-																		<td width="63%" class="complex_attr_value">
+																		<td width="63%">
 																			<%
 																			StringBuffer rowValue=null;
 																			Vector rows = attr.getRows();

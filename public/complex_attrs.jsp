@@ -341,15 +341,15 @@ private String legalizeAlert(String in){
 		
 		<table cellspacing="0">
 			<tr>
-				<td align="right" valign="middle" style="border-bottom-width:1;border-bottom-style:groove;border-bottom-color:#808080;border-right-width:1;border-right-style:groove;border-right-color:#808080;">
+				<td align="right" valign="middle">
 					<input type="checkbox" style="height:13;width:13" name="del_attr" value="<%=attrID%>"/>
 				</td>
-				<td style="border-bottom-width:1;border-bottom-style:groove;border-bottom-color:#808080;" valign="middle">
+				<td valign="middle">
 					<b>&#160;<%=Util.replaceTags(attrName)%></b>&nbsp;&nbsp;&nbsp;<img border="0" src="images/<%=Util.replaceTags(obligImg, true)%>" width="16" height="16" alt="<%=Util.replaceTags(obligStr, true)%>"/>
 				</td>
 			</tr>
 			<tr>
-				<td valign="top" style="padding-right:3;padding-top:3;border-right-width:1;border-right-style:groove;border-right-color:#808080;">
+				<td valign="top" style="padding-right:3;padding-top:3;">
 					<%
 					if (user != null && isWorkingCopy){
 						%>
@@ -396,10 +396,10 @@ private String legalizeAlert(String in){
 								String fieldID = (String)hash.get("id");
 								String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 								if (fieldValue == null) fieldValue = " ";
-								System.out.println("=================================================");
-								System.out.println("enne: " + fieldValue);
+								//System.out.println("=================================================");
+								//System.out.println("enne: " + fieldValue);
 								fieldValue = Util.replaceTags(fieldValue);
-								System.out.println("pärast: " + fieldValue);
+								//System.out.println("pärast: " + fieldValue);
 								%>
 								<td class="small" style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=Util.replaceTags(fieldValue)%></td>
 								<%
