@@ -887,16 +887,22 @@ String attrValue = null;
 						<tr>
 							<td width="100%" class="mnd_opt_cnd" colspan="2" >
 								<table border="0" width="100%" cellspacing="0">
+									<col style="width:4%"/>
+									<col style="width:17%"/>
+									<col style="width:4%"/>
+									<col style="width:15%"/>
+									<col style="width:4%"/>
+									<col style="width:56%"/>
 									<tr>
-										<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
-										<td width="17%">Mandatory</td>
-										<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
-										<td width="15%">Optional</td>
-										<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
-										<td width="56%">Conditional</td>
+										<td><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
+										<td>Mandatory</td>
+										<td><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
+										<td>Optional</td>
+										<td><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
+										<td>Conditional</td>
                             		</tr>
 		                            <tr>
-										<td width="100%" colspan="6">
+										<td colspan="6">
 											<b>NB! Edits will be lost if you leave the page without saving!</b>
 										</td>
 		                            </tr>
@@ -1009,14 +1015,16 @@ String attrValue = null;
 										%>
 										<div id="createbox">
 												<table id="outputsmenu">
+												<col style="width:73%"/>
+												<col style="width:27%"/>
 													<%
 													// XML Schema link
 													if (dispAll || dispXmlSchema){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Create an XML Schema for this table
 															</td>
-															<td style="width:27%">
+															<td>
 																<a target="_blank" href="GetSchema?id=TBL<%=tableID%>">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
@@ -1027,10 +1035,10 @@ String attrValue = null;
 													// XML Instance link
 													if (dispAll || dispXmlInstance){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Create an instance XML for this table
 															</td>
-															<td style="width:27%">
+															<td>
 																<a target="_blank" href="GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
@@ -1041,10 +1049,10 @@ String attrValue = null;
 													// XForm link
 													if (dispAll || dispXForm){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Create an XForm for this table
 															</td>
-															<td style="width:27%">
+															<td>
 																<a target="_blank" href="GetXForm?id=<%=tableID%>">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
@@ -1055,10 +1063,10 @@ String attrValue = null;
 													// MS Excel link
 													if (dispAll || dispXLS){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&amp;area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
 															</td>
-															<td style="width:27%">
+															<td>
 																<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt=""/></a>
 															</td>
 														</tr><%
@@ -1067,10 +1075,10 @@ String attrValue = null;
 													// OpenDocument spreadsheet template link
 													if (dispAll || dispODS){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Create an OpenDocument spreadsheet template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&amp;area=ods"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
 															</td>
-															<td style="width:27%">
+															<td>
 																<a href="GetOds?type=tbl&amp;id=<%=tableID%>"><img border="0" src="images/icon_ods.gif" alt=""/></a>
 															</td>
 														</tr><%
@@ -1079,10 +1087,10 @@ String attrValue = null;
 													// codelist
 													if (dispAll || dispXmlSchema){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Get the comma-separated codelists of this table
 															</td>
-															<td style="width:27%">
+															<td>
 																<a target="_blank" href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL">
 																	<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
 																</a>
@@ -1126,13 +1134,19 @@ String attrValue = null;
 										%>
 										
 										<table class="datatable" width="100%">
+												<col style="width:<%=titleWidth%>%"/>
+												<col style="width:4%"/>
+												<% if (colspan==4){ %>
+												<col style="width:4%"/>
+												<% } %>
+												<col style="width:<%=valueWidth%>%"/>
 								  		
 								  			<!-- static attributes -->
 								  			
 											<!-- short name -->								  			
 								    		<tr>
-												<td width="<%=titleWidth%>%" class="short_name">Short name</td>
-												<td width="4%" class="short_name simple_attr_help">
+												<td class="short_name">Short name</td>
+												<td class="short_name simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
@@ -1140,12 +1154,12 @@ String attrValue = null;
 												<%
 												if (colspan==4){
 													%>
-													<td width="4%" class="short_name simple_attr_help">
+													<td class="short_name simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
-												<td width="<%=valueWidth%>%" class="short_name_value">
+												<td class="short_name_value">
 													<%
 													if (mode.equals("view")){ %>
 														<%=Util.replaceTags(dsTable.getShortName())%>
@@ -1165,22 +1179,22 @@ String attrValue = null;
 								    		
 								    		<!-- dataset -->
 								    		<tr class="zebra<%=isOdd%>">
-								    			<td width="<%=titleWidth%>%" class="simple_attr_title">
+								    			<td class="simple_attr_title">
 													Dataset
 												</td>
-												<td width="4%" class="simple_attr_help">
+												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
-													<td width="4%" class="simple_attr_help">
+													<td class="simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
-												<td width="<%=valueWidth%>%" class="simple_attr_value">
+												<td class="simple_attr_value">
 													<%
 													// add case
 													if (mode.equals("add") && Util.voidStr(request.getParameter("ds_id"))){ %>
@@ -1224,15 +1238,15 @@ String attrValue = null;
 									    						dsTable.getIdentifier() + "&amp;pns=" + dsTable.getParentNs();
 									    		%>
 									    		<tr class="zebra<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title">
+													<td class="simple_attr_title">
 														Reference URL
 													</td>
-													<td width="4%" class="simple_attr_help">
+													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 														</a>
 													</td>
-													<td width="<%=valueWidth%>%" class="simple_attr_value">
+													<td class="simple_attr_value">
 														<span class="barfont"><a target="_blank" href="<%=refUrl%>"><%=refUrl%></a></span>
 													</td>
 													
@@ -1304,17 +1318,17 @@ String attrValue = null;
 									    		%>								    		
 								    		
 											    <tr class="zebra<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title">
+													<td class="simple_attr_title">
 														<%=Util.replaceTags(attribute.getShortName())%>
 													</td>
-													<td width="4%" class="simple_attr_help">
+													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
-														<td width="4%" class="simple_attr_help">
+														<td class="simple_attr_help">
 															<img border="0" src="images/<%=Util.replaceTags(obligImg)%>" width="16" height="16" alt=""/>
 														</td><%
 													}
@@ -1322,7 +1336,7 @@ String attrValue = null;
 													
 													<!-- dynamic attribute value display -->
 													
-													<td width="<%=valueWidth%>%" class="simple_attr_value"><%
+													<td class="simple_attr_value"><%
 													
 														// handle image attribute first
 														if (dispType.equals("image")){
@@ -1499,22 +1513,22 @@ String attrValue = null;
 										    
 								    		<!-- Identifier -->
 								    		<tr class="zebra<%=isOdd%>">
-												<td width="<%=titleWidth%>%" class="simple_attr_title">
+												<td class="simple_attr_title">
 													Identifier
 												</td>
-												<td width="4%" class="simple_attr_help">
+												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
-													<td width="4%" class="simple_attr_help">
+													<td class="simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
-												<td width="<%=valueWidth%>%" class="simple_attr_value">
+												<td class="simple_attr_value">
 													<%
 													if(!mode.equals("add")){ %>
 														<b><%=Util.replaceTags(dsTable.getIdentifier())%></b>
@@ -1599,15 +1613,21 @@ String attrValue = null;
 														types.put("CH2", "Quantitative");
 														%>
 											      				<table class="datatable subtable">
+																		<col style="width:<%=widthShortName%>"/>
+																		<% if (curMode.equals("GIS")){ %>
+																		<col style="width:<%=widthType%>"/>
+																		<% } %>
+																		<col style="width:<%=widthDatatype%>"/>
+																		<col style="width:<%=widthElemtype%>"/>
 																	<tr>
-																		<th width="<%=widthShortName%>">Short name</th>
+																		<th>Short name</th>
 																		<%
 																		if (curMode.equals("GIS")){ %>
-																			<th width="<%=widthType%>">GIS type</th><%
+																			<th>GIS type</th><%
 																		}
 																		%>
-																		<th width="<%=widthDatatype%>">Datatype</th>
-																		<th width="<%=widthElemtype%>">Element type</th>
+																		<th>Datatype</th>
+																		<th>Element type</th>
 																	</tr>
 																	
 																	<%
@@ -1650,7 +1670,7 @@ String attrValue = null;
 																		%>
 																		<tr>
 																			<!-- short name -->
-																			<td width="<%=widthShortName%>">
+																			<td>
 																				<%
 																				// red wildcard
 																				if (user!=null && elemWorkingUser!=null){ // mark checked-out elements
@@ -1684,17 +1704,17 @@ String attrValue = null;
 																			if (curMode.equals("GIS")){
 																				gisType = (gisType==null || gisType.length()==0) ? "&nbsp;" : gisType;
 																				%>
-																				<td width="<%=widthType%>">
+																				<td>
 																					<%=gisType%>
 																				</td><%
 																			}
 																			%>
 																			<!-- datatype -->
-																			<td width="<%=widthDatatype%>">
+																			<td>
 																				<%=Util.replaceTags(datatype)%>
 																			</td>
 																			<!-- element type -->
-																			<td width="<%=widthElemtype%>">
+																			<td>
 																				<%
 																				if (elem.getType().equals("CH1")){ %>
 																					<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>">
@@ -1778,6 +1798,10 @@ String attrValue = null;
 												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 													%>
 															<table class="datatable" id="dataset-attributes">
+																		<col style="width:29%"/>
+																		<col style="width:4%"/>
+																		<col style="width:63%"/>
+
 													        	<%
 													        	displayed = 1;
 													        	isOdd = Util.isOdd(displayed);
@@ -1790,17 +1814,17 @@ String attrValue = null;
 																	%>
 																	
 																	<tr class="zebra<%=isOdd%>">
-																		<td width="29%">
+																		<td>
 																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
-																		<td width="4%">
+																		<td>
 																			<a target="_blank" onclick="pop(this.href)" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
 																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																			</a>
 																		</td>
-																		<td width="63%">
+																		<td>
 																			<%
 																			StringBuffer rowValue=null;
 																			Vector rows = attr.getRows();
