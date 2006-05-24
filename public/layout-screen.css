@@ -776,102 +776,77 @@ th.dst_tbls {
 }
 
 /* Create box */
-.datatable1 {
+#outputsmenu {
 	border: 0px;
 	width: 100%;
-}
-
-.datatable1 td {
 	text-align: left;
 	vertical-align: middle;
 }
 
+
 /* Tables table */
-.datatable2 {
-	border: 1px;
-	bordercolorlight: #C0C0C0;
-	bordercolordark:#C0C0C0;
+#dataset-tables {
 	width: 100%;
 }
 
-.datatable2 th {
+#dataset-tables th {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	font-style: normal;
 	line-height: normal;
 	font-weight: bold;
-	border-left: 1px solid #C0C0C0;
-	border-top: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
 	color: #FFFFFF;
 	background: #666666;
 	text-decoration: none;
-	text-align: left;
 }
 
-.datatable2 td{
+#dataset-tables td{
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	font-style: normal;
 	line-height: normal;
-	border-left: 1px solid #C0C0C0;
-	border-top: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
 	background: #FFFFFF;
 	text-decoration: none;
 	text-align: left;
 }
 
 /* Dataset table "Obligations in ROD" */
-.datatable3 {
-	border: 1px;
-	bordercolorlight: #C0C0C0;
-	bordercolordark:#C0C0C0;
+.subtable{
 	width: 100%;
 	padding: 2px;
 }
 
-.datatable3 th {
+.subtable th {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 7pt;
 	font-style: normal;
 	line-height: normal;
 	font-weight: bold;
-	border-left: 1px solid #C0C0C0;
-	border-top: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
 	color: #FFFFFF;
 	background: #808080;
 	text-decoration: none;
-	text-align: left;
 }
 
-.datatable3 td{
+.subtable td{
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 7pt;
 	font-style: normal;
 	line-height: normal;
 	font-weight: normal;
-	border-left: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
 	background: #FFFFFF;
 	text-decoration: none;
 	vertical-align: top;
 }
 
 /* Dataset table "Complex attributes" */
-.datatable4 {
-	border-collapse: collapse;
-	border: 1px solid #C0C0C0;
-	bordercolorlight: #C0C0C0;
-	bordercolordark: #C0C0C0;
+#dataset-attributes {
 	width: 100%;
+	vertical-align: middle;
 }
 
-.datatable4 td {
-	border: 1px solid #C0C0C0;
+#dataset-attributes td{
+	vertical-align: middle;
 }
-
 
 /* Tables for arranging formulars */
 .formtable {
