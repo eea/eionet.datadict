@@ -557,26 +557,6 @@ td.simple_attr_help {
 	text-align: center;
 }
 
-td.simple_attr_title_odd {
-	font-weight: bold;
-	vertical-align: top;
-}
-
-td.simple_attr_value_odd {
-	vertical-align: top;
-}
-
-td.simple_attr_value_big_odd {
-	font-weight: bold;
-	font-size: 12pt;
-	vertical-align: top;
-}
-
-td.simple_attr_help_odd {
-	vertical-align: top;
-	text-align: center;
-}
-
 td.tbl_elms {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 7pt;
@@ -762,11 +742,14 @@ th.dst_tbls {
 	text-align: left;
 }
 
-.datatable .number {
-	text-align: right;
+table .number {
+        text-align: right;
 }
-.datatable .sum {
-	font-weight: bold;
+table .sum {
+        font-weight: bold;
+}
+table .center {
+        text-align: center;
 }
 
 .datatable td, .datatable th  {

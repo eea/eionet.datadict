@@ -1,5 +1,5 @@
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-		<link rel="stylesheet" type="text/css" href="layout-print.css" media="print" />
+		<link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/layout-print.css" media="print" />
 		<link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" title="Default" />
 		<link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
 		<link rel="alternate stylesheet" type="text/css"
