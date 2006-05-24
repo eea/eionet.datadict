@@ -1008,15 +1008,15 @@ String attrValue = null;
 									if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispXForm || dispCache || dispODS){
 										%>
 										<div id="createbox">
-												<table class="datatable1">
+												<table id="outputsmenu">
 													<%
 													// XML Schema link
 													if (dispAll || dispXmlSchema){ %>
 														<tr>
-															<td width="73%">
+															<td style="width:73%">
 																Create an XML Schema for this table
 															</td>
-															<td width="27%">
+															<td style="width:27%">
 																<a target="_blank" href="GetSchema?id=TBL<%=tableID%>">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
@@ -1027,10 +1027,10 @@ String attrValue = null;
 													// XML Instance link
 													if (dispAll || dispXmlInstance){ %>
 														<tr>
-															<td width="73%">
+															<td style="width:73%">
 																Create an instance XML for this table
 															</td>
-															<td width="27%">
+															<td style="width:27%">
 																<a target="_blank" href="GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
@@ -1041,10 +1041,10 @@ String attrValue = null;
 													// XForm link
 													if (dispAll || dispXForm){ %>
 														<tr>
-															<td width="73%">
+															<td style="width:73%">
 																Create an XForm for this table
 															</td>
-															<td width="27%">
+															<td style="width:27%">
 																<a target="_blank" href="GetXForm?id=<%=tableID%>">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 																</a>
@@ -1055,10 +1055,10 @@ String attrValue = null;
 													// MS Excel link
 													if (dispAll || dispXLS){ %>
 														<tr>
-															<td width="73%">
+															<td style="width:73%">
 																Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&amp;area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
 															</td>
-															<td width="27%">
+															<td style="width:27%">
 																<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt=""/></a>
 															</td>
 														</tr><%
@@ -1067,10 +1067,10 @@ String attrValue = null;
 													// OpenDocument spreadsheet template link
 													if (dispAll || dispODS){ %>
 														<tr>
-															<td width="73%">
+															<td style="width:73%">
 																Create an OpenDocument spreadsheet template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&amp;area=ods"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
 															</td>
-															<td width="27%">
+															<td style="width:27%">
 																<a href="GetOds?type=tbl&amp;id=<%=tableID%>"><img border="0" src="images/icon_ods.gif" alt=""/></a>
 															</td>
 														</tr><%
@@ -1079,10 +1079,10 @@ String attrValue = null;
 													// codelist
 													if (dispAll || dispXmlSchema){ %>
 														<tr>
-															<td width="73%">
+															<td style="width:73%">
 																Get the comma-separated codelists of this table
 															</td>
-															<td width="27%">
+															<td style="width:27%">
 																<a target="_blank" href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL">
 																	<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
 																</a>
@@ -1598,7 +1598,7 @@ String attrValue = null;
 														types.put("CH1", "Fixed values");
 														types.put("CH2", "Quantitative");
 														%>
-											      				<table class="datatable3">
+											      				<table class="datatable subtable">
 																	<tr>
 																		<th width="<%=widthShortName%>">Short name</th>
 																		<%
@@ -1777,7 +1777,7 @@ String attrValue = null;
 												// the table
 												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 													%>
-															<table class="datatable4">
+															<table class="datatable" id="dataset-attributes">
 													        	<%
 													        	displayed = 1;
 													        	isOdd = Util.isOdd(displayed);

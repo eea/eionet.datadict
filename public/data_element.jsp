@@ -1363,12 +1363,12 @@ else{
 									//user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u")
 									if (!popup && (dispAll || dispXmlSchema)){ %>
 								<div id="createbox">
-									<table class="datatable1">
+									<table id="outputsmenu">
 										<tr>
-											<td width="73%">
+											<td style="width:73%">
 												Create an XML Schema for this element
 											</td>
-											<td width="27%">
+											<td style="width:27%">
 												<a target="_blank" href="GetSchema?id=ELM<%=delem_id%>">
 													<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 												</a>
@@ -1377,10 +1377,10 @@ else{
 										<%
 										if (dataElement.getType().equals("CH1") && fixedValues!=null && fixedValues.size()>0){%>
 											<tr>
-												<td width="73%">
+												<td style="width:73%">
 													Get a comma-separated codelist of this element
 												</td>
-												<td width="27%">
+												<td style="width:27%">
 													<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
 														<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
 													</a>
@@ -2207,7 +2207,7 @@ else{
 												<!-- table part -->
 												<%
 												if (mode.equals("view") && fixedValues!=null && fixedValues.size()>0){%>
-															<table class="datatable3">
+															<table class="datatable subtable">
 																<tr>
 																	<th width="20%">Value</th>
 																	<th width="40%">Definition</th>
@@ -2314,7 +2314,7 @@ else{
 												<!-- table part -->
 												<%												
 												if (mode.equals("view") && fKeys!=null && fKeys.size()>0){%>
-															<table class="datatable3">
+															<table class="datatable subtable">
 																<tr>
 																	<th width="50%">Element</th>
 																	<th width="50%">Table</th>
@@ -2365,7 +2365,7 @@ else{
 												</h2>
 												
 												<!-- table part -->
-														<table class="datatable3">
+														<table class="datatable subtable">
 															<tr>
 																<th width="43%">Table</th>
 																<th width="43%">Dataset</th>
@@ -2452,7 +2452,7 @@ else{
 												// the table
 												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 													%>
-															<table class="datatable4">
+															<table class="datatable" id="dataset-attributes">
 													        	<%
 													        	displayed = 1;
 													        	isOdd = Util.isOdd(displayed);
