@@ -83,51 +83,37 @@
 /* Tables table */
 #dataset-tables {
 	width: 100%;
+	font-size: 90%;
 }
 
 #dataset-tables th {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 10pt;
-	font-style: normal;
-	line-height: normal;
 	font-weight: bold;
 	color: #FFFFFF;
 	background: #666666;
 	text-decoration: none;
 }
 
-#dataset-tables td{
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 10pt;
-	font-style: normal;
-	line-height: normal;
+#dataset-tables td {
 	background: #FFFFFF;
 	text-decoration: none;
 	text-align: left;
 }
 
 /* Dataset table "Obligations in ROD" */
-.subtable{
+.subtable {
 	width: 100%;
 	padding: 2px;
+	font-size: 70%;
 }
 
 .subtable th {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 7pt;
-	font-style: normal;
-	line-height: normal;
 	font-weight: bold;
 	color: #FFFFFF;
 	background: #808080;
 	text-decoration: none;
 }
 
-.subtable td{
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 7pt;
-	font-style: normal;
-	line-height: normal;
+.subtable td {
 	font-weight: normal;
 	background: #FFFFFF;
 	text-decoration: none;
@@ -137,10 +123,9 @@
 /* Dataset table "Complex attributes" */
 #dataset-attributes {
 	width: 100%;
-	vertical-align: middle;
 }
 
-#dataset-attributes td{
+#dataset-attributes td {
 	vertical-align: middle;
 }
 

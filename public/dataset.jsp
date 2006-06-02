@@ -781,16 +781,22 @@ private Vector getValues(String id, String mode, Vector attributes){
 					if (!mode.equals("view")){ %>
 					
 								<table class="mnd_opt_cnd" border="0" width="100%" cellspacing="0" style="margin-top:10px; background: #ffffff; border:1px solid #FF9900">
+									<col style="width:4%"/>
+									<col style="width:17%"/>
+									<col style="width:4%"/>
+									<col style="width:15%"/>
+									<col style="width:4%"/>
+									<col style="width:56%"/>
 									<tr>
-										<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
-										<td width="17%">Mandatory</td>
-										<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
-										<td width="15%">Optional</td>
-										<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
-										<td width="56%">Conditional</td>
+										<td><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
+										<td>Mandatory</td>
+										<td><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
+										<td>Optional</td>
+										<td><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
+										<td>Conditional</td>
 									</tr>
 									<tr>
-										<td width="100%" colspan="6">
+										<td colspan="6">
 											<b>NB! Edits will be lost if you leave the page without saving!</b>
 										</td>
 									</tr>
@@ -902,15 +908,16 @@ private Vector getValues(String id, String mode, Vector attributes){
 				                    	%>
 											<div id="createbox">
 												<table id="outputsmenu">
-													
+													<col style="width:73%"/>
+													<col style="width:27%"/>
 													<%
 													// PDF link
 													if (dispAll || dispPDF){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Create technical specification for this dataset
 															</td>
-															<td style="width:27%">
+															<td>
 																<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN">
 																	<img border="0" src="images/icon_pdf.jpg" width="17" height="18" alt="PDF" />
 																</a>
@@ -921,10 +928,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 													// XML Schema link
 													if (dispAll || dispXmlSchema){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Create an XML Schema for this dataset
 															</td>
-															<td style="width:27%">
+															<td>
 																<a target="_blank" href="GetSchema?id=DST<%=ds_id%>">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt="XML icon"/>
 																</a>
@@ -935,10 +942,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 													// XML Instance link
 													if (dispAll || dispXmlInstance){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Create an instance XML for this dataset
 															</td>
-															<td style="width:27%">
+															<td>
 																<a target="_blank" href="GetXmlInstance?id=<%=dataset.getID()%>&amp;type=dst">
 																	<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt="XML icon"/>
 																</a>
@@ -949,10 +956,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 													// MS Excel link
 													if (dispAll || dispXLS){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Create an MS Excel template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=excel" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
 															</td>
-															<td style="width:27%">
+															<td>
 																<a href="GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt="XLS icon"/></a>
 															</td>
 														</tr><%
@@ -961,10 +968,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 													// OpenDocument spreadsheet link
 													if (dispAll || dispODS){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Create an OpenDocument spreadsheet template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=ods" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
 															</td>
-															<td style="width:27%">
+															<td>
 																<a href="GetOds?type=dst&amp;id=<%=ds_id%>"><img border="0" src="images/icon_ods.gif" alt="ODS icon"/></a>
 															</td>
 														</tr><%
@@ -973,10 +980,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 													// MS Access link
 													if (dispAll || dispMDB){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Create validation metadata for MS Access template&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
 															</td>
-															<td style="width:27%">
+															<td>
 																<a href="GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true"><img border="0" src="images/icon_mdb.jpg" width="16" height="18" alt="MDB icon"/></a>
 															</td>
 														</tr><%
@@ -985,10 +992,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 													// codelist
 													if (dispAll || dispXmlSchema){ %>
 														<tr>
-															<td style="width:73%">
+															<td>
 																Get the comma-separated codelists of this dataset
 															</td>
-															<td style="width:27%">
+															<td>
 																<a target="_blank" href="CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST">
 																	<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
 																</a>
@@ -1005,8 +1012,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 														String title = (String)hash.get("title");
 														%>
 														<tr>
-															<td style="width:73%"><%=Util.replaceTags(title)%></td>
-															<td style="width:27%">
+															<td><%=Util.replaceTags(title)%></td>
+															<td>
 																<a href="DocDownload?file=<%=Util.replaceTags(md5)%>"><img border="0" src="images/<%=Util.replaceTags(icon)%>" width="16" height="18" alt="icon"/></a>
 																<%
 																if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){
@@ -1023,12 +1030,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 														%>
 														<tr style="height:20px;">
 															<td colspan="2">
-																<span class="barfont">
+																<small>
 																	[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>" onclick="pop(this.href)">Upload a document ...</a> ]
-																</span>
-																<span class="barfont">
+																</small>
+																<small>
 																	[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>" onclick="pop(this.href)">Open cache ...</a> ]
-																</span>
+																</small>
 															</td>
 														</tr>
 														<%
@@ -1057,13 +1064,20 @@ private Vector getValues(String id, String mode, Vector attributes){
 										%>
 
 										<table class="datatable">
+											<col style="width:<%=titleWidth%>%"/>
+											<col style="width:4%"/>
+											<% if (colspan==4){ %>
+											<col style="width:4%"/>
+											<% } %>
+											<col style="width:<%=valueWidth%>%"/>
+
 								  		
 								  			<!-- static attributes -->
 								  			
 											<!-- short name -->
 								    		<tr>
-												<td width="<%=titleWidth%>%" class="short_name">Short name</td>
-												<td width="4%" class="short_name simple_attr_help">
+												<td class="short_name">Short name</td>
+												<td class="short_name simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 													</a>
@@ -1071,12 +1085,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 												<%
 												if (colspan==4){
 													%>
-													<td width="4%" class="short_name simple_attr_help">
+													<td class="short_name simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
 													</td><%
 												}
 												%>
-												<td width="<%=valueWidth%>%" class="short_name_value">
+												<td class="short_name_value">
 													<%
 													if (mode.equals("view")){ %>
 														<%=Util.replaceTags(dataset.getShortName())%>
@@ -1097,22 +1111,22 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		<!-- RegistrationStatus -->
 								    		
 								    		<tr class="zebra<%=isOdd%>">
-												<td width="<%=titleWidth%>%" class="simple_attr_title">
+												<td class="simple_attr_title">
 													RegistrationStatus
 												</td>
-												<td width="4%" class="simple_attr_help">
+												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
-													<td width="4%" class="simple_attr_help">
+													<td class="simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
 													</td><%
 												}
 												%>
-												<td width="<%=valueWidth%>%" class="simple_attr_value">
+												<td class="simple_attr_value">
 													<%
 													if (mode.equals("view")){ %>														
 														<%=Util.replaceTags(regStatus)%><%
@@ -1140,16 +1154,16 @@ private Vector getValues(String id, String mode, Vector attributes){
 									    		String refUrl = jspUrlPrefix + "dataset.jsp?mode=view&amp;ds_idf=" + dataset.getIdentifier();
 									    		%>
 								    		  <tr class="zebra<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title">
+													<td class="simple_attr_title">
 														Reference URL
 													</td>
-													<td width="4%" class="simple_attr_help">
+													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
-													<td width="<%=valueWidth%>%" class="simple_attr_value">
-														<span class="barfont"><a target="_blank" href="<%=refUrl%>"><%=refUrl%></a></span>
+													<td class="simple_attr_value">
+														<small><a target="_blank" href="<%=refUrl%>"><%=refUrl%></a></small>
 													</td>
 													
 													<%isOdd = Util.isOdd(++displayed);%>
@@ -1203,17 +1217,17 @@ private Vector getValues(String id, String mode, Vector attributes){
 												%>
 												
 								    		<tr class="zebra<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title">
+													<td class="simple_attr_title">
 														<%=Util.replaceTags(attribute.getShortName())%>
 													</td>
-													<td width="4%" class="simple_attr_help">
+													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
-														<td width="4%" class="simple_attr_help">
+														<td class="simple_attr_help">
 															<img border="0" src="images/<%=Util.replaceTags(obligImg)%>" alt="<%=Util.replaceTags(obligTxt)%>" width="16" height="16"/>
 														</td><%
 													}
@@ -1221,7 +1235,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													
 													<!-- dynamic attribute value display -->
 													
-													<td width="<%=valueWidth%>%" style="word-wrap:break-word;wrap-option: emergency" class="simple_attr_value">
+													<td style="word-wrap:break-word;wrap-option: emergency" class="simple_attr_value">
 														<%
 														
 														// if mode is 'view', display simple a text, otherwise an input						
@@ -1380,43 +1394,43 @@ private Vector getValues(String id, String mode, Vector attributes){
 												String checkedXmlSchema = dataset.displayCreateLink("XMLSCHEMA") ? "checked='checked'" : "";												
 												%>
 								    		  <tr class="zebra<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title">
+													<td class="simple_attr_title">
 														Public outputs
 													</td>
-													<td width="4%" class="simple_attr_help">
+													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=public_outputs" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
-														<td width="4%" class="simple_attr_help">
+														<td class="simple_attr_help">
 															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
 														</td><%
 													}
 													%>
-													<td width="<%=valueWidth%>%" class="simple_attr_value">
+													<td class="simple_attr_value">
 														<%
 														if(mode.equals("view")){ %>
 															<input type="checkbox" disabled="disabled" <%=checkedPDF%>/>
-																<span class="barfont">Technical specification in PDF format</span>
+																<small>Technical specification in PDF format</small>
 															<br/>
 															<input type="checkbox" disabled="disabled" <%=checkedXLS%>/>
-																<span class="barfont">MS Excel template</span>
+																<small>MS Excel template</small>
 															<br/>
 															<input type="checkbox" disabled="disabled" <%=checkedXmlSchema%>/>
-																<span class="barfont">The definition on XML Schema format</span>
+																<small>The definition on XML Schema format</small>
 															<%
 														}
 														else{ %>
 															<input type="checkbox" name="disp_create_links" value="PDF" <%=checkedPDF%>/>
-																<span class="barfont">Technical specification in PDF format</span>
+																<small>Technical specification in PDF format</small>
 															<br/>
 															<input type="checkbox" name="disp_create_links" value="XLS" <%=checkedXLS%>/>
-																<span class="barfont">MS Excel template</span>
+																<small>MS Excel template</small>
 															<br/>
 															<input type="checkbox" name="disp_create_links" value="XMLSCHEMA" <%=checkedXmlSchema%>/>
-																<span class="barfont">The definition on XML Schema format</span>															
+																<small>The definition on XML Schema format</small>
 															<%
 														}
 														%>
@@ -1432,22 +1446,22 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		if (!mode.equals("add") && editPrm){
 												String dstVersion = dataset.getVersion(); %>
 								    		  <tr class="zebra<%=isOdd%>">
-													<td width="<%=titleWidth%>%" class="simple_attr_title">
+													<td class="simple_attr_title">
 														CheckInNo
 													</td>
-													<td width="4%" class="simple_attr_help">
+													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
-														<td width="4%" class="simple_attr_help">
+														<td class="simple_attr_help">
 															<img border="0" src="images/mandatory.gif" width="16" height="16" alt="Help"/>
 														</td><%
 													}
 													%>
-													<td width="<%=valueWidth%>%" class="simple_attr_value">
+													<td class="simple_attr_value">
 														<%=Util.replaceTags(dstVersion)%>
 													</td>
 													
@@ -1458,22 +1472,22 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		
 								    		<!-- Identifier -->
 								    		<tr class="zebra<%=isOdd%>">
-												<td width="<%=titleWidth%>%" class="simple_attr_title">
+												<td class="simple_attr_title">
 													Identifier
 												</td>
-												<td width="4%" class="simple_attr_help">
+												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
-													<td width="4%" class="simple_attr_help">
+													<td class="simple_attr_help">
 														<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
 													</td><%
 												}
 												%>
-												<td width="<%=valueWidth%>%" class="simple_attr_value">
+												<td class="simple_attr_value">
 													<%
 													if(!mode.equals("add")){ %>
 														<b><%=Util.replaceTags(idfier)%></b>
@@ -1576,9 +1590,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<%
 													// tables link
 													if (user!=null && editPrm && topFree){ %>
-														<span class="barfont">
+														<small>
 															[Click <a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.replaceTags(ds_name)%>"><b>HERE</b></a> to manage tables of this dataset]
-														</span><%
+														</small><%
 													}
 													%>
 												</h2>
@@ -1588,10 +1602,11 @@ private Vector getValues(String id, String mode, Vector attributes){
 												if (mode.equals("view") && tables!=null && tables.size()>0){
 													%>
 															<table class="datatable" id="dataset-tables">
-													        
+																<col style="width:50%"/>
+																<col style="width:50%"/>
 																<tr>
-																	<th width="50%">Full name</th>
-																	<th width="50%">Short name</th>
+																	<th>Full name</th>
+																	<th>Short name</th>
 																</tr>
 																
 																<%
@@ -1627,7 +1642,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																	%>
 																																		
 																	<tr>
-																		<td width="50%">
+																		<td>
 																			<%
 																			if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
 																				%> <font title="<%=Util.replaceTags(tblWorkingUser,true)%>" color="red">* </font><%
@@ -1642,7 +1657,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																				<%=Util.replaceTags(escapedName)%>
 																			</a>
 																		</td>
-																		<td width="50%">
+																		<td>
 																			<%=Util.replaceTags(table.getShortName())%>
 																		</td>
 																	</tr>																	
@@ -1654,7 +1669,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<%
 													if (user!=null && tables!=null && tables.size()>0 && hasMarkedTables){%>
 														<div class="barfont">
-																(a red wildcard stands for checked-out table)
+																(a red star stands for checked-out table)
 														</div><%
 													}
 												}
@@ -1704,10 +1719,13 @@ private Vector getValues(String id, String mode, Vector attributes){
 												<%
 												if (mode.equals("view") && rodLinks!=null && rodLinks.size()>0){%>
 															<table class="datatable subtable">
+																<col style="width:20%"/>
+																<col style="width:40%"/>
+																<col style="width:40%"/>
 																<tr>
-																	<th width="20%">Obligation</th>
-																	<th width="40%">Legal instrument</th>
-																	<th width="40%">Details</th>																	
+																	<th>Obligation</th>
+																	<th>Legal instrument</th>
+																	<th>Details</th>																	
 																</tr>
 																<%
 																// rows
@@ -1720,13 +1738,13 @@ private Vector getValues(String id, String mode, Vector attributes){
 																	
 																	%>
 																	<tr>
-																		<td width="20%">
+																		<td>
 																			<%=Util.replaceTags(raTitle)%>
 																		</td>
-																		<td width="40%">
+																		<td>
 																			<%=Util.replaceTags(liTitle)%>
 																		</td>
-																		<td width="40%">
+																		<td>
 																			<a target="_blank" href="<%=Util.replaceTags(raDetails, true)%>"><%=Util.replaceTags(raDetails, true)%></a>
 																		</td>																		
 																	</tr><%
@@ -1777,6 +1795,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 													%>
 															<table class="datatable" id="dataset-attributes">
+																<col style="width:29%"/>
+																<col style="width:4%"/>
+																<col style="width:63%"/>
 													        	<%
 													        	displayed = 1;
 													        	isOdd = Util.isOdd(displayed);
@@ -1789,17 +1810,17 @@ private Vector getValues(String id, String mode, Vector attributes){
 																	%>
 																	
 																	<tr class="zebra<%=isOdd%>">
-																		<td width="29%">
+																		<td>
 																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
-																		<td width="4%">
+																		<td>
 																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href)">
 																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																			</a>
 																		</td>
-																		<td width="63%">
+																		<td>
 																			<%
 																			StringBuffer rowValue=null;
 																			Vector rows = attr.getRows();
