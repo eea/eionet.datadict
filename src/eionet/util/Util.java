@@ -398,6 +398,10 @@ public class Util {
     		String in, boolean dontCreateHTMLAnchors, boolean dontCreateHTMLLineBreaks){
     	
 	    in = (in != null ? in : "");
+	    
+	    if (in.trim().startsWith("Many EEA Member Countries have previously submitted data on Nitrate in groundwater"))
+	    	System.out.println();
+	    
 	    StringBuffer ret = new StringBuffer();
 	    for (int i = 0; i < in.length(); i++) {
 	      char c = in.charAt(i);
@@ -426,12 +430,12 @@ public class Util {
 	    	  else
 	    		  ret.append("&amp;");
 	      }
-	      else if (c == '\n' && dontCreateHTMLLineBreaks==false)
-	        ret.append("<br/>");
-		  else if (c == '\r' && in.charAt(i+1)=='\n' && dontCreateHTMLLineBreaks==false){
-			ret.append("<br/>");
-			i = i + 1;
-		  }
+//	      else if (c == '\n' && dontCreateHTMLLineBreaks==false)
+//	        ret.append("<br/>");
+//		  else if (c == '\r' && in.charAt(i+1)=='\n' && dontCreateHTMLLineBreaks==false){
+//			ret.append("<br/>");
+//			i = i + 1;
+//		  }
 	      else
 	        ret.append(c);
 	    }
@@ -439,8 +443,21 @@ public class Util {
 	    String retString = ret.toString();
 	    if (dontCreateHTMLAnchors==false)
 	    	retString=setAnchors(retString, true, 50);
+	    
+	    ret = new StringBuffer();
+	    for (int i = 0; i < retString.length(); i++) {
+	    	char c = retString.charAt(i);
+	    	if (c == '\n' && dontCreateHTMLLineBreaks==false)
+	    		ret.append("<br/>");
+	    	else if (c == '\r' && i!=(retString.length()-1) && retString.charAt(i+1)=='\n' && dontCreateHTMLLineBreaks==false){
+	    		ret.append("<br/>");
+				i = i + 1;
+	    	}
+	    	else
+	    		ret.append(c);
+	    }
 
-	    return retString;
+	    return ret.toString();
 	}
 	
     /**
@@ -465,7 +482,7 @@ public class Util {
 	/**
 	* Finds all urls in a given string and replaces them with HTML anchors.
 	* If boolean newWindow==true then target will be a new window, else no.
-	* If boolean cutLink>0 then cut the displayed link lenght cutLink.
+	* If boolean cutLink > 0 then cut the displayed link length at cutLink.
 	*/
 	public static String setAnchors(String s, boolean newWindow, int cutLink){
 
@@ -474,23 +491,8 @@ public class Util {
 		StringTokenizer st = new StringTokenizer(s, " \t\n\r\f", true);
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken();
-			if (!isURL(token))
-				buf.append(token);
-			else{
-				StringBuffer _buf = new StringBuffer("<a ");
-				if (newWindow) _buf.append("target=\"_blank\" ");
-				_buf.append("href=\"");
-				_buf.append(token);
-				_buf.append("\">");
-				
-				if (cutLink<token.length())
-					_buf.append(token.substring(0, cutLink)).append("...");
-				else
-					_buf.append(token);
-					
-				_buf.append("</a>");
-				buf.append(_buf.toString());
-			}
+			token = processForLink(token, newWindow, cutLink);
+			buf.append(token);
 		}
         
 		return buf.toString();
@@ -502,7 +504,7 @@ public class Util {
     */
     public static String setAnchors(String s, boolean newWindow){
         
-        return setAnchors(s, newWindow, 0);
+        return setAnchors(s, newWindow, 9999999);
     }
   
     /**
@@ -515,13 +517,87 @@ public class Util {
     }
     
     /**
+     * 
+     * @param s
+     * @return
+     */
+    public static String processForLink(String in, boolean newWindow, int cutLink){
+    	
+    	if (in==null || in.trim().length()==0)
+    		return in;
+    	
+    	HashSet urlSchemes = new HashSet();
+    	urlSchemes.add("http://");
+    	urlSchemes.add("https://");
+    	urlSchemes.add("ftp://");
+    	urlSchemes.add("mailto://");
+    	urlSchemes.add("ldap://");
+    	urlSchemes.add("file://");
+    	
+    	int beginIndex = -1;
+    	Iterator iter = urlSchemes.iterator();
+    	while (iter.hasNext() && beginIndex<0)
+    		beginIndex = in.indexOf((String)iter.next());
+    	
+    	if (beginIndex<0)
+    		return in;
+    	
+    	int endIndex = -1;
+    	String s = null;
+    	for (endIndex=in.length(); endIndex>beginIndex; endIndex--){
+    		s = in.substring(beginIndex, endIndex);
+    		if (isURL(s))
+    			break;
+    	}
+    	
+    	if (s==null)
+    		return in;
+    	
+    	HashSet endChars = new HashSet();
+    	endChars.add(new Character('!'));
+    	endChars.add(new Character('\''));
+    	endChars.add(new Character('('));
+    	endChars.add(new Character(')'));
+    	endChars.add(new Character('.'));
+    	endChars.add(new Character(':'));
+    	endChars.add(new Character(';'));
+    	
+    	for (endIndex=endIndex-1; endIndex > beginIndex; endIndex--){
+    		char c = in.charAt(endIndex);
+    		if (!endChars.contains(new Character(c)))
+    			break;
+    	}
+    	
+    	StringBuffer buf = new StringBuffer(in.substring(0, beginIndex));
+    	
+    	String link = in.substring(beginIndex, endIndex+1);
+    	StringBuffer _buf = new StringBuffer("<a ");
+		if (newWindow) _buf.append("target=\"_blank\" ");
+		_buf.append("href=\"");
+		_buf.append(link);
+		_buf.append("\">");
+		
+		if (cutLink<link.length())
+			_buf.append(link.substring(0, cutLink)).append("...");
+		else
+			_buf.append(link);
+			
+		_buf.append("</a>");
+		buf.append(_buf.toString());
+    	
+    	buf.append(in.substring(endIndex+1));
+    	return buf.toString();
+    }
+    
+    /**
     * Checks if the given string is a well-formed URL
     */
     public static boolean isURL(String s){
         try {
-            URL url = new URL(s);
+            URI url = new URI(s);
         }
-        catch (MalformedURLException e){
+        //catch (MalformedURLException e){
+        catch (URISyntaxException e){
             return false;
         }
         
@@ -910,7 +986,12 @@ public class Util {
     */
     public static void main(String[] args){
 
-    	String s = Util.getObligationID("http://rod.eionet.eu.int/show.jsv?id=32&mode=A&aid=170");
-		System.out.println("|" + s + "|");
+    	String s = Util.processForLink("  (http://www.neti.ee!) \t", true, 9999);
+    	System.out.print("|");
+    	System.out.print(s);
+    	System.out.print("|");
+    	
+//    	boolean b = Util.isURL("http://www.neti.ee))");
+//		System.out.println(b);
     }
 }
