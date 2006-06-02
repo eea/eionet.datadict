@@ -179,12 +179,35 @@
 			}
 			
 			String disabled = user == null ? "disabled='disabled'" : "";
+			
+			// init page title
+			StringBuffer pageTitle = new StringBuffer();
+			if (mode.equals("edit")){				
+				if (type==null)
+					pageTitle.append("Edit attribute");
+				else if (type.equals(DElemAttribute.TYPE_COMPLEX))
+					pageTitle.append("Edit complex attribute");
+				else if (type.equals(DElemAttribute.TYPE_SIMPLE))
+					pageTitle.append("Edit simple attribute");
+			}
+			else{
+				if (type==null)
+					pageTitle.append("Attribute");
+				else if (type.equals(DElemAttribute.TYPE_COMPLEX))
+					pageTitle.append("Complex attribute");
+				else if (type.equals(DElemAttribute.TYPE_SIMPLE))
+					pageTitle.append("Simple attribute");
+			}
+			if (attribute!=null && attribute.getShortName()!=null)
+				pageTitle.append(" - ").append(attribute.getShortName());
+
+				
 			%>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
-  <title>Data Dictionary - Attribute</title>
+  <title><%=pageTitle.toString()%></title>
   <script type="text/javascript">
   // <![CDATA[
 		function submitForm(mode){

@@ -538,12 +538,34 @@ private String legalizeAlert(String in){
         	Vector refTables = null;
         	if (!mode.equals("add") && elmCommon)
         		refTables = searchEngine.getReferringTables(delem_id);
+        		
+        	// init page title
+			StringBuffer pageTitle = new StringBuffer();
+			if (mode.equals("edit")){
+				if (elmCommon)
+					pageTitle.append("Edit common element");
+				else
+					pageTitle.append("Edit element");
+			}
+			else{
+				if (elmCommon)
+					pageTitle.append("Common element");
+				else
+					pageTitle.append("Element");
+			}
+			if (dataElement!=null && dataElement.getShortName()!=null)
+				pageTitle.append(" - ").append(dataElement.getShortName());
+			if (dsTable!=null && dataset!=null){
+				if (dsTable.getShortName()!=null && dataset.getShortName()!=null)
+					pageTitle.append("/").append(dsTable.getShortName()).append("/").append(dataset.getShortName());
+			}
+
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
-    <title>Data element - Data Dictionary</title>
+    <title><%=pageTitle.toString()%></title>
     <script type="text/javascript" src='script.js'></script>
     <script type="text/javascript" src='modal_dialog.js'></script>
     <script type="text/javascript">

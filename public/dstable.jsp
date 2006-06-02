@@ -432,12 +432,23 @@ DElemAttribute attribute = null;
 String attrID = null;
 String attrValue = null;
 
+// init page title
+StringBuffer pageTitle = new StringBuffer();
+if (mode.equals("edit"))
+	pageTitle.append("Edit table");
+else
+	pageTitle.append("Table");
+if (dsTable!=null && dsTable.getShortName()!=null)
+	pageTitle.append(" - ").append(dsTable.getShortName());
+if (dataset!=null && dataset.getShortName()!=null)
+	pageTitle.append("/").append(dataset.getShortName());
+
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
-	<title>Dataset table - Data Dictionary</title>
+	<title><%=pageTitle.toString()%></title>
 	<script type="text/javascript" src='modal_dialog.js'></script>
 	<script type="text/javascript">
 // <![CDATA[

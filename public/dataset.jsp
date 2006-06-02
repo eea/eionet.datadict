@@ -321,12 +321,21 @@ private Vector getValues(String id, String mode, Vector attributes){
 			
 			// we get the registration status already here, because it's needed in javascript below
 			String regStatus = dataset!=null ? dataset.getStatus() : null;
+			
+			// init page title
+			StringBuffer pageTitle = new StringBuffer();
+			if (mode.equals("edit"))
+				pageTitle.append("Edit dataset");
+			else
+				pageTitle.append("Dataset");
+			if (dataset!=null && dataset.getShortName()!=null)
+				pageTitle.append(" - ").append(dataset.getShortName());
 			%>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 		<%@ include file="headerinfo.txt" %>
-    <title>Dataset - Data Dictionary</title>
+    <title><%=pageTitle.toString()%></title>
     <script type="text/javascript" src='modal_dialog.js'></script>
     <script type="text/javascript">
     // <![CDATA[
