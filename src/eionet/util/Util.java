@@ -399,9 +399,6 @@ public class Util {
     	
 	    in = (in != null ? in : "");
 	    
-	    if (in.trim().startsWith("Many EEA Member Countries have previously submitted data on Nitrate in groundwater"))
-	    	System.out.println();
-	    
 	    StringBuffer ret = new StringBuffer();
 	    for (int i = 0; i < in.length(); i++) {
 	      char c = in.charAt(i);
