@@ -880,7 +880,6 @@ private Vector getValues(String id, String mode, Vector attributes){
 			                    		quicklinks.add("Obligations in ROD | rodlinks");
 			                    	
 			                    	request.setAttribute("quicklinks", quicklinks);
-			                    	System.out.println("======> okokokok");
 			                    	%>
 		                    		<jsp:include page="quicklinks.jsp" flush="true">
 		                    		</jsp:include>
