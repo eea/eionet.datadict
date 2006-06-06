@@ -1155,8 +1155,8 @@ if (dataset!=null && dataset.getShortName()!=null)
 								  			<!-- static attributes -->
 								  			
 											<!-- short name -->								  			
-								    		<tr>
-												<td class="short_name">Short name</td>
+								    		<tr id="short_name_row">
+												<th scope="row" class="scope-row short_name">Short name</th>
 												<td class="short_name simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
@@ -1190,9 +1190,9 @@ if (dataset!=null && dataset.getShortName()!=null)
 								    		
 								    		<!-- dataset -->
 								    		<tr class="zebra<%=isOdd%>">
-								    			<td class="simple_attr_title">
+								    			<th scope="row" class="scope-row simple_attr_title">
 													Dataset
-												</td>
+												</th>
 												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
@@ -1249,16 +1249,16 @@ if (dataset!=null && dataset.getShortName()!=null)
 									    						dsTable.getIdentifier() + "&amp;pns=" + dsTable.getParentNs();
 									    		%>
 									    		<tr class="zebra<%=isOdd%>">
-													<td class="simple_attr_title">
+													<th scope="row" class="scope-row simple_attr_title">
 														Reference URL
-													</td>
+													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 														</a>
 													</td>
 													<td class="simple_attr_value">
-														<span class="barfont"><a target="_blank" href="<%=refUrl%>"><%=refUrl%></a></span>
+														<small><a target="_blank" href="<%=refUrl%>"><%=refUrl%></a></small>
 													</td>
 													
 													<%isOdd = Util.isOdd(++displayed);%>
@@ -1329,9 +1329,9 @@ if (dataset!=null && dataset.getShortName()!=null)
 									    		%>								    		
 								    		
 											    <tr class="zebra<%=isOdd%>">
-													<td class="simple_attr_title">
+													<th scope="row" class="scope-row simple_attr_title">
 														<%=Util.replaceTags(attribute.getShortName())%>
-													</td>
+													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
@@ -1524,9 +1524,9 @@ if (dataset!=null && dataset.getShortName()!=null)
 										    
 								    		<!-- Identifier -->
 								    		<tr class="zebra<%=isOdd%>">
-												<td class="simple_attr_title">
+												<th scope="row" class="scope-row simple_attr_title">
 													Identifier
-												</td>
+												</th>
 												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />

@@ -501,11 +501,14 @@ th.selected {
 * <td> styles
 */
 
-td.short_name {
+#short_name_row {
+	background: #FFB652;
+}
+
+td.short_name, th.short_name {
 	font-weight: bold;
 	border: 1px solid #C0C0C0;
 	vertical-align: top;
-	background: #FFB652;
 }
 
 td.short_name_value {
@@ -513,7 +516,6 @@ td.short_name_value {
 	font-weight: bold;
 	border: 1px solid #C0C0C0;
 	vertical-align: top;
-	background: #FFB652;
 }
 
 td.search_result {

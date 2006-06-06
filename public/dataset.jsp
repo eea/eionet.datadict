@@ -1074,8 +1074,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 								  			<!-- static attributes -->
 								  			
 											<!-- short name -->
-								    		<tr>
-												<td class="short_name">Short name</td>
+								    		<tr id="short_name_row">
+												<th class="scope-row short_name">Short name</th>
 												<td class="short_name simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
@@ -1110,9 +1110,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		<!-- RegistrationStatus -->
 								    		
 								    		<tr class="zebra<%=isOdd%>">
-												<td class="simple_attr_title">
+												<th scope="row" class="scope-row simple_attr_title">
 													RegistrationStatus
-												</td>
+												</th>
 												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
@@ -1153,9 +1153,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 									    		String refUrl = jspUrlPrefix + "dataset.jsp?mode=view&amp;ds_idf=" + dataset.getIdentifier();
 									    		%>
 								    		  <tr class="zebra<%=isOdd%>">
-													<td class="simple_attr_title">
+													<th scope="row" class="scope-row simple_attr_title">
 														Reference URL
-													</td>
+													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
@@ -1216,9 +1216,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 												%>
 												
 								    		<tr class="zebra<%=isOdd%>">
-													<td class="simple_attr_title">
+													<th scope="row" class="scope-row simple_attr_title">
 														<%=Util.replaceTags(attribute.getShortName())%>
-													</td>
+													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
@@ -1393,9 +1393,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 												String checkedXmlSchema = dataset.displayCreateLink("XMLSCHEMA") ? "checked='checked'" : "";												
 												%>
 								    		  <tr class="zebra<%=isOdd%>">
-													<td class="simple_attr_title">
+													<th scope="row" class="scope-row simple_attr_title">
 														Public outputs
-													</td>
+													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=public_outputs" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
@@ -1445,9 +1445,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		if (!mode.equals("add") && editPrm){
 												String dstVersion = dataset.getVersion(); %>
 								    		  <tr class="zebra<%=isOdd%>">
-													<td class="simple_attr_title">
+													<th scope="row" class="scope-row simple_attr_title">
 														CheckInNo
-													</td>
+													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href)">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
@@ -1471,9 +1471,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		
 								    		<!-- Identifier -->
 								    		<tr class="zebra<%=isOdd%>">
-												<td class="simple_attr_title">
+												<th scope="row" class="scope-row simple_attr_title">
 													Identifier
-												</td>
+												</th>
 												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
