@@ -321,13 +321,26 @@
     	}
     	
     	function alertReleased(id){
+	    	
 	    	alert("A dataset definition in Released status cannot be deleted, because it might be referenced by outer sources!");
+	    	
+	    	// get array of checkboxes
 	    	var checkBoxes = document.forms["form1"].elements["ds_id"];
-	    	for (var i=0; checkBoxes!=null && i<checkBoxes.length; i++){
-	    		var checkBox = checkBoxes[i];
-	    		if (checkBox.value==id){
-		    		checkBox.checked = false;
-	    		}
+	    	
+	    	// If there is only one checkbox, the above line will return a single checkbox
+	    	// object instead of an array. We detect this by checking if checkBoxes.checked
+	    	// is undefined or not. If not, then checkBoxes is a single checkbox object,
+	    	// otherwise it's an array of checkboxes.
+	    	if (checkBoxes.checked==undefined){
+		    	for (var i=0; checkBoxes!=null && i<checkBoxes.length; i++){
+		    		var checkBox = checkBoxes[i];
+		    		if (checkBox.value==id){
+			    		checkBox.checked = false;
+		    		}
+		    	}
+	    	}
+	    	else{
+		    	checkBoxes.checked = false;
 	    	}
     	}
     	
