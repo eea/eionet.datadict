@@ -315,10 +315,14 @@ else{ %>
 
 			<!-- search results table -->
 						
-			<table width="700" cellspacing="0" border="0" cellpadding="2" class="sortable">
+			<table width="700" class="sortable">
+			<col style="width:30%"/>
+			<col style="width:25%"/>
+			<col style="width:22%"/>
+			<col style="width:20%"/>
 			<thead>
 			<tr>
-				<th width="30%">
+				<th>
 					<%
 					String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 					String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
@@ -327,7 +331,7 @@ else{ %>
 	                      Element&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
-				<th width="25%">
+				<th>
 					<%
 					sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(3, oSortCol, oSortOrder);
@@ -336,7 +340,7 @@ else{ %>
 	                      Table&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
-				<th width="22%">
+				<th>
 					<%
 					sortedImg  = getSortedImg(4, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(4, oSortCol, oSortOrder);
@@ -345,7 +349,7 @@ else{ %>
 	                      Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
-				<th width="20%" style="border-right: 1px solid #FF9900">
+				<th>
 					<%
 					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
@@ -412,12 +416,12 @@ else{ %>
                 														 null);                															 
 					oEntry.topWorkingUser = topWorkingUser;
 					oResultSet.oElements.add(oEntry);
-					String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 					
 					%>
 				
-					<tr>
-						<td width="30%" class="<%=styleClass%>">
+					<tr class="<%=zebraClass%>">
+						<td>
 							<%
 							if (!popup){ %>
 								<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
@@ -436,13 +440,13 @@ else{ %>
 	    					}
 		    				%>
 						</td>
-						<td width="25%" class="<%=styleClass%>">
+						<td>
 							<%=Util.replaceTags(dispTbl)%>
 						</td>
-						<td width="22%" class="<%=styleClass%>">
+						<td>
 							<%=Util.replaceTags(dispDs)%>
 						</td>
-						<td width="20%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+						<td>
 							<%=displayType%>
 						</td>
 					</tr><%
@@ -466,10 +470,10 @@ else{ %>
                     for (int i=0;i<oResultSet.oElements.size();i++) {
 	                    
 	                    c_SearchResultEntry oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
-	                    String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+											String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 	                    %>
-						<tr>
-							<td width="30%" class="<%=styleClass%>">
+						<tr class="<%=zebraClass%>">
+							<td>
 								<%
 								if (!popup){ %>
 									<a href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view">
@@ -488,13 +492,13 @@ else{ %>
 		    					}
 		    					%>
 							</td>						
-							<td width="25%" class="<%=styleClass%>">
+							<td>
 								<%=Util.replaceTags(oEntry.oTblName)%>
 							</td>
-							<td width="22%" class="<%=styleClass%>">
+							<td>
 								<%=Util.replaceTags(oEntry.oDsName)%>
 							</td>
-							<td width="20%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+							<td>
 								<%=oEntry.oType%>
 							</td>
 						</tr>

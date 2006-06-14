@@ -208,7 +208,7 @@
 		</div>
 		
 		<!-- the result table -->		
-		<table width="700" cellspacing="0" border="0" cellpadding="2" class="sortable">
+		<table width="700" class="sortable">
 		 <col style="width:37%"/>
 		 <col style="width:35%"/>
 		 <col style="width:25%"/>
@@ -223,7 +223,7 @@
 	                      Table&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
-				<th style="border-left:0">
+				<th>
 					<%
 					sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(1, oSortCol, oSortOrder);
@@ -232,7 +232,7 @@
 	                      Short name&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
-				<th style="border-left:0; border-right: 1px solid #FF9900">
+				<th>
 					<%
 					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
@@ -314,7 +314,7 @@
 			        		    %>
 			        		</td>
 			        	</tr>
-			        	</table></form></div></td></tr></table></body></html> <%
+			        	</table></form></div></body></html> <%
 	            		return;
             		}
 
@@ -359,11 +359,11 @@
 						oEntry.topWorkingUser = topWorkingUser;
 						oResultSet.oElements.add(oEntry);
 						
-						String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+						String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 						
 						%>
-						<tr>
-		    				<td class="<%=styleClass%>">
+						<tr class="<%=zebraClass%>">
+		    				<td>
 								<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
 								<%
 								// mark tables in a locked dataset
@@ -372,10 +372,10 @@
 			    				}
 			    				%>
 							</td>
-							<td class="<%=styleClass%>">
+							<td>
 								<%=Util.replaceTags(table_name)%>
 							</td>
-							<td class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+							<td>
 								<%=Util.replaceTags(ds_name)%>
 								<%
 								// mark locked datasets
@@ -412,10 +412,10 @@
 
                         tableLink = "dstable.jsp?mode=view&amp;table_id=" + oEntry.oID + "&amp;ds_id=" + oEntry.oDsID + "&amp;ds_name=" + oEntry.oDsName;
                         
-                        String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+												String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 						%>
-						<tr>
-							<td class="<%=styleClass%>">
+						<tr class="<%=zebraClass%>">
+							<td>
 								<a href="<%=tableLink%>"><%=Util.replaceTags(oEntry.oName)%></a>
 								<%
 								// mark tables in a locked dataset
@@ -424,10 +424,10 @@
 			    				}
 			    				%>
 							</td>
-							<td class="<%=styleClass%>">
+							<td>
 								<%=Util.replaceTags(oEntry.oShortName)%>								
 							</td>
-							<td class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+							<td>
 								<%=Util.replaceTags(oEntry.oDsName)%>
 							</td>
 						</tr>

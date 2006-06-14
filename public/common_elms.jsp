@@ -276,7 +276,7 @@ else{ %>
 		
 			<!-- result table -->
 			
-			<table width="700" cellspacing="0" border="0" cellpadding="2" class="sortable">
+			<table width="700" class="sortable">
 			
 				<%
 				boolean userHasEditRights = user!=null &&
@@ -376,12 +376,12 @@ else{ %>
 					oEntry.topWorkingUser = workingUser;
 					
 					oResultSet.oElements.add(oEntry);
-					String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 					
 					%>
 				
-					<tr>
-						<td width="35%" class="<%=styleClass%>">
+					<tr class="<%=zebraClass%>">
+						<td width="35%">
 							<%
 							if (!popup){ %>
 								<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
@@ -411,17 +411,17 @@ else{ %>
 	    					}
 							%>
 						</td>
-						<td width="20%" class="<%=styleClass%>">
+						<td width="20%">
 							<%=Util.replaceTags(displayType)%>
 						</td>
 						<%
 						if (userHasEditRights){ %>
-							<td width="20%" class="<%=styleClass%>">
+							<td width="20%">
 								<%=checkInNo%>
 							</td><%
 						}
 						%>
-						<td width="25%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+						<td width="25%" style="border-right: 1px solid #C0C0C0">
 							<%=Util.replaceTags(status)%>
 						</td>
 					</tr><%
@@ -446,11 +446,11 @@ else{ %>
                     for (int i=0;i<oResultSet.oElements.size();i++) {
                     oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                     
-                    String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+										String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 
                     %>
-						<tr>
-							<td width="35%" class="<%=styleClass%>">
+						<tr class="<%=zebraClass%>">
+							<td width="35%">
 								<%
 								if (!popup){ %>
 									<a href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view">
@@ -482,17 +482,17 @@ else{ %>
 								}
 								%>
 							</td>						
-							<td width="20%" class="<%=styleClass%>">
+							<td width="20%">
 								<%=oEntry.oType%>
 							</td>
 							<%
 							if (userHasEditRights){ %>
-								<td width="20%" class="<%=styleClass%>">
+								<td width="20%">
 									<%=oEntry.checkInNo%>
 								</td><%
 							}
 							%>
-							<td width="25%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+							<td width="25%" style="border-right: 1px solid #C0C0C0">
 								<%=Util.replaceTags(oEntry.status)%>
 							</td>
 						</tr>

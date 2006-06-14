@@ -250,25 +250,6 @@ td.short_name_value {
 	background: #FFB652;
 }
 
-td.search_result {  font-family: Verdana, Arial, Helvetica, sans-serif; 
-	font-size: 10pt; 
-	font-style: normal; 
-	line-height: normal; 
-	text-decoration: none;
-	border-left: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
-}
-
-td.search_result_odd {
-	font-size: 10pt; 
-	font-style: normal; 
-	line-height: normal; 
-	text-decoration: none;
-	border-left: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
-	background: #CCCCCC;
-}
-
 td.simple_attr_title {  font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	border: 1px solid #C0C0C0;

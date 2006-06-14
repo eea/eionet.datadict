@@ -518,26 +518,6 @@ td.short_name_value {
 	vertical-align: top;
 }
 
-td.search_result {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 10pt;
-	font-style: normal;
-	line-height: normal;
-	text-decoration: none;
-	border-left: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
-}
-
-td.search_result_odd {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 10pt;
-	font-style: normal;
-	line-height: normal;
-	text-decoration: none;
-	border-left: 1px solid #C0C0C0;
-	border-bottom: 1px solid #C0C0C0;
-	background: #CCCCCC;
-}
 
 td.simple_attr_title {
 	font-weight: bold;
@@ -873,13 +853,16 @@ table .center {
 	background: #aaa;
 }
 
+/*
 table.sortable tbody td {
 	border: 1px solid #c0c0c0;
 	border-collapse: collapse;
 }
+
 table.sortable tbody td a {
 	text-decoration: none;
 }
+*/
 /* Temporary start */
 table.sortable table tr td {
 	border: none;

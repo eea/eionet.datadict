@@ -370,7 +370,7 @@
 		</div>
 
 		<!--  result table -->			
-		<table width="700" cellspacing="0" border="0" cellpadding="2" class="sortable">
+		<table width="700" class="sortable">
 		
 			<thead>
 			<tr>
@@ -458,13 +458,13 @@
 										workingUser!=null && user!=null &&
 										workingUser.equals(user.getUserName()));
 					
-					String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 										
 					%>
 				
-					<tr valign="top">
+					<tr valign="top" class="<%=zebraClass%>">
 					
-						<td width="3%" align="right" class="<%=styleClass%>">
+						<td width="3%" align="right">
 							<%
 		    				if (delPrm){
 		    					
@@ -481,15 +481,15 @@
 							%>
 						</td>
 						
-						<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(dsFullName, true)%>">
+						<td width="30%" title="<%=Util.replaceTags(dsFullName, true)%>">
 							<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;out_type=GDLN&amp;obj_id=<%=dataset.getID()%>">
 								<%=Util.replaceTags(dsFullName)%>
 							</a>
 						</td>					
-						<td width="20%" class="<%=styleClass%>">
+						<td width="20%">
 							<%=dsVersion%>
 						</td>
-						<td width="47%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+						<td width="47%" style="border-right: 1px solid #C0C0C0">
 							<%
 							for (int c=0; tables!=null && c<tables.size(); c++){
 				
@@ -530,32 +530,32 @@
                     for (int i=0;i<oResultSet.oElements.size();i++) {
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                         
-                        String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
+												String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 
                         %>
-						<tr valign="top">	
+						<tr valign="top" class="<%=zebraClass%>">	
 							<%
 							if (oEntry.getDelPrm()){
 								wasDelPrm = true;
 								%>
-								<td width="3%" align="right" class="<%=styleClass%>">
+								<td width="3%" align="right">
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>"/>
 									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier, true)%>"/>
 								</td> <%
 							}
 							%>
 							
-							<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(oEntry.oFullName, true)%>">
+							<td width="30%" title="<%=Util.replaceTags(oEntry.oFullName, true)%>">
 								<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;out_type=GDLN&amp;obj_id=<%=oEntry.oID%>">
 									<%=Util.replaceTags(oEntry.oFName)%>
 								</a>
 							</td>
 							
-							<td width="20%" class="<%=styleClass%>">
+							<td width="20%">
 								<%=oEntry.oVersion%>
 							</td>
 							
-							<td width="47%" class="<%=styleClass%>" style="border-right: 1px solid #C0C0C0">
+							<td width="47%" style="border-right: 1px solid #C0C0C0">
 								<%
 								Vector tables = oEntry.oTables;
 								for (int c=0; tables!=null && c<tables.size(); c++){

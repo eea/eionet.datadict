@@ -443,27 +443,38 @@
 		
 				</div>
 		
-		<table class="sortable" width="700" cellspacing="0" border="0" cellpadding="2">
+		<table class="sortable" width="700">
 		
 			<%
 			// Set the colspan. Users with no edit rights must not see the CheckInNo
 			boolean userHasEditRights = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
 			int colSpan = userHasEditRights ? 5 : 3;
-			%>
-		
-		
-			
+
+			if (userHasEditRights){ %>
+				<col style="width: 3%"/>
+				<col style="width: 32%"/>
+			<% } else { %>
+				<col style="width: 35%"/>
+			<% } %>
+			<% if (userHasEditRights){ %>
+      <col style="width: 10%"/>
+      <col style="width: 15%"/>
+      <col style="width: 40%"/>
+			<% } else { %>
+      <col style="width: 20%"/>
+      <col style="width: 45%"/>
+			<% } %>
 				
 			<!-- the table itself -->
 	   <thead>	
 			<tr>
 				<%
 				if (userHasEditRights){ %>
-					<th width="3%">&nbsp;</th>
-					<th width="32%" style="border-left:0"><%
+					<th>&nbsp;</th>
+					<th style="border-left:0"><%
 				}
 				else{ %>
-					<th width="32%"><%
+					<th><%
 				}
 				String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 				String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
@@ -473,14 +484,13 @@
 						Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
 					</a>
 				</th>
-				<%
-				if (userHasEditRights){ %>
-					<th width="10%">
+				<% if (userHasEditRights){ %>
+					<th>
 						CheckInNo
 					</th><%
 				}
 				%>
-				<th width="15%">
+				<th>
 					<%
 					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
@@ -490,7 +500,7 @@
 	                      Status&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
 					</a>
 				</th>
-				<th width="40%">
+				<th>
 					Tables
 				</th>
 			</tr>
@@ -580,16 +590,15 @@
 					
 					String statusImg   = "images/" + Util.getStatusImage(regStatus);
 					String statusTxt   = Util.getStatusRadics(regStatus);
-					String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
-					String oddevenClass  = i % 2 != 0 ? "zebraodd" : "zebraeven";
+					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 					
 					String alertReleased = regStatus.equals("Released") ? "onclick='alertReleased(" + ds_id + ")'" : "";
 					%>
 				
-					<tr valign="top" class="<%=oddevenClass%>">
+					<tr valign="top" class="<%=zebraClass%>">
 						<%
 						if (delPrm){ %>
-							<td width="3%" align="right" class="<%=styleClass%>">
+							<td align="right">
 								<%
 		    					if (topWorkingUser!=null){ // mark checked-out datasets
 			    					%> <font title="<%=Util.replaceTags(topWorkingUser,true)%>" color="red">*</font> <%
@@ -607,14 +616,14 @@
 						}
 						%>
 						
-						<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(dsFullName,true)%>">
+						<td title="<%=Util.replaceTags(dsFullName,true)%>">
 							<a <%=linkDisabled%> href="<%=Util.replaceTags(dsLink,true)%>">
 							<%=Util.replaceTags(dsFullName, true)%></a>
 						</td>
 						
 						<%
 						if (userHasEditRights){ %>
-							<td width="10%" class="<%=styleClass%>">
+							<td>
 								<%
 								if (clickable){ %>
 									<%=Util.replaceTags(dsVersion)%><%
@@ -626,7 +635,7 @@
 							</td><%
 						}
 						%>
-						<td width="12%" class="<%=styleClass%>">
+						<td>
 							<%
 							if (clickable){ %>
 								<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
@@ -638,7 +647,7 @@
 							}
 							%>
 						</td>
-						<td width="45%" class="<%=styleClass%>">
+						<td>
 							<%
 							for (int c=0; tables!=null && c<tables.size(); c++){
 				
@@ -703,38 +712,37 @@
                         String dsLink = oEntry.clickable ? "dataset.jsp?mode=view&amp;ds_id=" + oEntry.oID : "#";
                         String statusImg = "images/" + Util.getStatusImage(oEntry.getRegStatus());
                         String statusTxt   = Util.getStatusRadics(oEntry.getRegStatus());
-                        String styleClass  = i % 2 != 0 ? "search_result_odd" : "search_result";
-					              String oddevenClass  = i % 2 != 0 ? "zebraodd" : "zebraeven";
+					              String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
                         String alertReleased = oEntry.getRegStatus().equals("Released") ? "onclick='alertReleased(" + oEntry.oID + ")'" : "";
                         
                         %>
-						<tr valign="top" class="<%=oddevenClass%>">
+						<tr valign="top" class="<%=zebraClass%>">
 						
 							<%
 							if (oEntry.getDelPrm()){
 								wasDelPrm = true;
 								%>
-								<td width="3%" align="right" class="<%=styleClass%>">
+								<td align="right">
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" <%=Util.replaceTags(alertReleased)%>/>
 									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier,true)%>"/>
 								</td><%
 							}
 							%>
 							
-							<td width="30%" class="<%=styleClass%>" title="<%=Util.replaceTags(oEntry.oFullName,true)%>">
+							<td title="<%=Util.replaceTags(oEntry.oFullName,true)%>">
 								<a <%=linkDisabled%> href="<%=Util.replaceTags(dsLink, true)%>">
 								<%=Util.replaceTags(oEntry.oFName, true)%></a>
 							</td>
 							
 							<%
 							if (userHasEditRights){ %>
-								<td width="10%" class="<%=styleClass%>">
+								<td>
 									<%=oEntry.oVersion%>
 								</td><%
 							}
 							%>
 							
-							<td width="12%" class="<%=styleClass%>">
+							<td>
 								<%
 								if (oEntry.clickable){ %>
 									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.getRegStatus()%>" alt="<%=oEntry.getRegStatus()%>"/><%
@@ -747,7 +755,7 @@
 								%>
 							</td>
 							
-							<td width="45%" class="<%=styleClass%>">
+							<td>
 								<%
 								Vector tables = oEntry.oTables;
 								for (int c=0; tables!=null && c<tables.size(); c++){
