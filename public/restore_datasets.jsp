@@ -216,6 +216,7 @@
 				request.setAttribute("DD_ERR_BACK_LINK", backLink);
 				
 				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
 			}
 			restore = true;
 			datasets = searchEngine.getDeletedDatasets();

@@ -121,6 +121,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 						request.setAttribute("DD_ERR_BACK_LINK", backLink);
 						
 						request.getRequestDispatcher("error.jsp").forward(request, response);
+						return;
 					}
 				}
 				finally{
