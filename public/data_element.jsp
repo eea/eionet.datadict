@@ -662,6 +662,14 @@ private String legalizeAlert(String in){
 						return false;
 					}<%
 				}
+				else{
+					%>
+					var elmType = document.forms["form1"].elements["typeSelect"].value;
+					if (elmType==null || elmType==""){
+						alert('Element type not specified!');
+						return false;
+					}<%
+				}
 				%>
 			}
 			
