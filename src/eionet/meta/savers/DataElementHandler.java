@@ -205,7 +205,7 @@ public class DataElementHandler extends BaseHandler {
         if (mode.equalsIgnoreCase("add")){
             if (type==null || (!type.equalsIgnoreCase("CH1") &&
                             !type.equalsIgnoreCase("CH2")))
-                throw new Exception("DataElementHandler type unspecified!");
+                throw new Exception("Element type not specified!");
         }
 
         if (mode.equalsIgnoreCase("add") || mode.equalsIgnoreCase("copy")){
