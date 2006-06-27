@@ -13,9 +13,9 @@
 
 <html>
 <head>
+	<%@ include file="headerinfo.txt" %>
 	<title>Error - Data Dictionary</title>
 	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-	<link type="text/css" rel="stylesheet" href="eionet.css"/>
 	<script language="javascript" src='script.js' type="text/javascript"></script>
 </head>
 
@@ -44,7 +44,7 @@ else{
 <div id="workarea">
 	<table border="0">
     	<tr valign="top">
-        	<td>
+        	<td><%
 }
 %>
 
