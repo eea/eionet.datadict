@@ -130,9 +130,11 @@ public class MrProper {
             }
             catch (Exception e){
 				wasExc = true;
-				log(eionet.util.Util.getStack(e));
+				String stackTrace = eionet.util.Util.getStack(e);
+				if (stackTrace==null) stackTrace = e.toString();
+				log(stackTrace);
                 response.add((String)funNames.get(fun) +
-                                " failed: <b>" + e.toString() + "</b>");
+                                " failed: <b>" + stackTrace + "</b>");
                 continue;
             }
             
