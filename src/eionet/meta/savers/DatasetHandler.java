@@ -370,7 +370,7 @@ public class DatasetHandler extends BaseHandler {
 		deleteAttributes();
 		deleteComplexAttributes();
 		deleteRodLinks();
-		deleteTablesElems();
+		deleteTablesAndElements(complete!=null && !complete.equals("false"));
 		//deleteNamespaces();
 	
 		// delete namespaces of last such datasets
@@ -554,10 +554,12 @@ public class DatasetHandler extends BaseHandler {
         stmt.close();
     }
     
-    private void deleteTablesElems() throws Exception {
+    private void deleteTablesAndElements(boolean isCompleteDeletion) throws Exception {
         
-        // we can only delete the tables that exist ONLY within those
-        // datasets found legal for deletion (and residing in ds_ids)
+        // We can only delete the tables that exist ONLY within those
+        // datasets found legal for deletion (and residing in this.ds_ids).
+    	// BUT!!! We must nevertheless delete all DST2TBL relations if this
+    	// is a COMPLETE deletion!
         
         Statement stmt = conn.createStatement();
         
@@ -588,25 +590,24 @@ public class DatasetHandler extends BaseHandler {
                 }
             }
             
-            // delete the tables in Vector legal
-            if (legal.size()==0)
-                return;
-            
-            Parameters params = new Parameters();
-            params.addParameterValue("mode", "delete");
-            for (int j=0; j<legal.size(); j++){
-                params.addParameterValue("del_id", (String)legal.get(j));
+            // delete the tables in legal
+            if (legal.size()>0){	            
+	            Parameters params = new Parameters();
+	            params.addParameterValue("mode", "delete");
+	            for (int j=0; j<legal.size(); j++){
+	                params.addParameterValue("del_id", (String)legal.get(j));
+	            }
+	                        
+	            DsTableHandler tableHandler = new DsTableHandler(conn, params, ctx);
+	            tableHandler.setUser(user);
+	            // once we've found the dataset legal for deletion, we delete
+	            // its tables regardless of versioning
+	            tableHandler.setVersioning(false);
+	            tableHandler.execute();
             }
-                        
-            DsTableHandler tableHandler = new DsTableHandler(conn, params, ctx);
-            tableHandler.setUser(user);
-            // once we've found the dataset legal for deletion, we delete
-            // its tables regardless of versioning
-            tableHandler.setVersioning(false);
-            tableHandler.execute();
             
-			stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" +
-																ds_ids[i]);
+            if (isCompleteDeletion)
+            	stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" + ds_ids[i]);
         }
         
         stmt.close();
