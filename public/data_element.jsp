@@ -656,11 +656,14 @@ private String legalizeAlert(String in){
 				}
 				else{
 					%>
-					var elmType = document.forms["form1"].elements["typeSelect"].value;
-					if (elmType==null || elmType==""){
-						alert('Element type not specified!');
-						return false;
-					}<%
+					if (document.forms["form1"].elements["typeSelect"]!=undefined){
+						var elmType = document.forms["form1"].elements["typeSelect"].value;
+						if (elmType==null || elmType==""){
+							alert('Element type not specified!');
+							return false;
+						}
+					}
+					<%
 				}
 				%>
 			}
