@@ -2718,7 +2718,7 @@ public class DDSearchEngine {
 		append("select distinct DATAELEM.WORKING_USER ").
 		append("from TBL2ELEM left outer join DATAELEM ").
 		append("on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID where ").
-		append("DATAELEM.WORKING_COPY='Y' and TBL2ELEM.TABLE_ID=").
+		append("DATAELEM.PARENT_NS is not null and DATAELEM.WORKING_COPY='Y' and TBL2ELEM.TABLE_ID=").
 		append(tblID);
 		
 		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
