@@ -301,13 +301,10 @@ if (request.getMethod().equals("POST")){
 		}
 		else if (mode.equals("delete")){
 			
-			String lid = request.getParameter("latest_id");
 			String newDstID = handler.getNewDstID();
 			
 			if (!Util.voidStr(newDstID))
 				redirUrl = redirUrl + "dataset.jsp?mode=view&ds_id=" + newDstID;
-			else if (!Util.voidStr(lid))
-				redirUrl = redirUrl + "dstable.jsp?mode=view&table_id=" + lid;
 			else{
 				String[] pages={"datasets.jsp","search_results_tbl.jsp","dataset.jsp","dstables.jsp"};
 				String	deleteUrl = history.gotoLastMatching(pages);
@@ -1893,11 +1890,6 @@ if (dataset!=null && dataset.getShortName()!=null)
 				<input type="hidden" name="check_in" value="false"/>
 				
 				<%
-				String latestID = dsTable==null ? null : verMan.getLatestTblID(dsTable);
-				if (latestID!=null){%>
-					<input type="hidden" name="latest_id" value="<%=latestID%>"/><%
-				}
-				
 				if (dsID!=null && dsID.length()>0){ %>
 					<input type="hidden" name="ds_id" value="<%=dsID%>"/> <%
 				} %>

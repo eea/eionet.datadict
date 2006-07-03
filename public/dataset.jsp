@@ -162,14 +162,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 					qs.changeParam("mode", newMode);
 					redirUrl =qs.getValue();
 				}
-				else if (mode.equals("delete")){
-					String lid = request.getParameter("latest_id");
-					if (lid!=null)
-						redirUrl = redirUrl + "dataset.jsp?mode=view&ds_id=" + lid;
-					else{
-						redirUrl = history.gotoLastMatching("datasets.jsp");;
-						redirUrl = (redirUrl!=null&&redirUrl.length()>0) ? redirUrl : redirUrl + "/index.jsp";
-					}
+				else if (mode.equals("delete")){					
+					redirUrl = history.gotoLastMatching("datasets.jsp");
+					if (redirUrl==null || redirUrl.length()==0)
+						redirUrl = "index.jsp";
 				}
 				
 				response.sendRedirect(redirUrl);
@@ -250,7 +246,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 			
 			// JH220803
 			// version management
-			VersionManager verMan = new VersionManager(conn, searchEngine, user);
+			VersionManager verMan = new VersionManager(conn, searchEngine, user);			
 			String latestID = dataset==null ? null : verMan.getLatestDstID(dataset);
 			boolean isLatest = Util.voidStr(latestID) ? true : latestID.equals(dataset.getID());
 
@@ -341,7 +337,7 @@ private Vector getValues(String id, String mode, Vector attributes){
     <script type="text/javascript">
     // <![CDATA[
 
-		function deleteDatasetReady(){
+		function deleteDatasetReady(){			
 			document.forms["form1"].elements["mode"].value = "delete";
 			document.forms["form1"].submit();
 		}

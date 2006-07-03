@@ -319,24 +319,16 @@ private String legalizeAlert(String in){
 					else if (mode.equals("delete") && !wasPick){
 						
 						if (request.getParameter("common")!=null){
-							String latestCommonElmID = handler.getLatestCommonElmID();
-							if (!Util.voidStr(latestCommonElmID))
-								redirUrl = redirUrl + "data_element.jsp?mode=view&delem_id=" + latestCommonElmID;
-							else
-								redirUrl = redirUrl + "index.jsp";
+								redirUrl = "index.jsp";
 						}
 						else{
-							String lid = request.getParameter("latest_id");
 							String newTblID = handler.getNewTblID();
 							if (!Util.voidStr(newTblID))
 								redirUrl = redirUrl + "dstable.jsp?mode=view&table_id=" + newTblID;
-							else if (!Util.voidStr(lid))
-								redirUrl = redirUrl + "data_element.jsp?mode=view&delem_id=" + lid;
 							else{
 								String	deleteUrl = history.gotoLastNotMatching("data_element.jsp");
 								redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ?
-											deleteUrl :
-											redirUrl + "index.jsp";
+											deleteUrl : "index.jsp";
 							}
 						}
 					}
@@ -2584,11 +2576,6 @@ else{
 				<input type="hidden" name="changed" value="0"/>
 				
 				<%
-				
-				String latestID = dataElement==null ? null : verMan.getLatestElmID(dataElement);
-				if (latestID!=null){%>
-					<input type="hidden" name="latest_id" value="<%=latestID%>"/><%
-				}
 				
 				String dsidf = dataset==null ? null : dataset.getIdentifier();
 				if (dsidf==null && dst!=null)
