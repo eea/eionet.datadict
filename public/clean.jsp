@@ -111,7 +111,7 @@
 		            	for (int i=0; i<results.size(); i++){
 			            	String sss = (String)results.get(i);
 			            	%>
-			            	<tr><td>&gt; <%=Util.replaceTags(sss)%></td></tr><%
+			            	<tr><td>&gt; <%=sss%></td></tr><%
 		            	}
 		            	%>
 		            	
