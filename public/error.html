@@ -1,33 +1,26 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<html>
 <head>
-<title>User Authentication Error!</title>
-<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-<link href="eionet.css" rel="stylesheet" type="text/css"/>
-<script language="javascript">
-	function reLogin(){
-		window.location.href="login.html";
-	}
-</script>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+	<link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/layout-print.css" media="print" />
+	<link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" title="Default" />
+	<link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+	<link rel="alternate stylesheet" type="text/css"
+		  href="http://www.eionet.europa.eu/styles/eea2006/layout-screen.css"
+		  media="screen" title="EEA 2006 style" />
+	<link rel="alternate stylesheet" type="text/css"
+		  href="eea2006.css" media="screen" title="EEA 2006 style" />
+
+	<title>Data Dictionary - User Authentication Error!</title>
+
 </head>
-<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;">
+<body class="popup">
 <center>
-<form>
-<table>
-	<tr height="20pts"><td colspan="2">&nbsp;</td></tr>
-	<tr><td colspan="2"><h2>User Authentication failed!</h2></td></tr>
-	<tr><td colspan="2"><h3>You will not be able to save or delete any MetaData!</h3></td></tr>
-	<tr height="10pts"><td colspan="2">&nbsp;</td></tr>
-	<tr>
-		<td>
-			<input width="20pts" name="OK" type="button" value="OK" onclick="window.close()"></input>
-		</td>			
-		<td>
-			<input name="BACK" type="button" value="Try Again..." onclick="reLogin()"></input>
-		</td>
-	</tr>
-</table>
-</form>
+	<h2>User Authentication failed!</h2>
+	<p>
+		You may <a href="login.html">try again</a> or quit simply by closing this window.
+	</p>
 </center>
 </body>
 
