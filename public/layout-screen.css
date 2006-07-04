@@ -921,7 +921,7 @@ tbody tr.zebraodd {
 	margin: 0px 3px 0px 0px;
 }
 
-a.disabled {
+.disabled {
 	color:gray;
 }
 

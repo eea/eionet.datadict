@@ -561,7 +561,7 @@ span a:active { color: #024176 }
 	color: #024176;
 }
 
-a.disabled{
+.disabled{
 	color:gray;
 }
 

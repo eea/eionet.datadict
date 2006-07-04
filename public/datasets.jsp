@@ -614,13 +614,24 @@
 								}
 								%>
 							</td><%
+						}						
+						
+						if (clickable==false){
+							%>
+							<td title="<%=Util.replaceTags(dsFullName,true)%>" class="disabled">
+								<%=Util.replaceTags(dsFullName, true)%>
+							</td><%
+						}
+						else{
+							%>
+							<td title="<%=Util.replaceTags(dsFullName,true)%>">
+								<a href="<%=Util.replaceTags(dsLink,true)%>">
+									<%=Util.replaceTags(dsFullName, true)%>
+								</a>
+							</td>
+							<%
 						}
 						%>
-						
-						<td title="<%=Util.replaceTags(dsFullName,true)%>">
-							<a <%=linkDisabled%> href="<%=Util.replaceTags(dsLink,true)%>">
-							<%=Util.replaceTags(dsFullName, true)%></a>
-						</td>
 						
 						<%
 						if (userHasEditRights){ %>
@@ -630,7 +641,7 @@
 									<%=Util.replaceTags(dsVersion)%><%
 								}
 								else{ %>
-									<a disabled href="#" style="text-decoration:none"><%=Util.replaceTags(dsVersion)%></a><%
+									<a disabled style="text-decoration:none"><%=Util.replaceTags(dsVersion)%></a><%
 								}
 								%>
 							</td><%
@@ -667,14 +678,21 @@
 								if (wrkCopies){ %>
 									<%=Util.replaceTags(table.getShortName())%><%
 								}
-								else{ %>
-									<a <%=linkDisabled%> href="<%=tableLink%>">
-										<%=Util.replaceTags(table.getShortName())%>
-									</a><%
+								else{
+									if (clickable){
+										%>
+										<a href="<%=tableLink%>">
+											<%=Util.replaceTags(table.getShortName())%>
+										</a><%
+									}
+									else{
+										%>
+										<span class="disabled"><%=Util.replaceTags(table.getShortName())%></span><%
+									}
 								}
 								
 								if (user!=null && tblWorkingUser!=null){ // mark checked-out tables
-									%>&#160;<font color="red">*</font> <%
+									%>&nbsp;<font color="red">*</font> <%
 								}
 								else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
 									%> <font title="<%=Util.replaceTags(tblElmWorkingUser,true)%>" color="red">* </font> <%
@@ -728,14 +746,23 @@
 									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier,true)%>"/>
 								</td><%
 							}
+							
+							if (oEntry.clickable==false){
 							%>
+							<td title="<%=Util.replaceTags(oEntry.oFullName,true)%>" class="disabled">
+								<%=Util.replaceTags(oEntry.oFullName, true)%>
+							</td><%
+							}
+							else{
+								%>
+								<td title="<%=Util.replaceTags(oEntry.oFullName,true)%>">
+									<a href="<%=Util.replaceTags(dsLink,true)%>">
+										<%=Util.replaceTags(oEntry.oFullName, true)%>
+									</a>
+								</td>
+								<%
+							}
 							
-							<td title="<%=Util.replaceTags(oEntry.oFullName,true)%>">
-								<a <%=linkDisabled%> href="<%=Util.replaceTags(dsLink, true)%>">
-								<%=Util.replaceTags(oEntry.oFName, true)%></a>
-							</td>
-							
-							<%
 							if (userHasEditRights){ %>
 								<td>
 									<%=oEntry.oVersion%>
@@ -766,9 +793,20 @@
 									if (wrkCopies){ %>
 										<%=Util.replaceTags(table.getShortName())%><%
 									}
-									else{ %>
-										<a <%=linkDisabled%> href="<%=tableLink%>"><%=Util.replaceTags(table.getShortName())%></a><br/><%
+									else{
+										if (oEntry.clickable){
+											%>
+											<a href="<%=tableLink%>">
+												<%=Util.replaceTags(table.getShortName())%>
+											</a><%
+										}
+										else{
+											%>
+											<span class="disabled"><%=Util.replaceTags(table.getShortName())%></span><%
+										}
 									}
+									%>
+									<br/><%
 								}
 								%>
 							</td>
