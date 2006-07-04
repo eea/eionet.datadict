@@ -208,7 +208,7 @@ else { %>
 
         <div id="operations">
           <ul>
-              <li><a target="_blank" href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href)" title="Get some help on this page">Page help</a></li>
+              <li><a target="_blank" href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
           </ul>
         </div>
 
@@ -222,7 +222,7 @@ else { %>
 							<b>Short name</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 							</a>
 						</td>
@@ -236,7 +236,7 @@ else { %>
 							<b>Identifier</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 							</a>
 						</td>
@@ -283,7 +283,7 @@ else { %>
 										<b><%=Util.replaceTags(attrName)%></b>
 									</td>
 									<td>
-										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
+										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
 											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>
@@ -314,7 +314,7 @@ else { %>
 									<b><%=Util.replaceTags(attrName)%></b>
 								</td>
 								<td>
-									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
+									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
 										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 									</a>
 								</td>
@@ -340,7 +340,7 @@ else { %>
 									<b><%=Util.replaceTags(attrName)%></b>
 								</td>
 								<td>
-										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
+										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
 											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>

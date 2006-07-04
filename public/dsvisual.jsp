@@ -163,7 +163,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 							</font>
 						</td>
 						<td align="right">
-							<a target="_blank" href="help.jsp?screen=dataset_model&amp;area=pagehelp" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset_model&amp;area=pagehelp" onclick="pop(this.href);return false;">
 								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 							</a>
 						</td>

@@ -169,7 +169,7 @@
 				
 				<div id="operations">
 					<ul>
-					<li><a target="_blank" href="help.jsp?screen=tables&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+					<li><a target="_blank" href="help.jsp?screen=tables&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 					<li><a href="search_table.jsp">Search</a></li>
 					</ul>
 				</div>

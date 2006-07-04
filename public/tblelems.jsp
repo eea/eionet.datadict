@@ -458,7 +458,7 @@ int colCount = hasGIS ? 5 : 4;
 			</td>
 			
 			<td align="right">
-				<a target="_blank" href="help.jsp?screen=table_elements&amp;area=pagehelp" onclick="pop(this.href)">
+				<a target="_blank" href="help.jsp?screen=table_elements&amp;area=pagehelp" onclick="pop(this.href);return false;">
 					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 				</a>
 			</td>
@@ -485,7 +485,7 @@ int colCount = hasGIS ? 5 : 4;
 								<span class="barfont">Identifier:</span>
 							</td>
 							<td align="right">
-								<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
+								<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 								</a>
 							</td>
@@ -508,7 +508,7 @@ int colCount = hasGIS ? 5 : 4;
 						<tr>
 							<td align="right"><span class="barfont">Type:</span></td>
 							<td>
-								<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href)">
+								<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
 									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 								</a>
 							</td>
@@ -578,7 +578,7 @@ int colCount = hasGIS ? 5 : 4;
 										<b>Short name</b>
 									</td>
 									<td align="left" width="50%">
-										<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
+										<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
 											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>
@@ -595,7 +595,7 @@ int colCount = hasGIS ? 5 : 4;
 											<b>GIS</b>
 										</td>
 										<td align="left" width="50%">
-											<a target="_blank" href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href)">
+											<a target="_blank" href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
 												<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 											</a>
 										</td>
@@ -612,7 +612,7 @@ int colCount = hasGIS ? 5 : 4;
 										<b>Datatype</b>
 									</td>
 									<td align="left" width="50%">
-										<a target="_blank" href="help.jsp?attrshn=Datatype&amp;attrtype=SIMPLE" onclick="pop(this.href)">
+										<a target="_blank" href="help.jsp?attrshn=Datatype&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
 											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>
@@ -627,7 +627,7 @@ int colCount = hasGIS ? 5 : 4;
 										<b>Element type</b>
 									</td>
 									<td align="left" width="50%">
-										<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href)">
+										<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
 											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>

@@ -113,7 +113,7 @@
 							<span class="head00">Import data</span>
 						</td>
 						<td align="right">
-							<a target="_blank" href="help.jsp?screen=import&amp;area=pagehelp" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=import&amp;area=pagehelp" onclick="pop(this.href);return false;">
 								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 							</a>
 						</td>

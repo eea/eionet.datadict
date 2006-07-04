@@ -165,7 +165,7 @@ if (disabled.equals("")){
 				<span class="title2"><a href="data_element.jsp?mode=edit&delem_id=<%=delemID%>"><%=Util.replaceTags(delemName)%></a></span>.
 			</td>
 			<td align="right">
-				<a target="_blank" href="help.jsp?screen=foreign_keys&area=pagehelp" onclick="pop(this.href)">
+				<a target="_blank" href="help.jsp?screen=foreign_keys&area=pagehelp" onclick="pop(this.href);return false;">
 					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 				</a>
 			</td>

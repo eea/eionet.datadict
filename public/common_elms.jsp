@@ -268,7 +268,7 @@ else{ %>
             
 			<div id="operations">
             	<ul>
-            		<li><a target="_blank" href="help.jsp?screen=elements&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+            		<li><a target="_blank" href="help.jsp?screen=elements&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
             	</ul>
             </div>
             
@@ -404,7 +404,7 @@ else{ %>
 					    					%>
 					    				</td>
 					    				<td align="right" class="barfont">
-					    					[<a target="_blank" href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view&amp;popup" onclick="pop(this.href)">details</a>]
+					    					[<a target="_blank" href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view&amp;popup" onclick="pop(this.href);return false;">details</a>]
 					    				</td>
 				    				</tr>
 			    				</table><%
@@ -475,7 +475,7 @@ else{ %>
 												%>
 						    				</td>
 						    				<td align="right" class="barfont">
-						    					[<a target="_blank" href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view&amp;popup" onclick="pop(this.href)">details</a>]
+						    					[<a target="_blank" href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view&amp;popup" onclick="pop(this.href);return false;">details</a>]
 						    				</td>
 					    				</tr>
 				    				</table><%

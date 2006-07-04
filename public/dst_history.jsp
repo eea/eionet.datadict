@@ -83,7 +83,7 @@
     	<tr><td colspan="3">&nbsp;</td></tr>
     	<tr>
     		<td align="right" colspan="3">
-    			<a target="_blank" href="help.jsp?screen=history&amp;area=pagehelp" onclick="pop(this.href)">
+    			<a target="_blank" href="help.jsp?screen=history&amp;area=pagehelp" onclick="pop(this.href);return false;">
 					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 				</a>
     		</td>

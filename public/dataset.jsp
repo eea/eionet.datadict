@@ -701,7 +701,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 					hlpScreen = "dataset_add";
 				%>
 				<ul>
-					<li><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)" target="_blank">Page help</a></li>
+					<li><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" target="_blank">Page help</a></li>
 					<%
 					if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null){
 						%>
@@ -953,7 +953,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													if (dispAll || dispXLS){ %>
 														<tr>
 															<td>
-																Create an MS Excel template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=excel" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
+																Create an MS Excel template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=excel" onclick="pop(this.href);return false;"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td>
 																<a href="GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt="XLS icon"/></a>
@@ -965,7 +965,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													if (dispAll || dispODS){ %>
 														<tr>
 															<td>
-																Create an OpenDocument spreadsheet template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=ods" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
+																Create an OpenDocument spreadsheet template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=ods" onclick="pop(this.href);return false;"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td>
 																<a href="GetOds?type=dst&amp;id=<%=ds_id%>"><img border="0" src="images/icon_ods.gif" alt="ODS icon"/></a>
@@ -977,7 +977,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													if (dispAll || dispMDB){ %>
 														<tr>
 															<td>
-																Create validation metadata for MS Access template&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href)"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
+																Create validation metadata for MS Access template&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href);return false;"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td>
 																<a href="GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true"><img border="0" src="images/icon_mdb.jpg" width="16" height="18" alt="MDB icon"/></a>
@@ -1027,10 +1027,10 @@ private Vector getValues(String id, String mode, Vector attributes){
 														<tr style="height:20px;">
 															<td colspan="2">
 																<small>
-																	[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>" onclick="pop(this.href)">Upload a document ...</a> ]
+																	[ <a target="_blank" href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>" onclick="pop(this.href);return false;">Upload a document ...</a> ]
 																</small>
 																<small>
-																	[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>" onclick="pop(this.href)">Open cache ...</a> ]
+																	[ <a target="_blank" href="GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>" onclick="pop(this.href);return false;">Open cache ...</a> ]
 																</small>
 															</td>
 														</tr>
@@ -1074,7 +1074,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 								    		<tr id="short_name_row">
 												<th class="scope-row short_name">Short name</th>
 												<td class="short_name simple_attr_help">
-													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 													</a>
 												</td>
@@ -1111,7 +1111,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													RegistrationStatus
 												</th>
 												<td class="simple_attr_help">
-													<a target="_blank" href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href)">
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 													</a>
 												</td>
@@ -1154,7 +1154,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														Reference URL
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href)">
+														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
@@ -1217,7 +1217,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														<%=Util.replaceTags(attribute.getShortName())%>
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
+														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
@@ -1351,7 +1351,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		}
 																		%>
 																	</select>
-																	<a target="_blank" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr" onclick="pop(this.href)">
+																	<a target="_blank" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr" onclick="pop(this.href);return false;">
 																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																	</a>
 																	<%
@@ -1394,7 +1394,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														Public outputs
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?screen=dataset&amp;area=public_outputs" onclick="pop(this.href)">
+														<a target="_blank" href="help.jsp?screen=dataset&amp;area=public_outputs" onclick="pop(this.href);return false;">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
@@ -1446,7 +1446,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														CheckInNo
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href)">
+														<a target="_blank" href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href);return false;">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
@@ -1472,7 +1472,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													Identifier
 												</th>
 												<td class="simple_attr_help">
-													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 													</a>
 												</td>
@@ -1528,7 +1528,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<%
 													if (!mode.equals("view")){ %>
 														<td width="4%" class="simple_attr_help">
-															<a target="_blank" href="help.jsp?screen=dataset&amp;area=data_model_link" onclick="pop(this.href)">
+															<a target="_blank" href="help.jsp?screen=dataset&amp;area=data_model_link" onclick="pop(this.href);return false;">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 															</a>
 														</td>
@@ -1545,7 +1545,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														if (mode.equals("view") && dataset.getVisual()!=null){
 															
 															if (imgVisual){ %>
-																<a target="_blank" href="visuals/<%=Util.replaceTags(dsVisual)%>" onfocus="blur()" onclick="pop(this.href)">
+																<a target="_blank" href="visuals/<%=Util.replaceTags(dsVisual)%>" onfocus="blur()" onclick="pop(this.href);return false;">
 																	<img src="visuals/<%=Util.replaceTags(dsVisual)%>" border="0" height="100" width="100" alt="thumbnail"/>
 																</a><br/>
 																[Click thumbnail to view large version of the data model]<%
@@ -1687,7 +1687,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													<%
 													if (!mode.equals("view")){ %>
 														<span class="simple_attr_help">
-															<a target="_blank" href="help.jsp?screen=dataset&amp;area=rod_links_link" onclick="pop(this.href)">
+															<a target="_blank" href="help.jsp?screen=dataset&amp;area=rod_links_link" onclick="pop(this.href);return false;">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 															</a>
 														</span>
@@ -1768,7 +1768,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													if (!mode.equals("view")){
 														%>
 														<span class="simple_attr_help">
-															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href)">
+															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 															</a>
 														</span>
@@ -1780,7 +1780,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
 														<span width="<%=valueWidth%>%" class="barfont_bordered">
-															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true"><b>HERE</b></a> to manage complex attributes of this dataset]
+															[Click <a target="_blank" onclick="pop(this.href);return false;" href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true"><b>HERE</b></a> to manage complex attributes of this dataset]
 														</span><%
 													}
 													%>
@@ -1807,12 +1807,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 																	
 																	<tr class="zebra<%=isOdd%>">
 																		<td>
-																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
+																			<a target="_blank" onclick="pop(this.href);return false;" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
 																		<td>
-																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href)">
+																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href);return false;">
 																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																			</a>
 																		</td>

@@ -37,12 +37,8 @@ function popNovr(link) {
 	var newWin = window.open(link,"","status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
 }
 function pop(link) {
-	// It is VERY IMOPRTANT to set the window's event return value to FALSE, because this will override the browser's
-	// default behaviour which would ruin the whole thing. It is equally important to do it as the first thing here in
-	// this method, because doing it later would not be recognized by Netscape.
-	window.event.returnValue = false;
 
 	// it is VERY IMOPRTANT to give the popup window a name (even if its an empty string), because setting it to
 	// null will load into the opener if the opener itself has also been opened by another window!!!
-	var newWin = window.open(link,"","status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+	window.open(link,"","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
 }

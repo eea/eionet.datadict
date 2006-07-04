@@ -810,7 +810,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 							hlpScreen = "table_add";
 							
 						%>
-							<li><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href)" title="Get some help on this page">Page help</a></li>
+							<li><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 							<%
 							if (mode.equals("view") && user!=null && dsTable!=null && dsTable.getIdentifier()!=null && dataset!=null && dataset.getIdentifier()!=null){
 								%>
@@ -871,7 +871,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 				<h1><%=verb%> table definition
 					<%
 					if (mode.equals("add") && dsID != null && dsID.length()!=0){ %>
-						to <a target="_blank" onclick="pop(this.href)" href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a> dataset<%
+						to <a target="_blank" onclick="pop(this.href);return false;" href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a> dataset<%
 					}
 					%>
 				</h1>
@@ -1073,7 +1073,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 													if (dispAll || dispXLS){ %>
 														<tr>
 															<td>
-																Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&amp;area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
+																Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
 															</td>
 															<td>
 																<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt=""/></a>
@@ -1085,7 +1085,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 													if (dispAll || dispODS){ %>
 														<tr>
 															<td>
-																Create an OpenDocument spreadsheet template for this table&nbsp;<a target="_blank" onclick="pop(this.href)" href="help.jsp?screen=table&amp;area=ods"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
+																Create an OpenDocument spreadsheet template for this table&nbsp;<a target="_blank" onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=ods"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
 															</td>
 															<td>
 																<a href="GetOds?type=tbl&amp;id=<%=tableID%>"><img border="0" src="images/icon_ods.gif" alt=""/></a>
@@ -1113,7 +1113,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 														<tr style="height:20px;">
 															<td colspan="2">
 																<span class="barfont">
-																	[ <a target="_blank" onclick="pop(this.href)" href="GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
+																	[ <a target="_blank" onclick="pop(this.href);return false;" href="GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
 																</span>
 															</td>
 														</tr>
@@ -1156,7 +1156,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 								    		<tr id="short_name_row">
 												<th scope="row" class="scope-row short_name">Short name</th>
 												<td class="short_name simple_attr_help">
-													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
 												</td>
@@ -1192,7 +1192,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 													Dataset
 												</th>
 												<td class="simple_attr_help">
-													<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href)">
+													<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
 												</td>
@@ -1251,7 +1251,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 														Reference URL
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href)">
+														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 														</a>
 													</td>
@@ -1331,7 +1331,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 														<%=Util.replaceTags(attribute.getShortName())%>
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
+														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
 															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 														</a>
 													</td>
@@ -1355,7 +1355,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 															}
 															// thumbnail
 															if (mode.equals("view") && !Util.voidStr(attrValue)){ %>
-																<a target="_blank" href="visuals/<%=Util.replaceTags(attrValue)%>" onFocus="blur()" onclick="pop(this.href)">
+																<a target="_blank" href="visuals/<%=Util.replaceTags(attrValue)%>" onFocus="blur()" onclick="pop(this.href);return false;">
 																	<img src="visuals/<%=Util.replaceTags(attrValue)%>" border="0" height="100" width="100" alt=""/>
 																</a><br/><%
 															}
@@ -1364,7 +1364,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 																String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
 																%>
 																<span class="barfont">
-																	[Click <a target="_blank" onclick="pop(this.href)" href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>"><b>HERE</b></a> to <%=Util.replaceTags(actionText)%>]
+																	[Click <a target="_blank" onclick="pop(this.href);return false;" href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>"><b>HERE</b></a> to <%=Util.replaceTags(actionText)%>]
 																</span><%
 															}
 														}
@@ -1498,7 +1498,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 																		}
 																		%>
 																	</select>
-																	<a target="_blank" onclick="pop(this.href)" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
+																	<a target="_blank" onclick="pop(this.href);return false;" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
 																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 																	</a>
 																	<%
@@ -1526,7 +1526,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 													Identifier
 												</th>
 												<td class="simple_attr_help">
-													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
 														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
 													</a>
 												</td>
@@ -1784,7 +1784,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 													if (!mode.equals("view")){
 														%>
 														<span class="simple_attr_help">
-															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href)">
+															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
 																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 															</a>
 														</span>
@@ -1796,7 +1796,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
 														<span class="barfont_bordered">
-															[Click <a target="_blank" onclick="pop(this.href)" href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this table]
+															[Click <a target="_blank" onclick="pop(this.href);return false;" href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this table]
 														</span><%
 													}
 													%>
@@ -1824,12 +1824,12 @@ if (dataset!=null && dataset.getShortName()!=null)
 																	
 																	<tr class="zebra<%=isOdd%>">
 																		<td>
-																			<a target="_blank" onclick="pop(this.href)" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+																			<a target="_blank" onclick="pop(this.href);return false;" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
 																		<td>
-																			<a target="_blank" onclick="pop(this.href)" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
+																			<a target="_blank" onclick="pop(this.href);return false;" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
 																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
 																			</a>
 																		</td>

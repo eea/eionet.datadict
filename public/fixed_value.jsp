@@ -285,7 +285,7 @@ try { // start the whole page try block
 			
 		<div id="operations">
 		<ul>
-			<li><a target="_blank" href="help.jsp?screen=fixed_value&amp;area=pagehelp" title="Get some help on this page" onclick="pop(this.href)">Page help</a></li>
+			<li><a target="_blank" href="help.jsp?screen=fixed_value&amp;area=pagehelp" title="Get some help on this page" onclick="pop(this.href);return false;">Page help</a></li>
 
 		</ul>
 		</div>

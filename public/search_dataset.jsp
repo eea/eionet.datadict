@@ -183,7 +183,7 @@ private String setDefaultAttrs(String name){
 							<font class="head00">Search for a dataset definition</font>
 						</td>
 						<td align="right">
-							<a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">
 								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 							</a>
 						</td>
@@ -198,7 +198,7 @@ private String setDefaultAttrs(String name){
 							<b>Short name</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 							</a>
 						</td>
@@ -212,7 +212,7 @@ private String setDefaultAttrs(String name){
 							<b>Identifier</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href)">
+							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
 								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 							</a>
 						</td>
@@ -240,7 +240,7 @@ private String setDefaultAttrs(String name){
 										<b><%=Util.replaceTags(attrName)%></b>
 									</td>
 									<td>
-										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
+										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
 											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 										</a>
 									</td>
@@ -271,7 +271,7 @@ private String setDefaultAttrs(String name){
 									<b><%=Util.replaceTags(attrName)%></b>
 								</td>
 								<td>
-									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
+									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
 										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 									</a>
 								</td>
@@ -297,7 +297,7 @@ private String setDefaultAttrs(String name){
 									<b><%=Util.replaceTags(attrName)%></b>
 								</td>
 								<td>
-									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href)">
+									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
 										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
 									</a>
 								</td>

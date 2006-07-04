@@ -6,8 +6,6 @@
 request.setCharacterEncoding("UTF-8");
 
 String helpText = "";
-String width  = "400";
-String height = "400";
 
 String screen = request.getParameter("screen");
 String area   = request.getParameter("area");
@@ -22,15 +20,7 @@ if (attrid==null && attrshn==null){
 	
 	String _helpText = Helps.get(screen, area);
 	if (_helpText!=null)
-		helpText = _helpText;
-		
-	String _width = Helps.getPopupWidth(screen, area);
-	if (_width!=null && _width.length()!=0)
-		width = _width;
-	
-	String _height = Helps.getPopupLength(screen, area);
-	if (_height!=null && _height.length()!=0)
-		height = _height;
+		helpText = _helpText;		
 }
 else{
 	
@@ -69,20 +59,8 @@ else{
 		<%@ include file="headerinfo.txt" %>
     <title>Data Dictionary</title>
     <link type="text/css" rel="stylesheet" href="eionet_new.css" title="Default" />
-    <script type="text/javascript">
-      // <![CDATA[
-
-    	function load(){
-	    	resize();
-    	}
-    	
-    	function resize(){
-	    	window.resizeTo(<%=width%>, <%=height%>);
-    	}
-      // ]]>
-    </script>
 </head>
-<body class="popup" onload="load()">
+<body class="popup">
 <div class="popuphead">
 	<h1>Data Dictionary Help</h1>
 	<hr/>

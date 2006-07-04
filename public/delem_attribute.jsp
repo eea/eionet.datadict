@@ -436,7 +436,7 @@
 						%>
             <div id="operations">
               <ul>
-                <li><a target="_blank" href="help.jsp?screen=<%=Util.replaceTags(hlpScreen)%>&amp;area=pagehelp" onclick="pop(this.href)">Page help</a></li>
+                <li><a target="_blank" href="help.jsp?screen=<%=Util.replaceTags(hlpScreen)%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 							<%
 							if (user!=null && mode.equals("view") && editPrm){ %>
 								<li><a href="javascript:goToEdit()">Edit</a></li>

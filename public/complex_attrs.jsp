@@ -252,7 +252,7 @@ private String legalizeAlert(String in){
       		</table>
 		</td>
 		<td align="right">
-			<a target="_blank" href="help.jsp?screen=complex_attrs&amp;area=pagehelp" onclick="pop(this.href)">
+			<a target="_blank" href="help.jsp?screen=complex_attrs&amp;area=pagehelp" onclick="pop(this.href);return false;">
 				<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/>
 			</a>
 		</td>
