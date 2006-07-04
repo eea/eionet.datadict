@@ -50,6 +50,11 @@ public interface PropsIF {
 	public static final String PREDICATE_RDF_TYPE = "predicate.rdf-type";
 	public static final String PREDICATE_RDF_LABEL = "predicate.rdf-label";
 	
+	public static final String VISUALS_PATH = "visuals.path";
+	public static final String TEMP_FILE_PATH = "general.temp-file-path";
+	public static final String DOC_PATH = "general.doc-path";
+	public static final String OPENDOC_ODS_PATH = "opendoc.ods.path";
+	
 	/** defaults */
 	
 }
