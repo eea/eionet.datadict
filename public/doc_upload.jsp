@@ -16,6 +16,7 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 	<title>Data Dictionary</title>
 	<script language="javascript" src='script.js' type="text/javascript"></script>
 	<script language="javascript" type="text/javascript">
+	// <![CDATA[
 	
 		function submitForm(){
 			
@@ -25,11 +26,11 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 				return;
 			}
 			
-			qryStr = "ds_id=<%=dstID%>&amp;idf=<%=idf%>&amp;title=" + document.forms["form1"].elements["title"].value + "&amp;file=" + f;
+			qryStr = "ds_id=<%=dstID%>&idf=<%=idf%>&title=" + document.forms["form1"].elements["title"].value + "&file=" + f;
 			document.forms["form1"].action = document.forms["form1"].action + "?" + qryStr;
 			document.forms["form1"].submit();
 		}
-		
+	// ]]>
 	</script>
 </head>
 
