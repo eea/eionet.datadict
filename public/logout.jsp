@@ -1,13 +1,13 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<%!
 
+<%!
 ServletContext ctx = null;
-boolean wc = false;
+boolean userHasWorkingCopies = false;
 Vector datasets=null;
 Vector tables=null;
-Vector dataElements=null;
-
+Vector elements=null;
+Vector commonElements=null;
 %>
 
 <%@ include file="history.jsp" %>
@@ -22,6 +22,7 @@ Vector dataElements=null;
 		response.sendRedirect("index.jsp");
 		return;
 	}
+	
 	ctx = getServletContext();
 	String appName = ctx.getInitParameter("application-name");
 	
@@ -29,197 +30,203 @@ Vector dataElements=null;
 	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
 	DBPoolIF pool = xdbapp.getDBPool();
 	
-	try { // start the whole page try block
+	// try-catch block of the whole page
+	try {
 	
 		conn = pool.getConnection();
 
 		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 		searchEngine.setUser(user);		
-		wc = searchEngine.hasUserWorkingCopies();
+		userHasWorkingCopies = searchEngine.hasUserWorkingCopies();
 
-		if (wc){
+		if (userHasWorkingCopies){
 			datasets = searchEngine.getDatasets(null, null, null, null, true);
 			tables = searchEngine.getDatasetTables(null, null, null, null, null, true);
-			dataElements = searchEngine.getDataElements(null, null, null, null, null, null, true);
+			elements = searchEngine.getDataElements(null, null, null, null, null, null, true);
+			commonElements = searchEngine.getCommonElements(null, null, null, null, true, "=");
 		}
+		else
+			request.getRequestDispatcher("Logout").forward(request,response);
+			
 
 %>
 
 <html>
 <head>
 	<%@ include file="headerinfo.txt" %>
-	<title>Data Dictionary</title>
-	<script language="javascript" src='script.js' type="text/javascript"></script>
-	<script language="javascript" type="text/javascript">
-	// <![CDATA[
-		function onLoad(){
-			<%
-			if (wc==false){
-			%>
-				logout();
-			<%
+	<title>Data Dictionary - Logging out</title>
+</head>
+<body>
+<jsp:include page="nlocation.jsp" flush='true'>
+	<jsp:param name="name" value="Logout"/>
+	<jsp:param name="back" value="true"/>
+</jsp:include>
+<%@ include file="nmenu.jsp" %>
+
+<div id="workarea">
+	<h2>Logging out</h2>
+	<br/>
+	<table>
+		<caption style="text-align:left; font-weight:bold">You have checked out the following objects:</caption>
+		<tbody>
+			<% 			
+			int d=0;
+			
+			// DATASETS
+			if (datasets!=null && datasets.size()>0){
+				%>
+				<%
+				for (int i=0; i<datasets.size(); i++){
+		
+					Dataset dataset = (Dataset)datasets.get(i);
+			
+					String ds_id = dataset.getID();
+					String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
+					String ds_name = Util.replaceTags(dataset.getShortName());
+					if (ds_name == null) ds_name = "unknown";
+					if (ds_name.length() == 0) ds_name = "empty";									
+					String dsFullName=dataset.getName();
+					if (dsFullName == null) dsFullName = ds_name;
+					if (dsFullName.length() == 0) dsFullName = ds_name;
+					if (dsFullName.length()>60)
+						dsFullName = dsFullName.substring(0,60) + " ...";
+						d++;
+					%>
+		
+					<tr>					
+						<td style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2" title="<%=dsFullName%>">
+							Dataset: &nbsp;
+							<a href="dataset.jsp?ds_id=<%=ds_id%>&amp;mode=view">
+								<%=Util.replaceTags(dsFullName)%>
+							</a>
+						</td>
+					</tr>
+				<%
+				}
+			}
+			//TABLES
+			if (tables!=null && tables.size()>0){
+				for (int i=0; i<tables.size(); i++){
+					DsTable table = (DsTable)tables.get(i);
+					String table_id = table.getID();
+					String table_name = table.getShortName();
+					String ds_id = table.getDatasetID();
+					String ds_name = table.getDatasetName();
+					String dsNs = table.getParentNs();
+		
+					if (table_name == null) table_name = "unknown";
+					if (table_name.length() == 0) table_name = "empty";
+		
+					if (ds_name == null || ds_name.length() == 0) ds_name = "unknown";
+		
+					//String tblName = "";
+					String tblName = table.getName()==null ? "" : table.getName();
+		
+					String tblFullName = tblName;
+					tblName = tblName.length()>60 && tblName != null ? tblName.substring(0,60) + " ..." : tblName;
+
+					String tableLink = "dstable.jsp?mode=view&amp;table_id=" + table_id + "&amp;ds_id=" + ds_id + "&amp;ds_name=" + ds_name;
+					d++;
+					%>
+					<tr>
+						<td style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+							Table: &nbsp;
+							<a href="<%=tableLink%>">
+								<%=Util.replaceTags(table_name)%>
+							</a>&nbsp;(dataset is <u><%=Util.replaceTags(ds_name)%></u>)
+						</td>
+					</tr>
+					<%
+				}
+			}
+			//ELEMENTS
+			if (elements!=null && elements.size()>0){
+	        	for (int i=0; i<elements.size(); i++){
+					DataElement dataElement = (DataElement)elements.get(i);
+					String delem_id = dataElement.getID();
+					String delem_name = dataElement.getShortName();
+					if (delem_name == null) delem_name = "unknown";
+					if (delem_name.length() == 0) delem_name = "empty";
+					String delem_type = dataElement.getType();
+					if (delem_type == null) delem_type = "unknown";
+			
+					String displayType = "unknown";
+					if (delem_type.equals("CH1")){
+						displayType = "Fixed values";
+					}
+					else if (delem_type.equals("CH2")){
+						displayType = "Quantitative";
+					}
+		
+					String tblID = dataElement.getTableID();
+					DsTable tbl = null;
+					if (tblID != null) tbl = searchEngine.getDatasetTable(tblID);
+					String dsID = null;
+					Dataset ds = null;
+					if (tbl != null) dsID = tbl.getDatasetID();
+					if (dsID != null) ds = searchEngine.getDataset(dsID);
+		
+					String dispDs  = ds==null  ? "-" : ds.getShortName();
+					String dispTbl = tbl==null ? "-" : tbl.getShortName();
+					d++;
+					%>
+					<tr>
+						<td style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+						Element: &nbsp;
+						<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
+							<%=Util.replaceTags(delem_name)%>
+						</a>(<%=displayType%>, dataset is <u><%=Util.replaceTags(dispDs)%></u>, table is <u><%=Util.replaceTags(dispTbl)%></u>)
+					</tr>
+					<%
+				}
+			}
+			// COMMON ELEMENTS
+			if (commonElements!=null && commonElements.size()>0){
+				
+				for (int i=0; i<commonElements.size(); i++){
+					DataElement dataElement = (DataElement)commonElements.get(i);
+					String delem_id = dataElement.getID();
+					String delem_name = dataElement.getShortName();
+					if (delem_name == null) delem_name = "unknown";
+					if (delem_name.length() == 0) delem_name = "empty";
+					String delem_type = dataElement.getType();
+					if (delem_type == null) delem_type = "unknown";
+			
+					String displayType = "unknown";
+					if (delem_type.equals("CH1")){
+						displayType = "Fixed values";
+					}
+					else if (delem_type.equals("CH2")){
+						displayType = "Quantitative";
+					}
+		
+					d++;
+					%>
+					<tr>
+						<td style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
+						Common element: &nbsp;
+						<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
+							<%=Util.replaceTags(delem_name)%>
+						</a>
+						(<%=displayType%>)
+					</tr>
+					<%
+				}
 			}
 			%>
-		}
-	// ]]>
-	</script>
-</head>
-<body onload="onLoad()">
-
-<jsp:include page="nlocation.jsp" flush='true'>
-		<jsp:param name="name" value="Logout"/>
-		<jsp:param name="back" value="true"/>
-	</jsp:include>
-<%@ include file="nmenu.jsp" %>
-<div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-
-            <div style="margin-left:30">
-            	<form name="form1" action="index.jsp" method="get">
-				<table width="500">
-				
-				  <%
-				  if (wc){
-				  %>
-	  			    <tr><td><font class="head00">Logging out</font></td></tr>
-					<tr style="height:10px;"><td>&#160;</td></tr>
-					
-					<tr style="height:30px;"><td>You have checked out the following objects: </td></tr>
-					<% 
-					// DATASETS
-					int d=0;
-					
-					if (datasets!=null){
-						%>
-						<%
-						for (int i=0; i<datasets.size(); i++){
-				
-							Dataset dataset = (Dataset)datasets.get(i);
-					
-							String ds_id = dataset.getID();
-							String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
-							String ds_name = Util.replaceTags(dataset.getShortName());
-							if (ds_name == null) ds_name = "unknown";
-							if (ds_name.length() == 0) ds_name = "empty";									
-							String dsFullName=dataset.getName();
-							if (dsFullName == null) dsFullName = ds_name;
-							if (dsFullName.length() == 0) dsFullName = ds_name;
-							if (dsFullName.length()>60)
-								dsFullName = dsFullName.substring(0,60) + " ...";
-								d++;
-							%>
-				
-							<tr valign="top">					
-								<td align="left" style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2" title="<%=dsFullName%>">
-									Dataset definition: &#160;
-									<a href="dataset.jsp?ds_id=<%=ds_id%>&amp;mode=view">
-									<%=Util.replaceTags(dsFullName)%></a>&#160;
-									<!--%=dsVersion%-->
-								</td>
-							</tr>
-						<%
-						}
-					}
-					//TABLES
-					if (tables!=null){
-						for (int i=0; i<tables.size(); i++){
-							DsTable table = (DsTable)tables.get(i);
-							String table_id = table.getID();
-							String table_name = table.getShortName();
-							String ds_id = table.getDatasetID();
-							String ds_name = table.getDatasetName();
-							String dsNs = table.getParentNs();
-				
-							if (table_name == null) table_name = "unknown";
-							if (table_name.length() == 0) table_name = "empty";
-				
-							if (ds_name == null || ds_name.length() == 0) ds_name = "unknown";
-				
-							//String tblName = "";
-							String tblName = table.getName()==null ? "" : table.getName();
-				
-							String tblFullName = tblName;
-							tblName = tblName.length()>60 && tblName != null ? tblName.substring(0,60) + " ..." : tblName;
-
-							String tableLink = "dstable.jsp?mode=view&amp;table_id=" + table_id + "&amp;ds_id=" + ds_id + "&amp;ds_name=" + ds_name;
-							d++;
-							%>
-							<tr valign="top">					
-								<td align="left" style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-									Table definiton: &#160;
-									<a href="<%=tableLink%>"><%=Util.replaceTags(table_name)%></a>&#160;
-									in dataset: <%=Util.replaceTags(ds_name)%>
-									<!--%=Util.replaceTags(tblName)%-->
-								</td>
-							</tr>
-							<%
-						}
-					}
-					//ELEMENTS
-					if (dataElements!=null){
-			        	for (int i=0; i<dataElements.size(); i++){
-							DataElement dataElement = (DataElement)dataElements.get(i);
-							String delem_id = dataElement.getID();
-							String delem_name = dataElement.getShortName();
-							if (delem_name == null) delem_name = "unknown";
-							if (delem_name.length() == 0) delem_name = "empty";
-							String delem_type = dataElement.getType();
-							if (delem_type == null) delem_type = "unknown";
-					
-							String displayType = "unknown";
-							if (delem_type.equals("CH1")){
-								displayType = "Fixed values";
-							}
-							else if (delem_type.equals("CH2")){
-								displayType = "Quantitative";
-							}
-				
-							String tblID = dataElement.getTableID();
-							DsTable tbl = null;
-							if (tblID != null) tbl = searchEngine.getDatasetTable(tblID);
-							String dsID = null;
-							Dataset ds = null;
-							if (tbl != null) dsID = tbl.getDatasetID();
-							if (dsID != null) ds = searchEngine.getDataset(dsID);
-				
-							String dispDs  = ds==null  ? "-" : ds.getShortName();
-							String dispTbl = tbl==null ? "-" : tbl.getShortName();
-							d++;
-							%>
-							<tr valign="top">					
-								<td align="left" style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-								Data element definition: &#160;
-								<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
-								<%=Util.replaceTags(delem_name)%></a>
-								(<%=displayType%>)
-								in table: <%=Util.replaceTags(dispTbl)%>
-								in dataset: <%=Util.replaceTags(dispDs)%>
-							</tr>
-							<%
-						}
-					}
-					%>
-					
-					<tr><td align="left">&#160;</td></tr>
-					<tr style="height:30px;"><td><b>!Be aware that if you leave these objects as checked out, any other user cannot edit these or their parent objects.
-						If you still want to log out, please click 'Logout' button below:</b>
-					</td></tr>
-					<tr style="height:30px;"><td align="left">
-						<input type="button" onclick="logout()" value="Logout" class="smallbutton"/>
-					</td></tr>
-				  <%
-			  	  }
-			  	  else { %>
-	  			    <tr><td><font class="head00">Logging out . . .</font></td></tr>
-	  			  <%}%>
-				</table>
-				</form>
-            </div>
-		</td>
-	</tr>
-</table>
+		</tbody>
+	</table>
+	<br/>
+	<p class="caution">
+		NB!<br/>
+		If you leave these objects checked out, nobody else can edit them!<br/>
+		Leaving a table or non-comment element checked out locks the whole dataset!<br/>
+		If you still want to log out, please click the button below.
+	</p>
+	<form name="form1" action="Logout" method="get">
+		<input type="submit" value="Logout" class="smallbutton"/>
+	</form>
+	
 </div>
 </body>
 </html>
