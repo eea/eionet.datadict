@@ -23,7 +23,6 @@ public class DocUpload extends HttpServlet{
 	public  static final String REQPAR_DELETE = "delete";
 	
 	private static final String PERM = "du";
-	private static final String CTXPAR_FILEPATH = "doc-path";
 	
 	Connection conn = null;
 	
@@ -47,9 +46,9 @@ public class DocUpload extends HttpServlet{
 				return;
 			}
 			
-			String filePath = getServletContext().getInitParameter(CTXPAR_FILEPATH);
+			String filePath = Props.getProperty(PropsIF.DOC_PATH);
 			if (Util.voidStr(filePath))
-				throw new ServletException("Missing " + CTXPAR_FILEPATH + " context param!");
+				throw new ServletException("Missing property: " + PropsIF.DOC_PATH);
 			
 			String dstID = req.getParameter(REQPAR_DSID);
 			if (Util.voidStr(dstID))
@@ -76,9 +75,9 @@ public class DocUpload extends HttpServlet{
 	
 	private String getAbsFilePath(HttpServletRequest req) throws Exception{
 		
-		String path = getServletContext().getInitParameter(CTXPAR_FILEPATH);
+		String path = Props.getProperty(PropsIF.DOC_PATH);
 		if (Util.voidStr(path))
-			throw new Exception("Missing " + CTXPAR_FILEPATH + " context param!");
+			throw new Exception("Missing property: " + PropsIF.DOC_PATH);
 			
 		if (!path.endsWith(File.separator)) path = path + File.separator;
 		return path + extractFileName(req);

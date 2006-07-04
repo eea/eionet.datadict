@@ -38,26 +38,6 @@
 		<param-value>error.html</param-value>
 	</context-param>
 
-	<context-param>
-		<param-name>visuals-path</param-name>
-		<param-value>/prj/datadict/public/visuals</param-value>
-	</context-param>
-
-	<context-param>
-		<param-name>temp-file-path</param-name>
-		<param-value>/prj/datadict/tmp</param-value>
-	</context-param>
-
-	<context-param>
-		<param-name>doc-path</param-name>
-		<param-value>/prj/datadict/tmp</param-value>
-	</context-param>
-
-	<context-param>
-		<param-name>ods-path</param-name>
-		<param-value>/prj/datadict/opendoc/ods</param-value>
-	</context-param>
-
 <!-- servlets -->
 
 	<servlet>

@@ -61,7 +61,7 @@ public class GetPrintout extends HttpServlet {
             throw new ServletException("Object ID not specified!");
         
         // get the path of images
-        String visualsPath = ctx.getInitParameter("visuals-path");
+        String visualsPath = Props.getProperty(PropsIF.VISUALS_PATH);
 		// get the path of cache
 		String cachePath = ctx.getInitParameter("doc-path");
         

@@ -14,7 +14,6 @@ import com.tee.xmlserver.*;
 
 public class XFormServlet extends HttpServlet {
 	
-	private static final String CTXPAR_TMP_FILE_PATH = "temp-file-path";
 	private static final String TEMPLATE_NAME = "xform.xhtml";
     
 	protected void service(HttpServletRequest req, HttpServletResponse res)

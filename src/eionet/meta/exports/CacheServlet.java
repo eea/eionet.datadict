@@ -12,6 +12,8 @@ import eionet.meta.DDSearchEngine;
 import eionet.meta.exports.*;
 import eionet.meta.exports.pdf.*;
 import eionet.meta.exports.xls.*;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
 import com.tee.util.Util;
 import com.tee.xmlserver.*;
@@ -90,7 +92,8 @@ public class CacheServlet extends HttpServlet {
 			if (article.equals("pdf") && objType.equals("dst")){
 				cachable = new DstPdfGuideline(getConnection(req));
 				cachable.setCachePath(cachePath);
-				((PdfHandout)cachable).setVsPath(ctx.getInitParameter("visuals-path"));
+				String visualsPath = Props.getProperty(PropsIF.VISUALS_PATH);
+				((PdfHandout)cachable).setVsPath(visualsPath);
 				((PdfHandout)cachable).setLogo(ctx.getRealPath(GetPrintout.PDF_LOGO_PATH));
 			}
 			else if (article.equals("xls") && objType.equals("dst")){

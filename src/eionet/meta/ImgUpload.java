@@ -10,6 +10,8 @@ import java.sql.*;
 import com.tee.util.*;
 import com.tee.xmlserver.*;
 
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 
 import com.eteks.awt.PJAToolkit;
@@ -17,7 +19,6 @@ import com.eteks.awt.PJAToolkit;
 public class ImgUpload extends HttpServlet {
 
     private static final int BUF_SIZE = 1024;
-    private static final String PAR_WEB_ROOT = "visuals-path";
 	private static final String QRYSTR_ATTR = "imgattr_qrystr";
     
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -65,8 +66,7 @@ public class ImgUpload extends HttpServlet {
             throw new ServletException("Application name in servlet conf is not specified!");
         
         // get the file's physical path
-        String filePath = ctx.getInitParameter(PAR_WEB_ROOT);
-                    
+        String filePath = Props.getProperty(PropsIF.VISUALS_PATH);
         if (filePath == null)
             filePath = System.getProperty("user.dir");
                     

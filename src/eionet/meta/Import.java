@@ -13,6 +13,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import eionet.meta.imp.*;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
 
@@ -24,7 +26,6 @@ public class Import extends HttpServlet {
     private static final int BUF_SIZE = 1024;
     private static final String START_XML_STRING = "<?xml";
     
-    private static final String PAR_TEMP_FILE_PATH = "temp-file-path";
     private static final String TMP_FILE_PREFIX = "import_";
 
     private static PrintStream s = System.out;
@@ -131,8 +132,7 @@ public class Import extends HttpServlet {
         // since the data is going to be saved into a file
         // (regardless of whether we have a file upload or
         // URL stream, we initialize the file
-
-        String tmpFilePath = ctx.getInitParameter(PAR_TEMP_FILE_PATH);
+        String tmpFilePath = Props.getProperty(PropsIF.TEMP_FILE_PATH);
         if (tmpFilePath == null)
             tmpFilePath = System.getProperty("user.dir");
 

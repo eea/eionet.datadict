@@ -111,17 +111,16 @@ public class OdsServlet extends HttpServlet{
 	private String prepareWorkingFolder(String sessionID) throws Exception{
 
 		// get ods-folder path
-		ServletContext ctx = getServletContext();
-        String odsFolder = ctx.getInitParameter("ods-path");
+        String odsFolder = Props.getProperty(PropsIF.OPENDOC_ODS_PATH);
         if (odsFolder==null)
-        	throw new Exception("Missing context parameter: ods-path");
+        	throw new Exception("Missing property: " + PropsIF.OPENDOC_ODS_PATH);
         else if (!odsFolder.endsWith(File.separator))
         	odsFolder = odsFolder + File.separator;
         
         // get DD temporary folder
-        String tmpFilePath = ctx.getInitParameter("temp-file-path");
+        String tmpFilePath = Props.getProperty(PropsIF.TEMP_FILE_PATH);
         if (tmpFilePath==null)
-        	throw new Exception("Missing context parameter: temp-file-path");
+        	throw new Exception("Missing property: " + PropsIF.TEMP_FILE_PATH);
         else if (!tmpFilePath.endsWith(File.separator))
         	tmpFilePath = tmpFilePath + File.separator;
         

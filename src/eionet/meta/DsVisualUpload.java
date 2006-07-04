@@ -11,13 +11,14 @@ import com.tee.util.Util;
 import com.tee.xmlserver.*;
 
 import eionet.meta.savers.*;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 
 public class DsVisualUpload extends HttpServlet {
 
     private static final int BUF_SIZE = 1024;
     private static final String WEB_ROOT = "x:\\temp\\";
-    private static final String PAR_WEB_ROOT = "visuals-path";
     
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
@@ -53,9 +54,8 @@ public class DsVisualUpload extends HttpServlet {
         if (Util.nullString(appName))
             throw new ServletException("Application name in servlet conf is not specified!");
         
-        // get the file's physical path
-        String filePath = ctx.getInitParameter(PAR_WEB_ROOT);
-                    
+        // get the file's physical path        
+        String filePath = Props.getProperty(PropsIF.VISUALS_PATH);
         if (filePath == null)
             filePath = System.getProperty("user.dir");
                     
