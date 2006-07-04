@@ -89,13 +89,14 @@ public class SecurityUtil {
         HttpSession httpSession = servReq.getSession(false);
         if (httpSession != null) {
             AppUserIF user = (AppUserIF)httpSession.getAttribute(REMOTEUSER);
-            if (user != null)
-            user.invalidate();
+            if (user != null){
+            	user.invalidate();
+            	httpSession.removeAttribute(REMOTEUSER);
+            }
                 
-            // DBG
             if (Logger.enable(5))
-            Logger.log("freeSession: session=" + httpSession + " user=" + user);
-            //
+            	Logger.log("freeSession: session=" + httpSession + " user=" + user);
+            
 	        httpSession.invalidate();
         }
     }
