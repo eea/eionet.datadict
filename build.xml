@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ================================================== -->
+<!-- BUILDFILE FOR DATA DICTIONARY
+
+	Ant reads the following arguments from build.properties file.
+		build.dir - directory where the application will be installed eg.  /tomcat/webapps
+		servletapi.jar - servletapi.jar file location eg. /tomcat/common/lib/srvletapi.jar
+
+	If build.properties doesn't exist yet, then make a copy from default.properties and rename it to build.properties. Modify properties, if needed.
+	
+
+
+     The main targets are:
+
+	compile
+	   compiles java classes into classes.dir.
+
+	buildjar
+	   builds datadict.jar into WEB-INF/lib directory. removes also compiled java classes from classes directory.
+
+     install
+        creates the correct deployment directory structure in the target build.dir and
+        copies all web (jsp, xsl, xml,images, css and js), configuration (web.xml)
+        related data there, java libraries and builds jar file.
+
+     clean
+        this target removes all compiled java classes from classes.dir,
+        but does not touch the rest (jsp, html, xml, stylesheets etc.)
+
+
+	 default is install 
+  -->
+<!-- use JAR instead of classes because it makes it easier to debug errors -->
+
+
+
+<project name="datadict" default="install" basedir=".">
+
+	<!-- set global properties for this build -->
+	<!-- reads default parametrs from build.properties file -->
+
+	<target name="init">
+
+        <condition property="build.properties.exists">
+                <available file="build.properties" />
+        </condition>
+
+        <fail unless="build.properties.exists"
+            message="Couldn't find build.properties file! Make a copy from default.properties and rename it to build.properties. Modify properties, if needed."/>
+
+		<loadproperties srcFile="build.properties"/>
+
+        <fail unless="build.dir"
+            message="Mandatory build.dir property is missing in build.properties file. Please provide a directory name as build.dir property value where the application will be installed eg.  build.dir=/tomcat/webapps/datadict "/>
+
+		<property name="src" value="src"/>
+		<property name="lib" value="public/WEB-INF/lib"/>
+		<property name="classes.dir" value="${build.dir}/public/WEB-INF/classes"/>
+	</target>
+
+	<target name="compile" depends="init,prepare,clean" description="compiles java classes into classes path">
+	    <!-- Compile the java code from ${src} into ${build} -->
+		<javac deprecation="off" srcdir="${src}"
+		    destdir="${classes.dir}" debug="on" source="1.4"
+		    classpath="public/WEB-INF/lib/xmlserver.jar;
+			public/WEB-INF/lib/castor.jar;
+			public/WEB-INF/lib/jackcess-1.1.2.jar;
+			public/WEB-INF/lib/itext-0.99.jar;
+			public/WEB-INF/lib/commons-collections-3.0.jar;
+			public/WEB-INF/lib/commons-lang-1.0.jar;
+			public/WEB-INF/lib/commons-logging-api.jar;
+			public/WEB-INF/lib/xerces.jar;
+			public/WEB-INF/lib/pja.jar;
+			public/WEB-INF/lib/eionet-dir.jar;
+			public/WEB-INF/lib/uit-security.jar;
+			public/WEB-INF/lib/uit-client.jar;
+			public/WEB-INF/lib/uit-help.jar;
+			public/WEB-INF/lib/log4j.jar;
+			public/WEB-INF/lib/xmlrpc-2.0.jar;
+			public/WEB-INF/lib/servlet.jar;
+			public/WEB-INF/lib/poi-2.5-final-20040302.jar;
+			${servletapi.jar}" />
+	</target>
+
+	<target name="buildjar" depends="compile" description="creates datadict.jar into WB-INF/lib">
+		<jar jarfile="${build.dir}/${lib}/datadict.jar"
+		    includes="**/*.class" basedir="${classes.dir}" />
+		<!--delete dir='${classes.dir}/eionet' /-->
+		<antcall target="clean"/>
+	</target>
+
+	<target name="prepare" description="Creates folder structure if not existing yet">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.dir}/acl"/>
+		<mkdir dir="${build.dir}/opendoc"/>
+		<mkdir dir="${build.dir}/opendoc/ods"/>
+		<mkdir dir="${build.dir}/public"/>
+		<mkdir dir="${build.dir}/public/images"/>
+		<mkdir dir="${build.dir}/public/WEB-INF"/>
+		<mkdir dir="${build.dir}/public/WEB-INF/classes"/>
+		<mkdir dir="${build.dir}/public/WEB-INF/lib"/>
+		<mkdir dir="${build.dir}/public/visuals"/>
+	</target>
+
+	<target name="install" depends="init,copyfiles" description="complete installation">
+		<antcall target="checkProps"/>
+	</target>
+
+    <target name="copyfiles" depends="buildjar" description="Copies all files to deploy dir. Does not overwrite properties files!">
+        
+        <copy file="makemdb.sh" todir="${build.dir}" overwrite="false"/>
+        <copy file="VERSION.txt" todir="${build.dir}" overwrite="true"/>
+		<copy todir="${build.dir}/acl" overwrite="false">
+            <fileset dir="acl"/>
+        </copy>
+		<copy todir="${build.dir}/opendoc" overwrite="true">
+            <fileset dir="opendoc"/>
+        </copy>
+        <copy todir="${build.dir}/public" overwrite="true">
+            <fileset dir="public">
+                <exclude name="**/*.java" />
+                <exclude name="**/*.properties" />
+				<exclude name="visuals/**" />
+            </fileset>
+        </copy>        
+        
+        <condition property="uit.needed">
+            <not>
+                <available file="${classes.dir}/uit.properties" />
+            </not>
+        </condition>
+        <condition property="datadict.needed">
+            <not>
+                <available file="${classes.dir}/datadict.properties" />
+            </not>
+        </condition>
+        <condition property="log4j.needed">
+            <not>
+                <available file="${classes.dir}/log4j.properties" />
+            </not>
+        </condition>
+        <condition property="eionetdir.needed">
+            <not>
+                <available file="${classes.dir}/eionetdir.properties" />
+            </not>
+        </condition>
+        <condition property="teXDBMsg.needed">
+            <not>
+                <available file="${classes.dir}/teXDBMsg.properties" />
+            </not>
+        </condition>
+        <antcall target="copy_props" />
+    </target>
+    
+	<target name="copy_props" description="Checks that certain properties files exist">
+		<antcall target="cp_uit"/>
+		<antcall target="cp_datadict"/>
+		<antcall target="cp_log4j"/>
+		<antcall target="cp_eionetdir"/>
+		<antcall target="cp_teXDBMsg"/>
+	</target>
+	<target name="cp_uit" if="uit.needed">
+		<copy file="public/WEB-INF/classes/uit.properties" tofile="${classes.dir}/uit.properties"/>
+	</target>
+	<target name="cp_log4j" if="log4j.needed">
+		<copy file="public/WEB-INF/classes/log4j.properties" tofile="${classes.dir}/log4j.properties"/>
+	</target>
+	<target name="cp_datadict" if="datadict.needed">
+		<copy file="public/WEB-INF/classes/datadict.properties" tofile="${classes.dir}/datadict.properties"/>
+	</target>
+	<target name="cp_eionetdir" if="eionetdir.needed">
+		<copy file="public/WEB-INF/classes/eionetdir.properties" tofile="${classes.dir}/eionetdir.properties"/>
+	</target>
+	<target name="cp_teXDBMsg" if="teXDBMsg.needed">
+		<copy file="public/WEB-INF/classes/teXDBMsg.properties" tofile="${classes.dir}/teXDBMsg.properties"/>
+	</target>
+	
+<!-- Check properties inside properties-files -->
+	<target name="checkProps">
+		<antcall target="checkUITProps"/>
+		<antcall target="checkDataDictProps"/>
+	</target>
+
+	<target name="checkUITProps">
+		<loadproperties srcFile="${classes.dir}/uit.properties"/>
+		<condition property="srvdef.not.available">
+			<not>
+				<available file="${services.definition.file}"/>
+			</not>
+		</condition>
+
+		<condition property="groupfile.not.available">
+			<not>
+				<available file="${application.localgroups.file}"/>
+			</not>
+		</condition>
+		<condition property="prms.not.available">
+			<not>
+				<available file="${application.permissions.file}"/>
+			</not>
+		</condition>
+		<condition property="users.not.available">
+			<not>
+				<available file="${acl.localusers.xml}"/>
+			</not>
+		</condition>
+		
+		<antcall target="warn_definition"/>
+		<antcall target="warn_localgroup"/>
+		<antcall target="warn_prms"/>
+		<antcall target="warn_users"/>
+
+	</target>
+
+	<target name="checkDataDictProps">
+		<loadproperties srcFile="${classes.dir}/datadict.properties"/>
+		<condition property="mdbexecutable.not.available">
+			<not>
+				<available file="${mdb.executable}"/>
+			</not>
+		</condition>
+		<condition property="pdfunifont.not.available">
+			<not>
+				<available file="${pdf.uni-font}"/>
+			</not>
+		</condition>
+		<condition property="visualspath.not.available">
+			<not>
+				<available file="${visuals.path}" type="dir"/>
+			</not>
+		</condition>
+		<condition property="odspath.not.available">
+			<not>
+				<available file="${opendoc.ods.path}" type="dir"/>
+			</not>
+		</condition>
+		<condition property="tempfilepath.not.available">
+			<not>
+				<available file="${general.temp-file-path}" type="dir"/>
+			</not>
+		</condition>
+		<condition property="docpath.not.available">
+			<not>
+				<available file="${general.doc-path}" type="dir"/>
+			</not>
+		</condition>
+
+		<antcall target="warn_mdbexecutable"/>
+		<antcall target="warn_pdfunifont"/>
+		<antcall target="warn_visualspath"/>
+		<antcall target="warn_odspath"/>
+		<antcall target="warn_tempfilepath"/>
+		<antcall target="warn_docpath"/>
+
+	</target>
+
+	<!-- Warnings to display if certain paths, files, etc specified in properties-files do not actually exist in the system -->
+
+	<!-- warnings for uit.properties -->
+
+	<target name="warn_definition" if="srvdef.not.available">
+		<echo message="==================================================================="/>
+		<echo message="Services definition file is not available at: ${services.definition.file}"/>
+		<echo message="Please specify the correct location in uit.properties"/>
+		<echo message="==================================================================="/>
+	</target>
+
+	<target name="warn_localgroup" if="groupfile.not.available">
+		<echo message="==================================================================="/>
+		<echo message="File for localgroups and users is not available at: ${application.localgroups.file}"/>
+		<echo message="Please specify the correct location in uit.properties"/>
+		<echo message="==================================================================="/>
+	</target>
+
+	<target name="warn_prms" if="prms.not.available">
+		<echo message="==================================================================="/>
+		<echo message="File for app permissions and descriptions is not available at: ${application.permissions.file}"/>
+		<echo message="Please specify the correct location in uit.properties"/>
+		<echo message="==================================================================="/>
+	</target>
+
+	<target name="warn_users" if="users.not.available">
+		<echo message="==================================================================="/>
+		<echo message="File for localuser accounts is not available at: ${acl.localusers.xml}"/>
+		<echo message="Please specify the correct location in uit.properties"/>
+		<echo message="==================================================================="/>
+	</target>
+
+	<!-- warnings for datadict.properties -->
+
+	<target name="warn_mdbexecutable" if="mdbexecutable.not.available">
+		<echo message="==================================================================="/>
+		<echo message="The file specified in mdb.executable is not available at: ${mdb.executable}"/>
+		<echo message="Please specify the correct location in datadict.properties"/>
+		<echo message="==================================================================="/>
+	</target>
+	<target name="warn_pdfunifont" if="pdfunifont.not.available">
+		<echo message="==================================================================="/>
+		<echo message="The file specified in pdf.uni-font is not available at: ${pdf.uni-font}"/>
+		<echo message="Please specify the correct location in datadict.properties"/>
+		<echo message="==================================================================="/>
+	</target>
+	<target name="warn_visualspath" if="visualspath.not.available">
+		<echo message="==================================================================="/>
+		<echo message="The folder specified in visuals.path is not available at: ${visuals.path}"/>
+		<echo message="Please specify the correct location in datadict.properties"/>
+		<echo message="==================================================================="/>
+	</target>
+	<target name="warn_odspath" if="odspath.not.available">
+		<echo message="==================================================================="/>
+		<echo message="The folder specified in opendoc.ods.path is not available at: ${opendoc.ods.path}"/>
+		<echo message="Please specify the correct location in datadict.properties"/>
+		<echo message="==================================================================="/>
+	</target>
+	<target name="warn_tempfilepath" if="tempfilepath.not.available">
+		<echo message="==================================================================="/>
+		<echo message="The folder specified in general.temp-file-path is not available at: ${general.temp-file-path}"/>
+		<echo message="Please specify the correct location in datadict.properties"/>
+		<echo message="==================================================================="/>
+	</target>
+	<target name="warn_docpath" if="docpath.not.available">
+		<echo message="==================================================================="/>
+		<echo message="The folder specified in general.doc-path is not available at: ${general.doc-path}"/>
+		<echo message="Please specify the correct location in datadict.properties"/>
+		<echo message="==================================================================="/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${classes.dir}/eionet"/>
+	</target>
+
+</project>
