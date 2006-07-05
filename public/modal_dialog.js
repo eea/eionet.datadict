@@ -11,13 +11,13 @@ parameters:
 	*/
 
 function openYesNo(url, text, returnFunc, height, width) {
-	openDialog(url, text, returnFunc, "yesno", height, width);
+	openDialog(url, text, returnFunc, "yesno");
 }
 function openNoYes(url, text, returnFunc, height, width) {
-	openDialog(url, text, returnFunc, "noyes", height, width);
+	openDialog(url, text, returnFunc, "noyes");
 }
 
-function openDialog(url, text, returnFunc, order, height, width) {
+function openDialog(url, text, returnFunc, order) {
 
 	if (!dialogWin.win || (dialogWin.win && dialogWin.win.closed)) {
 
@@ -27,7 +27,7 @@ function openDialog(url, text, returnFunc, order, height, width) {
 		dialogWin.order = order;
 		
 		// Generate the dialog and make sure it has focus.
-		dialogWin.win = window.open(url, "", "height=" + height +",width="+width+",status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no,modal=yes");
+		dialogWin.win = window.open(url, "", "height=250,width=500,status=yes,toolbar=no,scrollbars=no,resizable=yes,menubar=no,location=no,modal=yes");
 
 		window.onfocus = checkModal;
 		dialogWin.win.focus()
