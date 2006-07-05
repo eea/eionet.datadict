@@ -20,9 +20,6 @@ var browser = document.all ? 'E' : 'N';
 function login() {
 	window.open("login.html","login","height=200,width=300,status=no,toolbar=no,scrollbars=no,resizable=no,menubar=no,location=no");
 }
-function logout() {
-	window.open("logout.html","login","height=200,width=300,status=no,toolbar=no,scrollbars=no,resizable=no,menubar=no,location=no");
-}
 
 function form_changed(form_name){
 	document.forms[form_name].elements["changed"].value="1";		
