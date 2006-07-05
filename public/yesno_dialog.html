@@ -1,9 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <html>
 	<head>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+		<link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/layout-print.css" media="print" />
+		<link rel="stylesheet" type="text/css" href="layout-screen.css" media="screen" title="Default" />
+		<link rel="stylesheet" type="text/css" href="layout-handheld.css" media="handheld" />
+		<link rel="alternate stylesheet" type="text/css"
+			  href="http://www.eionet.europa.eu/styles/eea2006/layout-screen.css"
+			  media="screen" title="EEA 2006 style" />
+		<link rel="alternate stylesheet" type="text/css"
+			  href="eea2006.css" media="screen" title="EEA 2006 style" />
+
 		<title>Dialog</title>
-		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-		<link type="text/css" rel="stylesheet" href="eionet.css">
-	    <script language="javascript">
+	    <script type="text/javascript">
 			// <![CDATA[
 			function clicked(value) {
 				document.forms["form1"].elements["wasclick"].value = "true";
@@ -31,38 +41,32 @@
 		</script>
 	</head>
 
-	<body style="background-color:#f0f0f0;background-image:url('images/eionet_background2.jpg');background-repeat:repeat-y;" 			  onblur="window.focus()" onunload="doUnload()">
+	<body class="popup" onunload="doUnload()">
 		
-		<form name="form1" method="POST" action="modal_dialog.html">
-			<table width="100%">
-				<tr>
-					<td colspan="3">
-						<span class="mainfont"><b>
-							<script language="javascript">
-								document.write(window.opener.dialogWin.text);
-							</script>
-						</b></span>
-					</td>
-				</tr>
-				<tr height="5"><td colspan="3">&#160;</td></tr>
-				<tr>
-					<script language="javascript">
-						if (window.opener.dialogWin.order=="yesno"){
-							document.writeln(
-							'<td><input type="button" class="mediumbuttonb" name="1stbutton" value=" Yes " onclick="clicked(\'true\')"/></td>');
-							document.writeln(
-							'<td><input type="button" class="mediumbuttonb" name="2ndbutton" value=" No " onclick="clicked(\'false\')"/></td>');
-						}
-						else{
-							document.writeln(
-								'<td><input type="button" class="mediumbuttonb" name="1stbutton" value=" No " onclick="clicked(\'false\')"/></td>');
-							document.writeln(
-							'<td><input type="button" class="mediumbuttonb" name="2ndbutton" value=" Yes " onclick="clicked(\'true\')"/></td>');
-						}
-					</script>
-					<td><input type="button" class="mediumbuttonb" name="3rdbutton" value="Cancel" onclick="clicked('cancel')"/></td>
-				</tr>
-			</table>
+		<p class="caution" style="font-weight:bold">
+			<script type="text/javascript">
+				document.write(window.opener.dialogWin.text);
+			</script>
+		</p>
+			
+		<form name="form1" method="post" action="modal_dialog.html">
+			<script type="text/javascript">
+			// <![CDATA[
+				if (window.opener.dialogWin.order=="yesno"){
+					document.writeln(
+					'<input type="button" class="mediumbuttonb" name="1stbutton" value=" Yes " onclick="clicked(\'true\')"/>');
+					document.writeln(
+					'&nbsp;<input type="button" class="mediumbuttonb" name="2ndbutton" value=" No " onclick="clicked(\'false\')"/>');
+				}
+				else{
+					document.writeln(
+					'<input type="button" class="mediumbuttonb" name="1stbutton" value=" No " onclick="clicked(\'false\')"/>');
+					document.writeln(
+					'&nbsp;<input type="button" class="mediumbuttonb" name="2ndbutton" value=" Yes " onclick="clicked(\'true\')"/>');
+				}
+			// ]]>
+			</script>
+			&nbsp;<input type="button" class="mediumbuttonb" name="3rdbutton" value="Cancel" onclick="clicked('cancel')"/>
 			<input type="hidden" name="wasclick" value="false"/>
 		</form>
 	</body>
