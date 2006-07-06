@@ -741,7 +741,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 										}
 									}
 								} %>
-								<input type="button" class="smallbutton" value="History" onclick="popNovr('dst_history.jsp?ds_id=<%=ds_id%>')"/><%
+								<input type="button" class="smallbutton" value="History" onclick="pop('dst_history.jsp?ds_id=<%=ds_id%>')"/><%
 							}
 							// the working copy part
 							else if (dataset!=null && dataset.isWorkingCopy()){								

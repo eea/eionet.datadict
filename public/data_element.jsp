@@ -1202,7 +1202,7 @@ else{
 						}
 						
 						if (elmCommon && editPrm){ %>
-							<input type="button" class="smallbutton" value="History" onclick="popNovr('elm_history.jsp?id=<%=dataElement.getID()%>')"/> <%
+							<input type="button" class="smallbutton" value="History" onclick="pop('elm_history.jsp?id=<%=dataElement.getID()%>')"/> <%
 						}
 					}
 				}
