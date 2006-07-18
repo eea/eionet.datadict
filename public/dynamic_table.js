@@ -143,12 +143,20 @@ function dt_setrownumbers(input_prefix){
 	if (input_prefix==null || input_prefix.length==0)
 			input_prefix="pos_";
 
+	var rowId;
 	for (var i=1; i<=rows_len; i++){
+
 		r = rows.item(i-1);
-		inputs=document.getElementsByTagName("input");
+		if (r.id!=undefined){
+			rowId = r.id;
+			if (rowId.substring(0,2)=="tr")
+				rowId = rowId.substring(2);
+		}
+
+		inputs=r.getElementsByTagName("input");
 		for(j=0;j<inputs.length;j++) {
 			inp = inputs.item(j);
-			if (inp.name==input_prefix + r.id){
+			if (inp.name==input_prefix + rowId){
 				inp.value=i;
 			}
 		}

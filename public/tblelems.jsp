@@ -136,8 +136,6 @@ if (request.getMethod().equals("POST")){
 	
 	if (link_elm==null || link_elm.length()==0){
 		
-		System.out.println();
-		
 		String mode = request.getParameter("mode");	
 		if (mode.equals("add") || mode.equals("copy")){
 			response.sendRedirect("data_element.jsp?mode=view&amp;delem_id=" + elmHandler.getLastInsertID());
@@ -651,6 +649,7 @@ int colCount = hasGIS ? 5 : 4;
 					boolean hasMarkedElems = false;
 					boolean hasForeignKeys = false;
 					boolean hasCommonElms = false;
+					
 					for (int i=0; elems!=null && i<elems.size(); i++){
 						
 						DataElement elem = (DataElement)elems.get(i);
@@ -758,7 +757,7 @@ int colCount = hasGIS ? 5 : 4;
 								<% } %>
 								<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5"/>
 								<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>" size="5"/>
-								<input type="hidden" name="pos_<%=elem.getID()%>" value="0" size="5"/>
+								<input type="hidden" name="pos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>" size="5"/>
 							</td>
 						
 						</tr>
