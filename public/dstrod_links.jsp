@@ -83,14 +83,16 @@ try{
 			            <!-- start work area -->
 						<div style="margin-left:30">
 							<br/><br/>
-							<span class="head00">
-								ROD obligations corresponding to <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset
-							</span>
-							<p align="right">
-								<a target="_blank" href="help.jsp?screen=dataset_rod&amp;area=pagehelp" onclick="pop(this.href);return false;">
-									<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-								</a>
-							</p>
+							<h1>ROD obligations corresponding to <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset</h1>
+							<div id="operations">
+								<ul>
+									<li>
+										<a target="_blank" href="help.jsp?screen=dataset_rod&amp;area=pagehelp" onclick="pop(this.href);return false;">
+											Page help
+										</a>
+									</li>
+								</ul>
+							</div>
 							<form name="rodlinks" action="dstrod_links.jsp" method="post">
 								<table width="auto" cellspacing="0" cellpadding="0">
 									<tr>
