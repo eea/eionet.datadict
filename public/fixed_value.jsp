@@ -293,10 +293,8 @@ try { // start the whole page try block
 			
 		<form name="form1" method="post" action="fixed_value.jsp">
 		<table width="auto" cellspacing="0" cellpadding="0">
-			<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-			
 			<tr>				
-				<td align="right" style="padding-right:10" valign="top">
+				<td align="right" style="padding-right:10px" valign="top">
 					<b><font color="black">Value</font></b>(M)
 				</td>
 				<td colspan="1" valign="top">
