@@ -14,22 +14,6 @@
 	-moz-border-radius: 6px;/* Mozilla */
 }
 
-/*
-* Popups don't have left or right columns. Instead we
-* indent the text a bit
-*/
-.popup {
-	margin:30px;
-	background-image: none;
-	background-color: white;
-}
-
-.popuphead hr {
-	background-color: #d8e1ce;
-	height: 15px;
-	border: none;
-}
-
 /* Boxes on index.jsp start */
 #boxes td.box {
 	width: 50%;
