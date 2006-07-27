@@ -160,37 +160,37 @@
 				<th scope="col" class="scope-col">
 								Short name
 								<a target="_blank" href="help.jsp?screen=attributes&amp;area=shortname" onclick="pop(this.href);return false;">
-									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 								</a>
 				</th>
 				<th scope="col" class="scope-col">
 								Type
 								<a target="_blank" href="help.jsp?screen=attributes&amp;area=type" onclick="pop(this.href);return false;">
-									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 								</a>
 				</th>
 				<th scope="col" class="scope-col">
 								Datasets
 								<a target="_blank" href="help.jsp?screen=attributes&amp;area=datasets" onclick="pop(this.href);return false;">
-									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 								</a>
 				</th>
 				<th scope="col" class="scope-col">
 								Tables
 								<a target="_blank" href="help.jsp?screen=attributes&amp;area=tables" onclick="pop(this.href);return false;">
-									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 								</a>
 				</th>
 				<th scope="col" class="scope-col">
 								Data elements with fixed values
 								<a target="_blank" href="help.jsp?screen=attributes&amp;area=elmfxv" onclick="pop(this.href);return false;">
-									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 								</a>
 				</th>
 				<th scope="col" class="scope-col">
 								Data elements with quantitative values
 								<a target="_blank" href="help.jsp?screen=attributes&amp;area=elmquant" onclick="pop(this.href);return false;">
-									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 								</a>
 				</th>
 			</tr>

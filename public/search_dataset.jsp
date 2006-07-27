@@ -199,7 +199,7 @@ private String setDefaultAttrs(String name){
 						</td>
 						<td>
 							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -213,7 +213,7 @@ private String setDefaultAttrs(String name){
 						</td>
 						<td>
 							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -241,7 +241,7 @@ private String setDefaultAttrs(String name){
 									</td>
 									<td>
 										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+											<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 										</a>
 									</td>
 									<td colspan="2">
@@ -272,7 +272,7 @@ private String setDefaultAttrs(String name){
 								</td>
 								<td>
 									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+										<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 									</a>
 								</td>
 								<td>
@@ -298,7 +298,7 @@ private String setDefaultAttrs(String name){
 								</td>
 								<td>
 									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-										<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+										<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 									</a>
 								</td>
 								<td>

@@ -246,7 +246,7 @@ else{ %>
 						</td>
 						<td>
 							<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
-								<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+								<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -272,7 +272,7 @@ else{ %>
 							</td>
 							<td>
 								<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
-									<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 								</a>
 							</td>
 							<td colspan="2">
@@ -301,7 +301,7 @@ else{ %>
 						</td>
 						<td>
 							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-								<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+								<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -315,7 +315,7 @@ else{ %>
 						</td>
 						<td>
 							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-								<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+								<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -348,7 +348,7 @@ else{ %>
 								<span class="mainfont"><b>Language</b></span>
 							</td>
 							<td align="right" style="padding-right:10">
-								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"><img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/></a>&#160;
+								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"><img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/></a>&#160;
 							</td>
 							<td colspan="2">
 								<select name="attr_<%=attrID%>" class="small">
@@ -436,7 +436,7 @@ else{ %>
 									</td>
 									<td>
 										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-											<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+											<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 										</a>
 									</td>
 									<td colspan="2">
@@ -468,7 +468,7 @@ else{ %>
 								</td>
 								<td>
 									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-										<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+										<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 									</a>
 								</td>
 								<td>
@@ -494,7 +494,7 @@ else{ %>
 								</td>
 								<td>
 									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-										<img border="0" src="images/icon_questionmark.jpg" alt="Help" width="16" height="16"/>
+										<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 									</a>
 								</td>
 								<td>

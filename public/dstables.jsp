@@ -219,7 +219,7 @@ if (disabled.equals("")){
 						</td>
 						<td align="left" width="50%">
 							<a target="_blank" href="help.jsp?attrshn=Name&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 							</a>
 						</td>
 					</tr>
@@ -233,7 +233,7 @@ if (disabled.equals("")){
 						</td>
 						<td align="left" width="50%">
 							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 							</a>
 						</td>
 					</tr>
@@ -247,7 +247,7 @@ if (disabled.equals("")){
 						</td>
 						<td align="left" width="50%">
 							<a target="_blank" href="help.jsp?attrshn=Definition&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-								<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 							</a>
 						</td>
 					</tr>

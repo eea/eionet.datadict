@@ -484,7 +484,7 @@ int colCount = hasGIS ? 5 : 4;
 							</td>
 							<td align="right">
 								<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+									<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 								</a>
 							</td>
 							<td style="padding-left:5">
@@ -507,7 +507,7 @@ int colCount = hasGIS ? 5 : 4;
 							<td align="right"><span class="barfont">Type:</span></td>
 							<td>
 								<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
-									<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+									<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 								</a>
 							</td>
 							<td style="padding-left:5" colspan="4">
@@ -577,7 +577,7 @@ int colCount = hasGIS ? 5 : 4;
 									</td>
 									<td align="left" width="50%">
 										<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+											<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 										</a>
 									</td>
 								</tr>
@@ -594,7 +594,7 @@ int colCount = hasGIS ? 5 : 4;
 										</td>
 										<td align="left" width="50%">
 											<a target="_blank" href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
-												<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+												<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 											</a>
 										</td>
 									</tr>
@@ -611,7 +611,7 @@ int colCount = hasGIS ? 5 : 4;
 									</td>
 									<td align="left" width="50%">
 										<a target="_blank" href="help.jsp?attrshn=Datatype&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+											<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 										</a>
 									</td>
 								</tr>
@@ -626,7 +626,7 @@ int colCount = hasGIS ? 5 : 4;
 									</td>
 									<td align="left" width="50%">
 										<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
-											<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt=""/>
+											<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 										</a>
 									</td>
 								</tr>

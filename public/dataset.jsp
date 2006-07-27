@@ -953,7 +953,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													if (dispAll || dispXLS){ %>
 														<tr>
 															<td>
-																Create an MS Excel template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=excel" onclick="pop(this.href);return false;"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
+																Create an MS Excel template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=excel" onclick="pop(this.href);return false;"><img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td>
 																<a href="GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt="XLS icon"/></a>
@@ -965,7 +965,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													if (dispAll || dispODS){ %>
 														<tr>
 															<td>
-																Create an OpenDocument spreadsheet template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=ods" onclick="pop(this.href);return false;"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
+																Create an OpenDocument spreadsheet template for this dataset&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=ods" onclick="pop(this.href);return false;"><img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td>
 																<a href="GetOds?type=dst&amp;id=<%=ds_id%>"><img border="0" src="images/icon_ods.gif" alt="ODS icon"/></a>
@@ -977,7 +977,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													if (dispAll || dispMDB){ %>
 														<tr>
 															<td>
-																Create validation metadata for MS Access template&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href);return false;"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/></a>
+																Create validation metadata for MS Access template&nbsp;<a target="_blank" href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href);return false;"><img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td>
 																<a href="GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true"><img border="0" src="images/icon_mdb.jpg" width="16" height="18" alt="MDB icon"/></a>
@@ -1075,7 +1075,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												<th class="scope-row short_name">Short name</th>
 												<td class="short_name simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+														<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 													</a>
 												</td>
 												<%
@@ -1112,7 +1112,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												</th>
 												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+														<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 													</a>
 												</td>
 												<%
@@ -1155,7 +1155,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
 													<td class="simple_attr_value">
@@ -1218,7 +1218,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
 													<%
@@ -1352,7 +1352,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		%>
 																	</select>
 																	<a target="_blank" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr" onclick="pop(this.href);return false;">
-																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+																		<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 																	</a>
 																	<%
 																}
@@ -1395,7 +1395,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=public_outputs" onclick="pop(this.href);return false;">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
 													<%
@@ -1447,7 +1447,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href);return false;">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
 													<%
@@ -1473,7 +1473,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												</th>
 												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+														<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 													</a>
 												</td>
 												<%
@@ -1529,7 +1529,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													if (!mode.equals("view")){ %>
 														<td width="4%" class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=dataset&amp;area=data_model_link" onclick="pop(this.href);return false;">
-																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+																<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 															</a>
 														</td>
 														<td width="4%" class="simple_attr_help">
@@ -1688,7 +1688,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													if (!mode.equals("view")){ %>
 														<span class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=dataset&amp;area=rod_links_link" onclick="pop(this.href);return false;">
-																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+																<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 															</a>
 														</span>
 														<span class="simple_attr_help">
@@ -1769,7 +1769,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 														%>
 														<span class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
-																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+																<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 															</a>
 														</span>
 														<span class="simple_attr_help">
@@ -1813,7 +1813,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 																		</td>
 																		<td>
 																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href);return false;">
-																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+																				<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 																			</a>
 																		</td>
 																		<td>

@@ -1073,7 +1073,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 													if (dispAll || dispXLS){ %>
 														<tr>
 															<td>
-																Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=excel"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
+																Create an MS Excel template for this table&nbsp;<a target="_blank" onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=excel"><img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help" /></a>
 															</td>
 															<td>
 																<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img border="0" src="images/icon_xls.gif" width="16" height="18" alt=""/></a>
@@ -1085,7 +1085,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 													if (dispAll || dispODS){ %>
 														<tr>
 															<td>
-																Create an OpenDocument spreadsheet template for this table&nbsp;<a target="_blank" onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=ods"><img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" /></a>
+																Create an OpenDocument spreadsheet template for this table&nbsp;<a target="_blank" onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=ods"><img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help" /></a>
 															</td>
 															<td>
 																<a href="GetOds?type=tbl&amp;id=<%=tableID%>"><img border="0" src="images/icon_ods.gif" alt=""/></a>
@@ -1157,7 +1157,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 												<th scope="row" class="scope-row short_name">Short name</th>
 												<td class="short_name simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
+														<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
 													</a>
 												</td>
 												<%
@@ -1193,7 +1193,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 												</th>
 												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
+														<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
 													</a>
 												</td>
 												<%
@@ -1252,7 +1252,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
+															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
 														</a>
 													</td>
 													<td class="simple_attr_value">
@@ -1332,7 +1332,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 													</th>
 													<td class="simple_attr_help">
 														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-															<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
+															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
 														</a>
 													</td>
 													<%
@@ -1499,7 +1499,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 																		%>
 																	</select>
 																	<a target="_blank" onclick="pop(this.href);return false;" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
-																		<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
+																		<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
 																	</a>
 																	<%
 																}
@@ -1527,7 +1527,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 												</th>
 												<td class="simple_attr_help">
 													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-														<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help" />
+														<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
 													</a>
 												</td>
 												<%
@@ -1785,7 +1785,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 														%>
 														<span class="simple_attr_help">
 															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
-																<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+																<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 															</a>
 														</span>
 														<span class="simple_attr_help">
@@ -1830,7 +1830,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 																		</td>
 																		<td>
 																			<a target="_blank" onclick="pop(this.href);return false;" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
-																				<img border="0" src="images/icon_questionmark.jpg" width="16" height="16" alt="Help"/>
+																				<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 																			</a>
 																		</td>
 																		<td>

@@ -194,7 +194,7 @@ String disabled = user == null ? "disabled" : "";
 						%>
 					</select>&nbsp;
 					<a target="_blank" href="help.jsp?screen=foreign_key_rel&area=cardinality" onclick="pop(this.href);return false;">
-						<img border="0" src="images/icon_questionmark.jpg" width="16" height="16"/>
+						<img border="0" src="images/info_icon.gif" width="16" height="16"/>
 					</a>
 				</td>
 			</tr>
