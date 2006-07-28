@@ -13,20 +13,13 @@ if (userProtarea!=null && userProtarea.isAuthentic()) loggedIn = true;
 				
 					<form target="_blank" name="LOGIN" method="post" action="Login">
 						<input type="hidden" name="target" value="blank"/>
-		  				<table border="0" width="100%" cellspacing="0" cellpadding="2">
-		                    <tr>
-								<td width="31%"><input type="text" size="20" name="j_username"/></td>
-								<td width="69%">(EIONET user ID)</td>
-		                    </tr>
-		                    <tr>
-								<td width="31%"><input type="password" size="20" name="j_password"/></td>
-								<td width="69%">(Password)</td>
-		                    </tr>
-		                    <tr>
-								<td width="31%" align="right"><input type="submit" value="Login" class="loginbutton"/></td>
-								<td width="69%"></td>
-		                    </tr>
-		  				</table>
+								<p><input type="text" size="20" name="j_username" id="j_username" style="margin-left:2em; width:31%"/>
+								<label for="j_username">(EIONET user ID)</label></p>
+								<p><input type="password" size="20" name="j_password" id="j_password" style="margin-left:2em; width:31%"/>
+								<label for="j_password">(Password)</label></p>
+								<p style="text-align:center">
+								<input type="submit" value="Login" class="loginbutton"/>
+								</p>
 		  			</form><%
   				}
   				else{ %>
