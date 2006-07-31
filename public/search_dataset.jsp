@@ -171,207 +171,198 @@ private String setDefaultAttrs(String name){
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-            
-			<div style="margin-left:30">
-				<form name="form1" action="datasets.jsp" method="get">
-				<table width="500">
-					<tr>
-						<td>
-							<font class="head00">Search for a dataset definition</font>
-						</td>
-						<td align="right">
-							<a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">
-								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-							</a>
-						</td>
-					</tr>
-					<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-				</table>
-				
-				<table width="auto" cellspacing="0">
-				
-					<tr valign="top">
-						<td align="right" style="padding-right:10">
-							<b>Short name</b>
-						</td>
-						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-							</a>
-						</td>
-						<td colspan="2">
-							<input type="text" class="smalltext" size="59" name="short_name" value="<%=Util.replaceTags(short_name, true)%>"/>
-						</td>
-					</tr>
+	<div style="margin-left:30">
+		<form name="form1" action="datasets.jsp" method="get">
+		<h1>Search for a dataset definition</h1>
+		<table width="600">
+			<tr>
+				<td align="right">
+					<a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">
+						<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
+					</a>
+				</td>
+			</tr>
+			<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
+		</table>
+		
+		<table width="600" cellspacing="0">
+		
+			<tr valign="top">
+				<td align="right" style="padding-right:10">
+					<b>Short name</b>
+				</td>
+				<td>
+					<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+						<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+					</a>
+				</td>
+				<td colspan="2">
+					<input type="text" class="smalltext" size="59" name="short_name" value="<%=Util.replaceTags(short_name, true)%>"/>
+				</td>
+			</tr>
+			
+			<tr valign="top">
+				<td align="right" style="padding-right:10">
+					<b>Identifier</b>
+				</td>
+				<td>
+					<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+						<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+					</a>
+				</td>
+				<td colspan="2">
+					<input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>"/>
+				</td>
+			</tr>
+
+			<%
+			//get default attributes, which are always on the page (defined above)
+			if (def_attrs!=null){
+				for (int i=0; i < def_attrs.size(); i++){
+					attrID = (String)def_attrs.get(i);
+					attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
 					
-					<tr valign="top">
-						<td align="right" style="padding-right:10">
-							<b>Identifier</b>
-						</td>
-						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-							</a>
-						</td>
-						<td colspan="2">
-							<input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>"/>
-						</td>
-					</tr>
+					attrName = getAttributeNameById(attrID);
 
-					<%
-					//get default attributes, which are always on the page (defined above)
-					if (def_attrs!=null){
-						for (int i=0; i < def_attrs.size(); i++){
-							attrID = (String)def_attrs.get(i);
-							attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
-							
-							attrName = getAttributeNameById(attrID);
+					if (inputAttributes.containsKey(attrID)) inputAttributes.remove(attrID);
 
-							if (inputAttributes.containsKey(attrID)) inputAttributes.remove(attrID);
-
-							if (attrID!=null){
-								collect_attrs.append(attrID + "|");
-								%>
-								<tr valign="top">
-									<td align="right" style="padding-right:10">
-										<b><%=Util.replaceTags(attrName)%></b>
-									</td>
-									<td>
-										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-											<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-										</a>
-									</td>
-									<td colspan="2">
-										<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.replaceTags(attrValue, true)%>"/>
-									</td>
-								</tr>
-								<%
-							}
-						}
-					}
-					// get attributes selected from picked list (get the ids from url)
-					if (attr_ids!=null){
-						for (int i=0; i < attr_ids.size(); i++){
-							attrID = (String)attr_ids.get(i);
-							 
-							if (!inputAttributes.containsKey(attrID)) continue;
-							if (sel_type.equals("remove") && attrID.equals(sel_attr)) continue;
-
-							attrName = getAttributeNameById(attrID);
-
-							attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
-							if (attrValue == null) attrValue="";
-							collect_attrs.append(attrID + "|");
-							%>
-							<tr valign="top">
-								<td align="right" style="padding-right:10">
-									<b><%=Util.replaceTags(attrName)%></b>
-								</td>
-								<td>
-									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-										<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-									</a>
-								</td>
-								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value="<%=Util.replaceTags(attrValue, true)%>"/>
-								</td>
-								<td>
-									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
-								</td>
-							</tr>
-							<%
-						}
-					}
-					// add the last selection
-					if (sel_type!=null && sel_attr!=null){
-						if (sel_type.equals("add")){
-							attrID = sel_attr;
-							collect_attrs.append(attrID + "|");
-							attrName = getAttributeNameById(attrID);
-							%>
-							<tr valign="top">
-								<td align="right" style="padding-right:10">
-									<b><%=Util.replaceTags(attrName)%></b>
-								</td>
-								<td>
-									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-										<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-									</a>
-								</td>
-								<td>
-									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
-								</td>
-								<td>
-									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
-								</td>
-							</tr>
-							<%
-						}
-					}
-					%>
-                        <tr valign="bottom">
-                    		<td width="150" colspan="2">&#160;</td>
-                    		<td colspan="2">
-                    			<input type="radio" name="search_precision" value="substr" checked="checked"/>Substring search
-                    			<input type="radio" name="search_precision" value="exact"/>Exact search &#160;&#160;
-                    			<input type="radio" name="search_precision" value="free"/>Free text search &#160;&#160;
-                    		</td>
-                        </tr>
-					
-					<%					
-					// if authenticated user, enable to get working copies only
-					if (user!=null && user.isAuthentic()){
+					if (attrID!=null){
+						collect_attrs.append(attrID + "|");
 						%>
 						<tr valign="top">
-							<td width="150" colspan="2"></td>
+							<td align="right" style="padding-right:10">
+								<b><%=Util.replaceTags(attrName)%></b>
+							</td>
+							<td>
+								<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+									<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+								</a>
+							</td>
 							<td colspan="2">
-								<input type="checkbox" name="wrk_copies" value="true"/><span class="smallfont" style="font-weight: normal">Working copies only</span>
+								<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.replaceTags(attrValue, true)%>"/>
 							</td>
 						</tr>
 						<%
 					}
+				}
+			}
+			// get attributes selected from picked list (get the ids from url)
+			if (attr_ids!=null){
+				for (int i=0; i < attr_ids.size(); i++){
+					attrID = (String)attr_ids.get(i);
+					 
+					if (!inputAttributes.containsKey(attrID)) continue;
+					if (sel_type.equals("remove") && attrID.equals(sel_attr)) continue;
+
+					attrName = getAttributeNameById(attrID);
+
+					attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
+					if (attrValue == null) attrValue="";
+					collect_attrs.append(attrID + "|");
 					%>
-					
 					<tr valign="top">
-						<td colspan="2"></td>
-						<td>
-							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('datasets.jsp')"/>
-							<input class="mediumbuttonb" type="reset" value="Reset"/>
+						<td align="right" style="padding-right:10">
+							<b><%=Util.replaceTags(attrName)%></b>
 						</td>
-						<td align="right">
-							<a href="javascript:openAttributes();"><img src="images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
+						<td>
+							<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+							</a>
+						</td>
+						<td>
+							<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value="<%=Util.replaceTags(attrValue, true)%>"/>
+						</td>
+						<td>
+							<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
 						</td>
 					</tr>
-				</table>
-				<!-- table for 'Add' -->
-				
+					<%
+				}
+			}
+			// add the last selection
+			if (sel_type!=null && sel_attr!=null){
+				if (sel_type.equals("add")){
+					attrID = sel_attr;
+					collect_attrs.append(attrID + "|");
+					attrName = getAttributeNameById(attrID);
+					%>
+					<tr valign="top">
+						<td align="right" style="padding-right:10">
+							<b><%=Util.replaceTags(attrName)%></b>
+						</td>
+						<td>
+							<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+							</a>
+						</td>
+						<td>
+							<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
+						</td>
+						<td>
+							<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
+						</td>
+					</tr>
+					<%
+				}
+			}
+			%>
+                <tr valign="bottom">
+            		<td width="150" colspan="2">&#160;</td>
+            		<td colspan="2">
+            			<input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked"/><label for="ssubstr">Substring search</label>
+            			<input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>
+            			<input type="radio" name="search_precision" id="sfree" value="free"/><label for="sfree">Free text search</label>
+            		</td>
+                </tr>
+			
+			<%					
+			// if authenticated user, enable to get working copies only
+			if (user!=null && user.isAuthentic()){
+				%>
+				<tr valign="top">
+					<td width="150" colspan="2"></td>
+					<td colspan="2">
+						<input type="checkbox" name="wrk_copies" value="true"/><span class="smallfont" style="font-weight: normal">Working copies only</span>
+					</td>
+				</tr>
 				<%
-				if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
-					<table width="500">
-						<tr style="height:10px;"><td>&#160;</td></tr>
-						<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-						<tr>
-							<td valign="bottom">
-								<input class="mediumbuttonb" type="button" value="Add" onclick="window.location.assign('dataset.jsp?mode=add')"/>
-								&#160;&#160;<span class="head00">a new dataset</span>&#160;&#160;
-							</td>
-						</tr>
-					</table>
-				<% } %>
-				<input type="hidden" name="sel_attr" value=""></input>			
-				<input type="hidden" name="sel_type" value=""></input>
-				<input type="hidden" name="type" value="DST"></input>
-				<!-- collect all the attributes already used in criterias -->
-				<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"></input>
-                <input name='SearchType' type='hidden' value='SEARCH'/>
-				</form>
-			</div>
-        </td>
-</tr>
-</table>
+			}
+			%>
+			
+			<tr valign="top">
+				<td colspan="2"></td>
+				<td>
+					<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('datasets.jsp')"/>
+					<input class="mediumbuttonb" type="reset" value="Reset"/>
+				</td>
+				<td align="right">
+					<a href="javascript:openAttributes();"><img src="images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
+				</td>
+			</tr>
+		</table>
+		<!-- table for 'Add' -->
+		
+		<%
+		if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
+			<table width="600">
+				<tr style="height:10px;"><td>&#160;</td></tr>
+				<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
+				<tr>
+					<td valign="bottom">
+						<input class="mediumbuttonb" type="button" value="Add" onclick="window.location.assign('dataset.jsp?mode=add')"/>
+						&#160;&#160;<span class="head00">a new dataset</span>&#160;&#160;
+					</td>
+				</tr>
+			</table>
+		<% } %>
+		<input type="hidden" name="sel_attr" value=""></input>			
+		<input type="hidden" name="sel_type" value=""></input>
+		<input type="hidden" name="type" value="DST"></input>
+		<!-- collect all the attributes already used in criterias -->
+		<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"></input>
+        <input name='SearchType' type='hidden' value='SEARCH'/>
+		</form>
+	</div>
 </div>
 </body>
 </html>
