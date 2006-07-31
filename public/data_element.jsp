@@ -1921,7 +1921,12 @@ else{
 														}
 														// if view mode, display simple text
 														else if (mode.equals("view") || (mode.equals("edit") && attribute.getShortName().equalsIgnoreCase("Datatype"))){ %>
-															<%=Util.replaceTags(attrValue)%><%
+															<%=Util.replaceTags(attrValue)%>
+															<%
+															if (mode.equals("edit") && attribute.getShortName().equalsIgnoreCase("Datatype")){
+																%>
+																<input type="hidden" name="attr_<%=attrID%>" value="<%=Util.replaceTags(attrValue)%>"/><%
+															}																
 														}
 														// if non-view mode, display input
 														else{
