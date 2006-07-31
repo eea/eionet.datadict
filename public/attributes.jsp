@@ -120,7 +120,7 @@
 			
 				<div id="operations">
 					<ul>
-						<li><a target="_blank" href="help.jsp?screen=attributes&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+						<li class="help"><a target="_blank" href="help.jsp?screen=attributes&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 				<%
 				if (user != null && mode==null){
 					boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");

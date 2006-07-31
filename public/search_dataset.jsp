@@ -173,7 +173,7 @@ private String setDefaultAttrs(String name){
 <div id="workarea">
     <div id="operations">
 			<ul>
-						<li><a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+						<li class="help"><a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 			</ul>
 		</div>
 		<form name="form1" action="datasets.jsp" method="get">

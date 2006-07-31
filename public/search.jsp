@@ -232,7 +232,7 @@ else{ %>
 			
 				<div id="operations">
 					<ul>
-							<li><a target="_blank" href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+							<li class="help"><a target="_blank" href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 					</ul>
 				</div>
 				<h1>Search for a data element definition</h1>

@@ -341,7 +341,7 @@
     	
 		<div id="operations">
         	<ul>
-        		<li><a target="_blank" href="help.jsp?screen=restore_datasets&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+        		<li class="help"><a target="_blank" href="help.jsp?screen=restore_datasets&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
         	</ul>
 		</div>
 

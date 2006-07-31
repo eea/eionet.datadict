@@ -701,7 +701,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 					hlpScreen = "dataset_add";
 				%>
 				<ul>
-					<li><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" target="_blank">Page help</a></li>
+					<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" target="_blank">Page help</a></li>
 					<%
 					if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null){
 						%>

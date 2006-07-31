@@ -392,7 +392,7 @@
 				
 				<div id="operations">
 				<ul>
-					<li><a target="_blank" href="help.jsp?screen=datasets&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+					<li class="help"><a target="_blank" href="help.jsp?screen=datasets&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 					<li><a href="search_dataset.jsp" title="Search datasets">Search</a></li>
 					<%
 					if (user!=null && user.isAuthentic() && !restore){%>

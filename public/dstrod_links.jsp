@@ -86,7 +86,7 @@ try{
 							<h1>ROD obligations corresponding to <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset</h1>
 							<div id="operations">
 								<ul>
-									<li>
+									<li class="help">
 										<a target="_blank" href="help.jsp?screen=dataset_rod&amp;area=pagehelp" onclick="pop(this.href);return false;">
 											Page help
 										</a>

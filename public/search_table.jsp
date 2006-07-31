@@ -208,7 +208,7 @@ else { %>
 
         <div id="operations">
           <ul>
-              <li><a target="_blank" href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+              <li class="help"><a target="_blank" href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
           </ul>
         </div>
 
