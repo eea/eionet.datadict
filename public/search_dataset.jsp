@@ -171,24 +171,17 @@ private String setDefaultAttrs(String name){
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-	<div style="margin-left:30">
+    <div id="operations">
+			<ul>
+						<li><a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+			</ul>
+		</div>
 		<form name="form1" action="datasets.jsp" method="get">
 		<h1>Search for a dataset definition</h1>
-		<table width="600">
-			<tr>
-				<td align="right">
-					<a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">
-						<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-					</a>
-				</td>
-			</tr>
-			<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-		</table>
-		
 		<table width="600" cellspacing="0">
 		
 			<tr valign="top">
-				<td align="right" style="padding-right:10">
+				<td align="right">
 					<b>Short name</b>
 				</td>
 				<td>
@@ -202,7 +195,7 @@ private String setDefaultAttrs(String name){
 			</tr>
 			
 			<tr valign="top">
-				<td align="right" style="padding-right:10">
+				<td align="right">
 					<b>Identifier</b>
 				</td>
 				<td>
@@ -230,7 +223,7 @@ private String setDefaultAttrs(String name){
 						collect_attrs.append(attrID + "|");
 						%>
 						<tr valign="top">
-							<td align="right" style="padding-right:10">
+							<td align="right">
 								<b><%=Util.replaceTags(attrName)%></b>
 							</td>
 							<td>
@@ -261,7 +254,7 @@ private String setDefaultAttrs(String name){
 					collect_attrs.append(attrID + "|");
 					%>
 					<tr valign="top">
-						<td align="right" style="padding-right:10">
+						<td align="right">
 							<b><%=Util.replaceTags(attrName)%></b>
 						</td>
 						<td>
@@ -287,7 +280,7 @@ private String setDefaultAttrs(String name){
 					attrName = getAttributeNameById(attrID);
 					%>
 					<tr valign="top">
-						<td align="right" style="padding-right:10">
+						<td align="right">
 							<b><%=Util.replaceTags(attrName)%></b>
 						</td>
 						<td>
@@ -322,7 +315,7 @@ private String setDefaultAttrs(String name){
 				<tr valign="top">
 					<td width="150" colspan="2"></td>
 					<td colspan="2">
-						<input type="checkbox" name="wrk_copies" value="true"/><span class="smallfont" style="font-weight: normal">Working copies only</span>
+						<input type="checkbox" name="wrk_copies" id="wrk_copies" value="true"/><label for="wrk_copies" class="smallfont" style="font-weight: normal">Working copies only</label>
 					</td>
 				</tr>
 				<%
@@ -362,7 +355,6 @@ private String setDefaultAttrs(String name){
 		<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"></input>
         <input name='SearchType' type='hidden' value='SEARCH'/>
 		</form>
-	</div>
 </div>
 </body>
 </html>
