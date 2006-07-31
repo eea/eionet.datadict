@@ -1583,9 +1583,15 @@ if (dataset!=null && dataset.getShortName()!=null)
 											for (int j=1; j<=loops; j++){
 												
 												String curMode = hasGIS && j==2 ? "GIS" : "NOGIS";
-												String title = "Elements";
-												if (mode.equals("view") && curMode.equals("NOGIS") && hasGIS)
-													title = "Metadata elements";
+												String title = "";
+												if (!hasGIS)
+													title = "Elements";
+												else if (mode.equals("view")){
+													if (curMode.equals("NOGIS"))
+														title = "Elements";
+													else
+														title = "Metadata elements";
+												}
 												
 												boolean hasMarkedElems = false;
 												boolean hasForeignKeys = false;

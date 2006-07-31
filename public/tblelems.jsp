@@ -850,8 +850,8 @@ int colCount = hasGIS ? 5 : 4;
 	if (hasGIS){ %>
 		<p>
 		NB! Note that in table view this table is split into two:<br/>
-		one for GIS elements (i.e. elements) and one for non-GIS elements<br/>
-		(i.e. Metadata elements).
+		one for GIS table elements (i.e. elements) and one for elements<br/>
+		describing the GIS file (i.e. Metadata elements).
 		</p><%
 	}
 	%>
