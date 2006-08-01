@@ -569,7 +569,9 @@
                															 dsFullName,
                 														 tables);
                 														 
-					boolean delPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
+					boolean delPrm = user!=null && (
+						SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u") ||
+						SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "d"));
 					oEntry.setDelPrm(delPrm);
 					if (delPrm) wasDelPrm = true;
 					
@@ -598,7 +600,8 @@
 				
 					<tr valign="top" class="<%=zebraClass%>">
 						<%
-						if (delPrm){ %>
+						if (delPrm){
+							%>
 							<td align="right">
 								<%
 		    					if (topWorkingUser!=null){ // mark checked-out datasets
@@ -614,7 +617,12 @@
 								}
 								%>
 							</td><%
-						}						
+						}
+						else{
+							%>
+							<td align="right">&nbsp;</td>
+							<%
+						}					
 						
 						if (clickable==false){
 							%>
@@ -745,6 +753,11 @@
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" <%=Util.replaceTags(alertReleased)%>/>
 									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier,true)%>"/>
 								</td><%
+							}
+							else{
+								%>
+								<td align="right">&nbsp;</td>
+								<%
 							}
 							
 							if (oEntry.clickable==false){
