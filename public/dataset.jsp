@@ -841,7 +841,8 @@ private Vector getValues(String id, String mode, Vector attributes){
 							<br/>
 								<span class="smallfont_light">
 									<%
-									if (!latestRegStatus.equals("Released")){ %>
+									boolean canOverwriteReleased = SecurityUtil.hasPerm(user.getUserName(), "/", "ovrR");
+									if (!latestRegStatus.equals("Released") || canOverwriteReleased){ %>
 										<input type="checkbox" id="upd_version" name="upd_version" value="true"/>
 											&nbsp;<label for="upd_version">Update the definition's CheckInNo when checking in
 										</label><%
@@ -1416,6 +1417,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 															<br/>
 															<input type="checkbox" disabled="disabled" <%=checkedXmlSchema%>/>
 																<small>The definition on XML Schema format</small>
+															<br/>
+															<input type="checkbox" disabled="disabled" <%=checkedODS%>/>
+																<small>OpenDocument spreadsheet</small>
 															<%
 														}
 														else{ %>
@@ -1427,6 +1431,9 @@ private Vector getValues(String id, String mode, Vector attributes){
 															<br/>
 															<input type="checkbox" name="disp_create_links" value="XMLSCHEMA" <%=checkedXmlSchema%>/>
 																<small>The definition on XML Schema format</small>
+															<br/>
+															<input type="checkbox" name="disp_create_links" value="ODS" <%=checkedODS%>/>
+																<small>OpenDocument spreadsheet</small>
 															<%
 														}
 														%>
