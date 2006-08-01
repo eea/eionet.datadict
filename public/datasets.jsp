@@ -28,6 +28,9 @@
     private String sortableStatus = "";
     public boolean clickable = false;
     
+    public String topWorkingUser = null;
+    public boolean canDelete = false;
+    
     public c_SearchResultEntry(String _oID, String _oShortName, String _oVersion, String _oFName, Vector _oTables) {
 	    
             oID	= _oID==null ? "" : _oID;
@@ -573,7 +576,8 @@
 						SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u") ||
 						SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "d"));
 					oEntry.setDelPrm(delPrm);
-					if (delPrm) wasDelPrm = true;
+					if (delPrm)
+						wasDelPrm = true;
 					
 					
 					oEntry.setRegStatus(regStatus);
@@ -581,21 +585,25 @@
 					oEntry.clickable = clickable;
 					oEntry.oIdentifier = dataset.getIdentifier();
 					
-					oResultSet.oElements.add(oEntry);
-					
 					String workingUser    = verMan.getDstWorkingUser(dataset.getIdentifier());
 					String topWorkingUser = verMan.getWorkingUser(dataset.getNamespaceID());
 					
 					boolean canDelete = topWorkingUser==null ||
-										(dataset.isWorkingCopy() &&
-										workingUser!=null && user!=null &&
-										workingUser.equals(user.getUserName()));
+					(dataset.isWorkingCopy() &&
+					workingUser!=null && user!=null &&
+					workingUser.equals(user.getUserName()));
 					
 					String statusImg   = "images/" + Util.getStatusImage(regStatus);
 					String statusTxt   = Util.getStatusRadics(regStatus);
 					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 					
 					String alertReleased = regStatus.equals("Released") ? "onclick='alertReleased(" + ds_id + ")'" : "";
+
+					oEntry.topWorkingUser = topWorkingUser;
+					oEntry.canDelete = canDelete;
+					
+					oResultSet.oElements.add(oEntry);
+					
 					%>
 				
 					<tr valign="top" class="<%=zebraClass%>">
@@ -618,7 +626,7 @@
 								%>
 							</td><%
 						}
-						else{
+						else if (user!=null){
 							%>
 							<td align="right">&nbsp;</td>
 							<%
@@ -750,21 +758,32 @@
 								wasDelPrm = true;
 								%>
 								<td align="right">
-									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" <%=Util.replaceTags(alertReleased)%>/>
-									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier,true)%>"/>
+									<%
+			    					if (oEntry.topWorkingUser!=null){ // mark checked-out datasets
+				    					%> <font title="<%=Util.replaceTags(oEntry.topWorkingUser,true)%>" color="red">*</font> <%
+			    					}
+			    					else if (oEntry.canDelete){ %>
+										<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" <%=Util.replaceTags(alertReleased)%>/>
+										<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier,true)%>"/>
+										<%
+									}
+									else{ %>
+										&nbsp;<%
+									}
+									%>
 								</td><%
 							}
-							else{
+							else if (user!=null){
 								%>
 								<td align="right">&nbsp;</td>
 								<%
 							}
 							
 							if (oEntry.clickable==false){
-							%>
-							<td title="<%=Util.replaceTags(oEntry.oFullName,true)%>" class="disabled">
-								<%=Util.replaceTags(oEntry.oFullName, true)%>
-							</td><%
+								%>
+								<td title="<%=Util.replaceTags(oEntry.oFullName,true)%>" class="disabled">
+									<%=Util.replaceTags(oEntry.oFullName, true)%>
+								</td><%
 							}
 							else{
 								%>
