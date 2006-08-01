@@ -431,31 +431,28 @@ int colCount = hasGIS ? 5 : 4;
 
 	<!-- page title & the add new part -->
 	
+	<h1>
+		Elements in
+		<span class="title2">
+			<a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=Util.replaceTags(dsName)%>">
+				<%=Util.replaceTags(tableName)%>
+			</a>
+		</span>
+		table,
+		<span class="title2">
+			<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view">
+				<%=Util.replaceTags(dsName)%>
+			</a>
+		</span>
+		dataset.
+	</h1>
+
 	<table width="500" cellspacing="0" cellpadding="0">
 	
 		<!-- title row & pagehelp -->
-		
+	
 		<tr>
-			<td>
-				<br/>
-				<span class="head00">
-					Elements in
-					<span class="title2">
-						<a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=Util.replaceTags(dsName)%>">
-							<%=Util.replaceTags(tableName)%>
-						</a>
-					</span>
-					table,
-					<span class="title2">
-						<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view">
-							<%=Util.replaceTags(dsName)%>
-						</a>
-					</span>
-					dataset.
-				</span>
-			</td>
-			
-			<td align="right">
+			<td align="right" colspan="2">
 				<a target="_blank" href="help.jsp?screen=table_elements&amp;area=pagehelp" onclick="pop(this.href);return false;">
 					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
 				</a>
@@ -532,13 +529,13 @@ int colCount = hasGIS ? 5 : 4;
 	<!-- the first column contains the table of elements,  -->
 	<!-- the second one contains the ordering buttons      -->
 	
-	<table width="auto" cellspacing="0"  border="0">
+	<table width="500" cellspacing="0"  border="0">
 		<tr>
 		
 			<!-- table of elements -->
 			
-			<td>
-				<table width="auto" cellspacing="0" id="tbl">
+			<td width="90%">
+				<table width="100%" cellspacing="0" id="tbl" class="datatable">
 				
 					<thead>
 				
@@ -569,72 +566,24 @@ int colCount = hasGIS ? 5 : 4;
 					<tr>
 						<th align="right" style="padding-right:10">&nbsp;</th> <!-- checkboxes column -->
 						
-						<th align="left" style="padding-left:5;padding-right:10;border-left:0">
-							<table width="100%">
-								<tr>
-									<td align="right" width="50%">
-										<b>Short name</b>
-									</td>
-									<td align="left" width="50%">
-										<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-											<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-										</a>
-									</td>
-								</tr>
-							</table>
-						</th>
+						<th>Short name</th>
 						
 						<%
 						if (hasGIS){ %>
-							<th align="left" style="padding-right:10">
-								<table width="100%">
-									<tr>
-										<td align="right" width="50%">
-											<b>GIS</b>
-										</td>
-										<td align="left" width="50%">
-											<a target="_blank" href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
-												<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-											</a>
-										</td>
-									</tr>
-								</table>
+							<th>
+								GIS
+								<a target="_blank" href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
+									<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+								</a>
 							</th><%
 						}
 						%>
 						
-						<th align="left" style="padding-right:10">
-							<table width="100%">
-								<tr>
-									<td align="right" width="50%">
-										<b>Datatype</b>
-									</td>
-									<td align="left" width="50%">
-										<a target="_blank" href="help.jsp?attrshn=Datatype&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-											<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-										</a>
-									</td>
-								</tr>
-							</table>
-						</th>
-						
-						<th align="left" style="padding-right:10; border-left:0; border-right:1px solid #FF9900">
-							<table width="100%">
-								<tr>
-									<td align="right" width="50%">
-										<b>Element type</b>
-									</td>
-									<td align="left" width="50%">
-										<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
-											<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-										</a>
-									</td>
-								</tr>
-							</table>
-						</th>
+						<th>Datatype</th>
+						<th>Element type</th>
 					</tr>
-					
 					</thead>
+
 					<tbody id="tbl_body">
 					
 					<%
@@ -802,7 +751,7 @@ int colCount = hasGIS ? 5 : 4;
 			
 			<%
 			if (user!=null && topFree && dsLatest && elems.size()>1 && dstPrm){ %>
-				<td align="left" style="padding-right:10" valign="middle" height="10">
+				<td  width="10%" align="left" style="padding-right:10" valign="middle" height="10">
 					<table cellspacing="2" cellpadding="2" border="0">
 						<tr>
 							<td>
