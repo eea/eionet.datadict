@@ -63,7 +63,7 @@ public class GetPrintout extends HttpServlet {
         // get the path of images
         String visualsPath = Props.getProperty(PropsIF.VISUALS_PATH);
 		// get the path of cache
-		String cachePath = ctx.getInitParameter("doc-path");
+		String cachePath = Props.getProperty(PropsIF.DOC_PATH);
         
         Connection conn = null;
         

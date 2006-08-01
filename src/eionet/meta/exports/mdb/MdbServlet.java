@@ -9,6 +9,9 @@ import javax.servlet.*;
 import com.tee.xmlserver.DBPoolIF;
 import com.tee.xmlserver.XDBApplication;
 
+import eionet.util.Props;
+import eionet.util.PropsIF;
+
 import java.io.*;
 import java.sql.*;
 
@@ -43,9 +46,9 @@ public class MdbServlet extends HttpServlet {
 				vmdOnly = true;
 
 			ServletContext ctx = getServletContext();
-			String filePath = ctx.getInitParameter("doc-path");
+			String filePath = Props.getProperty(PropsIF.DOC_PATH);
 			if (filePath==null)
-				throw new MdbException("Missing context parameter: doc-path");
+				throw new MdbException("Missing property: " + PropsIF.DOC_PATH);
 			else if (!filePath.endsWith(File.separator))
 				filePath = filePath + File.separator;
 

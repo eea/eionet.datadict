@@ -44,7 +44,7 @@ public class XlsServlet extends HttpServlet {
 	        
 	        ServletContext ctx = getServletContext();
 	        String appName = ctx.getInitParameter("application-name");
-			String cachePath = ctx.getInitParameter("doc-path");
+			String cachePath = Props.getProperty(PropsIF.DOC_PATH);
 
             // JH 300603 - getting the DB pool through XmlServer
             XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());

@@ -29,7 +29,7 @@ public class CacheServlet extends HttpServlet {
 	private String cachePath = null;
 	
 	public void init() throws ServletException{
-		cachePath = getServletConfig().getServletContext().getInitParameter("doc-path");
+		cachePath = Props.getProperty(PropsIF.DOC_PATH);		
 		if (!Util.nullString(cachePath)){
 			cachePath.trim();
 			if (!cachePath.endsWith(File.separator))

@@ -165,7 +165,8 @@ public class TblPdfGuideline {
 			owner.addTblNames(dsTable.getID(), tblName);
         }
 
-        String nonGisTitle = gisElms.size()>0 ? " metadata table:" : " table:";
+        String nonGisTitle = " table:";
+        String gisTitle = " metadata table:";
 
 		// write non-GIS elements factlist        
 		prg = new Paragraph();
@@ -189,7 +190,7 @@ public class TblPdfGuideline {
 							FontFactory.getFont(FontFactory.HELVETICA, 12)));
 			prg.add(new Chunk(tblName,
 							FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
-			prg.add(new Chunk(" table:",
+			prg.add(new Chunk(gisTitle,
 							FontFactory.getFont(FontFactory.HELVETICA, 12)));
 			addElement(prg);
 			

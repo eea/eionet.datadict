@@ -124,14 +124,18 @@ public class MdbFile {
 		
 		boolean atLeastOneCreated = false;
 		String tableName = tbl.getIdentifier();
-		if (gisColumns!=null && gisColumns.size()>0){
-			db.createTable(tableName, gisColumns);
+		//if (gisColumns!=null && gisColumns.size()>0){
+		if (nonGisColumns!=null && nonGisColumns.size()>0){
+			//db.createTable(tableName, gisColumns);
+			db.createTable(tableName, nonGisColumns);
 			atLeastOneCreated = true;
 		}
 
-		if (nonGisColumns!=null && nonGisColumns.size()>0){
+		//if (nonGisColumns!=null && nonGisColumns.size()>0){
+		if (gisColumns!=null && gisColumns.size()>0){
 			if (atLeastOneCreated) tableName = tableName + "_meta";
-			db.createTable(tableName, nonGisColumns);
+			//db.createTable(tableName, nonGisColumns);
+			db.createTable(tableName, gisColumns);
 			atLeastOneCreated = true;
 		}
 		
