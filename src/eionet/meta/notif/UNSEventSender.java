@@ -24,6 +24,8 @@ public class UNSEventSender {
 	public static final String PROP_UNS_USER_PREDICATE = "uns.user.predicate";
 	public static final String PROP_UNS_DEFINITION_URL_PREDICATE =
 		"uns.definition-url.predicate";
+	public static final String PROP_UNS_DEFINITION_STATUS_PREDICATE =
+		"uns.definition-status.predicate";
 	
 	/**
 	 * 
@@ -45,6 +47,8 @@ public class UNSEventSender {
 		
 		String elmIdfier = elm.getIdentifier();
 		String elmURL = elm.getReferenceURL();
+		String elmStatus = elm.getStatus();
+		boolean isCommon = elm.getNamespace()==null || elm.getNamespace().getID()==null; 
 		if (elmIdfier==null && elmURL==null)
 			return;
 		
@@ -64,6 +68,14 @@ public class UNSEventSender {
 			predicateObjects.put(
 					Props.getProperty(PROP_UNS_DEFINITION_URL_PREDICATE), objects);
 		}
+		
+		if (isCommon && elmStatus!=null){
+			objects = new Vector();
+			objects.add(elmStatus);
+			predicateObjects.put(
+					Props.getProperty(PROP_UNS_DEFINITION_STATUS_PREDICATE), objects);
+		}
+
 
 		if (user!=null){
 			objects = new Vector();
@@ -146,6 +158,7 @@ public class UNSEventSender {
 		
 		String dstIdfier = dst.getIdentifier();
 		String dstURL = dst.getReferenceURL();
+		String dstStatus = dst.getStatus();
 		if (dstIdfier==null && dstURL==null)
 			return;
 		
@@ -166,6 +179,13 @@ public class UNSEventSender {
 					Props.getProperty(PROP_UNS_DEFINITION_URL_PREDICATE), objects);
 		}
 		
+		if (dstStatus!=null){
+			objects = new Vector();
+			objects.add(dstStatus);
+			predicateObjects.put(
+					Props.getProperty(PROP_UNS_DEFINITION_STATUS_PREDICATE), objects);
+		}
+		
 		if (user!=null){
 			objects = new Vector();
 			objects.add(user);
@@ -184,30 +204,10 @@ public class UNSEventSender {
 	/*
 	 * 
 	 */
-	public static void definitionChanged(String defType, String defIdfier){
-		
-		if (defType==null || defIdfier==null)
-			return;
-		
-		Hashtable predicateObjects = new Hashtable();
-		Vector objects = new Vector();
-		objects.add(defIdfier);
-		predicateObjects.put(defType, objects);
-		
-		sendEvent(predicateObjects);
-	}
-
-	/*
-	 * 
-	 */
-	public static void sendEvent(Hashtable predicateObjects){
-		sendEvent(predicateObjects, null);
-	}
-
-	/*
-	 * 
-	 */
 	public static void sendEvent(Hashtable predicateObjects, String eventIDTrailer){
+		
+		if (true)
+			return;
 		
 		try{
 			if (predicateObjects==null || predicateObjects.size()==0)

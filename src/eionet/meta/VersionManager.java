@@ -632,6 +632,7 @@ public class VersionManager{
         	        if (dstIdentifier!=null){
         	        	Dataset dst = new Dataset(null, null, null);
         	        	dst.setIdentifier(dstIdentifier);
+        	        	dst.setStatus(tbl.getDstStatus());
         	        	UNSEventSender.definitionChanged(dst,
         	        			Subscribe.DATASET_CHANGED_EVENT,
         	        			user==null ? null : user.getUserName());
@@ -739,6 +740,7 @@ public class VersionManager{
         if (dstIdentifier!=null){
         	Dataset dst = new Dataset(null, null, null);
         	dst.setIdentifier(dstIdentifier);
+        	dst.setStatus(tbl.getDstStatus());
         	UNSEventSender.definitionChanged(dst,
         			Subscribe.DATASET_CHANGED_EVENT, user==null ? null : user.getUserName());
         }
@@ -1561,13 +1563,14 @@ public class VersionManager{
         try{
             Class.forName("com.mysql.jdbc.Driver");
             Connection conn =
-            DriverManager.getConnection("jdbc:mysql://195.250.186.33:3306/dd", "dduser", "xxx");
+            DriverManager.getConnection(
+            		"jdbc:mysql://192.168.10.15:3306/DataDict", "dduser", "xxx");
                 
             AppUserIF user = new TestUser(false);
-            user.authenticate("heinlja", "sss");
+            user.authenticate("heinlja", "mi6");
             
 			VersionManager verMan = new VersionManager(conn, user);
-            verMan.checkInElm("14917", "Incomplete");
+            verMan.checkInElm("16949", "whatever", false);
       }
         catch (Exception e){
             System.out.println(e.toString());

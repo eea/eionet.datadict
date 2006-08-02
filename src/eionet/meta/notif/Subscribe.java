@@ -27,7 +27,7 @@ public class Subscribe extends HttpServlet{
 	public static final String PROP_UNS_EVENTTYPE_PREDICATE = "uns.eventtype.predicate";
 	public static final String PROP_UNS_DATASET_PREDICATE = "uns.dataset.predicate";
 	public static final String PROP_UNS_TABLE_PREDICATE = "uns.table.predicate";
-	public static final String PROP_UNS_COMMONELEM_PREDICATE = "uns.commonelem.predicate";
+	public static final String PROP_UNS_COMMONELEM_PREDICATE = "uns.commonelem.predicate";	
 	public static final String PROP_UNS_XMLRPC_SERVER_URL = "uns.xml.rpc.server.url";
 	public static final String PROP_UNS_CHANNEL_NAME = "uns.channel.name";
 	public static final String PROP_UNS_SUBSCRIPTIONS_URL = "uns.subscriptions.url";

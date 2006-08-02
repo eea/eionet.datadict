@@ -2374,6 +2374,7 @@ public class DDSearchEngine {
                 
                 dsTable.setDatasetName(rs.getString("DATASET.SHORT_NAME"));
 				dsTable.setDstIdentifier(rs.getString("DATASET.IDENTIFIER"));
+				dsTable.setDstStatus(rs.getString("DATASET.REG_STATUS"));
 				dsTable.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
             }
         }
