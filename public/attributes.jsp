@@ -223,16 +223,16 @@
 						<%=Util.replaceTags(attr_name)%></a>
 					</td>
 					<td><%=Util.replaceTags(attrTypeDisp)%></td>
-					<td>
+					<td class="center">
 						<% if (attribute.displayFor("DST")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
 					</td>
-					<td>
+					<td class="center">
 						<% if (attribute.displayFor("TBL")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
 					</td>
-					<td>
+					<td class="center">
 						<% if (attribute.displayFor("CH1")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
 					</td>
-					<td>
+					<td class="center">
 						<% if (attribute.displayFor("CH2")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
 					</td>
 				</tr>
