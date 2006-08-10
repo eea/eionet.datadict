@@ -168,6 +168,7 @@ ul {
 /* Tables */
 table {
 	empty-cells: show;
+	border-collapse: collapse;
 }
 
 td {
@@ -639,9 +640,7 @@ th {
 	font-weight: bold;
 /*	background: #FFFFFF;*/
 	text-decoration: none;
-	border-left: 1px solid #FF9900;
-	border-top: 1px solid #FF9900;
-	border-bottom: 1px solid #FF9900;
+	border: 1px solid #FF9900;
 }
 
 .formtable th {
