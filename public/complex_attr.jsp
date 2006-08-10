@@ -325,31 +325,26 @@ private String legalizeAlert(String in){
 	<div id="operations">
 		<ul>
 				<li class="help"><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+<%
+if (!mode.equals("view")){
+%>
+				<li><a href="javascript:window.location.replace('<%=backURL%>')">
+				&lt; back to attributes</a></li>
+<%
+}
+%>
+			<%
+			if (user != null && isWorkingCopy && mode.equals("view")){ %>
+				<li><a href="javascript:goTo('edit')">Edit</a></li> <%
+			}
+			%>
 		</ul>
 	</div>
 
 
 <table width="400">
-<%
-if (!mode.equals("view")){
-%>
-<tr>
-	<td colspan="2">
-		<span class="smallfont">
-			<a href="javascript:window.location.replace('<%=backURL%>')">
-				<b>&lt; back to attributes</b>
-			</a>
-		</span>
-	</td>
-</tr>
-<%
-}
-%>
-	<tr><td colspan="2">&nbsp;</td></tr>
-
-	<tr colspan="2" valign="bottom">
-		<td>
-			<span class="head00">
+	<tr>
+		<th scope="row" class="scope-row">
 				<%
 				String nsPrefix = "";
 				if (parent_type.equals("DS")){
@@ -372,32 +367,21 @@ if (!mode.equals("view")){
 					}
 				}
 				%>
-			</span>
-			<span class="title2"><%=Util.replaceTags(parent_name)%></span>
-		</td>
+			</th>
+			<td><%=Util.replaceTags(parent_name)%></td>
 	</tr>
 	
-	<tr valign="bottom">
-		<td>
-			<span class="head00">Attribute: </span><span class="title2"><%=Util.replaceTags(attrName)%></span>
-		</td>
-		<td align="right">
-			<%
-			if (user != null && isWorkingCopy && mode.equals("view")){ %>
-				<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit')"/> <%
-			}
-			%>
-		</td>
+	<tr>
+		<th scope="row" class="scope-row">Attribute: </th>
+		<td><%=Util.replaceTags(attrName)%></td>
 	</tr>
-	
-	<tr><td colspan="2">&nbsp;</td></tr>
 	
 </table>
 
 <%
 if (!mode.equals("view")){
 %>
-<div style="margin-left:5">
+<div style="margin-left:5px">
 <%
 	if (user!=null){
 		%>
@@ -437,7 +421,7 @@ if (!mode.equals("view")){
 <%
 }
 %>
-<div style="margin-left:5">
+<div style="margin-left:5px">
 
 	<table cellpadding="0" cellspacing="0">
 	
@@ -565,7 +549,7 @@ if (!mode.equals("view")){
 <input type="hidden" name="table_id" value="<%=table_id%>"/>
 <input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
 
-<input type="hidden" name="position" value="<%=String.valueOf(position)%>"></input>
+<input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
 
 <%
 if (ds != null){

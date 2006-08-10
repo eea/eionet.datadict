@@ -175,39 +175,34 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 	</div>
 </div>
 
-<div>
 <form name="Upload" action="ImgUpload" method="post" enctype="multipart/form-data">
 
+	<h1>
+			<%=Util.replaceTags(attrName)%> of <a href="<%=Util.replaceTags(titleLink, true)%>"><font color="#006666"><%=Util.replaceTags(objName, true)%></font></a> <%=Util.replaceTags(titleType)%>
+	</h1>
+		
+		
 	<table width="auto" cellspacing="0">
-	
-		<tr>
-			<td class="head00" colspan="2">
-					<%=Util.replaceTags(attrName)%> of <a href="<%=Util.replaceTags(titleLink, true)%>"><font color="#006666"><%=Util.replaceTags(objName, true)%></font></a> <%=Util.replaceTags(titleType)%>
-			</td>
-		</tr>
-		
-		<tr><td colspan="2">&nbsp;</td></tr>
-		
 		<tr>
 			<td align="left" style="padding-right:5">
-				<input type="radio" name="fileORurl" value="file" checked="checked"></input>&#160;File:</td>
+				<input type="radio" name="fileORurl" value="file" checked="checked"/>&#160;File:</td>
 			<td align="left">
 				<input type="file" class="smalltext" name="file_input" size="40"/>
 			</td>
 		</tr>
 		<tr>
 			<td align="left" style="padding-right:5">
-				<input type="radio" class="smalltext" name="fileORurl" value="url"></input>&#160;URL:
+				<input type="radio" class="smalltext" name="fileORurl" value="url"/>&#160;URL:
 			</td>
 			<td align="left">
-				<input type="text" class="smalltext" name="url_input" size="52"></input>
+				<input type="text" class="smalltext" name="url_input" size="52"/>
 			</td>
 		</tr>
 		<tr>
 			<td></td>
 			<td align="left">
-				<input name="SUBMIT" type="button" <%=disabled%> class="mediumbuttonb" value="Add" onclick="submitForm('upload')" onkeypress="submitForm('upload')"></input>&#160;&#160;
-				<input name="REMOVE" type="button" <%=disabled%> class="mediumbuttonb" value="Remove selected" onclick="submitForm('remove')" onkeypress="submitForm('remove')"></input>
+				<input name="SUBMIT" type="button" <%=disabled%> class="mediumbuttonb" value="Add" onclick="submitForm('upload')" onkeypress="submitForm('upload')"/>&#160;&#160;
+				<input name="REMOVE" type="button" <%=disabled%> class="mediumbuttonb" value="Remove selected" onclick="submitForm('remove')" onkeypress="submitForm('remove')"/>
 			</td>
 		</tr>
 		<tr><td colspan="2">&nbsp;</td></tr>
@@ -269,7 +264,6 @@ if (user!=null && searchEngine.isWorkingCopy(objID, _type))
 	<input type="hidden" name="redir_url" value="imgattr.jsp?<%=Util.replaceTags(request.getQueryString(), true)%>"/>
 	
 </form>
-</div>
 </body>
 </html>
 

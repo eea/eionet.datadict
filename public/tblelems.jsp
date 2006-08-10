@@ -432,17 +432,17 @@ int colCount = hasGIS ? 5 : 4;
 	</div>
 	<h1>
 		Elements in
-		<span class="title2">
+		<em>
 			<a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=Util.replaceTags(dsName)%>">
 				<%=Util.replaceTags(tableName)%>
 			</a>
-		</span>
+		</em>
 		table,
-		<span class="title2">
+		<em>
 			<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view">
 				<%=Util.replaceTags(dsName)%>
 			</a>
-		</span>
+		</em>
 		dataset.
 	</h1>
 

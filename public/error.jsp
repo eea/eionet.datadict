@@ -42,15 +42,11 @@ else{
 		</jsp:include>
 	<%@ include file="nmenu.jsp" %>
 <div id="workarea">
-	<table border="0">
-    	<tr valign="top">
-        	<td><%
+		<%
 }
 %>
 
-    <div style="margin-left:30">
     	<form name="form1" action="index.jsp" method="get">
-		<table width="500">
 		
 			<%
 				String msg   = (String)request.getAttribute("DD_ERR_MSG");
@@ -63,36 +59,27 @@ else{
 				backLink = backLink==null ? "javascript:history.back()" : backLink;
 			%>
 			
-			<tr style="height:30px;"><td>&#160;</td></tr>
-			<tr><td><font class="head00"><u>Error:</u></font></td></tr>
-			<tr><td><b><%=msg%></b></td></tr>
-			<tr style="height:10px;">
-				<td>&#160;
-					<input type="hidden" name="trc" value="<%=trc%>"/>
-				</td>
-			</tr>
-			
 			<%
 			if (!isPopup){ %>
-				<tr>
-					<td>
+		<div id="operations">
+				<ul>
+					<li>
 						<a href="<%=backLink%>">&lt; back</a>
-					</td>
-				</tr><%
-			}
-			%>
+					</li>
+				</ul>
+				</div>
+			<% } %>
+			
+    <h1>Error:</h1>
+			
+		<p><b><%=msg%></b></p>
+		<input type="hidden" name="trc" value="<%=trc%>"/>
 			
 			
-			
-		</table>
 		</form>
-    </div>
 
             <%
 if (!isPopup){ %>            
-	</td>
-	</tr>
-	</table>
 	</div><%
 }
 %>

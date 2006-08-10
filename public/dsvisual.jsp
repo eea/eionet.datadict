@@ -231,25 +231,25 @@ if (dsVisual!=null && dsVisual.length()!=0){
 							
 							<tr>
 								<td align="left" style="padding-right:5">
-									<input type="radio" name="fileORurl" value="file" checked="checked"></input>&#160;File:</td>
+									<input type="radio" name="fileORurl" value="file" checked="checked"/>&#160;File:</td>
 								<td align="left">
 									<input type="file" class="smalltext" name="file_input" size="40"/>
 								</td>
 							</tr>
 							<tr>
 								<td align="left" style="padding-right:5">
-									<input type="radio" class="smalltext" name="fileORurl" value="url"></input>&#160;URL:
+									<input type="radio" class="smalltext" name="fileORurl" value="url"/>&#160;URL:
 								</td>
 								<td align="left">
-									<input type="text" class="smalltext" name="url_input" size="52"></input>
+									<input type="text" class="smalltext" name="url_input" size="52"/>
 								</td>
 							</tr>
 							<tr style="height:10px;"><td colspan="2"></td></tr>
 							<tr>
 								<td></td>
 								<td align="left">
-									<input name="SUBMIT" type="button" class="mediumbuttonb" value="Upload" onclick="submitForm('upload')" onkeypress="submitForm('upload')"></input>&#160;&#160;
-									<input name="REMOVE" type="button" class="mediumbuttonb" value="Remove" onclick="submitForm('remove')" onkeypress="submitForm('remove')"></input>
+									<input name="SUBMIT" type="button" class="mediumbuttonb" value="Upload" onclick="submitForm('upload')" onkeypress="submitForm('upload')"/>&#160;&#160;
+									<input name="REMOVE" type="button" class="mediumbuttonb" value="Remove" onclick="submitForm('remove')" onkeypress="submitForm('remove')"/>
 								</td>
 							</tr>
 						</table>

@@ -138,12 +138,12 @@ String disabled = user == null ? "disabled" : "";
 			
 			<tr>
 				<td align="right" style="padding-right:10"><span class="mainfont"><b>Element A</b></span></td>
-				<td><font class="title2" color="#006666"><%=Util.replaceTags((String)fkRel.get("a_name"))%></font></td>
+				<td><em><%=Util.replaceTags((String)fkRel.get("a_name"))%></em></td>
 			</tr>
 			
 			<tr>
 				<td align="right" style="padding-right:10"><span class="mainfont"><b>Element B</b></span></td>
-				<td> <font class="title2" color="#006666"><%=Util.replaceTags((String)fkRel.get("b_name"))%></font></td>
+				<td> <em><%=Util.replaceTags((String)fkRel.get("b_name"))%></em></td>
 			</tr>
 			
 			<tr>

@@ -1616,8 +1616,8 @@ else{
 																	else
 																		link = "dstable.jsp?mode=view&amp;table_id=" + dsTable.getID();
 																	%>
-																	<font class="title2" color="#006666">
-																	<a href="<%=link%>"><%=Util.replaceTags(dsTable.getShortName())%></a></font>
+																	<em>
+																	<a href="<%=link%>"><%=Util.replaceTags(dsTable.getShortName())%></a></em>
 																	<input type="hidden" name="table_id" value="<%=dsTable.getID()%>"/>
 																	<%
 															}

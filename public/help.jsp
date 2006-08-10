@@ -58,7 +58,6 @@ else{
 <head>
 		<%@ include file="headerinfo.txt" %>
     <title>Data Dictionary</title>
-    <link type="text/css" rel="stylesheet" href="eionet_new.css" title="Default" />
 </head>
 <body class="popup">
 <div class="popuphead">

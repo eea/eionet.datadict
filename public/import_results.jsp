@@ -24,32 +24,17 @@
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-           
-            	<div style="margin-left:30">
-					<table>
-						<tr>
-							<td colspan="3"><font class="head00">Import results</font></td>
-						</tr>
-						<tr style="height:10px;"><td colspan="3"></td></tr>
-						<tr style="height:10px;"><td colspan="3"><a href="javascript:openPDF()">Save import results into PDF file</a></td></tr>
-						<tr style="height:10px;"><td colspan="3"></td></tr>
-						<tr>
-							<td colspan="3"><b><%=Util.replaceTags(resptext)%></b></td>
-						</tr>
-					</table>
-				</div>
-		</td>
-	</tr>
-</table>
+  <h1>Import results</h1>
+	<p><a href="javascript:openPDF()">Save import results into PDF file</a></p>
+	<p>
+		<b><%=Util.replaceTags(resptext)%></b>
+	</p>
 <form name="form1" action="GetImportResults" method="post">
 <%
 	String text=Util.Replace(resptext, "<br/>", "\n");
 
 %>
-<input type="hidden" name="text" value="<%=Util.replaceTags(text, true)%>"></input>
+<input type="hidden" name="text" value="<%=Util.replaceTags(text, true)%>"/>
 </form>
 </div>
 </body>

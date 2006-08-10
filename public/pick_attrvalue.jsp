@@ -151,7 +151,7 @@
 								<%
 								}
 								%>
-								<input type="hidden" name="field_<%=fieldID%>" value="<%=Util.replaceTags(fieldValue, true)%>"></input>
+								<input type="hidden" name="field_<%=fieldID%>" value="<%=Util.replaceTags(fieldValue, true)%>"/>
 								</td>
 							<%
 					}
@@ -174,7 +174,7 @@
 		<tr><td>&#160;</td></tr>
 
 	</table>
-	<!--input type="hidden" name="type" value="<%=type%>"></input-->
+	<!--input type="hidden" name="type" value="<%=type%>"/-->
 	</form>
 </div>
 </body>

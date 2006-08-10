@@ -299,10 +299,10 @@ try { // start the whole page try block
 				</td>
 				<td colspan="1" valign="top">
 					<% if(!mode.equals("add")){ %>
-						<font class="title2" color="#006666"><%=Util.replaceTags(value)%></font>
+						<em><%=Util.replaceTags(value)%></em>
 						<input type="hidden" name="fxv_value" value="<%=Util.replaceTags(value, true)%>"/>
 					<% } else{ %>
-						<input class="smalltext" type="text" size="30" name="fxv_value"></input>
+						<input class="smalltext" type="text" size="30" name="fxv_value"/>
 					<% } %>
 				</td>
 			</tr>

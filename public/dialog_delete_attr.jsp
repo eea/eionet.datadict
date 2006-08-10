@@ -96,17 +96,10 @@ ServletContext ctx = null;
 	<%@ include file="nmenu.jsp" %>
 
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-            <div style="margin-left:30">
-            	<form name="form1" action="dialog_delete_attr.jsp" method="post">
+	<form name="form1" action="dialog_delete_attr.jsp" method="post">
+	<h1>Deleting attribute: <%=Util.replaceTags(short_name)%></h1>
+	<p>Are you sure you want to delete the attribute, because it is part of the following objects' definitions: </p>
 				<table width="500">
-	  			    <tr><td><font class="head00">Deleting attribute: <%=Util.replaceTags(short_name)%></font></td></tr>
-					<tr style="height:10px;"><td>&#160;</td></tr>
-					
-					<tr style="height:30px;"><td>Are you sure you want to delete the attribute, because it is part of the following objects' definitions: </td></tr>
-					<tr style="height:10px;"><td>&#160;</td></tr>
 					<% 
 					// DATASETS
 					int d=0;
@@ -185,10 +178,6 @@ ServletContext ctx = null;
 				%>				
 				<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
 				</form>
-            </div>
-		</td>
-	</tr>
-</table>
 </div>
 </body>
 </html>

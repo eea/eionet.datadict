@@ -129,7 +129,7 @@ private String legalizeAlert(String in){
 			
 			attrField = searchEngine.getAttrField(field_id);		
 			if (attrField == null) attrField = new Hashtable();
-			String disabled = user == null ? "disabled" : "";
+			String disabled = user == null ? "disabled='disabled'" : "";
 			
 			String name = (String)attrField.get("name");
 			String definition = (String)attrField.get("definition");
@@ -201,29 +201,29 @@ private String legalizeAlert(String in){
 
 	<h1>Field of <em><%=Util.replaceTags(attr_name)%></em> attribute</h1>
 			
-			<table width="auto" cellspacing="0" cellpadding="0">
+			<table class="datatable">
 			<tr>				
-				<td align="right" style="padding-right:10" valign="top">
-					<b><font color="black">Field name</font></b>
-				</td>
-				<td colspan="1" valign="top">
-					<font class="title2" color="#006666"><%=Util.replaceTags(name)%></font>
+				<th scope="row" class="scope-row">
+					Field name
+				</th>
+				<td>
+					<%=Util.replaceTags(name)%>
 				</td>
 			</tr>
 			<tr>				
-				<td align="right" style="padding-right:10" valign="top">
-					<b><font color="black">Definition</font></b>
-				</td>
-				<td colspan="1" valign="top">
+				<th scope="row" class="scope-row">
+					Definition
+				</th>
+				<td>
 					<textarea <%=disabled%> class="small" rows="5" cols="60" name="definition"><%=Util.replaceTags(definition, true, true)%></textarea>
 				</td>
 			</tr>
 			<tr>
-				<td align="right" style="padding-right:10" valign="top">
+				<th scope="row" class="scope-row">
 					<!--a href="javascript:openPriority()"><span class="help">?</span></a>&#160;-->
-					<span class="mainfont"><b>Priority</b></span>
-				</td>
-				<td colspan="1" valign="top">
+					Priority
+				</th>
+				<td>
 					<select <%=disabled%> name="priority" class="small">
 						<option value="<%=DElemAttribute.FIELD_PRIORITY_HIGH%>">High</option>
 						<option value="<%=DElemAttribute.FIELD_PRIORITY_LOW%>">Low</option>
@@ -235,13 +235,13 @@ private String legalizeAlert(String in){
 			if (harvFlds!=null && harvFlds.size()>0){
 				%>
 				<tr>
-					<td align="right" style="padding-right:10" valign="top">
-						<span class="mainfont"><b>Linked harvester field</b></span>
-					</td>
-					<td colspan="1" valign="top">
+					<th scope="row" class="scope-row">
+						Linked harvester field
+					</th>
+					<td>
 						<%
 						String harvFld = (String)attrField.get("harv_fld");
-						String noLinkSelected = Util.voidStr(harvFld) ? "selected" : "";					
+						String noLinkSelected = Util.voidStr(harvFld) ? "selected='selected'" : "";
 						%>
 						<select <%=disabled%> name="harv_fld" class="small">
 							<option <%=noLinkSelected%> value="null">-- no link --</option>
@@ -262,12 +262,8 @@ private String legalizeAlert(String in){
 			}
 			%>
 		
-		<tr style="height:10px;"><td colspan="2"></td></tr>
+	</table>
 		
-		<tr>
-			<td>&#160;</td>
-			<td colspan="2">
-			
 				<% 
 					if (user==null){ %>									
 						<input class="mediumbuttonb" type="button" value="Save" disabled="disabled"/>&#160;&#160;
@@ -278,12 +274,6 @@ private String legalizeAlert(String in){
 					<% }
 				%>
 				
-			</td>
-		</tr>
-		
-		
-	</table>
-
 	<input type="hidden" name="mode" value="<%=mode%>"/>
 	<input type="hidden" name="field_id" value="<%=field_id%>"/>
 	<input type="hidden" name="del_field" value="<%=field_id%>"/>

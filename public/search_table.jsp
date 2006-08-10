@@ -206,15 +206,25 @@ else { %>
 			
 				<div id="workarea">
 
+				<form name="form1" action="search_results_tbl.jsp" method="get">
         <div id="operations">
           <ul>
               <li class="help"><a target="_blank" href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+				<%
+					if (contextParam == null || !contextParam.equals(POPUP)){
+
+					boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
+					if (dstPrm) { %>
+								<li><a title="Create a new table" href="javascript:window.location.assign('dstable.jsp?mode=add')">Add table</a></li>
+				<%
+					}
+				}
+				%>
+				
           </ul>
         </div>
 
 				<h1>Search for a dataset table definition</h1>
-				<form name="form1" action="search_results_tbl.jsp" method="get"
- style="border-top:#008B8B solid 1pt;">
 				
 				<table width="auto" cellspacing="0">
 					<tr valign="top">
@@ -398,31 +408,7 @@ else { %>
 						</td>
 					</tr>
 				</table>
-				
-				<%
-					if (contextParam == null || !contextParam.equals(POPUP)){
-				%>
-				<%
-				boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
-				if (dstPrm) { %>
-					<table width="500">			
-						<tr style="height:10px;"><td>&#160;</td></tr>				
-						<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-						<tr>
-							<td valign="bottom">
-								<input class="mediumbuttonb" type="button" value="Add" onclick="window.location.assign('dstable.jsp?mode=add')"/>
-								&#160;&#160;<span class="head00">a new table</span>&#160;&#160;
-							</td>
-						</tr>		
-					</table>
-				<%
-				}
-				%>
-				<%
-				}
-				%>
-				
-				
+
 				<input type="hidden" name="sel_attr" value=""/>			
 				<input type="hidden" name="sel_type" value=""/>
 				<input type="hidden" name="type" value="TBL"/>

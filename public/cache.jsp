@@ -13,11 +13,10 @@ Vector entries = (Vector)request.getAttribute("entries");
 
 <html>
 <head>
+		<%@ include file="headerinfo.txt" %>
     <title>Data Dictionary</title>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-    <link type="text/css" rel="stylesheet" href="eionet_new.css" />
     <script type="text/javascript">
-    
+// <![CDATA[
     	function submitForm(action){
 	    	document.forms["form1"].elements["action"].value = action;
 	    	document.forms["form1"].submit();
@@ -30,7 +29,7 @@ Vector entries = (Vector)request.getAttribute("entries");
     	function resize(){
 	    	window.resizeTo(600, 450);
     	}
-    	
+// ]]>
     </script>
 </head>
 <body class="popup" onload="load()">
@@ -43,29 +42,30 @@ Vector entries = (Vector)request.getAttribute("entries");
 		</form>
 	</div>
 </div>
-<div>
 
 <form name="form1" action="GetCache" method="post">
-	<table width="500" cellpadding="1" cellspacing="0">
 	
-		<tr>
-			<td colspan="3" class="head0">
-				Cache for <%=request.getAttribute("object_type")%> <font color="006666"><%=idf%></font>
-			</td>
-		</tr>
+		<h1>
+				Cache for <%=request.getAttribute("object_type")%> <em><%=idf%></em>
+		</h1>
 	
-		<tr>
-			<td colspan="3">
+		<p>
 				<input type="button" class="smallbutton" value="Update selected" onclick="submitForm('update')"/>
 				<input type="button" class="smallbutton" value="Remove selected" onclick="submitForm('clear')"/>
-			</td>
-		</tr>
+		</p>
 		
+	<table width="500" class="datatable">
+		<col style="width:3%"/>
+		<col style="width:67%"/>
+		<col style="width:30%"/>
+		<thead>
 		<tr>
-			<th width="3%">&nbsp;</th>
-			<th width="67%" align="left" style="padding-left:10; border-left:0">Article</th>
-			<th width="30%" align="left" style="padding-left:10; border-right:1px solid #FF9900">Created</th>
+			<th>&nbsp;</th>
+			<th>Article</th>
+			<th>Created</th>
 		</tr>
+		</thead>
+		<tbody>
 			
 		<%
 		for (int i=0; i<entries.size(); i++){
@@ -76,19 +76,20 @@ Vector entries = (Vector)request.getAttribute("entries");
 			String date = created==null ? "-- not in cache --" : Util.historyDate(created.longValue());
 			%>
 			<tr>
-				<td width="3%">
+				<td class="center">
 					<input type="checkbox" name="article" value="<%=Util.replaceTags(article, true)%>"/>
 				</td>
-				<td width="67%" style="padding-left:10">
+				<td>
 					<%=Util.replaceTags(text)%>
 				</td>
-				<td width="30%" style="padding-left:10">
+				<td>
 					<%=date%>
 				</td>
 			</tr>
 			<%
 		}
 		%>
+		</tbody>
 	</table>
 	
 	<input type="hidden" name="action" value="update"/>
@@ -96,6 +97,5 @@ Vector entries = (Vector)request.getAttribute("entries");
 	<input type="hidden" name="obj_type" value="<%=objType%>"/>
 	<input type="hidden" name="idf" value="<%=idf%>"/>	
 </form>
-</div>
 </body>
 </html>

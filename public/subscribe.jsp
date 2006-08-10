@@ -92,7 +92,6 @@ finally {
 <head>
 	<%@ include file="headerinfo.txt" %>
 	<title>Subscribe - Data Dictionary</title>
-	<link type="text/css" rel="stylesheet" href="eionet_new.css" title="Default"/>
 </head>
 <body>
     <jsp:include page="nlocation.jsp" flush='true'>

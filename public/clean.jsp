@@ -61,11 +61,7 @@
 		<jsp:param name="back" value="true"/>
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
-
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
             
             <%
             
@@ -98,14 +94,8 @@
 				}
 	            
 	            %>
-	            <div style="margin-left:30">
+								<h1>Cleanup results</h1>
 		            <table width="auto" cellspacing="0">
-		            	<tr height="30"><td>&#160;</td></tr>
-		            	<tr>
-		            		<td><font class="head00">Cleanup results:</font></td>
-		            	</tr>
-		            	<tr height="10"><td>&#160;</td></tr>
-		            	
 		            	<%
 		            	// here come the results
 		            	for (int i=0; i<results.size(); i++){
@@ -120,77 +110,70 @@
 		            		<td><a href="clean.jsp">&lt; back to cleanup page</a></td>
 		            	</tr>		            	
 		            </table>		            
-	            </div>
 	            <%
             }
             // GET
             else{
 	            %>
             
-	            <div style="margin-left:30">            
 	            
-				<table width="500">
-					<tr>
-						<td colspan="3"><br/><font class="head00">Cleanup functions</font><br/>
-							<font color="red">
-							This is a function enabling you to clean the database from all kinds of
-							leftovers that might result from exceptional situations. Please use this
-							with great caution as you might accidentally delete some important data!
-							</font>
-						</td>
-				</tr>
-				</table>
+				<h1>Cleanup functions</h1>
+				<p style="color:red">
+				This is a function enabling you to clean the database from all kinds of
+				leftovers that might result from exceptional situations. Please use this
+				with great caution as you might accidentally delete some important data!
+				</p>
 				
 				<form name="form1" action="clean.jsp" method="post">
 				
 					<table width="auto" cellspacing="0">
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RLS_DST%>"/>
-									   <span class="smallfont">
+								<input type="checkbox" id="releaseds" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RLS_DST%>"/>
+									   <label for="releaseds">
 									   		Release the dataset with the given Identifier:
-									   </span>
+									   </label>
 								<input type="text" class="smalltext" name="<%=MrProper.DST_IDFIER%>"/>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.ORPHAN_ELM%>"/>
-									   <span class="smallfont">
+								<input type="checkbox" id="rmelem" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.ORPHAN_ELM%>"/>
+									   <label for="rmelem">
 									   	Delete all elements without parent tables.
-									   </span>
+									   </label>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.ORPHAN_TBL%>"/>
-									   <span class="smallfont">
+								<input type="checkbox" id="rmtab" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.ORPHAN_TBL%>"/>
+									   <label for="rmtab">
 									   	Delete all tables without parent datasets.
-									   </span>
+									   </label>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RLS_NOWC%>"/>
-									   <span class="smallfont">
+								<input type="checkbox" id="rellock" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RLS_NOWC%>"/>
+									   <label for="rellock">
 									   	Release locked objects which actually don't have a working copy.
-									   </span>
+									   </label>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RMV_WC_NORIG%>"/>
-									   <span class="smallfont">
+								<input type="checkbox" id="rmwc" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RMV_WC_NORIG%>"/>
+									   <label for="rmwc">
 									   	Remove working copies which do not have any associated originals.
-									   </span>
+									   </label>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RMV_MULT_VERS%>"/>
-									   <span class="smallfont">
+								<input type="checkbox" id="rmmult" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RMV_MULT_VERS%>"/>
+									   <label for="rmmult">
 									   	Remove multiple versions by leaving only the latest by timestamp.
-									   </span>
+									   </label>
 							</td>
 						</tr>
 						<tr style="height:10px;"><td>&#160;</td></tr>
@@ -214,7 +197,7 @@
 											<td colspan="2">&#160;</td>
 											<td bgcolor="#D3D3D3">
 												<span class="smallfont">
-													<input type="radio" name="rm_obj_type" value="dst">datasets</input>
+													<input type="radio" name="rm_obj_type" value="dst"/>datasets
 												</span>
 											</td>
 											<td>&#160;</td>
@@ -233,7 +216,7 @@
 											<td style="padding-left:5;padding-right:5"><span class="smallfont">Remove</span></td>
 											<td bgcolor="#D3D3D3">
 												<span class="smallfont">
-													<input type="radio" name="rm_obj_type" value="tbl">tables</input>
+													<input type="radio" name="rm_obj_type" value="tbl"/>tables
 												</span>
 											</td>
 											<td style="padding-left:5;padding-right:5"><span class="smallfont">with</span></td>
@@ -248,7 +231,7 @@
 											<td colspan="2">&#160;</td>
 											<td bgcolor="#D3D3D3">
 												<span class="smallfont">
-													<input type="radio" name="rm_obj_type" value="elm">elements</input>
+													<input type="radio" name="rm_obj_type" value="elm"/>elements
 												</span>
 											</td>
 											<td>&#160;</td>
@@ -272,12 +255,9 @@
 						%>
 					</table>
 				</form>
-	            </div> <%
+	            <%
             } // end GET
             %>
-		</td>
-	</tr>
-</table>
 </div>
 </body>
 </html>

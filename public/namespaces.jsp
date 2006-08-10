@@ -94,17 +94,12 @@
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-            
-			<div style="margin-left:30">
-			
+	<h1>Namespaces</h1>
 			<%
             
             if (namespaces == null || namespaces.size()==0){
 	            %>
-	            <b>No namespaces were found!</b></div></td></tr></table></body></html>
+	            <b>No namespaces were found!</b></div></body></html>
 	            <%
 	            return;
             }
@@ -112,16 +107,9 @@
             
 			<form id="form1" method="post" action="namespaces.jsp">
 			
-		<table width="550">
-			<tr><td><font class="head00">Namespaces</font></td></tr>
-			<tr style="height:10px;"><td></td></tr>
-			<tr>
-				<td>
+				<p>
 					To view or modify a namespace, click its Full name. To add a new namespace, click 'Add'.
-				</td>
-			</tr>
-			<tr style="height:10px;"><td></td></tr>
-		</table>
+				</p>
 		
 		<table width="auto" cellspacing="0">
 		
@@ -230,11 +218,6 @@
 		<input type="hidden" name="searchUrl" value=""/>
 		
 		</form>
-			</div>
-			
-		</td>
-</tr>
-</table>
 </div>
 </body>
 </html>

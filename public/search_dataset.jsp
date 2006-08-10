@@ -174,6 +174,10 @@ private String setDefaultAttrs(String name){
     <div id="operations">
 			<ul>
 						<li class="help"><a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+		<%
+		if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
+						<li><a title="Create a new dataset" href="javascript:window.location.assign('dataset.jsp?mode=add')">Add dataset</a></li>
+		<% } %>
 			</ul>
 		</div>
 		<form name="form1" action="datasets.jsp" method="get">
@@ -335,25 +339,12 @@ private String setDefaultAttrs(String name){
 		</table>
 		<!-- table for 'Add' -->
 		
-		<%
-		if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
-			<table width="600">
-				<tr style="height:10px;"><td>&#160;</td></tr>
-				<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-				<tr>
-					<td valign="bottom">
-						<input class="mediumbuttonb" type="button" value="Add" onclick="window.location.assign('dataset.jsp?mode=add')"/>
-						&#160;&#160;<span class="head00">a new dataset</span>&#160;&#160;
-					</td>
-				</tr>
-			</table>
-		<% } %>
-		<input type="hidden" name="sel_attr" value=""></input>			
-		<input type="hidden" name="sel_type" value=""></input>
-		<input type="hidden" name="type" value="DST"></input>
+		<input type="hidden" name="sel_attr" value=""/>			
+		<input type="hidden" name="sel_type" value=""/>
+		<input type="hidden" name="type" value="DST"/>
 		<!-- collect all the attributes already used in criterias -->
-		<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"></input>
-        <input name='SearchType' type='hidden' value='SEARCH'/>
+		<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
+		<input name='SearchType' type='hidden' value='SEARCH'/>
 		</form>
 </div>
 </body>

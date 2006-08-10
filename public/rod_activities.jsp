@@ -46,14 +46,16 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 	<form name="reload" action="InServices?client=webrod&amp;method=reload_activities" method="get">
 	<%
 	if (activities==null || activities.size()==0){ %>
-		<p>
-			<b>No activities found!</b>
-		</p>&nbsp;&nbsp;<input type="submit" class="smallbutton" value="Reload"/><%
+		<h1>
+			No activities found!
+		</h1>
+		&nbsp;&nbsp;<input type="submit" class="smallbutton" value="Reload"/><%
 	}
 	else{ %>
-		<span class="head00">
+		<h1>
 			Obligation in ROD
-		</span>&nbsp;&nbsp;<input type="submit" class="smallbutton" value="Reload"/><br/><br/>
+		</h1>
+		&nbsp;&nbsp;<input type="submit" class="smallbutton" value="Reload"/><br/><br/>
 		<p class="small">
 			Click <i>Title</i> to link the obligation with dataset. Click <i>Details</i> to open the obligation's details in ROD.
 		</p>

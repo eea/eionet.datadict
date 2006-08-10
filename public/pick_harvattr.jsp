@@ -157,7 +157,6 @@
 	</div>
 </div>
 
-<div style="margin-left:30">
 	<form aname="form1" action="pick_harvattr.jsp" method="post">
 	<table>
 		<%
@@ -195,8 +194,7 @@
 						<input type="checkbox"
 							   name="chk"
 							   value="<%=harvAttrID%>"
-							   onclick="selected('<%=harvAttrID%>')">
-						</input>
+							   onclick="selected('<%=harvAttrID%>')"/>
 				</td>
 				<%
 				for (int j=0; harvFields!=null && j<harvFields.size(); j++){
@@ -219,14 +217,14 @@
 	
 	<br/>
 	
-	<input type="hidden" name="parent_id" value="<%=parent_id%>"></input>
-	<input type="hidden" name="parent_type" value="<%=parent_type%>"></input>
-	<input type="hidden" name="position" value="<%=position%>"></input>
+	<input type="hidden" name="parent_id" value="<%=parent_id%>"/>
+	<input type="hidden" name="parent_type" value="<%=parent_type%>"/>
+	<input type="hidden" name="position" value="<%=position%>"/>
 	
-	<input type="hidden" name="attr_id" value="<%=attr_id%>"></input>
-	<input type="hidden" name="harv_attr_id" value=""></input>
+	<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
+	<input type="hidden" name="harv_attr_id" value=""/>
 	
-	<input type="hidden" name="mode" value="add"></input>
+	<input type="hidden" name="mode" value="add"/>
 	
 	</form>
 </body>

@@ -75,25 +75,18 @@ try{
 				<jsp:param name="back" value="true"/>
 			</jsp:include>
 		<%@ include file="nmenu.jsp" %>
-<div id="workarea">
-			<table border="0">
-			    <tr valign="top">
-			        <td>
-	            
-			            <!-- start work area -->
-						<div style="margin-left:30">
-							<br/><br/>
-							<h1>ROD obligations corresponding to <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset</h1>
-							<div id="operations">
-								<ul>
-									<li class="help">
-										<a target="_blank" href="help.jsp?screen=dataset_rod&amp;area=pagehelp" onclick="pop(this.href);return false;">
-											Page help
-										</a>
-									</li>
-								</ul>
-							</div>
-							<form name="rodlinks" action="dstrod_links.jsp" method="post">
+			<div id="workarea"> <!-- start work area -->
+				<form name="rodlinks" action="dstrod_links.jsp" method="post">
+					<div id="operations">
+						<ul>
+							<li class="help">
+								<a target="_blank" href="help.jsp?screen=dataset_rod&amp;area=pagehelp" onclick="pop(this.href);return false;">
+									Page help
+								</a>
+							</li>
+						</ul>
+					</div>
+					<h1>ROD obligations corresponding to <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset</h1>
 								<table width="auto" cellspacing="0" cellpadding="0">
 									<tr>
 										<td colspan="3">
@@ -150,11 +143,6 @@ try{
 							</form>
 						</div>
 						<!-- end work area -->
-						
-					</td>
-				</tr>
-			</table>
-			</div>
 		</body>
 	</html>
 	

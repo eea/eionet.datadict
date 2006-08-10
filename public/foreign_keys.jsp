@@ -235,7 +235,7 @@ if (disabled.equals("")){
 	<input type="hidden" name="a_id" value="<%=delemID%>"/>
 	<input type="hidden" name="b_id" value=""/>
 	
-	<input type="hidden" name="collect_elems" value="<%=collect_elems.toString()%>"></input>
+	<input type="hidden" name="collect_elems" value="<%=collect_elems.toString()%>"/>
 		
 </form>
 </div>

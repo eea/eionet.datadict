@@ -191,65 +191,42 @@
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-           
-			<div style="margin-left:30">
-			
 			<form id="form1" method="post" action="namespace.jsp">
 			
-			<table width="600" cellspacing="0">
-				<tr>
 					<%
 					if (mode.equals("add")){ %>
-						<td colspan="2"><span class="head00">Add a namespace</span></td> <%
+						<h1>Add a namespace</h1> <%
 					}
 					else if (mode.equals("edit")){ %>
-						<td colspan="2"><span class="head00">Edit namespace</span></td> <%
+						<h1>Edit namespace</h1> <%
 					}
 					else{ %>
-						<td><span class="head00">View namespace</span></td>
-						<td align="right">
 							<%
 							if (user!=null && nsEditable){ %>
-								<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=ns_id%>')"/> <%
-							}
-							else{
-								%>&#160;
-<!--								<input type="button" class="smallbutton" value="Edit" disabled/ -->
-							<%
-							}
-							%>
-						</td> <%
-					}
+						<div id="operations">
+						<ul>
+								<li><a href="javascript:goTo('edit', '<%=ns_id%>')">Edit</a></li>
+						</ul>
+						</div>
+							<% } %>
+						<h1>View namespace</h1>
+					<% }
 					%>
-				</tr>
 				
 				<%
 				if (!mode.equals("view")){ %>
 				
-					<tr style="height:5px;"><td colspan="2"></td></tr>
 				
-					<tr>
-						<td colspan="2"><span class="Mainfont">
+					<p>
 						(M), (O) and (C) behind the titles stand for Mandatory, Optional and Conditional.
-						</span></td>
-					</tr> <%
+					</p> <%
 				}
 				%>
 				
-				<tr style="height:5px;"><td colspan="2"></td></tr>
-				
-				<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-				
-			</table>
 			
 			<table width="600" cellspacing="0"  cellpadding="0" border="0">
-			
 			<tr>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Short name</b>
 						<%
 						if (!mode.equals("view")){
@@ -265,18 +242,17 @@
 						String shortName = namespace.getShortName();
 						if (shortName==null) shortName = "";
 						%>
-						<font class="title2" color="#006666"><%=Util.replaceTags(shortName)%></font>
+						<em><%=Util.replaceTags(shortName)%></em>
 						<input type="hidden" name="ns_id" value="<%=ns_id%>"/>
 						
 					<% } else{ %>
-						<input <%=disabled%> type="text" class="smalltext" size="10" name="ns_id"></input>
+						<input <%=disabled%> type="text" class="smalltext" size="10" name="ns_id"/>
 					<% } %>
 				</td>
 			</tr>
 			
 			<tr <% if (mode.equals("view")) %> bgcolor="#D3D3D3" <%;%>>
 				<td align="right" style="padding-right:10">
-					<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Name</b>
 						<%
 						if (!mode.equals("view")){
@@ -293,12 +269,12 @@
 						String fullName = Util.replaceTags(namespace.getFullName());
 						if (fullName==null) fullName = "";
 						if (mode.equals("edit")){ %>
-							<input <%=disabled%> type="text" class="smalltext" size="30" name="fullName" value="<%=Util.replaceTags(fullName, true)%>"></input> <%
+							<input <%=disabled%> type="text" class="smalltext" size="30" name="fullName" value="<%=Util.replaceTags(fullName, true)%>"/> <%
 						} else { %>
 							<span class="barfont" style="width:400"><%=Util.replaceTags(fullName)%></span> <%
 						}
 					} else{ %>
-						<input <%=disabled%> type="text" class="smalltext" size="30" name="fullName"></input> <%
+						<input <%=disabled%> type="text" class="smalltext" size="30" name="fullName"/> <%
 					}
 					%>
 				</td>
@@ -306,7 +282,6 @@
 			
 			<tr>	
 				<td align="right" style="padding-right:10">
-					<a href="javascript:alert('Under construction!')"><span class="help">?</span></a>&#160;
 					<span class="mainfont"><b>Description</b>
 						<%
 						if (!mode.equals("view")){
@@ -397,10 +372,6 @@
 	</table>
 	<input type="hidden" name="mode" value="<%=mode%>"/>
 	</form>
-</div>
-        </td>
-</tr>
-</table>
 </div>
 </body>
 </html>

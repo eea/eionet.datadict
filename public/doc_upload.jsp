@@ -47,8 +47,7 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 	</div>
 </div>
 
-<br/>
-<p class="head00">Upload document</p>
+<h1>Upload document</h1>
 <p>
 This is a function enabling you to upload documents relevant to the given dataset.
 Data Dictionary recognizes the following document types: <b>doc, rtf, xls, ppt, mdb, zip, txt, html</b>.

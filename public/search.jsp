@@ -233,10 +233,23 @@ else{ %>
 				<div id="operations">
 					<ul>
 							<li class="help"><a target="_blank" href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+				<%
+					if (contextParam == null || !contextParam.equals(POPUP)){
+				
+					boolean dstPrm = user!=null &&
+									 (SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u") ||
+									 SecurityUtil.hasChildPerm(user.getUserName(), "/elements", "i"));
+					if (dstPrm) { %>
+							<li><a title="Add a definition of a new non-common element" href="javascript:window.location.assign('data_element.jsp?mode=add')">New non-common element</a></li>
+							<li><a title="Add a definition of a new common element" href="javascript:window.location.assign('data_element.jsp?mode=add&common=true')">New common element</a></li>
+					 <%
+					}
+				}
+				%>
 					</ul>
 				</div>
 				<h1>Search for a data element definition</h1>
-				<form acceptcharset="UTF-8" name="form1" action="search_results.jsp" method="get">
+				<form name="form1" action="search_results.jsp" method="get">
 				
 				<table width="auto" cellspacing="0" border="0">
 
@@ -565,45 +578,7 @@ else{ %>
 					</tr>
 					
 				</table>
-				<%
-					if (contextParam == null || !contextParam.equals(POPUP)){
-				%>
-				
-				<!-- table for 'Add' -->
-				<%
-				
-					boolean dstPrm = user!=null &&
-									 (SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u") ||
-									 SecurityUtil.hasChildPerm(user.getUserName(), "/elements", "i"));
-					if (dstPrm) { %>
-					<table width="520">
-						<tr style="height:10px;">
-							<td colspan="2">&#160;</td>
-						</tr>
-						<tr>
-							<td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td>
-						</tr>	
-						<tr>
-							<td width="10">&#160;</td>
-							<td valign="bottom">
-								<input class="mediumbuttonb" type="button" value="Add" onclick="window.location.assign('data_element.jsp?mode=add')"/>
-								&#160;&#160;<span class="head00">a definition of a new non-common element</span>&#160;&#160;
-							</td>
-						</tr>
-						<tr>
-							<td width="10">&#160;</td>
-							<td valign="bottom">
-								<input class="mediumbuttonb" type="button" value="Add" onclick="window.location.assign('data_element.jsp?mode=add&common=true')"/>
-								&#160;&#160;<span class="head00">a definition of a new common element</span>&#160;&#160;
-							</td>
-						</tr>
-					</table> <%
-					}
-					%>
-					
-				<%
-				}
-				%>
+
 				<input type="hidden" name="sel_attr" value=""/>
 				<input type="hidden" name="sel_type" value=""/>
 				
