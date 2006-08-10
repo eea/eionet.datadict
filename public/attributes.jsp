@@ -9,23 +9,23 @@
 	request.setCharacterEncoding("UTF-8");
 	ServletContext ctx = getServletContext();
 	String appName = ctx.getInitParameter("application-name");
-	
+
 	Connection conn = null;
 	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
 	DBPoolIF pool = xdbapp.getDBPool();
-	
+
 	try { // start the whole page try block
-	
+
 	conn = pool.getConnection();
-	
+
 	AppUserIF user = SecurityUtil.getUser(request);
 	if (user==null || !user.isAuthentic()){ %>
 		<b>Not allowed!</b><%
 		return;
 	}
-	
+
 	if (request.getMethod().equals("POST")){
-		
+
 		if (user == null){
 			%>
 				<html>
@@ -36,16 +36,16 @@
 			<%
 			return;
 		}
-		
+
 		Connection userConn = null;
-		
+
 		try{
 			userConn = user.getConnection();
 			AttributeHandler handler = new AttributeHandler(userConn, request, ctx, "delete");
 			handler.setUser(user);
-					
+
 			handler.execute();
-			
+
 			String redirUrl = request.getParameter("searchUrl");
 			if (redirUrl != null && redirUrl.length()!=0){
 				ctx.log("redir= " + redirUrl);
@@ -56,10 +56,10 @@
 			try { if (userConn!=null) userConn.close();
 			} catch (SQLException e) {}
 		}
-	}	
-	
+	}
+
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-	
+
 	Vector attributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
 	Vector complexAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_COMPLEX, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
 	for (int i=0; complexAttributes!=null && i<complexAttributes.size(); i++)
@@ -75,7 +75,7 @@
     }
     if (iCurrPage<0)
         iCurrPage=0;
-    
+
     String mode = request.getParameter("mode");
 %>
 
@@ -90,7 +90,7 @@
 			if (o!=null)
 				o.value=document.location.href;
 		}
-		
+
 		function goTo(mode){
 			if (mode == "add"){
 				document.location.assign('delem_attribute.jsp?mode=add');
@@ -107,7 +107,7 @@
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 			<%
-            
+
             if (attributes == null || attributes.size()==0){
 	            %>
 	            <b>No attributes were found!</b></div></td></tr></table></body></html>
@@ -115,9 +115,9 @@
 	            return;
             }
             %>
-            
+
 			<form id="form1" method="post" action="attributes.jsp">
-			
+
 				<div id="operations">
 					<ul>
 						<li class="help"><a target="_blank" href="help.jsp?screen=attributes&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
@@ -130,7 +130,7 @@
 						<%
 					}
 				}
-			
+
 				%>
 
 					</ul>
@@ -148,53 +148,35 @@
 				The left-most column enables you to delete selected attributes.
 			<%}%>
 		</p>
-		
+
 		<table class="datatable">
-			<col style="width:14em"/>
-			<col style="width:7em"/>
-			<col style="width:6em"/>
-			<col style="width:6em"/>
-			<col style="width:6em"/>
-			<col style="width:6em"/>
+			<col style="width:30%"/>
+			<col style="width:14%"/>
+			<col style="width:14%"/>
+			<col style="width:14%"/>
+			<col style="width:14%"/>
+			<col style="width:14%"/>
 			<tr>
 				<th scope="col" class="scope-col">
 								Short name
-								<a target="_blank" href="help.jsp?screen=attributes&amp;area=shortname" onclick="pop(this.href);return false;">
-									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-								</a>
 				</th>
 				<th scope="col" class="scope-col">
 								Type
-								<a target="_blank" href="help.jsp?screen=attributes&amp;area=type" onclick="pop(this.href);return false;">
-									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-								</a>
 				</th>
 				<th scope="col" class="scope-col">
 								Datasets
-								<a target="_blank" href="help.jsp?screen=attributes&amp;area=datasets" onclick="pop(this.href);return false;">
-									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-								</a>
 				</th>
 				<th scope="col" class="scope-col">
 								Tables
-								<a target="_blank" href="help.jsp?screen=attributes&amp;area=tables" onclick="pop(this.href);return false;">
-									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-								</a>
 				</th>
 				<th scope="col" class="scope-col">
 								Data elements with fixed values
-								<a target="_blank" href="help.jsp?screen=attributes&amp;area=elmfxv" onclick="pop(this.href);return false;">
-									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-								</a>
 				</th>
 				<th scope="col" class="scope-col">
 								Data elements with quantitative values
-								<a target="_blank" href="help.jsp?screen=attributes&amp;area=elmquant" onclick="pop(this.href);return false;">
-									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-								</a>
 				</th>
 			</tr>
-			
+
 			<%
 			// show all
 			if (iPageLen==0)
@@ -202,21 +184,21 @@
 
 	        int iBeginNode=iCurrPage*iPageLen;
 		    int iEndNode=(iCurrPage+1)*iPageLen;
-			if (iEndNode>=attributes.size()) 
+			if (iEndNode>=attributes.size())
 				iEndNode=attributes.size();
 	        //for (int i=iBeginNode;i<iEndNode;i++) {
 			for (int i=0; i<attributes.size(); i++){
-				
+
 				DElemAttribute attribute = (DElemAttribute)attributes.get(i);
-				
+
 				String attr_id = attribute.getID();
 				String attr_name = attribute.getShortName();
 				if (attr_name == null) attr_name = "unknown";
 				if (attr_name.length() == 0) attr_name = "empty";
 				String attr_oblig = attribute.getObligation();
-				
+
 				String attrType = attribute.getType();
-				
+
 				String displayOblig = "Mandatory";
 				if (attr_oblig.equals("M")){
 					displayOblig = "Mandatory";
@@ -227,10 +209,10 @@
 				else if (attr_oblig.equals("C")){
 					displayOblig = "Conditional";
 				}
-				
+
 				String attrTypeDisp = "Simple";
 				%>
-				
+
 				<tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
 					<%
 					if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
@@ -254,13 +236,13 @@
 						<% if (attribute.displayFor("CH2")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
 					</td>
 				</tr>
-				
+
 				<%
 			}
 			%>
-			
+
 		</table>
-		
+
 		<input type="hidden" name="searchUrl" value=""/>
 		</form>
 			</div>
