@@ -126,7 +126,7 @@
 					boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
 					if (addPrm){
 						%>
-						<li><a href="javascript:goTo('add')">Add</a></li>
+						<li><a href="javascript:goTo('add')">Add attribute</a></li>
 						<%
 					}
 				}
