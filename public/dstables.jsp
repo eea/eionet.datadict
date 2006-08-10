@@ -201,7 +201,7 @@ if (disabled.equals("")){
 			<th align="right" style="padding-right:10px">&nbsp;</th>
 			<th align="left" style="padding-right:10px; border-left:0">Name</th>
 			<th align="left" style="padding-left:5px;padding-right:10px">Short name</th>
-			<th align="left" style="padding-right:10px; border-right:1px solid #FF9900">Definition</th>
+			<th align="left" style="padding-right:10px;">Definition</th>
 		</tr>
 			
 		<%

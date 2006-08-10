@@ -244,9 +244,9 @@ private String legalizeAlert(String in){
 	
 	<tr>
 		<th>&nbsp;</th>
-		<th style="padding-left:5;padding-right:5;border-left:0">Name</th>
-		<th style="padding-left:5;padding-right:5">Definition</th>
-		<th style="padding-left:5;padding-right:5;border-right:1px solid #FF9900">Priority</th>
+		<th style="padding-left:5px;padding-right:5px;border-left:0">Name</th>
+		<th style="padding-left:5px;padding-right:5px">Definition</th>
+		<th style="padding-left:5px;padding-right:5px">Priority</th>
 	</tr>
 	</thead>
 	<tbody id="tbl_body">	
@@ -274,20 +274,20 @@ private String legalizeAlert(String in){
 		<tr id="tr<%=id%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 			<%
 			if (user != null){ %>
-				<td align="right" style="padding-left:5;padding-right:5">
+				<td align="right" style="padding-left:5px;padding-right:5px">
 					<input type="checkbox" style="height:13;width:13" name="del_field" value="<%=id%>" onclick="tbl_obj.clickOtherObject();"/>
 				</td><%
 			}
 			%>
-			<td align="center" style="padding-left:5;padding-right:5">
+			<td align="center" style="padding-left:5px;padding-right:5px">
 				<a href="javascript:clickLink('<%=fieldLink%>')">
 					<%=Util.replaceTags(name)%>
 				</a>
 			</td>
-			<td align="center" onmouseover="" style="padding-left:5;padding-right:5">
+			<td align="center" onmouseover="" style="padding-left:5px;padding-right:5px">
 				<%=Util.replaceTags(definition)%>
 			</td>
-			<td align="center" onmouseover="" style="padding-left:5;padding-right:5">
+			<td align="center" onmouseover="" style="padding-left:5px;padding-right:5px">
 				<%=pri%>
 			</td>
 			<td width="0" style="display:none">

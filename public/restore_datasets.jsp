@@ -357,7 +357,7 @@
             
 		<form id="form1" method="post" action="restore_datasets.jsp" onsubmit="setLocation()">
 		
-		<div style="padding-bottom:5">
+		<div style="padding-bottom:5px">
 			<%
 			if (user != null){
 				if (restore){ %>
@@ -389,7 +389,7 @@
 				<th width="10%">
 					CheckInNo
 				</th>
-				<th width="47%" style="border-right: 1px solid #FF9900">
+				<th width="47%">
 					Tables
 				</th>
 			</tr>

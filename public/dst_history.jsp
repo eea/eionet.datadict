@@ -87,9 +87,9 @@
     <table width="auto" cellspacing="0" id="tbl">
     	<tr><td colspan="3">&nbsp;</td></tr>
 		<tr>
-			<th align="left" style="padding-left:5;padding-right:10">CheckInNo</th>
-			<th align="left" style="padding-left:5;padding-right:10">User</th>
-			<th align="left" style="padding-left:5;padding-right:10;border-right:1px solid #FF9900">Date</th>
+			<th align="left" style="padding-left:5px;padding-right:10px">CheckInNo</th>
+			<th align="left" style="padding-left:5px;padding-right:10px">User</th>
+			<th align="left" style="padding-left:5px;padding-right:10px">Date</th>
 		</tr>
 
 		<%

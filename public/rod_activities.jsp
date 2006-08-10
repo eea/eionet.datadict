@@ -61,8 +61,8 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 		</p>
 		<table width="auto" cellspacing="0" cellpadding="0">
 			<tr>
-				<th style="padding-left:5;padding-right:10">Title</th>
-				<th style="padding-left:5;padding-right:10;border-right:1px solid #FF9900">Details</th>
+				<th style="padding-left:5px;padding-right:10px">Title</th>
+				<th style="padding-left:5px;padding-right:10px>Details</th>
 			</tr>
 			<%
 			int displayed = 0;
@@ -94,10 +94,10 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 				String colorAttr = displayed % 2 != 0 ? "bgcolor=#CCCCCC" : "";
 				%>
 				<tr>
-					<td style="padding-left:5;padding-right:10" <%=colorAttr%>>
+					<td style="padding-left:5px;padding-right:10px" <%=colorAttr%>>
 						<a href="javascript:select('<%=raID%>', '<%=raTitle%>', '<%=liID%>', '<%=liTitle%>')"><%=Util.replaceTags(raTitle)%></a>
 					</td>
-					<td style="padding-left:5;padding-right:10" <%=colorAttr%>>
+					<td style="padding-left:5px;padding-right:10px" <%=colorAttr%>>
 						<a target="_blank" href="<%=raURL%>"><%=raURL%>
 					</td>
 				<tr>

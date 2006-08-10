@@ -375,9 +375,7 @@ private String legalizeAlert(String in){
 						for (int t=0; attrFields!=null && t<attrFields.size(); t++){
 							Hashtable hash = (Hashtable)attrFields.get(t);
 							String name = (String)hash.get("name");
-							String style = "padding-right:10";
-							if (t == attrFields.size()-1)
-								style = style + ";border-right:1px solid #FF9900";
+							String style = "padding-right:10px";
 							%>
 							<th align="left" class="small" style="<%=style%>"><%=Util.replaceTags(name)%></th>
 							<%

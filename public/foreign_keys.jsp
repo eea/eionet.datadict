@@ -178,9 +178,9 @@ if (disabled.equals("")){
 			<td align="right" style="padding-right:10">
 				<input type="button" <%=disabled%> value="Remove" class="smallbutton" onclick="submitForm('delete')"/>
 			</td>				
-			<th align="left" style="padding-left:5;padding-right:10">Element</th>
-			<th align="left" style="padding-left:5;padding-right:10">Table</th>
-			<th align="left" style="padding-left:5;padding-right:10;border-right:1px solid #FF9900">Cardinality</th>
+			<th align="left" style="padding-left:5px;padding-right:10px">Element</th>
+			<th align="left" style="padding-left:5px;padding-right:10px">Table</th>
+			<th align="left" style="padding-left:5px;padding-right:10px">Cardinality</th>
 		</tr>
 			
 		<%

@@ -357,8 +357,8 @@ private String legalizeAlert(String in){
 	<% } %>	
 		<tr>
 			<th>&#160;</th>
-		<th align="left" style="padding-left:5;padding-right:10;border-left:0" width="100">Value</th>
-		<th align="left" style="padding-left:5;padding-right:10;border-right:1px solid #FF9900" width="500">Definition</th>
+		<th align="left" style="padding-left:5px;padding-right:10px;border-left:0" width="100">Value</th>
+		<th align="left" style="padding-left:5px;padding-right:10px" width="500">Definition</th>
 	</tr>
 	<tbody>
 			

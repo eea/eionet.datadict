@@ -79,11 +79,7 @@ try{
 				<form name="rodlinks" action="dstrod_links.jsp" method="post">
 					<div id="operations">
 						<ul>
-							<li class="help">
-								<a target="_blank" href="help.jsp?screen=dataset_rod&amp;area=pagehelp" onclick="pop(this.href);return false;">
-									Page help
-								</a>
-							</li>
+							<li class="help"><a target="_blank" href="help.jsp?screen=dataset_rod&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 						</ul>
 					</div>
 					<h1>ROD obligations corresponding to <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset</h1>
@@ -100,8 +96,8 @@ try{
 									</tr>
 									<tr>
 										<th>&nbsp;</th>
-										<th style="padding-left:5;padding-right:10;border-left:0">Title</th>
-										<th style="padding-left:5;padding-right:10;border-right:1px solid #FF9900">Details</th>
+										<th style="padding-left:5px;padding-right:10px;border-left:0">Title</th>
+										<th style="padding-left:5px;padding-right:10px;">Details</th>
 									</tr>
 									<%
 									int displayed = 0;

@@ -248,15 +248,15 @@ else{ %>
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
         	    if (dataElements == null || dataElements.size()==0){
 	        	    %>
-	            	<b>No results found!</b>
+	            	<h1>No results found!</h1>
 	            	<%
 	    	        if (user==null){ %>
-	    	        	<br/>
+	    	        	<p>
 	    	        		This might be due to fact that you have not been authorized and there are<br/>
 	    	        		no datasets at the moment ready to be published for non-authorized users.<br/>
 	    	        		Please go to the <a href="datasets.jsp?SearchType=SEARCH">list of datasets</a>
 							to see which of them are in which status!
-	    	        	<br/><%
+	    	        	</p><%
     	        	}
     	        	%>
 	            	</div></body></html>
@@ -312,7 +312,7 @@ else{ %>
 					</th><%
 				}
 				%>
-				<th width="25%" style="border-right: 1px solid #FF9900">
+				<th width="25%">
 					<%
 					sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(3, oSortCol, oSortOrder);

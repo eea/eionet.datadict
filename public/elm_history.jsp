@@ -75,7 +75,7 @@
 	<tr>
 			<th align="left" style="padding-left:5px;padding-right:10px">CheckInNo</th>
 			<th align="left" style="padding-left:5px;padding-right:10px">User</th>
-			<th align="left" style="padding-left:5px;padding-right:10px;border-right:1px solid #FF9900">Date</th>
+			<th align="left" style="padding-left:5px;padding-right:10px">Date</th>
 	</tr>
 
 <%

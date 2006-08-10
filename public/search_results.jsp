@@ -285,7 +285,7 @@ else{ %>
         	    	// prepare message trailer for un-authenticated users
 		    		String msgTrailer = user==null ? " for un-authenticated users" : "";
 		    		%>
-        		    <b>No element definitions matching the search criteria were found<%=Util.replaceTags(msgTrailer)%>!</b>
+        		    <h1>No element definitions matching the search criteria were found<%=Util.replaceTags(msgTrailer)%>!</h1>
             		</div></body></html> <%
             		return;
         		}

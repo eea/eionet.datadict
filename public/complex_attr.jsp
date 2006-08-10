@@ -342,28 +342,28 @@ if (!mode.equals("view")){
 	</div>
 
 
-<table width="400">
+<table width="400" class="datatable">
 	<tr>
 		<th scope="row" class="scope-row">
 				<%
 				String nsPrefix = "";
 				if (parent_type.equals("DS")){
-					%>Dataset: <%
+					%>Dataset<%
 				}
 				else if (parent_type.equals("T")){
 					nsPrefix = parent_ns + ":";
-					%>Table: <%
+					%>Table<%
 				}
 				else if (parent_type.equals("C")){
 					nsPrefix = parent_ns + ":";
-					%>Class: <%
+					%>Class<%
 				}
 				else {
 					if (ds != null && ds.equals("true")){
-						%>Dataset: <%
+						%>Dataset<%
 					} else {
 						nsPrefix = parent_ns + ":";
-						%>Element: <%
+						%>Element<%
 					}
 				}
 				%>
@@ -372,7 +372,7 @@ if (!mode.equals("view")){
 	</tr>
 	
 	<tr>
-		<th scope="row" class="scope-row">Attribute: </th>
+		<th scope="row" class="scope-row">Attribute</th>
 		<td><%=Util.replaceTags(attrName)%></td>
 	</tr>
 	
@@ -453,9 +453,7 @@ if (!mode.equals("view")){
 			for (int t=0; attrFields!=null && t<attrFields.size(); t++){
 				Hashtable hash = (Hashtable)attrFields.get(t);
 				String name = (String)hash.get("name");
-					String style = "padding-left:5;padding-right:10";
-					if (t == attrFields.size()-1)
-						style = style + ";border-right:1px solid #FF9900";
+					String style = "padding-left:5px;padding-right:10px";
 					%>
 					<th class="small" align="left" style="<%=style%>"><%=Util.replaceTags(name)%></th>
 					<%
