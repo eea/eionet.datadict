@@ -232,6 +232,12 @@ private String legalizeAlert(String in){
 </div>
 
 <form name="form1" method="post" action="complex_attrs.jsp">
+	<div id="operations">
+		<ul>
+				<li class="help"><a target="_blank" href="help.jsp?screen=complex_attrs&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+		</ul>
+	</div>
+
     <h2>
         Complex attributes of <em><%=Util.replaceTags(parent_name)%></em>
     </h2>
@@ -252,9 +258,6 @@ private String legalizeAlert(String in){
       		</table>
 		</td>
 		<td align="right">
-			<a target="_blank" href="help.jsp?screen=complex_attrs&amp;area=pagehelp" onclick="pop(this.href);return false;">
-				<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/>
-			</a>
 		</td>
 	</tr>
 

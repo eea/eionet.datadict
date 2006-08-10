@@ -59,51 +59,47 @@
 		</form>
 	</div>
 </div>
+	<div id="operations">
+		<ul>
+				<li class="help"><a target="_blank" href="help.jsp?screen=history&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+		</ul>
+	</div>
 
-    <span class="head00">
-        History of <em><%=Util.replaceTags(elm.getShortName())%></em>
-        below CheckInNo <em><%=elm.getVersion()%></em>
-    </span>
+<h2>
+	History of <em><%=Util.replaceTags(elm.getShortName())%></em>
+	below CheckInNo <em><%=elm.getVersion()%></em>
+</h2>
 
-	<table width="auto" cellspacing="0" id="tbl">
-	
-		<tr><td colspan="3">&nbsp;</td></tr>
-    	<tr>
-    		<td align="right" colspan="3">
-    			<a target="_blank" href="help.jsp?screen=history&area=pagehelp" onclick="pop(this.href);return false;">
-					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-				</a>
-    		</td>
-    	</tr>
-	
-        <tr>
-            <th align="left" style="padding-left:5;padding-right:10">CheckInNo</th>
-            <th align="left" style="padding-left:5;padding-right:10">User</th>
-            <th align="left" style="padding-left:5;padding-right:10;border-right:1px solid #FF9900">Date</th>
-        </tr>
-		
-		<%
-		for (int i=0; i<v.size(); i++){
-			
-			Hashtable hash = (Hashtable)v.get(i);
-			String id = (String)hash.get("id");
-			String version = (String)hash.get("version");
-			String usr = (String)hash.get("user");
-			String date = (String)hash.get("date");
-			
-			%>
-			<tr>
-				<td align="left" style="padding-left:5;padding-right:10">
-					<a href="javascript:view('<%=id%>')">&#160;<%=version%>&#160;</a>
-				</td>
-				<td align="left" style="padding-left:5;padding-right:10"><%=usr%></td>
-				<td align="left" style="padding-left:5;padding-right:10"><%=date%></td>
-			</tr>
-			<%
-		}
-		%>
+<table width="auto" cellspacing="0" id="tbl">
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr>
+			<th align="left" style="padding-left:5px;padding-right:10px">CheckInNo</th>
+			<th align="left" style="padding-left:5px;padding-right:10px">User</th>
+			<th align="left" style="padding-left:5px;padding-right:10px;border-right:1px solid #FF9900">Date</th>
+	</tr>
 
-	</table>
+<%
+for (int i=0; i<v.size(); i++){
+
+Hashtable hash = (Hashtable)v.get(i);
+String id = (String)hash.get("id");
+String version = (String)hash.get("version");
+String usr = (String)hash.get("user");
+String date = (String)hash.get("date");
+
+%>
+<tr>
+	<td align="left" style="padding-left:5px;padding-right:10px">
+		<a href="javascript:view('<%=id%>')">&#160;<%=version%>&#160;</a>
+	</td>
+	<td align="left" style="padding-left:5px;padding-right:10px"><%=usr%></td>
+	<td align="left" style="padding-left:5px;padding-right:10px"><%=date%></td>
+</tr>
+<%
+}
+%>
+
+</table>
 
 </body>
 </html>
@@ -112,7 +108,7 @@
 // end the whole page try block
 }
 finally {
-	try { if (conn!=null) conn.close();
-	} catch (SQLException e) {}
+try { if (conn!=null) conn.close();
+} catch (SQLException e) {}
 }
 %>

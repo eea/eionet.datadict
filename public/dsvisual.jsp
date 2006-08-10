@@ -146,69 +146,30 @@ if (dsVisual!=null && dsVisual.length()!=0){
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-            
-            	<div style="margin-left:30">
-            
-				<table width="500">
-					<tr style="height:20px;"><td colspan="2"></td></tr>
-					<tr>
-						<td>
-							<font class="head00">
-								Data model of
-								<font class="title2" color="#006666"><%=Util.replaceTags(dataset.getShortName())%></font>
-								Dataset
-							</font>
-						</td>
-						<td align="right">
-							<a target="_blank" href="help.jsp?screen=dataset_model&amp;area=pagehelp" onclick="pop(this.href);return false;">
-								<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-							</a>
-						</td>
-					</tr>
-					
-					<tr style="height:5px;"><td colspan="2"></td></tr>
-				</table>
-				
-				<table width="500" cellpadding="0" cellspacing="0" border="0">
-					
-					<%
-					if (type.equals("simple")){ %>
-						<tr style="height:10px;">
-					        <td bgcolor="#10847B" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5" alt=""/></td>
-						    <th class="light" width="50">Simple</th>
-						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5" alt=""/></td>
-						    <td bgcolor="#f0f0f0" width="1"></td>
-	          				<td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5" alt=""/></td>
-						    <th class="light" width="50"><a href="dsvisual.jsp?ds_id=<%=ds_id%>&amp;str_type=detailed">
-						    	<font color="#FFFFFF">Detailed</font></a>
-						    </th>
-						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5" alt=""/></td>
-	    					<td bgcolor="#f0f0f0">&#160;</td>
-						</tr> <%
-					}
-					else{ %>
-						<tr style="height:10px;">
-					        <td bgcolor="#20B2AA" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5" alt=""/></td>
-						    <th class="light" width="50"><a href="dsvisual.jsp?ds_id=<%=ds_id%>&amp;str_type=simple">
-						    	<font color="#FFFFFF">Simple</font></a>
-						    </th>
-						    <td bgcolor="#20B2AA" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5" alt=""/></td>
-						    <td bgcolor="#f0f0f0" width="1"></td>
-	          				<td bgcolor="#10847B" valign="top" align="left" width="5"><img src="images/ltop.gif" width="5" height="5" alt=""/></td>
-						    <th class="light" width="50">Detailed</th>
-						    <td bgcolor="#10847B" valign="top" align="right" width="5"><img src="images/rtop.gif" width="5" height="5" alt=""/></td>
-	    					<td bgcolor="#f0f0f0">&#160;</td>
-						</tr> <%
-					}
-					%>					
-					<tr>
-						<td colspan="8" style="border-top-color:#10847B;border-top-style:solid;border-top-width:1pt;">&#160;</td>
-					</tr>
-				</table>
-				
+	<div id="operations">
+		<ul>
+				<li class="help"><a target="_blank" href="help.jsp?screen=dataset_model&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+		</ul>
+	</div>
+
+	<h1>
+		Data model of
+		<em><%=Util.replaceTags(dataset.getShortName())%></em>
+		Dataset
+	</h1>
+	<div id="tabbedmenu">
+    <ul>
+		<% if (type.equals("simple")){ %>
+			<li id="currenttab"><span>Simple</span></li>
+			<li><a href="dsvisual.jsp?ds_id=<%=ds_id%>&amp;str_type=detailed">Detailed</a></li>
+		<% } else { %>
+			<li><a href="dsvisual.jsp?ds_id=<%=ds_id%>&amp;str_type=simple">Simple</a></li>
+			<li id="currenttab"><span>Detailed</span></li>
+		<% } %>
+		</ul>
+	</div>
+	<br style="clear:left" />
+
 				<table width="500">
 					
 					<%
@@ -244,7 +205,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 						if (user!=null){
 							%>
 							<tr style="height:5px;"><td colspan="2"></td></tr>
-							<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
+							<tr><td colspan="2" style="border-top:1px solid #008B8B;">&#160;</td></tr>
 							
 							<tr>
 								<td colspan="2">
@@ -307,11 +268,6 @@ if (dsVisual!=null && dsVisual.length()!=0){
 					<%
 				}
 				%>
-
-			</div>
-		</td>
-	</tr>
-</table>
 </div>
 </body>
 </html>

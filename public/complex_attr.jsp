@@ -318,6 +318,16 @@ private String legalizeAlert(String in){
 	%>
 		
 <form name="form1" method="post" action="complex_attr.jsp">
+		<%
+		String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edit";
+		%>
+		
+	<div id="operations">
+		<ul>
+				<li class="help"><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+		</ul>
+	</div>
+
 
 <table width="400">
 <%
@@ -337,7 +347,7 @@ if (!mode.equals("view")){
 %>
 	<tr><td colspan="2">&nbsp;</td></tr>
 
-	<tr valign="bottom">
+	<tr colspan="2" valign="bottom">
 		<td>
 			<span class="head00">
 				<%
@@ -364,16 +374,6 @@ if (!mode.equals("view")){
 				%>
 			</span>
 			<span class="title2"><%=Util.replaceTags(parent_name)%></span>
-		</td>
-		
-		<%
-		String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edit";
-		%>
-		
-		<td align="right">
-			<a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">
-				<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page"/>
-			</a>
 		</td>
 	</tr>
 	

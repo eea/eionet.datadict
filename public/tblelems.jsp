@@ -421,16 +421,15 @@ int colCount = hasGIS ? 5 : 4;
 	</jsp:include>
     <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-            
-<div style="margin-left:30">
 			
 <form name="form1" method="post" action="tblelems.jsp">
 
 	<!-- page title & the add new part -->
-	
+	<div id="operations">
+		<ul>
+			<li class="help"><a target="_blank" href="help.jsp?screen=table_elements&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+		</ul>
+	</div>
 	<h1>
 		Elements in
 		<span class="title2">
@@ -447,20 +446,6 @@ int colCount = hasGIS ? 5 : 4;
 		dataset.
 	</h1>
 
-	<table width="500" cellspacing="0" cellpadding="0">
-	
-		<!-- title row & pagehelp -->
-	
-		<tr>
-			<td align="right" colspan="2">
-				<a target="_blank" href="help.jsp?screen=table_elements&amp;area=pagehelp" onclick="pop(this.href);return false;">
-					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-				</a>
-			</td>
-		</tr>
-		
-		<tr style="height:10px;"><td colspan="2"></td></tr>
-	
 		<%
 		// set the flag indicating if the top namespace is in use
 		VersionManager verMan = new VersionManager(conn, searchEngine, user);
@@ -472,20 +457,16 @@ int colCount = hasGIS ? 5 : 4;
 		boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
 		if (user != null && topFree && dstPrm){ %>
 		
-			<tr>
-				<td colspan="2">
-					<table width="auto">
+					<table width="500">
 						<tr>
-							<td align="right">
-								<span class="barfont">Identifier:</span>
-							</td>
+							<td align="right"><label for="idfier">Identifier:</label></td>
 							<td align="right">
 								<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
 									<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 								</a>
 							</td>
-							<td style="padding-left:5">
-								<input type="text" class="smalltext" style="width:145px;" name="idfier"/>
+							<td style="padding-left:5px">
+								<input type="text" class="smalltext" style="width:145px;" name="idfier" id="idfier"/>
 							</td>
 							<td align="right">
 								<input type="button" class="smallbutton" value="Add" onclick="goToAddForm()"
@@ -501,31 +482,25 @@ int colCount = hasGIS ? 5 : 4;
 							</td>
 						</tr>
 						<tr>
-							<td align="right"><span class="barfont">Type:</span></td>
+							<td align="right"><label for="elemtype">Type:</label></td>
 							<td>
 								<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
 									<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 								</a>
 							</td>
-							<td style="padding-left:5" colspan="4">
-								<select name="type" class="small">
+							<td style="padding-left:5px" colspan="4">
+								<select name="type" id="elemtype" class="small">
 									<option selected="selected" value="CH2">Quantitative</option>
 									<option value="CH1">Fixed values (codes)</option>
 								</select>
 							</td>
 						</tr>
 					</table>
-				</td>
-			</tr>
 			<%
 		}
 		%>
 		
-		<tr style="height:10px;"><td colspan="2"></td></tr>
-	</table>
-
-		
-	<!-- here's gonna be a table consisting of two columns -->
+	<!-- here is going to be a table consisting of two columns -->
 	<!-- the first column contains the table of elements,  -->
 	<!-- the second one contains the ordering buttons      -->
 	
@@ -564,13 +539,13 @@ int colCount = hasGIS ? 5 : 4;
 					<!-- column headers -->
 
 					<tr>
-						<th align="right" style="padding-right:10">&nbsp;</th> <!-- checkboxes column -->
+						<th align="right" style="padding-right:10px">&nbsp;</th> <!-- checkboxes column -->
 						
-						<th>Short name</th>
+						<th scope="col" class="scope-col">Short name</th>
 						
 						<%
 						if (hasGIS){ %>
-							<th>
+							<th scope="col" class="scope-col">
 								GIS
 								<a target="_blank" href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
 									<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
@@ -579,8 +554,8 @@ int colCount = hasGIS ? 5 : 4;
 						}
 						%>
 						
-						<th>Datatype</th>
-						<th>Element type</th>
+						<th scope="col" class="scope-col">Datatype</th>
+						<th scope="col" class="scope-col">Element type</th>
 					</tr>
 					</thead>
 
@@ -638,7 +613,7 @@ int colCount = hasGIS ? 5 : 4;
 						
 						<tr id="tr<%=elem.getID()%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 		
-							<td align="right" style="padding-right:10" bgcolor="#f0f0f0">
+							<td style="text-align: right; padding-right:10px">
 								<%
 								if (user!=null && dstPrm){
 									if ((workingUser==null || elmCommon) && topFree && dsLatest){
@@ -646,18 +621,18 @@ int colCount = hasGIS ? 5 : 4;
 										%>
 										<input onclick="tbl_obj.clickOtherObject();"
 												type="checkbox"
-												style="height:13;width:13" name="<%=Util.replaceTags(name)%>" value="<%=elem.getID()%>"/>
+												style="height:13px; width:13px" name="<%=Util.replaceTags(name)%>" value="<%=elem.getID()%>"/>
 										<%
 									}
 								}
 								%>
 							</td>
 					
-							<td align="left" style="padding-left:5;padding-right:10">
+							<td style="text-align:left; padding-left:5px; padding-right:10px">
 								<%
 								// red asterisk
 								if (workingUser!=null){ %>
-									<font title="<%=Util.replaceTags(workingUser, true)%>" color="red">* </font><%
+									<span title="<%=Util.replaceTags(workingUser, true)%>" style="color:red">* </span><%
 									hasMarkedElems = true;
 								}
 									
@@ -674,10 +649,10 @@ int colCount = hasGIS ? 5 : 4;
 									<span class="commonelm"><sup>C</sup></span><%
 								}
 								
-								// FK inidcator
+								// FK indicator
 								if (fks){ %>
 									&nbsp;
-									<span class="barfont">
+									<span style="font-size: 70%">
 										<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>&amp;ds_id=<%=dsID%>">
 											<b><i>(FK)</i></b>
 										</a>
@@ -688,17 +663,17 @@ int colCount = hasGIS ? 5 : 4;
 							
 							<%
 							if (hasGIS){ %>
-								<td align="left" style="padding-right:10">
+								<td style="text-align: left; padding-right:10px">
 									<%=Util.replaceTags(gis)%>
 								</td><%
 							}
 							%>
 							
-							<td align="left" style="padding-right:10">
+							<td style="text-align: left; padding-right:10px">
 								<%=Util.replaceTags(datatype)%>
 							</td>
 							
-							<td align="left" style="padding-right:10">
+							<td style="text-align: left; padding-right:10px">
 								<% if (elem.getType().equals("CH1")){ %>
 									<a href="javascript:clickLink('fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>')"><%=Util.replaceTags(elemType)%></a>
 								<%} else{ %>
@@ -715,28 +690,28 @@ int colCount = hasGIS ? 5 : 4;
 					%>
 					
 					<tr style="height:10px;">
-						<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>"></td>
+						<td width="100%" colspan="<%=String.valueOf(colCount)%>"></td>
 					</tr>
 					
 					<%
 					// explanations about red asterisks, fks and c-signs
 					if (user!=null && elems!=null && elems.size()>0 && hasMarkedElems){%>
 						<tr style="height:10px;">
-							<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>">
+							<td width="100%" style="font-size: 70%" colspan="<%=String.valueOf(colCount)%>">
 								(a red wildcard stands for checked-out element)
 							</td>
 						</tr><%
 					}
 					if (user!=null && elems!=null && elems.size()>0 && hasForeignKeys){%>
 						<tr style="height:10px;">
-							<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>">
+							<td width="100%" style="font-size: 70%" colspan="<%=String.valueOf(colCount)%>">
 								(the <u><b><i>(FK)</i></b></u> link indicates the element participating in a foreign key relation)
 							</td>
 						</tr><%
 					}
 					if (elems!=null && elems.size()>0 && hasCommonElms){%>
 						<tr style="height:10px;">
-							<td width="100%" class="barfont" colspan="<%=String.valueOf(colCount)%>">
+							<td width="100%" style="font-size: 70%" colspan="<%=String.valueOf(colCount)%>">
 								(the <span class="commonelm"><sup>C</sup></span> sign marks a common element)
 							</td>
 						</tr><%
@@ -751,7 +726,7 @@ int colCount = hasGIS ? 5 : 4;
 			
 			<%
 			if (user!=null && topFree && dsLatest && elems.size()>1 && dstPrm){ %>
-				<td  width="10%" align="left" style="padding-right:10" valign="middle" height="10">
+				<td width="10%" style="text-align: left; padding-right:10px" valign="middle" height="10">
 					<table cellspacing="2" cellpadding="2" border="0">
 						<tr>
 							<td>
@@ -820,10 +795,6 @@ int colCount = hasGIS ? 5 : 4;
 	<input type="hidden" name="elmpos" value="<%=maxPos+1%>"/>
 </form>
 
-</div>
-</td>
-</tr>
-</table>
 </div>
 </body>
 </html>

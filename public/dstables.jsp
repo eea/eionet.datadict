@@ -159,15 +159,13 @@ if (disabled.equals("")){
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-            
-<div style="margin-left:30">
-	
 <form name="form1" method="post" action="dstables.jsp">
+	<div id="operations">
+		<ul>
+				<li class="help"><a target="_blank" href="help.jsp?screen=dataset_tables&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+		</ul>
+	</div>
 
-	<table width="440">
 
 		<!--==================== dataset title  =========================================-->
 
@@ -177,83 +175,33 @@ if (disabled.equals("")){
 			dsName = "unknown";
 		%>
 
-		<tr valign="bottom">
-			<td><font class="head00">Tables in 
-				<span class="title2"><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a></span>
-			 dataset</font></td>
-		</tr>
+			<h1>Tables in 
+				<em><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a></em>
+			 dataset</h1>
 		
-	</table>
 
 	<table width="auto" cellspacing="0">
-	
-		<tr><td colspan="4">&nbsp;</td></tr>
 	
 		<tr>
 			<%
 			boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
 			if (dstPrm){ %>		
-				<td colspan="3">
+				<td colspan="4">
 					<input type="button" <%=disabled%> value="Add new" class="smallbutton"
 						   onclick="window.location.replace('dstable.jsp?mode=add&amp;ds_id=<%=dsID%>&#38;ds_name=<%=Util.replaceTags(dsName)%>&amp;ctx=ds')"/>
 					<input type="button" <%=disabled%> value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/>
 				</td><%
 			}
 			%>
-			<td align="right">
-				<a target="_blank" href="help.jsp?screen=dataset_tables&amp;area=pagehelp" onclick="pop(this.href);return false;">
-					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-				</a>
-			</td>
 		</tr>
 		
 		<tr style="height:5px;"><td colspan="4"></td></tr>
 
 		<tr>
-			<th align="right" style="padding-right:10">&nbsp;</th>
-			<th align="left" style="padding-right:10; border-left:0">
-				<table width="100%">
-					<tr>
-						<td align="right" width="50%">
-							<b>Name</b>
-						</td>
-						<td align="left" width="50%">
-							<a target="_blank" href="help.jsp?attrshn=Name&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-							</a>
-						</td>
-					</tr>
-				</table>
-			</th>
-			<th align="left" style="padding-left:5;padding-right:10">
-				<table width="100%">
-					<tr>
-						<td align="right" width="50%">
-							<b>Short name</b>
-						</td>
-						<td align="left" width="50%">
-							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-							</a>
-						</td>
-					</tr>
-				</table>
-			</th>
-			<th align="left" style="padding-right:10; border-right:1px solid #FF9900">
-				<table width="100%">
-					<tr>
-						<td align="right" width="50%">
-							<b>Definition</b>
-						</td>
-						<td align="left" width="50%">
-							<a target="_blank" href="help.jsp?attrshn=Definition&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-							</a>
-						</td>
-					</tr>
-				</table>
-			</th>
-			
+			<th align="right" style="padding-right:10px">&nbsp;</th>
+			<th align="left" style="padding-right:10px; border-left:0">Name</th>
+			<th align="left" style="padding-left:5px;padding-right:10px">Short name</th>
+			<th align="left" style="padding-right:10px; border-right:1px solid #FF9900">Definition</th>
 		</tr>
 			
 		<%
@@ -289,7 +237,7 @@ if (disabled.equals("")){
 			
 			%>
 			<tr>
-				<td align="right" style="padding-right:10">
+				<td align="right" style="padding-right:10px">
 					<%
 					if (user!=null && dstPrm){
 						
@@ -301,18 +249,18 @@ if (disabled.equals("")){
 						}
 					
 						if (tblWorkingUser==null && topFree){ %>
-							<input type="checkbox" style="height:13;width:13" name="del_id" value="<%=table.getID()%>"/><%
+							<input type="checkbox" style="height:13px;width:13px" name="del_id" value="<%=table.getID()%>"/><%
 						}
 					}
 					%>					
 				</td>
-				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+				<td align="left" style="padding-left:5px;padding-right:10px" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
 				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullName, true)%>">
+				<td align="left" style="padding-right:10px" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullName, true)%>">
 					<%=Util.replaceTags(table.getShortName())%>
 				</td>
-				<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullDef, true)%>">
+				<td align="left" style="padding-right:10px" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullDef, true)%>">
 					<%=Util.replaceTags(tblDef)%>
 					<input type="hidden" name="mode" value="delete"/>
 					<input type="hidden" name="ds_id" value="<%=dsID%>"/>
@@ -326,13 +274,8 @@ if (disabled.equals("")){
 
 	</table>
 	
-	
-	
 </form>
 </div>
-</td>
-</tr>
-</table>
 </body>
 </html>
 

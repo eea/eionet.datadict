@@ -73,22 +73,19 @@
 		</form>
 	</div>
 </div>
+<div id="operations">
+	<ul>
+			<li class="help"><a target="_blank" href="help.jsp?screen=history&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+	</ul>
+</div>
 
-    <span class="head00">
+
+    <h2>
         History of <em><%=Util.replaceTags(dataset.getShortName())%></em>
         below CheckInNo <em><%=dataset.getVersion()%></em>
-    </span>
+    </h2>
     <table width="auto" cellspacing="0" id="tbl">
-    
     	<tr><td colspan="3">&nbsp;</td></tr>
-    	<tr>
-    		<td align="right" colspan="3">
-    			<a target="_blank" href="help.jsp?screen=history&amp;area=pagehelp" onclick="pop(this.href);return false;">
-					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-				</a>
-    		</td>
-    	</tr>
-
 		<tr>
 			<th align="left" style="padding-left:5;padding-right:10">CheckInNo</th>
 			<th align="left" style="padding-left:5;padding-right:10">User</th>

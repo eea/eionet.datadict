@@ -186,45 +186,22 @@ private String legalizeAlert(String in){
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-            
-<div style="margin-left:30">
-
 	<%
 	String backURL = "" + "/m_attr_fields.jsp?attr_id=" + attr_id + "&attr_name=" + attr_name;
-	
 	%>
-		<form name="form1" method="post" action="m_attr_field.jsp">
+	<form name="form1" method="post" action="m_attr_field.jsp">
+  <div id="operations">
+    <ul>
+        <li class="help"><a target="_blank" href="help.jsp?screen=complex_attr_field&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+			<!-- li>
+					<a href="javascript:window.location.replace('<%=backURL%>')">&lt; back to allowable values list</a>
+			</li -->
+    </ul>
+  </div>
+
+	<h1>Field of <em><%=Util.replaceTags(attr_name)%></em> attribute</h1>
 			
 			<table width="auto" cellspacing="0" cellpadding="0">
-			
-			<!-- tr>
-				<td colspan="2">
-					<a href="javascript:window.location.replace('<%=backURL%>')">&lt; back to allowable values list</a>
-				</td>
-			</tr -->
-					
-			<tr style="height:20px;"><td colspan="2"></td></tr>
-			<tr valign="bottom">
-				<td colspan="2">
-					<span class="head00">Field of</span>
-					<span class="title2"><%=Util.replaceTags(attr_name)%></span>
-					<span class="head00"> attribute</span>
-				</td>
-			</tr>
-			
-			<tr style="height:20px;" valign="bottom">
-				<td valign="bottom" align="right" colspan="2">
-					<a target="_blank" href="help.jsp?screen=complex_attr_field&amp;area=pagehelp" onclick="pop(this.href);return false;">
-						<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-					</a>
-				</td>
-			</tr>
-			
-			<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&nbsp;</td></tr>
-			
 			<tr>				
 				<td align="right" style="padding-right:10" valign="top">
 					<b><font color="black">Field name</font></b>
@@ -314,10 +291,6 @@ private String legalizeAlert(String in){
 	<input type="hidden" name="attr_name" value="<%=Util.replaceTags(attr_name, true)%>"/>
 	
 	</form>
-</div>
-        </td>
-</tr>
-</table>
 </div>
 </body>
 </html>

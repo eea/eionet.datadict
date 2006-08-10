@@ -116,36 +116,21 @@ String disabled = user == null ? "disabled" : "";
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-           
-			<div style="margin-left:30">
-			
-			<form acceptcharset="UTF-8" id="form1" method="POST" action="fk_relation.jsp">
-			
-			<table width="560">
-				<tr>
-					<td>
-						This is the foreign key relation between elements
-						<font color="#006666"><%=Util.replaceTags((String)fkRel.get("a_name"))%></font> and
-						<font color="#006666"><%=Util.replaceTags((String)fkRel.get("b_name"))%></font>.<br/>
-						The relation is direction-less, so it doesn't matter which
-						exactly is A or B.
-					</td>
-				</tr>
+	<form id="form1" method="POST" action="fk_relation.jsp">
+	<div id="operations">
+		<ul>
+				<li class="help"><a target="_blank" href="help.jsp?screen=foreign_key_rel&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+		</ul>
+	</div>
+  <h1>Foreign key relation</h1> 
+	<p>
+		This is the foreign key relation between elements
+		<em><%=Util.replaceTags((String)fkRel.get("a_name"))%></em> and
+		<em><%=Util.replaceTags((String)fkRel.get("b_name"))%></em>.<br/>
+		The relation is direction-less, so it doesn't matter which
+		exactly is A or B.
+	</p>
 				
-				<tr><td style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&nbsp;</td></tr>
-				
-				<tr>
-					<td align="right">
-						<a target="_blank" href="help.jsp?screen=foreign_key_rel&area=pagehelp" onclick="pop(this.href);return false;">
-							<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-						</a>
-					</td>
-				</tr>
-				
-			</table>
 			
 			<table width="600" cellspacing="0"  cellpadding="0" border="0">
 			
@@ -227,10 +212,6 @@ String disabled = user == null ? "disabled" : "";
 	<input type="hidden" name="mode" value="<%=mode%>"/>
 	
 	</form>
-</div>
-</td>
-</tr>
-</table>
 </div>
 </body>
 </html>

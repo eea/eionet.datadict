@@ -188,26 +188,13 @@ private String legalizeAlert(String in){
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-            
-<div style="margin-left:30">
-
-<form name="form1" method="post" action="m_attr_fields.jsp">
-
-<table width="500">
-	<tr>
-		<td>
-			<span class="head00">Fields of <span class="title2" style="color:#006666;"><%=Util.replaceTags(attr_name)%></span></span>
-		</td>		
-		<td align="right">
-			<a target="_blank" href="help.jsp?screen=complex_attr_fields&amp;area=pagehelp" onclick="pop(this.href);return false;">
-				<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-			</a>
-		</td>
-	</tr>
-</table>
+	<form name="form1" method="post" action="m_attr_fields.jsp">
+		<div id="operations">
+			<ul>
+					<li class="help"><a target="_blank" href="help.jsp?screen=complex_attr_fields&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+			</ul>
+		</div>
+		<h1>Fields of <em><%=Util.replaceTags(attr_name)%></em></h1>
 
 <table width="auto">
 	<tr style="height:20px;"><td colspan="2"></td></tr>
@@ -361,10 +348,6 @@ private String legalizeAlert(String in){
 <input type="hidden" name="attr_name" value="<%=Util.replaceTags(attr_name, true)%>"/>
 <input type="hidden" name="changed" value="0"/>
 </form>
-</div>
-        </td>
-</tr>
-</table>
 </div>
 </body>
 </html>

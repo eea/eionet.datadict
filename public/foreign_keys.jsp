@@ -148,37 +148,18 @@ if (disabled.equals("")){
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<table border="0">
-    <tr valign="top">
-        <td>
-            
-<div style="margin-left:30">
-			
+
 <form acceptcharset="UTF-8" name="form1" method="POST" action="foreign_keys.jsp">
+  <div id="operations">
+    <ul>
+        <li class="help"><a target="_blank" href="help.jsp?screen=foreign_keys&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+    </ul>
+  </div>
 
-	<table width="500" cellspacing="0" cellpadding="0">
+	<h1>Foreign keys associated with
+	<em><a href="data_element.jsp?mode=edit&delem_id=<%=delemID%>"><%=Util.replaceTags(delemName)%></a></em>.
+</h1>
 
-		
-		<tr valign="bottom">
-			<td>
-				<font class="head00">Foreign keys associated with
-				<span class="title2"><a href="data_element.jsp?mode=edit&delem_id=<%=delemID%>"><%=Util.replaceTags(delemName)%></a></span>.
-			</td>
-			<td align="right">
-				<a target="_blank" href="help.jsp?screen=foreign_keys&area=pagehelp" onclick="pop(this.href);return false;">
-					<img src="images/pagehelp.jpg" border="0" alt="Get some help on this page" />
-				</a>
-			</td>
-		</tr>
-		
-		<tr height="5"><td colspan="2"></td></tr>
-		
-		<tr><td colspan="2" style="border-top-color:#008B8B;border-top-style:solid;border-top-width:1pt;">&#160;</td></tr>
-		
-		<tr height="5"><td colspan="2">&#160;</td></tr>
-		
-	</table>
-	
 	<table width="auto" cellspacing="0" cellpadding="0">
 	
 		<%
