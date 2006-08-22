@@ -137,19 +137,17 @@ String disabled = user == null ? "disabled" : "";
 			<tr height="10"><td colspan="2">&#160;</td></tr>
 			
 			<tr>
-				<td align="right" style="padding-right:10"><span class="mainfont"><b>Element A</b></span></td>
+				<th>Element A</th>
 				<td><em><%=Util.replaceTags((String)fkRel.get("a_name"))%></em></td>
 			</tr>
 			
 			<tr>
-				<td align="right" style="padding-right:10"><span class="mainfont"><b>Element B</b></span></td>
-				<td> <em><%=Util.replaceTags((String)fkRel.get("b_name"))%></em></td>
+				<th>Element B</th>
+				<td><em><%=Util.replaceTags((String)fkRel.get("b_name"))%></em></td>
 			</tr>
 			
 			<tr>
-				<td align="right" style="padding-right:10">
-					<span class="mainfont"><b>Cardinality (A to B)</b></span>
-				</td>
+				<th>Cardinality (A to B)</th>
 				<td>
 					<%
 					Vector cardins = new Vector();
@@ -185,10 +183,10 @@ String disabled = user == null ? "disabled" : "";
 			</tr>
 			
 			<tr>	
-				<td align="right" style="padding-right:10">
+				<th>
 					<a href="javascript:alert('Description of this relation')"><span class="help">?</span></a>&#160;
-					<span class="mainfont"><b>Description</b></span>
-				</td>
+					Description
+				</th>
 				<td>
 					<textarea <%=disabled%>
 							  class="small"
