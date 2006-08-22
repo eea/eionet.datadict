@@ -267,6 +267,22 @@ finally {
 							%>
 						</td>
 					</tr>
+					<tr>
+						<td>
+							<label for="reg_status"><strong>Registration Status:</strong></label>
+						</td>
+						<td>
+							<select name="reg_status" id="reg_status">
+								<option value="_none_">-- none --</option>
+								<option value="_all_">-- All --</option>
+								<option value="Recorded">Recorded</option>
+								<option value="Qualified">Qualified</option>
+								<option value="Released">Released</option>
+								<option value="Incomplete">Incomplete</option>
+								<option value="Candidate">Candidate</option>
+							</select>
+						</td>
+					</tr>
 
 				</table>
 				<br/>
