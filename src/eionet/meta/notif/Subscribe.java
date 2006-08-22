@@ -27,7 +27,8 @@ public class Subscribe extends HttpServlet{
 	public static final String PROP_UNS_EVENTTYPE_PREDICATE = "uns.eventtype.predicate";
 	public static final String PROP_UNS_DATASET_PREDICATE = "uns.dataset.predicate";
 	public static final String PROP_UNS_TABLE_PREDICATE = "uns.table.predicate";
-	public static final String PROP_UNS_COMMONELEM_PREDICATE = "uns.commonelem.predicate";	
+	public static final String PROP_UNS_COMMONELEM_PREDICATE = "uns.commonelem.predicate";
+    public static final String PROP_UNS_REGSTATUS_PREDICATE = "uns.definition-status.predicate";
 	public static final String PROP_UNS_XMLRPC_SERVER_URL = "uns.xml.rpc.server.url";
 	public static final String PROP_UNS_CHANNEL_NAME = "uns.channel.name";
 	public static final String PROP_UNS_SUBSCRIPTIONS_URL = "uns.subscriptions.url";
@@ -38,6 +39,7 @@ public class Subscribe extends HttpServlet{
 	public static final String DATASET_CHANGED_EVENT = "Dataset changed";
 	public static final String TABLE_CHANGED_EVENT = "Table changed";
 	public static final String COMMON_ELEMENT_CHANGED_EVENT = "Common element changed";
+    public static final String REGSTATUS_CHANGED_EVENT = "";
 	
 	public static final String NEW_DATASET_EVENT = "New dataset";
 	public static final String NEW_TABLE_EVENT = "New table";
@@ -80,7 +82,7 @@ public class Subscribe extends HttpServlet{
         try {
         	// make sure SUCCESS flag is cleared from session,
         	// even though it is a responsibility of the one who checks the flag
-	        req.getSession().removeAttribute("SUCCESS");
+	        req.getSession().removeAttribute("SUCCESS"); 
 	        
 	        // get user object from session
 			AppUserIF user = SecurityUtil.getUser(req);
@@ -125,7 +127,9 @@ public class Subscribe extends HttpServlet{
 					String parValue = req.getParameter(parName);
 					if (parValue!=null && !parValue.equals("_none_")){
 						filter = new Hashtable();
-						filter.put(predEventType, event);
+                        if(parName != null && !parName.equals("reg_status")){
+                            filter.put(predEventType, event);
+                        }
 						if (!parValue.equals("_all_")){
 							filter.put(pred, parValue);
 						}
@@ -184,11 +188,13 @@ public class Subscribe extends HttpServlet{
     		predsMap.put("dataset", Props.getProperty(PROP_UNS_DATASET_PREDICATE));
     		predsMap.put("table", Props.getProperty(PROP_UNS_TABLE_PREDICATE));
     		predsMap.put("common_element", Props.getProperty(PROP_UNS_COMMONELEM_PREDICATE));
+            predsMap.put("reg_status", Props.getProperty(PROP_UNS_REGSTATUS_PREDICATE));
 
     		eventsMap = new Hashtable();
     		eventsMap.put("dataset", DATASET_CHANGED_EVENT);
     		eventsMap.put("table", TABLE_CHANGED_EVENT);
     		eventsMap.put("common_element", COMMON_ELEMENT_CHANGED_EVENT);
+            eventsMap.put("reg_status", REGSTATUS_CHANGED_EVENT);
     		
     		unsUsername = Props.getProperty(PROP_UNS_USERNAME);
 			unsPassword = Props.getProperty(PROP_UNS_PASSWORD);
