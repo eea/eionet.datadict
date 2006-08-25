@@ -32,6 +32,11 @@
 	float:right
 }
 
+.eionetaccronym {
+	font-variant: small-caps;
+	text-transform:uppercase;
+}
+
 .sitetitle {
 	color: #006666;
 	font-size: 14pt;
