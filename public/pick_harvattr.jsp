@@ -36,7 +36,7 @@
 		
 		if (user==null || !user.isAuthentic()){
 			%>
-  				<html>
+  				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
   				<body>
   					<h1>Error</h1><b>Not authorized to post any data!</b>
   				</body>
@@ -56,7 +56,7 @@
 			}
 			catch (Exception e){
 				%>
-				<html><body><b><%=e.toString()%></b></body></html>
+				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><body><b><%=e.toString()%></b></body></html>
 				<%
 				return;
 			}
@@ -67,7 +67,7 @@
 		}
 		
 		%>
-		<html>
+		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 			<head>
 				<script language="javascript">
 				// <![CDATA[
@@ -102,7 +102,7 @@
 	HashSet added = searchEngine.getHarvestedAttrIDs(attr_id, parent_id, parent_type);
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 	<head>
 		<%@ include file="headerinfo.txt" %>
 		<title>Meta</title>

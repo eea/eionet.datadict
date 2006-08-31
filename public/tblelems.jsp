@@ -10,7 +10,7 @@
 <%!
 
 private String getAttributeIdByName(String name){
-	
+
 
 		for (int i=0; i<mAttributes.size(); i++){
 		DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
@@ -21,7 +21,7 @@ private String getAttributeIdByName(String name){
     return null;
 }
 private String getAttributeValue(DataElement elem, String name){
-	
+
 	String id = getAttributeIdByName(name);
 	if (elem == null) return null;
 	DElemAttribute attr = elem.getAttributeById(id);
@@ -60,7 +60,7 @@ AppUserIF user = SecurityUtil.getUser(request);
 if (request.getMethod().equals("POST")){
 	if (user == null){
 		%>
-			<html>
+			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 			<body>
 				<h1>Error</h1><b>Not authorized to post any data!</b>
 			</body>
@@ -125,7 +125,7 @@ if (request.getMethod().equals("POST")){
 			if (tblHandler!=null) tblHandler.cleanup();
 			if (elmHandler!=null) elmHandler.cleanup();
 			%>
-			<html><body><b><%=e.toString()%></b></body></html> <%
+			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><body><b><%=e.toString()%></b></body></html> <%
 			return;
 		}
 	}
@@ -204,7 +204,7 @@ int colCount = hasGIS ? 5 : 4;
 	
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
 	<title>Meta</title>

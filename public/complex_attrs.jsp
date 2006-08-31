@@ -45,7 +45,7 @@ private String legalizeAlert(String in){
 			if (request.getMethod().equals("POST")){
       			if (user == null){
 	      			%>
-	      				<html>
+	      				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 	      				<body>
 	      					<h1>Error</h1><p>Not authorized to post any data!</p>
 	      				</body>
@@ -95,7 +95,7 @@ private String legalizeAlert(String in){
 					}
 					catch (Exception e){
 						%>
-						<html><body><b><%=e.toString()%></b></body></html>
+						<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><body><b><%=e.toString()%></b></body></html>
 						<%
 						return;
 					}
@@ -159,7 +159,7 @@ private String legalizeAlert(String in){
 			
 			%>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
 	<title>Complex attributes</title>
@@ -400,7 +400,7 @@ private String legalizeAlert(String in){
 								//System.out.println("=================================================");
 								//System.out.println("enne: " + fieldValue);
 								fieldValue = Util.replaceTags(fieldValue);
-								//System.out.println("pärast: " + fieldValue);
+								//System.out.println("pÃ¤rast: " + fieldValue);
 								%>
 								<td class="small" style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=Util.replaceTags(fieldValue)%></td>
 								<%

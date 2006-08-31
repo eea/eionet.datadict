@@ -10,7 +10,7 @@ if (dstID==null || dstID.length()==0) throw new ServletException("Dataset ID is 
 String idf = request.getParameter("idf");
 if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier is missing!");
 %>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
 	<title>Data Dictionary</title>

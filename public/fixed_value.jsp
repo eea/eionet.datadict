@@ -79,7 +79,7 @@ if (request.getMethod().equals("POST")){
 		}
 		catch (Exception e){
 			%>
-			<html><body>
+			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><body>
 				<b><%=e.toString()%></b><br/>
 				<a href="javascript:window.location.replace('<%=currentUrl%>')">< back</a>
 				
@@ -166,7 +166,7 @@ try { // start the whole page try block
 	}
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
 	<title>Data Dictionary - Fixed value</title>

@@ -122,7 +122,7 @@ private String setDefaultAttrs(String name){
 
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
 	<title>Search tables - Data Dictionary</title>

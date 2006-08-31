@@ -50,7 +50,7 @@ private String legalizeAlert(String in){
 			if (request.getMethod().equals("POST")){
       			if (user == null){
 	      			%>
-	      				<html>
+	      				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 	      				<body class="popup">
                                         <div class="error">
 	      					<h1>Error</h1>
@@ -127,7 +127,7 @@ private String legalizeAlert(String in){
 					}
 					catch (Exception e){
 						%>
-						<html><body class="popup"><h1>Error</h1><p><%=e.toString()%></p></body></html>
+						<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><body class="popup"><h1>Error</h1><p><%=e.toString()%></p></body></html>
 						<%
 						return;
 					}
@@ -173,7 +173,7 @@ private String legalizeAlert(String in){
 			boolean isWorkingCopy = _type==null ? true : searchEngine.isWorkingCopy(parent_id, _type);
 			%>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 	<head>
 		<%@ include file="headerinfo.txt" %>
 		<title>Complex attribute</title>

@@ -126,7 +126,7 @@
 	boolean wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;	
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
 	<title>Tables - Data Dictionary</title>

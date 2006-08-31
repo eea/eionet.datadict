@@ -10,7 +10,7 @@
 	session.setAttribute("imgattr_qrystr", request.getQueryString());
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
 	<title>Data Dictionary</title>
@@ -86,7 +86,7 @@ String appName = ctx.getInitParameter("application-name");
 if (request.getMethod().equals("POST")){
 	if (user == null){
 		%>
-			<html>
+			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 			<body>
 				<h1>Error</h1><b>Not authorized to post any data!</b>
 			</body>
