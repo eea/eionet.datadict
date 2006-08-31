@@ -444,7 +444,7 @@ private String legalizeAlert(String in){
 <input type="hidden" name="changed" value="0"/>
 
 </form>
-</div>
+</div> <!-- workarea -->
       <jsp:include page="footer.jsp" flush="true">
       </jsp:include>
 </body>

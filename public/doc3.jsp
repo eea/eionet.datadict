@@ -24,7 +24,7 @@
 				<%=Helps.get("doc3", "text")%>
 		</div>				
   </div>				
-</div>
+</div> <!-- workarea -->
 				<jsp:include page="footer.jsp" flush="true">
 				</jsp:include>
 								

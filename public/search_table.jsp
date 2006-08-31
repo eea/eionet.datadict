@@ -416,7 +416,7 @@ else { %>
 				<!-- collect all the attributes already used in criterias -->
 				<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
 				</form>
-			</div>
+			</div> <!-- workarea -->
       <jsp:include page="footer.jsp" flush="true">
       </jsp:include>
 </body>

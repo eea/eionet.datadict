@@ -2605,6 +2605,7 @@ else{
 				
 			</form>
 			</div>
+			</div> <!-- workarea -->
 			
 			<%
 			if (!popup){ %>
@@ -2613,7 +2614,6 @@ else{
 			}
 			%>
 			
-			</div>
 
 </body>
 </html>

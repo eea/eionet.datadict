@@ -454,7 +454,7 @@
 			<input name='SearchType' type='hidden' value='NoSearch'/>
 		</form>
 		
-			</div>
+			</div> <!-- workarea -->
       <jsp:include page="footer.jsp" flush="true">
       </jsp:include>
 	</body>

@@ -146,7 +146,7 @@ finally{
 					} // end of excpetions if/else
 					%>
 								
-				</div>
+				</div> <!-- workarea -->
 
 						<jsp:include page="footer.jsp" flush="true">
 						</jsp:include>

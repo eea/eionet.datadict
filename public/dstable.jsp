@@ -1924,7 +1924,7 @@ if (dataset!=null && dataset.getShortName()!=null)
 				
 			</form>
 			</div>
-			</div>			
+			</div>			 <!-- workarea -->
 			
 			<jsp:include page="footer.jsp" flush="true">
 			</jsp:include>

@@ -381,7 +381,7 @@ try { // start the whole page try block
 	<input type="hidden" name="parent_type" value="<%=Util.replaceTags(valsType, true)%>"/>
 	
 	</form>
-</div>
+</div> <!-- workarea -->
       <jsp:include page="footer.jsp" flush="true">
       </jsp:include>
 </body>

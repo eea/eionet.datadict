@@ -1209,7 +1209,7 @@
 		<input type="hidden" name="ns" value="basens" />
 		
 	</form>
-</div>
+</div> <!-- workarea -->
 			<jsp:include page="footer.jsp" flush="true">
 			</jsp:include>
 </body>
