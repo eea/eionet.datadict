@@ -1,18 +1,8 @@
 <%@page import="java.util.*"%>
 <div id="pagehead">
-<form action="http://search.eionet.europa.eu/search" method="get">
-<input onfocus="if(this.value=='Search DD')this.value='';"
-       onblur="if(this.value=='')this.value='Search DD';"
-       title="Search Eionet sites with Google"
-       value="Search DD" size="10" type="text" name="q"/>
-<input value="Eionet" name="client" type="hidden"/>
-<input value="Eionet" name="site" type="hidden"/>
-<input value="UTF-8" name="ie" type="hidden"/>
-<input value="UTF-8" name="oe" type="hidden"/>
-<input value="xml_no_dtd" name="output" type="hidden"/>
-<input value="Eionet" name="proxystylesheet" type="hidden"/>
-<input value="dd.eionet.europa.eu" name="domains" type="hidden"/>
-<input value="dd.eionet.europa.eu" name="as_sitesearch" type="hidden"/>
+<form action="http://search.eionet.europa.eu/search.jsp" method="get">
+<input onfocus="if(this.value=='Search DD')this.value='';" onblur="if(this.value=='')this.value='Search DD';" title="Search Eionet sites with Nutch" value="Search DD" size="10" type="text" name="query"/>
+<input value="dd.eionet.europa.eu" name="qp_site" type="hidden"/>
 </form>
  <div id="identification">
   <a href="/"><img src="images/logo.png" alt="Logo" id="logo" border="0" /></a>
