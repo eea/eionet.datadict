@@ -93,6 +93,8 @@ public class ElmSchema extends Schema {
         
         if (dataType != null){
             
+            if (dataType.equalsIgnoreCase("float") || dataType.equalsIgnoreCase("double"))
+                dataType = "decimal";
             addString("\t\t");
             addString("<xs:restriction base=\"xs:");
             addString(dataType);
