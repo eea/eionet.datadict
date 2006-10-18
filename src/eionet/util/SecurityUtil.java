@@ -36,7 +36,7 @@ import java.util.*;
  */
 public class SecurityUtil {
     
-    private static final String REMOTEUSER = "eionet.util.SecurityUtil.user";
+    public static final String REMOTEUSER = "eionet.util.SecurityUtil.user";
     
     /**
     * Returns current user, or 'null', if the current session

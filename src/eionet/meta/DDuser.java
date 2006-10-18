@@ -43,17 +43,17 @@ public class DDuser implements AppUserIF {
     public static final String ACL_UPDATE_PRM   = "u";
     public static final String ACL_SERVICE_NAME = "/";
     
-	private static final String MAGIC_PASSWORD = "mi6";
+	protected static final String MAGIC_PASSWORD = "mi6";
     
-    private boolean authented = false;
-    private String user = null;
-    private String password = null;
-    private DBPoolIF dbPool = null;
-    private String fullName = null;
+    protected boolean authented = false;
+    protected String user = null;
+    protected String password = null;
+    protected DBPoolIF dbPool = null;
+    protected String fullName = null;
        
-    private String[] _roles = null;
+    protected String[] _roles = null;
     
-    private HashMap acls = null;
+    protected HashMap acls = null;
        
     public DDuser() {
         dbPool = XDBApplication.getDBPool();

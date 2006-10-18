@@ -1,5 +1,5 @@
 <%@page import="com.tee.uit.security.AccessController, com.tee.uit.security.AccessControlListIF, eionet.util.SecurityUtil,com.tee.xmlserver.AppUserIF"%>
-
+<%@ page import="eionet.meta.filters.EionetCASFilter" %>
 <%
 AppUserIF _user = SecurityUtil.getUser(request);
 %>
@@ -24,7 +24,7 @@ AppUserIF _user = SecurityUtil.getUser(request);
 			%>
 	<h2>Not logged in</h2>
     <ul>
-			<li><a href="javascript:login()">Login</a></li>
+			<li><a href="<%=EionetCASFilter.getCASLoginURL(request)%>">Login</a></li>
 			<%
 		}
 		if (_user!=null && _user.isAuthentic()){

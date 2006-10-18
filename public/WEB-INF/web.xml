@@ -30,13 +30,80 @@
 
 	<context-param>
 		<param-name>authenticator</param-name>
-		<param-value>eionet.meta.DDuser</param-value>
+		<param-value>eionet.meta.DDCASuser</param-value>
 	</context-param>
 
 	<context-param>
 		<param-name>login-error-page</param-name>
 		<param-value>error.html</param-value>
 	</context-param>
+
+
+<!-- filters -->
+	<filter>
+	    <filter-name>CAS Filter</filter-name>
+	    <filter-class>eionet.meta.filters.EionetCASFilter</filter-class>
+	    <init-param>
+	      <param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
+	      <param-value>https://localhost:8443/cas/login</param-value>
+	    </init-param>
+	    <init-param>
+	      <param-name>edu.yale.its.tp.cas.client.filter.validateUrl</param-name>
+	      <param-value>https://localhost:8443/cas/serviceValidate</param-value>
+	    </init-param>
+	    <init-param>
+	      <param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
+	      <param-value>localhost:8083</param-value>
+	    </init-param>
+	   <init-param>
+	      <param-name>edu.yale.its.tp.cas.client.filter.wrapRequest</param-name>
+	      <param-value>true</param-value>
+	    </init-param>
+	    <init-param>
+	      <param-name>eionetLoginCookieDomain</param-name>
+	      <param-value>localhost</param-value>
+	    </init-param>	    
+	</filter>
+	<filter>
+	    <filter-name>Browser cache controller</filter-name>
+	    <filter-class>eionet.meta.filters.BrowserCacheController</filter-class>
+	    <init-param>
+	      <param-name>disableBrowserCache</param-name>
+	      <param-value>true</param-value>
+	    </init-param>
+	</filter>
+
+	<!-- Filter Mappings -->
+	<filter-mapping>
+    	<filter-name>Browser cache controller</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+  	</filter-mapping>	
+
+
+	<filter-mapping>
+    	<filter-name>CAS Filter</filter-name>
+		<url-pattern>/login</url-pattern>
+  	</filter-mapping>
+	<filter-mapping>
+    	<filter-name>CAS Filter</filter-name>
+		<url-pattern>/eionetCookieLogin/*</url-pattern>		
+  	</filter-mapping>
+	<filter-mapping>
+    	<filter-name>CAS Filter</filter-name>
+		<url-pattern>/attributes.jsp</url-pattern>		
+  	</filter-mapping>
+	<filter-mapping>
+    	<filter-name>CAS Filter</filter-name>
+		<url-pattern>/subscribe.jsp</url-pattern>		
+  	</filter-mapping>
+	<filter-mapping>
+    	<filter-name>CAS Filter</filter-name>
+		<url-pattern>/import.jsp</url-pattern>		
+  	</filter-mapping>
+	<filter-mapping>
+    	<filter-name>CAS Filter</filter-name>
+		<url-pattern>/clean.jsp</url-pattern>		
+  	</filter-mapping>
 
 <!-- servlets -->
 

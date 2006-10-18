@@ -124,7 +124,7 @@ private String setDefaultAttrs(String name){
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-	<%@ include file="headerinfo.txt" %>
+	<%@ include file="headerinfo.jsp" %>
 	<title>Search tables - Data Dictionary</title>
 	<script type="text/javascript" language="javascript">
 	// <![CDATA[
@@ -417,8 +417,7 @@ else { %>
 				<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
 				</form>
 			</div> <!-- workarea -->
-      <jsp:include page="footer.jsp" flush="true">
-      </jsp:include>
+      <jsp:include page="footer.jsp" flush="true"></jsp:include>
 </body>
 </html>
 

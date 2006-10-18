@@ -70,7 +70,7 @@ ServletContext ctx = null;
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-	<%@ include file="headerinfo.txt" %>
+	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary</title>
 	<script language="javascript" src='script.js' type="text/javascript"></script>
 	<script language="javascript" type="text/javascript">

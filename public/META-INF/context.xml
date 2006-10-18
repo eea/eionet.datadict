@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context path="/DataDictionary" docBase="DataDictionary" debug="5"
+	reloadable="true" crossContext="true">
+	<Logger className="org.apache.catalina.logger.FileLogger"
+		prefix="dd." suffix=".log" timestamp="true" />
+
+	<Resource auth='Container' name='jdbc/datadict'
+		type='javax.sql.DataSource' />
+	<ResourceParams name='jdbc/datadict'>
+		<parameter>
+			<name>factory</name>
+			<value>
+				org.apache.commons.dbcp.BasicDataSourceFactory
+			</value>
+		</parameter>
+		<parameter>
+			<name>maxActive</name>
+			<value>100</value>
+		</parameter>
+		<parameter>
+			<name>maxIdle</name>
+			<value>30</value>
+		</parameter>
+		<parameter>
+			<name>maxWait</name>
+			<value>10000</value>
+		</parameter>
+		<parameter>
+			<name>username</name>
+			<value>dd_developer</value>
+		</parameter>
+		<parameter>
+			<name>password</name>
+			<value>reportnet</value>
+		</parameter>
+		<parameter>
+			<name>driverClassName</name>
+			<value>com.mysql.jdbc.Driver</value>
+		</parameter>
+		<parameter>
+			<name>url</name>
+			<value>jdbc:mysql://192.168.0.90:3306/DataDict?autoReconnect=true</value>
+		</parameter>
+	</ResourceParams>
+</Context>

@@ -4,7 +4,6 @@
 <%@ include file="history.jsp" %>
 
 <%
-
 request.setCharacterEncoding("UTF-8");
 
 Connection conn = null;
@@ -64,14 +63,14 @@ finally{
 %>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-	<%@ include file="headerinfo.txt" %>
+	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary</title>
 </head>
 <body>
                	<% if (page_name == null){%>
-	                <jsp:include page="nlocation.jsp" flush='true'/>
+	                <jsp:include page="nlocation.jsp" flush='false'/>
            		<%} else{ %>
-	                <jsp:include page="nlocation.jsp" flush='true'>
+	                <jsp:include page="nlocation.jsp" flush='false'>
             			<jsp:param name="name" value="<%=page_name%>"/>
             			<jsp:param name="back" value="true"/>
 		            </jsp:include>
@@ -107,8 +106,7 @@ finally{
 									
 										<!-- released data definitions part -->
 										
-					                    		<jsp:include page="released_datasets.jsp" flush="true">
-				                    			</jsp:include>
+					                    		<jsp:include page="released_datasets.jsp" flush="true"></jsp:include>
 									</div>
 					                	
 									<table id="boxes">
@@ -116,7 +114,7 @@ finally{
 					                	
 					                		<!-- the login part -->
 																<td class="box">
-																	<jsp:include page="protarea.jsp" flush="true"></jsp:include>
+																	<!--<jsp:include page="protarea.jsp" flush="true"></jsp:include>-->
 					                  		</td>
 					                  		
 					                  		<!-- the support part -->
@@ -148,7 +146,6 @@ finally{
 								
 				</div> <!-- workarea -->
 
-						<jsp:include page="footer.jsp" flush="true">
-						</jsp:include>
+						<jsp:include page="footer.jsp" flush="true"></jsp:include>
 </body>
 </html>

@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@ page import="eionet.meta.filters.EionetCASFilter" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!
@@ -45,15 +46,18 @@ Vector commonElements=null;
 			elements = searchEngine.getDataElements(null, null, null, null, null, null, true);
 			commonElements = searchEngine.getCommonElements(null, null, null, null, true, "=");
 		}
-		else
+		else{
 			request.getRequestDispatcher("Logout").forward(request,response);
+			return;
+		}
+			
 			
 
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-	<%@ include file="headerinfo.txt" %>
+	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary - Logging out</title>
 </head>
 <body>

@@ -269,7 +269,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-		<%@ include file="headerinfo.txt" %>
+		<%@ include file="headerinfo.jsp" %>
     <title>Datasets - Data Dictionary</title>
     <script type="text/javascript" src='modal_dialog.js'></script>
     <script type="text/javascript" language="javascript">
@@ -884,8 +884,7 @@
 		
 			</div> <!-- workarea -->
 			
-			<jsp:include page="footer.jsp" flush="true">
-			</jsp:include>
+			<jsp:include page="footer.jsp" flush="true"></jsp:include>
 			
 </body>
 </html>

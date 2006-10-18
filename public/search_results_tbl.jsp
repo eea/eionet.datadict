@@ -128,7 +128,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-	<%@ include file="headerinfo.txt" %>
+	<%@ include file="headerinfo.jsp" %>
 	<title>Tables - Data Dictionary</title>
 	<script type="text/javascript" language="javascript">
 	// <![CDATA[
@@ -455,8 +455,7 @@
 		</form>
 		
 			</div> <!-- workarea -->
-      <jsp:include page="footer.jsp" flush="true">
-      </jsp:include>
+      <jsp:include page="footer.jsp" flush="true"></jsp:include>
 	</body>
 </html>
 

@@ -175,7 +175,7 @@ private String legalizeAlert(String in){
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 	<head>
-		<%@ include file="headerinfo.txt" %>
+		<%@ include file="headerinfo.jsp" %>
 		<title>Complex attribute</title>
 	    <script type="text/javascript" src="script.js"></script>
 	<script type="text/javascript">

@@ -94,7 +94,7 @@ if (disabled.equals("")){
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-	<%@ include file="headerinfo.txt" %>
+	<%@ include file="headerinfo.jsp" %>
 	<title>Meta</title>
 </head>
 
@@ -239,6 +239,7 @@ if (disabled.equals("")){
 		
 </form>
 </div>
+<jsp:include page="footer.jsp" flush="true"></jsp:include>
 </body>
 </html>
 

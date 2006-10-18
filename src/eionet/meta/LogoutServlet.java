@@ -7,6 +7,7 @@ import javax.servlet.http.*;
 import com.tee.xmlserver.*;
 
 import eionet.util.SecurityUtil;
+import eionet.meta.filters.EionetCASFilter;
 
 /**
  * Simple servlet to handle logout form submit.
@@ -32,6 +33,9 @@ public class LogoutServlet extends HttpServlet {
         if (user != null)
             SecurityUtil.freeSession(req);
         
-        res.sendRedirect("index.jsp");
+        //res.sendRedirect("index.jsp");
+		EionetCASFilter.attachEionetLoginCookie(res,false);
+		res.sendRedirect(EionetCASFilter.getCASLogoutURL(req));
+        
     }
 }
