@@ -1,5 +1,5 @@
 <!-- START OF DATADICTIONARY -->
-	    <Host name="dd.eionet.eu.int"
+	    <Host name="dd.eionet.europa.eu"
 		debug="0" appBase="/prj/datadict" 
 		unpackWARs="true">
 		<Context path='' docBase='/prj/datadict/public' debug='0'

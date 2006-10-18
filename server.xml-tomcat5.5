@@ -1,0 +1,24 @@
+<!-- START OF DATADICTIONARY -->
+	    <Host name="dd.eionet.europa.eu"
+		debug="0" appBase="/prj/datadict" 
+		unpackWARs="true">
+		<Context path='' docBase='/prj/datadict/public' debug='0'
+			reloadable='true' crossContext='true'>
+
+		    <Logger className="org.apache.catalina.logger.FileLogger"
+			timestamp="true" suffix=".txt" prefix="dd." />
+
+		    <Resource auth='Container' name='jdbc/datadict' type='javax.sql.DataSource'
+			driverClassName="com.mysql.jdbc.Driver" 
+			username="user_here"
+			password="password_here"
+			maxIdle="30"
+			maxActive="100"
+			maxWait="10000"
+			logAbandoned="true"
+			removeAbandoned="true"
+			removeAbandonedTimeout="60"
+			url="jdbc:mysql:///DataDict?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+		</Context>
+	    </Host>
+<!-- END OF DATADICTIONARY -->
