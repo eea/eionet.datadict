@@ -45,15 +45,15 @@
 	    <filter-class>eionet.meta.filters.EionetCASFilter</filter-class>
 	    <init-param>
 	      <param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
-	      <param-value>https://localhost:8443/cas/login</param-value>
+	      <param-value>https://sso.eionet.europa.eu/login</param-value>
 	    </init-param>
 	    <init-param>
 	      <param-name>edu.yale.its.tp.cas.client.filter.validateUrl</param-name>
-	      <param-value>https://localhost:8443/cas/serviceValidate</param-value>
+	      <param-value>https://sso.eionet.europa.eu/serviceValidate</param-value>
 	    </init-param>
 	    <init-param>
 	      <param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
-	      <param-value>localhost:8083</param-value>
+	      <param-value>dd.eionet.europa.eu</param-value>
 	    </init-param>
 	   <init-param>
 	      <param-name>edu.yale.its.tp.cas.client.filter.wrapRequest</param-name>
@@ -61,7 +61,7 @@
 	    </init-param>
 	    <init-param>
 	      <param-name>eionetLoginCookieDomain</param-name>
-	      <param-value>localhost</param-value>
+	      <param-value>eionet.europa.eu</param-value>
 	    </init-param>	    
 	</filter>
 	<filter>
