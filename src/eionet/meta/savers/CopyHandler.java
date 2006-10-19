@@ -63,36 +63,100 @@ public class CopyHandler extends Object {
         if (dstGen==null) return null;
         srcConstraint = srcConstraint==null ? "" : " where " + srcConstraint;
 
+        String tableName = dstGen.getTableName();
+        Vector colNames = getTableColumnNames(tableName);
+        if (colNames==null || colNames.size()==0)
+        	throw new SQLException("Failed to retreive any column names of this table: " + tableName);
+        
         String q = "select * from " + dstGen.getTableName() + srcConstraint;
 
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(q);
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int colCount = rsmd.getColumnCount();
-
-        while (rs.next()){
-            SQLGenerator gen = (SQLGenerator)dstGen.clone();
-            for (int i=1; i<=colCount; i++){
-                String colName = rsmd.getColumnName(i);
-                String colValue = rs.getString(i);
-                if ((dstGen.getFieldValue(colName))==null){
-                    if (colValue!=null)
-                        gen.setField(colName, colValue);
-                }
-                else if (!includeDstGenFields){
-                    if(dstGen.getFieldValue(colName).equals(""))
-                        gen.removeField(colName);
-                }
-            }
-
-            log(gen.insertStatement());
-            stmt.executeUpdate(gen.insertStatement());
+        Statement stmt = null;
+        Statement stmt1 = null;
+        ResultSet rs = null;
+        try{
+        	stmt = conn.createStatement();
+        	rs = stmt.executeQuery(q);
+	        while (rs.next()){
+	            SQLGenerator gen = (SQLGenerator)dstGen.clone();
+	            for (int i=0; i<colNames.size(); i++){
+	                String colName = (String)colNames.get(i);
+	                String colValue = rs.getString(colName);
+	                if ((dstGen.getFieldValue(colName))==null){
+	                    if (colValue!=null)
+	                        gen.setField(colName, colValue);
+	                }
+	                else if (!includeDstGenFields){
+	                    if(dstGen.getFieldValue(colName).equals(""))
+	                        gen.removeField(colName);
+	                }
+	            }
+	            log(gen.insertStatement());
+	            
+	            if (stmt1==null)
+	            	stmt1 = conn.createStatement();
+	            stmt1.executeUpdate(gen.insertStatement());
+	        }
+        }
+        finally{
+        	try{
+	        	if (rs!=null) rs.close();
+	        	if (stmt!=null) stmt.close();
+	        	if (stmt1!=null) stmt1.close();
+        	}
+        	catch (Exception e){}
         }
 
         if (includeDstGenFields)
             return null;
         else
             return searchEngine.getLastInsertID();
+    }
+
+    /**
+     * 
+     * @param tableName
+     * @return
+     * @throws SQLException 
+     */
+    private Vector getTableColumnNames(String tableName) throws SQLException{
+    	
+    	Vector result = new Vector();
+    	if (tableName==null || tableName.length()==0)
+    		return result;
+    	
+    	StringBuffer buf = new StringBuffer("select * from ");
+    	buf.append(tableName);
+    	buf.append(" limit 0,1");
+    	
+    	int colCount = 0;
+    	Statement stmt = null;
+    	ResultSet rs = null;
+    	ResultSetMetaData rsmd = null;
+    	try{
+    		stmt = conn.createStatement();
+    		rs = stmt.executeQuery(buf.toString());
+    		rsmd = rs.getMetaData();
+    		if (rsmd!=null){
+    			colCount = rsmd.getColumnCount();
+    			for (int i=1; colCount>0 && i<=colCount; i++){
+	                String colName = rsmd.getColumnName(i);
+	                if (colName!=null && colName.length()>0)
+	                	result.add(colName);
+    			}
+    		}
+    	}
+    	finally{
+    		try{
+	        	if (rs!=null) rs.close();
+	        	if (stmt!=null) stmt.close();
+        	}
+        	catch (Exception e){}
+    	}
+    	
+    	if (result.size()<colCount)
+    		throw new SQLException("Failed to retreive names of all columns of this table: " + tableName);
+    	
+    	return result;
     }
 
     public String copy(String srcElemID, boolean tbl2elem)
