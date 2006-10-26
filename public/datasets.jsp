@@ -609,24 +609,26 @@
 					<tr valign="top" class="<%=zebraClass%>">
 						<%
 						if (delPrm){
-							%>
-							<td align="right">
-								<%
-		    					if (topWorkingUser!=null){ // mark checked-out datasets
-			    					%> <font title="<%=Util.replaceTags(topWorkingUser,true)%>" color="red">*</font> <%
-		    					}
-		    					else if (canDelete){ %>
-									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" <%=Util.replaceTags(alertReleased)%>/>
-									<input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=dataset.getIdentifier()%>"/>
-									<%
-								}
-								else{ %>
-									&nbsp;<%
-								}
+							if (userHasEditRights){
 								%>
-							</td><%
+								<td align="right">
+									<%
+			    					if (topWorkingUser!=null){ // mark checked-out datasets
+				    					%> <font title="<%=Util.replaceTags(topWorkingUser,true)%>" color="red">*</font> <%
+			    					}
+			    					else if (canDelete){ %>
+										<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" <%=Util.replaceTags(alertReleased)%>/>
+										<input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=dataset.getIdentifier()%>"/>
+										<%
+									}
+									else{ %>
+										&nbsp;<%
+									}
+									%>
+								</td><%
+							}
 						}
-						else if (user!=null){
+						else if (user!=null && userHasEditRights){
 							%>
 							<td align="right">&nbsp;</td>
 							<%
