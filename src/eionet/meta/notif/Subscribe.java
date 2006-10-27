@@ -34,6 +34,8 @@ public class Subscribe extends HttpServlet{
 	public static final String PROP_UNS_SUBSCRIPTIONS_URL = "uns.subscriptions.url";
 	public static final String PROP_UNS_USERNAME = "uns.username";
 	public static final String PROP_UNS_PASSWORD = "uns.password";
+	public static final String PROP_UNS_SUBSCRIBE_FUNC = "uns.make.subsription.function";
+	public static final String PROP_UNS_SEND_NOTIFICATION_FUNC = "uns.send.notification.function";
 	
 	/** */
 	public static final String DATASET_CHANGED_EVENT = "Dataset changed";
@@ -52,6 +54,8 @@ public class Subscribe extends HttpServlet{
 	
 	private static String unsUsername = null;
 	private static String unsPassword = null;
+
+	private static String unsMakeSubscriptionFunction = null;
 	
     private static Hashtable predsMap = null;
     private static Hashtable eventsMap = null;
@@ -155,7 +159,7 @@ public class Subscribe extends HttpServlet{
 	            params.add(username);
 	            params.add(filters);            
 	            String makeSubscription =
-	            (String) server.execute("makeSubscription", params);
+	            (String) server.execute(unsMakeSubscriptionFunction, params);
 	
 	        }
 	        
@@ -198,6 +202,8 @@ public class Subscribe extends HttpServlet{
     		
     		unsUsername = Props.getProperty(PROP_UNS_USERNAME);
 			unsPassword = Props.getProperty(PROP_UNS_PASSWORD);
+			
+			unsMakeSubscriptionFunction = Props.getProperty(PROP_UNS_SUBSCRIBE_FUNC);
 		}
 		catch (Throwable t) {
             t.printStackTrace(System.out);
@@ -245,7 +251,7 @@ public class Subscribe extends HttpServlet{
 	        params.add(channelName);
 	        params.add(users.get(i));
 	        params.add(filters);            
-	        String s = (String) server.execute("makeSubscription", params);
+	        String s = (String) server.execute(unsMakeSubscriptionFunction, params);
 		}
 	}
 
