@@ -153,7 +153,7 @@ public class DDhistory {
       return START_PAGE;
   }
   private void removeUrl(int index){
-      if (historySize>index){
+      if (historySize>index && index>=0){
           history.remove(index);
           currentUrl=backUrl;
           historySize--;

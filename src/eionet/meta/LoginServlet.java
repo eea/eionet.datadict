@@ -19,6 +19,9 @@ import eionet.util.SecurityUtil;
  */
 
 public class LoginServlet extends HttpServlet {
+	
+	/** */
+	public static final String INITPARAM_DONT_USE_CAS_LOGIN = "dont-use-cas-login";
 
 /**
  *

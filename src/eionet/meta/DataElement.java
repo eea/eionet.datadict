@@ -24,6 +24,8 @@ public class DataElement implements Comparable{
 	private String tblShortName = null; // used in the data elements search
 	private String tblIdentifier = null; // used in setting target namespaces in schemas
 	private String dstIdentifier = null; // used in setting target namespaces in schemas
+	private String dstWorkingUser = null;
+	private String dstStatus = null;
     
 	private String gis = null;
 	private String positionInTable = null;
@@ -44,6 +46,9 @@ public class DataElement implements Comparable{
 
 	private int sortOrder = 1;
 	private String sortString = null;
+	
+	private String checkedoutCopyID = null;
+	private String date = null;
 
     /*
      * 
@@ -418,5 +423,77 @@ public class DataElement implements Comparable{
 	 */
     public void setUser(String user) {
 		this.user = user;
+	}
+    
+	/**
+	 * 
+	 * @return
+	 */
+    public String getCheckedoutCopyID() {
+		return checkedoutCopyID;
+	}
+
+    /**
+     * 
+     * @param checkedoutCopyID
+     */
+	public void setCheckedoutCopyID(String checkedoutCopyID) {
+		this.checkedoutCopyID = checkedoutCopyID;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getDstStatus() {
+		return dstStatus;
+	}
+
+	/**
+	 * 
+	 * @param dstStatus
+	 */
+	public void setDstStatus(String dstStatus) {
+		this.dstStatus = dstStatus;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getDstWorkingUser() {
+		return dstWorkingUser;
+	}
+
+	/**
+	 * 
+	 * @param dstWorkingUser
+	 */
+	public void setDstWorkingUser(String dstWorkingUser) {
+		this.dstWorkingUser = dstWorkingUser;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getDate() {
+		return date;
+	}
+
+	/**
+	 * 
+	 * @param date
+	 */
+	public void setDate(String date) {
+		this.date = date;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isCommon(){
+		return (ns==null || ns.getID()==null);
 	}
 }

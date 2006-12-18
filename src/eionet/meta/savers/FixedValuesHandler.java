@@ -194,20 +194,6 @@ public class FixedValuesHandler {
 		if (!ownerType.equals("elem"))
 			return;
 		
-		// if in versioning mode, we cannot edit fixed-values of
-		// non-working copies
-		DDSearchEngine searchEngine = new DDSearchEngine(conn);
-		boolean wc = true;
-		try{
-			wc = searchEngine.isWorkingCopy(ownerID, "elm");
-		}
-		catch (Exception e){}
-		            
-		if (!wc && versioning){
-			throw new Exception(
-				"Cannot edit fixed values of a non-working copy!");
-		}
-		
 		// get the element's datatype and check if fxvalues are allowed
 		DDSearchEngine eng = new DDSearchEngine(conn);
 		DataElement elm = eng.getDataElement(ownerID);

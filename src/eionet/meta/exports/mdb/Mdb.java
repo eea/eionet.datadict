@@ -7,6 +7,8 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 
+import com.healthmarketscience.jackcess.*;
+
 import eionet.meta.DDSearchEngine;
 import eionet.meta.exports.CachableIF;
 import eionet.util.*;
@@ -304,5 +306,28 @@ public class Mdb implements CachableIF {
 		mdbTypeMappings.put("integer", new Integer(Types.INTEGER));
 		mdbTypeMappings.put("date", new Integer(Types.DATE));
 		mdbTypeMappings.put("float", new Integer(Types.FLOAT));
+	}
+	
+	/*
+	 * 
+	 */
+	public static void main(String[] args){
+		File file = new File("D:\\CDDA-LI-200606.mdb");
+		
+		Database db = null;
+		try{
+			db = Database.open(file);
+			Set set = db.getTableNames();
+			System.out.println("done");
+		}
+		catch (Throwable t){
+			t.printStackTrace();
+		}
+		finally{
+			try{
+				if (db!=null) db.close();
+			}
+			catch (Exception e){}
+		}
 	}
 }

@@ -978,6 +978,46 @@ public class Util {
 		request.getRequestDispatcher("error.jsp").forward(request, response);
 	}
 	
+	/**
+	 * 
+	 *
+	 */
+	public static String getServletPathWithQueryString(HttpServletRequest request){
+
+		StringBuffer result = new StringBuffer();
+		String servletPath = request.getServletPath();
+		if (servletPath!=null && servletPath.length()>0){
+			if (servletPath.startsWith("/") && servletPath.length()>1)
+				result.append(servletPath.substring(1));
+			String queryString = request.getQueryString();
+			if (queryString!=null && queryString.length()>0)
+				result.append("?").append(queryString);
+		}
+		
+		return result.toString();
+	}
+	
+	/**
+	 * 
+	 * @param str
+	 * @param token
+	 * @return
+	 */
+	public static HashSet tokens2hash(String str, String delim){
+		HashSet result = new HashSet();
+		if (str!=null && delim!=null){
+			StringTokenizer tokenizer = new StringTokenizer(str, delim);
+			while (tokenizer.hasMoreTokens()){
+				String token = tokenizer.nextToken();
+				if (token!=null && token.length()>0)
+					result.add(token);
+			}
+		}
+		
+		return result;
+		
+	}
+	
     /**
     * main
     */

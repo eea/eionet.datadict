@@ -188,8 +188,7 @@ public class DatasetImport{
                 dsHandler = new DatasetHandler(conn, par, ctx);
 				dsHandler.setUser(user);
 				dsHandler.setDate(date);
-                dsHandler.setVersioning(false);
-				dsHandler.setImport(true);
+				dsHandler.setImportMode(true);
                 dsHandler.execute();
                 ds_count++;
                 dsID.put((String)par.getParameter("ds_id"), (String)dsHandler.getLastInsertID());
@@ -265,7 +264,7 @@ public class DatasetImport{
 				delemHandler.setUser(user);
 				delemHandler.setDate(date);
                 delemHandler.setVersioning(false);
-				delemHandler.setImport(true);
+				delemHandler.setImportMode(true);
                 delemHandler.execute();
                 delem_count++;
                 delemID.put(delem_id, (String)delemHandler.getLastInsertID());

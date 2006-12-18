@@ -34,6 +34,7 @@ public class Subscribe extends HttpServlet{
 	public static final String PROP_UNS_SUBSCRIPTIONS_URL = "uns.subscriptions.url";
 	public static final String PROP_UNS_USERNAME = "uns.username";
 	public static final String PROP_UNS_PASSWORD = "uns.password";
+	public static final String PROP_UNS_DONTSENDEVENTS = "uns.dont-send-events";
 	public static final String PROP_UNS_SUBSCRIBE_FUNC = "uns.make.subsription.function";
 	public static final String PROP_UNS_SEND_NOTIFICATION_FUNC = "uns.send.notification.function";
 	

@@ -2,6 +2,7 @@ package eionet.meta.savers;
 
 import java.util.*;
 import java.sql.*;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -34,13 +35,6 @@ public class DsTableHandler extends BaseHandler {
     boolean superUser = false;
 	private String date = null;
     
-	/** indicates if top namespace needs to be released after an exception*/
-    private boolean doCleanup = false;
-    
-    /** hashes for remembering originals and top namespaces for cleanup */
-	HashSet originals = new HashSet();
-	HashSet topns = new HashSet();
-	
 	/** for storing dataset ID returned by VersionManager.deleteTbl() */
 	private String newDstID = null;
 	
@@ -101,32 +95,12 @@ public class DsTableHandler extends BaseHandler {
 		return this.newDstID;
 	}
     
-    /**                                                                        
-     * 
-     * @throws Exception
-     */
-	public void cleanup() throws Exception{
-		
-		if (!doCleanup) return;
-		
-		// set WORKING_USER to null in all originals
-		processOriginals(originals);
-		
-		// release the top namespaces
-		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("NAMESPACE");
-		gen.setFieldExpr("WORKING_USER", "NULL");
-		for (Iterator i=topns.iterator(); i.hasNext(); ){            
-		 conn.createStatement().executeUpdate(gen.updateStatement() +
-				 " where NAMESPACE_ID=" + (String)i.next());
-		}
-	}
-
+	/**
+	 * 
+	 * @throws Exception
+	 */
     public void execute() throws Exception {
     	
-		// initialize this.topNsReleaseNeeded (just in case)
-		doCleanup = false;
-
         if (mode!=null && mode.equalsIgnoreCase("copy")){
             mode = "add";
             copy = true;
@@ -148,11 +122,15 @@ public class DsTableHandler extends BaseHandler {
         }
     }
     
+    /**
+     * 
+     * @throws Exception
+     */
     private void insert() throws Exception {
     	
-    	// see if this is just linking to another element
+    	// if linking to another element, do the linking and return
 		String link_elm = req.getParameter("link_elm");
-		if (!Util.nullString(link_elm)){
+		if (link_elm!=null && link_elm.length()>0){
 			SQLGenerator gen = new SQLGenerator();
 			gen.setTable("TBL2ELEM");
 			gen.setFieldExpr("TABLE_ID", req.getParameter("table_id"));
@@ -162,96 +140,51 @@ public class DsTableHandler extends BaseHandler {
 			return;
 		}
         
-        // get the onwer dataset id
+        // get the dataset id number
         dsID = req.getParameter("ds_id");
-        if (dsID == null)
-            throw new Exception("DsTableHandler: ds_id not specified!");
+        if (dsID==null || dsID.length()==0)
+            throw new Exception("Missing request parameter: ds_id");
 
-        // get the table short name
+        // get the table identifier
 		String idfier = req.getParameter("idfier");
-        if (Util.nullString(idfier))
-            throw new Exception("DsTableHandler: table identifier not found!");
+        if (idfier==null || idfier.length()==0)
+            throw new Exception("Missing request parameter: idfier");
 
-        // get the parent namespace and dataset name
+        // now make sure such a table does not exist within this dataset
+        if (existsInDataset(dsID, idfier))
+        	throw new Exception("The dataset already has a table with this Identifier: " + idfier);
+
+        // if new table across this dataset's versions, create table's corresponding namespace
+        String correspNS = null;
         String parentNS = req.getParameter("parent_ns");
-        String dsName = req.getParameter("ds_name");
-        if (parentNS == null){
-            DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-            Dataset ds = searchEngine.getDataset(dsID);
-            if (ds != null){
-                parentNS = ds.getNamespaceID();
-                dsName = ds.getShortName();
-            }
+        if (parentNS!=null && !existsInDatasetVersions(parentNS, idfier)){
+        	correspNS = createNamespace(req.getParameter("ds_name"), idfier, parentNS);
+	        if (correspNS==null)
+	            throw new Exception("Returned corresponding namespace id number is null");
         }
-
-        if (parentNS == null)
-            throw new Exception("DsTableHandler: could not find " +
-                                    "the parent dataset's namespace!");
         
-        // now make sure that such a table does not exist
-        if (exists(parentNS, idfier)) throw new Exception("Such a table already exists!");
-
+        // create the new table
         SQLGenerator gen = new SQLGenerator();
-        Statement stmt = conn.createStatement();
-
-        // close the parent namespace
-        if (versioning && !Util.nullString(parentNS)){
-            gen.setTable("NAMESPACE");
-            gen.setField("WORKING_USER", user.getUserName());
-            stmt.executeUpdate(gen.updateStatement() +
-                    " where NAMESPACE_ID=" + parentNS);
-        }
-        
-        // all well, create the new table
-        
-        String type = req.getParameter("type");
-		String shn  = req.getParameter("short_name");
-		if (Util.nullString(shn))
-			shn = idfier;
-
-        gen.clear();
         gen.setTable("DS_TABLE");
-        gen.setField("IDENTIFIER", idfier);
-		gen.setField("SHORT_NAME", shn);
-        gen.setField("PARENT_NS", parentNS);
-
-        // new tables we treat as working copies until checked in
-		// Unless we are inserting from Import Tool (in which case versioning==false).
-        if (versioning){
-            gen.setField("WORKING_COPY", "Y");
-            if (user!=null && user.isAuthentic())
-                gen.setField("WORKING_USER", user.getUserName());
-            gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-        }
-        else{
-			if (user!=null) gen.setField("USER", user.getUserName());
-			if (date!=null) gen.setFieldExpr("DATE", date);
-        }
-
-        if (!Util.nullString(type))
-            gen.setField("TYPE", type);
-        if (!versioning && !Util.nullString(version))
-            gen.setField("VERSION", version);
-
-        // insert the table
+        gen.setField("IDENTIFIER", idfier);		
+		if (user!=null)
+			gen.setField("USER", user.getUserName());
+		if (date==null)
+			date = String.valueOf(System.currentTimeMillis());
+		gen.setFieldExpr("DATE", date);
+		if (correspNS!=null)
+			gen.setFieldExpr("CORRESP_NS", correspNS);
+        if (parentNS!=null)
+        	gen.setFieldExpr("PARENT_NS", parentNS);
+		String shortName  = req.getParameter("short_name");
+		if (shortName==null || shortName.length()==0)
+			shortName = idfier;
+		gen.setField("SHORT_NAME", shortName);
+        Statement stmt = conn.createStatement();
         stmt.executeUpdate(gen.insertStatement());
         setLastInsertID();
 
-        // create the corresponding namespace
-        String correspNS = createNamespace(dsName, idfier);
-        if (correspNS==null)
-            throw new Exception("DsTableHandler: failed to create " +
-                "a corresponding namespace!");
-        
-        if (correspNS!=null){
-            gen.clear();
-            gen.setTable("DS_TABLE");
-            gen.setField("CORRESP_NS", correspNS);
-            stmt.executeUpdate(gen.updateStatement() + 
-                        " where TABLE_ID=" + lastInsertID);
-        }
-
-        // JH140303 - enter a row into DST2TBL
+        // create row in DST2TBL
         gen.clear();
         gen.setTable("DST2TBL");
         gen.setField("TABLE_ID",   lastInsertID);
@@ -261,23 +194,23 @@ public class DsTableHandler extends BaseHandler {
         stmt.close();
         
         //copy table attributes and structure
-        String copy_tbl_id = req.getParameter("copy_tbl_id");
-        if (copy_tbl_id != null && copy_tbl_id.length()!=0){
-
-            CopyHandler copier = new CopyHandler(conn, ctx);
-			copier.setUser(user);
-
-            gen.clear();
-            gen.setTable("ATTRIBUTE");
-            gen.setField("DATAELEM_ID", getLastInsertID());
-            copier.copy(gen, "DATAELEM_ID=" + copy_tbl_id + " and PARENT_TYPE='T'");
-
-            // copy rows in COMPLEX_ATTR_ROW, with lastInsertID
-            copier.copyComplexAttrs(lastInsertID, copy_tbl_id, "T");
-
-            copyTbl2Elem(copy_tbl_id);
-            copy=true;
-        }
+//        String copy_tbl_id = req.getParameter("copy_tbl_id");
+//        if (copy_tbl_id != null && copy_tbl_id.length()!=0){
+//
+//            CopyHandler copier = new CopyHandler(conn, ctx);
+//			copier.setUser(user);
+//
+//            gen.clear();
+//            gen.setTable("ATTRIBUTE");
+//            gen.setField("DATAELEM_ID", getLastInsertID());
+//            copier.copy(gen, "DATAELEM_ID=" + copy_tbl_id + " and PARENT_TYPE='T'");
+//
+//            // copy rows in COMPLEX_ATTR_ROW, with lastInsertID
+//            copier.copyComplexAttrs(lastInsertID, copy_tbl_id, "T");
+//
+//            copyTbl2Elem(copy_tbl_id);
+//            copy=true;
+//        }
 
         // process table attributes
         if (!copy){
@@ -285,58 +218,47 @@ public class DsTableHandler extends BaseHandler {
         }
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     private void update() throws Exception {
 
+    	// get the table id number
         String tableID = req.getParameter("table_id");
-        if (tableID == null)
-            throw new Exception("DsTableHandler: table_id not specified!");
+        if (tableID==null || tableID.length()==0)
+            throw new Exception("Missing request parameter: table_id");
 
-		// short name
-		String shn = req.getParameter("short_name");
-		if (!Util.nullString(shn)){
+		// update short name
+		String shortName = req.getParameter("short_name");
+		if (shortName!=null && shortName.length()>0){
 			SQLGenerator gen = new SQLGenerator();
 			gen.setTable("DS_TABLE");
-			gen.setField("SHORT_NAME", shn);
+			gen.setField("SHORT_NAME", shortName);
 			conn.createStatement().executeUpdate(gen.updateStatement() +
 									" where TABLE_ID=" + tableID);
 		}
 
-        // if check-in, do the action and exit
-        String checkIn = req.getParameter("check_in");
-        if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
-        	
-            VersionManager verMan = new VersionManager(conn, user);
-			verMan.setContext(ctx);
-			
-			String updVer = req.getParameter("upd_version");
-			if (updVer!=null && updVer.equalsIgnoreCase("true")){
-				verMan.updateVersion();
-				verMan.setUpwardsVersioning(true);
-			}
-				
-            verMan.checkIn(tableID, "tbl",
-                                    req.getParameter("reg_status"));
-            return;
-        }
-        
         lastInsertID = tableID;
         String[] delIDs = {tableID};
         deleteAttributes(delIDs);
         processAttributes();
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     private void delete() throws Exception {
     	
-        // do not allow deletion by unauthorized users
-        if (user==null || !user.isAuthentic())
-            throw new Exception("Unauthorized user!");
-
+        // get id numbers of tables to delete
         String[] del_IDs = req.getParameterValues("del_id");
-        if (del_IDs==null || del_IDs.length==0) return;
+        if (del_IDs==null || del_IDs.length==0)
+        	return;
         
-        // get more data about each table
-        StringBuffer buf = new StringBuffer();
-        buf.append("select * from DS_TABLE where ");
+        // get id numbers of corresponding namespaces
+        HashSet correspNss = new HashSet();
+        StringBuffer buf = new StringBuffer("select distinct CORRESP_NS from DS_TABLE where ");
         for (int i=0; i<del_IDs.length; i++){
             if (i>0)
                 buf.append(" or ");
@@ -345,70 +267,8 @@ public class DsTableHandler extends BaseHandler {
         }
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(buf.toString());
-
-		// loop over all found tables
-        Vector wrkCopies = new Vector();
-        HashSet delns = new HashSet();
-        VersionManager verMan = new VersionManager(conn, user);
-		verMan.setContext(ctx);
-		String updVer = req.getParameter("upd_version");
-		if (updVer!=null && updVer.equalsIgnoreCase("true"))
-			verMan.updateVersion();
-		
-        while (rs.next()){
-            
-            // if table in work by another user, throw something
-            String userName = rs.getString("WORKING_USER");
-            if (userName!=null &&
-                !userName.equals(user.getUserName()) && !superUser)
-                throw new Exception("Table " +
-                            rs.getString("TABLE_ID") +
-                            " is in work by another user: " + userName);
-            
-            boolean wrkCopy =
-                rs.getString("WORKING_COPY").equals("Y") ?
-                true : false;
-            
-            // if no versioning logic should be applied (for
-            // example when overwriting a previous version),
-            // then treat the given tables as if they were
-            // working copies 
-            if (!versioning){
-                wrkCopies.add(rs.getString("TABLE_ID"));
-                if (wrkCopy && !superUser)
-                    topns.add(rs.getString("PARENT_NS"));
-                if (verMan.isLastTbl(rs.getString("TABLE_ID"),
-                                     rs.getString("IDENTIFIER"),
-                                     rs.getString("PARENT_NS"))){
-                    delns.add(rs.getString("CORRESP_NS"));
-                }
-            }
-            // working copies are to be left for DsTableHandler
-            else if (wrkCopy){
-                wrkCopies.add(rs.getString("DS_TABLE.TABLE_ID"));
-                originals.add(rs.getString("PARENT_NS") + "," +
-                              rs.getString("IDENTIFIER"));
-                topns.add(rs.getString("PARENT_NS"));
-                
-                if (verMan.isLastTbl(rs.getString("TABLE_ID"),
-                                     rs.getString("IDENTIFIER"),
-                                     rs.getString("PARENT_NS"))){
-                    delns.add(rs.getString("CORRESP_NS"));
-                }
-            }
-            else{
-                // non-working copies are handled by VersionManager
-                newDstID = verMan.deleteTbl(rs.getString("TABLE_ID"));
-            }
-        }
-        
-        if (wrkCopies.size()==0)
-			return;
-
-        // start working with those legal for deletion
-        del_IDs = new String[wrkCopies.size()];
-        for (int i=0; i<wrkCopies.size(); i++)
-            del_IDs[i] = (String)wrkCopies.get(i);
+        while (rs!=null && rs.next())
+        	correspNss.add(rs.getString("CORRESP_NS"));
         
         // delete table attributes
         deleteAttributes(del_IDs);
@@ -417,26 +277,16 @@ public class DsTableHandler extends BaseHandler {
         // delete table elements
 		deleteElements(del_IDs);
 		
-		// JH140803 - delete the tbl-dst relations
- 		buf = new StringBuffer("delete from DST2TBL where ");
+		// delete the tbl2dst relations
+		buf = new StringBuffer("delete from DST2TBL where ");
  		for (int i=0; i<del_IDs.length; i++){
 	 		if (i>0) buf.append(" or ");
  			buf.append("TABLE_ID=");
 	 		buf.append(del_IDs[i]);
- 		}
+ 		} 		
 		stmt.executeUpdate(buf.toString());
 		
-		// we've passed the critical point, set cleanup is needed
-		// in case an exception happens now
-		doCleanup = true;
-		
-		// delete the corresponding namespaces
-		for (Iterator i=delns.iterator(); i.hasNext(); ){            
-			stmt.executeUpdate("delete from NAMESPACE " +
-					" where NAMESPACE_ID=" + (String)i.next());
-		}
-        
-        // delete the tables
+        // delete the tables themselves
         buf = new StringBuffer("delete from DS_TABLE where ");
         for (int i=0; i<del_IDs.length; i++){
             if (i>0) buf.append(" or ");
@@ -444,11 +294,11 @@ public class DsTableHandler extends BaseHandler {
             buf.append(del_IDs[i]);
         }
         stmt.executeUpdate(buf.toString());
-        
-        stmt.close();
 
-        // release originals and top namespaces
-        cleanup();
+        // delete namespaces that have no corresponding table any more
+        deleteUnmatchedNamespaces(stmt, correspNss);
+
+        stmt.close();
     }
     
     /*
@@ -456,51 +306,27 @@ public class DsTableHandler extends BaseHandler {
      */
     private void deleteElements(String[] del_IDs) throws Exception{
 
-		// since because of the versioning an element can belong
-		// into several tables, we can here delete only those
-		// elements belonging ONLY TO THESE tables selected for deletion.
-
-		// first get all elements belonging to these tables
+		// get all non-common elements in these tables
 		HashSet elems = new HashSet();
-		StringBuffer buf = new
-			StringBuffer("select distinct DATAELEM_ID from TBL2ELEM where ");
+		StringBuffer buf = new StringBuffer("select distinct TBL2ELEM.DATAELEM_ID from TBL2ELEM ");
+		buf.append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID where (");
 		for (int i=0; i<del_IDs.length; i++){
 			if (i>0) buf.append(" or ");
-			buf.append("TABLE_ID=");
+			buf.append("TBL2ELEM.TABLE_ID=");
 			buf.append(del_IDs[i]);
 		}
-
+		buf.append(") and DATAELEM.DATAELEM_ID is not null and DATAELEM.PARENT_NS is not null");
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(buf.toString());
 		while (rs.next()){
-			elems.add(rs.getString("DATAELEM_ID"));
+			elems.add(rs.getString("TBL2ELEM.DATAELEM_ID"));
 		}
         
-		// no prune out those elements belonging into other tables as well
-		buf =
-		new StringBuffer("select count(*) from TBL2ELEM where DATAELEM_ID=?");
-		for (int i=0; i<del_IDs.length; i++){
-			buf.append(" and TABLE_ID<>");
-			buf.append(del_IDs[i]);
-		}
-        
-		PreparedStatement ps = conn.prepareStatement(buf.toString());
-        
-		Iterator iter = elems.iterator();
-		while (iter.hasNext()){
-			ps.setInt(1, Integer.parseInt((String)iter.next()));
-			rs = ps.executeQuery();
-			if (rs.next()){
-				if (rs.getInt(1) > 0)
-					iter.remove();
-			}
-		}
-		
-		// delete the elements found legal for deletion
-		if (elems.size() != 0){
+		// delete the above found non-common elements
+		if (elems.size()>0){
 			Parameters params = new Parameters();
 			params.addParameterValue("mode", "delete");
-			for (iter = elems.iterator(); iter.hasNext(); ){
+			for (Iterator iter = elems.iterator(); iter.hasNext(); ){
 				params.addParameterValue("delem_id", (String)iter.next());
 			}
 
@@ -508,26 +334,28 @@ public class DsTableHandler extends BaseHandler {
 								new DataElementHandler(conn, params, ctx);
 			delemHandler.setUser(user);
 			delemHandler.setSuperUser(superUser);
-			// here we must not use versioning, otherwise we might
-			// end up in VersionManager.deleteElm()
 			delemHandler.setVersioning(false);
-			try{ delemHandler.execute(); } catch (Exception e){
-				throw new SQLException(e.toString());
-			}
+			delemHandler.execute();
 		}
 		
-		// delete the tbl-elm relations
-		 buf = new StringBuffer("delete from TBL2ELEM where ");
-		 for (int i=0; i<del_IDs.length; i++){
-			 if (i>0) buf.append(" or ");
-			 buf.append("TABLE_ID=");
-			 buf.append(del_IDs[i]);
-		 }
+		// delete tbl2elm relations (also takes care of links to common elements
+		// and links to elements that do not exist due to some erroneous situation)
+		buf = new StringBuffer("delete from TBL2ELEM where ");
+		for (int i=0; i<del_IDs.length; i++){
+			if (i>0) buf.append(" or ");
+			buf.append("TABLE_ID=");
+			buf.append(del_IDs[i]);
+		}
 		stmt.executeUpdate(buf.toString());
 		
 		stmt.close();
     }
     
+    /**
+     * 
+     * @param originals
+     * @throws Exception
+     */
     private void processOriginals(HashSet originals) throws Exception {
         
         if (originals==null || originals.size()==0)
@@ -572,11 +400,11 @@ public class DsTableHandler extends BaseHandler {
     /**
     *
     */
-    private String createNamespace(String dstName, String idfier)
+    private String createNamespace(String dstName, String tblIdfier, String tblParentNS)
                                                     throws Exception{
-        
-        String shortName  = idfier + "_tbl_" + dstName + "_dst";
-        String fullName   = idfier + " table in " + dstName + " dataset";
+    	dstName = dstName==null ? "" : dstName;
+        String shortName  = tblIdfier + "_tbl_" + dstName + "_dst";
+        String fullName   = tblIdfier + " table in " + dstName + " dataset";
         String definition = "The namespace of " + fullName;
         
         Parameters pars = new Parameters();        
@@ -584,6 +412,8 @@ public class DsTableHandler extends BaseHandler {
         pars.addParameterValue("short_name", shortName);
         pars.addParameterValue("fullName", fullName);
         pars.addParameterValue("description", definition);
+        if (tblParentNS!=null && tblParentNS.length()>0)
+        	pars.addParameterValue("parent_ns", tblParentNS);
 
         NamespaceHandler nsHandler = new NamespaceHandler(conn, pars, ctx);
         nsHandler.execute();
@@ -639,7 +469,8 @@ public class DsTableHandler extends BaseHandler {
 
             AttrFieldsHandler attrFieldsHandler =
                                 new AttrFieldsHandler(conn, params, ctx);
-            attrFieldsHandler.setVersioning(this.versioning);
+            //attrFieldsHandler.setVersioning(this.versioning);
+            attrFieldsHandler.setVersioning(false);
             try{
                 attrFieldsHandler.execute();
             }
@@ -681,14 +512,14 @@ public class DsTableHandler extends BaseHandler {
                   !parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)){
               attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
               if (dsID==null) continue;
-              CopyHandler ch = new CopyHandler(conn, ctx);
+              CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
               ch.setUser(user);
               ch.copyAttribute(lastInsertID, dsID, "T", "DS", attrID);
             }
             else if (parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)){
               attrID = parName.substring(INHERIT_COMPLEX_ATTR_PREFIX.length());
               if (dsID==null) continue;
-              CopyHandler ch = new CopyHandler(conn, ctx);
+              CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
 			  ch.setUser(user);
               ch.copyComplexAttrs(lastInsertID, dsID, "DS", "T", attrID);
             }
@@ -730,19 +561,59 @@ public class DsTableHandler extends BaseHandler {
         return lastInsertID;
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getNamespaceID(){
         return nsID;
     }
 
-    public boolean exists(String parentNS, String idfier) throws SQLException {
-
+    /**
+     * 
+     * @param dstID
+     * @param tblIdfier
+     * @return
+     * @throws SQLException
+     */
+    public boolean existsInDataset(String dstID, String tblIdfier) throws SQLException {
+    	
         if (copy)
+            return false;
+
+        StringBuffer buf = new StringBuffer();
+        buf.append("select count(DS_TABLE.TABLE_ID) from DST2TBL ").
+        append("left outer join DS_TABLE on DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID where ").
+        append("DST2TBL.DATASET_ID=").append(dstID).
+        append(" and DS_TABLE.TABLE_ID is not null and DS_TABLE.IDENTIFIER=").
+        append(Util.strLiteral(tblIdfier));
+        		
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(buf.toString());
+        if (rs.next()){
+            if (rs.getInt(1)>0)
+                return true;
+        }
+
+        return false;
+    }
+    
+    /**
+     * 
+     * @param dstIdfier
+     * @param tblIdfier
+     * @return
+     * @throws SQLException
+     */
+    public boolean existsInDatasetVersions(String dstNamespaceID, String tblIdfier) throws SQLException {
+    	
+    	if (copy)
             return false;
 
         String qry =
         "select count(*) as COUNT from DS_TABLE " +
-        "where DS_TABLE.IDENTIFIER=" + com.tee.util.Util.strLiteral(idfier) +
-        " and DS_TABLE.PARENT_NS=" + parentNS;
+        "where DS_TABLE.IDENTIFIER=" + com.tee.util.Util.strLiteral(tblIdfier) +
+        " and DS_TABLE.PARENT_NS=" + dstNamespaceID;
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
@@ -755,6 +626,7 @@ public class DsTableHandler extends BaseHandler {
 
         return false;
     }
+    
     /**
     *
     */
@@ -810,6 +682,38 @@ public class DsTableHandler extends BaseHandler {
 		this.date = unixTimestampMillisec;
 	}
 
+    /**
+     * Deletes those given namespaces that are not present in CORRESP_NS of DS_TABLE.
+     * NB! Modifies the namespaces HashSet by removing those that are not to be deleted.
+     * 
+     * @throws SQLException 
+     */
+    private void deleteUnmatchedNamespaces(Statement stmt, HashSet nss) throws SQLException{
+    	
+    	ResultSet rs = stmt.executeQuery("select distinct CORRESP_NS from DS_TABLE");
+    	while (rs.next()){
+    		String nsid = rs.getString(1);
+    		if (nss.contains(nsid))
+    			nss.remove(nsid);
+    	}
+    	
+    	if (nss.size()==0)
+    		return;
+    	
+    	int i=0;
+    	StringBuffer buf = new StringBuffer("delete from NAMESPACE where ");
+    	for (Iterator iter = nss.iterator(); iter.hasNext(); i++){
+    		if (i>0) buf.append(" or ");
+    		buf.append("NAMESPACE_ID=").append(iter.next());
+    	}
+    	
+    	stmt.executeUpdate(buf.toString());
+    }
+
+    /**
+     * 
+     * @param args
+     */
     public static void main(String[] args){
 
         try{

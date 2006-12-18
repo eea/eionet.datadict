@@ -77,14 +77,6 @@ public class AttrFieldsHandler {
                 _type = "tbl";
             else if (parent_type.equals("DS"))
                 _type = "dst";
-
-            DDSearchEngine searchEngine = new DDSearchEngine(conn);
-            boolean wc = true;
-            try{ wc = searchEngine.isWorkingCopy(parent_id, _type); }
-            catch (Exception e){}
-            if (!wc && versioning)
-                throw new Exception("Cannot edit attributes of a " +
-                        "non-working copy!");
         }
 
         if (mode.equalsIgnoreCase("add")){

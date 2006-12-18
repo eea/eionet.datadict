@@ -60,14 +60,20 @@ public class Codelist {
 			Vector fxvs = searchEngine.getFixedValues(elm.getID());
 			if (fxvs==null || fxvs.size()==0) continue;
 			
-			String dstName = elm.getDstShortName();
-			if (Util.voidStr(dstName)) throw new Exception("failed to get dataset name");
-			String tblName = elm.getTblShortName();
-			if (Util.voidStr(tblName)) throw new Exception("failed to get table name");
+			StringBuffer line = new StringBuffer();
+			if (elm.isCommon()==false){			
+				String dstName = elm.getDstShortName();
+				if (Util.voidStr(dstName))
+					throw new Exception("failed to get dataset name");
+				String tblName = elm.getTblShortName();
+				if (Util.voidStr(tblName))
+					throw new Exception("failed to get table name");
 			
-			StringBuffer line = new StringBuffer(dstName).append("/").
-			append(tblName).append("/").append(elm.getShortName()).append(":");
-			
+				line.append(dstName).append("/").
+				append(tblName).append("/").
+				append(elm.getShortName()).
+				append(":");
+			}
 			for (int j=0; j<fxvs.size(); j++){
 				FixedValue fxv = (FixedValue)fxvs.get(j);
 				if (j>0) line.append(delim);

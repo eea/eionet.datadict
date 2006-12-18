@@ -32,6 +32,7 @@ public class VersionManager{
     
 	/** servlet context object if instatiated from servlet environment*/
 	private ServletContext ctx = null;
+	protected Parameters servlRequestParams = null;
     
     /**
     *
@@ -88,12 +89,19 @@ public class VersionManager{
         throws SQLException {
         
         String tblName = null;
-        if (type.equals("elm"))
+        String idField = null;
+        if (type.equals("elm")){
             tblName = "DATAELEM";
-        else if (type.equals("tbl"))
+            idField = "DATAELEM_ID";
+        }
+        else if (type.equals("tbl")){
             tblName = "DS_TABLE";
-        else if (type.equals("dst"))
+            idField = "TABLE_ID";
+        }
+        else if (type.equals("dst")){
             tblName = "DATASET";
+            idField = "DATASET_ID";
+        }
         else
             throw new SQLException("Unknown type");
         
@@ -101,13 +109,13 @@ public class VersionManager{
         if (type.equals("elm") || type.equals("tbl"))
             ctxField = "PARENT_NS";
         
-        String qry = "select distinct WORKING_USER, VERSION from " + tblName +
+        String qry = "select distinct WORKING_USER, " + idField + " from " + tblName +
         " where IDENTIFIER='" + idfier + "'";
         if (ctxField!=null && ctxID!=null)
             qry = qry + " and " + ctxField + "=" + ctxID;
         
         qry = qry + " and " + tblName + ".WORKING_COPY='Y'";
-        qry = qry + " order by VERSION desc";
+        qry = qry + " order by " + idField + " desc";
 
         ResultSet rs = conn.createStatement().executeQuery(qry);
         if (rs.next())
@@ -173,24 +181,37 @@ public class VersionManager{
         else
             return null;
     }
-    
+
+    /**
+    *
+    */
+    public String getDstCopyWorkingUser(String copyID)
+        throws SQLException {
+        
+    	StringBuffer buf = new StringBuffer("select WORKING_USER from DATASET ");
+    	buf.append("where DATASET_ID=").append(copyID);
+        
+        ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+        if (rs.next())
+            return rs.getString("WORKING_USER");
+        else
+            return null;
+    }
+
     /**
     *
     */
     public String getWorkingCopyID(DataElement elm) throws SQLException {
     	
-    	String parentNsID = elm.getNamespace()==null ? null : elm.getNamespace().getID();
+    	if (elm==null || user==null)
+    		return null;
     	
-    	StringBuffer buf = new StringBuffer().
-    	append("select DATAELEM_ID from DATAELEM where WORKING_COPY='Y' and IDENTIFIER=").
-    	append(Util.strLiteral(elm.getIdentifier()));
-    	if (parentNsID!=null) buf.append(" and PARENT_NS=").append(parentNsID);
-    	
+    	StringBuffer buf = new StringBuffer();
+    	buf.append("select DATAELEM_ID from DATAELEM where WORKING_COPY='Y'").
+    	append(" and WORKING_USER=").append(Util.strLiteral(user.getUserName())).
+    	append(" and CHECKEDOUT_COPY_ID=").append(elm.getID());
         ResultSet rs = conn.createStatement().executeQuery(buf.toString());
-        if (rs.next())
-        	return rs.getString(1);
-        else
-        	return null;
+        return rs.next() ? rs.getString(1) : null;
     }
     
     /**
@@ -216,17 +237,16 @@ public class VersionManager{
     *
     */
     public String getWorkingCopyID(Dataset dst) throws SQLException {
-        String q =
-        "select distinct DATASET_ID from DATASET " +
-        "where WORKING_COPY='Y' and " +
-        "IDENTIFIER='" + dst.getIdentifier() + "'";
-        
-        ResultSet rs = conn.createStatement().executeQuery(q);
-        if (rs.next()){
-            return rs.getString(1);
-        }
-        
-        return null;
+    	
+    	if (dst==null || user==null)
+    		return null;
+    	
+    	StringBuffer buf = new StringBuffer();
+    	buf.append("select DATASET_ID from DATASET where WORKING_COPY='Y'").
+    	append(" and WORKING_USER=").append(Util.strLiteral(user.getUserName())).
+    	append(" and CHECKEDOUT_COPY_ID=").append(dst.getID());
+        ResultSet rs = conn.createStatement().executeQuery(buf.toString());
+        return rs.next() ? rs.getString(1) : null;
     }
     
     /**
@@ -240,123 +260,56 @@ public class VersionManager{
      */
     public String checkOut(String id, String type) throws Exception{
     	
-        if (id==null || type==null)
-            throw
-            new Exception("Unable to locate the object to check out!");
-            
         if (type.equals("elm"))
             return checkOutElm(id);
-        else if (type.equals("tbl"))
-            return checkOutTbl(id);
         else if (type.equals("dst"))
             return checkOutDst(id);
         else
-            throw new Exception("Unknown object type!");
+            throw new Exception("Unknown object type: " + type);
     }
-    
-	private String checkOutElm(String elmID) throws Exception{
-		return checkOutElm(elmID, false);
-	}
     
     /**
      */
-    public String checkOutElm(String elmID, boolean elmCommon) throws Exception{
+    public String checkOutElm(String elmID) throws Exception{
         
         if (user==null || !user.isAuthentic())
             throw new Exception("Check-out attempt by an unauthorized user!");
         
-        String userName = user.getUserName();
         String newID = null;
-        String topNS = null;
-        try{        	
-	        // set the original's WORKING_USER
-	        SQLGenerator gen = new SQLGenerator();
-	        gen.setTable("DATAELEM");
-	        gen.setField("WORKING_USER", userName);
-	        String q = gen.updateStatement() + " where DATAELEM_ID=" + elmID;
-	        Statement stmt = conn.createStatement();
-	        stmt.executeUpdate(q);
-	        
-	        // set the WORKING_USER of top namespace
-	        q = "select TOP_NS from DATAELEM where DATAELEM_ID=" + elmID;
-	        ResultSet rs = stmt.executeQuery(q);
-	        topNS = rs.next() ? rs.getString(1) : null;
-	        if (topNS!=null){
-	            gen.clear();
-	            gen.setTable("NAMESPACE");
-	            gen.setField("WORKING_USER", userName);
-	            q = gen.updateStatement() + " where NAMESPACE_ID=" + topNS;
-	            stmt.executeUpdate(q);
-	        }
-	        
-			// copy element
-			CopyHandler copyHandler = new CopyHandler(conn);
+    	String topNS = null;
+    	try{
+			// set the working user of the original
+			SQLGenerator gen = new SQLGenerator();
+			gen.setTable("DATAELEM");
+			gen.setField("WORKING_USER", user.getUserName());
+			conn.createStatement().executeUpdate(gen.updateStatement() +
+						" where DATAELEM_ID=" + elmID);
+			
+			// copy the element
+			String strResetVersionAndStatus = servlRequestParams==null ?
+					null : servlRequestParams.getParameter("resetVersionAndStatus");
+			CopyHandler copyHandler = new CopyHandler(conn, ctx, searchEngine);
 			copyHandler.setUser(user);
-			newID = copyHandler.copyElem(elmID, true, !elmCommon);
-        }
+			// copy TBL2ELEM relations too, because common elements have links to tables
+			newID = copyHandler.copyElm(elmID, true, strResetVersionAndStatus==null, strResetVersionAndStatus!=null);
+			if (newID!=null){
+				gen.clear();
+				gen.setTable("DATAELEM");
+				gen.setFieldExpr("CHECKEDOUT_COPY_ID", elmID);
+				conn.createStatement().executeUpdate(gen.updateStatement() +
+							" where DATAELEM_ID=" + newID);
+			}
+    	}
         catch (Exception e){
         	try{
         		cleanupCheckout(elmID, "DATAELEM", topNS, newID);
         	}
-        	catch (Throwable t){        		
-        	}        	
+        	catch (Exception ee){}
         	throw e;
         }
-        
-        return newID;
-    }
-    
-    /**
-     * Check out the specified table.
-     * 
-     * @param   tblID    table id.
-     * @return  id of the working copy
-     * @exception   Exception
-     */
-    private String checkOutTbl(String tblID) throws Exception{
-        
-        if (user==null || !user.isAuthentic())
-            throw new Exception("Check-out attempt by an unauthorized user!");
-        
-        String newID = null;
-        String topNS = null;
-        try{
-	        // set the original's WORKING_USER
-	        SQLGenerator gen = new SQLGenerator();
-	        gen.setTable("DS_TABLE");
-	        gen.setField("WORKING_USER", user.getUserName());
-	        String q = gen.updateStatement() + " where TABLE_ID=" + tblID;
-	        Statement stmt = conn.createStatement();
-	        stmt.executeUpdate(q);
-	        
-	        // set the WORKING_USER of top namespace
-	        q = "select PARENT_NS from DS_TABLE where TABLE_ID=" + tblID;
-	        ResultSet rs = stmt.executeQuery(q);
-	        topNS = rs.next() ? rs.getString(1) : null;
-	        if (topNS!=null){
-	            gen.clear();
-	            gen.setTable("NAMESPACE");
-	            gen.setField("WORKING_USER", user.getUserName());
-	            q = gen.updateStatement() + " where NAMESPACE_ID=" + topNS;
-	            stmt.executeUpdate(q);
-	        }
-	        
-	        // copy table
-	        CopyHandler copyHandler = new CopyHandler(conn);
-	        copyHandler.setUser(user);
-	        newID = copyHandler.copyTbl(tblID, true, true);
-        }
-        catch (Exception e){
-        	try{
-        		cleanupCheckout(tblID, "DS_TABLE", topNS, newID);
-        	}
-        	catch (Throwable t){        		
-        	}        	
-        	throw e;
-        }
-        
-        return newID;
-    }
+		
+		return newID;
+	}
     
     /**
      * Check out the specified dataset.
@@ -393,16 +346,24 @@ public class VersionManager{
 	        }
 	        
 			// copy the dataset
-			CopyHandler copyHandler = new CopyHandler(conn);
+			String strResetVersionAndStatus = servlRequestParams==null ?
+					null : servlRequestParams.getParameter("resetVersionAndStatus");
+			CopyHandler copyHandler = new CopyHandler(conn, ctx, searchEngine);
 			copyHandler.setUser(user);
-			newID = copyHandler.copyDst(dstID, true, true, false);
+			newID = copyHandler.copyDst(dstID, true, strResetVersionAndStatus!=null);
+			if (newID!=null){
+				gen.clear();
+				gen.setTable("DATASET");
+				gen.setFieldExpr("CHECKEDOUT_COPY_ID", dstID);
+				conn.createStatement().executeUpdate(gen.updateStatement() +
+							" where DATASET_ID=" + newID);
+			}
     	}
         catch (Exception e){
         	try{
         		cleanupCheckout(dstID, "DATASET", topNS, newID);
         	}
-        	catch (Throwable t){        		
-        	}        	
+        	catch (Exception ee){}
         	throw e;
         }
 		
@@ -482,270 +443,99 @@ public class VersionManager{
     public boolean checkIn(String objID, String objType, String status)
         throws Exception {
             
-        if (objID==null || objType==null)
-            throw
-            new Exception("Unable to locate the object to check out!");
-
-		// JH 031203
-		// check if this is really a working copy.
-		// it might not be if the user has tried to cancel a previous
-		// check-in with the browser's STOP button
-		
-		if (!searchEngine.isWorkingCopy(objID, objType))
-			throw new Exception("Trying to check in a non-working copy!");
-		
         if (objType.equals("elm"))
             return checkInElm(objID, status);
-        else if (objType.equals("tbl"))
-            return checkInTbl(objID, status);
         else if (objType.equals("dst"))
             return checkInDst(objID, status);
         else
-            throw new Exception("Unknown object type!");
+            throw new Exception("Unknown object type: " + objType);
     }
 
-	/**
-	 * Check in the specified element.
-	 */
-	private boolean checkInElm(String elmID, String status) throws Exception{
-		return checkInElm(elmID, status, false);
-	}
-    
     /**
      * Check in the specified element.
      */
-    public boolean checkInElm(String elmID, String status, boolean elmCommon) throws Exception{
+    public boolean checkInElm(String elmID, String status) throws Exception{
         
-        // load the element we need to check in
-        DataElement elm = loadElm(elmID);
+		// load the element we need to check in
+		DataElement elm = loadElm(elmID);
         
-        // check the requirements for checking in a data element
-        checkRequirements(elm, status);
+		// check the requirements for checking in a dataset
+		checkRequirements(elm, status);
         
-        String newVersion = null;
-        DataElement latestElm = null;
-        
-		String latestID = getLatestElmID(elm);
-		if (latestID==null || latestID.equals(elm.getID())) // a brand new element
-			newVersion = composeNewVersion(null);
-		else
-			latestElm = loadElm(latestID);
-        
-		if (newVersion==null)
-		newVersion = versionUpdate ? composeNewVersion(elm.getVersion()) : elm.getVersion();
-        
-        // update from working copy to acting copy
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("DATAELEM");
-        gen.setField("WORKING_COPY", "N");
-        gen.setFieldExpr("WORKING_USER", "NULL");
-        gen.setField("VERSION", newVersion);
-        
-        // set the fields for keeping history info
-        gen.setField("USER", user.getUserName());
-        gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-        
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(gen.updateStatement() +
-                                " where DATAELEM_ID=" + elmID);
-        
-        // If the version wasn't updated (meaning non-effective attributes were
-        // changed), the original has to be deleted, otherwise set
-        // to WORKING_USER=NULL.
-        // This is no problem in a situation when the user updates status from
-        // no-version-requiring to version-requiring, because status is not
-        // part of unique ID, but the version however is. It is the new version
-        // that creates a new element. In other cases the previous latest has
-        // to be deleted. Status only effects if version is updated at all.
-        
-        if (latestElm!=null){
-        	
-        	// JH240804 - added !versionUpdate to make sure the previous copy is deleted
-            if (!versionUpdate || newVersion.equals(elm.getVersion())){
-                // delete the previous copy                
-                Parameters params = new Parameters();
-                params.addParameterValue("mode", "delete");
-                params.addParameterValue("delem_id", latestElm.getID());
-                DataElementHandler delemHandler =
-                    new DataElementHandler(conn, params, ctx);
-                delemHandler.setUser(user);
-                delemHandler.setVersioning(false);
-                delemHandler.execute();
-            }
-            else{
-                gen.clear();
-                gen.setTable("DATAELEM");
-                gen.setFieldExpr("WORKING_USER", "NULL");
-                stmt.executeUpdate(gen.updateStatement() +
-                        " where DATAELEM_ID=" + latestElm.getID());
-                
-                // if this is a common element and we update its version,
-                // we must delete the new version's TBL2ELEM relations
-                // so that the previous copy remains used in tables wherever it was used
-                if (elmCommon)
-					stmt.executeUpdate("delete from TBL2ELEM where DATAELEM_ID=" + elmID);
-
-                // update the parent table
-                versionUpwards(elm, latestElm.getID());
-            }
-        }
-        else
-            versionUpwards(elm, null);
-        
-        // release the top namespace
-        String topNS = elm.getTopNs();
-        if (topNS!=null){
-            gen.clear();
-            gen.setTable("NAMESPACE");
-            gen.setFieldExpr("WORKING_USER", "NULL");
-            stmt.executeUpdate(gen.updateStatement() + " where NAMESPACE_ID=" + topNS);
-        }
-        
-        // if common element, send UNS notification for common element,
-        // otherwise send UNS notification for the dataset and table
-        if (elmCommon){
-        	
-        	// before we send notification, we make sure certain users are subscribed        	
-        	try{
-    			Vector mustBeSubscribed = getMustBeSubscribedUsers(elm, latestElm);
-    			if (mustBeSubscribed!=null)
-    				Subscribe.subscribeToCommonElement(mustBeSubscribed, elm.getIdentifier());
+		// init the SQL statement object and SQL generator
+		SQLGenerator gen = new SQLGenerator();
+		Statement stmt = conn.createStatement();
+		
+		String checkedoutCopyID = servlRequestParams==null ?
+							null : servlRequestParams.getParameter("checkedout_copy_id");
+		if (checkedoutCopyID!=null){
+			if (!versionUpdate){
+				// delete the previous copy                
+				Parameters params = new Parameters();
+				params.addParameterValue("mode", "delete");
+				params.addParameterValue("complete", "true");
+				params.addParameterValue("delem_id", checkedoutCopyID);
+				DataElementHandler elmHandler =
+					new DataElementHandler(conn, params, ctx);
+				elmHandler.setUser(user);
+				elmHandler.setVersioning(false);
+				elmHandler.setUseForce(true);
+				elmHandler.execute();
+				
+				// the new copy must get the id of the previous one
+				gen.clear();
+				gen.setTable("DATAELEM");
+				gen.setFieldExpr("DATAELEM_ID", checkedoutCopyID);
+				stmt.executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + elmID);
+				
+				// the id of the new copy must be changed in all relations as well
+				DataElementHandler.replaceID(elmID, checkedoutCopyID, conn);
+				elmID = checkedoutCopyID;
+			}
+			else{
+				// unlock the checked-out copy
+				gen.clear();
+				gen.setTable("DATAELEM");
+				gen.setFieldExpr("WORKING_USER", "NULL");
+				stmt.executeUpdate(gen.updateStatement() +
+						" where DATAELEM_ID=" + checkedoutCopyID);
+			}
+		}
+		
+		// update the checked-in copy's vital fields
+		gen.clear();
+		gen.setTable("DATAELEM");
+		gen.setField("WORKING_COPY", "N");
+		gen.setFieldExpr("WORKING_USER", "NULL");
+		gen.setField("USER", user.getUserName());
+		gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+		gen.setFieldExpr("CHECKEDOUT_COPY_ID", "NULL");
+		stmt.executeUpdate(gen.updateStatement() +
+								" where DATAELEM_ID=" + elmID);
+		
+        // make sure certain users are subscribed and send UNS notification
+    	try{
+    		String checkedoutCopyUser = null;
+    		if (checkedoutCopyID!=null){
+    			ResultSet rs = stmt.executeQuery(
+    					"select USER from DATAELEM where DATAELEM_ID=" + checkedoutCopyID);
+    			if (rs!=null && rs.next())
+    				checkedoutCopyUser = rs.getString(1);
     		}
-    		catch (Throwable t){
-    			t.printStackTrace(System.out);
-    		}
-        	
-            String eventType = latestID!=null && latestID.length()>0 ?
-            		Subscribe.COMMON_ELEMENT_CHANGED_EVENT :
-            		Subscribe.NEW_COMMON_ELEMENT_EVENT;
-        	UNSEventSender.definitionChanged(elm, eventType, user==null ? null : user.getUserName());
-        }
-        else{
-        	String tblID = elm.getTableID();
-        	if (tblID!=null){
-        		DsTable tbl = loadTbl(tblID);
-        		if (tbl!=null){
-        			UNSEventSender.definitionChanged(tbl, Subscribe.TABLE_CHANGED_EVENT,
-        					user==null ? null : user.getUserName());
-        			
-        			String dstIdentifier = tbl.getDstIdentifier();
-        	        if (dstIdentifier!=null){
-        	        	Dataset dst = new Dataset(null, null, null);
-        	        	dst.setIdentifier(dstIdentifier);
-        	        	dst.setStatus(tbl.getDstStatus());
-        	        	UNSEventSender.definitionChanged(dst,
-        	        			Subscribe.DATASET_CHANGED_EVENT,
-        	        			user==null ? null : user.getUserName());
-        	        }
-        		}
-        	}
-        }
-        
-        return true;
-    }
-    
-    /**
-     * Check in the specified table.
-     */
-    private boolean checkInTbl(String tblID, String status) throws Exception{
-        
-        // load the table we need to check in
-        DsTable tbl = loadTbl(tblID);
-        
-		// check the requirements for checking in a table
-        checkRequirements(tbl, status);
-        
-        String newVersion = null;
-        DsTable latestTbl = null;
-        
-		String latestID = getLatestTblID(tbl);
-		if (latestID==null || latestID.equals(tbl.getID()))
-			newVersion = composeNewVersion(null);
-		else
-			latestTbl = loadTbl(latestID);
-        
-		if (newVersion==null)
-			newVersion = versionUpdate ?
-						composeNewVersion(tbl.getVersion()) : tbl.getVersion();
-        
-        // update from working copy to acting copy
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("DS_TABLE");
-        gen.setField("WORKING_COPY", "N");
-        gen.setFieldExpr("WORKING_USER", "NULL");
-        gen.setField("VERSION", newVersion);
-        
-        // set the fields for keeping history info
-        gen.setField("USER", user.getUserName());
-        gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-        
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(gen.updateStatement() +
-                                " where TABLE_ID=" + tblID);
-        
-        // If the version wasn't updated (meaning non-effective attributes were
-        // changed), the original has to be deleted, otherwise set
-        // to WORKING_USER=NULL.
-        // This is no problem in a situation when the user updates status from
-        // no-version-requiring to version-requiring, because status is not
-        // part of unique ID, but the version however is. It is the new version
-        // that creates a new element. In other cases the previous latest has
-        // to be deleted. Status only effects if version is updated at all.
-
-        if (latestTbl!=null){
-			// JH240804 - added !versionUpdate to make sure the previous copy is deleted
-            if (!versionUpdate || newVersion.equals(tbl.getVersion())){
-                // delete the previous copy                
-                Parameters params = new Parameters();
-                params.addParameterValue("mode", "delete");
-                params.addParameterValue("del_id", latestTbl.getID());
-                DsTableHandler tblHandler =
-                    new DsTableHandler(conn, params, ctx);
-                tblHandler.setUser(user);
-                tblHandler.setVersioning(false);
-                tblHandler.execute();
-            }
-            else{
-                gen.clear();
-                gen.setTable("DS_TABLE");
-                gen.setFieldExpr("WORKING_USER", "NULL");
-                stmt.executeUpdate(gen.updateStatement() +
-                        " where TABLE_ID=" + latestTbl.getID());
-
-                // update the parent dataset
-                versionUpwards(tbl, latestTbl.getID());
-            }
-        }
-        else
-            versionUpwards(tbl, null);
-        
-        // release the top namespace
-        String topNS = tbl.getParentNs();
-        if (topNS!=null){
-            gen.clear();
-            gen.setTable("NAMESPACE");
-            gen.setFieldExpr("WORKING_USER", "NULL");
-            stmt.executeUpdate(gen.updateStatement() +
-                    " where NAMESPACE_ID=" + topNS);
-        }
-        
-        // send UNS notification(for dataset too)
-        String eventType = latestID!=null && latestID.length()>0 ?
-        		Subscribe.TABLE_CHANGED_EVENT :
-        		Subscribe.NEW_TABLE_EVENT;
-        UNSEventSender.definitionChanged(tbl, eventType, user==null ? null : user.getUserName());
-        
-        // send UNS notification for the dataset too
-        String dstIdentifier = tbl.getDstIdentifier();
-        if (dstIdentifier!=null){
-        	Dataset dst = new Dataset(null, null, null);
-        	dst.setIdentifier(dstIdentifier);
-        	dst.setStatus(tbl.getDstStatus());
-        	UNSEventSender.definitionChanged(dst,
-        			Subscribe.DATASET_CHANGED_EVENT, user==null ? null : user.getUserName());
-        }
-
-        return true;
+			Vector mustBeSubscribed = getMustBeSubscribedUsers(elm, checkedoutCopyID, stmt);
+			if (mustBeSubscribed!=null && mustBeSubscribed.size()>0)
+				Subscribe.subscribeToCommonElement(mustBeSubscribed, elm.getIdentifier());
+		}
+		catch (Throwable t){
+			t.printStackTrace(System.out);
+		}		
+        String eventType = checkedoutCopyID!=null && checkedoutCopyID.length()>0 ?
+        		Subscribe.COMMON_ELEMENT_CHANGED_EVENT :
+        		Subscribe.NEW_COMMON_ELEMENT_EVENT;
+    	UNSEventSender.definitionChanged(elm, eventType, user==null ? null : user.getUserName());
+		
+    	stmt.close();
+		return true;
     }
     
     /**
@@ -755,83 +545,73 @@ public class VersionManager{
     	
 		// load the table we need to check in
 		Dataset dst = loadDst(dstID);
+		String correspNamespaceID = dst.getNamespaceID();
         
 		// check the requirements for checking in a dataset
 		checkRequirements(dst, status);
         
-		String newVersion = null;
-		Dataset latestDst = null;
-        
-		String latestID = getLatestDstID(dst);
-		if (latestID==null || latestID.equals(dst.getID()))
-			newVersion = composeNewVersion(null);
-		else
-			latestDst = loadDst(latestID);
-        
-		if (newVersion==null)
-			newVersion = versionUpdate ?
-						composeNewVersion(dst.getVersion()) : dst.getVersion();
-        
-		// update from working copy to acting copy
+		// init the SQL statement object and SQL generator
 		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("DATASET");
-		gen.setField("WORKING_COPY", "N");
-		gen.setFieldExpr("WORKING_USER", "NULL");
-		gen.setField("VERSION", newVersion);
-        
-		// set the fields for keeping history info
-		gen.setField("USER", user.getUserName());
-		gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-        
 		Statement stmt = conn.createStatement();
-		stmt.executeUpdate(gen.updateStatement() +
-								" where DATASET_ID=" + dstID);
-        
-		// If the version wasn't updated (meaning non-effective attributes were
-		// changed), the original has to be deleted, otherwise set
-		// to WORKING_USER=NULL.
-		// This is no problem in a situation when the user updates status from
-		// no-version-requiring to version-requiring, because status is not
-		// part of unique ID, but the version however is. It is the new version
-		// that creates a new dataset. In other cases the previous latest has
-		// to be deleted. Status only effects if version is updated at all.
-        
-		if (latestDst!=null){
-			
-			// JH240804 - added !versionUpdate to make sure the previous copy is deleted 
-			if (!versionUpdate || newVersion.equals(dst.getVersion())){
+		
+		String checkedoutCopyID = servlRequestParams==null ?
+							null : servlRequestParams.getParameter("checkedout_copy_id");
+		if (checkedoutCopyID!=null){
+			if (!versionUpdate){
 				// delete the previous copy                
 				Parameters params = new Parameters();
 				params.addParameterValue("mode", "delete");
 				params.addParameterValue("complete", "true");
-				params.addParameterValue("ds_id", latestDst.getID());
+				params.addParameterValue("ds_id", checkedoutCopyID);
 				DatasetHandler dstHandler =
 					new DatasetHandler(conn, params, ctx);
 				dstHandler.setUser(user);
 				dstHandler.setVersioning(false);
+				dstHandler.setUseForce(true);
 				dstHandler.execute();
+				
+				// the new copy must get the id of the previous one
+				gen.clear();
+				gen.setTable("DATASET");
+				gen.setFieldExpr("DATASET_ID", checkedoutCopyID);
+				stmt.executeUpdate(gen.updateStatement() + " where DATASET_ID=" + dstID);
+				
+				// the id of the new copy must be changed in all relations as well
+				DatasetHandler.replaceID(dstID, checkedoutCopyID, conn);
+				dstID = checkedoutCopyID;
 			}
 			else{
+				// unlock the checked-out copy
 				gen.clear();
 				gen.setTable("DATASET");
 				gen.setFieldExpr("WORKING_USER", "NULL");
 				stmt.executeUpdate(gen.updateStatement() +
-						" where DATASET_ID=" + latestDst.getID());
+						" where DATASET_ID=" + checkedoutCopyID);
 			}
 		}
 		
-		// release the top namespace
-        String topNS = dst.getNamespaceID();
-        if (topNS!=null){
+		// update the checked-in copy's vital fields
+		gen.clear();
+		gen.setTable("DATASET");
+		gen.setField("WORKING_COPY", "N");
+		gen.setFieldExpr("WORKING_USER", "NULL");
+		gen.setField("USER", user.getUserName());
+		gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+		gen.setFieldExpr("CHECKEDOUT_COPY_ID", "NULL");
+		stmt.executeUpdate(gen.updateStatement() +
+								" where DATASET_ID=" + dstID);
+		
+		// unlock the corresponding namespace
+        if (correspNamespaceID!=null){
             gen.clear();
             gen.setTable("NAMESPACE");
             gen.setFieldExpr("WORKING_USER", "NULL");
             stmt.executeUpdate(gen.updateStatement() +
-                    " where NAMESPACE_ID=" + topNS);
+                    " where NAMESPACE_ID=" + correspNamespaceID);
         }
         
         // send UNS notification
-        String eventType = latestID!=null && latestID.length()>0 ?
+        String eventType = checkedoutCopyID!=null && checkedoutCopyID.length()>0 ?
         		Subscribe.DATASET_CHANGED_EVENT :
         		Subscribe.NEW_DATASET_EVENT;
     	UNSEventSender.definitionChanged(dst, eventType, user==null ? null : user.getUserName());
@@ -929,371 +709,6 @@ public class VersionManager{
         
         return ds;
     }
-
-    
-    /**
-    *
-    */
-    private void versionUpwards(DataElement elm, String latestID)
-                throws Exception{
-        
-        if (!upwardsVersioning)
-        	return;
-        
-        // create new version of parent table by copying
-        // everything from the old version and substituting
-        // latestElm with the new elm
-        
-        String oldTblID = elm.getTableID();
-        if (Util.nullString(oldTblID))
-            return;
-        
-        // copy table
-        CopyHandler copyHandler = new CopyHandler(conn);
-        copyHandler.setUser(user);
-        String newTblID = copyHandler.copyTbl(oldTblID, false, true);
-        if (Util.nullString(newTblID))
-            return;
-
-        // set the new tables credentials for history
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("DS_TABLE");
-        gen.setFieldExpr("VERSION", "VERSION+1");
-        gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-        if (user==null)
-            gen.setFieldExpr("USER", "NULL");
-        else
-            gen.setField("USER", user.getUserName());
-        
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(gen.updateStatement() +
-                " where TABLE_ID=" + newTblID);
-
-		// check if this is an element restore and if so,
-		// add element with latestID to the new table
-        if (elm.getID()==null){
-        	if (latestID!=null){
-				gen = new SQLGenerator();
-				gen.setTable("TBL2ELEM");
-				gen.setFieldExpr("DATAELEM_ID", latestID);
-				gen.setFieldExpr("TABLE_ID", newTblID);
-				stmt.executeUpdate(gen.insertStatement());
-        	}
-        	
-        	DsTable tbl = loadTbl(newTblID);
-        	if (tbl!=null){
-        		String dstID = tbl.getDatasetID();
-        		tbl = new DsTable(null, dstID, null);
-        		//versionUpwards(tbl,"");
-        	}
-        	
-        	return;
-        }
-        
-        // remove new element from table old version
-        stmt.executeUpdate("delete from TBL2ELEM where TABLE_ID=" + oldTblID +
-                                " and DATAELEM_ID=" + elm.getID());
-        
-        // remove old element from table new version
-        // (that is if there ever was an old element, i.e.
-        // it's a completely new element)
-        if (latestID!=null)
-            stmt.executeUpdate("delete from TBL2ELEM where TABLE_ID=" +
-                                newTblID + " and DATAELEM_ID=" + latestID);
-                                
-        // update the parent dataset
-        versionUpwards(loadTbl(newTblID), oldTblID);
-    }
-    
-    /**
-    *
-    */
-    private void versionUpwards(DsTable tbl, String latestID)
-                                                throws Exception {
-		if (!upwardsVersioning)
-			return;
-        
-        // create new version of parent dataset by copying
-        // everything from the old version and substituting
-        // old table in the new dataset with new table
-        
-        String oldDstID = tbl.getDatasetID();
-        if (Util.nullString(oldDstID))
-            return;
-            
-        // copy dataset
-        CopyHandler copyHandler = new CopyHandler(conn);
-        copyHandler.setUser(user);
-        String newDstID = copyHandler.copyDst(oldDstID, false, true, false);
-        if (Util.nullString(newDstID))
-            return;
-
-        // set the new dataset's credentials for history
-        SQLGenerator gen = new SQLGenerator();
-        gen.clear();
-        gen.setTable("DATASET");
-        gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-		if (versionUpdate)
-			gen.setFieldExpr("VERSION", "VERSION+1");
-        if (user==null)
-            gen.setFieldExpr("USER", "NULL");
-        else
-            gen.setField("USER", user.getUserName());
-        
-        Statement stmt = conn.createStatement();
-        String sql = gen.updateStatement() + " where DATASET_ID=" + newDstID;
-        stmt.executeUpdate(sql);
-
-		// remove old table from the new dataset
-		// (that is if there ever was an old table, i.e. it's a completely new table)
-		if (latestID!=null)
-			stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" + newDstID +
-								" and TABLE_ID=" + latestID);
-        
-        if (versionUpdate){
-	        // remove new table from the dataset's old version
-	        stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" + oldDstID +
-	                                " and TABLE_ID=" + tbl.getID());
-        }
-        else{
-        	// delete old dataset completely
-			Parameters params = new Parameters();
-			params.addParameterValue("mode", "delete");
-			params.addParameterValue("complete", "true");
-			params.addParameterValue("ds_id", oldDstID);
-			DatasetHandler dstHandler = new DatasetHandler(conn, params, ctx);
-			dstHandler.setUser(user);
-			dstHandler.setVersioning(false);
-			dstHandler.execute();
-        }
-    }
-
-	/**
-	*
-	*/
-	public String deleteElmLinks(String dstID, String tblID, String[] elmlinks) throws Exception{
-		
-		if (dstID==null || tblID==null || elmlinks==null || elmlinks.length==0)
-			return null;
-        
-		// make sure that we're doing this in the latest dataset
-		Dataset dst = searchEngine.getDataset(dstID);
-		if (dst==null)
-			return null;
-		else if (!isLatestDst(dst.getID(), dst.getIdentifier()))
-			throw new Exception("Cannot delete in history!");
-        
-		// removing a links to common elements means creating a new dataset where these links
-		// are missing in this table. So first create a new table where these links
-		// are missing and then put that table into the new dataset
-        
-		// copy the table
-		CopyHandler copyHandler = new CopyHandler(conn);
-		copyHandler.setUser(user);
-		String newTblID = copyHandler.copyTbl(tblID, false, true);
-		if (Util.nullString(newTblID))
-			return null;
-
-		// set the new table's credentials for history
-		SQLGenerator gen = new SQLGenerator();
-		gen.clear();
-		gen.setTable("DS_TABLE");
-		gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-		if (versionUpdate)
-			gen.setFieldExpr("VERSION", "VERSION+1");
-		if (user==null)
-			gen.setFieldExpr("USER", "NULL");
-		else
-			gen.setField("USER", user.getUserName());
-        
-		Statement stmt = conn.createStatement();
-		stmt.executeUpdate(gen.updateStatement() + " where TABLE_ID=" + newTblID);
-        
-		// remove the element links from the new table
-		StringBuffer buf = new StringBuffer().
-		append("delete from TBL2ELEM where TABLE_ID=").append(newTblID).append(" and (");
-		for (int i=0; i<elmlinks.length; i++){
-			if (i>0) buf.append(" or ");
-			buf.append("DATAELEM_ID=").append(elmlinks[i]);
-		}
-		buf.append(")");
-		stmt.executeUpdate(buf.toString());
-        
-		// update the parent dataset
-		versionUpwards(loadTbl(newTblID), tblID);
-        
-		return newTblID;
-	}
-
-	/*
-	 * 
-	 */
-	public String deleteElm(String dstID,String dstIdf,String tblID,Vector elms)throws Exception{
-		
-		if (elms==null || elms.size()==0 || dstID==null || tblID==null) return null;
-        
-		// make sure that we're doing this in the latest dataset
-		if (!isLatestDst(dstID, dstIdf)) throw new Exception("Cannot delete in history!");
-        
-		// deleting elements belonging to a table means creating a new dataset where
-		// these elements are missing in this table. So first create a new table where
-		// these elements are missing and then put that table into the new dataset
-        
-		// copy old table
-		CopyHandler copyHandler = new CopyHandler(conn);
-		copyHandler.setUser(user);
-		String newTblID = copyHandler.copyTbl(tblID, false, true);
-		if (Util.nullString(newTblID))
-			return null;
-
-		// set the new table's credentials for history
-		SQLGenerator gen = new SQLGenerator();
-		gen.clear();
-		gen.setTable("DS_TABLE");
-		gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-		if (versionUpdate)
-			gen.setFieldExpr("VERSION", "VERSION+1");
-		if (user==null)
-			gen.setFieldExpr("USER", "NULL");
-		else
-			gen.setField("USER", user.getUserName());
-        
-		Statement stmt = conn.createStatement();
-		stmt.executeUpdate(gen.updateStatement() + " where TABLE_ID=" + newTblID);
-        
-		// remove the deleted elements from the new table
-		StringBuffer buf = new StringBuffer().
-		append("delete from TBL2ELEM where TABLE_ID=").append(newTblID).append(" and (");
-		for (int i=0; i<elms.size(); i++){
-			if (i>0) buf.append(" or ");
-			buf.append("DATAELEM_ID=").append(elms.get(i));
-		}
-		buf.append(")");
-		stmt.executeUpdate(buf.toString());
-        
-		// update the parent dataset
-		versionUpwards(loadTbl(newTblID), tblID);
-        
-		return newTblID;
-	}
-    
-    /**
-    *
-    */
-    public String deleteElm(String elmID) throws Exception{
-        
-        DataElement elm = loadElm(elmID);
-        if (elm==null)
-            return null;
-        
-        // make sure that we're doing this in the latest dataset
-        Dataset dst = searchEngine.getDataset(elm.getDatasetID());
-        if (dst==null)
-        	return null;
-        else if (!isLatestDst(dst.getID(), dst.getIdentifier()))
-            throw new Exception("Cannot delete in history!");
-        
-        // Deleting an element means creating a new dataset where this element
-        // is missing in this table. So first create a new table where this element
-        // is missing and then put that table into the new dataset
-        
-        String oldTblID = elm.getTableID();
-        if (Util.nullString(oldTblID))
-            return null;
-        
-        // copy old table
-        CopyHandler copyHandler = new CopyHandler(conn);
-        copyHandler.setUser(user);
-        String newTblID = copyHandler.copyTbl(oldTblID, false, true);
-        if (Util.nullString(newTblID))
-            return null;
-
-        // set the new table's credentials for history
-        SQLGenerator gen = new SQLGenerator();
-        gen.clear();
-        gen.setTable("DS_TABLE");
-        gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-		if (versionUpdate)
-			gen.setFieldExpr("VERSION", "VERSION+1");
-        if (user==null)
-            gen.setFieldExpr("USER", "NULL");
-        else
-            gen.setField("USER", user.getUserName());
-        
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(gen.updateStatement() + " where TABLE_ID=" + newTblID);
-        
-        // remove this element from the new table
-        stmt.executeUpdate(
-		"delete from TBL2ELEM where TABLE_ID=" + newTblID + " and DATAELEM_ID=" + elmID);
-        
-        // update the parent dataset
-        versionUpwards(loadTbl(newTblID), oldTblID);
-        
-        return newTblID;
-    }
-    
-    /**
-    *
-    */
-    public String deleteTbl(String tblID) throws Exception{
-        
-        DsTable tbl = loadTbl(tblID);
-        if (tbl==null)
-            return null;
-        
-		// make sure that we're doing this in the latest dataset
-		Dataset dst = searchEngine.getDataset(tbl.getDatasetID());
-		if (dst==null)
-			return null;
-		else if (!isLatestDst(dst.getID(), dst.getIdentifier()))
-			throw new Exception("Cannot delete in history!");
-        
-        // deleting a table means creating a new dataset where this table is missing
-        // so first we need to copy the old dataset and its relations.
-        String oldDstID = tbl.getDatasetID();
-        if (Util.nullString(oldDstID)) return null;
-        
-        CopyHandler copyHandler = new CopyHandler(conn);
-        copyHandler.setUser(user);
-        String newDstID = copyHandler.copyDst(oldDstID, false,true,false);
-        if (Util.nullString(newDstID))
-            return null;
-
-        // we need to update the new dataset's version
-        SQLGenerator gen = new SQLGenerator();
-        gen.clear();
-        gen.setTable("DATASET");
-        gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-		if (versionUpdate)
-			gen.setFieldExpr("VERSION", "VERSION+1");
-        if (user==null)
-            gen.setFieldExpr("USER", "NULL");
-        else
-            gen.setField("USER", user.getUserName());
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(gen.updateStatement() +
-                " where DATASET_ID=" + newDstID);
-        
-        // remove this table from the new dataset
-        stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" +
-                newDstID + " and TABLE_ID=" + tblID);
-        
-        // if this table deletion should NOT create a new version of the dataset,
-        // then delete the old dataset and delete it completely
-        if (!versionUpdate){
-			Parameters params = new Parameters();
-			params.addParameterValue("mode", "delete");
-			params.addParameterValue("complete", "true");
-			params.addParameterValue("ds_id", oldDstID);
-			DatasetHandler dstHandler = new DatasetHandler(conn, params, ctx);
-			dstHandler.setUser(user);
-			dstHandler.setVersioning(false);
-			dstHandler.execute();
-        }
-		
-		return newDstID;
-    }
     
     /**
     *
@@ -1313,13 +728,13 @@ public class VersionManager{
 			append("DATAELEM.WORKING_COPY='N' and DATAELEM.PARENT_NS=").
 			append(elm.getNamespace().getID()).append(" and DATAELEM.IDENTIFIER=").
 			append(Util.strLiteral(elm.getIdentifier())).
-			append(" and DATASET.DELETED is null order by DATASET.VERSION desc");
+			append(" and DATASET.DELETED is null order by DATASET.DATASET_ID desc");
         }
         else{
 			buf.append(" where ").
 			append("DATAELEM.WORKING_COPY='N' and DATAELEM.PARENT_NS is null and ").
 			append("DATAELEM.IDENTIFIER=").append(Util.strLiteral(elm.getIdentifier())).
-			append(" order by DATAELEM.VERSION desc");
+			append(" order by DATAELEM.DATAELEM_ID desc");
         }
         
         Statement stmt = null;
@@ -1352,7 +767,7 @@ public class VersionManager{
 		append("where DS_TABLE.WORKING_COPY='N' and DS_TABLE.PARENT_NS=").
 		append(tbl.getParentNs()).append(" and DS_TABLE.IDENTIFIER=").
 		append(Util.strLiteral(tbl.getIdentifier())).
-		append(" and DATASET.DELETED is null order by DATASET.VERSION desc");
+		append(" and DATASET.DELETED is null order by DATASET.DATASET_ID desc");
         
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -1375,12 +790,12 @@ public class VersionManager{
 	/**
 	*
 	*/
-	public String getLatestDstID(Dataset dst) throws SQLException{
+	public String getCheckedOutCopyID(Dataset dst) throws SQLException{
     
-		StringBuffer buf = new StringBuffer().
-		append("select DATASET_ID from DATASET where WORKING_COPY='N' and DELETED is null and ").
+		StringBuffer buf = new StringBuffer();
+		buf.append("select DATASET_ID from DATASET where WORKING_COPY='N' and DELETED is null and ").
 		append("IDENTIFIER=").append(Util.strLiteral(dst.getIdentifier())).
-		append(" order by VERSION desc");
+		append(" order by DATASET_ID desc");
 
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -1399,7 +814,7 @@ public class VersionManager{
 		
 		return null;
 	}
-    
+
     /**
     *
     */
@@ -1467,22 +882,25 @@ public class VersionManager{
         return f;
     }
 
-	/**
-	*
-	*/
-	public boolean isLatestDst(String id, String idf) throws SQLException{
-		
-		Dataset dst = new Dataset(null, null, null);
-		dst.setIdentifier(idf);
-		return id.equals(getLatestDstID(dst));
-	}
-	
+    /**
+     * 
+     * @param id
+     * @param idf
+     * @return
+     * @throws SQLException
+     */
 	public boolean isLatestCommonElm(String id, String idf) throws SQLException{
 		DataElement elm = new DataElement(id, null, null);
 		elm.setIdentifier(idf);
 		return id.equals(getLatestElmID(elm));
 	}
 
+	/**
+	 * 
+	 * @param idf
+	 * @return
+	 * @throws SQLException
+	 */
 	public boolean isFirstCommonElm(String idf) throws SQLException{
 		
 		StringBuffer buf = new StringBuffer().
@@ -1524,8 +942,12 @@ public class VersionManager{
 	
 	/**
 	 * 
+	 * @param elm
+	 * @param latestElm
+	 * @return
+	 * @throws SQLException
 	 */
-	private Vector getMustBeSubscribedUsers(DataElement elm, DataElement latestElm)
+	private Vector getMustBeSubscribedUsers(DataElement elm, String checkedoutCopyID, Statement stmt)
 																		throws SQLException{		
 		Vector result = new Vector();
 		
@@ -1543,18 +965,40 @@ public class VersionManager{
 				result.add(tblOwner);
 		}
 		
-		// add creator of latestElm
-		String latestCreator = latestElm.getUser();
-		if (latestCreator!=null && !result.contains(latestCreator))
-			result.add(latestCreator);
+		// add creator of checked-out copy
+		if (checkedoutCopyID!=null){
+			ResultSet rs = stmt.executeQuery(
+					"select USER from DATAELEM where DATAELEM_ID=" + checkedoutCopyID);
+			if (rs!=null && rs.next()){
+				String  checkedoutCopyUser = rs.getString(1);
+				if (checkedoutCopyUser!=null)
+					result.add(checkedoutCopyUser);
+			}
+		}
 		
-		// finally, remove the currently changing user as he doesn't need a notification anyway
+		// finally, remove this.user he doesn't need a notification anyway
 		if (user!=null && user.getUserName()!=null)
 			result.remove(user.getUserName());
 		
 		return result.size()>0 ? result : null;
 	}
-    
+
+	/**
+	 * 
+	 * @param servlRequestParams
+	 */
+	public void setServlRequestParams(Parameters servlRequestParams) {
+		this.servlRequestParams = servlRequestParams;
+	}
+	
+	/**
+	 * 
+	 *
+	 */
+	public Parameters getServlRequestParams(){
+		return this.servlRequestParams;
+	}
+
     /**
     * main for testing
     */
@@ -1570,8 +1014,7 @@ public class VersionManager{
             user.authenticate("heinlja", "mi6");
             
 			VersionManager verMan = new VersionManager(conn, user);
-            verMan.checkInElm("16949", "whatever", false);
-      }
+        }
         catch (Exception e){
             System.out.println(e.toString());
         }

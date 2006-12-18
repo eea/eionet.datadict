@@ -5,12 +5,18 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.tee.util.*;
 
+/**
+ * 
+ * @author jaanus
+ */
 public class NamespaceHandler {
-    
+
+	/** */
     private Connection conn = null;
     private Parameters req = null;
     private ServletContext ctx = null;
     
+    /** */
     private String mode = null;
     private String[] nsID = null;
     private String shortName = null;
@@ -21,12 +27,25 @@ public class NamespaceHandler {
     private String dsName = null;
     private String tblName = null;
     
+    /** */
     private String lastInsertID = null;
     
+    /**
+     * 
+     * @param conn
+     * @param req
+     * @param ctx
+     */
     public NamespaceHandler(Connection conn, HttpServletRequest req, ServletContext ctx){
         this(conn, new Parameters(req), ctx);
     }
     
+    /**
+     * 
+     * @param conn
+     * @param req
+     * @param ctx
+     */
     public NamespaceHandler(Connection conn, Parameters req, ServletContext ctx){
         
         this.conn = conn;
@@ -45,11 +64,22 @@ public class NamespaceHandler {
         this.tblName = req.getParameter("tbl_name");
     }
     
+    /**
+     * 
+     * @param conn
+     * @param req
+     * @param ctx
+     * @param mode
+     */
     public NamespaceHandler(Connection conn, HttpServletRequest req, ServletContext ctx, String mode){
         this(conn, req, ctx);
         this.mode = mode;
     }
     
+    /**
+     * 
+     * @throws Exception
+     */
     public void execute() throws Exception {
         
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
@@ -65,44 +95,16 @@ public class NamespaceHandler {
             delete();
     }
     
+    /**
+     * 
+     * @throws Exception
+     */
     private void insert() throws Exception {
         
         // at least the short_name is required
         if (Util.nullString(shortName))
             throw new Exception("NamespaceHandler: at least the short_name " +
                                         "is required!");
-        
-        /* if no dataset and table, there must be a short name
-        if (Util.nullString(dsID) && Util.nullString(tblID) && Util.nullString(shortName))
-            throw new Exception("If dataset and table are not specified then at least short name is needed!");
-        
-        // if no dataset and table, there must be a short name
-        if (exists())
-            throw new Exception("A namespace with such credentials already exists!");
-        
-        // if table or dataset is specified, overwrite the names and definition
-        if (!Util.nullString(tblID)){
-            
-            if (Util.nullString(dsID))
-                throw new Exception("Datset ID missing!");
-                
-            shortName = "ds" + dsID + "tb" + tblID;
-            if (tblName!=null){
-                fullName = tblName + " table";
-                definition = "The namespace of " + tblName + " table";
-                if (dsName != null){
-                    fullName = fullName + " in " + dsName + " dataset";
-                    definition = definition + " in " + dsName + " dataset";
-                }
-            }
-        }
-        else if (!Util.nullString(dsID)){
-            shortName = "ds" + dsID;
-            if (dsName != null){
-                fullName = dsName + " dataset";
-                definition = "The namespace of " + dsName + " dataset";
-            }
-        }*/
         
         // build SQL
         SQLGenerator gen = new SQLGenerator();
@@ -113,17 +115,17 @@ public class NamespaceHandler {
             gen.setField("SHORT_NAME", shortName);
         if (!Util.nullString(definition))
             gen.setField("DEFINITION", definition);
-        /*if (!Util.nullString(dsID))
-            gen.setField("DATASET_ID", dsID);
-        if (!Util.nullString(tblID))
-            gen.setField("TABLE_ID", tblID);*/
 
         String wrkUser = req.getParameter("wrk_user");
         if (!Util.nullString(wrkUser))
             gen.setField("WORKING_USER", wrkUser);
         else
             gen.setFieldExpr("WORKING_USER", "NULL");
-            
+
+        String parentNS = req.getParameter("parent_ns");
+        if (!Util.nullString(parentNS))
+        	gen.setFieldExpr("PARENT_NS", parentNS);
+        
         // execute
         String sql = gen.insertStatement();
         Statement stmt = conn.createStatement();

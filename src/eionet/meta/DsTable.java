@@ -21,6 +21,7 @@ public class DsTable implements Comparable {
 	private String datasetName = null;
 	private String dstIdentifier = null;
 	private String dstStatus = null;
+	private String dstWorkingUser = null;
 	private boolean gis = false;
 	
 	private String workingUser = null;
@@ -329,5 +330,21 @@ public class DsTable implements Comparable {
 	 */
     public void setDstStatus(String dstStatus) {
 		this.dstStatus = dstStatus;
+	}
+
+    /**
+     * 
+     * @return
+     */
+	public String getDstWorkingUser() {
+		return dstWorkingUser;
+	}
+
+	/**
+	 * 
+	 * @param dstWorkingUser
+	 */
+	public void setDstWorkingUser(String dstWorkingUser) {
+		this.dstWorkingUser = dstWorkingUser;
 	}
 }

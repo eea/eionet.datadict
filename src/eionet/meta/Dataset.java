@@ -21,6 +21,7 @@ public class Dataset implements Comparable{
 	private String date = null;
 	
 	private String workingCopy = null;
+	private String workingUser = null;
     
 	private String nsID = null;
     private String visual = null;
@@ -35,6 +36,8 @@ public class Dataset implements Comparable{
 	
 	private int sortOrder = 1;
 	private String sortString = null;
+	
+	private String checkedoutCopyID = null;
 
     /*
      * 
@@ -244,10 +247,6 @@ public class Dataset implements Comparable{
 	public String getRelativeCorrespNs(){
 		return "/datasets/" + identifier;
 	}
-	
-	public void setDisplayCreateLinks(int displayCreateLinks){
-		this.displayCreateLinks = displayCreateLinks;
-	}
 
 	/*
 	 * The return value indicates weather the given "Create..." link should be displayed
@@ -284,7 +283,11 @@ public class Dataset implements Comparable{
 		
 		return createLinkWeights;
 	}
-	
+
+	public void setDisplayCreateLinks(int displayCreateLinks){
+		this.displayCreateLinks = displayCreateLinks;
+	}
+
 	/*
 	 * 
 	 */
@@ -328,4 +331,36 @@ public class Dataset implements Comparable{
 		
 		return buf.toString();
     }
+
+	/**
+	 * 
+	 * @return
+	 */
+    public String getCheckedoutCopyID() {
+		return checkedoutCopyID;
+	}
+
+    /**
+     * 
+     * @param checkedoutCopyID
+     */
+	public void setCheckedoutCopyID(String checkedoutCopyID) {
+		this.checkedoutCopyID = checkedoutCopyID;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getWorkingUser() {
+		return workingUser;
+	}
+
+	/**
+	 * 
+	 * @param workingUser
+	 */
+	public void setWorkingUser(String workingUser) {
+		this.workingUser = workingUser;
+	}
 }

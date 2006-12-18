@@ -7,6 +7,8 @@
 package eionet.meta.notif;
 
 import eionet.meta.*;
+
+import java.io.File;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -206,9 +208,6 @@ public class UNSEventSender {
 	 */
 	public static void sendEvent(Hashtable predicateObjects, String eventIDTrailer){
 		
-		if (true)
-			return;
-		
 		try{
 			if (predicateObjects==null || predicateObjects.size()==0)
 				return;
@@ -271,7 +270,16 @@ public class UNSEventSender {
 	 * 
 	 */
 	public static void makeCall(Object rdfTriples) throws Exception{
-				
+		
+		// we don't make UNS calls when in development environment (assume it's Win32)
+		if (File.separatorChar == '\\')
+			return;
+
+		// don't send if property says so
+		String dontSendEvents = Props.getProperty(Subscribe.PROP_UNS_DONTSENDEVENTS);
+		if (dontSendEvents!=null && dontSendEvents.trim().length()>0)
+			return;
+		
         String serverURL = Props.getProperty(Subscribe.PROP_UNS_XMLRPC_SERVER_URL);
         String channelName = Props.getProperty(Subscribe.PROP_UNS_CHANNEL_NAME);
         

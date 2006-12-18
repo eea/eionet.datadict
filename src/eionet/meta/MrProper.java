@@ -202,6 +202,7 @@ public class MrProper {
 		DatasetHandler handler = new DatasetHandler(conn, ps, ctx);
 		handler.setUser(user);
 		handler.setVersioning(false);
+		handler.setUseForce(true);
 		handler.execute();
 	}
 
@@ -614,6 +615,7 @@ public class MrProper {
 		DatasetHandler dstH = new DatasetHandler(conn, pars, ctx);
 		dstH.setUser(user);
 		dstH.setVersioning(false);
+		dstH.setUseForce(true);
 		dstH.execute();
     }
     
@@ -845,6 +847,7 @@ public class MrProper {
 			DatasetHandler h = new DatasetHandler(conn, pars, ctx);
 			h.setUser(user);
 			h.setVersioning(false);
+			h.setUseForce(true);
 			//h.execute();
 		}
     }

@@ -103,6 +103,11 @@ public class SecurityUtil {
     
     /**
      * 
+     * @param usr
+     * @param aclPath
+     * @param prm
+     * @return
+     * @throws Exception
      */
     public static boolean hasPerm(String usr, String aclPath, String prm)
     														throws Exception{
@@ -143,19 +148,25 @@ public class SecurityUtil {
     }
     
 	/**
-	 * Check if given usr has prm permission on any of aclPath's children 
+	 * 
+	 * @param usr
+	 * @param aclPath
+	 * @param prm
+	 * @return
+	 * @throws Exception
 	 */
-	public static boolean hasChildPerm(String usr, String aclPath, String prm)
+    public static boolean hasChildPerm(String usr, String aclPath, String prm)
 															throws Exception{
 		HashMap acls = AccessController.getAcls();
 		Iterator aclNames = acls.keySet().iterator();
+		AccessControlListIF acl;
 		while (aclNames.hasNext()){
 			String aclName = (String)aclNames.next();
-			if (!aclPath.startsWith(aclPath))
-				continue;
-			AccessControlListIF acl = (AccessControlListIF)acls.get(aclName);
-			if (acl.checkPermission(usr, prm))
-				return true;
+			if (aclName.startsWith(aclPath)){
+				acl = (AccessControlListIF)acls.get(aclName);
+				if (acl.checkPermission(usr, prm))
+					return true;
+			}
 		}
 		
 		return false;
