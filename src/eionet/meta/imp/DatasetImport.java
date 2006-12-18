@@ -21,7 +21,7 @@ import javax.xml.parsers.*;
 /**
  * A Class class.
  * <P>
- * @author Enriko Käsper
+ * @author Enriko KÃ¤sper
  */
 public class DatasetImport{
 

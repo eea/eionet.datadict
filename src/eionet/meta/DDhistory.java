@@ -5,7 +5,7 @@ import eionet.util.QueryString;
 /**
  * A Class class.
  * <P>
- * @author Enriko Käsper
+ * @author Enriko KÃ¤sper
  */
 public class DDhistory {
 
