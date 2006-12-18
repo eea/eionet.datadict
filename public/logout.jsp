@@ -6,8 +6,6 @@
 ServletContext ctx = null;
 boolean userHasWorkingCopies = false;
 Vector datasets=null;
-Vector tables=null;
-Vector elements=null;
 Vector commonElements=null;
 %>
 
@@ -42,8 +40,6 @@ Vector commonElements=null;
 
 		if (userHasWorkingCopies){
 			datasets = searchEngine.getDatasets(null, null, null, null, true);
-			tables = searchEngine.getDatasetTables(null, null, null, null, null, true);
-			elements = searchEngine.getDataElements(null, null, null, null, null, null, true);
 			commonElements = searchEngine.getCommonElements(null, null, null, null, true, "=");
 		}
 		else{
@@ -68,14 +64,13 @@ Vector commonElements=null;
 <%@ include file="nmenu.jsp" %>
 
 <div id="workarea">
-	<h2>Logging out</h2>
+	<h2>Logging out</h2>	
 	<br/>
-	<table>
-		<caption style="text-align:left; font-weight:bold">You have checked out the following objects:</caption>
+	<p><strong>You have the following objects checked out:</strong></p>
+	<table class="datatable">
 		<tbody>
 			<% 			
 			int d=0;
-			
 			// DATASETS
 			if (datasets!=null && datasets.size()>0){
 				%>
@@ -98,90 +93,14 @@ Vector commonElements=null;
 					%>
 		
 					<tr>					
-						<td style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2" title="<%=dsFullName%>">
-							Dataset: &nbsp;
+						<td colspan="2" title="<%=dsFullName%>">
+							Dataset:&nbsp;
 							<a href="dataset.jsp?ds_id=<%=ds_id%>&amp;mode=view">
 								<%=Util.replaceTags(dsFullName)%>
 							</a>
 						</td>
 					</tr>
 				<%
-				}
-			}
-			//TABLES
-			if (tables!=null && tables.size()>0){
-				for (int i=0; i<tables.size(); i++){
-					DsTable table = (DsTable)tables.get(i);
-					String table_id = table.getID();
-					String table_name = table.getShortName();
-					String ds_id = table.getDatasetID();
-					String ds_name = table.getDatasetName();
-					String dsNs = table.getParentNs();
-		
-					if (table_name == null) table_name = "unknown";
-					if (table_name.length() == 0) table_name = "empty";
-		
-					if (ds_name == null || ds_name.length() == 0) ds_name = "unknown";
-		
-					//String tblName = "";
-					String tblName = table.getName()==null ? "" : table.getName();
-		
-					String tblFullName = tblName;
-					tblName = tblName.length()>60 && tblName != null ? tblName.substring(0,60) + " ..." : tblName;
-
-					String tableLink = "dstable.jsp?mode=view&amp;table_id=" + table_id + "&amp;ds_id=" + ds_id + "&amp;ds_name=" + ds_name;
-					d++;
-					%>
-					<tr>
-						<td style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-							Table: &nbsp;
-							<a href="<%=tableLink%>">
-								<%=Util.replaceTags(table_name)%>
-							</a>&nbsp;(dataset is <u><%=Util.replaceTags(ds_name)%></u>)
-						</td>
-					</tr>
-					<%
-				}
-			}
-			//ELEMENTS
-			if (elements!=null && elements.size()>0){
-	        	for (int i=0; i<elements.size(); i++){
-					DataElement dataElement = (DataElement)elements.get(i);
-					String delem_id = dataElement.getID();
-					String delem_name = dataElement.getShortName();
-					if (delem_name == null) delem_name = "unknown";
-					if (delem_name.length() == 0) delem_name = "empty";
-					String delem_type = dataElement.getType();
-					if (delem_type == null) delem_type = "unknown";
-			
-					String displayType = "unknown";
-					if (delem_type.equals("CH1")){
-						displayType = "Fixed values";
-					}
-					else if (delem_type.equals("CH2")){
-						displayType = "Quantitative";
-					}
-		
-					String tblID = dataElement.getTableID();
-					DsTable tbl = null;
-					if (tblID != null) tbl = searchEngine.getDatasetTable(tblID);
-					String dsID = null;
-					Dataset ds = null;
-					if (tbl != null) dsID = tbl.getDatasetID();
-					if (dsID != null) ds = searchEngine.getDataset(dsID);
-		
-					String dispDs  = ds==null  ? "-" : ds.getShortName();
-					String dispTbl = tbl==null ? "-" : tbl.getShortName();
-					d++;
-					%>
-					<tr>
-						<td style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-						Element: &nbsp;
-						<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
-							<%=Util.replaceTags(delem_name)%>
-						</a>(<%=displayType%>, dataset is <u><%=Util.replaceTags(dispDs)%></u>, table is <u><%=Util.replaceTags(dispTbl)%></u>)
-					</tr>
-					<%
 				}
 			}
 			// COMMON ELEMENTS
@@ -207,11 +126,11 @@ Vector commonElements=null;
 					d++;
 					%>
 					<tr>
-						<td style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
-						Common element: &nbsp;
-						<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
-							<%=Util.replaceTags(delem_name)%>
-						</a>
+						<td colspan="2">
+							Common element:&nbsp;
+							<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
+								<%=Util.replaceTags(delem_name)%>
+							</a>
 						(<%=displayType%>)
 					</tr>
 					<%
@@ -223,9 +142,8 @@ Vector commonElements=null;
 	<br/>
 	<p class="caution">
 		NB!<br/>
-		If you leave these objects checked out, nobody else can edit them!<br/>
-		Leaving a table or non-comment element checked out locks the whole dataset!<br/>
-		If you still want to log out, please click the button below.
+		This is a reminder that you have the above objects checked out.<br/>
+		To complete the logout, click the button below.
 	</p>
 	<form name="form1" action="Logout" method="get">
 		<input type="submit" value="Logout" class="smallbutton"/>

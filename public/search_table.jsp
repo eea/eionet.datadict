@@ -210,21 +210,10 @@ else { %>
         <div id="operations">
           <ul>
               <li class="help"><a target="_blank" href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-				<%
-					if (contextParam == null || !contextParam.equals(POPUP)){
-
-					boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
-					if (dstPrm) { %>
-								<li><a title="Create a new table" href="javascript:window.location.assign('dstable.jsp?mode=add')">Add table</a></li>
-				<%
-					}
-				}
-				%>
-				
           </ul>
         </div>
 
-				<h1>Search for a dataset table definition</h1>
+				<h1>Search tables</h1>
 				
 				<table width="auto" cellspacing="0">
 					<tr valign="top">

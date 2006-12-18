@@ -1,202 +1,179 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<%!private Vector tables=null;%>
-<%!private Vector attributes=null;%>
-<%!ServletContext ctx=null;%>
 
 <%@ include file="history.jsp" %>
 
-<%
-
-request.setCharacterEncoding("UTF-8");
-
-response.setHeader("Pragma", "no-cache");
-response.setHeader("Cache-Control", "no-cache");
-response.setDateHeader("Expires", 0);
-
-
-XDBApplication.getInstance(getServletContext());
-
-// check if the user is authorized
-AppUserIF user = SecurityUtil.getUser(request);
-if (request.getMethod().equals("POST")){
-	if (user == null){
-		%>
-			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-			<body>
-				<h1>Error</h1><b>Not authorized to post any data!</b>
-			</body>
-			</html>
-		<%
-		return;
-	}
-}
-
-String disabled = user == null ? "disabled" : "";
-
-//check if dataset id is specified
-String dsID = request.getParameter("ds_id");
-if (dsID == null || dsID.length()==0){ %>
-	<b>Dataset ID is missing!</b> <%
-	return;
-}
-
-ctx = getServletContext();
-
-//handle the POST
-if (request.getMethod().equals("POST")){
+	<%
+	// implementation of the servlet's service method
+	//////////////////////////////////////////////////
 	
-	String dsIdf = request.getParameter("ds_idf");
-	boolean delPrm = user!=null &&
-					 dsIdf!=null &&
-					 SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
+	request.setCharacterEncoding("UTF-8");
 	
-	if (!delPrm){ %>
-		<b>Not allowed!</b> <%
+	// ensure the page is not cached
+	response.setHeader("Pragma", "no-cache");
+	response.setHeader("Cache-Control", "no-cache");
+	response.setDateHeader("Expires", 0);
+
+	ServletContext ctx = getServletContext();
+	XDBApplication.getInstance(ctx);
+	AppUserIF user = SecurityUtil.getUser(request);
+	
+	// POST request not allowed for anybody who hasn't logged in			
+	if (request.getMethod().equals("POST") && user==null){
+		request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
+		request.getRequestDispatcher("error.jsp").forward(request, response);
 		return;
 	}
 	
-	Connection userConn = null;
-	DsTableHandler handler = null;
-	
-	try{
-		userConn = user.getConnection();
-		handler = new DsTableHandler(userConn, request, ctx);
-		handler.setUser(user);
+	// get values of several request parameters:
+	// - dataset id number
+	String dsID = request.getParameter("ds_id");
+	if (dsID == null || dsID.length()==0){
+		request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id");
+		request.getRequestDispatcher("error.jsp").forward(request, response);
+		return;
+	}
+	String dsName = request.getParameter("ds_name");
+
+	//// handle the POST request //////////////////////
+	//////////////////////////////////////////////////
+	if (request.getMethod().equals("POST")){
 		
+		Connection userConn = null;
+		DsTableHandler handler = null;
 		try{
-			handler.execute();
+			userConn = user.getConnection();
+			handler = new DsTableHandler(userConn, request, ctx);
+			handler.setUser(user);
+			
+			try{
+				handler.execute();
+			}
+			catch (Exception e){
+				String msg = e.getMessage();
+					
+				ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();							
+				e.printStackTrace(new PrintStream(bytesOut));
+				String trace = bytesOut.toString(response.getCharacterEncoding());
+				
+				String backLink = history.getBackUrl();
+				
+				request.setAttribute("DD_ERR_MSG", msg);
+				request.setAttribute("DD_ERR_TRC", trace);
+				request.setAttribute("DD_ERR_BACK_LINK", backLink);
+				
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
 		}
-		catch (Exception e){
-			handler.cleanup();
-			%>
-			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><body><b><%=e.toString()%></b></body></html> <%
+		finally{
+			try { if (userConn!=null) userConn.close();
+			} catch (SQLException e) {}
+		}
+
+		// disptach the POST request
+		String redirUrl = "dstables.jsp?ds_id=" + dsID;
+		if (dsName!=null && dsName.length()>0)
+			redirUrl = redirUrl + "&ds_name=" + dsName;
+		response.sendRedirect(redirUrl);
+		return;
+	}
+	//// end of handle the POST request //////////////////////
+	// any code below must not be reached when POST request!!!
+	
+	Connection conn = null;
+	DBPoolIF pool = XDBApplication.getDBPool();
+	
+	Vector tables = null;
+	Vector attributes=null;
+	String workingUser = null;
+	
+	// the whole page's try block
+	try {
+		
+		// get db connection, init search engine object
+		conn = pool.getConnection();
+		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+		searchEngine.setUser(user);
+
+		// get the dataset object		
+		Dataset dataset = searchEngine.getDataset(dsID);
+		if (dataset==null){
+			request.setAttribute("DD_ERR_MSG", "No dataset found with this id number: " + dsID);
+			request.getRequestDispatcher("error.jsp").forward(request, response);
 			return;
 		}
-	}
-	finally{
-		try { if (userConn!=null) userConn.close();
-		} catch (SQLException e) {}
-	}
 
-	String redirUrl = currentUrl;
-	String newDstID = handler.getNewDstID();
-	if (newDstID!=null)
-		redirUrl = "dataset.jsp?mode=view&ds_id=" + newDstID;
-	response.sendRedirect(redirUrl);
-	return;
-}
+		// get values for some parameters based on dataset object		
+		workingUser = dataset.getWorkingUser();
+		dsName = dataset.getShortName();
+		tables = searchEngine.getDatasetTables(dsID, true);
+		boolean editPrm = user!=null && dataset.isWorkingCopy() && workingUser!=null && workingUser.equals(user.getUserName());
+	%>
 
-
-//handle the GET
-
-String appName = ctx.getInitParameter("application-name");
-
-Connection conn = null;
-XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-DBPoolIF pool = xdbapp.getDBPool();
-
-try { // start the whole page try block
-
-conn = pool.getConnection();
-DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-
-Dataset dataset = searchEngine.getDataset(dsID);
-if (dataset == null){ %>
-	<b>Dataset was not found!</b> <%
-	return;
-}
-
-tables = searchEngine.getDatasetTables(dsID, true);
-
-DElemAttribute attr = null;
-
-VersionManager verMan = new VersionManager(conn, searchEngine, user);
-String topWorkingUser = verMan.getWorkingUser(dataset.getNamespaceID());
-boolean topFree = topWorkingUser==null ? true : false;
-
-if (disabled.equals("")){
-	if (!topFree) disabled = "disabled";
-}
-
-boolean dsLatest = dataset==null ? false : verMan.isLatestDst(dataset.getID(), dataset.getIdentifier());
-if (disabled.equals("")){
-	if (!dsLatest) disabled = "disabled";
-}
-	
+<%
+// start HTML //////////////////////////////////////////////////////////////
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Meta</title>
-
-<script language="javascript" src='script.js' type="text/javascript"></script>
-
-<script language="javascript" type="text/javascript">
-// <![CDATA[
-		function submitForm(mode){
-			
-			if (mode=="delete"){
-				var b = confirm("This will delete all the tables you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
-				if (b==false) return;
+	<script language="javascript" src='script.js' type="text/javascript"></script>
+	<script language="javascript" type="text/javascript">
+	// <![CDATA[
+			function submitForm(mode){
+				
+				if (mode=="delete"){
+					var b = confirm("This will delete all the tables you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
+					if (b==false) return;
+				}
+				
+				document.forms["form1"].elements["mode"].value = mode;
+				document.forms["form1"].submit();
 			}
-			
-			document.forms["form1"].elements["mode"].value = mode;
-			document.forms["form1"].submit();
-		}
-// ]]>
-</script>
-
+	// ]]>
+	</script>
 </head>
 	
 <body>
 
 <jsp:include page="nlocation.jsp" flush='true'>
-		<jsp:param name="name" value="Dataset tables"/>
-		<jsp:param name="back" value="true"/>
-	</jsp:include>
+	<jsp:param name="name" value="Dataset tables"/>
+	<jsp:param name="back" value="true"/>
+</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 <form name="form1" method="post" action="dstables.jsp">
 	<div id="operations">
 		<ul>
-				<li class="help"><a target="_blank" href="help.jsp?screen=dataset_tables&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+			<li class="help"><a target="_blank" href="help.jsp?screen=dataset_tables&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 		</ul>
 	</div>
 
-
-		<!--==================== dataset title  =========================================-->
-
-		<%
-		String dsName = dataset.getShortName();
-		if (dsName == null)
-			dsName = "unknown";
-		%>
-
-			<h1>Tables in 
-				<em><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a></em>
-			 dataset</h1>
+	<h1>
+		Tables in <em><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dataset.getShortName())%></a></em> dataset
+	</h1>
 		
-
 	<table width="auto" cellspacing="0">
 	
 		<tr>
 			<%
-			boolean dstPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
-			if (dstPrm){ %>		
+			if (editPrm){
+				%>
 				<td colspan="4">
-					<input type="button" <%=disabled%> value="Add new" class="smallbutton"
+					<input type="button" value="Add new" class="smallbutton"
 						   onclick="window.location.replace('dstable.jsp?mode=add&amp;ds_id=<%=dsID%>&#38;ds_name=<%=Util.replaceTags(dsName)%>&amp;ctx=ds')"/>
-					<input type="button" <%=disabled%> value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/>
+					<%
+					if (tables!=null && tables.size()>0){%>
+						<input type="button" value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/><%
+					}
+					%>
 				</td><%
 			}
 			%>
 		</tr>
-		
 		<tr style="height:5px;"><td colspan="4"></td></tr>
-
 		<tr>
 			<th align="right" style="padding-right:10px">&nbsp;</th>
 			<th align="left" style="padding-right:10px; border-left:0">Name</th>
@@ -205,15 +182,13 @@ if (disabled.equals("")){
 		</tr>
 			
 		<%
+		DElemAttribute attr = null;
 		for (int i=0; tables!=null && i<tables.size(); i++){
-			
-			DsTable table = (DsTable)tables.get(i);
-			
-			String tableLink = "dstable.jsp?mode=view&amp;table_id=" + table.getID() + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ctx=ds";
-			
+
 			String tblName = "";
 			String tblDef = "";
-		
+			DsTable table = (DsTable)tables.get(i);
+			String tableLink = "dstable.jsp?mode=view&amp;table_id=" + table.getID() + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ctx=ds";
 			attributes = searchEngine.getAttributes(table.getID(), "T", DElemAttribute.TYPE_SIMPLE);
 		
 			for (int c=0; c<attributes.size(); c++){
@@ -226,33 +201,17 @@ if (disabled.equals("")){
 
 			String tblFullName = tblName;
 			tblName = tblName.length()>40 && tblName != null ? tblName.substring(0,40) + " ..." : tblName;
-			
 			String tblFullDef = tblDef;
 			tblDef = tblDef.length()>40 && tblDef != null ? tblDef.substring(0,40) + " ..." : tblDef;
-			
-			String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
-														  table.getIdentifier(), "tbl");
-
-			String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());
-			
 			%>
 			<tr>
 				<td align="right" style="padding-right:10px">
 					<%
-					if (user!=null && dstPrm){
-						
-						if (tblWorkingUser!=null){ // mark checked-out tables
-							%> <font title="<%=Util.replaceTags(tblWorkingUser, true)%>" color="red">* </font> <%
-						}
-						else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
-							%> <font title="<%=Util.replaceTags(tblElmWorkingUser, true)%>" color="red">* </font> <%
-						}
-					
-						if (tblWorkingUser==null && topFree){ %>
-							<input type="checkbox" style="height:13px;width:13px" name="del_id" value="<%=table.getID()%>"/><%
-						}
+					if (editPrm){
+						%>
+						<input type="checkbox" style="height:13px;width:13px" name="del_id" value="<%=table.getID()%>"/><%
 					}
-					%>					
+					%>				
 				</td>
 				<td align="left" style="padding-left:5px;padding-right:10px" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>

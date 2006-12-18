@@ -6,90 +6,64 @@
 <%@ include file="history.jsp" %>
 
 <%
-
-request.setCharacterEncoding("UTF-8");
-
-response.setHeader("Pragma", "no-cache");
-response.setHeader("Cache-Control", "no-cache");
-response.setDateHeader("Expires", 0);
-
-XDBApplication.getInstance(getServletContext());
-AppUserIF user = SecurityUtil.getUser(request);
-if (request.getMethod().equals("POST")){
-	if (user == null){
-		%>
-			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-			<body>
-				<h1>Error</h1><b>Not authorized to post any data!</b>
-			</body>
-			</html>
-		<%
+	request.setCharacterEncoding("UTF-8");
+	
+	response.setHeader("Pragma", "no-cache");
+	response.setHeader("Cache-Control", "no-cache");
+	response.setDateHeader("Expires", 0);
+	
+	ServletContext ctx = getServletContext();
+	XDBApplication.getInstance(ctx);
+	AppUserIF user = SecurityUtil.getUser(request);	
+	
+	// POST request not allowed for anybody who hasn't logged in			
+	if (request.getMethod().equals("POST") && user==null){
+		request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
+		request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
 		return;
 	}
-}
-
-//check if element id is specified
-String delemID = request.getParameter("delem_id");
-if (delemID == null || delemID.length()==0){ %>
-	<b>Data element ID is missing!</b> <%
-	return;
-}
-
-String delemName = request.getParameter("delem_name");
-if (delemName == null || delemName.length()==0) delemName = "unknown";
-
-String disabled = user == null ? "disabled" : "";
-
-String dstID = request.getParameter("ds_id");
-
-ctx = getServletContext();
-
-//handle the POST
-
-if (request.getMethod().equals("POST")){
 	
-	Connection userConn = null;
+	// get vital request parameters
+	String delemID = request.getParameter("delem_id");
+	if (delemID == null || delemID.length()==0){
+		request.setAttribute("DD_ERR_MSG", "Missing request parameter: delem_id");
+		request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+		return;
+	}
 	
-	try{
-		userConn = user.getConnection();
-		FKHandler handler = new FKHandler(userConn, request, ctx);
-		
+	String delemName = request.getParameter("delem_name");
+	String dstID = request.getParameter("ds_id");
+	
+	// handle POST request
+	if (request.getMethod().equals("POST")){		
+		Connection userConn = null;
 		try{
-			handler.execute();
+			userConn = user.getConnection();
+			FKHandler handler = new FKHandler(userConn, request, ctx);
+			try{
+				handler.execute();
+			}
+			catch (Exception e){
+				e.printStackTrace(new PrintStream(response.getOutputStream()));
+				return;
+			}
 		}
-		catch (Exception e){
-			e.printStackTrace(new PrintStream(response.getOutputStream()));
-			return;
+		finally{
+			try { if (userConn!=null) userConn.close();
+			} catch (SQLException e) {}
 		}
 	}
-	finally{
-		try { if (userConn!=null) userConn.close();
-		} catch (SQLException e) {}
-	}
-}
-
-//handle the GET
-
-String appName = ctx.getInitParameter("application-name");
-
-Connection conn = null;
-XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-DBPoolIF pool = xdbapp.getDBPool();
-
-try { // start the whole page try block
-
-conn = pool.getConnection();
-DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-
-elems = searchEngine.getFKRelationsElm(delemID, dstID);
-
-StringBuffer collect_elems=new StringBuffer();
-
-if (disabled.equals("")){
-	boolean isWorkingCopy = searchEngine.isWorkingCopy(delemID, "elm");
-	if (!isWorkingCopy) disabled = "disabled";
-}
-
+	//// end of handle the POST request //////////////////////
+	
+	Connection conn = null;
+	DBPoolIF pool = XDBApplication.getDBPool();
+	
+	// the whole page's try block
+	try {	
+		conn = pool.getConnection();
+		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+		elems = searchEngine.getFKRelationsElm(delemID, dstID);
+		StringBuffer collect_elems = new StringBuffer();
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -114,7 +88,6 @@ if (disabled.equals("")){
 		}
 		
 		function openAdd(url){
-			
 			<%
 			String selDS = dstID;
 			if (selDS!=null){%>
@@ -163,20 +136,23 @@ if (disabled.equals("")){
 	<table width="auto" cellspacing="0" cellpadding="0">
 	
 		<%
-		String skipID = request.getParameter("orig_id");
-		if (skipID!=null && skipID.length()>0) skipID = "&skip_id=" + skipID;
+		String skipTableID = request.getParameter("table_id");
+		if (skipTableID!=null)
+			skipTableID = "&skip_table_id=" + skipTableID;
+		else
+			skipTableID = "";
 		%>
 	
 		<tr style="padding-bottom:2" >
 			<td></td>
 			<td colspan="3">
-				<input type="button" <%=disabled%> class="smallbutton" value="Add" onclick="openAdd('search.jsp?fk=true&ctx=popup<%=skipID%>&noncommon')"/>
+				<input type="button" class="smallbutton" value="Add" onclick="openAdd('search.jsp?fk=true&ctx=popup<%=skipTableID%>&noncommon')"/>
 			</td>
 		</tr>
 
 		<tr>
 			<td align="right" style="padding-right:10">
-				<input type="button" <%=disabled%> value="Remove" class="smallbutton" onclick="submitForm('delete')"/>
+				<input type="button" value="Remove" class="smallbutton" onclick="submitForm('delete')"/>
 			</td>				
 			<th align="left" style="padding-left:5px;padding-right:10px">Element</th>
 			<th align="left" style="padding-left:5px;padding-right:10px">Table</th>
@@ -236,6 +212,12 @@ if (disabled.equals("")){
 	<input type="hidden" name="b_id" value=""/>
 	
 	<input type="hidden" name="collect_elems" value="<%=collect_elems.toString()%>"/>
+	
+	<%
+	if (request.getParameter("table_id")!=null){ %>
+		<input type="hidden" name="table_id" value="<%=request.getParameter("table_id")%>"/><%
+	}
+	%>
 		
 </form>
 </div>

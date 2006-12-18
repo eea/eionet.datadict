@@ -20,9 +20,11 @@
     public String oTblName;
     public String oNs;
     public String oDsIdf;
-    public String topWorkingUser = null;
+    public String workingUser = null;
     public String status = null;
     public String checkInNo = null;
+    public String href = null;
+    public boolean clickable = true;
 
     private String oCompStr=null;
     private int iO=0;
@@ -42,10 +44,11 @@
         switch(i) {
             case 2: oCompStr=oType; break;
             case 3: oCompStr=status; break;
+            case 4: oCompStr=oID; break;
             default: oCompStr=oShortName; break;
             }
         iO=o;
-        }
+	}
     
     public String toString() {
         return oCompStr;
@@ -79,17 +82,8 @@
 <%
 	request.setCharacterEncoding("UTF-8");
 	
-	// The following if block tries to identify if a login has happened in which
-	// case it will redirect the response to the query string in session. This
-	// happens regardless of weather it's a sorting request or search request.
+	// get user object from session
 	AppUserIF user = SecurityUtil.getUser(request);
-	c_SearchResultSet rs = (c_SearchResultSet)session.getAttribute(attrCommonElms);
-	if (rs!=null){
-		if (rs.isAuth && user==null || !rs.isAuth && user!=null){
-			session.removeAttribute(attrCommonElms);
-			response.sendRedirect((String)session.getAttribute(oSearchUrlAttrName));
-		}
-	}
 
 	// get search type
 	String searchType=request.getParameter("SearchType");
@@ -113,6 +107,7 @@
     Connection conn = null;
     Vector dataElements = null;
     DDSearchEngine searchEngine = null;
+    boolean isIncludeHistoricVersions = request.getParameter("incl_histver")!=null && request.getParameter("incl_histver").equals("true");    
 	
     // start the whole page try block
 	try {
@@ -167,7 +162,7 @@
 			}
 			
 			// all set up for search, do it
-			dataElements = searchEngine.getCommonElements(params, type, short_name, idfier, wrkCopies, oper);
+			dataElements = searchEngine.getCommonElements(params, type, short_name, idfier, wrkCopies, isIncludeHistoricVersions, oper);
 			
 		} // end if in search mode
 
@@ -277,17 +272,25 @@ else{ %>
 			<!-- result table -->
 			
 			<table width="700" class="sortable">
-			
-				<%
-				boolean userHasEditRights = user!=null &&
-											(SecurityUtil.hasPerm(user.getUserName(), "/elements" , "u") ||
-											SecurityUtil.hasPerm(user.getUserName(), "/elements" , "i"));
-				int colSpan = userHasEditRights ? 4 : 3;
+			<%
+			boolean isDisplayVersionColumn = isIncludeHistoricVersions;
+			if (isDisplayVersionColumn){
 				%>
-				
+				<col style="width:31%"/>
+				<col style="width:23%"/>
+				<col style="width:23%"/>
+				<col style="width:23%"/><%
+			}
+			else{
+				%>
+				<col style="width:40%"/>
+				<col style="width:30%"/>
+				<col style="width:30%"/><%
+			}
+			%>
 			<thead>
 			<tr>
-				<th width="35%">
+				<th>
 					<%
 					String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 					String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
@@ -296,7 +299,7 @@ else{ %>
 	                      Element&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
-				<th width="20%">
+				<th>
 					<%
 					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
@@ -306,13 +309,18 @@ else{ %>
 					</a>
 				</th>
 				<%
-				if (userHasEditRights){ %>
-					<th width="20%">
-						CheckInNo
+				if (isDisplayVersionColumn){
+					sortedImg  = getSortedImg(4, oSortCol, oSortOrder);
+					sortedLink = getSortedLink(4, oSortCol, oSortOrder);
+					%>					
+					<th>
+						<a title="Version" href="<%=Util.replaceTags(sortedLink, true)%>">
+							Version&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
+						</a>
 					</th><%
 				}
 				%>
-				<th width="25%">
+				<th>
 					<%
 					sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(3, oSortCol, oSortOrder);
@@ -320,7 +328,6 @@ else{ %>
 					<a title="Status" href="<%=Util.replaceTags(sortedLink, true)%>">
 	                      Status&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
-
 				</th>
 			</tr>
 			</thead>
@@ -330,40 +337,53 @@ else{ %>
 			int displayed = 0;
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
 
-				// init the VersionManager
-				VersionManager verMan = new VersionManager(conn, searchEngine, user);
-			
 				// set up the search result set
 				c_SearchResultSet oResultSet=new c_SearchResultSet();
 				oResultSet.isAuth = user!=null;
 	        	oResultSet.oElements=new Vector(); 
 	        	session.setAttribute(attrCommonElms,oResultSet);
 	        	
+	        	// get IDs of elements to exclude
+	        	HashSet excludeIDs = new HashSet();
+	        	String strExcludeIDs = request.getParameter("exclude");
+	        	if (strExcludeIDs!=null && strExcludeIDs.length()>0){
+		        	StringTokenizer st = new StringTokenizer(strExcludeIDs, ",");
+				     while (st.hasMoreTokens()) {
+				         excludeIDs.add(st.nextToken());
+				     }
+	        	}
+	        	
 	        	// search results processing loop
 	        	for (int i=0; i<dataElements.size(); i++){
 		        	
-					// set up the element
 		        	DataElement dataElement = (DataElement)dataElements.get(i);
-					
 					String delem_id = dataElement.getID();
 					String delem_name = dataElement.getShortName();
-					if (delem_name == null) delem_name = "unknown";
-					if (delem_name.length() == 0) delem_name = "empty";
 					String delem_type = dataElement.getType();
-					if (delem_type == null) delem_type = "unknown";
 					
-					String displayType = "unknown";
-					if (delem_type.equals("CH1")){
+					String displayType = delem_type;
+					if (delem_type.equals("CH1"))
 						displayType = "Fixed values";
-					}
-					else if (delem_type.equals("CH2")){
+					else if (delem_type.equals("CH2"))
 						displayType = "Quantitative";
-					}
 					
+					String workingUser = dataElement.getWorkingUser();
 					String status = dataElement.getStatus();
 					String checkInNo = dataElement.getVersion();
+					StringBuffer href = new StringBuffer();
+					if (!popup)
+						href.append("data_element.jsp?mode=view&amp;delem_id=").append(delem_id);
+					else
+						href.append("javascript:pickElem(").append(delem_id).append(",").append(displayed+1).append(")");
 					
-					String workingUser = verMan.getWorkingUser(null, dataElement.getIdentifier(), "elm");
+					boolean clickable = status!=null ? !searchEngine.skipByRegStatus(status) : true;
+					if (clickable){
+						if (excludeIDs.contains(delem_id))
+							clickable = false;
+					}
+					String strDisabled = clickable ? "" : " disabled=\"disabled\"";
+					String statusImg   = "images/" + Util.getStatusImage(status);
+					String statusTxt   = Util.getStatusRadics(status);
 					
 					c_SearchResultEntry oEntry = new c_SearchResultEntry(delem_id,
                															 displayType,
@@ -371,58 +391,54 @@ else{ %>
                 														 null,
                 														 null,
                 														 null);                															 
+					oEntry.clickable = clickable;
 					oEntry.status = status;
 					oEntry.checkInNo = checkInNo;
-					oEntry.topWorkingUser = workingUser;
-					
+					oEntry.workingUser = workingUser;
+					oEntry.href = href.toString();
 					oResultSet.oElements.add(oEntry);
-					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 					
+					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 					%>
 				
 					<tr class="<%=zebraClass%>">
-						<td width="35%">
+						<td<%=strDisabled%>>
 							<%
-							if (!popup){ %>
-								<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
+							if (clickable){%>
+								<a href="<%=href%>">
 									<%=Util.replaceTags(delem_name)%>
 								</a><%
-								if (userHasEditRights && workingUser!=null){ %>
-		    						<font title="<%=Util.replaceTags(workingUser, true)%>" color="red">*</font><%
-		    					}
 							}
-							else{ %>
-								<table width="100%" cellspacing="0" cellpadding="0">
-									<tr>
-										<td>
-											<a href="javascript:pickElem(<%=dataElement.getID()%>, <%=displayed+1%>)">
-					    						<%=Util.replaceTags(delem_name)%>
-					    					</a><%
-					    					if (userHasEditRights && workingUser!=null){ %>
-					    						<font title="<%=Util.replaceTags(workingUser, true)%>" color="red">*</font><%
-					    					}
-					    					%>
-					    				</td>
-					    				<td align="right" class="barfont">
-					    					[<a target="_blank" href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view&amp;popup" onclick="pop(this.href);return false;">details</a>]
-					    				</td>
-				    				</tr>
-			    				</table><%
-	    					}
-							%>
-						</td>
-						<td width="20%">
+							else{%>
+								<%=Util.replaceTags(delem_name)%><%
+							}
+							// mark checked-out elements
+							if (user!=null && workingUser!=null){ %>
+								<font title="<%=workingUser%>" color="red">*</font><%
+		    				}
+		    				%>
+		    			</td>
+						<td<%=strDisabled%>>
 							<%=Util.replaceTags(displayType)%>
 						</td>
 						<%
-						if (userHasEditRights){ %>
-							<td width="20%">
-								<%=checkInNo%>
+						if (isDisplayVersionColumn){ %>
+							<td<%=strDisabled%>>
+								<%=delem_id%>
 							</td><%
 						}
 						%>
-						<td width="25%" style="border-right: 1px solid #C0C0C0">
-							<%=Util.replaceTags(status)%>
+						<td<%=strDisabled%>>
+							<%
+							if (clickable){ %>
+								<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=status%>" alt="<%=status%>"/><%
+							}
+							else{ %>
+								<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=status%>">
+									<strong><%=statusTxt%></strong>
+								</span><%
+							}
+							%>
 						</td>
 					</tr><%
 					displayed++;
@@ -443,57 +459,53 @@ else{ %>
                         oResultSet.SortByColumn(oSortCol,oSortOrder);
                     
                     c_SearchResultEntry oEntry;
-                    for (int i=0;i<oResultSet.oElements.size();i++) {
-                    oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
-                    
-										String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
-
-                    %>
+                    for (int i=0; i<oResultSet.oElements.size(); i++){
+	                    
+                    	oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
+                    	String strDisabled = oEntry.clickable ? "" : " disabled=\"disabled\"";
+	                    String statusImg   = "images/" + Util.getStatusImage(oEntry.status);
+						String statusTxt   = Util.getStatusRadics(oEntry.status);
+						
+						String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+                    	%>
 						<tr class="<%=zebraClass%>">
-							<td width="35%">
+							<td<%=strDisabled%>>
 								<%
-								if (!popup){ %>
-									<a href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view">
+								if (oEntry.clickable){%>
+									<a href="<%=oEntry.href%>">
 										<%=Util.replaceTags(oEntry.oShortName)%>
-									</a>
-									<%
-									if (userHasEditRights && oEntry.topWorkingUser!=null){ %>
-										<font title="<%=Util.replaceTags(oEntry.topWorkingUser, true)%>" color="red">*</font><%
-									}
+									</a><%
 								}
-								else{ %>
-									<table width="100%" cellspacing="0" cellpadding="0">
-										<tr>
-											<td>
-												<a href="javascript:pickElem(<%=oEntry.oID%>, <%=displayed+1%>)">
-						    						<%=Util.replaceTags(oEntry.oShortName)%>
-						    					</a>
-						    					<%
-												if (userHasEditRights && oEntry.topWorkingUser!=null){ %>
-													<font title="<%=Util.replaceTags(oEntry.topWorkingUser, true)%>" color="red">*</font><%
-												}
-												%>
-						    				</td>
-						    				<td align="right" class="barfont">
-						    					[<a target="_blank" href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view&amp;popup" onclick="pop(this.href);return false;">details</a>]
-						    				</td>
-					    				</tr>
-				    				</table><%
+								else{%>
+									<%=Util.replaceTags(oEntry.oShortName)%><%
 								}
+								// mark checked-out elements
+								if (user!=null && oEntry.workingUser!=null){ %>
+									<font title="<%=oEntry.workingUser%>" color="red">*</font><%
+			    				}
 								%>
-							</td>						
-							<td width="20%">
+							</td>
+							<td<%=strDisabled%>>
 								<%=oEntry.oType%>
 							</td>
 							<%
-							if (userHasEditRights){ %>
-								<td width="20%">
-									<%=oEntry.checkInNo%>
+							if (isDisplayVersionColumn){ %>
+								<td<%=strDisabled%>>
+									<%=oEntry.oID%>
 								</td><%
 							}
 							%>
-							<td width="25%" style="border-right: 1px solid #C0C0C0">
-								<%=Util.replaceTags(oEntry.status)%>
+							<td<%=strDisabled%>>
+								<%
+								if (oEntry.clickable){ %>
+									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.status%>" alt="<%=oEntry.status%>"/><%
+								}
+								else{ %>
+									<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=oEntry.status%>">
+										<strong><%=statusTxt%></strong>
+									</span><%
+								}
+								%>
 							</td>
 						</tr>
 						<%
@@ -516,6 +528,9 @@ else{ %>
 			<%
 			if (popup){ %>
 				<input type="hidden" name="ctx" value="popup"/><%
+			}
+			if (isIncludeHistoricVersions){%>
+				<input name="incl_histver" type="hidden" value="true"/><%
 			}
 			%>
 		</form>

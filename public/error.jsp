@@ -50,13 +50,14 @@ else{
 		
 			<%
 				String msg   = (String)request.getAttribute("DD_ERR_MSG");
-				msg = msg==null ? "empty message" : msg;
+				msg = msg==null ? "" : msg;
 				
 				String trc = (String)request.getAttribute("DD_ERR_TRC");
-				trc = trc==null ? "empty trace" : trc;
+				trc = trc==null ? "" : trc;
 				
-				String backLink = (String)request.getAttribute("DD_ERR_BACK_LINK");
-				backLink = backLink==null ? "javascript:history.back()" : backLink;
+//				String backLink = (String)request.getAttribute("DD_ERR_BACK_LINK");
+//				backLink = backLink==null ? "javascript:history.back()" : backLink;
+				String backLink = "javascript:history.back()";
 			%>
 			
 			<%
@@ -73,6 +74,7 @@ else{
     <h1>Error:</h1>
 			
 		<p><b><%=msg%></b></p>
+		<p><b><%=trc%></b></p>
 		<input type="hidden" name="trc" value="<%=trc%>"/>
 			
 			

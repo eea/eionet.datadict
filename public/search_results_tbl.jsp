@@ -16,7 +16,9 @@
     public String oName;
     public String oFullName;
     public String oDsName;
-    public String topWorkingUser = null;
+    public String workingUser = null;
+    public String regStatus = null;
+    public boolean clickable = true;
 
     private String oCompStr=null;
     private int iO=0;
@@ -39,6 +41,7 @@
         switch(i) {
             case 2: oCompStr=oDsName; break;
             case 3: oCompStr=oName; break;
+            case 4: oCompStr=regStatus; break;
             default: oCompStr=oShortName; break;
             }
         iO=o;
@@ -180,38 +183,26 @@
 						Working copies of table definitions<%
 					}
 					else{ %>
-						Dataset tables<%
+						Tables from latest versions of datasets in any status<%
 					}
 					%>
 			</h1>
 			<%
-			if (user==null){ %>
+			if (user==null){%>
 				<p>	
-    		    		NB! For un-authenticated users the definitions from datasets whose Registration status
-    		    		is not <em>Recorded</em> or <em>Released</em> are not listed.<br/>
-    		    		To see which datasets have such a Registration status, go to the
-    		    		<a href="datasets.jsp?SearchType=SEARCH">datasets list</a>.
+					NB! Tables from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.<br/>
 				</p><%
 		    }
 			%>
 		
 		<form id="form1" method="post" action="search_results_tbl.jsp" onsubmit="setLocation()">
 		
-		<div style="padding-bottom:5">
-			<%
-			boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
-			if (dstPrm){ %>
-				<input type="button" class="smallbutton" value="Add" onclick="goTo('add')"/>
-				<%
-			}
-			%>
-		</div>
-		
 		<!-- the result table -->		
 		<table width="700" class="sortable">
-		 <col style="width:37%"/>
-		 <col style="width:35%"/>
-		 <col style="width:25%"/>
+		 <col style="width:34%"/>
+		 <col style="width:22%"/>
+		 <col style="width:22%"/>
+		 <col style="width:22%"/>
 			<thead>
 			<tr>
 				<th>
@@ -220,7 +211,7 @@
 					String sortedLink = getSortedLink(3, oSortCol, oSortOrder);
 					%>
 					<a title="Table" href="<%=Util.replaceTags(sortedLink, true)%>">
-	                      Table&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
+	                      Full name&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 				<th>
@@ -239,6 +230,15 @@
 					%>
 					<a title="Dataset" href="<%=Util.replaceTags(sortedLink, true)%>">
 	                      Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
+					</a>
+				</th>
+				<th>
+					<%
+					sortedImg  = getSortedImg(4, oSortCol, oSortOrder);
+					sortedLink = getSortedLink(4, oSortCol, oSortOrder);
+					%>
+					<a title="Dataset status" href="<%=Util.replaceTags(sortedLink,true)%>">
+	                      Dataset status&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 			</tr>
@@ -325,64 +325,85 @@
 	        		oResultSet.oElements=new Vector(); 
 	        		session.setAttribute(oSearchCacheAttrName,oResultSet);
 	        		
-	        		// set up the version manager for checking check-outs
-	        		VersionManager verMan = new VersionManager(conn, searchEngine, user);
-
 					for (int i=0; i<dsTables.size(); i++){
 						DsTable table = (DsTable)dsTables.get(i);
-						
 						String table_id = table.getID();
 						String table_name = table.getShortName();
 						String ds_id = table.getDatasetID();
 						String ds_name = table.getDatasetName();
 						String dsNs = table.getParentNs();
-						
-						if (table_name == null) table_name = "unknown";
-						if (table_name.length() == 0) table_name = "empty";
-				
-						if (ds_name == null || ds_name.length() == 0) ds_name = "unknown";
-				
 						String tblName = table.getName()==null ? "" : table.getName();
-		
-						String tblFullName = tblName;
 						tblName = tblName.length()>60 && tblName != null ? tblName.substring(0,60) + " ..." : tblName;
-
+						String tblFullName = tblName;
+						String workingUser = table.getDstWorkingUser();
+						
 						tableLink = "dstable.jsp?mode=view&amp;table_id=" + table_id + "&amp;ds_id=" + ds_id + "&amp;ds_name=" + ds_name;
+
+						String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+						String regStatus = table.getDstStatus();
+						boolean clickable = regStatus!=null ? !searchEngine.skipByRegStatus(regStatus) : true;
+						String strDisabled = clickable ? "" : " disabled=\"disabled\"";
+						String statusImg   = "images/" + Util.getStatusImage(regStatus);
+						String statusTxt   = Util.getStatusRadics(regStatus);
 
 						c_SearchResultEntry oEntry = new c_SearchResultEntry(table_id,
                 															 ds_id,
                 															 table_name,
                 															 tblFullName,
                 															 ds_name);
-                															 
-						String topWorkingUser = verMan.getWorkingUser(table.getParentNs());
-						oEntry.topWorkingUser = topWorkingUser;
+                		oEntry.workingUser = workingUser;
+                		oEntry.clickable = clickable;
+                		oEntry.regStatus = regStatus;
 						oResultSet.oElements.add(oEntry);
-						
-						String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
-						
 						%>
 						<tr class="<%=zebraClass%>">
-		    				<td>
-								<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
-								<%
-								// mark tables in a locked dataset
-								if (dstPrm && topWorkingUser!=null){ %>
-									<font title="<%=Util.replaceTags(topWorkingUser, true)%>" color="red">*</font><%
-			    				}
+							<%
+							// 1st column, table full name
+							%>
+		    				<td<%=strDisabled%>>
+		    					<%
+		    					if (clickable){%>
+									<a href="<%=tableLink%>">
+										<%=Util.replaceTags(tblFullName)%>
+									</a><%
+								}
+								else{%>
+									<%=Util.replaceTags(tblFullName)%><%
+								}
 			    				%>
 							</td>
+							<%
+							// 2nd column, table short name
+							%>
 							<td>
 								<%=Util.replaceTags(table_name)%>
 							</td>
+							<%
+							// 3rd column, dataset short name
+							%>
 							<td>
 								<%=Util.replaceTags(ds_name)%>
 								<%
-								// mark locked datasets
-								if (dstPrm && topWorkingUser!=null){ %>
-									<font title="<%=Util.replaceTags(topWorkingUser, true)%>" color="red">*</font><%
+								// mark checked-out datasets
+								if (user!=null && workingUser!=null){ %>
+									<font title="<%=workingUser%>" color="red">*</font><%
 			    				}
 			    				%>
+							</td>
+							<%
+							// 4th column, dataset status
+							%>
+							<td>
+								<%
+								if (clickable){ %>
+									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
+								}
+								else{ %>
+									<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=regStatus%>">
+										<strong><%=statusTxt%></strong>
+									</span><%
+								}
+								%>
 							</td>
 						</tr>
 						<%
@@ -407,28 +428,66 @@
                         oResultSet.SortByColumn(oSortCol,oSortOrder);
                     
                     c_SearchResultEntry oEntry;
-                    for (int i=0;i<oResultSet.oElements.size();i++) {
+                    
+                    // loop over search result set
+                    for (int i=0;i<oResultSet.oElements.size();i++){
+	                    
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
-
+                        String strDisabled = oEntry.clickable ? "" : " disabled=\"disabled\"";
+                        String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
                         tableLink = "dstable.jsp?mode=view&amp;table_id=" + oEntry.oID + "&amp;ds_id=" + oEntry.oDsID + "&amp;ds_name=" + oEntry.oDsName;
+                        String statusImg   = "images/" + Util.getStatusImage(oEntry.regStatus);
+						String statusTxt   = Util.getStatusRadics(oEntry.regStatus);
                         
-												String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 						%>
 						<tr class="<%=zebraClass%>">
-							<td>
-								<a href="<%=tableLink%>"><%=Util.replaceTags(oEntry.oName)%></a>
+							<%
+							// 1st column, table full name
+							%>
+							<td<%=strDisabled%>>
 								<%
-								// mark tables in a locked dataset
-								if (dstPrm && oEntry.topWorkingUser!=null){ %>
-									<font title="<%=Util.replaceTags(oEntry.topWorkingUser, true)%>" color="red">*</font><%
-			    				}
+								if (oEntry.clickable){%>
+									<a href="<%=tableLink%>">
+										<%=Util.replaceTags(oEntry.oName)%>
+									</a><%
+								}
+								else{%>
+									<%=Util.replaceTags(oEntry.oName)%><%
+								}
 			    				%>
 							</td>
+							<%
+							// 2nd column, table short name
+							%>
 							<td>
 								<%=Util.replaceTags(oEntry.oShortName)%>								
 							</td>
+							<%
+							// 3rd column, dataset short name
+							%>
 							<td>
 								<%=Util.replaceTags(oEntry.oDsName)%>
+								<%
+								// mark checked-out datasets
+								if (user!=null && oEntry.workingUser!=null){ %>
+									<font title="<%=oEntry.workingUser%>" color="red">*</font><%
+			    				}
+			    				%>
+							</td>
+							<%
+							// 4th column, dataset status
+							%>
+							<td>
+								<%
+								if (oEntry.clickable){ %>
+									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.regStatus%>" alt="<%=oEntry.regStatus%>"/><%
+								}
+								else{ %>
+									<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=oEntry.regStatus%>">
+										<strong><%=statusTxt%></strong>
+									</span><%
+								}
+								%>
 							</td>
 						</tr>
 						<%

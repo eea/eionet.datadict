@@ -21,7 +21,11 @@
     public String oTblName;
     public String oNs;
     public String oDsIdf;
-    public String topWorkingUser = null;
+    public String dstID = null;
+    public String dstWorkingUser = null;
+    public String dstRegStatus = null;
+    public String href = null;
+    public boolean clickable = true;
 
     private String oCompStr=null;
     private int iO=0;
@@ -42,6 +46,8 @@
             case 2: oCompStr=oType; break;
             case 3: oCompStr=oTblName; break;
             case 4: oCompStr=oDsName; break;
+            case 5: oCompStr=dstRegStatus; break;
+            case 6: oCompStr=dstID; break;            
             default: oCompStr=oShortName; break;
             }
         iO=o;
@@ -86,17 +92,8 @@
 		request.getRequestDispatcher("common_elms.jsp").forward(request, response);
 	}
 
-	// The following if block tries to identify if a login has happened in which
-	// case it will redirect the response to the query string in session. This
-	// happens regardless of weather it's a sorting request or search request.
+	// get user object from session
 	AppUserIF user = SecurityUtil.getUser(request);
-	c_SearchResultSet rs = (c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
-	if (rs!=null){
-		if (rs.isAuth && user==null || !rs.isAuth && user!=null){
-			session.removeAttribute(oSearchCacheAttrName);
-			response.sendRedirect((String)session.getAttribute(oSearchUrlAttrName));
-		}
-	}
 	
 	// get search type
 	String searchType=request.getParameter("SearchType");
@@ -127,6 +124,7 @@
     Connection conn = null;
     Vector dataElements = null;
     DDSearchEngine searchEngine = null;
+    boolean isIncludeHistoricVersions = request.getParameter("incl_histver")!=null && request.getParameter("incl_histver").equals("true");
 	
     // start the whole page try block
 	try {
@@ -158,7 +156,7 @@
 				oper=" like ";
 			
 			String parWrkCopies = request.getParameter("wrk_copies");
-			boolean wrkCopies = (parWrkCopies!=null && parWrkCopies.equals("true")) ? true : false;
+			boolean wrkCopies = (parWrkCopies!=null && parWrkCopies.equals("true")) ? true : false;			
 		
 			// get dynamical search parameters
 			Vector params = new Vector();	
@@ -184,7 +182,27 @@
 			
 			// all set up for search, do it
 			dataElements =
-			searchEngine.getDataElements(params, type, ns_param, short_name, idfier, null, dataset, wrkCopies, oper);
+			searchEngine.getDataElements(params, type, ns_param, short_name, idfier, null, dataset, wrkCopies, isIncludeHistoricVersions, oper);
+			
+			// if searching for use as foreign key, prune out certain ones
+			String strForForeignKeyUse = request.getParameter("for_fk_use");			
+			if (strForForeignKeyUse!=null && strForForeignKeyUse.equals("true")){
+				String skipTableID = request.getParameter("skip_table_id");
+				HashSet alreadySelected = Util.tokens2hash(request.getParameter("selected"), "|");
+				if ((skipTableID!=null && skipTableID.length()>0) || (alreadySelected!=null && alreadySelected.size()>0)){
+					for (int i=0; dataElements!=null && i<dataElements.size();i++){
+						DataElement elm = (DataElement)dataElements.get(i);
+						if (skipTableID!=null && elm.getTableID()!=null && elm.getTableID().equals(skipTableID)){
+							dataElements.remove(i);
+							i--;
+						}
+						else if (alreadySelected.contains(elm.getID())){
+							dataElements.remove(i);
+							i--;
+						}
+					}
+				}
+			}
 			
 		} // end if in search mode
 
@@ -298,15 +316,15 @@ else{ %>
             	</ul>
             </div>
             
-            <h1>Search results</h1>
+            <%
+            String strAllOrLatest = isIncludeHistoricVersions ? "all " : "latest";
+            %>
+            <h1>Non-common elements from <%=strAllOrLatest%> versions of datasets in any status</h1>
 
 			<%
 			if (user==null){ %>
 				<p>
-		    		NB! For un-authenticated users the element definitions from datasets
-		    		whose Registration status is not<br/><em>Recorded</em> or <em>Released</em> are not listed.
-		    		To see which datasets have such a Registration status,<br/>go to the
-		    		<a href="datasets.jsp?SearchType=SEARCH">datasets list</a>.
+					NB! Elements from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
 		        </p><%
 		    }
 			%>
@@ -316,10 +334,26 @@ else{ %>
 			<!-- search results table -->
 						
 			<table width="700" class="sortable">
-			<col style="width:30%"/>
-			<col style="width:25%"/>
-			<col style="width:22%"/>
-			<col style="width:20%"/>
+			<%
+			boolean isDisplayDstVersionColumn = isIncludeHistoricVersions;
+			if (isDisplayDstVersionColumn){%>
+				<col style="width:20%"/>
+				<col style="width:16%"/>
+				<col style="width:16%"/>
+				<col style="width:16%"/>
+				<col style="width:16%"/>
+				<col style="width:16%"/>
+				<%
+			}
+			else{%>
+				<col style="width:24%"/>
+				<col style="width:19%"/>
+				<col style="width:19%"/>
+				<col style="width:19%"/>
+				<col style="width:19%"/>
+				<%
+			}
+			%>			
 			<thead>
 			<tr>
 				<th>
@@ -329,6 +363,15 @@ else{ %>
 					%>
 					<a title="Element" href="<%=Util.replaceTags(sortedLink, true)%>">
 	                      Element&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
+					</a>
+				</th>
+				<th>
+					<%
+					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
+					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
+					%>
+					<a title="Type" href="<%=Util.replaceTags(sortedLink, true)%>">
+	                      Type&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 				<th>
@@ -349,13 +392,25 @@ else{ %>
 	                      Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
+				<%
+				if (isDisplayDstVersionColumn){
+					sortedImg  = getSortedImg(6, oSortCol, oSortOrder);
+					sortedLink = getSortedLink(6, oSortCol, oSortOrder);
+					%>
+					<th>
+						<a title="Dataset version" href="<%=Util.replaceTags(sortedLink, true)%>">
+		                      Dataset version&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
+						</a>
+					</th><%
+				}
+				%>
 				<th>
 					<%
-					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
-					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
+					sortedImg  = getSortedImg(5, oSortCol, oSortOrder);
+					sortedLink = getSortedLink(5, oSortCol, oSortOrder);
 					%>
-					<a title="Type" href="<%=Util.replaceTags(sortedLink, true)%>">
-	                      Type&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
+					<a title="Dataset status" href="<%=Util.replaceTags(sortedLink, true)%>">
+	                      Dataset status&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
 			</tr>
@@ -364,12 +419,8 @@ else{ %>
 			<%
 			
 			int displayed = 0;
-			boolean dstPrm = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
 
-				// init the VersionManager
-				VersionManager verMan = new VersionManager(conn, searchEngine, user);
-			
 				// set up the search result set
 				c_SearchResultSet oResultSet=new c_SearchResultSet();
 				oResultSet.isAuth = user!=null;
@@ -385,69 +436,100 @@ else{ %>
 		        	
 					// skip_id is used for skipping the element for which we might be searching for foreign keys here
 		        	String delem_id = dataElement.getID();
-					if (skipID!=null && skipID.equals(delem_id)) continue;
+					if (skipID!=null && skipID.equals(delem_id))
+						continue;
 					
 					String delem_name = dataElement.getShortName();
-					if (delem_name == null) delem_name = "unknown";
-					if (delem_name.length() == 0) delem_name = "empty";
 					String delem_type = dataElement.getType();
-					if (delem_type == null) delem_type = "unknown";
-					
 					String displayType = "unknown";
-					if (delem_type.equals("CH1")){
+					if (delem_type.equals("CH1"))
 						displayType = "Fixed values";
-					}
-					else if (delem_type.equals("CH2")){
+					else if (delem_type.equals("CH2"))
 						displayType = "Quantitative";
-					}
 					
-					String topWorkingUser = verMan.getWorkingUser(dataElement.getTopNs());
-				
+					String dstID = dataElement.getDatasetID();
+					String dstWorkingUser = dataElement.getDstWorkingUser();
 					String dispDs = dataElement.getDstShortName();
-					if (dispDs==null) dispDs = "-";
+					if (dispDs==null)
+					dispDs = "-";
 					String dispTbl = dataElement.getTblShortName();
-					if (dispTbl==null) dispTbl = "-";
-				
+					if (dispTbl==null)
+					dispTbl = "-";
+
+					String dstRegStatus = dataElement.getDstStatus();
+					boolean clickable = dstRegStatus!=null ? !searchEngine.skipByRegStatus(dstRegStatus) : true;
+					String strDisabled = clickable ? "" : " disabled=\"disabled\"";
+					String statusImg   = "images/" + Util.getStatusImage(dstRegStatus);
+					String statusTxt   = Util.getStatusRadics(dstRegStatus);
+
+					StringBuffer href = new StringBuffer();
+					if (!popup)
+						href.append("data_element.jsp?mode=view&amp;delem_id=").append(delem_id);
+					else
+						href.append("javascript:pickElem(").append(delem_id).append(",").append(displayed+1).append(")");
+						
 					c_SearchResultEntry oEntry = new c_SearchResultEntry(delem_id,
                															 displayType,
                 														 delem_name,
                 														 dispDs,
                 														 dispTbl,
-                														 null);                															 
-					oEntry.topWorkingUser = topWorkingUser;
+                														 null);
+                	oEntry.clickable = clickable;
+                	oEntry.dstID = dstID;
+					oEntry.dstRegStatus = dstRegStatus;
+					oEntry.dstWorkingUser = dstWorkingUser;
+					oEntry.href = href.toString();
 					oResultSet.oElements.add(oEntry);
-					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 					
+					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 					%>
 				
-					<tr class="<%=zebraClass%>">
-						<td>
+					<tr class="<%=zebraClass%>">						
+						<td<%=strDisabled%>>
 							<%
-							if (!popup){ %>
-								<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
+							if (clickable){%>
+								<a href="<%=href%>">
 									<%=Util.replaceTags(delem_name)%>
-								</a>
-								<%
-								// mark elements in a locked dataset
-								if (dstPrm && topWorkingUser!=null){ %>
-									<font title="<%=Util.replaceTags(topWorkingUser, true)%>" color="red">*</font><%
-			    				}
-		    				}
-		    				else{ %>
-		    					<a href="javascript:pickElem(<%=dataElement.getID()%>, <%=displayed+1%>)">
-		    						<%=Util.replaceTags(delem_name)%>
-		    					</a><%
-	    					}
-		    				%>
+								</a><%
+							}
+							else{%>
+								<%=Util.replaceTags(delem_name)%><%
+							}
+							%>
+		    			</td>
+						<td>
+							<%=displayType%>
 						</td>
 						<td>
 							<%=Util.replaceTags(dispTbl)%>
 						</td>
 						<td>
 							<%=Util.replaceTags(dispDs)%>
+							<%
+							// mark checked-out datasets
+							if (user!=null && dstWorkingUser!=null){ %>
+								<font title="<%=dstWorkingUser%>" color="red">*</font><%
+		    				}
+		    				%>
 						</td>
+						<%
+						if (isDisplayDstVersionColumn){ %>
+							<td>
+								<%=dstID%>
+							</td><%
+						}
+						%>
 						<td>
-							<%=displayType%>
+							<%
+							if (clickable){ %>
+								<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=dstRegStatus%>" alt="<%=dstRegStatus%>"/><%
+							}
+							else{ %>
+								<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=dstRegStatus%>">
+									<strong><%=statusTxt%></strong>
+								</span><%
+							}
+							%>
 						</td>
 					</tr><%
 					displayed++;
@@ -470,36 +552,58 @@ else{ %>
                     for (int i=0;i<oResultSet.oElements.size();i++) {
 	                    
 	                    c_SearchResultEntry oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
-											String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+	                    String strDisabled = oEntry.clickable ? "" : " disabled=\"disabled\"";
+	                    String statusImg   = "images/" + Util.getStatusImage(oEntry.dstRegStatus);
+						String statusTxt   = Util.getStatusRadics(oEntry.dstRegStatus);
+						
+						String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 	                    %>
 						<tr class="<%=zebraClass%>">
-							<td>
+							<td<%=strDisabled%>>
 								<%
-								if (!popup){ %>
-									<a href="data_element.jsp?delem_id=<%=oEntry.oID%>&amp;type=<%=oEntry.oType%>&amp;mode=view">
+								if (oEntry.clickable){%>
+									<a href="<%=oEntry.href%>">
 										<%=Util.replaceTags(oEntry.oShortName)%>
-									</a>
-									<%
-									// mark elements in a locked dataset
-									if (dstPrm && oEntry.topWorkingUser!=null){ %>
-										<font title="<%=Util.replaceTags(oEntry.topWorkingUser, true)%>" color="red">*</font><%
-				    				}
-			    				}
-			    				else{ %>
-			    					<a href="javascript:pickElem(<%=oEntry.oID%>, <%=displayed+1%>)">
-			    						<%=Util.replaceTags(oEntry.oShortName)%>
-			    					</a><%
-		    					}
-		    					%>
+									</a><%
+								}
+								else{%>
+									<%=Util.replaceTags(oEntry.oShortName)%><%
+								}
+								%>
+							</td>
+							<td>
+								<%=oEntry.oType%>
 							</td>						
 							<td>
 								<%=Util.replaceTags(oEntry.oTblName)%>
 							</td>
 							<td>
 								<%=Util.replaceTags(oEntry.oDsName)%>
+								<%
+								// mark checked-out datasets
+								if (user!=null && oEntry.dstWorkingUser!=null){ %>
+									<font title="<%=oEntry.dstWorkingUser%>" color="red">*</font><%
+			    				}
+			    				%>
 							</td>
+							<%
+							if (isDisplayDstVersionColumn){ %>
+								<td>
+									<%=oEntry.dstID%>
+								</td><%
+							}
+							%>
 							<td>
-								<%=oEntry.oType%>
+								<%
+								if (oEntry.clickable){ %>
+									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.dstRegStatus%>" alt="<%=oEntry.dstRegStatus%>"/><%
+								}
+								else{ %>
+									<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=oEntry.dstRegStatus%>">
+										<strong><%=statusTxt%></strong>
+									</span><%
+								}
+								%>
 							</td>
 						</tr>
 						<%
@@ -517,6 +621,11 @@ else{ %>
 		<input type="hidden" name="searchUrl" />
 		<input name='SearchType' type='hidden' value='<%=TYPE_SEARCH%>'/>
 		<input type="hidden" name="mode" value="view"/>
+		<%
+		if (isIncludeHistoricVersions){%>
+			<input name="incl_histver" type="hidden" value="true"/><%
+		}
+		%>
 
 		</form>
 		
@@ -527,6 +636,9 @@ else{ %>
 			<%
 			if (popup){ %>
 				<input type='hidden' name='ctx' value='popup'/><%
+			}
+			if (isIncludeHistoricVersions){%>
+				<input name="incl_histver" type="hidden" value="true"/><%
 			}
 			%>
 		</form>

@@ -2,333 +2,382 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private String currentUrl=null;%>
-
 <%@ include file="history.jsp" %>
 
-<%!
-
-private String getValue(String id, String mode, Vector attributes){
-	if (id==null) return null;
-	if (mode.equals("add")) return null;
+	<%!
+	// servlet-scope helper functions
+	//////////////////////////////////
+	/**
+	*
+	*/
+	private String getValue(String id, String mode, Vector attributes){
+		if (id==null) return null;
+		if (mode.equals("add")) return null;
+		
+		for (int i=0; attributes!=null && i<attributes.size(); i++){
+			DElemAttribute attr = (DElemAttribute)attributes.get(i);
+			if (id.equals(attr.getID()))
+				return attr.getValue();
+		}
+		
+		return null;
+	}
+	/**
+	*
+	*/
 	
-	for (int i=0; attributes!=null && i<attributes.size(); i++){
-		DElemAttribute attr = (DElemAttribute)attributes.get(i);
-		if (id.equals(attr.getID()))
-			return attr.getValue();
+	private Vector getValues(String id, String mode, Vector attributes){
+		if (id==null) return null;
+		if (mode.equals("add")) return null;
+	
+		for (int i=0; attributes!=null && i<attributes.size(); i++){
+			DElemAttribute attr = (DElemAttribute)attributes.get(i);
+			if (id.equals(attr.getID()))
+				return attr.getValues();
+		}
+	
+		return null;
+	}
+	%>
+
+	<%
+	// implementation of the servlet's service method
+	//////////////////////////////////////////////////
+	
+	request.setCharacterEncoding("UTF-8");
+	
+	String mode=null;
+	Vector mAttributes=null;
+	Vector attributes=null;
+	Dataset dataset=null;
+	Vector complexAttrs=null;
+	Vector tables=null;
+	Vector otherVersions = null;
+	
+	ServletContext ctx = getServletContext();
+	XDBApplication.getInstance(ctx);
+	AppUserIF user = SecurityUtil.getUser(request);	
+	
+	// POST request not allowed for anybody who hasn't logged in			
+	if (request.getMethod().equals("POST") && user==null){
+		request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
+		request.getRequestDispatcher("error.jsp").forward(request, response);
+		return;
 	}
 	
-	return null;
-}
-private Vector getValues(String id, String mode, Vector attributes){
-	if (id==null) return null;
-	if (mode.equals("add")) return null;
-
-	for (int i=0; attributes!=null && i<attributes.size(); i++){
-		DElemAttribute attr = (DElemAttribute)attributes.get(i);
-		if (id.equals(attr.getID()))
-			return attr.getValues();
+	// get values of most important request parameters:
+	// - id number
+	// - alphanumeric identifier
+	// - mode			
+	String dstIdf = request.getParameter("ds_idf");
+	String ds_id = request.getParameter("ds_id");
+	mode = request.getParameter("mode");
+	if (mode == null || mode.length()==0){
+		request.setAttribute("DD_ERR_MSG", "Missing request parameter: mode");
+		request.getRequestDispatcher("error.jsp").forward(request, response);
+		return;
 	}
-
-	return null;
-}
-
-%>
-
-			<%
-			
-			request.setCharacterEncoding("UTF-8");
-			
-			String mode=null;
-			Vector mAttributes=null;
-			Vector attributes=null;
-			Dataset dataset=null;
-			Vector complexAttrs=null;
-			Vector tables=null;
-
-			XDBApplication.getInstance(getServletContext());
-			AppUserIF user = SecurityUtil.getUser(request);
-			
-			ServletContext ctx = getServletContext();			
-			
-			if (request.getMethod().equals("POST")){
-      			if (user == null){ %>
-					<b>Not authorized to post any data!</b> <%
-	      			return;
-      			}
+	if (mode.equals("add")){
+		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){
+			request.setAttribute("DD_ERR_MSG", "You have no permission to add a dataset!");
+			request.getRequestDispatcher("error.jsp").forward(request, response);
+			return;
+		}
+	}
+	if (mode.equals("view")){
+		if (Util.voidStr(dstIdf) && Util.voidStr(ds_id)){
+			request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id or ds_idf");
+			request.getRequestDispatcher("error.jsp").forward(request, response);
+			return;
+		}
+	}
+	else if (mode.equals("edit")){
+		if (Util.voidStr(ds_id)){
+			request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id");
+			request.getRequestDispatcher("error.jsp").forward(request, response);
+			return;
+		}
+	}
+	
+	// as of Sept 2006,  parameter "action" is a helper to add some extra context to parameter "mode"
+	String action = request.getParameter("action");
+	if (action!=null && action.trim().length()==0) action = null;
+	
+	// if requested by alphanumeric identifier, it means the dataset's latest version is requested 
+	boolean isLatestRequested = mode.equals("view") && !Util.voidStr(dstIdf);
+	
+	
+	//// handle the POST request//////////////////////
+	//////////////////////////////////////////////////
+	if (request.getMethod().equals("POST")){
+		
+		Connection userConn = null;
+		DatasetHandler handler = null;
+		try {
+			userConn = user.getConnection();
+			handler = new DatasetHandler(userConn, request, ctx);
+			handler.setUser(user);
+			try {
+				handler.execute();
 			}
-			
-			String dstIdf = request.getParameter("ds_idf");
-			String ds_id = request.getParameter("ds_id");
-			
-			mode = request.getParameter("mode");
-			if (mode == null || mode.length()==0) { %>
-				<b>Mode paramater is missing!</b> <%
+			catch (Exception e){
+				handler.cleanup();
+				String msg = e.getMessage();					
+				ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+				e.printStackTrace(new PrintStream(bytesOut));
+				String trace = bytesOut.toString(response.getCharacterEncoding());					
+				request.setAttribute("DD_ERR_MSG", msg);
+				request.setAttribute("DD_ERR_TRC", trace);
+				String backLink = request.getParameter("submitter_url");
+				if (backLink==null || backLink.length()==0)
+					backLink = history.getBackUrl();
+				request.setAttribute("DD_ERR_BACK_LINK", backLink);
+				request.getRequestDispatcher("error.jsp").forward(request, response);
 				return;
 			}
-			
-			if (mode.equals("add")){
-				if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
-					<b>Not allowed!</b> <%
-					return;
-				}
-			}
-			
-			if (mode.equals("view")){
-				if (Util.voidStr(dstIdf) && Util.voidStr(ds_id)){ %>
-					<b>Missing identifier or ID!</b> <%
-					return;
-				}
-			}
-			else if (mode.equals("edit")){
-				if (Util.voidStr(ds_id)){ %>
-					<b>Missing ID!</b> <%
-					return;
-				}
-			}
-			
-			boolean latestRequested = mode.equals("view") && !Util.voidStr(dstIdf);
-			boolean editPrm = false;
-			boolean delPrm = false;
+		}
+		finally{
+			try { if (userConn!=null) userConn.close();
+			} catch (SQLException e) {}
+		}
 
-			//// HANDLE THE POST //////////////////////
-			
-			if (request.getMethod().equals("POST")){
-				
-				Connection userConn = null;
-				DatasetHandler handler = null;
-				try {
-					userConn = user.getConnection();
-					handler = new DatasetHandler(userConn, request, ctx);
-					handler.setUser(user);
-					try {
-						handler.execute();
-					}
-					catch (Exception e){
-						handler.cleanup();
-						//e.printStackTrace(new PrintStream(response.getOutputStream()));
-						//return;
-						
-						String msg = e.getMessage();
-							
-						ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();							
-						e.printStackTrace(new PrintStream(bytesOut));
-						String trace = bytesOut.toString(response.getCharacterEncoding());
-						
-						String backLink = history.getBackUrl();
-						
-						request.setAttribute("DD_ERR_MSG", msg);
-						request.setAttribute("DD_ERR_TRC", trace);
-						request.setAttribute("DD_ERR_BACK_LINK", backLink);
-						
-						request.getRequestDispatcher("error.jsp").forward(request, response);
-						return;
-					}
-				}
-				finally{
-					try { if (userConn!=null) userConn.close();
-					} catch (SQLException e) {}
-				}
-				
-				String redirUrl = "";
-				
-				if (mode.equals("add")){
-					String id = handler.getLastInsertID();
-					if (id != null && id.length()!=0)
-						redirUrl = redirUrl + "dataset.jsp?mode=edit&ds_id=" + id;
-					if (history!=null){
-						int idx = history.getCurrentIndex();
-						if (idx>0)
-							history.remove(idx);
-					}
-				}
-				else if (mode.equals("edit")){
-					
-					// if this was check in & new version was created,
-					// or if this was an unlock, send to "view" mode
-					QueryString qs = new QueryString(currentUrl);
-					
-					String checkIn = request.getParameter("check_in");
-					String unlock  = request.getParameter("unlock");
-					
-					String newMode = "edit";
-					if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
-						newMode = "view";
-						//JH041203 - remove previous url (with edit mode) from history
-						history.remove(history.getCurrentIndex());
-					}
-					else if (unlock!=null && !unlock.equals("false"))
-						newMode = "view";
-					
-					qs.changeParam("mode", newMode);
-					redirUrl =qs.getValue();
-				}
-				else if (mode.equals("delete")){					
-					redirUrl = history.gotoLastMatching("datasets.jsp");
-					if (redirUrl==null || redirUrl.length()==0)
-						redirUrl = "index.jsp";
-				}
-				
-				response.sendRedirect(redirUrl);
-				return;
-			}
-			
-			Connection conn = null;
-			XDBApplication.getInstance(getServletContext());
-			DBPoolIF pool = XDBApplication.getDBPool();
-			
-			try { // start the whole page try block
-			
-			conn = pool.getConnection();
-			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-			
-			mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
-			searchEngine.setUser(user);
-			
-			String idfier = "";
-			String ds_name = "";
-			String version = "";
-			String dsVisual = null;
-			boolean imgVisual = false;
-			
-			if (!mode.equals("add")){
-				
-				if (latestRequested){
-					dataset = searchEngine.getLatestDst(dstIdf);
-					if (dataset!=null) ds_id = dataset.getID();
-				}
-				else
-					dataset = searchEngine.getDataset(ds_id);
-					
-				if (dataset!=null){
-					
-					idfier = dataset.getIdentifier();
-					if (idfier == null) idfier = "unknown";
-					if (idfier.length() == 0) idfier = "empty";
-					
-					ds_name = dataset.getShortName();
-					if (ds_name == null) ds_name = "unknown";
-					if (ds_name.length() == 0) ds_name = "empty";
-					
-					version = dataset.getVersion();
-					if (version == null) version = "unknown";
-					if (version.length() == 0) version = "empty";
-					
-					editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
-					delPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
-					
-					if (mode.equals("edit") && !editPrm){ %>
-						<b>Not allowed!</b> <%
-						return;
-					}
-					
-					// get the visual structure, so it will be displayed in the dataset view already
-					dsVisual = dataset.getVisual();
-					if (dsVisual!=null && dsVisual.length()!=0){
-						int i = dsVisual.lastIndexOf(".");
-						if (i != -1){
-							String visualType = dsVisual.substring(i+1, dsVisual.length()).toUpperCase();
-							if (visualType.equals("GIF") || visualType.equals("JPG") || visualType.equals("JPEG") || visualType.equals("PNG"))
-								imgVisual = true;
-						}
-					}
-				}
-				else{ %>
-					<b>Dataset was not found!</b> <%
-					return;
-				}
+		// disptach the POST request
+		////////////////////////////
+		String redirUrl = "";
+		if (mode.equals("add")){
+			String id = handler.getLastInsertID();
+			if (id!=null && id.length()>0)
+				redirUrl = redirUrl + "dataset.jsp?mode=view&ds_id=" + id;
+			if (history!=null)
+				history.remove(history.getCurrentIndex());
+		}
+		else if (mode.equals("edit")){
+			// if this was a "saveclose" of a working copy in edit, send to view mode of that same working copy
+			String strSaveclose = request.getParameter("saveclose");
+			if (strSaveclose!=null && strSaveclose.equals("true")){
+				QueryString qs = new QueryString(currentUrl);
+				qs.changeParam("mode", "view");
+				redirUrl = qs.getValue();
 			}
 			else{
-				if (mAttributes.size()==0){ %>
-					<b>No metadata on attributes found! Nothing to add.</b> <%
-					return;
+				// if this was check in, go to the view of checked in copy
+				String checkIn = request.getParameter("check_in");
+				if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
+					if (history!=null)
+						history.remove(history.getCurrentIndex());
+					QueryString qs = new QueryString(currentUrl);
+					qs.changeParam("mode", "view");
+					if (handler.getCheckedInCopyID()!=null)
+						qs.changeParam("ds_id", handler.getCheckedInCopyID());
+					redirUrl =qs.getValue();
+				}
+				else{
+					QueryString qs = new QueryString(currentUrl);
+					redirUrl =qs.getValue();
 				}
 			}
-			
-			// JH220803
-			// version management
-			VersionManager verMan = new VersionManager(conn, searchEngine, user);			
-			String latestID = dataset==null ? null : verMan.getLatestDstID(dataset);
-			boolean isLatest = Util.voidStr(latestID) ? true : latestID.equals(dataset.getID());
-
-			String workingUser = null;
-			if (dataset!=null)
-				workingUser = verMan.getDstWorkingUser(dataset.getIdentifier());
-			
-			// JH220803 - implementing check-in/check-out
-			if (mode.equals("edit") && user!=null && user.isAuthentic()){
-				// see if dataset is checked out
-				if (Util.voidStr(workingUser)){
-				    // dataset not checked out, create working copy
-				    // but first make sure it's the latest version
-				    if (!isLatest){ %>
-				    	<b>Trying to check out a version that is not the latest!</b><%
-				    	return;
-				    }
-				    
-				    String copyID = verMan.checkOut(ds_id, "dst");
-				    if (!ds_id.equals(copyID)){
-					    // send to copy if created successfully
-					    // But remove previous url (edit original) from history
-					    history.remove(history.getCurrentIndex());
-					    String qryStr = "mode=edit";
-					    qryStr+= "&ds_id=" + copyID;
-				        response.sendRedirect("dataset.jsp?" + qryStr);
-			        }
-			    }
-			    else if (!workingUser.equals(user.getUserName())){
-				    // dataset is chekced out by another user
-				    %>
-				    <b>This dataset is already checked out by another user: <%=workingUser%></b>
-				    <%
-				    return;
-			    }
-			    else if (dataset!=null && !dataset.isWorkingCopy()){
-				    // Dataset is checked out by THIS user.
-				    // If it's not the working copy, send the user to it.				    
-				    String copyID = verMan.getWorkingCopyID(dataset);
-				    if (copyID!=null && !copyID.equals(ds_id)){
-					    // Before resending, remove previous url (edit original) from history.
-					    history.remove(history.getCurrentIndex());
-						String qryStr = "mode=edit";
-						qryStr+= "&ds_id=" + copyID;
-						response.sendRedirect("dataset.jsp?" + qryStr);
-					}
-			    }
+		}
+		else if (mode.equals("delete")){
+			if (history!=null)
+				history.remove(history.getCurrentIndex());
+			redirUrl = "datasets.jsp?SearchType=SEARCH";
+		}
+		
+		response.sendRedirect(redirUrl);
+		return;
+	}	
+	//// end of handle the POST request //////////////////////
+	// any code below must not be reached when POST request!!!
+	
+	Connection conn = null;
+	DBPoolIF pool = XDBApplication.getDBPool();
+	
+	// the whole page's try block
+	try {
+	
+		// get db connection, init search engine object
+		conn = pool.getConnection();
+		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+		searchEngine.setUser(user);
+		
+		// initialize the metadata of attributes
+		mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+		
+		String idfier = "";
+		String ds_name = "";
+		String version = "";
+		String dsVisual = null;		
+		String workingUser = null;
+		String regStatus = null;
+		String latestID = null;
+		boolean isLatestDst = false;
+		boolean imgVisual = false;
+		boolean editPrm = false;
+		boolean editReleasedPrm = false;
+		boolean canCheckout = false;
+		boolean canNewVersion = false;
+		
+		// if not in add mode, get the dataset object and some parameters based on it
+		if (!mode.equals("add")){
+	
+			// get the dataset object		
+			if (isLatestRequested){
+				Vector v = new Vector();
+				v.add("Released");
+				v.add("Recorded");
+				dataset = searchEngine.getLatestDst(dstIdf, v);
+				if (dataset!=null)
+					ds_id = dataset.getID();
 			}
-			
-			attributes = searchEngine.getAttributes(ds_id, "DS", DElemAttribute.TYPE_SIMPLE);
-			
-			DElemAttribute attribute = null;
-			String attrID = null;
-			String attrValue = null;
-			
-			complexAttrs = searchEngine.getComplexAttributes(ds_id, "DS");		
-			if (complexAttrs == null) complexAttrs = new Vector();
-			tables = searchEngine.getDatasetTables(ds_id, true);
-			
-			Vector rodLinks = dataset==null ? null : searchEngine.getRodLinks(dataset.getID());
-			
-			// set a flag if element has history
-			boolean hasHistory = false;
-			if (mode.equals("edit") && dataset!=null){
-				Vector v = searchEngine.getDstHistory(dataset.getIdentifier(), dataset.getVersion() + 1);
-				if (v!=null && v.size()>0)
-					hasHistory = true;
-			}
-			
-			// we get the registration status already here, because it's needed in javascript below
-			String regStatus = dataset!=null ? dataset.getStatus() : null;
-			
-			// init page title
-			StringBuffer pageTitle = new StringBuffer();
-			if (mode.equals("edit"))
-				pageTitle.append("Edit dataset");
 			else
-				pageTitle.append("Dataset");
-			if (dataset!=null && dataset.getShortName()!=null)
-				pageTitle.append(" - ").append(dataset.getShortName());
-			%>
+				dataset = searchEngine.getDataset(ds_id);
+			
+			// if dataset object found, populate some parameters based on it
+			if (dataset!=null){
+				
+				idfier = dataset.getIdentifier();
+				ds_name = dataset.getShortName();
+				version = dataset.getVersion();
+				
+				regStatus = dataset.getStatus();
+				workingUser = dataset.getWorkingUser();
+				editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");				
+				editReleasedPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
+				
+				Vector v = null;
+				if (user==null){
+					v = new Vector();
+					v.add("Released");
+					v.add("Recorded");
+				}
+				latestID = searchEngine.getLatestDstID(idfier, v);
+				isLatestDst = latestID!=null && ds_id.equals(latestID);
+				
+				canNewVersion = !dataset.isWorkingCopy() && workingUser==null && regStatus!=null && user!=null && isLatestDst;
+				if (canNewVersion){
+					canNewVersion = regStatus.equals("Released") || regStatus.equals("Recorded");					
+					if (canNewVersion)
+						canNewVersion = editPrm || editReleasedPrm;						
+				}
+				
+				canCheckout = !dataset.isWorkingCopy() && workingUser==null && regStatus!=null && user!=null && isLatestDst;
+				if (canCheckout){
+					if (regStatus.equals("Released") || regStatus.equals("Recorded"))
+						canCheckout = editReleasedPrm;
+					else
+						canCheckout = editPrm || editReleasedPrm;
+				}
+				
+				// get the visual structure, so it will be displayed already in the dataset view
+				dsVisual = dataset.getVisual();
+				if (dsVisual!=null && dsVisual.length()!=0){
+					int i = dsVisual.lastIndexOf(".");
+					if (i != -1){
+						String visualType = dsVisual.substring(i+1, dsVisual.length()).toUpperCase();
+						if (visualType.equals("GIF") || visualType.equals("JPG") || visualType.equals("JPEG") || visualType.equals("PNG"))
+							imgVisual = true;
+					}
+				}
+				
+				// get the dataset's other versions (does not include working copies)
+				if (mode.equals("view"))
+					otherVersions = searchEngine.getDstOtherVersions(dataset.getIdentifier(), dataset.getID());
+			}
+			else{
+				request.setAttribute("DD_ERR_MSG", "No dataset found with this id number or alphanumeric identifier!");
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+		}
+		
+		// populate attribute values of the dataset
+		DElemAttribute attribute = null;
+		String attrID = null;
+		String attrValue = null;
+		attributes = searchEngine.getAttributes(ds_id, "DS", DElemAttribute.TYPE_SIMPLE);
+		complexAttrs = searchEngine.getComplexAttributes(ds_id, "DS");		
+		if (complexAttrs == null) complexAttrs = new Vector();
 
+		// get the dataset's tables and links to ROD		
+		tables = searchEngine.getDatasetTables(ds_id, true);
+		Vector rodLinks = dataset==null ? null : searchEngine.getRodLinks(dataset.getID());
+			
+		// init version manager object
+		VersionManager verMan = new VersionManager(conn, searchEngine, user);
+		
+		// security checks, checkin/checkout operations, dispatching of the GET request
+		if (mode.equals("edit")){
+			if (!dataset.isWorkingCopy() || user==null || (workingUser!=null && !workingUser.equals(user.getUserName()))){
+				request.setAttribute("DD_ERR_MSG", "You have no permission to edit this dataset!");
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+		}
+		else if (mode.equals("view") && action!=null && (action.equals("checkout") || action.equals("newversion"))){
+			
+			if (action.equals("checkout") && !canCheckout){
+				request.setAttribute("DD_ERR_MSG", "You have no permission to check out this dataset!");
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+			if (action.equals("newversion") && !canNewVersion){
+				request.setAttribute("DD_ERR_MSG", "You have no permission to create new version of this dataset!");
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+			
+			// if creating new version, let VersionManager know about this
+			if (action.equals("newversion")){
+				eionet.meta.savers.Parameters pars = new eionet.meta.savers.Parameters();
+				pars.addParameterValue("resetVersionAndStatus", "resetVersionAndStatus");
+				verMan.setServlRequestParams(pars);
+			}
+	
+			// check out the dataset
+		    String copyID = verMan.checkOut(ds_id, "dst");
+		    if (!ds_id.equals(copyID)){
+			    // send to copy if created successfully, remove previous url (edit original) from history
+			    history.remove(history.getCurrentIndex());			    
+			    StringBuffer buf = new StringBuffer("dataset.jsp?mode=view&ds_id=");
+			    buf.append(copyID);
+		        response.sendRedirect(buf.toString());
+	        }
+		}
+		else if (mode.equals("view") && dataset!=null){
+			// anonymous users should not be allowed to see anybody's working copy
+			if (dataset.isWorkingCopy() && user==null){
+				request.setAttribute("DD_ERR_MSG", "Anonymous users are not allowed to view a working copy!");
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+			// anonymous users should not be allowed to see definitions that are NOT in Recorded or Released status
+			if (user==null && regStatus!=null && !regStatus.equals("Recorded") && !regStatus.equals("Released")){
+				request.setAttribute("DD_ERR_MSG", "Definitions NOT in Recorded or Released status are inaccessible for anonymous users.");
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+			// redircet user to his working copy of this dataset (if such exists)
+			String workingCopyID = verMan.getWorkingCopyID(dataset);
+			if (workingCopyID!=null && workingCopyID.length()>0){
+				StringBuffer buf = new StringBuffer("dataset.jsp?mode=view&ds_id=");
+			    buf.append(workingCopyID);
+		        response.sendRedirect(buf.toString());
+			}
+		}
+		
+		// prepare the page's HTML title, shown in browser title bar
+		StringBuffer pageTitle = new StringBuffer();
+		if (mode.equals("edit"))
+			pageTitle.append("Edit dataset");
+		else
+			pageTitle.append("Dataset");
+		if (dataset!=null && dataset.getShortName()!=null)
+			pageTitle.append(" - ").append(dataset.getShortName());
+	%>
+
+<%
+// start HTML //////////////////////////////////////////////////////////////
+%>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 		<%@ include file="headerinfo.jsp" %>
@@ -341,26 +390,28 @@ private Vector getValues(String id, String mode, Vector attributes){
 			document.forms["form1"].elements["mode"].value = "delete";
 			document.forms["form1"].submit();
 		}
-
+		
 		function submitForm(mode){
 			
-			if (mode == "delete"){
+			if (mode == "delete"){				
+				<%
+				if (regStatus!=null && dataset!=null && !dataset.isWorkingCopy() && regStatus.equals("Released")){
+					if (!canCheckout){
+						%>
+						alert("You have no permission to delete this dataset!");
+						return;
+						<%
+					}
+				}
 				
-				<%
-				if (regStatus!=null && !dataset.isWorkingCopy() && regStatus.equals("Released")){ %>
-					alert("A dataset definition in Released status cannot be deleted, because it might be referenced by outer sources!");
-					return;<%
-				}
+				String confirmationText = "Are you sure you want to delete this dataset? Click OK, if yes. Otherwise click Cancel.";
+				if (dataset!=null && dataset.isWorkingCopy())
+					confirmationText = "This working copy will be deleted! Click OK, if you want to continue. Otherwise click Cancel.";
+				else if (regStatus!=null && dataset!=null && !dataset.isWorkingCopy() && regStatus.equals("Released"))
+					confirmationText = "You are about to delete a Released dataset! Are you sure you want to do this? Click OK, if yes. Otherwise click Cancel.";
 				%>
-			
-				<%
-				if (dataset!=null && dataset.isWorkingCopy()){ %>
-					var b = confirm("This working copy will be deleted and the whole dataset released for others to edit! Click OK, if you want to continue. Otherwise click Cancel.");<%
-				}
-				else{ %>
-					var b = confirm("This dataset will be deleted! You will be given a chance to delete it permanently or save it for restoring later. Click OK, if you want to continue. Otherwise click Cancel.");<%
-				}
-				%>
+				
+				var b = confirm("<%=confirmationText%>");
 				if (b==false) return;
 				
 				<%
@@ -371,7 +422,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 				}
 				else{ %>
 					// now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
-					openNoYes("yesno_dialog.html", "Do you want the selected datasets to be deleted permanently?\n(Note that working copies will always be permanently deleted)", delDialogReturn,100, 400);
+					openNoYes("yesno_dialog.html", "Do you want the dataset to be deleted permanently (answering No will enable to restore it later)?", delDialogReturn,100, 400);
 					return;<%
 				}
 				%>
@@ -396,7 +447,12 @@ private Vector getValues(String id, String mode, Vector attributes){
 				}
 				
 				slctAllValues();
-			}			
+			}
+			
+			if (mode=="editclose"){
+				mode = "edit";
+				document.forms["form1"].elements["saveclose"].value = "true";
+			}
 			
 			document.forms["form1"].elements["mode"].value = mode;
 			document.forms["form1"].submit();
@@ -469,51 +525,33 @@ private Vector getValues(String id, String mode, Vector attributes){
 			submitCheckIn();
 		}
 		
-		function submitCheckIn(){
+		function submitCheckIn(){			
 			<%
-			String latestRegStatus = dataset!=null ? searchEngine.getLatestRegStatus(dataset) : "";
-			if (latestRegStatus.equals("Released")){ %>
-				var b = confirm("Please note that you are checking your changes into a dataset definition that was in Released status prior to checking out! " +
-								"By force, this will create a new version of that definition! If you want to continue, click OK. Otherwise click Cancel.");
-				if (b==false) return;<%
-			}
-			%>
-			
-			var i;
-			var stat = "";
-			var optn;
-			var optns = document.forms["form1"].elements["reg_status"].options;
-			for (i=0; optns!=null && i<optns.length; i++){
-				optn = optns[i];
-				if (optn.selected){
-					stat = optn.value;
-					break;
-				}
-			}
-			
-			if (stat=="Released"){
+			if (regStatus!=null && regStatus.equals("Released")){
+				%>
 				var b = confirm("You are checking in with Released status! This will automatically release your changes into public view. " +
 							    "If you want to continue, click OK. Otherwise click Cancel.");
 				if (b==false) return;
+				<%
 			}
-
+			%>
 			document.forms["form1"].elements["check_in"].value = "true";
 			document.forms["form1"].elements["mode"].value = "edit";
 			document.forms["form1"].submit();
 		}
 		
 		function goTo(mode, id){
-			if (mode == "edit"){
-				<%
-				if (regStatus!=null && regStatus.equals("Released")){ %>
-					var b =  confirm("Please be aware that this is a definition in Released status. Unless " +
-						  			 "you change the status back to something lower, your edits will become " +
-						  			 "instantly visible for the public visitors after you check in the definition! " +
-						  			 "Click OK, if you want to continue. Otherwise click Cancel.");
-					if (b == false) return;<%
-				}
-				%>
+			if (mode == "edit"){				
 				document.location.assign("dataset.jsp?mode=edit&ds_id=" + id);
+			}
+			else if (mode=="checkout"){
+				document.location.assign("dataset.jsp?mode=view&action=checkout&ds_id=" + id);
+			}
+			else if (mode=="newversion"){
+				document.location.assign("dataset.jsp?mode=view&action=newversion&ds_id=" + id);
+			}
+			else if (mode=="view"){
+				document.location.assign("dataset.jsp?mode=view&ds_id=" + id);
 			}
 		}
 		
@@ -655,43 +693,27 @@ private Vector getValues(String id, String mode, Vector attributes){
 			return true;
 		}
 		
-		<%
-		if (!mode.equals("add")){%>
-			function unlockDataset(){
-				
-				var b = confirm('This will unlock the dataset for others to edit. ' +
-								'Please note that you should be doing this only in ' +
-								'extreme cases, where you are unable to unlock the dataset ' +
-								'through normal checkout/checkin procedures. Click OK, if you ' +
-								'still want to continue. Otherwise click Cancel.');
-				
-				if (b==false) return;
-								
-				document.forms["form1"].elements["unlock"].value = "<%=dataset.getNamespaceID()%>";
-				document.forms["form1"].elements["mode"].value = "edit";
-				document.forms["form1"].submit();
-			}<%
-		}
-		%>
    // ]]>
     </script>
 </head>
-<body>
-                  <jsp:include page="nlocation.jsp" flush='true'>
-                  <jsp:param name="name" value="Dataset"/>
-                  <jsp:param name="back" value="true"/>
-                </jsp:include>
-    <%@ include file="nmenu.jsp" %>
-<div id="workarea">
-				<%
 
-				String verb = "View";
-				if (mode.equals("add"))
-					verb = "Add";
-				else if (mode.equals("edit"))
-					verb = "Edit";
-					
-				%>
+<body>
+
+<jsp:include page="nlocation.jsp" flush='true'>
+<jsp:param name="name" value="Dataset"/>
+<jsp:param name="back" value="true"/>
+</jsp:include>
+<%@ include file="nmenu.jsp" %>
+<div id="workarea">
+			<%
+
+			String verb = "View";
+			if (mode.equals("add"))
+				verb = "Add";
+			else if (mode.equals("edit"))
+				verb = "Edit";
+				
+			%>
 			<div id="operations">
 				<%
 				String hlpScreen = "dataset";
@@ -703,54 +725,40 @@ private Vector getValues(String id, String mode, Vector attributes){
 				<ul>
 					<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" target="_blank">Page help</a></li>
 					<%
-					if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null){
-						%>
-						<li><a href="Subscribe?dataset=<%=Util.replaceTags(dataset.getIdentifier())%>">Subscribe</a></li>
-						<%
+					if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null){%>
+						<li><a href="Subscribe?dataset=<%=Util.replaceTags(dataset.getIdentifier())%>">Subscribe</a></li><%
+					}
+					if (mode.equals("view") && !dataset.isWorkingCopy()){
+						if (user!=null || (user==null && !isLatestRequested)){
+							if (latestID!=null && !latestID.equals(dataset.getID())){%>
+								<li><a href="dataset.jsp?mode=view&amp;ds_id=<%=latestID%>">Go to newest</a></li><%
+							}
+						}
 					}
 					%>
 				</ul>
       		</div>
 						
 			<div style="clear:right; float:right">
-							<%
-							String topWorkingUser = null;
-							boolean topFree = false;
-				
-							if (mode.equals("view") && dataset!=null){
-								if (user!=null){
-									// set the flag indicating if the corresponding namespace is in use
-									topWorkingUser = verMan.getWorkingUser(dataset.getNamespaceID());
-									topFree = topWorkingUser==null ? true : false;
-										
-									boolean inWorkByMe = workingUser==null ?
-											 false :
-											 workingUser.equals(user.getUserName());
-									
-									if (editPrm){
-										if ((dataset!=null && dataset.isWorkingCopy()) ||
-											(isLatest && topFree)   ||
-											(isLatest && inWorkByMe)){ %>
-											<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=ds_id%>')"/>&nbsp;<%
-										}
-									}
-									
-									if (delPrm){
-										if (dataset!=null && !dataset.isWorkingCopy() && isLatest && topFree){ %>
-											<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/>&nbsp;<%
-										}
-									}
-								} %>
-								<input type="button" class="smallbutton" value="History" onclick="pop('dst_history.jsp?ds_id=<%=ds_id%>')"/><%
-							}
-							// the working copy part
-							else if (dataset!=null && dataset.isWorkingCopy()){								
-								%>
-								<span class="wrkcopy">Working copy</span><%
-							}
-							%>
+				<%
+				if (mode.equals("view")){
+					if (canNewVersion){
+						%>
+						<input type="button" class="smallbutton" value="New version" onclick="goTo('newversion', '<%=ds_id%>')"/><%
+					}
+					if (canCheckout){
+						if (canNewVersion){
+							%>&nbsp;<%
+						}
+						%>
+						<input type="button" class="smallbutton" value="Check out" onclick="goTo('checkout', '<%=ds_id%>')"/>&nbsp;
+						<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
+					}
+				}
+				%>
       		</div>
-							<h1><%=Util.replaceTags(verb)%> dataset definition</h1>
+      		
+			<h1><%=Util.replaceTags(verb)%> dataset definition</h1>
 							
 			<div style="clear:both">
 			<br/>
@@ -775,92 +783,64 @@ private Vector getValues(String id, String mode, Vector attributes){
 	                <!-- mandatory/optional/conditional bar -->
 	                
 	                <%
-					if (!mode.equals("view")){ %>
-					
-								<table class="mnd_opt_cnd" border="0" width="100%" cellspacing="0" style="margin-top:10px; background: #ffffff; border:1px solid #FF9900">
-									<col style="width:4%"/>
-									<col style="width:17%"/>
-									<col style="width:4%"/>
-									<col style="width:15%"/>
-									<col style="width:4%"/>
-									<col style="width:56%"/>
-									<tr>
-										<td><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
-										<td>Mandatory</td>
-										<td><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
-										<td>Optional</td>
-										<td><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
-										<td>Conditional</td>
-									</tr>
-									<tr>
-										<td colspan="6">
-											<b>NB! Edits will be lost if you leave the page without saving!</b>
-										</td>
-									</tr>
-								</table>
+					if (!mode.equals("view")){
+						%>					
+						<table class="mnd_opt_cnd" border="0" width="100%" cellspacing="0" style="margin-top:10px; background: #ffffff; border:1px solid #FF9900">
+							<col style="width:4%"/>
+							<col style="width:17%"/>
+							<col style="width:4%"/>
+							<col style="width:15%"/>
+							<col style="width:4%"/>
+							<col style="width:56%"/>
+							<tr>
+								<td><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
+								<td>Mandatory</td>
+								<td><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
+								<td>Optional</td>
+								<td><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
+								<td>Conditional</td>
+							</tr>
+							<tr>
+								<td colspan="6">
+									<b>NB! Edits will be lost if you leave the page without saving!</b>
+								</td>
+							</tr>
+						</table>
 						<%
 					}	
 					%>
 	                
-	                <!-- add, save, check-in, undo check-out buttons -->
+	                			<!-- add, save, check-in, undo check-out buttons -->
 					
-					<%
-					if (mode.equals("add") || mode.equals("edit")){ %>					
-							<div style="margin-top:10px; text-align:right;" >
-							<%
-								// add case
-								if (mode.equals("add")){
-									boolean iPrm = user==null ? false : SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i");
-									if (!iPrm){ %>
-										<input class="mediumbuttonb" type="button" value="Add" disabled="disabled"/><%
-									}
-									else{ %>
-										<input class="mediumbuttonb" type="button" value="Add" onclick="submitForm('add')"/><%
-									}
-								}
-								// edit case
-								else if (mode.equals("edit")){
-									String isDisabled = editPrm ? "" : "disabled='disabled'";
-									%>
-									<input type="button" class="mediumbuttonb" value="Save" <%=isDisabled%> onclick="submitForm('edit')"/>&nbsp;
+								<div style="margin-top:10px;margin-bottom:5px;text-align:right;">
 									<%
-									if (!dataset.isWorkingCopy()){ %>
-										<input class="mediumbuttonb" type="button" value="Delete" <%=isDisabled%> onclick="submitForm('delete')"/>&nbsp;<%
+									// add case
+									if (mode.equals("add")){ %>
+										<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
+										<%
 									}
-									else{ %>
-										<input class="mediumbuttonb" type="button" value="Check in" onclick="checkIn()" <%=isDisabled%>/>&nbsp;
-										<input class="mediumbuttonb" type="button" value="Undo check-out" <%=isDisabled%> onclick="submitForm('delete')"/><%
+									// view case
+									else if (mode.equals("view") && dataset!=null && dataset.isWorkingCopy()){
+										if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
+											%>
+											<input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=ds_id%>')"/>&nbsp;
+											<input type="button" class="mediumbuttonb" value="Check in" onclick="checkIn()" />&nbsp;
+											<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>
+											<%
+										}
 									}
-								}
-							%>
-						
-						<%
-						// update version checkbox
-						if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy() && editPrm && hasHistory) {
-							%>
-							<br/>
-								<span class="smallfont_light">
-									<%
-									boolean canOverwriteReleased = SecurityUtil.hasPerm(user.getUserName(), "/", "ovrR");
-									if (!latestRegStatus.equals("Released") || canOverwriteReleased){ %>
-										<input type="checkbox" id="upd_version" name="upd_version" value="true"/>
-											&nbsp;<label for="upd_version">Update the definition's CheckInNo when checking in
-										</label><%
-									}
-									else{ %>
-										<input type="checkbox" id="upd_version" name="upd_version_DISABLED" checked="checked" disabled="disabled"/>
-											&nbsp;<label for="upd_version">Update the definition's CheckInNo when checking in</label>
-										<input type="hidden" name="upd_version" value="true"/><%
+									// edit case
+									else if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy()){
+										if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
+											%>
+											<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
+											<input type="button" class="mediumbuttonb" value="Save & close" onclick="submitForm('editclose')"/>&nbsp;
+											<input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=ds_id%>')"/>
+											<%
+										}
 									}
 									%>
-								</span>
-							<%
-						} %>
-						</div>
-						<%
-					}
-					%>
-	                
+								</div>
 		                    
 		                    	<!-- quick links -->
 		                    	
@@ -890,14 +870,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 		                    	if (mode.equals("view")){
 			                    	
 			                    	Vector docs = searchEngine.getDocs(ds_id);
-			                    	boolean dispAll = editPrm;
+			                    	boolean dispAll = editPrm || editReleasedPrm;
 			                    	boolean dispPDF = dataset!=null && dataset.displayCreateLink("PDF");
 									boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
 									boolean dispODS = dataset!=null && dataset.displayCreateLink("ODS");
 									boolean dispMDB = dataset!=null && dataset.displayCreateLink("MDB");
 									boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
 									boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
-									boolean dispUploadAndCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
+									boolean dispUploadAndCache = editPrm || editReleasedPrm;
 									boolean dispDocs = docs!=null && docs.size()>0;
 									
 									if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispUploadAndCache || dispDocs || dispMDB || dispODS){
@@ -1125,7 +1105,18 @@ private Vector getValues(String id, String mode, Vector attributes){
 												<td class="simple_attr_value">
 													<%
 													if (mode.equals("view")){ %>														
-														<%=Util.replaceTags(regStatus)%><%
+														<%=Util.replaceTags(regStatus)%>
+														<%
+														if (workingUser!=null){
+															if (dataset.isWorkingCopy() && user!=null && workingUser.equals(user.getUserName())){
+																%>
+																<span class="caution">(Working copy)</span><%
+															}
+															else if (user!=null){
+																%>
+																<span class="caution">(checked out by <em><%=workingUser%></em>)</span><%
+															}
+														}
 													}
 													else{ %>
 														<select name="reg_status" onchange="form_changed('form1')"> <%
@@ -1580,108 +1571,76 @@ private Vector getValues(String id, String mode, Vector attributes){
 										<!-- tables list -->
 										
 										<%
-										if (mode.equals("view") && tables!=null && tables.size()>0 || mode.equals("view") && user!=null && editPrm && topFree){
-											
-											colspan = user==null ? 1 : 2;
-
+										if ((mode.equals("view") && tables!=null && tables.size()>0) || mode.equals("edit")){
 											%>
-												
-												<h2>
-														Dataset tables<a name="tables"></a>
-													
-													<%
-													// tables link
-													if (user!=null && editPrm && topFree){ %>
-														<small>
-															[Click <a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.replaceTags(ds_name)%>"><b>HERE</b></a> to manage tables of this dataset]
-														</small><%
-													}
-													%>
-												</h2>
-												
+											<h2>
+												Dataset tables<a name="tables"></a>
 												<%
-												// tables table
-												if (mode.equals("view") && tables!=null && tables.size()>0){
-													%>
-															<table class="datatable" id="dataset-tables">
-																<col style="width:50%"/>
-																<col style="width:50%"/>
-																<tr>
-																	<th>Full name</th>
-																	<th>Short name</th>
-																</tr>
-																
-																<%
-																boolean hasMarkedTables = false;
-																for (int i=0; tables!=null && i<tables.size(); i++){
-																				
-																	DsTable table = (DsTable)tables.get(i);
-																	
-																	String tableLink = "";
-																	if (latestRequested)
-																		tableLink = "dstable.jsp?mode=view&amp;table_idf=" + table.getIdentifier() + "&amp;pns=" + dataset.getNamespaceID();
-																	else
-																		tableLink = "dstable.jsp?mode=view&amp;table_id=" + table.getID();
-											
-																	String tblName = "";
-																	attributes = searchEngine.getAttributes(table.getID(), "T", DElemAttribute.TYPE_SIMPLE);
-										
-																	for (int c=0; c<attributes.size(); c++){
-																		DElemAttribute attr = (DElemAttribute)attributes.get(c);
-								       									if (attr.getName().equalsIgnoreCase("Name"))
-								       										tblName = attr.getValue();
-																	}
-								
-																	String tblFullName = tblName;
-																	tblName = tblName.length()>40 && tblName != null ? tblName.substring(0,40) + " ..." : tblName;
-																	
-																	String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
-											    															  table.getIdentifier(), "tbl");
-								
-																	String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());																
-																	
-																	String escapedName = Util.replaceTags(tblName);
-																	%>
-																																		
-																	<tr>
-																		<td>
-																			<%
-																			if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
-																				%> <font title="<%=Util.replaceTags(tblWorkingUser,true)%>" color="red">* </font><%
-																				hasMarkedTables = true;
-																			}
-																			else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
-																				%> <font title="<%=Util.replaceTags(tblElmWorkingUser,true)%>" color="red">* </font><%
-																				hasMarkedTables = true;
-																			}
-																			%>
-																			<a href="<%=tableLink%>" title="<%=Util.replaceTags(escapedName,true)%>">
-																				<%=Util.replaceTags(escapedName)%>
-																			</a>
-																		</td>
-																		<td>
-																			<%=Util.replaceTags(table.getShortName())%>
-																		</td>
-																	</tr>																	
-																	<%
-																}
-																%>
-													          															
-													        </table>
-													<%
-													if (user!=null && tables!=null && tables.size()>0 && hasMarkedTables){%>
-														<div class="barfont">
-																(a red star stands for checked-out table)
-														</div><%
-													}
+												// tables link
+												if (mode.equals("edit")){ %>
+													<small>
+														[Click <a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.replaceTags(ds_name)%>"><b>HERE</b></a> to manage tables of this dataset]
+													</small><%
 												}
+												%>
+											</h2>												
+											<%
+											// tables table
+											if (mode.equals("view")){
+												%>
+												<table class="datatable" id="dataset-tables">
+													<col style="width:50%"/>
+													<col style="width:50%"/>
+													<thead>
+													<tr>
+														<th>Full name</th>
+														<th>Short name</th>
+													</tr>
+													</thead>
+													<%
+													boolean hasMarkedTables = false;
+													for (int i=0; i<tables.size(); i++){
+																	
+														DsTable table = (DsTable)tables.get(i);
+														String tableLink = "";
+														if (isLatestRequested)
+															tableLink = "dstable.jsp?mode=view&amp;table_idf=" + table.getIdentifier() + "&amp;pns=" + dataset.getNamespaceID();
+														else
+															tableLink = "dstable.jsp?mode=view&amp;table_id=" + table.getID();
+								
+														String tblFullName = "";
+														attributes = searchEngine.getAttributes(table.getID(), "T", DElemAttribute.TYPE_SIMPLE);
+														for (int c=0; c<attributes.size(); c++){
+															DElemAttribute attr = (DElemAttribute)attributes.get(c);
+					       									if (attr.getName().equalsIgnoreCase("Name"))
+					       										tblFullName = attr.getValue();
+														}					
+														if (tblFullName!=null && tblFullName.length()>40)
+															tblFullName = tblFullName.substring(0,40) + " ...";
+														String escapedFullName = Util.replaceTags(tblFullName,true,true);
+														%>								
+														<tr>
+															<td>
+																<a href="<%=tableLink%>" title="<%=escapedFullName%>">
+																	<%=escapedFullName%>
+																</a>
+															</td>
+															<td>
+																<%=Util.replaceTags(table.getShortName())%>
+															</td>
+														</tr>																	
+														<%
+													}
+													%>
+										        </table><%
+											}
 										}
 										%>
 										
 										<!-- rod links -->
 										
 										<%
-										if ((mode.equals("edit") && user!=null) || (mode.equals("view") && rodLinks!=null && rodLinks.size()>0)){
+										if (mode.equals("edit") || (mode.equals("view") && rodLinks!=null && rodLinks.size()>0)){
 											
 											%>
 										
@@ -1706,14 +1665,14 @@ private Vector getValues(String id, String mode, Vector attributes){
 														<span class="barfont"><%
 													}
 													
-														// the link
-														if (mode.equals("edit") && user!=null){
-															String dstrodLink = "dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
-															%>
-															[Click <a href="<%=dstrodLink%>"><b>HERE</b></a> to manage the dataset's links to ROD]
-															<%
-														}
+													// the link
+													if (mode.equals("edit")){
+														String dstrodLink = "dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
 														%>
+														[Click <a href="<%=dstrodLink%>"><b>HERE</b></a> to manage the dataset's links to ROD]
+														<%
+													}
+													%>
 													</span>
 												</h2>
 												
@@ -1768,8 +1727,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 											%>
 											
 												<h2>
-														<b>Complex attributes<a name="cattrs"></a></b>
-													
+													Complex attributes<a name="cattrs"></a>
 													<%
 													if (!mode.equals("view")){
 														%>
@@ -1784,7 +1742,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 													}
 													
 													// the link
-													if (mode.equals("edit") && user!=null){ %>
+													if (mode.equals("edit")){ %>
 														<span width="<%=valueWidth%>%" class="barfont_bordered">
 															[Click <a target="_blank" onclick="pop(this.href);return false;" href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true"><b>HERE</b></a> to manage complex attributes of this dataset]
 														</span><%
@@ -1796,7 +1754,7 @@ private Vector getValues(String id, String mode, Vector attributes){
 												// the table
 												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 													%>
-															<table class="datatable" id="dataset-attributes">
+															<table class="datatable" id="dataset-attributes">																
 																<col style="width:29%"/>
 																<col style="width:4%"/>
 																<col style="width:63%"/>
@@ -1861,7 +1819,62 @@ private Vector getValues(String id, String mode, Vector attributes){
 												%>	
 											
 											<!-- end complex attributes -->
+											
 											<%
+											// other versions
+											if (mode.equals("view") && otherVersions!=null && otherVersions.size()>0){%>
+												<h2>
+													Other versions<a name="versions"></a>
+												</h2>
+												<table class="datatable" id="other-versions">
+													<col style="width:25%"/>
+													<col style="width:25%"/>
+													<col style="width:25%"/>
+													<col style="width:25%"/>
+													<thead>
+														<tr>
+															<th>Dataset number</th>
+															<th>Status</th>
+															<th>Release date</th>
+															<th></th>
+														</tr>
+													</thead>
+													<tbody>
+													<%
+													Dataset otherVer;
+													for (int i=0; i<otherVersions.size(); i++){
+														otherVer = (Dataset)otherVersions.get(i);
+														String status = otherVer.getStatus();
+														String releaseDate = null;
+														if (status.equals("Released"))
+															releaseDate = otherVer.getDate();
+														if (releaseDate!=null)
+															releaseDate = eionet.util.Util.releasedDate(Long.parseLong(releaseDate));
+														else
+															releaseDate = "";
+														%>
+														<tr>
+															<td><%=otherVer.getID()%></td>
+															<td><%=status%></td>
+															<td><%=releaseDate%></td>
+															<td>
+																<%
+																if (searchEngine.skipByRegStatus(otherVer.getStatus())){ %>
+																	&nbsp;<%
+																}
+																else{ %>
+																	[<a href="dataset.jsp?mode=view&amp;ds_id=<%=otherVer.getID()%>">view</a>]<%
+																}
+																%>
+															</td>
+														</tr>
+														<%
+													}
+													%>
+													</tbody>
+												</table>
+												<%
+											}
 										}
 										%>
 										
@@ -1875,14 +1888,27 @@ private Vector getValues(String id, String mode, Vector attributes){
 				
 				<input type="hidden" name="mode" value="<%=mode%>"/>
 				<input type="hidden" name="check_in" value="false"/>
-				<input type="hidden" name="unlock" value="false"/>
 				<input type="hidden" name="changed" value="0"/>
-				<!-- Special input for 'delete' mode only. Indicates if dataset(s) should be deleted completely. -->
 				<input type="hidden" name="complete" value="false"/>
-				
+				<input type="hidden" name="saveclose" value="false"/>
 				<%
-				if (latestID!=null){%>
-					<input type="hidden" name="latest_id" value="<%=latestID%>"/><%
+				String checkedoutCopyID = dataset==null ? null : dataset.getCheckedoutCopyID();
+				if (checkedoutCopyID!=null){%>
+					<input type="hidden" name="checkedout_copy_id" value="<%=checkedoutCopyID%>"/><%
+				}
+				if (dataset!=null){
+					String checkInNo = dataset.getVersion();
+					if (checkInNo.equals("1")){
+						%>
+						<input type="hidden" name="upd_version" value="true"/><%
+					}
+				}
+				// submitter url, might be used by POST handler who might want to send back to POST submitter
+				String submitterUrl = Util.getServletPathWithQueryString(request);
+				if (submitterUrl!=null){
+					submitterUrl = Util.replaceTags(submitterUrl);
+					%>
+					<input type="hidden" name="submitter_url" value="<%=submitterUrl%>"/><%
 				}
 				%>
 				
@@ -1897,6 +1923,22 @@ private Vector getValues(String id, String mode, Vector attributes){
 
 <%
 // end the whole page try block
+}
+catch (Exception e){
+	if (response.isCommitted())
+		e.printStackTrace(System.out);
+	else{
+		String msg = e.getMessage();
+		ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();							
+		e.printStackTrace(new PrintStream(bytesOut));
+		String trace = bytesOut.toString(response.getCharacterEncoding());
+		String backLink = history.getBackUrl();
+		request.setAttribute("DD_ERR_MSG", msg);
+		request.setAttribute("DD_ERR_TRC", trace);
+		request.setAttribute("DD_ERR_BACK_LINK", backLink);
+		request.getRequestDispatcher("error.jsp").forward(request, response);
+		return;
+	}
 }
 finally {
 	try { if (conn!=null) conn.close();

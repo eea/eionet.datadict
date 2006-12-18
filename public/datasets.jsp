@@ -23,12 +23,10 @@
     private String oCompStr=null;
     private int iO=0;
     
-    private boolean delPrm = false;
     private String regStatus = "";
     private String sortableStatus = "";
     public boolean clickable = false;
-    
-    public String topWorkingUser = null;
+    public String workingUser = null;
     public boolean canDelete = false;
     
     public c_SearchResultEntry(String _oID, String _oShortName, String _oVersion, String _oFName, Vector _oTables) {
@@ -49,6 +47,7 @@
         switch(i) {
             case 1: oCompStr=oFName; break;
             case 2: oCompStr=sortableStatus; break;
+            case 3: oCompStr=oID; break;
             default: oCompStr=oFName; break;
 		}
 		
@@ -61,14 +60,6 @@
 
     public int compareTo(Object oC1) {
         return iO*oCompStr.compareToIgnoreCase(oC1.toString());
-    }
-    
-    public void setDelPrm(boolean b){
-	    delPrm = b;
-    }
-    
-    public boolean getDelPrm(){
-	    return delPrm;
     }
     
     public void setRegStatus(String stat){
@@ -144,23 +135,12 @@
 	DBPoolIF pool = xdbapp.getDBPool();
 	
 	AppUserIF user = SecurityUtil.getUser(request);
-	
-	// The following if block tries to identify if a login has happened in which
-	// case it will redirect the response to the query string in session. This
-	// happens regardless of weather it's a sorting request or search request.
-	c_SearchResultSet rs = (c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
-	if (rs!=null){		
-		if (rs.isAuth && user==null || !rs.isAuth && user!=null){
-			session.removeAttribute(oSearchCacheAttrName);
-			searchType = TYPE_SEARCH;
-		}
-	}
-	
-	String _wrkCopies = request.getParameter("wrk_copies");
-	boolean wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
-	
-	VersionManager verMan = null;
 
+	String _isSearchForWorkingCopies = request.getParameter("wrk_copies");
+	boolean isSearchForWorkingCopies = (_isSearchForWorkingCopies!=null && _isSearchForWorkingCopies.equals("true")) ? true : false;
+	
+	boolean isIncludeHistoricVersions = request.getParameter("incl_histver")!=null && request.getParameter("incl_histver").equals("true");
+	
 	try { // start the whole page try block
 		
 	if (searchType != null && searchType.equals(TYPE_SEARCH)){
@@ -259,12 +239,9 @@
 			datasets = searchEngine.getDeletedDatasets();
 		}
 		else{
-			datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, wrkCopies);
+			datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, isSearchForWorkingCopies, isIncludeHistoricVersions, null);
 		}
-		
-		verMan = new VersionManager(conn, searchEngine, user);
-	}
-	
+}	
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -324,35 +301,16 @@
        		document.forms["form1"].submit();
     	}
     	
-    	function alertReleased(id){
-	    	
-	    	alert("A dataset definition in Released status cannot be deleted, because it might be referenced by outer sources!");
-	    	
-	    	// get array of checkboxes
-	    	var checkBoxes = document.forms["form1"].elements["ds_id"];
-	    	
-	    	// If there is only one checkbox, the above line will return a single checkbox
-	    	// object instead of an array. We detect this by checking if checkBoxes.checked
-	    	// is undefined or not. If not, then checkBoxes is a single checkbox object,
-	    	// otherwise it's an array of checkboxes.
-	    	if (checkBoxes.checked==undefined){
-		    	for (var i=0; checkBoxes!=null && i<checkBoxes.length; i++){
-		    		var checkBox = checkBoxes[i];
-		    		if (checkBox.value==id){
-			    		checkBox.checked = false;
-		    		}
-		    	}
-	    	}
-	    	else{
-		    	checkBoxes.checked = false;
-	    	}
+    	function alertReleased(chkbox){
+	    	if (chkbox.checked==true)
+	    		alert("Please note that you selected a dataset in Released status!");
     	}
     	
     	function doLoad(){
-	    	if (document.forms["form1"]!=null && document.forms["form1"].elements["was_del_prm"]!=null){
-		    	var wasDelPrm = document.forms["form1"].elements["was_del_prm"].value;
-		    	if (wasDelPrm == "true")
-		    		document.forms["form1"].elements["del_button"].disabled = false;
+	    	if (document.forms["form1"]!=null && document.forms["form1"].elements["count_checkboxes"]!=null){
+		    	var v = document.forms["form1"].elements["count_checkboxes"].value;
+		    	if (v <= 0)
+		    		document.forms["form1"].elements["del_button"].disabled = true;
     		}
     	}
     // ]]>
@@ -366,31 +324,6 @@
     <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 
-			<%
-			if (searchType != null && searchType.equals(TYPE_SEARCH)){
-            
-	            // check if any results found
-				if (datasets == null || datasets.size()==0){
-					
-		            // see if this is a search or just listing all the datasets
-					if (Util.voidStr(request.getParameter("search_precision"))){ // listing all the datasets
-						%>
-						<b>No dataset definitions were found!</b><%
-					}
-					else{ // a search
-						%>
-						<b>No dataset definitions matching the search criteria were found!</b><%
-					}
-    	        	%>
-    	        	
-	    	        </div></body></html>
-	        	    <%
-	            	return;
-	            }
-        	}
-            %>
-            
-				
 				<!-- search, restore, page help buttons -->
 				
 				<div id="operations">
@@ -405,11 +338,13 @@
 				</ul>
 				</div>
 					<%
-					if (!restore && wrkCopies){ %>
+					if (!restore && isSearchForWorkingCopies){ %>
 						<h1>Working copies of dataset definitions</h1><%
 					}
-					else if (!restore){%>
-						<h1>Datasets</h1><%
+					else if (!restore){
+						String strAllOrLatest = isIncludeHistoricVersions ? "All " : "Latest";
+						%>
+						<h1><%=strAllOrLatest%> versions of datasets in any status</h1><%
 					}
 					else{%>
 						<h1>Restore datasets</h1><%
@@ -417,13 +352,9 @@
 					%>
 			
 		
-			
 			<%
 			if (user==null){ %>
-				<p>	
-		        		NB! For un-authenticated users dataset definitions whose Registration status<br/>
-		        		is not <em>Recorded</em> or <em>Released</em> are displayed as inacessible.
-			  </p><%
+				<p>NB! Datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
 		    }
 			%>
 			
@@ -433,64 +364,98 @@
 				<div style="padding-bottom:5">
 					<%
 					if (user != null){
-						if (!wrkCopies && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>							
-							<input type="button" class="smallbutton" value="Add new" onclick="goTo('add')"/><%
-						}
-						if (!restore && !wrkCopies){ %>
-							&nbsp;<input type="button" name="del_button" value="Delete selected" class="smallbutton" disabled="disabled" onclick="deleteDataset()"/><%
-						}
-						else if (restore){%>
-							&nbsp;<input type="button" name="rst_button" value="Restore selected" class="smallbutton" disabled="disabled" onclick="restoreDataset()"/><%
-						}
+						String strAddDisabled = (!isSearchForWorkingCopies && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")) ?
+												"" : "disabled=\"disabled\"";
+						String strDeleteDisabled = (!isSearchForWorkingCopies) ? "" : "disabled=\"disabled\"";
+						%>
+						<input type="button" class="smallbutton" value="Add new" <%=strAddDisabled%> onclick="goTo('add')"/>&nbsp;
+						<input type="button" name="del_button" value="Delete selected" <%=strDeleteDisabled%> onclick="deleteDataset()"/><%
 					}
-					%>
-		
+					%>		
 				</div>
-		
+
+				<%
+				if (searchType != null && searchType.equals(TYPE_SEARCH)){
+	            
+		            // check if any results found
+					if (datasets == null || datasets.size()==0){
+						
+			            // see if this is a search or just listing all the datasets
+						if (Util.voidStr(request.getParameter("search_precision"))){ // listing all the datasets
+							%>
+							<b>No dataset definitions were found!</b><%
+						}
+						else{ // a search
+							%>
+							<b>No dataset definitions matching the search criteria were found!</b><%
+						}
+	    	        	%>
+	    	        	
+		    	        </div></body></html>
+		        	    <%
+		            	return;
+		            }
+	        	}
+	            %>
+            		
 		<table class="sortable" width="700">
 		
 			<%
-			// Set the colspan. Users with no edit rights must not see the CheckInNo
-			boolean userHasEditRights = user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u");
-			int colSpan = userHasEditRights ? 5 : 3;
+			// temporarly we do not display version aka CheckInNo, because for the time being it doesn't function properly anyway
+			boolean isDisplayVersionColumn = isIncludeHistoricVersions;//false;//user!=null;
+			boolean isDisplayHelperColumn = user!=null;
+			
+			int colSpan = 3;
+			if (isDisplayHelperColumn)
+				colSpan++;
+			if (isDisplayVersionColumn)
+				colSpan++;
 
-			if (userHasEditRights){ %>
+			if (isDisplayHelperColumn){ %>
 				<col style="width: 3%"/>
-				<col style="width: 32%"/>
-			<% } else { %>
-				<col style="width: 35%"/>
-			<% } %>
-			<% if (userHasEditRights){ %>
-      <col style="width: 10%"/>
-      <col style="width: 15%"/>
-      <col style="width: 40%"/>
-			<% } else { %>
-      <col style="width: 20%"/>
-      <col style="width: 45%"/>
-			<% } %>
+				<col style="width: 32%"/><%
+			}
+			else { %>
+				<col style="width: 35%"/><%
+			}
+			
+			if (isDisplayVersionColumn){ %>
+				<col style="width: 10%"/>
+				<col style="width: 15%"/>
+				<col style="width: 40%"/><%
+			}
+		    else { %>
+				<col style="width: 20%"/>
+				<col style="width: 45%"/><%
+			}
+			%>
 				
 			<!-- the table itself -->
 	   <thead>	
 			<tr>
 				<%
-				if (userHasEditRights){ %>
-					<th>&nbsp;</th>
-					<th style="border-left:0"><%
-				}
-				else{ %>
-					<th><%
+				if (isDisplayHelperColumn){%>
+					<th></th><%
 				}
 				String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 				String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
 				String sortedAlt  = getSortedAlt(sortedImg);
 				%>
+				<th>
 					<a title="Dataset" href="<%=Util.replaceTags(sortedLink,true)%>">
 						Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
 					</a>
 				</th>
-				<% if (userHasEditRights){ %>
+				<%
+				if (isDisplayVersionColumn){
+					sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
+					sortedLink = getSortedLink(3, oSortCol, oSortOrder);
+					sortedAlt  = getSortedAlt(sortedImg);
+					%>
 					<th>
-						CheckInNo
+						<a title="Version" href="<%=Util.replaceTags(sortedLink,true)%>">
+	                      Version&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
+						</a>
 					</th><%
 				}
 				%>
@@ -512,9 +477,8 @@
       <tbody>
 			
 			<%
-			
-			boolean wasDelPrm = false;
-			
+			DElemAttribute attr = null;
+			int countCheckboxes = 0;
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
 				
 				c_SearchResultSet oResultSet=new c_SearchResultSet();
@@ -522,148 +486,100 @@
 	        	oResultSet.oElements=new Vector(); 
 	        	session.setAttribute(oSearchCacheAttrName,oResultSet);
 	        	
-	        	DElemAttribute attr = null;
-	        	
 				for (int i=0; i<datasets.size(); i++){
 				
 					Dataset dataset = (Dataset)datasets.get(i);
 					
-					String regStatus = dataset!=null ? dataset.getStatus() : null;
-					boolean clickable = searchEngine.skipByRegStatus(regStatus) ? false : true;
-					//String linkDisabled = clickable ? "" : "disabled";
-					String linkDisabled = clickable ? "" : "class=\"disabled\"";
-					
-					// for countries show only Recorded & Released
-					/*if (regStatus!=null){
-						if (user==null || !user.isAuthentic()){
-							if (regStatus.equals("Incomplete") || regStatus.equals("Candidate") || regStatus.equals("Qualified"))
-								continue;
-						}
-					}*/
-					
 					String ds_id = dataset.getID();
+					Vector tables = searchEngine.getDatasetTables(ds_id);
+					String regStatus = dataset.getStatus();
+					boolean clickable = searchEngine.skipByRegStatus(regStatus) ? false : true;
+					String linkDisabled = clickable ? "" : "class=\"disabled\"";					
 					String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
 					String ds_name = Util.replaceTags(dataset.getShortName());
-					if (ds_name == null) ds_name = "unknown";
-					if (ds_name.length() == 0) ds_name = "empty";
-					
 					String dsLink = clickable ? "dataset.jsp?mode=view&amp;ds_id=" + ds_id : "#";
-					
-					Vector tables = searchEngine.getDatasetTables(ds_id);
-					/*attributes = searchEngine.getAttributes(ds_id, "DS", DElemAttribute.TYPE_SIMPLE);
-		
-					String dsFullName=null;
-					for (int c=0; c<attributes.size(); c++){
-						attr = (DElemAttribute)attributes.get(c);
-       					if (attr.getName().equalsIgnoreCase("Name"))
-       						dsFullName = attr.getValue();
-					}*/
-					
 					String dsFullName=dataset.getName();
-					
-					if (dsFullName == null) dsFullName = ds_name;
-					if (dsFullName.length() == 0) dsFullName = ds_name;
-					if (dsFullName.length()>60)
+					if (dsFullName!=null && dsFullName.length()>60)
 						dsFullName = dsFullName.substring(0,60) + " ...";
-				
+					String workingUser = dataset.getWorkingUser();
+
+					String statusImg   = "images/" + Util.getStatusImage(regStatus);
+					String statusTxt   = Util.getStatusRadics(regStatus);
+					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
+					String alertReleased = regStatus.equals("Released") ? "onclick=\"alertReleased(this)\"" : "";
+					
+					boolean canDelete = !dataset.isWorkingCopy() && workingUser==null && regStatus!=null && user!=null;
+					if (canDelete){
+						boolean editPrm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
+						boolean editReleasedPrm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
+						if (regStatus.equals("Released") || regStatus.equals("Recorded"))
+							canDelete = editReleasedPrm;
+						else
+							canDelete = editPrm || editReleasedPrm;
+					}
+						
 					c_SearchResultEntry oEntry = new c_SearchResultEntry(ds_id,
                															 ds_name,
                															 dsVersion,
                															 dsFullName,
-                														 tables);
-                														 
-					boolean delPrm = user!=null && (
-						SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u") ||
-						SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "d"));
-					oEntry.setDelPrm(delPrm);
-					if (delPrm)
-						wasDelPrm = true;
-					
-					
+                														 tables);                														 
 					oEntry.setRegStatus(regStatus);
+					oEntry.workingUser = workingUser;
 					oEntry.setSortableStatus(Util.getStatusSortString(regStatus));
 					oEntry.clickable = clickable;
 					oEntry.oIdentifier = dataset.getIdentifier();
-					
-					String workingUser    = verMan.getDstWorkingUser(dataset.getIdentifier());
-					String topWorkingUser = verMan.getWorkingUser(dataset.getNamespaceID());
-					
-					boolean canDelete = topWorkingUser==null ||
-					(dataset.isWorkingCopy() &&
-					workingUser!=null && user!=null &&
-					workingUser.equals(user.getUserName()));
-					
-					String statusImg   = "images/" + Util.getStatusImage(regStatus);
-					String statusTxt   = Util.getStatusRadics(regStatus);
-					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
-					
-					String alertReleased = regStatus.equals("Released") ? "onclick='alertReleased(" + ds_id + ")'" : "";
-
-					oEntry.topWorkingUser = topWorkingUser;
 					oEntry.canDelete = canDelete;
 					
-					oResultSet.oElements.add(oEntry);
-					
+					oResultSet.oElements.add(oEntry);					
 					%>
 				
 					<tr valign="top" class="<%=zebraClass%>">
 						<%
-						if (delPrm){
-							if (userHasEditRights){
-								%>
-								<td align="right">
-									<%
-			    					if (topWorkingUser!=null){ // mark checked-out datasets
-				    					%> <font title="<%=Util.replaceTags(topWorkingUser,true)%>" color="red">*</font> <%
-			    					}
-			    					else if (canDelete){ %>
-										<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" <%=Util.replaceTags(alertReleased)%>/>
-										<input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=dataset.getIdentifier()%>"/>
-										<%
-									}
-									else{ %>
-										&nbsp;<%
-									}
+						// the 1st column: checkbox, red asterisk or nbsp
+						if (isDisplayHelperColumn){ %>
+							<td align="right">
+								<%
+								if (canDelete){									
 									%>
-								</td><%
-							}
+									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" <%=alertReleased%>/>
+									<input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=dataset.getIdentifier()%>"/>
+									<%
+									countCheckboxes++;
+								}
+								else if (workingUser!=null){ %>
+									<font title="<%=Util.replaceTags(workingUser,true)%>" color="red">*</font><%
+		    					}
+		    					else{ %>
+		    						&nbsp;<%
+	    						}
+								%>
+							</td><%
 						}
-						else if (user!=null && userHasEditRights){
-							%>
-							<td align="right">&nbsp;</td>
-							<%
-						}					
 						
-						if (clickable==false){
-							%>
+						// the 2nd column: full name link
+						if (clickable==false){%>
 							<td title="<%=Util.replaceTags(dsFullName,true)%>" class="disabled">
 								<%=Util.replaceTags(dsFullName, true)%>
 							</td><%
 						}
-						else{
-							%>
+						else{ %>
 							<td title="<%=Util.replaceTags(dsFullName,true)%>">
 								<a href="<%=Util.replaceTags(dsLink,true)%>">
 									<%=Util.replaceTags(dsFullName, true)%>
 								</a>
-							</td>
-							<%
+							</td><%
 						}
 						%>
 						
 						<%
-						if (userHasEditRights){ %>
+						// 3rd column: version aka CheckInNo
+						if (isDisplayVersionColumn){ %>
 							<td>
-								<%
-								if (clickable){ %>
-									<%=Util.replaceTags(dsVersion)%><%
-								}
-								else{ %>
-									<a disabled style="text-decoration:none"><%=Util.replaceTags(dsVersion)%></a><%
-								}
-								%>
+								<%=dataset.getID()%>
 							</td><%
 						}
+						
+						// 4th column: Registration status
 						%>
 						<td>
 							<%
@@ -677,43 +593,30 @@
 							}
 							%>
 						</td>
+						<%
+						// 5th column: tables in this dataset
+						%>
 						<td>
 							<%
 							for (int c=0; tables!=null && c<tables.size(); c++){
 				
 								DsTable table = (DsTable)tables.get(c);
-								String tableLink = clickable ?
-												   "dstable.jsp?mode=view&amp;table_id=" +
-												   table.getID() + "&amp;ds_id=" + ds_id +
-												   "&amp;ds_name=" + ds_name :
-												   "#";
+								StringBuffer tableLink = new StringBuffer("dstable.jsp?mode=view&amp;table_id=");
+								tableLink.append(table.getID()).append("&amp;ds_id=").append(ds_id).append("&amp;ds_name=").append(ds_name);
 								
-								String tblWorkingUser = verMan.getWorkingUser(table.getParentNs(),
-			    															  table.getIdentifier(), "tbl");
-
-								String tblElmWorkingUser = searchEngine.getTblElmWorkingUser(table.getID());
-								
-								if (wrkCopies){ %>
+								// it is probably less confusing if there are no links for tables of working copies
+								if (isSearchForWorkingCopies){ %>
 									<%=Util.replaceTags(table.getShortName())%><%
 								}
 								else{
-									if (clickable){
-										%>
+									if (clickable){ %>
 										<a href="<%=tableLink%>">
 											<%=Util.replaceTags(table.getShortName())%>
 										</a><%
 									}
-									else{
-										%>
+									else{ %>
 										<span class="disabled"><%=Util.replaceTags(table.getShortName())%></span><%
 									}
-								}
-								
-								if (user!=null && tblWorkingUser!=null){ // mark checked-out tables
-									%>&nbsp;<font color="red">*</font> <%
-								}
-								else if (tblElmWorkingUser!=null){ // mark tables having checked-out elements
-									%> <font title="<%=Util.replaceTags(tblElmWorkingUser,true)%>" color="red">* </font> <%
 								}
 								%>
 								<br/><%
@@ -744,66 +647,59 @@
                     for (int i=0;i<oResultSet.oElements.size();i++) {
 	                    
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
-                        
                         String linkDisabled = oEntry.clickable ? "" : "class=\"disabled\"";
                         String dsLink = oEntry.clickable ? "dataset.jsp?mode=view&amp;ds_id=" + oEntry.oID : "#";
                         String statusImg = "images/" + Util.getStatusImage(oEntry.getRegStatus());
                         String statusTxt   = Util.getStatusRadics(oEntry.getRegStatus());
 					              String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
-                        String alertReleased = oEntry.getRegStatus().equals("Released") ? "onclick='alertReleased(" + oEntry.oID + ")'" : "";
-                        
+                        String alertReleased = oEntry.getRegStatus().equals("Released") ? "onclick=\"alertReleased(this)\"" : "";
                         %>
 						<tr valign="top" class="<%=zebraClass%>">
 						
 							<%
-							if (oEntry.getDelPrm()){
-								wasDelPrm = true;
-								%>
+							// the 1st column: checkbox, red asterisk or nbsp
+							if (isDisplayHelperColumn){%>
 								<td align="right">
 									<%
-			    					if (oEntry.topWorkingUser!=null){ // mark checked-out datasets
-				    					%> <font title="<%=Util.replaceTags(oEntry.topWorkingUser,true)%>" color="red">*</font> <%
-			    					}
-			    					else if (oEntry.canDelete){ %>
-										<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" <%=Util.replaceTags(alertReleased)%>/>
+									if (oEntry.canDelete){%>
+										<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" <%=alertReleased%>/>
 										<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier,true)%>"/>
 										<%
+										countCheckboxes++;
 									}
+			    					else if (oEntry.workingUser!=null){%>
+			    						<font title="<%=Util.replaceTags(oEntry.workingUser,true)%>" color="red">*</font><%
+			    					}
 									else{ %>
 										&nbsp;<%
 									}
 									%>
 								</td><%
 							}
-							else if (user!=null){
-								%>
-								<td align="right">&nbsp;</td>
-								<%
-							}
 							
-							if (oEntry.clickable==false){
-								%>
+							// 2nd column: full name link
+							if (oEntry.clickable==false){%>
 								<td title="<%=Util.replaceTags(oEntry.oFullName,true)%>" class="disabled">
 									<%=Util.replaceTags(oEntry.oFullName, true)%>
 								</td><%
 							}
-							else{
-								%>
+							else{%>
 								<td title="<%=Util.replaceTags(oEntry.oFullName,true)%>">
 									<a href="<%=Util.replaceTags(dsLink,true)%>">
 										<%=Util.replaceTags(oEntry.oFullName, true)%>
 									</a>
-								</td>
-								<%
-							}
-							
-							if (userHasEditRights){ %>
-								<td>
-									<%=oEntry.oVersion%>
 								</td><%
 							}
-							%>
 							
+							// 3nd column: version aka CheckInNo
+							if (isDisplayVersionColumn){ %>
+								<td>
+									<%=oEntry.oID%>
+								</td><%
+							}
+							
+							// 4th column: Registration status
+							%>							
 							<td>
 								<%
 								if (oEntry.clickable){ %>
@@ -816,26 +712,30 @@
 								}
 								%>
 							</td>
-							
+							<%
+							// 5th column: tables in this dataset
+							%>
 							<td>
 								<%
 								Vector tables = oEntry.oTables;
 								for (int c=0; tables!=null && c<tables.size(); c++){
-				
+	
 									DsTable table = (DsTable)tables.get(c);
-									String tableLink = oEntry.clickable ? "dstable.jsp?mode=view&amp;table_id=" + table.getID() + "&amp;ds_id=" + oEntry.oID + "&amp;ds_name=" + oEntry.oShortName : "#";
-									if (wrkCopies){ %>
+									StringBuffer tableLink = new StringBuffer("dstable.jsp?mode=view&amp;table_id=");
+									tableLink.append(table.getID()).append("&amp;ds_id=").
+									append(oEntry.oID).append("&amp;ds_name=").append(oEntry.oShortName);
+									
+									// it is probbaly less confusing if there are no links for tables of working copies
+									if (isSearchForWorkingCopies){ %>
 										<%=Util.replaceTags(table.getShortName())%><%
 									}
 									else{
-										if (oEntry.clickable){
-											%>
+										if (oEntry.clickable){%>
 											<a href="<%=tableLink%>">
 												<%=Util.replaceTags(table.getShortName())%>
 											</a><%
 										}
-										else{
-											%>
+										else{%>
 											<span class="disabled"><%=Util.replaceTags(table.getShortName())%></span><%
 										}
 									}
@@ -848,28 +748,29 @@
 					<%
 					}
                 	%>
-		</tbody>	
-		</table>
-		<p>Total results: <%=oResultSet.oElements.size()%></p><%
+			</tbody>	
+			</table>
+			<p>
+				Total results: <%=oResultSet.oElements.size()%>
+			</p><%
                 }
-
             }
 			%>
 		
-		<input name="was_del_prm" type="hidden" value="<%=wasDelPrm%>"/>
 		<input type="hidden" name="searchUrl" value=""/>
 		<input name='SearchType' type='hidden' value='<%=TYPE_SEARCH%>'/>
-		
 		<input type="hidden" name="mode" value="view"/>
-		
-		<!-- Special input for 'delete' mode only. Indicates if dataset(s) should be deleted completely. -->
 		<input type="hidden" name="complete" value="false"/>
-		
 		<%
-		if (wrkCopies){ %>
+		if (isSearchForWorkingCopies){ %>
 			<input name='wrk_copies' type='hidden' value='true'/><%
 		}
+		if (isIncludeHistoricVersions){%>
+			<input name="incl_histver" type="hidden" value="true"/><%
+		}
+		// helper hidden input so that we can disable delete button if no checkboxes were displayed
 		%>
+		<input name="count_checkboxes" type="hidden" value="<%=countCheckboxes%>"/>
 		
 		</form>
 		
@@ -878,8 +779,11 @@
 	        <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
 			<input name='SearchType' type='hidden' value='NoSearch'/>
 			<%
-			if (wrkCopies){ %>
+			if (isSearchForWorkingCopies){ %>
 				<input name='wrk_copies' type='hidden' value='true'/><%
+			}
+			if (isIncludeHistoricVersions){%>
+				<input name="incl_histver" type="hidden" value="true"/><%
 			}
 			%>
 		</form>

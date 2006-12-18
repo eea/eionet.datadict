@@ -8,7 +8,7 @@ Vector releasedDatasets = (Vector)request.getAttribute("rlsd_datasets");
 <table border="0" width="100%" cellspacing="0" cellpadding="3" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0; border: 1px solid #FF9900">
 		<tr>
 			<td width="100%" valign="top" align="left" colspan="3">
-				<b>Released data definitions</b>
+				<b>Latest released data definitions</b>
 			</td>
 		</tr>
 		

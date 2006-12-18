@@ -83,6 +83,25 @@
 	text-align: left;
 }
 
+/* Other versions table */
+#other-versions {
+	width: 100%;
+	font-size: 90%;
+}
+
+#other-versions th {
+	font-weight: bold;
+	color: #FFFFFF;
+	background: #666666;
+	text-decoration: none;
+}
+
+#other-versions td {
+	background: #FFFFFF;
+	text-decoration: none;
+	text-align: left;
+}
+
 /* Dataset table "Obligations in ROD" */
 .subtable {
 	width: 100%;
@@ -113,3 +132,22 @@
 	vertical-align: middle;
 }
 
+/*
+* Admonitions
+*/
+.caution {
+	color: red;
+	border-width: 1px;
+}
+
+.error {
+	font-style: bold;
+}
+
+input[type="submit"][disabled], input[type="reset"][disabled],  input[type="button"][disabled] {
+	font-size: 90%;
+	font-weight: bold;
+	color: #C0C0C0;
+	text-decoration: none;
+	background: #edf1e7;
+}

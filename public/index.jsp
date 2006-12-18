@@ -31,15 +31,9 @@ try{
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);	
 	searchEngine.setUser(user);
 	
-	Vector datasets = searchEngine.getDatasets(null, null, null, null, null, false);
-	Vector releasedDatasets = new Vector();
-	for (int i=0; datasets!=null && i<datasets.size(); i++){
-		Dataset dst = (Dataset)datasets.get(i);
-		String status = dst.getStatus();
-		if (status!=null && status.equals("Released"))
-			releasedDatasets.add(dst);
-	}
-	
+	HashSet filterStatuses = new HashSet();
+	filterStatuses.add("Released");
+	Vector releasedDatasets = searchEngine.getDatasets(null, null, null, null, null, false, filterStatuses);
 	request.setAttribute("rlsd_datasets", releasedDatasets);
 }
 catch (Exception e){

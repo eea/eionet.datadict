@@ -172,16 +172,17 @@ private String setDefaultAttrs(String name){
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
     <div id="operations">
-			<ul>
-						<li class="help"><a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
-		<%
-		if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
-						<li><a title="Create a new dataset" href="javascript:window.location.assign('dataset.jsp?mode=add')">Add dataset</a></li>
-		<% } %>
-			</ul>
-		</div>
+		<ul>
+			<li class="help"><a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+			<%
+			if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
+				<li><a title="Create a new dataset" href="dataset.jsp?mode=add">Add dataset</a></li><%
+			}
+			%>
+		</ul>
+	</div>
 		<form name="form1" action="datasets.jsp" method="get">
-		<h1>Search for a dataset definition</h1>
+		<h1>Search datasets</h1>
 		<table width="600" cellspacing="0">
 		
 			<tr valign="top">
@@ -319,13 +320,20 @@ private String setDefaultAttrs(String name){
 				<tr valign="top">
 					<td width="150" colspan="2"></td>
 					<td colspan="2">
-						<input type="checkbox" name="wrk_copies" id="wrk_copies" value="true"/><label for="wrk_copies" class="smallfont" style="font-weight: normal">Working copies only</label>
+						<input type="checkbox" name="wrk_copies" id="wrk_copies" value="true"/>
+						<label for="wrk_copies" class="smallfont" style="font-weight: normal">Working copies only</label>
 					</td>
 				</tr>
 				<%
 			}
 			%>
-			
+			<tr valign="top">
+				<td width="150" colspan="2"></td>
+				<td colspan="2">
+					<input type="checkbox" name="incl_histver" id="incl_histver" value="true"/>
+					<label for="incl_histver" class="smallfont" style="font-weight: normal">Include historic versions</label>
+				</td>
+			</tr>
 			<tr valign="top">
 				<td colspan="2"></td>
 				<td>

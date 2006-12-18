@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.io.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.io.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private static final int MAX_CELL_LEN=40;%>
@@ -6,555 +6,616 @@
 <%!private static final int MAX_DISP_VALUES=30;%>
 
 <%!
+	// servlet-scope helper functions
+	//////////////////////////////////
 
-private DElemAttribute getAttributeByName(String name, Vector mAttributes){
-	
-	for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
-		DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
-        //if (attr.getName().equalsIgnoreCase(name))
-        if (attr.getShortName().equalsIgnoreCase(name))
-        	return attr;
+	/**
+	 *
+	 */
+	private DElemAttribute getAttributeByName(String name, Vector mAttributes){
+		
+		for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
+			DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
+	        //if (attr.getName().equalsIgnoreCase(name))
+	        if (attr.getShortName().equalsIgnoreCase(name))
+	        	return attr;
+		}
+	        
+		    return null;
 	}
-        
+	/**
+	 *
+	 */
+	private String getAttributeIdByName(String name, Vector mAttributes){
+		
+		for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
+			DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
+	        //if (attr.getName().equalsIgnoreCase(name))
+	        if (attr.getShortName().equalsIgnoreCase(name))
+	        	return attr.getID();
+		}
+	        
 	    return null;
-}
-
-private String getAttributeIdByName(String name, Vector mAttributes){
-	
-	for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
-		DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
-        //if (attr.getName().equalsIgnoreCase(name))
-        if (attr.getShortName().equalsIgnoreCase(name))
-        	return attr.getID();
 	}
-        
-    return null;
-}
-
-private String getValue(String id, String mode, DataElement dataElement, DataElement newDataElement){
-	return getValue(id, 0, mode, dataElement, newDataElement);
-}
-/*
-		int val indicates which type of value is requested. the default is 0
-		0 - display value (if original value is null, then show inherited value)
-		1 - original value
-		2 - inherited value
-*/
-private String getValue(String id, int val, String mode, DataElement dataElement, DataElement newDataElement){
+	/**
+	 *
+	 */
+	private String getValue(String id, String mode, DataElement dataElement, DataElement newDataElement){
+		return getValue(id, 0, mode, dataElement, newDataElement);
+	}
+	/**
+	 *  int val indicates which type of value is requested. the default is 0
+	 *  0 - display value (if original value is null, then show inherited value)
+	 *  1 - original value
+	 *  2 - inherited value
+	 */
+	private String getValue(String id, int val, String mode, DataElement dataElement, DataElement newDataElement){
+		
+		if (id==null) return null;
+		DElemAttribute attr = null;
 	
-	if (id==null) return null;
-	DElemAttribute attr = null;
-
-	if (mode.equals("add")){
-		if (val<2) 
-			return null;
-		else{
-			if (newDataElement==null) return null;
-			attr = newDataElement.getAttributeById(id);
+		if (mode.equals("add")){
+			if (val<2) 
+				return null;
+			else{
+				if (newDataElement==null) return null;
+				attr = newDataElement.getAttributeById(id);
+			}
 		}
-	}
-	else{
-		if (dataElement==null) return null;
-		attr = dataElement.getAttributeById(id);
-	}
-
-	if (attr == null) return null;
-	if (val==1)
-		return attr.getOriginalValue();
-	else if (val==2)
-		return attr.getInheritedValue();
-	else
-		return attr.getValue();
-}
-
-private Vector getValues(String id, String mode, DataElement dataElement, DataElement newDataElement){
-	return getValues(id, 0, mode, dataElement, newDataElement);
-}
-
-/*
-		int val indicates which group of values is requested. the default is 0
-		0 - all
-		1 - original
-		2 - inherited
-*/
-private Vector getValues(String id, int val, String mode, DataElement dataElement, DataElement newDataElement){
-	if (id==null) return null;
-	DElemAttribute attr = null;
-
-	if (mode.equals("add")){
-		if (val<2) 
-			return null;
 		else{
-			if (newDataElement==null) return null;
-			attr = newDataElement.getAttributeById(id);
+			if (dataElement==null) return null;
+			attr = dataElement.getAttributeById(id);
 		}
-	}
-	else{
-		if (dataElement==null) return null;
-		attr = dataElement.getAttributeById(id);
-	}
-
-	if (attr == null) return null;
-	if (val==1)
-		return attr.getOriginalValues();
-	else if (val==2)
-		return attr.getInheritedValues();
-	else
-		return attr.getValues();
-}
-
-private String getAttributeObligationById(String id, Vector mAttributes){
 	
-	for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
-		DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
-        if (attr.getID().equalsIgnoreCase(id))
-        	return attr.getObligation();
+		if (attr == null) return null;
+		if (val==1)
+			return attr.getOriginalValue();
+		else if (val==2)
+			return attr.getInheritedValue();
+		else
+			return attr.getValue();
 	}
-        
-    return null;
-}
-
-private String legalizeAlert(String in){
-        
-    in = (in != null ? in : "");
-    StringBuffer ret = new StringBuffer(); 
-  
-    for (int i = 0; i < in.length(); i++) {
-        char c = in.charAt(i);
-        if (c == '\'')
-            ret.append("\\'");
-        else if (c == '\\')
-        	ret.append("\\\\");
-        else
-            ret.append(c);
-    }
-
-    return ret.toString();
-}
-
+	/**
+	 *
+	 */
+	private Vector getValues(String id, String mode, DataElement dataElement, DataElement newDataElement){
+		return getValues(id, 0, mode, dataElement, newDataElement);
+	}	
+	/**
+	 *  int val indicates which group of values is requested. the default is 0
+	 *  0 - all
+	 *  1 - original
+	 *  2 - inherited
+	 */
+	private Vector getValues(String id, int val, String mode, DataElement dataElement, DataElement newDataElement){
+		if (id==null) return null;
+		DElemAttribute attr = null;
+	
+		if (mode.equals("add")){
+			if (val<2) 
+				return null;
+			else{
+				if (newDataElement==null) return null;
+				attr = newDataElement.getAttributeById(id);
+			}
+		}
+		else{
+			if (dataElement==null) return null;
+			attr = dataElement.getAttributeById(id);
+		}
+	
+		if (attr == null) return null;
+		if (val==1)
+			return attr.getOriginalValues();
+		else if (val==2)
+			return attr.getInheritedValues();
+		else
+			return attr.getValues();
+	}
+	/**
+	 *
+	 */
+	private String getAttributeObligationById(String id, Vector mAttributes){
+		
+		for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
+			DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
+	        if (attr.getID().equalsIgnoreCase(id))
+	        	return attr.getObligation();
+		}
+	        
+	    return null;
+	}
+	/**
+	 *
+	 */
+	private String legalizeAlert(String in){
+	        
+	    in = (in != null ? in : "");
+	    StringBuffer ret = new StringBuffer(); 
+	  
+	    for (int i = 0; i < in.length(); i++) {
+	        char c = in.charAt(i);
+	        if (c == '\'')
+	            ret.append("\\'");
+	        else if (c == '\\')
+	        	ret.append("\\\\");
+	        else
+	            ret.append(c);
+	    }
+	
+	    return ret.toString();
+	}
 %>
 
-			<%
-			
-			request.setCharacterEncoding("UTF-8");
+<%
+	// implementation of the servlet's service method
+	//////////////////////////////////////////////////
 
-			//
-			String mode=null;
-			Vector mAttributes=null;
-			DataElement dataElement=null;
-			DataElement newDataElement=null;
-			Vector complexAttrs=null;
-			Vector fixedValues=null;
-			//
-			
-			ServletContext ctx = getServletContext();
-			XDBApplication xdbApp = XDBApplication.getInstance(ctx);
-			AppUserIF user = SecurityUtil.getUser(request);
-			
-			if (user!=null){ //if user has logged in, we disable caching
-				response.setHeader("Pragma", "no-cache");
-				response.setHeader("Cache-Control", "no-cache");
-				response.setDateHeader("Expires", 0);
-				response.setHeader("Cache-Control", "no-store");
-			}
+	response.setHeader("Pragma", "no-cache");
+	response.setHeader("Cache-Control", "no-cache");
+	response.setDateHeader("Expires", 0);
+	response.setHeader("Cache-Control", "no-store");
+	request.setCharacterEncoding("UTF-8");
 	
-			%>
-			<%@ include file="history.jsp" %>
-			<%
+	String mode=null;
+	Vector mAttributes=null;
+	DataElement dataElement=null;
+	DataElement newDataElement=null;
+	Vector complexAttrs=null;
+	Vector fixedValues=null;
+	
+	ServletContext ctx = getServletContext();
+	XDBApplication.getInstance(ctx);
+	AppUserIF user = SecurityUtil.getUser(request);
+	
+	// POST request not allowed for anybody who hasn't logged in			
+	if (request.getMethod().equals("POST") && user==null){
+		request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
+		request.getRequestDispatcher("error.jsp").forward(request, response);
+		return;
+	}
 
-			if (request.getMethod().equals("POST") && user==null){ %>
-				<b>Not authorized to post any data!</b> <%
-	      		return;
-			}						
-			
-			mode = request.getParameter("mode");
-			if (mode == null || mode.length()==0) { %>
-				<b>Mode paramater is missing!</b>
-				<%
+	%>
+	<%@ include file="history.jsp" %>
+	<%
+
+	// init the flag indicating if this is a common element
+	boolean elmCommon = request.getParameter("common")!=null;
+		
+	// get values of several request parameters:
+	// - mode
+	// - delem_id
+	// - delem_idf
+	// - copy_elem_id
+	// - ds_id
+	// - table_id
+	// - type (indicates whether element is fixed values or quantitative)
+	mode = request.getParameter("mode");
+	String delem_id = request.getParameter("delem_id");	
+	String delem_name = request.getParameter("delem_name");
+	String copy_elem_id = request.getParameter("copy_elem_id");
+	String dsID = request.getParameter("ds_id");
+	String tableID = request.getParameter("table_id");
+	String type = request.getParameter("type"); // indicates whether element is fixed values or quantitative
+	if (type!=null && type.length()==0)
+		type = null;
+	
+	// for historic reasons reference URL uses "delem_idf" while as internally DD pages are used to "idfier"
+	String idfier = "";
+	String delemIdf = request.getParameter("delem_idf");
+	if (delemIdf!=null && delemIdf.length()>0)
+		idfier = delemIdf;
+	else if (request.getParameter("idfier")!=null)
+		idfier = request.getParameter("idfier");
+
+	// security for add common element
+	if (mode.equals("add") && elmCommon){
+		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")){
+			request.setAttribute("DD_ERR_MSG", "You have no permission to create new common element!");
+			request.getRequestDispatcher("error.jsp").forward(request, response);
+			return;
+		}
+	}
+
+	// check missing request parameters
+	if (mode == null || mode.length()==0){
+		request.setAttribute("DD_ERR_MSG", "Missing request parameter: mode");
+		request.getRequestDispatcher("error.jsp").forward(request, response);
+		return;
+	}
+	if (mode.equals("add") && !elmCommon){
+		if (Util.voidStr(tableID)){
+			request.setAttribute("DD_ERR_MSG", "Missing request parameter: table_id");
+			request.getRequestDispatcher("error.jsp").forward(request, response);
+			return;
+		}
+	}
+	else if (mode.equals("view")){
+		if (Util.voidStr(delem_id) && Util.voidStr(delemIdf)){
+			request.setAttribute("DD_ERR_MSG", "Missing request parameter: delem_id or delem_idf");
+			request.getRequestDispatcher("error.jsp").forward(request, response);
+			return;
+		}
+	}
+	else if (mode.equals("edit")){
+		if (Util.voidStr(delem_id)){
+			request.setAttribute("DD_ERR_MSG", "Missing request parameter: delem_id");
+			request.getRequestDispatcher("error.jsp").forward(request, response);
+			return;
+		}
+	}
+	else if (mode.equals("copy")){
+		if (Util.voidStr(copy_elem_id)){
+			request.setAttribute("DD_ERR_MSG", "Missing request parameter: copy_elem_id");
+			request.getRequestDispatcher("error.jsp").forward(request, response);
+			return;
+		}
+	}
+	
+	// as of Sept 2006,  parameter "action" is a helper to add some extra context to parameter "mode"
+	String action = request.getParameter("action");
+	if (action!=null && action.trim().length()==0) action = null;
+	
+	
+	//// handle the POST request //////////////////////
+	//////////////////////////////////////////////////
+	if (request.getMethod().equals("POST")){
+		
+		DataElementHandler handler = null;
+		Connection userConn = null;		
+		try{
+			userConn = user.getConnection();
+			handler = new DataElementHandler(userConn, request, ctx);
+			handler.setUser(user);
+			try{
+				handler.execute();
+			}
+			catch (Exception e){					
+				handler.cleanup();
+				String msg = e.getMessage();					
+				ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+				e.printStackTrace(new PrintStream(bytesOut));
+				String trace = bytesOut.toString(response.getCharacterEncoding());					
+				request.setAttribute("DD_ERR_MSG", msg);
+				request.setAttribute("DD_ERR_TRC", trace);
+				String backLink = request.getParameter("submitter_url");
+				if (backLink==null || backLink.length()==0)
+					backLink = history.getBackUrl();
+				request.setAttribute("DD_ERR_BACK_LINK", backLink);
+				request.getRequestDispatcher("error.jsp").forward(request, response);
 				return;
 			}
-			else if (mode.equals("add")){
-				if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")){ %>
-					<b>Not allowed!</b> <%
-	      			return;
-				}
-			}
-			
-			String delem_id = request.getParameter("delem_id");
-			String delemIdf = request.getParameter("delem_idf");
-			String pns = request.getParameter("pns");
-			String copy_elem_id = request.getParameter("copy_elem_id");
-			
-			if (mode.equals("view")){
-				if (Util.voidStr(delem_id) && Util.voidStr(delemIdf)){ %>
-					<b>Missing ID or Identifier and parent namespace!</b> <%
-					return;
-				}
-			}
-			else if (mode.equals("edit")){
-				if (Util.voidStr(delem_id)){ %>
-					<b>Missing ID to edit!</b> <%
-					return;
-				}
-			}
-			else if (mode.equals("copy")){
-				if (Util.voidStr(copy_elem_id)){ %>
-					<b>Missing ID to copy!</b> <%
-					return;
-				}
-			}
-			
-			boolean latestRequested = mode.equals("view") && !Util.voidStr(delemIdf);
-			
-			if (mode.equals("add"))
-				dataElement = null;
-			
-			String dsID = request.getParameter("ds_id");
-			String tableID = request.getParameter("table_id");
-			
-			boolean editPrm = false;
-			boolean deletePrm = false;
-			
-			boolean elmCommon = request.getParameter("common")!=null;
-			if (mode.equals("add") && !elmCommon && dsID==null){
-				if (request.getMethod().equals("POST")){ %>
-					<b>Dataset ID missing in POST!</b><%
-					return;
-				}
-				else if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
-					<b>Not allowed!</b><%
-					return;
-				}
-			}
-			
-			String type = request.getParameter("type");
-			if (type!=null && type.length()==0)
-				type = null;
-			
-			String s = request.getParameter("pick");
-			boolean wasPick = (s==null || !s.equals("true")) ? false : true;
-			
-			if (wasPick)
-				tableID = null;
+		}
+		finally{
+			try { if (userConn!=null) userConn.close();
+			} catch (SQLException e) {}
+		}
 
-			// handle the POST
-			///////////////////////////////////////////
-						
-			if (request.getMethod().equals("POST")){
-				
-				DataElementHandler handler = null;
-				Connection userConn = null;
-				String redirUrl = "";
-				
-				try{
-					if (!wasPick){
-						
-						if (!elmCommon){
-							String dsidf = request.getParameter("ds_idf");
-							if (dsidf==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsidf, "u")){%>
-								<b>Not allowed!</b><%
-								return;
-							}
-						}
-						else if (!mode.equals("add") && !SecurityUtil.hasPerm(user.getUserName(), "/elements", "u")){%>
-							<b>Not allowed!</b><%
-							return;
-						}
-						
-						userConn = user.getConnection();
-						handler = new DataElementHandler(userConn, request, ctx);
-						handler.setUser(user);
-						try{
-							handler.execute();
-						}
-						catch (Exception e){
-							
-							handler.cleanup();
-							//e.printStackTrace(new PrintStream(response.getOutputStream()));
-							//return;
-							
-							String msg = e.getMessage();
-							
-							ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-							e.printStackTrace(new PrintStream(bytesOut));
-							String trace = bytesOut.toString(response.getCharacterEncoding());
-							
-							String backLink = history.getBackUrl();
-							
-							request.setAttribute("DD_ERR_MSG", msg);
-							request.setAttribute("DD_ERR_TRC", trace);
-							request.setAttribute("DD_ERR_BACK_LINK", backLink);
-							
-							request.getRequestDispatcher("error.jsp").forward(request, response);
-							return;
-						}
-					}
-					
-					if ((mode.equals("add") && !wasPick) || mode.equals("copy")){
-						String id = handler.getLastInsertID();
-						if (id != null && id.length()!=0) redirUrl = redirUrl + "data_element.jsp?mode=edit&delem_id=" + id;
-						if (history!=null){
-						int idx = history.getCurrentIndex();
-							if (idx>0)
-								history.remove(idx);
-						}
-					}
-					else if (mode.equals("edit") && !wasPick){
-						
-						// if this was check in & new version was created , send to "view" mode
-						QueryString qs = new QueryString(currentUrl);
-						String checkIn = request.getParameter("check_in");			
-			        	if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
-				        	qs.changeParam("mode", "view");
-				        	
-				        	//JH041203 - remove previous url (with edit mode) from history
-							history.remove(history.getCurrentIndex());
-			        	}
-				        else
-				        	qs.changeParam("mode", "edit");
-				        
-						redirUrl =qs.getValue();
-						
-					}
-					else if (mode.equals("delete") && !wasPick){
-						
-						if (request.getParameter("common")!=null){
-								redirUrl = "index.jsp";
-						}
-						else{
-							String newTblID = handler.getNewTblID();
-							if (!Util.voidStr(newTblID))
-								redirUrl = redirUrl + "dstable.jsp?mode=view&table_id=" + newTblID;
-							else{
-								String	deleteUrl = history.gotoLastNotMatching("data_element.jsp");
-								redirUrl = (deleteUrl!=null&&deleteUrl.length()>0) ?
-											deleteUrl : "index.jsp";
-							}
-						}
-					}
-					else if (wasPick){
-						redirUrl = redirUrl + "data_element.jsp?&mode=" + mode;
-						
-						if (delem_id!=null) redirUrl = redirUrl + "&delem_id=" + delem_id;
-						if (type!=null) redirUrl = redirUrl + "&type=" + type;
-						
-						if (dsID != null) redirUrl = redirUrl + "&ds_id=" + dsID;
-						if (tableID != null) redirUrl = redirUrl + "&table_id=" + tableID;
-					}
-				}
-				finally{
-					try { if (userConn!=null) userConn.close();
-					} catch (SQLException e) {}
-				}
-				
-				response.sendRedirect(redirUrl);
-				return;
-				
-			} // end of handle the POST
-			
-			Connection conn = null;
-			DBPoolIF pool = xdbApp.getDBPool();
-			
-			// start the whole page try block
-			
-			try {
-			
-			conn = pool.getConnection();
-			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-			searchEngine.setUser(user);
-			
-			// get metadata on all attributes
-			mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
-			
-			// get the data element if not "add" mode
-			String delem_name = "";
-			String idfier = "";
-			
-			if (mode.equals("edit") || mode.equals("view")){
-				
-				if (latestRequested){
-					dataElement = searchEngine.getLatestElm(delemIdf, pns);
-					if (dataElement!=null) delem_id = dataElement.getID();
-				}
-				else
-					dataElement = searchEngine.getDataElement(delem_id);
-					
-				if (dataElement!=null){
-					type = dataElement.getType();
-					
-					idfier = dataElement.getIdentifier();
-					if (idfier == null) idfier = "unknown";
-					if (idfier.length() == 0) idfier = "empty";
-					
-					delem_name = dataElement.getShortName();
-					if (delem_name == null) delem_name = "unknown";
-					if (delem_name.length() == 0) delem_name = "empty";
-				}
-				else{ %>
-					<b>Data element was not found!</b> <%
-					return;
-				}
-			}
-			else if (mAttributes.size()==0){ %>
-				<b>No metadata on attributes found!</b> <%
-				return;
-			}
-			else if(mode.equals("add")){
-				
-				idfier = request.getParameter("idfier");
-				if (idfier==null) idfier="";
-				
-				delem_name = request.getParameter("delem_name");
-				if (delem_name==null) delem_name="";
-				
-				//get inherited attribues
-				if (dsID!=null && tableID!=null){
-					if (!dsID.equals("") && !tableID.equals("")){
-						newDataElement = new DataElement();
-						newDataElement.setDatasetID(dsID);
-						newDataElement.setTableID(tableID);
-						newDataElement.setAttributes(searchEngine.getSimpleAttributes(null, "E", tableID, dsID));
-					}
-				}
-			}
-			
-			// set the flag indicating if the data element is a common one or not
-			Namespace elmNs = dataElement==null ? null : dataElement.getNamespace();
-    		if (!mode.equals("add")) elmCommon = elmNs==null || elmNs.getID()==null;
-			
-			// get the dataset and table
-			Dataset dataset = null;
-			DsTable dsTable = null;
-			
-			if (dataElement!=null && !elmCommon){
-				tableID = dataElement.getTableID();
-				if (tableID!=null){
-					dsTable = searchEngine.getDatasetTable(tableID);
-					if (dsTable!=null){
-						dsID = dsTable.getDatasetID();
-						if (dsID!=null){							
-							dataset = searchEngine.getDataset(dsID);
-						}
-					}
-				}
-			}
+		// disptach the POST request
+		////////////////////////////
+		String redirUrl = "";
+		if (mode.equals("add") || mode.equals("copy")){
+			String id = handler.getLastInsertID();
+			if (id!=null && id.length()>0)
+				redirUrl = redirUrl + "data_element.jsp?mode=view&delem_id=" + id;
+			if (history!=null)
+				history.remove(history.getCurrentIndex());
+		}
+		else if (mode.equals("edit")){
 
-			// find out if this is the dataset's latest version
-			VersionManager verMan = new VersionManager(conn, searchEngine, user);
-			boolean isLatest = false;
-			if (elmCommon)
-				isLatest = dataElement==null ? false : verMan.isLatestCommonElm(dataElement.getID(), dataElement.getIdentifier());
-			else if (dataset!=null)
-				isLatest = verMan.isLatestDst(dataset.getID(), dataset.getIdentifier());
-			
-			// implementing check-in/check-out
-			
-			String workingUser = null;
-			if (dataElement!=null)
-				workingUser = verMan.getWorkingUser(dataElement.getNamespace().getID(),
-			    											dataElement.getIdentifier(), "elm");
-			if (mode.equals("edit") && user!=null){
-				
-				// see if element is checked out
-				if (Util.voidStr(workingUser)){
-					
-				    // element not checked out, create working copy
-				    // but first make sure it's the latest version
-				    if (!isLatest){
-					    if (elmCommon){ %>
-					    	<b>Trying to check out a common element that is not the latest!</b><%
-				    	}
-				    	else{ %>
-					    	<b>Trying to check out in a dataset that is not the latest!</b><%
-				    	}
-					    return;
-				    }
-				    
-				    //String copyID = verMan.checkOutElm(delem_id, elmCommon);
-				    String copyID = verMan.checkOut(delem_id, "elm");
-				    if (!delem_id.equals(copyID)){
-					    
-					    // send to copy if created successfully
-					    // but first remove previous url (edit original) from history					    
-						history.remove(history.getCurrentIndex());
-						
-					    String qryStr = "mode=edit&type=" + type;
-					    qryStr+= "&delem_id=" + copyID;
-				        response.sendRedirect("data_element.jsp?" + qryStr);
-			        }
-			    }
-			    else if (!workingUser.equals(user.getUserName())){
-				    // element is chekced out by another user
-				    %>
-				    <b>This element is already checked out by another user: <%=workingUser%></b>
-				    <%
-				    return;
-			    }
-			    else if (dataElement!=null && !dataElement.isWorkingCopy()){
-				    
-				    // element is checked out by THIS user.
-				    // If it's not the working copy, send the user to it
-				    String copyID = verMan.getWorkingCopyID(dataElement);
-				    
-				    if (copyID!=null && !copyID.equals(delem_id)){
-					    
-					    // first remove previous url (edit original) from history
-						history.remove(history.getCurrentIndex());
-						
-						String qryStr = "mode=edit&type=" + type;
-						qryStr+= "&delem_id=" + verMan.getWorkingCopyID(dataElement);
-						response.sendRedirect("data_element.jsp?" + qryStr);
-					}
-			    }
-		    }
-			
-			// set permissions
-			editPrm = user!=null;
-			if (editPrm){
-				if (elmCommon)
-					editPrm = SecurityUtil.hasPerm(user.getUserName(), "/elements" , "u");
-				else
-					editPrm = dataset!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
-			}
-			deletePrm = editPrm;
-			
-			// get the complex attributes
-			complexAttrs = searchEngine.getComplexAttributes(delem_id, "E", null, tableID, dsID);
-			if (complexAttrs == null) complexAttrs = new Vector();
-			
-			DElemAttribute attribute = null;
-			
-			// we get the Registration status in order to know to warn if somebody wnats to edit a Released definition
-			String regStatus = !elmCommon || dataElement==null ? null : dataElement.getStatus();
-			
-			// set up referring tables (if common element)
-        	Vector refTables = null;
-        	if (!mode.equals("add") && elmCommon)
-        		refTables = searchEngine.getReferringTables(delem_id);
-        		
-        	// init page title
-			StringBuffer pageTitle = new StringBuffer();
-			if (mode.equals("edit")){
-				if (elmCommon)
-					pageTitle.append("Edit common element");
-				else
-					pageTitle.append("Edit element");
+			// if this was a "saveclose", send to view mode
+			String strSaveclose = request.getParameter("saveclose");
+			if (strSaveclose!=null && strSaveclose.equals("true")){
+				QueryString qs = new QueryString(currentUrl);
+				qs.changeParam("mode", "view");
+				redirUrl = qs.getValue();
 			}
 			else{
-				if (elmCommon)
-					pageTitle.append("Common element");
-				else
-					pageTitle.append("Element");
+				// if this was check in, go to the view of checked in copy
+				String checkIn = request.getParameter("check_in");
+				if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
+					if (history!=null)
+						history.remove(history.getCurrentIndex());
+					QueryString qs = new QueryString(currentUrl);
+					qs.changeParam("mode", "view");
+					if (handler.getCheckedInCopyID()!=null)
+						qs.changeParam("delem_id", handler.getCheckedInCopyID());
+					redirUrl = qs.getValue();
+				}
+				// if this was just a save, send back to edit page
+				else{
+					QueryString qs = new QueryString(currentUrl);
+					redirUrl = qs.getValue();
+				}
 			}
-			if (dataElement!=null && dataElement.getShortName()!=null)
-				pageTitle.append(" - ").append(dataElement.getShortName());
-			if (dsTable!=null && dataset!=null){
-				if (dsTable.getShortName()!=null && dataset.getShortName()!=null)
-					pageTitle.append("/").append(dsTable.getShortName()).append("/").append(dataset.getShortName());
+		}
+		else if (mode.equals("delete")){
+			String checkedoutCopyID = request.getParameter("checkedout_copy_id");
+			if (checkedoutCopyID!=null && checkedoutCopyID.length()>0)
+				redirUrl = "data_element.jsp?mode=view&delem_id=" + checkedoutCopyID;
+			else
+				redirUrl = "index.jsp";
+			if (!elmCommon){
+				if (tableID!=null && tableID.length()>0)
+					redirUrl = "dstable.jsp?mode=view&table_id=" + tableID;
+			}
+		}
+		
+		response.sendRedirect(redirUrl);
+		return;		
+	}
+	//// end of handle the POST request //////////////////////
+	//////////////////////////////////////////////////////////
+
+	// if requested by alphanumeric identifier, it means the common element's latest version is requested 
+	boolean isLatestRequested = mode.equals("view") && !Util.voidStr(delemIdf);
+
+	Dataset dataset = null;
+	DsTable dsTable = null;
+	String dstWorkingUser = null;
+	String elmWorkingUser = null;
+	String elmRegStatus = null;
+	VersionManager verMan = null;
+	Vector refTables = null;
+	Vector otherVersions = null;
+	String latestID = null;
+	
+	// security flag for non-common elements only
+	boolean editDstPrm = false;
+	
+	// security flags for common elements only
+	boolean editPrm = false;
+	boolean editReleasedPrm = false;
+	boolean canCheckout = false;
+	boolean canNewVersion = false;
+	boolean isMyWorkingCopy = false;
+	boolean isLatestElm = false;
+		
+	Connection conn = null;
+	DBPoolIF pool = XDBApplication.getDBPool();
+	
+	// the whole page's try block
+	try {
+		
+		// get db connection, init search engine object
+		conn = pool.getConnection();
+		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+		searchEngine.setUser(user);
+		
+		// get metadata of attributes
+		mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+				
+		// if not in add mode, get the element object, set some parameters based on it
+		if (!mode.equals("add")){
+			
+			if (isLatestRequested){
+				Vector v = new Vector();
+				v.add("Released");
+				v.add("Recorded");
+				dataElement = searchEngine.getLatestElm(delemIdf, v);				
+			}
+			else
+				dataElement = searchEngine.getDataElement(delem_id);
+			
+			if (dataElement==null){
+				request.setAttribute("DD_ERR_MSG", "No data element found with this id number or alphanumeric identifier!");
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
 			}
 
+
+			// set parameters regardless of common or non-common elements
+			elmCommon = dataElement.getNamespace()==null || dataElement.getNamespace().getID()==null;
+			delem_id = dataElement.getID();
+			delem_name = dataElement.getShortName();
+			delemIdf = dataElement.getIdentifier();
+			idfier = dataElement.getIdentifier();
+			type = dataElement.getType();
+			if (type!=null && type.length()==0)
+				type = null;			
+			complexAttrs = searchEngine.getComplexAttributes(delem_id, "E", null, tableID, dsID);
+			if (complexAttrs == null)
+				complexAttrs = new Vector();
+			
+			// set parameters specific to NON-COMMON elements
+			if (!elmCommon){				
+				tableID = dataElement.getTableID();
+				if (tableID==null || tableID.length()==0){
+					request.setAttribute("DD_ERR_MSG", "Missing table id number in the non-common element object");
+					request.getRequestDispatcher("error.jsp").forward(request, response);
+					return;
+				}
+			}
+			// set parameters and security flags specific to COMMON elements
+			else{
+				elmWorkingUser = dataElement.getWorkingUser();
+				elmRegStatus = dataElement.getStatus();
+				refTables = searchEngine.getReferringTables(delem_id);
+				
+				Vector v = null;
+				if (user==null){
+					v = new Vector();
+					v.add("Released");
+					v.add("Recorded");								
+				}
+				latestID = searchEngine.getLatestElmID(delemIdf, v);
+				isLatestElm = latestID!=null && delem_id.equals(latestID);
+				
+				System.out.println("latestID=" + latestID);
+				System.out.println("isLatestElm=" + isLatestElm);
+							
+				editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delemIdf, "u");
+				editReleasedPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delemIdf, "er");
+				
+				canNewVersion = !dataElement.isWorkingCopy() && elmWorkingUser==null && elmRegStatus!=null && user!=null && isLatestElm;
+				if (canNewVersion){
+					canNewVersion = elmRegStatus.equals("Released") || elmRegStatus.equals("Recorded");
+					if (canNewVersion)
+						canNewVersion = editPrm || editReleasedPrm;
+				}
+				
+				canCheckout = !dataElement.isWorkingCopy() && elmWorkingUser==null && elmRegStatus!=null && user!=null && isLatestElm;
+				if (canCheckout){
+					if (elmRegStatus.equals("Released") || elmRegStatus.equals("Recorded"))
+						canCheckout = editReleasedPrm;
+					else
+						canCheckout = editPrm || editReleasedPrm;
+				}
+				
+				isMyWorkingCopy = elmCommon && dataElement.isWorkingCopy() &&
+								  elmWorkingUser!=null && user!=null && elmWorkingUser.equals(user.getUserName());
+				
+				// get the element's other versions (does not include working copies)
+				if (mode.equals("view"))
+					otherVersions = searchEngine.getElmOtherVersions(dataElement.getIdentifier(), dataElement.getID());
+			}
+		}
+
+		// if non-common element, get the table object (by this point the table id must not be null if non-common element)
+		if (!elmCommon){
+			
+			dsTable = searchEngine.getDatasetTable(tableID);
+			if (dsTable==null){
+				request.setAttribute("DD_ERR_MSG", "No table found with this id number: " + tableID);
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+			
+			// overwrite the dataset id number parameter with the value from table object
+			dsID = dsTable.getDatasetID();
+			if (dsID==null || dsID.length()==0){
+				request.setAttribute("DD_ERR_MSG", "Missing dataset id number in the table object");
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+			
+			dataset = searchEngine.getDataset(dsID);
+			if (dataset==null){
+				request.setAttribute("DD_ERR_MSG", "No dataset found with this id number: " + dsID);
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+			
+			// set some parameters based on the table & dataset objects
+			dstWorkingUser = dataset.getWorkingUser();
+			editDstPrm = user!=null && dataset.isWorkingCopy() && dstWorkingUser!=null && dstWorkingUser.equals(user.getUserName());
+			
+			// security checks
+			if (!mode.equals("view") && editDstPrm==false){
+				request.setAttribute("DD_ERR_MSG", "You have no permission to do modifications in this dataset!");
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+			// anonymous users should not be allowed to see elements from a dataset working copy
+			if (mode.equals("view") && user==null && dataset.isWorkingCopy()){
+				request.setAttribute("DD_ERR_MSG", "Anonymous users are not allowed to view elements from a dataset working copy");
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+			// anonymous users should not be allowed to see elements from datasets that are NOT in Recorded or Released status
+			if (mode.equals("view") && user==null && dataset.getStatus()!=null && !dataset.getStatus().equals("Recorded") && !dataset.getStatus().equals("Released")){
+				request.setAttribute("DD_ERR_MSG", "Elements from datasets NOT in Recorded or Released status are inaccessible for anonymous users.");
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+				return;
+			}
+			// if add mode, populate the helper newDataElement object with attribute values inherited from table & dataset
+			if(mode.equals("add")){
+				newDataElement = new DataElement();
+				newDataElement.setDatasetID(dsID);
+				newDataElement.setTableID(tableID);
+				newDataElement.setAttributes(searchEngine.getSimpleAttributes(null, "E", tableID, dsID));
+			}
+		}
+
+		// FOR COMMON ELEMENTS ONLY - security checks, checkin/checkout operations, dispatching of the GET request
+		if (elmCommon){
+			
+			verMan = new VersionManager(conn, searchEngine, user);
+			if (mode.equals("edit")){
+				if (!dataElement.isWorkingCopy() || user==null || (elmWorkingUser!=null && !elmWorkingUser.equals(user.getUserName()))){
+					request.setAttribute("DD_ERR_MSG", "You have no permission to edit this common element!");
+					request.getRequestDispatcher("error.jsp").forward(request, response);
+					return;
+				}
+			}
+			else if (mode.equals("view") && action!=null && (action.equals("checkout") || action.equals("newversion"))){
+				
+				if (action.equals("checkout") && !canCheckout){
+					request.setAttribute("DD_ERR_MSG", "You have no permission to check out this dataset!");
+					request.getRequestDispatcher("error.jsp").forward(request, response);
+					return;
+				}
+				if (action.equals("newversion") && !canNewVersion){
+					request.setAttribute("DD_ERR_MSG", "You have no permission to create new version of this dataset!");
+					request.getRequestDispatcher("error.jsp").forward(request, response);
+					return;
+				}
+				
+				// if creating new version, let VersionManager know about this
+				if (action.equals("newversion")){
+					eionet.meta.savers.Parameters pars = new eionet.meta.savers.Parameters();
+					pars.addParameterValue("resetVersionAndStatus", "resetVersionAndStatus");
+					verMan.setServlRequestParams(pars);
+				}
+		
+				// check out the element
+			    String copyID = verMan.checkOut(delem_id, "elm");
+			    if (!delem_id.equals(copyID)){
+				    // send to copy if created successfully, remove previous url (edit original) from history
+				    history.remove(history.getCurrentIndex());			    
+				    StringBuffer buf = new StringBuffer("data_element.jsp?mode=view&delem_id=");
+				    buf.append(copyID);
+			        response.sendRedirect(buf.toString());
+		        }
+			}
+			else if (mode.equals("view")){
+				// anonymous users should not be allowed to see anybody's working copy
+				if (dataElement.isWorkingCopy() && user==null){
+					request.setAttribute("DD_ERR_MSG", "Anonymous users are not allowed to view a working copy!");
+					request.getRequestDispatcher("error.jsp").forward(request, response);
+					return;
+				}
+				// anonymous users should not be allowed to see definitions that are NOT in Recorded or Released status
+				if (user==null && elmRegStatus!=null && !elmRegStatus.equals("Recorded") && !elmRegStatus.equals("Released")){
+					request.setAttribute("DD_ERR_MSG", "Definitions NOT in Recorded or Released status are inaccessible for anonymous users.");
+					request.getRequestDispatcher("error.jsp").forward(request, response);
+					return;
+				}
+				// redircet user to his working copy of this element (if such exists)
+				String workingCopyID = verMan.getWorkingCopyID(dataElement);
+				if (workingCopyID!=null && workingCopyID.length()>0){
+					StringBuffer buf = new StringBuffer("data_element.jsp?mode=view&delem_id=");
+				    buf.append(workingCopyID);
+			        response.sendRedirect(buf.toString());
+				}
+			}
+		}
+		
+		// prepare the page's HTML title, shown in browser title bar
+		StringBuffer pageTitle = new StringBuffer();
+		if (mode.equals("edit")){
+			if (elmCommon)
+				pageTitle.append("Edit common element");
+			else
+				pageTitle.append("Edit element");
+		}
+		else{
+			if (elmCommon)
+				pageTitle.append("Common element");
+			else
+				pageTitle.append("Element");
+		}
+		if (dataElement!=null && dataElement.getShortName()!=null)
+			pageTitle.append(" - ").append(dataElement.getShortName());
+		if (dsTable!=null && dataset!=null){
+			if (dsTable.getShortName()!=null && dataset.getShortName()!=null)
+				pageTitle.append("/").append(dsTable.getShortName()).append("/").append(dataset.getShortName());
+		}
 %>
 
+<%
+// start HTML //////////////////////////////////////////////////////////////
+%>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
@@ -582,149 +643,81 @@ private String legalizeAlert(String in){
 			window.open("station.xsd",null, "height=400,width=600,status=no,toolbar=no,menubar=no,location=no,scrollbars=yes,top=100,left=100");
 		}
 
-		function submitPick(){
-			document.forms["form1"].elements["pick"].value = "true";
-			document.forms["form1"].submit();
-		}
-		
 		function checkIn(){
 			submitCheckIn();
 		}
 		
 		function submitCheckIn(){
-
 			<%
-			if (!elmCommon && dataset!=null && dataset.getStatus().equals("Released")){ %>
-				var b = confirm("Please note that you are checking in a non-common element definition in a dataset definition that is in Released status! " +
-								"This will create a new version of that dataset definition and it will be automatically released for public view. " +
-								"If you want to continue, click OK. Otherwise click Cancel.");
-				if (b==false) return;<%
-			}
-			
-			String latestRegStatus = elmCommon ? searchEngine.getLatestRegStatus(dataElement) : "";
-			if (latestRegStatus.equals("Released")){ %>
-				var b = confirm("Please note that you are checking your changes into a common element definition that was in Released status prior to checking out! " +
-				"By force, this will create a new version of that definition! If you want to continue, click OK. Otherwise click Cancel.");
-				if (b==false) return;<%
-			}
-			
-			if (elmCommon){
+			if (elmRegStatus!=null && elmRegStatus.equals("Released")){
 				%>
-				var i;
-				var stat = "";
-				var optn;
-				var optns = document.forms["form1"].elements["reg_status"].options;
-				for (i=0; optns!=null && i<optns.length; i++){
-					optn = optns[i];
-					if (optn.selected){
-						stat = optn.value;
-						break;
-					}
-				}
-				
-				if (stat=="Released"){
-					var b = confirm("You are checking in with Released status! This will automatically release your changes into public view. " +
-								    "If you want to continue, click OK. Otherwise click Cancel.");
-					if (b==false) return;
-				}<%
+				var b = confirm("You are checking in with Released status! This will automatically release your changes into public view. " +
+							    "If you want to continue, click OK. Otherwise click Cancel.");
+				if (b==false) return;
+				<%
 			}
 			%>
-
 			document.forms["form1"].elements["check_in"].value = "true";
-			var b = submitForm('edit');
-			if (b==false)
-				document.forms["form1"].elements["check_in"].value = "false";
+			document.forms["form1"].elements["mode"].value = "edit";
+			document.forms["form1"].submit();
+		}
+		
+		function goTo(mode, id){
+			if (mode == "edit"){				
+				document.location.assign("data_element.jsp?mode=edit&delem_id=" + id);
+			}
+			else if (mode=="checkout"){
+				document.location.assign("data_element.jsp?mode=view&action=checkout&delem_id=" + id);
+			}
+			else if (mode=="newversion"){
+				document.location.assign("data_element.jsp?mode=view&action=newversion&delem_id=" + id);
+			}
+			else if (mode=="view"){
+				document.location.assign("data_element.jsp?mode=view&delem_id=" + id);
+			}
 		}
 		
 		function submitForm(mode){
-			
-			if (mode=="add"){
-				
-				<%
-				if (!elmCommon){ %>
-					var ds = document.forms["form1"].elements["ds_id"].value;
-					if (ds==null || ds==""){
-						alert('Dataset not specified!');
-						return false;
-					}
-					
-					var tbl = document.forms["form1"].elements["table_id"].value;
-					if (tbl==null || tbl==""){
-						alert('Table not specified!');
-						return false;
-					}<%
+
+			// if element type select is present, make sure a value is selected
+			if (document.forms["form1"].elements["typeSelect"]!=undefined){
+				var elmTypeSelectedValue = document.forms["form1"].elements["typeSelect"].value;
+				if (elmTypeSelectedValue==null || elmTypeSelectedValue==""){
+					alert('Element type not specified!');
+					return false;
 				}
-				else{
-					%>
-					if (document.forms["form1"].elements["typeSelect"]!=undefined){
-						var elmType = document.forms["form1"].elements["typeSelect"].value;
-						if (elmType==null || elmType==""){
-							alert('Element type not specified!');
-							return false;
-						}
-					}
-					<%
-				}
-				%>
 			}
-			
+
 			if (mode == "delete"){
 				<%
-				String confirmDelTxt = "";
-				if (elmCommon){
-					if (!mode.equals("add") && dataElement.isWorkingCopy())
-						confirmDelTxt = "This working copy will be deleted! Click OK, if you want to continue. Otherwise click Cancel.";
-					else if (refTables!=null && refTables.size()>0){
-						confirmDelTxt = "Please note that this common element definition is used in some tables " +
-										"(see the relevant list on this page)! If you still want to delete it, click OK. " +
-										"Otherwise click Cancel.";
-					}
-					else if (regStatus!=null && regStatus.equals("Released")){
-						confirmDelTxt = "Please note that a common element definition in Released status might be referenced by other " +
-										"applications! If you still want to delete it, click OK. Otherwise click Cancel.";
-					}
-				}
-				else{
-					if (!mode.equals("add") && dataElement.isWorkingCopy())
-						confirmDelTxt = "This working copy will be deleted and the whole dataset released for others to edit! " +
-							            "Click OK, if you want to continue. Otherwise click Cancel.";
-					else
-						confirmDelTxt = "This element will be deleted! You will be asked if you want this to update the dataset's " +
-							  		    "CheckInNo as well. Click OK, if you want to continue. Otherwise click Cancel.";
+				String confirmationText = "Are you sure you want to delete this element? Click OK, if yes. Otherwise click Cancel.";
+				if (dataElement!=null && elmCommon){
+					if (dataElement.isWorkingCopy())
+						confirmationText = "This working copy will be deleted! Click OK, if you want to continue. Otherwise click Cancel.";
+					else if (elmRegStatus!=null && !dataElement.isWorkingCopy() && elmRegStatus.equals("Released"))
+						confirmationText = "You are about to delete a Released common element! Are you sure you want to do this? Click OK, if yes. Otherwise click Cancel.";
 				}
 				%>
+
+				var b = confirm("<%=confirmationText%>");
+				if (b==false) return;
 				
-				if (confirm("<%=Util.replaceTags(confirmDelTxt)%>")==false)
-					return false;
-				
-				<%
-				if (dataElement!=null && dataElement.isWorkingCopy()){ %>
-					document.forms["form1"].elements["upd_version"].value = "false";
-					deleteReady();
-					return false;<%
-				}
-				else if (!elmCommon){ %>
-					// now ask if the deletion should also result in the dataset's new version being created				
-					openNoYes("yesno_dialog.html", "Do you want to update the dataset definition's CheckInNo with this deletion?", delDialogReturn,100, 400);
-					return false;<%
-				}
-				%>
+				document.forms["form1"].elements["mode"].value = "delete";
+				document.forms["form1"].submit();
+				return;
 			}
-			
+
+			// if not delete mode, do validation of inputs
 			if (mode != "delete"){
-				
 				forceAttrMaxLen();
-				
 				if (!checkObligations()){
 					alert("You have not specified one of the mandatory atttributes!");
 					return false;
 				}
-				
 				if (hasWhiteSpace("idfier")){
 					alert("Identifier cannot contain any white space!");
 					return false;
 				}
-				
 				if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
 					alert("Identifier not valid for usage as an XML tag! " +
 						  "In the first character only underscore or latin characters are allowed! " +
@@ -734,6 +727,11 @@ private String legalizeAlert(String in){
 			}
 			
 			slctAllValues();
+			
+			if (mode=="editclose"){
+				mode = "edit";
+				document.forms["form1"].elements["saveclose"].value = "true";
+			}
 			
 			document.forms["form1"].elements["mode"].value = mode;
 			document.forms["form1"].submit();
@@ -814,7 +812,7 @@ private String legalizeAlert(String in){
     	function edit(){
 	    	<%
 	    	// check if this is a common element in Released status
-			if (regStatus!=null && regStatus.equals("Released")){ %>
+			if (elmRegStatus!=null && elmRegStatus.equals("Released")){ %>
 				var a = confirm("Please be aware that this is a definition in Released status. Unless " +
 					  			"you change the status back to something lower, your edits will become " +
 					  			"instantly visible for the public visitors after you check in the definition! " +
@@ -1111,26 +1109,21 @@ private String legalizeAlert(String in){
 </head>
 
 <%
-			
-String attrID = null;
-String attrValue = null;
-
+// start HTML body ///////////////////////////////////////
 boolean popup = request.getParameter("popup")!=null;
-
-if (popup){ %>	
-
-	<body class="popup">
-	
-	<div class="popuphead">
-		<h1>Data Dictionary</h1>
-		<hr/>
-		<div align="right">
-			<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
-				<input type="submit" class="smallbutton" value="Close"/>
-			</form>
+if (popup){
+	%>
+	<body class="popup">	
+		<div class="popuphead">
+			<h1>Data Dictionary</h1>
+			<hr/>
+			<div align="right">
+				<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
+					<input type="submit" class="smallbutton" value="Close"/>
+				</form>
+			</div>
 		</div>
-	</div>
-	<div><%
+		<div><%
 }
 else{
 	%>
@@ -1142,7 +1135,7 @@ else{
 		<%@ include file="nmenu.jsp" %>
 		<div id="workarea">
 <%
-} // end if not popup
+} // end if popup
 %>
 			<div id="operations">
 				<%
@@ -1160,6 +1153,13 @@ else{
 						<li><a href="Subscribe?common_element=<%=Util.replaceTags(dataElement.getIdentifier())%>">Subscribe</a></li>
 						<%
 					}
+					if (mode.equals("view") && elmCommon && !dataElement.isWorkingCopy()){
+						if (user!=null || (user==null && !isLatestRequested)){							
+							if (latestID!=null && !latestID.equals(dataElement.getID())){%>
+								<li><a href="data_element.jsp?mode=view&amp;delem_id=<%=latestID%>">Go to newest</a></li><%
+							}
+						}
+					}
 					%>
 				</ul>
 			</div>
@@ -1167,48 +1167,19 @@ else{
 			<!-- The buttons displayed in view mode -->
 			<div style="clear:right; float:right">
 				<%
-				// the buttons displayed in view mode
-				if (!popup && mode.equals("view") && dataElement!=null){
-					if (user!=null){
-						
-						// set some helper flags
-						String topWorkingUser = verMan.getWorkingUser(dataElement.getTopNs());
-						boolean topFree = elmCommon ? workingUser==null : topWorkingUser==null;
-						boolean inWorkByMe = workingUser==null ? false : workingUser.equals(user.getUserName());
-						
-						/*System.out.println("===> editPrm = " + editPrm);
-						System.out.println("===> dataElement.isWorkingCopy() = " + dataElement.isWorkingCopy());
-						System.out.println("===> topFree = " + topFree);
-						System.out.println("===> isLatest = " + isLatest);
-						System.out.println("===> inWorkByMe = " + inWorkByMe);*/
-						
-						if (editPrm){
-							if (dataElement.isWorkingCopy() ||
-								(isLatest && topFree) ||
-								(isLatest && inWorkByMe)){ %>
-								<input type="button" class="smallbutton" value="Edit" onclick="edit()"/><%
-							}
-						}
-						
-						/*System.out.println("===> deletePrm = " + deletePrm);
-						System.out.println("===> dataElement.isWorkingCopy() = " + dataElement.isWorkingCopy());
-						System.out.println("===> isLatest = " + isLatest);
-						System.out.println("===> topFree = " + topFree);*/
-						
-						if (deletePrm){
-							if (!dataElement.isWorkingCopy() && isLatest && topFree){ %>
-								<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
-							}
-						}
-						
-						if (elmCommon && editPrm){ %>
-							<input type="button" class="smallbutton" value="History" onclick="pop('elm_history.jsp?id=<%=dataElement.getID()%>')"/> <%
-						}
+				if (mode.equals("view")){
+					if (!elmCommon && editDstPrm){ %>
+						<input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/><%
 					}
-				}
-				// the working copy part
-				else if (!popup && dataElement!=null && dataElement.isWorkingCopy()){ %>
-					<span class="wrkcopy">Working copy</span><%
+					if (elmCommon && canNewVersion){%>
+						<input type="button" class="smallbutton" value="New version" onclick="goTo('newversion', '<%=delem_id%>')"/><%
+					}
+					if (elmCommon && canCheckout){%>
+						&nbsp;<input type="button" class="smallbutton" value="Check out" onclick="goTo('checkout', '<%=delem_id%>')"/><%
+					}
+					if ((elmCommon && canCheckout) || (!elmCommon && editDstPrm)){%>
+						&nbsp;<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
+					}
 				}
 				%>
 			</div>
@@ -1219,10 +1190,9 @@ else{
 				verb = "Add";
 			else if (mode.equals("edit"))
 				verb = "Edit";	
-				
-			String sCommon = elmCommon ? "common" : "";
+			String strCommon = elmCommon ? "common" : "";
 			%>
-			<h1><%=verb%> <%=sCommon%> element definition</h1>
+			<h1><%=verb%> <%=strCommon%> element definition</h1>
 		    
 			<div style="clear:both">
 			<br/>
@@ -1235,7 +1205,6 @@ else{
 				else { %>
 					<input type="hidden" name="dummy"/><%
 				}
-				
 				%>
 				
 				<!--=======================-->
@@ -1267,87 +1236,43 @@ else{
 					}	
 					%>
 					
-					<!-- add, save, check-in, undo check-out buttons -->
+						<!-- add, save, check-in, undo check-out buttons -->
 					
-					<%
-					if (mode.equals("add") || mode.equals("edit")){
-						%>				
-				<table border="0" width="620" cellspacing="0" cellpadding="0">
-						
+						<table border="0" width="620" cellspacing="0" cellpadding="0">
 							<tr><td width="100%" colspan="2" height="10"></td></tr>
 							<tr>
-							<td width="100%" align="right" colspan="2">
-							<%
-								// add case
-								if (mode.equals("add")){
-									if (user==null){ %>
-										<input type="button" class="mediumbuttonb" value="Add" disabled="true"/><%
-									}
-									else { %>
-										<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
-										<input type="button" class="mediumbuttonb" value="Copy" onclick="copyElem()" title="Copies data element attributes from existing data element"/><%
-									}
-								}
-								// edit case
-								else if (mode.equals("edit")){
-									String isDisabled = user==null ? "disabled" : "";
-									%>
-									<input type="button" class="mediumbuttonb" value="Save" <%=isDisabled%> onclick="submitForm('edit')"/>&nbsp;
+								<td width="100%" align="right" colspan="2">
 									<%
-									if (!dataElement.isWorkingCopy()){ %>
-										<input class="mediumbuttonb" type="button" value="Delete" <%=isDisabled%> onclick="submitForm('delete')"/>&nbsp;<%
+									// add case
+									if (mode.equals("add")){ %>
+										<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
+										<input type="button" class="mediumbuttonb" value="Copy"
+											onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
+											title="Copies data element attributes from existing data element"/>
+										<%
 									}
-									else{ %>
-										<input class="mediumbuttonb" type="button" value="Check in" onclick="checkIn()" <%=isDisabled%>/>&nbsp;
-										<input class="mediumbuttonb" type="button" value="Undo check-out" <%=isDisabled%> onclick="submitForm('delete')"/><%
+									// view case
+									else if (mode.equals("view") && isMyWorkingCopy){
+										%>
+										<input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/>
+										&nbsp;<input type="button" class="mediumbuttonb" value="Check in" onclick="checkIn()" />
+										&nbsp;<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>
+										<%
 									}
-								}
-							%>
-							</td>
-						</tr>
-						<%
-						// update version checkbox
-						boolean brandNew = dataElement!=null && elmCommon && verMan.isFirstCommonElm(dataElement.getIdentifier());
-						if (mode.equals("edit") && dataElement!=null && dataElement.isWorkingCopy() && user!=null){
-							
-							boolean allowOverwrite = false;
-							if (elmCommon && !latestRegStatus.equals("Released"))
-								allowOverwrite = true;
-							else if (!elmCommon && (dataset==null || !dataset.getStatus().equals("Released")))
-								allowOverwrite = true;
-							
-							String updVerText = elmCommon ?
-												"Update this element definition's CheckInNo when checking in" :
-												"Update the dataset definition's CheckInNo when checking in";
-							
-							String hidden = "";
-							StringBuffer checkbox = new StringBuffer("<input type=\"checkbox\" value=\"true\" name=\"");
-							if (allowOverwrite)
-								checkbox.append("upd_version\"");
-							else{
-								checkbox.append("upd_version_DISABLED\" checked=\"true\" disabled=\"true\"");
-								hidden = "<input type=\"hidden\" name=\"upd_version\" value=\"true\"/>";
-							}
-							checkbox.append("/>").append("&nbsp;"+updVerText);
-							
-							if (!brandNew){ %>
-								<tr>
-									<td align="right" class="smallfont_light" colspan="2"><%=checkbox%><%=hidden%></td>
-								</tr><%
-							}
-							else{
-								%>
-								<input type="hidden" name="upd_version" value="false"/>
-								<%
-							}
-						}
-								%>
-					</table>
-								<%
-					}
-					%>
+									// edit case
+									else if (mode.equals("edit")){
+										%>
+										<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
+										<input type="button" class="mediumbuttonb" value="Save & close" onclick="submitForm('editclose')"/>&nbsp;
+										<input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
+										<%
+									}
+									%>
+								</td>
+							</tr>
+						</table>
 	                
-	                <!-- main table body -->
+	                	<!-- main table body -->
 	                
 		                    
 		                    	<!-- quick links -->
@@ -1383,38 +1308,38 @@ else{
 								<%
 								// display schema link only in view mode and only for users that have a right to edit a dataset
 								if (mode.equals("view")){
-									boolean dispAll = editPrm;
-									boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
-									//user!=null && SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u")
-									if (!popup && (dispAll || dispXmlSchema)){ %>
-								<div id="createbox">
-									<table id="outputsmenu">
-										<tr>
-											<td style="width:73%">
-												Create an XML Schema for this element
-											</td>
-											<td style="width:27%">
-												<a target="_blank" href="GetSchema?id=ELM<%=delem_id%>">
-													<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
-												</a>
-											</td>
-										</tr>
-										<%
-										if (dataElement.getType().equals("CH1") && fixedValues!=null && fixedValues.size()>0){%>
-											<tr>
-												<td style="width:73%">
-													Get a comma-separated codelist of this element
-												</td>
-												<td style="width:27%">
-													<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
-														<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
-													</a>
-												</td>
-											</tr><%
-										}
-										%>
-									</table>
-								</div>
+									boolean dispOutputs = elmCommon;
+									if (dispOutputs==false)
+										dispOutputs = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
+									if (!popup && dispOutputs){ %>
+										<div id="createbox">
+											<table id="outputsmenu">
+												<tr>
+													<td style="width:73%">
+														Create an XML Schema for this element
+													</td>
+													<td style="width:27%">
+														<a target="_blank" href="GetSchema?id=ELM<%=delem_id%>">
+															<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
+														</a>
+													</td>
+												</tr>
+												<%
+												if (dataElement.getType().equals("CH1") && fixedValues!=null && fixedValues.size()>0){%>
+													<tr>
+														<td style="width:73%">
+															Get a comma-separated codelist of this element
+														</td>
+														<td style="width:27%">
+															<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
+																<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
+															</a>
+														</td>
+													</tr><%
+												}
+												%>
+											</table>
+										</div>
 										<%
 									}
 								}
@@ -1507,159 +1432,68 @@ else{
 								    		<!-- dataset & table part, relevant for non-common elements only -->
 								    		
 								    		<%
-								    		Dataset dst = null;
 								    		if (!elmCommon){
 								    		
 									    		// dataset
-									    		
-												if (mode.equals("add") || dataset!=null){ %>
-										    		<tr class="zebra<%=isOdd%>">
-										    			<th scope="row" class="scope-row simple_attr_title">
-															Dataset
-															</th>
-														<td class="simple_attr_help">
-															<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
-																<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
-															</a>
-														</td>
-														<%
-														if (colspan==4){%>
-															<td class="simple_attr_help">
-																<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
-															</td><%
-														}
-														%>
-														<td class="simple_attr_value">
-															<%
-															String link = "";
-															if (latestRequested)
-																link = "dataset.jsp?mode=view&amp;ds_idf=" + dataset.getIdentifier();
-															else
-																link = "dataset.jsp?mode=view&amp;ds_id=" + dsID;
-															// the case when dataset has been specified and mode is view or edit
-															if (dataset!=null && !mode.equals("add")){ %>
-																<a href="<%=link%>">
-																	<b><%=Util.replaceTags(dataset.getShortName())%></b>
-																</a>
-																<input type="hidden" name="ds_id" value="<%=dsID%>"/><%
-															}
-															// other cases
-															else {
-															
-																dsID = request.getParameter("ds_id");
-																if (dsID!=null && dsID.length()!=0)
-																	dst = searchEngine.getDataset(dsID);
-																%>
-																<select class="small" name="ds_id" onchange="submitPick('<%%>')"> <%
-																
-																	if (dst==null){ %>
-																		<option selected="selected" value="">-- select a dataset --</option><%
-																	}
-																	
-																	Vector datasets = searchEngine.getDatasets();
-																	for (int i=0; datasets!=null && i<datasets.size(); i++){
-																		Dataset ds = (Dataset)datasets.get(i);
-																		
-																		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + ds.getIdentifier(), "u"))
-																			continue;
-																		
-																		// skip datasets in work
-																		if (verMan.getWorkingUser(ds.getNamespaceID()) != null)
-																			continue;
-																		
-																		boolean isTheOne = dst==null ? false : dst.getID().equals(ds.getID());
-																		String selected = isTheOne ? "selected=\"selected\"" : "";
-																		// String selected = (dsID!=null && dataset!=null && dsID.equals(ds.getID())) ? "selected" : "";
-																		%>
-																		<option <%=selected%> value="<%=ds.getID()%>"><%=Util.replaceTags(ds.getShortName())%></option>
-																		<%
-																	}
-																	
-																	%>
-																</select>&nbsp;
-																<span class="barfont">(datasets in work are not displayed)</span><%
-															}
-															%>
-														</td>
-														
-														<%isOdd = Util.isOdd(++displayed);%>
-										    		</tr><%
-									    		}
-									    		
-									    		// table
-									    		
-												if (mode.equals("add") || dsTable!=null){ %>
-													<tr class="zebra<%=isOdd%>">
-										    			<th scope="row" class="scope-row simple_attr_title">
-															Table
+												%>
+									    		<tr class="zebra<%=isOdd%>">
+									    			<th scope="row" class="scope-row simple_attr_title">
+														Dataset
 														</th>
+													<td class="simple_attr_help">
+														<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
+															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+														</a>
+													</td>
+													<%
+													if (colspan==4){%>
 														<td class="simple_attr_help">
-															<a target="_blank" href="help.jsp?screen=element&amp;area=table" onclick="pop(this.href);return false;">
-																<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+															<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+														</td><%
+													}
+													%>
+													<td class="simple_attr_value">
+														<em>
+															<a href="dataset.jsp?mode=view&amp;ds_id=<%=dsID%>">
+																<b><%=Util.replaceTags(dataset.getShortName())%></b>
 															</a>
-														</td>
-														<%
-														if (colspan==4){%>
-															<td class="simple_attr_help">
-																<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
-															</td><%
-														}
-														%>
-														<td class="simple_attr_value">
-															<%
-															// the case when table has been specified and mode is view or edit
-															if (dsTable!=null && !mode.equals("add")){
-																	String link = "";
-																	if (latestRequested)
-																		link = "dstable.jsp?mode=view&amp;table_idf=" + dsTable.getIdentifier() + "&pns=" + dsTable.getParentNs();
-																	else
-																		link = "dstable.jsp?mode=view&amp;table_id=" + dsTable.getID();
-																	%>
-																	<em>
-																	<a href="<%=link%>"><%=Util.replaceTags(dsTable.getShortName())%></a></em>
-																	<input type="hidden" name="table_id" value="<%=dsTable.getID()%>"/>
-																	<%
-															}
-															// other cases
-															else{															
-																tableID = request.getParameter("table_id");
-																DsTable tbl = null;
-																if (tableID!=null && tableID.length()!=0)
-																	tbl = searchEngine.getDatasetTable(tableID);																
-																%>
-																<select class="small" name="table_id"">
-																	<%
-																	if (dst!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dst.getIdentifier(), "u")){
-																		if (tbl==null){ %>
-																			<option selected="selected" value="">-- select a table --</option>
-																			<%
-																		}
-																		
-																		Vector tables = searchEngine.getDatasetTables(dst.getID());
-																		for (int i=0; tables!=null && i<tables.size(); i++){
-																			DsTable tb = (DsTable)tables.get(i);
-																			boolean isTheOne = tbl==null ? false : tbl.getID().equals(tb.getID());
-																			String selected = isTheOne ? "selected=\"selected\"" : "";
-																			%>
-																			<option <%=selected%> value="<%=tb.getID()%>"><%=Util.replaceTags(tb.getShortName())%></option>
-																			<%
-																		}
-																	}
-																	else{ %>
-																		<option value="">-- pick a dataset first! --</option>
-																		<%
-																	}
-																	%>
-																</select>
-																<%
-															}
-															%>
-														</td>
-														
-														<%isOdd = Util.isOdd(++displayed);%>
-										    		</tr><%
-												}
-											} // end of dataset & table part, relevant only if not a common element
+														</em>
+														<input type="hidden" name="ds_id" value="<%=dsID%>"/>
+													</td>
+													
+													<%isOdd = Util.isOdd(++displayed);%>
+									    		</tr>
+										    	<%
+									    		// table
+									    		%>
+												<tr class="zebra<%=isOdd%>">
+									    			<th scope="row" class="scope-row simple_attr_title">
+														Table
+													</th>
+													<td class="simple_attr_help">
+														<a target="_blank" href="help.jsp?screen=element&amp;area=table" onclick="pop(this.href);return false;">
+															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+														</a>
+													</td>
+													<%
+													if (colspan==4){%>
+														<td class="simple_attr_help">
+															<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+														</td><%
+													}
+													%>
+													<td class="simple_attr_value">
+														<em>
+															<a href="dstable.jsp?mode=view&amp;table_id=<%=dsTable.getID()%>">
+																<%=Util.replaceTags(dsTable.getShortName())%>
+															</a>
+														</em>
+														<input type="hidden" name="table_id" value="<%=dsTable.getID()%>"/>
+													</td>
+													
+													<%isOdd = Util.isOdd(++displayed);%>
+									    		</tr><%
+											} // end of dataset & table part (relevant only for non-common elements)
 											%>
 											
 											<!-- RegistrationStatus, relevant for common elements only -->
@@ -1685,14 +1519,25 @@ else{
 													<td class="simple_attr_value">
 														<%
 														if (mode.equals("view")){ %>
-															<%=Util.replaceTags(regStatus)%><%
+															<%=Util.replaceTags(elmRegStatus)%>
+															<%
+															if (elmWorkingUser!=null){
+																if (dataElement.isWorkingCopy() && user!=null && elmWorkingUser.equals(user.getUserName())){
+																	%>
+																	<span class="caution">(Working copy)</span><%
+																}
+																else{
+																	%>
+																	<span class="caution">(checked out by <em><%=elmWorkingUser%></em>)</span><%
+																}
+															}
 														}
 														else{ %>
 															<select name="reg_status" onchange="form_changed('form1')"> <%
 																Vector regStatuses = verMan.getRegStatuses();
 																for (int i=0; i<regStatuses.size(); i++){
 																	String stat = (String)regStatuses.get(i);
-																	String selected = stat.equals(regStatus) ? "selected=\"selected\"" : ""; %>
+																	String selected = stat.equals(elmRegStatus) ? "selected=\"selected\"" : ""; %>
 																	<option <%=selected%> value="<%=Util.replaceTags(stat)%>"><%=Util.replaceTags(stat)%></option><%
 																} %>
 															</select><%
@@ -1794,8 +1639,11 @@ else{
 								    		<!-- dynamic attributes -->
 								    		
 								    		<%
-								    		boolean imagesQuicklinkSet = false;
-								    		boolean isBoolean = false;
+								    		String attrID = null;
+											String attrValue = null;
+											DElemAttribute attribute = null;
+											boolean isBoolean = false;
+											boolean imagesQuicklinkSet = false;
 											for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
 												
 												attribute = (DElemAttribute)mAttributes.get(i);
@@ -1816,7 +1664,7 @@ else{
 													attrValue = elmDataType;
 												else
 													attrValue = getValue(attrID, mode, dataElement, newDataElement);
-													
+
 												String attrOblig = attribute.getObligation();
 												String obligImg  = "optional.gif";
 												if (attrOblig.equalsIgnoreCase("M"))
@@ -2023,6 +1871,7 @@ else{
 																	}
 																}
 																else if (dispType.equals("select")){
+																	
 																	String onchange = "";
 																	if (attribute.getShortName().equalsIgnoreCase("Datatype"))
 																		onchange = " onchange=\"changeDatatype()\"";
@@ -2182,10 +2031,10 @@ else{
 													<%
 													if(!mode.equals("add")){ %>
 														<b><%=Util.replaceTags(idfier)%></b>
-														<input type="hidden" name="idfier" value="<%=Util.replaceTags(idfier,true)%>"/><%
+														<input type="hidden" name="idfier" value="<%=Util.replaceTags(delemIdf,true)%>"/><%
 													}
 													else{ %>
-														<input class="smalltext" type="text" size="30" name="idfier" onchange="form_changed('form1')" value="<%=Util.replaceTags(idfier)%>"/><%
+														<input class="smalltext" type="text" size="30" name="idfier" onchange="form_changed('form1')" value="<%=idfier%>"/><%
 													}
 													%>
 												</td>
@@ -2205,7 +2054,7 @@ else{
 										
 										<%										
 										boolean key = (mode.equals("edit") && user!=null) || (mode.equals("view") && fixedValues!=null && fixedValues.size()>0);
-										if (type!=null && !isBoolean && key){
+										if (type!=null && key){
 																						
 											String title = type.equals("CH1") ? "Allowable values" : "Suggested values";
 											String helpAreaName = type.equals("CH1") ? "allowable_values_link" : "suggested_values_link";
@@ -2316,15 +2165,11 @@ else{
 										<!-- foreign key relations, relevant for non-common elements only -->
 										
 										<%
-										if (!elmCommon &&
-											((mode.equals("edit") && user!=null) || (mode.equals("view") && fKeys!=null && fKeys.size()>0))){
-
-											
+										if (!elmCommon && (mode.equals("edit") || (mode.equals("view") && fKeys!=null && fKeys.size()>0))){
 											%>										
 												<!-- title & link part -->
 												<h2>
-														Foreign key relations<a name="fkeys"></a>
-													
+													Foreign key relations<a name="fkeys"></a>													
 													<%
 													if (!mode.equals("view")){
 														%>
@@ -2337,14 +2182,11 @@ else{
 															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
 														</span><%
 													}
-													
 													// the link
-													if (mode.equals("edit") && user!=null){
-														String origID = verMan.getLatestElmID(dataElement);
-														if (origID!=null && origID.length()>0) origID = "&orig_id=" + origID;
+													if (mode.equals("edit")){
 														%>
 														<span class="barfont_bordered">
-															[Click <a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;ds_id=<%=dsID%><%=origID%>"><b>HERE</b></a> to manage foreign keys of this element]
+															[Click <a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>"><b>HERE</b></a> to manage foreign keys of this element]
 														</span><%
 													}
 													%>
@@ -2420,7 +2262,7 @@ else{
 																DsTable tbl = (DsTable)refTables.get(i);
 																String tblLink = "";
 																String dstLink = "";
-																if (latestRequested){
+																if (isLatestRequested){
 																	tblLink = "dstable.jsp?mode=view&amp;table_idf=" + tbl.getIdentifier() + "&amp;pns=" + tbl.getParentNs();
 																	dstLink = "dataset.jsp?mode=view&amp;ds_idf=" + tbl.getDstIdentifier();
 																}
@@ -2435,12 +2277,12 @@ else{
 																%>
 																<tr>
 																	<td>
-																		<a target="_blank" href="<%=tblLink%>">
+																		<a href="<%=tblLink%>">
 																			<%=Util.replaceTags(tbl.getShortName())%>
 																		</a>
 																	</td>
 																	<td>
-																		<a target="_blank" href="<%=dstLink%>">
+																		<a href="<%=dstLink%>">
 																			<%=Util.replaceTags(tbl.getDatasetName())%>
 																		</a>
 																	</td>
@@ -2561,6 +2403,64 @@ else{
 										}
 										%>
 										<!-- end complex attributes -->
+										
+										<%
+										// other versions
+										if (mode.equals("view") && elmCommon && otherVersions!=null && otherVersions.size()>0){
+											%>
+											<h2>
+												Other versions<a name="versions"></a>
+											</h2>
+											<table class="datatable" id="other-versions">
+												<col style="width:25%"/>
+												<col style="width:25%"/>
+												<col style="width:25%"/>
+												<col style="width:25%"/>
+												<thead>
+													<tr>
+														<th>Element number</th>
+														<th>Status</th>
+														<th>Release date</th>
+														<th></th>
+													</tr>
+												</thead>
+												<tbody>
+												<%
+												DataElement otherVer;
+												for (int i=0; i<otherVersions.size(); i++){
+													otherVer = (DataElement)otherVersions.get(i);
+													String status = otherVer.getStatus();
+													String releaseDate = null;
+													if (status.equals("Released"))
+														releaseDate = otherVer.getDate();
+													if (releaseDate!=null)
+														releaseDate = eionet.util.Util.releasedDate(Long.parseLong(releaseDate));
+													else
+														releaseDate = "";
+													%>
+													<tr>
+														<td><%=otherVer.getID()%></td>
+														<td><%=status%></td>
+														<td><%=releaseDate%></td>
+														<td>
+															<%
+															if (searchEngine.skipByRegStatus(otherVer.getStatus())){ %>
+																&nbsp;<%
+															}
+															else{ %>
+																[<a href="dataset.jsp?mode=view&amp;ds_id=<%=otherVer.getID()%>">view</a>]<%
+															}
+															%>
+														</td>
+													</tr>
+													<%
+												}
+												%>
+												</tbody>
+											</table>
+											<%
+										}
+										%>
 								        
 								<!-- end dotted -->
 								
@@ -2570,35 +2470,48 @@ else{
 					
 				<!-- end main table -->
 				
-				<%
-				if (type!=null){ %>
-					<input type="hidden" name="type" value="<%=type%>"/> <%
-				}
-				%>
 				<input type="hidden" name="mode" value="<%=mode%>"/>
-				<input type="hidden" name="pick" value="false"/>
 				<input type="hidden" name="check_in" value="false"/>
-				<input type="hidden" name="ns" value="1"/>
 				<input type="hidden" name="copy_elem_id" value=""/>
 				<input type="hidden" name="changed" value="0"/>
+				<input type="hidden" name="saveclose" value="false"/>
 				
 				<%
-				
-				String dsidf = dataset==null ? null : dataset.getIdentifier();
-				if (dsidf==null && dst!=null)
-					dsidf = dst.getIdentifier();
-				
-				if (dsidf!=null){%>
-					<input type="hidden" name="ds_idf" value="<%=dsidf%>"/><%
+				if (type!=null){ %>
+					<input type="hidden" name="type" value="<%=type%>"/><%
 				}
-				
-				// for deletion from view mode we need upd_version parameter
-				if (mode.equals("view")){ %>
-					<input type="hidden" name="upd_version" value="false"/><%
-				}
-				
-				if (elmCommon){ %>
+
+				if (elmCommon){
+					String checkedoutCopyID = dataElement==null ? null : dataElement.getCheckedoutCopyID();
+					if (checkedoutCopyID!=null){%>
+						<input type="hidden" name="checkedout_copy_id" value="<%=checkedoutCopyID%>"/><%
+					}
+					if (dataElement!=null){
+						String checkInNo = dataElement.getVersion();
+						if (checkInNo.equals("1")){%>
+							<input type="hidden" name="upd_version" value="true"/><%
+						}
+					}
+					%>
 					<input type="hidden" name="common" value="true"/><%
+				}
+				else{
+					String dstNamespaceID = dataset.getNamespaceID();
+					if (dstNamespaceID!=null && dstNamespaceID.length()>0){ %>
+						<input type="hidden" name="dst_namespace_id" value="<%=dstNamespaceID%>"/><%
+					}
+					String tblNamespaceID = dsTable.getNamespace();
+					if (tblNamespaceID!=null && tblNamespaceID.length()>0){ %>
+						<input type="hidden" name="tbl_namespace_id" value="<%=tblNamespaceID%>"/><%
+					}
+
+				}
+				// submitter url, might be used by POST handler who might want to send back to POST submitter
+				String submitterUrl = Util.getServletPathWithQueryString(request);
+				if (submitterUrl!=null){
+					submitterUrl = Util.replaceTags(submitterUrl);
+					%>
+					<input type="hidden" name="submitter_url" value="<%=submitterUrl%>"/><%
 				}
 				%>
 				
@@ -2618,6 +2531,22 @@ else{
 
 <%
 // end the whole page try block
+}
+catch (Exception e){
+	if (response.isCommitted())
+		e.printStackTrace(System.out);
+	else{
+		String msg = e.getMessage();
+		ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();							
+		e.printStackTrace(new PrintStream(bytesOut));
+		String trace = bytesOut.toString(response.getCharacterEncoding());
+		String backLink = history.getBackUrl();
+		request.setAttribute("DD_ERR_MSG", msg);
+		request.setAttribute("DD_ERR_TRC", trace);
+		request.setAttribute("DD_ERR_BACK_LINK", backLink);
+		request.getRequestDispatcher("error.jsp").forward(request, response);
+		return;
+	}
 }
 finally {
 	try { if (conn!=null) conn.close();

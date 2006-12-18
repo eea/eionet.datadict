@@ -1,11 +1,9 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.net.URL,java.net.URLEncoder,java.net.MalformedURLException"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.net.URL,java.net.URLEncoder,java.net.MalformedURLException"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private Vector complexAttrs=null;%>
 
 <%!
-
-
 private String legalizeAlert(String in){
         
     in = (in != null ? in : "");
@@ -23,141 +21,109 @@ private String legalizeAlert(String in){
 
     return ret.toString();
 }
-
 %>
 
-			<%
-			
-			request.setCharacterEncoding("UTF-8");
-			
-			XDBApplication.getInstance(getServletContext());
-			AppUserIF user = SecurityUtil.getUser(request);
-			
-			ServletContext ctx = getServletContext();			
-			String appName = ctx.getInitParameter("application-name");
-			
-			/*DDuser user = new DDuser(DBPool.getPool(appName));
+<%
+	request.setCharacterEncoding("UTF-8");
 	
-			String username = "root";
-			String password = "ABr00t";
-			boolean f = user.authenticate(username, password);*/
-			
-			if (request.getMethod().equals("POST")){
-      			if (user == null){
-	      			%>
-	      				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-	      				<body>
-	      					<h1>Error</h1><p>Not authorized to post any data!</p>
-	      				</body>
-	      				</html>
-	      			<%
-	      			return;
-      			}
-			}						
-			
-			String parent_id = request.getParameter("parent_id");
-			
-			if (parent_id == null || parent_id.length()==0){ %>
-				<span class="error">Parent ID is missing!</span> <%
-				return;
-			}
-			
-			String parent_type = request.getParameter("parent_type");
-			
-			if (parent_type == null || parent_type.length()==0){ %>
-				<span class="error">Parent type is missing!</span> <%
-				return;
-			}
-			
-			String parent_name = request.getParameter("parent_name");
-			if (parent_name == null) parent_name = "?";
-			
-			String parent_ns = request.getParameter("parent_ns");
-			if (parent_ns == null) parent_ns = "?";
-			
-			String ds = request.getParameter("ds");
-			
-			// For getting inherited attributes
-			String dataset_id = request.getParameter("dataset_id");
-			if (dataset_id == null) dataset_id = "";
-			String table_id = request.getParameter("table_id");
-			if (table_id == null) table_id = "";
+	ServletContext ctx = getServletContext();
+	XDBApplication.getInstance(ctx);
+	AppUserIF user = SecurityUtil.getUser(request);	
+	
+	// POST request not allowed for anybody who hasn't logged in			
+	if (request.getMethod().equals("POST") && user==null){
+		request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
+		request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+		return;
+	}
 
-			if (request.getMethod().equals("POST")){
-
-				Connection userConn = null;				
-				try{
-					userConn = user.getConnection();
-					AttrFieldsHandler handler = new AttrFieldsHandler(userConn, request, ctx);
-					
-					try{
-						handler.execute();
-					}
-					catch (Exception e){
-						%>
-						<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><body><b><%=e.toString()%></b></body></html>
-						<%
-						return;
-					}
-				}
-				finally{
-					try { if (userConn!=null) userConn.close();
-					} catch (SQLException e) {}
-				}
-				
-				String redirUrl = "complex_attrs.jsp?parent_id=" + parent_id +
-															 "&parent_type=" + parent_type +
-															 "&parent_name=" + parent_name +
-															 "&parent_ns=" + parent_ns +
-															 "&table_id=" + table_id +
-															 "&dataset_id=" + dataset_id;
-				
-				response.sendRedirect(redirUrl);
+	// get some vital request parameters
+	String parent_id = request.getParameter("parent_id");
+	if (parent_id == null || parent_id.length()==0){
+		request.setAttribute("DD_ERR_MSG", "Missing request parameter: parent_id");
+		request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+		return;
+	}	
+	String parent_type = request.getParameter("parent_type");
+	if (parent_type == null || parent_type.length()==0){
+		request.setAttribute("DD_ERR_MSG", "Missing request parameter: parent_type");
+		request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+		return;
+	}
+	String parent_name = request.getParameter("parent_name");
+	String parent_ns = request.getParameter("parent_ns");
+	String ds = request.getParameter("ds");
+	
+	// for getting inherited attributes
+	String dataset_id = request.getParameter("dataset_id");
+	if (dataset_id == null) dataset_id = "";
+	String table_id = request.getParameter("table_id");
+	if (table_id == null) table_id = "";
+	
+	// handle POST request
+	if (request.getMethod().equals("POST")){
+		Connection userConn = null;				
+		try{
+			userConn = user.getConnection();
+			AttrFieldsHandler handler = new AttrFieldsHandler(userConn, request, ctx);			
+			try{
+				handler.execute();
+			}
+			catch (Exception e){
+				String msg = e.getMessage();					
+				ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+				e.printStackTrace(new PrintStream(bytesOut));
+				String trace = bytesOut.toString(response.getCharacterEncoding());					
+				request.setAttribute("DD_ERR_MSG", msg);
+				request.setAttribute("DD_ERR_TRC", trace);
+				request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
 				return;
 			}
-			
-			Connection conn = null;
-			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-        	DBPoolIF pool = xdbapp.getDBPool();
-			
-			try { // start the whole page try block
-			
-			conn = pool.getConnection();
-			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-			
-			Vector mComplexAttrs = searchEngine.getDElemAttributes(DElemAttribute.TYPE_COMPLEX);
-			if (mComplexAttrs == null) mComplexAttrs = new Vector();
-			
-			complexAttrs = searchEngine.getComplexAttributes(parent_id, parent_type, null, table_id, dataset_id);
-			
-			if (complexAttrs == null) complexAttrs = new Vector();
-			
-			for (int i=0; mComplexAttrs.size()!=0 && i<complexAttrs.size(); i++){
-				DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
-				String attrID = attr.getID();
-				for (int j=0; j<mComplexAttrs.size(); j++){
-					DElemAttribute mAttr = (DElemAttribute)mComplexAttrs.get(j);
-					String mAttrID = mAttr.getID();
-					if (attrID.equals(mAttrID)){
-						mComplexAttrs.remove(j);
-						j--;
-					}
+		}
+		finally{
+			try { if (userConn!=null) userConn.close();
+			} catch (SQLException e) {}
+		}
+		// dispatch the POST request
+		String redirUrl = "complex_attrs.jsp?parent_id=" + parent_id +
+													 "&parent_type=" + parent_type +
+													 "&parent_name=" + parent_name +
+													 "&parent_ns=" + parent_ns +
+													 "&table_id=" + table_id +
+													 "&dataset_id=" + dataset_id;
+		response.sendRedirect(redirUrl);
+		return;
+	}
+	//// end of handle the POST request, all following code deals with GET //////////////////////
+	
+	Connection conn = null;
+	DBPoolIF pool = XDBApplication.getDBPool();
+	
+	// the whole page's try block
+	try {	
+		conn = pool.getConnection();
+		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+		Vector mComplexAttrs = searchEngine.getDElemAttributes(DElemAttribute.TYPE_COMPLEX);
+		if (mComplexAttrs == null)
+			mComplexAttrs = new Vector();
+		
+		complexAttrs = searchEngine.getComplexAttributes(parent_id, parent_type, null, table_id, dataset_id);
+		if (complexAttrs == null)
+			complexAttrs = new Vector();
+		
+		for (int i=0; mComplexAttrs.size()!=0 && i<complexAttrs.size(); i++){
+			DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
+			String attrID = attr.getID();
+			for (int j=0; j<mComplexAttrs.size(); j++){
+				DElemAttribute mAttr = (DElemAttribute)mComplexAttrs.get(j);
+				String mAttrID = mAttr.getID();
+				if (attrID.equals(mAttrID)){
+					mComplexAttrs.remove(j);
+					j--;
 				}
 			}
-			
-			// JH170803
-			// if the parent is not a working copy, its complex attributes cannot be edited.
-			// so here we set the falg it is a working copy or not
-			String _type = null;
-			if (parent_type.equals("E"))
-				_type="elm";
-			else if (parent_type.equals("DS"))
-				_type="dst";
-			else if (parent_type.equals("T"))
-				_type="tbl";
-			boolean isWorkingCopy = _type==null ? true : searchEngine.isWorkingCopy(parent_id, _type);
-			
-			%>
+		}		
+%>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
@@ -300,16 +266,8 @@ private String legalizeAlert(String in){
 					%>
 				</select>&#160;
 				
-				<%
-				if (user != null && isWorkingCopy){ %>
-					<input class="smallbutton" type="button" value="Add new" onclick="addNew()"/>&nbsp;
-					<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')"/><%
-				}
-				else{ %>
-					<input class="smallbutton" type="button" value="Add new" disabled="disabled" />&nbsp;
-					<input class="smallbutton" type="button" value="Remove selected" disabled="disabled"/><%
-				}
-				%>
+				<input class="smallbutton" type="button" value="Add new" onclick="addNew()"/>&nbsp;
+				<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')"/>
 				
 			</td>
 		</tr>
@@ -340,52 +298,79 @@ private String legalizeAlert(String in){
 		
 		String obligImg = obligStr + ".gif";
 		
+		String inherited = null;
+		Vector rows = attr.getRows();
+		for (int j=0; rows!=null && j<rows.size(); j++){
+			Hashtable rowHash = (Hashtable)rows.get(j);
+			inherited = (String)rowHash.get("inherited");
+			if (inherited!=null){
+				if (inherited.equals("DS"))
+					inherited = "(inherited from dataset)";
+				else if (inherited.equals("DT"))
+					inherited = "(inherited from table)";
+				else
+					inherited = null;
+				break;
+			}
+		}
+
 		%>
 		
-		<table cellspacing="0">
+		<table cellspacing="0" class="datatable">
+			<%
+			//System.out.println("------------------------------------------------ " + attrName);
+			//System.out.println("inherited = " + inherited);
+			%>
 			<tr>
 				<td align="right" valign="middle">
-					<input type="checkbox" style="height:13;width:13" name="del_attr" value="<%=attrID%>"/>
+					<%
+					if (inherited==null){%>
+						<input type="checkbox" style="height:13;width:13" name="del_attr" value="<%=attrID%>"/><%
+					}
+					else{ %>
+						&nbsp;<%
+					}
+					%>
 				</td>
 				<td valign="middle">
-					<b>&#160;<%=Util.replaceTags(attrName)%></b>&nbsp;&nbsp;&nbsp;<img border="0" src="images/<%=Util.replaceTags(obligImg, true)%>" width="16" height="16" alt="<%=Util.replaceTags(obligStr, true)%>"/>
+					<b>&#160;<%=Util.replaceTags(attrName)%></b>&nbsp;&nbsp;&nbsp;
+					<%
+					if (inherited==null){%>
+						<img border="0" src="images/<%=Util.replaceTags(obligImg, true)%>" width="16" height="16" alt="<%=Util.replaceTags(obligStr, true)%>"/><%
+					}
+					else{ %>
+						<%=inherited%><%
+					}
+					%>
 				</td>
 			</tr>
 			<tr>
 				<td valign="top" style="padding-right:3;padding-top:3;">
 					<%
-					if (user != null && isWorkingCopy){
-						%>
-						<input class="smallbutton" type="button" value="Edit" onclick="edit('<%=attrID%>')"/>
-						<%
+					if (inherited==null){%>
+						<input class="smallbutton" type="button" value="Edit" onclick="edit('<%=attrID%>')"/><%
 					}
-					else{
-						%>&#160;
-<!--						<input class="smallbutton" type="button" value="Edit" disabled/ -->
-						<%
+					else{ %>
+						&nbsp;<%
 					}
 					%>
-				</td>
-				
+				</td>				
 				<td style="padding-left:3;padding-top:3">
 					<table cellspacing="0">
 						<tr>
-						<%
-						
+						<%						
 						for (int t=0; attrFields!=null && t<attrFields.size(); t++){
 							Hashtable hash = (Hashtable)attrFields.get(t);
 							String name = (String)hash.get("name");
 							String style = "padding-right:10px";
 							%>
-							<th align="left" class="small" style="<%=style%>"><%=Util.replaceTags(name)%></th>
+							<th align="left" class="small"><%=Util.replaceTags(name)%></th>
 							<%
 						}
-						
 						%>
 						</tr>
 						
 						<%
-						Vector rows = attr.getRows();
 						for (int j=0; rows!=null && j<rows.size(); j++){
 							Hashtable rowHash = (Hashtable)rows.get(j);
 							%>
@@ -397,10 +382,7 @@ private String legalizeAlert(String in){
 								String fieldID = (String)hash.get("id");
 								String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 								if (fieldValue == null) fieldValue = " ";
-								//System.out.println("=================================================");
-								//System.out.println("enne: " + fieldValue);
-								fieldValue = Util.replaceTags(fieldValue);
-								//System.out.println("pärast: " + fieldValue);
+								fieldValue = Util.replaceTags(fieldValue);								
 								%>
 								<td class="small" style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=Util.replaceTags(fieldValue)%></td>
 								<%
@@ -412,9 +394,6 @@ private String legalizeAlert(String in){
 						%>
 					</table>
 				</td>
-			</tr>
-			<tr>
-				<td colspan="2">&nbsp;</td>
 			</tr>
 		</table>
 		<%

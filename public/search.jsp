@@ -185,6 +185,10 @@ private String setDefaultAttrs(String name){
 				<% 
 				}
 			%>
+			if (document.forms["form1"].snoncom.checked)
+				changeFormStateForNonCommon();
+			else if (document.forms["form1"].scom.checked)
+				changeFormStateForCommon();
 		}
 		
 		function typeSelect(){
@@ -194,6 +198,18 @@ private String setDefaultAttrs(String name){
 				if (sel>=0){
 				}
 			}
+		}
+		
+		function changeFormStateForCommon(){
+			document.forms["form1"].dataset.selectedIndex = 0;
+			document.forms["form1"].dataset.disabled = true;
+			document.forms["form1"].wrk_copies.disabled = false;
+		}
+		
+		function changeFormStateForNonCommon(){
+			document.forms["form1"].dataset.disabled = false;
+			document.forms["form1"].wrk_copies.checked = false;
+			document.forms["form1"].wrk_copies.disabled = true;
 		}
 		
 	// ]]>
@@ -229,30 +245,62 @@ else{ %>
 			}	
 			%>
 			
-			
 				<div id="operations">
 					<ul>
-							<li class="help"><a target="_blank" href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-				<%
-					if (contextParam == null || !contextParam.equals(POPUP)){
-				
-					boolean dstPrm = user!=null &&
-									 (SecurityUtil.hasChildPerm(user.getUserName(), "/datasets/", "u") ||
-									 SecurityUtil.hasChildPerm(user.getUserName(), "/elements", "i"));
-					if (dstPrm) { %>
-							<li><a title="Add a definition of a new non-common element" href="javascript:window.location.assign('data_element.jsp?mode=add')">New non-common element</a></li>
-							<li><a title="Add a definition of a new common element" href="javascript:window.location.assign('data_element.jsp?mode=add&common=true')">New common element</a></li>
-					 <%
-					}
-				}
-				%>
+						<li class="help"><a target="_blank" href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+						<%
+						if (contextParam == null || !contextParam.equals(POPUP)){
+							boolean elmPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i");
+							if (elmPrm){%>
+								<li><a title="Add a definition of a new common element" href="javascript:window.location.assign('data_element.jsp?mode=add&common=true')">New common element</a></li><%
+							}
+						}
+						%>
 					</ul>
 				</div>
-				<h1>Search for a data element definition</h1>
+				
+				<h1>Search data elements</h1>
 				<form name="form1" action="search_results.jsp" method="get">
 				
 				<table width="auto" cellspacing="0" border="0">
 
+					<%
+					String fk = request.getParameter("fk");
+					if (fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0){
+						%>
+						<input type="hidden" name="dataset" value="<%=sel_ds%>"/>
+						<input type="hidden" name="fk" value="<%=fk%>"/><%
+					}
+					else{
+						%>
+						<tr valign="top">
+							<td align="right" style="padding-right:10">
+								<b>Dataset</b>
+							</td>
+							<td>
+								<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
+									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+								</a>
+							</td>
+							<td colspan="2">
+								<select name="dataset" class="small">
+									<option value="">All</option>
+									<%
+									Vector datasets = searchEngine.getDatasets();
+									for (int i=0; datasets!=null && i<datasets.size(); i++){
+										Dataset ds = (Dataset)datasets.get(i);
+										String selected = (sel_ds!=null && sel_ds.equals(ds.getID())) ? "selected" : "";
+										%>
+										<option <%=selected%> value="<%=ds.getID()%>"><%=Util.replaceTags(ds.getShortName())%></option>
+										<%
+									}
+									%>
+								</select>
+							</td>
+						</tr><%
+					}
+					%>
+									
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
 							<b>Type</b>
@@ -270,43 +318,6 @@ else{ %>
 							</select>
 						</td>
 					</tr>
-					
-					<%
-					String fk = request.getParameter("fk");
-					if (fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0){%>
-						<input type="hidden" name="dataset" value="<%=sel_ds%>"/>
-						<input type="hidden" name="fk" value="<%=fk%>"/><%
-					}
-					else{%>
-
-						<tr valign="top">
-							<td align="right" style="padding-right:10">
-								<b>Dataset</b>
-							</td>
-							<td>
-								<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
-									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
-								</a>
-							</td>
-							<td colspan="2">
-								<select name="dataset" class="small">
-									<option value="">All</option>
-									<option value="-1" <% if (sel_ds.equals("-1"))%>selected<%;%>>Not defined</option>
-									<%
-									Vector datasets = searchEngine.getDatasets();
-									for (int i=0; datasets!=null && i<datasets.size(); i++){
-										Dataset ds = (Dataset)datasets.get(i);
-										String selected = (sel_ds!=null && sel_ds.equals(ds.getID())) ? "selected" : "";
-										%>
-										<option <%=selected%> value="<%=ds.getID()%>"><%=Util.replaceTags(ds.getShortName())%></option>
-										<%
-									}
-									%>
-								</select>
-							</td>
-						</tr><%
-					}
-					%>
 					
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
@@ -539,24 +550,38 @@ else{ %>
 						<tr>
 							<td colspan="2">&nbsp;</td>
 							<td colspan="2" align="left" class="smallfont_light">
-								<input type="radio" name="common" value="false" id="snoncom" checked="checked"/><label for="snoncom">Non-common elements</label>
-								<input type="radio" name="common" id="scom" value="true"/><label for="scom">Common elements</label>
+								<input type="radio" name="common" value="false" id="snoncom" checked="checked" onchange="changeFormStateForNonCommon()"/><label for="snoncom">Non-common elements</label>
+								<input type="radio" name="common" id="scom" value="true" onchange="changeFormStateForCommon()"/><label for="scom">Common elements</label>
 							</td>
 						</tr><%
 					}
 					
 					// if authenticated user, enable to get working copies only
-					if (user!=null){ %>
+					if (user!=null){
+						if (fk==null || !fk.equals("true")){ %>
+							<tr>
+								<td colspan="2">&nbsp;</td>
+								<td colspan="2" align="left">
+									<input type="checkbox" name="wrk_copies" id="wrk_copies" value="true"/>
+									<label for="wrk_copies" class="smallfont" style="font-weight: normal">Working copies only</label>
+								</td>
+							</tr> <%
+						}
+						else{ %>
+							<input type="hidden" name="wrk_copies" id="wrk_copies" value="true"/><%
+						}
+					}
+					
+					if (fk==null || !fk.equals("true")){ %>
 						<tr>
 							<td colspan="2">&nbsp;</td>
 							<td colspan="2" align="left">
-								<input type="checkbox" name="wrk_copies" value="true"/>
-								<span class="smallfont_light">Working copies only</span>
+								<input type="checkbox" name="incl_histver" id="incl_histver" value="true"/>
+								<label for="incl_histver" class="smallfont" style="font-weight: normal">Include historic versions</label>
 							</td>
-						</tr> <%
+						</tr><%
 					}
 					%>
-					
                     
 					<tr style="height:10px;"><td colspan="4"></td></tr>
 					
@@ -608,6 +633,18 @@ else{ %>
             	if (nonCommonOnly){ %>
             		<input type="hidden" name="common" value="false"/><%
         		}
+        		String strExclude = request.getParameter("exclude");
+        		if (strExclude!=null){%>
+        			<input type="hidden" name="exclude" value="<%=strExclude%>"/><%
+    			}
+    			String skipTableID = request.getParameter("skip_table_id");
+    			if (skipTableID!=null && skipTableID.length()>0){ %>
+    				<input type="hidden" name="skip_table_id" value="<%=skipTableID%>"/><%
+				}
+    			if (fk!=null && fk.equals("true")){ %>
+    				<input type="hidden" name="for_fk_use" value="true"/><%
+				}
+
         		%>
                 
 				</form>

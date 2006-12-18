@@ -6,8 +6,9 @@
 	
 	XDBApplication.getInstance(getServletContext());
 	AppUserIF user = SecurityUtil.getUser(request);
-	if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/cleanup", "x")){ %>
-		<b>Not allowed!</b><%
+	if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/cleanup", "x")){
+		request.setAttribute("DD_ERR_MSG", "You have no permission to access this page");
+		request.getRequestDispatcher("error.jsp").forward(request, response);
 		return;
 	}
 %>
@@ -180,8 +181,7 @@
 						<tr>
 							<td>
 								<%
-								
-								String disabled = "";//clnPrm ? "" : "disabled";
+								String disabled = "disabled=\"disabled\"";
 								%>
 								<input type="button" <%=disabled%> class="smallbuttonb" value="Action" onclick="submitForm()"/>
 							</td>
