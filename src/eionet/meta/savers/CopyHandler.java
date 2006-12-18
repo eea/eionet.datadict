@@ -286,18 +286,23 @@ public class CopyHandler extends Object {
 		append("OWNER_ID=").append(oldOwner).append(" and OWNER_TYPE=").
 		append(Util.strLiteral(ownerType));
 
-		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("FXV");
-		gen.setFieldExpr("OWNER_ID", newOwner);
-		gen.setField("OWNER_TYPE", ownerType);
-		
+		Vector v = new Vector();
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(buf.toString());
 		while (rs!=null && rs.next()){
+			SQLGenerator gen = new SQLGenerator();
+			gen.setTable("FXV");
+			gen.setFieldExpr("OWNER_ID", newOwner);
+			gen.setField("OWNER_TYPE", ownerType);
 			gen.setField("VALUE", rs.getString("VALUE"));
 			gen.setField("IS_DEFAULT", rs.getString("IS_DEFAULT"));
 			gen.setField("DEFINITION", rs.getString("DEFINITION"));
 			gen.setField("SHORT_DESC", rs.getString("SHORT_DESC"));
+			v.add(gen);
+		}
+		rs.close();
+		for (int i=0; i<v.size(); i++){
+			SQLGenerator gen = (SQLGenerator)v.get(i);
 			stmt.executeUpdate(gen.insertStatement());
 		}
 		
