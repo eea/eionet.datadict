@@ -293,7 +293,7 @@ public class CopyHandler extends Object {
 		
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(buf.toString());
-		while (rs.next()){
+		while (rs!=null && rs.next()){
 			gen.setField("VALUE", rs.getString("VALUE"));
 			gen.setField("IS_DEFAULT", rs.getString("IS_DEFAULT"));
 			gen.setField("DEFINITION", rs.getString("DEFINITION"));
