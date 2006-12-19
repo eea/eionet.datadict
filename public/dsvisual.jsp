@@ -141,9 +141,9 @@ if (dsVisual!=null && dsVisual.length()!=0){
 <body>
 
 <jsp:include page="nlocation.jsp" flush='true'>
-		<jsp:param name="name" value="Dataset Model"/>
-		<jsp:param name="back" value="true"/>
-	</jsp:include>
+	<jsp:param name="name" value="Dataset Model"/>
+	<jsp:param name="back" value="true"/>
+</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 	<div id="operations">

@@ -1129,8 +1129,8 @@ else{
 	%>
 	<body>
 		<jsp:include page="nlocation.jsp" flush='true'>
-          <jsp:param name="name" value="Data element"/>
-          <jsp:param name="back" value="true"/>
+			<jsp:param name="name" value="Data element"/>
+			<jsp:param name="back" value="true"/>
         </jsp:include>
 		<%@ include file="nmenu.jsp" %>
 		<div id="workarea">
@@ -1298,7 +1298,7 @@ else{
 			                    	
 			                    	request.setAttribute("quicklinks", quicklinks);
 			                    	%>
-		                    		<jsp:include page="quicklinks.jsp" flush="true"></jsp:include>
+		                    		<jsp:include page="quicklinks.jsp" flush="true" />
 						            <%
 								}
 								%>
@@ -2521,7 +2521,8 @@ else{
 			
 			<%
 			if (!popup){ %>
-				<jsp:include page="footer.jsp" flush="true"></jsp:include><%
+				<jsp:include page="footer.jsp" flush="true" />
+				<%
 			}
 			%>
 			

@@ -859,7 +859,7 @@
 			                    	
 			                    	request.setAttribute("quicklinks", quicklinks);
 			                    	%>
-		                    		<jsp:include page="quicklinks.jsp" flush="true"></jsp:include>
+		                    		<jsp:include page="quicklinks.jsp" flush="true" />
 						            <%
 								}
 								%>
@@ -1917,7 +1917,7 @@
 			
 			</div> <!-- workarea -->
 			
-			<jsp:include page="footer.jsp" flush="true"></jsp:include>
+			<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 

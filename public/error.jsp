@@ -36,7 +36,7 @@ if (isPopup){
 else{
 	%>
 	<body>
-	<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:include page="nlocation.jsp" flush='true'>
 			<jsp:param name="name" value="Error"/>
 			<jsp:param name="back" value="true"/>
 		</jsp:include>

@@ -89,9 +89,9 @@
 </head>
 <body>
 <jsp:include page="nlocation.jsp" flush='true'>
-		<jsp:param name="name" value="Namespaces"/>
-		<jsp:param name="back" value="true"/>
-	</jsp:include>
+	<jsp:param name="name" value="Namespaces"/>
+	<jsp:param name="back" value="true"/>
+</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 	<h1>Namespaces</h1>

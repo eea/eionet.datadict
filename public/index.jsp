@@ -100,7 +100,7 @@ finally{
 									
 										<!-- released data definitions part -->
 										
-					                    		<jsp:include page="released_datasets.jsp" flush="true"></jsp:include>
+					                    		<jsp:include page="released_datasets.jsp" flush="true" />
 									</div>
 					                	
 									<table id="boxes">
@@ -108,7 +108,6 @@ finally{
 					                	
 					                		<!-- the login part -->
 																<td class="box">
-																	<!--<jsp:include page="protarea.jsp" flush="true"></jsp:include>-->
 					                  		</td>
 					                  		
 					                  		<!-- the support part -->
@@ -140,6 +139,6 @@ finally{
 								
 				</div> <!-- workarea -->
 
-						<jsp:include page="footer.jsp" flush="true"></jsp:include>
+						<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>

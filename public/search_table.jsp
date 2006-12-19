@@ -186,12 +186,12 @@ else { %>
 }
 %>
 		<%
-			if (contextParam == null || !contextParam.equals(POPUP)){
-		%>
-                  <jsp:include page="nlocation.jsp" flush='true'>
-                  <jsp:param name="name" value="Search"/>
-                  <jsp:param name="back" value="true"/>
-                </jsp:include>
+		if (contextParam == null || !contextParam.equals(POPUP)){
+			%>
+            <jsp:include page="nlocation.jsp" flush='true'>
+				<jsp:param name="name" value="Search"/>
+				<jsp:param name="back" value="true"/>
+            </jsp:include>
     <%@ include file="nmenu.jsp" %>
 		<%
 		}
@@ -406,7 +406,7 @@ else { %>
 				<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
 				</form>
 			</div> <!-- workarea -->
-      <jsp:include page="footer.jsp" flush="true"></jsp:include>
+      <jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 

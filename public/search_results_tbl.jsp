@@ -514,7 +514,7 @@
 		</form>
 		
 			</div> <!-- workarea -->
-      <jsp:include page="footer.jsp" flush="true"></jsp:include>
+      <jsp:include page="footer.jsp" flush="true" />
 	</body>
 </html>
 

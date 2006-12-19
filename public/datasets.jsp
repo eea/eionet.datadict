@@ -317,10 +317,10 @@
     </script>
 </head>
 <body onload="doLoad()">
-                  <jsp:include page="nlocation.jsp" flush='true'>
-                  <jsp:param name="name" value="Datasets"/>
-                  <jsp:param name="back" value="true"/>
-                </jsp:include>
+	<jsp:include page="nlocation.jsp" flush='true'>
+		<jsp:param name="name" value="Datasets"/>
+		<jsp:param name="back" value="true"/>
+	</jsp:include>
     <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 
@@ -790,7 +790,7 @@
 		
 			</div> <!-- workarea -->
 			
-			<jsp:include page="footer.jsp" flush="true"></jsp:include>
+			<jsp:include page="footer.jsp" flush="true" />
 			
 </body>
 </html>
