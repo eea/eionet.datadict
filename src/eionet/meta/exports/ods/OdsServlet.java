@@ -98,7 +98,8 @@ public class OdsServlet extends HttpServlet{
 			
 			// clean up the working folder
 			try{
-				deleteFolder(workingFolderPath);
+				if (req.getParameter("keep_working_folder")==null)
+					deleteFolder(workingFolderPath);
 			}
 			catch(Exception e){}
 		}
@@ -133,7 +134,8 @@ public class OdsServlet extends HttpServlet{
         
         // create working folder
         File workginFolder = new File(buf.toString());
-        workginFolder.mkdir();
+        if (workginFolder.mkdir()==false)
+        	throw new Exception("Failed to create directory: " + buf.toString());
         
         String s = buf.toString() + File.separator;
 
