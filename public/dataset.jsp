@@ -700,8 +700,8 @@
 <body>
 
 <jsp:include page="nlocation.jsp" flush='true'>
-<jsp:param name="name" value="Dataset"/>
-<jsp:param name="back" value="true"/>
+	<jsp:param name="name" value="Dataset"/>
+	<jsp:param name="back" value="true"/>
 </jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -716,7 +716,7 @@
 			%>
 			<div id="operations">
 				<%
-				String hlpScreen = "dataset";
+				String hlpScreen = dataset!=null && dataset.isWorkingCopy() ? "dataset_working_copy" : "dataset";
 				if (mode.equals("edit"))
 					hlpScreen = "dataset_edit";
 				else if (mode.equals("add"))
@@ -1433,17 +1433,17 @@
 									    		</tr><%
 								    		}%>
 											
-											<!-- version (or the so-called CheckInNo) -->
+											<!-- dataset number -->
 								    		<%
 								    		// display only in non-add mode and for users with edit prm
 								    		if (!mode.equals("add") && editPrm){
-												String dstVersion = dataset.getVersion(); %>
-								    		  <tr class="zebra<%=isOdd%>">
+												%>
+												<tr class="zebra<%=isOdd%>">
 													<th scope="row" class="scope-row simple_attr_title">
-														CheckInNo
+														Dataset number
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href);return false;">
+														<a target="_blank" href="help.jsp?screen=dataset&amp;area=dataset_number" onclick="pop(this.href);return false;">
 															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 														</a>
 													</td>
@@ -1455,7 +1455,7 @@
 													}
 													%>
 													<td class="simple_attr_value">
-														<%=Util.replaceTags(dstVersion)%>
+														<%=dataset.getID()%>
 													</td>
 													
 													<%isOdd = Util.isOdd(++displayed);%>

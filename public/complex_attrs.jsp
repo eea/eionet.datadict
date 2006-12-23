@@ -317,10 +317,6 @@ private String legalizeAlert(String in){
 		%>
 		
 		<table cellspacing="0" class="datatable">
-			<%
-			//System.out.println("------------------------------------------------ " + attrName);
-			//System.out.println("inherited = " + inherited);
-			%>
 			<tr>
 				<td align="right" valign="middle">
 					<%

@@ -1140,9 +1140,20 @@ else{
 			<div id="operations">
 				<%
 				String hlpScreen = "element";
-				if (mode.equals("edit"))
+				if (mode.equals("view")){
+					if (elmCommon && !dataElement.isWorkingCopy())
+						hlpScreen = "common_element";
+					else if (elmCommon && dataElement.isWorkingCopy())
+						hlpScreen = "common_element_working_copy";
+				}
+				
+				if (mode.equals("edit") && !elmCommon)
 					hlpScreen = "element_edit";
-				else if (mode.equals("add"))
+				else if (mode.equals("edit") && elmCommon)
+					hlpScreen = "common_element_edit";
+				else if (mode.equals("add") && elmCommon)
+					hlpScreen = "common_element_add";
+				else if (mode.equals("add") && !elmCommon)
 					hlpScreen = "element_add";
 				%>
 				<ul>
@@ -1289,8 +1300,10 @@ else{
 		                    	if (mode.equals("view")){
 			                    	Vector quicklinks = new Vector();
 			                    	
-			                    	if (fixedValues!=null && fixedValues.size()>0)
-			                    		quicklinks.add("Allowable values | values");
+			                    	if (fixedValues!=null && fixedValues.size()>0){
+				                    	String s = type.equals("CH1") ? "Allowable values" : "Suggested values";
+			                    		quicklinks.add(s + " | values");
+		                    		}
 			                    	if (fKeys!=null && fKeys.size()>0)
 			                    		quicklinks.add("Foreign key relations | fkeys");
 			                    	if (complexAttrs!=null && complexAttrs.size()>0)
@@ -1458,6 +1471,11 @@ else{
 																<b><%=Util.replaceTags(dataset.getShortName())%></b>
 															</a>
 														</em>
+														<%
+														if (mode.equals("view") && dataset.isWorkingCopy()){ %>
+															<span class="caution">(Working copy)</span><%
+														}
+														%>
 														<input type="hidden" name="ds_id" value="<%=dsID%>"/>
 													</td>
 													
@@ -2448,7 +2466,7 @@ else{
 																&nbsp;<%
 															}
 															else{ %>
-																[<a href="dataset.jsp?mode=view&amp;ds_id=<%=otherVer.getID()%>">view</a>]<%
+																[<a href="data_element.jsp?mode=view&amp;delem_id=<%=otherVer.getID()%>">view</a>]<%
 															}
 															%>
 														</td>

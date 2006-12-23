@@ -32,7 +32,6 @@ try{
 		
 		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);	
 		searchEngine.setUser(user);
-		System.out.println("-----------------------------------------------------------");
 		// get datasets,
 		// take out the ones that should be skipped by registration status
 		HashSet nonSkippedDatasetIDs = new HashSet();

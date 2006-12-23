@@ -201,13 +201,13 @@ private String setDefaultAttrs(String name){
 		}
 		
 		function changeFormStateForCommon(){
-			document.forms["form1"].dataset.selectedIndex = 0;
-			document.forms["form1"].dataset.disabled = true;
+			document.forms["form1"].dataset_idf.selectedIndex = 0;
+			document.forms["form1"].dataset_idf.disabled = true;
 			document.forms["form1"].wrk_copies.disabled = false;
 		}
 		
 		function changeFormStateForNonCommon(){
-			document.forms["form1"].dataset.disabled = false;
+			document.forms["form1"].dataset_idf.disabled = false;
 			document.forms["form1"].wrk_copies.checked = false;
 			document.forms["form1"].wrk_copies.disabled = true;
 		}
@@ -278,12 +278,12 @@ else{ %>
 								<b>Dataset</b>
 							</td>
 							<td>
-								<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
+								<a target="_blank" href="help.jsp?screen=search_element&amp;area=dataset" onclick="pop(this.href);return false;">
 									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 								</a>
 							</td>
 							<td colspan="2">
-								<select name="dataset" class="small">
+								<select name="dataset_idf" class="small">
 									<option value="">All</option>
 									<%
 									Vector datasets = searchEngine.getDatasets();
@@ -291,7 +291,7 @@ else{ %>
 										Dataset ds = (Dataset)datasets.get(i);
 										String selected = (sel_ds!=null && sel_ds.equals(ds.getID())) ? "selected" : "";
 										%>
-										<option <%=selected%> value="<%=ds.getID()%>"><%=Util.replaceTags(ds.getShortName())%></option>
+										<option <%=selected%> value="<%=ds.getIdentifier()%>"><%=Util.replaceTags(ds.getShortName())%></option>
 										<%
 									}
 									%>

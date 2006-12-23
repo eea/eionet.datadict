@@ -82,6 +82,8 @@
 <%
 	request.setCharacterEncoding("UTF-8");
 	
+	System.out.println("JAANUS");
+	
 	// get user object from session
 	AppUserIF user = SecurityUtil.getUser(request);
 
@@ -236,38 +238,34 @@ else{ %>
 			<jsp:param name="back" value="true"/>
 		</jsp:include>
     	<%@ include file="nmenu.jsp" %>
-		<div id="workarea">
+		<div id="workarea">		
 		<%
 }
+%>
             
+			<div id="operations">
+            	<ul>
+            		<li class="help"><a target="_blank" href="help.jsp?screen=common_element_search_results&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+            	</ul>
+            </div>
+            
+			<h1>Search results</h1>
+			
+			<%
+			if (user==null){ %>
+				<p>NB! Common elements NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
+		    }
+		    
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
-        	    if (dataElements == null || dataElements.size()==0){
+        	    if (dataElements==null || dataElements.size()==0){
 	        	    %>
-	            	<h1>No results found!</h1>
-	            	<%
-	    	        if (user==null){ %>
-	    	        	<p>
-	    	        		This might be due to fact that you have not been authorized and there are<br/>
-	    	        		no datasets at the moment ready to be published for non-authorized users.<br/>
-	    	        		Please go to the <a href="datasets.jsp?SearchType=SEARCH">list of datasets</a>
-							to see which of them are in which status!
-	    	        	</p><%
-    	        	}
-    	        	%>
+	            	<b>No results matching the search criteria were found!</b>
 	            	</div></body></html>
 	            	<%
 	            	return;
             	}
             }
-            %>
-            
-			<div id="operations">
-            	<ul>
-            		<li class="help"><a target="_blank" href="help.jsp?screen=elements&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
-            	</ul>
-            </div>
-            
-			<h1>Search results</h1>
+			%>
 		
 			<!-- result table -->
 			

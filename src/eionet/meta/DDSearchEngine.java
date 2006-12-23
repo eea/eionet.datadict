@@ -69,9 +69,9 @@ public class DDSearchEngine {
     */
     public Vector getDataElements(Vector params,
                                   String type,
-                                  String namespace,
+                                  String datasetIdf,
                                   String short_name) throws SQLException {
-        return getDataElements(params, type, namespace, short_name, null);
+        return getDataElements(params, type, datasetIdf, short_name, null);
     }
     
     /**
@@ -80,7 +80,7 @@ public class DDSearchEngine {
     */
     public Vector getDataElements(Vector params,
                                   String type,
-                                  String namespace,
+                                  String datasetIdf,
                                   String short_name,
                                   String tableID) throws SQLException {
                                   	
@@ -212,12 +212,12 @@ public class DDSearchEngine {
     */
     public Vector getDataElements(Vector params,
                                   String type,
-                                  String namespace,
+                                  String datasetIdf,
                                   String short_name,
                                   String tableID,
                                   String datasetID) throws SQLException {
 
-        return getDataElements(params, type, namespace, short_name,
+        return getDataElements(params, type, datasetIdf, short_name,
                                     tableID, datasetID, false);
     }
 
@@ -227,13 +227,13 @@ public class DDSearchEngine {
     */
     public Vector getDataElements(Vector params,
                                   String type,
-                                  String namespace,
+                                  String datasetIdf,
                                   String short_name,
                                   String tableID,
                                   String datasetID,
                                   boolean wrkCopies) throws SQLException {
 
-        return getDataElements(params, type, namespace, short_name,
+        return getDataElements(params, type, datasetIdf, short_name,
                                     tableID, datasetID, wrkCopies, null);
     }
 
@@ -243,13 +243,13 @@ public class DDSearchEngine {
 	*/
 	public Vector getDataElements(Vector params,
 								  String type,
-								  String namespace,
+								  String datasetIdf,
 								  String short_name,
 								  String tableID,
 								  String datasetID,
 								  boolean wrkCopies,
 								  String oper) throws SQLException {
-		return getDataElements(params, type, namespace,
+		return getDataElements(params, type, datasetIdf,
 					short_name, null, tableID, datasetID, wrkCopies, null);
 	}
 	
@@ -259,7 +259,7 @@ public class DDSearchEngine {
     */
     public Vector getDataElements(Vector params,
                                   String type,
-                                  String namespace,
+                                  String datasetIdf,
                                   String short_name,
 								  String idfier,
                                   String tableID,
@@ -268,7 +268,7 @@ public class DDSearchEngine {
                                   String oper) throws SQLException {
     	
     	return getDataElements(
-    			params, type, namespace, short_name, idfier, tableID, datasetID, wrkCopies, false, oper);
+    			params, type, datasetIdf, short_name, idfier, tableID, datasetID, wrkCopies, false, oper);
     }
     /**
     * Get data elements, control over working copies, historic versions & params oper
@@ -276,7 +276,7 @@ public class DDSearchEngine {
     */
     public Vector getDataElements(Vector params,
                                   String type,
-                                  String namespace,
+                                  String datasetIdf,
                                   String short_name,
 								  String idfier,
                                   String tableID,
@@ -303,11 +303,13 @@ public class DDSearchEngine {
         
 		// we look only in non-deleted datasets
 		constraints.append("DATASET.DELETED is null");
-		// if requested, look in dataset working copies only, otherwise non-working copies
-		if (wrkCopies)
-			constraints.append(" and DATASET.WORKING_COPY='Y'");
-		else
-			constraints.append(" and DATASET.WORKING_COPY='N'");
+		// if not looking in a concrete dataset copy, take into account the working copies parameter
+		if (datasetID==null){
+			if (wrkCopies)
+				constraints.append(" and DATASET.WORKING_COPY='Y'");
+			else
+				constraints.append(" and DATASET.WORKING_COPY='N'");
+		}
 		// we look only for non-common elements here, so DATAELEM.PARENT_NS must NOT be null
 		constraints.append(" and DATAELEM.PARENT_NS is not null");
 
@@ -315,12 +317,6 @@ public class DDSearchEngine {
         if (type!=null && type.length()!=0){
 			if (constraints.length()!=0) constraints.append(" and ");
             constraints.append("DATAELEM.TYPE=").append(Util.strLiteral(type));
-        }
-
-        // set the parent namespace of element
-        if (namespace!=null && namespace.length()!=0){
-            if (constraints.length()!=0) constraints.append(" and ");
-            constraints.append("DATAELEM.PARENT_NS=").append(namespace);
         }
 
         // set the element short name
@@ -359,13 +355,19 @@ public class DDSearchEngine {
             constraints.append("TBL2ELEM.TABLE_ID=").append(tableID);
         }
         
-		// see if looking for elements of a concrete dataset
+		// see if looking for elements of a concrete dataset copy
         if (datasetID!=null && datasetID.length()!=0){
             if (constraints.length()!=0) constraints.append(" and ");
             if (datasetID.equals("-1"))
                 constraints.append("DATASET.DATASET_ID IS NULL");
             else
                 constraints.append("DATASET.DATASET_ID=").append(datasetID);
+        }
+        
+        // see if looking for elements of datasets with a concrete identifier
+        if (datasetIdf!=null && datasetIdf.length()!=0){
+            if (constraints.length()!=0) constraints.append(" and ");
+            constraints.append("DATASET.IDENTIFIER='").append(datasetIdf).append("'");
         }
 
         // the loop for processing dynamic search parameters

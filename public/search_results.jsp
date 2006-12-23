@@ -147,6 +147,7 @@
 			String short_name = request.getParameter("short_name");
 			String idfier = request.getParameter("idfier");
 			String dataset = request.getParameter("dataset");
+			String datasetIdf = request.getParameter("dataset_idf");
 		
 			String searchPrecision = request.getParameter("search_precision");
 			String oper="=";
@@ -182,7 +183,7 @@
 			
 			// all set up for search, do it
 			dataElements =
-			searchEngine.getDataElements(params, type, ns_param, short_name, idfier, null, dataset, wrkCopies, isIncludeHistoricVersions, oper);
+			searchEngine.getDataElements(params, type, datasetIdf, short_name, idfier, null, dataset, wrkCopies, isIncludeHistoricVersions, oper);
 			
 			// if searching for use as foreign key, prune out certain ones
 			String strForForeignKeyUse = request.getParameter("for_fk_use");			

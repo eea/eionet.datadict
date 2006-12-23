@@ -312,12 +312,33 @@ public class Mdb implements CachableIF {
 	 * 
 	 */
 	public static void main(String[] args){
-		File file = new File("D:\\CDDA-LI-200606.mdb");
+		
+		File file = new File("D:\\projects\\datadict\\tmp\\test3.mdb");
+		File fileNew = new File("D:\\projects\\datadict\\tmp\\new.mdb");
 		
 		Database db = null;
 		try{
 			db = Database.open(file);
-			Set set = db.getTableNames();
+			//db = Database.create(fileNew);
+			
+			Column a = new Column();
+			a.setName("a");
+			a.setSQLType(Types.VARCHAR);
+			
+			Column b = new Column();
+			b.setName("b");
+			b.setSQLType(Types.VARCHAR);
+			
+			Vector columns = new Vector();
+			columns.add(a);
+			columns.add(b);
+			
+			String tableName = "Table" + System.currentTimeMillis();
+			db.createTable(tableName, columns);
+			//Table newTable = db.getTable(tableName);
+			//newTable.addRow(new Object[] {"Kalamees", "foo"});
+			
+			db.close();
 			System.out.println("done");
 		}
 		catch (Throwable t){

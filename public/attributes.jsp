@@ -6,8 +6,6 @@
 <%@ include file="history.jsp" %>
 
 <%
-	System.out.println("----");
-	
 	request.setCharacterEncoding("UTF-8");
 	ServletContext ctx = getServletContext();
 	String appName = ctx.getInitParameter("application-name");
