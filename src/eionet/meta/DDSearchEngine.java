@@ -502,6 +502,8 @@ public class DDSearchEngine {
 				elm.setDatasetID(elemsRs.getString("DATASET.DATASET_ID"));
 				elm.setDstShortName(elemsRs.getString("DATASET.SHORT_NAME"));
 				elm.setTblShortName(elemsRs.getString("DS_TABLE.SHORT_NAME"));
+				elm.setDstIdentifier(elemsRs.getString("DATASET.IDENTIFIER"));
+				elm.setTblIdentifier(elemsRs.getString("DS_TABLE.IDENTIFIER"));
 				elm.setNamespace(new Namespace(
 									elemsRs.getString("DATAELEM.PARENT_NS"), "", "", "", ""));
 				elm.setCheckedoutCopyID(elemsRs.getString("DATAELEM.CHECKEDOUT_COPY_ID"));
@@ -1033,6 +1035,8 @@ public class DDSearchEngine {
 	                elm.setDatasetID(rs.getString("DATASET.DATASET_ID"));
 	                elm.setDstShortName(rs.getString("DATASET.SHORT_NAME"));
 	                elm.setTblShortName(rs.getString("DS_TABLE.SHORT_NAME"));
+	                elm.setDstIdentifier(rs.getString("DATASET.IDENTIFIER"));
+	                elm.setTblIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
 	                elm.setPositionInTable(rs.getString("TBL2ELEM.POSITION"));
                 }
 

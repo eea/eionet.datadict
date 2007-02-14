@@ -885,6 +885,16 @@
 																<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
 															</a>
 														</td>
+													</tr>
+													<tr>
+														<td>
+															Get the codelists of this table in XML format
+														</td>
+														<td>
+															<a target="_blank" href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL&amp;format=xml">
+																<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
+															</a>
+														</td>
 													</tr><%
 												}
 												

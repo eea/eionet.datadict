@@ -14,6 +14,10 @@ import com.tee.uit.security.*;
 
 public class CodelistServlet extends HttpServlet {
 	
+	/*
+	 *  (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
     protected void service(HttpServletRequest req, HttpServletResponse res)
                                 throws ServletException, IOException {
 
@@ -32,6 +36,11 @@ public class CodelistServlet extends HttpServlet {
 			String type = req.getParameter("type");
 			if (Util.voidStr(type)) throw new Exception("Missing object type!");
 
+			// get codelist format
+			String format = req.getParameter("format");
+			if (Util.voidStr(format))
+				format = "csv";
+
 			// get the delimiter
 			String delim = req.getParameter("delim");
 	        
@@ -43,12 +52,27 @@ public class CodelistServlet extends HttpServlet {
             XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
             DBPoolIF pool = XDBApplication.getDBPool();            
             conn = pool.getConnection();
-                
-			res.setContentType("text/plain; charset=UTF-8");
+
+            // set response content type
+			if (format.equals("csv"))
+				res.setContentType("text/plain; charset=UTF-8");
+			else if (format.equals("xml"))
+				res.setContentType("text/xml; charset=UTF-8");
+			else
+				throw new Exception("Unknown codelist format requested: " + format);
+			
+			// prepare output stream and writer
 			osw = new OutputStreamWriter(res.getOutputStream(), "UTF-8");
             writer = new PrintWriter(osw);
 
-			Codelist codelist = new Codelist(conn, writer, delim);
+            // construct codelist writer
+			Codelist codelist = null;
+			if (format.equals("csv"))
+				codelist = new CodelistCSV(conn, writer, delim);
+			else if (format.equals("xml"))
+				codelist = new CodelistXML(conn, writer);
+			
+			// write & flush
 			codelist.write(id, type);
 			codelist.flush();
 	        writer.flush();

@@ -1341,11 +1341,21 @@ else{
 												if (dataElement.getType().equals("CH1") && fixedValues!=null && fixedValues.size()>0){%>
 													<tr>
 														<td style="width:73%">
-															Get a comma-separated codelist of this element
+															Get the comma-separated codelist of this element
 														</td>
 														<td style="width:27%">
 															<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
 																<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
+															</a>
+														</td>
+													</tr>
+													<tr>
+														<td style="width:73%">
+															Get the codelist of this element in XML format
+														</td>
+														<td style="width:27%">
+															<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM&amp;format=xml">
+																<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 															</a>
 														</td>
 													</tr><%
