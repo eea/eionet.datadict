@@ -939,7 +939,7 @@ public class DataOperations{
 	public static Connection getTestConnection() throws ClassNotFoundException, SQLException{
 		Class.forName("com.mysql.jdbc.Driver");
         return DriverManager.getConnection(
-			"jdbc:mysql://192.168.10.15:3306/jaanusdd", "dduser", "xxx");		
+			"jdbc:mysql://192.168.10.15:3306/jaanusdd?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&emptyStringsConvertToZero=false&jdbcCompliantTruncation=false", "dduser", "xxx");		
 	}
 	
 	/**

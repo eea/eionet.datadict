@@ -132,7 +132,8 @@ public class Mdb implements CachableIF {
 		if (jdkVersion!=null && jdkVersion.startsWith("1.") && jdkVersion.length()>=3){
 			try{
 				int i = Integer.parseInt(jdkVersion.substring(2,3));
-				if (i<5) createInBackground = true;
+				if (i<5)
+					createInBackground = true;
 			}
 			catch (NumberFormatException nfe){}
 		}
@@ -276,7 +277,7 @@ public class Mdb implements CachableIF {
 	 * 
 	 */
 	public static int getVmdColumnType(String vmdColumnName){
-		return Types.VARCHAR;
+		return Types.LONGVARCHAR;
 	}
 	
 	/*

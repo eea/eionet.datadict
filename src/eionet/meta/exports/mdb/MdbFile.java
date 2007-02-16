@@ -21,22 +21,35 @@ public class MdbFile {
 	public static final String PROP_TMP_FILE_PATH = "mdb.tmp-file-path";
 	public static final String PROP_LOG_FILE = "mdb.log-file";
 	public static final String PROP_SCHEMA_URL = "mdb.vmd-schema-url";
+	public static final String NAMESPACE_PREFIX = "dd";
+	public static final String DATASETS_NSID = "1";
 	
 	public static final String   VMD_TABLENAME = "VALIDATION_METADATA_DO_NOT_MODIFY";
-	public static final String[] VMD_COLUMNS   = {"TableID", "SchemaURL", "DatasetSchemaURL"};
+	public static final String[] VMD_COLUMNS   =
+		{"TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf", "DstNr", "DstNsID", "DstNsURL", "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"};
 	
 	/** */
 	private static LogServiceIF log = null;
 	
 	/** */
 	private Connection conn = null;
+	
 	private String dstID = null;
+	private String dstIdf = null;
+	private String dstNsID = null;
+	private String dstSchemaURL = null;
+	private String dstSchemaLocation = null;
+	private Dataset dst = null;
+	
 	private String fullPath = null;
 	private DDSearchEngine searchEngine = null;
 	
 	private boolean vmdOnly = false;
-	private String tblSchemaURL = null;
-	private String dstSchemaURL = null;
+	
+	private String schemaURLBase = null;
+	private String tblSchemaURLPrefix = null;
+	private String dstSchemaURLPrefix = null;
+	private String namespaceURLPrefix = null;
 		
 	/*
 	 * 
@@ -73,10 +86,12 @@ public class MdbFile {
 	private File create() throws Exception{
 		
 		// if only creating metadata for automatic validation 
-		if (vmdOnly) return createVmdOnly();
+		if (vmdOnly)
+			return createVmdOnly();
 
 		Dataset dst = searchEngine.getDataset(dstID);
-		if (dst==null) throw new MdbException("Dataset not found, id=" + dstID);
+		if (dst==null)
+			throw new MdbException("Dataset not found, id=" + dstID);
 		
 		File file = new File(fullPath);
 		createDatabase(dst, file);
@@ -225,7 +240,8 @@ public class MdbFile {
 
 			db.createTable(VMD_TABLENAME, cols);
 			Table vmdTable = db.getTable(VMD_TABLENAME);
-			if (vmdTable==null) throw new NullPointerException();
+			if (vmdTable==null)
+				throw new NullPointerException();
 			
 			List rows = createVmdRows();
 			if (rows==null || rows.size()==0)
@@ -247,22 +263,38 @@ public class MdbFile {
 	 */
 	private List createVmdRows() throws SQLException, IOException, MdbException{
 
-		Vector ddTables = searchEngine.getDatasetTables(dstID);
-		if (ddTables==null || ddTables.size()==0) return null;
+		//"TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf", "DstNr", "DstNsID", "DstNsURL", "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"
 		
-		initSchemaURLs();
+		Vector ddTables = searchEngine.getDatasetTables(dstID);
+		if (ddTables==null || ddTables.size()==0)
+			return null;
 		
 		Vector rows = new Vector();
 		for (int i=0; ddTables!=null && i<ddTables.size(); i++){
-			
-			DsTable ddTable = (DsTable)ddTables.get(i);
+			DsTable tbl = (DsTable)ddTables.get(i);
+			Vector ddElms = searchEngine.getDataElements(null, null, null, null, tbl.getID());
+			for (int j=0; ddElms!=null && j<ddElms.size(); j++){
+				DataElement elm = (DataElement)ddElms.get(j);
 				
-			Object[] row = new Object[VMD_COLUMNS.length];
-			row[0] = ddTable.getIdentifier();
-			row[1] = tblSchemaURL + ddTable.getID();
-			row[2] = dstSchemaURL + dstID;
-			
-			rows.add(row);
+				Object[] row = new Object[VMD_COLUMNS.length];
+				
+				row[0] = tbl.getIdentifier();							// TblIdf
+				row[1] = elm.getIdentifier();							// ElmIdf
+				row[2] = tbl.getID();									// TblNr
+				row[3] = NAMESPACE_PREFIX + tbl.getNamespace();			// TblNsID
+				row[4] = getNamespaceURLPrefix() + tbl.getNamespace();	// TblNsURL
+				row[5] = getTblSchemaURLPrefix() + tbl.getID();			// TblSchemaURL
+				row[6] = getDstIdf();									// DstIdf
+				row[7] = getDstID();									// DstNr
+				row[8] = NAMESPACE_PREFIX + getDstNsID();				// DstNsID
+				row[9] = getNamespaceURLPrefix() + getDstNsID();		// DstNsURL				
+				row[10] = getDstSchemaURL();							// DstSchemaURL
+				row[11] = getDstSchemaLocation();						// DstSchemaLocation
+				row[12] = NAMESPACE_PREFIX + DATASETS_NSID;				// DstsNsID
+				row[13] = getNamespaceURLPrefix() + DATASETS_NSID;		// DstsNsURL
+				
+				rows.add(row);
+			}
 		}
 		
 		return (List)rows;
@@ -284,19 +316,6 @@ public class MdbFile {
 		return cols;
 	}
 	
-	/*
-	 * 
-	 */
-	private void initSchemaURLs() throws MdbException{
-
-		String schemaUrlBase = Props.getProperty(PROP_SCHEMA_URL);
-		if (schemaUrlBase==null || schemaUrlBase.length()==0)
-			throw new MdbException("Missing " + PROP_SCHEMA_URL + " property!");
-		
-		this.tblSchemaURL = schemaUrlBase + "TBL";
-		this.dstSchemaURL = schemaUrlBase + "DST";
-	}
-
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
@@ -472,5 +491,149 @@ public class MdbFile {
 		
 		db.close();
 
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getDstID() {
+		return dstID;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws SQLException 
+	 */
+	public String getDstIdf() throws SQLException {
+		if (dstIdf==null)
+			dstIdf = getDst().getIdentifier();
+		return dstIdf;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws SQLException 
+	 */
+	public Dataset getDst() throws SQLException {
+		if (dst==null)
+			dst = searchEngine.getDataset(getDstID());
+		return dst;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws SQLException 
+	 */
+	public String getDstNsID() throws SQLException {
+		if (dstNsID==null)
+			dstNsID = getDst().getNamespaceID();
+		return dstNsID;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws MdbException 
+	 */
+	public String getTblSchemaURLPrefix() throws MdbException {
+		if (tblSchemaURLPrefix==null)
+			tblSchemaURLPrefix = getSchemaURLBase() + "TBL";
+		return tblSchemaURLPrefix;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws MdbException 
+	 */
+	public String getDstSchemaURLPrefix() throws MdbException {
+		if (dstSchemaURLPrefix==null)
+			dstSchemaURLPrefix = getSchemaURLBase() + "DST";
+		return dstSchemaURLPrefix;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws MdbException 
+	 */
+	public String getSchemaURLBase() throws MdbException {
+		
+		if (schemaURLBase==null){
+			schemaURLBase = Props.getProperty(PROP_SCHEMA_URL);
+			if (schemaURLBase==null || schemaURLBase.length()==0)
+				throw new MdbException("Missing " + PROP_SCHEMA_URL + " property!");
+		}
+
+		return schemaURLBase;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws MdbException 
+	 * @throws SQLException 
+	 */
+	public String getDstSchemaLocation() throws SQLException, MdbException {
+		
+		if (dstSchemaLocation==null){
+			String jspURLPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+			if (jspURLPrefix==null || jspURLPrefix.length()==0)
+				throw new MdbException("Missing " + PropsIF.JSP_URL_PREFIX + " property!");
+			if (jspURLPrefix.endsWith("/")==false)
+				jspURLPrefix = jspURLPrefix + "/";
+			
+			StringBuffer buf = new StringBuffer(jspURLPrefix);
+			buf.append("namespace.jsp?ns_id=").append(getDstNsID()).append(" ").append(getDstSchemaURL());
+			dstSchemaLocation = buf.toString();
+		}
+
+		return dstSchemaLocation;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws MdbException 
+	 */
+	public String getDstSchemaURL() throws MdbException {
+		if (dstSchemaURL==null)
+			dstSchemaURL = getDstSchemaURLPrefix() + getDstID();
+		return dstSchemaURL;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws MdbException 
+	 * @throws SQLException 
+	 */
+	public String getNamespaceURLPrefix() throws MdbException, SQLException {
+		
+		if (namespaceURLPrefix==null){
+			String jspURLPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+			if (jspURLPrefix==null || jspURLPrefix.length()==0)
+				throw new MdbException("Missing " + PropsIF.JSP_URL_PREFIX + " property!");
+			if (jspURLPrefix.endsWith("/")==false)
+				jspURLPrefix = jspURLPrefix + "/";
+			
+			StringBuffer buf = new StringBuffer(jspURLPrefix);
+			buf.append("namespace.jsp?ns_id=");
+			namespaceURLPrefix = buf.toString();
+		}
+
+		return namespaceURLPrefix;
+	}
+	
+	/**
+	 * 
+	 *
+	 */
+	private static String getDatasetsNsID(){
+		return NAMESPACE_PREFIX + "1";
 	}
 }
