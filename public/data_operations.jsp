@@ -6,8 +6,8 @@ PrintWriter writer = null;
 try{
 	XDBApplication.getInstance(getServletContext());
 	DBPoolIF pool = XDBApplication.getDBPool();
-	//conn = pool.getConnection();
-	conn = DataOperations.getTestConnection();
+	conn = pool.getConnection();
+	//conn = DataOperations.getTestConnection();
 	writer = response.getWriter();
 	DataOperations dataOperations = new DataOperations(conn, writer);
 	String action = request.getParameter(DataOperations.PARAM_ACTION);
