@@ -16,15 +16,18 @@ try{
 			dataOperations.cleanup();
 		else if (action.equals(DataOperations.ACTION_CREATE))
 			dataOperations.create();
+		else if (action.equals(DataOperations.ACTION_CLEANUP_CREATE)){
+			dataOperations.cleanup();
+			dataOperations.create();
+		}
 		else if (action.equals(DataOperations.ACTION_BOOLEAN_VALUES))
 			dataOperations.createBooleanFixedValues();
 		else
-			throw new Exception("Unknown action: " + action);
+			throw new Exception("Unknown action requested: " + action);
 	}
-	else{
-		dataOperations.cleanup();
-		dataOperations.create();
-	}	
+	else
+		throw new Exception("Missing request parameter: " + DataOperations.PARAM_ACTION);
+		
 	dataOperations.outputWriteln("");
 	dataOperations.outputWriteln("ALL DONE!");
 }
