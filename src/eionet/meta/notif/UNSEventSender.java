@@ -292,8 +292,6 @@ public class UNSEventSender {
         params.add(rdfTriples);
         
         String result = (String) server.execute(Props.getProperty(Subscribe.PROP_UNS_SEND_NOTIFICATION_FUNC), params);
-        if (result.length()>0)
-        	System.out.println("sendNotification result: " + result);
     }
 	
 	/*

@@ -5,11 +5,17 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.tee.util.*;
 
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
+
 /**
  * 
  * @author jaanus
  */
 public class NamespaceHandler {
+	
+	/** */
+	private static LogServiceIF logger = new Log4jLoggerImpl();
 
 	/** */
     private Connection conn = null;
@@ -160,7 +166,7 @@ public class NamespaceHandler {
         buf.append(" where NAMESPACE_ID=");
         buf.append(nsID[0]);
         
-        log(buf.toString());
+        logger.debug(buf.toString());
         
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
@@ -210,11 +216,6 @@ public class NamespaceHandler {
         return lastInsertID;
     }
     
-    private void log(String msg){
-        if (ctx != null)
-            ctx.log(msg);
-    }
-    
     private boolean exists() throws SQLException {
         
         String qry = "";
@@ -235,7 +236,7 @@ public class NamespaceHandler {
                     "TABLE_ID is null and DATASET_ID=" + dsID;
         }
         
-        log(qry);
+        logger.debug(qry);
         
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);

@@ -131,7 +131,7 @@ public class AttributeHandler extends BaseHandler {
 		}
         
         String sql = sqlGenerator.insertStatement();
-        log(sql);
+        logger.debug(sql);
         
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
@@ -253,7 +253,7 @@ public class AttributeHandler extends BaseHandler {
                 buf.append(simpleAttrs[i]);
             }
             
-            log(buf.toString());
+            logger.debug(buf.toString());
         
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(buf.toString());
@@ -271,7 +271,7 @@ public class AttributeHandler extends BaseHandler {
                 buf.append(complexAttrs[i]);
             }
             
-            log(buf.toString());
+            logger.debug(buf.toString());
         
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(buf.toString());
@@ -310,7 +310,7 @@ public class AttributeHandler extends BaseHandler {
             buf.append(attr_ids[i]);
         }
         
-        log(buf.toString());
+        logger.debug(buf.toString());
         
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
@@ -326,7 +326,7 @@ public class AttributeHandler extends BaseHandler {
             buf.append(attr_ids[i]);
         }
         
-        log(buf.toString());
+        logger.debug(buf.toString());
         
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(buf.toString());
@@ -343,7 +343,7 @@ public class AttributeHandler extends BaseHandler {
         }
         
         if (buf != null){
-            log(buf.toString());
+        	logger.debug(buf.toString());
             
             stmt = conn.createStatement();
             stmt.executeUpdate(buf.toString());
@@ -356,7 +356,7 @@ public class AttributeHandler extends BaseHandler {
             buf.append(attr_ids[i]);
         }
         
-        log(buf.toString());
+        logger.debug(buf.toString());
         
         stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
@@ -392,7 +392,7 @@ public class AttributeHandler extends BaseHandler {
         
         String qry = "SELECT LAST_INSERT_ID()";
         
-        log(qry);
+        logger.debug(qry);
         
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);        

@@ -1,6 +1,8 @@
 package eionet.meta;
 
 import eionet.meta.savers.*;
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
 
 import java.util.*;
 import java.sql.*;
@@ -35,6 +37,7 @@ public class MrProper {
     
     private Hashtable funNames = null;
     private boolean wasExc = false;
+    private static LogServiceIF logger = new Log4jLoggerImpl();
     
     /**
     *
@@ -132,7 +135,7 @@ public class MrProper {
 				wasExc = true;
 				String stackTrace = eionet.util.Util.getStack(e);
 				if (stackTrace==null) stackTrace = e.toString();
-				log(stackTrace);
+				logger.fatal(stackTrace);
                 response.add((String)funNames.get(fun) +
                                 " failed: <b>" + stackTrace + "</b>");
                 continue;
@@ -858,14 +861,6 @@ public class MrProper {
     public Vector getResponse(){
         return response;
     }
-
-	/**
-	*
-	*/
-	public void log(String msg){
-		if (ctx!=null)
-			ctx.log(msg);
-	}
 
     /**
     *

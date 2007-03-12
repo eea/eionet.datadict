@@ -4,6 +4,9 @@ import java.sql.*;
 
 import javax.servlet.*;
 import java.util.*;
+
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -25,7 +28,13 @@ public class DDSearchEngine {
 	private String predTitle = "http://purl.org/dc/elements/1.1/title";
     
     private AppUserIF user = null;
+    
+    private static LogServiceIF logger = new Log4jLoggerImpl();
 
+    /**
+     * 
+     * @param conn
+     */
     public DDSearchEngine(Connection conn){
         this.conn = conn;
         
@@ -107,7 +116,7 @@ public class DDSearchEngine {
 	append(" order by TBL2ELEM.POSITION asc");
 	
 	// log the monster query
-	log(monsterQry.toString());
+	logger.debug(monsterQry.toString());
 	
 	// prepare the statement for dynamic attributes
 	ResultSet attrsRs=null;
@@ -428,7 +437,7 @@ public class DDSearchEngine {
 			append("DS_TABLE.IDENTIFIER asc, DS_TABLE.TABLE_ID desc, ").
 			append("DATAELEM.IDENTIFIER asc, DATAELEM.DATAELEM_ID desc");
 		
-        log(monsterQry.toString());
+		logger.debug(monsterQry.toString());
         
 		// see if dynamic attributes of elements should be fetched and if so,
 		// prepare the relevant statement
@@ -720,7 +729,7 @@ public class DDSearchEngine {
 		monsterQry.append(" order by DATAELEM.IDENTIFIER asc, DATAELEM.DATAELEM_ID desc");
     
 		// log the monster query
-		log(monsterQry.toString());
+		logger.debug(monsterQry.toString());
     
 		// prepare the statement for fecthing the elements' dynamic attributes
 		ResultSet attrsRs=null;
@@ -1005,7 +1014,7 @@ public class DDSearchEngine {
 			append("DATAELEM.DATAELEM_ID desc");
 			if (!elmCommon) qry.append(", DS_TABLE.TABLE_ID desc, DATASET.DATASET_ID desc");
 	
-	        log(qry.toString());
+			logger.debug(qry.toString());
 	
             // execute the query
             stmt = conn.createStatement();
@@ -1435,7 +1444,7 @@ public class DDSearchEngine {
         //buf.append("COMPLEX_ATTR_FIELD.ROW_ID=COMPLEX_ATTR_ROW.ROW_ID ");
         buf.append("order by ATTR_ID, PARENT_TYPE, ROW_POS");
         
-        log(buf.toString());
+        logger.debug(buf.toString());
         
         Statement stmt = null;
         ResultSet rs = null;
@@ -1603,7 +1612,7 @@ public class DDSearchEngine {
         }
 
         buf.append(" order by ROW_ID");
-        log(buf.toString());
+        logger.debug(buf.toString());
         Statement stmt = null;
         ResultSet rs = null;
         Vector v = new Vector();
@@ -1659,7 +1668,7 @@ public class DDSearchEngine {
         buf.append("select distinct value from ATTRIBUTE where M_ATTRIBUTE_ID=");
         buf.append(attr_id);
         buf.append(" order by VALUE");
-        log(buf.toString());
+        logger.debug(buf.toString());
         Statement stmt = null;
         ResultSet rs = null;
         Vector v = new Vector();
@@ -1839,7 +1848,7 @@ public class DDSearchEngine {
                                
         buf.append(" order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc");
 
-        log(buf.toString());
+        logger.debug(buf.toString());
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -2054,7 +2063,7 @@ public class DDSearchEngine {
             buf.append(constraints.toString());
         }
         buf.append(" order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc");
-        log(buf.toString());
+        logger.debug(buf.toString());
         
         // preprare the statement for getting attributes
         PreparedStatement ps = null;
@@ -2172,7 +2181,7 @@ public class DDSearchEngine {
 			append("ATTRIBUTE.PARENT_TYPE='T'");
         }
         buf.append(" order by DS_TABLE.IDENTIFIER,DS_TABLE.TABLE_ID desc");
-        log(buf.toString());
+        logger.debug(buf.toString());
         
         Statement stmt = null;
         ResultSet rs = null;
@@ -2373,7 +2382,7 @@ public class DDSearchEngine {
         
 		buf.append(" order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc, " +
 				   "DS_TABLE.IDENTIFIER asc, DS_TABLE.TABLE_ID desc");
-        log(buf.toString());
+		logger.debug(buf.toString());
         
         // preprare the statement for getting attributes
         PreparedStatement ps = null;
@@ -2555,7 +2564,7 @@ public class DDSearchEngine {
             qry.append("' and ATTRIBUTE.PARENT_TYPE='DS' and M_ATTRIBUTE.INHERIT!='0')");
         }
 
-        log(qry.toString());
+        logger.debug(qry.toString());
         Statement stmt = null;
         ResultSet rs = null;
         Vector v = new Vector();
@@ -2880,7 +2889,7 @@ public class DDSearchEngine {
             if (rs.next()) return true;
 
         } catch (SQLException sqle) {
-            log(sqle.toString());
+        	logger.fatal(sqle.toString(), sqle);
         }
         finally{
             try{
@@ -2907,7 +2916,7 @@ public class DDSearchEngine {
             rs = stmt.executeQuery(sql);
             if (rs.next()) return true;
         } catch (SQLException sqle) {
-            log(sqle.toString());
+        	logger.fatal(sqle.toString(), sqle);
         }
         finally{
             try{
@@ -2950,7 +2959,7 @@ public class DDSearchEngine {
           sql.append(" ORDER BY PARENT_TYPE, DS_NAME, DS_ID, T_NAME, T_ID, E_NAME, E_ID, CSI_VALUE");
         }
 
-        log(sql.toString());
+        logger.debug(sql.toString());
         Statement stmt = null;
         ResultSet rs = null;
         Vector v = new Vector();
@@ -2982,8 +2991,7 @@ public class DDSearchEngine {
                 }
             }
         } catch (SQLException sqle) {
-            log(sqle.toString());
-            log(sql.toString());
+            logger.fatal(sqle.toString(), sqle);
         }
         finally{
             try{
@@ -3021,7 +3029,7 @@ public class DDSearchEngine {
 		append("where REL_ID=").
 		append(relID);
 		
-		log(buf.toString());
+		logger.debug(buf.toString());
 		
 		Hashtable hash = null;
 		Statement stmt = conn.createStatement();
@@ -4021,15 +4029,6 @@ public class DDSearchEngine {
 			return null;
 	}
 			
-    /**
-    *
-    */
-    public void log(String msg){
-        if (ctx != null){
-            ctx.log(msg);
-        }
-    }
-    
     /**
      * 
      * @param args

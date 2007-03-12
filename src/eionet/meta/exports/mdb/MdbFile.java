@@ -29,7 +29,7 @@ public class MdbFile {
 		{"TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf", "DstNr", "DstNsID", "DstNsURL", "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"};
 	
 	/** */
-	private static LogServiceIF log = null;
+	private static LogServiceIF log = new Log4jLoggerImpl();
 	
 	/** */
 	private Connection conn = null;
@@ -408,24 +408,6 @@ public class MdbFile {
 		return props; 
 	}
 	
-	/*
-	 * 
-	 */
-	private static void initLog(){
-		
-		String logFile = null;
-		try{
-			logFile = Props.getProperty(PROP_LOG_FILE);
-		}
-		catch (Throwable t){
-		}
-		
-		if (logFile!=null && logFile.trim().length()>0)
-			log = new Log4jLoggerImpl(logFile.trim());
-		else
-			log = null;
-	}
-
 	/*
 	 * 
 	 */

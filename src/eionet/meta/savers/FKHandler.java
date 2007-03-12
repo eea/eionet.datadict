@@ -9,6 +9,9 @@ import javax.servlet.http.*;
 
 import com.tee.util.*;
 
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
+
 public class FKHandler {
 
 	private Connection conn = null;
@@ -18,6 +21,7 @@ public class FKHandler {
 	private String mode = null;
 	
 	private String lastInsertID = null;
+	private static LogServiceIF logger = new Log4jLoggerImpl();
 
 	public FKHandler(Connection conn, HttpServletRequest req, ServletContext ctx){
 		this(conn, new Parameters(req), ctx);
@@ -112,7 +116,7 @@ public class FKHandler {
 			buf.append(rel_ids[i]);
 		}
         
-		log(buf.toString());
+		logger.debug(buf.toString());
 
 		Statement stmt = conn.createStatement();
 		stmt.executeUpdate(buf.toString());
@@ -133,10 +137,5 @@ public class FKHandler {
 
 	public String getLastInsertID(){
 		return lastInsertID;
-	}
-
-	private void log(String msg){
-		if (ctx != null)
-			ctx.log(msg);
 	}
 }

@@ -134,8 +134,6 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
 			byte prec = col.getPrecision();
 			byte scale = col.getScale();
 			String name = col.getName();
-			
-			System.out.println(name);
 		}
 		
 		db.close();

@@ -582,7 +582,7 @@ public class DatasetHandler extends BaseHandler {
 		for (int i=0; i<imgAttrs.size(); i++)
 			buf.append(" and M_ATTRIBUTE_ID<>").append((String)imgAttrs.get(i));
        
-        log(buf.toString());
+		logger.debug(buf.toString());
         
         stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
@@ -666,7 +666,7 @@ public class DatasetHandler extends BaseHandler {
         gen.setField("PARENT_TYPE", "DS");
         
         String sql = gen.insertStatement();
-        log(sql);
+        logger.debug(sql);
         
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
@@ -725,7 +725,7 @@ public class DatasetHandler extends BaseHandler {
         
         String qry = "SELECT LAST_INSERT_ID()";
         
-        log(qry);
+        logger.debug(qry);
         
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);        

@@ -4,6 +4,9 @@ import java.sql.*;
 import java.util.*;
 
 import eionet.meta.*;
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
+
 import javax.servlet.*;
 import com.tee.util.*;
 import com.tee.xmlserver.AppUserIF;
@@ -19,6 +22,7 @@ public class CopyHandler extends Object {
     private ServletContext ctx = null;
     
     private AppUserIF user = null;
+    private static LogServiceIF logger = new Log4jLoggerImpl();
 
     /**
      * 
@@ -101,7 +105,7 @@ public class CopyHandler extends Object {
 	                        gen.removeField(colName);
 	                }
 	            }
-	            log(gen.insertStatement());
+	            logger.debug(gen.insertStatement());
 	            
 	            if (stmt1==null)
 	            	stmt1 = conn.createStatement();
@@ -586,11 +590,6 @@ public class CopyHandler extends Object {
             
         stmt.close();
         return id;
-    }
-    
-    private void log(String msg){
-        if (ctx != null)
-            ctx.log(msg);
     }
     
     public static void main(String[] args){

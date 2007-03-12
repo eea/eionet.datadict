@@ -6,6 +6,8 @@ import javax.servlet.http.*;
 import java.util.*;
 
 import eionet.meta.*;
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
 
 import com.tee.util.*;
 
@@ -27,6 +29,7 @@ public class FixedValuesHandler {
     
     private boolean allowed = true;
 	private boolean allowanceChecked = false;
+	private static LogServiceIF logger = new Log4jLoggerImpl();
     
     public FixedValuesHandler(Connection conn, HttpServletRequest req, ServletContext ctx){
         this(conn, new Parameters(req), ctx);
@@ -208,7 +211,7 @@ public class FixedValuesHandler {
         
         String qry = "SELECT LAST_INSERT_ID()";
 
-        log(qry);
+        logger.debug(qry);
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
@@ -220,10 +223,6 @@ public class FixedValuesHandler {
 
     public String getLastInsertID(){
         return lastInsertID;
-    }
-    private void log(String msg){
-        if (ctx != null)
-            ctx.log(msg);
     }
 
     public static void main(String[] args){

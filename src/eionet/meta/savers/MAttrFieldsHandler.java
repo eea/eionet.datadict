@@ -5,6 +5,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.tee.util.*;
 
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
+
 public class MAttrFieldsHandler {
     
     public static String POS_PREFIX = "pos_";
@@ -17,6 +20,7 @@ public class MAttrFieldsHandler {
     String mode = null;
     String attr_id = null;
     String attr_name = null;
+    private static LogServiceIF logger = new Log4jLoggerImpl();
 
     public MAttrFieldsHandler(Connection conn, HttpServletRequest req, ServletContext ctx){
         this(conn, new Parameters(req), ctx);
@@ -144,7 +148,7 @@ public class MAttrFieldsHandler {
         sqlBuf.append(" where M_COMPLEX_ATTR_FIELD_ID=");
         sqlBuf.append(field_id);
 
-        log(sqlBuf.toString());
+        logger.debug(sqlBuf.toString());
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sqlBuf.toString());
@@ -159,13 +163,13 @@ public class MAttrFieldsHandler {
         String parName=null;
         if (posIds==null || posIds.length==0) return;
 
-        log(Integer.toString(posIds.length));
-        log(posIds[0]);
+        logger.debug(Integer.toString(posIds.length));
+        logger.debug(posIds[0]);
 
         for (int i=0; i<posIds.length; i++){
             old_pos = req.getParameter(OLDPOS_PREFIX + posIds[i]);
             pos = req.getParameter(POS_PREFIX + posIds[i]);
-        log(old_pos + "|" + pos + "|" + posIds[i]);
+            logger.debug(old_pos + "|" + pos + "|" + posIds[i]);
             if (old_pos.length()==0 || pos.length()==0)
                 continue;
             if (!old_pos.equals(pos))
@@ -182,14 +186,10 @@ public class MAttrFieldsHandler {
         sqlBuf.append(" where M_COMPLEX_ATTR_FIELD_ID=");
         sqlBuf.append(fieldId);
 
-        log(sqlBuf.toString());
+        logger.debug(sqlBuf.toString());
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sqlBuf.toString());
         stmt.close();
-    }
-   private void log(String msg){
-        if (ctx != null)
-            ctx.log(msg);
     }
 }

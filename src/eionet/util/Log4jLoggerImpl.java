@@ -153,9 +153,12 @@ public class Log4jLoggerImpl implements LogServiceIF {
     logger.fatal(msg);
   }
   
-  public static void main(String[] args){
-  	
-	LogServiceIF log = new Log4jLoggerImpl("og");
-	log.info("he-heePPPPPPPPPP");
-  }
+	/**
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args){
+		LogServiceIF log = new Log4jLoggerImpl();
+		log.debug("halloooooooooooooo????????????????");
+	}
 }

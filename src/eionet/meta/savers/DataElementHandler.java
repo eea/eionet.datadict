@@ -607,7 +607,7 @@ public class DataElementHandler extends BaseHandler {
         for (int i=0; i<imgAttrs.size(); i++)
         	buf.append(" and M_ATTRIBUTE_ID<>").append((String)imgAttrs.get(i));
 
-        log(buf.toString());
+        logger.debug(buf.toString());
 
         stmt.executeUpdate(buf.toString());
         stmt.close();
@@ -644,7 +644,7 @@ public class DataElementHandler extends BaseHandler {
             buf.append(delem_ids[i]);
         }
 
-        log(buf.toString());
+        logger.debug(buf.toString());
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
@@ -713,7 +713,7 @@ public class DataElementHandler extends BaseHandler {
         gen.setField("POSITION", position);
 
         String sql = gen.insertStatement();
-        log(sql);
+        logger.debug(sql);
         
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
@@ -725,7 +725,7 @@ public class DataElementHandler extends BaseHandler {
 		append("select max(POSITION) from TBL2ELEM where TABLE_ID=").
         append(tableID);
 
-        log(buf.toString());
+        logger.debug(buf.toString());
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(buf.toString());
@@ -760,7 +760,7 @@ public class DataElementHandler extends BaseHandler {
             buf.append(delem_ids[i]);
         }
 
-        log(buf.toString());
+        logger.debug(buf.toString());
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(buf.toString());
@@ -796,7 +796,7 @@ public class DataElementHandler extends BaseHandler {
         sqlBuf.append(" and DATAELEM_ID=");
         sqlBuf.append(elemId);
 
-        log(sqlBuf.toString());
+        logger.debug(sqlBuf.toString());
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sqlBuf.toString());
@@ -903,7 +903,7 @@ public class DataElementHandler extends BaseHandler {
         gen.setField("PARENT_TYPE", "E");
 
         String sql = gen.insertStatement();
-        log(sql);
+        logger.debug(sql);
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
@@ -921,7 +921,7 @@ public class DataElementHandler extends BaseHandler {
         gen.setField("VALUE", value);
 
         String sql = gen.updateStatement();
-        log(sql);
+        logger.debug(sql);
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
@@ -932,7 +932,7 @@ public class DataElementHandler extends BaseHandler {
 
         String qry = "SELECT LAST_INSERT_ID()";
 
-        log(qry);
+        logger.debug(qry);
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
@@ -982,7 +982,7 @@ public class DataElementHandler extends BaseHandler {
         gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
 
         String q = gen.updateStatement() + " where DATAELEM_ID=" + lastInsertID;
-        log(q);
+        logger.debug(q);
         conn.createStatement().executeUpdate(q);
 
         insertTableElem();

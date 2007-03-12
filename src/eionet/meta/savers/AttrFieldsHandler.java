@@ -7,10 +7,13 @@ import java.util.*;
 
 import com.tee.util.*;
 import eionet.meta.DDSearchEngine;
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
 
 public class AttrFieldsHandler {
 
     public static final String FLD_PREFIX = "field_";
+    private static LogServiceIF logger = new Log4jLoggerImpl();
 
     private Connection conn = null;
     //private HttpServletRequest req = null;
@@ -128,7 +131,7 @@ public class AttrFieldsHandler {
 
         String sql = gen.insertStatement();
 
-        log(sql);
+        logger.debug(sql);
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
@@ -157,7 +160,7 @@ public class AttrFieldsHandler {
             gen.setField("VALUE", req.getParameter(parName));
 
             String sql = gen.insertStatement();
-            log(sql);
+            logger.debug(sql);
 
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(sql);
@@ -196,10 +199,10 @@ public class AttrFieldsHandler {
         
         Statement stmt = conn.createStatement();
         
-        log(bufRow.toString());
+        logger.debug(bufRow.toString());
         stmt.executeUpdate(bufRow.toString());
         
-        log(bufFld.toString());
+        logger.debug(bufFld.toString());
         stmt.executeUpdate(bufFld.toString());
         
         stmt.close();
@@ -253,9 +256,5 @@ public class AttrFieldsHandler {
 
         return false;
 
-    }
-    private void log(String msg){
-        if (ctx != null)
-            ctx.log(msg);
     }
 }
