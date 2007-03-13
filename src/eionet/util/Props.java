@@ -89,6 +89,7 @@ public class Props implements PropsIF{
 		defaultProps.put(DD_RDF_SCHEMA_URL, "http://dd.eionet.europa.eu/schema.rdf#");
 		defaultProps.put(PREDICATE_RDF_TYPE, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 		defaultProps.put(PREDICATE_RDF_LABEL, "http://www.w3.org/2000/01/rdf-schema#label");
+		defaultProps.put(OUTSERV_PRED_TITLE, "http://purl.org/dc/elements/1.1/title");
 	}
 	
 	/**

@@ -91,6 +91,14 @@ public class UNSEventSender {
 		predicateObjects.put(
 				Props.getProperty(Subscribe.PROP_UNS_EVENTTYPE_PREDICATE), objects);
 
+		objects = new Vector();
+		StringBuffer buf = new StringBuffer("DD ");
+		buf.append(eventType);
+		if (elmIdfier!=null)
+			buf.append(elmIdfier);
+		objects.add(buf.toString());
+		predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
+
 		sendEvent(predicateObjects, user);
 	}
 
@@ -143,6 +151,14 @@ public class UNSEventSender {
 		objects.add(eventType);
 		predicateObjects.put(
 				Props.getProperty(Subscribe.PROP_UNS_EVENTTYPE_PREDICATE), objects);
+
+		objects = new Vector();
+		StringBuffer buf = new StringBuffer("DD ");
+		buf.append(eventType);
+		if (tblIdfier!=null)
+			buf.append(tblIdfier);
+		objects.add(buf.toString());
+		predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
 
 		sendEvent(predicateObjects, user);
 	}
@@ -199,7 +215,15 @@ public class UNSEventSender {
 		objects.add(eventType);
 		predicateObjects.put(
 				Props.getProperty(Subscribe.PROP_UNS_EVENTTYPE_PREDICATE), objects);
-		
+
+		objects = new Vector();
+		StringBuffer buf = new StringBuffer("DD ");
+		buf.append(eventType);
+		if (dstIdfier!=null)
+			buf.append(dstIdfier);
+		objects.add(buf.toString());
+		predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
+
 		sendEvent(predicateObjects, user);
 	}
 
