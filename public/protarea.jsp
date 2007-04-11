@@ -14,7 +14,7 @@ if (userProtarea!=null && userProtarea.isAuthentic()) loggedIn = true;
 					<form target="_blank" name="LOGIN" method="post" action="Login">
 						<input type="hidden" name="target" value="blank"/>
 								<p><input type="text" size="20" name="j_username" id="j_username" style="margin-left:2em; width:31%"/>
-								<label for="j_username">(EIONET user ID)</label></p>
+								<label for="j_username">(Eionet user ID)</label></p>
 								<p><input type="password" size="20" name="j_password" id="j_password" style="margin-left:2em; width:31%"/>
 								<label for="j_password">(Password)</label></p>
 								<p style="text-align:center">
