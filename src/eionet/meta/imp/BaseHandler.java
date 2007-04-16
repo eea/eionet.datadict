@@ -10,7 +10,7 @@ import com.tee.xmlserver.AppUserIF;
 /**
  * A Class class.
  * <P>
- * @author Enriko Käsper
+ * @author Enriko KÃ¤sper
  */
 public class BaseHandler extends DefaultHandler {
 

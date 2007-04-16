@@ -4,7 +4,7 @@ import java.util.StringTokenizer;
 /**
  * A Class class.
  * <P>
- * @author Enriko Käsper
+ * @author Enriko KÃ¤sper
  */
 public class QueryString{
 

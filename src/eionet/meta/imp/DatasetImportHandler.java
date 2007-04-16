@@ -11,7 +11,7 @@ import eionet.util.UnicodeEscapes;
 /**
  * A Class class.
  * <P>
- * @author Enriko Käsper
+ * @author Enriko KÃ¤sper
  */
 public class DatasetImportHandler extends BaseHandler{
 
