@@ -226,120 +226,115 @@ private String legalizeAlert(String in){
 	<tr style="height:10px;"><td colspan="2"></td></tr>
 </table>
 
-<table width="auto" cellspacing="0" cellpadding="0" border="0"><tr><td rowspan="2">	
-<table width="auto" id="tbl" cellspacing="0" cellpadding="0" >
+<table width="auto" cellspacing="0" cellpadding="0" border="0" id="tbl" style="float:left">
 	<thead>
-	<%
-	if (user != null) { %>
-		<tr>
-			<td colspan="4" style="padding-right:10">
-				<input type="button" <%=disabled%> value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/>
-				<input type="button" value="Save order" class="smallbutton" onclick="saveChanges()" title="save the order of the fields"/>
-			</td>
-		</tr>
-		<tr style="height:3px;"><td colspan="4"></td></tr>
 		<%
-	}
-	%>
-	
-	<tr>
-		<th>&nbsp;</th>
-		<th style="padding-left:5px;padding-right:5px;border-left:0">Name</th>
-		<th style="padding-left:5px;padding-right:5px">Definition</th>
-		<th style="padding-left:5px;padding-right:5px">Priority</th>
-	</tr>
-	</thead>
-	<tbody id="tbl_body">	
-	
-	<%
-	
-	//String position = String.valueOf(attrFields.size() + 1);
-	int position = 0;
-	
-	for (int i=0; i<attrFields.size(); i++){
-		Hashtable hash = (Hashtable)attrFields.get(i);
-		String id = (String)hash.get("id");
-		String name = (String)hash.get("name");
-		String definition = (String)hash.get("definition");
-		if (definition.length()>50) definition = definition.substring(0,50) + " ...";
-		
-		String fieldLink = "m_attr_field.jsp?mode=edit&amp;attr_id=" + attr_id + "&amp;attr_name=" + attr_name + "&amp;field_id=" + id;
-		
-		int pos = Integer.parseInt((String)hash.get("position"));
-		if (pos >= position) position = pos +1;
-			
-		String priority = (String)hash.get("priority");
-		String pri = (priority!=null && priority.equals(DElemAttribute.FIELD_PRIORITY_HIGH)) ? "High" : "Low";
-		%>
-		<tr id="tr<%=id%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+		if (user != null) { %>
+			<tr>
+				<td colspan="4" style="padding-right:10">
+					<input type="button" <%=disabled%> value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/>
+					<input type="button" value="Save order" class="smallbutton" onclick="saveChanges()" title="save the order of the fields"/>
+				</td>
+			</tr>
+			<tr style="height:3px;"><td colspan="4"></td></tr>
 			<%
-			if (user != null){ %>
-				<td align="right" style="padding-left:5px;padding-right:5px">
-					<input type="checkbox" style="height:13;width:13" name="del_field" value="<%=id%>" onclick="tbl_obj.clickOtherObject();"/>
-				</td><%
-			}
+		}
+		%>					
+		<tr>
+			<th>&nbsp;</th>
+			<th style="padding-left:5px;padding-right:5px;border-left:0">Name</th>
+			<th style="padding-left:5px;padding-right:5px">Definition</th>
+			<th style="padding-left:5px;padding-right:5px">Priority</th>
+		</tr>
+	</thead>
+	<tbody id="tbl_body">
+		<%
+		int position = 0;
+		
+		for (int i=0; i<attrFields.size(); i++){
+			Hashtable hash = (Hashtable)attrFields.get(i);
+			String id = (String)hash.get("id");
+			String name = (String)hash.get("name");
+			String definition = (String)hash.get("definition");
+			if (definition.length()>50) definition = definition.substring(0,50) + " ...";
+			
+			String fieldLink = "m_attr_field.jsp?mode=edit&amp;attr_id=" + attr_id + "&amp;attr_name=" + attr_name + "&amp;field_id=" + id;
+			
+			int pos = Integer.parseInt((String)hash.get("position"));
+			if (pos >= position) position = pos +1;
+				
+			String priority = (String)hash.get("priority");
+			String pri = (priority!=null && priority.equals(DElemAttribute.FIELD_PRIORITY_HIGH)) ? "High" : "Low";
 			%>
-			<td align="center" style="padding-left:5px;padding-right:5px">
-				<a href="javascript:clickLink('<%=fieldLink%>')">
-					<%=Util.replaceTags(name)%>
-				</a>
-			</td>
-			<td align="center" onmouseover="" style="padding-left:5px;padding-right:5px">
-				<%=Util.replaceTags(definition)%>
-			</td>
-			<td align="center" onmouseover="" style="padding-left:5px;padding-right:5px">
-				<%=pri%>
-			</td>
-			<td width="0" style="display:none">
-				<input type="hidden" name="pos_id" value="<%=id%>" size="5"/>
-				<input type="hidden" name="oldpos_<%=id%>" value='<%=(String)hash.get("position")%>' size="5"/>
-				<input type="hidden" name="pos_<%=id%>" value="0" size="5"/>
+			<tr id="tr<%=id%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+				<%
+				if (user != null){ %>
+					<td align="right" style="padding-left:5px;padding-right:5px">
+						<input type="checkbox" style="height:13;width:13" name="del_field" value="<%=id%>" onclick="tbl_obj.clickOtherObject();"/>
+					</td><%
+				}
+				%>
+				<td align="center" style="padding-left:5px;padding-right:5px">
+					<a href="javascript:clickLink('<%=fieldLink%>')">
+						<%=Util.replaceTags(name)%>
+					</a>
+				</td>
+				<td align="center" onmouseover="" style="padding-left:5px;padding-right:5px">
+					<%=Util.replaceTags(definition)%>
+				</td>
+				<td align="center" onmouseover="" style="padding-left:5px;padding-right:5px">
+					<%=pri%>
+				</td>
+				<td width="0" style="display:none">
+					<input type="hidden" name="pos_id" value="<%=id%>" size="5"/>
+					<input type="hidden" name="oldpos_<%=id%>" value='<%=(String)hash.get("position")%>' size="5"/>
+					<input type="hidden" name="pos_<%=id%>" value="0" size="5"/>
+				</td>
+			</tr><%
+		}
+		%>
+	</tbody>
+</table>
+
+<%
+if (user!=null && attrFields.size()>1){
+	%>
+	<table width="auto" cellspacing="2" cellpadding="2" border="0" style="float:left">
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>
+				<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" title="move selected row to top" alt=""/></a>			
 			</td>
 		</tr>
-		<%
-	}
-	%>
-	</tbody>	
-</table>
-	</td>
+		<tr>
+			<td>
+				<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" title="move selected row up" alt=""/></a>			
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="images/dot.gif" alt=""/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a href="javascript:moveRowDown()"><img src="images/move_down.gif" border="0" title="move selected row down" alt=""/></a>			
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a href="javascript:moveLast()"><img src="images/move_last.gif" border="0" title="move selected row last" alt=""/></a>			
+			</td>
+		</tr>
+	</table>
 	<%
-		if (user!=null && attrFields.size()>1){ %>
-		<td align="left" style="padding-right:10" valign="top" height="10">&nbsp;</td>
-		</tr><tr><td>
-				<table cellspacing="2" cellpadding="2" border="0">
-					<tr>
-						<td></td>
-					</tr>
-					<tr>
-						<td>
-							<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" title="move selected row to top" alt=""/></a>			
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" title="move selected row up" alt=""/></a>			
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<img src="images/dot.gif" alt=""/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<a href="javascript:moveRowDown()"><img src="images/move_down.gif" border="0" title="move selected row down" alt=""/></a>			
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<a href="javascript:moveLast()"><img src="images/move_last.gif" border="0" title="move selected row last" alt=""/></a>			
-						</td>
-					</tr>
-				<% } %>
-			</table> 
-		</td>
-	</tr>
-</table>
+}
+%>
 
 <input type="hidden" name="mode" value="add"/>
 <input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
