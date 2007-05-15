@@ -190,14 +190,13 @@ private String legalizeAlert(String in){
 	String backURL = "" + "/m_attr_fields.jsp?attr_id=" + attr_id + "&attr_name=" + attr_name;
 	%>
 	<form name="form1" method="post" action="m_attr_field.jsp">
-  <div id="operations">
-    <ul>
-        <li class="help"><a target="_blank" href="help.jsp?screen=complex_attr_field&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-			<!-- li>
-					<a href="javascript:window.location.replace('<%=backURL%>')">&lt; back to allowable values list</a>
-			</li -->
-    </ul>
-  </div>
+	<div id="operations">
+		<ul>
+			<li class="help">
+				<a target="_blank" href="help.jsp?screen=complex_attr_field&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a>
+			</li>
+		</ul>
+	</div>
 
 	<h1>Field of <em><%=Util.replaceTags(attr_name)%></em> attribute</h1>
 			
@@ -231,7 +230,11 @@ private String legalizeAlert(String in){
 				</td>
 			</tr>
 			<%
-			Vector harvFlds = searchEngine.getHarvesterFieldsByAttr(attr_id, false);
+			//Vector harvFlds = searchEngine.getHarvesterFieldsByAttr(attr_id, false);
+			Vector harvFlds = new Vector();
+			harvFlds.add("FIELD1");
+			harvFlds.add("FIELD2");
+			harvFlds.add("FIELD3");
 			if (harvFlds!=null && harvFlds.size()>0){
 				%>
 				<tr>
@@ -241,19 +244,15 @@ private String legalizeAlert(String in){
 					<td>
 						<%
 						String harvFld = (String)attrField.get("harv_fld");
-						String noLinkSelected = Util.voidStr(harvFld) ? "selected='selected'" : "";
 						%>
 						<select <%=disabled%> name="harv_fld" class="small">
-							<option <%=noLinkSelected%> value="null">-- no link --</option>
+							<option value="null">-- no link --</option>
 							<%
-							if (!Util.voidStr(harvFld)){ %>
-								<option selected value="<%=Util.replaceTags(harvFld, true)%>"><%=Util.replaceTags(harvFld)%></option><%
-							}
-							
 							for (int i=0; harvFlds!=null && i<harvFlds.size(); i++){
-								String _harvFld = (String)harvFlds.get(i);
+								String s = (String)harvFlds.get(i);
+								String strSelected = harvFld!=null && harvFld.equals(s) ? "selected=\"selected\"" : "";
 								%>
-								<option value="<%=Util.replaceTags(_harvFld, true)%>"><%=Util.replaceTags(_harvFld)%></option> <%
+								<option <%=strSelected%> value="<%=Util.replaceTags(s, true)%>"><%=Util.replaceTags(s)%></option> <%
 							}
 							%>
 						</select>
