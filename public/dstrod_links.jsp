@@ -13,19 +13,23 @@ Connection conn = null;
 try{
 	// check if the user exists
 	AppUserIF user = SecurityUtil.getUser(request);
-	if (user == null) throw new Exception("Not authenticated!");
+	if (user == null)
+		throw new Exception("Not authenticated!");
 	
 	// get the dataset Identifier
 	String dstIdf = request.getParameter("dst_idf");
-	if (dstIdf == null || dstIdf.length()==0) throw new Exception("Dataset Identifier is missing!");
+	if (dstIdf == null || dstIdf.length()==0)
+		throw new Exception("Dataset Identifier is missing!");
 	
 	// check if the user is authorised
-	boolean prm = user!=null && dstIdf!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dstIdf, "u");
-	if (!prm) throw new Exception("Not authorised!");
+	boolean prm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dstIdf, "u");
+	if (!prm)
+		throw new Exception("User is missing the required permissions: " + user.getUserName());
 		
 	// get dataset id
 	String dstID = request.getParameter("dst_id");
-	if (dstID == null || dstID.length()==0) throw new Exception("Dataset ID is missing!");
+	if (dstID == null || dstID.length()==0)
+		throw new Exception("Dataset ID is missing!");
 	
 	// init connection
 	ServletContext ctx = getServletContext();
