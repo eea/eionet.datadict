@@ -934,6 +934,7 @@
 					var arr = new Array();
 					arr[0] = elmDataType;
 					requestQS.setValues_("elm_datatype", arr);
+					requestQS.remove("<%=datatypeID%>");
 					
 					slctAllValues();
 					var s = visibleInputsToQueryString("form1");
