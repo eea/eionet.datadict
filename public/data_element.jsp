@@ -441,9 +441,6 @@
 				latestID = searchEngine.getLatestElmID(delemIdf, v);
 				isLatestElm = latestID!=null && delem_id.equals(latestID);
 				
-				System.out.println("latestID=" + latestID);
-				System.out.println("isLatestElm=" + isLatestElm);
-							
 				editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delemIdf, "u");
 				editReleasedPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delemIdf, "er");
 				
