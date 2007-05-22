@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.io.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.io.*,javax.servlet.http.HttpUtils"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%!private static final int MAX_CELL_LEN=40;%>
@@ -621,6 +621,7 @@
 	<%@ include file="headerinfo.jsp" %>
     <title><%=pageTitle.toString()%></title>
     <script type="text/javascript" src='script.js'></script>
+    <script type="text/javascript" src="querystring.js"></script>
     <script type="text/javascript" src='modal_dialog.js'></script>
     <script type="text/javascript">
 		// <![CDATA[
@@ -861,49 +862,89 @@
 		
 		function fixType(){
 			
-			var type = document.forms["form1"].typeSelect.value;
-			if (type == null || type.length==0)
+			var strType = document.forms["form1"].elements["typeSelect"].value;
+			if (strType == null || strType.length==0)
 				return;
 				
-			<%
-			if (elmCommon){ %>
-				document.location.assign("data_element.jsp?mode=add&common=true&type=" + type);<%
-			}
-			else{ %>
-				document.location.assign("data_element.jsp?mode=add&type=" + type);<%
-			}%>
+			var requestQS = new Querystring();
+			var arr = new Array();
+			arr[0] = strType;
+			requestQS.setValues_("type", arr);
+			
+			//alert("requestQS = " + requestQS.toString());
+			
+			slctAllValues();
+			var s = visibleInputsToQueryString("form1");
+			var inputsQS = new Querystring(s);
+			inputsQS.remove("typeSelect");
+			
+			requestQS.removeAll(inputsQS);
+			var newLocation = "data_element.jsp?" + requestQS.toString() + "&" + inputsQS.toString();
+			document.location.assign(newLocation);
 		}
-
+		
+		function onBodyLoad(){
+			
+			var formName = "form1";
+			var inputName;
+			var popValues;
+			<%
+			Hashtable qryStrHash1 = HttpUtils.parseQueryString(request.getQueryString());
+			if (qryStrHash1!=null && qryStrHash1.size()>0){
+				Enumeration keys = qryStrHash1.keys();
+				while (keys!=null && keys.hasMoreElements()){
+					String name = (String)keys.nextElement();
+					String[] values = (String[])qryStrHash1.get(name);
+					if (values!=null && values.length>0){
+						%>
+						inputName = "<%=name%>";
+						popValues = new Array();							
+						<%
+						for (int i=0; i<values.length; i++){
+							String value = values[i];
+							%>
+							popValues[<%=i%>] = "<%=value%>";
+							<%
+						}
+						%>
+						populateInput(formName, inputName, popValues);
+						<%
+					}
+				}
+			}
+			%>
+		}
+		
 		function changeDatatype(){
+			
 			<%
 			if (type!=null && type.equals("CH1")){ %>
 				return;<%
 			}
 			else{
 				String datatypeID = getAttributeIdByName("Datatype", mAttributes);
-				if (datatypeID!=null && datatypeID.length()>0) datatypeID = "attr_" + datatypeID;
-				%>
-				var elmDataType = document.forms["form1"].<%=datatypeID%>.value;
-				if (elmDataType == null || elmDataType.length==0)
-					return;
+				if (datatypeID!=null && datatypeID.length()>0){
+					datatypeID = "attr_" + datatypeID;
+					%>
+					var elmDataType = document.forms["form1"].<%=datatypeID%>.value;
+					if (elmDataType == null || elmDataType.length==0)
+						return;
 					
-				<%
-				//String reLocation = elmCommon ? "data_element.jsp?mode=add&common=true" : "data_element.jsp?mode=add";				
-				//if (type!=null && type.length()>0) reLocation = reLocation + "&type=" + type;
-				
-				String reLocation = "data_element.jsp?" + request.getQueryString();
-				int i = reLocation.indexOf("elm_datatype=");
-				if (i>=0){
-					StringBuffer buf = new StringBuffer(reLocation.substring(0,i));
-					int j = reLocation.indexOf("&", i);
-					if (j>=0) buf.append(reLocation.substring(j+1));
-					reLocation = buf.toString();
+					var requestQS = new Querystring();
+					var arr = new Array();
+					arr[0] = elmDataType;
+					requestQS.setValues_("elm_datatype", arr);
+					
+					slctAllValues();
+					var s = visibleInputsToQueryString("form1");
+					var inputsQS = new Querystring(s);
+					inputsQS.remove("<%=datatypeID%>");
+					
+					requestQS.removeAll(inputsQS);
+					var newLocation = "data_element.jsp?" + requestQS.toString() + "&" + inputsQS.toString();
+					document.location.assign(newLocation);
+					<%
 				}
-				
-				if (!reLocation.endsWith("&")) reLocation = reLocation + "&";
-				%>
-				
-				document.location.assign("<%=reLocation%>elm_datatype=" + elmDataType);<%
 			}
 			%>
 		}
@@ -1113,7 +1154,7 @@
 boolean popup = request.getParameter("popup")!=null;
 if (popup){
 	%>
-	<body class="popup">	
+	<body class="popup" onload="onBodyLoad()">
 		<div class="popuphead">
 			<h1>Data Dictionary</h1>
 			<hr/>
@@ -1127,7 +1168,7 @@ if (popup){
 }
 else{
 	%>
-	<body>
+	<body onload="onBodyLoad()">
 		<jsp:include page="nlocation.jsp" flush='true'>
 			<jsp:param name="name" value="Data element"/>
 			<jsp:param name="back" value="true"/>
