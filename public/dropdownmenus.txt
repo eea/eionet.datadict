@@ -1,3 +1,4 @@
+<!-- Last updated: 2007-05-25T10:47:11Z -->
 <ul id="dropdowns">
         <li><a href="http://www.eionet.europa.eu/">Services</a>
             <ul>
@@ -18,6 +19,7 @@
          <li><a href="http://rod.eionet.europa.eu/">ROD Obligations</a></li>
          <li><a href="http://dd.eionet.europa.eu/">Data Dictionary</a></li>
          <li><a href="http://cr.eionet.europa.eu/">Content Registry</a></li>
+         <li><a href="http://dampos.eea.europa.eu/">Dam Positioning</a></li>
                 </ul>
         </li>
         <li><a href="http://www.eionet.europa.eu/software">Tools</a>
@@ -31,12 +33,12 @@
          <li><a href="http://www.eionet.europa.eu/gemet">GEMET Thesaurus</a></li>
                 </ul>
         </li>
-        <li><a href="http://www.eionet.europa.eu/topics.html">Topics</a>
+        <li><a href="http://www.eionet.europa.eu/topics">Topics</a>
             <ul>
-         <li><a href="http://air-climate.eionet.europa.eu/">Air &amp; Climate</a></li>
-         <li><a href="http://biodiversity.eionet.europa.eu/">Biodiversity</a></li>
-         <li><a href="http://terrestrial.eionet.europa.eu/">Terrestrial</a></li>
-         <li><a href="http://waste.eionet.europa.eu/">Resources and Waste</a></li>
+         <li><a href="http://air-climate.eionet.europa.eu/">Air &amp; Climate Change</a></li>
+         <li><a href="http://biodiversity.eionet.europa.eu/">Biological Diversity</a></li>
+         <li><a href="http://terrestrial.eionet.europa.eu/">Land Use &amp; Spatial Information</a></li>
+         <li><a href="http://waste.eionet.europa.eu/">Resource and Waste Management</a></li>
          <li><a href="http://water.eionet.europa.eu/">Water</a></li>
                 </ul>
         </li>
