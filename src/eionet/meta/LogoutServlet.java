@@ -33,9 +33,12 @@ public class LogoutServlet extends HttpServlet {
         if (user != null)
             SecurityUtil.freeSession(req);
         
-        //res.sendRedirect("index.jsp");
-		EionetCASFilter.attachEionetLoginCookie(res,false);
-		res.sendRedirect(EionetCASFilter.getCASLogoutURL(req));
-        
+        String dontUseCasLogin = getServletContext().getInitParameter(LoginServlet.INITPARAM_DONT_USE_CAS_LOGIN);
+        if (dontUseCasLogin!=null)
+        	res.sendRedirect("index.jsp");
+        else{
+			EionetCASFilter.attachEionetLoginCookie(res,false);
+			res.sendRedirect(EionetCASFilter.getCASLogoutURL(req));
+        }
     }
 }
