@@ -620,8 +620,9 @@ else{ %>
 			%>
 		
 		<input type="hidden" name="searchUrl" />
-		<input name='SearchType' type='hidden' value='<%=TYPE_SEARCH%>'/>
+		<input name="SearchType" type="hidden" value="<%=TYPE_SEARCH%>"/>
 		<input type="hidden" name="mode" value="view"/>
+		
 		<%
 		if (isIncludeHistoricVersions){%>
 			<input name="incl_histver" type="hidden" value="true"/><%
@@ -643,9 +644,8 @@ else{ %>
 			}
 			%>
 		</form>
-		
-			</div> <!-- workarea -->
-      <jsp:include page="footer.jsp" flush="true" />
+	</div> <!-- workarea -->
+	<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 

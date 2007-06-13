@@ -82,8 +82,6 @@
 <%
 	request.setCharacterEncoding("UTF-8");
 	
-	System.out.println("JAANUS");
-	
 	// get user object from session
 	AppUserIF user = SecurityUtil.getUser(request);
 
@@ -533,7 +531,8 @@ else{ %>
 			%>
 		</form>
 		
-			</div>
+	</div>
+	<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 
