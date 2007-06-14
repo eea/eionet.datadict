@@ -15,7 +15,7 @@
 
 	<context-param>
 		<param-name>log-level</param-name>
-		<param-value>5</param-value>
+		<param-value>3</param-value>
 	</context-param>
 
 	<context-param>
