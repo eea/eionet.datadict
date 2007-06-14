@@ -1,4 +1,5 @@
-<!-- Last updated: 2007-05-25T10:47:11Z -->
+<!-- Last updated: 2007-06-14T11:08:50Z
+     To update download http://www.eionet.europa.eu/dropdownmenus.txt -->
 <ul id="dropdowns">
         <li><a href="http://www.eionet.europa.eu/">Services</a>
             <ul>
@@ -19,6 +20,7 @@
          <li><a href="http://rod.eionet.europa.eu/">ROD Obligations</a></li>
          <li><a href="http://dd.eionet.europa.eu/">Data Dictionary</a></li>
          <li><a href="http://cr.eionet.europa.eu/">Content Registry</a></li>
+         <li><a href="http://converters.eionet.europa.eu/">Conversion service</a></li>
          <li><a href="http://dampos.eea.europa.eu/">Dam Positioning</a></li>
                 </ul>
         </li>
