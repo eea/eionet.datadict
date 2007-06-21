@@ -93,11 +93,10 @@
 					// if mode==delete, check whether the attribute is used somewhere. if Yes, then prompt user
 					if (mode.equals("delete")){
 						searchEngine = new DDSearchEngine(userConn, "", ctx);
-						boolean hasObjects = searchEngine.hasAttributeObjects(attr_id, type);
-						if (hasObjects){
+						int attrUseCount = searchEngine.getAttributeUseCount(attr_id, type);
+						if (attrUseCount>0){
 					        String sName = request.getParameter("short_name");
-					        
-							response.sendRedirect("dialog_delete_attr.jsp?mode=delete&attr_id=" + attr_id + "&type=" + type + "&short_name=" + sName);
+					        response.sendRedirect("dialog_delete_attr.jsp?mode=delete&attr_id=" + attr_id + "&type=" + type + "&short_name=" + sName);
 							return;
 						}
 					}
@@ -389,11 +388,11 @@
     </script>
 </head>
 <body onload="onLoad()">
-		<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+		<jsp:include page="nlocation.jsp" flush="true">
 			<jsp:param name="name" value="Attribute"/>
-			<jsp:param name="back" value="true"/>
 		</jsp:include>
-	<%@ include file="nmenu.jsp" %>
+		<%@ include file="nmenu.jsp" %>
 <div id="workarea">
 
 			<form id="form1" name="form1" method="post" action="delem_attribute.jsp">
@@ -459,17 +458,8 @@
 					%>
 				
 				<%
-				if (!mode.equals("view")){ %>
-				
-				
-					<p>
-						(M), (O) and (C) behind the titles stand for Mandatory, Optional and Conditional.
-					</p>
-						<%
-						if (type==null){ %>
-							<p><b>NB! Please select the attribute type first. Otherwise your entries will be lost.
-							Also, for simple attributes more inputs will be displayed.</b></p> <%
-						}
+				if (!mode.equals("view") && type==null){ %>
+					<div class="attention">NB! Please select the attribute type first. Otherwise your entries will be lost.</div><%
 				}
 				%>
 				
@@ -486,7 +476,7 @@
 				<%
 			} else {
 			%>
-				<table class="formtable" style="clear:right">
+				<table class="datatable" style="clear:right">
 				<col style="width:9em"/>
 				<col style="width:2em"/>
 				<col style="width:35em"/>
@@ -500,7 +490,7 @@
 				displayed++;
 				if (!mode.equals("view")){
 					%>
-					<td>(M)</td>
+					<td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
 					<%
 				}
 				%>
@@ -532,7 +522,7 @@
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							<td>(M)</td>
+							<td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
 							<%
 						}
 						%>
@@ -554,7 +544,7 @@
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							<td>(M)</td>
+							<td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
 							<%
 						}
 						%>
@@ -575,7 +565,7 @@
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							<td>(M)</td>
+							<td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
 							<%
 						}
 						%>
@@ -641,7 +631,7 @@
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							<td>(O)</td>
+							<td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
 							<%
 						}
 						%>
@@ -679,7 +669,7 @@
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								<td>(M)</td>
+								<td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
 								<%
 							}
 							%>
@@ -716,7 +706,7 @@
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								<td>(O)</td>
+								<td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
 								<%
 							}
 							%>
@@ -789,7 +779,7 @@
 							displayed++;
 								if (!mode.equals("view")){
 									%>
-									<td>(O)</td>
+									<td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
 									<%
 								}
 							%>
@@ -827,7 +817,7 @@
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							<td>(O)</td>
+							<td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
 							<%
 						}
 						%>
@@ -866,7 +856,7 @@
 						displayed++;
 						if (!mode.equals("view")){
 							%>
-							<td>(O)</td>
+							<td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
 							<%
 						}
 						%>
@@ -904,7 +894,7 @@
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								<td>(M)</td>
+								<td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
 								<%
 							}
 							%>
@@ -962,7 +952,7 @@
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								<td>(O)</td>
+								<td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
 								<%
 							}
 							%>
@@ -1000,7 +990,7 @@
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								<td>(O)</td>
+								<td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
 								<%
 							}
 							%>
@@ -1062,7 +1052,7 @@
 							displayed++;
 							if (!mode.equals("view")){
 								%>
-								<td>(O)</td>
+								<td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
 								<%
 							}
 							%>
@@ -1210,7 +1200,8 @@
 		
 	</form>
 </div> <!-- workarea -->
-			<jsp:include page="footer.jsp" flush="true" />
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 

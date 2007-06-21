@@ -60,15 +60,19 @@ else{
     <title>Data Dictionary</title>
 </head>
 <body class="popup">
-<div class="popuphead">
-	<h1>Data Dictionary Help</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
+	<div id="pagehead">
+	    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+	    <div id="networktitle">Eionet</div>
+	    <div id="sitetitle">Data Dictionary (DD)</div>
+	    <div id="sitetagline">This service is part of Reportnet</div>    
+	</div> <!-- pagehead -->
+	<div id="operations" style="margin-top:10px">
+		<ul>
+			<li><a href="javascript:window.close();">Close</a></li>
+		</ul>
 	</div>
-</div>
-<%=helpText%>
+	<div id="workarea" style="clear:right">
+		<%=helpText%>
+	</div>
 </body>
 </html>

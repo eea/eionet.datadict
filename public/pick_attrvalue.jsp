@@ -84,21 +84,22 @@
 
 <body class="popup">
 
-<div class="popuphead">
-	<h1>Data Dictionary</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
+	<div id="pagehead">
+	    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+	    <div id="networktitle">Eionet</div>
+	    <div id="sitetitle">Data Dictionary (DD)</div>
+	    <div id="sitetagline">This service is part of Reportnet</div>    
+	</div> <!-- pagehead -->
+	<div id="operations" style="margin-top:10px">
+		<ul>
+			<li><a href="javascript:window.close();">Close</a></li>
+		</ul>
 	</div>
-</div>
 
-<div>	
+<div id="workarea" style="clear:right">
+	<h5>Select (<%=Util.replaceTags(attrName)%>) value:</h5>
 	<form name="form1" action="">
-	<table>
-		<tr><td><b>Select attribute (<%=Util.replaceTags(attrName)%>) value:</b></td></tr>
-		<tr><td>&#160;</td></tr>
+	<table class="datatable">
 		<tr>
 			<%
 			if (type.equals(DElemAttribute.TYPE_COMPLEX)){
@@ -116,7 +117,7 @@
 			}
 			else{
 				%>
-				<th align="left" style="padding-right:10">&#160;Value</th>
+				<th align="left" style="padding-right:10">&nbsp;Value</th>
 				<%
 			}
 		%>

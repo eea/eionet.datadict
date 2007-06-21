@@ -139,10 +139,9 @@ if (dsVisual!=null && dsVisual.length()!=0){
 %>
 
 <body>
-
-<jsp:include page="nlocation.jsp" flush='true'>
-	<jsp:param name="name" value="Dataset Model"/>
-	<jsp:param name="back" value="true"/>
+<div id="container">
+<jsp:include page="nlocation.jsp" flush="true">
+	<jsp:param name="name" value="Dataset Model"/>	
 </jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -268,7 +267,9 @@ if (dsVisual!=null && dsVisual.length()!=0){
 					<%
 				}
 				%>
-</div>
+</div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 

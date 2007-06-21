@@ -18,25 +18,25 @@
 	</script>
 </head>
 <body>
-	<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Import results"/>
-		<jsp:param name="back" value="true"/>
 	</jsp:include>
-<%@ include file="nmenu.jsp" %>
-<div id="workarea">
-  <h1>Import results</h1>
-	<p><a href="javascript:openPDF()">Save import results into PDF file</a></p>
-	<p>
-		<b><%=Util.replaceTags(resptext)%></b>
-	</p>
-<form name="form1" action="GetImportResults" method="post">
-<%
-	String text=Util.Replace(resptext, "<br/>", "\n");
-
-%>
-<input type="hidden" name="text" value="<%=Util.replaceTags(text, true)%>"/>
-</form>
-</div>
+	<%@ include file="nmenu.jsp" %>
+	<div id="workarea">
+		<h1>Import results</h1>
+		<p><a href="javascript:openPDF()">Save import results into PDF file</a></p>
+		<p>
+			<b><%=Util.replaceTags(resptext)%></b>
+		</p>
+		<form name="form1" action="GetImportResults" method="post">
+			<%
+			String text=Util.Replace(resptext, "<br/>", "\n");		
+			%>
+			<input type="hidden" name="text" value="<%=Util.replaceTags(text, true)%>"/>
+		</form>
+	</div> <!-- workarea -->
+</div> <!-- container -->
 <jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>

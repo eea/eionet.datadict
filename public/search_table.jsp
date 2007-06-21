@@ -139,7 +139,7 @@ private String setDefaultAttrs(String name){
 		function openAttributes(){
 			var type = document.forms["form1"].type.value;
 			var selected = document.forms["form1"].collect_attrs.value;
-			attrWindow=window.open('pick_attribute.jsp?type=' + type + "&selected=" + selected,"Search","height=450,width=300,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
+			attrWindow=window.open('pick_attribute.jsp?type=' + type + "&selected=" + selected,"Search","height=450,width=450,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
 			if (window.focus) {attrWindow.focus()}
 		}
 		function checkalert()
@@ -176,46 +176,44 @@ private String setDefaultAttrs(String name){
 </head>
 
 <%
-if (contextParam == null || !contextParam.equals(POPUP)){ %>
+boolean isPopup = (contextParam == null || !contextParam.equals(POPUP))==false;
+if (!isPopup){
+	%>
 	<body onclick="checkalert()" onload="onLoad()">
-<%
+	<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
+		<jsp:param name="name" value="Search"/>				
+	</jsp:include>
+	<%@ include file="nmenu.jsp" %><%
 }
-else { %>
+else {
+	%>
 	<body class="popup" onload="onLoad()">
-<%
+	<div id="pagehead">
+	    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+	    <div id="networktitle">Eionet</div>
+	    <div id="sitetitle">Data Dictionary (DD)</div>
+	    <div id="sitetagline">This service is part of Reportnet</div>    
+	</div>
+	<%
 }
 %>
-		<%
-		if (contextParam == null || !contextParam.equals(POPUP)){
-			%>
-            <jsp:include page="nlocation.jsp" flush='true'>
-				<jsp:param name="name" value="Search"/>
-				<jsp:param name="back" value="true"/>
-            </jsp:include>
-    <%@ include file="nmenu.jsp" %>
-		<%
-		}
-			else{ %>
-			
-				<div class="popuphead">
-					<h1>Data Dictionary</h1>
-					<hr/>
-				</div><%
-			}	
-			%>
-			
-				<div id="workarea">
 
-				<form name="form1" action="search_results_tbl.jsp" method="get">
-        <div id="operations">
-          <ul>
-              <li class="help"><a target="_blank" href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-          </ul>
-        </div>
+<div id="workarea">
+	<div id="operations">
+	  <ul>
+	  		<%
+	  	  	if (isPopup){ %>
+	  	  		<li><a href="javascript:window.close();">Close</a></li><%
+		  		}
+		  		%>
+	      	<li class="help"><a target="_blank" href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+	  </ul>
+	</div>
+	<h1>Search tables</h1>
+		<form name="form1" action="search_results_tbl.jsp" method="get">
 
-				<h1>Search tables</h1>
-				
-				<table width="auto" cellspacing="0">
+				<table width="auto" cellspacing="0" style="margin-top:10px">
 					<tr valign="top">
 						<td align="right" style="padding-right:10">
 							<b>Short name</b>
@@ -386,12 +384,12 @@ else { %>
 							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('<%=submitForm%>')"/>
 							<input class="mediumbuttonb" type="reset" value="Reset"/>
 						</td>
-						<td align="right">
+						<td style="font-size:65%;text-align:right">
 							<%
-								if (contextParam == null || !contextParam.equals(POPUP)){
-							%>
-								<a href="javascript:openAttributes();"><img src="images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
-							<%
+							if (contextParam == null || !contextParam.equals(POPUP)){%>
+								<a href="javascript:openAttributes();">
+									<img src="images/button_plus.gif" border="0" alt="Click here to add more search criterias"/>
+								</a>&nbsp;Add criteria<%
 							}
 							%>
 						</td>
@@ -406,7 +404,12 @@ else { %>
 				<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
 				</form>
 			</div> <!-- workarea -->
-      <jsp:include page="footer.jsp" flush="true" />
+		<%
+		if (!isPopup){ %>
+			</div> <!-- container -->
+			<jsp:include page="footer.jsp" flush="true" /><%
+		}
+		%>
 </body>
 </html>
 

@@ -319,10 +319,9 @@
     </script>
 </head>
 <body onload="doLoad()">
-
-	<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Restore datasets"/>
-        <jsp:param name="back" value="true"/>
 	</jsp:include>
     <%@ include file="nmenu.jsp" %>
 	<div id="workarea">
@@ -332,7 +331,7 @@
         
             if (datasets == null || datasets.size()==0){
 	            %>
-    	        <b>No results found!</b></div></body></html>
+    	        <strong>No results found!</strong></div></div><jsp:include page="footer.jsp" flush="true"/></body></html>
         	    <%
             	return;
             }
@@ -595,6 +594,7 @@
 		</form>
 		
 		</div> <!-- workarea -->
+		</div> <!-- container -->
       <jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>

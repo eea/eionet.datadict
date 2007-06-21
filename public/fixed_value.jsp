@@ -293,33 +293,24 @@
 	</script>
 </head>
 <body>
-        	<%
-        	if (valsType.equals("CH1")){ %>
-	            <jsp:include page="nlocation.jsp" flush='true'>
-	                <jsp:param name="name" value="Allowable value"/>
-	                <jsp:param name="back" value="true"/>
-	            </jsp:include><%
-            }
-            else{ %>
-            	<jsp:include page="nlocation.jsp" flush='true'>
-	                <jsp:param name="name" value="Suggested value"/>
-	                <jsp:param name="back" value="true"/>
-	            </jsp:include><%
-        	}
-        	%>
-            
-    <%@ include file="nmenu.jsp" %>
+<div id="container">
+<%
+if (valsType.equals("CH1")){ %>
+    <jsp:include page="nlocation.jsp" flush="true">
+        <jsp:param name="name" value="Allowable value"/>
+        
+    </jsp:include><%
+}
+else{ %>
+	<jsp:include page="nlocation.jsp" flush="true">
+        <jsp:param name="name" value="Suggested value"/>
+        
+    </jsp:include><%
+}
+%>            
+<%@ include file="nmenu.jsp" %>
 <div id="workarea">
 
-	<%
-	String backURL = "" + "/fixed_values.jsp?delem_id=" + delem_id +
-															 "&delem_name=" + delem_name +
-															 "&parent_type=" + parent_type;
-	String strMandatory = mode.equals("view") ? "" : "&nbsp;(M)";
-	String strOptional  = mode.equals("view") ? "" : "&nbsp;(O)";
-	String strTableClass = mode.equals("view") ? " class=\"datatable\"" : "";
-	%>
-			
 		<div id="operations">
 		<ul>
 			<li class="help"><a target="_blank" href="help.jsp?screen=fixed_value&amp;area=pagehelp" title="Get some help on this page" onclick="pop(this.href);return false;">Page help</a></li>
@@ -331,12 +322,18 @@
     	</h1>
 			
 		<form name="form1" method="post" action="fixed_value.jsp">
-		<table width="auto" cellspacing="1"<%=strTableClass%>>
+		
+		<%
+		String strMandatory = mode.equals("view") ? "" : "<img src=\"images/mandatory.gif\" alt=\"Mandatory\" title=\"Mandatory\"/>";
+		String strOptional  = mode.equals("view") ? "" : "<img src=\"images/optional.gif\" alt=\"Optional\" title=\"Optional\"/>";
+		String strTableClass = " class=\"datatable\"";
+		%>
+	
+		<table cellspacing="0" class="datatable" style="width:auto">
 			<tr>				
-				<td align="right" style="padding-right:10;color:black;font-weight:bold" valign="top">
-					Value:<%=strMandatory%>
-				</td>
-				<td colspan="1" valign="top">
+				<th scope="row">Value:</th>
+				<td><%=strMandatory%></td>
+				<td>
 					<%
 					if(!mode.equals("add")){ %>
 						<em><%=Util.replaceTags(value)%></em>
@@ -352,10 +349,9 @@
 			<%
 			if (parent_type.equals("attr")){ %>
 				<tr>				
-					<td align="right" style="padding-right:10;color:black;font-weight:bold" valign="top">
-						Default:<%=strOptional%>
-					</td>
-					<td colspan="1" valign="top">
+					<th scope="row">Default:</th>
+					<td><%=strOptional%></td>
+					<td>
 						<%
 						String strDefault = null;
 						if (fxv!=null)
@@ -385,10 +381,9 @@
 			%>
 			
 			<tr>
-				<td align="right" style="padding-right:10;color:black;font-weight:bold" valign="top">
-					Definition:<%=strOptional%>
-				</td>
-				<td valign="top">
+				<th scope="row">Definition:</th>
+				<td><%=strOptional%></td>
+				<td>
 					<%
 					if (mode.equals("view")){ %>
 						<%=Util.replaceTags(fxv.getDefinition(), true, true)%><%
@@ -398,13 +393,11 @@
 					}
 					%>
 				</td>
-			</tr>
-			
+			</tr>			
 			<tr>
-				<td align="right" style="padding-right:10;color:black;font-weight:bold" valign="top">
-					Short description:<%=strOptional%>
-				</td>
-				<td valign="top">
+				<th scope="row">Short description:</th>
+				<td><%=strOptional%></td>
+				<td>
 					<%
 					if (mode.equals("view")){ %>
 						<%=Util.replaceTags(fxv.getShortDesc(), true, true)%><%
@@ -418,8 +411,8 @@
 			<%
 			if (mode.equals("edit")){ %>
 				<tr>
-					<td>&nbsp;</td>
-					<td colspan="2">
+					<td colspan="2">&nbsp;</td>
+					<td>
 						<input class="mediumbuttonb" type="button" value="Save" onclick="submitForm('edit')"/>&nbsp;&nbsp;
 						<input class="mediumbuttonb" type="button" value="Delete" onclick="submitForm('delete')" <%=strDeleteDisabled%>/>&nbsp;&nbsp;
 					</td>
@@ -436,7 +429,8 @@
 	
 	</form>
 </div> <!-- workarea -->
-      <jsp:include page="footer.jsp" flush="true" />
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 

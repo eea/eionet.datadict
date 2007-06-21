@@ -133,15 +133,18 @@
 </head>
 <body class="popup">
 
-<div class="popuphead">
-	<h1>Data Dictionary</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
-	</div>
-</div>
+<div id="pagehead">
+    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+    <div id="networktitle">Eionet</div>
+    <div id="sitetitle">Data Dictionary (DD)</div>
+    <div id="sitetagline">This service is part of Reportnet</div>    
+</div> <!-- pagehead -->
+<div id="operations" style="margin-top:10px">
+	<ul>
+		<li><a href="javascript:window.close();">Close</a></li>
+	</ul>
+</div>	
+<div id="workarea" style="clear:right;">
 
 <form name="Upload" action="ImgUpload" method="post" enctype="multipart/form-data">
 
@@ -149,7 +152,7 @@
 		<%=Util.replaceTags(attrName)%> of <a href="<%=Util.replaceTags(titleLink, true)%>"><%=Util.replaceTags(objName, true)%></a> <%=Util.replaceTags(titleType)%>
 	</h1>
 		
-	<table width="auto" cellspacing="0">
+	<table cellspacing="0" style="width:auto;margin-top:10px">
 		<tr>
 			<td align="left" style="padding-right:5">
 				<input type="radio" name="fileORurl" value="file" checked="checked"/>&nbsp;File:
@@ -230,6 +233,7 @@
 	<input type="hidden" name="redir_url" value="imgattr.jsp?<%=Util.replaceTags(request.getQueryString(), true)%>"/>
 	
 </form>
+</div> <!-- workarea -->
 </body>
 </html>
 

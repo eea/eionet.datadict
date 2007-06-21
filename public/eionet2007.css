@@ -1,0 +1,221 @@
+/* styles that aren't in the central style sheet */
+#outerframe {
+	padding: 3px;
+	margin-top: 10px;
+	border-radius: 6px;/* CSS3 */
+	-moz-border-radius: 6px;/* Mozilla */
+}
+
+#innerframe {
+	padding: 3px;
+	border: 1px solid #d8e1ce;
+	border-radius: 6px;/* CSS3 */
+	-moz-border-radius: 6px;/* Mozilla */
+}
+
+#quickbar {
+	border: 1px solid #91aa73;
+	background-color:#FFFFFF;
+	padding: 3px;
+	font-family: Verdana, Arial, "MS Sans Serif", sans-serif;
+	font-size: 7pt;
+	font-style: normal;
+	line-height: normal;
+	text-decoration: none
+}
+
+#createbox {
+	border: 1px solid #91aa73;
+	margin-top: 10px;
+}
+
+/* Create box */
+#outputsmenu {
+	border: 0px;
+	width: 100%;
+	text-align: left;
+	vertical-align: middle;
+}
+
+
+/* Tables table */
+#dataset-tables {
+	width: 100%;
+	font-size: 90%;
+}
+
+#dataset-tables th {
+	font-weight: bold;
+	color: #FFFFFF;
+	background: #666666;
+	text-decoration: none;
+}
+
+#dataset-tables td {
+	background: #FFFFFF;
+	text-decoration: none;
+	text-align: left;
+}
+
+/* Other versions table */
+#other-versions {
+	width: 100%;
+	font-size: 90%;
+}
+
+#other-versions th {
+	font-weight: bold;
+	color: #FFFFFF;
+	background: #666666;
+	text-decoration: none;
+}
+
+#other-versions td {
+	background: #FFFFFF;
+	text-decoration: none;
+	text-align: left;
+}
+
+/* Dataset table "Obligations in ROD" */
+.subtable {
+	width: 100%;
+	padding: 2px;
+	font-size: 70%;
+}
+
+.subtable th {
+	font-weight: bold;
+	color: #FFFFFF;
+	background: #808080;
+	text-decoration: none;
+}
+
+.subtable td {
+	font-weight: normal;
+	background: #FFFFFF;
+	text-decoration: none;
+	vertical-align: top;
+}
+
+/* Dataset table "Complex attributes" */
+#dataset-attributes {
+	width: 100%;
+}
+
+#dataset-attributes td {
+	vertical-align: middle;
+}
+
+/*
+* Admonitions
+*/
+.attention {
+	color: #FF0000;
+}
+
+.caution {
+	color: red;
+	border-width: 1px;
+}
+
+.error {
+	font-style: bold;
+}
+/*
+input[type="submit"][disabled], input[type="reset"][disabled],  input[type="button"][disabled] {
+	font-size: 90%;
+	font-weight: bold;
+	color: #C0C0C0;
+	text-decoration: none;
+	background: #edf1e7;
+}
+*/
+
+/*
+* Quickfix to problem when content of div #container overflows its height:
+* setting the minimum height of workarea to surely exceed the height of the menu in leftcolumn
+*/
+#workarea {
+	min-height:200px;
+}
+
+/*
+* Horisontal list.
+*/
+.horlist li {
+	display: inline;	
+}
+
+/*
+* The legend for Mandatory, Optional, Conditional icons.
+*/
+#moc-legend {
+	float:left;
+	padding: 3px;
+	border: 1px solid #d8e1ce;
+	border-radius: 6px;/* CSS3 */
+	-moz-border-radius: 6px;/* Mozilla */
+}
+
+#moc-legend ul li{
+	padding-right: 20px;
+}
+
+/*
+* Popups
+*/
+.popup {
+	margin:30px;
+	background-image: none;
+	background-color: white;
+}
+
+.popup #pagehead {
+	height: 102px;
+	width: 100%;
+	background: #a5ced1 url('top_01.png') repeat-y;
+	border-top: 4px solid #6f7072;
+	border-bottom: 1px solid #315076;
+}
+
+.popup #workarea {
+	margin-left: 0;
+	border-left: 0;
+	padding: 1em;
+}
+
+.popuphead hr {
+	background-color: #315076;
+	height: 15px;
+	border: none;
+}
+
+.popup h1 {
+	padding: 0.2em 0em;
+	margin: 0;
+	font-size: 135%;
+	background-color: transparent;
+	color: #315076;
+}
+
+.popup #close {
+	float:right;
+	padding-top:10px;
+}
+
+/*
+* The <td> of row-moving buttons on some pages where the order of table rows can be dynamically changed.
+*/
+.row-movers {
+	vertical-align:middle;
+	padding-left:10px
+}
+
+.row-movers a{
+	display:block;
+	padding-top:10px;
+}
+
+.row-movers img#dot{
+	padding-top:10px;
+}

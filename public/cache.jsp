@@ -27,42 +27,35 @@ Vector entries = (Vector)request.getAttribute("entries");
     	}
     	
     	function resize(){
-	    	window.resizeTo(600, 450);
+	    	window.resizeTo(800, 450);
     	}
 // ]]>
     </script>
 </head>
 <body class="popup" onload="load()">
-<div class="popuphead">
-	<h1>Data Dictionary</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
-	</div>
-</div>
-
-<form name="form1" action="GetCache" method="post">
-	
-		<h1>
-				Cache for <%=request.getAttribute("object_type")%> <em><%=idf%></em>
-		</h1>
-	
-		<p>
-				<input type="button" class="smallbutton" value="Update selected" onclick="submitForm('update')"/>
-				<input type="button" class="smallbutton" value="Remove selected" onclick="submitForm('clear')"/>
-		</p>
-		
-	<table width="500" class="datatable">
-		<col style="width:3%"/>
-		<col style="width:67%"/>
-		<col style="width:30%"/>
+<div id="pagehead">
+    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+    <div id="networktitle">Eionet</div>
+    <div id="sitetitle">Data Dictionary (DD)</div>
+    <div id="sitetagline">This service is part of Reportnet</div>    
+</div> <!-- pagehead -->
+<div id="operations" style="margin-top:10px">
+	<ul>
+		<li><a href="javascript:window.close();">Close</a></li>
+	</ul>
+</div>	
+<div id="workarea">
+<h1>Cache for <%=request.getAttribute("object_type")%> <em><%=idf%></em></h1>
+<br/>
+<form name="form1" action="GetCache" method="post">	
+	<input type="button" class="smallbutton" value="Update selected" onclick="submitForm('update')"/>
+	<input type="button" class="smallbutton" value="Remove selected" onclick="submitForm('clear')"/>		
+	<table class="datatable" style="width:auto">
 		<thead>
 		<tr>
 			<th>&nbsp;</th>
-			<th>Article</th>
-			<th>Created</th>
+			<th style="text-align:left">Article</th>
+			<th style="text-align:left">Created</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -79,7 +72,7 @@ Vector entries = (Vector)request.getAttribute("entries");
 				<td class="center">
 					<input type="checkbox" name="article" value="<%=Util.replaceTags(article, true)%>"/>
 				</td>
-				<td>
+				<td style="padding-right:10px">
 					<%=Util.replaceTags(text)%>
 				</td>
 				<td>
@@ -97,5 +90,6 @@ Vector entries = (Vector)request.getAttribute("entries");
 	<input type="hidden" name="obj_type" value="<%=objType%>"/>
 	<input type="hidden" name="idf" value="<%=idf%>"/>	
 </form>
+</div>
 </body>
 </html>

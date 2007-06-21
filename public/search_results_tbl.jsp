@@ -159,13 +159,13 @@
 	</script>
 </head>
 <body>
-	<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Tables"/>
-		<jsp:param name="back" value="true"/>
 	</jsp:include>
 	<%@ include file="nmenu.jsp" %>
 
-		<div id="workarea">
+<div id="workarea">
 			
             
 				<!-- search buttons -->
@@ -198,7 +198,7 @@
 		<form id="form1" method="post" action="search_results_tbl.jsp" onsubmit="setLocation()">
 		
 		<!-- the result table -->		
-		<table width="700" class="sortable">
+		<table width="700" class="sortable" style="clear:both">
 		 <col style="width:34%"/>
 		 <col style="width:22%"/>
 		 <col style="width:22%"/>
@@ -514,6 +514,7 @@
 		</form>
 		
 			</div> <!-- workarea -->
+			</div> <!-- container -->
       <jsp:include page="footer.jsp" flush="true" />
 	</body>
 </html>

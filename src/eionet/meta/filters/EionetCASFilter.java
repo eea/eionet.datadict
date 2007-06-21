@@ -25,7 +25,9 @@ import eionet.util.LogServiceIF;
 import eionet.util.SecurityUtil;
 
 public class EionetCASFilter extends CASFilter {
-
+	
+	private static boolean initCalled = false;
+	
 	public static final String EIONET_LOGIN_COOKIE_NAME = "eionetCasLogin";
 
 	private static LogServiceIF logger = new Log4jLoggerImpl();
@@ -39,14 +41,18 @@ public class EionetCASFilter extends CASFilter {
 	private static String EIONET_LOGIN_COOKIE_DOMAIN = null;
 
 	public void init(FilterConfig config) throws ServletException {
+		
+		// JH
+		EionetCASFilter.initCalled = true;
+		
 		CAS_LOGIN_URL = config.getInitParameter(LOGIN_INIT_PARAM);
 		SERVER_NAME = config.getInitParameter(SERVERNAME_INIT_PARAM);
 		EIONET_LOGIN_COOKIE_DOMAIN = config.getInitParameter("eionetLoginCookieDomain");
 		super.init(config);
-
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException, IOException {
+		
 		CASFilterChain chain = new CASFilterChain();
 		super.doFilter(request, response, chain);
 
@@ -139,6 +145,14 @@ public class EionetCASFilter extends CASFilter {
 		else
 			realURI = requestUri.replaceFirst("/" + EIONET_COOKIE_LOGIN_PATH, "");
 		response.sendRedirect(realURI);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static boolean hasInitBeenCalled(){
+		return EionetCASFilter.initCalled;
 	}
 
 	

@@ -36,16 +36,14 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 
 
 <body class="popup">
-		
-<div class="popuphead">
-	<h1>Data Dictionary</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
-	</div>
-</div>
+
+<div id="pagehead">
+    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+    <div id="networktitle">Eionet</div>
+    <div id="sitetitle">Data Dictionary (DD)</div>
+    <div id="sitetagline">This service is part of Reportnet</div>    
+</div> <!-- pagehead -->
+<div id="workarea">
 
 <h1>Upload document</h1>
 <p>
@@ -67,7 +65,7 @@ unknown. But whatever is the type of the file you upload, it can later be downlo
 		<tr>
 			<td class="head0">Title:</td>
 			<td align="left">
-				<input type="text" class="smalltext" name="title" size="40"/><span class="smallfont_light">(if left empty, file name will serve as title)</span>
+				<input type="text" class="smalltext" name="title" size="40"/><span style="font-size:0.7em">(if left empty, file name will serve as title)</span>
 			</td>
 		</tr>
 		<tr style="height:10px;"><td colspan="2"></td></tr>
@@ -80,5 +78,6 @@ unknown. But whatever is the type of the file you upload, it can later be downlo
 	</table>
 	
 </form>	
+</div> <!-- workarea -->
 </body>
 </html>

@@ -187,100 +187,60 @@ private String legalizeAlert(String in){
 	</script>
 </head>
 <body class="popup" onload="load()">
-<div class="popuphead">
-	<h1>Data Dictionary</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
-	</div>
+<div id="pagehead">
+    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+    <div id="networktitle">Eionet</div>
+    <div id="sitetitle">Data Dictionary (DD)</div>
+    <div id="sitetagline">This service is part of Reportnet</div>    
+</div> <!-- pagehead -->
+<div id="workarea">
+
+<div id="operations">
+	<ul>
+		<li><a href="javascript:window.close();">Close</a></li>
+		<li class="help"><a target="_blank" href="help.jsp?screen=complex_attrs&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+	</ul>
 </div>
 
+<h1>Complex attributes of <em><%=Util.replaceTags(parent_name)%></em></h1>
+<%
+if (complexAttrs==null || complexAttrs.size() == 0){
+	%>
+	<p>None found!</p><%
+}
+%>
+
+<div style="clear:right;padding-top:10px">
 <form name="form1" method="post" action="complex_attrs.jsp">
-	<div id="operations">
-		<ul>
-				<li class="help"><a target="_blank" href="help.jsp?screen=complex_attrs&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-		</ul>
-	</div>
-
-    <h2>
-        Complex attributes of <em><%=Util.replaceTags(parent_name)%></em>
-    </h2>
-
-<table width="600">
-
-	<tr>
-		<td class="mnd_opt_cnd" width="60%">
-			<table border="0" width="100%" cellspacing="0">
-				<tr>
-					<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
-					<td width="17%">Mandatory</td>
-					<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
-					<td width="15%">Optional</td>
-					<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
-					<td width="56%">Conditional</td>
-        		</tr>
-      		</table>
-		</td>
-		<td align="right">
-		</td>
-	</tr>
-
 	<%
-	if (complexAttrs==null || complexAttrs.size() == 0){
+	if (mComplexAttrs!=null && mComplexAttrs.size()>0){
 		%>
-		<tr height="10"><td colspan="2">None found!</td></tr>
-		<%
-	}
-	%>
-	
-	
-	<tr><td colspan="2">&nbsp;</td></tr>
-	<%
-	if (mComplexAttrs.size() != 0){
-		%>
-		<tr>
-			<td colspan="2">
+		<select class="small" name="new_attr_id">
 			<%
-			if (user!=null){ %>
-				<select class="small" name="new_attr_id"> <%
-			} else{ %>
-				<select class="small" name="new_attr_id" disabled="disabled"> <%
+			for (int i=0; i<mComplexAttrs.size(); i++){
+				DElemAttribute attr = (DElemAttribute)mComplexAttrs.get(i);
+				String attrID = attr.getID();
+				String attrName = attr.getShortName();
+				
+				String attrOblig = attr.getObligation();
+				String obligStr  = "(O)";
+				if (attrOblig.equalsIgnoreCase("M"))
+					obligStr = "(M)";
+				else if (attrOblig.equalsIgnoreCase("C"))
+					obligStr = "(C)";
+				%>
+				<option value="<%=attrID%>"><%=Util.replaceTags(attrName)%>&nbsp;&nbsp;&nbsp;<%=Util.replaceTags(obligStr)%></option><%
 			}
-					for (int i=0; i<mComplexAttrs.size(); i++){
-						DElemAttribute attr = (DElemAttribute)mComplexAttrs.get(i);
-						String attrID = attr.getID();
-						String attrName = attr.getShortName();
-						
-						String attrOblig = attr.getObligation();
-						String obligStr  = "(O)";
-						if (attrOblig.equalsIgnoreCase("M"))
-							obligStr = "(M)";
-						else if (attrOblig.equalsIgnoreCase("C"))
-							obligStr = "(C)";
-						%>
-						<option value="<%=attrID%>"><%=Util.replaceTags(attrName)%>&nbsp;&nbsp;&nbsp;<%=Util.replaceTags(obligStr)%></option>
-						<%
-					}
-					%>
-				</select>&#160;
-				
-				<input class="smallbutton" type="button" value="Add new" onclick="addNew()"/>&nbsp;
-				<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')"/>
-				
-			</td>
-		</tr>
-		
-		<tr><td colspan="2">&nbsp;</td></tr>
-		
-		<%
+			%>
+		</select>
+		<input class="smallbutton" type="button" value="Add new" onclick="addNew()"/>
+		<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')"/><%
 	}
 	%>
-</table>
+
 
 <%
-	for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
+for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
 		
 		DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
 		String attrID = attr.getID();
@@ -414,6 +374,8 @@ if (ds != null){
 %>
 															 
 </form>
+</div>
+</div> <!-- workarea -->
 </body>
 </html>
 

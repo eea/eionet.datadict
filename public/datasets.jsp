@@ -317,9 +317,9 @@
     </script>
 </head>
 <body onload="doLoad()">
-	<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Datasets"/>
-		<jsp:param name="back" value="true"/>
 	</jsp:include>
     <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -357,23 +357,22 @@
 				<p>NB! Datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
 		    }
 			%>
-			
+			<br/>
 			<form id="form1" method="post" action="datasets.jsp" onsubmit="setLocation()">
 			<!-- the buttons part -->
 				<!-- update buttons -->
-				<div style="padding-bottom:5">
+				<div>
 					<%
 					if (user != null){
 						String strAddDisabled = (!isSearchForWorkingCopies && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")) ?
 												"" : "disabled=\"disabled\"";
 						String strDeleteDisabled = (!isSearchForWorkingCopies) ? "" : "disabled=\"disabled\"";
 						%>
-						<input type="button" class="smallbutton" value="Add new" <%=strAddDisabled%> onclick="goTo('add')"/>&nbsp;
+						<input type="button" class="smallbutton" value="Add new" <%=strAddDisabled%> onclick="goTo('add')" style="vertical-align:baseline"/>&nbsp;
 						<input type="button" name="del_button" value="Delete selected" <%=strDeleteDisabled%> onclick="deleteDataset()"/><%
 					}
 					%>		
 				</div>
-
 				<%
 				if (searchType != null && searchType.equals(TYPE_SEARCH)){
 	            
@@ -391,14 +390,14 @@
 						}
 	    	        	%>
 	    	        	
-		    	        </div></body></html>
+		    	        </div></div><jsp:include page="footer.jsp" flush="true" /></body></html>
 		        	    <%
 		            	return;
 		            }
 	        	}
 	            %>
             		
-		<table class="sortable" width="700">
+		<table class="sortable" width="700" style="clear:both">
 		
 			<%
 			// temporarly we do not display version aka CheckInNo, because for the time being it doesn't function properly anyway
@@ -431,7 +430,7 @@
 			%>
 				
 			<!-- the table itself -->
-	   <thead>	
+	   <thead>
 			<tr>
 				<%
 				if (isDisplayHelperColumn){%>
@@ -788,10 +787,9 @@
 			%>
 		</form>
 		
-			</div> <!-- workarea -->
-			
-			<jsp:include page="footer.jsp" flush="true" />
-			
+</div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />			
 </body>
 </html>
 

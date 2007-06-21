@@ -698,10 +698,9 @@
 </head>
 
 <body>
-
-<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+<jsp:include page="nlocation.jsp" flush="true">
 	<jsp:param name="name" value="Dataset"/>
-	<jsp:param name="back" value="true"/>
 </jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -780,39 +779,9 @@
 				
 				
 	                
-	                <!-- mandatory/optional/conditional bar -->
-	                
-	                <%
-					if (!mode.equals("view")){
-						%>					
-						<table class="mnd_opt_cnd" border="0" width="100%" cellspacing="0" style="margin-top:10px; background: #ffffff; border:1px solid #FF9900">
-							<col style="width:4%"/>
-							<col style="width:17%"/>
-							<col style="width:4%"/>
-							<col style="width:15%"/>
-							<col style="width:4%"/>
-							<col style="width:56%"/>
-							<tr>
-								<td><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
-								<td>Mandatory</td>
-								<td><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
-								<td>Optional</td>
-								<td><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
-								<td>Conditional</td>
-							</tr>
-							<tr>
-								<td colspan="6">
-									<b>NB! Edits will be lost if you leave the page without saving!</b>
-								</td>
-							</tr>
-						</table>
-						<%
-					}	
-					%>
-	                
 	                			<!-- add, save, check-in, undo check-out buttons -->
 					
-								<div style="margin-top:10px;margin-bottom:5px;text-align:right;">
+								<div style="text-align:right;clear:left">
 									<%
 									// add case
 									if (mode.equals("add")){ %>
@@ -1072,7 +1041,7 @@
 												if (colspan==4){
 													%>
 													<td class="short_name simple_attr_help">
-														<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
+														<img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
 													</td><%
 												}
 												%>
@@ -1108,7 +1077,7 @@
 												<%
 												if (colspan==4){%>
 													<td class="simple_attr_help">
-														<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
+														<img src="images/mandatory.gif" alt="Mandatory"  title="Mandatory"/>
 													</td><%
 												}
 												%>
@@ -1180,14 +1149,14 @@
 												
 												String attrOblig = attribute.getObligation();
 												String obligImg  = "optional.gif";
-												String obligTxt  = "optional";
+												String obligTxt  = "Optional";
 												if (attrOblig.equalsIgnoreCase("M")) {
 													obligImg = "mandatory.gif";
-													obligTxt  = "mandatory";
+													obligTxt  = "Mandatory";
 												}
 												else if (attrOblig.equalsIgnoreCase("C")) {
 													obligImg = "conditional.gif";
-													obligTxt  = "conditional";
+													obligTxt  = "Conditional";
 												}
 												
 												if (!attribute.displayFor("DST")) continue;
@@ -1225,7 +1194,7 @@
 													<%
 													if (colspan==4){%>
 														<td class="simple_attr_help">
-															<img border="0" src="images/<%=Util.replaceTags(obligImg)%>" alt="<%=Util.replaceTags(obligTxt)%>" width="16" height="16"/>
+															<img src="images/<%=Util.replaceTags(obligImg)%>" alt="<%=Util.replaceTags(obligTxt)%>" title="<%=Util.replaceTags(obligTxt)%>"/>
 														</td><%
 													}
 													%>
@@ -1460,7 +1429,7 @@
 													<%
 													if (colspan==4){%>
 														<td class="simple_attr_help">
-															<img border="0" src="images/mandatory.gif" width="16" height="16" alt="Help"/>
+															<img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
 														</td><%
 													}
 													%>
@@ -1486,7 +1455,7 @@
 												<%
 												if (colspan==4){%>
 													<td class="simple_attr_help">
-														<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
+														<img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
 													</td><%
 												}
 												%>
@@ -1516,67 +1485,41 @@
 										<!-- data model -->
 										
 										<%
-										if ((mode.equals("edit") && user!=null) || (mode.equals("view") && dataset.getVisual()!=null)){
-											
+										if ((mode.equals("edit") && user!=null) || (mode.equals("view") && dataset.getVisual()!=null)){											
 											%>
-											<table border="0" width="100%" cellspacing="0" cellpadding="3">
-												<tr>
-													<%
-													if (!mode.equals("view")){ %>
-														<td width="<%=titleWidth%>%" class="simple_attr_title"><%
-													}
-													else{ %>
-														<td width="34%" valign="top"><%
-													}
-													%>
-														<a name="model"></a><b>Data model</b>
-													</td>
-													
-													<%
-													if (!mode.equals("view")){ %>
-														<td width="4%" class="simple_attr_help">
-															<a target="_blank" href="help.jsp?screen=dataset&amp;area=data_model_link" onclick="pop(this.href);return false;">
-																<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
-															</a>
-														</td>
-														<td width="4%" class="simple_attr_help">
-															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
-														</td>
-														<td width="<%=valueWidth%>%" class="barfont_bordered"><%
-													}
-													else{ %>
-														<td width="66%" class="barfont"><%
-													}
-													
-														// thumbnail
-														if (mode.equals("view") && dataset.getVisual()!=null){
-															
-															if (imgVisual){ %>
-																<a target="_blank" href="visuals/<%=Util.replaceTags(dsVisual)%>" onfocus="blur()" onclick="pop(this.href);return false;">
-																	<img src="visuals/<%=Util.replaceTags(dsVisual)%>" border="0" height="100" width="100" alt="thumbnail"/>
-																</a><br/>
-																[Click thumbnail to view large version of the data model]<%
-															}
-															else{ %>
-																The file representing the dataset stucture cannot be displayed on this web-page.
-																But you can see it by pressing the following link:<br/>
-																<a href="javascript:openStructure('visuals/<%=Util.replaceTags(dsVisual)%>')"><%=Util.replaceTags(dsVisual)%></a> <%
-															}
-														}
-														
-														// model link
-														if (mode.equals("edit") && user!=null){ %>
-															[Click <a href="dsvisual.jsp?ds_id=<%=ds_id%>"><b>HERE</b></a> to manage the model of this dataset]
-															<%
-														}
-														%>
-													</td>
-												</tr>												
-											</table>
-											<%
+											<h2>
+												Data model<a name="model"></a>
+												<%
+												if (!mode.equals("view")){ %>
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=data_model_link" onclick="pop(this.href);return false;">
+														<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+													</a>
+													<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
+													[Click <a href="dsvisual.jsp?ds_id=<%=ds_id%>"><b>HERE</b></a> to manage the model of this dataset]<%
+												}
+												%>
+											</h2>
+											<%											
+											// thumbnail
+											if (mode.equals("view") && dataset.getVisual()!=null){
+												if (imgVisual){ %>
+													<div style="text-align:right">
+														<a target="_blank" href="visuals/<%=Util.replaceTags(dsVisual)%>" onfocus="blur()" onclick="pop(this.href);return false;">
+															<img src="visuals/<%=Util.replaceTags(dsVisual)%>" border="0" height="100" width="100" alt="thumbnail"/>
+														</a><br/>
+														[Click thumbnail to view large version of the data model]
+													</div><%
+												}
+												else{ %>
+													<div style="text-align:right">
+														The file representing the dataset stucture cannot be displayed on this web-page.
+														But you can see it by pressing the following link:<br/>
+														<a href="javascript:openStructure('visuals/<%=Util.replaceTags(dsVisual)%>')"><%=Util.replaceTags(dsVisual)%></a>
+													</div><%
+												}
+											}
 										}
 										%>
-										
 										
 										<!-- tables list -->
 										
@@ -1587,10 +1530,13 @@
 												Dataset tables<a name="tables"></a>
 												<%
 												// tables link
-												if (mode.equals("edit")){ %>
-													<small>
-														[Click <a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.replaceTags(ds_name)%>"><b>HERE</b></a> to manage tables of this dataset]
-													</small><%
+												if (mode.equals("edit")){
+													%>
+													<a target="_blank" href="help.jsp?screen=dataset&amp;area=tables_link" onclick="pop(this.href);return false;">
+														<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+													</a>
+													<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
+													[Click <a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.replaceTags(ds_name)%>"><b>HERE</b></a> to manage tables of this dataset]<%
 												}
 												%>
 											</h2>												
@@ -1747,7 +1693,7 @@
 															</a>
 														</span>
 														<span class="simple_attr_help">
-															<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
+															<img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
 														</span><%
 													}
 													
@@ -1926,7 +1872,7 @@
 			</div>
 			
 			</div> <!-- workarea -->
-			
+			</div> <!-- container -->
 			<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>

@@ -1153,23 +1153,20 @@ boolean popup = request.getParameter("popup")!=null;
 if (popup){
 	%>
 	<body class="popup" onload="onBodyLoad()">
-		<div class="popuphead">
-			<h1>Data Dictionary</h1>
-			<hr/>
-			<div align="right">
-				<form acceptcharset="UTF-8" name="close" action="javascript:window.close()">
-					<input type="submit" class="smallbutton" value="Close"/>
-				</form>
-			</div>
-		</div>
-		<div><%
+	<div id="pagehead">
+	    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+	    <div id="networktitle">Eionet</div>
+	    <div id="sitetitle">Data Dictionary (DD)</div>
+	    <div id="sitetagline">This service is part of Reportnet</div>    
+	</div> <!-- pagehead -->
+	<div id="workarea"><%
 }
 else{
 	%>
 	<body onload="onBodyLoad()">
-		<jsp:include page="nlocation.jsp" flush='true'>
+	<div id="container">
+		<jsp:include page="nlocation.jsp" flush="true">
 			<jsp:param name="name" value="Data element"/>
-			<jsp:param name="back" value="true"/>
         </jsp:include>
 		<%@ include file="nmenu.jsp" %>
 		<div id="workarea">
@@ -1196,6 +1193,11 @@ else{
 					hlpScreen = "element_add";
 				%>
 				<ul>
+					<%
+					if (popup){ %>
+						<li><a href="javascript:window.close();">Close</a></li><%
+					}
+					%>
 					<li class="help"><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 					<%
 					if (mode.equals("view") && user!=null && dataElement!=null && elmCommon && dataElement.getIdentifier()!=null){
@@ -1262,65 +1264,36 @@ else{
 				<!--=======================-->
 				
 				               
-	                <!-- mandatory/optional/conditional bar -->
-	                
-	                <%
-					if (!mode.equals("view")){ %>
-					
-								<table border="0" width="620" class="mnd_opt_cnd" cellspacing="0">
-									<tr>
-										<td width="4%"><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
-										<td width="17%">Mandatory</td>
-										<td width="4%"><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
-										<td width="15%">Optional</td>
-										<td width="4%"><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
-										<td width="56%">Conditional</td>
-                            		</tr>
-		                            <tr>
-										<td width="100%" colspan="6">
-											<b>NB! Edits will be lost if you leave the page without saving!</b>
-										</td>
-		                            </tr>
-                          		</table>
-						<%
-					}	
-					%>
-					
 						<!-- add, save, check-in, undo check-out buttons -->
 					
-						<table border="0" width="620" cellspacing="0" cellpadding="0">
-							<tr><td width="100%" colspan="2" height="10"></td></tr>
-							<tr>
-								<td width="100%" align="right" colspan="2">
-									<%
-									// add case
-									if (mode.equals("add")){ %>
-										<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
-										<input type="button" class="mediumbuttonb" value="Copy"
-											onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
-											title="Copies data element attributes from existing data element"/>
-										<%
-									}
-									// view case
-									else if (mode.equals("view") && isMyWorkingCopy){
-										%>
-										<input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/>
-										&nbsp;<input type="button" class="mediumbuttonb" value="Check in" onclick="checkIn()" />
-										&nbsp;<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>
-										<%
-									}
-									// edit case
-									else if (mode.equals("edit")){
-										%>
-										<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-										<input type="button" class="mediumbuttonb" value="Save & close" onclick="submitForm('editclose')"/>&nbsp;
-										<input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
-										<%
-									}
-									%>
-								</td>
-							</tr>
-						</table>
+						<div style="float:right">
+							<%
+							// add case
+							if (mode.equals("add")){ %>
+								<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
+								<input type="button" class="mediumbuttonb" value="Copy"
+									onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
+									title="Copies data element attributes from existing data element"/>
+								<%
+							}
+							// view case
+							else if (mode.equals("view") && isMyWorkingCopy){
+								%>
+								<input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/>
+								&nbsp;<input type="button" class="mediumbuttonb" value="Check in" onclick="checkIn()" />
+								&nbsp;<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>
+								<%
+							}
+							// edit case
+							else if (mode.equals("edit")){
+								%>
+								<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
+								<input type="button" class="mediumbuttonb" value="Save & close" onclick="submitForm('editclose')"/>&nbsp;
+								<input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
+								<%
+							}
+							%>
+						</div>
 	                
 	                	<!-- main table body -->
 	                
@@ -2585,9 +2558,9 @@ else{
 			</form>
 			</div>
 			</div> <!-- workarea -->
-			
 			<%
 			if (!popup){ %>
+				</div> <!-- container -->
 				<jsp:include page="footer.jsp" flush="true" />
 				<%
 			}

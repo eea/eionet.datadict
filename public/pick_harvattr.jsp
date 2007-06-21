@@ -147,45 +147,45 @@
 
 <body class="popup">
 
-<div class="popuphead">
-	<h1>Data Dictionary</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
+<div id="pagehead">
+	    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+	    <div id="networktitle">Eionet</div>
+	    <div id="sitetitle">Data Dictionary (DD)</div>
+	    <div id="sitetagline">This service is part of Reportnet</div>    
+	</div> <!-- pagehead -->
+	<div id="operations" style="margin-top:10px">
+		<ul>
+			<li><a href="javascript:window.close();">Close</a></li>
+		</ul>
 	</div>
-</div>
-
-	<form aname="form1" action="pick_harvattr.jsp" method="post">
-	<table>
-		<%
-		
-		int displayed = 0;
-		
-		if (harvAttrs==null || harvAttrs.size()==0){
-			displayed++;
+	<div id="workarea" style="clear:right">
+	<%
+	if (harvAttrs==null || harvAttrs.size()==0){ %>
+		<h5>Nothing harvested for this attribute!</h5><%
+	}
+	else{ %>
+		<h5>Select one of the harvested attribute values below:</h5><%
+	}
+	%>	
+	<form name="form1" action="pick_harvattr.jsp" method="post">
+	<table class="datatable">
+		<%				
+		if (harvFields!=null && harvFields.size()>0){
 			%>
-			<tr><td colspan="<%=colsp%>"><b>Nothing harvested for this attribute!</b></td></tr><%
-		}
-		else{ %>			
-			<tr><td colspan="<%=colsp%>"><b>Select one of the harvested attribute values below:</b></td></tr>
-			<tr><td colspan="<%=colsp%>">&#160;</td></tr><%
-			
-			if (harvFields!=null && harvFields.size()>0){ %>
-				<tr><td>&#160;</td>
+			<tr>
+				<th>&nbsp;</th>
 				<%
 				for (int i=0; i<harvFields.size(); i++){ %>
 					<th align="left" style="padding-right:10">&#160;<%=(String)harvFields.get(i)%></th><%
 				}
 				%>
-				</tr><%
-			}
+			</tr><%
 		}
 		
+		int displayed = 0;
 		for (int i=0; harvAttrs!=null && i<harvAttrs.size(); i++){
 			Hashtable attrHash = (Hashtable)harvAttrs.get(i);
-			String harvAttrID = (String)attrHash.get("harv_attr_id");
+			String harvAttrID = "11";//(String)attrHash.get("harv_attr_id");
 			if (added.contains(harvAttrID))
 				continue;
 			%>
@@ -198,9 +198,10 @@
 				</td>
 				<%
 				for (int j=0; harvFields!=null && j<harvFields.size(); j++){
-					String field = (String)harvFields.get(j); %>
+					String field = (String)harvFields.get(j);
+					%>
 					<td <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-right:10">
-						&#160;<%=(String)attrHash.get(field)%>
+						&nbsp;<%=(String)attrHash.get(field)%>
 					</td><%
 				}
 				%>
@@ -208,15 +209,13 @@
 			
 			displayed++;
 		}
-		
-		if (displayed==0){ %>
-			<tr><td colspan="<%=colsp%>">&#160;&#160;(all have been already selected)</td></tr><%
-		}
 		%>		
 	</table>
-	
-	<br/>
-	
+	<%
+	if (displayed==0 && !(harvAttrs==null || harvAttrs.size()==0)){ %>
+		<p>(all have been already selected)</p><%
+	}
+	%>
 	<input type="hidden" name="parent_id" value="<%=parent_id%>"/>
 	<input type="hidden" name="parent_type" value="<%=parent_type%>"/>
 	<input type="hidden" name="position" value="<%=position%>"/>
@@ -227,6 +226,7 @@
 	<input type="hidden" name="mode" value="add"/>
 	
 	</form>
+	</div>
 </body>
 </html>
 

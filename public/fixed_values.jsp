@@ -262,17 +262,18 @@
 	</script>
 </head>
 <body>
+<div id="container">
 	<%
 	if (valsType.equals("CH1")){ %>
-        <jsp:include page="nlocation.jsp" flush='true'>
+        <jsp:include page="nlocation.jsp" flush="true">
             <jsp:param name="name" value="Allowable values"/>
-            <jsp:param name="back" value="true"/>
+            
         </jsp:include><%
     }
     else{ %>
-    	<jsp:include page="nlocation.jsp" flush='true'>
+    	<jsp:include page="nlocation.jsp" flush="true">
             <jsp:param name="name" value="Suggested values"/>
-            <jsp:param name="back" value="true"/>
+            
         </jsp:include><%
 	}
 	%>            
@@ -440,6 +441,7 @@
 
 		</form>
 	</div> <!-- workarea -->
+	</div> <!-- container -->
 	<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>

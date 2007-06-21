@@ -57,9 +57,9 @@ Vector commonElements=null;
 	<title>Data Dictionary - Logging out</title>
 </head>
 <body>
-<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+<jsp:include page="nlocation.jsp" flush="true">
 	<jsp:param name="name" value="Logout"/>
-	<jsp:param name="back" value="true"/>
 </jsp:include>
 <%@ include file="nmenu.jsp" %>
 
@@ -149,7 +149,9 @@ Vector commonElements=null;
 		<input type="submit" value="Logout" class="smallbutton"/>
 	</form>
 	
-</div>
+</div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 <%

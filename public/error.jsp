@@ -23,26 +23,24 @@
 if (isPopup){
 	%>
 	<body class="popup">
-	<div class="popuphead">
-	<h1>Data Dictionary</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
-	</div>
+	<div id="pagehead">
+    	<a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+	    <div id="networktitle">Eionet</div>
+	    <div id="sitetitle">Data Dictionary (DD)</div>
+	    <div id="sitetagline">This service is part of Reportnet</div>    
+	</div> <!-- pagehead -->
+	<div id="workarea">
 	<%
 }
 else{
 	%>
 	<body>
-		<jsp:include page="nlocation.jsp" flush='true'>
-			<jsp:param name="name" value="Error"/>
-			<jsp:param name="back" value="true"/>
+		<div id="container">
+		<jsp:include page="nlocation.jsp" flush="true">
+			<jsp:param name="name" value="Error"/>			
 		</jsp:include>
-	<%@ include file="nmenu.jsp" %>
-<div id="workarea">
-		<%
+		<%@ include file="nmenu.jsp" %>
+		<div id="workarea"><%
 }
 %>
 
@@ -50,10 +48,10 @@ else{
 		
 			<%
 				String msg   = (String)request.getAttribute("DD_ERR_MSG");
-				msg = msg==null ? "" : msg;
+				msg = msg==null ? "no error message found in request" : msg;
 				
 				String trc = (String)request.getAttribute("DD_ERR_TRC");
-				trc = trc==null ? "" : trc;
+				trc = trc==null ? "no error trace found in request" : trc;
 				
 //				String backLink = (String)request.getAttribute("DD_ERR_BACK_LINK");
 //				backLink = backLink==null ? "javascript:history.back()" : backLink;
@@ -61,30 +59,30 @@ else{
 			%>
 			
 			<%
-			if (!isPopup){ %>
-		<div id="operations">
-				<ul>
-					<li>
-						<a href="<%=backLink%>">&lt; back</a>
-					</li>
-				</ul>
-				</div>
-			<% } %>
+			if (!isPopup){
+				%>
+				<div id="operations">
+					<ul>
+						<li>
+							<a href="<%=backLink%>">&lt; back</a>
+						</li>
+					</ul>
+				</div><%
+			}
+			%>
 			
-    <h1>Error:</h1>
-			
-		<p><b><%=msg%></b></p>
-		<p><b><%=trc%></b></p>
-		<input type="hidden" name="trc" value="<%=trc%>"/>
-			
-			
+    		<h1>Error:</h1>
+			<p><b><%=msg%></b></p>
+			<p><b><%=trc%></b></p>
+			<input type="hidden" name="trc" value="<%=trc%>"/>
 		</form>
-
-            <%
-if (!isPopup){ %>            
-	</div><%
+</div> <!-- workarea -->
+<%
+if (!isPopup){
+	%>
+	</div> <!-- container -->
+	<jsp:include page="footer.jsp" flush="true" /><%
 }
 %>
-
 </body>
 </html>

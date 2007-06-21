@@ -626,10 +626,10 @@
 </script>
 </head>
 <body>
-
-	<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Dataset table"/>
-		<jsp:param name="back" value="true"/>
+		
 	</jsp:include>
 	<%@ include file="nmenu.jsp" %>
         
@@ -677,93 +677,44 @@
 		else if (mode.equals("edit"))
 			pageHeadingVerb = "Edit";
 		%>	
-		<h1><%=pageHeadingVerb%> table definition
-			<%
-			if (mode.equals("add")){ %>
-				to <a target="_blank" onclick="pop(this.href);return false;" href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view">
-					<%=Util.replaceTags(dsName)%>
-				</a> dataset<%
-			}
-			%>
-		</h1>
+		<h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a> dataset<%}%></h1>
 		
 		<div style="clear:both">
 		<br/>
 		<form name="form1" method="post" action="dstable.jsp">
-		
+
+				<!-- add, save, check-in, undo check-out buttons -->
+				<%
+				if (mode.equals("add") || mode.equals("edit")){
+					%>
+					<div style="float:right">
+						<%
+						// add case
+						if (mode.equals("add")){
+							%>
+							<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
+							<input type="button" class="mediumbuttonb" value="Copy"
+								onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
+								title="Copies table structure and attributes from existing dataset table"/><%
+						}
+						// edit case
+						else if (mode.equals("edit")){
+							%>
+							<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
+							<input type="button" class="mediumbuttonb" value="Save & close" onclick="submitForm('editclose')"/>&nbsp;
+							<input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
+							<%
+						}
+						%>
+					</div><%
+				}
+				%>
+						
 			<!--=======================-->
 			<!-- main table inside div -->
 			<!--=======================-->
 			
-			<table border="0" cellspacing="0" cellpadding="0">
-				
-				
-				<!-- mandatory/optional/conditional bar -->
-                
-                <%
-				if (!mode.equals("view")){ %>
-				
-					<tr><td width="100%" height="10" colspan="2" ></td></tr>
-					<tr>
-						<td width="100%" class="mnd_opt_cnd" colspan="2" >
-							<table border="0" width="100%" cellspacing="0">
-								<col style="width:4%"/>
-								<col style="width:17%"/>
-								<col style="width:4%"/>
-								<col style="width:15%"/>
-								<col style="width:4%"/>
-								<col style="width:56%"/>
-								<tr>
-									<td><img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/></td>
-									<td>Mandatory</td>
-									<td><img border="0" src="images/optional.gif" width="16" height="16" alt=""/></td>
-									<td>Optional</td>
-									<td><img border="0" src="images/conditional.gif" width="16" height="16" alt=""/></td>
-									<td>Conditional</td>
-                        		</tr>
-	                            <tr>
-									<td colspan="6">
-										<b>NB! Edits will be lost if you leave the page without saving!</b>
-									</td>
-	                            </tr>
-                      		</table>
-                    	</td>
-					</tr><%
-				}	
-				%>
-				
-				
-				<!-- add, save, check-in, undo check-out buttons -->
-				
-				<%
-				if (mode.equals("add") || mode.equals("edit")){
-					%>
-					<tr><td width="100%" colspan="2" height="10"></td></tr>
-					<tr>
-						<td width="100%" align="right" colspan="2">
-						<%
-							// add case
-							if (mode.equals("add")){
-								%>
-								<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
-								<input type="button" class="mediumbuttonb" value="Copy"
-									onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
-									title="Copies table structure and attributes from existing dataset table"/><%
-							}
-							// edit case
-							else if (mode.equals("edit")){
-								%>
-								<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-								<input type="button" class="mediumbuttonb" value="Save & close" onclick="submitForm('editclose')"/>&nbsp;
-								<input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
-								<%
-							}
-						%>
-						</td>
-					</tr>
-					<%
-				}
-				%>
+			<table border="0" cellspacing="0" cellpadding="0" style="clear:right">
 				               
                 <!-- main table body -->
                 
@@ -1370,9 +1321,11 @@
 													if (mode.equals("edit")){
 														String elemLink = "tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
 														%>
-														<span class="barfont">
-															[Click <a href="<%=elemLink%>"><b>HERE</b></a> to manage elements of this table]
-														</span><%
+														<a target="_blank" href="help.jsp?screen=dataset&amp;area=elements_link" onclick="pop(this.href);return false;">
+															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+														</a>
+														<img border="0" src="images/optional.gif" alt="Optional" title="Optional"/>
+														[Click <a href="<%=elemLink%>"><b>HERE</b></a> to manage elements of this table]<%
 													}
 													%>
 												</h2>
@@ -1444,7 +1397,7 @@
 																			
 																			<%
 																			if (elmCommon){ %>
-																				<span class="commonelm"><sup>C</sup></span><%
+																				<span style="color:#858585;font-weight:bold;"><sup>C</sup></span><%
 																				hasCommonElms = true;
 																			}
 																			
@@ -1503,7 +1456,7 @@
 													}
 													if (elems!=null && elems.size()>0 && hasCommonElms){%>
 														<div class="barfont">
-																(the <span class="commonelm"><sup>C</sup></span> sign marks a common element)
+																(the <sup style="color:#858585;">C</sup></span> sign marks a common element)
 														</div><%
 													}
 												}
@@ -1675,7 +1628,7 @@
 		</form>
 		</div>
 	</div> <!-- end workarea -->
-		
+	</div> <!-- container -->
 	<jsp:include page="footer.jsp" flush="true" />
 
 </body>

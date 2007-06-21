@@ -14,18 +14,19 @@
 	<title>Documentation</title>
 </head>
 <body>
-				<jsp:include page="nlocation.jsp" flush='true'>
-        			<jsp:param name="name" value="Documentation"/>
-	            </jsp:include>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
+		<jsp:param name="name" value="Documentation"/>
+    </jsp:include>
     <%@ include file="nmenu.jsp" %>
-<div id="workarea">
-	<div id="outerframe">
-		<div id="innerframe">
-				<%=Helps.get("doc3", "text")%>
-		</div>				
-  </div>				
-</div> <!-- workarea -->
-				<jsp:include page="footer.jsp" flush="true" />
-								
+	<div id="workarea">
+		<div id="outerframe">
+			<div id="innerframe">
+					<%=Helps.get("doc3", "text")%>
+			</div>				
+	  	</div>				
+	</div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>

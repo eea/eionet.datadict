@@ -423,9 +423,10 @@
 </head>
 	
 <body onload="start()">
-	<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Table elements"/>
-        <jsp:param name="back" value="true"/>
+        
 	</jsp:include>
     <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -457,7 +458,7 @@
 	<%
 	if (editDstPrm){
 		%>
-		<table width="500">
+		<table width="500" style="margin-top:10px">
 			<tr>
 				<td align="right"><label for="idfier">Identifier:</label></td>
 				<td align="right">
@@ -787,7 +788,8 @@
 	<input type="hidden" name="elmpos" value="<%=maxPos+1%>"/>
 </form>
 
-</div>
+</div> <!-- workarea -->
+</div> <!-- container -->
 <jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>

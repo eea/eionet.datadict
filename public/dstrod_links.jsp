@@ -74,11 +74,12 @@ try{
 			</script>
 		</head>
 		<body>
-			<jsp:include page="nlocation.jsp" flush='true'>
+			<div id="container">
+			<jsp:include page="nlocation.jsp" flush="true">
 				<jsp:param name="name" value="Rod links"/>
-				<jsp:param name="back" value="true"/>
+				
 			</jsp:include>
-		<%@ include file="nmenu.jsp" %>
+			<%@ include file="nmenu.jsp" %>
 			<div id="workarea"> <!-- start work area -->
 				<form name="rodlinks" action="dstrod_links.jsp" method="post">
 					<div id="operations">
@@ -87,17 +88,15 @@ try{
 						</ul>
 					</div>
 					<h1>ROD obligations corresponding to <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset</h1>
-								<table width="auto" cellspacing="0" cellpadding="0">
-									<tr>
-										<td colspan="3">
-											<input type="button" class="smallbutton" value="Add new" onclick="pop('InServices?client=webrod&amp;method=get_activities')"/>
-											<%
-											if (rodLinks!=null && rodLinks.size()>0){ %>
-												<input type="submit" class="smallbutton" value="Remove selected"/><%
-											}
-											%>
-										</td>
-									</tr>
+					<div style="float:left;margin-top:20px;">
+						<input type="button" class="smallbutton" value="Add new" onclick="pop('InServices?client=webrod&amp;method=get_activities')"/>
+						<%
+						if (rodLinks!=null && rodLinks.size()>0){ %>
+							<input type="submit" class="smallbutton" value="Remove selected"/><%
+						}
+						%>
+					</div>
+								<table cellspacing="0" cellpadding="0" class="datatable" style="margin-top:0;width:auto;clear:both">
 									<tr>
 										<th>&nbsp;</th>
 										<th style="padding-left:5px;padding-right:10px;border-left:0">Title</th>
@@ -141,8 +140,9 @@ try{
 								<input type="hidden" name="li_id" value=""/>
 								<input type="hidden" name="li_title" value=""/>
 							</form>
-						</div>
-						<!-- end work area -->
+						</div> <!-- workarea -->
+						</div> <!-- container -->
+						<jsp:include page="footer.jsp" flush="true" />
 		</body>
 	</html>
 	

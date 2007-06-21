@@ -180,9 +180,10 @@ private String legalizeAlert(String in){
 		</script>
 	</head>
 <body onload="onLoad()">
-	<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Allowable value"/>
-		<jsp:param name="back" value="true"/>
+		
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -281,6 +282,8 @@ private String legalizeAlert(String in){
 	
 	</form>
 </div>
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 

@@ -129,23 +129,25 @@
 
 <body class="popup">
 
-<div class="popuphead">
-	<h1>Data Dictionary</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
+	<div id="pagehead">
+	    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+	    <div id="networktitle">Eionet</div>
+	    <div id="sitetitle">Data Dictionary (DD)</div>
+	    <div id="sitetagline">This service is part of Reportnet</div>    
+	</div> <!-- pagehead -->
+	<div id="operations" style="margin-top:10px">
+		<ul>
+			<li><a href="javascript:window.close();">Close</a></li>
+			<li><a href="<%=backUrl%>">back to search</a></li>
+		</ul>
 	</div>
-</div>
 
-<div>
+<div id="workarea">
 	<form name="form1" action="">
-		<p><b>Select dataset table:</b></p>
+		<h5>Select dataset table:</h5>
 		
-		<table id="tbl">
+		<table id="tbl" class="datatable">
 			<thead>
-				<tr><td colspan="4" align="right"><a href="<%=backUrl%>">back to search</a></td></tr>
 				<tr>
 					<th align="left" style="padding-left:5;padding-right:10">Short name</th>
 					<th align="left" style="padding-right:10">Dataset</th>

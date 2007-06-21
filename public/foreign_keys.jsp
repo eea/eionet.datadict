@@ -115,9 +115,10 @@
 </script>
 	
 <body>
-	<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Foreign keys"/>
-		<jsp:param name="back" value="true"/>
+		
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -133,7 +134,7 @@
 	<em><a href="data_element.jsp?mode=edit&delem_id=<%=delemID%>"><%=Util.replaceTags(delemName)%></a></em>.
 </h1>
 
-	<table width="auto" cellspacing="0" cellpadding="0">
+	<table cellspacing="0" cellpadding="0" style="width:auto;clear:right;margin-top:20px" class="datatable">
 	
 		<%
 		String skipTableID = request.getParameter("table_id");
@@ -154,9 +155,9 @@
 			<td align="right" style="padding-right:10">
 				<input type="button" value="Remove" class="smallbutton" onclick="submitForm('delete')"/>
 			</td>				
-			<th align="left" style="padding-left:5px;padding-right:10px">Element</th>
-			<th align="left" style="padding-left:5px;padding-right:10px">Table</th>
-			<th align="left" style="padding-left:5px;padding-right:10px">Cardinality</th>
+			<th style="padding-left:5px;padding-right:10px;text-align:left;">Element</th>
+			<th style="padding-left:5px;padding-right:10px;text-align:left;">Table</th>
+			<th style="padding-left:5px;padding-right:10px;text-align:left;">Cardinality</th>
 		</tr>
 			
 		<%
@@ -220,7 +221,8 @@
 	%>
 		
 </form>
-</div>
+</div> <!-- workarea -->
+</div> <!-- container -->
 <jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>

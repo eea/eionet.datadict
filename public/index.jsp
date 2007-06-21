@@ -15,7 +15,7 @@ String page_id = request.getParameter("page");
 if (page_id==null || page_id.length()==0)
 	page_id = "0";
 
-String page_name=null;	
+String page_name="";	
 if (page_id.equals("1"))
 	page_name = "Functions";
 else if (page_id.equals("2"))
@@ -61,14 +61,10 @@ finally{
 	<title>Data Dictionary</title>
 </head>
 <body>
-               	<% if (page_name == null){%>
-	                <jsp:include page="nlocation.jsp" flush='false'/>
-           		<%} else{ %>
-	                <jsp:include page="nlocation.jsp" flush='false'>
-            			<jsp:param name="name" value="<%=page_name%>"/>
-            			<jsp:param name="back" value="true"/>
-		            </jsp:include>
-	            <% } %>
+<div id="container">
+    <jsp:include page="nlocation.jsp" flush="false">
+		<jsp:param name="name" value="<%=page_name%>"/>
+    </jsp:include>
     <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 
@@ -97,48 +93,25 @@ finally{
 					
 								<div id="outerframe">												
 									<div style="margin-bottom:10px">
-									
-										<!-- released data definitions part -->
-										
-					                    		<jsp:include page="released_datasets.jsp" flush="true" />
-									</div>
-					                	
-									<table id="boxes">
+					                    <jsp:include page="released_datasets.jsp" flush="true" />
+									</div>					                	
+									<table>
 										<tr>
-					                	
-					                		<!-- the login part -->
-																<td class="box">
-					                  		</td>
-					                  		
-					                  		<!-- the support part -->
-					                  		
-					                  		<td class="box">
-					                  			<%=Helps.get("front_page", "support")%>
-					                  		</td>
+											<td style="vertical-align:top"><%=Helps.get("front_page", "documentation")%></td>
+					                  		<td><%=Helps.get("front_page", "support")%></td>
 					                	</tr>
 					                	<tr>
-					                	
-					                		<!-- the documentation part -->
-					                		
-					                  		<td class="box">
-												<%=Helps.get("front_page", "documentation")%>
-					                  		</td>
-					                  		
-					                  		<!-- the news part -->
-					                  		
-					                  		<td class="box">
-												<%=Helps.get("front_page", "news")%>
-		                  					</td>
+					                  		<td><%=Helps.get("front_page", "news")%></td>
+		                  					<td>&nbsp;</td>
 										</tr>
 									</table>
-						</div>
-						
+						</div>						
 						<%
 					} // end of excpetions if/else
 					%>
 								
-				</div> <!-- workarea -->
-
-						<jsp:include page="footer.jsp" flush="true" />
+</div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>

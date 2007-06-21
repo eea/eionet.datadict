@@ -273,26 +273,23 @@ if (popup){ %>
 
 	<body class="popup">
 	
-	<div class="popuphead">
-		<h1>Data Dictionary</h1>
-		<hr/>
-		<div align="right">
-			<form name="close" action="javascript:window.close()">
-				<input type="submit" class="smallbutton" value="Close"/>
-			</form>
-		</div>
-	</div>
-	<div><%
+	<div id="pagehead">
+	    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+	    <div id="networktitle">Eionet</div>
+	    <div id="sitetitle">Data Dictionary (DD)</div>
+	    <div id="sitetagline">This service is part of Reportnet</div>    
+	</div> <!-- pagehead -->
+	<%
 }
 else{ %>
 
 	<body>
-		<jsp:include page="nlocation.jsp" flush='true'>
+		<div id="container">
+		<jsp:include page="nlocation.jsp" flush="true">
 			<jsp:param name="name" value="Search results"/>
-			<jsp:param name="back" value="true"/>
+			
 		</jsp:include>
     	<%@ include file="nmenu.jsp" %>
-		<div id="workarea">
 		<%
 }
             
@@ -310,9 +307,14 @@ else{ %>
         		}
             }
             %>
-            
+		<div id="workarea">            
             <div id="operations">
             	<ul>
+            		<%
+            		if (popup){ %>
+            			<li><a href="javascript:window.close();">Close</a></li><%
+        			}
+        			%>
             		<li class="help"><a target="_blank" href="help.jsp?screen=elements&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
             	</ul>
             </div>
@@ -334,7 +336,7 @@ else{ %>
 
 			<!-- search results table -->
 						
-			<table width="700" class="sortable">
+			<table width="700" class="sortable" style="display:block">
 			<%
 			boolean isDisplayDstVersionColumn = isIncludeHistoricVersions;
 			if (isDisplayDstVersionColumn){%>
@@ -645,7 +647,12 @@ else{ %>
 			%>
 		</form>
 	</div> <!-- workarea -->
-	<jsp:include page="footer.jsp" flush="true" />
+	<%
+	if (!popup){%>
+		</div> <!-- container -->
+		<jsp:include page="footer.jsp" flush="true" /><%
+	}
+	%>
 </body>
 </html>
 

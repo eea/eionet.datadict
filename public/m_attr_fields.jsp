@@ -181,169 +181,156 @@ private String legalizeAlert(String in){
 			// ]]>
 			</script>
 	</head>
+	
 <body onload="start()">
-	<jsp:include page="nlocation.jsp" flush='true'>
-		<jsp:param name="name" value="Complex attribute fields"/>
-		<jsp:param name="back" value="true"/>
-	</jsp:include>
-<%@ include file="nmenu.jsp" %>
-<div id="workarea">
-	<form name="form1" method="post" action="m_attr_fields.jsp">
-		<div id="operations">
-			<ul>
-					<li class="help"><a target="_blank" href="help.jsp?screen=complex_attr_fields&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-			</ul>
-		</div>
-		<h1>Fields of <em><%=Util.replaceTags(attr_name)%></em></h1>
-
-<table width="auto">
-	<tr style="height:20px;"><td colspan="2"></td></tr>
-	<tr><td colspan="2" class="smallFont">Enter a new field here:</td></tr>
-	<tr>
-		<td class="small" align="left">Name:</td>
-		<td>
-			<input type="text" size="20" name="new_field"/>&#160;
-			<%
-			if (user!=null){
-				%>
-				<input type="button" value="Add" style="font-family:Arial;font-size:10px;font-weight:bold" onclick="submitForm('add')"/>
-				<%
-			}
-			else{
-				%>
-				<input type="button" value="Add" style="font-family:Arial;font-size:10px;font-weight:bold" onclick="submitForm('add')" disabled="true"/>
-				<%
-			}
-			%>
-		</td>
-	</tr>
-	<tr>
-		<td class="small" align="left">Definition:</td>
-		<td>
-			<textarea rows="2" cols="30" name="definition"></textarea>
-		</td>
-	</tr>
-	<tr style="height:10px;"><td colspan="2"></td></tr>
-</table>
-
-<table width="auto" cellspacing="0" cellpadding="0" border="0" id="tbl" style="float:left">
-	<thead>
-		<%
-		if (user != null) { %>
-			<tr>
-				<td colspan="4" style="padding-right:10">
-					<input type="button" <%=disabled%> value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/>
-					<input type="button" value="Save order" class="smallbutton" onclick="saveChanges()" title="save the order of the fields"/>
-				</td>
-			</tr>
-			<tr style="height:3px;"><td colspan="4"></td></tr>
-			<%
-		}
-		%>					
-		<tr>
-			<th>&nbsp;</th>
-			<th style="padding-left:5px;padding-right:5px;border-left:0">Name</th>
-			<th style="padding-left:5px;padding-right:5px">Definition</th>
-			<th style="padding-left:5px;padding-right:5px">Priority</th>
-		</tr>
-	</thead>
-	<tbody id="tbl_body">
-		<%
-		int position = 0;
-		
-		for (int i=0; i<attrFields.size(); i++){
-			Hashtable hash = (Hashtable)attrFields.get(i);
-			String id = (String)hash.get("id");
-			String name = (String)hash.get("name");
-			String definition = (String)hash.get("definition");
-			if (definition.length()>50) definition = definition.substring(0,50) + " ...";
-			
-			String fieldLink = "m_attr_field.jsp?mode=edit&amp;attr_id=" + attr_id + "&amp;attr_name=" + attr_name + "&amp;field_id=" + id;
-			
-			int pos = Integer.parseInt((String)hash.get("position"));
-			if (pos >= position) position = pos +1;
+	<div id="container">
+		<jsp:include page="nlocation.jsp" flush="true">
+			<jsp:param name="name" value="Complex attribute fields"/>		
+		</jsp:include>
+		<%@ include file="nmenu.jsp" %>
+		<div id="workarea">
+			<form name="form1" method="post" action="m_attr_fields.jsp">
+				<div id="operations">
+					<ul>
+						<li class="help">
+							<a target="_blank" href="help.jsp?screen=complex_attr_fields&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a>
+						</li>
+					</ul>
+				</div>
+				<h1>Fields of <em><%=Util.replaceTags(attr_name)%></em></h1>
+				<div>
+					<table style="width:auto">
+					
+						<tr style="height:20px;"><td colspan="2"></td></tr>
+						<tr><td colspan="2" class="smallFont">Enter a new field here:</td></tr>
+						<tr>
+							<td class="small" align="left">Name:</td>
+							<td>
+								<input type="text" size="20" name="new_field"/>&#160;
+								<%
+								if (user!=null){
+									%>
+									<input type="button" value="Add" style="font-family:Arial;font-size:10px;font-weight:bold" onclick="submitForm('add')"/>
+									<%
+								}
+								else{
+									%>
+									<input type="button" value="Add" style="font-family:Arial;font-size:10px;font-weight:bold" onclick="submitForm('add')" disabled="true"/>
+									<%
+								}
+								%>
+							</td>
+						</tr>
+						<tr>
+							<td class="small" align="left">Definition:</td>
+							<td>
+								<textarea rows="2" cols="30" name="definition"></textarea>
+							</td>
+						</tr>
+						<tr style="height:10px;"><td colspan="2"></td></tr>
+					</table>
+				</div>
 				
-			String priority = (String)hash.get("priority");
-			String pri = (priority!=null && priority.equals(DElemAttribute.FIELD_PRIORITY_HIGH)) ? "High" : "Low";
-			%>
-			<tr id="tr<%=id%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 				<%
-				if (user != null){ %>
-					<td align="right" style="padding-left:5px;padding-right:5px">
-						<input type="checkbox" style="height:13;width:13" name="del_field" value="<%=id%>" onclick="tbl_obj.clickOtherObject();"/>
-					</td><%
+				if (user != null) { %>
+					<div style="margin-bottom:10px">
+						<input type="button" <%=disabled%> value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/>
+						<input type="button" value="Save order" class="smallbutton" onclick="saveChanges()" title="save the order of the fields"/>
+					</div><%
 				}
 				%>
-				<td align="center" style="padding-left:5px;padding-right:5px">
-					<a href="javascript:clickLink('<%=fieldLink%>')">
-						<%=Util.replaceTags(name)%>
-					</a>
-				</td>
-				<td align="center" onmouseover="" style="padding-left:5px;padding-right:5px">
-					<%=Util.replaceTags(definition)%>
-				</td>
-				<td align="center" onmouseover="" style="padding-left:5px;padding-right:5px">
-					<%=pri%>
-				</td>
-				<td width="0" style="display:none">
-					<input type="hidden" name="pos_id" value="<%=id%>" size="5"/>
-					<input type="hidden" name="oldpos_<%=id%>" value='<%=(String)hash.get("position")%>' size="5"/>
-					<input type="hidden" name="pos_<%=id%>" value="0" size="5"/>
-				</td>
-			</tr><%
-		}
-		%>
-	</tbody>
-</table>
-
-<%
-if (user!=null && attrFields.size()>1){
-	%>
-	<table width="auto" cellspacing="2" cellpadding="2" border="0" style="float:left">
-		<tr>
-			<td>&nbsp;</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-		</tr>
-		<tr>
-			<td>
-				<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" title="move selected row to top" alt=""/></a>			
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" title="move selected row up" alt=""/></a>			
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<img src="images/dot.gif" alt=""/>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<a href="javascript:moveRowDown()"><img src="images/move_down.gif" border="0" title="move selected row down" alt=""/></a>			
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<a href="javascript:moveLast()"><img src="images/move_last.gif" border="0" title="move selected row last" alt=""/></a>			
-			</td>
-		</tr>
-	</table>
-	<%
-}
-%>
-
-<input type="hidden" name="mode" value="add"/>
-<input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
-
-<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
-<input type="hidden" name="attr_name" value="<%=Util.replaceTags(attr_name, true)%>"/>
-<input type="hidden" name="changed" value="0"/>
-</form>
-</div>
+				
+				<div>
+					<table cellspacing="0" cellpadding="0" id="tbl">
+						<thead>
+							<tr>
+								<%
+								if (user != null){ %>
+									<th style="background-color:#f6f6f6;">&nbsp;</th><%
+								}
+								%>
+								<th style="background-color:#f6f6f6;">Name</th>
+								<th style="padding-left:5px;background-color:#f6f6f6;">Definition</th>
+								<th style="padding-left:5px;background-color:#f6f6f6;">Priority</th>								
+							</tr>							
+						</thead>
+						<tbody id="tbl_body">
+							<%
+							if (user!=null && attrFields.size()>1){
+								
+								%>
+								<tr>
+									<td colspan="4"></td>
+									<td rowspan="<%=attrFields.size()+1%>" class="row-movers">
+										<a href="javascript:moveFirst()"><img src="images/move_first.gif" title="move selected row to top" alt=""/></a>
+										<a href="javascript:moveRowUp()"><img src="images/move_up.gif" title="move selected row up" alt=""/></a>
+										<img id="dot" src="images/dot.gif" alt=""/>
+										<a href="javascript:moveRowDown()"><img src="images/move_down.gif" title="move selected row down" alt=""/></a>
+										<a href="javascript:moveLast()"><img src="images/move_last.gif" title="move selected row last" alt=""/></a>		
+									</td>							
+								</tr><%
+							}
+							
+							int position = 0;
+							
+							for (int i=0; i<attrFields.size(); i++){
+								Hashtable hash = (Hashtable)attrFields.get(i);
+								String id = (String)hash.get("id");
+								String name = (String)hash.get("name");
+								String definition = (String)hash.get("definition");
+								if (definition.length()>50) definition = definition.substring(0,50) + " ...";
+								
+								String fieldLink = "m_attr_field.jsp?mode=edit&amp;attr_id=" + attr_id + "&amp;attr_name=" + attr_name + "&amp;field_id=" + id;
+								
+								int pos = Integer.parseInt((String)hash.get("position"));
+								if (pos >= position) position = pos +1;
+									
+								String priority = (String)hash.get("priority");
+								String pri = (priority!=null && priority.equals(DElemAttribute.FIELD_PRIORITY_HIGH)) ? "High" : "Low";
+								%>
+								<tr id="tr<%=id%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+									<%
+									if (user != null){ %>
+										<td align="right" style="padding-left:5px;padding-right:5px">
+											<input type="checkbox" style="height:13;width:13" name="del_field" value="<%=id%>" onclick="tbl_obj.clickOtherObject();"/>
+										</td><%
+									}
+									%>
+									<td align="center" style="padding-left:5px;padding-right:5px">
+										<a href="javascript:clickLink('<%=fieldLink%>')">
+											<%=Util.replaceTags(name)%>
+										</a>
+									</td>
+									<td align="center" onmouseover="" style="padding-left:5px;padding-right:5px">
+										<%=Util.replaceTags(definition)%>
+									</td>
+									<td align="center" onmouseover="" style="padding-left:5px;padding-right:5px">
+										<%=pri%>
+									</td>
+									<td width="0" style="display:none">
+										<input type="hidden" name="pos_id" value="<%=id%>" size="5"/>
+										<input type="hidden" name="oldpos_<%=id%>" value='<%=(String)hash.get("position")%>' size="5"/>
+										<input type="hidden" name="pos_<%=id%>" value="0" size="5"/>
+									</td>
+								</tr><%
+							}
+							%>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+								
+					
+				<input type="hidden" name="mode" value="add"/>
+				<input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
+				
+				<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
+				<input type="hidden" name="attr_name" value="<%=Util.replaceTags(attr_name, true)%>"/>
+				<input type="hidden" name="changed" value="0"/>
+			</form>
+		</div> <!-- workarea -->
+	</div> <!-- container -->
+	<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 

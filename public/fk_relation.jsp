@@ -110,9 +110,10 @@ String disabled = user == null ? "disabled" : "";
     </script>
 </head>
 <body>
-	<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Foreign key relation"/>
-		<jsp:param name="back" value="true"/>
+		
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -132,22 +133,22 @@ String disabled = user == null ? "disabled" : "";
 	</p>
 				
 			
-			<table width="600" cellspacing="0"  cellpadding="0" border="0">
+			<table cellspacing="0" cellpadding="0" class="datatable">
 			
-			<tr height="10"><td colspan="2">&#160;</td></tr>
+			<tr height="10"><td colspan="2">&nbsp;</td></tr>
 			
 			<tr>
-				<th>Element A</th>
+				<th scope="row">Element A</th>
 				<td><em><%=Util.replaceTags((String)fkRel.get("a_name"))%></em></td>
 			</tr>
 			
 			<tr>
-				<th>Element B</th>
+				<th scope="row">Element B</th>
 				<td><em><%=Util.replaceTags((String)fkRel.get("b_name"))%></em></td>
 			</tr>
 			
 			<tr>
-				<th>Cardinality (A to B)</th>
+				<th scope="row">Cardinality (A to B)</th>
 				<td>
 					<%
 					Vector cardins = new Vector();
@@ -183,10 +184,7 @@ String disabled = user == null ? "disabled" : "";
 			</tr>
 			
 			<tr>	
-				<th>
-					<a href="javascript:alert('Description of this relation')"><span class="help">?</span></a>&#160;
-					Description
-				</th>
+				<th scope="row">Description</th>
 				<td>
 					<textarea <%=disabled%>
 							  class="small"
@@ -210,7 +208,9 @@ String disabled = user == null ? "disabled" : "";
 	<input type="hidden" name="mode" value="<%=mode%>"/>
 	
 	</form>
-</div>
+</div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 

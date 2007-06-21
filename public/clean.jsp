@@ -57,11 +57,11 @@
 	</script>
 </head>
 <body>
-	<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Cleanup"/>
-		<jsp:param name="back" value="true"/>
 	</jsp:include>
-<%@ include file="nmenu.jsp" %>
+	<%@ include file="nmenu.jsp" %>
 <div id="workarea">
             
             <%
@@ -258,6 +258,8 @@
 	            <%
             } // end GET
             %>
-</div>
+</div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>

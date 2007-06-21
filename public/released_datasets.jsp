@@ -4,14 +4,10 @@
 request.setCharacterEncoding("UTF-8");
 Vector releasedDatasets = (Vector)request.getAttribute("rlsd_datasets");
 %>
-	
-<table border="0" width="100%" cellspacing="0" cellpadding="3" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0; border: 1px solid #FF9900">
-		<tr>
-			<td width="100%" valign="top" align="left" colspan="3">
-				<b>Latest released data definitions</b>
-			</td>
-		</tr>
-		
+
+<h2>Latest released data definitions</h2>
+<!-- <table border="0" width="100%" cellspacing="0" cellpadding="3" style="bordercolorlight:#C0C0C0; bordercolordark:#C0C0C0; border: 1px solid #FF9900"> -->
+<table width="100%">
 		<%
 		for (int i=0; releasedDatasets!=null && i<releasedDatasets.size(); i++){
 			Dataset dst = (Dataset)releasedDatasets.get(i);

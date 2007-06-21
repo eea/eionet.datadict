@@ -141,7 +141,7 @@ private String setDefaultAttrs(String name){
 			var type = document.forms["form1"].type.value;
 			var selected = document.forms["form1"].collect_attrs.value;
 			
-			attrWindow=window.open('pick_attribute.jsp?type=' + type + "&selected=" + selected,"Search","height=450,width=300,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
+			attrWindow=window.open('pick_attribute.jsp?type=' + type + "&selected=" + selected,"Search","height=450,width=450,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
 			if (window.focus) {attrWindow.focus()}
 		}
 		function checkalert()
@@ -217,36 +217,46 @@ private String setDefaultAttrs(String name){
 </head>
 
 <%
-if (contextParam == null || !contextParam.equals(POPUP)){ %>
-	<body onFocus="checkalert()" onload="onLoad()">
-	<%
-}
-else{ %>
-	<body class="popup" onload="onLoad()"> <%
-}
+boolean isPopup = (contextParam==null || !contextParam.equals(POPUP))==false;
+StringBuffer bodyAttrs = new StringBuffer("onload=\"onLoad()\"");
+if (!isPopup)
+	bodyAttrs.append(" onFocus=\"checkalert()\"");
+else
+	bodyAttrs.append(" class=\"popup\"");
 %>
 
-		<%
-		if (contextParam == null || !contextParam.equals(POPUP)){ %>
-			<jsp:include page="nlocation.jsp" flush='true'>
-				<jsp:param name="name" value="Search dataelements"/>
-				<jsp:param name="back" value="true"/>
-			</jsp:include>
-    		<%@ include file="nmenu.jsp" %>
-    		<div id="workarea">
-		<%
-		}
-		else{ %>
-			<div class="popuphead">
-				<h1>Data Dictionary</h1>
-				<hr/>
-			</div>
-			<div><%
-			}	
-			%>
+<body <%=bodyAttrs.toString()%>>
+	
+<%
+if (!isPopup){
+	%>
+	<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
+		<jsp:param name="name" value="Search dataelements"/>
+	</jsp:include>
+	<%@ include file="nmenu.jsp" %>
+	<div id="workarea">
+<%
+}
+else{ %>
+	<div id="pagehead">
+	    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+	    <div id="networktitle">Eionet</div>
+	    <div id="sitetitle">Data Dictionary (DD)</div>
+	    <div id="sitetagline">This service is part of Reportnet</div>    
+	</div> <!-- pagehead -->
+	<div id="workarea">
+	<%
+}	
+%>
 			
 				<div id="operations">
 					<ul>
+						<%
+						if (isPopup){ %>
+							<li><a href="javascript:window.close();">Close</a></li><%
+						}
+						%>
 						<li class="help"><a target="_blank" href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 						<%
 						if (contextParam == null || !contextParam.equals(POPUP)){
@@ -260,9 +270,10 @@ else{ %>
 				</div>
 				
 				<h1>Search data elements</h1>
+				<br/>
 				<form name="form1" action="search_results.jsp" method="get">
 				
-				<table width="auto" cellspacing="0" border="0">
+				<table width="auto" cellspacing="0" style="clear:right">
 
 					<%
 					String fk = request.getParameter("fk");
@@ -591,14 +602,12 @@ else{ %>
 							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('search_results.jsp')"/>
 							<input class="mediumbuttonb" type="reset" value="Reset"/>
 						</td>
-						<td align="left">
-						<%
-							if (contextParam == null || !contextParam.equals(POPUP)){
-						%>
-							<a href="javascript:openAttributes();"><img src="images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
-						<%
+						<td align="left" colspan="2" style="font-size:65%">
+							<%
+							if (contextParam == null || !contextParam.equals(POPUP)){ %>
+								<a href="javascript:openAttributes();"><img src="images/button_plus.gif" border="0" alt="Click here to add more search criteria" title="Click here to add more search criteria"/></a>&nbsp;Add criteria<%
 							}
-						%>
+							%>
 						</td>
 					</tr>
 					
@@ -649,7 +658,13 @@ else{ %>
                 
 				</form>
 			</div> <!-- workarea -->
-      <jsp:include page="footer.jsp" flush="true" />
+	<%
+	if (!isPopup){
+		%>
+		</div> <!-- container -->
+		<jsp:include page="footer.jsp" flush="true" /><%
+	}
+	%>
 </body>
 </html>
 

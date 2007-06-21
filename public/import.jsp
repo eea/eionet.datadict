@@ -93,9 +93,9 @@
 	</script>
 </head>
 <body>
-	<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Import"/>
-		<jsp:param name="back" value="true"/>
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -159,7 +159,8 @@
 					</tr>
 				</table>
 			</form>	
-</div>
+</div> <!-- workarea -->
+</div> <!-- container -->
 <jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>

@@ -100,9 +100,9 @@ finally {
 	<title>Subscribe - Data Dictionary</title>
 </head>
 <body>
-    <jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+    <jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Subscribe"/>
-		<jsp:param name="back" value="true"/>
     </jsp:include>
     <%@ include file="nmenu.jsp" %>
     
@@ -300,6 +300,7 @@ finally {
 		%>
     	
     </div> <!-- workarea -->
+    </div> <!-- container -->
     
 	<jsp:include page="footer.jsp" flush="true" />
 </body>

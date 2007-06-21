@@ -1,78 +1,62 @@
-<%@page import="java.util.*"%>
-<div id="pagehead">
-<form action="http://search.eionet.europa.eu/search.jsp" method="get">
-<input onfocus="if(this.value=='Search DD')this.value='';" onblur="if(this.value=='')this.value='Search DD';" title="Search Eionet sites with Nutch" value="Search DD" size="10" type="text" name="query"/>
-<input value="dd.eionet.europa.eu" name="qp_site" type="hidden"/>
-</form>
- <div id="identification">
-  <a href="/"><img src="images/logo.png" alt="Logo" id="logo" border="0" /></a>
-  <div class="sitetitle">Data Dictionary (DD)</div>
-  <div class="sitetagline">This service is part of Reportnet</div>
- </div>
-<div class="breadcrumbtrail">
- <div class="breadcrumbhead">You are here:</div>
- <div class="breadcrumbitem eionetaccronym"><a href="http://www.eionet.europa.eu">Eionet</a></div>
+<%@page import="java.util.*,eionet.util.SecurityUtil,com.tee.xmlserver.AppUserIF,eionet.meta.LoginServlet,eionet.meta.filters.EionetCASFilter"%>
 
-<%
-   String oHName=request.getParameter("name");
-   if (oHName==null) {  %>
- <div class="breadcrumbitemlast">Data Dictionary</div>
-<% } %>
-<%  if (oHName!=null) { %>
- <div class="breadcrumbitem"><a href='index.jsp'>Data Dictionary</a></div>
- <div class="breadcrumbitemlast"><%=oHName%></div>
-<% } %>
- <div class="breadcrumbtail"></div>
-</div>
+<div id="toolribbon">
+	<div id="lefttools">
+      <a id="eealink" href="http://www.eea.europa.eu/">EEA</a>
+      <a id="ewlink" href="http://www.ewindows.eu.org/">EnviroWindows</a>
+    </div>
+    <div id="righttools">    
+    	<%
+		AppUserIF _user = SecurityUtil.getUser(request);
+		if (_user!=null){
+			%>
+			<a id="logoutlink" href="logout.jsp" title="Logout">Logout (<%=_user.getUserName()%>)</a><%
+		}
+		else{
+	    	String loginUrl = EionetCASFilter.hasInitBeenCalled()==false ? "javascript:login()" : EionetCASFilter.getCASLoginURL(request);
+			%>
+			<a id="loginlink" href="<%=loginUrl%>" title="Login">Login</a><%
+		}
+		%>
+		<a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
+        <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
+        <a id="acronymlink" href="http://www.eionet.europa.eu/acronyms" title="Look up acronyms"><span>Acronyms</span></a>
+        <form action="http://search.eionet.europa.eu/search.jsp" method="get">
+			<div id="freesrchform"><label for="freesrchfld">Search</label>
+				<input type="text" id="freesrchfld" name="query"/>
+
+				<input id="freesrchbtn" type="image" src="images/button_go.gif" alt="Go"/>
+			</div>
+		</form>
+    </div>
+</div> <!-- toolribbon -->
+
+<div id="pagehead">
+    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+    <div id="networktitle">Eionet</div>
+    <div id="sitetitle">Data Dictionary (DD)</div>
+    <div id="sitetagline">This service is part of Reportnet</div>
 </div> <!-- pagehead -->
 
-<%-- for debugging, remove the two dashes from the <%-- below, put them back later when you're done --%>
-<%--
-Enumeration oNames;
-String oName=null;
-%>
-<p><b><u>Init parameters (app):</u></b><%
-oNames=application.getInitParameterNames();
-oName=null;
-while (oNames.hasMoreElements()) {
-  oName=(String)oNames.nextElement();%>
-  <li><%=oName%> = <%=application.getInitParameter(oName)%></li><%
-  }%>
-<p><b><u>Init parameters (sess):</u></b><%
-oNames=config.getInitParameterNames();
-oName=null;
-while (oNames.hasMoreElements()) {
-  oName=(String)oNames.nextElement();%>
-  <li><%=oName%> = <%=config.getInitParameter(oName)%></li><%
-  }%>
-<p><u><b>Session attributes:</u></b><%
-oNames=session.getAttributeNames();
-oName=null;
-while (oNames.hasMoreElements()) {
-  oName=(String)oNames.nextElement();%>
-  <li><%=oName%> = <%=session.getAttribute(oName)%></li><%
-  }%>
-<p><b><u>Request:</u></b>
-<p><u>parameters:</u><%
-oNames=request.getParameterNames();
-oName=null;
-while (oNames.hasMoreElements()) {
-  oName=(String)oNames.nextElement();%>
-  <li><%=oName%> = <%=request.getParameter(oName)%></li><%
-  }%>
-<p><u>attributes:</u><%
-oNames=request.getAttributeNames();
-oName=null;
-while (oNames.hasMoreElements()) {
-  oName=(String)oNames.nextElement();%>
-  <li><%=oName%> = <%=request.getAttribute(oName)%></li><%
-  }%>
-<p><u>headers:</u><%
-oNames=request.getHeaderNames();
-oName=null;
-while (oNames.hasMoreElements()) {
-  oName=(String)oNames.nextElement();%>
-  <li><%=oName%> = <%=request.getHeader(oName)%></li><%
-  }
-%>
-<%-- --%>
+
+<div id="menuribbon">
+	<%@ include file="dropdownmenus.txt" %>
+</div>
+<div class="breadcrumbtrail">
+	<div class="breadcrumbhead">You are here:</div>
+	<div class="breadcrumbitem eionetaccronym"><a href="http://www.eionet.europa.eu">Eionet</a></div>	
+	<%
+	String lastItemName = request.getParameter("name");
+	if (lastItemName!=null && lastItemName.trim().length()>0 && !lastItemName.equals("null")){
+		%>
+		<div class="breadcrumbitem"><a href="index.jsp">Data Dictionary</a></div>
+		<div class="breadcrumbitemlast"><%=lastItemName%></div><%
+	}
+	else{
+		%>
+		<div class="breadcrumbitemlast">Data Dictionary</div><%
+	}
+	%>
+<div class="breadcrumbtail">
+</div>
+</div>

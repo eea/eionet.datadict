@@ -129,7 +129,7 @@ private String setDefaultAttrs(String name){
 		function openAttributes(){
 			var type = document.forms["form1"].type.value;
 			var selected = document.forms["form1"].collect_attrs.value;
-			attrWindow=window.open('pick_attribute.jsp?type=' + type + "&selected=" + selected,"Search","height=450,width=300,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
+			attrWindow=window.open('pick_attribute.jsp?type=' + type + "&selected=" + selected,"Search","height=450,width=450,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
 			if (window.focus) {attrWindow.focus()}
 		}
 		function checkalert()
@@ -165,10 +165,10 @@ private String setDefaultAttrs(String name){
 	</script>
 </head>
 <body onclick="checkalert()" onload="onLoad()">
-	<jsp:include page="nlocation.jsp" flush='true'>
-		<jsp:param name="name" value="Search"/>
-		<jsp:param name="back" value="true"/>
-	</jsp:include>
+<div id="container">
+<jsp:include page="nlocation.jsp" flush="true">
+	<jsp:param name="name" value="Search"/>
+</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
     <div id="operations">
@@ -183,7 +183,7 @@ private String setDefaultAttrs(String name){
 	</div>
 		<form name="form1" action="datasets.jsp" method="get">
 		<h1>Search datasets</h1>
-		<table width="600" cellspacing="0">
+		<table width="600" cellspacing="0" style="padding-top:10px">
 		
 			<tr valign="top">
 				<td align="right">
@@ -340,8 +340,10 @@ private String setDefaultAttrs(String name){
 					<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('datasets.jsp')"/>
 					<input class="mediumbuttonb" type="reset" value="Reset"/>
 				</td>
-				<td align="right">
-					<a href="javascript:openAttributes();"><img src="images/button_plus.gif" border="0" alt="Click here to add more search criterias"/></a>
+				<td style="font-size:65%;text-align:right">
+					<a href="javascript:openAttributes();">
+						<img src="images/button_plus.gif" border="0" alt="Click here to add more search criterias"/>
+					</a>&nbsp;Add criteria
 				</td>
 			</tr>
 		</table>
@@ -354,7 +356,9 @@ private String setDefaultAttrs(String name){
 		<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
 		<input name='SearchType' type='hidden' value='SEARCH'/>
 		</form>
-</div>
+</div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 

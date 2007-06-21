@@ -32,37 +32,35 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 </head>
 
 <body class="popup" onload="load()">
-<div class="popuphead">
-	<h1>Data Dictionary</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
-	</div>
-</div>
-
+<div id="pagehead">
+    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+    <div id="networktitle">Eionet</div>
+    <div id="sitetitle">Data Dictionary (DD)</div>
+    <div id="sitetagline">This service is part of Reportnet</div>    
+</div> <!-- pagehead -->
+<div id="workarea">
 <div>
 	<form name="reload" action="InServices?client=webrod&amp;method=reload_activities" method="get">
+	<div id="operations">
+		<ul>
+			<li><a href="javascript:window.close();">Close</a></li>
+			<li><a href="javascript:document.forms['reload'].submit();">Reload</a></li>
+		</ul>
+	</div>
 	<%
-	if (activities==null || activities.size()==0){ %>
-		<h1>
-			No activities found!
-		</h1>
-		&nbsp;&nbsp;<input type="submit" class="smallbutton" value="Reload"/><%
+	if (activities==null || activities.size()==0){
+		%>
+		<h1>No activities found!</h1><%
 	}
 	else{ %>
-		<h1>
-			Obligation in ROD
-		</h1>
-		&nbsp;&nbsp;<input type="submit" class="smallbutton" value="Reload"/><br/><br/>
-		<p class="small">
-			Click <i>Title</i> to link the obligation with dataset. Click <i>Details</i> to open the obligation's details in ROD.
-		</p>
-		<table width="auto" cellspacing="0" cellpadding="0">
+		<h1>Obligations in ROD</h1>
+		<div style="font-size:0.7em;clear:right;margin-bottom:10px">
+			Click Title to link obligation with dataset.<br/>Click Details to open obligation details in ROD.
+		</div>
+		<table class="datatable" cellspacing="0" cellpadding="0" style="width:auto">
 			<tr>
 				<th style="padding-left:5px;padding-right:10px">Title</th>
-				<th style="padding-left:5px;padding-right:10px>Details</th>
+				<th style="padding-left:5px;padding-right:10px">Details</th>
 			</tr>
 			<%
 			int displayed = 0;
@@ -91,13 +89,13 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 				raURL = new StringBuffer(raURL).
 				replace(j, j + PropsIF.INSERV_ROD_RA_IDPATTERN.length(), raID).toString();
 				
-				String colorAttr = displayed % 2 != 0 ? "bgcolor=#CCCCCC" : "";
+				String colorStyle = displayed % 2 != 0 ? ";background-color:#E6E6E6;" : "";
 				%>
 				<tr>
-					<td style="padding-left:5px;padding-right:10px" <%=colorAttr%>>
+					<td style="padding-left:5px;padding-right:10px<%=colorStyle%>">
 						<a href="javascript:select('<%=raID%>', '<%=raTitle%>', '<%=liID%>', '<%=liTitle%>')"><%=Util.replaceTags(raTitle)%></a>
 					</td>
-					<td style="padding-left:5px;padding-right:10px" <%=colorAttr%>>
+					<td style="padding-left:5px;padding-right:10px<%=colorStyle%>">
 						<a target="_blank" href="<%=raURL%>"><%=raURL%>
 					</td>
 				<tr>
@@ -114,5 +112,6 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 	
 	</form>
 </div>
+</div> <!-- workarea -->
 </body>
 </html>

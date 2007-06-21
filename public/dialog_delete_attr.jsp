@@ -56,16 +56,17 @@ ServletContext ctx = null;
 	Connection conn = null;
 	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
 	DBPoolIF pool = xdbapp.getDBPool();
-	
+	int attrUseCount = 0;
 	try { // start the whole page try block
 	
 		conn = pool.getConnection();
 
 		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 		
-		objects = searchEngine.getAttributeObjects(attr_id, type);
-		
-		
+		objects = null;//searchEngine.getAttributeObjects(attr_id, type);
+		attrUseCount = searchEngine.getAttributeUseCount(attr_id, type);
+		if (attrUseCount<=0)
+			throw new Exception("Attribute not use at all, so this page should not have been reached");
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -89,16 +90,16 @@ ServletContext ctx = null;
 
 </head>
 <body>
-		<jsp:include page="nlocation.jsp" flush='true'>
+<div id="container">
+		<jsp:include page="nlocation.jsp" flush="true">
 			<jsp:param name="name" value="Attribute"/>
-			<jsp:param name="back" value="true"/>
 		</jsp:include>
-	<%@ include file="nmenu.jsp" %>
+<%@ include file="nmenu.jsp" %>
 
 <div id="workarea">
 	<form name="form1" action="dialog_delete_attr.jsp" method="post">
-	<h1>Deleting attribute: <%=Util.replaceTags(short_name)%></h1>
-	<p>Are you sure you want to delete the attribute, because it is part of the following objects' definitions: </p>
+	<h1>Deleting attribute</h1>
+	<div class="attention" style="padding-top:20px">Are you sure you want to delete attribute "<%=Util.replaceTags(short_name)%>"?<br/>It is used in <%=attrUseCount%> definitions.</div>
 				<table width="500">
 					<% 
 					// DATASETS
@@ -154,8 +155,6 @@ ServletContext ctx = null;
 					%>
 					
 					<tr><td align="left">&#160;</td></tr>
-					<tr style="height:30px;"><td><b>!Be aware that if you delete this attribute, it affects all these objects' definitions.</b>
-					</td></tr>
 					<tr style="height:30px;"><td align="left">
 						<input type="button" onclick="cancel();" value="Cancel" class="mediumbuttonb"/>
 						<input type="button" onclick="deleteAttr();" value="Delete" class="mediumbuttonb"/>
@@ -178,7 +177,8 @@ ServletContext ctx = null;
 				%>				
 				<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
 				</form>
-</div>
+</div> <!-- workarea -->
+</div> <!-- container -->
 </body>
 </html>
 <%

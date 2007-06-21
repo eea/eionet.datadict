@@ -81,17 +81,21 @@ private String getAttributeIdByName(String name){
 		</script>
 	</head>
    
-<body class="popup">
-<div class="popuphead">
-	<h1>Data Dictionary</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
+<body class="popup" style="min-width:350px">
+	<div id="pagehead">
+	    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+	    <div id="networktitle">Eionet</div>
+	    <div id="sitetitle">Data Dictionary (DD)</div>
+	    <div id="sitetagline">This service is part of Reportnet</div>    
+	</div> <!-- pagehead -->
+	<div id="operations" style="margin-top:10px">
+		<ul>
+			<li><a href="javascript:window.close();">Close</a></li>
+		</ul>
 	</div>
-</div>
-  <h2>Select attributes:</h2>
+	
+	<div id="workarea" style="clear:right">
+	<h2>Select attributes:</h2>
 	<form name="form1" action="">
 	<table>
 			<%
@@ -128,6 +132,7 @@ private String getAttributeIdByName(String name){
 	</table>
 	<input type="hidden" name="type" value="<%=type%>"/>
 	</form>
+	</div>
 </body>
 </html>
 

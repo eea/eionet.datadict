@@ -245,15 +245,13 @@ private String legalizeAlert(String in){
 	</head>
 <body class="popup" onload="doLoad()">
 		
-<div class="popuphead">
-	<h1>Data Dictionary</h1>
-	<hr/>
-	<div align="right">
-		<form name="close" action="javascript:window.close()">
-			<input type="submit" class="smallbutton" value="Close"/>
-		</form>
-	</div>
-</div>
+<div id="pagehead">
+    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
+    <div id="networktitle">Eionet</div>
+    <div id="sitetitle">Data Dictionary (DD)</div>
+    <div id="sitetagline">This service is part of Reportnet</div>    
+</div> <!-- pagehead -->
+<div id="workarea">
 
 	<%
 	
@@ -324,16 +322,12 @@ private String legalizeAlert(String in){
 		
 	<div id="operations">
 		<ul>
-				<li class="help"><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-<%
-if (!mode.equals("view")){
-%>
-				<li><a href="javascript:window.location.replace('<%=backURL%>')">
-				&lt; back to attributes</a></li>
-<%
-}
-%>
+			<li><a href="javascript:window.close();">Close</a></li>
+			<li class="help"><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 			<%
+			if (!mode.equals("view")){ %>
+				<li><a href="javascript:window.location.replace('<%=backURL%>')">&lt; back to attributes</a></li><%
+			}
 			if (user != null && isWorkingCopy && mode.equals("view")){ %>
 				<li><a href="javascript:goTo('edit')">Edit</a></li> <%
 			}
@@ -341,8 +335,8 @@ if (!mode.equals("view")){
 		</ul>
 	</div>
 
-
-<table width="400" class="datatable">
+<h1>Complex attribute value</h1>
+<table class="datatable" style="width:auto;border:0">
 	<tr>
 		<th scope="row" class="scope-row">
 				<%
@@ -380,50 +374,45 @@ if (!mode.equals("view")){
 
 <%
 if (!mode.equals("view")){
-%>
-<div style="margin-left:5px">
-<%
-	if (user!=null){
-		%>
-		<input class="smallbutton" type="button" name="addbutton" value="Add"  onclick="submitForm('add')" />&nbsp;
-		<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')" />&nbsp;
-		<%
-		if (harvesterID!=null && harvesterID.length()>0){ %>
-			<input class="smallbutton" type="button" value="Get"  onclick="openHarvested('<%=attr_id%>')" /><%
-		}
-	}
-	else{
-		%>
-		<input class="smallbutton" type="button" value="Add" disabled="true"/>
-		<%
-	}
-%>
-<table style="border: 1px solid #808080">
-
+	%>
 	<%
-		for (int t=0; attrFields!=null && t<attrFields.size(); t++){			
-			Hashtable hash = (Hashtable)attrFields.get(t);
-			String id = (String)hash.get("id");
-			String name = (String)hash.get("name");
+		if (user!=null){
 			%>
-			<tr>
-				<td class="small" width="100" align="right"><b><%=Util.replaceTags(name)%></b>:</td>
-				<td>
-					<input class="smalltext" type="text" name="<%=AttrFieldsHandler.FLD_PREFIX%><%=id%>"/>
-				</td>
-			</tr>
+			<input class="smallbutton" type="button" name="addbutton" value="Add"  onclick="submitForm('add')" />
+			<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')" />
+			<%
+			if (harvesterID!=null && harvesterID.length()>0){ %>
+				<input class="smallbutton" type="button" value="Get"  onclick="openHarvested('<%=attr_id%>')" /><%
+			}
+		}
+		else{
+			%>
+			<input class="smallbutton" type="button" value="Add" disabled="true"/>
 			<%
 		}
 	%>
-</table>
-</div>
-<br/>
-<%
-}
+	<table class="datatable" cellspacing="0" cellpadding="0">
+	
+		<%
+			for (int t=0; attrFields!=null && t<attrFields.size(); t++){			
+				Hashtable hash = (Hashtable)attrFields.get(t);
+				String id = (String)hash.get("id");
+				String name = (String)hash.get("name");
+				%>
+				<tr>
+					<th style="padding:0;text-align:right"><%=Util.replaceTags(name)%>:&nbsp;</th>
+					<td style="padding:0">
+						<input class="smalltext" type="text" name="<%=AttrFieldsHandler.FLD_PREFIX%><%=id%>"/>
+					</td>
+				</tr>
+				<%
+			}
+		%>
+	</table><%
+} // if (!mode.equals("view"))
 %>
-<div style="margin-left:5px">
 
-	<table cellpadding="0" cellspacing="0">
+	<table cellpadding="0" cellspacing="0" class="datatable">
 	
 		<tr>
 			<%
@@ -532,7 +521,7 @@ if (!mode.equals("view")){
 		%>	
 
 	</table>
-</div>
+
 
 <input type="hidden" name="allowToAdd" value="<%=nonInheritedCount==0%>"/>
 <input type="hidden" name="attrName" value="<%=Util.replaceTags(attrName, true)%>"/>
@@ -556,9 +545,9 @@ if (ds != null){
 	<%
 }
 %>
-															 
-</form>
 
+</form>
+</div>
 </body>
 </html>
 

@@ -369,7 +369,7 @@ public class AttributeHandler extends BaseHandler {
             return;
         
         StringBuffer buf = new StringBuffer();
-        buf.append("select distinct FXV_ID from FXV where WNER_TYPE='attr' and (");
+        buf.append("select distinct FXV_ID from FXV where OWNER_TYPE='attr' and (");
         for (int i=0; i<attr_ids.length; i++){
             if (i>0) buf.append(" or ");
             buf.append("OWNER_ID=");
