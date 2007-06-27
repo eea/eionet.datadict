@@ -43,7 +43,8 @@ private String legalizeAlert(String in){
 		request.setAttribute("DD_ERR_MSG", "Missing request parameter: parent_id");
 		request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
 		return;
-	}	
+	}
+	
 	String parent_type = request.getParameter("parent_type");
 	if (parent_type == null || parent_type.length()==0){
 		request.setAttribute("DD_ERR_MSG", "Missing request parameter: parent_type");

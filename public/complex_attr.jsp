@@ -138,7 +138,9 @@ private String legalizeAlert(String in){
 				}
 				
 				
-				if (mode.equals("delete")) redirUrl = redirUrl + "&wasdel=true";
+				if (mode.equals("delete"))
+					redirUrl = redirUrl + "&wasdel=true";
+				
 				response.sendRedirect(redirUrl);
 				return;
 			}
@@ -249,13 +251,21 @@ private String legalizeAlert(String in){
 	<%
 	
 	String backURL = "complex_attrs.jsp?parent_id=" + parent_id +
-															 "&amp;parent_type=" + parent_type +
-															 "&amp;parent_name=" + parent_name +
-															 "&amp;parent_ns=" + parent_ns +
-															 "&amp;table_id=" + table_id+
-															 "&amp;dataset_id=" + dataset_id;
-	if (ds != null)
-		backURL = backURL + "&amp;ds=" + ds;
+															 "&parent_type=" + parent_type +
+															 "&parent_name=" + parent_name +
+															 "&parent_ns=" + parent_ns +
+															 "&table_id=" + table_id+
+															 "&dataset_id=" + dataset_id;
+	String backURLEscaped = "complex_attrs.jsp?parent_id=" + parent_id +
+														 "&amp;parent_type=" + parent_type +
+														 "&amp;parent_name=" + parent_name +
+														 "&amp;parent_ns=" + parent_ns +
+														 "&amp;table_id=" + table_id+
+														 "&amp;dataset_id=" + dataset_id;
+	if (ds != null){
+		backURL = backURL + "&ds=" + ds;
+		backURLEscaped = backURLEscaped + "&amp;ds=" + ds;
+	}
 		
 	if (mode.equals("add")){
 		if (attrFields == null || attrFields.size()==0){
@@ -319,7 +329,7 @@ private String legalizeAlert(String in){
 			<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 			<%
 			if (!mode.equals("view")){ %>
-				<li><a href="javascript:window.location.replace('<%=backURL%>')">&lt; back to attributes</a></li><%
+				<li><a href="javascript:window.location.replace('<%=backURLEscaped%>')">&lt; back to attributes</a></li><%
 			}
 			if (user != null && isWorkingCopy && mode.equals("view")){ %>
 				<li><a href="javascript:goTo('edit')">Edit</a></li> <%
