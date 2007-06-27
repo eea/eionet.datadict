@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 
@@ -10,12 +10,11 @@ if (dstID==null || dstID.length()==0) throw new ServletException("Dataset ID is 
 String idf = request.getParameter("idf");
 if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier is missing!");
 %>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary</title>
-	<script language="javascript" src='script.js' type="text/javascript"></script>
-	<script language="javascript" type="text/javascript">
+	<script type="text/javascript">
 	// <![CDATA[
 	
 		function submitForm(){
@@ -53,7 +52,7 @@ However, you can upload any other types of files as well. Their type will simply
 unknown. But whatever is the type of the file you upload, it can later be downloaded.
 </p>
 				
-<form name="form1" action="DocUpload" method="post" enctype="multipart/form-data">
+<form id="form1" action="DocUpload" method="post" enctype="multipart/form-data">
 
 	<table width="660" cellspacing="0">
 		<tr>
@@ -71,7 +70,7 @@ unknown. But whatever is the type of the file you upload, it can later be downlo
 		<tr style="height:10px;"><td colspan="2"></td></tr>
 		<tr>
 			<td align="left" colspan="2">
-				<input type="button" class="mediumbuttonb" value="Upload" onclick="submitForm()"/>&#160;&#160;
+				<input type="button" class="mediumbuttonb" value="Upload" onclick="submitForm()"/>&nbsp;&nbsp;
 				<input type="reset"  class="mediumbuttonb" value="Clear"/>
 			</td>
 		</tr>

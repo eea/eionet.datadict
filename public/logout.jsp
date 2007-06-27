@@ -1,6 +1,6 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
 <%@ page import="eionet.meta.filters.EionetCASFilter" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!
 ServletContext ctx = null;
@@ -51,7 +51,7 @@ Vector commonElements=null;
 
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary - Logging out</title>
@@ -132,6 +132,7 @@ Vector commonElements=null;
 								<%=Util.replaceTags(delem_name)%>
 							</a>
 						(<%=displayType%>)
+						</td>
 					</tr>
 					<%
 				}
@@ -145,8 +146,10 @@ Vector commonElements=null;
 		This is a reminder that you have the above objects checked out.<br/>
 		To complete the logout, click the button below.
 	</p>
-	<form name="form1" action="Logout" method="get">
-		<input type="submit" value="Logout" class="smallbutton"/>
+	<form id="form1" action="Logout" method="get">
+		<div>
+			<input type="submit" value="Logout" class="smallbutton"/>
+		</div>
 	</form>
 	
 </div> <!-- workarea -->

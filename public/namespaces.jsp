@@ -64,8 +64,7 @@
 <head>
 	<%@ include file="headerinfo.jsp" %>
     <title>Data Dictionary</title>
-    <script language="javascript" src='script.js' type="text/javascript"></script>
-    <script language="javascript" type="text/javascript">
+    <script type="text/javascript">
 		// <![CDATA[
 		function submitForm(){
 			

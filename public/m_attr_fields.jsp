@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private Vector attrFields=null;%>
 
@@ -51,7 +51,7 @@ private String legalizeAlert(String in){
 			if (request.getMethod().equals("POST")){
       			if (user == null){
 	      			%>
-	      				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	      				<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	      				<body>
 	      					<h1>Error</h1><b>Not authorized to post any data!</b>
 	      				</body>
@@ -86,7 +86,7 @@ private String legalizeAlert(String in){
 					}
 					catch (Exception e){
 						%>
-						<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><body><b><%=e.toString()%></b></body></html>
+						<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body><b><%=e.toString()%></b></body></html>
 						<%
 						return;
 					}
@@ -119,13 +119,12 @@ private String legalizeAlert(String in){
 			String disabled = user == null ? "disabled" : "";
 			%>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 		<%@ include file="headerinfo.jsp" %>
 		<title>Meta</title>
-		<script language="javascript" src='script.js' type="text/javascript"></script>
-		<script language="javascript" src='dynamic_table.js' type="text/javascript"></script>
-		<script language="javascript" type="text/javascript">
+		<script type="text/javascript" src="dynamic_table.js"></script>
+		<script type="text/javascript">
 		// <![CDATA[
 			function submitForm(mode){
 					
@@ -138,6 +137,7 @@ private String legalizeAlert(String in){
 				document.forms["form1"].submit();
 			}
 			function start() {
+				alert("kala");
 				tbl_obj=new dynamic_table("tbl"); //create dynamic_table object
 			}
 	
@@ -189,11 +189,11 @@ private String legalizeAlert(String in){
 		</jsp:include>
 		<%@ include file="nmenu.jsp" %>
 		<div id="workarea">
-			<form name="form1" method="post" action="m_attr_fields.jsp">
+			<form id="form1" method="post" action="m_attr_fields.jsp">
 				<div id="operations">
 					<ul>
 						<li class="help">
-							<a target="_blank" href="help.jsp?screen=complex_attr_fields&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a>
+							<a href="help.jsp?screen=complex_attr_fields&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a>
 						</li>
 					</ul>
 				</div>
@@ -206,7 +206,7 @@ private String legalizeAlert(String in){
 						<tr>
 							<td class="small" align="left">Name:</td>
 							<td>
-								<input type="text" size="20" name="new_field"/>&#160;
+								<input type="text" size="20" name="new_field"/>&nbsp;
 								<%
 								if (user!=null){
 									%>
@@ -287,8 +287,9 @@ private String legalizeAlert(String in){
 									
 								String priority = (String)hash.get("priority");
 								String pri = (priority!=null && priority.equals(DElemAttribute.FIELD_PRIORITY_HIGH)) ? "High" : "Low";
+								String trStyle = (i%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
 								%>
-								<tr id="tr<%=id%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+								<tr id="tr<%=id%>" onclick="tbl_obj.selectRow(this);" <%=trStyle%>>
 									<%
 									if (user != null){ %>
 										<td align="right" style="padding-left:5px;padding-right:5px">
@@ -307,7 +308,7 @@ private String legalizeAlert(String in){
 									<td align="center" onmouseover="" style="padding-left:5px;padding-right:5px">
 										<%=pri%>
 									</td>
-									<td width="0" style="display:none">
+									<td style="display:none;width:0">
 										<input type="hidden" name="pos_id" value="<%=id%>" size="5"/>
 										<input type="hidden" name="oldpos_<%=id%>" value='<%=(String)hash.get("position")%>' size="5"/>
 										<input type="hidden" name="pos_<%=id%>" value="0" size="5"/>
@@ -315,18 +316,18 @@ private String legalizeAlert(String in){
 								</tr><%
 							}
 							%>
-							</tr>
 						</tbody>
 					</table>
 				</div>
 								
+				<div style="display:none">
+					<input type="hidden" name="mode" value="add"/>
+					<input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
 					
-				<input type="hidden" name="mode" value="add"/>
-				<input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
-				
-				<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
-				<input type="hidden" name="attr_name" value="<%=Util.replaceTags(attr_name, true)%>"/>
-				<input type="hidden" name="changed" value="0"/>
+					<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
+					<input type="hidden" name="attr_name" value="<%=Util.replaceTags(attr_name, true)%>"/>
+					<input type="hidden" name="changed" value="0"/>
+				</div>
 			</form>
 		</div> <!-- workarea -->
 	</div> <!-- container -->

@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,eionet.util.Util,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
@@ -28,12 +28,11 @@
 	String elmName = request.getParameter("short_name");
 	if (elmName==null || elmName.length()==0) elmName = "?";
 %>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary</title>
-	<script language="javascript" src='script.js' type="text/javascript"></script>
-	<script language="javascript" type="text/javascript">
+	<script type="text/javascript">
 	// <![CDATA[
 
 	function submitForm(){
@@ -101,7 +100,7 @@
 <div id="workarea">
 	<div id="operations">
 		<ul>
-				<li class="help"><a target="_blank" href="help.jsp?screen=import&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+				<li class="help"><a href="help.jsp?screen=import&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 		</ul>
 	</div>
 
@@ -127,21 +126,19 @@
 		}
 		%>
 				
-				<form name="Upload" action="Import" method="post" enctype="multipart/form-data">
-				
-				<input type="hidden" name="type" value="<%=mode%>"/>
+				<form id="Upload" action="Import" method="post" enctype="multipart/form-data">
 
 				<table width="auto" cellspacing="0">
 					<tr>
 						<td align="left" style="padding-right:5">
-							<input type="radio" name="fileORurl" value="file" checked="checked"/>&#160;File:</td>
+							<input type="radio" name="fileORurl" value="file" checked="checked"/>&nbsp;File:</td>
 						<td align="left">
 							<input type="file" class="smalltext" name="file_input" size="40"/>
 						</td>
 					</tr>
 					<tr>
 						<td align="left" style="padding-right:5">
-							<input type="radio" class="smalltext" name="fileORurl" value="url"/>&#160;URL:
+							<input type="radio" class="smalltext" name="fileORurl" value="url"/>&nbsp;URL:
 						</td>
 						<td align="left">
 							<input type="text" class="smalltext" name="url_input" size="52"/>
@@ -152,12 +149,16 @@
 						<td></td>
 						<td align="left">
 							<% if (user!=null){ %>									
-								<input name="SUBMIT" type="button" class="mediumbuttonb" value="Import" onclick="submitForm()" onkeypress="submitForm()"/>&#160;&#160;
+								<input name="SUBMIT" type="button" class="mediumbuttonb" value="Import" onclick="submitForm()" onkeypress="submitForm()"/>&nbsp;&nbsp;
 							<%}%>
 								<input name="RESET" type="reset" class="mediumbuttonb" value="Clear"/>
 						</td>
 					</tr>
 				</table>
+				
+				<div style="display:none">
+					<input type="hidden" name="type" value="<%=mode%>"/>
+				</div>
 			</form>	
 </div> <!-- workarea -->
 </div> <!-- container -->

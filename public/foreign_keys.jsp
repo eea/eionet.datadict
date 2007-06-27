@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private Vector elems=null;%>
 <%!private ServletContext ctx=null;%>
@@ -66,54 +67,50 @@
 		StringBuffer collect_elems = new StringBuffer();
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Meta</title>
+	<script type="text/javascript">
+	// <![CDATA[
+			function submitForm(mode){
+				
+				if (mode=="delete"){
+					var b = confirm("This will delete the foreign key relations you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
+					if (b==false) return;
+				}
+				
+				document.forms["form1"].elements["mode"].value = mode;
+				document.forms["form1"].submit();
+			}
+			
+			function openAdd(url){
+				<%				
+				String selDS = dstID;
+				if (selDS!=null){%>
+					if (url != null) url = url + "&amp;dataset=" + <%=selDS%>;<%
+				}
+				%>
+				
+				var selected = document.forms["form1"].collect_elems.value;
+				if (url != null) url = url + "&selected=" + selected;
+				
+				wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+				if (window.focus){
+					wAdd.focus();
+				}
+			}
+			
+			function pickElem(id){
+				document.forms["form1"].b_id.value=id;
+				document.forms["form1"].mode.value="add";
+				submitForm('add');
+				return true;
+			}
+			
+	// ]]>
+	</script>
 </head>
-
-<script language="javascript" src='script.js'></script>
-
-<script language="javascript">
-// <![CDATA[
-		function submitForm(mode){
-			
-			if (mode=="delete"){
-				var b = confirm("This will delete the foreign key relations you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
-				if (b==false) return;
-			}
-			
-			document.forms["form1"].elements["mode"].value = mode;
-			document.forms["form1"].submit();
-		}
-		
-		function openAdd(url){
-			<%
-			String selDS = dstID;
-			if (selDS!=null){%>
-				if (url != null) url = url + "&dataset=" + <%=selDS%>;<%
-			}
-			%>
-			
-			var selected = document.forms["form1"].collect_elems.value;
-			if (url != null) url = url + "&selected=" + selected;
-			
-			wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
-			if (window.focus){
-				wAdd.focus();
-			}
-		}
-		
-		function pickElem(id){
-			document.forms["form1"].b_id.value=id;
-			document.forms["form1"].mode.value="add";
-			submitForm('add');
-			return true;
-		}
-		
-// ]]>
-</script>
-	
 <body>
 <div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
@@ -123,15 +120,15 @@
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 
-<form acceptcharset="UTF-8" name="form1" method="POST" action="foreign_keys.jsp">
+<form accept-charset="UTF-8" id="form1" method="post" action="foreign_keys.jsp">
   <div id="operations">
     <ul>
-        <li class="help"><a target="_blank" href="help.jsp?screen=foreign_keys&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+        <li class="help"><a href="help.jsp?screen=foreign_keys&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
     </ul>
   </div>
 
 	<h1>Foreign keys associated with
-	<em><a href="data_element.jsp?mode=edit&delem_id=<%=delemID%>"><%=Util.replaceTags(delemName)%></a></em>.
+	<em><a href="data_element.jsp?mode=edit&amp;delem_id=<%=delemID%>"><%=Util.replaceTags(delemName)%></a></em>.
 </h1>
 
 	<table cellspacing="0" cellpadding="0" style="width:auto;clear:right;margin-top:20px" class="datatable">
@@ -139,7 +136,7 @@
 		<%
 		String skipTableID = request.getParameter("table_id");
 		if (skipTableID!=null)
-			skipTableID = "&skip_table_id=" + skipTableID;
+			skipTableID = "&amp;skip_table_id=" + skipTableID;
 		else
 			skipTableID = "";
 		%>
@@ -147,7 +144,7 @@
 		<tr style="padding-bottom:2" >
 			<td></td>
 			<td colspan="3">
-				<input type="button" class="smallbutton" value="Add" onclick="openAdd('search.jsp?fk=true&ctx=popup<%=skipTableID%>&noncommon')"/>
+				<input type="button" class="smallbutton" value="Add" onclick="openAdd('search.jsp?fk=true&amp;ctx=popup<%=skipTableID%>&amp;noncommon')"/>
 			</td>
 		</tr>
 
@@ -203,23 +200,23 @@
 		%>
 
 	</table>
-	
-	<input type="hidden" name="mode" value="delete"/>
-	<input type="hidden" name="delem_id" value="<%=delemID%>"/>
-	<input type="hidden" name="delem_name" value="<%=delemName%>"/>
-	<input type="hidden" name="ds_id" value="<%=dstID%>"/>
-	
-	<input type="hidden" name="a_id" value="<%=delemID%>"/>
-	<input type="hidden" name="b_id" value=""/>
-	
-	<input type="hidden" name="collect_elems" value="<%=collect_elems.toString()%>"/>
-	
-	<%
-	if (request.getParameter("table_id")!=null){ %>
-		<input type="hidden" name="table_id" value="<%=request.getParameter("table_id")%>"/><%
-	}
-	%>
+	<div style="display:none">
+		<input type="hidden" name="mode" value="delete"/>
+		<input type="hidden" name="delem_id" value="<%=delemID%>"/>
+		<input type="hidden" name="delem_name" value="<%=delemName%>"/>
+		<input type="hidden" name="ds_id" value="<%=dstID%>"/>
 		
+		<input type="hidden" name="a_id" value="<%=delemID%>"/>
+		<input type="hidden" name="b_id" value=""/>
+		
+		<input type="hidden" name="collect_elems" value="<%=collect_elems.toString()%>"/>
+		
+		<%
+		if (request.getParameter("table_id")!=null){ %>
+			<input type="hidden" name="table_id" value="<%=request.getParameter("table_id")%>"/><%
+		}
+		%>
+	</div>		
 </form>
 </div> <!-- workarea -->
 </div> <!-- container -->

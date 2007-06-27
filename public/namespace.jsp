@@ -118,8 +118,7 @@
 <head>
 	<%@ include file="headerinfo.jsp" %>
     <title>Data Dictionary</title>
-    <script language="javascript" src='script.js' type="text/javascript"></script>
-    <script language="javascript" type="text/javascript">
+    <script type="text/javascript">
 		// <![CDATA[
     
 		function submitForm(mode){
@@ -231,7 +230,7 @@
 						<%
 						if (!mode.equals("view")){
 							%>
-							&#160;(M)
+							&nbsp;(M)
 							<%
 						}
 						%>
@@ -257,7 +256,7 @@
 						<%
 						if (!mode.equals("view")){
 							%>
-							&#160;(O)
+							&nbsp;(O)
 							<%
 						}
 						%>
@@ -286,7 +285,7 @@
 						<%
 						if (!mode.equals("view")){
 							%>
-							&#160;(O)
+							&nbsp;(O)
 							<%
 						}
 						%>
@@ -315,7 +314,7 @@
 				Dataset ds = searchEngine.getDataset(namespace.getDataset());
 				String dsName = ds==null ? "" : ds.getShortName();
 				%>
-				<tr style="height:5px;"><td colspan="2">&#160;</td></tr>
+				<tr style="height:5px;"><td colspan="2">&nbsp;</td></tr>
 				<tr>
 					<td class="barfont" colspan="2">
 						<b>NB!</b><br/>This namespace was automatically created in the process of creating the
@@ -325,7 +324,7 @@
 				</tr><%
 			}
 			else if (namespace.getDataset()!=null){ %>
-				<tr style="height:5px;"><td colspan="2">&#160;</td></tr>
+				<tr style="height:5px;"><td colspan="2">&nbsp;</td></tr>
 				<tr>
 					<td class="barfont" colspan="2">
 						<b>NB!</b><br/>This namespace was automatically created in the process of creating the
@@ -346,19 +345,19 @@
 					<%
 					if (mode.equals("add")){ // if mode is "add"
 						if (user==null){ %>									
-							<input type="button" class="mediumbuttonb" value="Add" disabled="disabled"/>&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Add" disabled="disabled"/>&nbsp;&nbsp;
 						<%} else {%>
-							<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;&nbsp;
 						<% }
 					} // end if mode is "add"
 					
 					if (!mode.equals("add")){ // if mode is not "add"
 						if (user==null || !nsEditable){ %>									
-							<input type="button" class="mediumbuttonb" value="Save" disabled="disabled"/>&#160;&#160;
-							<!--input type="button" class="mediumbuttonb" value="Delete" disabled="disabled"/>&#160;&#160;-->
+							<input type="button" class="mediumbuttonb" value="Save" disabled="disabled"/>&nbsp;&nbsp;
+							<!--input type="button" class="mediumbuttonb" value="Delete" disabled="disabled"/>&nbsp;&nbsp;-->
 						<%} else {%>
-							<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&#160;&#160;
-							<!--input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')"/>&#160;&#160; -->
+							<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;&nbsp;
+							<!--input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')"/>&nbsp;&nbsp; -->
 						<% }
 					} // end if mode is not "add"
 					

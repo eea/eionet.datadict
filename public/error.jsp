@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
@@ -11,12 +11,11 @@
 	boolean isPopup = bodyClass!=null && bodyClass.equals("popup");
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Error - Data Dictionary</title>
 	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-	<script language="javascript" src='script.js' type="text/javascript"></script>
 </head>
 
 <%
@@ -44,7 +43,7 @@ else{
 }
 %>
 
-    	<form name="form1" action="index.jsp" method="get">
+    	<form id="form1" action="index.jsp" method="get">
 		
 			<%
 				String msg   = (String)request.getAttribute("DD_ERR_MSG");
@@ -72,9 +71,8 @@ else{
 			%>
 			
     		<h1>Error:</h1>
-			<p><b><%=msg%></b></p>
-			<p><b><%=trc%></b></p>
-			<input type="hidden" name="trc" value="<%=trc%>"/>
+			<p><strong><%=msg%></strong></p>
+			<p><strong><%=trc%></strong></p>
 		</form>
 </div> <!-- workarea -->
 <%

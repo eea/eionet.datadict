@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
@@ -244,12 +244,12 @@
 }	
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 		<%@ include file="headerinfo.jsp" %>
     <title>Datasets - Data Dictionary</title>
-    <script type="text/javascript" src='modal_dialog.js'></script>
-    <script type="text/javascript" language="javascript">
+    <script type="text/javascript" src="modal_dialog.js"></script>
+    <script type="text/javascript">
     // <![CDATA[
 		function setLocation(){
 			var o = document.forms["form1"].searchUrl;
@@ -259,7 +259,7 @@
 		
 		function goTo(mode){
 			if (mode == "add"){
-				document.location.assign('dataset.jsp?mode=add');
+				document.location.assign("dataset.jsp?mode=add");
 			}
 		}
     	function showSortedList(clmn,ordr) {
@@ -291,13 +291,13 @@
 
     	function deleteDatasetReady(){
 	    	document.forms["form1"].elements["mode"].value = "delete";
-	    	document.forms["form1"].elements["SearchType"].value='<%=TYPE_SEARCH%>';
+	    	document.forms["form1"].elements["SearchType"].value="<%=TYPE_SEARCH%>";
        		document.forms["form1"].submit();
     	}
     	
     	function restoreDataset(){
 	    	document.forms["form1"].elements["mode"].value = "restore";
-	    	document.forms["form1"].elements["SearchType"].value='<%=TYPE_SEARCH%>';
+	    	document.forms["form1"].elements["SearchType"].value="<%=TYPE_SEARCH%>";
        		document.forms["form1"].submit();
     	}
     	
@@ -328,7 +328,7 @@
 				
 				<div id="operations">
 				<ul>
-					<li class="help"><a target="_blank" href="help.jsp?screen=datasets&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+					<li class="help"><a href="help.jsp?screen=datasets&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 					<li><a href="search_dataset.jsp" title="Search datasets">Search</a></li>
 					<%
 					if (user!=null && user.isAuthentic() && !restore){%>
@@ -546,7 +546,7 @@
 									countCheckboxes++;
 								}
 								else if (workingUser!=null){ %>
-									<font title="<%=Util.replaceTags(workingUser,true)%>" color="red">*</font><%
+									<div title="<%=Util.replaceTags(workingUser,true)%>" style="color:red">*</div><%
 		    					}
 		    					else{ %>
 		    						&nbsp;<%
@@ -583,7 +583,7 @@
 						<td>
 							<%
 							if (clickable){ %>
-								<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
+								<img style="border:0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
 							}
 							else{ %>
 								<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=regStatus%>">
@@ -667,7 +667,7 @@
 										countCheckboxes++;
 									}
 			    					else if (oEntry.workingUser!=null){%>
-			    						<font title="<%=Util.replaceTags(oEntry.workingUser,true)%>" color="red">*</font><%
+			    						<div title="<%=Util.replaceTags(oEntry.workingUser,true)%>" style="color:red">*</div><%
 			    					}
 									else{ %>
 										&nbsp;<%
@@ -702,7 +702,7 @@
 							<td>
 								<%
 								if (oEntry.clickable){ %>
-									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.getRegStatus()%>" alt="<%=oEntry.getRegStatus()%>"/><%
+									<img style="border:0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.getRegStatus()%>" alt="<%=oEntry.getRegStatus()%>"/><%
 								}
 								else{ %>
 									<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=oEntry.getRegStatus()%>">
@@ -756,35 +756,38 @@
             }
 			%>
 		
-		<input type="hidden" name="searchUrl" value=""/>
-		<input name='SearchType' type='hidden' value='<%=TYPE_SEARCH%>'/>
-		<input type="hidden" name="mode" value="view"/>
-		<input type="hidden" name="complete" value="false"/>
-		<%
-		if (isSearchForWorkingCopies){ %>
-			<input name='wrk_copies' type='hidden' value='true'/><%
-		}
-		if (isIncludeHistoricVersions){%>
-			<input name="incl_histver" type="hidden" value="true"/><%
-		}
-		// helper hidden input so that we can disable delete button if no checkboxes were displayed
-		%>
-		<input name="count_checkboxes" type="hidden" value="<%=countCheckboxes%>"/>
-		
+			<div style="display:none">
+				<input type="hidden" name="searchUrl" value=""/>
+				<input name="SearchType" type="hidden" value="<%=TYPE_SEARCH%>"/>
+				<input type="hidden" name="mode" value="view"/>
+				<input type="hidden" name="complete" value="false"/>
+				<%
+				if (isSearchForWorkingCopies){ %>
+					<input name="wrk_copies" type="hidden" value="true"/><%
+				}
+				if (isIncludeHistoricVersions){%>
+					<input name="incl_histver" type="hidden" value="true"/><%
+				}
+				// helper hidden input so that we can disable delete button if no checkboxes were displayed
+				%>
+				<input name="count_checkboxes" type="hidden" value="<%=countCheckboxes%>"/>
+			</div>		
 		</form>
 		
-		<form name="sort_form" action="datasets.jsp" method="get">
-			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
-	        <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
-			<input name='SearchType' type='hidden' value='NoSearch'/>
-			<%
-			if (isSearchForWorkingCopies){ %>
-				<input name='wrk_copies' type='hidden' value='true'/><%
-			}
-			if (isIncludeHistoricVersions){%>
-				<input name="incl_histver" type="hidden" value="true"/><%
-			}
-			%>
+		<form id="sort_form" action="datasets.jsp" method="get">
+			<div style="display:none">
+				<input name="sort_column" type="hidden" value="<%=(oSortCol==null)? "":oSortCol.toString()%>"/>
+		        <input name="sort_order" type="hidden" value="<%=(oSortOrder==null)? "":oSortOrder.toString()%>"/>
+				<input name="SearchType" type="hidden" value="NoSearch"/>
+				<%
+				if (isSearchForWorkingCopies){ %>
+					<input name="wrk_copies" type="hidden" value="true"/><%
+				}
+				if (isIncludeHistoricVersions){%>
+					<input name="incl_histver" type="hidden" value="true"/><%
+				}
+				%>
+			</div>
 		</form>
 		
 </div> <!-- workarea -->

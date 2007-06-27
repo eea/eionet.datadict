@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
 
@@ -212,16 +212,15 @@
 <%
 // start HTML //////////////////////////////////////////////////////////////
 %>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Meta</title>
 
-<script language="javascript" src='script.js' type="text/javascript"></script>
-<script language="javascript" src='dynamic_table.js' type="text/javascript"></script>
-<script language="javascript" src='modal_dialog.js' type="text/javascript"></script>
+<script src="dynamic_table.js" type="text/javascript"></script>
+<script src="modal_dialog.js" type="text/javascript"></script>
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 // <![CDATA[
 		function submitForm(mode){
 			
@@ -431,12 +430,12 @@
     <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 			
-<form name="form1" method="post" action="tblelems.jsp">
+<form id="form1" method="post" action="tblelems.jsp">
 
 	<!-- page title & the add new part -->
 	<div id="operations">
 		<ul>
-			<li class="help"><a target="_blank" href="help.jsp?screen=table_elements&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+			<li class="help"><a href="help.jsp?screen=table_elements&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 		</ul>
 	</div>
 	<h1>
@@ -462,8 +461,8 @@
 			<tr>
 				<td align="right"><label for="idfier">Identifier:</label></td>
 				<td align="right">
-					<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-						<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+					<a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+						<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 					</a>
 				</td>
 				<td style="padding-left:5px">
@@ -475,8 +474,7 @@
 				</td>
 				<td align="right">
 					<input type="button" class="smallbutton" value="Copy" onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
-									title="Copies data element attributes from existing data element"
-						   title="Define a new element into this table by copying an existing element in some other table, give it the Identifier on the left."/>
+									title="Copies data element attributes from existing data element"/>
 				</td>
 				<td align="right">
 					<input type="button" class="smallbutton" value="Link" onclick="linkElem()"
@@ -486,8 +484,8 @@
 			<tr>
 				<td align="right"><label for="elemtype">Type:</label></td>
 				<td>
-					<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
-						<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+					<a href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
+						<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 					</a>
 				</td>
 				<td style="padding-left:5px" colspan="4">
@@ -505,12 +503,12 @@
 	<!-- the first column contains the table of elements,      -->
 	<!-- the second one contains the ordering buttons          -->
 	
-	<table width="500" cellspacing="0"  border="0">
+	<table width="500" cellspacing="0"  style="border:0">
 		<tr>
 		
 			<!-- table of elements -->
 			
-			<td width="90%">
+			<td style="width:90%">
 				<table width="100%" cellspacing="0" id="tbl" class="datatable">
 				
 					<thead>
@@ -543,8 +541,8 @@
 						if (hasGIS){ %>
 							<th scope="col" class="scope-col">
 								GIS
-								<a target="_blank" href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
-									<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+								<a href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
+									<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 								</a>
 							</th><%
 						}
@@ -604,11 +602,13 @@
 							hasForeignKeys = true;
 						if (elmCommon)
 							hasCommonElms = true;
+							
+						String trStyle = (i%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
 					%>
 						
 						<!-- element row -->
 						
-						<tr id="tr<%=elem.getID()%>" onclick="tbl_obj.selectRow(this);" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+						<tr id="tr<%=elem.getID()%>" onclick="tbl_obj.selectRow(this);">
 		
 							<td style="text-align: right; padding-right:10px">
 								<%
@@ -687,28 +687,28 @@
 					%>
 					
 					<tr style="height:10px;">
-						<td width="100%" colspan="<%=String.valueOf(colCount)%>"></td>
+						<td style="width:100%" colspan="<%=String.valueOf(colCount)%>"></td>
 					</tr>
 					
 					<%
 					// explanations about red asterisks, fks and c-signs
 					if (false){%>
 						<tr style="height:10px;">
-							<td width="100%" style="font-size: 70%" colspan="<%=String.valueOf(colCount)%>">
+							<td style="font-size:70%;width:100%" colspan="<%=String.valueOf(colCount)%>">
 								(a red wildcard stands for checked-out element)
 							</td>
 						</tr><%
 					}
 					if (user!=null && elems!=null && elems.size()>0 && hasForeignKeys){%>
 						<tr style="height:10px;">
-							<td width="100%" style="font-size: 70%" colspan="<%=String.valueOf(colCount)%>">
-								(the <u><b><i>(FK)</i></b></u> link indicates the element participating in a foreign key relation)
+							<td style="font-size:70%;width:100%" colspan="<%=String.valueOf(colCount)%>">
+								(the <em><strong style="text-decoration:underline">(FK)</strong></em> link indicates the element participating in a foreign key relation)
 							</td>
 						</tr><%
 					}
 					if (elems!=null && elems.size()>0 && hasCommonElms){%>
 						<tr style="height:10px;">
-							<td width="100%" style="font-size: 70%" colspan="<%=String.valueOf(colCount)%>">
+							<td style="font-size:70%;width:100%" colspan="<%=String.valueOf(colCount)%>">
 								(the <span class="commonelm"><sup>C</sup></span> sign marks a common element)
 							</td>
 						</tr><%
@@ -723,16 +723,16 @@
 			
 			<%
 			if (elems.size()>1 && editDstPrm){ %>
-				<td width="10%" style="text-align: left; padding-right:10px" valign="middle" height="10">
-					<table cellspacing="2" cellpadding="2" border="0">
+				<td style="text-align:left;padding-right:10px;vertical-align:middle;height:10px;width:10%">
+					<table cellspacing="2" cellpadding="2" style="border:0">
 						<tr>
 							<td>
-								<a href="javascript:moveFirst()"><img src="images/move_first.gif" border="0" alt="" title="move selected row to top"/></a>
+								<a href="javascript:moveFirst()"><img src="images/move_first.gif" style="border:0" alt="" title="move selected row to top"/></a>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<a href="javascript:moveRowUp()"><img src="images/move_up.gif" border="0" alt="" title="move selected row up"/></a>
+								<a href="javascript:moveRowUp()"><img src="images/move_up.gif" style="border:0" alt="" title="move selected row up"/></a>
 							</td>
 						</tr>
 						<tr>
@@ -742,12 +742,12 @@
 						</tr>
 						<tr>
 							<td>
-								<a href="javascript:moveRowDown()"><img alt="" src="images/move_down.gif" border="0" title="move selected row down"/></a>			
+								<a href="javascript:moveRowDown()"><img alt="" src="images/move_down.gif" style="border:0" title="move selected row down"/></a>			
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<a href="javascript:moveLast()"><img alt="" src="images/move_last.gif" border="0" title="move selected row last"/></a>			
+								<a href="javascript:moveLast()"><img alt="" src="images/move_last.gif" style="border:0" title="move selected row last"/></a>			
 							</td>
 						</tr>
 					</table>					
@@ -767,25 +767,28 @@
 		</p><%
 	}
 	%>
-		
-	<input type="hidden" name="mode" value="delete"/>
-	<input type="hidden" name="ds_id" value="<%=dsID%>"/>
-	<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName, true)%>"/>
-	<input type="hidden" name="table_id" value="<%=tableID%>"/>
-	<input type="hidden" name="changed" value="0"/>
-	<input type="hidden" name="copy_elem_id" value=""/>
-	<input type="hidden" name="upd_version" value="false"/>
-	<input type="hidden" name="str_elem_ids" value="<%=strElemIDs%>">
 	
+	<div style="display:none">	
+		<input type="hidden" name="mode" value="delete"/>
+		<input type="hidden" name="ds_id" value="<%=dsID%>"/>
+		<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName, true)%>"/>
+		<input type="hidden" name="table_id" value="<%=tableID%>"/>
+		<input type="hidden" name="changed" value="0"/>
+		<input type="hidden" name="copy_elem_id" value=""/>
+		<input type="hidden" name="upd_version" value="false"/>
+		<input type="hidden" name="str_elem_ids" value="<%=strElemIDs%>"/>
+	</div>	
 </form>
 
-<form name="common_elm_link_form" method="post" action="tblelems.jsp">
-	<input type="hidden" name="link_elm" value=""/>
-	<input type="hidden" name="mode" value="add"/>
-	<input type="hidden" name="table_id" value="<%=tableID%>"/>
-	<input type="hidden" name="ds_id" value="<%=dsID%>"/>
-	<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName, true)%>"/>
-	<input type="hidden" name="elmpos" value="<%=maxPos+1%>"/>
+<form id="common_elm_link_form" method="post" action="tblelems.jsp">
+	<div style="display:none">
+		<input type="hidden" name="link_elm" value=""/>
+		<input type="hidden" name="mode" value="add"/>
+		<input type="hidden" name="table_id" value="<%=tableID%>"/>
+		<input type="hidden" name="ds_id" value="<%=dsID%>"/>
+		<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName, true)%>"/>
+		<input type="hidden" name="elmpos" value="<%=maxPos+1%>"/>
+	</div>
 </form>
 
 </div> <!-- workarea -->

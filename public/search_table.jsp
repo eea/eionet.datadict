@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,com.tee.xmlserver.*,eionet.util.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!final static String POPUP="popup";%>
 
@@ -122,11 +122,11 @@ private String setDefaultAttrs(String name){
 
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Search tables - Data Dictionary</title>
-	<script type="text/javascript" language="javascript">
+	<script type="text/javascript">
 	// <![CDATA[
 		attrWindow=null;
 
@@ -207,20 +207,20 @@ else {
 	  	  		<li><a href="javascript:window.close();">Close</a></li><%
 		  		}
 		  		%>
-	      	<li class="help"><a target="_blank" href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+	      	<li class="help"><a href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 	  </ul>
 	</div>
 	<h1>Search tables</h1>
-		<form name="form1" action="search_results_tbl.jsp" method="get">
+		<form id="form1" action="search_results_tbl.jsp" method="get">
 
 				<table width="auto" cellspacing="0" style="margin-top:10px">
-					<tr valign="top">
+					<tr style="vertical-align:top">
 						<td align="right" style="padding-right:10">
 							<b>Short name</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+							<a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+								<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -228,13 +228,13 @@ else {
 						</td>
 					</tr>
 					
-					<tr valign="top">
+					<tr style="vertical-align:top">
 						<td align="right" style="padding-right:10">
 							<b>Identifier</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+							<a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+								<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -244,8 +244,8 @@ else {
 
 					<!--tr align="top">
 						<td align="right" style="padding-right:10">
-							<a href="javascript:openFulltName()"><span class="help">?</span></a>&#160;
-							<span class="mainfont"><b>Full name</b></span>&#160;&#160;
+							<a href="javascript:openFulltName()"><span class="help">?</span></a>&nbsp;
+							<span class="mainfont"><b>Full name</b></span>&nbsp;&nbsp;
 						</td>
 						<td colspan="2">
 							<input type="text" class="smalltext" size="40" name="full_name" value="<%=full_name%>"/>
@@ -253,8 +253,8 @@ else {
 					</tr>
 					<tr align="top">
 						<td align="right" style="padding-right:10">
-							<a href="javascript:openDefinition()"><span class="help">?</span></a>&#160;
-							<span class="mainfont"><b>Definition</b></span>&#160;&#160;
+							<a href="javascript:openDefinition()"><span class="help">?</span></a>&nbsp;
+							<span class="mainfont"><b>Definition</b></span>&nbsp;&nbsp;
 						</td>
 						<td colspan="2">
 							<input type="text" class="smalltext" size="40" name="definition" value="<%=definition%>"/>
@@ -275,13 +275,13 @@ else {
 							if (attrID!=null){
 								collect_attrs.append(attrID + "|");
 								%>
-								<tr valign="top">
+								<tr style="vertical-align:top">
 									<td align="right" style="padding-right:10">
 										<b><%=Util.replaceTags(attrName)%></b>
 									</td>
 									<td>
-										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-											<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+										<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+											<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 										</a>
 									</td>
 									<td colspan="2">
@@ -306,20 +306,20 @@ else {
 							if (attrValue == null) attrValue="";
 							collect_attrs.append(attrID + "|");
 							%>
-							<tr valign="top">
+							<tr style="vertical-align:top">
 								<td align="right" style="padding-right:10">
 									<b><%=Util.replaceTags(attrName)%></b>
 								</td>
 								<td>
-									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-										<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+									<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+										<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 									</a>
 								</td>
 								<td>
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.replaceTags(attrValue, true)%>"/>
 								</td>
 								<td>
-									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
+									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
 								</td>
 							</tr>
 							<%
@@ -332,20 +332,20 @@ else {
 							collect_attrs.append(attrID + "|");
 							attrName = getAttributeNameById(attrID);
 							%>
-							<tr valign="top">
+							<tr style="vertical-align:top">
 								<td align="right" style="padding-right:10">
 									<b><%=Util.replaceTags(attrName)%></b>
 								</td>
 								<td>
-										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-											<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+										<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+											<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 										</a>
 									</td>
 								<td>
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
 								</td>
 								<td>
-									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
+									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
 								</td>
 							</tr>
 							<%
@@ -354,11 +354,11 @@ else {
 					%>
 					
                     <tr valign="bottom">
-                		<td width="150" colspan="2">&#160;</td>
+                		<td style="width:150px" colspan="2">&nbsp;</td>
                     	<td colspan="2">
                 			<input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked"/><label for="ssubstr">Substring search</label>
-                			<input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>&#160;&#160;
-                			<input type="radio" name="search_precision" id="sfree" value="free"/><label for="sfree">Free text search</label>&#160;&#160;
+                			<input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>&nbsp;&nbsp;
+                			<input type="radio" name="search_precision" id="sfree" value="free"/><label for="sfree">Free text search</label>&nbsp;&nbsp;
                 		</td>
                     </tr>
                     
@@ -366,8 +366,8 @@ else {
 					// if authenticated user, enable to get working copies only
 					if (user!=null && user.isAuthentic()){
 						%>
-						<tr valign="top">
-							<td width="150" colspan="2"></td>
+						<tr style="vertical-align:top">
+							<td style="width:150px" colspan="2"></td>
 							<td colspan="2">
 								<input type="checkbox" name="wrk_copies" value="true"/><span class="smallfont" style="font-weight: normal">Working copies only</span>
 							</td>
@@ -378,7 +378,7 @@ else {
 					
 					<tr style="height:10px;"><td colspan="4"></td></tr>
 					
-					<tr valign="top">
+					<tr style="vertical-align:top">
 						<td colspan="2"></td>
 						<td>
 							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('<%=submitForm%>')"/>
@@ -388,7 +388,7 @@ else {
 							<%
 							if (contextParam == null || !contextParam.equals(POPUP)){%>
 								<a href="javascript:openAttributes();">
-									<img src="images/button_plus.gif" border="0" alt="Click here to add more search criterias"/>
+									<img src="images/button_plus.gif" style="border:0" alt="Click here to add more search criterias"/>
 								</a>&nbsp;Add criteria<%
 							}
 							%>
@@ -396,12 +396,14 @@ else {
 					</tr>
 				</table>
 
-				<input type="hidden" name="sel_attr" value=""/>			
-				<input type="hidden" name="sel_type" value=""/>
-				<input type="hidden" name="type" value="TBL"/>
-                <input name='SearchType' type='hidden' value='SEARCH'/>
-				<!-- collect all the attributes already used in criterias -->
-				<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
+					<div style="display:none">
+						<input type="hidden" name="sel_attr" value=""/>			
+						<input type="hidden" name="sel_type" value=""/>
+						<input type="hidden" name="type" value="TBL"/>
+		                <input name='SearchType' type='hidden' value='SEARCH'/>
+						<!-- collect all the attributes already used in criterias -->
+						<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
+					</div>
 				</form>
 			</div> <!-- workarea -->
 		<%

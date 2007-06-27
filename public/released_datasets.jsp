@@ -20,17 +20,17 @@ Vector releasedDatasets = (Vector)request.getAttribute("rlsd_datasets");
 			date = date==null ? "" : eionet.util.Util.releasedDate(Long.parseLong(date));
 			%>
 			<tr>				
-				<td width="70%" valign="top" align="left">
+				<td style="width:70%;vertical-align:top">
 					<a href="dataset.jsp?mode=view&amp;ds_id=<%=dst.getID()%>">
 						<%=Util.replaceTags(name)%>
 					</a>
 				</td>
-				<td width="23%" valign="top" align="left">
+				<td style="width:23%;vertical-align:top">
 					<%=date%>
 				</td>
-				<td width="7%" valign="top" align="center">
+				<td style="width:7%;vertical-align:top;text-align:center">
 					<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=dst.getID()%>&amp;out_type=GDLN">
-						<img src="images/icon_pdf.jpg" border="0" width="17" height="18" alt="PDF" />
+						<img src="images/icon_pdf.jpg" style="border:0" width="17" height="18" alt="PDF" title="Definition as a PDF file"/>
 					</a>
 				</td>
 			</tr>
@@ -40,7 +40,7 @@ Vector releasedDatasets = (Vector)request.getAttribute("rlsd_datasets");
 		if (releasedDatasets.size()==0){
 			%>
 			<tr>
-				<td width="100%" valign="top" align="left" colspan="3">
+				<td style="width:100%;vertical-align:top" colspan="3">
 					No released dataset definitions found at the moment!
 				</td>
 			</tr>
@@ -49,7 +49,7 @@ Vector releasedDatasets = (Vector)request.getAttribute("rlsd_datasets");
 		else{
 			%>
 			<tr>
-				<td width="100%" valign="top" align="right" colspan="3">
+				<td style="width:100%;vertical-align:top;text-align:right" colspan="3">
 					[<a href="datasets.jsp?SearchType=SEARCH">More...</a>]
 				</td>
 			</tr>

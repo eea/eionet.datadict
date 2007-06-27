@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
 
@@ -115,12 +115,11 @@
 // start HTML //////////////////////////////////////////////////////////////
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Meta</title>
-	<script language="javascript" src='script.js' type="text/javascript"></script>
-	<script language="javascript" type="text/javascript">
+	<script type="text/javascript">
 	// <![CDATA[
 			function submitForm(mode){
 				
@@ -143,10 +142,10 @@
 </jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<form name="form1" method="post" action="dstables.jsp">
+<form id="form1" method="post" action="dstables.jsp">
 	<div id="operations">
 		<ul>
-			<li class="help"><a target="_blank" href="help.jsp?screen=dataset_tables&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+			<li class="help"><a href="help.jsp?screen=dataset_tables&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 		</ul>
 	</div>
 
@@ -154,7 +153,7 @@
 		Tables in <em><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dataset.getShortName())%></a></em> dataset
 	</h1>
 		
-	<table width="auto" cellspacing="0" style="margin-top:20px">
+	<table class="datatable" cellspacing="0" style="margin-top:20px;width:auto;border:0">
 	
 		<tr>
 			<%
@@ -202,8 +201,9 @@
 			tblName = tblName.length()>40 && tblName != null ? tblName.substring(0,40) + " ..." : tblName;
 			String tblFullDef = tblDef;
 			tblDef = tblDef.length()>40 && tblDef != null ? tblDef.substring(0,40) + " ..." : tblDef;
+			String trStyle = (i % 2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
 			%>
-			<tr>
+			<tr <%=trStyle%>>
 				<td align="right" style="padding-right:10px">
 					<%
 					if (editPrm){
@@ -212,13 +212,13 @@
 					}
 					%>				
 				</td>
-				<td align="left" style="padding-left:5px;padding-right:10px" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+				<td align="left" style="padding-left:5px;padding-right:10px">
 					<a href="<%=tableLink%>"><%=Util.replaceTags(tblName)%></a>
 				</td>
-				<td align="left" style="padding-right:10px" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullName, true)%>">
+				<td align="left" style="padding-right:10px" title="<%=Util.replaceTags(tblFullName, true)%>">
 					<%=Util.replaceTags(table.getShortName())%>
 				</td>
-				<td align="left" style="padding-right:10px" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> title="<%=Util.replaceTags(tblFullDef, true)%>">
+				<td align="left" style="padding-right:10px" title="<%=Util.replaceTags(tblFullDef, true)%>">
 					<%=Util.replaceTags(tblDef)%>
 					<input type="hidden" name="mode" value="delete"/>
 					<input type="hidden" name="ds_id" value="<%=dsID%>"/>

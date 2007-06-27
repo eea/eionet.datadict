@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,java.util.*,java.io.*,com.tee.xmlserver.*,eionet.util.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
@@ -64,12 +64,11 @@
 		Vector attrs = searchEngine.getSimpleAttributes(objID, objType);
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary</title>
-	<script language="javascript" src='script.js' type="text/javascript"></script>
-	<script language="javascript" type="text/javascript">
+	<script type="text/javascript">
 	// <![CDATA[
 
 	function submitForm(mode){
@@ -146,7 +145,7 @@
 </div>	
 <div id="workarea" style="clear:right;">
 
-<form name="Upload" action="ImgUpload" method="post" enctype="multipart/form-data">
+<form id="Upload" action="ImgUpload" method="post" enctype="multipart/form-data">
 
 	<h1>
 		<%=Util.replaceTags(attrName)%> of <a href="<%=Util.replaceTags(titleLink, true)%>"><%=Util.replaceTags(objName, true)%></a> <%=Util.replaceTags(titleType)%>
@@ -203,7 +202,7 @@
 							<img src="visuals/<%=Util.replaceTags(value, true)%>"/>
 						</td>
 					</tr>
-					<tr height="10"><td colspan="2">&#160;</td></tr> <%
+					<tr height="10"><td colspan="2">&nbsp;</td></tr> <%
 					displayed++;
 				}
 			}
@@ -224,14 +223,15 @@
 		
 	</table>
 	
-	<input type="hidden" name="obj_id" value="<%=objID%>"/>
-	<input type="hidden" name="obj_type" value="<%=objType%>"/>
-	<input type="hidden" name="attr_id" value="<%=attrID%>"/>
-	
-	<input type="hidden" name="mode" value="add"/>
-	
-	<input type="hidden" name="redir_url" value="imgattr.jsp?<%=Util.replaceTags(request.getQueryString(), true)%>"/>
-	
+	<div style="display:none">
+		<input type="hidden" name="obj_id" value="<%=objID%>"/>
+		<input type="hidden" name="obj_type" value="<%=objType%>"/>
+		<input type="hidden" name="attr_id" value="<%=attrID%>"/>
+		
+		<input type="hidden" name="mode" value="add"/>
+		
+		<input type="hidden" name="redir_url" value="imgattr.jsp?<%=Util.replaceTags(request.getQueryString(), true)%>"/>
+	</div>	
 </form>
 </div> <!-- workarea -->
 </body>

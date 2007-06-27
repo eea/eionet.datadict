@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!static int iPageLen=0;%>
@@ -209,7 +209,7 @@
 
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Search results - Data Dictionary</title>
@@ -315,7 +315,7 @@ else{ %>
             			<li><a href="javascript:window.close();">Close</a></li><%
         			}
         			%>
-            		<li class="help"><a target="_blank" href="help.jsp?screen=elements&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+            		<li class="help"><a href="help.jsp?screen=elements&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
             	</ul>
             </div>
             
@@ -525,7 +525,7 @@ else{ %>
 						<td>
 							<%
 							if (clickable){ %>
-								<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=dstRegStatus%>" alt="<%=dstRegStatus%>"/><%
+								<img style="border:0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=dstRegStatus%>" alt="<%=dstRegStatus%>"/><%
 							}
 							else{ %>
 								<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=dstRegStatus%>">
@@ -599,7 +599,7 @@ else{ %>
 							<td>
 								<%
 								if (oEntry.clickable){ %>
-									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.dstRegStatus%>" alt="<%=oEntry.dstRegStatus%>"/><%
+									<img style="border:0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.dstRegStatus%>" alt="<%=oEntry.dstRegStatus%>"/><%
 								}
 								else{ %>
 									<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=oEntry.dstRegStatus%>">
@@ -620,31 +620,33 @@ else{ %>
 
             }
 			%>
-		
-		<input type="hidden" name="searchUrl" />
-		<input name="SearchType" type="hidden" value="<%=TYPE_SEARCH%>"/>
-		<input type="hidden" name="mode" value="view"/>
-		
-		<%
-		if (isIncludeHistoricVersions){%>
-			<input name="incl_histver" type="hidden" value="true"/><%
-		}
-		%>
-
+			<div style="display:none">
+				<input type="hidden" name="searchUrl" />
+				<input name="SearchType" type="hidden" value="<%=TYPE_SEARCH%>"/>
+				<input type="hidden" name="mode" value="view"/>
+				
+				<%
+				if (isIncludeHistoricVersions){%>
+					<input name="incl_histver" type="hidden" value="true"/><%
+				}
+				%>
+			</div>
 		</form>
 		
-		<form name="sort_form" action="search_results.jsp" method="get">
-			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
-        	<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
-			<input name='SearchType' type='hidden' value='NoSearch'/>
-			<%
-			if (popup){ %>
-				<input type='hidden' name='ctx' value='popup'/><%
-			}
-			if (isIncludeHistoricVersions){%>
-				<input name="incl_histver" type="hidden" value="true"/><%
-			}
-			%>
+		<form id="sort_form" action="search_results.jsp" method="get">
+			<div style="display:none">
+				<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
+	        	<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
+				<input name='SearchType' type='hidden' value='NoSearch'/>
+				<%
+				if (popup){ %>
+					<input type='hidden' name='ctx' value='popup'/><%
+				}
+				if (isIncludeHistoricVersions){%>
+					<input name="incl_histver" type="hidden" value="true"/><%
+				}
+				%>
+			</div>
 		</form>
 	</div> <!-- workarea -->
 	<%

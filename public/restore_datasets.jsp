@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
@@ -229,7 +229,7 @@
 
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Restore datasets - Data Dictionary</title>
@@ -340,7 +340,7 @@
     	
 		<div id="operations">
         	<ul>
-        		<li class="help"><a target="_blank" href="help.jsp?screen=restore_datasets&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+        		<li class="help"><a href="help.jsp?screen=restore_datasets&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
         	</ul>
 		</div>
 
@@ -374,8 +374,8 @@
 		
 			<thead>
 			<tr>
-				<th width="3%">&nbsp;</th>
-				<th width="30%" style="border-left: 0">
+				<th style="width:3%">&nbsp;</th>
+				<th style="width:30%;border-left:0">
 					<%
 					String sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 					String sortedLink = getSortedLink(1, oSortCol, oSortOrder);
@@ -385,10 +385,10 @@
 					</a>
 				</th>
 				<!--th width="20%">Version</th-->
-				<th width="10%">
+				<th style="width:10%">
 					CheckInNo
 				</th>
-				<th width="47%">
+				<th style="width:47%">
 					Tables
 				</th>
 			</tr>
@@ -464,7 +464,7 @@
 				
 					<tr valign="top" class="<%=zebraClass%>">
 					
-						<td width="3%" align="right">
+						<td style="width:3%;text-align:right">
 							<%
 		    				if (delPrm){
 		    					
@@ -481,15 +481,15 @@
 							%>
 						</td>
 						
-						<td width="30%" title="<%=Util.replaceTags(dsFullName, true)%>">
+						<td style="width:30%" title="<%=Util.replaceTags(dsFullName, true)%>">
 							<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;out_type=GDLN&amp;obj_id=<%=dataset.getID()%>">
 								<%=Util.replaceTags(dsFullName)%>
 							</a>
 						</td>					
-						<td width="20%">
+						<td style="width:20%">
 							<%=dsVersion%>
 						</td>
-						<td width="47%" style="border-right: 1px solid #C0C0C0">
+						<td style="border-right: 1px solid #C0C0C0;width:47%">
 							<%
 							for (int c=0; tables!=null && c<tables.size(); c++){
 				
@@ -501,7 +501,7 @@
 									<%=Util.replaceTags(table.getShortName())%>
 								<%
 								if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
-									%>&#160;<font color="red">*</font> <%
+									%>&nbsp;<font color="red">*</font> <%
 								}
 								%>
 								<br/><%
@@ -538,24 +538,24 @@
 							if (oEntry.getDelPrm()){
 								wasDelPrm = true;
 								%>
-								<td width="3%" align="right">
+								<td style="width:3%;text-align:right">
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>"/>
 									<input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier, true)%>"/>
 								</td> <%
 							}
 							%>
 							
-							<td width="30%" title="<%=Util.replaceTags(oEntry.oFullName, true)%>">
+							<td style="width:30%" title="<%=Util.replaceTags(oEntry.oFullName, true)%>">
 								<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;out_type=GDLN&amp;obj_id=<%=oEntry.oID%>">
 									<%=Util.replaceTags(oEntry.oFName)%>
 								</a>
 							</td>
 							
-							<td width="20%">
+							<td style="width:20%">
 								<%=oEntry.oVersion%>
 							</td>
 							
-							<td width="47%" style="border-right: 1px solid #C0C0C0">
+							<td style="border-right: 1px solid #C0C0C0;width:47%">
 								<%
 								Vector tables = oEntry.oTables;
 								for (int c=0; tables!=null && c<tables.size(); c++){
@@ -580,17 +580,16 @@
             }
 			%>
 		
-		<input name="was_del_prm" type="hidden" value="<%=wasDelPrm%>"/>
-		<input type="hidden" name="searchUrl" value=""/>
-        <input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
-        <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
-		<input name='SearchType' type='hidden' value='NoSearch'/>
-		
-		<input type="hidden" name="mode" value="view"/>
-		
-		<!-- Special input for 'delete' mode only. Inidcates if dataset(s) should be deleted completely. -->
-		<input type="hidden" name="complete" value="true"/>
-		
+			<div style="display:none">
+				<input type="hidden" name="was_del_prm" value="<%=wasDelPrm%>"/>
+				<input type="hidden" name="searchUrl" value=""/>
+		        <input type="hidden" name="sort_column" value="<%=(oSortCol==null)? "":oSortCol.toString()%>"/>
+		        <input type="hidden" name="sort_order" value="<%=(oSortOrder==null)? "":oSortOrder.toString()%>"/>
+				<input type="hidden" name="SearchType" value="NoSearch"/>
+				<input type="hidden" name="mode" value="view"/>	
+				<!-- Special input for 'delete' mode only. Inidcates if dataset(s) should be deleted completely. -->
+				<input type="hidden" name="complete" value="true"/>
+			</div>		
 		</form>
 		
 		</div> <!-- workarea -->

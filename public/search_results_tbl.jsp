@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!final static String TYPE_SEARCH="SEARCH";%>
@@ -129,11 +129,11 @@
 	boolean wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;	
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Tables - Data Dictionary</title>
-	<script type="text/javascript" language="javascript">
+	<script type="text/javascript">
 	// <![CDATA[
 
 		function setLocation(){
@@ -172,7 +172,7 @@
 				
 				<div id="operations">
 					<ul>
-					<li class="help"><a target="_blank" href="help.jsp?screen=tables&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+					<li class="help"><a href="help.jsp?screen=tables&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 					<li><a href="search_table.jsp">Search</a></li>
 					</ul>
 				</div>
@@ -342,7 +342,7 @@
 						String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 						String regStatus = table.getDstStatus();
 						boolean clickable = regStatus!=null ? !searchEngine.skipByRegStatus(regStatus) : true;
-						String strDisabled = clickable ? "" : " disabled=\"disabled\"";
+						String strDisabled = clickable ? "" : " class=\"disabled\"";
 						String statusImg   = "images/" + Util.getStatusImage(regStatus);
 						String statusTxt   = Util.getStatusRadics(regStatus);
 
@@ -360,7 +360,7 @@
 							<%
 							// 1st column, table full name
 							%>
-		    				<td<%=strDisabled%>>
+		    				<td <%=strDisabled%>>
 		    					<%
 		    					if (clickable){%>
 									<a href="<%=tableLink%>">
@@ -386,7 +386,7 @@
 								<%
 								// mark checked-out datasets
 								if (user!=null && workingUser!=null){ %>
-									<font title="<%=workingUser%>" color="red">*</font><%
+									<div title="<%=workingUser%>" style="color:red">*</div><%
 			    				}
 			    				%>
 							</td>
@@ -396,7 +396,7 @@
 							<td>
 								<%
 								if (clickable){ %>
-									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
+									<img style="border:0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
 								}
 								else{ %>
 									<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=regStatus%>">
@@ -433,7 +433,7 @@
                     for (int i=0;i<oResultSet.oElements.size();i++){
 	                    
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
-                        String strDisabled = oEntry.clickable ? "" : " disabled=\"disabled\"";
+                        String strDisabled = oEntry.clickable ? "" : " class=\"disabled\"";
                         String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
                         tableLink = "dstable.jsp?mode=view&amp;table_id=" + oEntry.oID + "&amp;ds_id=" + oEntry.oDsID + "&amp;ds_name=" + oEntry.oDsName;
                         String statusImg   = "images/" + Util.getStatusImage(oEntry.regStatus);
@@ -470,7 +470,7 @@
 								<%
 								// mark checked-out datasets
 								if (user!=null && oEntry.workingUser!=null){ %>
-									<font title="<%=oEntry.workingUser%>" color="red">*</font><%
+									<div title="<%=oEntry.workingUser%>" style="color:red">*</div><%
 			    				}
 			    				%>
 							</td>
@@ -480,7 +480,7 @@
 							<td>
 								<%
 								if (oEntry.clickable){ %>
-									<img border="0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.regStatus%>" alt="<%=oEntry.regStatus%>"/><%
+									<img style="border:0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.regStatus%>" alt="<%=oEntry.regStatus%>"/><%
 								}
 								else{ %>
 									<span style="color:gray;text-decoration:none;font-size:8pt" title="<%=oEntry.regStatus%>">
@@ -499,18 +499,18 @@
             	}
 			}
 			%>
-		
-		<input type="hidden" name="searchUrl" value=""/>
-		<input type='hidden' name='SearchType' value='<%=TYPE_SEARCH%>'/>
-
-		<!--   Page footer  -->
-
+			<div style="display:none">
+				<input type="hidden" name="searchUrl" value=""/>
+				<input type='hidden' name='SearchType' value='<%=TYPE_SEARCH%>'/>
+			</div>
 		</form>
 		
-		<form name="sort_form" action="search_results_tbl.jsp" method="get">
-			<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
-			<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
-			<input name='SearchType' type='hidden' value='NoSearch'/>
+		<form id="sort_form" action="search_results_tbl.jsp" method="get">
+			<div style="display:none">
+				<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
+				<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
+				<input name='SearchType' type='hidden' value='NoSearch'/>
+			</div>
 		</form>
 		
 			</div> <!-- workarea -->

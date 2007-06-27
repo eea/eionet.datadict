@@ -4,7 +4,7 @@
 Vector links = (Vector)request.getAttribute("quicklinks");
 if (links!=null && links.size()>0){
 	%>
-		<div id="quickbar">
+		<div id="quickbar" style="clear:right">
 						<b>Quick links</b><%
 						
 						for (int i=0; i<links.size(); i++){

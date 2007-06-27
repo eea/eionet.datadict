@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final int MAX_CELL_LEN=70;%>
 
@@ -200,7 +200,7 @@
 		String strFormDisabled = isBooleanDatatype ? "disabled=\"disabled\"" : "";
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary - Fixed values</title>
@@ -253,7 +253,7 @@
 		
 		function selectAll(){
 			
-			var checks = document.form1.del_id;
+			var checks = document.forms["form1"].elements["del_id"];
 			for (var i=0; checks!=null && i<checks.length; i++){
 				checks[i].checked=true;
 			}
@@ -284,14 +284,14 @@
 		%>
 		<div id="operations">
 			<ul>
-				<li class="help"><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+				<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 			</ul>
 		</div>
 		<h1>
 			<%=Util.replaceTags(initCaseTitle)%> values of <a href="<%=Util.replaceTags(parentUrl, true)%>"><%=Util.replaceTags(delem_name, true)%></a> <%=dispParentType%>
 		</h1>
 		
-		<form name="form1" method="post" action="fixed_values.jsp">
+		<form id="form1" method="post" action="fixed_values.jsp">
 			<%
 			if (mode.equals("view") && canEdit){ %>
 				<table width="600">
@@ -311,9 +311,9 @@
 				}
 				%>
 				<table width="600">
-					<tr height="10"><td colspan="2"><%=text%></td></tr>
+					<tr style="height:10px"><td colspan="2"><%=text%></td></tr>
 					<tr>
-						<td colspan="1" width="300">
+						<td colspan="1" style="width:300px">
 							<input class="smalltext" type="text" size="20" name="new_value" <%=strFormDisabled%>/>
 							<input class="smallbutton" type="button" value="Add" onclick="submitForm('add')" <%=strFormDisabled%>/>&nbsp;
 							<%
@@ -346,7 +346,7 @@
 						String fxvAttrValueShort = null;
 						String spaces="";
 						for (int j=1; j<level; j++){
-							spaces +="&#160;&#160;&#160;";
+							spaces +="&nbsp;&nbsp;&nbsp;";
 						}
 						
 						String definition = fxv.getDefinition();
@@ -381,17 +381,17 @@
 					<thead>
 						<tr>
 							<td align="left" colspan="3">
-								<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')" <%=strFormDisabled%>>
-								<input class="smallbutton" type="button" value="Remove all" onclick="submitForm('delete_all')" <%=strFormDisabled%>>
+								<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')" <%=strFormDisabled%>/>
+								<input class="smallbutton" type="button" value="Remove all" onclick="submitForm('delete_all')" <%=strFormDisabled%>/>
 							</td>
 						</tr>
 						<tr>
 							<td colspan="3">&nbsp;</td>
 						</tr>
 						<tr>
-							<th style="font-weight:bold;color: #FFFFFF;background: #666666;">&nbsp;</th>
-							<th style="font-weight:bold;color: #FFFFFF;background: #666666;" width="100">Value</th>
-							<th style="font-weight:bold;color: #FFFFFF;background: #666666;" width="500">Definition</th>
+							<th style="font-weight:bold;color:#FFFFFF;background-color:#666666;">&nbsp;</th>
+							<th style="font-weight:bold;color: #FFFFFF;background-color:#666666;width:100px">Value</th>
+							<th style="font-weight:bold;color: #FFFFFF;background-color:#666666;width:500px">Definition</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -407,23 +407,24 @@
 						String definition = fxv.getDefinition();
 						definition = definition==null ? "" : definition;
 						definition = definition.length()>MAX_CELL_LEN ? definition.substring(0,MAX_CELL_LEN) + "..." : definition;				
+						String trStyle = (i % 2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
 						%>
-						<tr id="<%=fxvID%>" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+						<tr <%=trStyle%>>
 							<td align="right" valign="top" style="padding-right:10">
 								<input type="checkbox" style="height:13;width:13" name="del_id" value="<%=fxvID%>" <%=strFormDisabled%>/>
 							</td>
 							<td valign="bottom" align="left" style="padding-left:5;padding-right:10">
 								<b><a href="fixed_value.jsp?fxv_id=<%=fxvID%>&amp;mode=edit&amp;delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;parent_type=<%=typeParam%>">
 									<%=Util.replaceTags(value)%>
-								</a></b>&#160;
+								</a></b>&nbsp;
 							</td>
 							<td align="left" style="padding-left:5;padding-right:10" title="Definition">
 								<%=Util.replaceTags(definition)%>
 							</td>
 							<td>
-								<input type="hidden" name="pos_id" value="<%=fxvID%>" size="5">
-								<input type="hidden" name="oldpos_<%=fxvID%>" value="<%=fxv.getPosition()%>" size="5">
-								<input type="hidden" name="pos_<%=fxvID%>" value="0" size="5">
+								<input type="hidden" name="pos_id" value="<%=fxvID%>" size="5" />
+								<input type="hidden" name="oldpos_<%=fxvID%>" value="<%=fxv.getPosition()%>" size="5" />
+								<input type="hidden" name="pos_<%=fxvID%>" value="0" size="5" />
 							</td>
 						</tr><%
 					}
@@ -432,13 +433,13 @@
 				</table><%
 			}
 			%>
-
-			<input type="hidden" name="delem_id" value="<%=delem_id%>"/>
-			<input type="hidden" name="delem_name" value="<%=Util.replaceTags(delem_name)%>"/>
-			<input type="hidden" name="parent_type" value="<%=typeParam%>"/>
-			<input type="hidden" name="mode" value="<%=mode%>"/>
-			<input type="hidden" name="changed" value="0"/>
-
+			<div style="display:none">
+				<input type="hidden" name="delem_id" value="<%=delem_id%>"/>
+				<input type="hidden" name="delem_name" value="<%=Util.replaceTags(delem_name)%>"/>
+				<input type="hidden" name="parent_type" value="<%=typeParam%>"/>
+				<input type="hidden" name="mode" value="<%=mode%>"/>
+				<input type="hidden" name="changed" value="0"/>
+			</div>
 		</form>
 	</div> <!-- workarea -->
 	</div> <!-- container -->

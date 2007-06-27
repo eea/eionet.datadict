@@ -1,4 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
 
@@ -15,7 +16,7 @@ AppUserIF user = SecurityUtil.getUser(request);
 if (request.getMethod().equals("POST")){
 	if (user == null){
 		%>
-			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+			<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 			<body>
 				<h1>Error</h1><b>Not authorized to post any data!</b>
 			</body>
@@ -87,12 +88,11 @@ String disabled = user == null ? "disabled" : "";
 
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
     <title>Data Dictionary</title>
-    <script language="javascript" src='script.js'></script>
-    <script language="javascript">
+    <script type="text/javascript">
 		// <![CDATA[
     
 		function submitForm(mode){
@@ -117,10 +117,10 @@ String disabled = user == null ? "disabled" : "";
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-	<form id="form1" method="POST" action="fk_relation.jsp">
+	<form id="form1" method="post" action="fk_relation.jsp">
 	<div id="operations">
 		<ul>
-				<li class="help"><a target="_blank" href="help.jsp?screen=foreign_key_rel&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+				<li class="help"><a href="help.jsp?screen=foreign_key_rel&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 		</ul>
 	</div>
   <h1>Foreign key relation</h1> 
@@ -135,7 +135,7 @@ String disabled = user == null ? "disabled" : "";
 			
 			<table cellspacing="0" cellpadding="0" class="datatable">
 			
-			<tr height="10"><td colspan="2">&nbsp;</td></tr>
+			<tr style="height:10"><td colspan="2">&nbsp;</td></tr>
 			
 			<tr>
 				<th scope="row">Element A</th>
@@ -162,23 +162,23 @@ String disabled = user == null ? "disabled" : "";
 						String aCardin = (String)fkRel.get("a_cardin");
 						for (int i=0; i<cardins.size(); i++){
 							String cardin = (String)cardins.get(i);
-							String selected = aCardin.equals(cardin) ? "selected" : ""; %>
+							String selected = aCardin.equals(cardin) ? "selected=\"selected\"" : ""; %>
 							<option <%=selected%> value="<%=Util.replaceTags(cardin, true)%>"><%=Util.replaceTags(cardin)%></option><%
 						}
 						%>
-					</select>&#160;to&#160;
+					</select>&nbsp;to&nbsp;
 					<select name="b_cardin">
 						<%
 						String bCardin = (String)fkRel.get("b_cardin");
 						for (int i=0; i<cardins.size(); i++){
 							String cardin = (String)cardins.get(i);
-							String selected = bCardin.equals(cardin) ? "selected" : ""; %>
+							String selected = bCardin.equals(cardin) ? "selected=\"selected\"" : ""; %>
 							<option <%=selected%> value="<%=Util.replaceTags(cardin, true)%>"><%=Util.replaceTags(cardin)%></option><%
 						}
 						%>
 					</select>&nbsp;
-					<a target="_blank" href="help.jsp?screen=foreign_key_rel&area=cardinality" onclick="pop(this.href);return false;">
-						<img border="0" src="images/info_icon.gif" width="16" height="16"/>
+					<a href="help.jsp?screen=foreign_key_rel&amp;area=cardinality" onclick="pop(this.href);return false;">
+						<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Get help on this item"/>
 					</a>
 				</td>
 			</tr>
@@ -193,20 +193,20 @@ String disabled = user == null ? "disabled" : "";
 				</td>
 			</tr>
 			
-			<tr height="20"><td colspan="2"></td></tr>
+			<tr style="height:20"><td colspan="2"></td></tr>
 			
 			<tr>
 				<td></td>
 				<td>
-					<input type="button" <%=disabled%> class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&#160;&#160;
+					<input type="button" <%=disabled%> class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;&nbsp;
 					<input type="button" <%=disabled%> class="mediumbuttonb" value="Delete" onclick="submitForm('delete')"/>
 				</td>
 			</tr>
 	</table>
-	
-	<input type="hidden" name="rel_id" value="<%=relID%>"/>
-	<input type="hidden" name="mode" value="<%=mode%>"/>
-	
+	<div style="display:none">
+		<input type="hidden" name="rel_id" value="<%=relID%>"/>
+		<input type="hidden" name="mode" value="<%=mode%>"/>
+	</div>	
 	</form>
 </div> <!-- workarea -->
 </div> <!-- container -->

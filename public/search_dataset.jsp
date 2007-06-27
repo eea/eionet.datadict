@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,com.tee.xmlserver.*,eionet.util.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
 
@@ -111,12 +111,11 @@ private String setDefaultAttrs(String name){
 
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
     <title>Data Dictionary</title>
-    <script language="javascript" src='script.js' type="text/javascript"></script>
-    <script language="javascript" type="text/javascript">
+    <script type="text/javascript">
 		// <![CDATA[
 		attrWindow=null;
 
@@ -173,7 +172,7 @@ private String setDefaultAttrs(String name){
 <div id="workarea">
     <div id="operations">
 		<ul>
-			<li class="help"><a target="_blank" href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+			<li class="help"><a href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 			<%
 			if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
 				<li><a title="Create a new dataset" href="dataset.jsp?mode=add">Add dataset</a></li><%
@@ -181,17 +180,17 @@ private String setDefaultAttrs(String name){
 			%>
 		</ul>
 	</div>
-		<form name="form1" action="datasets.jsp" method="get">
+		<form id="form1" action="datasets.jsp" method="get">
 		<h1>Search datasets</h1>
 		<table width="600" cellspacing="0" style="padding-top:10px">
 		
-			<tr valign="top">
+			<tr style="vertical-align:top">
 				<td align="right">
 					<b>Short name</b>
 				</td>
 				<td>
-					<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-						<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+					<a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+						<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 					</a>
 				</td>
 				<td colspan="2">
@@ -199,13 +198,13 @@ private String setDefaultAttrs(String name){
 				</td>
 			</tr>
 			
-			<tr valign="top">
+			<tr style="vertical-align:top">
 				<td align="right">
 					<b>Identifier</b>
 				</td>
 				<td>
-					<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-						<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+					<a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+						<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 					</a>
 				</td>
 				<td colspan="2">
@@ -227,13 +226,13 @@ private String setDefaultAttrs(String name){
 					if (attrID!=null){
 						collect_attrs.append(attrID + "|");
 						%>
-						<tr valign="top">
+						<tr style="vertical-align:top">
 							<td align="right">
 								<b><%=Util.replaceTags(attrName)%></b>
 							</td>
 							<td>
-								<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-									<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+								<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+									<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 								</a>
 							</td>
 							<td colspan="2">
@@ -258,20 +257,20 @@ private String setDefaultAttrs(String name){
 					if (attrValue == null) attrValue="";
 					collect_attrs.append(attrID + "|");
 					%>
-					<tr valign="top">
+					<tr style="vertical-align:top">
 						<td align="right">
 							<b><%=Util.replaceTags(attrName)%></b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+							<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+								<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 							</a>
 						</td>
 						<td>
 							<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value="<%=Util.replaceTags(attrValue, true)%>"/>
 						</td>
 						<td>
-							<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
+							<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
 						</td>
 					</tr>
 					<%
@@ -284,20 +283,20 @@ private String setDefaultAttrs(String name){
 					collect_attrs.append(attrID + "|");
 					attrName = getAttributeNameById(attrID);
 					%>
-					<tr valign="top">
+					<tr style="vertical-align:top">
 						<td align="right">
 							<b><%=Util.replaceTags(attrName)%></b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" width="16" height="16" alt=""/>
+							<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+								<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
 							</a>
 						</td>
 						<td>
 							<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
 						</td>
 						<td>
-							<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
+							<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
 						</td>
 					</tr>
 					<%
@@ -305,7 +304,7 @@ private String setDefaultAttrs(String name){
 			}
 			%>
                 <tr valign="bottom">
-            		<td width="150" colspan="2">&#160;</td>
+            		<td style="width:150px" colspan="2">&nbsp;</td>
             		<td colspan="2">
             			<input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked"/><label for="ssubstr">Substring search</label>
             			<input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>
@@ -317,8 +316,8 @@ private String setDefaultAttrs(String name){
 			// if authenticated user, enable to get working copies only
 			if (user!=null && user.isAuthentic()){
 				%>
-				<tr valign="top">
-					<td width="150" colspan="2"></td>
+				<tr style="vertical-align:top">
+					<td style="width:150px" colspan="2"></td>
 					<td colspan="2">
 						<input type="checkbox" name="wrk_copies" id="wrk_copies" value="true"/>
 						<label for="wrk_copies" class="smallfont" style="font-weight: normal">Working copies only</label>
@@ -327,14 +326,14 @@ private String setDefaultAttrs(String name){
 				<%
 			}
 			%>
-			<tr valign="top">
-				<td width="150" colspan="2"></td>
+			<tr style="vertical-align:top">
+				<td style="width:150px" colspan="2"></td>
 				<td colspan="2">
 					<input type="checkbox" name="incl_histver" id="incl_histver" value="true"/>
 					<label for="incl_histver" class="smallfont" style="font-weight: normal">Include historic versions</label>
 				</td>
 			</tr>
-			<tr valign="top">
+			<tr style="vertical-align:top">
 				<td colspan="2"></td>
 				<td>
 					<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('datasets.jsp')"/>
@@ -342,19 +341,21 @@ private String setDefaultAttrs(String name){
 				</td>
 				<td style="font-size:65%;text-align:right">
 					<a href="javascript:openAttributes();">
-						<img src="images/button_plus.gif" border="0" alt="Click here to add more search criterias"/>
+						<img src="images/button_plus.gif" style="border:0" alt="Click here to add more search criterias"/>
 					</a>&nbsp;Add criteria
 				</td>
 			</tr>
 		</table>
 		<!-- table for 'Add' -->
 		
-		<input type="hidden" name="sel_attr" value=""/>			
-		<input type="hidden" name="sel_type" value=""/>
-		<input type="hidden" name="type" value="DST"/>
-		<!-- collect all the attributes already used in criterias -->
-		<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
-		<input name='SearchType' type='hidden' value='SEARCH'/>
+			<div style="display:none">
+				<input type="hidden" name="sel_attr" value=""/>			
+				<input type="hidden" name="sel_type" value=""/>
+				<input type="hidden" name="type" value="DST"/>
+				<!-- collect all the attributes already used in criterias -->
+				<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
+				<input name='SearchType' type='hidden' value='SEARCH'/>
+			</div>
 		</form>
 </div> <!-- workarea -->
 </div> <!-- container -->

@@ -1,6 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 
@@ -47,25 +47,27 @@
 			</script>
 		</p>
 			
-		<form name="form1" method="post" action="modal_dialog.html">
-			<script type="text/javascript">
-			// <![CDATA[
-				if (window.opener.dialogWin.order=="yesno"){
-					document.writeln(
-					'<input type="button" class="mediumbuttonb" name="1stbutton" value=" Yes " onclick="clicked(\'true\')"/>');
-					document.writeln(
-					'&nbsp;<input type="button" class="mediumbuttonb" name="2ndbutton" value=" No " onclick="clicked(\'false\')"/>');
-				}
-				else{
-					document.writeln(
-					'<input type="button" class="mediumbuttonb" name="1stbutton" value=" No " onclick="clicked(\'false\')"/>');
-					document.writeln(
-					'&nbsp;<input type="button" class="mediumbuttonb" name="2ndbutton" value=" Yes " onclick="clicked(\'true\')"/>');
-				}
-			// ]]>
-			</script>
-			&nbsp;<input type="button" class="mediumbuttonb" name="3rdbutton" value="Cancel" onclick="clicked('cancel')"/>
-			<input type="hidden" name="wasclick" value="false"/>
+		<form id="form1" method="post" action="modal_dialog.html">
+			<div>
+				<script type="text/javascript">
+				// <![CDATA[
+					if (window.opener.dialogWin.order=="yesno"){
+						document.writeln(
+						'<input type="button" class="mediumbuttonb" name="1stbutton" value=" Yes " onclick="clicked(\'true\')"/>');
+						document.writeln(
+						'&nbsp;<input type="button" class="mediumbuttonb" name="2ndbutton" value=" No " onclick="clicked(\'false\')"/>');
+					}
+					else{
+						document.writeln(
+						'<input type="button" class="mediumbuttonb" name="1stbutton" value=" No " onclick="clicked(\'false\')"/>');
+						document.writeln(
+						'&nbsp;<input type="button" class="mediumbuttonb" name="2ndbutton" value=" Yes " onclick="clicked(\'true\')"/>');
+					}
+				// ]]>
+				</script>			
+				&nbsp;<input type="button" class="mediumbuttonb" name="3rdbutton" value="Cancel" onclick="clicked('cancel')"/>
+				<input type="hidden" name="wasclick" value="false"/>
+			</div>
 		</form>
 	</body>
 </html>

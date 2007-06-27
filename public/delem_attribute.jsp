@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.Util"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private String type=null;%>
 <%!private String mode=null;%>
@@ -24,7 +24,7 @@
 			if (request.getMethod().equals("POST")){
       			if (user == null){
 	      			%>
-	      				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	      				<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	      				<body>
 	      					<h1>Error</h1><b>Not authorized to post any data!</b>
 	      				</body>
@@ -203,7 +203,7 @@
 				
 			%>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
   <title><%=pageTitle.toString()%></title>
@@ -395,47 +395,45 @@
 		<%@ include file="nmenu.jsp" %>
 <div id="workarea">
 
-			<form id="form1" name="form1" method="post" action="delem_attribute.jsp">
-			
-			<% if (!mode.equals("add")){ %>
-				<input type="hidden" name="attr_id" value="<%=attr_id%>" />
-				<%
-				
-				if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE)){
-					%>
-					<input type="hidden" name="simple_attr_id" value="<%=attr_id%>" />
+			<form id="form1" method="post" action="delem_attribute.jsp">
+				<div style="display:none">
 					<%
-				}
-				else{
-					%>
-					<input type="hidden" name="complex_attr_id" value="<%=attr_id%>" />
-					<%							
-				}
-				
-			} %>
-			
-						<%
-						String hlpScreen = "simple_attr_def_";
-						if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
-							hlpScreen = "complex_attr_def_";
-							
-						if (mode.equals("view"))
-							hlpScreen = hlpScreen + "view";
-						else if (mode.equals("edit"))
-							hlpScreen = hlpScreen + "edit";
-						else if (mode.equals("add")){
-							if (type==null)
-								hlpScreen = "attr_def_add";
-							else
-								hlpScreen = hlpScreen + "add";
-						}
-						else
-							hlpScreen = hlpScreen + "view";
-							
+					if (!mode.equals("add")){
 						%>
+						<input type="hidden" name="attr_id" value="<%=attr_id%>" /><%
+					
+						if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE)){
+							%>
+							<input type="hidden" name="simple_attr_id" value="<%=attr_id%>" /><%
+						}
+						else{
+							%>
+							<input type="hidden" name="complex_attr_id" value="<%=attr_id%>" /><%							
+						}					
+					}
+				
+					String hlpScreen = "simple_attr_def_";
+					if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
+						hlpScreen = "complex_attr_def_";
+						
+					if (mode.equals("view"))
+						hlpScreen = hlpScreen + "view";
+					else if (mode.equals("edit"))
+						hlpScreen = hlpScreen + "edit";
+					else if (mode.equals("add")){
+						if (type==null)
+							hlpScreen = "attr_def_add";
+						else
+							hlpScreen = hlpScreen + "add";
+					}
+					else
+						hlpScreen = hlpScreen + "view";
+						
+					%>
+				</div>				
             <div id="operations">
               <ul>
-                <li class="help"><a target="_blank" href="help.jsp?screen=<%=Util.replaceTags(hlpScreen)%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+                <li class="help"><a href="help.jsp?screen=<%=Util.replaceTags(hlpScreen)%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 							<%
 							if (user!=null && mode.equals("view") && editPrm){ %>
 								<li><a href="javascript:goToEdit()">Edit</a></li>
@@ -559,71 +557,93 @@
 				</td>
 			</tr>
 			
-			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>	
-				<th scope="row" class="scope-row">Context</th>
-						<%
-						displayed++;
-						if (!mode.equals("view")){
-							%>
-							<td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
+			<%
+			boolean displayNamespace = mode.equals("view") && attrNamespace!=null && attrNamespace.getShortName()!=null;
+			if (displayNamespace==false && mode.equals("edit")){
+				int count = 0;
+				Vector namespaces = searchEngine.getNamespaces();
+				for (int k=0; namespaces!=null && k<namespaces.size(); k++){
+					Namespace ns = (Namespace)namespaces.get(k);
+					if (ns.getTable()!=null || ns.getDataset()!=null || (ns.getID()!=null && ns.getID().equals("1")))
+						continue;
+					String nsName = ns.getFullName();
+					if (nsName==null)
+						nsName = ns.getShortName();
+					if (nsName.indexOf("attributes") < 0)
+						continue;
+					count++;
+				}
+				displayNamespace = count>0;
+			}
+			if (displayNamespace){
+				%>				
+				<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>	
+					
+					<th scope="row" class="scope-row">Context</th>
 							<%
-						}
-						%>
-				<td>
-					<%
-					if (mode.equals("view")){
-						
-						String nsName = attrNamespace==null ? null : attrNamespace.getFullName();
-						if (nsName==null){
-							if (attrNamespace==null)
-								nsName = "";
-							else
-								nsName = attrNamespace.getShortName();
-						}
-						if (nsName == null) nsName = "";
-						
-						%>
-						<%=Util.replaceTags(nsName)%> <%
-					}
-					else{
-						%>
-						<select <%=disabled%> class="small" name="ns">
-							<%
-							Vector namespaces = searchEngine.getNamespaces();
-							for (int k=0; namespaces!=null && k<namespaces.size(); k++){
-								Namespace ns = (Namespace)namespaces.get(k);
-								
-								if (ns.getTable()!=null || ns.getDataset()!=null || (ns.getID()!=null && ns.getID().equals("1")))
-									continue;
-									
-								String nsName = null;
-								if (ns!=null) nsName = ns.getFullName();
-								if (nsName == null) nsName = ns.getShortName();
-								if (nsName == null) nsName = "";
-								
-								if (nsName.indexOf("attributes") < 0)
-									continue;
-								
-								String ifSelected = "";
-								if (attrNamespace!=null){
-									if (attrNamespace.getID().equals(ns.getID())){
-										ifSelected = "selected=\"selected\"";
-									}
-								}
-								else if (nsName.indexOf("Data Dictionary") != -1)
-									ifSelected = "selected=\"selected\"";
-									
+							displayed++;
+							if (!mode.equals("view")){
 								%>
-								<option <%=ifSelected%> value="<%=ns.getID()%>"><%=Util.replaceTags(nsName)%></option>
+								<td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
 								<%
 							}
 							%>
-						</select>
+					<td>
 						<%
-					}
-					%>
-				</td>
-			</tr>
+						if (mode.equals("view")){
+							String nsName = attrNamespace==null ? null : attrNamespace.getFullName();
+							if (nsName==null){
+								if (attrNamespace==null)
+									nsName = "";
+								else
+									nsName = attrNamespace.getShortName();
+							}
+							if (nsName == null) nsName = "";
+							
+							%>
+							<%=Util.replaceTags(nsName)%> <%
+						}
+						else{
+							%>
+							<select <%=disabled%> class="small" name="ns">
+								<%
+								Vector namespaces = searchEngine.getNamespaces();
+								for (int k=0; namespaces!=null && k<namespaces.size(); k++){
+									Namespace ns = (Namespace)namespaces.get(k);
+									
+									if (ns.getTable()!=null || ns.getDataset()!=null || (ns.getID()!=null && ns.getID().equals("1")))
+										continue;
+										
+									String nsName = null;
+									if (ns!=null) nsName = ns.getFullName();
+									if (nsName == null) nsName = ns.getShortName();
+									if (nsName == null) nsName = "";
+									
+									if (nsName.indexOf("attributes") < 0)
+										continue;
+									
+									String ifSelected = "";
+									if (attrNamespace!=null){
+										if (attrNamespace.getID().equals(ns.getID())){
+											ifSelected = "selected=\"selected\"";
+										}
+									}
+									else if (nsName.indexOf("Data Dictionary") != -1)
+										ifSelected = "selected=\"selected\"";
+										
+									%>
+									<option <%=ifSelected%> value="<%=ns.getID()%>"><%=Util.replaceTags(nsName)%></option>
+									<%
+								}
+								%>
+							</select>
+							<%
+						}
+						%>
+					</td>
+				</tr><%
+			}
+			%>
 			
 			<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>	
 				<th scope="row" class="scope-row">Definition</th>
@@ -738,7 +758,7 @@
 							<%
 							if (mode.equals("edit") && dispType!=null && dispType.equals("select")){
 								%>
-								&#160;<span class="smallfont"><a href="fixed_values.jsp?mode=edit&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=Util.replaceTags(attr_shortname)%>&amp;parent_type=attr">
+								&nbsp;<span class="smallfont"><a href="fixed_values.jsp?mode=edit&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=Util.replaceTags(attr_shortname)%>&amp;parent_type=attr">
 								<b>FIXED VALUES</b></a></span>
 								<%
 							}
@@ -1145,9 +1165,9 @@
 				<% } %>
 				<td>
 					<b>*</b> <span class="smallfont"><a href="m_attr_fields.jsp?attr_id=<%=attr_id%>&amp;attr_name=<%=Util.replaceTags(attr_shortname)%>">
-						<b>FIELDS</b></a></span>&#160;&#160;
+						<b>FIELDS</b></a></span>&nbsp;&nbsp;
 					<span class="smallfont" style="font-weight: normal">
-						&lt;&#160;click here to add/remove fields of this complex attribute
+						&lt;&nbsp;click here to add/remove fields of this complex attribute
 					</span>
 				</td>
 			</tr>
@@ -1166,19 +1186,19 @@
 					
 					if (mode.equals("add")){ // if mode is "add"
 						if (user==null){ %>									
-							<input type="button" class="mediumbuttonb" value="Add" disabled="disabled" />&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Add" disabled="disabled" />&nbsp;&nbsp;
 						<%} else {%>
-							<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')" />&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')" />&nbsp;&nbsp;
 						<% }
 					} // end if mode is "add"
 					
 					if (!mode.equals("add")){ // if mode is not "add"
 						if (user==null){ %>									
-							<input type="button" class="mediumbuttonb" value="Save" disabled="disabled" />&#160;&#160;
-							<input type="button" class="mediumbuttonb" value="Delete" disabled="disabled" />&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Save" disabled="disabled" />&nbsp;&nbsp;
+							<input type="button" class="mediumbuttonb" value="Delete" disabled="disabled" />&nbsp;&nbsp;
 						<%} else {%>
-							<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')" />&#160;&#160;
-							<input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')" />&#160;&#160;
+							<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')" />&nbsp;&nbsp;
+							<input type="button" class="mediumbuttonb" value="Delete" onclick="submitForm('delete')" />&nbsp;&nbsp;
 						<% }
 					} // end if mode is not "add"
 					
@@ -1189,15 +1209,15 @@
 		}
 		%>
 	</table>
-	
-		<%
-		if (type!=null){ %>
-			<input type="hidden" name="type" value="<%=type%>" /> <%
-		}
-		%>
-		<input type="hidden" name="mode" value="<%=mode%>" />		
-		<input type="hidden" name="ns" value="basens" />
-		
+		<div style="display:none">
+			<%
+			if (type!=null){ %>
+				<input type="hidden" name="type" value="<%=type%>" /> <%
+			}
+			%>
+			<input type="hidden" name="mode" value="<%=mode%>" />		
+			<input type="hidden" name="ns" value="basens" />
+		</div>		
 	</form>
 </div> <!-- workarea -->
 </div> <!-- container -->

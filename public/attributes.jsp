@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!static int iPageLen=0;%>
 
@@ -28,7 +28,7 @@
 
 		if (user == null){
 			%>
-				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+				<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 				<body>
 					<h1>Error</h1><b>Not authorized to post any data!</b>
 				</body>
@@ -79,7 +79,7 @@
     String mode = request.getParameter("mode");
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
   <title>Data Dictionary - Attributes</title>
@@ -120,7 +120,7 @@
 
 				<div id="operations">
 					<ul>
-						<li class="help"><a target="_blank" href="help.jsp?screen=attributes&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+						<li class="help"><a href="help.jsp?screen=attributes&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 				<%
 				if (user != null && mode==null){
 					boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
@@ -243,7 +243,9 @@
 
 		</table>
 
-		<input type="hidden" name="searchUrl" value=""/>
+		<fieldset style="display:hidden">
+			<input type="hidden" name="searchUrl" value=""/>
+		</fieldset>
 		</form>
 			</div> <!-- workarea -->
 			</div> <!-- container -->

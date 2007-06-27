@@ -1,19 +1,16 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <%
 	request.setCharacterEncoding("UTF-8");
 	String resptext = (String)request.getAttribute("TEXT");
 %>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary</title>
-	<script language="javascript" src='script.js' type="text/javascript"></script>
-    <script language="javascript" type="text/javascript">
+    <script type="text/javascript">
 		function openPDF(){
-			
 			document.forms["form1"].submit();
-
 		}
 	</script>
 </head>
@@ -29,11 +26,13 @@
 		<p>
 			<b><%=Util.replaceTags(resptext)%></b>
 		</p>
-		<form name="form1" action="GetImportResults" method="post">
+		<form id="form1" action="GetImportResults" method="post">
 			<%
 			String text=Util.Replace(resptext, "<br/>", "\n");		
 			%>
-			<input type="hidden" name="text" value="<%=Util.replaceTags(text, true)%>"/>
+			<div style="display:none">
+				<input type="hidden" name="text" value="<%=Util.replaceTags(text, true)%>"/>
+			</div>
 		</form>
 	</div> <!-- workarea -->
 </div> <!-- container -->

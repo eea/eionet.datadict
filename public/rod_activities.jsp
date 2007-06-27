@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,eionet.meta.inservices.*,eionet.util.Props,eionet.util.PropsIF,eionet.util.Util"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 request.setCharacterEncoding("UTF-8");
@@ -8,11 +8,11 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
     <title>Data Dictionary</title>
-    <script language="javascript" type="text/javascript">
+    <script type="text/javascript">
 	// <![CDATA[
 	
 		function select(raID, raTitle,liID, liTitle){
@@ -20,18 +20,11 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 			window.close();
 		}
 		
-		function load(){
-	    	resize();
-    	}
-    	
-    	function resize(){
-	    	window.resizeTo(600, 600);
-    	}
 	// ]]>
 	</script>
 </head>
 
-<body class="popup" onload="load()">
+<body class="popup">
 <div id="pagehead">
     <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
     <div id="networktitle">Eionet</div>
@@ -40,7 +33,7 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 </div> <!-- pagehead -->
 <div id="workarea">
 <div>
-	<form name="reload" action="InServices?client=webrod&amp;method=reload_activities" method="get">
+	<form id="reload" action="InServices?client=webrod&amp;method=reload_activities" method="get">
 	<div id="operations">
 		<ul>
 			<li><a href="javascript:window.close();">Close</a></li>
@@ -93,12 +86,12 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 				%>
 				<tr>
 					<td style="padding-left:5px;padding-right:10px<%=colorStyle%>">
-						<a href="javascript:select('<%=raID%>', '<%=raTitle%>', '<%=liID%>', '<%=liTitle%>')"><%=Util.replaceTags(raTitle)%></a>
+						<a href="javascript:select('<%=raID%>', '<%=Util.replaceTags(raTitle)%>', '<%=liID%>', '<%=Util.replaceTags(liTitle)%>')"><%=Util.replaceTags(raTitle)%></a>
 					</td>
 					<td style="padding-left:5px;padding-right:10px<%=colorStyle%>">
-						<a target="_blank" href="<%=raURL%>"><%=raURL%>
+						<a href="<%=Util.replaceTags(raURL,true)%>"><%=Util.replaceTags(raURL,true)%></a>
 					</td>
-				<tr>
+				</tr>
 				<%
 				displayed++;
 			}
@@ -106,10 +99,10 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 		</table><%
 	}
 	%>
-	
-	<input type="hidden" name="client" value="webrod"/>
-	<input type="hidden" name="method" value="reload_activities"/>
-	
+	<div style="display:none">
+		<input type="hidden" name="client" value="webrod"/>
+		<input type="hidden" name="method" value="reload_activities"/>
+	</div>	
 	</form>
 </div>
 </div> <!-- workarea -->

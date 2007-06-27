@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!
 
@@ -50,7 +50,7 @@ private String legalizeAlert(String in){
 			if (request.getMethod().equals("POST")){
       			if (user == null){
 	      			%>
-	      				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	      				<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	      				<body class="popup">
                                         <div class="error">
 	      					<h1>Error</h1>
@@ -127,7 +127,7 @@ private String legalizeAlert(String in){
 					}
 					catch (Exception e){
 						%>
-						<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><body class="popup"><h1>Error</h1><p><%=e.toString()%></p></body></html>
+						<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body class="popup"><h1>Error</h1><p><%=e.toString()%></p></body></html>
 						<%
 						return;
 					}
@@ -173,11 +173,10 @@ private String legalizeAlert(String in){
 			boolean isWorkingCopy = _type==null ? true : searchEngine.isWorkingCopy(parent_id, _type);
 			%>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 		<%@ include file="headerinfo.jsp" %>
 		<title>Complex attribute</title>
-	    <script type="text/javascript" src="script.js"></script>
 	<script type="text/javascript">
 	// <![CDATA[
 			function submitForm(mode){
@@ -223,8 +222,6 @@ private String legalizeAlert(String in){
 			
 			function doLoad(){
 				
-				resize();
-				
 				var attrName = document.forms["form1"].elements["attrName"].value;
 				var allowToAdd = document.forms["form1"].elements["allowToAdd"].value;
 				if (attrName!=null && (attrName=="SubmitOrganisation" || attrName=="RespOrganisation")){
@@ -234,10 +231,6 @@ private String legalizeAlert(String in){
 						}
 					}
 				}
-			}
-			
-			function resize(){
-		    	window.resizeTo(700, 600);
 			}
 			
 	// ]]>
@@ -315,7 +308,7 @@ private String legalizeAlert(String in){
 	
 	%>
 		
-<form name="form1" method="post" action="complex_attr.jsp">
+<form id="form1" method="post" action="complex_attr.jsp">
 		<%
 		String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edit";
 		%>
@@ -323,7 +316,7 @@ private String legalizeAlert(String in){
 	<div id="operations">
 		<ul>
 			<li><a href="javascript:window.close();">Close</a></li>
-			<li class="help"><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+			<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 			<%
 			if (!mode.equals("view")){ %>
 				<li><a href="javascript:window.location.replace('<%=backURL%>')">&lt; back to attributes</a></li><%
@@ -372,25 +365,27 @@ private String legalizeAlert(String in){
 	
 </table>
 
-<%
-if (!mode.equals("view")){
-	%>
 	<%
-		if (user!=null){
-			%>
-			<input class="smallbutton" type="button" name="addbutton" value="Add"  onclick="submitForm('add')" />
-			<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')" />
+	if (!mode.equals("view")){
+		%>
+		<div>
 			<%
-			if (harvesterID!=null && harvesterID.length()>0){ %>
-				<input class="smallbutton" type="button" value="Get"  onclick="openHarvested('<%=attr_id%>')" /><%
+			if (user!=null){
+				%>
+				<input class="smallbutton" type="button" name="addbutton" value="Add"  onclick="submitForm('add')" />
+				<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')" />
+				<%				
+				if (harvesterID!=null && harvesterID.length()>0){ %>
+					<input class="smallbutton" type="button" value="Get"  onclick="openHarvested('<%=attr_id%>')" /><%
+				}
 			}
-		}
-		else{
+			else{
+				%>
+				<input class="smallbutton" type="button" value="Add" disabled="disabled"/><%
+			}
 			%>
-			<input class="smallbutton" type="button" value="Add" disabled="true"/>
-			<%
-		}
-	%>
+		</div>
+	
 	<table class="datatable" cellspacing="0" cellpadding="0">
 	
 		<%
@@ -427,12 +422,12 @@ if (!mode.equals("view")){
 					}
 					else{
 						%>
-						<input class="smallbutton" type="button" value="Remove" disabled/>
+						<input class="smallbutton" type="button" value="Remove" disabled="disabled"/>
 						<%
 					}
 					%>
 				</td>
-				<td width="10">&nbsp;</td>
+				<td style="width:10px">&nbsp;</td>
 				<%
 			}
 			%>
@@ -463,7 +458,7 @@ if (!mode.equals("view")){
 					%>
 					<tr>
 						<td class="small" align="right"><%=sInhText%></td>
-						<td class="small" width="10">&nbsp;</td>
+						<td style="width:10px">&nbsp;</td>
 					<%
 			
 					for (int t=0; t<attrFields.size(); t++){
@@ -496,7 +491,7 @@ if (!mode.equals("view")){
 			if (!mode.equals("view")){
 			%>
 				<td class="small" align="right"><input type="checkbox" style="height:13;width:13" name="del_row" value="<%=row_id%>"/></td>
-				<td class="small" width="10">&nbsp;</td>
+				<td style="width:10px">&nbsp;</td>
 			<%
 			}
 			%>
@@ -522,30 +517,30 @@ if (!mode.equals("view")){
 
 	</table>
 
-
-<input type="hidden" name="allowToAdd" value="<%=nonInheritedCount==0%>"/>
-<input type="hidden" name="attrName" value="<%=Util.replaceTags(attrName, true)%>"/>
-
-<input type="hidden" name="mode" value="<%=mode%>"/>
-
-<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
-<input type="hidden" name="parent_id" value="<%=parent_id%>"/>
-<input type="hidden" name="parent_name" value="<%=Util.replaceTags(parent_name, true)%>"/>
-<input type="hidden" name="parent_type" value="<%=parent_type%>"/>
-<input type="hidden" name="parent_ns" value="<%=parent_ns%>"/>
-<input type="hidden" name="table_id" value="<%=table_id%>"/>
-<input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
-
-<input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
-
-<%
-if (ds != null){
-	%>
-	<input type="hidden" name="ds" value="<%=ds%>"/>
+<div style="display:none">
+	<input type="hidden" name="allowToAdd" value="<%=nonInheritedCount==0%>"/>
+	<input type="hidden" name="attrName" value="<%=Util.replaceTags(attrName, true)%>"/>
+	
+	<input type="hidden" name="mode" value="<%=mode%>"/>
+	
+	<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
+	<input type="hidden" name="parent_id" value="<%=parent_id%>"/>
+	<input type="hidden" name="parent_name" value="<%=Util.replaceTags(parent_name, true)%>"/>
+	<input type="hidden" name="parent_type" value="<%=parent_type%>"/>
+	<input type="hidden" name="parent_ns" value="<%=parent_ns%>"/>
+	<input type="hidden" name="table_id" value="<%=table_id%>"/>
+	<input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
+	
+	<input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
+	
 	<%
-}
-%>
-
+	if (ds != null){
+		%>
+		<input type="hidden" name="ds" value="<%=ds%>"/>
+		<%
+	}
+	%>
+</div>
 </form>
 </div>
 </body>

@@ -569,8 +569,7 @@ public class Util {
     	
     	String link = in.substring(beginIndex, endIndex+1);
     	StringBuffer _buf = new StringBuffer("<a ");
-		if (newWindow) _buf.append("target=\"_blank\" ");
-		_buf.append("href=\"");
+		_buf.append(" href=\"");
 		_buf.append(link);
 		_buf.append("\">");
 		

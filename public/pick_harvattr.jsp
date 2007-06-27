@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
@@ -36,7 +36,7 @@
 		
 		if (user==null || !user.isAuthentic()){
 			%>
-  				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  				<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
   				<body>
   					<h1>Error</h1><b>Not authorized to post any data!</b>
   				</body>
@@ -56,7 +56,7 @@
 			}
 			catch (Exception e){
 				%>
-				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><body><b><%=e.toString()%></b></body></html>
+				<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body><b><%=e.toString()%></b></body></html>
 				<%
 				return;
 			}
@@ -67,9 +67,9 @@
 		}
 		
 		%>
-		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+		<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 			<head>
-				<script language="javascript">
+				<script type="text/language">
 				// <![CDATA[
 				var s = opener.document.forms["form1"].elements["reloadUrl"].value;
 				if (s!=null)
@@ -97,16 +97,16 @@
 	Vector harvFields = (harvAttrs!=null && harvAttrs.size()>0) ?
 						searchEngine.getHarvesterFieldsByAttr(attr_id) :
 						null;
-	String colsp = (harvFields==null || harvFields.size()==0) ? "1" : String.valueOf(harvFields.size());
 	
+	String colsp = (harvFields==null || harvFields.size()==0) ? "1" : String.valueOf(harvFields.size());
 	HashSet added = searchEngine.getHarvestedAttrIDs(attr_id, parent_id, parent_type);
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 		<%@ include file="headerinfo.jsp" %>
 		<title>Meta</title>
-		<script language="javascript" type="text/javascript">
+		<script type="text/javascript">
 		// <![CDATA[
 
 			function closeme(){
@@ -167,7 +167,7 @@
 		<h5>Select one of the harvested attribute values below:</h5><%
 	}
 	%>	
-	<form name="form1" action="pick_harvattr.jsp" method="post">
+	<form id="form1" action="pick_harvattr.jsp" method="post">
 	<table class="datatable">
 		<%				
 		if (harvFields!=null && harvFields.size()>0){
@@ -176,7 +176,7 @@
 				<th>&nbsp;</th>
 				<%
 				for (int i=0; i<harvFields.size(); i++){ %>
-					<th align="left" style="padding-right:10">&#160;<%=(String)harvFields.get(i)%></th><%
+					<th align="left" style="padding-right:10">&nbsp;<%=(String)harvFields.get(i)%></th><%
 				}
 				%>
 			</tr><%
@@ -188,8 +188,9 @@
 			String harvAttrID = "11";//(String)attrHash.get("harv_attr_id");
 			if (added.contains(harvAttrID))
 				continue;
+			String trStyle = (i%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
 			%>
-			<tr>
+			<tr <%=trStyle%>>
 				<td valign="top" style="padding-right:10">
 						<input type="checkbox"
 							   name="chk"
@@ -200,7 +201,7 @@
 				for (int j=0; harvFields!=null && j<harvFields.size(); j++){
 					String field = (String)harvFields.get(j);
 					%>
-					<td <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-right:10">
+					<td style="padding-right:10">
 						&nbsp;<%=(String)attrHash.get(field)%>
 					</td><%
 				}
@@ -216,15 +217,17 @@
 		<p>(all have been already selected)</p><%
 	}
 	%>
-	<input type="hidden" name="parent_id" value="<%=parent_id%>"/>
-	<input type="hidden" name="parent_type" value="<%=parent_type%>"/>
-	<input type="hidden" name="position" value="<%=position%>"/>
 	
-	<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
-	<input type="hidden" name="harv_attr_id" value=""/>
-	
-	<input type="hidden" name="mode" value="add"/>
-	
+	<div style="display:none">
+		<input type="hidden" name="parent_id" value="<%=parent_id%>"/>
+		<input type="hidden" name="parent_type" value="<%=parent_type%>"/>
+		<input type="hidden" name="position" value="<%=position%>"/>
+		
+		<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
+		<input type="hidden" name="harv_attr_id" value=""/>
+		
+		<input type="hidden" name="mode" value="add"/>
+	</div>	
 	</form>
 	</div>
 </body>

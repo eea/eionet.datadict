@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*, eionet.util.Util"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 
@@ -11,7 +11,7 @@ String idf = (String)request.getAttribute("identifier");
 Vector entries = (Vector)request.getAttribute("entries");
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 		<%@ include file="headerinfo.jsp" %>
     <title>Data Dictionary</title>
@@ -21,35 +21,24 @@ Vector entries = (Vector)request.getAttribute("entries");
 	    	document.forms["form1"].elements["action"].value = action;
 	    	document.forms["form1"].submit();
     	}
-    	
-    	function load(){
-	    	resize();
-    	}
-    	
-    	function resize(){
-	    	window.resizeTo(800, 450);
-    	}
 // ]]>
     </script>
 </head>
-<body class="popup" onload="load()">
+<body class="popup">
 <div id="pagehead">
     <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
     <div id="networktitle">Eionet</div>
     <div id="sitetitle">Data Dictionary (DD)</div>
     <div id="sitetagline">This service is part of Reportnet</div>    
 </div> <!-- pagehead -->
-<div id="operations" style="margin-top:10px">
-	<ul>
-		<li><a href="javascript:window.close();">Close</a></li>
-	</ul>
-</div>	
 <div id="workarea">
 <h1>Cache for <%=request.getAttribute("object_type")%> <em><%=idf%></em></h1>
 <br/>
-<form name="form1" action="GetCache" method="post">	
-	<input type="button" class="smallbutton" value="Update selected" onclick="submitForm('update')"/>
-	<input type="button" class="smallbutton" value="Remove selected" onclick="submitForm('clear')"/>		
+<form id="form1" action="GetCache" method="post">
+	<div>
+		<input type="button" class="smallbutton" value="Update selected" onclick="submitForm('update')"/>
+		<input type="button" class="smallbutton" value="Remove selected" onclick="submitForm('clear')"/>
+	</div>
 	<table class="datatable" style="width:auto">
 		<thead>
 		<tr>
@@ -84,11 +73,12 @@ Vector entries = (Vector)request.getAttribute("entries");
 		%>
 		</tbody>
 	</table>
-	
-	<input type="hidden" name="action" value="update"/>
-	<input type="hidden" name="obj_id" value="<%=objID%>"/>
-	<input type="hidden" name="obj_type" value="<%=objType%>"/>
-	<input type="hidden" name="idf" value="<%=idf%>"/>	
+	<div style="display:none">
+		<input type="hidden" name="action" value="update"/>
+		<input type="hidden" name="obj_id" value="<%=objID%>"/>
+		<input type="hidden" name="obj_type" value="<%=objType%>"/>
+		<input type="hidden" name="idf" value="<%=idf%>"/>
+	</div>
 </form>
 </div>
 </body>

@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.net.URL,java.net.URLEncoder,java.net.MalformedURLException"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private Vector complexAttrs=null;%>
 
@@ -125,11 +125,10 @@ private String legalizeAlert(String in){
 		}		
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Complex attributes</title>
-    <script type="text/javascript" src="script.js"></script>
 	<script type="text/javascript">
 	// <![CDATA[
 			function submitForm(mode){
@@ -175,18 +174,10 @@ private String legalizeAlert(String in){
 				window.location.replace(url);
 			}
 			
-			function load(){
-				resize();
-			}
-			
-			function resize(){
-		    	window.resizeTo(700, 700);
-			}
-			
 	// ]]>
 	</script>
 </head>
-<body class="popup" onload="load()">
+<body class="popup">
 <div id="pagehead">
     <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
     <div id="networktitle">Eionet</div>
@@ -198,7 +189,7 @@ private String legalizeAlert(String in){
 <div id="operations">
 	<ul>
 		<li><a href="javascript:window.close();">Close</a></li>
-		<li class="help"><a target="_blank" href="help.jsp?screen=complex_attrs&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+		<li class="help"><a href="help.jsp?screen=complex_attrs&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 	</ul>
 </div>
 
@@ -211,7 +202,7 @@ if (complexAttrs==null || complexAttrs.size() == 0){
 %>
 
 <div style="clear:right;padding-top:10px">
-<form name="form1" method="post" action="complex_attrs.jsp">
+<form id="form1" method="post" action="complex_attrs.jsp">
 	<%
 	if (mComplexAttrs!=null && mComplexAttrs.size()>0){
 		%>
@@ -289,10 +280,10 @@ for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
 					%>
 				</td>
 				<td valign="middle">
-					<b>&#160;<%=Util.replaceTags(attrName)%></b>&nbsp;&nbsp;&nbsp;
+					<b>&nbsp;<%=Util.replaceTags(attrName)%></b>&nbsp;&nbsp;&nbsp;
 					<%
 					if (inherited==null){%>
-						<img border="0" src="images/<%=Util.replaceTags(obligImg, true)%>" width="16" height="16" alt="<%=Util.replaceTags(obligStr, true)%>"/><%
+						<img src="images/<%=Util.replaceTags(obligImg, true)%>" width="16" height="16" alt="<%=Util.replaceTags(obligStr, true)%>" style="border:0"/><%
 					}
 					else{ %>
 						<%=inherited%><%
@@ -338,9 +329,9 @@ for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
 								String fieldID = (String)hash.get("id");
 								String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 								if (fieldValue == null) fieldValue = " ";
-								fieldValue = Util.replaceTags(fieldValue);								
+								fieldValue = Util.replaceTags(fieldValue);							
 								%>
-								<td class="small" style="padding-right:10" <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=Util.replaceTags(fieldValue)%></td>
+								<td class="small" style="padding-right:10;background-color:#D3D3D3;" <% if (j % 2 != 0) %> <%;%>><%=fieldValue%></td>
 								<%
 							}
 							%>
@@ -356,23 +347,22 @@ for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
 	}
 %>
 
-<input type="hidden" name="mode" value="delete"/>
-
-<input type="hidden" name="parent_id" value="<%=parent_id%>"/>
-<input type="hidden" name="parent_name" value="<%=Util.replaceTags(parent_name, true)%>"/>
-<input type="hidden" name="parent_type" value="<%=parent_type%>"/>
-<input type="hidden" name="parent_ns" value="<%=parent_ns%>"/>
-<input type="hidden" name="table_id" value="<%=table_id%>"/>
-<input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
-
-<%
-if (ds != null){
-	%>
-	<input type="hidden" name="ds" value="<%=ds%>"/>
+<div style="display:none">
+	<input type="hidden" name="mode" value="delete"/>
+	<input type="hidden" name="parent_id" value="<%=parent_id%>"/>
+	<input type="hidden" name="parent_name" value="<%=Util.replaceTags(parent_name, true)%>"/>
+	<input type="hidden" name="parent_type" value="<%=parent_type%>"/>
+	<input type="hidden" name="parent_ns" value="<%=parent_ns%>"/>
+	<input type="hidden" name="table_id" value="<%=table_id%>"/>
+	<input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
 	<%
-}
-%>
-															 
+	if (ds != null){
+		%>
+		<input type="hidden" name="ds" value="<%=ds%>"/>
+		<%
+	}
+	%>
+</div>
 </form>
 </div>
 </div> <!-- workarea -->

@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.Vector,com.tee.xmlserver.*,eionet.meta.MrProper,eionet.util.Util,java.sql.Connection,java.sql.SQLException"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
@@ -13,12 +13,11 @@
 	}
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary</title>
-	<script language="javascript" src='script.js' type="text/javascript"></script>
-	<script language="javascript" type="text/javascript">
+	<script type="text/javascript">
 	// <![CDATA[
 	
 		var idsCleared = false;
@@ -106,7 +105,7 @@
 		            	}
 		            	%>
 		            	
-		            	<tr height="10"><td>&#160;</td></tr>
+		            	<tr><td>&nbsp;</td></tr>
 		            	<tr>
 		            		<td><a href="clean.jsp">&lt; back to cleanup page</a></td>
 		            	</tr>		            	
@@ -125,7 +124,7 @@
 				with great caution as you might accidentally delete some important data!
 				</p>
 				
-				<form name="form1" action="clean.jsp" method="post">
+				<form id="form1" action="clean.jsp" method="post">
 				
 					<table width="auto" cellspacing="0">
 						<tr>
@@ -177,7 +176,7 @@
 									   </label>
 							</td>
 						</tr>
-						<tr style="height:10px;"><td>&#160;</td></tr>
+						<tr style="height:10px;"><td>&nbsp;</td></tr>
 						<tr>
 							<td>
 								<%
@@ -189,22 +188,22 @@
 						
 						<%
 						if (request.getParameter("smersh")!=null){ %>
-							<tr height="10"><td>&#160;</td></tr>
+							<tr><td>&nbsp;</td></tr>
 							<tr>
 								<td>
 									<table cellspacing="0" cellpadding="0">
 										<tr>
-											<td colspan="2">&#160;</td>
-											<td bgcolor="#D3D3D3">
+											<td colspan="2">&nbsp;</td>
+											<td style="background-color:#D3D3D3;">
 												<span class="smallfont">
 													<input type="radio" name="rm_obj_type" value="dst"/>datasets
 												</span>
 											</td>
-											<td>&#160;</td>
-											<td  bgcolor="#D3D3D3">
+											<td>&nbsp;</td>
+											<td style="background-color:#D3D3D3;">
 												<span class="smallfont">
-													<input type="radio" name="rm_crit" value="lid" onclick="rmCrit()"/>Identifier&#160;
-													<input type="text" class="smalltext" name="rm_idfier" disabled/>
+													<input type="radio" name="rm_crit" value="lid" onclick="rmCrit()"/>Identifier&nbsp;
+													<input type="text" class="smalltext" name="rm_idfier" disabled="disabled"/>
 												</span>
 											</td>
 										</tr>
@@ -214,36 +213,36 @@
 									   				value="<%=MrProper.RMV_OBJECTS%>"/>
 											</td>
 											<td style="padding-left:5;padding-right:5"><span class="smallfont">Remove</span></td>
-											<td bgcolor="#D3D3D3">
+											<td style="background-color:#D3D3D3;">
 												<span class="smallfont">
 													<input type="radio" name="rm_obj_type" value="tbl"/>tables
 												</span>
 											</td>
 											<td style="padding-left:5;padding-right:5"><span class="smallfont">with</span></td>
-											<td  bgcolor="#D3D3D3">
+											<td style="background-color:#D3D3D3;">
 												<span class="smallfont">
-													&#160;&#160;&#160;&#160;&#160;&#160;& parent ns&#160;
-													<input type="text" class="smalltext" name="rm_ns" disabled/>
+													&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp; parent ns&nbsp;
+													<input type="text" class="smalltext" name="rm_ns" disabled="disabled"/>
 												</span>
 											</td>
 										</tr>
 										<tr>
-											<td colspan="2">&#160;</td>
-											<td bgcolor="#D3D3D3">
+											<td colspan="2">&nbsp;</td>
+											<td style="background-color:#D3D3D3;">
 												<span class="smallfont">
 													<input type="radio" name="rm_obj_type" value="elm"/>elements
 												</span>
 											</td>
-											<td>&#160;</td>
-											<td  bgcolor="#D3D3D3">
+											<td>&nbsp;</td>
+											<td style="background-color:#D3D3D3;">
 												<span class="smallfont">
-													<input type="radio" name="rm_crit" value="id" onclick="rmCrit()"/>ids&#160;
+													<input type="radio" name="rm_crit" value="id" onclick="rmCrit()"/>ids&nbsp;
 													<input type="text"
 														   class="smalltext"
 														   name="rm_id"
 														   value="(delimited by space)"
 														   onclick="clearIds()"
-														   disabled/>
+														   disabled="disabled"/>
 												</span>
 											</td>
 										</tr>

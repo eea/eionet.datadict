@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private String mode=null;%>
 <%!private Hashtable attrField=null;%>
@@ -43,7 +43,7 @@ private String legalizeAlert(String in){
 			if (request.getMethod().equals("POST")){
       			if (user == null){
 	      			%>
-	      				<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	      				<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	      				<body>
 	      					<h1>Error</h1><b>Not authorized to post any data!</b>
 	      				</body>
@@ -93,7 +93,7 @@ private String legalizeAlert(String in){
 					}
 					catch (Exception e){
 						%>
-						<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><body><b><%=e.toString()%></b></body></html>
+						<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body><b><%=e.toString()%></b></body></html>
 						<%
 						return;
 					}
@@ -137,12 +137,11 @@ private String legalizeAlert(String in){
 
 			%>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 		<%@ include file="headerinfo.jsp" %>
 		<title>Meta</title>
-		<script language="javascript" src='script.js' type="text/javascript"></script>
-		<script language="javascript" type="text/javascript">
+		<script type="text/javascript">
 		// <![CDATA[
 	
 			function submitForm(mode){
@@ -190,11 +189,11 @@ private String legalizeAlert(String in){
 	<%
 	String backURL = "" + "/m_attr_fields.jsp?attr_id=" + attr_id + "&attr_name=" + attr_name;
 	%>
-	<form name="form1" method="post" action="m_attr_field.jsp">
+	<form id="form1" method="post" action="m_attr_field.jsp">
 	<div id="operations">
 		<ul>
 			<li class="help">
-				<a target="_blank" href="help.jsp?screen=complex_attr_field&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a>
+				<a href="help.jsp?screen=complex_attr_field&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a>
 			</li>
 		</ul>
 	</div>
@@ -220,7 +219,7 @@ private String legalizeAlert(String in){
 			</tr>
 			<tr>
 				<th scope="row" class="scope-row">
-					<!--a href="javascript:openPriority()"><span class="help">?</span></a>&#160;-->
+					<!--a href="javascript:openPriority()"><span class="help">?</span></a>&nbsp;-->
 					Priority
 				</th>
 				<td>
@@ -263,23 +262,27 @@ private String legalizeAlert(String in){
 			%>
 		
 	</table>
-		
-				<% 
-					if (user==null){ %>									
-						<input class="mediumbuttonb" type="button" value="Save" disabled="disabled"/>&#160;&#160;
-						<input class="mediumbuttonb" type="button" value="Delete" disabled="disabled"/>&#160;&#160;
-					<%} else {%>
-						<input class="mediumbuttonb" type="button" value="Save" onclick="submitForm('edit')"/>&#160;&#160;
-						<input class="mediumbuttonb" type="button" value="Delete" onclick="submitForm('delete')"/>&#160;&#160;
-					<% }
-				%>
-				
-	<input type="hidden" name="mode" value="<%=mode%>"/>
-	<input type="hidden" name="field_id" value="<%=field_id%>"/>
-	<input type="hidden" name="del_field" value="<%=field_id%>"/>
-	<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
-	<input type="hidden" name="attr_name" value="<%=Util.replaceTags(attr_name, true)%>"/>
-	
+		<div>
+		<% 
+		if (user==null){
+			%>
+			<input class="mediumbuttonb" type="button" value="Save" disabled="disabled"/>&nbsp;&nbsp;
+			<input class="mediumbuttonb" type="button" value="Delete" disabled="disabled"/>&nbsp;&nbsp;<%
+		}
+		else{
+			%>
+			<input class="mediumbuttonb" type="button" value="Save" onclick="submitForm('edit')"/>&nbsp;&nbsp;
+			<input class="mediumbuttonb" type="button" value="Delete" onclick="submitForm('delete')"/>&nbsp;&nbsp;<%
+		}
+		%>
+		</div>
+		<div style="display:none">
+			<input type="hidden" name="mode" value="<%=mode%>"/>
+			<input type="hidden" name="field_id" value="<%=field_id%>"/>
+			<input type="hidden" name="del_field" value="<%=field_id%>"/>
+			<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
+			<input type="hidden" name="attr_name" value="<%=Util.replaceTags(attr_name, true)%>"/>
+		</div>	
 	</form>
 </div>
 </div> <!-- container -->

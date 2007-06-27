@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.io.*,javax.servlet.http.HttpUtils"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final int MAX_CELL_LEN=40;%>
 <%!private static final int MAX_ATTR_LEN=500;%>
@@ -613,13 +613,12 @@
 <%
 // start HTML //////////////////////////////////////////////////////////////
 %>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
     <title><%=pageTitle.toString()%></title>
-    <script type="text/javascript" src='script.js'></script>
     <script type="text/javascript" src="querystring.js"></script>
-    <script type="text/javascript" src='modal_dialog.js'></script>
+    <script type="text/javascript" src="modal_dialog.js"></script>
     <script type="text/javascript">
 		// <![CDATA[
     
@@ -990,22 +989,17 @@
 
 			if (val.length > 0){
 				if (hasValue(id,val)){
-					alert("There can not be dublicate values!");
+					alert("There can not be duplicate values!");
 					return
 				}
-				if (document.all){
-					var oOption = document.createElement("option");				
-					document.all('attr_mult_' + id).options.add(oOption);
-					oOption.text = val;
-					oOption.value = val;
-					oOption.size=oOption.length;
-				}
-				else{
-					var oOption = new Option(val, val, false, false);
-					var slct = document.forms["form1"].elements["attr_mult_" + id]; 
-					slct.options[slct.length] = oOption;
-					slct.size=oOption.length;
-				}
+				
+				var selectName = "attr_mult_" + id;
+				var oOption = new Option(val, val, false, false);
+				var slct = document.forms["form1"].elements[selectName];
+				if (slct.length==1 && slct.options[0].value=="" && slct.options[0].text=="")
+					slct.remove(0);
+				slct.options[slct.length] = oOption;
+				slct.size=oOption.length;
 			}
  			form_changed("form1");
  		}
@@ -1017,20 +1011,14 @@
 			for (var j=0; j<elems.length; j++){
 				var elem = elems[j];
 				var elemName = elem.name;
-				if (startsWith(elemName, "attr_mult_")){
-					
-					if (document.all){
-						var optns=document.all(elemName).options;
-						for (var i=0; i<optns.length; i++){
-							var optn = optns.item(i);
-							optn.selected = "true";
-						}
+				if (startsWith(elemName, "attr_mult_")){					
+					var slct = document.forms["form1"].elements[elemName];
+					if (slct.length==1 && slct.options[0].value=="" && slct.options[0].text==""){
+						slct.remove(0);
+						slct.length = 0;
 					}
-					else{
-						var slct = document.forms["form1"].elements[elemName];
-						for (var i=0; i<slct.length; i++){
-							slct.options[i].selected = "true";
-						}
+					for (var i=0; i<slct.length; i++){
+						slct.options[i].selected = "true";
 					}
 				}
 			}
@@ -1173,6 +1161,7 @@ else{
 <%
 } // end if popup
 %>
+			
 			<div id="operations">
 				<%
 				String hlpScreen = "element";
@@ -1198,7 +1187,7 @@ else{
 						<li><a href="javascript:window.close();">Close</a></li><%
 					}
 					%>
-					<li class="help"><a target="_blank" href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+					<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 					<%
 					if (mode.equals("view") && user!=null && dataElement!=null && elmCommon && dataElement.getIdentifier()!=null){
 						%>
@@ -1216,26 +1205,6 @@ else{
 				</ul>
 			</div>
 			
-			<!-- The buttons displayed in view mode -->
-			<div style="clear:right; float:right">
-				<%
-				if (mode.equals("view")){
-					if (!elmCommon && editDstPrm){ %>
-						<input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/><%
-					}
-					if (elmCommon && canNewVersion){%>
-						<input type="button" class="smallbutton" value="New version" onclick="goTo('newversion', '<%=delem_id%>')"/><%
-					}
-					if (elmCommon && canCheckout){%>
-						&nbsp;<input type="button" class="smallbutton" value="Check out" onclick="goTo('checkout', '<%=delem_id%>')"/><%
-					}
-					if ((elmCommon && canCheckout) || (!elmCommon && editDstPrm)){%>
-						&nbsp;<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
-					}
-				}
-				%>
-			</div>
-			
 			<%
 			String verb = "View";
 			if (mode.equals("add"))
@@ -1245,28 +1214,46 @@ else{
 			String strCommon = elmCommon ? "common" : "";
 			%>
 			<h1><%=verb%> <%=strCommon%> element definition</h1>
-		    
-			<div style="clear:both">
-			<br/>
-			<form name="form1" id="form1" method="post" action="data_element.jsp">
 			
-				<%
-				if (!mode.equals("add")){ %>
-					<input type="hidden" name="delem_id" value="<%=delem_id%>"/><%
-				}
-				else { %>
-					<input type="hidden" name="dummy"/><%
-				}
-				%>
+			<form id="form1" method="post" action="data_element.jsp" style="clear:right;margin-top:10px">
+				<div style="display:none">
+					<%
+					if (!mode.equals("add")){ %>
+						<input type="hidden" name="delem_id" value="<%=delem_id%>"/><%
+					}
+					else { %>
+						<input type="hidden" name="dummy"/><%
+					}
+					%>
+				</div>				
 				
-				<!--=======================-->
-				<!-- main table inside div -->
-				<!--=======================-->
-				
-				               
+<!-- The buttons displayed in view mode -->
+
+						<%
+						if (mode.equals("view")){
+							%>
+				    		<div style="float:right;clear:left">
+				    			<%
+								if (!elmCommon && editDstPrm){ %>
+									<input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/><%
+								}
+								if (elmCommon && canNewVersion){%>
+									<input type="button" class="smallbutton" value="New version" onclick="goTo('newversion', '<%=delem_id%>')"/><%
+								}
+								if (elmCommon && canCheckout){%>
+									&nbsp;<input type="button" class="smallbutton" value="Check out" onclick="goTo('checkout', '<%=delem_id%>')"/><%
+								}
+								if ((elmCommon && canCheckout) || (!elmCommon && editDstPrm)){%>
+									&nbsp;<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
+								}
+								%>
+							</div><%
+						}
+						%>
+			           
 						<!-- add, save, check-in, undo check-out buttons -->
 					
-						<div style="float:right">
+						<div style="float:right;clear:left">
 							<%
 							// add case
 							if (mode.equals("add")){ %>
@@ -1288,13 +1275,12 @@ else{
 							else if (mode.equals("edit")){
 								%>
 								<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-								<input type="button" class="mediumbuttonb" value="Save & close" onclick="submitForm('editclose')"/>&nbsp;
+								<input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
 								<input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
 								<%
 							}
 							%>
 						</div>
-	                
 	                	<!-- main table body -->
 	                
 		                    
@@ -1337,15 +1323,15 @@ else{
 									if (dispOutputs==false)
 										dispOutputs = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
 									if (!popup && dispOutputs){ %>
-										<div id="createbox">
+										<div id="createbox" style="clear:right">
 											<table id="outputsmenu">
 												<tr>
 													<td style="width:73%">
 														Create an XML Schema for this element
 													</td>
 													<td style="width:27%">
-														<a target="_blank" href="GetSchema?id=ELM<%=delem_id%>">
-															<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
+														<a href="GetSchema?id=ELM<%=delem_id%>">
+															<img style="border:0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 														</a>
 													</td>
 												</tr>
@@ -1356,8 +1342,8 @@ else{
 															Get the comma-separated codelist of this element
 														</td>
 														<td style="width:27%">
-															<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
-																<img border="0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
+															<a href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
+																<img style="border:0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
 															</a>
 														</td>
 													</tr>
@@ -1366,8 +1352,8 @@ else{
 															Get the codelist of this element in XML format
 														</td>
 														<td style="width:27%">
-															<a target="_blank" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM&amp;format=xml">
-																<img border="0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
+															<a href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM&amp;format=xml">
+																<img style="border:0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
 															</a>
 														</td>
 													</tr><%
@@ -1401,8 +1387,8 @@ else{
 												}
 											}
 											%>
-											<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
-												<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+											<a href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
+												<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 											</a>
 								</div>
 								
@@ -1434,15 +1420,15 @@ else{
 								    		<tr id="short_name_row">
 												<th scope="row" class="scope-row short_name">Short name</th>
 												<td class="short_name simple_attr_help">
-													<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-														<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+													<a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+														<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 													</a>
 												</td>
 												<%
 												if (colspan==4){
 													%>
 													<td class="short_name simple_attr_help">
-														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+														<img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
@@ -1476,14 +1462,14 @@ else{
 														Dataset
 														</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
-															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+														<a href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
+															<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
 														<td class="simple_attr_help">
-															<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+															<img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
@@ -1511,14 +1497,14 @@ else{
 														Table
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?screen=element&amp;area=table" onclick="pop(this.href);return false;">
-															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+														<a href="help.jsp?screen=element&amp;area=table" onclick="pop(this.href);return false;">
+															<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
 														<td class="simple_attr_help">
-															<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+															<img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
@@ -1545,14 +1531,14 @@ else{
 														RegistrationStatus
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
-															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+														<a href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
+															<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
 														<td class="simple_attr_help">
-															<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+															<img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
@@ -1599,14 +1585,14 @@ else{
 														GIS type
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
-															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+														<a href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
+															<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
 														<td class="simple_attr_help">
-															<img border="0" src="images/optional.gif" width="16" height="16" alt=""/>
+															<img style="border:0" src="images/optional.gif" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
@@ -1653,12 +1639,12 @@ else{
 														Reference URL
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
-															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+														<a href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
+															<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 														</a>
 													</td>
 													<td class="simple_attr_value">
-														<small><a target="_blank" href="<%=refUrl%>"><%=refUrl%></a></small>
+														<small><a href="<%=refUrl%>"><%=refUrl%></a></small>
 													</td>
 													
 													<%isOdd = Util.isOdd(++displayed);%>
@@ -1769,14 +1755,14 @@ else{
 														<%=Util.replaceTags(attribute.getShortName())%>
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+														<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+															<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
 														<td class="simple_attr_help">
-															<img border="0" src="images/<%=Util.replaceTags(obligImg)%>" width="16" height="16" alt=""/>
+															<img style="border:0" src="images/<%=Util.replaceTags(obligImg)%>" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
@@ -1788,13 +1774,13 @@ else{
 														// handle image attribute first
 														if (dispType.equals("image")){
 															if (!imagesQuicklinkSet){ %>
-																<a name="images"></a><%
+																<a id="images"></a><%
 																imagesQuicklinkSet = true;
 															}
 															// thumbnail
 															if (mode.equals("view") && !Util.voidStr(attrValue)){ %>
-																<a target="_blank" href="visuals/<%=Util.replaceTags(attrValue)%>" onFocus="blur()" onclick="pop(this.href);return false;">
-																	<img src="visuals/<%=Util.replaceTags(attrValue)%>" border="0" height="100" width="100" alt=""/>
+																<a href="visuals/<%=Util.replaceTags(attrValue)%>" onclick="pop(this.href);return false;">
+																	<img src="visuals/<%=Util.replaceTags(attrValue)%>" style="border:0" height="100" width="100" alt=""/>
 																</a><br/><%
 															}
 															// link
@@ -1802,7 +1788,7 @@ else{
 																String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
 																%>
 																<span class="barfont">
-																	[Click <a target="_blank" onclick="pop(this.href);return false;" href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dataElement.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>"><b>HERE</b></a> to <%=Util.replaceTags(actionText)%>]
+																	[Click <a onclick="pop(this.href);return false;" href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dataElement.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>"><b>HERE</b></a> to <%=Util.replaceTags(actionText)%>]
 																</span><%
 															}
 														}
@@ -1834,7 +1820,12 @@ else{
 															// mutliple display
 															if (dispMultiple && !dispType.equals("image")){ %>
 															
-																<select <%=disabled%> id="attr_mult_<%=attrID%>" name="attr_mult_<%=attrID%>" multiple="multiple" style="width:auto"><%
+																<select <%=disabled%> id="attr_mult_<%=attrID%>" name="attr_mult_<%=attrID%>" multiple="multiple" style="width:auto">
+																	<%
+																	if (multiValues==null || multiValues.size()==0){ %>
+																		<option value=""></option><%
+																	}
+																	
 																	for (int k=0; multiValues!=null && k<multiValues.size(); k++){
 																		attrValue = (String)multiValues.get(k);
 																		%>
@@ -1845,8 +1836,8 @@ else{
 																
 																<%
 																if (disabled.equals("")){ %>
-																	<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" border="0" title="Click here to remove selected value" alt=""/></a>
-																	<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=Util.replaceTags(dispType)%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" border="0" title="Click here to add a new value" alt=""/></a><%
+																	<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" style="border:0" title="Click here to remove selected value" alt=""/></a>
+																	<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=Util.replaceTags(dispType)%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" style="border:0" title="Click here to add a new value" alt=""/></a><%
 																}
 																
 																if (dispType.equals("select")){ %>							
@@ -1950,8 +1941,8 @@ else{
 																		}
 																		%>
 																	</select>
-																	<a target="_blank" onclick="pop(this.href);return false;" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
-																		<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+																	<a onclick="pop(this.href);return false;" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
+																		<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 																	</a>
 																	<%
 																}
@@ -1981,14 +1972,14 @@ else{
 													Is ROD parameter
 												</th>
 												<td class="simple_attr_help">
-													<a target="_blank" href="help.jsp?screen=element&amp;area=is_rod_param" onclick="pop(this.href);return false;">
-														<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+													<a href="help.jsp?screen=element&amp;area=is_rod_param" onclick="pop(this.href);return false;">
+														<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
 													<td class="simple_attr_help">
-														<img border="0" src="images/optional.gif" width="16" height="16" alt=""/>
+														<img style="border:0" src="images/optional.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
@@ -2028,14 +2019,14 @@ else{
 														CheckInNo
 													</th>
 													<td class="simple_attr_help">
-														<a target="_blank" href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href);return false;">
-															<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+														<a href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href);return false;">
+															<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 														</a>
 													</td>
 													<%
 													if (colspan==4){%>
 														<td class="simple_attr_help">
-															<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+															<img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 														</td><%
 													}
 													%>
@@ -2056,14 +2047,14 @@ else{
 													Identifier
 												</th>
 												<td class="simple_attr_help">
-													<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-														<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+													<a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+														<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 													</a>
 												</td>
 												<%
 												if (colspan==4){%>
 													<td class="simple_attr_help">
-														<img border="0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+														<img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
 													</td><%
 												}
 												%>
@@ -2103,18 +2094,18 @@ else{
 											
 												<!-- title & link part -->
 												<h2>
-														<%=title%><a name="values"></a>
+														<%=title%><a id="values"></a>
 													
 													<%
 													if (!mode.equals("view")){
 														%>
 														<span class="simple_attr_help">
-															<a target="_blank" href="help.jsp?screen=element&amp;area=<%=Util.replaceTags(helpAreaName)%>" onclick="pop(this.href);return false;">
-																<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+															<a href="help.jsp?screen=element&amp;area=<%=Util.replaceTags(helpAreaName)%>" onclick="pop(this.href);return false;">
+																<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 															</a>
 														</span>
 														<span class="simple_attr_help">
-															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
+															<img style="border:0" src="images/optional.gif" width="16" height="16" alt="optional"/>
 														</span><%
 													}
 													
@@ -2209,17 +2200,17 @@ else{
 											%>										
 												<!-- title & link part -->
 												<h2>
-													Foreign key relations<a name="fkeys"></a>													
+													Foreign key relations<a id="fkeys"></a>													
 													<%
 													if (!mode.equals("view")){
 														%>
 														<span class="simple_attr_help">
-															<a target="_blank" href="help.jsp?screen=element&amp;area=fks_link" onclick="pop(this.href);return false;">
-																<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+															<a href="help.jsp?screen=element&amp;area=fks_link" onclick="pop(this.href);return false;">
+																<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 															</a>
 														</span>
 														<span class="simple_attr_help">
-															<img border="0" src="images/optional.gif" width="16" height="16" alt="optional"/>
+															<img style="border:0" src="images/optional.gif" width="16" height="16" alt="optional"/>
 														</span><%
 													}
 													// the link
@@ -2237,8 +2228,8 @@ else{
 												if (mode.equals("view") && fKeys!=null && fKeys.size()>0){%>
 															<table class="datatable subtable">
 																<tr>
-																	<th width="50%">Element</th>
-																	<th width="50%">Table</th>
+																	<th style="width:50%">Element</th>
+																	<th style="width:50%">Table</th>
 																</tr>
 																<%
 																// rows
@@ -2255,12 +2246,12 @@ else{
 																		
 																	%>
 																	<tr>
-																		<td width="50%">
+																		<td style="width:50%">
 																			<a href="data_element.jsp?delem_id=<%=fkElmID%>&amp;mode=view">
 																				<%=Util.replaceTags(fkElmName)%>
 																			</a>
 																		</td>
-																		<td width="50%">
+																		<td style="width:50%">
 																			<%=Util.replaceTags(fkTblName)%>
 																		</td>
 																	</tr><%
@@ -2282,7 +2273,7 @@ else{
 											
 												<!-- title part -->
 												<h2>
-														Tables using this common element<a name="fkeys"></a>
+														Tables using this common element<a id="fkeys"></a>
 												</h2>
 												
 												<!-- table part -->
@@ -2348,25 +2339,25 @@ else{
 
 											
 												<h2>
-														Complex attributes<a name="cattrs"></a>
+														Complex attributes<a id="cattrs"></a>
 													
 													<%
 													if (!mode.equals("view")){
 														%>
 														<span class="simple_attr_help">
-															<a target="_blank" href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
-																<img border="0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+															<a href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
+																<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 															</a>
 														</span>
 														<span class="simple_attr_help">
-															<img border="0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
+															<img style="border:0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
 														</span><%
 													}
 													
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
 														<span class="barfont_bordered">
-															[Click <a target="_blank" onclick="pop(this.href);return false;" href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this element]
+															[Click <a onclick="pop(this.href);return false;" href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this element]
 														</span><%
 													}
 													%>
@@ -2393,13 +2384,13 @@ else{
 																	
 																	<tr class="zebra<%=isOdd%>">
 																		<td>
-																			<a target="_blank" onclick="pop(this.href);return false;" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+																			<a onclick="pop(this.href);return false;" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
 																		<td>
-																			<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href);return false;">
-																				<img border="0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+																			<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href);return false;">
+																				<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 																			</a>
 																		</td>
 																		<td>
@@ -2449,7 +2440,7 @@ else{
 										if (mode.equals("view") && elmCommon && otherVersions!=null && otherVersions.size()>0){
 											%>
 											<h2>
-												Other versions<a name="versions"></a>
+												Other versions<a id="versions"></a>
 											</h2>
 											<table class="datatable" id="other-versions">
 												<col style="width:25%"/>
@@ -2509,54 +2500,53 @@ else{
 					<!-- end main table body -->
 					
 				<!-- end main table -->
-				
-				<input type="hidden" name="mode" value="<%=mode%>"/>
-				<input type="hidden" name="check_in" value="false"/>
-				<input type="hidden" name="copy_elem_id" value=""/>
-				<input type="hidden" name="changed" value="0"/>
-				<input type="hidden" name="saveclose" value="false"/>
-				
-				<%
-				if (type!=null){ %>
-					<input type="hidden" name="type" value="<%=type%>"/><%
-				}
-
-				if (elmCommon){
-					String checkedoutCopyID = dataElement==null ? null : dataElement.getCheckedoutCopyID();
-					if (checkedoutCopyID!=null){%>
-						<input type="hidden" name="checkedout_copy_id" value="<%=checkedoutCopyID%>"/><%
+				<div style="display:none">
+					<input type="hidden" name="mode" value="<%=mode%>"/>
+					<input type="hidden" name="check_in" value="false"/>
+					<input type="hidden" name="copy_elem_id" value=""/>
+					<input type="hidden" name="changed" value="0"/>
+					<input type="hidden" name="saveclose" value="false"/>
+					
+					<%
+					if (type!=null){ %>
+						<input type="hidden" name="type" value="<%=type%>"/><%
 					}
-					if (dataElement!=null){
-						String checkInNo = dataElement.getVersion();
-						if (checkInNo.equals("1")){%>
-							<input type="hidden" name="upd_version" value="true"/><%
+	
+					if (elmCommon){
+						String checkedoutCopyID = dataElement==null ? null : dataElement.getCheckedoutCopyID();
+						if (checkedoutCopyID!=null){%>
+							<input type="hidden" name="checkedout_copy_id" value="<%=checkedoutCopyID%>"/><%
 						}
+						if (dataElement!=null){
+							String checkInNo = dataElement.getVersion();
+							if (checkInNo.equals("1")){%>
+								<input type="hidden" name="upd_version" value="true"/><%
+							}
+						}
+						%>
+						<input type="hidden" name="common" value="true"/><%
+					}
+					else{
+						String dstNamespaceID = dataset.getNamespaceID();
+						if (dstNamespaceID!=null && dstNamespaceID.length()>0){ %>
+							<input type="hidden" name="dst_namespace_id" value="<%=dstNamespaceID%>"/><%
+						}
+						String tblNamespaceID = dsTable.getNamespace();
+						if (tblNamespaceID!=null && tblNamespaceID.length()>0){ %>
+							<input type="hidden" name="tbl_namespace_id" value="<%=tblNamespaceID%>"/><%
+						}
+	
+					}
+					// submitter url, might be used by POST handler who might want to send back to POST submitter
+					String submitterUrl = Util.getServletPathWithQueryString(request);
+					if (submitterUrl!=null){
+						submitterUrl = Util.replaceTags(submitterUrl);
+						%>
+						<input type="hidden" name="submitter_url" value="<%=submitterUrl%>"/><%
 					}
 					%>
-					<input type="hidden" name="common" value="true"/><%
-				}
-				else{
-					String dstNamespaceID = dataset.getNamespaceID();
-					if (dstNamespaceID!=null && dstNamespaceID.length()>0){ %>
-						<input type="hidden" name="dst_namespace_id" value="<%=dstNamespaceID%>"/><%
-					}
-					String tblNamespaceID = dsTable.getNamespace();
-					if (tblNamespaceID!=null && tblNamespaceID.length()>0){ %>
-						<input type="hidden" name="tbl_namespace_id" value="<%=tblNamespaceID%>"/><%
-					}
-
-				}
-				// submitter url, might be used by POST handler who might want to send back to POST submitter
-				String submitterUrl = Util.getServletPathWithQueryString(request);
-				if (submitterUrl!=null){
-					submitterUrl = Util.replaceTags(submitterUrl);
-					%>
-					<input type="hidden" name="submitter_url" value="<%=submitterUrl%>"/><%
-				}
-				%>
-				
+				</div>				
 			</form>
-			</div>
 			</div> <!-- workarea -->
 			<%
 			if (!popup){ %>

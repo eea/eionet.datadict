@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private Vector selected=null;%>
 
@@ -38,11 +38,11 @@
 			
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 		<%@ include file="headerinfo.jsp" %>
 		<title>Meta</title>
-		<script language="javascript" type="text/javascript">
+		<script type="text/javascript">
 		// <![CDATA[
 			function selectAttr(id, oControl) {
 				if (opener && !opener.closed) {
@@ -98,10 +98,15 @@
 				closeme();
 			}
 			function onLoad(){
-				
+				// remove the empty option which is there for XHTML1.1 compliancy
+				if (document.forms["form1"].elements['val']){
+					if (document.forms["form1"].elements['val'].options && document.forms["form1"].elements['val'].length==1){
+						document.forms["form1"].elements['val'].remove(0);
+					}
+				}
 			  <%
 			  if(dispType.equals("select") || dispType.equals("text")){
-			  %>
+			  	%>
 				if (opener==null || opener.closed) {
 					alert("You have closed the main window.\n\nNo action will be taken on the choices in this dialog box.");
 					return;
@@ -171,12 +176,14 @@
 	</div>
 	
 <div id="workarea">
-	<form name="form1" onsubmit="ok()" action="">
+	<form id="form1" onsubmit="ok()" action="">
+		<div>
 		<%
 		if(dispType.equals("select") || dispType.equals("text")){
 			%>
 			<strong>Select value:</strong>
 			<select class="small" name="val" multiple="multiple" style="display:block">
+				<option value=""></option> <!-- for XHTML1.1 compliancy -->
 			</select><%
 		}
 		
@@ -194,9 +201,10 @@
 			}
 		}
 		%>
-		<input class="mediumbuttonb" type="button" value="OK" onclick="ok()"/>
-		<input class="mediumbuttonb" type="button" value="Cancel" onclick="closeme()"/>
-		<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
+			<input class="mediumbuttonb" type="button" value="OK" onclick="ok()"/>
+			<input class="mediumbuttonb" type="button" value="Cancel" onclick="closeme()"/>
+			<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
+		</div>
 	</form>
 </div>
 

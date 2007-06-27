@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,java.io.*,eionet.meta.*,com.tee.xmlserver.*,com.tee.uit.help.Helps,eionet.util.Util"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
 
@@ -55,7 +55,7 @@ finally{
 
 	
 %>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary</title>
@@ -81,8 +81,10 @@ finally{
 						<%
 						if (errTrc!=null){
 							%>
-							<form name="errtrc" action="http://">
-								<input type="hidden" name="errtrc" value="<%=errTrc%>"/>
+							<form id="errtrc" action="http://">
+								<div style="display:none">
+									<input type="hidden" name="errtrc" value="<%=errTrc%>"/>
+								</div>
 							</form>
 							<%
 						}

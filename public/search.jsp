@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!final static String POPUP="popup";%>
 
@@ -123,11 +123,11 @@ private String setDefaultAttrs(String name){
 
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Search elements - Data Dictionary</title>
-	<script type="text/javascript" language="javascript">
+	<script type="text/javascript">
 	// <![CDATA[
 		attrWindow=null;
 
@@ -219,9 +219,7 @@ private String setDefaultAttrs(String name){
 <%
 boolean isPopup = (contextParam==null || !contextParam.equals(POPUP))==false;
 StringBuffer bodyAttrs = new StringBuffer("onload=\"onLoad()\"");
-if (!isPopup)
-	bodyAttrs.append(" onFocus=\"checkalert()\"");
-else
+if (isPopup)
 	bodyAttrs.append(" class=\"popup\"");
 %>
 
@@ -257,12 +255,12 @@ else{ %>
 							<li><a href="javascript:window.close();">Close</a></li><%
 						}
 						%>
-						<li class="help"><a target="_blank" href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+						<li class="help"><a href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 						<%
 						if (contextParam == null || !contextParam.equals(POPUP)){
 							boolean elmPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i");
 							if (elmPrm){%>
-								<li><a title="Add a definition of a new common element" href="javascript:window.location.assign('data_element.jsp?mode=add&common=true')">New common element</a></li><%
+								<li><a title="Add a definition of a new common element" href="javascript:window.location.assign('data_element.jsp?mode=add&amp;common=true')">New common element</a></li><%
 							}
 						}
 						%>
@@ -271,26 +269,29 @@ else{ %>
 				
 				<h1>Search data elements</h1>
 				<br/>
-				<form name="form1" action="search_results.jsp" method="get">
-				
-				<table width="auto" cellspacing="0" style="clear:right">
-
+				<form id="form1" action="search_results.jsp" method="get">
 					<%
 					String fk = request.getParameter("fk");
 					if (fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0){
 						%>
-						<input type="hidden" name="dataset" value="<%=sel_ds%>"/>
-						<input type="hidden" name="fk" value="<%=fk%>"/><%
+						<div style="display:none">
+							<input type="hidden" name="dataset" value="<%=sel_ds%>"/>
+							<input type="hidden" name="fk" value="<%=fk%>"/>
+						</div><%
 					}
-					else{
+					%>
+				<table width="auto" cellspacing="0" style="clear:right">
+
+					<%					
+					if ((fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0)==false){
 						%>
 						<tr valign="top">
 							<td align="right" style="padding-right:10">
 								<b>Dataset</b>
 							</td>
 							<td>
-								<a target="_blank" href="help.jsp?screen=search_element&amp;area=dataset" onclick="pop(this.href);return false;">
-									<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+								<a href="help.jsp?screen=search_element&amp;area=dataset" onclick="pop(this.href);return false;">
+									<img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 								</a>
 							</td>
 							<td colspan="2">
@@ -317,8 +318,8 @@ else{ %>
 							<b>Type</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+							<a href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
+								<img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -335,8 +336,8 @@ else{ %>
 							<b>Short name</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+							<a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+								<img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -349,8 +350,8 @@ else{ %>
 							<b>Identifier</b>
 						</td>
 						<td>
-							<a target="_blank" href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-								<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+							<a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+								<img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 							</a>
 						</td>
 						<td colspan="2">
@@ -383,7 +384,7 @@ else{ %>
 								<span class="mainfont"><b>Language</b></span>
 							</td>
 							<td align="right" style="padding-right:10">
-								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"><img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/></a>&#160;
+								<a href="delem_attribute.jsp?attr_id=<%=attrID%>&amp;type=SIMPLE&amp;mode=edit"><img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/></a>&nbsp;
 							</td>
 							<td colspan="2">
 								<select name="attr_<%=attrID%>" class="small">
@@ -470,8 +471,8 @@ else{ %>
 										<b><%=Util.replaceTags(attrName)%></b>
 									</td>
 									<td>
-										<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-											<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+										<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+											<img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 										</a>
 									</td>
 									<td colspan="2">
@@ -502,15 +503,15 @@ else{ %>
 									<b><%=Util.replaceTags(attrName)%></b>
 								</td>
 								<td>
-									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-										<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+									<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+										<img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 									</a>
 								</td>
 								<td>
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59"  value="<%=Util.replaceTags(attrValue, true)%>"/>
 								</td>
 								<td>
-									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
+									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
 								</td>
 							</tr>
 							<%
@@ -528,15 +529,15 @@ else{ %>
 									<b><%=Util.replaceTags(attrName)%></b>
 								</td>
 								<td>
-									<a target="_blank" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-										<img border="0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+									<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+										<img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 									</a>
 								</td>
 								<td>
 									<input type="text" class="smalltext" name="attr_<%=attrID%>" size="59" value=""/>
 								</td>
 								<td>
-									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" border="0" alt="Remove attribute from search criterias"/></a>
+									<a href="javascript:selAttr(<%=attrID%>, 'remove');"><img src="images/button_remove.gif" style="border:0" alt="Remove attribute from search criterias"/></a>
 								</td>
 							</tr>
 							<%
@@ -545,11 +546,11 @@ else{ %>
 					%>
 					
 					<tr valign="bottom">
-						<td width="150" colspan="2">&nbsp;</td>
+						<td style="width:150px" colspan="2">&nbsp;</td>
                 		<td colspan="2" class="smallfont_light">
                 			<input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked"/><label for="ssubstr">Substring search</label>
-                			<input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>&#160;&#160;
-                			<input type="radio" name="search_precision" id="sfree" value="free"/><label for="sfree">Free text search</label>&#160;&#160;
+                			<input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>&nbsp;&nbsp;
+                			<input type="radio" name="search_precision" id="sfree" value="free"/><label for="sfree">Free text search</label>&nbsp;&nbsp;
                 		</td>
                     </tr>
                     
@@ -605,7 +606,7 @@ else{ %>
 						<td align="left" colspan="2" style="font-size:65%">
 							<%
 							if (contextParam == null || !contextParam.equals(POPUP)){ %>
-								<a href="javascript:openAttributes();"><img src="images/button_plus.gif" border="0" alt="Click here to add more search criteria" title="Click here to add more search criteria"/></a>&nbsp;Add criteria<%
+								<a href="javascript:openAttributes();"><img src="images/button_plus.gif" style="border:0" alt="Click here to add more search criteria" title="Click here to add more search criteria"/></a>&nbsp;Add criteria<%
 							}
 							%>
 						</td>
@@ -613,49 +614,50 @@ else{ %>
 					
 				</table>
 
-				<input type="hidden" name="sel_attr" value=""/>
-				<input type="hidden" name="sel_type" value=""/>
-				
-				<!-- collect all the attributes already used in criterias -->
-				
-				<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
-                <input name='SearchType' type='hidden' value='SEARCH'/>
-                <input name="ctx" type="hidden" value="<%=Util.replaceTags(contextParam, true)%>"/>
-                
-                <%
-                String skipID = request.getParameter("skip_id");
-                if (skipID!=null && skipID.length()!=0){ %>
-                	<input type="hidden" name="skip_id" value="<%=skipID%>"/><%
-            	}
-            	
-                String selected = request.getParameter("selected");
-                if (selected!=null && selected.length()!=0){
-	                %>
-	                <input name='selected' type='hidden' value='<%=selected%>'/>
-	                <%
-                }                
-                
-                if (commonOnly){ %>
-                	<input type="hidden" name="common" value="true"/><%
-            	}
-            	
-            	if (nonCommonOnly){ %>
-            		<input type="hidden" name="common" value="false"/><%
-        		}
-        		String strExclude = request.getParameter("exclude");
-        		if (strExclude!=null){%>
-        			<input type="hidden" name="exclude" value="<%=strExclude%>"/><%
-    			}
-    			String skipTableID = request.getParameter("skip_table_id");
-    			if (skipTableID!=null && skipTableID.length()>0){ %>
-    				<input type="hidden" name="skip_table_id" value="<%=skipTableID%>"/><%
-				}
-    			if (fk!=null && fk.equals("true")){ %>
-    				<input type="hidden" name="for_fk_use" value="true"/><%
-				}
-
-        		%>
-                
+					<div style="display:none"> <!-- hidden inputs -->
+						<input type="hidden" name="sel_attr" value=""/>
+						<input type="hidden" name="sel_type" value=""/>
+						
+						<!-- collect all the attributes already used in criterias -->
+						
+						<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
+		                <input name='SearchType' type='hidden' value='SEARCH'/>
+		                <input name="ctx" type="hidden" value="<%=Util.replaceTags(contextParam, true)%>"/>
+		                
+		                <%
+		                String skipID = request.getParameter("skip_id");
+		                if (skipID!=null && skipID.length()!=0){ %>
+		                	<input type="hidden" name="skip_id" value="<%=skipID%>"/><%
+		            	}
+		            	
+		                String selected = request.getParameter("selected");
+		                if (selected!=null && selected.length()!=0){
+			                %>
+			                <input name='selected' type='hidden' value='<%=selected%>'/>
+			                <%
+		                }                
+		                
+		                if (commonOnly){ %>
+		                	<input type="hidden" name="common" value="true"/><%
+		            	}
+		            	
+		            	if (nonCommonOnly){ %>
+		            		<input type="hidden" name="common" value="false"/><%
+		        		}
+		        		String strExclude = request.getParameter("exclude");
+		        		if (strExclude!=null){%>
+		        			<input type="hidden" name="exclude" value="<%=strExclude%>"/><%
+		    			}
+		    			String skipTableID = request.getParameter("skip_table_id");
+		    			if (skipTableID!=null && skipTableID.length()>0){ %>
+		    				<input type="hidden" name="skip_table_id" value="<%=skipTableID%>"/><%
+						}
+		    			if (fk!=null && fk.equals("true")){ %>
+		    				<input type="hidden" name="for_fk_use" value="true"/><%
+						}
+		
+		        		%>
+					</div>                
 				</form>
 			</div> <!-- workarea -->
 	<%

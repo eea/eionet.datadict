@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!private Vector selected=null;%>
@@ -96,11 +96,11 @@
 
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 		<%@ include file="headerinfo.jsp" %>
 		<title>Meta</title>
-		<script language="javascript" type="text/javascript">
+		<script type="text/javascript">
 		// <![CDATA[
 			function pickTable(id, i, name) {
 				if (opener && !opener.closed) {
@@ -143,7 +143,7 @@
 	</div>
 
 <div id="workarea">
-	<form name="form1" action="">
+	<form id="form1" action="">
 		<h5>Select dataset table:</h5>
 		
 		<table id="tbl" class="datatable">
@@ -195,16 +195,18 @@
 				
 						String tblFullName = tblName;
 						tblName = tblName.length()>60 && tblName != null ? tblName.substring(0,60) + " ..." : tblName;
-						c++;
+						
+						String trStyle = (i%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
+						c++;						
 					%>
 				
-					<tr>
-						<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
+					<tr <%=trStyle%>>
+						<td align="left" style="padding-left:5;padding-right:10">
 							<a href="#" onclick="pickTable(<%=table_id%>, <%=c%>, '<%=table_name%>')">
 							<%=Util.replaceTags(table_name)%></a>
 						</td>					
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=Util.replaceTags(ds_name)%></td>
-						<td align="left" style="padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>><%=Util.replaceTags(tblName)%></td>
+						<td align="left" style="padding-right:10"><%=Util.replaceTags(ds_name)%></td>
+						<td align="left" style="padding-right:10"><%=Util.replaceTags(tblName)%></td>
 					</tr>
 				
 				<%
@@ -212,7 +214,7 @@
 			%>
 			</tbody>
 		</table>
-		<br/>
+
  	</form>
 </div>
 </body>

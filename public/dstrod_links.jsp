@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 
@@ -54,12 +54,11 @@ try{
 	Vector rodLinks = searchEngine.getRodLinks(dstID);
 	%>
 	
-	<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 		<head>
 			<%@ include file="headerinfo.jsp" %>
 			<title>Data Dictionary</title>
-			<script language="javascript" src='script.js' type="text/javascript"></script>
-			<script language="javascript" type="text/javascript">
+			<script type="text/javascript">
 			// <![CDATA[
 				function submitAdd(raID, raTitle, liID, liTitle){
 					
@@ -81,10 +80,10 @@ try{
 			</jsp:include>
 			<%@ include file="nmenu.jsp" %>
 			<div id="workarea"> <!-- start work area -->
-				<form name="rodlinks" action="dstrod_links.jsp" method="post">
+				<form id="rodlinks" action="dstrod_links.jsp" method="post">
 					<div id="operations">
 						<ul>
-							<li class="help"><a target="_blank" href="help.jsp?screen=dataset_rod&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+							<li class="help"><a href="help.jsp?screen=dataset_rod&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 						</ul>
 					</div>
 					<h1>ROD obligations corresponding to <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset</h1>
@@ -121,7 +120,7 @@ try{
 												<%=Util.replaceTags(raTitle)%>
 											</td>
 											<td style="padding-left:5;padding-right:10" <%=colorAttr%>>
-												<a target="_blank" href="<%=Util.replaceTags(raDetails, true)%>"><%=Util.replaceTags(raDetails, true)%></a>
+												<a href="<%=Util.replaceTags(raDetails, true)%>"><%=Util.replaceTags(raDetails, true)%></a>
 											</td>
 										</tr>
 										<%
@@ -129,16 +128,17 @@ try{
 									}
 									%>
 								</table>
-								
-								<input type="hidden" name="mode" value="rmv"/>
-								<input type="hidden" name="dst_id" value="<%=dstID%>"/>
-								<input type="hidden" name="dst_idf" value="<%=Util.replaceTags(dstIdf, true)%>"/>
-								<input type="hidden" name="dst_name" value="<%=Util.replaceTags(dstName, true)%>"/>
-								
-								<input type="hidden" name="ra_id" value=""/>
-								<input type="hidden" name="ra_title" value=""/>
-								<input type="hidden" name="li_id" value=""/>
-								<input type="hidden" name="li_title" value=""/>
+								<div style="display:none">
+									<input type="hidden" name="mode" value="rmv"/>
+									<input type="hidden" name="dst_id" value="<%=dstID%>"/>
+									<input type="hidden" name="dst_idf" value="<%=Util.replaceTags(dstIdf, true)%>"/>
+									<input type="hidden" name="dst_name" value="<%=Util.replaceTags(dstName, true)%>"/>
+									
+									<input type="hidden" name="ra_id" value=""/>
+									<input type="hidden" name="ra_title" value=""/>
+									<input type="hidden" name="li_id" value=""/>
+									<input type="hidden" name="li_title" value=""/>
+								</div>
 							</form>
 						</div> <!-- workarea -->
 						</div> <!-- container -->

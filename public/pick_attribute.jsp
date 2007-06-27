@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.Util"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private Vector mAttributes=null;%>
 <%!private Vector selected=null;%>
@@ -56,11 +56,11 @@ private String getAttributeIdByName(String name){
 
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 		<%@ include file="headerinfo.jsp" %>
 		<title>Meta</title>
-		<script language="javascript" type="text/javascript">
+		<script type="text/javascript">
 		// <![CDATA[
 			function selectAttr(id, oControl) {
 				if (opener && !opener.closed) {
@@ -96,7 +96,7 @@ private String getAttributeIdByName(String name){
 	
 	<div id="workarea" style="clear:right">
 	<h2>Select attributes:</h2>
-	<form name="form1" action="">
+	<form id="form1" action="">
 	<table>
 			<%
 			for (int i=0; i<mAttributes.size(); i++){
@@ -117,7 +117,7 @@ private String getAttributeIdByName(String name){
 
 				%>
 				<tr>
-					<td align="left" width="300pts">	
+					<td style="width:300px">	
 						<a href='#' onclick='selectAttr(<%=attr_id%>, this)'>
 							<%=Util.replaceTags(attr_name)%>
 						</a>
@@ -127,10 +127,12 @@ private String getAttributeIdByName(String name){
 			}
 			%>
 
-		<tr><td>&#160;</td></tr>
+		<tr><td>&nbsp;</td></tr>
 
 	</table>
-	<input type="hidden" name="type" value="<%=type%>"/>
+		<div style="display:none">
+			<input type="hidden" name="type" value="<%=type%>"/>
+		</div>
 	</form>
 	</div>
 </body>

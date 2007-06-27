@@ -1,5 +1,5 @@
 <%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,eionet.util.Util,java.sql.*,com.tee.xmlserver.*"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
 
@@ -10,12 +10,11 @@
 	AppUserIF user = SecurityUtil.getUser(request);
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary</title>
-	<script language="javascript" src='script.js' type="text/javascript"></script>
-	<script language="javascript" type="text/javascript">
+	<script type="text/javascript">
 	// <![CDATA[
 
 	function submitForm(mode){
@@ -94,7 +93,7 @@ String appName = ctx.getInitParameter("application-name");
 if (request.getMethod().equals("POST")){
 	if (user == null){
 		%>
-			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+			<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 			<body>
 				<h1>Error</h1><b>Not authorized to post any data!</b>
 			</body>
@@ -147,7 +146,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 <div id="workarea">
 	<div id="operations">
 		<ul>
-				<li class="help"><a target="_blank" href="help.jsp?screen=dataset_model&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+				<li class="help"><a href="help.jsp?screen=dataset_model&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
 		</ul>
 	</div>
 
@@ -204,7 +203,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
 						if (user!=null){
 							%>
 							<tr style="height:5px;"><td colspan="2"></td></tr>
-							<tr><td colspan="2" style="border-top:1px solid #008B8B;">&#160;</td></tr>
+							<tr><td colspan="2" style="border-top:1px solid #008B8B;">&nbsp;</td></tr>
 							
 							<tr>
 								<td colspan="2">
@@ -224,20 +223,20 @@ if (dsVisual!=null && dsVisual.length()!=0){
 				<%
 				if (user!=null){
 					%>
-					<form name="Upload" action="DsVisualUpload" method="post" enctype="multipart/form-data">
+					<form id="Upload" action="DsVisualUpload" method="post" enctype="multipart/form-data">
 
 						<table width="auto" cellspacing="0">
 							
 							<tr>
 								<td align="left" style="padding-right:5">
-									<input type="radio" name="fileORurl" value="file" checked="checked"/>&#160;File:</td>
+									<input type="radio" name="fileORurl" value="file" checked="checked"/>&nbsp;File:</td>
 								<td align="left">
 									<input type="file" class="smalltext" name="file_input" size="40"/>
 								</td>
 							</tr>
 							<tr>
 								<td align="left" style="padding-right:5">
-									<input type="radio" class="smalltext" name="fileORurl" value="url"/>&#160;URL:
+									<input type="radio" class="smalltext" name="fileORurl" value="url"/>&nbsp;URL:
 								</td>
 								<td align="left">
 									<input type="text" class="smalltext" name="url_input" size="52"/>
@@ -247,22 +246,23 @@ if (dsVisual!=null && dsVisual.length()!=0){
 							<tr>
 								<td></td>
 								<td align="left">
-									<input name="SUBMIT" type="button" class="mediumbuttonb" value="Upload" onclick="submitForm('upload')" onkeypress="submitForm('upload')"/>&#160;&#160;
+									<input name="SUBMIT" type="button" class="mediumbuttonb" value="Upload" onclick="submitForm('upload')" onkeypress="submitForm('upload')"/>&nbsp;&nbsp;
 									<input name="REMOVE" type="button" class="mediumbuttonb" value="Remove" onclick="submitForm('remove')" onkeypress="submitForm('remove')"/>
 								</td>
 							</tr>
 						</table>
-						
-						<input type="hidden" name="ds_id" value="<%=ds_id%>"/>
-						<%
-						if (dsVisual != null && dsVisual.length()!=0){
-							%>
-							<input type="hidden" name="visual" value="<%=Util.replaceTags(dsVisual, true)%>"/>
+						<div style="display:none">
+							<input type="hidden" name="ds_id" value="<%=ds_id%>"/>
 							<%
-						}
-						%>
-						
-						<input type="hidden" name="str_type" value="<%=type%>"/>
+							if (dsVisual != null && dsVisual.length()!=0){
+								%>
+								<input type="hidden" name="visual" value="<%=Util.replaceTags(dsVisual, true)%>"/>
+								<%
+							}
+							%>
+							
+							<input type="hidden" name="str_type" value="<%=type%>"/>
+						</div>
 					</form>
 					<%
 				}
