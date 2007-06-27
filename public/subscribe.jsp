@@ -38,14 +38,11 @@ try{
 		Vector v = searchEngine.getDatasets();
 		for (int i=0; v!=null && i<v.size(); i++){
 			Dataset dst = (Dataset)v.get(i);
-			System.out.print("dataset " + dst.getID());System.out.println(", identifier=" + dst.getIdentifier());
 			if (!searchEngine.skipByRegStatus(dst.getStatus())){
 				if (datasets==null) datasets = new Vector();
 				datasets.add(dst);
 				nonSkippedDatasetIDs.add(dst.getID());
 			}
-			else
-				System.out.println("skipped dataset " + dst.getID());
 		}
 		for (int i=0; datasets!=null && i<datasets.size(); i++){
 			Dataset dst = (Dataset)datasets.get(i);
@@ -60,14 +57,11 @@ try{
 		for (int i=0; v!=null && i<v.size(); i++){
 			DsTable tbl = (DsTable)v.get(i);			
 			String dstID = tbl.getDatasetID();
-			System.out.print("table " + tbl.getID() + ", identifier=" + tbl.getIdentifier());
-			System.out.println(", dataset " + dstID);
 			if (dstID!=null && nonSkippedDatasetIDs.contains(dstID)){
 				if (tables==null) tables = new Vector();
 				tables.add(tbl);
 			}
 			else{
-				System.out.println("skipped table " + tbl.getID());
 				skippedTables++;
 			}
 		}
