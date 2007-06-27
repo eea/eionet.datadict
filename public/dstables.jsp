@@ -139,15 +139,11 @@
 <div id="container">
 <jsp:include page="nlocation.jsp" flush="true">
 	<jsp:param name="name" value="Dataset tables"/>
+	<jsp:param name="helpscreen" value="dataset_tables"/>
 </jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 <form id="form1" method="post" action="dstables.jsp">
-	<div id="operations">
-		<ul>
-			<li class="help"><a href="help.jsp?screen=dataset_tables&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-		</ul>
-	</div>
 
 	<h1>
 		Tables in <em><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dataset.getShortName())%></a></em> dataset

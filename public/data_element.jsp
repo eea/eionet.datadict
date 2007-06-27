@@ -1136,6 +1136,23 @@
 </head>
 
 <%
+String hlpScreen = "element";
+if (mode.equals("view")){
+	if (elmCommon && !dataElement.isWorkingCopy())
+		hlpScreen = "common_element";
+	else if (elmCommon && dataElement.isWorkingCopy())
+		hlpScreen = "common_element_working_copy";
+}
+
+if (mode.equals("edit") && !elmCommon)
+	hlpScreen = "element_edit";
+else if (mode.equals("edit") && elmCommon)
+	hlpScreen = "common_element_edit";
+else if (mode.equals("add") && elmCommon)
+	hlpScreen = "common_element_add";
+else if (mode.equals("add") && !elmCommon)
+	hlpScreen = "element_add";
+		
 // start HTML body ///////////////////////////////////////
 boolean popup = request.getParameter("popup")!=null;
 if (popup){
@@ -1155,6 +1172,7 @@ else{
 	<div id="container">
 		<jsp:include page="nlocation.jsp" flush="true">
 			<jsp:param name="name" value="Data element"/>
+			<jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
         </jsp:include>
 		<%@ include file="nmenu.jsp" %>
 		<div id="workarea">
@@ -1163,31 +1181,14 @@ else{
 %>
 			
 			<div id="operations">
-				<%
-				String hlpScreen = "element";
-				if (mode.equals("view")){
-					if (elmCommon && !dataElement.isWorkingCopy())
-						hlpScreen = "common_element";
-					else if (elmCommon && dataElement.isWorkingCopy())
-						hlpScreen = "common_element_working_copy";
-				}
 				
-				if (mode.equals("edit") && !elmCommon)
-					hlpScreen = "element_edit";
-				else if (mode.equals("edit") && elmCommon)
-					hlpScreen = "common_element_edit";
-				else if (mode.equals("add") && elmCommon)
-					hlpScreen = "common_element_add";
-				else if (mode.equals("add") && !elmCommon)
-					hlpScreen = "element_add";
-				%>
 				<ul>
 					<%
 					if (popup){ %>
-						<li><a href="javascript:window.close();">Close</a></li><%
+						<li><a href="javascript:window.close();">Close</a></li>
+						<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li><%
 					}
-					%>
-					<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
+					%>					
 					<%
 					if (mode.equals("view") && user!=null && dataElement!=null && elmCommon && dataElement.getIdentifier()!=null){
 						%>

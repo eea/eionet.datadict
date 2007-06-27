@@ -387,10 +387,30 @@
 		// ]]>
     </script>
 </head>
+
+<%
+String hlpScreen = "simple_attr_def_";
+if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
+	hlpScreen = "complex_attr_def_";
+	
+if (mode.equals("view"))
+	hlpScreen = hlpScreen + "view";
+else if (mode.equals("edit"))
+	hlpScreen = hlpScreen + "edit";
+else if (mode.equals("add")){
+	if (type==null)
+		hlpScreen = "attr_def_add";
+	else
+		hlpScreen = hlpScreen + "add";
+}
+else
+	hlpScreen = hlpScreen + "view";
+%>
 <body onload="onLoad()">
 <div id="container">
 		<jsp:include page="nlocation.jsp" flush="true">
 			<jsp:param name="name" value="Attribute"/>
+			<jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
 		</jsp:include>
 		<%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -411,59 +431,34 @@
 							<input type="hidden" name="complex_attr_id" value="<%=attr_id%>" /><%							
 						}					
 					}
-				
-					String hlpScreen = "simple_attr_def_";
-					if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
-						hlpScreen = "complex_attr_def_";
-						
-					if (mode.equals("view"))
-						hlpScreen = hlpScreen + "view";
-					else if (mode.equals("edit"))
-						hlpScreen = hlpScreen + "edit";
-					else if (mode.equals("add")){
-						if (type==null)
-							hlpScreen = "attr_def_add";
-						else
-							hlpScreen = hlpScreen + "add";
-					}
-					else
-						hlpScreen = hlpScreen + "view";
-						
 					%>
 				</div>				
-            <div id="operations">
-              <ul>
-                <li class="help"><a href="help.jsp?screen=<%=Util.replaceTags(hlpScreen)%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
-							<%
-							if (user!=null && mode.equals("view") && editPrm){ %>
-								<li><a href="javascript:goToEdit()">Edit</a></li>
-							<% }%>
-              </ul>
-            </div>
-
-
-					<%
-					if (mode.equals("add")){ %>
-						<h1>Add an attribute definition</h1> <%
-					}
-					else if (mode.equals("edit")){ %>
-						<h1>Edit attribute definition</h1> <%
-					}
-					else{ %>
-						<h1>View attribute definition</h1>
-						<%
-					}
-					%>
-				
+            
 				<%
+				if (user!=null && mode.equals("view") && editPrm){
+					%>
+					<div id="operations">
+              			<ul>
+							<li><a href="javascript:goToEdit()">Edit</a></li>
+						</ul>
+            		</div><%
+            	}
+            	
+				if (mode.equals("add")){ %>
+					<h1>Add an attribute definition</h1> <%
+				}
+				else if (mode.equals("edit")){ %>
+					<h1>Edit attribute definition</h1> <%
+				}
+				else{ %>
+					<h1>View attribute definition</h1>
+					<%
+				}
+				
 				if (!mode.equals("view") && type==null){ %>
 					<div class="attention">NB! Please select the attribute type first. Otherwise your entries will be lost.</div><%
 				}
-				%>
 				
-				
-			
-			<%
 			int displayed = 0;
 			
 			if (mode.equals("view")){

@@ -76,16 +76,11 @@ try{
 			<div id="container">
 			<jsp:include page="nlocation.jsp" flush="true">
 				<jsp:param name="name" value="Rod links"/>
-				
+				<jsp:param name="helpscreen" value="dataset_rod"/>
 			</jsp:include>
 			<%@ include file="nmenu.jsp" %>
 			<div id="workarea"> <!-- start work area -->
 				<form id="rodlinks" action="dstrod_links.jsp" method="post">
-					<div id="operations">
-						<ul>
-							<li class="help"><a href="help.jsp?screen=dataset_rod&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
-						</ul>
-					</div>
 					<h1>ROD obligations corresponding to <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset</h1>
 					<div style="float:left;margin-top:20px;">
 						<input type="button" class="smallbutton" value="Add new" onclick="pop('InServices?client=webrod&amp;method=get_activities')"/>

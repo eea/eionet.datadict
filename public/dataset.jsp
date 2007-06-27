@@ -685,46 +685,53 @@
     </script>
 </head>
 
+<%
+String hlpScreen = dataset!=null && dataset.isWorkingCopy() ? "dataset_working_copy" : "dataset";
+if (mode.equals("edit"))
+	hlpScreen = "dataset_edit";
+else if (mode.equals("add"))
+	hlpScreen = "dataset_add";
+%>
+
 <body>
 <div id="container">
 <jsp:include page="nlocation.jsp" flush="true">
 	<jsp:param name="name" value="Dataset"/>
+	<jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
 </jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 			<%
-
 			String verb = "View";
 			if (mode.equals("add"))
 				verb = "Add";
 			else if (mode.equals("edit"))
 				verb = "Edit";
-				
-			%>
-			<div id="operations">
-				<%
-				String hlpScreen = dataset!=null && dataset.isWorkingCopy() ? "dataset_working_copy" : "dataset";
-				if (mode.equals("edit"))
-					hlpScreen = "dataset_edit";
-				else if (mode.equals("add"))
-					hlpScreen = "dataset_add";
+			
+			boolean isDisplayOperations = mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null;
+			if (isDisplayOperations==false)
+				isDisplayOperations = (mode.equals("view") && !dataset.isWorkingCopy()) && (user!=null || (user==null && !isLatestRequested)) && (latestID!=null && !latestID.equals(dataset.getID()));
+			
+			if (isDisplayOperations){
 				%>
-				<ul>
-					<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
-					<%
-					if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null){%>
-						<li><a href="Subscribe?dataset=<%=Util.replaceTags(dataset.getIdentifier())%>">Subscribe</a></li><%
-					}
-					if (mode.equals("view") && !dataset.isWorkingCopy()){
-						if (user!=null || (user==null && !isLatestRequested)){
-							if (latestID!=null && !latestID.equals(dataset.getID())){%>
-								<li><a href="dataset.jsp?mode=view&amp;ds_id=<%=latestID%>">Go to newest</a></li><%
+				<div id="operations">
+					<ul>
+						<%
+						if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null){%>
+							<li><a href="Subscribe?dataset=<%=Util.replaceTags(dataset.getIdentifier())%>">Subscribe</a></li><%
+						}
+						if (mode.equals("view") && !dataset.isWorkingCopy()){
+							if (user!=null || (user==null && !isLatestRequested)){
+								if (latestID!=null && !latestID.equals(dataset.getID())){%>
+									<li><a href="dataset.jsp?mode=view&amp;ds_id=<%=latestID%>">Go to newest</a></li><%
+								}
 							}
 						}
-					}
-					%>
-				</ul>
-      		</div>
+						%>
+					</ul>
+	      		</div><%
+      		}
+      		%>
 						
 			<div style="clear:right; float:right">
 				<%

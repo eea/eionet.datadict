@@ -182,7 +182,8 @@ if (!isPopup){
 	<body onclick="checkalert()" onload="onLoad()">
 	<div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
-		<jsp:param name="name" value="Search"/>				
+		<jsp:param name="name" value="Search tables"/>				
+		<jsp:param name="helpscreen" value="search_table"/>
 	</jsp:include>
 	<%@ include file="nmenu.jsp" %><%
 }
@@ -200,16 +201,19 @@ else {
 %>
 
 <div id="workarea">
-	<div id="operations">
-	  <ul>
-	  		<%
-	  	  	if (isPopup){ %>
-	  	  		<li><a href="javascript:window.close();">Close</a></li><%
-		  		}
-		  		%>
-	      	<li class="help"><a href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-	  </ul>
-	</div>
+	
+	<%
+  	if (isPopup){
+	  	%>
+	  	<div id="operations">
+			<ul>
+  	  		<li><a href="javascript:window.close();">Close</a></li>
+  	  		<li class="help"><a href="help.jsp?screen=search_table&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
+	  		</ul>
+	</div><%
+  	}
+  	%>
+	  
 	<h1>Search tables</h1>
 		<form id="form1" action="search_results_tbl.jsp" method="get">
 

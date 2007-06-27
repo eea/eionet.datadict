@@ -425,7 +425,7 @@
 <div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Table elements"/>
-        
+        <jsp:param name="helpscreen" value="table_elements"/>
 	</jsp:include>
     <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -433,11 +433,6 @@
 <form id="form1" method="post" action="tblelems.jsp">
 
 	<!-- page title & the add new part -->
-	<div id="operations">
-		<ul>
-			<li class="help"><a href="help.jsp?screen=table_elements&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-		</ul>
-	</div>
 	<h1>
 		Elements in
 		<em>

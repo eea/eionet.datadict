@@ -231,6 +231,7 @@ else{ %>
 		<div id="container">
 		<jsp:include page="nlocation.jsp" flush="true">
 			<jsp:param name="name" value="Search results"/>
+			<jsp:param name="helpscreen" value="common_element_search_results"/>
 		</jsp:include>
     	<%@ include file="nmenu.jsp" %>
 		<div id="workarea">		
@@ -238,16 +239,16 @@ else{ %>
 }
 %>
             
-			<div id="operations">
-            	<ul>
-            		<%
-					if (popup){ %>
-						<li><a href="javascript:window.close();">Close</a></li><%
-					}
-					%>
-            		<li class="help"><a href="help.jsp?screen=common_element_search_results&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
-            	</ul>
-            </div>
+    		<%
+			if (popup){
+				%>
+				<div id="operations">
+    				<ul>
+						<li><a href="javascript:window.close();">Close</a></li>
+					</ul>
+				</div><%
+			}
+			%>
             
 			<h1>Search results</h1>
 			

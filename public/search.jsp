@@ -217,7 +217,7 @@ private String setDefaultAttrs(String name){
 </head>
 
 <%
-boolean isPopup = (contextParam==null || !contextParam.equals(POPUP))==false;
+boolean isPopup = contextParam!=null && contextParam.equals(POPUP);
 StringBuffer bodyAttrs = new StringBuffer("onload=\"onLoad()\"");
 if (isPopup)
 	bodyAttrs.append(" class=\"popup\"");
@@ -231,6 +231,7 @@ if (!isPopup){
 	<div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Search dataelements"/>
+		<jsp:param name="helpscreen" value="search_element"/>
 	</jsp:include>
 	<%@ include file="nmenu.jsp" %>
 	<div id="workarea">
@@ -245,27 +246,29 @@ else{ %>
 	</div> <!-- pagehead -->
 	<div id="workarea">
 	<%
-}	
+}
+
+boolean isDisplayOperations = isPopup;
+if (isDisplayOperations==false)
+	isDisplayOperations = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i");
+if (isDisplayOperations){
+	%>
+	<div id="operations">
+		<ul>
+			<%
+			if (isPopup){ %>
+				<li><a href="javascript:window.close();">Close</a></li>
+				<li class="help"><a href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li><%
+			}
+			else if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")){
+				%>
+				<li><a title="Add a definition of a new common element" href="javascript:window.location.assign('data_element.jsp?mode=add&amp;common=true')">New common element</a></li><%
+			}
+			%>
+		</ul>
+	</div><%
+}
 %>
-			
-				<div id="operations">
-					<ul>
-						<%
-						if (isPopup){ %>
-							<li><a href="javascript:window.close();">Close</a></li><%
-						}
-						%>
-						<li class="help"><a href="help.jsp?screen=search_element&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-						<%
-						if (contextParam == null || !contextParam.equals(POPUP)){
-							boolean elmPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i");
-							if (elmPrm){%>
-								<li><a title="Add a definition of a new common element" href="javascript:window.location.assign('data_element.jsp?mode=add&amp;common=true')">New common element</a></li><%
-							}
-						}
-						%>
-					</ul>
-				</div>
 				
 				<h1>Search data elements</h1>
 				<br/>

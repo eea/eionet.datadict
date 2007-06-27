@@ -298,25 +298,19 @@
 if (valsType.equals("CH1")){ %>
     <jsp:include page="nlocation.jsp" flush="true">
         <jsp:param name="name" value="Allowable value"/>
-        
+        <jsp:param name="helpscreen" value="fixed_value"/>
     </jsp:include><%
 }
 else{ %>
 	<jsp:include page="nlocation.jsp" flush="true">
         <jsp:param name="name" value="Suggested value"/>
-        
+        <jsp:param name="helpscreen" value="suggested_value"/>
     </jsp:include><%
 }
 %>            
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 
-		<div id="operations">
-		<ul>
-			<li class="help"><a href="help.jsp?screen=fixed_value&amp;area=pagehelp" title="Get some help on this page" onclick="pop(this.href);return false;">Page help</a></li>
-
-		</ul>
-		</div>
     	<h1>
     		<%=Util.replaceTags(initCaseTitle)%> value of <a href="<%=Util.replaceTags(parentUrl, true)%>"><%=Util.replaceTags(delem_name, true)%></a> <%=dispParentType%>
     	</h1>

@@ -95,14 +95,10 @@
 <div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Import"/>
+		<jsp:param name="helpscreen" value="import"/>
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-	<div id="operations">
-		<ul>
-				<li class="help"><a href="help.jsp?screen=import&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-		</ul>
-	</div>
 
 	<h1>Import data</h1>
 

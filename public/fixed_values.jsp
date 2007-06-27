@@ -261,32 +261,30 @@
 	// ]]>
 	</script>
 </head>
+
+<%
+String hlpScreen = valsType.equals("CH1") ? "fixed_values" : "suggested_values";
+hlpScreen = mode.equals("view") ? hlpScreen + "_view" : hlpScreen + "_edit";
+%>
 <body>
 <div id="container">
 	<%
 	if (valsType.equals("CH1")){ %>
         <jsp:include page="nlocation.jsp" flush="true">
             <jsp:param name="name" value="Allowable values"/>
-            
+            <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
         </jsp:include><%
     }
     else{ %>
     	<jsp:include page="nlocation.jsp" flush="true">
             <jsp:param name="name" value="Suggested values"/>
-            
+            <jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
         </jsp:include><%
 	}
 	%>            
     <%@ include file="nmenu.jsp" %>
 	<div id="workarea">
-		<%
-		String hlpScreen = mode.equals("view") ? "fixed_values_view" : "fixed_values_edit";
-		%>
-		<div id="operations">
-			<ul>
-				<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
-			</ul>
-		</div>
+		
 		<h1>
 			<%=Util.replaceTags(initCaseTitle)%> values of <a href="<%=Util.replaceTags(parentUrl, true)%>"><%=Util.replaceTags(delem_name, true)%></a> <%=dispParentType%>
 		</h1>

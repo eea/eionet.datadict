@@ -113,16 +113,11 @@ String disabled = user == null ? "disabled" : "";
 <div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Foreign key relation"/>
-		
+		<jsp:param name="helpscreen" value="foreign_key_rel"/>
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 	<form id="form1" method="post" action="fk_relation.jsp">
-	<div id="operations">
-		<ul>
-				<li class="help"><a href="help.jsp?screen=foreign_key_rel&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-		</ul>
-	</div>
   <h1>Foreign key relation</h1> 
 	<p>
 		This is the foreign key relation between elements

@@ -140,16 +140,11 @@ if (dsVisual!=null && dsVisual.length()!=0){
 <body>
 <div id="container">
 <jsp:include page="nlocation.jsp" flush="true">
-	<jsp:param name="name" value="Dataset Model"/>	
+	<jsp:param name="name" value="Dataset Model"/>
+	<jsp:param name="helpscreen" value="dataset_model"/>
 </jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-	<div id="operations">
-		<ul>
-				<li class="help"><a href="help.jsp?screen=dataset_model&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-		</ul>
-	</div>
-
 	<h1>
 		Data model of
 		<em><%=Util.replaceTags(dataset.getShortName())%></em>

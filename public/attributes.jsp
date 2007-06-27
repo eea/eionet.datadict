@@ -103,6 +103,7 @@
 <div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Attributes"/>
+		<jsp:param name="helpscreen" value="attributes"/>
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -118,23 +119,20 @@
 
 			<form id="form1" method="post" action="attributes.jsp">
 
-				<div id="operations">
-					<ul>
-						<li class="help"><a href="help.jsp?screen=attributes&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
-				<%
-				if (user != null && mode==null){
-					boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
-					if (addPrm){
-						%>
-						<li><a href="javascript:goTo('add')">Add attribute</a></li>
-						<%
-					}
+			<%
+			if (user != null && mode==null){
+				boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
+				if (addPrm){
+					%>
+					<div id="operations">
+						<ul>
+							<li><a href="javascript:goTo('add')">Add attribute</a></li>
+						</ul>
+					</div>
+					<%
 				}
-
-				%>
-
-					</ul>
-				</div>
+			}
+			%>
 
 		<h1>Attributes</h1>
 		<p>

@@ -322,6 +322,7 @@
 <div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Restore datasets"/>
+		<jsp:param name="helpscreen" value="restore_datasets"/>
 	</jsp:include>
     <%@ include file="nmenu.jsp" %>
 	<div id="workarea">
@@ -337,13 +338,6 @@
             }
     	}
     	%>
-    	
-		<div id="operations">
-        	<ul>
-        		<li class="help"><a href="help.jsp?screen=restore_datasets&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
-        	</ul>
-		</div>
-
     	
     	<%
 		if (!restore){%>

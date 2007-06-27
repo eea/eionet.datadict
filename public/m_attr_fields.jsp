@@ -137,7 +137,6 @@ private String legalizeAlert(String in){
 				document.forms["form1"].submit();
 			}
 			function start() {
-				alert("kala");
 				tbl_obj=new dynamic_table("tbl"); //create dynamic_table object
 			}
 	
@@ -185,18 +184,12 @@ private String legalizeAlert(String in){
 <body onload="start()">
 	<div id="container">
 		<jsp:include page="nlocation.jsp" flush="true">
-			<jsp:param name="name" value="Complex attribute fields"/>		
+			<jsp:param name="name" value="Complex attribute fields"/>
+			<jsp:param name="helpscreen" value="complex_attr_fields"/>
 		</jsp:include>
 		<%@ include file="nmenu.jsp" %>
 		<div id="workarea">
 			<form id="form1" method="post" action="m_attr_fields.jsp">
-				<div id="operations">
-					<ul>
-						<li class="help">
-							<a href="help.jsp?screen=complex_attr_fields&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a>
-						</li>
-					</ul>
-				</div>
 				<h1>Fields of <em><%=Util.replaceTags(attr_name)%></em></h1>
 				<div>
 					<table style="width:auto">

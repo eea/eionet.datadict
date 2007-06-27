@@ -17,6 +17,12 @@
 			%>
 			<a id="loginlink" href="<%=loginUrl%>" title="Login">Login</a><%
 		}
+		
+		String helpScreen = request.getParameter("helpscreen");
+		if (helpScreen!=null){
+			%>
+			<a id="pagehelplink" title="Get help on this page" href="help.jsp?screen=<%=helpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;"><span>Page help</span></a><%
+		}
 		%>
 		<a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>

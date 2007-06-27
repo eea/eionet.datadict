@@ -613,35 +613,36 @@
 // ]]>
 </script>
 </head>
+
+<%
+String hlpScreen = "table";
+if (mode.equals("edit"))
+	hlpScreen = "table_edit";
+else if (mode.equals("add"))
+	hlpScreen = "table_add";
+	
+%>
+
 <body>
 <div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Dataset table"/>
-		
+		<jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
 	</jsp:include>
 	<%@ include file="nmenu.jsp" %>
         
 	<div id="workarea">
-		<div id="operations">
-			<ul>
-			<%
-			String hlpScreen = "table";
-			if (mode.equals("edit"))
-				hlpScreen = "table_edit";
-			else if (mode.equals("add"))
-				hlpScreen = "table_add";
-				
+		
+		<%
+		if (mode.equals("view") && user!=null && dsTable!=null && dsTable.getIdentifier()!=null && dataset!=null && dataset.getIdentifier()!=null){
 			%>
-				<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-				<%
-				if (mode.equals("view") && user!=null && dsTable!=null && dsTable.getIdentifier()!=null && dataset!=null && dataset.getIdentifier()!=null){
-					%>
+			<div id="operations">
+				<ul>
 					<li><a href="Subscribe?table=<%=dataset.getIdentifier()%>%2F<%=dsTable.getIdentifier()%>">Subscribe</a></li>
-					<%
-				}
-				%>
-			</ul>
-		</div>
+				</ul>
+			</div><%
+		}
+		%>
 			
 		<!-- The buttons displayed in view mode -->
 		<div style="clear:right; float:right">

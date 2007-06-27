@@ -181,8 +181,8 @@ private String legalizeAlert(String in){
 <body onload="onLoad()">
 <div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
-		<jsp:param name="name" value="Allowable value"/>
-		
+		<jsp:param name="name" value="Complex attribute field"/>
+		<jsp:param name="helpscreen" value="complex_attr_field"/>
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
@@ -190,13 +190,6 @@ private String legalizeAlert(String in){
 	String backURL = "" + "/m_attr_fields.jsp?attr_id=" + attr_id + "&attr_name=" + attr_name;
 	%>
 	<form id="form1" method="post" action="m_attr_field.jsp">
-	<div id="operations">
-		<ul>
-			<li class="help">
-				<a href="help.jsp?screen=complex_attr_field&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a>
-			</li>
-		</ul>
-	</div>
 
 	<h1>Field of <em><%=Util.replaceTags(attr_name)%></em> attribute</h1>
 			

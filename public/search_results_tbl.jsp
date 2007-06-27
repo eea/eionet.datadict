@@ -162,6 +162,7 @@
 <div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Tables"/>
+		<jsp:param name="helpscreen" value="tables"/>
 	</jsp:include>
 	<%@ include file="nmenu.jsp" %>
 
@@ -172,8 +173,7 @@
 				
 				<div id="operations">
 					<ul>
-					<li class="help"><a href="help.jsp?screen=tables&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
-					<li><a href="search_table.jsp">Search</a></li>
+						<li><a href="search_table.jsp">Search</a></li>
 					</ul>
 				</div>
 			

@@ -320,15 +320,15 @@
 <div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Datasets"/>
+		<jsp:param name="helpscreen" value="datasets"/>
 	</jsp:include>
     <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 
-				<!-- search, restore, page help buttons -->
+				<!-- search, restore -->
 				
 				<div id="operations">
 				<ul>
-					<li class="help"><a href="help.jsp?screen=datasets&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
 					<li><a href="search_dataset.jsp" title="Search datasets">Search</a></li>
 					<%
 					if (user!=null && user.isAuthentic() && !restore){%>

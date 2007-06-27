@@ -166,20 +166,23 @@ private String setDefaultAttrs(String name){
 <body onclick="checkalert()" onload="onLoad()">
 <div id="container">
 <jsp:include page="nlocation.jsp" flush="true">
-	<jsp:param name="name" value="Search"/>
+	<jsp:param name="name" value="Search datasets"/>
+	<jsp:param name="helpscreen" value="search_dataset"/>
 </jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-    <div id="operations">
-		<ul>
-			<li class="help"><a href="help.jsp?screen=search_dataset&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li>
-			<%
-			if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){ %>
-				<li><a title="Create a new dataset" href="dataset.jsp?mode=add">Add dataset</a></li><%
-			}
+    
+		<%
+		if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){
 			%>
-		</ul>
-	</div>
+			<div id="operations">
+				<ul>
+					<li><a title="Create a new dataset" href="dataset.jsp?mode=add">Add dataset</a></li>
+				</ul>
+			</div><%
+		}
+		%>
+		
 		<form id="form1" action="datasets.jsp" method="get">
 		<h1>Search datasets</h1>
 		<table width="600" cellspacing="0" style="padding-top:10px">

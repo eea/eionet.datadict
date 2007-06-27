@@ -115,17 +115,12 @@
 <div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Foreign keys"/>
-		
+		<jsp:param name="helpscreen" value="foreign_keys"/>
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 
 <form accept-charset="UTF-8" id="form1" method="post" action="foreign_keys.jsp">
-  <div id="operations">
-    <ul>
-        <li class="help"><a href="help.jsp?screen=foreign_keys&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-    </ul>
-  </div>
 
 	<h1>Foreign keys associated with
 	<em><a href="data_element.jsp?mode=edit&amp;delem_id=<%=delemID%>"><%=Util.replaceTags(delemName)%></a></em>.
