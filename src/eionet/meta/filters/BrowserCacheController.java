@@ -26,9 +26,9 @@ public class BrowserCacheController implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException, IOException {
 		if (disableCache) {
 			HttpServletResponse httpResponse = (HttpServletResponse) response;
-			httpResponse.setHeader("Pragma", "No-cache");
+			httpResponse.setHeader("Pragma", "no-cache");
 			httpResponse.setHeader("Cache-Control", "no-cache");
-			httpResponse.setHeader("Cache-Control", "no-store");
+			httpResponse.addHeader("Cache-Control", "no-store");
 			httpResponse.setDateHeader("Expires", 0);
 		}
 		fc.doFilter(request, response);
