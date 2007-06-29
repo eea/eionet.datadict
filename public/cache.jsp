@@ -9,6 +9,7 @@ String objID = request.getParameter("obj_id");
 String objType = request.getParameter("obj_type");
 String idf = (String)request.getAttribute("identifier");
 Vector entries = (Vector)request.getAttribute("entries");
+
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -24,15 +25,15 @@ Vector entries = (Vector)request.getAttribute("entries");
 // ]]>
     </script>
 </head>
-<body class="popup">
-<div id="pagehead">
-    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
-    <div id="networktitle">Eionet</div>
-    <div id="sitetitle">Data Dictionary (DD)</div>
-    <div id="sitetagline">This service is part of Reportnet</div>    
-</div> <!-- pagehead -->
+<body>
+<div id="container">
+<jsp:include page="nlocation.jsp" flush="true">
+		<jsp:param name="name" value="Cache"/>
+		<jsp:param name="helpscreen" value="cache"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<h1>Cache for <%=request.getAttribute("object_type")%> <em><%=idf%></em></h1>
+<h1>Cached articles for <%=request.getAttribute("object_type")%>: <em><%=idf%></em></h1>
 <br/>
 <form id="form1" action="GetCache" method="post">
 	<div>
@@ -80,6 +81,9 @@ Vector entries = (Vector)request.getAttribute("entries");
 		<input type="hidden" name="idf" value="<%=idf%>"/>
 	</div>
 </form>
-</div>
+
+</div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true"/>
 </body>
 </html>

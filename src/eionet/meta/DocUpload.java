@@ -38,11 +38,15 @@ public class DocUpload extends HttpServlet{
 														
 		try{
 			guard(req);
-			
+
+			String dstID = req.getParameter(REQPAR_DSID);
+			if (Util.voidStr(dstID))
+				throw new ServletException("Missing " + REQPAR_DSID + " request parameter!");
+
 			String del = req.getParameter(REQPAR_DELETE);
 			if (!Util.voidStr(del)){
 				delete(del);
-				writeResponse(res);
+				res.sendRedirect("dataset.jsp?mode=view&ds_id=" + dstID);
 				return;
 			}
 			
@@ -50,15 +54,10 @@ public class DocUpload extends HttpServlet{
 			if (Util.voidStr(filePath))
 				throw new ServletException("Missing property: " + PropsIF.DOC_PATH);
 			
-			String dstID = req.getParameter(REQPAR_DSID);
-			if (Util.voidStr(dstID))
-				throw new ServletException("Missing " + REQPAR_DSID + " request parameter!");
-			
 			File file = new File(getAbsFilePath(req));
 			HttpUploader.upload(req, file);
 			save(dstID, file, req.getParameter(REQPAR_TITLE));
-			writeResponse(res);
-			//req.getRequestDispatcher("doc_upload.jsp").forward(req, res);
+			res.sendRedirect("dataset.jsp?mode=view&ds_id=" + dstID);
 		}
 		catch (Exception e){
 			throw new ServletException(e.toString());
@@ -66,11 +65,6 @@ public class DocUpload extends HttpServlet{
 		finally{
 			closeConnection();
 		}
-	}
-	
-	private void writeResponse(HttpServletResponse res) throws IOException{
-		res.setContentType("text/html");
-		res.getWriter().println("<html><script>window.opener.location.reload(true);window.close();</script></html>");
 	}
 	
 	private String getAbsFilePath(HttpServletRequest req) throws Exception{

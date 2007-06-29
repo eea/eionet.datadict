@@ -33,7 +33,7 @@ private String legalizeAlert(String in){
 	// POST request not allowed for anybody who hasn't logged in			
 	if (request.getMethod().equals("POST") && user==null){
 		request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
-		request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+		request.getRequestDispatcher("error.jsp").forward(request, response);
 		return;
 	}
 
@@ -41,14 +41,14 @@ private String legalizeAlert(String in){
 	String parent_id = request.getParameter("parent_id");
 	if (parent_id == null || parent_id.length()==0){
 		request.setAttribute("DD_ERR_MSG", "Missing request parameter: parent_id");
-		request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+		request.getRequestDispatcher("error.jsp").forward(request, response);
 		return;
 	}
 	
 	String parent_type = request.getParameter("parent_type");
 	if (parent_type == null || parent_type.length()==0){
 		request.setAttribute("DD_ERR_MSG", "Missing request parameter: parent_type");
-		request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+		request.getRequestDispatcher("error.jsp").forward(request, response);
 		return;
 	}
 	String parent_name = request.getParameter("parent_name");
@@ -77,7 +77,7 @@ private String legalizeAlert(String in){
 				String trace = bytesOut.toString(response.getCharacterEncoding());					
 				request.setAttribute("DD_ERR_MSG", msg);
 				request.setAttribute("DD_ERR_TRC", trace);
-				request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+				request.getRequestDispatcher("error.jsp").forward(request, response);
 				return;
 			}
 		}
@@ -178,21 +178,16 @@ private String legalizeAlert(String in){
 	// ]]>
 	</script>
 </head>
-<body class="popup">
-<div id="pagehead">
-    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
-    <div id="networktitle">Eionet</div>
-    <div id="sitetitle">Data Dictionary (DD)</div>
-    <div id="sitetagline">This service is part of Reportnet</div>    
-</div> <!-- pagehead -->
-<div id="workarea">
+<body>
 
-<div id="operations">
-	<ul>
-		<li><a href="javascript:window.close();">Close</a></li>
-		<li class="help"><a href="help.jsp?screen=complex_attrs&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-	</ul>
-</div>
+<div id="container">
+<jsp:include page="nlocation.jsp" flush="true">
+		<jsp:param name="name" value="Complex attributes"/>
+		<jsp:param name="helpscreen" value="complex_attrs"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
+
+<div id="workarea">
 
 <h1>Complex attributes of <em><%=Util.replaceTags(parent_name)%></em></h1>
 <%
@@ -367,6 +362,9 @@ for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
 </form>
 </div>
 </div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true"/>
+
 </body>
 </html>
 

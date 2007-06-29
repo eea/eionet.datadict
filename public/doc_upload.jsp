@@ -34,14 +34,15 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 </head>
 
 
-<body class="popup">
+<body">
 
-<div id="pagehead">
-    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
-    <div id="networktitle">Eionet</div>
-    <div id="sitetitle">Data Dictionary (DD)</div>
-    <div id="sitetagline">This service is part of Reportnet</div>    
-</div> <!-- pagehead -->
+<div id="container">
+<jsp:include page="nlocation.jsp" flush="true">
+		<jsp:param name="name" value="Upload document"/>
+		<jsp:param name="helpscreen" value="doc_upload"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
+
 <div id="workarea">
 
 <h1>Upload document</h1>
@@ -78,5 +79,8 @@ unknown. But whatever is the type of the file you upload, it can later be downlo
 	
 </form>	
 </div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true"/>
+
 </body>
 </html>

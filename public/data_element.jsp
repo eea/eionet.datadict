@@ -2358,7 +2358,7 @@ else{
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
 														<span class="barfont_bordered">
-															[Click <a onclick="pop(this.href);return false;" href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this element]
+															[Click <a href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this element]
 														</span><%
 													}
 													%>
@@ -2385,7 +2385,7 @@ else{
 																	
 																	<tr class="zebra<%=isOdd%>">
 																		<td>
-																			<a onclick="pop(this.href);return false;" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+																			<a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>

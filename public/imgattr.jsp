@@ -130,19 +130,15 @@
 	// ]]>
 	</script>
 </head>
-<body class="popup">
+<body>
 
-<div id="pagehead">
-    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
-    <div id="networktitle">Eionet</div>
-    <div id="sitetitle">Data Dictionary (DD)</div>
-    <div id="sitetagline">This service is part of Reportnet</div>    
-</div> <!-- pagehead -->
-<div id="operations" style="margin-top:10px">
-	<ul>
-		<li><a href="javascript:window.close();">Close</a></li>
-	</ul>
-</div>	
+<div id="container">
+<jsp:include page="nlocation.jsp" flush="true">
+		<jsp:param name="name" value="Image attribute"/>
+		<jsp:param name="helpscreen" value="img_attr"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
+
 <div id="workarea" style="clear:right;">
 
 <form id="Upload" action="ImgUpload" method="post" enctype="multipart/form-data">
@@ -234,6 +230,9 @@
 	</div>	
 </form>
 </div> <!-- workarea -->
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true"/>
+
 </body>
 </html>
 

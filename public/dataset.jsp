@@ -966,7 +966,7 @@ else if (mode.equals("add"))
 																<a href="DocDownload?file=<%=Util.replaceTags(md5)%>"><img style="border:0" src="images/<%=Util.replaceTags(icon)%>" width="16" height="18" alt="icon"/></a>
 																<%
 																if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){
-																	%>&nbsp;<a  href="DocUpload?delete=<%=Util.replaceTags(md5)%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>"><img style="border:0" src="images/delete.gif" width="14" height="14"/></a><%
+																	%>&nbsp;<a  href="DocUpload?ds_id=<%=ds_id%>&amp;delete=<%=Util.replaceTags(md5)%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>"><img style="border:0" src="images/delete.gif" width="14" height="14"/></a><%
 																}
 																%>
 															</td>
@@ -980,10 +980,10 @@ else if (mode.equals("add"))
 														<tr style="height:20px;">
 															<td colspan="2">
 																<small>
-																	[ <a  href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>" onclick="pop(this.href);return false;">Upload a document ...</a> ]
+																	[ <a  href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>">Upload a document ...</a> ]
 																</small>
 																<small>
-																	[ <a  href="GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>" onclick="pop(this.href);return false;">Open cache ...</a> ]
+																	[ <a  href="GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>">Open cache ...</a> ]
 																</small>
 															</td>
 														</tr>
@@ -1699,7 +1699,7 @@ else if (mode.equals("add"))
 													// the link
 													if (mode.equals("edit")){ %>
 														<span style="width:<%=valueWidth%>%" class="barfont_bordered">
-															[Click <a  onclick="pop(this.href);return false;" href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true"><b>HERE</b></a> to manage complex attributes of this dataset]
+															[Click <a href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true"><b>HERE</b></a> to manage complex attributes of this dataset]
 														</span><%
 													}
 													%>
@@ -1726,7 +1726,7 @@ else if (mode.equals("add"))
 																	
 																	<tr class="zebra<%=isOdd%>">
 																		<td>
-																			<a  onclick="pop(this.href);return false;" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
+																			<a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>

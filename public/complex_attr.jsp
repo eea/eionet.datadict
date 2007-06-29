@@ -51,11 +51,11 @@ private String legalizeAlert(String in){
       			if (user == null){
 	      			%>
 	      				<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-	      				<body class="popup">
-                                        <div class="error">
-	      					<h1>Error</h1>
-                                                <p>Not authorized to post any data!</p>
-                                        </div>
+	      				<body>
+							<div class="error">
+	      						<h1>Error</h1>
+								<p>Not authorized to post any data!</p>
+							</div>
 	      				</body>
 	      				</html>
 	      			<%
@@ -127,7 +127,7 @@ private String legalizeAlert(String in){
 					}
 					catch (Exception e){
 						%>
-						<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body class="popup"><h1>Error</h1><p><%=e.toString()%></p></body></html>
+						<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body><h1>Error</h1><p><%=e.toString()%></p></body></html>
 						<%
 						return;
 					}
@@ -238,14 +238,19 @@ private String legalizeAlert(String in){
 	// ]]>
 	</script>
 	</head>
-<body class="popup" onload="doLoad()">
-		
-<div id="pagehead">
-    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
-    <div id="networktitle">Eionet</div>
-    <div id="sitetitle">Data Dictionary (DD)</div>
-    <div id="sitetagline">This service is part of Reportnet</div>    
-</div> <!-- pagehead -->
+
+<%
+String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edit";
+%>
+
+<body onload="doLoad()">
+<div id="container">
+<jsp:include page="nlocation.jsp" flush="true">
+		<jsp:param name="name" value="Complex attribute"/>
+		<jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
+	</jsp:include>
+<%@ include file="nmenu.jsp" %>
+
 <div id="workarea">
 
 	<%
@@ -319,24 +324,24 @@ private String legalizeAlert(String in){
 	%>
 		
 <form id="form1" method="post" action="complex_attr.jsp">
-		<%
-		String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edit";
-		%>
 		
-	<div id="operations">
-		<ul>
-			<li><a href="javascript:window.close();">Close</a></li>
-			<li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;" title="Get some help on this page">Page help</a></li>
-			<%
-			if (!mode.equals("view")){ %>
-				<li><a href="javascript:window.location.replace('<%=backURLEscaped%>')">&lt; back to attributes</a></li><%
-			}
-			if (user != null && isWorkingCopy && mode.equals("view")){ %>
-				<li><a href="javascript:goTo('edit')">Edit</a></li> <%
-			}
-			%>
-		</ul>
-	</div>
+	<%
+	if (!mode.equals("view") || (user != null && isWorkingCopy && mode.equals("view"))){
+		%>
+		<div id="operations">
+			<ul>
+				<%
+				if (!mode.equals("view")){ %>
+					<li><a href="javascript:window.location.replace('<%=backURLEscaped%>')">&lt; back to attributes</a></li><%
+				}
+				if (user != null && isWorkingCopy && mode.equals("view")){ %>
+					<li><a href="javascript:goTo('edit')">Edit</a></li> <%
+				}
+				%>
+			</ul>
+		</div><%
+	}
+	%>
 
 <h1>Complex attribute value</h1>
 <table class="datatable" style="width:auto;border:0">
@@ -553,6 +558,8 @@ private String legalizeAlert(String in){
 </div>
 </form>
 </div>
+</div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true"/>
 </body>
 </html>
 

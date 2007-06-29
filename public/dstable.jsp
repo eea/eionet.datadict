@@ -1066,18 +1066,24 @@ else if (mode.equals("add"))
 															<a id="images"></a><%
 															imagesQuicklinkSet = true;
 														}
+														
 														// thumbnail
-														if (mode.equals("view") && !Util.voidStr(attrValue)){ %>
-															<a href="visuals/<%=Util.replaceTags(attrValue)%>" onFocus="blur()" onclick="pop(this.href);return false;">
-																<img src="visuals/<%=Util.replaceTags(attrValue)%>" style="border:0" height="100" width="100" alt=""/>
-															</a><br/><%
+														if (mode.equals("view") && !Util.voidStr(attrValue)){
+															StringTokenizer st = new StringTokenizer(attrValue, ",");
+															while (st.hasMoreTokens()){
+																String token = st.nextToken().trim();
+																%>	
+																<a href="visuals/<%=Util.replaceTags(token)%>">
+																	<img src="visuals/<%=Util.replaceTags(token)%>" style="border:0;max-width:100px;max-height:100px" alt=""/>
+																</a><br/><%
+															}
 														}
 														// link
 														if (mode.equals("edit") && user!=null){
 															String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
 															%>
 															<span class="barfont">
-																[Click <a onclick="pop(this.href);return false;" href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>"><b>HERE</b></a> to <%=Util.replaceTags(actionText)%>]
+																[Click <a href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>"><b>HERE</b></a> to <%=Util.replaceTags(actionText)%>]
 															</span><%
 														}
 													}
@@ -1494,7 +1500,7 @@ else if (mode.equals("add"))
 												// the link
 												if (mode.equals("edit") && user!=null){ %>
 													<span class="barfont_bordered">
-														[Click <a onclick="pop(this.href);return false;" href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this table]
+														[Click <a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this table]
 													</span><%
 												}
 												%>
@@ -1522,7 +1528,7 @@ else if (mode.equals("add"))
 																
 																<tr class="zebra<%=isOdd%>">
 																	<td>
-																		<a onclick="pop(this.href);return false;" href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+																		<a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																			<%=Util.replaceTags(attrName)%>
 																		</a>
 																	</td>
