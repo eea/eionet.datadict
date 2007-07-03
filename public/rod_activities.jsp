@@ -63,7 +63,6 @@ if (dstName == null || dstName.length()==0)
 <div id="container">
 <jsp:include page="nlocation.jsp" flush="true">
 	<jsp:param name="name" value="Rod links"/>
-	<jsp:param name="helpscreen" value="dataset_rod"/>
 </jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
