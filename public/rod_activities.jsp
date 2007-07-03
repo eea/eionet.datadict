@@ -1,10 +1,41 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,eionet.meta.inservices.*,eionet.util.Props,eionet.util.PropsIF,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
+<%!class ActivityComparator implements Comparator {
+	
+	/**
+	*
+	*/
+	public int compare(Object o1, Object o2){
+		
+		Hashtable hash1 = (Hashtable)o1;
+		Hashtable hash2 = (Hashtable)o2;
+		String o1Title = (String)hash1.get("TITLE");
+		String o2Title = (String)hash2.get("TITLE");
+		return o1Title.compareTo(o2Title);
+	}
+}
+%>
+
 <%
+///////////////////////////////////////////////
+
 request.setCharacterEncoding("UTF-8");
 Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
-//if (activities==null) activities = (Vector)request.getAttribute(Attrs.ACTIVITIES);
+if (activities!=null)
+	Collections.sort(activities, new ActivityComparator());
+
+String dstID = request.getParameter("dst_id");
+if (dstID == null || dstID.length()==0)
+	throw new Exception("Dataset ID is missing!");
+
+String dstIdf = request.getParameter("dst_idf");
+if (dstIdf == null || dstIdf.length()==0)
+	throw new Exception("Dataset Identifier is missing!");
+
+String dstName = request.getParameter("dst_name");
+if (dstName == null || dstName.length()==0)
+	throw new Exception("Dataset name is missing!");
 
 %>
 
@@ -15,40 +46,61 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
     <script type="text/javascript">
 	// <![CDATA[
 	
-		function select(raID, raTitle,liID, liTitle){
-			window.opener.submitAdd(raID, raTitle,liID, liTitle);
-			window.close();
+		function submitAdd(raID, raTitle, liID, liTitle){
+			document.forms["link"].elements["mode"].value = "add";
+			document.forms["link"].elements["ra_id"].value = raID;
+			document.forms["link"].elements["ra_title"].value = raTitle;
+			document.forms["link"].elements["li_id"].value = liID;
+			document.forms["link"].elements["li_title"].value = liTitle;
+			document.forms["link"].submit();
 		}
 		
 	// ]]>
 	</script>
 </head>
 
-<body class="popup">
-<div id="pagehead">
-    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
-    <div id="networktitle">Eionet</div>
-    <div id="sitetitle">Data Dictionary (DD)</div>
-    <div id="sitetagline">This service is part of Reportnet</div>    
-</div> <!-- pagehead -->
+<body>
+<div id="container">
+<jsp:include page="nlocation.jsp" flush="true">
+	<jsp:param name="name" value="Rod links"/>
+	<jsp:param name="helpscreen" value="dataset_rod"/>
+</jsp:include>
+<%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<div>
 	<form id="reload" action="InServices?client=webrod&amp;method=reload_activities" method="get">
+		<div style="display:none">
+			<input type="hidden" name="client" value="webrod"/>
+			<input type="hidden" name="method" value="reload_activities"/>
+			
+			<input type="hidden" name="dst_id" value="<%=dstID%>"/>
+			<input type="hidden" name="dst_idf" value="<%=dstIdf%>"/>
+			<input type="hidden" name="dst_name" value="<%=dstName%>"/>
+		</div>	
+	</form>
 	<div id="operations">
 		<ul>
-			<li><a href="javascript:window.close();">Close</a></li>
 			<li><a href="javascript:document.forms['reload'].submit();">Reload</a></li>
 		</ul>
 	</div>
 	<%
 	if (activities==null || activities.size()==0){
 		%>
-		<h1>No activities found!</h1><%
+		<h1>Failed to receive the list of obligations from ROD!</h1><%
 	}
-	else{ %>
-		<h1>Obligations in ROD</h1>
-		<div style="font-size:0.7em;clear:right;margin-bottom:10px">
-			Click Title to link obligation with dataset.<br/>Click Details to open obligation details in ROD.
+	else{
+		if (dstID!=null && dstName!=null){
+			%>
+			<h1>You are linking ROD obligations with <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=dstName%></a> dataset</h1><%
+		}
+		else{
+			%>		
+			<h1>You are linking ROD obligations with dataset</h1><%
+		}
+		%>
+		<div style="font-size:0.7em;clear:right;margin-bottom:10px;margin-top:10px">
+			Below is the list of obligations in ROD.<br/>
+			Click Title to link obligation with the dataset.<br/>
+			Click Details to open the obligation's details in ROD.
 		</div>
 		<table class="datatable" cellspacing="0" cellpadding="0" style="width:auto">
 			<tr>
@@ -86,7 +138,7 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 				%>
 				<tr>
 					<td style="padding-left:5px;padding-right:10px<%=colorStyle%>">
-						<a href="javascript:select('<%=raID%>', '<%=Util.replaceTags(raTitle)%>', '<%=liID%>', '<%=Util.replaceTags(liTitle)%>')"><%=Util.replaceTags(raTitle)%></a>
+						<a href="javascript:submitAdd('<%=raID%>', '<%=Util.replaceTags(raTitle)%>', '<%=liID%>', '<%=Util.replaceTags(liTitle)%>')"><%=Util.replaceTags(raTitle)%></a>
 					</td>
 					<td style="padding-left:5px;padding-right:10px<%=colorStyle%>">
 						<a href="<%=Util.replaceTags(raURL,true)%>"><%=Util.replaceTags(raURL,true)%></a>
@@ -99,12 +151,22 @@ Vector activities = (Vector)session.getAttribute(Attrs.ROD_ACTIVITIES);
 		</table><%
 	}
 	%>
-	<div style="display:none">
-		<input type="hidden" name="client" value="webrod"/>
-		<input type="hidden" name="method" value="reload_activities"/>
-	</div>	
+	<form name="link" method="post" action="dstrod_links.jsp">
+		<div style="display:none">
+			<input type="hidden" name="mode" value="rmv"/>
+			
+			<input type="hidden" name="dst_id" value="<%=dstID%>"/>
+			<input type="hidden" name="dst_idf" value="<%=dstIdf%>"/>
+			<input type="hidden" name="dst_name" value="<%=dstName%>"/>
+			
+			<input type="hidden" name="ra_id" value=""/>
+			<input type="hidden" name="ra_title" value=""/>
+			<input type="hidden" name="li_id" value=""/>
+			<input type="hidden" name="li_title" value=""/>
+			
+		</div>
 	</form>
-</div>
 </div> <!-- workarea -->
+</div> <!-- container -->
 </body>
 </html>

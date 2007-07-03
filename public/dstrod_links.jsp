@@ -1,8 +1,26 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
-<%
+<%!private static final String SUBMIT_ADD_NEW = "Add new";%>
+<%!private static final String SUBMIT_REMOVE_SELECTED = "Remove selected";%>
 
+<%!class RodLinkComparator implements Comparator {
+	
+	/**
+	*
+	*/
+	public int compare(Object o1, Object o2){
+		
+		Hashtable hash1 = (Hashtable)o1;
+		Hashtable hash2 = (Hashtable)o2;
+		String o1Title = (String)hash1.get("ra-title");
+		String o2Title = (String)hash2.get("ra-title");
+		return o1Title.compareTo(o2Title);
+	}
+}
+%>
+
+<%
 request.setCharacterEncoding("UTF-8");
 
 response.setHeader("Pragma", "no-cache");
@@ -38,8 +56,13 @@ try{
 	
 	// handle the POST
 	if (request.getMethod().equals("POST")){
-		RodLinksHandler handler = new RodLinksHandler(conn, ctx);
-		handler.execute(request);
+		String submit = request.getParameter("submit");
+		if (submit!=null && submit.equals(SUBMIT_ADD_NEW))
+			request.getRequestDispatcher("InServices").forward(request, response);
+		else if (submit==null || (submit!=null && submit.equals(SUBMIT_REMOVE_SELECTED))){
+			RodLinksHandler handler = new RodLinksHandler(conn, ctx);
+			handler.execute(request);
+		}
 	}
 	
 	// ...
@@ -52,6 +75,8 @@ try{
 	
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 	Vector rodLinks = searchEngine.getRodLinks(dstID);
+	if (rodLinks!=null)
+		Collections.sort(rodLinks, new RodLinkComparator());
 	%>
 	
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -83,10 +108,10 @@ try{
 				<form id="rodlinks" action="dstrod_links.jsp" method="post">
 					<h1>ROD obligations corresponding to <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset</h1>
 					<div style="float:left;margin-top:20px;">
-						<input type="button" class="smallbutton" value="Add new" onclick="pop('InServices?client=webrod&amp;method=get_activities')"/>
+						<input type="submit" name="submit" value="<%=SUBMIT_ADD_NEW%>"/>
 						<%
 						if (rodLinks!=null && rodLinks.size()>0){ %>
-							<input type="submit" class="smallbutton" value="Remove selected"/><%
+							<input type="submit" name="submit" value="<%=SUBMIT_REMOVE_SELECTED%>"/><%
 						}
 						%>
 					</div>
@@ -133,6 +158,9 @@ try{
 									<input type="hidden" name="ra_title" value=""/>
 									<input type="hidden" name="li_id" value=""/>
 									<input type="hidden" name="li_title" value=""/>
+									
+									<input type="hidden" name="client" value="webrod"/>
+									<input type="hidden" name="method" value="get_activities"/>
 								</div>
 							</form>
 						</div> <!-- workarea -->
