@@ -167,5 +167,6 @@ if (dstName == null || dstName.length()==0)
 	</form>
 </div> <!-- workarea -->
 </div> <!-- container -->
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
