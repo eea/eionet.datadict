@@ -77,7 +77,8 @@ private String setDefaultAttrs(String name){
 	String attrID = null;
 	String attrValue = null;
 	String attrName = null;
-	StringBuffer collect_attrs=new StringBuffer();
+	StringBuffer collect_attrs = new StringBuffer();
+	HashSet displayedCriteria = new HashSet();
 
 	String sel_attr = request.getParameter("sel_attr");
 	String sel_type = request.getParameter("sel_type");
@@ -136,18 +137,6 @@ private String setDefaultAttrs(String name){
 			document.forms["form1"].submit();
 		}
 
-		function openAttributes(){
-			var type = document.forms["form1"].type.value;
-			var selected = document.forms["form1"].collect_attrs.value;
-			attrWindow=window.open('pick_attribute.jsp?type=' + type + "&selected=" + selected,"Search","height=450,width=450,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
-			if (window.focus) {attrWindow.focus()}
-		}
-		function checkalert()
-		{
-			if (attrWindow != null) {
-			   if (!attrWindow.closed) attrWindow.focus();
-			}
-		}
 		function selAttr(id, type){
 			document.forms["form1"].sel_attr.value=id;
 			document.forms["form1"].sel_type.value=type;
@@ -179,7 +168,7 @@ private String setDefaultAttrs(String name){
 boolean isPopup = (contextParam == null || !contextParam.equals(POPUP))==false;
 if (!isPopup){
 	%>
-	<body onclick="checkalert()" onload="onLoad()">
+	<body onload="onLoad()">
 	<div id="container">
 	<jsp:include page="nlocation.jsp" flush="true">
 		<jsp:param name="name" value="Search tables"/>				
@@ -278,6 +267,7 @@ else {
 
 							if (attrID!=null){
 								collect_attrs.append(attrID + "|");
+								displayedCriteria.add(attrID);
 								%>
 								<tr style="vertical-align:top">
 									<td align="right" style="padding-right:10">
@@ -309,6 +299,7 @@ else {
 							attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
 							if (attrValue == null) attrValue="";
 							collect_attrs.append(attrID + "|");
+							displayedCriteria.add(attrID);
 							%>
 							<tr style="vertical-align:top">
 								<td align="right" style="padding-right:10">
@@ -334,6 +325,7 @@ else {
 						if (sel_type.equals("add")){
 							attrID = sel_attr;
 							collect_attrs.append(attrID + "|");
+							displayedCriteria.add(attrID);
 							attrName = getAttributeNameById(attrID);
 							%>
 							<tr style="vertical-align:top">
@@ -388,16 +380,42 @@ else {
 							<input class="mediumbuttonb" type="button" value="Search" onclick="submitForm('<%=submitForm%>')"/>
 							<input class="mediumbuttonb" type="reset" value="Reset"/>
 						</td>
-						<td style="font-size:65%;text-align:right">
-							<%
-							if (contextParam == null || !contextParam.equals(POPUP)){%>
-								<a href="javascript:openAttributes();">
-									<img src="images/button_plus.gif" style="border:0" alt="Click here to add more search criterias"/>
-								</a>&nbsp;Add criteria<%
-							}
-							%>
-						</td>
 					</tr>
+					<%
+					Vector addCriteria = new Vector();
+					for (int i=0; attrs!=null && i<attrs.size(); i++){
+						
+						DElemAttribute attribute = (DElemAttribute)attrs.get(i);
+						if (!attribute.displayFor("TBL"))
+							continue;
+					
+						if (!displayedCriteria.contains(attribute.getID())){
+							Hashtable hash = new Hashtable();
+							hash.put("id", attribute.getID());
+							hash.put("name", attribute.getShortName());
+							addCriteria.add(hash);
+						}
+					}
+					
+					if (addCriteria.size()>0){
+						%>
+						<tr>
+							<td colspan="4" style="text-align:right">
+								<label for="add_criteria">Add criteria</label>
+								<select name="add_criteria" id="add_criteria" onchange="selAttr(this.options[this.selectedIndex].value, 'add')">
+									<option value=""></option>
+									<%
+									for (int i=0; i<addCriteria.size(); i++){
+										Hashtable hash = (Hashtable)addCriteria.get(i);
+										%>
+										<option value="<%=hash.get("id")%>"><%=hash.get("name")%></option><%
+									}
+									%>
+								</select>
+							</td>
+						</tr><%
+					}
+					%>
 				</table>
 
 					<div style="display:none">
