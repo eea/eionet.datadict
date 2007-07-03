@@ -219,3 +219,11 @@ input[type="submit"][disabled], input[type="reset"][disabled],  input[type="butt
 .row-movers img#dot{
 	padding-top:10px;
 }
+
+/*
+* multiple select list implemented with <div>
+*/
+div .multiselect{
+	overflow:auto;
+	border:1px solid #9E9E9E;
+}

@@ -723,7 +723,7 @@
 				}
 			}
 			
-			slctAllValues();
+			//slctAllValues();
 			
 			if (mode=="editclose"){
 				mode = "edit";
@@ -1042,11 +1042,6 @@
 				}
 			}
 			return false;
-		}
-		
-		function openAddBox(id, dispParams){
-			attrWindow=window.open('multiple_value_add.jsp?id=' + id + '&' + dispParams,"Search","height=350,width=500,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
-			if (window.focus) {attrWindow.focus()}
 		}
 		
 		function copyElem(){
@@ -1819,61 +1814,48 @@ else{
 															}
 															
 															// mutliple display
-															if (dispMultiple && !dispType.equals("image")){ %>
-															
-																<select <%=disabled%> id="attr_mult_<%=attrID%>" name="attr_mult_<%=attrID%>" multiple="multiple" style="width:auto">
+															if (dispMultiple && !dispType.equals("image")){
+																															
+																Vector allPossibleValues = null;
+																if (dispType.equals("select"))
+																	allPossibleValues = searchEngine.getFixedValues(attrID, "attr");
+																else if (dispType.equals("text"))
+																	allPossibleValues = searchEngine.getSimpleAttributeValues(attrID);
+																
+																String divHeight = "7.5em";
+																String textName = "other_value_attr_" + attrID;
+																String divID = "multiselect_div_attr_" + attrID;
+																String checkboxName = "attr_mult_" + attrID;
+																Vector displayValues = new Vector();
+																if (multiValues!=null && multiValues.size()>0)
+																	displayValues.addAll(multiValues);
+																if (allPossibleValues!=null && allPossibleValues.size()>0)
+																	displayValues.addAll(allPossibleValues);
+																%>
+																<input type="text" name="<%=textName%>" value="insert other value" style="font-size:0.9em" onfocus="this.value=''"/>
+																<input type="button" value="-&gt;" style="font-size:0.8em;" onclick="addMultiSelectRow(document.forms['form1'].elements['<%=textName%>'].value, '<%=checkboxName%>','<%=divID%>')"/>
+																<div id="<%=divID%>" class="multiselect" style="height:<%=divHeight%>;width:25em;">
 																	<%
-																	if (multiValues==null || multiValues.size()==0){ %>
-																		<option value=""></option><%
-																	}
-																	
-																	for (int k=0; multiValues!=null && k<multiValues.size(); k++){
-																		attrValue = (String)multiValues.get(k);
-																		%>
-																		<option value="<%=Util.replaceTags(attrValue)%>"><%=Util.replaceTags(attrValue)%></option><%
+																	HashSet displayedSet = new HashSet();
+																	for (int k=0; displayValues!=null && k<displayValues.size(); k++){
+																		
+																		Object valueObject = displayValues.get(k);
+																		attrValue = (valueObject instanceof FixedValue) ? ((FixedValue)valueObject).getValue() : valueObject.toString();
+																		if (displayedSet.contains(attrValue))
+																			continue;
+																			
+																		String strChecked = "";
+																		if (multiValues!=null && multiValues.contains(attrValue))
+																			strChecked = "checked=\"checked\"";
+																		%>		
+																		<label style="display:block">
+																			<input type="checkbox" name="<%=checkboxName%>" value="<%=attrValue%>" <%=strChecked%> style="margin-right:5px"/><%=attrValue%>
+																		</label>
+																		<%
+																		displayedSet.add(attrValue);
 																	}
 																	%>
-																</select>
-																
-																<%
-																if (disabled.equals("")){ %>
-																	<a href="javascript:rmvValue('<%=attrID%>')"><img src="images/button_remove.gif" style="border:0" title="Click here to remove selected value" alt=""/></a>
-																	<a href="javascript:openAddBox('<%=attrID%>', 'dispType=<%=Util.replaceTags(dispType)%>&amp;width=<%=width%>')"><img src="images/button_plus.gif" style="border:0" title="Click here to add a new value" alt=""/></a><%
-																}
-																
-																if (dispType.equals("select")){ %>							
-																	<select class="small" name="hidden_attr_<%=attrID%>" style="display:none">
-																		<%
-																		Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
-																		if (fxValues==null || fxValues.size()==0){ %>
-																			<option selected="selected" value=""></option> <%
-																		}
-																		else{
-																			for (int g=0; g<fxValues.size(); g++){
-																				FixedValue fxValue = (FixedValue)fxValues.get(g);
-																				%>
-																				<option value="<%=Util.replaceTags(fxValue.getValue())%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
-																			}
-																		}
-																		%>
-																	</select> <%
-																}
-																else if (dispType.equals("text")){ %>
-																	<select class="small" name="hidden_attr_<%=attrID%>" style="display:none">
-																		<%
-																		Vector attrValues = searchEngine.getSimpleAttributeValues(attrID);
-																		if (attrValues==null || attrValues.size()==0){ %>
-																			<option selected="selected" value=""></option> <%
-																		}
-																		else{
-																			for (int g=0; g<attrValues.size(); g++){
-																				%>
-																				<option value="<%=Util.replaceTags((String)attrValues.get(g))%>"><%=Util.replaceTags((String)attrValues.get(g))%></option> <%
-																			}
-																		}
-																		%>
-																	</select> <%
-																}
+																</div><%
 															}
 															
 															// no multiple display

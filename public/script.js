@@ -120,3 +120,37 @@ function visibleInputsToQueryString(formName, skipByName){
 
 	return result;
 }
+
+function getFirstChildElement(n){
+	var x = n.firstChild;
+	while (x.nodeType!=1){
+		x=x.nextSibling;
+	}
+	return x;
+}
+
+function addMultiSelectRow(addValue, checkboxName, multiSelectDivName){
+
+	if (!addValue || addValue.length==0 || !checkboxName || checkboxName.length==0 || !multiSelectDivName || multiSelectDivName.length==0)
+		return;
+
+	var div = document.getElementById(multiSelectDivName);
+	if (!div)
+		return;
+	
+	var label = document.createElement("label");
+	label.setAttribute("style", "display:block");
+
+	var input = document.createElement("input");
+	input.setAttribute("type", "checkbox");
+	input.setAttribute("name", checkboxName);
+	input.setAttribute("value", addValue);
+	input.setAttribute("checked", "checked");
+	input.setAttribute("style", "margin-right:5px");
+	label.appendChild(input);
+
+	var text = document.createTextNode(addValue);
+	label.appendChild(text);
+
+	div.insertBefore(label,getFirstChildElement(div));
+}
