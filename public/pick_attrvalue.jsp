@@ -40,7 +40,13 @@
 		 attrValues = searchEngine.getComplexAttributeValues(attr_id);	
 	else
 		 attrValues = searchEngine.getSimpleAttributeValues(attr_id);	
-
+		 
+	String requesterQrystr = request.getParameter("requester_qrystr");
+	if (requesterQrystr==null){
+		%>
+		<b>Missing request parameter: requester_qrystr</b><%
+		return;		
+	}
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -50,131 +56,128 @@
 		<script type="text/javascript">
 		// <![CDATA[
 
-			function closeme(){
-				window.close()
-			}
 			function selectComplex(idx){
+				
+				var url = "complex_attr.jsp?<%=requesterQrystr%>";
 				var field_ids = document.forms["form1"].elements["field_ids"];
-				if (opener && !opener.closed) {
-					if (field_ids.length>0){
-						for (var i=0; i<field_ids.length;i++){
-							
-							field_id=document.forms["form1"].elements["field_ids"][i].value;
-							if (opener.document.forms["form1"].elements["field_"+field_id])
-								opener.document.forms["form1"].elements["field_"+field_id].value=document.forms["form1"].elements["field_"+field_id][idx+1].value;
-						}
+				if (field_ids.length>0){
+					for (var i=0; i<field_ids.length;i++){						
+						field_id = document.forms["form1"].elements["field_ids"][i].value;
+						url = url + "&<%=AttrFieldsHandler.FLD_PREFIX%>" + field_id + "=" + document.forms["form1"].elements["field_"+field_id][idx+1].value;
 					}
-				} else {
-					alert("You have closed the main window.\n\nNo action will be taken on the choices in this dialog box.")
 				}
-				closeme()
+				
+				document.location.assign(url);
 			}
-			function selectSimple(val){
-			//EK this function will finished if somebody want to use it
-				if (opener && !opener.closed) {
-						alert(val);
-				} else {
-					alert("You have closed the main window.\n\nNo action will be taken on the choices in this dialog box.")
-				}
-				closeme()
-			}
+			
 		// ]]>
 		</script>
 	</head>
 
-<body class="popup">
+<body>
+<div id="container">
 
-	<div id="pagehead">
-	    <a href="/"><img src="images/eealogo.gif" alt="Logo" id="logo" /></a>
-	    <div id="networktitle">Eionet</div>
-	    <div id="sitetitle">Data Dictionary (DD)</div>
-	    <div id="sitetagline">This service is part of Reportnet</div>    
-	</div> <!-- pagehead -->
-	<div id="operations" style="margin-top:10px">
-		<ul>
-			<li><a href="javascript:window.close();">Close</a></li>
-		</ul>
-	</div>
+	<jsp:include page="nlocation.jsp" flush="true">
+		<jsp:param name="name" value="Pick attribute value"/>
+	</jsp:include>
+	<%@ include file="nmenu.jsp" %>
 
-<div id="workarea" style="clear:right">
-	<h5>Select (<%=Util.replaceTags(attrName)%>) value:</h5>
-	<form id="form1" action="">
-	<table class="datatable">
-		<tr>
-			<%
-			if (type.equals(DElemAttribute.TYPE_COMPLEX)){
-				for (int t=0; t<attrFields.size(); t++){
-					Hashtable hash = (Hashtable)attrFields.get(t);
-					String name = (String)hash.get("name");
-					String f_id = (String)hash.get("id");
-						%>
-						<th align="left" style="padding-right:10">&nbsp;<%=Util.replaceTags(name)%>
-							<input type="hidden" name="field_ids" value="<%=f_id%>"/>
-							<input type="hidden" name="field_<%=f_id%>" value=" "/>
-						</th>
-						<%
-				}
-			}
-			else{
-				%>
-				<th align="left" style="padding-right:10">&nbsp;Value</th>
-				<%
-			}
-		%>
-		</tr>
+	<div id="workarea">
+	
 		<%
-		if (attrValues!= null){
-		if (attrValues.size()>0){
-			for (int j=0; attrValues!=null && j<attrValues.size();j++){
-				String trStyle = (j%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
-				if (type.equals(DElemAttribute.TYPE_COMPLEX)){
-					Hashtable rowHash = (Hashtable)attrValues.get(j);
-					%>
-					<tr <%=trStyle%>>
+		StringBuffer parentLink = new StringBuffer();
+		String dispParentType = request.getParameter("parent_type");
+		if (dispParentType==null)
+			dispParentType = "";
+		else if (dispParentType.equals("DS")){
+			dispParentType = "dataset";
+			parentLink.append("dataset.jsp?ds_id=");
+		}
+		else if (dispParentType.equals("T")){
+			dispParentType = "table";
+			parentLink.append("dstable.jsp?table_id=");
+		}
+		else if (dispParentType.equals("E")){			
+			dispParentType = "element";
+			parentLink.append("data_element.jsp?delem_id=");
+		}
+		
+		String dispParentName = request.getParameter("parent_name");
+		if (dispParentName==null)
+			dispParentName = "";
+		
+		if (parentLink.length()>0)
+			parentLink.append(request.getParameter("parent_id")).append("&amp;mode=edit");
+		
+		%>
+		<h2>You are selecting a value for <a href="complex_attr.jsp?<%=Util.replaceTags(requesterQrystr, true, true)%>"><%=attrName%></a> of <a href="<%=parentLink%>"><%=dispParentName%></a> <%=dispParentType%></h2>
+		
+		<div style="font-size:0.7em;clear:right;margin-bottom:10px;margin-top:10px">			
+			Click the link in the first column of the value-row you want to select.<br/>
+			Links in other columns are outside links.
+		</div>
+				
+		<form id="form1" action="">
+			<div style="overflow:auto">
+			<table class="datatable" style="width:100%" cellspacing="0" cellpadding="0">
+				<tr>
 					<%
-			
 					for (int t=0; t<attrFields.size(); t++){
 						Hashtable hash = (Hashtable)attrFields.get(t);
-						String fieldID = (String)hash.get("id");
-						String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
-						
-						if (fieldValue == null) fieldValue = "";
+						String name = (String)hash.get("name");
+						String f_id = (String)hash.get("id");
 							%>
-							<td style="padding-right:10">&nbsp;
-								<%
-								if (t==0){
-									%>
-									<a href="javascript:selectComplex(<%=j%>)"><%=Util.replaceTags(fieldValue, true)%></a><%
-								}
-								else{ %>
-									<%=Util.replaceTags(fieldValue)%><%
-								}
-								%>
-								<input type="hidden" name="field_<%=fieldID%>" value="<%=Util.replaceTags(fieldValue, true)%>"/>
-							</td>
-							<%
+							<th align="left" style="padding-right:10">&nbsp;<%=Util.replaceTags(name)%>
+								<input type="hidden" name="field_ids" value="<%=f_id%>"/>
+								<input type="hidden" name="field_<%=f_id%>" value=" "/>
+							</th><%
 					}
+					%>
+				</tr>
 				
-					%>
-					</tr>				
-					<%
+				<%
+				if (attrValues!=null && attrValues.size()>0){
+					
+					for (int j=0; attrValues!=null && j<attrValues.size();j++){
+						
+						String trStyle = (j%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
+						Hashtable rowHash = (Hashtable)attrValues.get(j);
+						%>
+						<tr <%=trStyle%>>
+							<%
+							for (int t=0; t<attrFields.size(); t++){
+								
+								Hashtable hash = (Hashtable)attrFields.get(t);
+								String fieldID = (String)hash.get("id");
+								String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
+								if (fieldValue == null)
+									fieldValue = "";
+								%>
+								<td style="padding-right:10">&nbsp;
+									<%
+									if (t==0){
+										%>
+										<a href="javascript:selectComplex(<%=j%>)"><%=Util.replaceTags(fieldValue, true)%></a><%
+									}
+									else{ %>
+										<%=Util.replaceTags(fieldValue)%><%
+									}
+									%>
+									<input type="hidden" name="field_<%=fieldID%>" value="<%=Util.replaceTags(fieldValue, true)%>"/>
+								</td><%
+							}					
+							%>
+						</tr><%
+					}
 				}
-				else{
-					String value = (String)attrValues.get(j);
-					%>
-					<tr><td <% if (j % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-right:10">&nbsp;
-						<a href="javascript:selectSimple('<%=value%>')"><%=Util.replaceTags(value, true)%></a>
-						</td></tr>
-					<%
-				}
-			}
-		}}
-		%>	
-		<tr><td>&nbsp;</td></tr>
-
-	</table>
-	</form>
+				%>	
+				<tr><td>&nbsp;</td></tr>
+			</table>
+			</div>
+		</form>
+	</div>
 </div>
+<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
 

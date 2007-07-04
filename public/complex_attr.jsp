@@ -140,7 +140,6 @@ private String legalizeAlert(String in){
 				
 				if (mode.equals("delete"))
 					redirUrl = redirUrl + "&wasdel=true";
-				
 				response.sendRedirect(redirUrl);
 				return;
 			}
@@ -173,6 +172,30 @@ private String legalizeAlert(String in){
 			else if (parent_type.equals("T"))
 				_type="tbl";
 			boolean isWorkingCopy = _type==null ? true : searchEngine.isWorkingCopy(parent_id, _type);
+			
+			String backURL = "complex_attrs.jsp?parent_id=" + parent_id +
+															 "&parent_type=" + parent_type +
+															 "&parent_name=" + parent_name +
+															 "&parent_ns=" + parent_ns +
+															 "&table_id=" + table_id+
+															 "&dataset_id=" + dataset_id;
+			String backURLEscaped = "complex_attrs.jsp?parent_id=" + parent_id +
+														 "&amp;parent_type=" + parent_type +
+														 "&amp;parent_name=" + parent_name +
+														 "&amp;parent_ns=" + parent_ns +
+														 "&amp;table_id=" + table_id+
+														 "&amp;dataset_id=" + dataset_id;
+			if (ds != null){
+				backURL = backURL + "&ds=" + ds;
+				backURLEscaped = backURLEscaped + "&amp;ds=" + ds;
+			}
+			
+			String wasDelete = request.getParameter("wasdel");
+			if (wasDelete!=null && attribute==null){
+				response.sendRedirect(backURL);
+				return;
+			}
+
 			%>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -198,8 +221,8 @@ private String legalizeAlert(String in){
 			}
 			
 			function openValues(id){
-				attrWindow=window.open("pick_attrvalue.jsp?attr_id=" + id + "&type=COMPLEX","Attribute_values","height=400,width=700,status=no,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
-				if (window.focus) {attrWindow.focus()}
+				document.forms["form1"].action = "pick_attrvalue.jsp";
+				document.forms["form1"].submit();
 			}
 			
 			function openHarvested(id){
@@ -254,24 +277,6 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 <div id="workarea">
 
 	<%
-	
-	String backURL = "complex_attrs.jsp?parent_id=" + parent_id +
-															 "&parent_type=" + parent_type +
-															 "&parent_name=" + parent_name +
-															 "&parent_ns=" + parent_ns +
-															 "&table_id=" + table_id+
-															 "&dataset_id=" + dataset_id;
-	String backURLEscaped = "complex_attrs.jsp?parent_id=" + parent_id +
-														 "&amp;parent_type=" + parent_type +
-														 "&amp;parent_name=" + parent_name +
-														 "&amp;parent_ns=" + parent_ns +
-														 "&amp;table_id=" + table_id+
-														 "&amp;dataset_id=" + dataset_id;
-	if (ds != null){
-		backURL = backURL + "&ds=" + ds;
-		backURLEscaped = backURLEscaped + "&amp;ds=" + ds;
-	}
-		
 	if (mode.equals("add")){
 		if (attrFields == null || attrFields.size()==0){
 			%>
@@ -281,11 +286,6 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 		}
 	}
 	else if (attribute == null){
-		String wasDelete = request.getParameter("wasdel");
-		if (wasDelete != null){
-			response.sendRedirect(backURL);
-			return;
-		}
 		%>
 		<span class="error">Attribute not found!</span><br/>
 			<a href="javascript:history.back(-1)">
@@ -341,44 +341,33 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 			</ul>
 		</div><%
 	}
-	%>
 
-<h1>Complex attribute value</h1>
-<table class="datatable" style="width:auto;border:0">
-	<tr>
-		<th scope="row" class="scope-row">
-				<%
-				String nsPrefix = "";
-				if (parent_type.equals("DS")){
-					%>Dataset<%
-				}
-				else if (parent_type.equals("T")){
-					nsPrefix = parent_ns + ":";
-					%>Table<%
-				}
-				else if (parent_type.equals("C")){
-					nsPrefix = parent_ns + ":";
-					%>Class<%
-				}
-				else {
-					if (ds != null && ds.equals("true")){
-						%>Dataset<%
-					} else {
-						nsPrefix = parent_ns + ":";
-						%>Element<%
-					}
-				}
-				%>
-			</th>
-			<td><%=Util.replaceTags(parent_name)%></td>
-	</tr>
-	
-	<tr>
-		<th scope="row" class="scope-row">Attribute</th>
-		<td><%=Util.replaceTags(attrName)%></td>
-	</tr>
-	
-</table>
+StringBuffer parentLink = new StringBuffer();
+String dispParentType = request.getParameter("parent_type");
+if (dispParentType==null)
+	dispParentType = "";
+else if (dispParentType.equals("DS")){
+	dispParentType = "dataset";
+	parentLink.append("dataset.jsp?ds_id=");
+}
+else if (dispParentType.equals("T")){
+	dispParentType = "table";
+	parentLink.append("dstable.jsp?table_id=");
+}
+else if (dispParentType.equals("E")){			
+	dispParentType = "element";
+	parentLink.append("data_element.jsp?delem_id=");
+}
+
+String dispParentName = request.getParameter("parent_name");
+if (dispParentName==null)
+	dispParentName = "";
+
+if (parentLink.length()>0)
+	parentLink.append(request.getParameter("parent_id")).append("&amp;mode=edit");	
+%>
+
+<h1 style="margin-bottom:20px">Complex attribute <a href=""><%=attrName%></a> of <%=dispParentType%> <a href="<%=parentLink%>"><%=dispParentName%></a></h1>
 
 	<%
 	if (!mode.equals("view")){
@@ -387,7 +376,7 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 			<%
 			if (user!=null){
 				%>
-				<input class="smallbutton" type="button" name="addbutton" value="Add"  onclick="submitForm('add')" />
+				<input class="smallbutton" type="button" name="addbutton" value="Add" onclick="submitForm('add')" />
 				<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')" />
 				<%				
 				if (harvesterID!=null && harvesterID.length()>0){ %>
@@ -404,24 +393,27 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 	<table class="datatable" cellspacing="0" cellpadding="0">
 	
 		<%
-			for (int t=0; attrFields!=null && t<attrFields.size(); t++){			
-				Hashtable hash = (Hashtable)attrFields.get(t);
-				String id = (String)hash.get("id");
-				String name = (String)hash.get("name");
-				%>
-				<tr>
-					<th style="padding:0;text-align:right"><%=Util.replaceTags(name)%>:&nbsp;</th>
-					<td style="padding:0">
-						<input class="smalltext" type="text" name="<%=AttrFieldsHandler.FLD_PREFIX%><%=id%>"/>
-					</td>
-				</tr>
-				<%
-			}
+		for (int t=0; attrFields!=null && t<attrFields.size(); t++){			
+			Hashtable hash = (Hashtable)attrFields.get(t);
+			String id = (String)hash.get("id");
+			String name = (String)hash.get("name");
+			String givenValue = request.getParameter(AttrFieldsHandler.FLD_PREFIX + id);
+			if (givenValue==null)
+				givenValue = "";
+			%>
+			<tr>
+				<th style="padding:0;text-align:right"><%=Util.replaceTags(name)%>:&nbsp;</th>
+				<td style="padding:0">
+					<input class="smalltext" type="text" name="<%=AttrFieldsHandler.FLD_PREFIX%><%=id%>" value="<%=givenValue%>"/>
+				</td>
+			</tr>
+			<%
+		}
 		%>
 	</table><%
 } // if (!mode.equals("view"))
 %>
-
+	<div style="overflow:auto">
 	<table cellpadding="0" cellspacing="0" class="datatable">
 	
 		<tr>
@@ -479,10 +471,13 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 					for (int t=0; t<attrFields.size(); t++){
 						Hashtable hash = (Hashtable)attrFields.get(t);
 						String fieldID = (String)hash.get("id");
-						String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
+						String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);						
 						if (fieldValue == null) fieldValue = " ";
+							String tdStyle = "padding-left:5;padding-right:10";
+							if (displayed%2 != 0)
+								tdStyle = tdStyle + ";background-color:#D3D3D3;";
 							%>
-							<td class="small" <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-left:5;padding-right:10"><%=Util.replaceTags(fieldValue)%></td>
+							<td style="<%=tdStyle%>"><%=Util.replaceTags(fieldValue)%></td>
 							<%
 					}		
 					displayed++;
@@ -517,8 +512,11 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 				String fieldID = (String)hash.get("id");
 				String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 				if (fieldValue == null) fieldValue = " ";
+					String tdStyle = "padding-left:5;padding-right:10";
+					if (displayed % 2 != 0)
+						tdStyle = tdStyle + ";background-color:#D3D3D3;";
 					%>
-					<td class="small" <% if (displayed % 2 != 0) %> bgcolor="#D3D3D3" <%;%> align="left" style="padding-left:5;padding-right:10"><%=Util.replaceTags(fieldValue)%></td>
+					<td style="<%=tdStyle%>"><%=Util.replaceTags(fieldValue)%></td>
 					<%
 			}
 			displayed++;
@@ -531,12 +529,14 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 		%>	
 
 	</table>
+	</div>
 
 <div style="display:none">
 	<input type="hidden" name="allowToAdd" value="<%=nonInheritedCount==0%>"/>
 	<input type="hidden" name="attrName" value="<%=Util.replaceTags(attrName, true)%>"/>
 	
 	<input type="hidden" name="mode" value="<%=mode%>"/>
+	<input type="hidden" name="type" value="COMPLEX"/>
 	
 	<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
 	<input type="hidden" name="parent_id" value="<%=parent_id%>"/>
@@ -554,7 +554,17 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 		<input type="hidden" name="ds" value="<%=ds%>"/>
 		<%
 	}
+	
+	String qryStr = request.getQueryString();
+	if (qryStr!=null && qryStr.length()>0){
+		int i = qryStr.indexOf(AttrFieldsHandler.FLD_PREFIX);
+		if (i>0)
+			qryStr = qryStr.substring(0,i);
+	}
 	%>
+	
+	<input type="hidden" name="requester_qrystr" value="<%=Util.replaceTags(qryStr, true, true)%>" />
+	
 </div>
 </form>
 </div>

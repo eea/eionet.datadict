@@ -189,7 +189,34 @@ private String legalizeAlert(String in){
 
 <div id="workarea">
 
-<h1>Complex attributes of <em><%=Util.replaceTags(parent_name)%></em></h1>
+<%
+StringBuffer parentLink = new StringBuffer();
+String dispParentType = request.getParameter("parent_type");
+if (dispParentType==null)
+	dispParentType = "";
+else if (dispParentType.equals("DS")){
+	dispParentType = "dataset";
+	parentLink.append("dataset.jsp?ds_id=");
+}
+else if (dispParentType.equals("T")){
+	dispParentType = "table";
+	parentLink.append("dstable.jsp?table_id=");
+}
+else if (dispParentType.equals("E")){			
+	dispParentType = "element";
+	parentLink.append("data_element.jsp?delem_id=");
+}
+
+String dispParentName = request.getParameter("parent_name");
+if (dispParentName==null)
+	dispParentName = "";
+
+if (parentLink.length()>0)
+	parentLink.append(request.getParameter("parent_id")).append("&amp;mode=edit");
+		
+%>
+
+<h1>Complex attributes of <a href="<%=parentLink%>"><%=dispParentName%></a> <%=dispParentType%></h1>
 <%
 if (complexAttrs==null || complexAttrs.size() == 0){
 	%>
@@ -202,26 +229,28 @@ if (complexAttrs==null || complexAttrs.size() == 0){
 	<%
 	if (mComplexAttrs!=null && mComplexAttrs.size()>0){
 		%>
-		<select class="small" name="new_attr_id">
-			<%
-			for (int i=0; i<mComplexAttrs.size(); i++){
-				DElemAttribute attr = (DElemAttribute)mComplexAttrs.get(i);
-				String attrID = attr.getID();
-				String attrName = attr.getShortName();
-				
-				String attrOblig = attr.getObligation();
-				String obligStr  = "(O)";
-				if (attrOblig.equalsIgnoreCase("M"))
-					obligStr = "(M)";
-				else if (attrOblig.equalsIgnoreCase("C"))
-					obligStr = "(C)";
+		<div>
+			<select class="small" name="new_attr_id">
+				<%
+				for (int i=0; i<mComplexAttrs.size(); i++){
+					DElemAttribute attr = (DElemAttribute)mComplexAttrs.get(i);
+					String attrID = attr.getID();
+					String attrName = attr.getShortName();
+					
+					String attrOblig = attr.getObligation();
+					String obligStr  = "(O)";
+					if (attrOblig.equalsIgnoreCase("M"))
+						obligStr = "(M)";
+					else if (attrOblig.equalsIgnoreCase("C"))
+						obligStr = "(C)";
+					%>
+					<option value="<%=attrID%>"><%=Util.replaceTags(attrName)%>&nbsp;&nbsp;&nbsp;<%=Util.replaceTags(obligStr)%></option><%
+				}
 				%>
-				<option value="<%=attrID%>"><%=Util.replaceTags(attrName)%>&nbsp;&nbsp;&nbsp;<%=Util.replaceTags(obligStr)%></option><%
-			}
-			%>
-		</select>
-		<input class="smallbutton" type="button" value="Add new" onclick="addNew()"/>
-		<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')"/><%
+			</select>
+			<input class="smallbutton" type="button" value="Add new" onclick="addNew()"/>
+			<input class="smallbutton" type="button" value="Remove selected" onclick="submitForm('delete')"/>
+		</div><%
 	}
 	%>
 
@@ -262,7 +291,7 @@ for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
 		}
 
 		%>
-		
+		<div style="overflow:auto">
 		<table cellspacing="0" class="datatable">
 			<tr>
 				<td align="right" valign="middle">
@@ -339,6 +368,7 @@ for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
 				</td>
 			</tr>
 		</table>
+		</div>
 		<%
 	}
 %>
