@@ -1451,7 +1451,6 @@ public class DDSearchEngine {
 		Vector v = new Vector();
 		DElemAttribute attr = null;
 		Hashtable rowHash = null;
-		
 		try{
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(buf.toString());
@@ -3091,16 +3090,34 @@ public class DDSearchEngine {
 	
 	/**
 	 * 
+	 * @param attrID
+	 * @return
+	 * @throws SQLException
 	 */
-	public Vector getHarvesterFieldsByAttr(String attrID)
-	throws SQLException {
+	public Vector getHarvesterFieldsByAttr(String attrID) throws SQLException {
 		return getHarvesterFieldsByAttr(attrID, true);
 	}
+	
 	/**
 	 * 
+	 * @param attrID
+	 * @param all
+	 * @return
+	 * @throws SQLException
 	 */
-	public Vector getHarvesterFieldsByAttr(String attrID, boolean all)
-	throws SQLException {
+	public Vector getHarvesterFieldsByAttr(String attrID, boolean all) throws SQLException {
+		return getHarvesterFieldsByAttr(attrID, all, null);
+	}
+	
+	/**
+	 * 
+	 * @param attrID
+	 * @param all
+	 * @param includeFields
+	 * @return
+	 * @throws SQLException
+	 */
+	public Vector getHarvesterFieldsByAttr(String attrID, boolean all, HashSet includeFields) throws SQLException {
 		
 		String q = null;		
 		Vector v = new Vector();
@@ -3143,7 +3160,7 @@ public class DDSearchEngine {
 		rs = stmt.executeQuery(q);
 		while (rs.next()){
 			String fldName = rs.getString("FLD_NAME");
-			if (!taken.contains(fldName)){
+			if ((includeFields!=null && includeFields.contains(fldName)) || !taken.contains(fldName)){
 				
 				// ordering logic
 				String uc = new String(fldName);
@@ -3264,11 +3281,28 @@ public class DDSearchEngine {
 			}
 		}
 		
-		return vv;
+		return vv;	
 	}
 	
-	public Hashtable getHarvestedAttrFieldsHash(String attrID)
-	throws SQLException{
+	/**
+	 * 
+	 * @param harvesterID
+	 * @param harvAttrID
+	 * @return
+	 */
+	public Vector getHarvestedRow(String harvesterID, String harvAttrID) throws SQLException{
+		
+		return null;
+		
+	}
+	
+	/**
+	 * 
+	 * @param attrID
+	 * @return
+	 * @throws SQLException
+	 */
+	public Hashtable getHarvestedAttrFieldsHash(String attrID) throws SQLException{
 		Hashtable hash = new Hashtable();
 		Vector v = getAttrFields(attrID);
 		for (int i=0; v!=null && i<v.size(); i++){
@@ -3971,19 +4005,15 @@ public class DDSearchEngine {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection conn =
 				DriverManager.getConnection(
-						"jdbc:mysql://localhost:3306/datadict", "root", "ABr00t");
+						"jdbc:mysql://192.168.10.15:3306/jaanusdd", "root", "ABr00t");
 			
 			DDSearchEngine searchEngine = new DDSearchEngine(conn);
 			AppUserIF testUser = new TestUser(false);
-			testUser.authenticate("heinlja", "ddd");
+			testUser.authenticate("heinlja", "mi6");
 			searchEngine.setUser(testUser);
 			
-			Vector v = searchEngine.getObligationsWithDatasets();
-			for (int i=0; v!=null && i<v.size(); i++){
-				System.out.println("================================>");
-				System.out.println(v.get(i).toString());
-				System.out.println("================================>");
-			}
+			Hashtable v = searchEngine.getHarvestedAttrFieldsHash("12");
+			System.out.println(v);
 		}
 		catch (Exception e){
 			System.out.println(e.toString());

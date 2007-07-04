@@ -222,12 +222,12 @@ private String legalizeAlert(String in){
 					</select>
 				</td>
 			</tr>
-			<%
-			//Vector harvFlds = searchEngine.getHarvesterFieldsByAttr(attr_id, false);
-			Vector harvFlds = new Vector();
-			harvFlds.add("FIELD1");
-			harvFlds.add("FIELD2");
-			harvFlds.add("FIELD3");
+			<%			
+			HashSet includeFields = new HashSet();
+			String harvFld = (String)attrField.get("harv_fld");
+			if (harvFld!=null)
+				includeFields.add(harvFld);
+			Vector harvFlds = searchEngine.getHarvesterFieldsByAttr(attr_id, false, includeFields);
 			if (harvFlds!=null && harvFlds.size()>0){
 				%>
 				<tr>
@@ -236,10 +236,10 @@ private String legalizeAlert(String in){
 					</th>
 					<td>
 						<%
-						String harvFld = (String)attrField.get("harv_fld");
+						
 						%>
 						<select <%=disabled%> name="harv_fld" class="small">
-							<option value="null">-- no link --</option>
+							<option value="null"></option>
 							<%
 							for (int i=0; harvFlds!=null && i<harvFlds.size(); i++){
 								String s = (String)harvFlds.get(i);

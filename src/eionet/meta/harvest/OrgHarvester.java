@@ -8,6 +8,7 @@ package eionet.meta.harvest;
 
 import java.util.*;
 
+import eionet.directory.DirServiceException;
 import eionet.directory.DirectoryService;
 
 public class OrgHarvester extends DDHarvester{
@@ -18,8 +19,15 @@ public class OrgHarvester extends DDHarvester{
 	
 	public void doHarvest() throws Exception{
 		
-		Vector orgs = DirectoryService.listOrganisations();
-		if (orgs==null) return;
+		Vector orgs = null;
+		try{
+			orgs = DirectoryService.listOrganisations();
+		}
+		catch (DirServiceException dse){
+			dse.printStackTrace();
+		}		
+		if (orgs==null)
+			return;
 
 		for (int i=0; i<orgs.size(); i++){
 			
@@ -27,7 +35,13 @@ public class OrgHarvester extends DDHarvester{
 			if (orgID.startsWith("="))
 				orgID = orgID.substring(1).trim();
 			
-			Hashtable h = DirectoryService.getOrganisation(orgID);
+			Hashtable h = null;
+			try{
+				h = DirectoryService.getOrganisation(orgID);
+			}
+			catch (DirServiceException dse){
+				dse.printStackTrace();
+			}
 			if (h==null)
 				continue;
 			

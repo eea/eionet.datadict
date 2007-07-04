@@ -26,6 +26,11 @@ private String legalizeAlert(String in){
 
 			<%
 			
+			response.setHeader("Pragma", "no-cache");
+			response.setHeader("Cache-Control", "no-cache");
+			response.addHeader("Cache-Control", "no-store");
+			response.setDateHeader("Expires", 0);
+			
 			request.setCharacterEncoding("UTF-8");
 			
 			XDBApplication.getInstance(getServletContext());
@@ -226,23 +231,8 @@ private String legalizeAlert(String in){
 			}
 			
 			function openHarvested(id){
-				<%
-				StringBuffer buf = new StringBuffer("pick_harvattr.jsp?attr_id=");
-				buf.append(attr_id);
-				buf.append("&parent_id=");
-				buf.append(parent_id);
-				buf.append("&parent_type=");
-				buf.append(parent_type);
-				%>
-				
-				var link = "<%=buf.toString()%>";
-				link = link + "&position=" + document.forms["form1"].elements["position"].value;
-				
-				attrWindow=window.open(link,
-										"HarvestedAttributes",
-										"height=400,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
-										
-				if (window.focus) {attrWindow.focus()}
+				document.forms["form1"].action = "pick_harvattr.jsp";
+				document.forms["form1"].submit();
 			}
 			
 			function doLoad(){
@@ -380,7 +370,7 @@ if (parentLink.length()>0)
 				<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')" />
 				<%				
 				if (harvesterID!=null && harvesterID.length()>0){ %>
-					<input class="smallbutton" type="button" value="Get"  onclick="openHarvested('<%=attr_id%>')" /><%
+					<input class="smallbutton" type="button" value="Get harvested"  onclick="openHarvested('<%=attr_id%>')" /><%
 				}
 			}
 			else{
@@ -533,7 +523,7 @@ if (parentLink.length()>0)
 
 <div style="display:none">
 	<input type="hidden" name="allowToAdd" value="<%=nonInheritedCount==0%>"/>
-	<input type="hidden" name="attrName" value="<%=Util.replaceTags(attrName, true)%>"/>
+	<input type="hidden" name="attrName" value="<%=attrName%>"/>
 	
 	<input type="hidden" name="mode" value="<%=mode%>"/>
 	<input type="hidden" name="type" value="COMPLEX"/>
@@ -564,6 +554,7 @@ if (parentLink.length()>0)
 	%>
 	
 	<input type="hidden" name="requester_qrystr" value="<%=Util.replaceTags(qryStr, true, true)%>" />
+	<input type="hidden" name="requester_redir_url" value="<%=Util.replaceTags(redirUrl, true, true)%>" />
 	
 </div>
 </form>
