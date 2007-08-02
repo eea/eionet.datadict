@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!
@@ -131,9 +131,13 @@ private String legalizeAlert(String in){
 						handler.execute();
 					}
 					catch (Exception e){
-						%>
-						<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body><h1>Error</h1><p><%=e.toString()%></p></body></html>
-						<%
+						ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+						e.printStackTrace(new PrintStream(bytesOut));
+						request.setAttribute("DD_ERR_MSG", e.getMessage());
+						request.setAttribute("DD_ERR_TRC", bytesOut.toString(response.getCharacterEncoding()));
+						String backLink = request.getParameter("submitter_url");
+						request.setAttribute("DD_ERR_BACK_LINK", backLink);
+						request.getRequestDispatcher("error.jsp").forward(request, response);
 						return;
 					}
 				}

@@ -542,7 +542,6 @@ if (isDisplayOperations){
                 		<td colspan="2" class="smallfont_light">
                 			<input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked"/><label for="ssubstr">Substring search</label>
                 			<input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>&nbsp;&nbsp;
-                			<input type="radio" name="search_precision" id="sfree" value="free"/><label for="sfree">Free text search</label>&nbsp;&nbsp;
                 		</td>
                     </tr>
                     

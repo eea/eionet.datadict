@@ -303,7 +303,6 @@ private String setDefaultAttrs(String name){
             		<td colspan="2">
             			<input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked"/><label for="ssubstr">Substring search</label>
             			<input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>
-            			<input type="radio" name="search_precision" id="sfree" value="free"/><label for="sfree">Free text search</label>
             		</td>
                 </tr>
 			
