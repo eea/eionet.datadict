@@ -57,7 +57,7 @@ public class AttributeHandler extends BaseHandler {
         this.mode = mode;
     }
 
-    public void execute() throws Exception {
+    public void execute_() throws Exception {
 
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
                           !mode.equalsIgnoreCase("edit") &&

@@ -8,19 +8,14 @@ import com.tee.util.*;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
 
-public class MAttrFieldsHandler {
+public class MAttrFieldsHandler extends BaseHandler{
     
     public static String POS_PREFIX = "pos_";
     public static String OLDPOS_PREFIX = "oldpos_";
 
-    private Connection conn = null;
-    //private HttpServletRequest req = null;
-    private Parameters req = null;
-    private ServletContext ctx = null;
     String mode = null;
     String attr_id = null;
     String attr_name = null;
-    private static LogServiceIF logger = new Log4jLoggerImpl();
 
     public MAttrFieldsHandler(Connection conn, HttpServletRequest req, ServletContext ctx){
         this(conn, new Parameters(req), ctx);
@@ -40,7 +35,11 @@ public class MAttrFieldsHandler {
         this.mode = mode;
     }
 
-    public void execute() throws Exception {
+    /*
+     *  (non-Javadoc)
+     * @see eionet.meta.savers.BaseHandler#execute_()
+     */
+    public void execute_() throws Exception {
         if (mode==null ||
            (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("delete") && !mode.equalsIgnoreCase("edit") && !mode.equalsIgnoreCase("edit_pos")))
             throw new Exception("MAttrFieldsHandler mode unspecified!");

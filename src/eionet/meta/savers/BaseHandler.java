@@ -2,7 +2,9 @@
 package eionet.meta.savers;
 
 import java.sql.*;
+
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import eionet.meta.*;
 import eionet.util.Log4jLoggerImpl;
@@ -10,16 +12,68 @@ import eionet.util.LogServiceIF;
 
 import com.tee.util.Util;
 import com.tee.xmlserver.AppUserIF;
+import eionet.util.DbTransactionPolite;
 
+/**
+ * @author Jaanus Heinlaid
+ */
 public abstract class BaseHandler {
-	
+
+	/** */
 	protected Connection conn = null;
 	protected Parameters req = null;
 	protected ServletContext ctx = null;
+	protected HttpServletRequest httpServletRequest = null;
 	
+	/** */
 	protected AppUserIF user = null;
 	protected static LogServiceIF logger = new Log4jLoggerImpl();
-    
+
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	public void execute() throws Exception {
+
+		DbTransactionPolite tx = DbTransactionPolite.start(conn);
+		boolean b = tx.getIsAnotherTransactionRunning();
+		System.out.println();
+		try{
+    		execute_();
+    		tx.commit();
+    	}
+    	catch (Exception e){
+    		tx.rollback();
+    		throw e;
+    	}
+    	finally{    		
+    		tx.end();
+    	}
+	}
+
+	/**
+	 * 
+	 * @param pars
+	 * @throws Exception
+	 */
+	public void execute(Parameters pars) throws Exception {
+		this.req = pars;
+		execute();
+	}
+
+	/**
+	 * 
+	 * @param pars
+	 * @throws Exception
+	 */
+	public void execute(HttpServletRequest req) throws Exception {
+		this.httpServletRequest = req;
+		execute();
+	}
+	
+	/**
+	 *
+	 */
 	protected void cleanVisuals(){
 		
 		String vp = ctx==null ? null : ctx.getInitParameter("visuals-path");
@@ -36,4 +90,10 @@ public abstract class BaseHandler {
 		mrProper.execute(pars);
 		logger.debug(mrProper.getResponse().toString());
 	}
+	
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	public abstract void execute_() throws Exception;
 }

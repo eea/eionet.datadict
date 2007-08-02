@@ -112,7 +112,7 @@ public class DatasetHandler extends BaseHandler {
 		}
 	}
     
-    public void execute() throws Exception {
+    public void execute_() throws Exception {
     	
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
 						  !mode.equalsIgnoreCase("edit") &&
@@ -225,7 +225,7 @@ public class DatasetHandler extends BaseHandler {
 			
 			String updVer = req.getParameter("upd_version");
 			if (updVer!=null && updVer.equalsIgnoreCase("true")){
-				verMan.updateVersion();
+				verMan.setVersionUpdate(true);
 				setCheckedInCopyID(ds_id);
 			}
 			else

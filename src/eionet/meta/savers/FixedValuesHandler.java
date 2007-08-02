@@ -11,14 +11,10 @@ import eionet.util.LogServiceIF;
 
 import com.tee.util.*;
 
-public class FixedValuesHandler {
+public class FixedValuesHandler extends BaseHandler{
 	
 	private static final String DEFAULT_OWNER_TYPE = "elem";
 
-    private Connection conn = null;
-    private Parameters req = null;
-    private ServletContext ctx = null;
-    
     private String mode = null;
     private String ownerID = null;
 	private String ownerType = DEFAULT_OWNER_TYPE;
@@ -29,7 +25,6 @@ public class FixedValuesHandler {
     
     private boolean allowed = true;
 	private boolean allowanceChecked = false;
-	private static LogServiceIF logger = new Log4jLoggerImpl();
     
     public FixedValuesHandler(Connection conn, HttpServletRequest req, ServletContext ctx){
         this(conn, new Parameters(req), ctx);
@@ -70,17 +65,16 @@ public class FixedValuesHandler {
     	return ownerID;
     }
     
-	public boolean execute(Parameters pars) throws Exception {
-		this.req = pars;
-		return execute();
-	}
-    
-    public boolean execute() throws Exception {
+    /*
+     *  (non-Javadoc)
+     * @see eionet.meta.savers.BaseHandler#execute_()
+     */
+    public void execute_() throws Exception {
     	
     	if (!allowanceChecked)
 			 checkAllowance();
     	else if (!allowed)
-    		return false; 
+    		return; 
 
         if (mode.equalsIgnoreCase("add"))
             insert();
@@ -88,8 +82,6 @@ public class FixedValuesHandler {
             update();
         else
             delete();
-        
-        return true;
     }
 
     private void insert() throws Exception {

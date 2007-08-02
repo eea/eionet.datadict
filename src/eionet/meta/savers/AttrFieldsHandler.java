@@ -10,15 +10,10 @@ import eionet.meta.DDSearchEngine;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
 
-public class AttrFieldsHandler {
+public class AttrFieldsHandler extends BaseHandler {
 
     public static final String FLD_PREFIX = "field_";
-    private static LogServiceIF logger = new Log4jLoggerImpl();
 
-    private Connection conn = null;
-    //private HttpServletRequest req = null;
-    private Parameters req = null;
-    private ServletContext ctx = null;
     String mode = null;
     String parent_id = null;
     String parent_type = null;
@@ -63,7 +58,7 @@ public class AttrFieldsHandler {
         this.versioning = f;
     }
 
-    public void execute() throws Exception {
+    public void execute_() throws Exception {
     	
         if (mode==null || (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("delete")))
             throw new Exception("AttrFieldsHandler mode unspecified!");
@@ -142,31 +137,37 @@ public class AttrFieldsHandler {
 
     private void insertFields(String row_id, Enumeration params) throws SQLException {
 
-        if (row_id == null) return;
+        if (row_id == null)
+        	return;
 
-        do {
-            String parName = (String)params.nextElement();
-            if (!parName.startsWith(FLD_PREFIX)) continue;
-
-            if (Util.nullString(req.getParameter(parName))) continue;
-
-            String fieldID = parName.substring(FLD_PREFIX.length());
-
-            SQLGenerator gen = new SQLGenerator();
-            gen.setTable("COMPLEX_ATTR_FIELD");
-
-            gen.setFieldExpr("ROW_ID", row_id);
-            gen.setField("M_COMPLEX_ATTR_FIELD_ID", fieldID);
-            gen.setField("VALUE", req.getParameter(parName));
-
-            String sql = gen.insertStatement();
-            logger.debug(sql);
-
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(sql);
-            stmt.close();
+        try{
+	        do {
+	            String parName = (String)params.nextElement();
+	            if (!parName.startsWith(FLD_PREFIX)) continue;
+	
+	            if (Util.nullString(req.getParameter(parName))) continue;
+	
+	            String fieldID = parName.substring(FLD_PREFIX.length());
+	
+	            SQLGenerator gen = new SQLGenerator();
+	            gen.setTable("COMPLEX_ATTR_FIELD");
+	
+	            gen.setFieldExpr("ROW_ID", row_id);
+	            gen.setField("M_COMPLEX_ATTR_FIELD_ID", fieldID);
+	            gen.setField("VALUE", req.getParameter(parName));
+	
+	            String sql = gen.insertStatement();
+	            logger.debug(sql);
+	
+	            Statement stmt = conn.createStatement();
+	            stmt.executeUpdate(sql);
+	            stmt.close();
+	        }
+	        while (params.hasMoreElements());
         }
-        while (params.hasMoreElements());
+        catch (SQLException sqle){
+        	sqle.printStackTrace(System.out);
+        }
     }
     
     private void delete() throws SQLException {

@@ -12,16 +12,8 @@ import eionet.util.LogServiceIF;
  * 
  * @author jaanus
  */
-public class NamespaceHandler {
+public class NamespaceHandler extends BaseHandler{
 	
-	/** */
-	private static LogServiceIF logger = new Log4jLoggerImpl();
-
-	/** */
-    private Connection conn = null;
-    private Parameters req = null;
-    private ServletContext ctx = null;
-    
     /** */
     private String mode = null;
     private String[] nsID = null;
@@ -81,12 +73,12 @@ public class NamespaceHandler {
         this(conn, req, ctx);
         this.mode = mode;
     }
-    
-    /**
-     * 
-     * @throws Exception
+
+    /*
+     *  (non-Javadoc)
+     * @see eionet.meta.savers.BaseHandler#execute_()
      */
-    public void execute() throws Exception {
+    public void execute_() throws Exception {
         
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
                           !mode.equalsIgnoreCase("edit") &&

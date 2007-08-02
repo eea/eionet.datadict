@@ -5,36 +5,33 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.tee.util.*;
 
-public class RodLinksHandler{
-	
-	private Connection conn = null;
-	private ServletContext ctx = null;
+public class RodLinksHandler extends BaseHandler{
 	
 	public RodLinksHandler(Connection conn, ServletContext ctx){
 		this.conn = conn;
 		this.ctx = ctx;
 	}
 	
-	public void execute(HttpServletRequest req) throws Exception{
+	public void execute_() throws Exception{
 		
-		String dstID = req.getParameter("dst_id");
+		String dstID = httpServletRequest.getParameter("dst_id");
 		if (dstID==null)
 			throw new Exception("RodLinksHandler: dstID is missing!");
 		
-		String mode = req.getParameter("mode");
+		String mode = httpServletRequest.getParameter("mode");
 		if (mode==null)
 			throw new Exception("RodLinksHandler: mode is missing!");
 		else if (mode.equals("add"))
-			addRodLinks(req, dstID);
+			addRodLinks(dstID);
 		else if (mode.equals("rmv"))
-			rmvRodLinks(req, dstID);
+			rmvRodLinks(dstID);
 		else
 			throw new Exception("RodLinksHandler: unknown mode " + mode);
 	}
 	
-	private void addRodLinks(HttpServletRequest req, String dstID) throws Exception{
+	private void addRodLinks(String dstID) throws Exception{
 	
-		String raID = req.getParameter("ra_id");
+		String raID = httpServletRequest.getParameter("ra_id");
 		if (Util.nullString(raID)) throw new Exception("ra_id is missing!");
 	
 		StringBuffer buf = new StringBuffer("select count(*) from DST2ROD where DATASET_ID=").
@@ -48,9 +45,9 @@ public class RodLinksHandler{
 			if (rs.next() && rs.getInt(1) > 0)
 				throw new Exception("This dataset is already linked with this obligation!");
 		
-			String raTitle = req.getParameter("ra_title");
-			String liID = req.getParameter("li_id");
-			String liTitle = req.getParameter("li_title");
+			String raTitle = httpServletRequest.getParameter("ra_title");
+			String liID = httpServletRequest.getParameter("li_id");
+			String liTitle = httpServletRequest.getParameter("li_title");
 		
 			buf = new StringBuffer("select count(*) from ROD_ACTIVITIES where ").
 			append("ACTIVITY_ID=").append(raID);
@@ -81,8 +78,8 @@ public class RodLinksHandler{
 		}
 	}
 
-	private void rmvRodLinks(HttpServletRequest req, String dstID) throws Exception{
-		String[] raIDs = req.getParameterValues("del_id");
+	private void rmvRodLinks(String dstID) throws Exception{
+		String[] raIDs = httpServletRequest.getParameterValues("del_id");
 		if (raIDs==null || raIDs.length==0) throw new Exception("ra_id is missing!");
 	
 		StringBuffer buf = new StringBuffer("delete from DST2ROD where DATASET_ID=").

@@ -201,7 +201,7 @@ public class DataElementHandler extends BaseHandler {
         stmt.close();
     }
     
-    public void execute() throws Exception {
+    public void execute_() throws Exception {
         
         // initialize this.topNsReleaseNeeded (just in case)
         doCleanup = false;
@@ -392,7 +392,7 @@ public class DataElementHandler extends BaseHandler {
 			
 			String updVer = req.getParameter("upd_version");
 			if (updVer!=null && updVer.equalsIgnoreCase("true")){
-				verMan.updateVersion();
+				verMan.setVersionUpdate(true);
 				setCheckedInCopyID(delem_id);
 			}
 			else

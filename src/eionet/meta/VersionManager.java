@@ -12,6 +12,8 @@ import eionet.meta.notif.*;
 import eionet.meta.savers.*;
 
 import com.tee.uit.security.*;
+
+import eionet.util.DbTransactionPolite;
 import eionet.util.SecurityUtil;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -269,8 +271,31 @@ public class VersionManager{
     }
     
     /**
+     * 
+     * @param elmID
+     * @return
+     * @throws Exception
      */
     public String checkOutElm(String elmID) throws Exception{
+    	
+    	DbTransactionPolite tx = DbTransactionPolite.start(conn);
+    	try{
+    		String result = checkOutElm_(elmID);
+    		tx.commit();
+    		return result;
+    	}
+    	catch (Exception e){
+    		tx.rollback();
+    		throw e;
+    	}
+    	finally{    		
+    		tx.end();
+    	}
+    }
+    
+    /**
+     */
+    private String checkOutElm_(String elmID) throws Exception{
         
         if (user==null || !user.isAuthentic())
             throw new Exception("Check-out attempt by an unauthorized user!");
@@ -312,13 +337,36 @@ public class VersionManager{
 	}
     
     /**
+     * 
+     * @param dstID
+     * @return
+     * @throws Exception
+     */
+    private String checkOutDst(String dstID) throws Exception{
+    	
+    	DbTransactionPolite tx = DbTransactionPolite.start(conn);
+    	try{
+    		String result = checkOutDst_(dstID);
+    		tx.commit();
+    		return result;
+    	}
+    	catch (Exception e){
+    		tx.rollback();
+    		throw e;
+    	}
+    	finally{    		
+    		tx.end();
+    	}
+    }
+    
+    /**
      * Check out the specified dataset.
      * 
      * @param   dstID    dataset id.
      * @return  id of the working copy
      * @exception   Exception
      */
-    private String checkOutDst(String dstID) throws Exception{
+    private String checkOutDst_(String dstID) throws Exception{
     	
     	if (dstID==null) throw new Exception("Dataset ID missing!"); 
     	
@@ -450,11 +498,35 @@ public class VersionManager{
         else
             throw new Exception("Unknown object type: " + objType);
     }
+    
+    /**
+     * 
+     * @param elmID
+     * @param status
+     * @return
+     * @throws Exception
+     */
+    public boolean checkInElm(String elmID, String status) throws Exception{
+    	
+    	DbTransactionPolite tx = DbTransactionPolite.start(conn);
+    	try{
+    		boolean result = checkInElm_(elmID, status);
+    		tx.commit();
+    		return result;
+    	}
+    	catch (Exception e){
+    		tx.rollback();
+    		throw e;
+    	}
+    	finally{    		
+    		tx.end();
+    	}
+    }
 
     /**
      * Check in the specified element.
      */
-    public boolean checkInElm(String elmID, String status) throws Exception{
+    private boolean checkInElm_(String elmID, String status) throws Exception{
         
 		// load the element we need to check in
 		DataElement elm = loadElm(elmID);
@@ -539,9 +611,33 @@ public class VersionManager{
     }
     
     /**
-     * Check in the specified dataset.
+     * 
+     * @param dstID
+     * @param status
+     * @return
+     * @throws Exception
      */
     private boolean checkInDst(String dstID, String status) throws Exception{
+    	
+    	DbTransactionPolite tx = DbTransactionPolite.start(conn);
+    	try{
+    		boolean result = checkInDst_(dstID, status);
+    		tx.commit();
+    		return result;
+    	}
+    	catch (Exception e){
+    		tx.rollback();
+    		throw e;
+    	}
+    	finally{    		
+    		tx.end();
+    	}
+    }
+    
+    /**
+     * Check in the specified dataset.
+     */
+    private boolean checkInDst_(String dstID, String status) throws Exception{
     	
 		// load the table we need to check in
 		Dataset dst = loadDst(dstID);
@@ -936,8 +1032,8 @@ public class VersionManager{
 	/**
 	*
 	*/
-	public void updateVersion(){
-		this.versionUpdate = true;
+	public void setVersionUpdate(boolean b){
+		this.versionUpdate = b;
 	}
 	
 	/**
@@ -998,22 +1094,22 @@ public class VersionManager{
 	public Parameters getServlRequestParams(){
 		return this.servlRequestParams;
 	}
-
+	
     /**
     * main for testing
     */
     public static void main(String[] args){
         
         try{
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection conn =
-            DriverManager.getConnection(
-            		"jdbc:mysql://192.168.10.15:3306/DataDict", "dduser", "xxx");
-                
-            AppUserIF user = new TestUser(false);
-            user.authenticate("heinlja", "mi6");
-            
-			VersionManager verMan = new VersionManager(conn, user);
+//            Class.forName("com.mysql.jdbc.Driver");
+//            Connection conn =
+//            DriverManager.getConnection(
+//            		"jdbc:mysql://192.168.10.15:3306/DataDict", "dduser", "xxx");
+//                
+//            AppUserIF user = new TestUser(false);
+//            user.authenticate("heinlja", "mi6");
+//            
+//			VersionManager verMan = new VersionManager(conn, user);
         }
         catch (Exception e){
             System.out.println(e.toString());

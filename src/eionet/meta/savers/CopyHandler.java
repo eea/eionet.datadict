@@ -557,6 +557,10 @@ public class CopyHandler extends Object {
 					                               "where ROW_ID=" + rowID);
 	            }
             }
+            catch (SQLException e){
+            	e.printStackTrace(System.out);
+            	throw e;
+            }
             finally{
             	try{
             		if (stmt!=null) stmt.close();

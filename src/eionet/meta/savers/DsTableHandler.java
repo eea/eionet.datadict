@@ -99,7 +99,7 @@ public class DsTableHandler extends BaseHandler {
 	 * 
 	 * @throws Exception
 	 */
-    public void execute() throws Exception {
+    public void execute_() throws Exception {
     	
         if (mode!=null && mode.equalsIgnoreCase("copy")){
             mode = "add";

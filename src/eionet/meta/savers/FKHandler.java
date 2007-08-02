@@ -12,16 +12,10 @@ import com.tee.util.*;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
 
-public class FKHandler {
+public class FKHandler extends BaseHandler{
 
-	private Connection conn = null;
-	private Parameters req = null;
-	private ServletContext ctx = null;
-	
 	private String mode = null;
-	
 	private String lastInsertID = null;
-	private static LogServiceIF logger = new Log4jLoggerImpl();
 
 	public FKHandler(Connection conn, HttpServletRequest req, ServletContext ctx){
 		this(conn, new Parameters(req), ctx);
@@ -34,7 +28,11 @@ public class FKHandler {
 		this.ctx = ctx;
 	}
 
-	public void execute() throws Exception {
+	/*
+	 *  (non-Javadoc)
+	 * @see eionet.meta.savers.BaseHandler#execute_()
+	 */
+	public void execute_() throws Exception {
 		
 		mode = req.getParameter("mode");
 		

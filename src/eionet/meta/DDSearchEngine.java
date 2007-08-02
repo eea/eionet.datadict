@@ -4005,15 +4005,9 @@ public class DDSearchEngine {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection conn =
 				DriverManager.getConnection(
-						"jdbc:mysql://192.168.10.15:3306/jaanusdd", "root", "ABr00t");
+						"jdbc:mysql://192.168.10.15:3306/datadict", "root", "ABr00t");
 			
-			DDSearchEngine searchEngine = new DDSearchEngine(conn);
-			AppUserIF testUser = new TestUser(false);
-			testUser.authenticate("heinlja", "mi6");
-			searchEngine.setUser(testUser);
-			
-			Hashtable v = searchEngine.getHarvestedAttrFieldsHash("12");
-			System.out.println(v);
+			System.out.println();
 		}
 		catch (Exception e){
 			System.out.println(e.toString());
