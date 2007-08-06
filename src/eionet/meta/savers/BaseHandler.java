@@ -36,8 +36,6 @@ public abstract class BaseHandler {
 	public void execute() throws Exception {
 
 		DbTransactionPolite tx = DbTransactionPolite.start(conn);
-		boolean b = tx.getIsAnotherTransactionRunning();
-		System.out.println();
 		try{
     		execute_();
     		tx.commit();

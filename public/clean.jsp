@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.Vector,com.tee.xmlserver.*,eionet.meta.MrProper,eionet.util.Util,java.sql.Connection,java.sql.SQLException"%>
+<%@page contentType="text/html;charset=UTF-8" import="com.tee.xmlserver.*,eionet.meta.CleanupServlet"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
@@ -19,246 +19,68 @@
 	<title>Data Dictionary</title>
 	<script type="text/javascript">
 	// <![CDATA[
-	
-		var idsCleared = false;
-		
-		function submitForm(){
-			document.forms["form1"].submit();
-		}
-		
-		function clearIds(){
-			
-			if (idsCleared == false){
-				document.forms["form1"].elements["rm_id"].value="";
-				idsCleared = true;
-			}
-		}
-		
-		function rmCrit(){
-			
-			if (document.forms["form1"].elements["rm_crit"][0].checked){
-				document.forms["form1"].elements["rm_id"].disabled = true;
-				document.forms["form1"].elements["rm_idfier"].disabled = false;
-				document.forms["form1"].elements["rm_ns"].disabled = false;
-			}
-			else if (document.forms["form1"].elements["rm_crit"][1].checked){				
-				document.forms["form1"].elements["rm_idfier"].disabled = true;
-				document.forms["form1"].elements["rm_ns"].disabled = true;
-				document.forms["form1"].elements["rm_id"].disabled = false;
-			}
-			else{
-				document.forms["form1"].elements["rm_idfier"].disabled = true;
-				document.forms["form1"].elements["rm_ns"].disabled = true;
-				document.forms["form1"].elements["rm_id"].disabled = true;
-			}
+		function submitCleanup(){
+			if (confirm("Are you sure?"))
+				pop('CleanupServlet?<%=CleanupServlet.PAR_ACTION%>=<%=CleanupServlet.ACTION_CLEANUP%>');
 		}
 	// ]]>
 	</script>
 </head>
 <body>
-<div id="container">
-	<jsp:include page="nlocation.jsp" flush="true">
-		<jsp:param name="name" value="Cleanup"/>
-	</jsp:include>
-	<%@ include file="nmenu.jsp" %>
-<div id="workarea">
-            
-            <%
-            
-            // POST
-            if (request.getMethod().equals("POST")){
-	            
-	            Connection conn = null;
-	            Vector results = new Vector();
-	            try{
-		            // init db connection & MrProper
-		            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-					DBPoolIF pool = xdbapp.getDBPool();
-					conn = pool.getConnection();
-		            MrProper mrProper = new MrProper(conn);
-		            mrProper.setContext(getServletContext());
-		            mrProper.setUser(user);
-		            
-		            // execute mrProper
-		            mrProper.execute(request);
-		            
-		            // get results
-		            results = mrProper.getResponse();
-		            if (results.size()==0) results.add("No results got back!");
-				}
-				finally{
-					try{
-						if (conn!=null) conn.close();
-					}
-					catch (SQLException e){}
-				}
-	            
-	            %>
-								<h1>Cleanup results</h1>
-		            <table width="auto" cellspacing="0">
-		            	<%
-		            	// here come the results
-		            	for (int i=0; i<results.size(); i++){
-			            	String sss = (String)results.get(i);
-			            	%>
-			            	<tr><td>&gt; <%=sss%></td></tr><%
-		            	}
-		            	%>
-		            	
-		            	<tr><td>&nbsp;</td></tr>
-		            	<tr>
-		            		<td><a href="clean.jsp">&lt; back to cleanup page</a></td>
-		            	</tr>		            	
-		            </table>		            
-	            <%
-            }
-            // GET
-            else{
-	            %>
-            
-	            
-				<h1>Cleanup functions</h1>
-				<p style="color:red">
-				This is a function enabling you to clean the database from all kinds of
-				leftovers that might result from exceptional situations. Please use this
-				with great caution as you might accidentally delete some important data!
-				</p>
-				
-				<form id="form1" action="clean.jsp" method="post">
-				
-					<table width="auto" cellspacing="0">
-						<tr>
-							<td>
-								<input type="checkbox" id="releaseds" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RLS_DST%>"/>
-									   <label for="releaseds">
-									   		Release the dataset with the given Identifier:
-									   </label>
-								<input type="text" class="smalltext" name="<%=MrProper.DST_IDFIER%>"/>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<input type="checkbox" id="rmelem" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.ORPHAN_ELM%>"/>
-									   <label for="rmelem">
-									   	Delete all elements without parent tables.
-									   </label>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<input type="checkbox" id="rmtab" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.ORPHAN_TBL%>"/>
-									   <label for="rmtab">
-									   	Delete all tables without parent datasets.
-									   </label>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<input type="checkbox" id="rellock" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RLS_NOWC%>"/>
-									   <label for="rellock">
-									   	Release locked objects which actually don't have a working copy.
-									   </label>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<input type="checkbox" id="rmwc" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RMV_WC_NORIG%>"/>
-									   <label for="rmwc">
-									   	Remove working copies which do not have any associated originals.
-									   </label>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<input type="checkbox" id="rmmult" name="<%=MrProper.FUNCTIONS_PAR%>" value="<%=MrProper.RMV_MULT_VERS%>"/>
-									   <label for="rmmult">
-									   	Remove multiple versions by leaving only the latest by timestamp.
-									   </label>
-							</td>
-						</tr>
-						<tr style="height:10px;"><td>&nbsp;</td></tr>
-						<tr>
-							<td>
-								<%
-								String disabled = "disabled=\"disabled\"";
-								%>
-								<input type="button" <%=disabled%> class="smallbuttonb" value="Action" onclick="submitForm()"/>
-							</td>
-						</tr>
-						
-						<%
-						if (request.getParameter("smersh")!=null){ %>
-							<tr><td>&nbsp;</td></tr>
-							<tr>
-								<td>
-									<table cellspacing="0" cellpadding="0">
-										<tr>
-											<td colspan="2">&nbsp;</td>
-											<td style="background-color:#D3D3D3;">
-												<span class="smallfont">
-													<input type="radio" name="rm_obj_type" value="dst"/>datasets
-												</span>
-											</td>
-											<td>&nbsp;</td>
-											<td style="background-color:#D3D3D3;">
-												<span class="smallfont">
-													<input type="radio" name="rm_crit" value="lid" onclick="rmCrit()"/>Identifier&nbsp;
-													<input type="text" class="smalltext" name="rm_idfier" disabled="disabled"/>
-												</span>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<input type="checkbox" name="<%=MrProper.FUNCTIONS_PAR%>"
-									   				value="<%=MrProper.RMV_OBJECTS%>"/>
-											</td>
-											<td style="padding-left:5;padding-right:5"><span class="smallfont">Remove</span></td>
-											<td style="background-color:#D3D3D3;">
-												<span class="smallfont">
-													<input type="radio" name="rm_obj_type" value="tbl"/>tables
-												</span>
-											</td>
-											<td style="padding-left:5;padding-right:5"><span class="smallfont">with</span></td>
-											<td style="background-color:#D3D3D3;">
-												<span class="smallfont">
-													&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp; parent ns&nbsp;
-													<input type="text" class="smalltext" name="rm_ns" disabled="disabled"/>
-												</span>
-											</td>
-										</tr>
-										<tr>
-											<td colspan="2">&nbsp;</td>
-											<td style="background-color:#D3D3D3;">
-												<span class="smallfont">
-													<input type="radio" name="rm_obj_type" value="elm"/>elements
-												</span>
-											</td>
-											<td>&nbsp;</td>
-											<td style="background-color:#D3D3D3;">
-												<span class="smallfont">
-													<input type="radio" name="rm_crit" value="id" onclick="rmCrit()"/>ids&nbsp;
-													<input type="text"
-														   class="smalltext"
-														   name="rm_id"
-														   value="(delimited by space)"
-														   onclick="clearIds()"
-														   disabled="disabled"/>
-												</span>
-											</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-							<%
-						}
+	<div id="container">
+		<jsp:include page="nlocation.jsp" flush="true">
+			<jsp:param name="name" value="Cleanup"/>
+		</jsp:include>
+		<%@ include file="nmenu.jsp" %>
+		<div id="workarea">
+			<h1>Cleanup functions</h1>
+			<p>
+				Pressing the 'Cleanup' button below will execute the following cleanup operations<br/>
+				in the database contents (in the given order!):
+			</p>
+			<ul>
+				<li>delete DST2TBL relations where the dataset or the table does not actually exist</li>
+				<li>delete tables with no parent dataset</li>
+				<li>delete TBL2ELEM relations where the table or the element does not actually exist</li>
+				<li>delete non-common elements with no parent table</li>
+				<li>delete NAMESPACE entries that don't have a corresponding dataset, nor a corresponding table</li>
+				<li>delete object ACLs of objects that do not actually exist</li>
+			</ul>
+			<p>
+				If you have javascript enabled, a pop-up window is opened where you see messages about the cleanup progress.<br/>
+				Othwerise the messages are displayed in the current window, in plain text format.<br/++>
+				If the cleanup is finished, the message says ALL DONE!
+				In an exception happens, you get a message too.
+			</p>
+			<form id="cleanupForm" method="post" action="CleanupServlet">
+			
+				<input type="submit" name="<%=CleanupServlet.PAR_ACTION%>" value="<%=CleanupServlet.ACTION_CLEANUP%>" onclick="submitCleanup();return false;"/>				
+				<%
+				if (request.getParameter("mi6")!=null){
+					%>
+					<p style="margin-top:20px">
+						The following section enables to delete elements/tables/datasets by their IDs.<br/>
+						Type in the ID or multiple IDs (separated by space) and press the button relevant for you.<br/>
+						You will be notified of success or failure.
+					</p>
+					<div style="margin-bottom:5px">
+						<label for="idsInput">IDs:</label>
+						<input type="text" id="idsInput" name="<%=CleanupServlet.PAR_OBJ_IDS%>"/>
+						<input type="hidden" name="mi6" value=""/>
+					</div>
+					<input type="submit" name="<%=CleanupServlet.PAR_ACTION%>" value="<%=CleanupServlet.ACTION_DELETE_ELM%>"/>
+					<input type="submit" name="<%=CleanupServlet.PAR_ACTION%>" value="<%=CleanupServlet.ACTION_DELETE_TBL%>"/>
+					<input type="submit" name="<%=CleanupServlet.PAR_ACTION%>" value="<%=CleanupServlet.ACTION_DELETE_DST%>"/>
+					<%
+					if (request.getAttribute(CleanupServlet.ATTR_DELETE_SUCCESS)!=null){
 						%>
-					</table>
-				</form>
-	            <%
-            } // end GET
-            %>
-</div> <!-- workarea -->
-</div> <!-- container -->
-<jsp:include page="footer.jsp" flush="true" />
+						<span style="color:red;border:1px dashed red;padding:3px;margin-left:5px">Delete successful!</span><%
+					}
+				}
+				%>
+			</form>
+		</div> <!-- workarea -->
+	</div> <!-- container -->
+	<jsp:include page="footer.jsp" flush="true" />
 </body>
 </html>
