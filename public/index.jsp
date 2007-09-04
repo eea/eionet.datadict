@@ -60,13 +60,16 @@ finally{
 	<%@ include file="headerinfo.jsp" %>
 	<title>Data Dictionary</title>
 </head>
-<body>
+<body class="threecolumns">
 <div id="container">
     <jsp:include page="nlocation.jsp" flush="false">
 		<jsp:param name="name" value="<%=page_name%>"/>
     </jsp:include>
     <%@ include file="nmenu.jsp" %>
-<div id="workarea">
+ <div id="rightcolumn" class="quickjumps">
+<%=Helps.get("front_page", "news")%>
+ </div>
+ <div id="workarea">
 
 				
 					<%
@@ -93,23 +96,13 @@ finally{
 					else{
 						%>
 					
-								<div id="outerframe">												
-									<div style="margin-bottom:10px">
-					                    <jsp:include page="released_datasets.jsp" flush="true" />
-									</div>					                	
-									<table>
-										<tr>
-											<td style="vertical-align:top"><%=Helps.get("front_page", "documentation")%></td>
-					                  		<td><%=Helps.get("front_page", "support")%></td>
-					                	</tr>
-					                	<tr>
-					                  		<td><%=Helps.get("front_page", "news")%></td>
-		                  					<td>&nbsp;</td>
-										</tr>
-									</table>
+						<div id="outerframe">												
+						    <jsp:include page="released_datasets.jsp" flush="true" />
+						<%=Helps.get("front_page", "documentation")%>
+						<%=Helps.get("front_page", "support")%>
 						</div>						
 						<%
-					} // end of excpetions if/else
+					} // end of exceptions if/else
 					%>
 								
 </div> <!-- workarea -->
