@@ -8,16 +8,20 @@ import java.sql.SQLException;
  * @author Jaanus Heinlaid
  *
  */
-public class DbTransactionPolite extends DbTransactionRobust{
+public class DbTransactionPolite{
 	
+	/** */
 	private boolean isAnotherTransactionRunning = false;
+	
+	/** */
+	private Connection conn = null;
 
 	/**
 	 * 
 	 * @param conn
 	 */
 	private DbTransactionPolite(Connection conn){
-		super(conn);
+		this.conn = conn;
 	}
 
 	/**

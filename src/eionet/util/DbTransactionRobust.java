@@ -10,13 +10,14 @@ import java.sql.SQLException;
  */
 public class DbTransactionRobust {
 	
-	protected Connection conn = null;
+	/** */
+	private Connection conn = null;
 	
 	/**
 	 * 
 	 * @param conn
 	 */
-	protected DbTransactionRobust(Connection conn){
+	private DbTransactionRobust(Connection conn){
 		this.conn = conn;
 	}
 
