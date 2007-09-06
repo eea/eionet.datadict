@@ -523,12 +523,14 @@
 				var elemName = elem.name;
 				if (startsWith(elemName, "attr_mult_")){					
 					var slct = document.forms["form1"].elements[elemName];
-					if (slct.length==1 && slct.options[0].value=="" && slct.options[0].text==""){
-						slct.remove(0);
-						slct.length = 0;
-					}
-					for (var i=0; i<slct.length; i++){
-						slct.options[i].selected = "true";
+					if (slct.options && slct.length){
+						if (slct.length==1 && slct.options[0].value=="" && slct.options[0].text==""){
+							slct.remove(0);
+							slct.length = 0;
+						}
+						for (var i=0; i<slct.length; i++){
+							slct.options[i].selected = "true";
+						}
 					}
 				}
 			}
