@@ -95,7 +95,7 @@ public class UNSEventSender {
 		StringBuffer buf = new StringBuffer("DD ");
 		buf.append(eventType);
 		if (elmIdfier!=null)
-			buf.append(elmIdfier);
+			buf.append(" ").append(elmIdfier);
 		objects.add(buf.toString());
 		predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
 
@@ -156,7 +156,7 @@ public class UNSEventSender {
 		StringBuffer buf = new StringBuffer("DD ");
 		buf.append(eventType);
 		if (tblIdfier!=null)
-			buf.append(tblIdfier);
+			buf.append(" ").append(tblIdfier);
 		objects.add(buf.toString());
 		predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
 
@@ -220,7 +220,7 @@ public class UNSEventSender {
 		StringBuffer buf = new StringBuffer("DD ");
 		buf.append(eventType);
 		if (dstIdfier!=null)
-			buf.append(dstIdfier);
+			buf.append(" ").append(dstIdfier);
 		objects.add(buf.toString());
 		predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
 
@@ -252,18 +252,6 @@ public class UNSEventSender {
 			rdfTriple.setPredicate(Props.getProperty(PropsIF.PREDICATE_RDF_TYPE));
 			rdfTriple.setObject("Data Dictionary event");
 			rdfTriples.add(rdfTriple.toVector());
-//	
-//			rdfTriple = new RDFTriple();
-//			rdfTriple.setSubject(eventID);
-//			rdfTriple.setPredicate(Props.getProperty(PropsIF.PREDICATE_RDF_LABEL));
-//			rdfTriple.setObject("Definition changed");
-//			rdfTriples.add(rdfTriple.toVector());
-//			
-//			rdfTriple = new RDFTriple();
-//			rdfTriple.setSubject(eventID);
-//			rdfTriple.setPredicate(Props.getProperty(Subscribe.PROP_UNS_EVENTTYPE_PREDICATE));
-//			rdfTriple.setObject("Definition changed");
-//			rdfTriples.add(rdfTriple.toVector());
 			
 			Enumeration predicates = predicateObjects.keys();
 			while (predicates.hasMoreElements()){
