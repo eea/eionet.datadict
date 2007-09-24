@@ -71,13 +71,13 @@ public class Import extends HttpServlet {
         AppUserIF user = SecurityUtil.getUser(req);
         try{
 			AccessControlListIF acl = AccessController.getAcl("/import");
-			if (user==null || !acl.checkPermission(user.getUserName(), "x")){
+			if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/import", "x")){
 				responseText.append("<h1>Not allowed!</h1><br/>");
 				bException = true;
 			}
         }
-        catch (SignOnException soe){
-			responseText.append("<h1>" + soe.toString() + "</h1><br/>");
+        catch (Exception e){
+			responseText.append("<h1>" + e.toString() + "</h1><br/>");
 			bException = true;
         }
 
