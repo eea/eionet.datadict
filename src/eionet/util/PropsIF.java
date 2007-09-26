@@ -54,6 +54,9 @@ public interface PropsIF {
 	public static final String TEMP_FILE_PATH = "general.temp-file-path";
 	public static final String DOC_PATH = "general.doc-path";
 	public static final String OPENDOC_ODS_PATH = "opendoc.ods.path";
+
+	/** */
+	public static final String SCREEN_NAME = "documentation.screen-name";
 	
 	/** defaults */
 	

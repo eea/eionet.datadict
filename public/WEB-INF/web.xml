@@ -199,6 +199,18 @@
 		<servlet-name>OdsServlet</servlet-name>
 		<servlet-class>eionet.meta.exports.ods.OdsServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>DocumentationServlet</servlet-name>
+		<servlet-class>eionet.meta.DocumentationServlet</servlet-class>		
+		<init-param>
+			<param-name>screen-name</param-name>
+			<param-value>documentation</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forward-jsp</param-name>
+			<param-value>documentation.jsp</param-value>
+		</init-param>
+	</servlet>
 
 <!-- servlet mappings -->
 
@@ -297,6 +309,10 @@
 	<servlet-mapping>
 		<servlet-name>OdsServlet</servlet-name>
 		<url-pattern>/GetOds</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>DocumentationServlet</servlet-name>
+		<url-pattern>/documentation/*</url-pattern>
 	</servlet-mapping>
 
 <!-- the application server might allow directory listing.

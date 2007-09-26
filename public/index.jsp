@@ -1,6 +1,8 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,java.io.*,eionet.meta.*,com.tee.xmlserver.*,com.tee.uit.help.Helps,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
+<%!final static int MAX_DOCUMENTATION_ITEMS=5;%>
+
 <%@ include file="history.jsp" %>
 
 <%
@@ -66,10 +68,10 @@ finally{
 		<jsp:param name="name" value="<%=page_name%>"/>
     </jsp:include>
     <%@ include file="nmenu.jsp" %>
- <div id="rightcolumn" class="quickjumps">
-<%=Helps.get("front_page", "news")%>
- </div>
- <div id="workarea">
+	<div id="rightcolumn" class="quickjumps">
+		<%=Helps.get("front_page", "news")%>
+	</div>
+	<div id="workarea">
 
 				
 					<%
@@ -94,15 +96,43 @@ finally{
 					}
 					// no exceptions
 					else{
-						%>
-					
+						%>					
 						<div id="outerframe">												
-						    <jsp:include page="released_datasets.jsp" flush="true" />
-						<%=Helps.get("front_page", "documentation")%>
-						<%=Helps.get("front_page", "support")%>
-						</div>						
+			                <jsp:include page="released_datasets.jsp" flush="true" />
+			                <div>
+			                    <h2>Documentation</h2>
+								<%
+								List docsList = DocumentationServlet.listDocs();
+								if (docsList.size()>0){
+									%>
+									<ul>
+										<%
+										for (int i=0; i<docsList.size() && i<MAX_DOCUMENTATION_ITEMS; i++){
+											Properties props = (Properties)docsList.get(i);
+											String id = props.getProperty("id");
+											String heading = props.getProperty("heading");
+											%>
+											<li>
+												<a href="documentation/<%=id%>"><%=heading%></a>
+											</li><%
+										}
+										%>
+									</ul>
+									<%
+									if (docsList.size()>MAX_DOCUMENTATION_ITEMS){
+										%>
+										<p style="text-align:right">[<a href="documentation">More...</a>]</p><%
+									}
+								}
+								else{
+									%><p>No documentation currently available in the database.</p><%
+								}
+								%>
+							</div>
+							<%=Helps.get("front_page", "support")%>
+						</div> <!-- outerframe -->
 						<%
-					} // end of exceptions if/else
+					} // end of excpetions if/else
 					%>
 								
 </div> <!-- workarea -->

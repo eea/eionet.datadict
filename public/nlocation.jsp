@@ -55,7 +55,7 @@
 	String lastItemName = request.getParameter("name");
 	if (lastItemName!=null && lastItemName.trim().length()>0 && !lastItemName.equals("null")){
 		%>
-		<div class="breadcrumbitem"><a href="index.jsp">Data Dictionary</a></div>
+		<div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/index.jsp">Data Dictionary</a></div>
 		<div class="breadcrumbitemlast"><%=lastItemName%></div><%
 	}
 	else{
