@@ -203,10 +203,6 @@
 		<servlet-name>DocumentationServlet</servlet-name>
 		<servlet-class>eionet.meta.DocumentationServlet</servlet-class>		
 		<init-param>
-			<param-name>screen-name</param-name>
-			<param-value>documentation</param-value>
-		</init-param>
-		<init-param>
 			<param-name>forward-jsp</param-name>
 			<param-value>documentation.jsp</param-value>
 		</init-param>

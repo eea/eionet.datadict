@@ -128,7 +128,7 @@ public class DocumentationServlet extends HttpServlet{
 	 * @return
 	 */
 	private String getDocString(String docID){
-		return Helps.get(this.getInitParameter(PropsIF.SCREEN_NAME), docID);
+		return Helps.get(getScreenName(), docID);
 	}
 	
 	/**
