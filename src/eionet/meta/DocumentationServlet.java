@@ -36,6 +36,7 @@ public class DocumentationServlet extends HttpServlet{
 	
 	/** */
 	public static final String DOC_STRING = "doc-string";
+	public static final String DOC_HEADING = "doc-heading";
 	public static final String DOCS_LIST = "docs-list";
 	public static final String DISPATCHER_PATH = "dispatcher-path";
 	
@@ -67,12 +68,8 @@ public class DocumentationServlet extends HttpServlet{
 				List l = slicePathInfo(pathInfo);
 				if (l.size()==0)
 					throw new Exception("No path info in request object");
-				else{
-					String s = (String)l.get(0);
-					String ss = getDocString(s);
-					req.setAttribute(DOC_STRING, ss);
-					//req.setAttribute(DOC_STRING, getDocString((String)l.get(0)));
-				}
+				else
+					getDocStringAndHeading((String)l.get(0), req);
 			}
 		}
 		catch (Exception e){
@@ -108,10 +105,7 @@ public class DocumentationServlet extends HttpServlet{
 		        		Area area = (Area)iter.next();
 		        		Properties props = new Properties();
 		        		props.setProperty("id", area.getID());
-		        		String docHeading = area.getDescription();
-		        		if (docHeading==null || docHeading.trim().length()==0)
-		        			docHeading = getDocHeading(area.getHTML(null));
-		        		props.setProperty("heading", docHeading);
+		        		props.setProperty("heading", getDocHeading(area));
 		        		result.add(props);
 			        }
 	        	}
@@ -126,9 +120,33 @@ public class DocumentationServlet extends HttpServlet{
 	 * 
 	 * @param docID
 	 * @return
+	 * @throws HelpException 
 	 */
-	private String getDocString(String docID){
-		return Helps.get(getScreenName(), docID);
+	private void getDocStringAndHeading(String docID, HttpServletRequest request) throws HelpException{
+		
+		Hashtable screens = Helps.getHelps();
+        if(screens != null){
+        	Screen screen = (Screen)screens.get(getScreenName());
+        	if(screen != null){
+        		Area area = screen.getArea(docID);
+        		if (area!=null){
+        			request.setAttribute(DOC_HEADING, getDocHeading(area));
+        			request.setAttribute(DOC_STRING, area.getHTML(null));
+        		}
+        	}
+        }
+	}
+	
+	/**
+	 * 
+	 * @param area
+	 * @return
+	 */
+	private static String getDocHeading(Area area){
+		String docHeading = area.getDescription();
+		if (docHeading==null || docHeading.trim().length()==0)
+			docHeading = getDocHeading(area.getHTML(null));
+		return docHeading;
 	}
 	
 	/**

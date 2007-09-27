@@ -52,13 +52,28 @@
 	<div class="breadcrumbhead">You are here:</div>
 	<div class="breadcrumbitem eionetaccronym"><a href="http://www.eionet.europa.eu">Eionet</a></div>	
 	<%
+	String contextName = request.getParameter("context_name");
+	String contextPath = request.getParameter("context_path");
+	if (contextPath==null)
+		contextPath = "";
 	String lastItemName = request.getParameter("name");
-	if (lastItemName!=null && lastItemName.trim().length()>0 && !lastItemName.equals("null")){
+	if (lastItemName!=null && contextName==null){
 		%>
 		<div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/index.jsp">Data Dictionary</a></div>
 		<div class="breadcrumbitemlast"><%=lastItemName%></div><%
 	}
-	else{
+	else if (lastItemName==null && contextName!=null){
+		%>
+		<div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/index.jsp">Data Dictionary</a></div>
+		<div class="breadcrumbitemlast"><%=contextName%></div><%
+	}
+	else if (lastItemName!=null && contextName!=null){
+		%>
+		<div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/index.jsp">Data Dictionary</a></div>
+		<div class="breadcrumbitem"><a href="<%=contextPath%>"><%=contextName%></a></div>
+		<div class="breadcrumbitemlast"><%=lastItemName%></div><%
+	}
+	else if (lastItemName==null && contextName==null){
 		%>
 		<div class="breadcrumbitemlast">Data Dictionary</div><%
 	}

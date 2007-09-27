@@ -25,14 +25,28 @@
 <head>
 	<base href="<%=Util.getBaseHref(request)%>" /><!--[if lt IE 7]></base><![endif]-->
 	<%@ include file="headerinfo.jsp" %>
-	<title>Documentation</title>
+	<title>Documentation</title>	
 </head>
 <body>
 <div id="container">
 
-	<jsp:include page="nlocation.jsp" flush="true">
-		<jsp:param name="name" value="Documentation"/>
-	</jsp:include>
+	<%
+	if (docString!=null){
+		%>
+		<jsp:include page="nlocation.jsp" flush="true">
+			<jsp:param name="context_name" value="Documentation"/>
+			<jsp:param name="context_path" value="documentation"/>
+			<jsp:param name="name" value="<%=request.getAttribute(DocumentationServlet.DOC_HEADING)%>"/>
+		</jsp:include><%
+	}
+	else{
+		%>
+		<jsp:include page="nlocation.jsp" flush="true">
+			<jsp:param name="name" value="Documentation"/>
+		</jsp:include><%
+	}
+	%>
+	
 	<%@ include file="nmenu.jsp" %>
 	<div id="workarea">
 		<%
