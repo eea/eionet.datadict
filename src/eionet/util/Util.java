@@ -1017,15 +1017,37 @@ public class Util {
 		
 	}
 	
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String getBaseHref(HttpServletRequest request){
+		
+		String protocol = request.getProtocol().toLowerCase();
+		int i = protocol.indexOf('/');
+		if (i>=0)
+			protocol = protocol.substring(0,i);
+			
+		StringBuffer buf = new StringBuffer(protocol);
+		buf.append("://").append(request.getServerName());
+		if (request.getServerPort()>0)
+			buf.append(":").append(request.getServerPort());
+		if (request.getContextPath()!=null)
+			buf.append(request.getContextPath());
+		if (buf.toString().endsWith("/")==false)
+			buf.append("/");
+		
+		return buf.toString();
+	}
+	
     /**
     * main
     */
     public static void main(String[] args){
 
-    	String s = Util.processForLink("  (http://www.neti.ee!) \t", true, 9999);
-    	System.out.print("|");
-    	System.out.print(s);
-    	System.out.print("|");
+    	String s = new String("http://dd.eionet.europa.eu/documentation/doc1");
+    	System.out.print("substr=" + s.substring(0,0) + "|");
     	
 //    	boolean b = Util.isURL("http://www.neti.ee))");
 //		System.out.println(b);

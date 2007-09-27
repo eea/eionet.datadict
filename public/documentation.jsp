@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,eionet.meta.DocumentationServlet,com.tee.xmlserver.XDBApplication"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,eionet.meta.DocumentationServlet,com.tee.xmlserver.XDBApplication,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
@@ -25,6 +25,7 @@
 <head>
 	<%@ include file="headerinfo.jsp" %>
 	<title>Documentation</title>
+	<base href="<%=Util.getBaseHref(request)%>" />
 </head>
 <body>
 <div id="container">
