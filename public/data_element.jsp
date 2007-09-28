@@ -703,6 +703,36 @@
 				document.forms["form1"].submit();
 				return;
 			}
+			
+			<%			
+			if (mode.equals("edit")){
+				String par_dt = request.getParameter("elm_datatype");
+				if (par_dt!=null && par_dt.length()>0){
+					String obj_dt = dataElement.getAttributeValueByShortName("Datatype");
+					if (obj_dt!=null && !obj_dt.equals(par_dt)){
+						%>
+						document.forms["form1"].elements["datatype_conversion"].value = "<%=obj_dt%>-<%=par_dt%>";
+						<%
+						if (!Util.isAllowedFxvDatatypeConversion(obj_dt, par_dt)){
+							StringBuffer text = new StringBuffer("You have chosen to change the Datatype from '");
+							text.append(obj_dt).append("' to '").append(par_dt).append("'. DD will remove this element's ");
+							text.append(dataElement.getType().equals("CH1") ? "fixed" : "suggested").append(" values, ");
+							text.append("because they are not compatible with the new Datatype! Are you sure you want to continue?");
+							%>
+							if (mode=="edit" || mode=="editclose"){
+								var bb = confirm("<%=text%>");
+								if (bb==false){
+									document.forms["form1"].elements["remove_values"].value = "false"
+									return;
+								}
+								else
+									document.forms["form1"].elements["remove_values"].value = "true";
+							}<%
+						}
+					}
+				}
+			}
+			%>
 
 			// if not delete mode, do validation of inputs
 			if (mode != "delete"){
@@ -898,8 +928,16 @@
 						<%
 						for (int i=0; i<values.length; i++){
 							String value = values[i];
+							// value can contain line breaks which need to make to "\n" strings for the below Javascript that puts the values into form inputs
+							StringTokenizer valueLines = new StringTokenizer(value, "\r\n");
+							StringBuffer valueProcessed = new StringBuffer();
+							while (valueLines.hasMoreTokens()){
+								if (valueProcessed.length()>0)
+									valueProcessed.append("\\n");
+								valueProcessed.append(valueLines.nextToken());
+							}
 							%>
-							popValues[<%=i%>] = "<%=value%>";
+							popValues[<%=i%>] = "<%=valueProcessed%>";
 							<%
 						}
 						%>
@@ -914,34 +952,29 @@
 		function changeDatatype(){
 			
 			<%
-			if (type!=null && type.equals("CH1")){ %>
-				return;<%
-			}
-			else{
-				String datatypeID = getAttributeIdByName("Datatype", mAttributes);
-				if (datatypeID!=null && datatypeID.length()>0){
-					datatypeID = "attr_" + datatypeID;
-					%>
-					var elmDataType = document.forms["form1"].<%=datatypeID%>.value;
-					if (elmDataType == null || elmDataType.length==0)
-						return;
-					
-					var requestQS = new Querystring();
-					var arr = new Array();
-					arr[0] = elmDataType;
-					requestQS.setValues_("elm_datatype", arr);
-					requestQS.remove("<%=datatypeID%>");
-					
-					slctAllValues();
-					var s = visibleInputsToQueryString("form1");
-					var inputsQS = new Querystring(s);
-					inputsQS.remove("<%=datatypeID%>");
-					
-					requestQS.removeAll(inputsQS);
-					var newLocation = "data_element.jsp?" + requestQS.toString() + "&" + inputsQS.toString();
-					document.location.assign(newLocation);
-					<%
-				}
+			String datatypeID = getAttributeIdByName("Datatype", mAttributes);
+			if (datatypeID!=null && datatypeID.length()>0){
+				datatypeID = "attr_" + datatypeID;
+				%>
+				var elmDataType = document.forms["form1"].<%=datatypeID%>.value;
+				if (elmDataType == null || elmDataType.length==0)
+					return;
+				
+				var requestQS = new Querystring();
+				var arr = new Array();
+				arr[0] = elmDataType;
+				requestQS.setValues_("elm_datatype", arr);
+				requestQS.remove("<%=datatypeID%>");
+				
+				slctAllValues();
+				var s = visibleInputsToQueryString("form1");
+				var inputsQS = new Querystring(s);
+				inputsQS.remove("<%=datatypeID%>");
+				
+				requestQS.removeAll(inputsQS);
+				var newLocation = "data_element.jsp?" + requestQS.toString() + "&" + inputsQS.toString();
+				document.location.assign(newLocation);
+				<%
 			}
 			%>
 		}
@@ -1650,9 +1683,15 @@ else{
 								    		}
 								    		
 								    		String elmDataType = "string";
-								    		if (mode.equals("add")){
+								    		if (mode.equals("add") || mode.equals("edit")){
 									    		String _elmDataType = request.getParameter("elm_datatype");
-									    		if (_elmDataType!=null && _elmDataType.length()>0) elmDataType = _elmDataType;
+									    		if (_elmDataType!=null && _elmDataType.length()>0)
+									    			elmDataType = _elmDataType;
+									    		else if (mode.equals("edit")){
+										    		_elmDataType = dataElement==null ? null : dataElement.getAttributeValueByShortName("Datatype");
+									    			if (_elmDataType!=null && _elmDataType.length()>0)
+									    				elmDataType = _elmDataType;
+									    		}
 								    		}
 								    		else{
 									    		String _elmDataType = dataElement==null ? null : dataElement.getAttributeValueByShortName("Datatype");
@@ -1790,14 +1829,9 @@ else{
 																</span><%
 															}
 														}
-														// if view mode, display simple text
-														else if (mode.equals("view") || (mode.equals("edit") && attribute.getShortName().equalsIgnoreCase("Datatype"))){ %>
-															<%=Util.replaceTags(attrValue)%>
-															<%
-															if (mode.equals("edit") && attribute.getShortName().equalsIgnoreCase("Datatype")){
-																%>
-																<input type="hidden" name="attr_<%=attrID%>" value="<%=Util.replaceTags(attrValue)%>"/><%
-															}																
+														// if view mode or Datatype in edit mode, display simple text
+														else if (mode.equals("view")){ %>
+															<%=Util.replaceTags(attrValue)%><%
 														}
 														// if non-view mode, display input
 														else{
@@ -2491,6 +2525,8 @@ else{
 					<input type="hidden" name="copy_elem_id" value=""/>
 					<input type="hidden" name="changed" value="0"/>
 					<input type="hidden" name="saveclose" value="false"/>
+					<input type="hidden" name="remove_values" value="false"/>
+					<input type="hidden" name="datatype_conversion" value=""/>
 					
 					<%
 					if (type!=null){ %>

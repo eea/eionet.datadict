@@ -437,9 +437,61 @@ public class DataElementHandler extends BaseHandler {
         // handle element's attributes
         deleteAttributes();
         processAttributes();
+        
+        // handle the element's fixed/suggested values
+        String rmvValues = req.getParameter("remove_values"); 
+        if (rmvValues!=null && rmvValues.equals("true"))
+        	conn.createStatement().executeUpdate("delete from FXV where OWNER_TYPE='elem' and OWNER_ID=" + delem_id);
+        
+        // handle datatype conversion
+        handleDatatypeConversion(req.getParameter("datatype_conversion"));
     }
 
     /**
+     * 
+     * @param conversion
+     * @throws SQLException 
+     */
+    private void handleDatatypeConversion(String conversion) throws Exception {
+    	
+    	if (eionet.util.Util.voidStr(conversion))
+    		return;
+    	
+    	int i = conversion.indexOf('-');
+    	if (i<=0)
+    		throw new Exception("Invalid parameter value: " + conversion);
+    	
+    	String oldDatatype = conversion.substring(0,i);
+    	String newDatatype = conversion.substring(i+1);
+    	
+    	if (searchEngine==null)
+    		searchEngine = new DDSearchEngine(conn, "", ctx);
+    	
+    	HashSet deleteAttrs = new HashSet();
+    	Vector v = searchEngine.getDElemAttributes(DElemAttribute.TYPE_SIMPLE);
+    	for (i=0; v!=null && i<v.size(); i++){
+    		DElemAttribute attr = (DElemAttribute)v.get(i);
+    		if (eionet.util.Util.skipAttributeByDatatype(attr.getShortName(), newDatatype))
+    			deleteAttrs.add(attr.getID());
+    	}
+    	
+    	if (deleteAttrs.size()>0){
+    		StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID=");
+    		buf.append(delem_id).append(" and (");
+    		i=0;
+	    	for (Iterator iter=deleteAttrs.iterator(); iter.hasNext(); i++){
+	    		if (i>0)
+	    			buf.append(" or ");
+	    		buf.append("M_ATTRIBUTE_ID=").append(iter.next());
+	    	}
+	    	buf.append(")");
+	    	
+	    	System.out.println("executing: " + buf.toString());
+	    	conn.createStatement().executeUpdate(buf.toString());
+    	}
+	}
+
+	/**
      * 
      * @throws Exception
      */

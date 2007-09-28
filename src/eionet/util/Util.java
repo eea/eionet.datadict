@@ -43,6 +43,15 @@ public class Util {
 	
 	private static final int BUF_SIZE = 1024;
 	private static Hashtable xmlEscapes = null;
+	private static String[][] allowedFxvDatatypeConversions = {{"boolean", "string"},
+		{"date", "string"},
+		{"float", "string"},
+		{"double", "string"},
+		{"integer", "string"},
+		{"integer", "float"},
+		{"integer", "double"},
+		{"float", "double"}
+		};
     
     /**
      * A method for determining if a String is void.
@@ -1041,15 +1050,30 @@ public class Util {
 		return buf.toString();
 	}
 	
+	/**
+	 * 
+	 * @param from
+	 * @param to
+	 * @return
+	 */
+	public static boolean isAllowedFxvDatatypeConversion(String from, String to){
+		
+		if (allowedFxvDatatypeConversions!=null && allowedFxvDatatypeConversions.length>0){
+			int FROM = 0;
+			int TO = 1;
+			for (int i=0; i<allowedFxvDatatypeConversions.length; i++){
+				String[] pair = allowedFxvDatatypeConversions[i];
+				if (pair[FROM].equals(from) && pair[TO].equals(to))
+					return true;
+			}
+		}
+		
+		return false;
+	}
+	
     /**
     * main
     */
     public static void main(String[] args){
-
-    	String s = new String("http://dd.eionet.europa.eu/documentation/doc1");
-    	System.out.print("substr=" + s.substring(0,0) + "|");
-    	
-//    	boolean b = Util.isURL("http://www.neti.ee))");
-//		System.out.println(b);
     }
 }
