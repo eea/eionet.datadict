@@ -397,7 +397,7 @@
 	        	}
 	            %>
             		
-		<table class="sortable" width="700" style="clear:both">
+		<table class="sortable" width="100%" style="clear:both">
 		
 			<%
 			// temporarly we do not display version aka CheckInNo, because for the time being it doesn't function properly anyway
@@ -441,7 +441,7 @@
 				String sortedAlt  = getSortedAlt(sortedImg);
 				%>
 				<th>
-					<a title="Dataset" href="<%=Util.replaceTags(sortedLink,true)%>">
+					<a title="Sort on Dataset" href="<%=Util.replaceTags(sortedLink,true)%>">
 						Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
 					</a>
 				</th>
@@ -452,7 +452,7 @@
 					sortedAlt  = getSortedAlt(sortedImg);
 					%>
 					<th>
-						<a title="Version" href="<%=Util.replaceTags(sortedLink,true)%>">
+						<a title="Sort on Version" href="<%=Util.replaceTags(sortedLink,true)%>">
 	                      Version&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
 						</a>
 					</th><%
@@ -464,7 +464,7 @@
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
 					sortedAlt  = getSortedAlt(sortedImg);
 					%>
-					<a title="Status" href="<%=Util.replaceTags(sortedLink,true)%>">
+					<a title="Sort on Status" href="<%=Util.replaceTags(sortedLink,true)%>">
 	                      Status&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
 					</a>
 				</th>
