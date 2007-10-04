@@ -198,7 +198,7 @@
 		<form id="form1" method="post" action="search_results_tbl.jsp" onsubmit="setLocation()">
 		
 		<!-- the result table -->		
-		<table width="700" class="sortable" style="clear:both">
+		<table width="100%" class="sortable" style="clear:both">
 		 <col style="width:34%"/>
 		 <col style="width:22%"/>
 		 <col style="width:22%"/>
@@ -210,7 +210,7 @@
 					String sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
 					String sortedLink = getSortedLink(3, oSortCol, oSortOrder);
 					%>
-					<a title="Table" href="<%=Util.replaceTags(sortedLink, true)%>">
+					<a title="Sort on Table" href="<%=Util.replaceTags(sortedLink, true)%>">
 	                      Full name&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
@@ -219,7 +219,7 @@
 					sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(1, oSortCol, oSortOrder);
 					%>
-					<a title="Short name" href="<%=Util.replaceTags(sortedLink, true)%>">
+					<a title="Sort on Short name" href="<%=Util.replaceTags(sortedLink, true)%>">
 	                      Short name&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
@@ -228,7 +228,7 @@
 					sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(2, oSortCol, oSortOrder);
 					%>
-					<a title="Dataset" href="<%=Util.replaceTags(sortedLink, true)%>">
+					<a title="Sort on Dataset" href="<%=Util.replaceTags(sortedLink, true)%>">
 	                      Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
@@ -237,7 +237,7 @@
 					sortedImg  = getSortedImg(4, oSortCol, oSortOrder);
 					sortedLink = getSortedLink(4, oSortCol, oSortOrder);
 					%>
-					<a title="Dataset status" href="<%=Util.replaceTags(sortedLink,true)%>">
+					<a title="Sort on Dataset status" href="<%=Util.replaceTags(sortedLink,true)%>">
 	                      Dataset status&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
