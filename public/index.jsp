@@ -13,18 +13,6 @@ DBPoolIF pool = null;
 ServletContext ctx = getServletContext();
 XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
 
-String page_id = request.getParameter("page");
-if (page_id==null || page_id.length()==0)
-	page_id = "0";
-
-String page_name="";	
-if (page_id.equals("1"))
-	page_name = "Functions";
-else if (page_id.equals("2"))
-	page_name = "Concepts";
-else if (page_id.equals("3"))
-	page_name = "Login mode";
-
 try{
 	pool = xdbapp.getDBPool();	
 	conn = pool.getConnection();
@@ -64,9 +52,7 @@ finally{
 </head>
 <body class="threecolumns">
 <div id="container">
-    <jsp:include page="nlocation.jsp" flush="false">
-		<jsp:param name="name" value="<%=page_name%>"/>
-    </jsp:include>
+    <jsp:include page="nlocation.jsp" flush="false" />
     <%@ include file="nmenu.jsp" %>
 	<div id="rightcolumn" class="quickjumps">
 		<%=Helps.get("front_page", "news")%>
@@ -113,7 +99,7 @@ finally{
 											String heading = props.getProperty("heading");
 											%>
 											<li>
-												<a href="documentation/<%=id%>"><%=heading%></a>
+												<a href="documentation/<%=id%>"><%=Util.replaceTags(heading, true, true)%></a>
 											</li><%
 										}
 										%>
