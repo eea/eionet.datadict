@@ -176,13 +176,13 @@ public class CacheServlet extends HttpServlet {
 		Hashtable hash = new Hashtable();
 		hash.put("article", "pdf");
 		hash.put("text", "Technical specification");
-		hash.put("icon", "icon_pdf.jpg");
+		hash.put("icon", "pdf.png");
 		v.add(hash);
 		
 		hash = new Hashtable();
 		hash.put("article", "xls");
 		hash.put("text", "MS Excel template");
-		hash.put("icon", "icon_xls.jpg");
+		hash.put("icon", "xls.png");
 		v.add(hash);
 		
 		articles.put("dst", v);
@@ -192,7 +192,7 @@ public class CacheServlet extends HttpServlet {
 		hash = new Hashtable();
 		hash.put("article", "xls");
 		hash.put("text", "MS Excel template");
-		hash.put("icon", "icon_xls.gif");
+		hash.put("icon", "xls.png");
 		v.add(hash);
 		
 		articles.put("tbl", v);

@@ -706,33 +706,50 @@ public class Util {
 		String s = path==null ? null : path.toLowerCase();
 		
 		if (s==null)
-			return "icon_unknown.gif";
+			return "file.png";
 		else if (s.endsWith(".pdf"))
-			return "icon_pdf.jpg";
+			return "pdf.png";
 		else if (s.endsWith(".doc"))
-			return "icon_doc.gif";
+			return "doc.png";
 		else if (s.endsWith(".rtf"))
-			return "icon_doc.gif";
+			return "rtf.png";
 		else if (s.endsWith(".xls"))
-			return "icon_xls.gif";
+			return "xls.png";
 		else if (s.endsWith(".ppt"))
-			return "icon_ppt.gif";
+			return "ppt.png";
 		else if (s.endsWith(".txt"))
-			return "icon_txt.gif";
+			return "txt.png";
 		else if (s.endsWith(".zip"))
-			return "icon_zip.gif";
+			return "zip.png";
 		else if (s.endsWith(".htm"))
-			return "icon_html.gif";
+			return "htm.png";
 		else if (s.endsWith(".html"))
-			return "icon_html.gif";
+			return "html.png";
 		else if (s.endsWith(".xml"))
-			return "icon_xml.jpg";
+			return "xml.png";
 		else if (s.endsWith(".xsd"))
-			return "icon_xml.jpg";
+			return "xsd.png";
 		else if (s.endsWith(".mdb"))
-			return "icon_mdb.jpg";		
+			return "mdb.png";
+		else if (s.endsWith(".gif"))
+			return "gif.png";
+		else if (s.endsWith(".jpeg"))
+			return "jpeg.png";
+		else if (s.endsWith(".jpg"))
+			return "jpg.png";
+		else if (s.endsWith(".png"))
+			return "png.png";
+		else if (s.endsWith(".rar"))
+			return "rar.png";
+		else if (s.endsWith(".tar"))
+			return "tar.png";
+		else if (s.endsWith(".tgz"))
+			return "tgz.png";
+		else if (s.endsWith(".xsl"))
+			return "xsl.png";
+
 		else
-			return "icon_unknown.gif";
+			return "file.png";
 	}
 
 	/**

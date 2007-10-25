@@ -755,7 +755,7 @@ else if (mode.equals("add"))
 														</td>
 														<td>
 															<a href="GetSchema?id=TBL<%=tableID%>">
-																<img style="border:0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
+																<img style="border:0" src="images/xsd.png" width="16" height="18" alt=""/>
 															</a>
 														</td>
 													</tr><%
@@ -769,7 +769,7 @@ else if (mode.equals("add"))
 														</td>
 														<td>
 															<a href="GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
-																<img style="border:0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
+																<img style="border:0" src="images/xml.png" width="16" height="18" alt=""/>
 															</a>
 														</td>
 													</tr><%
@@ -783,7 +783,7 @@ else if (mode.equals("add"))
 														</td>
 														<td>
 															<a href="GetXForm?id=<%=tableID%>">
-																<img style="border:0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
+																<img style="border:0" src="images/xml.png" width="16" height="18" alt=""/>
 															</a>
 														</td>
 													</tr><%
@@ -796,7 +796,7 @@ else if (mode.equals("add"))
 															Create an MS Excel template for this table&nbsp;<a onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=excel"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" /></a>
 														</td>
 														<td>
-															<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img style="border:0" src="images/icon_xls.gif" width="16" height="18" alt=""/></a>
+															<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img style="border:0" src="images/xls.png" width="16" height="18" alt=""/></a>
 														</td>
 													</tr><%
 												}
@@ -808,7 +808,7 @@ else if (mode.equals("add"))
 															Create an OpenDocument spreadsheet template for this table&nbsp;<a onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=ods"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" /></a>
 														</td>
 														<td>
-															<a href="GetOds?type=tbl&amp;id=<%=tableID%>"><img style="border:0" src="images/icon_ods.gif" alt=""/></a>
+															<a href="GetOds?type=tbl&amp;id=<%=tableID%>"><img style="border:0" src="images/ods.png" alt=""/></a>
 														</td>
 													</tr><%
 												}
@@ -821,7 +821,7 @@ else if (mode.equals("add"))
 														</td>
 														<td>
 															<a href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL">
-																<img style="border:0" src="images/icon_txt.gif" width="16" height="18" alt=""/>
+																<img style="border:0" src="images/txt.png" width="16" height="18" alt=""/>
 															</a>
 														</td>
 													</tr>
@@ -831,7 +831,7 @@ else if (mode.equals("add"))
 														</td>
 														<td>
 															<a href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL&amp;format=xml">
-																<img style="border:0" src="images/icon_xml.jpg" width="16" height="18" alt=""/>
+																<img style="border:0" src="images/xml.png" width="16" height="18" alt=""/>
 															</a>
 														</td>
 													</tr><%
