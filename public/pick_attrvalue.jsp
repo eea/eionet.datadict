@@ -63,7 +63,7 @@
 				if (field_ids.length>0){
 					for (var i=0; i<field_ids.length;i++){						
 						field_id = document.forms["form1"].elements["field_ids"][i].value;
-						url = url + "&<%=AttrFieldsHandler.FLD_PREFIX%>" + field_id + "=" + document.forms["form1"].elements["field_"+field_id][idx+1].value;
+						url = url + "&<%=AttrFieldsHandler.FLD_PREFIX%>" + field_id + "=" + escape(document.forms["form1"].elements["field_"+field_id][idx+1].value);
 					}
 				}
 				
