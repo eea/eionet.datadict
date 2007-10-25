@@ -457,16 +457,20 @@ public class DataElementHandler extends BaseHandler {
     	if (eionet.util.Util.voidStr(conversion))
     		return;
     	
+    	// conversion is a string with pattern "oldtype-newtype", so check that '-' is indeed present
     	int i = conversion.indexOf('-');
     	if (i<=0)
     		throw new Exception("Invalid parameter value: " + conversion);
     	
+    	// extract old and new datatype
     	String oldDatatype = conversion.substring(0,i);
     	String newDatatype = conversion.substring(i+1);
     	
+    	// setup search engine object
     	if (searchEngine==null)
     		searchEngine = new DDSearchEngine(conn, "", ctx);
     	
+    	// find ids of attributes whose values must be deleted according to the new datatype's rules
     	HashSet deleteAttrs = new HashSet();
     	Vector v = searchEngine.getDElemAttributes(DElemAttribute.TYPE_SIMPLE);
     	for (i=0; v!=null && i<v.size(); i++){
@@ -475,6 +479,8 @@ public class DataElementHandler extends BaseHandler {
     			deleteAttrs.add(attr.getID());
     	}
     	
+    	// delete the values of teh above-found attributes
+    	Statement stmt = null;
     	if (deleteAttrs.size()>0){
     		StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID=");
     		buf.append(delem_id).append(" and (");
@@ -485,10 +491,21 @@ public class DataElementHandler extends BaseHandler {
 	    		buf.append("M_ATTRIBUTE_ID=").append(iter.next());
 	    	}
 	    	buf.append(")");
-	    	
-	    	System.out.println("executing: " + buf.toString());
-	    	conn.createStatement().executeUpdate(buf.toString());
+
+	    	stmt = conn.createStatement();
+	    	stmt.executeUpdate(buf.toString());
     	}
+
+    	// if a fixed values element is converted into boolean datatype, auto-create "true" and "false" values
+    	// (it is assumed here that the old non-boolean values have already been removed)
+		if (elmValuesType!=null && elmValuesType.equals("CH1") && newDatatype.equals("boolean")){
+			if (stmt==null)
+				stmt = conn.createStatement();
+			autoCreateBooleanFixedValues(stmt, delem_id);
+		}
+
+		if (stmt!=null)
+			stmt.close();
 	}
 
 	/**
