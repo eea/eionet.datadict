@@ -1630,7 +1630,7 @@ else{
 													<td class="simple_attr_value">
 														<%
 														if (mode.equals("view")){
-															gisType = (gisType==null || gisType.length()==0) ? "&nbsp" : gisType;
+															gisType = (gisType==null || gisType.length()==0) ? "&nbsp;" : gisType;
 															%>
 															<%=Util.replaceTags(gisType)%><%
 														}
