@@ -272,8 +272,11 @@ if (isDisplayOperations){
 					%>
 				<table width="auto" cellspacing="0" style="clear:right">
 
-					<%					
-					if ((fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0)==false){
+					<%
+					boolean commonOnly = request.getParameter("common")!=null;
+                    boolean nonCommonOnly = request.getParameter("noncommon")!=null;
+                    
+					if (!(fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0) && commonOnly==false){
 						%>
 						<tr valign="top">
 							<td align="right" style="padding-right:10">
@@ -546,9 +549,6 @@ if (isDisplayOperations){
                     </tr>
                     
                     <%
-                    boolean commonOnly = request.getParameter("common")!=null;
-                    boolean nonCommonOnly = request.getParameter("noncommon")!=null;
-					
 					if (!commonOnly && !nonCommonOnly){ %>
 						<tr>
 							<td colspan="2">&nbsp;</td>
