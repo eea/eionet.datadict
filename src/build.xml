@@ -3,29 +3,53 @@
   <!-- set global properties for this build -->
   <property name="src" value="."/>
   <property name="classes" value="../public/WEB-INF/classes"/>
+  <property name="lib" value="../public/WEB-INF/lib"/>
 
   <target name="compile">
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${classes}" source="1.4"
-		classpath="../public/WEB-INF/lib/xmlserver.jar;
-		../public/WEB-INF/lib/castor.jar;
-		../public/WEB-INF/lib/jackcess-1.1.2.jar;
-		../public/WEB-INF/lib/itext-0.99.jar;
-		../public/WEB-INF/lib/commons-collections-3.0.jar;
-		../public/WEB-INF/lib/commons-lang-1.0.jar;
-		../public/WEB-INF/lib/commons-logging-api.jar;
-		../public/WEB-INF/lib/xerces.jar;
-		../public/WEB-INF/lib/pja.jar;
-		../public/WEB-INF/lib/eionet-dir.jar;
-		../public/WEB-INF/lib/uit-security.jar;
-		../public/WEB-INF/lib/uit-client.jar;
-		../public/WEB-INF/lib/uit-help.jar;
-		../public/WEB-INF/lib/log4j.jar;
-		../public/WEB-INF/lib/xmlrpc-2.0.jar;
-		../public/WEB-INF/lib/servlet.jar;
-		../public/WEB-INF/lib/poi-2.5-final-20040302.jar;
-		../public/WEB-INF/lib/casclient.jar;
+    <javac srcdir="${src}" destdir="${classes}" source="1.5" target="1.5"
+		classpath="${lib}/xmlserver.jar;
+		${lib}/castor.jar;
+		${lib}/jackcess-1.1.2.jar;
+		${lib}/itext-0.99.jar;
+		${lib}/commons-collections-3.0.jar;
+		${lib}/commons-lang-1.0.jar;
+		${lib}/commons-logging-api.jar;
+		${lib}/xerces.jar;
+		${lib}/pja.jar;
+		${lib}/eionet-dir.jar;
+		${lib}/uit-security.jar;
+		${lib}/uit-client.jar;
+		${lib}/uit-help.jar;
+		${lib}/log4j.jar;
+		${lib}/xmlrpc-2.0.jar;
+		${lib}/servlet.jar;
+		${lib}/poi-2.5-final-20040302.jar;
+		${lib}/casclient.jar;
 		/var/lib/tomcat4/common/lib/[servletapi4].jar"/>
   </target>
-</project>
 
+  <path id="classpath.test">
+		<pathelement path="${classes}"/>
+		<fileset dir="${lib}">
+			<include name="**/*.jar"/>
+		</fileset>
+		<pathelement location="/var/lib/tomcat4/common/lib/[servletapi4].jar"/>
+    </path>
+	<fileset id="fileset.test" dir="${src}">
+		<include name="**/*Test.java"/>
+		<include name="**/*Tests.java"/>
+	</fileset>
+
+  	<target name="test" depends="compile" description="Runs all found unit tests">
+		<junit haltonfailure="no" failureproperty="unittestFailed" showoutput="yes" printsummary="yes">
+			<classpath refid="classpath.test" />
+			<formatter type="brief" usefile="false"/>
+			<batchtest fork="yes">				
+				<fileset refid="fileset.test"/>
+			</batchtest>
+		</junit>
+		<fail if="unittestFailed" message="One or more unit tests failed."/>
+	</target>
+
+</project>
