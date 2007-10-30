@@ -577,7 +577,7 @@ public class DDSearchEngine {
 			String oper) throws SQLException {
 		return getCommonElements(params, type, short_name, idfier, wrkCopies, false, oper);
 	}
-	
+
 	/**
 	 * 
 	 * @param params
@@ -598,6 +598,31 @@ public class DDSearchEngine {
 			boolean isIncludeHistoricVersions,
 			String oper) throws SQLException {
 		
+		return getCommonElements(params, type, short_name, idfier, null, wrkCopies, false, oper);
+	}
+	
+	/**
+	 * 
+	 * @param params
+	 * @param type
+	 * @param short_name
+	 * @param idfier
+	 * @param regStatus
+	 * @param wrkCopies
+	 * @param isIncludeHistoricVersions
+	 * @param oper
+	 * @return
+	 * @throws SQLException
+	 */
+	public Vector getCommonElements(Vector params,
+			String type,
+			String short_name,
+			String idfier,
+			String regStatus,
+			boolean wrkCopies,
+			boolean isIncludeHistoricVersions,
+			String oper) throws SQLException {
+		
 		Vector result = new Vector();
 		
 		// oper defines the search precision. If it's missing, set it to substring search
@@ -611,6 +636,12 @@ public class DDSearchEngine {
 		
 		// we look only for common elements here, so DATAELEM.PARENT_NS must be null
 		constraints.append("DATAELEM.PARENT_NS is null");
+		
+		// set the registration status
+		if (regStatus!=null && regStatus.trim().length()>0){
+			if (constraints.length()>0) constraints.append(" and ");
+			constraints.append("DATAELEM.REG_STATUS=").append(Util.strLiteral(regStatus));
+		}
 		
 		// set the element type (CH1 or CH2)
 		if (type!=null && type.length()!=0){

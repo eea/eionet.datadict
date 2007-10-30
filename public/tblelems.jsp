@@ -347,7 +347,7 @@
 		
 		function linkElem(){
 			pickMode = "link";
-			var url="search.jsp?ctx=popup&common=&exclude=" + document.forms["form1"].str_elem_ids.value;
+			var url="search.jsp?ctx=popup&common=&link=&exclude=" + document.forms["form1"].str_elem_ids.value;
 			wLink = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
 			if (window.focus){
 				wLink.focus();

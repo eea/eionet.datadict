@@ -678,7 +678,9 @@ if (isDisplayOperations){
 		    			if (fk!=null && fk.equals("true")){ %>
 		    				<input type="hidden" name="for_fk_use" value="true"/><%
 						}
-		
+						if (request.getParameter("link")!=null){ %>
+							<input type="hidden" name="reg_status" value="Released"/><%
+						}
 		        		%>
 					</div>                
 				</form>

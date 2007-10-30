@@ -162,7 +162,7 @@
 			}
 			
 			// all set up for search, do it
-			dataElements = searchEngine.getCommonElements(params, type, short_name, idfier, wrkCopies, isIncludeHistoricVersions, oper);
+			dataElements = searchEngine.getCommonElements(params, type, short_name, idfier, request.getParameter("reg_status"), wrkCopies, isIncludeHistoricVersions, oper);
 			
 		} // end if in search mode
 
