@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * A Class class.
  * <P>
- * @author Enriko Käsper, Jaanus Heinlaid
+ * @author Enriko KÃ¤sper, Jaanus Heinlaid
  */
 public class QueryString{
 	
