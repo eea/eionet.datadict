@@ -2,10 +2,6 @@ package eionet.util;
 
 import java.util.StringTokenizer;
 
-import junit.framework.JUnit4TestAdapter;
-
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
 /**
  * A Class class.
@@ -178,11 +174,5 @@ public class QueryString{
 		return true;
 	}
 	
-	@Test
-	public void testHasParam(){
-		
-		QueryString qryStr = new QueryString("param1=value1&param2=");
-		assertEquals(true, qryStr.hasParam("param2"));
-	}
 }
 

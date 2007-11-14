@@ -26,7 +26,7 @@
 		${lib}/servlet.jar;
 		${lib}/poi-2.5-final-20040302.jar;
 		${lib}/casclient.jar;
-		/var/lib/tomcat4/common/lib/[servletapi4].jar"/>
+		/var/lib/tomcat5/common/lib/[servlet].jar"/>
   </target>
 
   <path id="classpath.test">
