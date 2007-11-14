@@ -43,7 +43,7 @@ public class PropsTest extends TestCase {
 	 * Test method for 'eionet.util.Props.isXHTMLEntity(String)'
 	 */
 	public void test_getProperty() {
-		assertEquals("com.mysql.jdbc.Driver", props.getProperty(PropsIF.DBDRV));
+		assertEquals("com.mysql.jdbc.Driver", Props.getProperty(PropsIF.DBDRV));
 	}
 
 }
