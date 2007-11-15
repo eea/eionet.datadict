@@ -1912,6 +1912,7 @@ public class DDSearchEngine {
 				ds.setIdentifier(rs.getString("IDENTIFIER"));
 				ds.setCheckedoutCopyID(rs.getString("CHECKEDOUT_COPY_ID"));
 				ds.setWorkingUser(rs.getString("WORKING_USER"));
+				ds.setDate(rs.getString("DATE"));
 				
 				v.add(ds);
 			}
