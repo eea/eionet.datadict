@@ -1088,6 +1088,9 @@ else if (mode.equals("add"))
 																<span class="caution">(checked out by <em><%=workingUser%></em>)</span><%
 															}
 														}
+														else if (regStatus.equalsIgnoreCase("RELEASED") && dataset.getDate()!=null){
+															%><%=eionet.util.Util.releasedDate(Long.parseLong(dataset.getDate()))%><%
+														}
 													}
 													else{ %>
 														<select name="reg_status" onchange="form_changed('form1')"> <%

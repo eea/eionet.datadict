@@ -1588,6 +1588,9 @@ else{
 																	<span class="caution">(checked out by <em><%=elmWorkingUser%></em>)</span><%
 																}
 															}
+															else if (elmRegStatus.equalsIgnoreCase("RELEASED") && dataElement.getDate()!=null){
+																%><%=eionet.util.Util.releasedDate(Long.parseLong(dataElement.getDate()))%><%
+															}
 														}
 														else{ %>
 															<select name="reg_status" onchange="form_changed('form1')"> <%
