@@ -239,7 +239,13 @@
 			datasets = searchEngine.getDeletedDatasets();
 		}
 		else{
-			datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, isSearchForWorkingCopies, isIncludeHistoricVersions, null);
+			HashSet statuses = null;
+			String requestedStatus = request.getParameter("reg_status");
+			if (requestedStatus!=null && requestedStatus.length()>0){
+				statuses = new HashSet();
+				statuses.add(requestedStatus);
+			}
+			datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, isSearchForWorkingCopies, isIncludeHistoricVersions, statuses);
 		}
 }	
 %>

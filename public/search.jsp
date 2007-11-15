@@ -191,12 +191,19 @@ private String setDefaultAttrs(String name){
 			document.forms["form1"].dataset_idf.selectedIndex = 0;
 			document.forms["form1"].dataset_idf.disabled = true;
 			document.forms["form1"].wrk_copies.disabled = false;
+			
+			if (document.forms["form1"].reg_status)
+				document.forms["form1"].reg_status.disabled = false;
+
 		}
 		
 		function changeFormStateForNonCommon(){
 			document.forms["form1"].dataset_idf.disabled = false;
 			document.forms["form1"].wrk_copies.checked = false;
 			document.forms["form1"].wrk_copies.disabled = true;
+			
+			if (document.forms["form1"].reg_status)
+				document.forms["form1"].reg_status.disabled = true;
 		}
 		
 	// ]]>
@@ -275,6 +282,30 @@ if (isDisplayOperations){
 					<%
 					boolean commonOnly = request.getParameter("common")!=null;
                     boolean nonCommonOnly = request.getParameter("noncommon")!=null;
+                    
+					if (request.getParameter("link")==null){
+						%>
+						<tr valign="top">
+							<td align="right" style="padding-right:10">
+								<strong>RegistrationStatus</strong>
+							</td>
+							<td>
+								<a href="help.jsp?screen=dataset&area=regstatus" onclick="pop(this.href);return false;">
+									<img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+								</a>
+							</td>
+							<td colspan="2">
+								<select name="reg_status" class="small">
+									<option value="">All</option>
+									<option value="Released">Released</option>
+									<option value="Recorded">Recorded</option>
+									<option value="Qualified">Qualified</option>
+									<option value="Candidate">Candidate</option>
+									<option value="Incomplete">Incomplete</option>
+								</select>
+							</td>
+						</tr><%
+					}
                     
 					if (!(fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0) && commonOnly==false){
 						%>

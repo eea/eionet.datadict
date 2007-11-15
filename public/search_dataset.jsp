@@ -176,6 +176,27 @@ private String setDefaultAttrs(String name){
 		<h1>Search datasets</h1>
 		<table width="600" cellspacing="0" style="padding-top:10px">
 		
+			<tr valign="top">
+				<td align="right">
+					<strong>RegistrationStatus</strong>
+				</td>
+				<td>
+					<a href="help.jsp?screen=dataset&area=regstatus" onclick="pop(this.href);return false;">
+						<img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
+					</a>
+				</td>
+				<td colspan="2">
+					<select name="reg_status" class="small">
+						<option value="">All</option>
+						<option value="Released">Released</option>
+						<option value="Recorded">Recorded</option>
+						<option value="Qualified">Qualified</option>
+						<option value="Candidate">Candidate</option>
+						<option value="Incomplete">Incomplete</option>
+					</select>
+				</td>
+			</tr>
+								
 			<tr style="vertical-align:top">
 				<td align="right">
 					<b>Short name</b>
