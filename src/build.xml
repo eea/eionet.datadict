@@ -34,7 +34,7 @@
 		<fileset dir="${lib}">
 			<include name="**/*.jar"/>
 		</fileset>
-		<pathelement location="/var/lib/tomcat4/common/lib/[servletapi4].jar"/>
+		<pathelement location="/var/lib/tomcat5/common/lib/[servlet].jar"/>
     </path>
 	<fileset id="fileset.test" dir="${src}">
 		<include name="**/*Test.java"/>
