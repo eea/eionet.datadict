@@ -80,7 +80,7 @@ unknown. But whatever is the type of the file you upload, it can later be downlo
 </form>	
 </div> <!-- workarea -->
 </div> <!-- container -->
-<jsp:include page="footer.jsp" flush="true"/>
+<%@ include file="footer.txt" %>
 
 </body>
 </html>

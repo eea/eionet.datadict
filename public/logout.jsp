@@ -154,7 +154,7 @@ Vector commonElements=null;
 	
 </div> <!-- workarea -->
 </div> <!-- container -->
-<jsp:include page="footer.jsp" flush="true" />
+<%@ include file="footer.txt" %>
 </body>
 </html>
 <%

@@ -332,7 +332,7 @@
         
             if (datasets == null || datasets.size()==0){
 	            %>
-    	        <strong>No results found!</strong></div></div><jsp:include page="footer.jsp" flush="true"/></body></html>
+    	        <strong>No results found!</strong></div></div><%@ include file="footer.txt" %></body></html>
         	    <%
             	return;
             }
@@ -588,7 +588,7 @@
 		
 		</div> <!-- workarea -->
 		</div> <!-- container -->
-      <jsp:include page="footer.jsp" flush="true" />
+      <%@ include file="footer.txt" %>
 </body>
 </html>
 

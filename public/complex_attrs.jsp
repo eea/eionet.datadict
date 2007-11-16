@@ -393,7 +393,7 @@ for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
 </div>
 </div> <!-- workarea -->
 </div> <!-- container -->
-<jsp:include page="footer.jsp" flush="true"/>
+<%@ include file="footer.txt" %>
 
 </body>
 </html>
