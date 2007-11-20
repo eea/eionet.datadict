@@ -836,7 +836,25 @@ else if (mode.equals("add"))
 														</td>
 													</tr><%
 												}
-												
+
+												// TESTING the link for creating dBase II format
+												if (user!=null){
+													String userName = user.getUserName();
+													if (userName.equals("roug") || userName.equals("heinlja")){
+														%>
+														<tr>
+															<td>Create dBaseII</td>
+															<td>
+																<a href="GetDbf/<%=dsTable.getID()%>">
+																	<img style="border:0" src="images/txt.png" width="16" height="18" alt=""/>
+																</a>
+															</td>
+														</tr>
+														<%
+													}
+												}
+
+																										
 												// display the link about cache
 												if (dispAll || dispCache){
 													%>

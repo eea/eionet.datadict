@@ -207,6 +207,10 @@
 			<param-value>documentation.jsp</param-value>
 		</init-param>
 	</servlet>
+	<servlet>
+		<servlet-name>DbfServlet</servlet-name>
+		<servlet-class>eionet.meta.exports.dbf.DbfServlet</servlet-class>
+	</servlet>
 
 <!-- servlet mappings -->
 
@@ -309,6 +313,10 @@
 	<servlet-mapping>
 		<servlet-name>DocumentationServlet</servlet-name>
 		<url-pattern>/documentation/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>DbfServlet</servlet-name>
+		<url-pattern>/GetDbf/*</url-pattern>
 	</servlet-mapping>
 
 <!-- the application server might allow directory listing.
