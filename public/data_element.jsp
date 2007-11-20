@@ -937,7 +937,7 @@
 								valueProcessed.append(valueLines.nextToken());
 							}
 							%>
-							popValues[<%=i%>] = "<%=valueProcessed%>";
+							popValues[<%=i%>] = '<%=valueProcessed.toString().replace('\'', '"')%>';
 							<%
 						}
 						%>
