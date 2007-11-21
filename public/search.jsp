@@ -122,6 +122,7 @@ private String setDefaultAttrs(String name){
 		%><%@ include file="history.jsp"%><%
 	}
 
+	boolean isPopup = contextParam!=null && contextParam.equals(POPUP);
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -190,7 +191,14 @@ private String setDefaultAttrs(String name){
 		function changeFormStateForCommon(){
 			document.forms["form1"].dataset_idf.selectedIndex = 0;
 			document.forms["form1"].dataset_idf.disabled = true;
-			document.forms["form1"].wrk_copies.disabled = false;
+			<%
+			if (isPopup){
+				%>document.forms["form1"].wrk_copies.disabled = true;<%
+			}
+			else{
+				%>document.forms["form1"].wrk_copies.disabled = false;<%
+			}
+			%>
 			
 			if (document.forms["form1"].reg_status)
 				document.forms["form1"].reg_status.disabled = false;
@@ -211,7 +219,6 @@ private String setDefaultAttrs(String name){
 </head>
 
 <%
-boolean isPopup = contextParam!=null && contextParam.equals(POPUP);
 StringBuffer bodyAttrs = new StringBuffer("onload=\"onLoad()\"");
 if (isPopup)
 	bodyAttrs.append(" class=\"popup\"");

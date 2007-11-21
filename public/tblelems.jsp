@@ -369,26 +369,9 @@
 
 			return true;
 		}
+		
 		function goToAddForm(){
-			
-			if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
-				alert("Identifier not valid for usage as an XML tag! " +
-						  "In the first character only underscore or latin characters are allowed! " +
-						  "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
-				return;
-			}
-			
-			if (hasWhiteSpace("idfier")){
-				alert("Identifier cannot contain any white space!");
-				return;
-			}
-			
 			var url = "data_element.jsp?mode=add&table_id=<%=tableID%>&ds_id=<%=dsID%>";
-			identifier = document.forms["form1"].elements["idfier"].value;
-			elem_type = document.forms["form1"].elements["type"].value;
-			
-			url +="&idfier=" + identifier;
-			url +="&type=" + elem_type;
 			document.location.assign(url);
 		}
 		
@@ -452,49 +435,14 @@
 	<%
 	if (editDstPrm){
 		%>
-		<table width="500" style="margin-top:10px">
-			<tr>
-				<td align="right"><label for="idfier">Identifier:</label></td>
-				<td align="right">
-					<a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-						<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-					</a>
-				</td>
-				<td style="padding-left:5px">
-					<input type="text" class="smalltext" style="width:145px;" name="idfier" id="idfier"/>
-				</td>
-				<td align="right">
-					<input type="button" class="smallbutton" value="Add" onclick="goToAddForm()"
-						   title="Define a new element into this table, give it the Identifier on the left."/>
-				</td>
-				<td align="right">
-					<input type="button" class="smallbutton" value="Copy" onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
-									title="Copies data element attributes from existing data element"/>
-				</td>
-				<td align="right">
-					<input type="button" class="smallbutton" value="Link" onclick="linkElem()"
-						   title="Link this table with a common element."/>
-				</td>
-			</tr>
-			<tr>
-				<td align="right"><label for="elemtype">Type:</label></td>
-				<td>
-					<a href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
-						<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt=""/>
-					</a>
-				</td>
-				<td style="padding-left:5px" colspan="4">
-					<select name="type" id="elemtype" class="small">
-						<option selected="selected" value="CH2">Quantitative</option>
-						<option value="CH1">Fixed values (codes)</option>
-					</select>
-				</td>
-			</tr>
-		</table><%
+		<p style="margin-top:20px;">
+			<input type="button" class="smallbutton" value="Add" onclick="goToAddForm()" title="Create a new element in this table."/>
+			<input type="button" class="smallbutton" value="Link" onclick="linkElem()" title="Link a common element into this table."/>
+		</p><%
 	}
 	%>
 		
-	<!-- here is going to be a table consisting of two columns -->
+	<!-- following is a table consisting of two columns -->
 	<!-- the first column contains the table of elements,      -->
 	<!-- the second one contains the ordering buttons          -->
 	

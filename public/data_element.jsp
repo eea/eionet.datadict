@@ -1109,25 +1109,13 @@
 			}
 			%>
 			
-			if (!checkObligations()){
-				alert("You have not specified one of the mandatory atttributes!");
-				return;
-			}
-			
-			forceAttrMaxLen();
-			
-			var type;
-			var url="search.jsp?ctx=popup&noncommon";
-			if (document.forms["form1"].elements["type"]){
-				type = document.forms["form1"].elements["type"].value;
-				url += "&type=" + type;
-			}
-		
+			var url="search.jsp?ctx=popup";
 			wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
 			if (window.focus){
 				wAdd.focus();
 			}
 		}
+		
 		function pickElem(id){
 			
 			document.forms["form1"].elements["copy_elem_id"].value=id;
@@ -1246,7 +1234,20 @@ else{
 			%>
 			<h1><%=verb%> <%=strCommon%> element definition</h1>
 			
-			<form id="form1" method="post" action="data_element.jsp" style="clear:right;margin-top:10px">
+			<%
+			if (mode.equals("add")){
+				%>
+				<p>
+					You have 2 options here:
+					<ul>
+						<li>Copy an existing element by filling the input for Identifier (others will be ignored) and clicking <em>Copy</em>.</li>
+						<li>Create new element by filling at least the mandatory inputs and clikcing <em>Add.</em></li>
+					</ul>
+				</p><%
+			}
+			%>
+			
+			<form id="form1" method="post" action="data_element.jsp" style="clear:right;margin-top:20px">
 				<div style="display:none">
 					<%
 					if (!mode.equals("add")){ %>
@@ -1290,8 +1291,8 @@ else{
 							if (mode.equals("add")){ %>
 								<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
 								<input type="button" class="mediumbuttonb" value="Copy"
-									onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
-									title="Copies data element attributes from existing data element"/>
+									onclick="copyElem()"
+									title="Opens an element search window, and from the search results you can select an element to copy."/>
 								<%
 							}
 							// view case

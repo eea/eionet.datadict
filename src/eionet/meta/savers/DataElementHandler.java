@@ -242,16 +242,6 @@ public class DataElementHandler extends BaseHandler {
     	// init the flag indicating if this is a common element
     	boolean elmCommon = req.getParameter("common")!=null; 
 
-        // if making a copy, do the copy and return
-		String copyElemID = req.getParameter("copy_elem_id");
-		if (copyElemID != null && copyElemID.length()!=0){
-			if (elmCommon)
-				convertElm(copyElemID);
-			else
-				copyElem(copyElemID, dstNamespaceID);
-			return;
-		}
-
         // check missing parameters
 		if (elmIdfier == null)
 			throw new SQLException("Missing request parameter: idfier");
@@ -263,8 +253,18 @@ public class DataElementHandler extends BaseHandler {
 			throw new SQLException("The table already has an element with this Identifier");
 		
 		// if common element, make sure such does not already exist
-		if (elmCommon && exists())
-			throw new SQLException("An existing common element already this Identifier");
+		if (elmCommon && existsCommon())
+			throw new SQLException("A common element with this Identifier already exists");
+
+        // if making a copy, do the copy and return
+		String copyElemID = req.getParameter("copy_elem_id");
+		if (copyElemID != null && copyElemID.length()!=0){
+			if (elmCommon)
+				copyIntoCommon(copyElemID);
+			else
+				copyIntoNonCommon(copyElemID);
+			return;
+		}
 
 		// prepare SQL generator for element insert
         SQLGenerator gen = new SQLGenerator();
@@ -320,11 +320,12 @@ public class DataElementHandler extends BaseHandler {
 		
 		// if non-common element, create row in TBL2ELEM
 		if (!elmCommon){
-			gen.clear();
-	        gen.setTable("TBL2ELEM");
-	        gen.setFieldExpr("TABLE_ID", tableID);
-	        gen.setFieldExpr("DATAELEM_ID", getLastInsertID());
-	        stmt.executeUpdate(gen.insertStatement());
+			if (tableID==null || tableID.length()==0)
+				throw new Exception("Missing tableID");
+			StringBuffer sqlBuf = new StringBuffer("insert into TBL2ELEM (TABLE_ID, DATAELEM_ID, POSITION) select ");
+			sqlBuf.append(tableID).append(", ").append(getLastInsertID());
+			sqlBuf.append(", max(POSITION)+1 from TBL2ELEM where TABLE_ID=").append(tableID);
+			stmt.executeUpdate(sqlBuf.toString());
 		}
 
 		// process the element's attributes
@@ -765,29 +766,6 @@ public class DataElementHandler extends BaseHandler {
 		stmt.close();
     }
     
-    private void insertTableElem() throws SQLException {
-
-        if (tableID == null || tableID.length()==0)
-            return;
-        
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("TBL2ELEM");
-        gen.setField("TABLE_ID", tableID);
-        gen.setField("DATAELEM_ID", getLastInsertID());
-        
-        String position = req.getParameter("pos");
-        if (Util.nullString(position))
-            position = getTableElemPos();
-		    
-        gen.setField("POSITION", position);
-
-        String sql = gen.insertStatement();
-        logger.debug(sql);
-        
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(sql);
-        stmt.close();
-    }
     private String getTableElemPos() throws SQLException{
 
         StringBuffer buf = new StringBuffer().
@@ -1017,80 +995,146 @@ public class DataElementHandler extends BaseHandler {
 
     /**
      * 
-     * @param copyElemID
-     * @param topNS
+     * @param copyElmID
      * @throws Exception
      */
-    private void copyElem(String copyElemID, String topNS) throws Exception{
+    private void copyIntoNonCommon(String copyElmID) throws Exception{
 
-        if (copyElemID==null) return;
-
-        CopyHandler copier = new CopyHandler(conn, ctx, searchEngine);
-		copier.setUser(user);
-        lastInsertID = copier.copyElm(copyElemID, false, false, false);
-
-        if (lastInsertID==null)
-            return;
-
+    	// return if copyElemID is null
+        if (copyElmID==null)
+        	return;
+        
+        // copy row in DATAELEM table
         SQLGenerator gen = new SQLGenerator();
-
         gen.setTable("DATAELEM");
-        gen.setField("IDENTIFIER", elmIdfier);
-        gen.setFieldExpr("PARENT_NS", tblNamespaceID);
-		gen.setFieldExpr("TOP_NS", topNS);
-        gen.setField("VERSION", "1");
-        if (versioning==false){
-            if (user!=null && user.isAuthentic())
-                gen.setField("USER", user.getUserName());
-        }
-        else{
-            gen.setField("WORKING_COPY", "Y");
-            if (user!=null && user.isAuthentic())
-                gen.setField("WORKING_USER", user.getUserName());
-        }
-        gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+        gen.setField("DATAELEM_ID", "");
+        CopyHandler copyHandler = new CopyHandler(conn, null, null);
+        lastInsertID = copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID, false);
+        if (lastInsertID==null)
+        	return;
 
-        String q = gen.updateStatement() + " where DATAELEM_ID=" + lastInsertID;
-        logger.debug(q);
-        conn.createStatement().executeUpdate(q);
+        Statement stmt = null;
+    	try {
+			// set Identifier to what user supplied 
+			gen = new SQLGenerator();
+			gen.setTable("DATAELEM");
+			gen.setField("IDENTIFIER", elmIdfier);
+			
+			// set parent -and top namespaces (corresponding to parent table and dataset respectively) 
+			gen.setFieldExpr("PARENT_NS", tblNamespaceID);
+			gen.setFieldExpr("TOP_NS", dstNamespaceID);
 
-        insertTableElem();
+			// set defaults
+			gen.setFieldExpr("VERSION", "1");
+			gen.setFieldExpr("NAMESPACE_ID", "1");
+			gen.setFieldExpr("CHECKEDOUT_COPY_ID", "NULL");
+			gen.setField("REG_STATUS", "Incomplete");			
+			gen.setFieldExpr("DATE", date==null ? String.valueOf(System.currentTimeMillis()) : date);
+			gen.setField("USER", user.getUserName());
+			gen.setFieldExpr("WORKING_USER", "NULL");
+			gen.setField("WORKING_COPY", "N");
 
+			// execute SQL
+			StringBuffer sqlBuf = new StringBuffer(gen.updateStatement());
+			sqlBuf.append(" where DATAELEM_ID=").append(lastInsertID);
+			logger.debug(sqlBuf.toString());
+			stmt = conn.createStatement();
+			stmt.executeUpdate(sqlBuf.toString());
+			
+			// copy simple attributes
+			gen.clear();
+			gen.setTable("ATTRIBUTE");
+			gen.setField("DATAELEM_ID", lastInsertID);
+			copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID + " and PARENT_TYPE='E'");
+			
+	        // copy complex attributes
+			copyHandler.copyComplexAttrs(lastInsertID, copyElmID, "E");
+	        
+	        // copy fixed values
+			copyHandler.copyFxv(lastInsertID, copyElmID, "elem");
+			
+			// create table-to-element relation
+			if (tableID==null || tableID.length()==0)
+				throw new Exception("Missing tableID");
+			sqlBuf = new StringBuffer("insert into TBL2ELEM (TABLE_ID, DATAELEM_ID, POSITION) select ");
+			sqlBuf.append(tableID).append(", ").append(lastInsertID);
+			sqlBuf.append(", max(POSITION)+1 from TBL2ELEM where TABLE_ID=").append(tableID);
+			stmt.executeUpdate(sqlBuf.toString());
+		}
+    	catch (Exception e) {
+			e.printStackTrace();
+			if (stmt!=null){
+				try{ stmt.close(); } catch (SQLException sqle){}
+			}
+		}
     }
     
-    /**
-     * 
-     * @param copyElemID
-     * @throws Exception
-     */
-	private void convertElm(String copyElemID) throws Exception{
+	/**
+	 * 
+	 * @param copyElmID
+	 * @throws Exception
+	 */
+    private void copyIntoCommon(String copyElmID) throws Exception{
 
-		if (copyElemID==null) return;
+    	// return if copyElemID is null
+        if (copyElmID==null)
+        	return;
+        
+        // copy row in DATAELEM table
+        SQLGenerator gen = new SQLGenerator();
+        gen.setTable("DATAELEM");
+        gen.setField("DATAELEM_ID", "");
+        CopyHandler copyHandler = new CopyHandler(conn, null, null);
+        lastInsertID = copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID, false);
+        if (lastInsertID==null)
+        	return;
 
-		CopyHandler copier = new CopyHandler(conn, ctx, searchEngine);
-		copier.setUser(user);
-		lastInsertID = copier.copyElm(copyElemID, false, false, false);
-		if (lastInsertID==null) return;
-
-		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("DATAELEM");
-		gen.setField("IDENTIFIER", elmIdfier);
-		gen.setField("VERSION", "1");
-		gen.setFieldExpr("PARENT_NS", "NULL");
-		gen.setFieldExpr("TOP_NS", "NULL");
-		if (versioning==false){
-			if (user!=null && user.isAuthentic())
-				gen.setField("USER", user.getUserName());
-		}
-		else{
+        Statement stmt = null;
+    	try {
+			// set Identifier to what user supplied 
+			gen = new SQLGenerator();
+			gen.setTable("DATAELEM");
+			gen.setField("IDENTIFIER", elmIdfier);
+			
+			// set defaults
+			gen.setFieldExpr("VERSION", "1");
+			gen.setFieldExpr("NAMESPACE_ID", "1");
+			gen.setFieldExpr("PARENT_NS", "NULL");
+			gen.setFieldExpr("TOP_NS", "NULL");
+			gen.setFieldExpr("CHECKEDOUT_COPY_ID", "NULL");
+			gen.setField("REG_STATUS", "Incomplete");			
+			gen.setFieldExpr("DATE", date==null ? String.valueOf(System.currentTimeMillis()) : date);
+			gen.setField("USER", user.getUserName());
+			gen.setField("WORKING_USER", user.getUserName());
 			gen.setField("WORKING_COPY", "Y");
-			if (user!=null && user.isAuthentic())
-				gen.setField("WORKING_USER", user.getUserName());
+			
+			// execute SQL
+			StringBuffer sqlBuf = new StringBuffer(gen.updateStatement());
+			sqlBuf.append(" where DATAELEM_ID=").append(lastInsertID);
+			logger.debug(sqlBuf.toString());
+			stmt = conn.createStatement();
+			stmt.executeUpdate(sqlBuf.toString());
+			
+			// copy simple attributes
+			gen.clear();
+			gen.setTable("ATTRIBUTE");
+			gen.setField("DATAELEM_ID", lastInsertID);
+			copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID + " and PARENT_TYPE='E'");
+			
+	        // copy complex attributes
+			copyHandler.copyComplexAttrs(lastInsertID, copyElmID, "E");
+	        
+	        // copy fixed values
+			copyHandler.copyFxv(lastInsertID, copyElmID, "elem");
 		}
-		gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-
-		String q = gen.updateStatement() + " where DATAELEM_ID=" + lastInsertID;
-		conn.createStatement().executeUpdate(q);
+    	catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+    	finally{
+			if (stmt!=null)
+				try{ stmt.close(); } catch (SQLException sqle){}
+    	}
 	}
     
 	/**
@@ -1123,7 +1167,7 @@ public class DataElementHandler extends BaseHandler {
 	 * @return
 	 * @throws SQLException
 	 */
-	private boolean exists() throws SQLException {
+	private boolean existsCommon() throws SQLException {
 
 		StringBuffer buf = new StringBuffer();
 		buf.append("select count(*) as COUNT from DATAELEM where PARENT_NS is null and IDENTIFIER=");
