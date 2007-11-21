@@ -1,18 +1,18 @@
 
 
 -- drop fulltext on ATTRIBUTE, because InnoDB does not support full text indexes
-lock tables ATTRIBUTE write; write;
+lock tables ATTRIBUTE write;
 alter table ATTRIBUTE drop key VALUE;
 unlock tables;
 
 -- change all tables to InnoDB
-lock tables ATTRIBUTE write; write;
+lock tables ACL_ROWS write;
 alter table ACL_ROWS engine=InnoDB;
 unlock tables;
-lock tables ACLS write; write;
+lock tables ACLS write;
 alter table ACLS engine=InnoDB;
 unlock tables;
-lock tables ATTRIBUTE write; write;
+lock tables ATTRIBUTE write;
 alter table ATTRIBUTE engine=InnoDB;
 unlock tables;
 lock tables CACHE write;

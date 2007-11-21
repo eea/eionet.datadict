@@ -26,6 +26,7 @@
 		${lib}/servlet.jar;
 		${lib}/poi-2.5-final-20040302.jar;
 		${lib}/casclient.jar;
+		${lib}/javadbf-0.4.0.jar;
 		/var/lib/tomcat5/common/lib/[servlet].jar"/>
   </target>
 

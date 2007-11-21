@@ -840,7 +840,7 @@ else if (mode.equals("add"))
 												// TESTING the link for creating dBase II format
 												if (user!=null){
 													String userName = user.getUserName();
-													if (userName.equals("roug") || userName.equals("heinlja")){
+													if (userName.equals("roug") || userName.equals("heinlja") || userName.equals("cryan")){
 														%>
 														<tr>
 															<td>Create dBaseII</td>
