@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: DataDict
 -- ------------------------------------------------------
--- Server version	5.0.22
+-- Server version	5.0.27
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -28,7 +28,7 @@ CREATE TABLE `ACLS` (
   `DESCRIPTION` varchar(255) default '',
   PRIMARY KEY  (`ACL_ID`),
   UNIQUE KEY `ACL_NAME` (`ACL_NAME`,`PARENT_NAME`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `ACL_ROWS`
@@ -41,9 +41,9 @@ CREATE TABLE `ACL_ROWS` (
   `ENTRY_TYPE` enum('owner','user','localgroup','other','foreign','unauthenticated','authenticated','mask') NOT NULL default 'user',
   `PRINCIPAL` char(16) NOT NULL default '',
   `PERMISSIONS` char(255) NOT NULL default '',
-  `STATUS` int(1) default NULL,
-  PRIMARY KEY  (`ACL_ID`,`TYPE`,`ENTRY_TYPE`,`PRINCIPAL`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  `STATUS` int(1) NOT NULL default '0',
+  PRIMARY KEY  (`ACL_ID`,`TYPE`,`ENTRY_TYPE`,`PRINCIPAL`,`STATUS`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `ATTRIBUTE`
@@ -55,9 +55,8 @@ CREATE TABLE `ATTRIBUTE` (
   `DATAELEM_ID` int(10) unsigned NOT NULL default '0',
   `VALUE` text NOT NULL,
   `PARENT_TYPE` enum('E','C','DS','CSI','T') NOT NULL default 'E',
-  PRIMARY KEY  (`M_ATTRIBUTE_ID`,`DATAELEM_ID`,`VALUE`(255),`PARENT_TYPE`),
-  FULLTEXT KEY `VALUE` (`VALUE`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  PRIMARY KEY  (`M_ATTRIBUTE_ID`,`DATAELEM_ID`,`VALUE`(255),`PARENT_TYPE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `CACHE`
@@ -71,7 +70,7 @@ CREATE TABLE `CACHE` (
   `FILENAME` varchar(255) default NULL,
   `CREATED` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`OBJ_ID`,`OBJ_TYPE`,`ARTICLE`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `COMPLEX_ATTR_FIELD`
@@ -83,7 +82,7 @@ CREATE TABLE `COMPLEX_ATTR_FIELD` (
   `VALUE` text NOT NULL,
   `ROW_ID` varchar(32) NOT NULL default '',
   PRIMARY KEY  (`ROW_ID`,`M_COMPLEX_ATTR_FIELD_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `COMPLEX_ATTR_ROW`
@@ -98,7 +97,7 @@ CREATE TABLE `COMPLEX_ATTR_ROW` (
   `ROW_ID` varchar(32) NOT NULL default '',
   `HARV_ATTR_ID` varchar(32) default NULL,
   PRIMARY KEY  (`PARENT_ID`,`PARENT_TYPE`,`M_COMPLEX_ATTR_ID`,`POSITION`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `DATAELEM`
@@ -123,7 +122,7 @@ CREATE TABLE `DATAELEM` (
   `IS_ROD_PARAM` enum('true','false') NOT NULL default 'true',
   `CHECKEDOUT_COPY_ID` int(10) unsigned default NULL,
   PRIMARY KEY  (`DATAELEM_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `DATASET`
@@ -147,7 +146,7 @@ CREATE TABLE `DATASET` (
   `DISP_CREATE_LINKS` int(2) NOT NULL default '43',
   `CHECKEDOUT_COPY_ID` int(10) unsigned default NULL,
   PRIMARY KEY  (`DATASET_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `DOC`
@@ -161,7 +160,7 @@ CREATE TABLE `DOC` (
   `ABS_PATH` text NOT NULL,
   `TITLE` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`OWNER_ID`,`OWNER_TYPE`,`MD5_PATH`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `DST2ROD`
@@ -172,7 +171,7 @@ CREATE TABLE `DST2ROD` (
   `DATASET_ID` int(10) unsigned NOT NULL default '0',
   `ACTIVITY_ID` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`DATASET_ID`,`ACTIVITY_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `DST2TBL`
@@ -184,7 +183,7 @@ CREATE TABLE `DST2TBL` (
   `TABLE_ID` int(10) unsigned NOT NULL default '0',
   `POSITION` int(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`DATASET_ID`,`TABLE_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `DS_TABLE`
@@ -204,7 +203,7 @@ CREATE TABLE `DS_TABLE` (
   `PARENT_NS` int(10) unsigned NOT NULL default '0',
   `IDENTIFIER` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`TABLE_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `FK_RELATION`
@@ -219,7 +218,7 @@ CREATE TABLE `FK_RELATION` (
   `B_CARDIN` enum('0','1','+','*') default '1',
   `DEFINITION` text NOT NULL,
   PRIMARY KEY  (`REL_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `FXV`
@@ -236,7 +235,7 @@ CREATE TABLE `FXV` (
   `SHORT_DESC` text NOT NULL,
   PRIMARY KEY  (`FXV_ID`),
   UNIQUE KEY `OWNER_ID` (`OWNER_ID`,`OWNER_TYPE`,`VALUE`(255))
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `HARV_ATTR`
@@ -250,7 +249,7 @@ CREATE TABLE `HARV_ATTR` (
   `MD5KEY` varchar(32) NOT NULL default '',
   `LOGICAL_ID` varchar(32) NOT NULL default '',
   PRIMARY KEY  (`HARV_ATTR_ID`,`HARVESTER_ID`,`HARVESTED`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `HARV_ATTR_FIELD`
@@ -262,7 +261,7 @@ CREATE TABLE `HARV_ATTR_FIELD` (
   `FLD_NAME` varchar(100) NOT NULL default '',
   `FLD_VALUE` text NOT NULL,
   PRIMARY KEY  (`HARV_ATTR_MD5`,`FLD_NAME`,`FLD_VALUE`(200))
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `HLP_AREA`
@@ -279,7 +278,7 @@ CREATE TABLE `HLP_AREA` (
   `POPUP_WIDTH` varchar(10) NOT NULL default '400',
   `POPUP_LENGTH` varchar(10) NOT NULL default '400',
   PRIMARY KEY  (`AREA_ID`,`SCREEN_ID`,`LANGUAGE`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `HLP_SCREEN`
@@ -290,7 +289,7 @@ CREATE TABLE `HLP_SCREEN` (
   `SCREEN_ID` varchar(100) NOT NULL default '',
   `DESCRIPTION` text NOT NULL,
   PRIMARY KEY  (`SCREEN_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `M_ATTRIBUTE`
@@ -312,7 +311,7 @@ CREATE TABLE `M_ATTRIBUTE` (
   `DISP_MULTIPLE` enum('0','1') NOT NULL default '0',
   `INHERIT` enum('0','1','2') NOT NULL default '0',
   PRIMARY KEY  (`M_ATTRIBUTE_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `M_COMPLEX_ATTR`
@@ -331,7 +330,7 @@ CREATE TABLE `M_COMPLEX_ATTR` (
   `INHERIT` enum('0','1','2') NOT NULL default '0',
   `HARVESTER_ID` varchar(225) default NULL,
   PRIMARY KEY  (`M_COMPLEX_ATTR_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `M_COMPLEX_ATTR_FIELD`
@@ -347,7 +346,7 @@ CREATE TABLE `M_COMPLEX_ATTR_FIELD` (
   `PRIORITY` enum('0','1') NOT NULL default '0',
   `HARV_ATTR_FLD_NAME` varchar(200) default NULL,
   PRIMARY KEY  (`M_COMPLEX_ATTR_FIELD_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `NAMESPACE`
@@ -362,7 +361,7 @@ CREATE TABLE `NAMESPACE` (
   `PARENT_NS` int(10) unsigned default NULL,
   `WORKING_USER` varchar(255) default NULL,
   PRIMARY KEY  (`NAMESPACE_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `ROD_ACTIVITIES`
@@ -375,7 +374,7 @@ CREATE TABLE `ROD_ACTIVITIES` (
   `LEGINSTR_ID` int(10) unsigned NOT NULL default '0',
   `LEGINSTR_TITLE` text NOT NULL,
   PRIMARY KEY  (`ACTIVITY_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `TBL2ELEM`
@@ -387,7 +386,7 @@ CREATE TABLE `TBL2ELEM` (
   `DATAELEM_ID` int(10) unsigned NOT NULL default '0',
   `POSITION` int(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`TABLE_ID`,`DATAELEM_ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -398,3 +397,4 @@ CREATE TABLE `TBL2ELEM` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+-- Dump completed on 2007-11-22 12:50:49

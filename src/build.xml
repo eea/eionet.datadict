@@ -27,6 +27,8 @@
 		${lib}/poi-2.5-final-20040302.jar;
 		${lib}/casclient.jar;
 		${lib}/javadbf-0.4.0.jar;
+                /usr/share/java/dbunit.jar;
+                /usr/share/java/jakarta-commons-io.jar;
 		/var/lib/tomcat5/common/lib/[servlet].jar"/>
   </target>
 
@@ -35,6 +37,9 @@
 		<fileset dir="${lib}">
 			<include name="**/*.jar"/>
 		</fileset>
+		<pathelement location="/usr/share/java/dbunit.jar"/>
+		<pathelement location="/usr/share/java/mysql-connector-java.jar"/>
+		<pathelement location="/usr/share/java/jakarta-commons-io.jar"/>
 		<pathelement location="/var/lib/tomcat5/common/lib/[servlet].jar"/>
     </path>
 	<fileset id="fileset.test" dir="${src}">
@@ -43,7 +48,7 @@
 	</fileset>
 
   	<target name="test" depends="compile" description="Runs all found unit tests">
-		<junit haltonfailure="no" failureproperty="unittestFailed" showoutput="yes" printsummary="yes">
+		<junit haltonfailure="yes" failureproperty="unittestFailed" showoutput="yes" printsummary="yes">
 			<classpath refid="classpath.test" />
 			<formatter type="brief" usefile="false"/>
 			<batchtest fork="yes">				
