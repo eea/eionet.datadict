@@ -32,7 +32,7 @@ public class AclUnitTest extends DatabaseTestCase
     protected IDatabaseConnection getConnection() throws Exception
     {
         Class driverClass = Class.forName("com.mysql.jdbc.Driver");
-        Connection jdbcConnection = DriverManager.getConnection("jdbc:mysql://localhost/test_dd", "ddtest", "smrsmr");
+        Connection jdbcConnection = DriverManager.getConnection("jdbc:mysql://localhost/test_dd", "ddtest", "testpwd");
         return new DatabaseConnection(jdbcConnection);
     }
 
