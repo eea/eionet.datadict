@@ -19,10 +19,10 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
  * This class demonstrates runs a few test cases to demonstrate DbUnit in action
  * @author Phil Zoio
  */
-public class AclUnitTest extends DatabaseTestCase
+public class AttributeTest extends DatabaseTestCase
 {
 
-    public static final String TABLE_NAME = "ACLS";
+    public static final String TABLE_NAME = "ATTRIBUTE";
 
     private FlatXmlDataSet loadedDataSet;
 
@@ -42,7 +42,7 @@ public class AclUnitTest extends DatabaseTestCase
      */
     protected IDataSet getDataSet() throws Exception
     {
-        loadedDataSet = new FlatXmlDataSet(this.getClass().getClassLoader().getResourceAsStream("/input-acls.xml"));
+        loadedDataSet = new FlatXmlDataSet(this.getClass().getClassLoader().getResourceAsStream("/input-attributes.xml"));
         return loadedDataSet;
     }
 
@@ -88,7 +88,7 @@ public class AclUnitTest extends DatabaseTestCase
             TABLE_NAME
         });
 
-        URL url = DatabaseTestCase.class.getResource("/input-acls.xml");
+        URL url = DatabaseTestCase.class.getResource("/input-attributes.xml");
         assertNotNull(url);
         File inputFile = new File(url.getPath());
         File outputFile = new File(inputFile.getParent(), "output.xml");

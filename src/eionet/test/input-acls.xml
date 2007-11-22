@@ -1,5 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-  <ACLS ACL_ID="1" ACL_NAME="s1" PARENT_NAME="/attributes" OWNER="palitmet" DESCRIPTION="Short_name=Name"/>
-  <ACLS ACL_ID="2" ACL_NAME="s2" PARENT_NAME="/attributes" OWNER="palitmet" DESCRIPTION="Short_name=Identifier"/>
-</dataset>
