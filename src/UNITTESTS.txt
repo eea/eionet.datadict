@@ -13,3 +13,9 @@ mysql -u ddtest -p test_dd <../dd-struct.sql
 
 Finally the eionet/test/input*.xml must be placed in the classes directory
 if ant doesn't do it already.
+
+REFERENCES:
+ - http://realsolve.co.uk/site/tech/dbunit-quickstart.php
+ - http://www.onjava.com/pub/a/onjava/2004/01/21/dbunit.html
+ - http://www.dbunit.org/
+
