@@ -24,11 +24,11 @@
 		<h1>Import results</h1>
 		<p><a href="javascript:openPDF()">Save import results into PDF file</a></p>
 		<p>
-			<b><%=Util.replaceTags(resptext)%></b>
+			<b><%=resptext%></b>
 		</p>
 		<form id="form1" action="GetImportResults" method="post">
 			<%
-			String text=Util.Replace(resptext, "<br/>", "\n");		
+			String text=Util.Replace(resptext, "<br/>", "\n");
 			%>
 			<div style="display:none">
 				<input type="hidden" name="text" value="<%=Util.replaceTags(text, true)%>"/>

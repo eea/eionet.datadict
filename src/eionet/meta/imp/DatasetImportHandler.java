@@ -1,5 +1,4 @@
 
-// Copyright (c) 2000 TietoEnator
 package eionet.meta.imp;
 
 import org.xml.sax.*;
@@ -9,96 +8,122 @@ import javax.xml.parsers.*;
 import eionet.util.UnicodeEscapes;
 
 /**
- * A Class class.
- * <P>
  * @author Enriko Käsper
  */
 public class DatasetImportHandler extends BaseHandler{
 
+	/** */
     public static String ROWSET = "RowSet";
     public static String ROW = "Row";
     public static String IMPORT = "import";
 
+    /** */
     private StringBuffer fieldData = new StringBuffer(); // buffer for collecting characters
 
+    /** */
     private Hashtable tables;
     private Vector table;
     private Hashtable row;
 
+    /** */
     private boolean bOK=false;
     private boolean bTableStart=false;
     private String tableName;
     private String importName;
     
+    /** */
 	private UnicodeEscapes unicodeEscapes = new UnicodeEscapes();
-	
-  /**
-   * Constructor
-   */
-  public DatasetImportHandler() {
-      super();
 
-      tables = new Hashtable();
-      table = new Vector();
-      row = new Hashtable();
-      //this.ctx=ctx;
-  }
+	/**
+	 * 
+	 *
+	 */
+	public DatasetImportHandler() {
+	    super();
+	     tables = new Hashtable();
+	    table = new Vector();
+	    row = new Hashtable();
+	    //this.ctx=ctx;
+	}
 
+	/*
+	 *  (non-Javadoc)
+	 * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
+	 */
     public void startElement(String uri, String localName, String name, Attributes attributes){
 
-      if (bTableStart==true){   //start of table
-          bTableStart=false;
-          tableName=name;
-      }
-      if (name.equals(ROWSET)){
+	      if (bTableStart==true){   //start of table
+	          bTableStart=false;
+	          tableName=name;
+	      }
+	      
+	      if (name.equals(ROWSET)){
+	          bTableStart=true;
+	          table = new Vector();
+	      }
+	      
+	      if (name.equals(ROW)){
+	          row = new Hashtable();
+	          bOK = true;
+	      }
+	      
+	      if (name.equals(IMPORT))
+	          this.importName = attributes.getValue("name");
+	}
 
-          bTableStart=true;
-          table = new Vector();
-      }
-      if (name.equals(ROW)){
-          row = new Hashtable();
-          bOK = true;
-      }
-      if (name.equals(IMPORT)){
-          this.importName = attributes.getValue("name");
-      }
-    }
-
+    /*
+     *  (non-Javadoc)
+     * @see org.xml.sax.ContentHandler#characters(char[], int, int)
+     */
     public void characters(char[] ch,int start,int len){
-		  if (bOK==true){
-        fieldData.append(ch, start, len);
-      }
+		  if (bOK==true)
+			  fieldData.append(ch, start, len);
     }
 
+    /*
+     *  (non-Javadoc)
+     * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
+     */
     public void endElement(String uri, String localName, String name){
-      if (name.equals(ROWSET)){  //end of table
+    	
+      if (name.equals(ROWSET))  //end of table
           tables.put(tableName, table);
-      }
 
       if (name.equals(ROW)){
           table.add(row);
           bOK = false;
       }
       else{
-        if (bOK==true){
-            row.put(name.toLowerCase(), processFieldData(fieldData.toString().trim()));
-        }
+	        if (bOK==true)
+	            row.put(name.toLowerCase(), processFieldData(fieldData.toString().trim()));
       }
+      
       fieldData =  new StringBuffer();
     }
+
+    /**
+     * 
+     * @return
+     */
     public Hashtable getTables(){
         return tables;
-    }
-    public String getImportName(){
-        return importName;
     }
     
     /**
      * 
+     * @return
+     */
+    public String getImportName(){
+        return importName;
+    }
+
+    /**
+     * 
+     * @param data
+     * @return
      */
     private String processFieldData(String data){
     	
-    	//return processApos(data);
 		return processUnicodeEscapes(data);
     }
 
@@ -149,7 +174,7 @@ public class DatasetImportHandler extends BaseHandler{
     
     /**
      * Substitutes &apos; entities with &#39;, because &apos; is not supported in older
-     * browsers and IE6 :(
+     * browsers and IE6.
      */
     private String processApos(String data){
     	
@@ -172,38 +197,25 @@ public class DatasetImportHandler extends BaseHandler{
      * 
      */
     public static void main(String[] args){
-      StringBuffer errorBuff = new StringBuffer();
-      //String srcFile = "C:\\Documents and Settings\\jaanus\\Desktop\\import013_testMay.xml";
-	  String srcFile = "D:\\projects\\datadict\\tmp\\valid_nuka_tbl.xml";
+    	
+    	StringBuffer errorBuff = new StringBuffer();
+    	String srcFile = "D:\\projects\\datadict\\tmp\\valid_nuka_tbl.xml";
 
-     try{
-        DatasetImportHandler handler=new DatasetImportHandler();
-        SAXParserFactory spfact = SAXParserFactory.newInstance();
-        SAXParser parser = spfact.newSAXParser();
-        XMLReader reader = parser.getXMLReader();
-        spfact.setValidating(true);
+    	try{
+	        DatasetImportHandler handler=new DatasetImportHandler();
+	        SAXParserFactory spfact = SAXParserFactory.newInstance();
+	        SAXParser parser = spfact.newSAXParser();
+	        XMLReader reader = parser.getXMLReader();
+	        spfact.setValidating(true);
 
-       reader.setContentHandler(handler);
-       reader.parse(srcFile);
-       if (handler.hasError())
-          System.out.println(handler.getErrorBuff().toString());
+	        reader.setContentHandler(handler);
+	        reader.parse(srcFile);
+	        if (handler.hasError())
+	        	System.out.println(handler.getErrorBuff().toString());
 
-        /*String tblName;
-        Hashtable row;
-
-       Hashtable tbls = handler.getTables();
-       Enumeration tblsKeys = tbls.keys();
-       while (tblsKeys.hasMoreElements()){
-          tblName = (String)tblsKeys.nextElement();
-          Vector tbl = (Vector)tbls.get(tblName);
-          for (int i=0; i<tbl.size(); i++){
-              row = (Hashtable)tbl.get(i);
-              System.out.println(tblName + ": " + row.toString());
-          }
-       }*/
-      }
-      catch (Exception e){
-          System.out.println(e.toString());
-      }
+    	}
+    	catch (Exception e){
+    		System.out.println(e.toString());
+    	}
     }
 }

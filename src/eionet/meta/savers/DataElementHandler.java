@@ -274,9 +274,10 @@ public class DataElementHandler extends BaseHandler {
         	gen.setField("SHORT_NAME", elmShortName);
         if (elmValuesType!=null)
         	gen.setField("TYPE", elmValuesType);
-        if (!elmCommon){        	
-        	gen.setFieldExpr("PARENT_NS", tblNamespaceID);
-        	gen.setFieldExpr("TOP_NS", dstNamespaceID);
+        
+        if (!elmCommon){
+        	gen.setFieldExpr("PARENT_NS", getTblNamespaceID());
+        	gen.setFieldExpr("TOP_NS", getDstNamespaceID());
         }
         
 		// set the element's registration status (relevant for common elements only)
@@ -1365,4 +1366,67 @@ public class DataElementHandler extends BaseHandler {
 		}
         
 	}
+	
+	/**
+	 * @throws Exception 
+	 */
+	private String getTblNamespaceID() throws Exception{
+		
+		if (tblNamespaceID==null){
+			StringBuffer buf = new StringBuffer("select CORRESP_NS from DS_TABLE where TABLE_ID=");
+			buf.append(tableID);
+			Statement stmt = null;
+			ResultSet rs = null;
+			try{
+				stmt = conn.createStatement();
+				rs = stmt.executeQuery(buf.toString());
+				tblNamespaceID = rs.next() ? rs.getString(1) : null;
+			}
+			catch (Exception e){
+				e.printStackTrace();
+				try{
+					if (stmt!=null) stmt.close();
+					if (rs!=null) rs.close();
+				}
+				catch (SQLException sqle){}
+			}
+		}
+		
+		if (tblNamespaceID==null)
+			throw new Exception("Failed to obtain table namespace ID which is required");
+		
+		return tblNamespaceID;
+	}
+	
+	/**
+	 * @throws Exception 
+	 */
+	private String getDstNamespaceID() throws Exception{
+		
+		if (dstNamespaceID==null){
+			StringBuffer buf = new StringBuffer("select PARENT_NS from DS_TABLE where TABLE_ID=");
+			buf.append(tableID);
+			Statement stmt = null;
+			ResultSet rs = null;
+			try{
+				stmt = conn.createStatement();
+				rs = stmt.executeQuery(buf.toString());
+				dstNamespaceID = rs.next() ? rs.getString(1) : null;
+			}
+			catch (Exception e){
+				e.printStackTrace();
+				try{
+					if (stmt!=null) stmt.close();
+					if (rs!=null) rs.close();
+				}
+				catch (SQLException sqle){}
+			}
+		}
+		
+		if (dstNamespaceID==null)
+			throw new Exception("Failed to obtain dataset namespace ID which is required");
+		
+		return dstNamespaceID;
+	}
+
 }

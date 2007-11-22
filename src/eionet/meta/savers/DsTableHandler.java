@@ -26,7 +26,7 @@ public class DsTableHandler extends BaseHandler {
     private DDSearchEngine searchEngine = null;
     
     private String nsID = null;
-    private String dsID = null;
+    private String dstID = null;
 
     boolean copy = false; //making a copy, exists() not performed
     String version = null; //used only when making a copy
@@ -141,8 +141,8 @@ public class DsTableHandler extends BaseHandler {
 		}
         
         // get the dataset id number
-        dsID = req.getParameter("ds_id");
-        if (dsID==null || dsID.length()==0)
+        dstID = req.getParameter("ds_id");
+        if (dstID==null || dstID.length()==0)
             throw new Exception("Missing request parameter: ds_id");
 
         // get the table identifier
@@ -151,17 +151,18 @@ public class DsTableHandler extends BaseHandler {
             throw new Exception("Missing request parameter: idfier");
 
         // now make sure such a table does not exist within this dataset
-        if (existsInDataset(dsID, idfier))
+        if (existsInDataset(dstID, idfier))
         	throw new Exception("The dataset already has a table with this Identifier: " + idfier);
 
+        // get parent namespace id (the getter will throw exception if not found)
+        String parentNS = getParentNamespaceID();
+        
         // if new table across this dataset's versions, create table's corresponding namespace
-        String correspNS = null;
-        String parentNS = req.getParameter("parent_ns");
-        if (parentNS!=null && !existsInDatasetVersions(parentNS, idfier)){
+        String correspNS = existsInDatasetVersions(parentNS, idfier);
+        if (correspNS==null || correspNS.equals("0"))
         	correspNS = createNamespace(req.getParameter("ds_name"), idfier, parentNS);
-	        if (correspNS==null)
-	            throw new Exception("Returned corresponding namespace id number is null");
-        }
+        if (correspNS==null)
+        	throw new Exception("Failed to obtain the ID of corresponding namespace for this table");
         
         // create the new table
         SQLGenerator gen = new SQLGenerator();
@@ -172,10 +173,11 @@ public class DsTableHandler extends BaseHandler {
 		if (date==null)
 			date = String.valueOf(System.currentTimeMillis());
 		gen.setFieldExpr("DATE", date);
-		if (correspNS!=null)
-			gen.setFieldExpr("CORRESP_NS", correspNS);
+		gen.setFieldExpr("CORRESP_NS", correspNS);
+		
         if (parentNS!=null)
         	gen.setFieldExpr("PARENT_NS", parentNS);
+        
 		String shortName  = req.getParameter("short_name");
 		if (shortName==null || shortName.length()==0)
 			shortName = idfier;
@@ -188,34 +190,13 @@ public class DsTableHandler extends BaseHandler {
         gen.clear();
         gen.setTable("DST2TBL");
         gen.setField("TABLE_ID",   lastInsertID);
-        gen.setField("DATASET_ID", dsID);
+        gen.setField("DATASET_ID", dstID);
         stmt.executeUpdate(gen.insertStatement());
 
         stmt.close();
         
-        //copy table attributes and structure
-//        String copy_tbl_id = req.getParameter("copy_tbl_id");
-//        if (copy_tbl_id != null && copy_tbl_id.length()!=0){
-//
-//            CopyHandler copier = new CopyHandler(conn, ctx);
-//			copier.setUser(user);
-//
-//            gen.clear();
-//            gen.setTable("ATTRIBUTE");
-//            gen.setField("DATAELEM_ID", getLastInsertID());
-//            copier.copy(gen, "DATAELEM_ID=" + copy_tbl_id + " and PARENT_TYPE='T'");
-//
-//            // copy rows in COMPLEX_ATTR_ROW, with lastInsertID
-//            copier.copyComplexAttrs(lastInsertID, copy_tbl_id, "T");
-//
-//            copyTbl2Elem(copy_tbl_id);
-//            copy=true;
-//        }
-
-        // process table attributes
-        if (!copy){
+        if (!copy)
            processAttributes();
-        }
     }
 
     /**
@@ -511,17 +492,17 @@ public class DsTableHandler extends BaseHandler {
             else if (parName.startsWith(INHERIT_ATTR_PREFIX) &&
                   !parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)){
               attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
-              if (dsID==null) continue;
+              if (dstID==null) continue;
               CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
               ch.setUser(user);
-              ch.copyAttribute(lastInsertID, dsID, "T", "DS", attrID);
+              ch.copyAttribute(lastInsertID, dstID, "T", "DS", attrID);
             }
             else if (parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)){
               attrID = parName.substring(INHERIT_COMPLEX_ATTR_PREFIX.length());
-              if (dsID==null) continue;
+              if (dstID==null) continue;
               CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
 			  ch.setUser(user);
-              ch.copyComplexAttrs(lastInsertID, dsID, "DS", "T", attrID);
+              ch.copyComplexAttrs(lastInsertID, dstID, "DS", "T", attrID);
             }
         }
     }
@@ -597,34 +578,30 @@ public class DsTableHandler extends BaseHandler {
 
         return false;
     }
-    
+
     /**
-     * 
-     * @param dstIdfier
+     * Checks if a table already exists with such identifier in such a dataset namespace.
+     * If so, then returns the table's CORRESP_NS. Otherwise returns null.
+     *
+     * @param dstNamespaceID
      * @param tblIdfier
      * @return
      * @throws SQLException
      */
-    public boolean existsInDatasetVersions(String dstNamespaceID, String tblIdfier) throws SQLException {
+    public String existsInDatasetVersions(String dstNamespaceID, String tblIdfier) throws SQLException {
     	
     	if (copy)
-            return false;
+            return null;
 
         String qry =
-        "select count(*) as COUNT from DS_TABLE " +
-        "where DS_TABLE.IDENTIFIER=" + com.tee.util.Util.strLiteral(tblIdfier) +
+        "select distinct CORRESP_NS from DS_TABLE" +
+        " where DS_TABLE.IDENTIFIER=" + com.tee.util.Util.strLiteral(tblIdfier) +
         " and DS_TABLE.PARENT_NS=" + dstNamespaceID;
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
 
-        if (rs.next()){
-            if (rs.getInt("COUNT")>0){
-                return true;
-            }
-        }
-
-        return false;
+        return rs.next() ? rs.getString(1) : null; 
     }
     
     /**
@@ -738,4 +715,37 @@ public class DsTableHandler extends BaseHandler {
             System.out.println(e.toString());
         }
     }
+
+	/**
+	 * @throws Exception 
+	 */
+	private String getParentNamespaceID() throws Exception{
+		
+		String parentNsID = req.getParameter("parent_ns");
+		if (parentNsID==null){
+			StringBuffer buf = new StringBuffer("select CORRESP_NS from DATASET where DATASET_ID=");
+			buf.append(dstID);
+			Statement stmt = null;
+			ResultSet rs = null;
+			try{
+				stmt = conn.createStatement();
+				rs = stmt.executeQuery(buf.toString());
+				parentNsID = rs.next() ? rs.getString(1) : null;
+			}
+			catch (Exception e){
+				e.printStackTrace();
+				try{
+					if (stmt!=null) stmt.close();
+					if (rs!=null) rs.close();
+				}
+				catch (SQLException sqle){}
+			}
+		}
+		
+		if (parentNsID==null)
+			throw new Exception("Failed to obtain parent namespace ID which is required");
+		
+		return parentNsID;
+	}
+
 }

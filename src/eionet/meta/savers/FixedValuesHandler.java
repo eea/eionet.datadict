@@ -73,7 +73,7 @@ public class FixedValuesHandler extends BaseHandler{
     	
     	if (!allowanceChecked)
 			 checkAllowance();
-    	else if (!allowed)
+    	if (!allowed)
     		return; 
 
         if (mode.equalsIgnoreCase("add"))
@@ -239,5 +239,13 @@ public class FixedValuesHandler extends BaseHandler{
         catch (Exception e){
             System.out.println(e.toString());
         }
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean isAllowed(){
+    	return allowed;
     }
 }
