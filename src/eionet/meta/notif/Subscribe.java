@@ -225,11 +225,10 @@ public class Subscribe extends HttpServlet{
 		v.add(user);
 		subscribe(v, filters);
 	}
-	
+
 	/**
 	 * 
-	 * @param channelName
-	 * @param userName
+	 * @param users
 	 * @param filters
 	 * @throws Exception
 	 */
