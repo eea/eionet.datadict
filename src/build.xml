@@ -1,53 +1,52 @@
 <project name="DataDict" default="compile" basedir=".">
 
-  <!-- set global properties for this build -->
-  <property name="src" value="."/>
-  <property name="classes" value="../public/WEB-INF/classes"/>
-  <property name="lib" value="../public/WEB-INF/lib"/>
+	<!-- global properties for this build -->
+	<property name="src" value="."/>
+	<property name="classes" value="../public/WEB-INF/classes"/>
+	<property name="lib" value="../public/WEB-INF/lib"/>
 
-  <target name="compile">
-    <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${classes}" source="1.5" target="1.5"
-		classpath="${lib}/xmlserver.jar;
-		${lib}/castor.jar;
-		${lib}/jackcess-1.1.2.jar;
-		${lib}/itext-0.99.jar;
-		${lib}/commons-collections-3.0.jar;
-		${lib}/commons-lang-1.0.jar;
-		${lib}/commons-logging-api.jar;
-		${lib}/xerces.jar;
-		${lib}/pja.jar;
-		${lib}/eionet-dir.jar;
-		${lib}/uit-security.jar;
-		${lib}/uit-client.jar;
-		${lib}/uit-help.jar;
-		${lib}/log4j.jar;
-		${lib}/xmlrpc-2.0.jar;
-		${lib}/servlet.jar;
-		${lib}/poi-2.5-final-20040302.jar;
-		${lib}/casclient.jar;
-		${lib}/javadbf-0.4.0.jar;
-                /usr/share/java/dbunit.jar;
-                /usr/share/java/jakarta-commons-io.jar;
-		/var/lib/tomcat5/common/lib/[servlet].jar"/>
-  </target>
-
-  <path id="classpath.test">
-		<pathelement path="${classes}"/>
-		<fileset dir="${lib}">
-			<include name="**/*.jar"/>
-		</fileset>
+	<!-- define external classpath, i.e. JARs and classes not found in WEB-INF/classes and WEB-INF/lib -->
+	<path id="classpath.externals">
 		<pathelement location="/usr/share/java/dbunit.jar"/>
 		<pathelement location="/usr/share/java/mysql-connector-java.jar"/>
 		<pathelement location="/usr/share/java/jakarta-commons-io.jar"/>
 		<pathelement location="/var/lib/tomcat5/common/lib/[servlet].jar"/>
     </path>
+
+	<!-- define classpath for compile -->
+	<path id="classpath.compile">
+		<fileset dir="${lib}">
+			<include name="**/*.jar"/>
+		</fileset>
+		<path refid="classpath.externals"/>
+    </path>
+
+	<!-- compile target, refers to pre-defined paths -->
+	<target name="compile">
+		<javac srcdir="${src}" destdir="${classes}" source="1.5" target="1.5">
+			<classpath refid="classpath.compile"/>
+			<exclude name="eionet/test/**"/>
+		</javac>
+	</target>
+
+	<!-- define classpath to be used bu JUnit -->
+	<path id="classpath.test">
+		<pathelement path="${classes}"/>
+		<fileset dir="${lib}">
+			<include name="**/*.jar"/>
+		</fileset>
+		<path refid="classpath.externals"/>
+    </path>
+
+	<!-- define src files to be included and/or excluded when JUnit searches for test cases -->
 	<fileset id="fileset.test" dir="${src}">
 		<include name="**/*Test.java"/>
 		<include name="**/*Tests.java"/>
 	</fileset>
 
-  	<target name="test" depends="compile" description="Runs all found unit tests">
+	<!-- test target, refers to pre-defined paths and filesets -->
+  	<target name="test" depends="compile,compiletest" description="Runs all found unit tests">
+		<copy file="${src}/eionet/test/input-attributes.xml" todir="${classes}/eionet/test"/>
 		<junit haltonfailure="yes" failureproperty="unittestFailed" showoutput="yes" printsummary="yes">
 			<classpath refid="classpath.test" />
 			<formatter type="brief" usefile="false"/>
@@ -59,3 +58,4 @@
 	</target>
 
 </project>
+
