@@ -15,15 +15,21 @@ import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 
+import eionet.util.Props;
+import eionet.util.PropsIF;
+
 /**
  * This class demonstrates runs a few test cases to demonstrate DbUnit in action
  * @author Phil Zoio
  */
-public class AttributeTest extends DatabaseTestCase
-{
+public class AttributeTest extends DatabaseTestCase {
 
+	/** */
+	public static final String INPUT_ATTRS_RESOURCE_PATH = "eionet/test/input-attributes.xml";
+	/** */
     public static final String TABLE_NAME = "ATTRIBUTE";
 
+    /** */
     private FlatXmlDataSet loadedDataSet;
 
     /**
@@ -31,9 +37,13 @@ public class AttributeTest extends DatabaseTestCase
      */
     protected IDatabaseConnection getConnection() throws Exception
     {
-        Class driverClass = Class.forName("com.mysql.jdbc.Driver");
-        Connection jdbcConnection = DriverManager.getConnection("jdbc:mysql://localhost/test_dd", "ddtest", "testpwd");
-        return new DatabaseConnection(jdbcConnection);
+    	Class.forName(Props.getProperty(PropsIF.DBDRV));
+		Connection jdbcConn = DriverManager.getConnection(
+							Props.getProperty(PropsIF.DBURL),
+							Props.getProperty(PropsIF.DBUSR),
+							Props.getProperty(PropsIF.DBPSW));
+		
+        return new DatabaseConnection(jdbcConn);
     }
 
     /**
@@ -42,7 +52,7 @@ public class AttributeTest extends DatabaseTestCase
      */
     protected IDataSet getDataSet() throws Exception
     {
-        loadedDataSet = new FlatXmlDataSet(this.getClass().getClassLoader().getResourceAsStream("/input-attributes.xml"));
+        loadedDataSet = new FlatXmlDataSet(this.getClass().getClassLoader().getResourceAsStream(INPUT_ATTRS_RESOURCE_PATH));
         return loadedDataSet;
     }
 
@@ -88,7 +98,7 @@ public class AttributeTest extends DatabaseTestCase
             TABLE_NAME
         });
 
-        URL url = DatabaseTestCase.class.getResource("/input-attributes.xml");
+        URL url = DatabaseTestCase.class.getResource(INPUT_ATTRS_RESOURCE_PATH);
         assertNotNull(url);
         File inputFile = new File(url.getPath());
         File outputFile = new File(inputFile.getParent(), "output.xml");
@@ -96,6 +106,27 @@ public class AttributeTest extends DatabaseTestCase
 
         assertEquals(FileUtils.readFileToString(inputFile, "UTF8"), FileUtils.readFileToString(outputFile, "UTF8"));
 
+    }
+    
+    /**
+     * 
+     * @param args
+     */
+    public static void main(String[] args){
+    	
+    	try{
+	    	java.io.InputStream is = AttributeTest.class.getClassLoader().getResourceAsStream(INPUT_ATTRS_RESOURCE_PATH);
+	    	java.io.InputStreamReader isr = new java.io.InputStreamReader(is);
+	    	java.io.BufferedReader rdr = new java.io.BufferedReader(isr);
+	    	String line = rdr.readLine();
+	    	while (line!=null){
+	    		System.out.println(line);
+	    		rdr.readLine();
+	    	}
+    	}
+    	catch (Throwable t){
+    		t.printStackTrace(System.out);
+    	}
     }
 
 }
