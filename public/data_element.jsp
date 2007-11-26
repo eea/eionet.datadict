@@ -1363,7 +1363,7 @@ else{
 													</td>
 													<td style="width:27%">
 														<a href="GetSchema?id=ELM<%=delem_id%>">
-															<img style="border:0" src="images/xsd.png" width="16" height="18" alt=""/>
+															<img style="border:0" src="images/xsd.png" width="16" height="16" alt=""/>
 														</a>
 													</td>
 												</tr>
@@ -1375,7 +1375,7 @@ else{
 														</td>
 														<td style="width:27%">
 															<a href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
-																<img style="border:0" src="images/txt.png" width="16" height="18" alt=""/>
+																<img style="border:0" src="images/txt.png" width="16" height="16" alt=""/>
 															</a>
 														</td>
 													</tr>
@@ -1385,7 +1385,7 @@ else{
 														</td>
 														<td style="width:27%">
 															<a href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM&amp;format=xml">
-																<img style="border:0" src="images/xml.png" width="16" height="18" alt=""/>
+																<img style="border:0" src="images/xml.png" width="16" height="16" alt=""/>
 															</a>
 														</td>
 													</tr><%

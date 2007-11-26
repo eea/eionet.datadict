@@ -32,7 +32,7 @@ Vector releasedDatasets = (Vector)request.getAttribute("rlsd_datasets");
 				</td>
 				<td style="vertical-align:top;text-align:center">
 					<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=dst.getID()%>&amp;out_type=GDLN">
-						<img src="images/pdf.png" style="border:0" width="17" height="18" alt="PDF" title="Definition as a PDF file"/>
+						<img src="images/pdf.png" style="border:0" width="16" height="16" alt="PDF" title="Definition as a PDF file"/>
 					</a>
 				</td>
 			</tr>
