@@ -12,7 +12,7 @@ import static org.easymock.EasyMock.*;
 /*
  * This unittest tests the logout servlet, in an example where the user has no session
  * The response from the logout servlet should be to redirect to index.jsp
- * See www.easymock.org
+ * See www.easymock.org and http://www.evolutionnext.com/blog/2006/01/27.html
  */
 public class LogoutServletTest extends TestCase {
 
