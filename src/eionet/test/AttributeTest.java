@@ -15,12 +15,15 @@ import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 
-import eionet.util.Props;
+import eionet.util.TestingProps;
 import eionet.util.PropsIF;
 
 /**
- * This class demonstrates runs a few test cases to demonstrate DbUnit in action
+ * This class demonstrates runs a few test cases to demonstrate DbUnit in action.
+ * 
  * @author Phil Zoio
+ * @author Søren Roug
+ * @author Jaanus Heinlaid
  */
 public class AttributeTest extends DatabaseTestCase {
 
@@ -33,15 +36,15 @@ public class AttributeTest extends DatabaseTestCase {
     private FlatXmlDataSet loadedDataSet;
 
     /**
-     * Provide a connection to the database
+     * Provide a connection to the database.
      */
     protected IDatabaseConnection getConnection() throws Exception
     {
-    	Class.forName(Props.getProperty(PropsIF.DBDRV));
+    	Class.forName(TestingProps.getProperty(PropsIF.DBDRV));
 		Connection jdbcConn = DriverManager.getConnection(
-							Props.getProperty(PropsIF.DBURL),
-							Props.getProperty(PropsIF.DBUSR),
-							Props.getProperty(PropsIF.DBPSW));
+				TestingProps.getProperty(PropsIF.DBURL),
+				TestingProps.getProperty(PropsIF.DBUSR),
+				TestingProps.getProperty(PropsIF.DBPSW));
 		
         return new DatabaseConnection(jdbcConn);
     }
@@ -98,13 +101,13 @@ public class AttributeTest extends DatabaseTestCase {
             TABLE_NAME
         });
 
-        URL url = DatabaseTestCase.class.getResource(INPUT_ATTRS_RESOURCE_PATH);
+        URL url = this.getClass().getClassLoader().getResource(INPUT_ATTRS_RESOURCE_PATH);
         assertNotNull(url);
         File inputFile = new File(url.getPath());
         File outputFile = new File(inputFile.getParent(), "output.xml");
         FlatXmlDataSet.write(dataSet, new FileOutputStream(outputFile));
 
-        assertEquals(FileUtils.readFileToString(inputFile, "UTF8"), FileUtils.readFileToString(outputFile, "UTF8"));
+        assertEquals(FileUtils.readLines(inputFile, "UTF-8"), FileUtils.readLines(outputFile, "UTF-8"));
 
     }
     
