@@ -11,9 +11,6 @@ import junit.framework.TestCase;
  */
 public class PropsTest extends TestCase {
 	
-	/** */
-	protected Props props = null;
-
 	/**
 	 * 
 	 * @param name
@@ -28,7 +25,6 @@ public class PropsTest extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		props = new Props();
 	}
 
 	/*

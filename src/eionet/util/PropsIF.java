@@ -10,6 +10,7 @@ public interface PropsIF {
 	
 	/** properties file name prefix */
 	public static final String PROP_FILE = "datadict";
+	public static final String TEST_PROP_FILE = "datadict-test";
 	
 	/** properties names*/
 	public static final String DBDRV = "db.drv";
