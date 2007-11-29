@@ -23,7 +23,7 @@
 
 	<!-- compile target, refers to pre-defined paths -->
 	<target name="compile">
-		<javac srcdir="${src}" destdir="${classes}" source="1.5" target="1.5">
+		<javac srcdir="${src}" destdir="${classes}" source="1.5" target="1.5" debug="on">
 			<classpath refid="classpath.compile"/>
 			<exclude name="eionet/test/**"/>
 		</javac>
