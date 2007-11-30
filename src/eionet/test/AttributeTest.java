@@ -28,7 +28,7 @@ import eionet.util.PropsIF;
 public class AttributeTest extends DatabaseTestCase {
 
 	/** */
-	public static final String INPUT_ATTRS_RESOURCE_PATH = "eionet/test/input-attributes.xml";
+	public static final String INPUT_ATTRS_RESOURCE_PATH = "input-attributes.xml";
 	/** */
     public static final String TABLE_NAME = "ATTRIBUTE";
 
@@ -55,7 +55,7 @@ public class AttributeTest extends DatabaseTestCase {
      */
     protected IDataSet getDataSet() throws Exception
     {
-        loadedDataSet = new FlatXmlDataSet(this.getClass().getClassLoader().getResourceAsStream(INPUT_ATTRS_RESOURCE_PATH));
+        loadedDataSet = new FlatXmlDataSet(TestingResources.getResourceAsStream(this.getClass(), INPUT_ATTRS_RESOURCE_PATH));
         return loadedDataSet;
     }
 
@@ -101,7 +101,7 @@ public class AttributeTest extends DatabaseTestCase {
             TABLE_NAME
         });
 
-        URL url = this.getClass().getClassLoader().getResource(INPUT_ATTRS_RESOURCE_PATH);
+        URL url = TestingResources.getResource(this.getClass(), INPUT_ATTRS_RESOURCE_PATH);
         assertNotNull(url);
         File inputFile = new File(url.getPath());
         File outputFile = new File(inputFile.getParent(), "output.xml");

@@ -58,7 +58,10 @@ public interface PropsIF {
 
 	/** */
 	public static final String SCREEN_NAME = "documentation.screen-name";
-	
+
+	/** */
+	public static final String SRC_DIR = "src.dir";
+
 	/** defaults */
 	
 }

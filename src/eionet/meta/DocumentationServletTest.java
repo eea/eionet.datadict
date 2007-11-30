@@ -16,6 +16,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.RequestDispatcher;
 
+import eionet.test.TestingResources;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -23,13 +24,17 @@ import eionet.meta.DocumentationServlet;
 import static org.easymock.EasyMock.*;
 
 
-/*
+/**
  * This unittest tests the Documentation servlet
  * IT NEEDS the seed-hlp.xml in the classes directory
  * See www.easymock.org and http://www.evolutionnext.com/blog/2006/01/27.html
  */
 public class DocumentationServletTest extends DatabaseTestCase {
+	
+	/** */
+	public static final String SEED_HELP_RESOURCE = "seed-hlp.xml";
 
+	/** */
 	private FlatXmlDataSet loadedDataSet;
 
 	/**
@@ -52,7 +57,7 @@ public class DocumentationServletTest extends DatabaseTestCase {
 	 */
 	protected IDataSet getDataSet() throws Exception
 	{
-	    loadedDataSet = new FlatXmlDataSet(this.getClass().getClassLoader().getResourceAsStream("seed-hlp.xml"));
+	    loadedDataSet = new FlatXmlDataSet(TestingResources.getResourceAsStream(TestingResources.class, SEED_HELP_RESOURCE));
 	    return loadedDataSet;
 	}
 

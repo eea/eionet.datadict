@@ -3,7 +3,7 @@
 	<!-- global properties for this build -->
 	<property name="src" value="."/>
 	<property name="classes" value="../public/WEB-INF/classes"/>
-	<property name="lib" value="../public/WEB-INF/lib"/>
+2	<property name="lib" value="../public/WEB-INF/lib"/>
 
 	<!-- define external classpath, i.e. JARs and classes not found in WEB-INF/classes and WEB-INF/lib -->
 	<path id="classpath.externals">
@@ -18,14 +18,12 @@
 		<fileset dir="${lib}">
 			<include name="**/*.jar"/>
 		</fileset>
-		<path refid="classpath.externals"/>
     </path>
 
 	<!-- compile target, refers to pre-defined paths -->
 	<target name="compile">
 		<javac srcdir="${src}" destdir="${classes}" source="1.5" target="1.5" debug="on">
 			<classpath refid="classpath.compile"/>
-			<exclude name="eionet/test/**"/>
 		</javac>
 	</target>
 
@@ -46,7 +44,6 @@
 
 	<!-- test target, refers to pre-defined paths and filesets -->
   	<target name="test" depends="compile,compiletest" description="Runs all found unit tests">
-		<copy file="${src}/eionet/test/input-attributes.xml" todir="${classes}/eionet/test"/>
 		<junit haltonfailure="yes" failureproperty="unittestFailed" showoutput="yes" printsummary="yes">
 			<classpath refid="classpath.test" />
 			<formatter type="brief" usefile="false"/>
