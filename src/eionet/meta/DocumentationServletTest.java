@@ -57,7 +57,7 @@ public class DocumentationServletTest extends DatabaseTestCase {
 	 */
 	protected IDataSet getDataSet() throws Exception
 	{
-	    loadedDataSet = new FlatXmlDataSet(TestingResources.getResourceAsStream(TestingResources.class, SEED_HELP_RESOURCE));
+	    loadedDataSet = new FlatXmlDataSet(TestingResources.getResourceAsStream(this.getClass(), SEED_HELP_RESOURCE));
 	    return loadedDataSet;
 	}
 
