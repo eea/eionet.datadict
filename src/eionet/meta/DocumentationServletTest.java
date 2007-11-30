@@ -19,7 +19,6 @@ import javax.servlet.RequestDispatcher;
 import eionet.test.TestingResources;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import eionet.util.TestingProps;
 
 import eionet.meta.DocumentationServlet;
 import static org.easymock.EasyMock.*;
@@ -43,11 +42,11 @@ public class DocumentationServletTest extends DatabaseTestCase {
 	 */
 	protected IDatabaseConnection getConnection() throws Exception
 	{
-	    Class.forName(TestingProps.getProperty(PropsIF.DBDRV));
+	    Class.forName(Props.getProperty(PropsIF.DBDRV));
 		    Connection jdbcConn = DriverManager.getConnection(
-		    		TestingProps.getProperty(PropsIF.DBURL),
-		    		TestingProps.getProperty(PropsIF.DBUSR),
-		    		TestingProps.getProperty(PropsIF.DBPSW));
+		    		Props.getProperty(PropsIF.DBURL),
+		    		Props.getProperty(PropsIF.DBUSR),
+		    		Props.getProperty(PropsIF.DBPSW));
 		    
 	    return new DatabaseConnection(jdbcConn);
 	}

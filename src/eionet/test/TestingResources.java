@@ -8,8 +8,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import eionet.util.Props;
 import eionet.util.PropsIF;
-import eionet.util.TestingProps;
 
 /**
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
@@ -33,7 +33,7 @@ public class TestingResources {
 	public static File getRootLocation(){
 		
 		if (rootLocation==null){
-			String srcDir = TestingProps.getProperty(PropsIF.SRC_DIR);
+			String srcDir = Props.getProperty(PropsIF.SRC_DIR);
 			if (srcDir!=null)
 				rootLocation = new File(srcDir);
 		}

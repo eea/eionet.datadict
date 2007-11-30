@@ -15,7 +15,7 @@ import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 
-import eionet.util.TestingProps;
+import eionet.util.Props;
 import eionet.util.PropsIF;
 
 /**
@@ -40,11 +40,11 @@ public class AttributeTest extends DatabaseTestCase {
      */
     protected IDatabaseConnection getConnection() throws Exception
     {
-    	Class.forName(TestingProps.getProperty(PropsIF.DBDRV));
+    	Class.forName(Props.getProperty(PropsIF.DBDRV));
 		Connection jdbcConn = DriverManager.getConnection(
-				TestingProps.getProperty(PropsIF.DBURL),
-				TestingProps.getProperty(PropsIF.DBUSR),
-				TestingProps.getProperty(PropsIF.DBPSW));
+				Props.getProperty(PropsIF.DBURL),
+				Props.getProperty(PropsIF.DBUSR),
+				Props.getProperty(PropsIF.DBPSW));
 		
         return new DatabaseConnection(jdbcConn);
     }
