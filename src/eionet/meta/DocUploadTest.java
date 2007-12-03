@@ -80,61 +80,65 @@ public class DocUploadTest extends DatabaseTestCase {
 	 */
 	protected IDataSet getDataSet() throws Exception
 	{
-	    loadedDataSet = new FlatXmlDataSet(TestingResources.getResourceAsStream(TestingResources.class, SEED_HELP_RESOURCE));
+	    loadedDataSet = new FlatXmlDataSet(TestingResources.getResourceAsStream(DocUploadTest.class, SEED_HELP_RESOURCE));
 	    return loadedDataSet;
 	}
 
- 
-        /**
-         * This test simply uploads the seed-hlp file
-         */
+    /**
+     * This test simply uploads the seed-hlp file
+     */
 	public void testSimpleUpload() throws Exception {
 
 		// Create the mock objects
 		HttpServletRequest request = createMock(HttpServletRequest.class);
 		HttpServletResponse response = createMock(HttpServletResponse.class);
 		ServletConfig servletConfig = createMock(ServletConfig.class);
+		ServletContext servletContext = createMock(ServletContext.class);
 		HttpSession httpSession = createMock(HttpSession.class);
 		AppUserIF user = createMock(AppUserIF.class);
-		ServletContext servletContext = createMock(ServletContext.class);
 		
-		//Create the target object        
+		// Create the target object        
 		DocUpload instance = new DocUpload();
-		//Call the init of the servlet with the mock ServletConfig
+		// Call the init of the servlet with the mock ServletConfig
 		instance.init(servletConfig);
-
 
 		// This is what we expect for the servletConfig object
 		expect(servletConfig.getServletContext()).andReturn(servletContext);
-                expect(servletConfig.getInitParameter("cache-size")).andReturn("1024");
-
-
+		
+		// This is what we expect for the servletContext object
+		expect(servletContext.getInitParameter("module-db_pool")).andReturn("eionet.test.MockDbPool");
+		expect(servletContext.getInitParameter(not(eq("module-db_pool")))).andStubReturn(null);
+        
 		// This is what we expect for the request object
 		request.setCharacterEncoding("UTF-8");
 		expect(request.getSession(false)).andReturn((HttpSession) httpSession);
-		// ds_id seems to only be used for ACL check. Can easily be spoofed
 		expect(request.getParameter("idf")).andReturn("CDDA");
-		expect(request.getParameter("ds_id")).andReturn("23");
+		expect(request.getParameter("ds_id")).andReturn("23"); // ds_id seems to only be used for ACL check. Can easily be spoofed
 		expect(request.getParameter("title")).andReturn("Test file for Dataset #23");
 
-
-		String filename = TestingResources.getResource(TestingResources.class, SEED_HELP_RESOURCE).getFile();
+		String filename = TestingResources.getResource(DocUploadTest.class, SEED_HELP_RESOURCE).getFile();
 		expect(request.getParameter("file")).andReturn(filename);
 		expect(request.getContentType()).andReturn("text/xml");
 		expect(request.getParameter("delete")).andReturn("");
 		mockServletInputStream instream = new mockServletInputStream(filename);
 		expect(request.getInputStream()).andReturn((ServletInputStream)instream);
 
+		// this is what expect for the httpSession
 		expect(httpSession.getAttribute("eionet.util.SecurityUtil.user")).andReturn((AppUserIF) user);
                 expect(user.isAuthentic()).andReturn(true);
 		expectLastCall().times(2);
-		expect(user.getUserName()).andReturn("enriko");
+		
+		// this is what expect for the user object
+		expect(user.getUserName()).andReturn("heinlja");
 
-
+		// this is what expect for the response object
+		response.sendRedirect((String)anyObject());
+		
 		//start the replay for all mock objects
 		replay(request);
 		replay(response);
 		replay(servletConfig);
+		replay(servletContext);
 		replay(httpSession);
 		replay(user);
 
@@ -145,6 +149,7 @@ public class DocUploadTest extends DatabaseTestCase {
 		verify(request);
 		verify(response);
 		verify(servletConfig);
+		verify(servletContext);
 		verify(httpSession);
 		verify(user);
 	}
