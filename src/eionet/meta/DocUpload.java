@@ -60,7 +60,8 @@ public class DocUpload extends HttpServlet{
 			res.sendRedirect("dataset.jsp?mode=view&ds_id=" + dstID);
 		}
 		catch (Exception e){
-			throw new ServletException(e.toString());
+			e.printStackTrace();
+			throw new ServletException(e.getMessage()==null ? "" : e.getMessage(), e);
 		}
 		finally{
 			closeConnection();
