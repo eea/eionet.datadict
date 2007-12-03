@@ -10,10 +10,14 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import javax.servlet.http.*;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletInputStream;
 
 
 import eionet.test.TestingResources;
@@ -25,6 +29,22 @@ import com.tee.xmlserver.*; // For AppUserIF
 import eionet.meta.DocUpload;
 import static org.easymock.EasyMock.*;
 
+/*
+ * An attempt to mock a ServletInputStream
+ */
+
+class mockServletInputStream extends ServletInputStream {
+    private InputStream instream;
+
+    public mockServletInputStream(String name) throws Exception {
+        instream = new FileInputStream(name);
+    }
+
+    public int read() throws IOException {
+        return instream.read();
+    }
+        
+}
 
 /**
  * This unittest tests the DocUpload servlet
@@ -66,9 +86,9 @@ public class DocUploadTest extends DatabaseTestCase {
 
  
         /**
-         * This test simply loads the help area 'doc1' from the database
+         * This test simply uploads the seed-hlp file
          */
-	public void testDoc1() throws Exception {
+	public void testSimpleUpload() throws Exception {
 
 		// Create the mock objects
 		HttpServletRequest request = createMock(HttpServletRequest.class);
@@ -76,29 +96,39 @@ public class DocUploadTest extends DatabaseTestCase {
 		ServletConfig servletConfig = createMock(ServletConfig.class);
 		HttpSession httpSession = createMock(HttpSession.class);
 		AppUserIF user = createMock(AppUserIF.class);
+		ServletContext servletContext = createMock(ServletContext.class);
 		
 		//Create the target object        
 		DocUpload instance = new DocUpload();
 		//Call the init of the servlet with the mock ServletConfig
 		instance.init(servletConfig);
 
-//                expect(servletConfig.getInitParameter("forward-jsp")).andReturn("documentation.jsp");
 
+		// This is what we expect for the servletConfig object
+		expect(servletConfig.getServletContext()).andReturn(servletContext);
+                expect(servletConfig.getInitParameter("cache-size")).andReturn("1024");
 
-		// This is what we expect for the response object
 
 		// This is what we expect for the request object
 		request.setCharacterEncoding("UTF-8");
 		expect(request.getSession(false)).andReturn((HttpSession) httpSession);
-		expect(request.getParameter("idf")).andReturn("23");
+		// ds_id seems to only be used for ACL check. Can easily be spoofed
+		expect(request.getParameter("idf")).andReturn("CDDA");
+		expect(request.getParameter("ds_id")).andReturn("23");
+		expect(request.getParameter("title")).andReturn("Test file for Dataset #23");
+
+
+		String filename = TestingResources.getResource(TestingResources.class, SEED_HELP_RESOURCE).getFile();
+		expect(request.getParameter("file")).andReturn(filename);
+		expect(request.getContentType()).andReturn("text/xml");
+		expect(request.getParameter("delete")).andReturn("");
+		mockServletInputStream instream = new mockServletInputStream(filename);
+		expect(request.getInputStream()).andReturn((ServletInputStream)instream);
 
 		expect(httpSession.getAttribute("eionet.util.SecurityUtil.user")).andReturn((AppUserIF) user);
-//                expect(request.getPathInfo()).andReturn("doc1");
-//                expect(request.getServletPath()).andReturn("/");
-//                request.setAttribute("dispatcher-path", "");
                 expect(user.isAuthentic()).andReturn(true);
 		expectLastCall().times(2);
-		expect(user.getUserName()).andReturn("roug");
+		expect(user.getUserName()).andReturn("enriko");
 
 
 		//start the replay for all mock objects
