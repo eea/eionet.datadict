@@ -29,21 +29,19 @@ public class DatasetImportHandler extends BaseHandler{
     private boolean bOK=false;
     private boolean bTableStart=false;
     private String tableName;
-    private String importName;
+    private String importType;
     
     /** */
 	private UnicodeEscapes unicodeEscapes = new UnicodeEscapes();
 
 	/**
-	 * 
 	 *
 	 */
 	public DatasetImportHandler() {
 	    super();
-	     tables = new Hashtable();
+	    tables = new Hashtable();
 	    table = new Vector();
 	    row = new Hashtable();
-	    //this.ctx=ctx;
 	}
 
 	/*
@@ -68,7 +66,7 @@ public class DatasetImportHandler extends BaseHandler{
 	      }
 	      
 	      if (name.equals(IMPORT))
-	          this.importName = attributes.getValue("name");
+	          this.importType = attributes.getValue("name");
 	}
 
     /*
@@ -113,8 +111,8 @@ public class DatasetImportHandler extends BaseHandler{
      * 
      * @return
      */
-    public String getImportName(){
-        return importName;
+    public String getImportType(){
+        return importType;
     }
 
     /**
