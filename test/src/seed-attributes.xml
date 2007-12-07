@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <attribute M_ATTRIBUTE_ID="1" DATAELEM_ID="1115" VALUE="Impact of hazardous substances" PARENT_TYPE="T"/>
+  <attribute M_ATTRIBUTE_ID="1" DATAELEM_ID="1116" VALUE="Progress in the management of contaminated sites" PARENT_TYPE="T"/>
+</dataset>

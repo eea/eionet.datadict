@@ -1,9 +1,10 @@
 <project name="DataDict" default="compile" basedir=".">
 
-	<!-- global properties for this build -->
+	<!-- global properties for this build -->	
 	<property name="src" value="."/>
 	<property name="classes" value="../public/WEB-INF/classes"/>
-2	<property name="lib" value="../public/WEB-INF/lib"/>
+	<property name="lib" value="../public/WEB-INF/lib"/>
+	<property name="test" value="../test"/>
 
 	<!-- define external classpath, i.e. JARs and classes not found in WEB-INF/classes and WEB-INF/lib -->
 	<path id="classpath.externals">
@@ -18,6 +19,13 @@
 		<fileset dir="${lib}">
 			<include name="**/*.jar"/>
 		</fileset>
+		<path refid="classpath.externals"/>
+    </path>
+
+	<!-- define classpath for unit tests -->
+	<path id="classpath.compile-tests">
+		<pathelement location="${classes}"/>
+		<path refid="classpath.compile"/>
     </path>
 
 	<!-- compile target, refers to pre-defined paths -->
@@ -27,8 +35,25 @@
 		</javac>
 	</target>
 
+	<!-- compile target for compiling unit tests, expects classes-under-test compiled, refers to pre-defined paths -->
+	<target name="compile-tests" depends="compile">
+		<javac srcdir="${test}/src" destdir="${test}/build" source="1.5" target="1.5" debug="on">
+			<classpath refid="classpath.compile-tests"/>
+		</javac>
+	</target>
+
+	<!-- copies seed for unit tests into the unit tests' build tree -->
+	<target name="seed-tests">
+		<copy todir="${test}/build" overwrite="true">
+			<fileset dir="${test}/src">
+				<include name="**/seed-*.*"/>
+			</fileset>
+		</copy>
+	</target>
+
 	<!-- define classpath to be used bu JUnit -->
 	<path id="classpath.test">
+		<pathelement path="${test}/build"/>
 		<pathelement path="${classes}"/>
 		<fileset dir="${lib}">
 			<include name="**/*.jar"/>
@@ -37,13 +62,13 @@
     </path>
 
 	<!-- define src files to be included and/or excluded when JUnit searches for test cases -->
-	<fileset id="fileset.test" dir="${src}">
+	<fileset id="fileset.test" dir="${test}/src">
 		<include name="**/*Test.java"/>
 		<include name="**/*Tests.java"/>
 	</fileset>
 
 	<!-- test target, refers to pre-defined paths and filesets -->
-  	<target name="test" depends="compile,compiletest" description="Runs all found unit tests">
+  	<target name="test" depends="compile-tests,seed-tests" description="Runs all found unit tests">
 		<junit haltonfailure="yes" failureproperty="unittestFailed" showoutput="yes" printsummary="yes">
 			<classpath refid="classpath.test" />
 			<formatter type="brief" usefile="false"/>
