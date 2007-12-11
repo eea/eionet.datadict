@@ -2,10 +2,13 @@
 // Therefore we must be in the same package
 package eionet.meta;
 
+import junit.framework.TestCase;
 import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ITable;
+import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 
 import java.sql.Connection;
@@ -77,7 +80,7 @@ public class DocUploadTest extends DatabaseTestCase {
 	 */
 	protected IDataSet getDataSet() throws Exception
 	{
-	    loadedDataSet = new FlatXmlDataSet(getClass().getClassLoader().getResourceAsStream(Seed.HLP));
+	    loadedDataSet = new FlatXmlDataSet(getClass().getClassLoader().getResourceAsStream("seed-docupload.xml"));
 	    return loadedDataSet;
 	}
 
@@ -111,7 +114,7 @@ public class DocUploadTest extends DatabaseTestCase {
 		expect(request.getSession(false)).andReturn((HttpSession) httpSession);
 		expect(request.getParameter("idf")).andReturn("CDDA");
 		expect(request.getParameter("ds_id")).andReturn("23"); // ds_id seems to only be used for ACL check. Can easily be spoofed
-		expect(request.getParameter("title")).andReturn("Test file for Dataset #23");
+		expect(request.getParameter("title")).andReturn("Test file for Dataset ¤23");
 
 		String filename = this.getClass().getClassLoader().getResource(Seed.HLP).getFile();
 		expect(request.getParameter("file")).andReturn(filename);
@@ -126,7 +129,7 @@ public class DocUploadTest extends DatabaseTestCase {
 		expectLastCall().times(2);
 		
 		// this is what expect for the user object
-		expect(user.getUserName()).andReturn("heinlja");
+		expect(user.getUserName()).andReturn("jaanus");
 
 		// this is what expect for the response object
 		response.sendRedirect((String)anyObject());
@@ -149,5 +152,17 @@ public class DocUploadTest extends DatabaseTestCase {
 		verify(servletContext);
 		verify(httpSession);
 		verify(user);
+		// Verify that there are the expected number of rows in the DOC table
+		QueryDataSet queryDataSet = new QueryDataSet(getConnection());
+		queryDataSet.addTable("DOC", "SELECT * FROM DOC ORDER BY OWNER_ID");
+		ITable tmpTable = queryDataSet.getTable("DOC");
+		TestCase.assertEquals(tmpTable.getRowCount(), 2);
+		// Verify the title survived
+		TestCase.assertEquals(tmpTable.getValue(0,"TITLE"),"Test file for Dataset ¤23");
 	}
 }
+    /**
+     *      * Compare test data with query-generated IDataSet
+     *           */
+
+

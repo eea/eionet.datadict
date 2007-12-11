@@ -91,7 +91,9 @@ public class AttributeTest extends DatabaseTestCase {
 
     /**
      * Test the DbUnit export mechanism
+     * This should not be enabled. It is just an example
      */
+    /*
     public void testExportData() throws Exception
     {
         IDataSet dataSet = getConnection().createDataSet(new String[]
@@ -108,4 +110,5 @@ public class AttributeTest extends DatabaseTestCase {
         assertEquals(FileUtils.readLines(inputFile, "UTF-8"), FileUtils.readLines(outputFile, "UTF-8"));
 
     }
+    */
 }
