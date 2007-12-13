@@ -84,10 +84,13 @@ public class DocUploadTest extends DatabaseTestCase {
 	    return loadedDataSet;
 	}
 
-    /**
-     * This test simply uploads the seed-hlp file
-     */
-	public void testSimpleUpload() throws Exception {
+	/**
+	 * This test simply uploads the seed-hlp file
+	 * For some reason, the object is not completely reset at each test, so the first
+	 * time the servletContext.getInitParameter("module-db_pool") once, and not again
+	 * and user.isAuthentic() is called twice the first time and once on every additional test run
+	 */
+	private void runSimpleUpload(String title) throws Exception {
 
 		// Create the mock objects
 		HttpServletRequest request = createMock(HttpServletRequest.class);
@@ -106,15 +109,16 @@ public class DocUploadTest extends DatabaseTestCase {
 		expect(servletConfig.getServletContext()).andReturn(servletContext);
 		
 		// This is what we expect for the servletContext object
-		expect(servletContext.getInitParameter("module-db_pool")).andReturn("eionet.test.MockDbPool");
+		expect(servletContext.getInitParameter("module-db_pool")).andReturn("eionet.test.MockDbPool").times(0,1);
 		expect(servletContext.getInitParameter(not(eq("module-db_pool")))).andStubReturn(null);
         
 		// This is what we expect for the request object
 		request.setCharacterEncoding("UTF-8");
 		expect(request.getSession(false)).andReturn((HttpSession) httpSession);
 		expect(request.getParameter("idf")).andReturn("CDDA");
-		expect(request.getParameter("ds_id")).andReturn("23"); // ds_id seems to only be used for ACL check. Can easily be spoofed
-		expect(request.getParameter("title")).andReturn("Test file for Dataset ¤23");
+		// ds_id seems to only be used for ACL check. Can easily be spoofed
+		expect(request.getParameter("ds_id")).andReturn("23");
+		expect(request.getParameter("title")).andReturn(title);
 
 		String filename = this.getClass().getClassLoader().getResource(Seed.HLP).getFile();
 		expect(request.getParameter("file")).andReturn(filename);
@@ -126,9 +130,9 @@ public class DocUploadTest extends DatabaseTestCase {
 		// this is what expect for the httpSession
 		expect(httpSession.getAttribute("eionet.util.SecurityUtil.user")).andReturn((AppUserIF) user);
                 expect(user.isAuthentic()).andReturn(true);
-		expectLastCall().times(2);
+		expectLastCall().times(1,2);
 		
-		// this is what expect for the user object
+		// THIS USER ACCOUNT MUST BE LISTED IN dd.group!
 		expect(user.getUserName()).andReturn("jaanus");
 
 		// this is what expect for the response object
@@ -158,11 +162,39 @@ public class DocUploadTest extends DatabaseTestCase {
 		ITable tmpTable = queryDataSet.getTable("DOC");
 		TestCase.assertEquals(tmpTable.getRowCount(), 2);
 		// Verify the title survived
-		TestCase.assertEquals(tmpTable.getValue(0,"TITLE"),"Test file for Dataset ¤23");
+		TestCase.assertEquals(title, tmpTable.getValue(0,"TITLE"));
 	}
-}
-    /**
-     *      * Compare test data with query-generated IDataSet
-     *           */
 
+	public void testUnicodeTitle() throws Exception {
+	    runSimpleUpload("Test file for Dataset ¤23");
+	}
+
+	public void testQuote() throws Exception {
+	    runSimpleUpload("Please don't fail!");
+	}
+
+	public void testBackslashQuote() throws Exception {
+	    // This is how you escape quotes
+	    runSimpleUpload("Please don\\'t fail!");
+	}
+
+	public void testBackslashO() throws Exception {
+	    // \o is not a special escape sequence in MySQL
+	    runSimpleUpload("Please do n\\ot fail!");
+	}
+
+	public void testBackslashT() throws Exception {
+	    // \t is an escape sequence for TAB, but must be saved escaped
+	    runSimpleUpload("Please do no\\t fail!");
+	}
+
+	public void testLessThan() throws Exception {
+	    runSimpleUpload("2 is < ∞ (infinite)");
+	}
+
+	public void testGreek() throws Exception {
+	    runSimpleUpload("Τίτλος: Ηλέκτρα");
+	}
+
+}
 
