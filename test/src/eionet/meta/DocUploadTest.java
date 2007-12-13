@@ -90,7 +90,7 @@ public class DocUploadTest extends DatabaseTestCase {
 	 * time the servletContext.getInitParameter("module-db_pool") once, and not again
 	 * and user.isAuthentic() is called twice the first time and once on every additional test run
 	 */
-	private void runSimpleUpload(String title) throws Exception {
+	private void runSimpleUpload(String title, String ds_id) throws Exception {
 
 		// Create the mock objects
 		HttpServletRequest request = createMock(HttpServletRequest.class);
@@ -117,7 +117,7 @@ public class DocUploadTest extends DatabaseTestCase {
 		expect(request.getSession(false)).andReturn((HttpSession) httpSession);
 		expect(request.getParameter("idf")).andReturn("CDDA");
 		// ds_id seems to only be used for ACL check. Can easily be spoofed
-		expect(request.getParameter("ds_id")).andReturn("23");
+		expect(request.getParameter("ds_id")).andReturn(ds_id);
 		expect(request.getParameter("title")).andReturn(title);
 
 		String filename = this.getClass().getClassLoader().getResource(Seed.HLP).getFile();
@@ -160,9 +160,19 @@ public class DocUploadTest extends DatabaseTestCase {
 		QueryDataSet queryDataSet = new QueryDataSet(getConnection());
 		queryDataSet.addTable("DOC", "SELECT * FROM DOC ORDER BY OWNER_ID");
 		ITable tmpTable = queryDataSet.getTable("DOC");
+
 		TestCase.assertEquals(tmpTable.getRowCount(), 2);
 		// Verify the title survived
+		// Ensure owner_id/ds_id is under 27 for your test record
 		TestCase.assertEquals(title, tmpTable.getValue(0,"TITLE"));
+	}
+	private void runSimpleUpload(String title) throws Exception {
+		runSimpleUpload(title,"23");
+	}
+
+// -------------- The tests ------------
+	public void testDsIdQuote() throws Exception {
+	    runSimpleUpload("Simple title","23'");
 	}
 
 	public void testUnicodeTitle() throws Exception {
@@ -170,11 +180,12 @@ public class DocUploadTest extends DatabaseTestCase {
 	}
 
 	public void testQuote() throws Exception {
+	    // Here the quote must be escaped
 	    runSimpleUpload("Please don't fail!");
 	}
 
 	public void testBackslashQuote() throws Exception {
-	    // This is how you escape quotes
+	    // Here the escape must be escaped (and the quote)
 	    runSimpleUpload("Please don\\'t fail!");
 	}
 
@@ -184,7 +195,7 @@ public class DocUploadTest extends DatabaseTestCase {
 	}
 
 	public void testBackslashT() throws Exception {
-	    // \t is an escape sequence for TAB, but must be saved escaped
+	    // \t is an escape sequence for TAB, but must be escaped
 	    runSimpleUpload("Please do no\\t fail!");
 	}
 
