@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!-- Tables are UPPERCASE under Linux -->
 <dataset>
   <HLP_SCREEN SCREEN_ID="documentation" DESCRIPTION="Abstract screen to serve as the root of DD documentation areas"/>
