@@ -69,17 +69,21 @@ public class AttributeHandlerTest extends DatabaseTestCase {
 	/**
 	 * Tests that a simple attribute with M_ATTRIBUTE_ID=18 is deleted
 	 */
-	public void testDelete() throws Exception {
+	public void testDeleteSimpleAttr() throws Exception {
+		String attribute_to_delete = "37";
 
 		QueryDataSet queryDataSet = new QueryDataSet(getConnection());
 		queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
 		queryDataSet.addTable("M_ATTRIBUTE", "SELECT count(*) as C FROM M_ATTRIBUTE");
+		queryDataSet.addTable("FXV", "SELECT count(*) as C FROM FXV");
 		// Verify that there are the expected number of rows in the ATTRIBUTE table
 		ITable tmpTable = queryDataSet.getTable("ATTRIBUTE");
-		TestCase.assertEquals("451", tmpTable.getValue(0,"C").toString());
+		TestCase.assertEquals("757", tmpTable.getValue(0,"C").toString());
 		// Verify that there are the expected number of rows in the M_ATTRIBUTE table
 		tmpTable = queryDataSet.getTable("M_ATTRIBUTE");
 		TestCase.assertEquals("2", tmpTable.getValue(0,"C").toString());
+		tmpTable = queryDataSet.getTable("FXV");
+		TestCase.assertEquals("20", tmpTable.getValue(0,"C").toString());
 
 		// Create the mock objects
 		HttpServletRequest request = createMock(HttpServletRequest.class);
@@ -91,22 +95,20 @@ public class AttributeHandlerTest extends DatabaseTestCase {
 	
 		// This is what we expect for the servletContext object
 		expect(servletContext.getInitParameter("visuals-path")).andReturn("HERE-IS-VISUALS-PATH");
-		expect(servletContext.getInitParameter("versioning")).andReturn("HERE-IS-VISUALS-PATH");
-		//expect(servletContext.getInitParameter(not(eq("module-db_pool")))).andStubReturn(null);
+		expect(servletContext.getInitParameter("versioning")).andReturn("HERE-IS-VERSIONING");
 
 		// This is what we expect for the request object
-		//request.setCharacterEncoding("UTF-8");
 		expect(request.getRequestedSessionId()).andReturn("92834kejwh89");
 		expect(request.getParameter("mode")).andReturn("delete");
 		expect(request.getParameter("type")).andReturn("SIMPLE");
-		expect(request.getParameter("attr_id")).andReturn("18");
+		expect(request.getParameter("attr_id")).andReturn(attribute_to_delete);
 		expect(request.getParameter("name")).andReturn("Keywords");
 		expect(request.getParameter("short_name")).andReturn("Keyword");
 		expect(request.getParameter("definition")).andReturn("One or more significant words.");
 		expect(request.getParameter("obligation")).andReturn("M");
 		expect(request.getParameter("ns")).andReturn("basens");
 		String[] vs = new String[1];
-		vs[0] = "18";
+		vs[0] = attribute_to_delete;
 		expect(request.getParameterValues("simple_attr_id")).andReturn(vs);
 		expect(request.getParameterValues("complex_attr_id")).andReturn(null);
 		
@@ -132,6 +134,8 @@ public class AttributeHandlerTest extends DatabaseTestCase {
 		// Verify that there are the expected number of rows in the M_ATTRIBUTE table
 		tmpTable = queryDataSet.getTable("M_ATTRIBUTE");
 		TestCase.assertEquals("1", tmpTable.getValue(0,"C").toString());
+		tmpTable = queryDataSet.getTable("FXV");
+		TestCase.assertEquals("2", tmpTable.getValue(0,"C").toString());
 	}
 
 }
