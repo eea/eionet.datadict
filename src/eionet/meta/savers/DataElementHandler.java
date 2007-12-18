@@ -256,13 +256,16 @@ public class DataElementHandler extends BaseHandler {
 		if (elmCommon && existsCommon())
 			throw new SQLException("A common element with this Identifier already exists");
 
-        // if making a copy, do the copy and return
+        // if making a copy, do the copy, create acl, and return
 		String copyElemID = req.getParameter("copy_elem_id");
 		if (copyElemID != null && copyElemID.length()!=0){
 			if (elmCommon)
 				copyIntoCommon(copyElemID);
 			else
 				copyIntoNonCommon(copyElemID);
+			
+			if (elmCommon && user!=null)
+				createAclForCommonElm();
 			return;
 		}
 
@@ -338,15 +341,24 @@ public class DataElementHandler extends BaseHandler {
 		stmt.close();
 		
 		// if common element, create corresponding acl
-		if (elmCommon && user!=null){
-			String aclPath = "/elements/" + elmIdfier;
-			HashMap acls = AccessController.getAcls();
-			if (!acls.containsKey(aclPath)){
-				String aclDesc = "Identifier: " + elmIdfier;
-				try{
-					AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
-				}
-				catch (Exception e){}
+		if (elmCommon && user!=null)
+			createAclForCommonElm();
+    }
+
+    /**
+     * @throws SignOnException 
+     *
+     */
+    private void createAclForCommonElm() throws SignOnException {
+		String aclPath = "/elements/" + elmIdfier;
+		HashMap acls = AccessController.getAcls();
+		if (!acls.containsKey(aclPath)){
+			String aclDesc = "Identifier: " + elmIdfier;
+			try{
+				AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
+			}
+			catch (Exception e){
+				e.printStackTrace();
 			}
 		}
     }
