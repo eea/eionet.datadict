@@ -24,7 +24,6 @@ import javax.servlet.ServletInputStream;
 
 
 import eionet.test.Seed;
-import eionet.test.TestingResources;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
