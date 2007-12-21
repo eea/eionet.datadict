@@ -1,0 +1,1184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<import name="datasets">
+<RowSet name="Dataset">
+<DATASET>
+<Row>
+  <DATASET_ID><![CDATA[4]]></DATASET_ID>
+  <Identifier><![CDATA[NiD]]></Identifier>
+  <SHORT_NAME><![CDATA[NiD_water]]></SHORT_NAME>
+  <Version><![CDATA[November 2007]]></Version>
+  <Name><![CDATA[Evaluation of water quality under the Nitrates Directive.]]></Name>
+  <ShortDescription><![CDATA[Ground- and surface water sampling points to define waterquality based on nitrate concentrations and other parameters]]></ShortDescription>
+  <Definition><![CDATA[Data on monitoring stations are collected for each reporting period (4 year period). Full details of the data requested on water are presented in this specification by tables and include characteristics on the water monitoring stations as well as values for the concentrations of NO3 for each station]]></Definition>
+  <RegStatus><![CDATA[Incomplete]]></RegStatus>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[Article V]]></Keyword_2>
+  <Keyword_3><![CDATA[Groundwater]]></Keyword_3>
+  <Keyword_4><![CDATA[NO3]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <ROD_name_1><![CDATA[]]></ROD_name_1>
+  <ROD_url_1><![CDATA[]]></ROD_url_1>
+  <Methodology><![CDATA[The data requested  for Nitrates Directive should be derived from existing national and/or regional monitoring networks within each Member State.
+The combination of the fields CountryCode, NationalStationCode and type must be a unique record in the table. No duplicate records should exist with this combination.
+Please consider the following when compiling your data delivery:
+1.	Provide information on the monitoring stations. Station location must represent a point location.
+2.	Submit NO3 concentrations sampled during a period of one or more years.
+3.	Submit data for each sample site (no aggregation of stations).]]></Methodology>
+  <PlannedUpdFreq><![CDATA[4 years]]></PlannedUpdFreq>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+  <RegistrationAuthority_name_1><![CDATA[]]></RegistrationAuthority_name_1>
+  <RegistrationAuthority_name-abbrevation_1><![CDATA[]]></RegistrationAuthority_name-abbrevation_1>
+  <RespOrganisation_name_1><![CDATA[Nitrates Directive Dgenv]]></RespOrganisation_name_1>
+  <RespOrganisation_name-abbrevation_1><![CDATA[]]></RespOrganisation_name-abbrevation_1>
+  <SubmitOrganisation_name_1><![CDATA[]]></SubmitOrganisation_name_1>
+  <SubmitOrganisation_name-abbrevation_1><![CDATA[]]></SubmitOrganisation_name-abbrevation_1>
+  <SubmitOrganisation_url_1><![CDATA[]]></SubmitOrganisation_url_1>
+  <SubmitOrganisation_PhoneNr_1><![CDATA[]]></SubmitOrganisation_PhoneNr_1>
+</Row>
+</DATASET>
+</RowSet>
+<RowSet name="DS_Table">
+<DS_TABLE>
+<Row>
+  <TABLE_ID><![CDATA[3]]></TABLE_ID>
+  <DATASET_ID><![CDATA[4]]></DATASET_ID>
+  <Identifier><![CDATA[NiD_GW_Stat]]></Identifier>
+  <SHORT_NAME><![CDATA[GW_MonitoringStations]]></SHORT_NAME>
+  <NAME><![CDATA[List of groundwater monitoring stations]]></NAME>
+  <Definition><![CDATA[Detailed information on the characteristics of the groundwater monitoring stations]]></Definition>
+  <Methodology><![CDATA[]]></Methodology>
+  <ShortDescription><![CDATA[]]></ShortDescription>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[4]]></TABLE_ID>
+  <DATASET_ID><![CDATA[4]]></DATASET_ID>
+  <Identifier><![CDATA[NiD_GW_Conc]]></Identifier>
+  <SHORT_NAME><![CDATA[GW_NO3_concentrations]]></SHORT_NAME>
+  <NAME><![CDATA[NO3 concentrations in groundwater]]></NAME>
+  <Definition><![CDATA[NO3 concentrations measured in each groundwater monitoring station.]]></Definition>
+  <Methodology><![CDATA[]]></Methodology>
+  <ShortDescription><![CDATA[]]></ShortDescription>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[5]]></TABLE_ID>
+  <DATASET_ID><![CDATA[4]]></DATASET_ID>
+  <Identifier><![CDATA[NiD_SW_Stat]]></Identifier>
+  <SHORT_NAME><![CDATA[SW_MonitoringStations]]></SHORT_NAME>
+  <NAME><![CDATA[List of surface monitoring stations]]></NAME>
+  <Definition><![CDATA[Detailed information on the characteristics of the urface water monitoring stations]]></Definition>
+  <Methodology><![CDATA[]]></Methodology>
+  <ShortDescription><![CDATA[]]></ShortDescription>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[6]]></TABLE_ID>
+  <DATASET_ID><![CDATA[4]]></DATASET_ID>
+  <Identifier><![CDATA[NiD_SW_Conc]]></Identifier>
+  <SHORT_NAME><![CDATA[SW_NO3_concentrations]]></SHORT_NAME>
+  <NAME><![CDATA[NO3 concentrations in surface water]]></NAME>
+  <Definition><![CDATA[NO3 concentrations measured in each surface water monitoring station.]]></Definition>
+  <Methodology><![CDATA[]]></Methodology>
+  <ShortDescription><![CDATA[]]></ShortDescription>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[7]]></TABLE_ID>
+  <DATASET_ID><![CDATA[4]]></DATASET_ID>
+  <Identifier><![CDATA[NiD_SW_EutroMeas]]></Identifier>
+  <SHORT_NAME><![CDATA[SW_Eutrophication_measurements]]></SHORT_NAME>
+  <NAME><![CDATA[Eutrophication parameters in surface water]]></NAME>
+  <Definition><![CDATA[Eutrophication parameters measured in each surface water monitoring station.]]></Definition>
+  <Methodology><![CDATA[]]></Methodology>
+  <ShortDescription><![CDATA[]]></ShortDescription>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[8]]></TABLE_ID>
+  <DATASET_ID><![CDATA[4]]></DATASET_ID>
+  <Identifier><![CDATA[NiD_SW_EutroState]]></Identifier>
+  <SHORT_NAME><![CDATA[SW_Eutrophication_state]]></SHORT_NAME>
+  <NAME><![CDATA[Trophic state of surfacewater]]></NAME>
+  <Definition><![CDATA[Trophic state in each surface water monitoring station.]]></Definition>
+  <Methodology><![CDATA[]]></Methodology>
+  <ShortDescription><![CDATA[]]></ShortDescription>
+</Row>
+</DS_TABLE>
+</RowSet>
+<RowSet name="tbl2elem">
+<TBL2ELEM>
+<Row>
+  <TABLE_ID><![CDATA[3]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[93]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[3]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[3]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[95]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[3]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[96]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[3]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[97]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[3]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[98]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[3]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[99]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[3]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[100]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[3]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[101]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[4]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[102]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[4]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[103]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[7]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[4]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[105]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[4]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[108]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[4]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[109]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[4]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[110]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[4]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[111]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[6]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[112]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[6]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[113]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[7]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[114]]></DATAELEM_ID>
+</Row>
+<Row>
+  <TABLE_ID><![CDATA[8]]></TABLE_ID>
+  <DATAELEM_ID><![CDATA[115]]></DATAELEM_ID>
+</Row>
+</TBL2ELEM>
+</RowSet>
+<RowSet name="Dataelem">
+<DATAELEM>
+<Row>
+  <DATAELEM_ID><![CDATA[93]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_NatStatCode]]></Identifier>
+  <SHORT_NAME><![CDATA[NationalStationCode]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Nationl station code]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[string]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[50]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_StationType]]></Identifier>
+  <SHORT_NAME><![CDATA[StationType]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Station type]]></NAME>
+  <TYPE><![CDATA[CH1]]></TYPE>
+  <Definition><![CDATA[mandatory]]></Definition>
+  <Datatype><![CDATA[string]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[2]]></MinSize>
+  <MaxSize><![CDATA[2]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[95]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_NatStatName]]></Identifier>
+  <SHORT_NAME><![CDATA[NationalStationName]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[National station name]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[string]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[255]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[96]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_WatEntName]]></Identifier>
+  <SHORT_NAME><![CDATA[WaterEntityName]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Name of a water entity]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[string]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[255]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[97]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_NatStatCodeND]]></Identifier>
+  <SHORT_NAME><![CDATA[NationalStationCodeND]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[National station code Nitrates Directive]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[string]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[50]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[98]]></DATAELEM_ID>
+  <Identifier><![CDATA[EU_CD]]></Identifier>
+  <SHORT_NAME><![CDATA[EU_CD]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[WFD station code]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[string]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[50]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[99]]></DATAELEM_ID>
+  <Identifier><![CDATA[WaterbaseID]]></Identifier>
+  <SHORT_NAME><![CDATA[WaterbaseID]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Waterbase station code]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[string]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[50]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[100]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_Depth]]></Identifier>
+  <SHORT_NAME><![CDATA[Depth]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Depth]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[float]]></Datatype>
+  <MinValue><![CDATA[0]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[1]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[6]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[101]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_Drinking]]></Identifier>
+  <SHORT_NAME><![CDATA[Drinking]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Drinking water station]]></NAME>
+  <TYPE><![CDATA[CH1]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[boolean]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[]]></MinSize>
+  <MaxSize><![CDATA[]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[102]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_BeginDate]]></Identifier>
+  <SHORT_NAME><![CDATA[BeginDate]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Beginning date]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[date]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[10]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[103]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_EndDate]]></Identifier>
+  <SHORT_NAME><![CDATA[EndDate]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[End date]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[date]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[10]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_ParameterName]]></Identifier>
+  <SHORT_NAME><![CDATA[ParameterName]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Name of parameter]]></NAME>
+  <TYPE><![CDATA[CH1]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[string]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[1]]></MinSize>
+  <MaxSize><![CDATA[4]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[105]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_MeasUnit]]></Identifier>
+  <SHORT_NAME><![CDATA[MeasurementUnit]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Unit of measurement]]></NAME>
+  <TYPE><![CDATA[CH1]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[string]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[1]]></MinSize>
+  <MaxSize><![CDATA[10]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[108]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_NoOfSamples]]></Identifier>
+  <SHORT_NAME><![CDATA[NumberOfSamples]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Number of samples]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[integer]]></Datatype>
+  <MinValue><![CDATA[1]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[1]]></MinSize>
+  <MaxSize><![CDATA[4]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[109]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_AvgAnnValue]]></Identifier>
+  <SHORT_NAME><![CDATA[AverageAnnualValue]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Average annual value]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[float]]></Datatype>
+  <MinValue><![CDATA[0]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[4]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[8]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[112]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_AvgWintValue]]></Identifier>
+  <SHORT_NAME><![CDATA[AverageWinterValue]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Average winter value]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[float]]></Datatype>
+  <MinValue><![CDATA[0]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[4]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[8]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[113]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_TrendWintValue]]></Identifier>
+  <SHORT_NAME><![CDATA[TrendWinterValue]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Trend winter value]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[float]]></Datatype>
+  <MinValue><![CDATA[0]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[4]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[8]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[114]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_AvgValue]]></Identifier>
+  <SHORT_NAME><![CDATA[AverageValue]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Average value]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[float]]></Datatype>
+  <MinValue><![CDATA[0]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[4]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[8]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[115]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_TrophicState]]></Identifier>
+  <SHORT_NAME><![CDATA[TrophicState]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Trophic state]]></NAME>
+  <TYPE><![CDATA[CH1]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[string]]></Datatype>
+  <MinValue><![CDATA[]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[32]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[110]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_MaxValue]]></Identifier>
+  <SHORT_NAME><![CDATA[MaximumValue]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Maximum value]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[float]]></Datatype>
+  <MinValue><![CDATA[0]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[4]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[8]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+<Row>
+  <DATAELEM_ID><![CDATA[111]]></DATAELEM_ID>
+  <Identifier><![CDATA[ND_TrendAnnValue]]></Identifier>
+  <SHORT_NAME><![CDATA[TrendAnnualValue]]></SHORT_NAME>
+  <GIStype><![CDATA[]]></GIStype>
+  <NAME><![CDATA[Trend annual value]]></NAME>
+  <TYPE><![CDATA[CH2]]></TYPE>
+  <Definition><![CDATA[]]></Definition>
+  <Datatype><![CDATA[float]]></Datatype>
+  <MinValue><![CDATA[0]]></MinValue>
+  <MaxValue><![CDATA[]]></MaxValue>
+  <DecimalPrecision><![CDATA[4]]></DecimalPrecision>
+  <MinSize><![CDATA[0]]></MinSize>
+  <MaxSize><![CDATA[8]]></MaxSize>
+  <Methodology><![CDATA[]]></Methodology>
+  <Unit><![CDATA[]]></Unit>
+  <Keyword_1><![CDATA[]]></Keyword_1>
+  <Keyword_2><![CDATA[]]></Keyword_2>
+  <Keyword_3><![CDATA[]]></Keyword_3>
+  <Keyword_4><![CDATA[]]></Keyword_4>
+  <Keyword_5><![CDATA[]]></Keyword_5>
+  <Keyword_6><![CDATA[]]></Keyword_6>
+  <Keyword_7><![CDATA[]]></Keyword_7>
+  <Keyword_8><![CDATA[]]></Keyword_8>
+  <Keyword_9><![CDATA[]]></Keyword_9>
+  <EEAissue_1><![CDATA[]]></EEAissue_1>
+  <EEAissue_2><![CDATA[]]></EEAissue_2>
+  <EEAissue_3><![CDATA[]]></EEAissue_3>
+  <EEAissue_4><![CDATA[]]></EEAissue_4>
+  <Guidelines_url_1><![CDATA[]]></Guidelines_url_1>
+  <Guidelines_description_1><![CDATA[]]></Guidelines_description_1>
+  <Guidelines_url_2><![CDATA[]]></Guidelines_url_2>
+  <Guidelines_description_2><![CDATA[]]></Guidelines_description_2>
+</Row>
+</DATAELEM>
+</RowSet>
+<RowSet name="Fixed_value">
+<FIXED_VALUE>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[1]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <VALUE><![CDATA[0]]></VALUE>
+  <DEFINITION><![CDATA[Phreatic groundwater (shallow): 0-5 m (inclusive springs 0 m)]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[2]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <VALUE><![CDATA[1a]]></VALUE>
+  <DEFINITION><![CDATA[Phreatic groundwater (deep): 5-15 m]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[3]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <VALUE><![CDATA[1b]]></VALUE>
+  <DEFINITION><![CDATA[Phreatic groundwater (deep): 15-30 m]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[4]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <VALUE><![CDATA[1c]]></VALUE>
+  <DEFINITION><![CDATA[Phreatic groundwater (deep): &gt;30 m]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[5]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <VALUE><![CDATA[2]]></VALUE>
+  <DEFINITION><![CDATA[Captive groundwater]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[6]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <VALUE><![CDATA[3]]></VALUE>
+  <DEFINITION><![CDATA[Karstic groundwater]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[7]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <VALUE><![CDATA[4]]></VALUE>
+  <DEFINITION><![CDATA[River water]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[8]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <VALUE><![CDATA[5]]></VALUE>
+  <DEFINITION><![CDATA[Lake water]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[9]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <VALUE><![CDATA[6]]></VALUE>
+  <DEFINITION><![CDATA[Transitional water]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[10]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <VALUE><![CDATA[7]]></VALUE>
+  <DEFINITION><![CDATA[Coastal water]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[11]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[94]]></DATAELEM_ID>
+  <VALUE><![CDATA[8]]></VALUE>
+  <DEFINITION><![CDATA[Marine water]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[12]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[101]]></DATAELEM_ID>
+  <VALUE><![CDATA[true]]></VALUE>
+  <DEFINITION><![CDATA[]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[13]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[101]]></DATAELEM_ID>
+  <VALUE><![CDATA[false]]></VALUE>
+  <DEFINITION><![CDATA[]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[15]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[105]]></DATAELEM_ID>
+  <VALUE><![CDATA[mg/l NO3]]></VALUE>
+  <DEFINITION><![CDATA[NO3]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[Nitrate]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[16]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[105]]></DATAELEM_ID>
+  <VALUE><![CDATA[mg/l NO2]]></VALUE>
+  <DEFINITION><![CDATA[NO2]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[Nitrite]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[17]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[105]]></DATAELEM_ID>
+  <VALUE><![CDATA[mg/l P]]></VALUE>
+  <DEFINITION><![CDATA[P]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[Total Phosphorus]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[18]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[105]]></DATAELEM_ID>
+  <VALUE><![CDATA[mg/l PO4]]></VALUE>
+  <DEFINITION><![CDATA[PO4]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[Orthophosphate]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[19]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[105]]></DATAELEM_ID>
+  <VALUE><![CDATA[mg/l N]]></VALUE>
+  <DEFINITION><![CDATA[N]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[Total Nitrogen]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[20]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[105]]></DATAELEM_ID>
+  <VALUE><![CDATA[&#956;g/l]]></VALUE>
+  <DEFINITION><![CDATA[Chl-a, DIN, DIP]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[Chlorophyll-a, Dissolved inorganic Nitrogen, Dissolved inorganic Phosphorus]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[21]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[105]]></DATAELEM_ID>
+  <VALUE><![CDATA[mg/l O2]]></VALUE>
+  <DEFINITION><![CDATA[BOD, DO]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[Biochemical Oxygen Demand, Dissolved Oxygen]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[22]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[105]]></DATAELEM_ID>
+  <VALUE><![CDATA[m]]></VALUE>
+  <DEFINITION><![CDATA[Secchi depth (in meters)]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[Secchi Depth Transparency]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[23]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[115]]></DATAELEM_ID>
+  <VALUE><![CDATA[Ultra-oligotrophic]]></VALUE>
+  <DEFINITION><![CDATA[Ultra-oligotrophic]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[24]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[115]]></DATAELEM_ID>
+  <VALUE><![CDATA[Oligotrophic]]></VALUE>
+  <DEFINITION><![CDATA[Oligotrophic]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[25]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[115]]></DATAELEM_ID>
+  <VALUE><![CDATA[Mesotrophic]]></VALUE>
+  <DEFINITION><![CDATA[Mesotrophic]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[26]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[115]]></DATAELEM_ID>
+  <VALUE><![CDATA[Eutrophic]]></VALUE>
+  <DEFINITION><![CDATA[Eutrophic]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[27]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[115]]></DATAELEM_ID>
+  <VALUE><![CDATA[Hypertrophic]]></VALUE>
+  <DEFINITION><![CDATA[Hypertrophic]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[28]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <VALUE><![CDATA[P-tot]]></VALUE>
+  <DEFINITION><![CDATA[Total Phosphorus]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[29]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <VALUE><![CDATA[P-PO4]]></VALUE>
+  <DEFINITION><![CDATA[Orthophosfate]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[30]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <VALUE><![CDATA[N-tot]]></VALUE>
+  <DEFINITION><![CDATA[Total Nitrogen]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[31]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <VALUE><![CDATA[NO3]]></VALUE>
+  <DEFINITION><![CDATA[Nitrate]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[32]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <VALUE><![CDATA[NO2]]></VALUE>
+  <DEFINITION><![CDATA[Nitrite]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[33]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <VALUE><![CDATA[Chl-a]]></VALUE>
+  <DEFINITION><![CDATA[Chlorophyll-a (average summer period)]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[34]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <VALUE><![CDATA[BOD]]></VALUE>
+  <DEFINITION><![CDATA[Biochemical Oxygen Demand (BOD5  is preferred)]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[35]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <VALUE><![CDATA[DO]]></VALUE>
+  <DEFINITION><![CDATA[Dissolved oxygen]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[36]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <VALUE><![CDATA[Secchi depth]]></VALUE>
+  <DEFINITION><![CDATA[Secchi depth]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[37]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <VALUE><![CDATA[DIN]]></VALUE>
+  <DEFINITION><![CDATA[Dissolved inorganic Nitrogen]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+<Row>
+  <FIXED_VALUE_ID><![CDATA[38]]></FIXED_VALUE_ID>
+  <DATAELEM_ID><![CDATA[104]]></DATAELEM_ID>
+  <VALUE><![CDATA[DIP]]></VALUE>
+  <DEFINITION><![CDATA[Dissolved inorganic Phophorus]]></DEFINITION>
+  <SHORTDESCRIPTION><![CDATA[]]></SHORTDESCRIPTION>
+</Row>
+</FIXED_VALUE>
+</RowSet>
+</import>

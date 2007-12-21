@@ -12,4 +12,7 @@ public interface Seed {
 	
 	/** */
 	public static final String ATTRIBUTES = "seed-attributes.xml";
+
+	/** */
+	public static final String DST_IMPORT = "seed-dataset-import.xml";
 }

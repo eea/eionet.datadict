@@ -24,12 +24,17 @@ import javax.xml.parsers.*;
  * @author Enriko Käsper
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  */
+/**
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ *
+ */
 public class DatasetImport{
 
 	/** */
     public static final String SEPARATOR = "_";
     public static final String IMPORT_TYPE_FXV_ONLY = "fixedValues";
     public static final String IMPORT_TYPE_WHOLE_DATASETS = "datasets";
+	private static final String RESPONSE_NEW_LINE = "<br/>";
 
     /** */
     private DatasetImportHandler handler;
@@ -88,7 +93,7 @@ public class DatasetImport{
 	 * @param ctx
 	 * @param type
 	 */
-    public DatasetImport(DatasetImportHandler handler, Connection conn, ServletContext ctx, String type){
+    public DatasetImport(DatasetImportHandler handler, Connection conn, ServletContext ctx){
         this.handler = handler;
         this.conn = conn;
         this.searchEngine = new DDSearchEngine(conn, null, ctx);
@@ -115,9 +120,9 @@ public class DatasetImport{
     	
     	// check if the XML file has the expected import type declared in it
     	if (!importType.equalsIgnoreCase(importTypeInXML)){
-    		handleError(null, responseNewLine() + "Import failed!" +
-    				responseNewLine() + "Imported xml file does not have the same type." +
-    				responseNewLine() + "Import type:" + importType + "; Xml file import type:" + importTypeInXML);
+    		handleError(null, RESPONSE_NEW_LINE + "Import failed!" +
+    				RESPONSE_NEW_LINE + "Imported xml file does not have the same type." +
+    				RESPONSE_NEW_LINE + "Import type:" + importType + "; Xml file import type:" + importTypeInXML);
     		return;
     	}
     	
@@ -127,13 +132,13 @@ public class DatasetImport{
     	// if we are importing only fixed values for one particular element
     	if (importType.equalsIgnoreCase(IMPORT_TYPE_FXV_ONLY)){
     		if (importParentID == null){
-    			handleError(null, responseNewLine() + "Import failed!" + responseNewLine() + "Data element id is not specified");
+    			handleError(null, RESPONSE_NEW_LINE + "Import failed!" + RESPONSE_NEW_LINE + "Data element id is not specified");
     			return;         
     		}
     		setParams("FIXED_VALUE", true, "FXV", "new_value", null, null);
     		elmID = new Hashtable();
     		saveFixedValues();
-    		responseText.append(responseNewLine()).append("Fixed values found:" + countFixedValuesFound + "; successfully imported:" + countFixedValuesImported);
+    		responseText.append(RESPONSE_NEW_LINE).append("Fixed values found:" + countFixedValuesFound + "; successfully imported:" + countFixedValuesImported);
     	}
     	// if we are importing whole new dataset(s)
     	else {
@@ -151,19 +156,19 @@ public class DatasetImport{
     		saveComplexAttrs();       
     		
     		
-    		responseText.append(responseNewLine());
-    		responseText.append(responseNewLine()).append("Datasets found:" + countDatasetsFound + "; successfully imported:" + countDatasetsImported);
-    		responseText.append(responseNewLine()).append("Dataset tables found:" + countTablesFound + "; successfully imported:" + countTablesImported);
-    		responseText.append(responseNewLine()).append("Data elements found:" + countElementsFound + "; successfully imported:" + countElementsImported);
-    		responseText.append(responseNewLine()).append("Fixed values found:" + countFixedValuesFound + "; successfully imported:" + countFixedValuesImported);
-    		responseText.append(responseNewLine());
+    		responseText.append(RESPONSE_NEW_LINE);
+    		responseText.append(RESPONSE_NEW_LINE).append("Datasets found:" + countDatasetsFound + "; successfully imported:" + countDatasetsImported);
+    		responseText.append(RESPONSE_NEW_LINE).append("Dataset tables found:" + countTablesFound + "; successfully imported:" + countTablesImported);
+    		responseText.append(RESPONSE_NEW_LINE).append("Data elements found:" + countElementsFound + "; successfully imported:" + countElementsImported);
+    		responseText.append(RESPONSE_NEW_LINE).append("Fixed values found:" + countFixedValuesFound + "; successfully imported:" + countFixedValuesImported);
+    		responseText.append(RESPONSE_NEW_LINE);
     		
     		if (unknownTbl.size()>0){
-    			handleWarning(null, responseNewLine() + "Unknown fields found from the following tables:");
+    			handleWarning(null, RESPONSE_NEW_LINE + "Unknown fields found from the following tables:");
     			Enumeration keys = unknownTbl.keys();
     			while (keys.hasMoreElements()){
     				String key = (String)keys.nextElement();
-    				responseText.append(responseNewLine() + key + ": " + unknownTbl.get(key).toString());
+    				responseText.append(RESPONSE_NEW_LINE + key + ": " + unknownTbl.get(key).toString());
     			}
     		}
     	}
@@ -194,8 +199,8 @@ public class DatasetImport{
         		dstID.put((String)par.getParameter("ds_id"), (String)dsHandler.getLastInsertID());
         	}
         	catch(Exception e){
-        		handleError(e, "Import had errors! Failed storing dataset: " + par.getParameter("ds_name") + responseNewLine() +
-        						e.toString() + responseNewLine());
+        		handleError(e, "Import had errors! Failed storing dataset: " + par.getParameter("ds_name") + RESPONSE_NEW_LINE +
+        						e.toString() + RESPONSE_NEW_LINE);
         	}
         }
     }
@@ -225,7 +230,7 @@ public class DatasetImport{
     		}
     		else{
     			responseText.append("Dataset id was not found for table: " +
-    					par.getParameter("short_name") + responseNewLine());
+    					par.getParameter("short_name") + RESPONSE_NEW_LINE);
     			continue;
     		}
     		try{
@@ -239,8 +244,8 @@ public class DatasetImport{
     			tblID.put((String)par.getParameter("tbl_id"), (String)tblHandler.getLastInsertID());
     		}
     		catch(Exception e){
-    			handleError(e, "Import had errors! Failed storing table: " + par.getParameter("short_name") + responseNewLine() +
-    					e.toString() + responseNewLine());
+    			handleError(e, "Import had errors! Failed storing table: " + par.getParameter("short_name") + RESPONSE_NEW_LINE +
+    					e.toString() + RESPONSE_NEW_LINE);
     		}
     	}
     }
@@ -277,8 +282,8 @@ public class DatasetImport{
     			elmID.put(delem_id, (String)delemHandler.getLastInsertID());
     		}
     		catch(Exception e){
-    			handleError(e, "Import had errors! Failed storing element: " + par.getParameter("delem_name") + responseNewLine() +
-    					e.toString() + responseNewLine());
+    			handleError(e, "Import had errors! Failed storing element: " + par.getParameter("delem_name") + RESPONSE_NEW_LINE +
+    					e.toString() + RESPONSE_NEW_LINE);
     		}
     	}
     }
@@ -350,7 +355,7 @@ public class DatasetImport{
 			}
 			else{
 				responseText.append("Data element id was not found for fixed value " +
-				fxv_val + responseNewLine());
+				fxv_val + RESPONSE_NEW_LINE);
 				continue;
 			}
 
@@ -372,8 +377,8 @@ public class DatasetImport{
 				}
 			}
 			catch(Exception e){
-				handleError(e, "Import had errors! Could not store fixed value into database: " + fxv_val + responseNewLine() +
-						e.toString() + responseNewLine());
+				handleError(e, "Import had errors! Could not store fixed value into database: " + fxv_val + RESPONSE_NEW_LINE +
+						e.toString() + RESPONSE_NEW_LINE);
 			}
 		}
 	}
@@ -402,7 +407,7 @@ public class DatasetImport{
                     par.addParameterValue("parent_id", (String)elmID.get(parent_id));
                 }
                 else{
-                    responseText.append("Data element id was not found for complex attribute.").append(responseNewLine());
+                    responseText.append("Data element id was not found for complex attribute.").append(RESPONSE_NEW_LINE);
                     continue;
                 }
             }
@@ -412,7 +417,7 @@ public class DatasetImport{
                     par.addParameterValue("parent_id", (String)dstID.get(parent_id));
                 }
                 else{
-                    responseText.append("Data element id was not found for complex attribute.").append(responseNewLine());
+                    responseText.append("Data element id was not found for complex attribute.").append(RESPONSE_NEW_LINE);
                     continue;
                 }
             }
@@ -424,7 +429,7 @@ public class DatasetImport{
                 saveHandler.execute();
              }
             catch(Exception e){
-            	handleError(e, "Could not store complex attributes into database, " +e.toString() + responseNewLine());
+            	handleError(e, "Could not store complex attributes into database, " +e.toString() + RESPONSE_NEW_LINE);
             }
         }
     }
@@ -486,7 +491,7 @@ public class DatasetImport{
     			allowNull=(String)fieldMap.get("allowNull");
     			if (allowNull.equals("false")){
     				if (importValue==null || importValue.length() == 0){
-    					responseText.append((String)fieldMap.get("text") + " is empty!").append(responseNewLine());
+    					responseText.append((String)fieldMap.get("text") + " is empty!").append(RESPONSE_NEW_LINE);
     					break;
     				}
     			}
@@ -504,8 +509,8 @@ public class DatasetImport{
     					getComplexAttrs(row, (String)params.getParameter(id_field), parent_type);
     				}
     				catch(Exception e){
-    					handleError(e, "Failed reading complex attributes: " + params.getParameter("context") + responseNewLine() +
-    							e.toString() + responseNewLine());
+    					handleError(e, "Failed reading complex attributes: " + params.getParameter("context") + RESPONSE_NEW_LINE +
+    							e.toString() + RESPONSE_NEW_LINE);
     				}
     			}
     		}
@@ -556,7 +561,7 @@ public class DatasetImport{
                         attrValue = (String)row.get(attrName.toLowerCase());
                         if (attrValue == null || attrValue.length()==0){
                         	handleError(null, "Could not find mandatory attribute (" + attrName + ") value from specified xml for " +
-                        			getContextName(type) + " - " + context_name + "!" + responseNewLine());
+                        			getContextName(type) + " - " + context_name + "!" + RESPONSE_NEW_LINE);
                         }
                         else{
                             params.addParameterValue(DataElementHandler.ATTR_PREFIX + delemAttr.getID(), attrValue);
@@ -565,7 +570,7 @@ public class DatasetImport{
                     }
                     else{
                     	handleError(null, "Could not find mandatory attribute (" + attrName + ") value from specified xml for " +
-                    			getContextName(type) + " - " + context_name + "!" + responseNewLine());
+                    			getContextName(type) + " - " + context_name + "!" + RESPONSE_NEW_LINE);
                     }
                 }
 //find other attributes
@@ -893,14 +898,6 @@ public class DatasetImport{
 	
 	/**
 	 * 
-	 * @return
-	 */
-	private String responseNewLine(){
-		return "<br/>";
-	}
-
-	/**
-	 * 
 	 * @param args
 	 */
     public static void main(String[] args){
@@ -924,7 +921,7 @@ public class DatasetImport{
 			if (!handler.hasError()){
 	
 				DatasetImport dbImport =
-					new DatasetImport((DatasetImportHandler)handler, conn, null, "DST");
+					new DatasetImport((DatasetImportHandler)handler, conn, null);
 				
 				AppUserIF testUser = new TestUser();
 				testUser.authenticate("jaanus", "jaanus");
@@ -945,5 +942,61 @@ public class DatasetImport{
     		e.printStackTrace(System.out);
     	}
     }
+
+	/**
+	 * @return
+	 */
+	public int getCountDatasetsFound() {
+		return countDatasetsFound;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getCountDatasetsImported() {
+		return countDatasetsImported;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getCountElementsFound() {
+		return countElementsFound;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getCountElementsImported() {
+		return countElementsImported;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getCountFixedValuesFound() {
+		return countFixedValuesFound;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getCountFixedValuesImported() {
+		return countFixedValuesImported;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getCountTablesFound() {
+		return countTablesFound;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getCountTablesImported() {
+		return countTablesImported;
+	}
 }
 

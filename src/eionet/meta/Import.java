@@ -40,10 +40,11 @@ public class Import extends HttpServlet {
     private static File[]  xmlFiles;
 
     private static Hashtable conf;
-    
-    /**
-    * Override the servlet's doGet()
-    */
+
+    /*
+     *  (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
@@ -52,9 +53,10 @@ public class Import extends HttpServlet {
        req.getRequestDispatcher("import_results.jsp").forward(req, res);
     }
 
-    /**
-    * Override the servlet's doPost()
-    */
+    /*
+     *  (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
@@ -182,7 +184,7 @@ public class Import extends HttpServlet {
                 if (!handler.hasError()){
 
                     DatasetImport dbImport =
-                        new DatasetImport((DatasetImportHandler)handler, userConn, ctx, type);
+                        new DatasetImport((DatasetImportHandler)handler, userConn, ctx);
 					dbImport.setUser(user);
 					dbImport.setDate(String.valueOf(System.currentTimeMillis()));
                     dbImport.setImportType(type);
