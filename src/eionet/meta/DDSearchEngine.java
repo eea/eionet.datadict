@@ -2281,7 +2281,7 @@ public class DDSearchEngine {
 		
 		return getDatasetTables(params, short_name, null, full_name, definition, oper);
 	}
-	
+
 	/**
 	 *
 	 */
@@ -2290,7 +2290,22 @@ public class DDSearchEngine {
 			String idfier,
 			String full_name,
 			String definition,
-			String oper) throws SQLException {
+			String oper) throws SQLException{
+		
+		return getDatasetTables(params, short_name, idfier, full_name, definition, oper, null, true);
+	}
+
+	/**
+	 *
+	 */
+	public Vector getDatasetTables(Vector params,
+			String short_name,
+			String idfier,
+			String full_name,
+			String definition,
+			String oper,
+			HashSet dstStatuses,
+			boolean latestOnly) throws SQLException {
 		
 		// get the id of simple attribute "Name"
 		Statement stmt = conn.createStatement();
@@ -2308,6 +2323,21 @@ public class DDSearchEngine {
 		StringBuffer constraints = new StringBuffer().
 		append("DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID and DST2TBL.DATASET_ID=DATASET.DATASET_ID").
 		append(" and DATASET.DELETED is null and DATASET.WORKING_COPY='N'");
+		
+		// dataset statuses into constraints
+		if (dstStatuses!=null && dstStatuses.size()>0){
+			if (constraints.length()>0)
+				constraints.append(" and ");
+			constraints.append("(");
+			int i = 0;
+			for (Iterator iter=dstStatuses.iterator(); iter.hasNext(); i++){
+				if (i>0) constraints.append(" or ");
+				constraints.append("DATASET.REG_STATUS=");
+				constraints.append(Util.strLiteral((String)iter.next()));
+			}
+			constraints.append(")");
+		}
+
 		
 		// short name into constraints
 		if (short_name!=null && short_name.length()!=0){
@@ -2414,7 +2444,6 @@ public class DDSearchEngine {
 			
 			String curDstID  = null;
 			String curDstIdf = null;
-			String curTblIdf = null;
 			
 			while (rs.next()){
 				
@@ -2422,13 +2451,15 @@ public class DDSearchEngine {
 				String dstIdf = rs.getString("DATASET.IDENTIFIER");
 				if (dstID==null && dstIdf==null) continue;
 				
-				// the following if-else block skips tables in non-latest DATASETS
-				if (curDstIdf==null || !curDstIdf.equals(dstIdf)){
-					curDstIdf = dstIdf;
-					curDstID = dstID;
+				if (latestOnly){
+					// the following if-else block skips tables in non-latest DATASETS
+					if (curDstIdf==null || !curDstIdf.equals(dstIdf)){
+						curDstIdf = dstIdf;
+						curDstID = dstID;
+					}
+					else if (!dstID.equals(curDstID))
+						continue;
 				}
-				else if (!dstID.equals(curDstID))
-					continue;
 				
 				// skip tables that do not actually exist (ie trash from some erroneous situation)
 				String tblIdf = rs.getString("DS_TABLE.IDENTIFIER");
@@ -2449,6 +2480,7 @@ public class DDSearchEngine {
 				tbl.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
 				tbl.setDstStatus(rs.getString("DATASET.REG_STATUS"));
 				tbl.setDstWorkingUser(rs.getString("DATASET.WORKING_USER"));
+				tbl.setDstDate(rs.getString("DATASET.DATE"));
 				
 				// set the name if nameID was previously successfully found
 				if (nameID!=null){

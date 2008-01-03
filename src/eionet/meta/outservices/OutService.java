@@ -3,6 +3,10 @@ package eionet.meta.outservices;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -53,9 +57,20 @@ public class OutService {
 	}
 
 	/**
-	 * Created by Dusko Kolundzija(ED)
-	 * Get dataset tables
-	 * @return Vector of Dataset tables
+	 * Created by Dusko Kolundzija(ED).
+	 * Modified by Jaanus Heinlaid (<a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>)
+	 * 
+	 * Returns all tables of all released datasets, including historic versions.
+	 * Return type is s a Vector of Hashtables where each Hashtable represents one table and has the following keys:
+	 * - tblId			the table's numeric identifier
+	 * - identifier		the table's alphanumeric (i.e. logical) identifier in DD database
+	 * - shortName		the table's short name
+	 * - dataSet		the short name of the dataset where this table belongs to
+	 * - dateReleased	the release date of the dataset where this table belongs to
+	 * 
+	 * The caller should know that each of the above keys may be missing.
+	 *  
+	 * @return Vector of Hashtables
 	 * @throws Exception
 	 */
 		public Vector getDSTables() throws Exception{
@@ -63,12 +78,15 @@ public class OutService {
 			try{
 				if (conn==null) getConnection();
 				DDSearchEngine searchEngine = new DDSearchEngine(conn);
-				Vector result = searchEngine.getDatasetTables(null, null, null, null, null);
+				
+				HashSet dstStatuses = new HashSet();
+				dstStatuses.add("Released");
+				Vector result = searchEngine.getDatasetTables(null, null, null, null, null, null, dstStatuses, false);
 		
 				Vector ret = new Vector();
 				for (int i=0; i<result.size(); i++){
 					DsTable table = (DsTable)result.get(i);
-					
+
 					String table_id = table.getID();
 					String table_name = table.getShortName();
 					String ds_id = table.getDatasetID();
@@ -79,7 +97,12 @@ public class OutService {
 					hash.put("tblId", table.getID());
 					hash.put("identifier", table.getIdentifier());
 					hash.put("shortName", table.getShortName());
-					hash.put("dataSet", table.getDatasetName());				
+					hash.put("dataSet", table.getDatasetName());
+					
+					if (table.getDstDate()!=null){
+						String dateFormatted = (new SimpleDateFormat("ddMMyy")).format(new Date(Long.parseLong(table.getDstDate())));
+						hash.put("dateReleased", dateFormatted);
+					}
 					ret.add(hash);			
 					
 				}		
