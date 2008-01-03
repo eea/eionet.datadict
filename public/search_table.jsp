@@ -357,20 +357,6 @@ else {
                 		</td>
                     </tr>
                     
-                    <%					
-					// if authenticated user, enable to get working copies only
-					if (user!=null && user.isAuthentic()){
-						%>
-						<tr style="vertical-align:top">
-							<td style="width:150px" colspan="2"></td>
-							<td colspan="2">
-								<input type="checkbox" name="wrk_copies" value="true"/><span class="smallfont" style="font-weight: normal">Working copies only</span>
-							</td>
-						</tr>
-						<%
-					}
-					%>
-					
 					<tr style="height:10px;"><td colspan="4"></td></tr>
 					
 					<tr style="vertical-align:top">

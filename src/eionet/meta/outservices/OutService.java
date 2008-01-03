@@ -63,7 +63,7 @@ public class OutService {
 			try{
 				if (conn==null) getConnection();
 				DDSearchEngine searchEngine = new DDSearchEngine(conn);
-				Vector result = searchEngine.getDatasetTables(null, null, null, null, null, true);
+				Vector result = searchEngine.getDatasetTables(null, null, null, null, null);
 		
 				Vector ret = new Vector();
 				for (int i=0; i<result.size(); i++){

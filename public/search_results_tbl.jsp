@@ -125,8 +125,6 @@
     String searchType=request.getParameter("SearchType");
     String tableLink="";
     
-    String _wrkCopies = request.getParameter("wrk_copies");
-	boolean wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;	
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -177,16 +175,7 @@
 					</ul>
 				</div>
 			
-			<h1>
-					<%
-					if (wrkCopies){ %>
-						Working copies of table definitions<%
-					}
-					else{ %>
-						Tables from latest versions of datasets in any status<%
-					}
-					%>
-			</h1>
+			<h1>Tables from latest versions of datasets in any status</h1>
 			<%
 			if (user==null){%>
 				<p>	
@@ -292,7 +281,7 @@
 						params.add(param);
 					}
 					
-					Vector dsTables = searchEngine.getDatasetTables(params, short_name, idfier, full_name, definition, oper, wrkCopies);
+					Vector dsTables = searchEngine.getDatasetTables(params, short_name, idfier, full_name, definition, oper);
 					
 					// see if any result were found
         		    if (dsTables == null || dsTables.size()==0){ %>

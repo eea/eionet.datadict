@@ -2270,10 +2270,6 @@ public class DDSearchEngine {
 		return getDatasetTables(params, short_name, full_name, definition, null);
 	}
 	
-	public Vector getDatasetTables(Vector params, String short_name, String full_name, String definition, String oper) throws SQLException {
-		return getDatasetTables(params, short_name, full_name, definition, oper, false);
-	}
-	
 	/**
 	 *
 	 */
@@ -2281,10 +2277,9 @@ public class DDSearchEngine {
 			String short_name,								   
 			String full_name,
 			String definition,
-			String oper,
-			boolean wrkCopies) throws SQLException {
-		return getDatasetTables(params, short_name, null,
-				full_name, definition, oper, wrkCopies);
+			String oper) throws SQLException {
+		
+		return getDatasetTables(params, short_name, null, full_name, definition, oper);
 	}
 	
 	/**
@@ -2295,8 +2290,7 @@ public class DDSearchEngine {
 			String idfier,
 			String full_name,
 			String definition,
-			String oper,
-			boolean wrkCopies) throws SQLException {
+			String oper) throws SQLException {
 		
 		// get the id of simple attribute "Name"
 		Statement stmt = conn.createStatement();
@@ -2355,18 +2349,6 @@ public class DDSearchEngine {
 			constraints.append(definition);
 			constraints.append("%'");
 		}
-		
-		// prune out working copies unless the opposite is requested
-//		if (wrkCopies && (user==null || !user.isAuthentic()))
-//		wrkCopies = false;
-//		if (constraints.length()!=0)
-//		constraints.append(" and ");
-//		if (!wrkCopies)
-//		constraints.append("DS_TABLE.WORKING_COPY='N'");
-//		else
-//		constraints.append("DS_TABLE.WORKING_COPY='Y' and " +
-//		"DS_TABLE.WORKING_USER='" +
-//		user.getUserName() + "'");
 		
 		// params into constraints (if params==null, we ask for all)
 		for (int i=0; params!=null && i<params.size(); i++){
@@ -2455,8 +2437,6 @@ public class DDSearchEngine {
 				
 				// skip this dataset if this.user should not see a dataset in given status
 				String dstStatus = rs.getString("DATASET.REG_STATUS");
-//				if (skipByRegStatus(dstStatus))
-//				continue;
 				
 				// construct the table object
 				DsTable tbl = new DsTable(rs.getString("DS_TABLE.TABLE_ID"),

@@ -16,8 +16,6 @@
 	DBPoolIF pool = xdbapp.getDBPool();
 	AppUserIF user = SecurityUtil.getUser(request);
 
-	boolean wrkCopies = false;
-	
 	try { // start the whole page try block
 	
 	conn = pool.getConnection();
@@ -89,10 +87,7 @@
 		params.add(param);
 	}
 					
-	String _wrkCopies = request.getParameter("wrk_copies");
-	wrkCopies = (_wrkCopies!=null && _wrkCopies.equals("true")) ? true : false;
-
-	Vector dsTables = searchEngine.getDatasetTables(params, short_name, idfier, full_name, definition, oper, wrkCopies);
+	Vector dsTables = searchEngine.getDatasetTables(params, short_name, idfier, full_name, definition, oper);
 
 %>
 

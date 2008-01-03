@@ -53,7 +53,7 @@ try{
 		// get tables,
 		// take out the ones in datasets that were skipped above
 		int skippedTables = 0;
-		v = searchEngine.getDatasetTables(null, null, null, null, null, null, false);
+		v = searchEngine.getDatasetTables(null, null, null, null, null, null);
 		for (int i=0; v!=null && i<v.size(); i++){
 			DsTable tbl = (DsTable)v.get(i);			
 			String dstID = tbl.getDatasetID();
