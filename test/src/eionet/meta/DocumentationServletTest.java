@@ -2,6 +2,7 @@
 // Therefore we must be in the same package
 package eionet.meta;
 
+
 import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -31,131 +32,137 @@ import static org.easymock.EasyMock.*;
  */
 public class DocumentationServletTest extends DatabaseTestCase {
 	
-	/** */
-	private FlatXmlDataSet loadedDataSet;
+    /** */
+    private FlatXmlDataSet loadedDataSet;
 
-	/**
-	 * Provide a connection to the database.
-	 */
-	protected IDatabaseConnection getConnection() throws Exception
-	{
-	    Class.forName(Props.getProperty(PropsIF.DBDRV));
-		    Connection jdbcConn = DriverManager.getConnection(
-		    		Props.getProperty(PropsIF.DBURL),
-		    		Props.getProperty(PropsIF.DBUSR),
-		    		Props.getProperty(PropsIF.DBPSW));
+    /**
+     * Provide a connection to the database.
+     */
+    protected IDatabaseConnection getConnection() throws Exception {
+        Class.forName(Props.getProperty(PropsIF.DBDRV));
+        Connection jdbcConn = DriverManager.getConnection(
+                Props.getProperty(PropsIF.DBURL),
+                Props.getProperty(PropsIF.DBUSR),
+                Props.getProperty(PropsIF.DBPSW));
 		    
-	    return new DatabaseConnection(jdbcConn);
-	}
+        return new DatabaseConnection(jdbcConn);
+    }
 
-	/**
-	 * Load the data which will be inserted for the test
-	 * The tables must already exist
-	 */
-	protected IDataSet getDataSet() throws Exception
-	{
-	    loadedDataSet = new FlatXmlDataSet(getClass().getClassLoader().getResourceAsStream(Seed.HLP));
-	    return loadedDataSet;
-	}
+    /**
+     * Load the data which will be inserted for the test
+     * The tables must already exist
+     */
+    protected IDataSet getDataSet() throws Exception {
+        loadedDataSet = new FlatXmlDataSet(
+                getClass().getClassLoader().getResourceAsStream(Seed.HLP));
+        return loadedDataSet;
+    }
 
- 
-        /**
-         * This test simply loads the help area 'doc1' from the database
-         */
-	public void testDoc1() throws Exception {
+    /**
+     * This test simply loads the help area 'doc1' from the database
+     */
+    public void testDoc1() throws Exception {
 
-		// Create the mock objects
-		HttpServletRequest request = createMock(HttpServletRequest.class);
-		HttpServletResponse response = createMock(HttpServletResponse.class);
-		ServletConfig servletConfig = createMock(ServletConfig.class);
-		ServletContext servletContext = createMock(ServletContext.class);
-		RequestDispatcher requestDispatcher = createMock(RequestDispatcher.class);
+        // Create the mock objects
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        HttpServletResponse response = createMock(HttpServletResponse.class);
+        ServletConfig servletConfig = createMock(ServletConfig.class);
+        ServletContext servletContext = createMock(ServletContext.class);
+        RequestDispatcher requestDispatcher = createMock(RequestDispatcher.class);
 		
-		//Create the target object        
-		DocumentationServlet instance = new DocumentationServlet();
-		//Call the init of the servlet with the mock ServletConfig
-		instance.init(servletConfig);
+        // Create the target object        
+        DocumentationServlet instance = new DocumentationServlet();
 
-                expect(servletConfig.getServletContext()).andReturn(servletContext).anyTimes();
-                expect(servletConfig.getInitParameter("forward-jsp")).andReturn("documentation.jsp");
-                expect(servletContext.getRequestDispatcher("/documentation.jsp")).andReturn(requestDispatcher);
+        // Call the init of the servlet with the mock ServletConfig
+        instance.init(servletConfig);
 
-		// This is what we expect for the request object
-                expect(request.getPathInfo()).andReturn("doc1");
-                expect(request.getServletPath()).andReturn("/");
-                request.setAttribute("dispatcher-path", "");
+        expect(servletConfig.getServletContext()).andReturn(servletContext).anyTimes();
+        expect(servletConfig.getInitParameter("forward-jsp")).andReturn(
+                "documentation.jsp");
+        expect(servletContext.getRequestDispatcher("/documentation.jsp")).andReturn(
+                requestDispatcher);
 
-                // The next two values are retrieved from the database
-                request.setAttribute("doc-heading", "Data Dictionary - functions (from seed-hlp.xml)");
-                request.setAttribute("doc-string", "<h1>Data Dictionary - functions</h1>");
+        // This is what we expect for the request object
+        expect(request.getPathInfo()).andReturn("doc1");
+        expect(request.getServletPath()).andReturn("/");
+        request.setAttribute("dispatcher-path", "");
 
-                // This is what we expect for the RequestDispatcher
-                requestDispatcher.forward(request, response);
+        // The next two values are retrieved from the database
+        request.setAttribute("doc-heading",
+                "Data Dictionary - functions (from seed-hlp.xml)");
+        request.setAttribute("doc-string",
+                "<h1>Data Dictionary - functions</h1>");
 
-		//start the replay for all mock objects
-		replay(request);
-		replay(response);
-		replay(servletConfig);
-		replay(servletContext);
-                replay(requestDispatcher);
+        // This is what we expect for the RequestDispatcher
+        requestDispatcher.forward(request, response);
 
-		//and call your doGet, doPost, or service methods at will.
-		instance.doGet(request, response);
+        // start the replay for all mock objects
+        replay(request);
+        replay(response);
+        replay(servletConfig);
+        replay(servletContext);
+        replay(requestDispatcher);
 
-		//verify the responses
-		verify(request);
-		verify(response);
-		verify(servletConfig);
-		verify(servletContext);
-                verify(requestDispatcher);
-	}
+        // and call your doGet, doPost, or service methods at will.
+        instance.doGet(request, response);
 
-        /**
-         * This test tries to load a help area that doesn't exist in the database
-         * The only thing that happens is the "doc-string" attribute isn't set
-         */
-	public void testDoesntExist() throws Exception {
+        // verify the responses
+        verify(request);
+        verify(response);
+        verify(servletConfig);
+        verify(servletContext);
+        verify(requestDispatcher);
+    }
 
-		// Create the mock objects
-		HttpServletRequest request = createMock(HttpServletRequest.class);
-		HttpServletResponse response = createMock(HttpServletResponse.class);
-		ServletConfig servletConfig = createMock(ServletConfig.class);
-		ServletContext servletContext = createMock(ServletContext.class);
-		RequestDispatcher requestDispatcher = createMock(RequestDispatcher.class);
+    /**
+     * This test tries to load a help area that doesn't exist in the database
+     * The only thing that happens is the "doc-string" attribute isn't set
+     */
+    public void testDoesntExist() throws Exception {
+
+        // Create the mock objects
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        HttpServletResponse response = createMock(HttpServletResponse.class);
+        ServletConfig servletConfig = createMock(ServletConfig.class);
+        ServletContext servletContext = createMock(ServletContext.class);
+        RequestDispatcher requestDispatcher = createMock(RequestDispatcher.class);
 		
-		//Create the target object        
-		DocumentationServlet instance = new DocumentationServlet();
-		//Call the init of the servlet with the mock ServletConfig
-		instance.init(servletConfig);
+        // Create the target object        
+        DocumentationServlet instance = new DocumentationServlet();
 
-                expect(servletConfig.getServletContext()).andReturn(servletContext).anyTimes();
-                expect(servletConfig.getInitParameter("forward-jsp")).andReturn("documentation.jsp");
+        // Call the init of the servlet with the mock ServletConfig
+        instance.init(servletConfig);
 
-                expect(servletContext.getRequestDispatcher("/documentation.jsp")).andReturn(requestDispatcher);
+        expect(servletConfig.getServletContext()).andReturn(servletContext).anyTimes();
+        expect(servletConfig.getInitParameter("forward-jsp")).andReturn(
+                "documentation.jsp");
 
-                expect(request.getPathInfo()).andReturn("doesntexist");
-                expect(request.getServletPath()).andReturn("/");
-                request.setAttribute("dispatcher-path", "");
+        expect(servletContext.getRequestDispatcher("/documentation.jsp")).andReturn(
+                requestDispatcher);
 
-                // This is what we expect for the RequestDispatcher
-                requestDispatcher.forward(request, response);
+        expect(request.getPathInfo()).andReturn("doesntexist");
+        expect(request.getServletPath()).andReturn("/");
+        request.setAttribute("dispatcher-path", "");
 
-		//start the replay for all mock objects
-		replay(request);
-		replay(response);
-		replay(servletConfig);
-		replay(servletContext);
-                replay(requestDispatcher);
+        // This is what we expect for the RequestDispatcher
+        requestDispatcher.forward(request, response);
 
-		//and call your doGet, doPost, or service methods at will.
-		instance.doGet(request, response);
+        // start the replay for all mock objects
+        replay(request);
+        replay(response);
+        replay(servletConfig);
+        replay(servletContext);
+        replay(requestDispatcher);
 
-		//verify the responses
-		verify(request);
-		verify(response);
-		verify(servletConfig);
-		verify(servletContext);
-                verify(requestDispatcher);
-	}
+        // and call your doGet, doPost, or service methods at will.
+        instance.doGet(request, response);
+
+        // verify the responses
+        verify(request);
+        verify(response);
+        verify(servletConfig);
+        verify(servletContext);
+        verify(requestDispatcher);
+    }
 
 }
