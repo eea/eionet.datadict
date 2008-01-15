@@ -8,11 +8,10 @@
 
 	<!-- define external classpath, i.e. JARs and classes not found in WEB-INF/classes and WEB-INF/lib -->
 	<path id="classpath.externals">
-		<pathelement location="/usr/share/java/dbunit.jar"/>
 		<pathelement location="/usr/share/java/mysql-connector-java.jar"/>
 		<pathelement location="/usr/share/java/jakarta-commons-io.jar"/>
 		<pathelement location="/var/lib/tomcat5/common/lib/[servlet].jar"/>
-    </path>
+	</path>
 
 	<!-- define classpath for compile -->
 	<path id="classpath.compile">
@@ -20,13 +19,16 @@
 			<include name="**/*.jar"/>
 		</fileset>
 		<path refid="classpath.externals"/>
-    </path>
+	</path>
 
 	<!-- define classpath for unit tests -->
 	<path id="classpath.compile-tests">
 		<pathelement location="${classes}"/>
+		<fileset dir="${test}/lib">
+			<include name="*.jar"/>
+		</fileset>
 		<path refid="classpath.compile"/>
-    </path>
+	</path>
 
 	<!-- compile target, refers to pre-defined paths -->
 	<target name="compile">
@@ -59,12 +61,11 @@
 			<include name="**/*.jar"/>
 		</fileset>
 		<path refid="classpath.externals"/>
-    </path>
+	</path>
 
 	<!-- define src files to be included and/or excluded when JUnit searches for test cases -->
 	<fileset id="fileset.test" dir="${test}/src">
 		<include name="**/*Test.java"/>
-		<include name="**/*Tests.java"/>
 	</fileset>
 
 	<!-- test target, refers to pre-defined paths and filesets -->
@@ -80,4 +81,3 @@
 	</target>
 
 </project>
-

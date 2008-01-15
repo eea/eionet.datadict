@@ -58,29 +58,25 @@
 		<property name="classes.dir" value="${build.dir}/public/WEB-INF/classes"/>
 	</target>
 
+	<!-- define external classpath, i.e. JARs and classes not found in WEB-INF/classes and WEB-INF/lib -->
+	<path id="classpath.externals">
+		<pathelement location="${servletapi.jar}"/>
+	</path>
+
+	<!-- define classpath for compile -->
+	<path id="classpath.compile">
+		<fileset dir="${lib}">
+			<include name="*.jar"/>
+		</fileset>
+		<path refid="classpath.externals"/>
+	</path>
+
 	<target name="compile" depends="init,prepare,clean" description="compiles java classes into classes path">
 	    <!-- Compile the java code from ${src} into ${build} -->
 		<javac deprecation="off" srcdir="${src}"
-		    destdir="${classes.dir}" debug="on" source="1.4"
-		    classpath="public/WEB-INF/lib/xmlserver.jar;
-			public/WEB-INF/lib/castor.jar;
-			public/WEB-INF/lib/jackcess-1.1.2.jar;
-			public/WEB-INF/lib/itext-0.99.jar;
-			public/WEB-INF/lib/commons-collections-3.0.jar;
-			public/WEB-INF/lib/commons-lang-1.0.jar;
-			public/WEB-INF/lib/commons-logging-api.jar;
-			public/WEB-INF/lib/xerces.jar;
-			public/WEB-INF/lib/pja.jar;
-			public/WEB-INF/lib/eionet-dir.jar;
-			public/WEB-INF/lib/uit-security.jar;
-			public/WEB-INF/lib/uit-client.jar;
-			public/WEB-INF/lib/uit-help.jar;
-			public/WEB-INF/lib/log4j.jar;
-			public/WEB-INF/lib/xmlrpc-2.0.jar;
-			public/WEB-INF/lib/servlet.jar;
-			public/WEB-INF/lib/poi-2.5-final-20040302.jar;
-			public/WEB-INF/lib/casclient.jar;			
-			${servletapi.jar}" />
+		    destdir="${classes.dir}" debug="on" source="1.4">
+			<classpath refid="classpath.compile"/>
+		</javac>
 	</target>
 
 	<target name="buildjar" depends="compile" description="creates datadict.jar into WB-INF/lib">
