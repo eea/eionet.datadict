@@ -186,10 +186,12 @@ public class Dbf {
 		else if (fldLength > maxLength.intValue()){
 			if (dataType==DBFField.FIELD_TYPE_C){
 				fld.setDataType(DBFField.FIELD_TYPE_M);
-				fld.setFieldLength(Dbf.getMaxLength(DBFField.FIELD_TYPE_M));
+				Integer fldl=Dbf.getMaxLength(DBFField.FIELD_TYPE_M);
+				fld.setFieldLength(fldl.intValue());
 			}
 			else
-				fld.setFieldLength(maxLength);
+				fld.setFieldLength(maxLength.intValue());
+				
 		}
 		else
 			fld.setFieldLength(fldLength);
