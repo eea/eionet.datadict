@@ -56,7 +56,6 @@
 		<property name="src" value="src"/>
 		<property name="lib" value="public/WEB-INF/lib"/>
 		<property name="classes.dir" value="${build.dir}/public/WEB-INF/classes"/>
-	</target>
 
 	<!-- define external classpath, i.e. JARs and classes not found in WEB-INF/classes and WEB-INF/lib -->
 	<path id="classpath.externals">
@@ -65,11 +64,13 @@
 
 	<!-- define classpath for compile -->
 	<path id="classpath.compile">
-		<fileset dir="${lib}">
+		<path refid="classpath.externals"/>
+		<fileset dir="public/WEB-INF/lib">
 			<include name="*.jar"/>
 		</fileset>
-		<path refid="classpath.externals"/>
 	</path>
+
+	</target>
 
 	<target name="compile" depends="init,prepare,clean" description="compiles java classes into classes path">
 	    <!-- Compile the java code from ${src} into ${build} -->
@@ -97,6 +98,7 @@
 		<mkdir dir="${build.dir}/public/WEB-INF/classes"/>
 		<mkdir dir="${build.dir}/public/WEB-INF/lib"/>
 		<mkdir dir="${build.dir}/public/visuals"/>
+		<mkdir dir="${build.dir}/tmp"/>
 	</target>
 
 	<target name="install" depends="init,copyfiles" description="complete installation">
@@ -157,12 +159,40 @@
 		<antcall target="cp_teXDBMsg"/>
 	</target>
 	<target name="cp_uit" if="uit.needed">
+<!--Create properties file from a template -->
+		<echo message="delete properties file"/>
+		<delete file="public/WEB-INF/classes/uit.properties"/>
+    		<copy file="public/WEB-INF/classes/uit.properties.tmpl"  tofile="public/WEB-INF/classes/uit.properties" >
+        		<filterchain>
+           			<striplinecomments>
+              				<comment value="!"/>
+           			</striplinecomments>
+           			<replacetokens>
+                			<token key="builddir" value="${build.dir}"/>
+            			</replacetokens>
+        		</filterchain>
+    		</copy>
+<!--Now copy the updated file -->
 		<copy file="public/WEB-INF/classes/uit.properties" tofile="${classes.dir}/uit.properties"/>
 	</target>
 	<target name="cp_log4j" if="log4j.needed">
 		<copy file="public/WEB-INF/classes/log4j.properties" tofile="${classes.dir}/log4j.properties"/>
 	</target>
 	<target name="cp_datadict" if="datadict.needed">
+<!--Create properties file from a template -->
+                <echo message="delete properties file"/>
+                <delete file="public/WEB-INF/classes/datadict.properties"/>
+                <copy file="public/WEB-INF/classes/datadict.properties.tmpl"  tofile="public/WEB-INF/classes/datadict.properties" >
+                        <filterchain>
+                                <striplinecomments>
+                                        <comment value="!"/>
+                                </striplinecomments>
+                                <replacetokens>
+                                        <token key="builddir" value="${build.dir}"/>
+                                </replacetokens>
+                        </filterchain>
+                </copy>
+<!--Now copy the updated file -->
 		<copy file="public/WEB-INF/classes/datadict.properties" tofile="${classes.dir}/datadict.properties"/>
 	</target>
 	<target name="cp_eionetdir" if="eionetdir.needed">
