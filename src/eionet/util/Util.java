@@ -379,7 +379,8 @@ public class Util {
   }
 
     /**
-     * 
+     * Calls replaceTags(in, false, false). See the documentation of that method.
+     *  
      * @param in
      * @return
      */
@@ -388,6 +389,7 @@ public class Util {
     }
     
     /**
+     * Calls replaceTags(in, dontCreateHTMLAnchors, false). See the documentation of that method.
      * 
      * @param in
      * @param dontCreateHTMLAnchors
@@ -396,8 +398,15 @@ public class Util {
     public static String replaceTags(String in, boolean dontCreateHTMLAnchors){
     	return replaceTags(in, dontCreateHTMLAnchors, false);
     }
-    
+
     /**
+     * Replaces the following characters with their XML escape codes: ', ", <, >, \, &.
+     * If an ampersand is found and it is the start of an escape sequence, the ampersand is not escaped.
+     * 
+     * By default, this method creates HTML anchors (<a href"...">...</a>) for URLs it finds in the string. This can be switched
+     * off by setting dontCreateHTMLAnchors to true.
+     * Also by default, this method converts discovered line breaks into HTML line breaks (<br>). This can be switched off by setting
+     * dontCreateHTMLLineBreaks to true.
      * 
      * @param in
      * @param inTextarea
