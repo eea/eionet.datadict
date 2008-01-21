@@ -411,17 +411,17 @@ public class Util {
 	    StringBuffer ret = new StringBuffer();
 	    for (int i = 0; i < in.length(); i++) {
 	      char c = in.charAt(i);
-	      if (c == '<')
+	      if (c == '<')             // less than
 	        ret.append("&lt;");
-	      else if (c == '>')
+	      else if (c == '>')        // greater than
 	        ret.append("&gt;");
-	      else if (c == '\"')
+	      else if (c == '"')        // quotation
 	          ret.append("&quot;");
-	      else if (c == '\"')
+	      else if (c == '\'')       // apostrophe
 	    	  ret.append("&#039;");
-	      else if (c == '\\')
+	      else if (c == '\\')       // backslash
 	          ret.append("&#092;");
-	      else if (c == '&'){
+	      else if (c == '&'){       // ampersand
 	    	  boolean startsEscapeSequence = false;
 	    	  int j = in.indexOf(';', i);
 	    	  if (j>0){
@@ -436,12 +436,6 @@ public class Util {
 	    	  else
 	    		  ret.append("&amp;");
 	      }
-//	      else if (c == '\n' && dontCreateHTMLLineBreaks==false)
-//	        ret.append("<br/>");
-//		  else if (c == '\r' && in.charAt(i+1)=='\n' && dontCreateHTMLLineBreaks==false){
-//			ret.append("<br/>");
-//			i = i + 1;
-//		  }
 	      else
 	        ret.append(c);
 	    }
@@ -552,7 +546,7 @@ public class Util {
     	String s = null;
     	for (endIndex=in.length(); endIndex>beginIndex; endIndex--){
     		s = in.substring(beginIndex, endIndex);
-    		if (isURL(s))
+    		if (isURI(s))
     			break;
     	}
     	
@@ -578,7 +572,7 @@ public class Util {
     	
     	String link = in.substring(beginIndex, endIndex+1);
     	StringBuffer _buf = new StringBuffer("<a ");
-		_buf.append(" href=\"");
+		_buf.append("href=\"");
 		_buf.append(link);
 		_buf.append("\">");
 		
@@ -595,13 +589,12 @@ public class Util {
     }
     
     /**
-    * Checks if the given string is a well-formed URL
+    * Checks if the given string is a well-formed URI.
     */
-    public static boolean isURL(String s){
+    public static boolean isURI(String s){
         try {
-            URI url = new URI(s);
+            URI uri = new URI(s);
         }
-        //catch (MalformedURLException e){
         catch (URISyntaxException e){
             return false;
         }
