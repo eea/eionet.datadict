@@ -1,6 +1,8 @@
 package eionet.meta;
 
 import eionet.util.*;
+import eionet.util.sql.SQLArguments;
+import eionet.util.sql.SQL;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -12,8 +14,12 @@ import java.sql.*;
 
 import com.tee.uit.security.*;
 import com.tee.xmlserver.*;
-import com.tee.util.SQLGenerator;
 
+/**
+ * 
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ *
+ */
 public class DocUpload extends HttpServlet{
 	
 	public  static final String REQPAR_FILE   = "file";
@@ -26,11 +32,17 @@ public class DocUpload extends HttpServlet{
 	
 	Connection conn = null;
 	
+	/* (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse res)
 													throws ServletException, IOException {
 		doPost(req,res);
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
 	protected void doPost(HttpServletRequest req, HttpServletResponse res)
 													throws ServletException, IOException {
 		
@@ -60,6 +72,10 @@ public class DocUpload extends HttpServlet{
 			res.sendRedirect("dataset.jsp?mode=view&ds_id=" + dstID);
 		}
 		catch (Exception e){
+			if (e instanceof SQLException){
+				int errCode = ((SQLException)e).getErrorCode();
+				System.out.println(errCode);
+			}
 			e.printStackTrace();
 			throw new ServletException(e.getMessage()==null ? "" : e.getMessage(), e);
 		}
@@ -68,6 +84,11 @@ public class DocUpload extends HttpServlet{
 		}
 	}
 	
+	/**
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	private String getAbsFilePath(HttpServletRequest req) throws Exception{
 		
 		String path = Props.getProperty(PropsIF.DOC_PATH);
@@ -78,6 +99,11 @@ public class DocUpload extends HttpServlet{
 		return path + extractFileName(req);
 	}
 	
+	/**
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	private String extractFileName(HttpServletRequest req) throws Exception{
 		String fullName = req.getParameter(REQPAR_FILE);
 		if (Util.voidStr(fullName)) throw new Exception("Missing file path!");
@@ -87,6 +113,10 @@ public class DocUpload extends HttpServlet{
 		return fullName.substring(i+1, fullName.length());
 	}
 	
+	/**
+	 * @param req
+	 * @throws Exception
+	 */
 	private void guard(HttpServletRequest req) throws Exception{
 		AppUserIF user = SecurityUtil.getUser(req);
 		if (user == null) throw new Exception("Not authenticated!");
@@ -99,37 +129,55 @@ public class DocUpload extends HttpServlet{
 			throw new Exception("Not permitted!");
 	}
 	
+	/**
+	 * @param dstID
+	 * @param file
+	 * @param title
+	 * @throws Exception
+	 */
 	private void save(String dstID, File file, String title) throws Exception{
 		
 		openConnection();
 		
 		String legalizedPath = legalizePath(file.getAbsolutePath());
 		
-		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("DOC");
-		gen.setField("OWNER_ID", dstID);
-		gen.setFieldExpr("MD5_PATH", "md5(" + Util.strLiteral(legalizedPath) + ")");
-		gen.setField("ABS_PATH", legalizedPath);
-		if (title==null || title.length()==0) title = file.getName();
-		gen.setField("TITLE", title);
+		SQLArguments sqlArgs = new SQLArguments();
+		Hashtable insertCols = new Hashtable();
+		insertCols.put("OWNER_ID", sqlArgs.add(dstID, Types.INTEGER));
+		insertCols.put("MD5_PATH", "md5(" + sqlArgs.add(legalizedPath) + ")");
+		insertCols.put("ABS_PATH", sqlArgs.add(legalizedPath));
 		
-		conn.createStatement().executeUpdate(gen.insertStatement());
+		if (title==null || title.length()==0)
+			title = file.getName();
+		insertCols.put("TITLE", sqlArgs.add(title));
+		
+		SQL.preparedStatement(SQL.insertStatement("DOC", insertCols), sqlArgs, conn).executeUpdate();
 	}
 
+	/**
+	 * @param md5
+	 * @throws Exception
+	 */
 	private void delete(String md5) throws Exception{
 		
 		openConnection();
-		String q = "select * from DOC where MD5_PATH=" + Util.strLiteral(md5);
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(q);
+		SQLArguments sqlArgs = new SQLArguments();
+		String sqlStr = "select * from DOC where MD5_PATH=" + sqlArgs.add(md5);
+		PreparedStatement stmt = SQL.preparedStatement(sqlStr, sqlArgs, conn);
+		ResultSet rs = stmt.executeQuery();
 		String absPath = rs.next() ? rs.getString("ABS_PATH") : null;
-		if (absPath==null) return;
+		if (absPath==null)
+			return;
 		
-		stmt.executeUpdate("delete from DOC where MD5_PATH=" + Util.strLiteral(md5));
+		stmt = SQL.preparedStatement("delete from DOC where MD5_PATH=", sqlArgs, conn);
+		stmt.executeUpdate();
 		File file = new File(absPath);
 		if (file.exists() && !file.isDirectory()) file.delete();
 	}
 		
+	/**
+	 * 
+	 */
 	private void openConnection(){
 		if (conn==null){
 			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
@@ -138,6 +186,9 @@ public class DocUpload extends HttpServlet{
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	private void closeConnection(){
 		if (conn!=null){
 			try {
@@ -151,6 +202,10 @@ public class DocUpload extends HttpServlet{
 		}
 	}
 	
+	/**
+	 * @param path
+	 * @return
+	 */
 	private String legalizePath(String path){
 		StringBuffer buf = new StringBuffer();
 		for (int i=0; path!=null && i<path.length(); i++){

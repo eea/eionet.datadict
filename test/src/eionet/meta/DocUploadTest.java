@@ -14,6 +14,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
@@ -21,6 +22,7 @@ import javax.servlet.http.*;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 
 import eionet.test.Seed;
@@ -180,10 +182,6 @@ public class DocUploadTest extends DatabaseTestCase {
     }
 
     // -------------- The tests ------------
-    public void testDsIdQuote() throws Exception {
-        runSimpleUpload("Simple title", "23'");
-    }
-
     public void testUnicodeTitle() throws Exception {
         runSimpleUpload("Test file for Dataset ¤23");
     }
