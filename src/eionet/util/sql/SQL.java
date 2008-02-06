@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 /**
  * 
@@ -25,7 +26,7 @@ public class SQL {
 	 * @return
 	 * @throws SQLException 
 	 */
-	public static PreparedStatement preparedStatement(String sql, SQLArguments sqlArgs, Connection conn) throws SQLException{
+	public static PreparedStatement preparedStatement(String sql, INParameters sqlArgs, Connection conn) throws SQLException{
 		
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		populate(stmt, sqlArgs);
@@ -38,7 +39,7 @@ public class SQL {
 	 * @param sqlArgs
 	 * @throws SQLException 
 	 */
-	public static void populate(PreparedStatement stmt, SQLArguments sqlArgs) throws SQLException{
+	public static void populate(PreparedStatement stmt, INParameters sqlArgs) throws SQLException{
 		
 		for (int i=0; stmt!=null && sqlArgs!=null && i<sqlArgs.size(); i++){
 			
@@ -55,7 +56,7 @@ public class SQL {
 	 * @param columns
 	 * @return
 	 */
-	public static String insertStatement(String tableName, Hashtable columns){
+	public static String insertStatement(String tableName, LinkedHashMap columns){
 		
 		if (columns==null || columns.size()==0)
 			return null;
@@ -64,21 +65,21 @@ public class SQL {
 		buf.append(tableName).append(" (");
 		
 		// add names
-		Enumeration colNames = columns.keys();
-		for (int i=0; colNames.hasMoreElements(); i++){
+		Iterator iter = columns.keySet().iterator();
+		for (int i=0; iter.hasNext(); i++){
 			if (i>0)
 				buf.append(", ");
-			buf.append(colNames.nextElement());
+			buf.append(iter.next());
 		}
 		
 		buf.append(") values (");
 		
 		// add values
-		Iterator colValues = columns.values().iterator();
-		for (int i=0; colValues.hasNext(); i++){
+		iter = columns.values().iterator();
+		for (int i=0; iter.hasNext(); i++){
 			if (i>0)
 				buf.append(", ");
-			buf.append(colValues.next());
+			buf.append(iter.next());
 		}
 		
 		return buf.append(")").toString();
@@ -89,7 +90,7 @@ public class SQL {
 	 * @param columns
 	 * @return
 	 */
-	public static String updateStatement(String tableName, Hashtable columns){
+	public static String updateStatement(String tableName, LinkedHashMap columns){
 		
 		if (columns==null || columns.size()==0)
 			return null;
@@ -97,11 +98,11 @@ public class SQL {
 		StringBuffer buf = new StringBuffer("update ");
 		buf.append(tableName).append(" set ");
 		
-		Enumeration colNames = columns.keys();
-		for (int i=0; colNames.hasMoreElements(); i++){
+		Iterator colNames = columns.keySet().iterator();
+		for (int i=0; colNames.hasNext(); i++){
 			if (i>0)
 				buf.append(", ");
-			String colName = colNames.nextElement().toString();
+			String colName = colNames.next().toString();
 			buf.append(colName).append("=").append(columns.get(colName));
 		}
 		

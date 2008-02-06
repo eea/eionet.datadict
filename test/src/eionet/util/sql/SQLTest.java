@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 import eionet.test.MockDbPool;
 
@@ -24,11 +25,11 @@ public class SQLTest extends TestCase{
 	 */
 	public void test_insertStatement(){
 		
-		SQLArguments sqlArgs = new SQLArguments();
-		Hashtable hash = new Hashtable();
+		INParameters inParams = new INParameters();
+		LinkedHashMap hash = new LinkedHashMap();
 		hash.put("COL1", "'value1'");
-		hash.put("COL2", sqlArgs.add("45", Types.INTEGER));
-		hash.put("COL3", "md5(" + sqlArgs.add("value2", Types.VARBINARY) + ")");
+		hash.put("COL2", inParams.add("45", Types.INTEGER));
+		hash.put("COL3", "md5(" + inParams.add("value2", Types.VARBINARY) + ")");
 		
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -36,7 +37,7 @@ public class SQLTest extends TestCase{
 			conn = (new MockDbPool()).getConnection();
 			assertNotNull(conn);
 			
-			stmt = SQL.preparedStatement(SQL.insertStatement("TBL1", hash), sqlArgs, conn);
+			stmt = SQL.preparedStatement(SQL.insertStatement("TBL1", hash), inParams, conn);
 			assertNotNull(stmt);
 		}
 		catch (SQLException e){

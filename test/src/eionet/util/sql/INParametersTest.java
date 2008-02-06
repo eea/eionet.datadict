@@ -5,28 +5,28 @@ import java.sql.Types;
 import junit.framework.TestCase;
 
 /**
- * A class for unit testing <code>eionet.util.sql.SQLArgumentsTest</code>.
+ * A class for unit testing <code>eionet.util.sql.INParameters</code>.
  * 
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  */
-public class SQLArgumentsTest extends TestCase{
+public class INParametersTest extends TestCase{
 
 	/**
 	 * 
 	 */
 	public void test(){
 		
-		SQLArguments sqlArgs = new SQLArguments();
-		sqlArgs.add("string1");
-		sqlArgs.add("string2", Types.VARCHAR);
-		sqlArgs.add("345", Types.INTEGER);
-		sqlArgs.add("+", Types.CHAR);
+		INParameters inParams = new INParameters();
+		inParams.add("string1");
+		inParams.add("string2", Types.VARCHAR);
+		inParams.add("345", Types.INTEGER);
+		inParams.add("+", Types.CHAR);
 		
-		assertEquals((int)4, sqlArgs.size());
-		assertEquals("345", sqlArgs.getValue(2));
-		assertEquals(Types.CHAR, sqlArgs.getSQLType(3));
+		assertEquals((int)4, inParams.size());
+		assertEquals("345", inParams.getValue(2));
+		assertEquals(Types.CHAR, inParams.getSQLType(3));
 		
-		String str = sqlArgs.toString();
+		String str = inParams.toString();
 		assertNotNull(str);
 		assertTrue(str.indexOf("string1, Types.JAVA_OBJECT")>=0);
 		assertTrue(str.indexOf("string2, Types.VARCHAR")>=0);

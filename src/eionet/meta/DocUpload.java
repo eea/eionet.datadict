@@ -1,7 +1,7 @@
 package eionet.meta;
 
 import eionet.util.*;
-import eionet.util.sql.SQLArguments;
+import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 import javax.servlet.*;
@@ -141,17 +141,17 @@ public class DocUpload extends HttpServlet{
 		
 		String legalizedPath = legalizePath(file.getAbsolutePath());
 		
-		SQLArguments sqlArgs = new SQLArguments();
-		Hashtable insertCols = new Hashtable();
-		insertCols.put("OWNER_ID", sqlArgs.add(dstID, Types.INTEGER));
-		insertCols.put("MD5_PATH", "md5(" + sqlArgs.add(legalizedPath) + ")");
-		insertCols.put("ABS_PATH", sqlArgs.add(legalizedPath));
+		INParameters inParams = new INParameters();
+		LinkedHashMap insertCols = new LinkedHashMap();
+		insertCols.put("OWNER_ID", inParams.add(dstID, Types.INTEGER));
+		insertCols.put("MD5_PATH", "md5(" + inParams.add(legalizedPath) + ")");
+		insertCols.put("ABS_PATH", inParams.add(legalizedPath));
 		
 		if (title==null || title.length()==0)
 			title = file.getName();
-		insertCols.put("TITLE", sqlArgs.add(title));
+		insertCols.put("TITLE", inParams.add(title));
 		
-		SQL.preparedStatement(SQL.insertStatement("DOC", insertCols), sqlArgs, conn).executeUpdate();
+		SQL.preparedStatement(SQL.insertStatement("DOC", insertCols), inParams, conn).executeUpdate();
 	}
 
 	/**
@@ -161,15 +161,15 @@ public class DocUpload extends HttpServlet{
 	private void delete(String md5) throws Exception{
 		
 		openConnection();
-		SQLArguments sqlArgs = new SQLArguments();
-		String sqlStr = "select * from DOC where MD5_PATH=" + sqlArgs.add(md5);
-		PreparedStatement stmt = SQL.preparedStatement(sqlStr, sqlArgs, conn);
+		INParameters inParams = new INParameters();
+		String sqlStr = "select * from DOC where MD5_PATH=" + inParams.add(md5);
+		PreparedStatement stmt = SQL.preparedStatement(sqlStr, inParams, conn);
 		ResultSet rs = stmt.executeQuery();
 		String absPath = rs.next() ? rs.getString("ABS_PATH") : null;
 		if (absPath==null)
 			return;
 		
-		stmt = SQL.preparedStatement("delete from DOC where MD5_PATH=", sqlArgs, conn);
+		stmt = SQL.preparedStatement("delete from DOC where MD5_PATH=", inParams, conn);
 		stmt.executeUpdate();
 		File file = new File(absPath);
 		if (file.exists() && !file.isDirectory()) file.delete();

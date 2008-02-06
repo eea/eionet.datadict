@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class SQLArguments {
+public class INParameters {
 	
 	/** */
 	ArrayList values = null;
@@ -17,7 +17,7 @@ public class SQLArguments {
 	/**
 	 *
 	 */
-	public SQLArguments(){
+	public INParameters(){
 		values = new ArrayList();
 		sqlTypes = new ArrayList();
 	}
