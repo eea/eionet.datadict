@@ -9,6 +9,8 @@ import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
 
 import com.tee.util.*;
 import com.tee.xmlserver.AppUserIF;
@@ -87,10 +89,10 @@ public class DDSearchEngine {
 	 * Get data elements by table id.
 	 * 5 inputs
 	 */
-	public Vector getDataElements(Vector params,
-			String type,
-			String datasetIdf,
-			String short_name,
+	public Vector getDataElements(Vector unUsed1,
+			String unUsed2,
+			String unUsed3,
+			String unUsed4,
 			String tableID) throws SQLException {
 		
 		// make sure we have the tableID
@@ -98,6 +100,7 @@ public class DDSearchEngine {
 			throw new SQLException("getDataElements(): tableID is missing!");
 		
 		// build the monster query.
+		INParameters inPrms = new INParameters();
 		StringBuffer monsterQry = new StringBuffer().
 		append("select ").
 		append("distinct DATAELEM.*, TBL2ELEM.TABLE_ID, TBL2ELEM.POSITION, ").
@@ -111,7 +114,7 @@ public class DDSearchEngine {
 		append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ").
 		append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ").
 		append("where ").
-		append("TBL2ELEM.TABLE_ID=").append(tableID).append(" and DATASET.DELETED is null and ").
+		append("TBL2ELEM.TABLE_ID=").append(inPrms.add(tableID, Types.INTEGER)).append(" and DATASET.DELETED is null and ").
 		append("DATAELEM.WORKING_COPY='N'"). // JH200505 - don't want working copies coming up here
 		append(" order by TBL2ELEM.POSITION asc");
 		
@@ -129,14 +132,14 @@ public class DDSearchEngine {
 		
 		// finally execute the monster query
 		Vector result = new Vector();
-		Statement elemsStmt = null;
+		PreparedStatement elemsStmt = null;
 		ResultSet elemsRs = null;
 		
 		int counter = 0;
 		
 		try{
-			elemsStmt = conn.createStatement();
-			elemsRs = elemsStmt.executeQuery(monsterQry.toString());
+			elemsStmt = SQL.preparedStatement(monsterQry.toString(), inPrms, conn);
+			elemsRs = elemsStmt.executeQuery();
 			
 			
 			// process ResultSet
@@ -294,6 +297,9 @@ public class DDSearchEngine {
 			boolean isIncludeHistoricVersions,
 			String oper) throws SQLException {
 		
+		// set up the IN parameters for the upcoming PreparedStatement
+		INParameters inPrms = new INParameters();
+		
 		// oper defines the search precision. If it's missing, set it to substring search
 		if (oper==null)
 			oper=" like ";
@@ -324,8 +330,9 @@ public class DDSearchEngine {
 		
 		// set the element type (CH1 or CH2)
 		if (type!=null && type.length()!=0){
-			if (constraints.length()!=0) constraints.append(" and ");
-			constraints.append("DATAELEM.TYPE=").append(Util.strLiteral(type));
+			if (constraints.length()!=0)
+				constraints.append(" and ");
+			constraints.append("DATAELEM.TYPE=").append(inPrms.add(type));
 		}
 		
 		// set the element short name
@@ -338,9 +345,9 @@ public class DDSearchEngine {
 				oper=" like ";
 			constraints.append(oper);
 			if (oper.trim().equalsIgnoreCase("like"))
-				constraints.append(Util.strLiteral("%" + short_name + "%"));
+				constraints.append(inPrms.add("%" + short_name + "%"));
 			else
-				constraints.append(Util.strLiteral(short_name));
+				constraints.append(inPrms.add(short_name));
 		}
 		
 		// set the element identifier
@@ -353,15 +360,16 @@ public class DDSearchEngine {
 				oper=" like ";
 			constraints.append(oper);
 			if (oper.trim().equalsIgnoreCase("like"))
-				constraints.append(Util.strLiteral("%" + idfier + "%"));
+				constraints.append(inPrms.add("%" + idfier + "%"));
 			else
-				constraints.append(Util.strLiteral(idfier));
+				constraints.append(inPrms.add(idfier));
 		}
 		
 		// see if looking for elements of a concrete table 
 		if (tableID!=null && tableID.length()!=0){
-			if (constraints.length()!=0) constraints.append(" and ");
-			constraints.append("TBL2ELEM.TABLE_ID=").append(tableID);
+			if (constraints.length()!=0)
+				constraints.append(" and ");
+			constraints.append("TBL2ELEM.TABLE_ID=").append(inPrms.add(tableID, Types.INTEGER));
 		}
 		
 		// see if looking for elements of a concrete dataset copy
@@ -370,13 +378,14 @@ public class DDSearchEngine {
 			if (datasetID.equals("-1"))
 				constraints.append("DATASET.DATASET_ID IS NULL");
 			else
-				constraints.append("DATASET.DATASET_ID=").append(datasetID);
+				constraints.append("DATASET.DATASET_ID=").append(inPrms.add(datasetID, Types.INTEGER));
 		}
 		
 		// see if looking for elements of datasets with a concrete identifier
 		if (datasetIdf!=null && datasetIdf.length()!=0){
-			if (constraints.length()!=0) constraints.append(" and ");
-			constraints.append("DATASET.IDENTIFIER='").append(datasetIdf).append("'");
+			if (constraints.length()!=0)
+				constraints.append(" and ");
+			constraints.append("DATASET.IDENTIFIER=").append(inPrms.add(datasetIdf));
 		}
 		
 		// the loop for processing dynamic search parameters
@@ -396,7 +405,7 @@ public class DDSearchEngine {
 			if (constraints.length()!=0)
 				constraints.append(" and ");
 			constraints.append("ATTR").append(index).append(".M_ATTRIBUTE_ID").
-			append(idOper).append(attrID).append(" and ");
+			append(idOper).append(inPrms.add(attrID, Types.INTEGER)).append(" and ");
 			
 			// concatenate the searched values with "or"
 			if (attrValues!=null && attrValues.size()!=0){
@@ -405,11 +414,11 @@ public class DDSearchEngine {
 					if (j>0) constraints.append(" or ");
 					if (valueOper!= null && valueOper.trim().equalsIgnoreCase("MATCH")){
 						constraints.append("match(ATTR").append(index).
-						append(".VALUE) against(").append(attrValues.get(j)).append(")");
+						append(".VALUE) against(").append(inPrms.add(attrValues.get(j), Types.VARCHAR)).append(")");
 					}
 					else
 						constraints.append("ATTR").append(index).append(".VALUE").
-						append(valueOper).append(attrValues.get(j));
+						append(valueOper).append(inPrms.add(attrValues.get(j), Types.VARCHAR));
 				}
 				constraints.append(")");
 			}
@@ -454,11 +463,11 @@ public class DDSearchEngine {
 		
 		// finally execute the monster query
 		Vector result = new Vector();
-		Statement elemsStmt = null;
+		PreparedStatement elemsStmt = null;
 		ResultSet elemsRs = null;
 		try{
-			elemsStmt = conn.createStatement();
-			elemsRs = elemsStmt.executeQuery(monsterQry.toString());
+			elemsStmt = SQL.preparedStatement(monsterQry.toString(), inPrms, conn);
+			elemsRs = elemsStmt.executeQuery();
 			
 			String curDstID = null;
 			String curDstIdf = null;
@@ -625,6 +634,9 @@ public class DDSearchEngine {
 		
 		Vector result = new Vector();
 		
+		// set up the IN parameters for the up-coming query
+		INParameters inParams = new INParameters();
+		
 		// oper defines the search precision. If it's missing, set it to substring search
 		if (oper==null) oper=" like ";
 		
@@ -639,56 +651,51 @@ public class DDSearchEngine {
 		
 		// set the registration status
 		if (regStatus!=null && regStatus.trim().length()>0){
-			if (constraints.length()>0) constraints.append(" and ");
-			constraints.append("DATAELEM.REG_STATUS=").append(Util.strLiteral(regStatus));
+			if (constraints.length()>0)
+				constraints.append(" and ");
+			constraints.append("DATAELEM.REG_STATUS=").append(inParams.add(regStatus));
 		}
 		
 		// set the element type (CH1 or CH2)
 		if (type!=null && type.length()!=0){
 			if (constraints.length()!=0) constraints.append(" and ");
-			constraints.append("DATAELEM.TYPE=").append(Util.strLiteral(type));
+			constraints.append("DATAELEM.TYPE=").append(inParams.add(type));
 		}
 		
 		// set the element short name
 		if (short_name!=null && short_name.length()!=0){
-			if (constraints.length()!=0){
-				constraints.append(" and ");
-			}
 			
+			if (constraints.length()!=0)
+				constraints.append(" and ");
 			constraints.append("DATAELEM.SHORT_NAME");
 			
 			// SHORT_NAME is not fulltext indexed, so force "match" to "like"
-			if (oper.trim().equalsIgnoreCase("match")){
+			if (oper.trim().equalsIgnoreCase("match"))
 				oper=" like ";
-			}
-			
 			constraints.append(oper);
 			
 			if (oper.trim().equalsIgnoreCase("like"))
-				constraints.append(Util.strLiteral("%" + short_name + "%"));
+				constraints.append(inParams.add("%" + short_name + "%"));
 			else
-				constraints.append(Util.strLiteral(short_name));
+				constraints.append(inParams.add(short_name));
 		}
 		
 		// set the element identifier
 		if (idfier!=null && idfier.length()!=0){
-			if (constraints.length()!=0){
-				constraints.append(" and ");
-			}
 			
+			if (constraints.length()!=0)
+				constraints.append(" and ");
 			constraints.append("DATAELEM.IDENTIFIER");
 			
 			// IDENTIFIER is not fulltext indexed, so force "match" to "like"
-			if (oper.trim().equalsIgnoreCase("match")){
+			if (oper.trim().equalsIgnoreCase("match"))
 				oper=" like ";
-			}
-			
 			constraints.append(oper);
 			
 			if (oper.trim().equalsIgnoreCase("like"))
-				constraints.append(Util.strLiteral("%" + idfier + "%"));
+				constraints.append(inParams.add("%" + idfier + "%"));
 			else
-				constraints.append(Util.strLiteral(idfier));
+				constraints.append(inParams.add(idfier));
 		}
 		
 		// the loop for processing dynamic search parameters
@@ -707,12 +714,11 @@ public class DDSearchEngine {
 			tables.append(", ATTRIBUTE as ATTR" + index);
 			
 			// deal with the where part
-			if (constraints.length()!=0){
+			if (constraints.length()!=0)
 				constraints.append(" and ");
-			}
 			
 			constraints.append("ATTR").append(index).append(".M_ATTRIBUTE_ID").
-			append(idOper).append(attrID).append(" and ");
+			append(idOper).append(inParams.add(attrID, Types.INTEGER)).append(" and ");
 			
 			// concatenate the searched values with "or"
 			if (attrValues!=null && attrValues.size()!=0){
@@ -721,11 +727,11 @@ public class DDSearchEngine {
 					if (j>0) constraints.append(" or ");
 					if (valueOper!= null && valueOper.trim().equalsIgnoreCase("MATCH")){
 						constraints.append("match(ATTR").append(index).
-						append(".VALUE) against(").append(attrValues.get(j)).append(")");
+						append(".VALUE) against(").append(inParams.add(attrValues.get(j))).append(")");
 					}
 					else
 						constraints.append("ATTR").append(index).append(".VALUE").
-						append(valueOper).append(attrValues.get(j));
+						append(valueOper).append(inParams.add(attrValues.get(j)));
 				}
 				constraints.append(")");
 			}
@@ -738,11 +744,13 @@ public class DDSearchEngine {
 		// end of dynamic parameters loop
 		
 		// if the user is missing, override the wrkCopies argument
-		if (user==null) wrkCopies = false;
-		if (constraints.length()!=0) constraints.append(" and ");
+		if (user==null)
+			wrkCopies = false;
+		if (constraints.length()!=0)
+			constraints.append(" and ");
 		if (wrkCopies){
 			constraints.append("DATAELEM.WORKING_COPY='Y' and DATAELEM.WORKING_USER=").
-			append(Util.strLiteral(user.getUserName()));
+			append(inParams.add(user.getUserName()));
 		}
 		else
 			constraints.append("DATAELEM.WORKING_COPY='N'");
@@ -772,11 +780,11 @@ public class DDSearchEngine {
 		attrsStmt = conn.prepareStatement(attrsQry.toString());
 		
 		// finally execute the monster query
-		Statement elemsStmt = null;
+		PreparedStatement elemsStmt = null;
 		ResultSet elemsRs = null;
 		try{
-			elemsStmt = conn.createStatement();
-			elemsRs = elemsStmt.executeQuery(monsterQry.toString());
+			elemsStmt = SQL.preparedStatement(monsterQry.toString(), inParams, conn);
+			elemsRs = elemsStmt.executeQuery();
 			
 			String curElmIdf = null;
 			
@@ -855,14 +863,16 @@ public class DDSearchEngine {
 	 */
 	public String getLatestElmID(String idf, Vector statuses) throws SQLException{
 		
+		INParameters inParams = new INParameters();
+		
 		StringBuffer buf = new StringBuffer();
 		buf.append("select DATAELEM_ID from DATAELEM where WORKING_COPY='N'");
-		buf.append(" and PARENT_NS is null and IDENTIFIER=").append(Util.strLiteral(idf));
+		buf.append(" and PARENT_NS is null and IDENTIFIER=").append(inParams.add(idf));
 		if (statuses!=null && statuses.size()>0){
 			buf.append(" and (");
 			for (int i=0; i<statuses.size(); i++){
 				if (i>0) buf.append(" or ");
-				buf.append("REG_STATUS=").append(Util.strLiteral((String)statuses.get(i)));
+				buf.append("REG_STATUS=").append(inParams.add((String)statuses.get(i)));
 			}
 			buf.append(")");
 		}
@@ -870,10 +880,10 @@ public class DDSearchEngine {
 		
 		String elmID = null;
 		ResultSet rs = null;
-		Statement stmt = null;		
+		PreparedStatement stmt = null;		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			if (rs.next())
 				return rs.getString(1);
 		}
@@ -937,14 +947,16 @@ public class DDSearchEngine {
 	 */
 	public String getLatestDstID(String idf, Vector statuses) throws SQLException{
 		
+		INParameters inParams = new INParameters();
+		
 		StringBuffer buf = new StringBuffer();
 		buf.append("select DATASET_ID from DATASET where WORKING_COPY='N'");
-		buf.append(" and DELETED is null and IDENTIFIER=").append(Util.strLiteral(idf));
+		buf.append(" and DELETED is null and IDENTIFIER=").append(inParams.add(idf));
 		if (statuses!=null && statuses.size()>0){
 			buf.append(" and (");
 			for (int i=0; i<statuses.size(); i++){
 				if (i>0) buf.append(" or ");
-				buf.append("REG_STATUS=").append(Util.strLiteral((String)statuses.get(i)));
+				buf.append("REG_STATUS=").append(inParams.add((String)statuses.get(i)));
 			}
 			buf.append(")");
 		}
@@ -952,10 +964,10 @@ public class DDSearchEngine {
 		
 		String dstID = null;
 		ResultSet rs = null;
-		Statement stmt = null;		
+		PreparedStatement stmt = null;
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			if (rs.next())
 				return rs.getString(1);
 		}
@@ -1006,23 +1018,35 @@ public class DDSearchEngine {
 		return getDataElement(elmID, tblID, true);
 	}
 	
-	public DataElement getDataElement(String elmID, String tblID, boolean inheritAttrs)
-	throws SQLException {
+	/**
+	 * 
+	 * @param elmID
+	 * @param tblID
+	 * @param inheritAttrs
+	 * @return
+	 * @throws SQLException
+	 */
+	public DataElement getDataElement(String elmID, String tblID, boolean inheritAttrs) throws SQLException {
+		
+		INParameters inParams = new INParameters();
+		
 		StringBuffer qry = null;
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		DataElement elm = null;
 		try{
 			// first find out if this is a common element
-			qry = new StringBuffer("select * from DATAELEM where DATAELEM_ID=").append(elmID);
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(qry.toString());
-			if (!rs.next()) return null;
+			qry = new StringBuffer("select * from DATAELEM where DATAELEM_ID=").append(inParams.add(elmID, Types.INTEGER));
+			stmt = SQL.preparedStatement(qry.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			if (!rs.next())
+				return null;
 			boolean elmCommon = Util.nullString(rs.getString("PARENT_NS"));
 			
 			// Build the query which takes into account the tblID.
 			// If the latter is null then take the table which is latest in history,
 			// otherwise take exactly the table wanted by tblID
+			inParams = new INParameters();
 			qry = new StringBuffer("select DATAELEM.*");
 			if (!elmCommon){
 				qry.append(", TBL2ELEM.POSITION, DS_TABLE.TABLE_ID, DS_TABLE.IDENTIFIER, ").
@@ -1037,19 +1061,20 @@ public class DDSearchEngine {
 				append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ").
 				append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID");
 			}
-			qry.append(" where DATAELEM.DATAELEM_ID=").append(elmID);
+			qry.append(" where DATAELEM.DATAELEM_ID=").append(inParams.add(elmID, Types.INTEGER));
 			if (!elmCommon && !Util.nullString(tblID))
-				qry.append(" and DS_TABLE.TABLE_ID=").append(tblID);
+				qry.append(" and DS_TABLE.TABLE_ID=").append(inParams.add(tblID, Types.INTEGER));
 			
 			qry.append(" order by ").
 			append("DATAELEM.DATAELEM_ID desc");
-			if (!elmCommon) qry.append(", DS_TABLE.TABLE_ID desc, DATASET.DATASET_ID desc");
+			if (!elmCommon)
+				qry.append(", DS_TABLE.TABLE_ID desc, DATASET.DATASET_ID desc");
 			
 			logger.debug(qry.toString());
 			
 			// execute the query
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(qry.toString());
+			stmt = SQL.preparedStatement(qry.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			if (rs.next()){
 				elm = new DataElement(rs.getString("DATAELEM.DATAELEM_ID"),
 						rs.getString("DATAELEM.SHORT_NAME"),
@@ -1116,8 +1141,10 @@ public class DDSearchEngine {
 	
 	public Vector getDElemAttributes(String attr_id, String type, String orderBy, String inheritable) throws SQLException {
 		
-		if (type==null) type = DElemAttribute.TYPE_SIMPLE;
+		if (type==null)
+			type = DElemAttribute.TYPE_SIMPLE;
 		
+		INParameters inParams = new INParameters();
 		StringBuffer qry=new StringBuffer();
 		if (type.equals(DElemAttribute.TYPE_SIMPLE)){
 			qry.append("select distinct M_ATTRIBUTE_ID as ID, M_ATTRIBUTE.* from M_ATTRIBUTE");
@@ -1130,27 +1157,28 @@ public class DDSearchEngine {
 				qry.append(" where M_COMPLEX_ATTR_ID=");
 		}
 		if (attr_id != null)
-			qry.append(attr_id);
+			qry.append(inParams.add(attr_id, Types.INTEGER));
 		
 		if (inheritable!=null){
-			if (attr_id!=null) qry.append(" AND ");
-			if (attr_id==null) qry.append(" WHERE ");
-			qry.append("INHERIT='");
-			qry.append(inheritable);
-			qry.append("'");
+			if (attr_id!=null)
+				qry.append(" AND ");
+			if (attr_id==null)
+				qry.append(" WHERE ");
+			qry.append("INHERIT=").append(inParams.add(inheritable));
 		}
 		
-		if (orderBy == null) orderBy = ORDER_BY_M_ATTR_NAME;
+		if (orderBy == null)
+			orderBy = ORDER_BY_M_ATTR_NAME;
 		qry.append(" order by ");
 		qry.append(orderBy);
 		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Vector v = new Vector();
 		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(qry.toString());
+			stmt = SQL.preparedStatement(qry.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			while (rs.next()){
 				DElemAttribute attr = new DElemAttribute(rs.getString("ID"),
@@ -1198,88 +1226,31 @@ public class DDSearchEngine {
 		return v;
 	}
 	
-	public boolean hasSubValues(String parent_csi) throws SQLException {
-		
-		StringBuffer buf = new StringBuffer();
-		buf.append("select count(*) from CSI_RELATION ");
-		buf.append("where PARENT_CSI=");
-		buf.append(parent_csi);
-		
-		Statement stmt = null;
-		ResultSet rs = null;
-		
-		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
-			
-			if (rs.next()){
-				if (rs.getInt(1)>0){
-					return true;
-				}
-			}
-		}
-		finally{
-			try{
-				if (rs != null) rs.close();
-				if (stmt != null) stmt.close();
-			} catch (SQLException sqle) {}
-		}
-		
-		return false;
-	}
-	
-	public boolean isChild(String csiID) throws SQLException {
-		
-		StringBuffer buf = new StringBuffer();
-		buf.append("select count(*) from CSI_RELATION ");
-		buf.append("where CHILD_CSI=");
-		buf.append(csiID);
-		
-		Statement stmt = null;
-		ResultSet rs = null;
-		
-		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
-			
-			if (rs.next()){
-				if (rs.getInt(1)>0){
-					return true;
-				}
-			}
-		}
-		finally{
-			try{
-				if (rs != null) rs.close();
-				if (stmt != null) stmt.close();
-			} catch (SQLException sqle) {}
-		}
-		
-		return false;
-	}
-	
 	public Vector getFixedValues(String delem_id) throws SQLException {
 		return getFixedValues(delem_id, "elem");
 	}
 	
-	public Vector getFixedValues(String delem_id, String parent_type)
-	throws SQLException {
-		
+	/**
+	 * 
+	 * @param delem_id
+	 * @param parent_type
+	 * @return
+	 * @throws SQLException
+	 */
+	public Vector getFixedValues(String delem_id, String parent_type) throws SQLException {
+
+		INParameters inParams = new INParameters();
 		StringBuffer buf = new StringBuffer();
+		buf.append("select * from FXV where OWNER_ID=").append(inParams.add(delem_id, Types.INTEGER)).
+		append(" and OWNER_TYPE=").append(inParams.add(parent_type)).append(" order by VALUE asc");
 		
-		buf.append("select * from FXV where OWNER_ID=").
-		append(delem_id).
-		append(" and OWNER_TYPE=").
-		append(Util.strLiteral(parent_type)).
-		append(" order by VALUE asc");
-		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Vector v = new Vector();
 		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			while (rs.next()){
 				
@@ -1307,31 +1278,41 @@ public class DDSearchEngine {
 		return v;
 	}
 	
+	/**
+	 * 
+	 * @param attr_id
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getAttrFields(String attr_id) throws SQLException{
 		return getAttrFields(attr_id, null);
 	}
+	
+	/**
+	 * 
+	 * @param attr_id
+	 * @param priority
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getAttrFields(String attr_id, String priority) throws SQLException{
+		
+		INParameters inParams = new INParameters();
 		
 		StringBuffer buf = new StringBuffer();
 		buf.append("select * from M_COMPLEX_ATTR_FIELD ");
 		buf.append("where M_COMPLEX_ATTR_ID=");
-		buf.append(attr_id);
-		
-		if (priority != null){
-			buf.append(" and PRIORITY='");
-			buf.append(priority);
-			buf.append("'");
-		}
-		
+		buf.append(inParams.add(attr_id, Types.INTEGER));
+		if (priority != null)
+			buf.append(" and PRIORITY=").append(inParams.add(priority));
 		buf.append(" order by POSITION");
 		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Vector v = new Vector();
-		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			while (rs.next()){
 				
@@ -1358,20 +1339,28 @@ public class DDSearchEngine {
 		
 		return v;
 	}
+	
+	/**
+	 * 
+	 * @param field_id
+	 * @return
+	 * @throws SQLException
+	 */
 	public Hashtable getAttrField(String field_id) throws SQLException{
 		
+		INParameters inParams = new INParameters();
 		StringBuffer buf = new StringBuffer();
 		buf.append("select * from M_COMPLEX_ATTR_FIELD ");
 		buf.append("where M_COMPLEX_ATTR_FIELD_ID=");
-		buf.append(field_id);
+		buf.append(inParams.add(field_id, Types.INTEGER));
 		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Hashtable hash = new Hashtable();
 		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			while (rs.next()){
 				
@@ -1396,24 +1385,58 @@ public class DDSearchEngine {
 		return hash;
 	}
 	
+	/**
+	 * 
+	 * @param attr_id
+	 * @param parent_id
+	 * @param parent_type
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getComplexAttribute(String attr_id, String parent_id, String parent_type) throws SQLException {
 		return getComplexAttributes(parent_id, parent_type, attr_id);
 	}
 	
+	/**
+	 * 
+	 * @param parent_id
+	 * @param parent_type
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getComplexAttributes(String parent_id, String parent_type) throws SQLException {
 		return getComplexAttributes(parent_id, parent_type, null);
 	}
 	
+	/**
+	 * 
+	 * @param parent_id
+	 * @param parent_type
+	 * @param attr_id
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getComplexAttributes(String parent_id, String parent_type, String attr_id) throws SQLException {
 		return getComplexAttributes(parent_id, parent_type, attr_id, null, null);
 	}
 	
+	/**
+	 * 
+	 * @param parent_id
+	 * @param parent_type
+	 * @param attr_id
+	 * @param inheritTblID
+	 * @param inheritDstID
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getComplexAttributes(String parent_id,
 			String parent_type,
 			String attr_id,
 			String inheritTblID,
-			String inheritDsID) throws SQLException {
+			String inheritDstID) throws SQLException {
 		
+		INParameters inParams = new INParameters();
 		StringBuffer buf = new StringBuffer();
 		buf.append("select ");
 		buf.append("M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID as ATTR_ID, ");
@@ -1446,20 +1469,20 @@ public class DDSearchEngine {
 		buf.append("on M_COMPLEX_ATTR.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID ");        
 		buf.append("where ");
 		buf.append("((COMPLEX_ATTR_ROW.PARENT_ID=");
-		buf.append(parent_id);
-		buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE='");
-		buf.append(parent_type);
-		buf.append("')");
+		buf.append(inParams.add(parent_id, Types.INTEGER));
+		buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE=");
+		buf.append(inParams.add(parent_type));
+		buf.append(")");
 		
-		//Ek  291003 search inhrted attributes from table and/or dataset level
+		// EK291003 search inhrted attributes from table and/or dataset level
 		if (!Util.nullString(inheritTblID)){
 			buf.append(" or (COMPLEX_ATTR_ROW.PARENT_ID=");
-			buf.append(inheritTblID);
+			buf.append(inParams.add(inheritTblID, Types.INTEGER));
 			buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE='T' and M_COMPLEX_ATTR.INHERIT!='0')");
 		}
-		if (!Util.nullString(inheritDsID)){
+		if (!Util.nullString(inheritDstID)){
 			buf.append(" or (COMPLEX_ATTR_ROW.PARENT_ID=");
-			buf.append(inheritDsID);
+			buf.append(inParams.add(inheritDstID, Types.INTEGER));
 			buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE='DS' and M_COMPLEX_ATTR.INHERIT!='0')");
 		}
 		buf.append(")");
@@ -1467,24 +1490,23 @@ public class DDSearchEngine {
 		// set attribute id if looking for a concrete attribute
 		if (attr_id != null){
 			buf.append(" and COMPLEX_ATTR_ROW.M_COMPLEX_ATTR_ID=");
-			buf.append(attr_id);
+			buf.append(inParams.add(attr_id, Types.INTEGER));
 		}
 		
 		buf.append(" and COMPLEX_ATTR_ROW.M_COMPLEX_ATTR_ID=");
 		buf.append("M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID ");
-		//buf.append("COMPLEX_ATTR_FIELD.ROW_ID=COMPLEX_ATTR_ROW.ROW_ID ");
 		buf.append("order by ATTR_ID, PARENT_TYPE, ROW_POS");
 		
 		logger.debug(buf.toString());
 		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Vector v = new Vector();
 		DElemAttribute attr = null;
 		Hashtable rowHash = null;
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			Hashtable attrs  = new Hashtable();
 			Hashtable fields = new Hashtable();
@@ -1580,7 +1602,12 @@ public class DDSearchEngine {
 		
 		return v;
 	}
-	// initiated from getComplexAttributes
+	
+	/**
+	 * 
+	 * @param attr
+	 * @param rowHash
+	 */
 	private void addRowHash(DElemAttribute attr, Hashtable rowHash){
 		String inherited=null;
 		if (rowHash.containsKey("inherited"))
@@ -1614,9 +1641,18 @@ public class DDSearchEngine {
 		
 	}
 	
+	/**
+	 * 
+	 * @param attr_id
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getComplexAttributeValues(String attr_id) throws SQLException {
 		
-		if (attr_id==null) return null;
+		if (attr_id==null)
+			return null;
+		
+		INParameters inParams = new INParameters();
 		
 		StringBuffer buf = new StringBuffer();
 		buf.append("select ");
@@ -1638,12 +1674,13 @@ public class DDSearchEngine {
 		
 		if (attr_id != null){
 			buf.append(" and COMPLEX_ATTR_ROW.M_COMPLEX_ATTR_ID=");
-			buf.append(attr_id);
+			buf.append(inParams.add(attr_id, Types.INTEGER));
 		}
-		
 		buf.append(" order by ROW_ID");
+		
 		logger.debug(buf.toString());
-		Statement stmt = null;
+		
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Vector v = new Vector();
 		Hashtable rowHash = null;
@@ -1652,8 +1689,8 @@ public class DDSearchEngine {
 		String row="";
 		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			String prvRow = "-1";
 			while (ok){
@@ -1690,22 +1727,33 @@ public class DDSearchEngine {
 		
 		return v;
 	}
+	
+	/**
+	 * 
+	 * @param attr_id
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getSimpleAttributeValues(String attr_id) throws SQLException {
 		
-		if (attr_id==null) return null;
+		if (attr_id==null)
+			return null;
+		
+		INParameters inParams = new INParameters();
 		
 		StringBuffer buf = new StringBuffer();
 		buf.append("select distinct value from ATTRIBUTE where M_ATTRIBUTE_ID=");
-		buf.append(attr_id);
+		buf.append(inParams.add(attr_id, Types.INTEGER));
 		buf.append(" order by VALUE");
-		logger.debug(buf.toString());
-		Statement stmt = null;
-		ResultSet rs = null;
-		Vector v = new Vector();
 		
+		logger.debug(buf.toString());
+		
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		Vector v = new Vector();		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			while (rs.next()){
 				
@@ -1726,44 +1774,51 @@ public class DDSearchEngine {
 		return v;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getNamespaces() throws SQLException {
 		return getNamespaces(null);
 	}
 	
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 * @throws SQLException
+	 */
 	public Namespace getNamespace(String id) throws SQLException {
 		Vector v = getNamespaces(id);
 		if (v != null && v.size()!=0) return (Namespace)v.get(0);
 		return null;
 	}
 	
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getNamespaces(String id) throws SQLException {
 		
-		StringBuffer buf = new StringBuffer("select * from NAMESPACE");
-		if (id != null && id.length()!=0){
-			buf.append(" where NAMESPACE_ID='");
-			buf.append(id);
-			buf.append("'");
-		}
+		INParameters inParams = new INParameters();
 		
-		//buf.append(" order by TABLE_ID, DATASET_ID");
+		StringBuffer buf = new StringBuffer("select * from NAMESPACE");
+		if (id != null && id.length()!=0)
+			buf.append(" where NAMESPACE_ID=").append(inParams.add(id, Types.INTEGER));
 		buf.append(" order by SHORT_NAME");
 		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Vector v = new Vector();
-		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
-			
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			while (rs.next()){
-				Namespace namespace=new Namespace(rs.getString("NAMESPACE_ID"),
-						rs.getString("SHORT_NAME"),
-						rs.getString("FULL_NAME"),
-						null, //rs.getString("URL"),
-						rs.getString("DEFINITION"));
-				//namespace.setTable(rs.getString("NAMESPACE.TABLE_ID"));
-				//namespace.setDataset(rs.getString("NAMESPACE.DATASET_ID"));
+				Namespace namespace = new Namespace(rs.getString("NAMESPACE_ID"),
+						rs.getString("SHORT_NAME"), rs.getString("FULL_NAME"), null, rs.getString("DEFINITION"));
 				namespace.setWorkingUser(rs.getString("WORKING_USER"));
 				v.add(namespace);
 			}
@@ -1777,33 +1832,13 @@ public class DDSearchEngine {
 		
 		return v;
 	}
-	
-	public String getContentDefinitionUrl(String id) throws SQLException {
-		
-		StringBuffer buf = new StringBuffer("select * from CONTENT_DEFINITION where DATAELEM_ID=");
-		buf.append(id);
-		
-		Statement stmt = null;
-		ResultSet rs = null;
-		
-		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
-			
-			if (rs.next()){
-				return rs.getString("URL");
-			}
-		}
-		finally{
-			try{
-				if (rs != null) rs.close();
-				if (stmt != null) stmt.close();
-			} catch (SQLException sqle) {}
-		}
-		
-		return null;
-	}
-	
+
+	/**
+	 * 
+	 * @param datasetID
+	 * @return
+	 * @throws SQLException
+	 */
 	public Dataset getDeletedDataset(String datasetID) throws SQLException {
 		Vector v = getDatasets(datasetID, false, true);
 		if (v==null || v.size()==0)
@@ -1812,6 +1847,12 @@ public class DDSearchEngine {
 			return (Dataset)v.get(0);
 	}
 	
+	/**
+	 * 
+	 * @param datasetID
+	 * @return
+	 * @throws SQLException
+	 */
 	public Dataset getDataset(String datasetID) throws SQLException {
 		
 		Vector v = getDatasets(datasetID, false, false);
@@ -1821,41 +1862,61 @@ public class DDSearchEngine {
 			return (Dataset)v.get(0);
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getDatasets() throws SQLException {
 		return getDatasets(null, false, false);
 	}
 	
+	/**
+	 * 
+	 * @param wrkCopies
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getDatasets(boolean wrkCopies) throws SQLException {
 		return getDatasets(null, wrkCopies, false);
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getDeletedDatasets() throws SQLException {
 		if (user==null || !user.isAuthentic())
 			throw new SQLException("User not authorized");
 		return getDatasets(null, false, true);
 	}
 	
-	private Vector getDatasets(String datasetID,
-			boolean wrkCopies,
-			boolean deleted) throws SQLException {
+	/**
+	 * 
+	 * @param datasetID
+	 * @param wrkCopies
+	 * @param deleted
+	 * @return
+	 * @throws SQLException
+	 */
+	private Vector getDatasets(String datasetID, boolean wrkCopies, boolean deleted) throws SQLException {
+		
+		INParameters inParams = new INParameters();
 		
 		StringBuffer buf  = new StringBuffer();
 		buf.append("select distinct DATASET.* ");
 		buf.append("from DATASET ");
 		buf.append("where CORRESP_NS is not null");
-		if (datasetID!=null && datasetID.length()!=0){
-			buf.append(" and DATASET.DATASET_ID=");
-			buf.append(datasetID);
-		}
+		if (datasetID!=null && datasetID.length()!=0)
+			buf.append(" and DATASET.DATASET_ID=").append(inParams.add(datasetID, Types.INTEGER));
 		
 		// JH141003
 		// if datasetID specified, ignore the DELETED flag, otherwise follow it
 		if (!Util.nullString(datasetID))
 			buf.append(" ");
-		else if (deleted && user!=null){
-			buf.append(" and DATASET.DELETED=");
-			buf.append(Util.strLiteral(user.getUserName()) + " ");
-		}
+		else if (deleted && user!=null)
+			buf.append(" and DATASET.DELETED=").append(inParams.add(user.getUserName())).append(" ");
 		else
 			buf.append(" and DATASET.DELETED is null ");
 		
@@ -1871,25 +1932,21 @@ public class DDSearchEngine {
 			if (!wrkCopies)
 				buf.append("DATASET.WORKING_COPY='N'");
 			else
-				buf.append("DATASET.WORKING_COPY='Y' and " +
-						"DATASET.WORKING_USER='" +
-						user.getUserName() + "'");
+				buf.append("DATASET.WORKING_COPY='Y' and DATASET.WORKING_USER=").append(inParams.add(user.getUserName()));
 		}
-		
 		buf.append(" order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc");
 		
 		logger.debug(buf.toString());
 		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Vector v = new Vector();
 		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			Dataset ds = null;
-			
 			while (rs.next()){
 				
 				String idf = rs.getString("IDENTIFIER");
@@ -1926,15 +1983,42 @@ public class DDSearchEngine {
 		
 		return v;
 	}
-	
+
+	/**
+	 * 
+	 * @param params
+	 * @param short_name
+	 * @param version
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getDatasets(Vector params, String short_name, String version) throws SQLException {
 		return getDatasets(params, short_name, version, null);
 	}
 	
+	/**
+	 * 
+	 * @param params
+	 * @param short_name
+	 * @param version
+	 * @param oper
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getDatasets(Vector params, String short_name, String version, String oper) throws SQLException {
 		return getDatasets(params, short_name, version, oper, false);
 	}
 	
+	/**
+	 * 
+	 * @param params
+	 * @param short_name
+	 * @param version
+	 * @param oper
+	 * @param wrkCopies
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getDatasets(Vector params,
 			String short_name,
 			String version,
@@ -1970,7 +2054,7 @@ public class DDSearchEngine {
 	}
 	
 	/**
-	 * get datasets by params, control oper, working copies & historic versions
+	 * Get datasets by params, control oper, working copies & historic versions.
 	 */
 	public Vector getDatasets(Vector params,
 			String short_name,
@@ -1982,10 +2066,14 @@ public class DDSearchEngine {
 			HashSet statuses) throws SQLException {
 		
 		// get the id of simple attribute "Name"
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("select M_ATTRIBUTE_ID from " +
+		Statement stmt1 = conn.createStatement();
+		ResultSet rs = stmt1.executeQuery("select M_ATTRIBUTE_ID from " +
 		"M_ATTRIBUTE where SHORT_NAME='Name'");
 		String nameID = rs.next() ? rs.getString(1) : null;
+		rs.close();
+		stmt1.close();
+		
+		INParameters inParams = new INParameters();
 		
 		// prepare different parts of the query for getting datasets
 		if (oper==null)
@@ -2002,9 +2090,9 @@ public class DDSearchEngine {
 				oper=" like ";
 			constraints.append(oper);
 			if (oper.trim().equalsIgnoreCase("like"))
-				constraints.append("'%").append(short_name).append("%'");
+				constraints.append(inParams.add("%" + short_name + "%"));
 			else
-				constraints.append("'").append(short_name).append("'");
+				constraints.append(inParams.add(short_name));
 		}
 		
 		// identifier into constraints
@@ -2015,16 +2103,16 @@ public class DDSearchEngine {
 				oper=" like "; // 
 			constraints.append(oper);
 			if (oper.trim().equalsIgnoreCase("like"))
-				constraints.append("'%").append(idfier).append("%'");
+				constraints.append(inParams.add("%" + idfier + "%"));
 			else
-				constraints.append("'").append(idfier).append("'");
+				constraints.append(inParams.add(idfier));
 		}
 		
 		// version into constraints
 		if (version!=null && version.length()!=0){
 			if (constraints.length()!=0)
 				constraints.append(" and ");
-			constraints.append("DATASET.VERSION='").append(version).append("'");
+			constraints.append("DATASET.VERSION=").append(inParams.add(version, Types.INTEGER));
 		}
 		
 		// statuses into constraints
@@ -2035,7 +2123,7 @@ public class DDSearchEngine {
 			for (Iterator iter=statuses.iterator(); iter.hasNext(); i++){
 				if (i>0) constraints.append(" or ");
 				constraints.append("REG_STATUS=");
-				constraints.append(Util.strLiteral((String)iter.next()));
+				constraints.append(inParams.add((String)iter.next()));
 			}
 			constraints.append(")");
 		}
@@ -2053,7 +2141,7 @@ public class DDSearchEngine {
 			
 			if (constraints.length()!=0)
 				constraints.append(" and ");
-			constraints.append("ATTR" + index + ".M_ATTRIBUTE_ID" + idOper + attrID);
+			constraints.append("ATTR" + index + ".M_ATTRIBUTE_ID" + idOper + inParams.add(attrID, Types.INTEGER));
 			constraints.append(" and ");
 			
 			if (attrValues!=null && attrValues.size()!=0){
@@ -2061,9 +2149,9 @@ public class DDSearchEngine {
 				for (int j=0; j<attrValues.size(); j++){
 					if (j>0) constraints.append(" or ");
 					if (valueOper!= null && valueOper.trim().equalsIgnoreCase("MATCH"))
-						constraints.append("match(ATTR" + index + ".VALUE) against(" + attrValues.get(j) +")");
+						constraints.append("match(ATTR" + index + ".VALUE) against(" + inParams.add(attrValues.get(j)) +")");
 					else
-						constraints.append("ATTR" + index + ".VALUE" + valueOper + attrValues.get(j));
+						constraints.append("ATTR" + index + ".VALUE" + valueOper + inParams.add(attrValues.get(j)));
 				}
 				constraints.append(")");
 			}
@@ -2082,9 +2170,7 @@ public class DDSearchEngine {
 		if (!wrkCopies)
 			constraints.append("DATASET.WORKING_COPY='N'");
 		else
-			constraints.append("DATASET.WORKING_COPY='Y' and " +
-					"DATASET.WORKING_USER='" +
-					user.getUserName() + "'");
+			constraints.append("DATASET.WORKING_COPY='Y' and DATASET.WORKING_USER=" + inParams.add(user.getUserName()));
 		
 		// compile the query from the above-prepared parts
 		StringBuffer buf = new StringBuffer("select DATASET.* from ");
@@ -2106,12 +2192,13 @@ public class DDSearchEngine {
 		}
 		
 		// execute the query for datasets
-		stmt = null;
+		PreparedStatement stmt = null;
 		rs = null;
+		ResultSet rs2 = null;
 		Vector v = new Vector();
 		try {
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			Dataset ds = null;
 			while (rs.next()){
@@ -2139,8 +2226,9 @@ public class DDSearchEngine {
 				// set the name if nameID was previously successfully found
 				if (nameID!=null){
 					ps.setInt(1, rs.getInt("DATASET.DATASET_ID"));
-					ResultSet rs2 = ps.executeQuery();
-					if (rs2.next()) ds.setName(rs2.getString(1));
+					rs2 = ps.executeQuery();
+					if (rs2.next())
+						ds.setName(rs2.getString(1));
 				}
 				
 				ds.setStatus(regStatus);
@@ -2154,7 +2242,9 @@ public class DDSearchEngine {
 		finally{
 			try{
 				if (rs != null) rs.close();
+				if (rs2 != null) rs2.close();
 				if (stmt != null) stmt.close();
+				if (stmt1 != null) stmt1.close();
 			} catch (SQLException sqle) {}
 		}
 		
@@ -2180,19 +2270,26 @@ public class DDSearchEngine {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @param dsID
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getDatasetTables(String dsID) throws SQLException {
 		return getDatasetTables(dsID, false);
 	}
 	
 	/**
 	 * 
-	 * @param dsID
+	 * @param dstID
 	 * @param isOrderByFullName
 	 * @return
 	 * @throws SQLException
 	 */
-	public Vector getDatasetTables(String dsID, boolean isOrderByFullName)
-	throws SQLException {
+	public Vector getDatasetTables(String dstID, boolean isOrderByFullName) throws SQLException {
+		
+		INParameters inParams = new INParameters();
 		
 		// prepare the query
 		StringBuffer buf  = new StringBuffer();
@@ -2206,21 +2303,22 @@ public class DDSearchEngine {
 			append("left outer join M_ATTRIBUTE on ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID ");
 		}
 		buf.append("where DS_TABLE.CORRESP_NS is not null and ").
-		append("DST2TBL.DATASET_ID=").append(dsID);
+		append("DST2TBL.DATASET_ID=").append(inParams.add(dstID, Types.INTEGER));
 		if (isOrderByFullName){
 			buf.append(" and M_ATTRIBUTE.SHORT_NAME='Name' and ").
 			append("ATTRIBUTE.PARENT_TYPE='T'");
 		}
 		buf.append(" order by DS_TABLE.IDENTIFIER,DS_TABLE.TABLE_ID desc");
+		
 		logger.debug(buf.toString());
 		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		Vector v = new Vector();
 		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			DsTable dsTable = null;
 			while (rs.next()){
@@ -2233,7 +2331,7 @@ public class DDSearchEngine {
 				}
 				
 				dsTable = new DsTable(rs.getString("DS_TABLE.TABLE_ID"),
-						dsID,
+						dstID,
 						rs.getString("DS_TABLE.SHORT_NAME"));
 				
 				dsTable.setWorkingCopy(rs.getString("DS_TABLE.WORKING_COPY"));
@@ -2262,16 +2360,29 @@ public class DDSearchEngine {
 		
 		return v;
 	}
-	
+
 	/**
-	 *
+	 * 
+	 * @param params
+	 * @param short_name
+	 * @param full_name
+	 * @param definition
+	 * @return
+	 * @throws SQLException
 	 */
 	public Vector getDatasetTables(Vector params, String short_name, String full_name, String definition) throws SQLException {
 		return getDatasetTables(params, short_name, full_name, definition, null);
 	}
-	
+
 	/**
-	 *
+	 * 
+	 * @param params
+	 * @param short_name
+	 * @param full_name
+	 * @param definition
+	 * @param oper
+	 * @return
+	 * @throws SQLException
 	 */
 	public Vector getDatasetTables(Vector params,
 			String short_name,								   
@@ -2283,7 +2394,15 @@ public class DDSearchEngine {
 	}
 
 	/**
-	 *
+	 * 
+	 * @param params
+	 * @param short_name
+	 * @param idfier
+	 * @param full_name
+	 * @param definition
+	 * @param oper
+	 * @return
+	 * @throws SQLException
 	 */
 	public Vector getDatasetTables(Vector params,
 			String short_name,
@@ -2296,7 +2415,17 @@ public class DDSearchEngine {
 	}
 
 	/**
-	 *
+	 * 
+	 * @param params
+	 * @param short_name
+	 * @param idfier
+	 * @param full_name
+	 * @param definition
+	 * @param oper
+	 * @param dstStatuses
+	 * @param latestOnly
+	 * @return
+	 * @throws SQLException
 	 */
 	public Vector getDatasetTables(Vector params,
 			String short_name,
@@ -2307,13 +2436,14 @@ public class DDSearchEngine {
 			HashSet dstStatuses,
 			boolean latestOnly) throws SQLException {
 		
+		INParameters inParams = new INParameters();
+		
 		// get the id of simple attribute "Name"
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("select M_ATTRIBUTE_ID from " +
-		"M_ATTRIBUTE where SHORT_NAME='Name'");
+		Statement stmt1 = conn.createStatement();
+		ResultSet rs = stmt1.executeQuery("select M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME='Name'");
 		String nameID = rs.next() ? rs.getString(1) : null;
-		stmt.close();
 		rs.close();
+		stmt1.close();
 		
 		// prepare different parts of the query for tables
 		if (oper==null)
@@ -2331,9 +2461,9 @@ public class DDSearchEngine {
 			constraints.append("(");
 			int i = 0;
 			for (Iterator iter=dstStatuses.iterator(); iter.hasNext(); i++){
-				if (i>0) constraints.append(" or ");
-				constraints.append("DATASET.REG_STATUS=");
-				constraints.append(Util.strLiteral((String)iter.next()));
+				if (i>0)
+					constraints.append(" or ");
+				constraints.append("DATASET.REG_STATUS=").append(inParams.add((String)iter.next()));
 			}
 			constraints.append(")");
 		}
@@ -2347,9 +2477,9 @@ public class DDSearchEngine {
 				oper=" like ";
 			constraints.append(oper);
 			if (oper.trim().equalsIgnoreCase("like"))
-				constraints.append("'%").append(short_name).append("%'");
+				constraints.append(inParams.add("%" + short_name + "%"));
 			else
-				constraints.append("'").append(short_name).append("'");
+				constraints.append(inParams.add(short_name));
 		}
 		
 		// identifier into constraints
@@ -2360,28 +2490,27 @@ public class DDSearchEngine {
 				oper=" like ";
 			constraints.append(oper);
 			if (oper.trim().equalsIgnoreCase("like"))
-				constraints.append("'%").append(idfier).append("%'");
+				constraints.append(inParams.add("%" + idfier + "%"));
 			else
-				constraints.append("'").append(idfier).append("'");
+				constraints.append(inParams.add(idfier));
 		}
 		
 		// full name into constraints
 		if (full_name!=null && full_name.length()!=0){
-			if (constraints.length()!=0) constraints.append(" and ");
-			constraints.append("DS_TABLE.NAME like '%");
-			constraints.append(full_name);
-			constraints.append("%'");
+			if (constraints.length()!=0)
+				constraints.append(" and ");
+			constraints.append("DS_TABLE.NAME like ").append(inParams.add("%" + full_name + "%"));
 		}
 		// definition into constraints
 		if (definition!=null && definition.length()!=0){
-			if (constraints.length()!=0) constraints.append(" and ");
-			constraints.append("DS_TABLE.DEFINITION like '%");
-			constraints.append(definition);
-			constraints.append("%'");
+			if (constraints.length()!=0)
+				constraints.append(" and ");
+			constraints.append("DS_TABLE.DEFINITION like ").append(inParams.add("%" + definition + "%"));
 		}
 		
 		// params into constraints (if params==null, we ask for all)
 		for (int i=0; params!=null && i<params.size(); i++){
+			
 			String index = String.valueOf(i+1);
 			DDSearchParameter param = (DDSearchParameter)params.get(i);
 			String attrID  = param.getAttrID();
@@ -2394,7 +2523,7 @@ public class DDSearchEngine {
 			
 			if (constraints.length()!=0)
 				constraints.append(" and ");
-			constraints.append("ATTR" + index + ".M_ATTRIBUTE_ID" + idOper + attrID);
+			constraints.append("ATTR" + index + ".M_ATTRIBUTE_ID" + idOper + inParams.add(attrID, Types.INTEGER));
 			constraints.append(" and ");
 			
 			if (attrValues!=null && attrValues.size()!=0){
@@ -2402,9 +2531,9 @@ public class DDSearchEngine {
 				for (int j=0; j<attrValues.size(); j++){
 					if (j>0) constraints.append(" or ");
 					if (valueOper!= null && valueOper.trim().equalsIgnoreCase("MATCH"))
-						constraints.append("match(ATTR" + index + ".VALUE) against(" + attrValues.get(j) +")");
+						constraints.append("match(ATTR" + index + ".VALUE) against(" + inParams.add(attrValues.get(j)) +")");
 					else
-						constraints.append("ATTR" + index + ".VALUE" + valueOper + attrValues.get(j));
+						constraints.append("ATTR" + index + ".VALUE" + valueOper + inParams.add(attrValues.get(j)));
 				}
 				constraints.append(")");
 			}
@@ -2421,35 +2550,37 @@ public class DDSearchEngine {
 		if (constraints.length()!=0){
 			buf.append(" where ");
 			buf.append(constraints.toString());
-		}
-		
+		}		
 		buf.append(" order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc, " +
 		"DS_TABLE.IDENTIFIER asc, DS_TABLE.TABLE_ID desc");
+		
 		logger.debug(buf.toString());
 		
 		// preprare the statement for getting attributes
-		PreparedStatement ps = null;
+		PreparedStatement attrsPstmt = null;
 		if (nameID!=null){
 			String s = "select VALUE from ATTRIBUTE where M_ATTRIBUTE_ID=" +
 			nameID + " and PARENT_TYPE='T' and " +
 			"DATAELEM_ID=?";
-			ps = conn.prepareStatement(s);
+			attrsPstmt = conn.prepareStatement(s);
 		}
 		
 		// execute the query for tables
+		PreparedStatement stmt = null;
+		ResultSet rs2 = null;
 		Vector v = new Vector();
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			String curDstID  = null;
 			String curDstIdf = null;
-			
 			while (rs.next()){
 				
 				String dstID  = rs.getString("DATASET.DATASET_ID");
 				String dstIdf = rs.getString("DATASET.IDENTIFIER");
-				if (dstID==null && dstIdf==null) continue;
+				if (dstID==null && dstIdf==null)
+					continue;
 				
 				if (latestOnly){
 					// the following if-else block skips tables in non-latest DATASETS
@@ -2484,8 +2615,8 @@ public class DDSearchEngine {
 				
 				// set the name if nameID was previously successfully found
 				if (nameID!=null){
-					ps.setInt(1, rs.getInt("DS_TABLE.TABLE_ID"));
-					ResultSet rs2 = ps.executeQuery();
+					attrsPstmt.setInt(1, rs.getInt("DS_TABLE.TABLE_ID"));
+					rs2 = attrsPstmt.executeQuery();
 					if (rs2.next())
 						tbl.setName(rs2.getString(1));
 				}
@@ -2497,7 +2628,9 @@ public class DDSearchEngine {
 		}
 		finally{
 			try{
+				if (rs2 != null) rs2.close();
 				if (rs != null) rs.close();
+				if (stmt1 != null) stmt1.close();
 				if (stmt != null) stmt.close();
 			} catch (SQLException sqle) {}
 		}
@@ -2506,12 +2639,26 @@ public class DDSearchEngine {
 		return v;
 	}
 	
+	/**
+	 * 
+	 * @param tableID
+	 * @return
+	 * @throws SQLException
+	 */
 	public DsTable getDatasetTable(String tableID) throws SQLException{
 		return getDatasetTable(tableID, null);
 	}
 	
-	public DsTable getDatasetTable(String tableID, String dstID)
-	throws SQLException {
+	/**
+	 * 
+	 * @param tableID
+	 * @param dstID
+	 * @return
+	 * @throws SQLException
+	 */
+	public DsTable getDatasetTable(String tableID, String dstID) throws SQLException {
+		
+		INParameters inParams = new INParameters();
 		
 		StringBuffer buf  = new StringBuffer();
 		buf.append("select distinct DS_TABLE.*, DATASET.* ");
@@ -2521,24 +2668,23 @@ public class DDSearchEngine {
 		// there's now a many-to-many relation btw DS_TABLE & DATASET
 		buf.append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ");
 		buf.append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ");
-		
 		buf.append("where DS_TABLE.CORRESP_NS is not null and DS_TABLE.TABLE_ID=");
-		buf.append(tableID);
+		buf.append(inParams.add(tableID, Types.INTEGER));
 		
 		if (Util.nullString(dstID))
 			buf.append(" and DATASET.DELETED is null");
 		else
-			buf.append(" and DATASET.DATASET_ID=" + dstID);
+			buf.append(" and DATASET.DATASET_ID=").append(inParams.add(dstID, Types.INTEGER));
 		
 		buf.append(" order by DATASET.DATASET_ID desc");
 		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		DsTable dsTable = null;
 		
 		try {
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			if (rs.next()){
 				
@@ -2569,52 +2715,87 @@ public class DDSearchEngine {
 		return dsTable;
 	}
 	
+	/**
+	 * 
+	 * @param parentID
+	 * @param parentType
+	 * @param attrType
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getAttributes(String parentID, String parentType, String attrType) throws SQLException {
 		return getAttributes(parentID, parentType, attrType, null, null);
 	}
+	
+	/**
+	 * 
+	 * @param parentID
+	 * @param parentType
+	 * @param attrType
+	 * @param inheritTblID
+	 * @param inheritDsID
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getAttributes(String parentID, String parentType, String attrType, String inheritTblID, String inheritDsID) throws SQLException {
 		if (attrType.equals(DElemAttribute.TYPE_SIMPLE))
 			return getSimpleAttributes(parentID, parentType, inheritTblID, inheritDsID);
 		else
 			return getComplexAttributes(parentID, parentType, null, inheritTblID, inheritDsID);
 	}
+	
+	/**
+	 * 
+	 * @param parentID
+	 * @param parentType
+	 * @return
+	 * @throws SQLException
+	 */
 	public Vector getSimpleAttributes(String parentID, String parentType) throws SQLException {
 		return getSimpleAttributes(parentID, parentType, null, null);
 	}
-	public Vector getSimpleAttributes(String parentID, String parentType, String inheritTblID, String inheritDsID) throws SQLException {
+	
+	/**
+	 * 
+	 * @param parentID
+	 * @param parentType
+	 * @param inheritTblID
+	 * @param inheritDstID
+	 * @return
+	 * @throws SQLException
+	 */
+	public Vector getSimpleAttributes(String parentID, String parentType, String inheritTblID, String inheritDstID) throws SQLException {
 		
-		StringBuffer qry =
-			// JH - 120203, ATTRIBUTE.FIXED_VALUE_ID is no more present in the model
-			//"select M_ATTRIBUTE.*, NAMESPACE.*, ATTRIBUTE.VALUE, ATTRIBUTE.FIXED_VALUE_ID from " +
-			new StringBuffer("select M_ATTRIBUTE.*, NAMESPACE.*, ATTRIBUTE.VALUE, ATTRIBUTE.PARENT_TYPE from ");
+		INParameters inParams = new INParameters();
+		
+		StringBuffer qry = new StringBuffer("select M_ATTRIBUTE.*, NAMESPACE.*, ATTRIBUTE.VALUE, ATTRIBUTE.PARENT_TYPE from ");
 		qry.append("M_ATTRIBUTE left outer join NAMESPACE on ");
 		qry.append("M_ATTRIBUTE.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID ");
 		qry.append("left outer join ATTRIBUTE on M_ATTRIBUTE.M_ATTRIBUTE_ID=ATTRIBUTE.M_ATTRIBUTE_ID ");
-		qry.append("where (ATTRIBUTE.DATAELEM_ID='");
-		qry.append(parentID);
-		qry.append("' and ATTRIBUTE.PARENT_TYPE='");
-		qry.append(parentType);
-		qry.append("')");
+		qry.append("where (ATTRIBUTE.DATAELEM_ID=");
+		qry.append(inParams.add(parentID, Types.INTEGER));
+		qry.append(" and ATTRIBUTE.PARENT_TYPE=").append(inParams.add(parentType)).append(")");
+		
 		//Ek  291003 search inhrted attributes from table and/or dataset level
 		if (!Util.nullString(inheritTblID)){
-			qry.append(" or (ATTRIBUTE.DATAELEM_ID='");
-			qry.append(inheritTblID);
-			qry.append("' and ATTRIBUTE.PARENT_TYPE='T' and M_ATTRIBUTE.INHERIT!='0')");
+			qry.append(" or (ATTRIBUTE.DATAELEM_ID=");
+			qry.append(inParams.add(inheritTblID, Types.INTEGER));
+			qry.append(" and ATTRIBUTE.PARENT_TYPE='T' and M_ATTRIBUTE.INHERIT!='0')");
 		}
-		if (!Util.nullString(inheritDsID)){
-			qry.append(" or (ATTRIBUTE.DATAELEM_ID='");
-			qry.append(inheritDsID);
-			qry.append("' and ATTRIBUTE.PARENT_TYPE='DS' and M_ATTRIBUTE.INHERIT!='0')");
+		if (!Util.nullString(inheritDstID)){
+			qry.append(" or (ATTRIBUTE.DATAELEM_ID=");
+			qry.append(inParams.add(inheritDstID, Types.INTEGER));
+			qry.append(" and ATTRIBUTE.PARENT_TYPE='DS' and M_ATTRIBUTE.INHERIT!='0')");
 		}
 		
 		logger.debug(qry.toString());
-		Statement stmt = null;
-		ResultSet rs = null;
-		Vector v = new Vector();
 		
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		Vector v = new Vector();		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(qry.toString());
+			stmt = SQL.preparedStatement(qry.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			while (rs.next()){
 				String parent_type = rs.getString("ATTRIBUTE.PARENT_TYPE");
@@ -2640,17 +2821,13 @@ public class DDSearchEngine {
 					Namespace ns = new Namespace(rs.getString("NAMESPACE.NAMESPACE_ID"),
 							rs.getString("NAMESPACE.SHORT_NAME"),
 							rs.getString("NAMESPACE.FULL_NAME"),
-							null, //rs.getString("NAMESPACE.URL"),
+							null,
 							rs.getString("NAMESPACE.DEFINITION"));
-					//ns.setTable(rs.getString("NAMESPACE.TABLE_ID"));
-					//ns.setDataset(rs.getString("NAMESPACE.DATASET_ID"));
 					attr.setNamespace(ns);
-					// JH - 120203, ATTRIBUTE.FIXED_VALUE_ID is no more present in the model
-					//attr.setFixedValueID("ATTRIBUTE.FIXED_VALUE_ID");
+					
 					v.add(attr);
 				}
-				/*
-				 */
+				
 				if (inherited!=null){
 					if (attr.getInheritable().equals("1")){    //inheritance type 1 - show all values from upper levels
 						attr.setValue(value);
@@ -2677,10 +2854,6 @@ public class DDSearchEngine {
 					attr.setValue(value);
 					attr.setOriginalValue(value);
 				}
-				
-				
-				/*
-				 */
 			}
 		}
 		finally{
@@ -2693,39 +2866,13 @@ public class DDSearchEngine {
 		return v;
 		
 	}
-	
-	public String getDataElementID(String ns_id, String idfier) throws SQLException {
-		
-		if(ns_id == null || ns_id.length()==0) return null;
-		if(idfier == null || idfier.length()==0) return null;
-		
-		StringBuffer buf = new StringBuffer(
-		"select DATAELEM.DATAELEM_ID from DATAELEM where DATAELEM.IDENTIFIER='");
-		buf.append(idfier);
-		buf.append("' AND DATAELEM.PARENT_NS=");
-		buf.append(ns_id);
-		
-		Statement stmt = null;
-		ResultSet rs = null;
-		
-		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
-			
-			if (rs.next()){
-				return rs.getString("DATAELEM_ID");
-			}
-		}
-		finally{
-			try{
-				if (rs != null) rs.close();
-				if (stmt != null) stmt.close();
-			} catch (SQLException sqle) {}
-		}
-		
-		return null;
-	}
-	
+
+	/**
+	 * 
+	 * @param fxv_id
+	 * @return
+	 * @throws SQLException
+	 */
 	public FixedValue getFixedValue(String fxv_id) throws SQLException {
 		
 		if (fxv_id == null || fxv_id.length()==0){
@@ -2736,16 +2883,15 @@ public class DDSearchEngine {
 			return fxv;
 		}
 		
-		String qry =
-			"select * from FXV where FXV_ID=" + fxv_id;
+		INParameters inParams = new INParameters();
+		String qry = "select * from FXV where FXV_ID=" + inParams.add(fxv_id, Types.INTEGER);
 		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		FixedValue fxv = null;
-		
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(qry);
+			stmt = SQL.preparedStatement(qry, inParams, conn);
+			rs = stmt.executeQuery();
 			
 			if (rs.next()){
 				fxv = new FixedValue(rs.getString("FXV_ID"),
@@ -2760,29 +2906,6 @@ public class DDSearchEngine {
 				fxv.setShortDesc(rs.getString("SHORT_DESC"));
 			}
 			else return null;
-			
-			/*qry =
-			 "select M_ATTRIBUTE.*, ATTRIBUTE.VALUE from M_ATTRIBUTE, ATTRIBUTE " +
-			 "where " +
-			 //"ATTRIBUTE.PARENT_TYPE='FV' and ATTRIBUTE.DATAELEM_ID=" + fxv_id + " and " +
-			  "ATTRIBUTE.PARENT_TYPE='CSI' and ATTRIBUTE.DATAELEM_ID=" + fxv_id + " and " +
-			  "ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID";
-			  
-			  stmt = conn.createStatement();
-			  rs = stmt.executeQuery(qry);
-			  
-			  while (rs.next()){
-			  
-			  DElemAttribute attr =
-			  new DElemAttribute(rs.getString("M_ATTRIBUTE.M_ATTRIBUTE_ID"),
-			  rs.getString("M_ATTRIBUTE.NAME"),
-			  rs.getString("M_ATTRIBUTE.SHORT_NAME"),
-			  DElemAttribute.TYPE_SIMPLE,
-			  rs.getString("ATTRIBUTE.VALUE"),
-			  rs.getString("M_ATTRIBUTE.DEFINITION"),
-			  rs.getString("M_ATTRIBUTE.OBLIGATION"));
-			  fxv.addAttribute(attr);
-			  }*/
 		}
 		finally{
 			try{
@@ -2794,6 +2917,12 @@ public class DDSearchEngine {
 		return fxv;
 	}
 	
+	/**
+	 * 
+	 * @param v
+	 * @param id
+	 * @return
+	 */
 	private DElemAttribute getAttributeById(Vector v, String id){
 		
 		if (v == null) return null;
@@ -2807,9 +2936,12 @@ public class DDSearchEngine {
 		
 		return null;
 	}
-	
+
 	/**
 	 * Get the last insert ID from database.
+	 * 
+	 * @return
+	 * @throws SQLException
 	 */
 	public String getLastInsertID() throws SQLException {
 		
@@ -2825,29 +2957,14 @@ public class DDSearchEngine {
 		stmt.close();
 		return id;
 	}
-	
-	/**
-	 *
-	 */
-	public String getMaxVersion(String tblName, String constraint)
-	throws SQLException {
-		
-		String q =
-			"select max(VERSION) from " + tblName + " where DELETED is null and " +
-			constraint;
-		ResultSet rs = conn.createStatement().executeQuery(q);
-		if (rs.next())
-			return rs.getString(1);
-		
-		return null;
-	}
-	
+
 	/**
 	 * 
 	 * @return
 	 * @throws SQLException 
 	 */
 	public Vector getDstOtherVersions(String idfier, String ofID) throws SQLException{
+		
 		Vector v = getDatasets(null, null, idfier, null, "=", false, true, null);
 		for (int i=0; v!=null && i<v.size(); i++){
 			if (((Dataset)v.get(i)).getID().equals(ofID)){
@@ -2900,38 +3017,61 @@ public class DDSearchEngine {
 		
 		String idField = type.equals("tbl") ? "TABLE_ID" : tblName+"_ID";
 		
-		String q = "select WORKING_COPY from " + tblName +
-		" where " + idField + "=" + id;
+		INParameters inParams = new INParameters();
+		String q = "select WORKING_COPY from " + tblName + " where " + idField + "=" + inParams.add(id, Types.INTEGER);
 		
-		ResultSet rs = conn.createStatement().executeQuery(q);
-		if (rs.next()){
-			if (rs.getString(1).equals("Y"))
-				return true;
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		try{
+			stmt = SQL.preparedStatement(q, inParams, conn);
+			rs = stmt.executeQuery();
+			if (rs.next()){
+				if (rs.getString(1).equals("Y"))
+					return true;
+			}
+			else throw new Exception("Could not find such an object!");
 		}
-		else throw new Exception("Could not find such an object!");
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
 		
 		return false;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean hasUserWorkingCopies(){
-		
+
+		if (user==null || !user.isAuthentic())
+			return false;
+
+		INParameters inParams = new INParameters();
 		StringBuffer constraints = new StringBuffer();
+		constraints.append("WHERE WORKING_COPY='Y' and WORKING_USER=").append(inParams.add(user.getUserName()));
 		
-		if (user==null || !user.isAuthentic())  return false;
-		
-		constraints.append("WHERE WORKING_COPY='Y' and WORKING_USER='" +
-				user.getUserName() + "'");
-		Statement stmt = null;
 		ResultSet rs = null;
-		
+		PreparedStatement stmt = null;
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery("SELECT * FROM DATAELEM " + constraints.toString());
-			if (rs.next()) return true;
+			stmt = SQL.preparedStatement("SELECT * FROM DATAELEM " + constraints.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			if (rs.next())
+				return true;
 			
-			rs = stmt.executeQuery("SELECT * FROM DATASET " + constraints.toString());
-			if (rs.next()) return true;
+			rs.close();
+			stmt.close();
 			
-		} catch (SQLException sqle) {
+			stmt = SQL.preparedStatement("SELECT * FROM DATASET " + constraints.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			if (rs.next())
+				return true;
+		}
+		catch (SQLException sqle) {
 			logger.fatal(sqle.toString(), sqle);
 		}
 		finally{
@@ -2953,17 +3093,21 @@ public class DDSearchEngine {
 	 */
 	public int getAttributeUseCount(String attrID, String attrType) throws SQLException{
 		
+		INParameters inParams = new INParameters();
+		
 		StringBuffer sql = new StringBuffer();
 		if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
-			sql.append("select count(distinct PARENT_TYPE, PARENT_ID) from COMPLEX_ATTR_ROW where M_COMPLEX_ATTR_ID=").append(attrID);
+			sql.append("select count(distinct PARENT_TYPE, PARENT_ID) from COMPLEX_ATTR_ROW where M_COMPLEX_ATTR_ID=").
+			append(inParams.add(attrID, Types.INTEGER));
 		else
-			sql.append("select count(distinct PARENT_TYPE, DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID=").append(attrID);
+			sql.append("select count(distinct PARENT_TYPE, DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID=").
+			append(inParams.add(attrID, Types.INTEGER));
 		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(sql.toString());
+			stmt = SQL.preparedStatement(sql.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			if (rs.next())
 				return rs.getInt(1);
 		}
@@ -2988,6 +3132,8 @@ public class DDSearchEngine {
 		if (Util.nullString(relID))
 			return null;
 		
+		INParameters inParams = new INParameters();
+		
 		StringBuffer buf = new StringBuffer("select ").
 		append("A_ELM.SHORT_NAME as A_NAME, A_TBL.SHORT_NAME as A_TABLE, ").
 		append("B_ELM.SHORT_NAME as B_NAME, B_TBL.SHORT_NAME as B_TABLE, ").
@@ -3002,30 +3148,39 @@ public class DDSearchEngine {
 		append("left outer join DS_TABLE as B_TBL ").
 		append("on B_ELM.PARENT_NS=B_TBL.CORRESP_NS ").
 		append("where REL_ID=").
-		append(relID);
+		append(inParams.add(relID, Types.INTEGER));
 		
 		logger.debug(buf.toString());
 		
 		Hashtable hash = null;
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
-		if (rs.next()){
-			
-			hash= new Hashtable();
-			
-			hash.put("a_id", rs.getString("A_ID"));
-			hash.put("a_name", rs.getString("A_NAME"));
-			hash.put("a_tbl", rs.getString("A_TABLE"));
-			hash.put("a_cardin", rs.getString("A_CARDIN"));
-			
-			hash.put("b_id", rs.getString("B_ID"));
-			hash.put("b_name", rs.getString("B_NAME"));
-			hash.put("b_tbl", rs.getString("B_TABLE"));
-			hash.put("b_cardin", rs.getString("B_CARDIN"));
-			hash.put("cardin", rs.getString("A_CARDIN") + " to " +
-					rs.getString("B_CARDIN"));
-			
-			hash.put("definition", rs.getString("FK_RELATION.DEFINITION"));
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			if (rs.next()){
+				
+				hash = new Hashtable();
+				hash.put("a_id", rs.getString("A_ID"));
+				hash.put("a_name", rs.getString("A_NAME"));
+				hash.put("a_tbl", rs.getString("A_TABLE"));
+				hash.put("a_cardin", rs.getString("A_CARDIN"));
+				
+				hash.put("b_id", rs.getString("B_ID"));
+				hash.put("b_name", rs.getString("B_NAME"));
+				hash.put("b_tbl", rs.getString("B_TABLE"));
+				hash.put("b_cardin", rs.getString("B_CARDIN"));
+				hash.put("cardin", rs.getString("A_CARDIN") + " to " + rs.getString("B_CARDIN"));
+				
+				hash.put("definition", rs.getString("FK_RELATION.DEFINITION"));
+			}
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
 		}
 		
 		return hash;
@@ -3037,8 +3192,7 @@ public class DDSearchEngine {
 	 * @return
 	 * @throws SQLException
 	 */    
-	public Vector getFKRelationsElm(String elmID)
-	throws SQLException{
+	public Vector getFKRelationsElm(String elmID) throws SQLException{
 		return getFKRelationsElm(elmID, null);
 	}
 	
@@ -3048,86 +3202,118 @@ public class DDSearchEngine {
 	 * @return
 	 * @throws SQLException
 	 */    
-	public Vector getFKRelationsElm(String elmID, String dstID)
-	throws SQLException{
+	public Vector getFKRelationsElm(String elmID, String dstID) throws SQLException{
 		
 		Vector v = new Vector();
-		
-		Statement stmt = conn.createStatement();
-		for (int i=1; i<=2; i++){
-			
-			String side = i==1 ? "A_ID" : "B_ID";
-			String contraSide = i==1 ? "B_ID" : "A_ID";
-			
-			StringBuffer buf = new StringBuffer("select distinct ");
-			buf.append("DATAELEM.SHORT_NAME, ");
-			buf.append("DATAELEM.DATAELEM_ID, ");
-			buf.append("DS_TABLE.SHORT_NAME, ");
-			buf.append("DST2TBL.DATASET_ID, ");
-			buf.append("FK_RELATION.* ");
-			buf.append("from FK_RELATION ");
-			buf.append("left outer join DATAELEM on FK_RELATION.");
-			buf.append(contraSide);
-			buf.append("=DATAELEM.DATAELEM_ID ");
-			buf.append("left outer join TBL2ELEM on ");
-			buf.append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID ");
-			buf.append("left outer join DS_TABLE on ");
-			buf.append("TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID ");
-			buf.append("left outer join DST2TBL on ");
-			buf.append("DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ");
-			if (!Util.nullString(elmID)){
-				buf.append(" where ");
-				buf.append(side);
-				buf.append("=");
-				buf.append(elmID);
-			}
-			
-			HashSet added = new HashSet();
-			ResultSet rs = stmt.executeQuery(buf.toString());
-			while (rs.next()){
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		try{
+			for (int i=1; i<=2; i++){
 				
-				if (dstID!=null){
-					String ds = rs.getString("DST2TBL.DATASET_ID");
-					if (!dstID.equals(ds))
-						continue;
+				String side = i==1 ? "A_ID" : "B_ID";
+				String contraSide = i==1 ? "B_ID" : "A_ID";
+				
+				INParameters inParams = new INParameters();
+				StringBuffer buf = new StringBuffer("select distinct ");
+				buf.append("DATAELEM.SHORT_NAME, ");
+				buf.append("DATAELEM.DATAELEM_ID, ");
+				buf.append("DS_TABLE.SHORT_NAME, ");
+				buf.append("DST2TBL.DATASET_ID, ");
+				buf.append("FK_RELATION.* ");
+				buf.append("from FK_RELATION ");
+				buf.append("left outer join DATAELEM on FK_RELATION.");
+				buf.append(contraSide);
+				buf.append("=DATAELEM.DATAELEM_ID ");
+				buf.append("left outer join TBL2ELEM on ");
+				buf.append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID ");
+				buf.append("left outer join DS_TABLE on ");
+				buf.append("TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID ");
+				buf.append("left outer join DST2TBL on ");
+				buf.append("DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ");
+				if (!Util.nullString(elmID)){
+					buf.append(" where ");
+					buf.append(side);
+					buf.append("=");
+					buf.append(inParams.add(elmID, Types.INTEGER));
 				}
-				
-				Hashtable hash = new Hashtable();				
-				String id = rs.getString("DATAELEM.DATAELEM_ID");
-				if (id==null)
-					continue;
-				if (added.contains(id))
-					continue;
-				else
-					added.add(id);		
-				hash.put("elm_id", id);
-				hash.put("elm_name", rs.getString("DATAELEM.SHORT_NAME"));
-				hash.put("tbl_name", rs.getString("DS_TABLE.SHORT_NAME"));
-				hash.put("rel_id", rs.getString("REL_ID"));
-				
-				hash.put("a_cardin", rs.getString("A_CARDIN"));
-				hash.put("b_cardin", rs.getString("B_CARDIN"));
-				hash.put("definition", rs.getString("DEFINITION"));
-				hash.put("cardin", rs.getString("A_CARDIN") + " to " +
-						rs.getString("B_CARDIN"));
-				
-				v.add(hash);
+	
+				// close rs and stmt if they were opened in the loop's previous step
+				try{
+					if (rs!=null) rs.close();
+					if (stmt!=null) stmt.close();
+				}
+				catch (SQLException e){}
+	
+				HashSet added = new HashSet();
+				stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+				rs = stmt.executeQuery();
+				while (rs.next()){
+					
+					if (dstID!=null){
+						String ds = rs.getString("DST2TBL.DATASET_ID");
+						if (!dstID.equals(ds))
+							continue;
+					}
+					
+					Hashtable hash = new Hashtable();				
+					String id = rs.getString("DATAELEM.DATAELEM_ID");
+					if (id==null)
+						continue;
+					if (added.contains(id))
+						continue;
+					else
+						added.add(id);		
+					hash.put("elm_id", id);
+					hash.put("elm_name", rs.getString("DATAELEM.SHORT_NAME"));
+					hash.put("tbl_name", rs.getString("DS_TABLE.SHORT_NAME"));
+					hash.put("rel_id", rs.getString("REL_ID"));
+					
+					hash.put("a_cardin", rs.getString("A_CARDIN"));
+					hash.put("b_cardin", rs.getString("B_CARDIN"));
+					hash.put("definition", rs.getString("DEFINITION"));
+					hash.put("cardin", rs.getString("A_CARDIN") + " to " +
+							rs.getString("B_CARDIN"));
+					
+					v.add(hash);
+				}
 			}
 		}
-		stmt.close();
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
 		
 		return v;
 	}
-	
+
 	/**
 	 * 
+	 * @return
+	 * @throws SQLException
 	 */
 	public Vector getHarvesters() throws SQLException {
-		Vector v = new Vector();
+		
 		String q = "select distinct HARVESTER_ID from HARV_ATTR";
-		ResultSet rs = conn.createStatement().executeQuery(q);
-		while (rs.next())
-			v.add(rs.getString("HARVESTER_ID"));
+
+		Vector v = new Vector();
+		Statement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(q);
+			while (rs.next())
+				v.add(rs.getString("HARVESTER_ID"));
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
 		
 		return v;
 	}
@@ -3167,7 +3353,7 @@ public class DDSearchEngine {
 		Vector v = new Vector();
 		HashSet taken = new HashSet();
 		
-		// fields must ne returned in the following order
+		// fields must be returned in the following order
 		Vector order = new Vector();
 		order.add("ID");
 		order.add("NAME");
@@ -3177,46 +3363,65 @@ public class DDSearchEngine {
 		order.add("PHONE");
 		order.add("DESCRIPTION");
 		
-		Statement stmt = conn.createStatement();
+		INParameters inParams = new INParameters();
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		
-		if (!all){
-			q = "select distinct HARV_ATTR_FLD_NAME from " +
-			"M_COMPLEX_ATTR_FIELD where HARV_ATTR_FLD_NAME is not null " +
-			"and M_COMPLEX_ATTR_ID=" + attrID;
-			rs = stmt.executeQuery(q);
-			while (rs.next())
-				taken.add(rs.getString(1));
-		}
-		
-		q =
-			"select distinct HARV_ATTR_FIELD.FLD_NAME " +
-			"from " +
-			"M_COMPLEX_ATTR " +
-			"left outer join HARV_ATTR on " +
-			"M_COMPLEX_ATTR.HARVESTER_ID=HARV_ATTR.HARVESTER_ID " +
-			"left outer join HARV_ATTR_FIELD on " +
-			"HARV_ATTR.MD5KEY=HARV_ATTR_FIELD.HARV_ATTR_MD5 " +
-			"where M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID=" + attrID +
-			" and M_COMPLEX_ATTR.HARVESTER_ID is not null " +
-			"order by HARV_ATTR_FIELD.FLD_NAME asc";
-		
-		rs = stmt.executeQuery(q);
-		while (rs.next()){
-			String fldName = rs.getString("FLD_NAME");
-			if ((includeFields!=null && includeFields.contains(fldName)) || !taken.contains(fldName)){
-				
-				// ordering logic
-				String uc = new String(fldName);
-				int pos = order.indexOf(uc.toUpperCase());
-				if (pos == -1)
-					v.add(fldName);
-				else{
-					if (pos > v.size()-1)
-						v.setSize(pos+1);
-					v.add(pos, fldName);
+		try{
+			if (!all){
+				q = "select distinct HARV_ATTR_FLD_NAME from " +
+				"M_COMPLEX_ATTR_FIELD where HARV_ATTR_FLD_NAME is not null " +
+				"and M_COMPLEX_ATTR_ID=" + inParams.add(attrID, Types.INTEGER);
+				stmt = SQL.preparedStatement(q, inParams, conn);
+				rs = stmt.executeQuery();
+				while (rs.next())
+					taken.add(rs.getString(1));
+			}
+			
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+			
+			inParams = new INParameters();
+			q =
+				"select distinct HARV_ATTR_FIELD.FLD_NAME " +
+				"from " +
+				"M_COMPLEX_ATTR " +
+				"left outer join HARV_ATTR on " +
+				"M_COMPLEX_ATTR.HARVESTER_ID=HARV_ATTR.HARVESTER_ID " +
+				"left outer join HARV_ATTR_FIELD on " +
+				"HARV_ATTR.MD5KEY=HARV_ATTR_FIELD.HARV_ATTR_MD5 " +
+				"where M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID=" + inParams.add(attrID, Types.INTEGER) +
+				" and M_COMPLEX_ATTR.HARVESTER_ID is not null " +
+				"order by HARV_ATTR_FIELD.FLD_NAME asc";
+			
+			stmt = SQL.preparedStatement(q, inParams, conn);
+			rs = stmt.executeQuery();
+			while (rs.next()){
+				String fldName = rs.getString("FLD_NAME");
+				if ((includeFields!=null && includeFields.contains(fldName)) || !taken.contains(fldName)){
+					
+					// ordering logic
+					String uc = new String(fldName);
+					int pos = order.indexOf(uc.toUpperCase());
+					if (pos == -1)
+						v.add(fldName);
+					else{
+						if (pos > v.size()-1)
+							v.setSize(pos+1);
+						v.add(pos, fldName);
+					}
 				}
 			}
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
 		}
 		
 		// ordering might have left some null objects in there
@@ -3226,20 +3431,38 @@ public class DDSearchEngine {
 		return v;
 	}
 	
-	public HashSet getHarvestedAttrIDs(String attrID,
-			String parentID,
-			String parentType) throws SQLException{
-		HashSet hashSet = new HashSet();
-		String q = 
-			"select distinct HARV_ATTR_ID from COMPLEX_ATTR_ROW " +
-			"where M_COMPLEX_ATTR_ID=" + attrID + " and PARENT_ID=" + parentID +
-			" and PARENT_TYPE='DS'";
+	/**
+	 * 
+	 * @param attrID
+	 * @param parentID
+	 * @param unUsed
+	 * @return
+	 * @throws SQLException
+	 */
+	public HashSet getHarvestedAttrIDs(String attrID, String parentID, String unUsed) throws SQLException{
 		
-		ResultSet rs = conn.createStatement().executeQuery(q);
-		while (rs.next()){
-			String id = rs.getString(1);
-			if (id!=null) 
-				hashSet.add(id);
+		INParameters inParams = new INParameters();		
+		String q =  "select distinct HARV_ATTR_ID from COMPLEX_ATTR_ROW where M_COMPLEX_ATTR_ID=" +
+					inParams.add(attrID, Types.INTEGER) + " and PARENT_ID=" + inParams.add(parentID, Types.INTEGER) + " and PARENT_TYPE='DS'";
+		
+		HashSet hashSet = new HashSet();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		try{
+			stmt = SQL.preparedStatement(q, inParams, conn);
+			rs = stmt.executeQuery();
+			while (rs.next()){
+				String id = rs.getString(1);
+				if (id!=null) 
+					hashSet.add(id);
+			}
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
 		}
 		
 		return hashSet;
@@ -3250,62 +3473,89 @@ public class DDSearchEngine {
 	 */
 	public Vector getHarvestedAttrs(String attrID) throws SQLException {
 		
-		Vector vv = new Vector();
-		
+		INParameters inParams = new INParameters();
 		String q =
 			"select distinct HARVESTED " +
 			"from " +
 			"M_COMPLEX_ATTR " +
 			"left outer join HARV_ATTR on " +
 			"M_COMPLEX_ATTR.HARVESTER_ID=HARV_ATTR.HARVESTER_ID " +
-			"where M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID=" + attrID +
+			"where M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID=" + inParams.add(attrID, Types.INTEGER) +
 			" and M_COMPLEX_ATTR.HARVESTER_ID is not null " +
 			"order by HARVESTED desc";
 		
+		Vector vv = new Vector();
 		String lastHarvested = null;
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(q);
-		if (rs.next())
-			lastHarvested = rs.getString(1);
 		
-		if (Util.nullString(lastHarvested)) return vv;
-		
-		q =
-			"select distinct MD5KEY, LOGICAL_ID " +
-			"from " +
-			"M_COMPLEX_ATTR " +
-			"left outer join HARV_ATTR on " +
-			"M_COMPLEX_ATTR.HARVESTER_ID=HARV_ATTR.HARVESTER_ID " +
-			"where M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID=" + attrID +
-			" and M_COMPLEX_ATTR.HARVESTER_ID is not null " +
-			" and HARVESTED=" + lastHarvested;
-		
-		Hashtable harvAttrs = new Hashtable();		
-		rs = stmt.executeQuery(q);
-		while (rs.next())
-			harvAttrs.put(rs.getString("MD5KEY"), rs.getString("LOGICAL_ID"));
-		
-		q = 
-			"select distinct FLD_NAME, FLD_VALUE from HARV_ATTR_FIELD " +
-			"where HARV_ATTR_MD5=?";
-		
-		PreparedStatement pstmt = conn.prepareStatement(q);
-		
-		Enumeration enumer = harvAttrs.keys();
-		while (enumer.hasMoreElements()){
-			String md5key = (String)enumer.nextElement();
-			String harvAttrID = (String)harvAttrs.get(md5key);
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		try{
+			stmt = SQL.preparedStatement(q, inParams, conn);
+			rs = stmt.executeQuery();
+			if (rs.next())
+				lastHarvested = rs.getString(1);
 			
-			Hashtable hash = new Hashtable();
-			hash.put("harv_attr_id", harvAttrID);
+			if (Util.nullString(lastHarvested))
+				return vv;
 			
-			pstmt.setString(1, md5key);
-			rs = pstmt.executeQuery();
-			while (rs.next()){
-				hash.put(rs.getString("FLD_NAME"), rs.getString("FLD_VALUE"));
+			inParams = new INParameters();
+			q =
+				"select distinct MD5KEY, LOGICAL_ID " +
+				"from " +
+				"M_COMPLEX_ATTR " +
+				"left outer join HARV_ATTR on " +
+				"M_COMPLEX_ATTR.HARVESTER_ID=HARV_ATTR.HARVESTER_ID " +
+				"where M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID=" + inParams.add(attrID, Types.INTEGER) +
+				" and M_COMPLEX_ATTR.HARVESTER_ID is not null " +
+				" and HARVESTED=" + inParams.add(lastHarvested, Types.BIGINT);
+	
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
 			}
-			
-			vv.add(hash);				
+			catch (SQLException e){}
+	
+			Hashtable harvAttrs = new Hashtable();
+			stmt = SQL.preparedStatement(q, inParams, conn);
+			rs = stmt.executeQuery();
+			while (rs.next())
+				harvAttrs.put(rs.getString("MD5KEY"), rs.getString("LOGICAL_ID"));
+	
+			inParams = new INParameters();
+			q = 
+				"select distinct FLD_NAME, FLD_VALUE from HARV_ATTR_FIELD " +
+				"where HARV_ATTR_MD5=?";
+	
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+	
+			stmt = conn.prepareStatement(q);
+			Enumeration enumer = harvAttrs.keys();
+			while (enumer.hasMoreElements()){
+				String md5key = (String)enumer.nextElement();
+				String harvAttrID = (String)harvAttrs.get(md5key);
+				
+				Hashtable hash = new Hashtable();
+				hash.put("harv_attr_id", harvAttrID);
+				
+				stmt.setString(1, md5key);
+				rs = stmt.executeQuery();
+				while (rs.next()){
+					hash.put(rs.getString("FLD_NAME"), rs.getString("FLD_VALUE"));
+				}
+				
+				vv.add(hash);				
+			}
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
 		}
 		
 		// order the results by the NAME field
@@ -3330,18 +3580,6 @@ public class DDSearchEngine {
 	
 	/**
 	 * 
-	 * @param harvesterID
-	 * @param harvAttrID
-	 * @return
-	 */
-	public Vector getHarvestedRow(String harvesterID, String harvAttrID) throws SQLException{
-		
-		return null;
-		
-	}
-	
-	/**
-	 * 
 	 * @param attrID
 	 * @return
 	 * @throws SQLException
@@ -3358,172 +3596,103 @@ public class DDSearchEngine {
 		
 		return hash;
 	}
-	
+
 	/**
 	 * 
-	 */
-	public boolean isElmDeleted(String elmID) throws SQLException{
-		
-		if (Util.nullString(elmID))
-			return false;
-		
-		// get latest tbl where this elm is present
-		
-		StringBuffer buf = new StringBuffer();
-		buf.append("select DS_TABLE.* ");
-		buf.append("from DATAELEM, DS_TABLE ");
-		buf.append("left outer join TBL2ELEM on ");
-		buf.append("DS_TABLE.TABLE_ID=TBL2ELEM.TABLE_ID ");
-		buf.append("left outer join DST2TBL on ");
-		buf.append("DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ");
-		buf.append("left outer join DATASET on ");
-		buf.append("DST2TBL.DATASET_ID=DATASET.DATASET_ID ");
-		buf.append("where DATAELEM.DATAELEM_ID=");
-		buf.append(elmID);
-		buf.append(" and DATAELEM.PARENT_NS=DS_TABLE.CORRESP_NS and ");
-		buf.append("TBL2ELEM.DATAELEM_ID=");
-		buf.append(elmID);
-		buf.append(" and DATASET.DELETED is null ");
-		buf.append(" order by DS_TABLE.TABLE_ID desc");
-		
-		String id = null;
-		String correspNs = null;
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
-		if (rs.next()){
-			id = rs.getString("TABLE_ID");
-			correspNs = rs.getString("CORRESP_NS");
-		}
-		
-		if (Util.nullString(id) || Util.nullString(correspNs))
-			return false;
-		
-		// check if the found table is the latest such table
-		
-		buf = new StringBuffer();
-		buf.append("select DS_TABLE.* from DS_TABLE ");
-		buf.append("left outer join DST2TBL on ");
-		buf.append("DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ");
-		buf.append("left outer join DATASET on ");
-		buf.append("DST2TBL.DATASET_ID=DATASET.DATASET_ID ");
-		buf.append("where DS_TABLE.CORRESP_NS=");
-		buf.append(correspNs);
-		buf.append(" and DATASET.DELETED is null ");
-		buf.append(" order by TABLE_ID desc");
-		
-		rs = stmt.executeQuery(buf.toString());
-		if (rs.next()){
-			if (!id.equals(rs.getString("TABLE_ID")))
-				return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean isTblDeleted(String tblID) throws SQLException{
-		
-		if (Util.nullString(tblID))
-			return false;
-		
-		// get latest dst where this elm is present
-		
-		StringBuffer buf = new StringBuffer();
-		buf.append("select DATASET.* ");
-		buf.append("from DS_TABLE, DATASET ");
-		buf.append("left outer join DST2TBL on ");
-		buf.append("DATASET.DATASET_ID=DST2TBL.DATASET_ID ");
-		buf.append("where DS_TABLE.TABLE_ID=");
-		buf.append(tblID);
-		buf.append(" and DS_TABLE.PARENT_NS=DATASET.CORRESP_NS and ");
-		buf.append("DST2TBL.TABLE_ID=");
-		buf.append(tblID);
-		buf.append(" and DATASET.DELETED is null ");
-		buf.append(" order by DATASET.DATASET_ID desc");
-		
-		String id = null;
-		String correspNs = null;
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
-		if (rs.next()){
-			id = rs.getString("DATASET_ID");
-			correspNs = rs.getString("CORRESP_NS");
-		}
-		
-		if (Util.nullString(id) || Util.nullString(correspNs))
-			return false;
-		
-		// check if the found table is the latest such table
-		
-		buf = new StringBuffer();
-		buf.append("select * from DATASET where CORRESP_NS=");
-		buf.append(correspNs);
-		buf.append(" and DELETED is null ");
-		buf.append(" order by DATASET_ID desc");
-		
-		rs = stmt.executeQuery(buf.toString());
-		if (rs.next()){
-			if (!id.equals(rs.getString("DATASET_ID")))
-				return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * 
+	 * @param tblID
+	 * @return
+	 * @throws SQLException
 	 */
 	public boolean hasGIS(String tblID) throws SQLException{
 		
-		if (tblID==null) return false;
+		if (tblID==null)
+			return false;
 		
+		INParameters inParams = new INParameters();
 		StringBuffer buf = new StringBuffer("select count(*) ").
 		append("from DATAELEM left outer join TBL2ELEM on ").
 		append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID ").
 		append("where DATAELEM.GIS is not null and TBL2ELEM.TABLE_ID=").
-		append(tblID);
+		append(inParams.add(tblID, Types.INTEGER));
 		
-		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
-		if (rs.next() && rs.getInt(1)>0)
-			return true;
-		else
-			return false;	
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		try{
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			if (rs.next() && rs.getInt(1)>0)
+				return true;
+			else
+				return false;
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
 	}
-	
+
 	/**
 	 * 
+	 * @param ownerID
+	 * @return
+	 * @throws SQLException
 	 */
 	public Vector getDocs(String ownerID) throws SQLException{
 		return getDocs(ownerID, "dst");
 	}
-	
+
 	/**
 	 * 
+	 * @param ownerID
+	 * @param ownerType
+	 * @return
+	 * @throws SQLException
 	 */
 	public Vector getDocs(String ownerID, String ownerType) throws SQLException{
 		
+		INParameters inParams = new INParameters();
+		
 		StringBuffer buf = new StringBuffer("select * from DOC where ").
-		append("OWNER_ID=").append(ownerID).
-		append(" and OWNER_TYPE=").append(Util.strLiteral(ownerType)).
+		append("OWNER_ID=").append(inParams.add(ownerID, Types.INTEGER)).
+		append(" and OWNER_TYPE=").append(inParams.add(ownerType)).
 		append(" order by TITLE asc");
 		
 		Vector v = new Vector();
-		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
-		while (rs.next()){
-			String file = rs.getString("ABS_PATH");
-			Hashtable hash = new Hashtable();
-			hash.put("md5", rs.getString("MD5_PATH"));
-			hash.put("file", file);
-			hash.put("icon", eionet.util.Util.getIcon(file));
-			hash.put("title", rs.getString("TITLE"));
-			v.add(hash);
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			while (rs.next()){
+				String file = rs.getString("ABS_PATH");
+				Hashtable hash = new Hashtable();
+				hash.put("md5", rs.getString("MD5_PATH"));
+				hash.put("file", file);
+				hash.put("icon", eionet.util.Util.getIcon(file));
+				hash.put("title", rs.getString("TITLE"));
+				v.add(hash);
+			}
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
 		}
 		
 		return v;
 	}
 	
+	/**
+	 * 
+	 * @param shortName
+	 * @param attrType
+	 * @return
+	 */
 	public String getAttrHelpByShortName(String shortName, String attrType){
 		if (shortName==null) return "";
 		if (attrType==null)
@@ -3536,6 +3705,12 @@ public class DDSearchEngine {
 			return getSimpleAttrHelpByShortName(shortName);
 	}
 	
+	/**
+	 * 
+	 * @param attrID
+	 * @param attrType
+	 * @return
+	 */
 	public String getAttrHelp(String attrID, String attrType){
 		if (attrID==null) return "";
 		if (attrType==null)
@@ -3548,143 +3723,232 @@ public class DDSearchEngine {
 			return getSimpleAttrHelp(attrID);
 	}
 	
+	/**
+	 * 
+	 * @param attrID
+	 * @return
+	 */
 	public String getSimpleAttrHelp(String attrID){
 		return getSimpleAttrHelp("M_ATTRIBUTE_ID", attrID);
 	}
 	
+	/**
+	 * 
+	 * @param shortName
+	 * @return
+	 */
 	public String getSimpleAttrHelpByShortName(String shortName){
 		return getSimpleAttrHelp("SHORT_NAME", Util.strLiteral(shortName));
 	}
 	
+	/**
+	 * 
+	 * @param field
+	 * @param value
+	 * @return
+	 */
 	public String getSimpleAttrHelp(String field, String value){
 		
-		StringBuffer help = new StringBuffer("");
+		StringBuffer retBuf = new StringBuffer();
+		INParameters inParams = new INParameters();
+		
+		StringBuffer qryBuf = new StringBuffer("select * from M_ATTRIBUTE where ");
+		qryBuf.append(field).append("=").append(inParams.add(value, Types.VARCHAR));
+		
 		if (field!=null && value!=null){
+			
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
 			try{
-				ResultSet rs = conn.createStatement().executeQuery(
-						"select * from M_ATTRIBUTE where " + field + "=" + value);
+				stmt = SQL.preparedStatement(qryBuf.toString(), inParams, conn);
+				rs = stmt.executeQuery();
 				if (rs.next()){
-					help.append("<br/><b>").append(rs.getString("SHORT_NAME")).
+					retBuf.append("<br/><b>").append(rs.getString("SHORT_NAME")).
 					append("</b><br/><br/>").append(rs.getString("DEFINITION")); 
 				}
 			}
 			catch (SQLException e){
 			}
+			finally{
+				try{
+					if (rs!=null) rs.close();
+					if (stmt!=null) stmt.close();
+				}
+				catch (SQLException e){}
+			}
 		}
 		
-		return help.toString();
+		return retBuf.toString();
 	}
 	
+	/**
+	 * 
+	 * @param attrID
+	 * @return
+	 */
 	public String getComplexAttrHelp(String attrID){
 		return getComplexAttrHelp("M_COMPLEX_ATTR_ID", attrID);
 	}
 	
+	/**
+	 * 
+	 * @param shortName
+	 * @return
+	 */
 	public String getComplexAttrHelpByShortName(String shortName){
 		return getComplexAttrHelp("SHORT_NAME", Util.strLiteral(shortName));
 	}
 	
+	/**
+	 * 
+	 * @param field
+	 * @param value
+	 * @return
+	 */
 	public String getComplexAttrHelp(String field, String value){
 		
-		StringBuffer help = new StringBuffer("");
+		StringBuffer retBuf = new StringBuffer();
+		INParameters inParams = new INParameters();
+		
+		StringBuffer qryBuf = new StringBuffer("select * from M_COMPLEX_ATTR where ");
+		qryBuf.append(field).append("=").append(inParams.add(value, Types.VARCHAR));
+		
 		if (field!=null && value!=null){
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
 			try{
-				ResultSet rs = conn.createStatement().executeQuery(
-						"select * from M_COMPLEX_ATTR where " + field + "=" + value);
+				stmt = SQL.preparedStatement(qryBuf.toString(), inParams, conn);
+				rs = stmt.executeQuery();
 				if (rs.next()){
-					help.append("<br/><b>").append(rs.getString("SHORT_NAME")).
+					retBuf.append("<br/><b>").append(rs.getString("SHORT_NAME")).
 					append("</b><br/><br/>").append(rs.getString("DEFINITION")); 
 				}
 			}
 			catch (SQLException e){
 			}
+			finally{
+				try{
+					if (rs!=null) rs.close();
+					if (stmt!=null) stmt.close();
+				}
+				catch (SQLException e){}
+			}
 		}
 		
-		return help.toString();
+		return retBuf.toString();
 	}
 	
-	public String getCacheFileName(String objID, String objType, String article)
-	throws SQLException{
+	/**
+	 * 
+	 * @param objID
+	 * @param objType
+	 * @param article
+	 * @return
+	 * @throws SQLException
+	 */
+	public String getCacheFileName(String objID, String objType, String article) throws SQLException{
+		
 		if (objID==null || objType==null || article==null)
 			throw new SQLException("getCacheFileName(): objID or objType or article is null");
 		
+		INParameters inParams = new INParameters();
 		StringBuffer buf = new StringBuffer("select FILENAME from CACHE where ").
-		append("OBJ_ID=").append(objID).
-		append(" and OBJ_TYPE=").append(Util.strLiteral(objType)).
-		append(" and ARTICLE=").append(Util.strLiteral(article));
+		append("OBJ_ID=").append(inParams.add(objID, Types.INTEGER)).
+		append(" and OBJ_TYPE=").append(inParams.add(objType)).
+		append(" and ARTICLE=").append(inParams.add(article));
 		
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
-		String fileName = rs.next() ? rs.getString(1) : null;
-		
-		stmt.close();
-		rs.close();
+		String fileName = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			fileName = rs.next() ? rs.getString(1) : null;
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
 		
 		return fileName;
 	}
 	
+	/**
+	 * 
+	 * @param objID
+	 * @param objType
+	 * @return
+	 * @throws SQLException
+	 */
 	public Hashtable getCache(String objID, String objType) throws SQLException{
 		
 		if (objID==null || objType==null)
 			throw new SQLException("getCache(): objID or objType or article is null");
 		
+		INParameters inParams = new INParameters();
 		StringBuffer buf = new StringBuffer("select * from CACHE where ").
-		append("OBJ_ID=").append(objID).
-		append(" and OBJ_TYPE=").append(Util.strLiteral(objType));
+		append("OBJ_ID=").append(inParams.add(objID, Types.INTEGER)).
+		append(" and OBJ_TYPE=").append(inParams.add(objType));
 		
 		Hashtable result = new Hashtable();
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
-		while (rs.next()){
-			String filename = rs.getString("FILENAME");
-			String article = rs.getString("ARTICLE");
-			Long created = new Long(rs.getLong("CREATED"));
-			if (Util.nullString(filename)) continue;
-			
-			Hashtable hash = new Hashtable();
-			hash.put("filename", filename);
-			hash.put("created", created);
-			
-			result.put(rs.getString("ARTICLE"), hash);
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			while (rs.next()){
+				String filename = rs.getString("FILENAME");
+				String article = rs.getString("ARTICLE");
+				Long created = new Long(rs.getLong("CREATED"));
+				if (Util.nullString(filename))
+					continue;
+				
+				Hashtable hash = new Hashtable();
+				hash.put("filename", filename);
+				hash.put("created", created);
+				
+				result.put(rs.getString("ARTICLE"), hash);
+			}
 		}
-		
-		stmt.close();
-		rs.close();
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
+			
 		
 		return result;
 	}
-	
-	public String getLastUpdated() throws SQLException{
-		
-		String lastUpdated = null;
-		ResultSet rs = conn.createStatement().executeQuery("show table status");
-		while (rs.next()){
-			String updTime = rs.getDate("Update_time").toString();
-			if (lastUpdated==null)
-				lastUpdated = updTime;
-			else if (lastUpdated.compareTo(updTime)<0){
-				lastUpdated = updTime;
-			}
-		}
-		
-		return lastUpdated;
-	}
-	
+
+	/**
+	 * 
+	 * @param dstID
+	 * @return
+	 * @throws Exception
+	 */
 	public Vector getRodLinks(String dstID) throws Exception{
 		
-		if (Util.nullString(dstID)) throw new Exception("getRodLinks(): dstID missing!");
+		if (Util.nullString(dstID))
+			throw new Exception("getRodLinks(): dstID missing!");
 		
 		Vector v = new Vector();
 		
+		INParameters inParams = new INParameters();
 		StringBuffer buf =
 			new StringBuffer("select distinct ROD_ACTIVITIES.* from DST2ROD, ROD_ACTIVITIES where ").
 			append("DST2ROD.ACTIVITY_ID=ROD_ACTIVITIES.ACTIVITY_ID and DST2ROD.DATASET_ID=").
-			append(dstID);
+			append(inParams.add(dstID, Types.INTEGER));
 		
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			while (rs.next()){
 				Hashtable hash = new Hashtable();
 				String raID = rs.getString("ACTIVITY_ID");
@@ -3706,14 +3970,21 @@ public class DDSearchEngine {
 		}
 		finally{
 			try{
-				if (stmt!=null) stmt.close();
 				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
 			}
 			catch (SQLException sqle){}
 		}
+		
 		return v;
 	}
 	
+	/**
+	 * 
+	 * @param raID
+	 * @return
+	 * @throws Exception
+	 */
 	public Vector getParametersByActivityID(String raID) throws Exception{
 		
 		if (Util.nullString(raID))
@@ -3721,13 +3992,14 @@ public class DDSearchEngine {
 		
 		Vector result = new Vector();
 		
-		StringBuffer qryDatasets = new StringBuffer().
+		INParameters inParams = new INParameters();
+		StringBuffer qryOfDatasets = new StringBuffer().
 		append("select distinct DATASET.DATASET_ID, DATASET.SHORT_NAME, DATASET.IDENTIFIER, ").
-		append("DATASET.VERSION from DST2ROD, DATASET where DST2ROD.ACTIVITY_ID=").append(raID).
+		append("DATASET.VERSION from DST2ROD, DATASET where DST2ROD.ACTIVITY_ID=").append(inParams.add(raID, Types.INTEGER)).
 		append(" and DST2ROD.DATASET_ID=DATASET.DATASET_ID and DATASET.DELETED is null ").
 		append("order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc");
 		
-		StringBuffer qryParameters = new StringBuffer().
+		StringBuffer qryOfParameters = new StringBuffer().
 		append("select distinct DATAELEM.DATAELEM_ID, DATAELEM.TYPE, DATAELEM.SHORT_NAME, ").
 		append("DS_TABLE.SHORT_NAME from DST2TBL ").
 		append("left outer join DS_TABLE on DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID ").
@@ -3737,32 +4009,32 @@ public class DDSearchEngine {
 		append("DATAELEM.DATAELEM_ID is not null and DATAELEM.IS_ROD_PARAM='true' ").
 		append("order by DS_TABLE.SHORT_NAME, DATAELEM.SHORT_NAME");
 		
-		Statement stmt = null;
-		ResultSet rsParams = null;
-		ResultSet rsDatasets = null;
-		PreparedStatement pstmt = null;
+		ResultSet rsOfDatasets = null;
+		PreparedStatement stmtOfDatasets = null;
+		ResultSet rsOfParams = null;
+		PreparedStatement stmtOfParams = null;
 		try{
-			pstmt = conn.prepareStatement(qryParameters.toString());
-			stmt = conn.createStatement();
-			rsDatasets = stmt.executeQuery(qryDatasets.toString());
+			stmtOfParams = conn.prepareStatement(qryOfParameters.toString());
+			stmtOfDatasets = SQL.preparedStatement(qryOfDatasets.toString(), inParams, conn);
+			rsOfDatasets = stmtOfDatasets.executeQuery();
 			String curDstIdf = null;
-			while (rsDatasets.next()){
-				String dstIdf = rsDatasets.getString("DATASET.IDENTIFIER");
+			while (rsOfDatasets.next()){
+				String dstIdf = rsOfDatasets.getString("DATASET.IDENTIFIER");
 				if (curDstIdf!=null && curDstIdf.equals(dstIdf))
 					continue;
 				curDstIdf = dstIdf;
 				
-				String dstName = rsDatasets.getString("DATASET.SHORT_NAME");
-				int dstID = rsDatasets.getInt("DATASET.DATASET_ID");
-				pstmt.setInt(1,dstID);
-				rsParams = pstmt.executeQuery();
-				while(rsParams.next()){
+				String dstName = rsOfDatasets.getString("DATASET.SHORT_NAME");
+				int dstID = rsOfDatasets.getInt("DATASET.DATASET_ID");
+				stmtOfParams.setInt(1,dstID);
+				rsOfParams = stmtOfParams.executeQuery();
+				while(rsOfParams.next()){
 					Hashtable hash = new Hashtable();
-					hash.put("elm-name", rsParams.getString("DATAELEM.SHORT_NAME"));
-					hash.put("tbl-name", rsParams.getString("DS_TABLE.SHORT_NAME"));
+					hash.put("elm-name", rsOfParams.getString("DATAELEM.SHORT_NAME"));
+					hash.put("tbl-name", rsOfParams.getString("DS_TABLE.SHORT_NAME"));
 					hash.put("dst-name", dstName);
 					
-					String elmID = rsParams.getString("DATAELEM.DATAELEM_ID");
+					String elmID = rsOfParams.getString("DATAELEM.DATAELEM_ID");
 					String elmUrl = Props.getProperty(PropsIF.OUTSERV_ELM_URLPATTERN);
 					int i = elmUrl.indexOf(PropsIF.OUTSERV_ELM_IDPATTERN);
 					if (i==-1) throw new Exception(
@@ -3778,10 +4050,10 @@ public class DDSearchEngine {
 		}
 		finally{
 			try{
-				if (stmt!=null) stmt.close();
-				if (pstmt!=null) pstmt.close();
-				if (rsParams!=null) rsParams.close();
-				if (rsDatasets!=null) rsDatasets.close();
+				if (stmtOfDatasets!=null) stmtOfDatasets.close();
+				if (stmtOfParams!=null) stmtOfParams.close();
+				if (rsOfParams!=null) rsOfParams.close();
+				if (rsOfDatasets!=null) rsOfDatasets.close();
 				
 			}
 			catch (SQLException sqle){}
@@ -3789,10 +4061,12 @@ public class DDSearchEngine {
 		
 		return result;
 	}
-	
-	/*
-	 * This one returns the IDs and titles of all ogligations that have
-	 * a released dataset definition present in DD
+
+	/**
+	 * This one returns the IDs and titles of all ogligations that have a released dataset definition present in DD.
+	 * 
+	 * @return
+	 * @throws Exception
 	 */
 	public Vector getObligationsWithDatasets() throws Exception{
 		
@@ -3855,9 +4129,14 @@ public class DDSearchEngine {
 		
 		return obligations;
 	}
-	
-	/*
+
+	/**
 	 * 
+	 * @param attrShortName
+	 * @param parentID
+	 * @param parentType
+	 * @return
+	 * @throws Exception
 	 */
 	public Vector getComplexAttrValueRowHashes(String attrShortName,
 			String parentID, String parentType) throws Exception{
@@ -3896,9 +4175,12 @@ public class DDSearchEngine {
 		
 		return result;
 	}
-	
-	/*
+
+	/**
 	 * 
+	 * @param elmID
+	 * @return
+	 * @throws SQLException
 	 */
 	public Vector getReferringTables(String elmID) throws SQLException{
 		
@@ -3906,11 +4188,11 @@ public class DDSearchEngine {
 		StringBuffer qry = new StringBuffer("select * from ACLS where PARENT_NAME='/datasets'");
 		
 		Hashtable owners = new Hashtable();
-		Statement stmt = null;
+		Statement stmt1 = null;
 		ResultSet rs = null;
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(qry.toString());
+			stmt1 = conn.createStatement();
+			rs = stmt1.executeQuery(qry.toString());
 			while (rs.next()){
 				String idf = rs.getString("ACL_NAME");
 				String own = rs.getString("OWNER");
@@ -3919,11 +4201,13 @@ public class DDSearchEngine {
 		}
 		finally{
 			try{
-				if (stmt!=null) stmt.close();
+				if (stmt1!=null) stmt1.close();
 				if (rs!=null) rs.close();
 			}
 			catch (SQLException e){}
 		}
+		
+		INParameters inParams = new INParameters();
 		
 		// and now get the referring tables
 		qry = new StringBuffer("select DS_TABLE.*, ").
@@ -3932,16 +4216,18 @@ public class DDSearchEngine {
 		append("left outer join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID ").
 		append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ").
 		append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ").
-		append("where TBL2ELEM.DATAELEM_ID=").append(elmID).append(" and ").
+		append("where TBL2ELEM.DATAELEM_ID=").append(inParams.add(elmID, Types.INTEGER)).append(" and ").
 		append("DS_TABLE.TABLE_ID is not null and ").
 		append("DATASET.DELETED is null ").
 		append("order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc, ").
 		append("DS_TABLE.IDENTIFIER asc, DS_TABLE.TABLE_ID desc");
 		
 		Vector result = new Vector();
+		PreparedStatement stmt = null;
+		rs = null;
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(qry.toString());
+			stmt = SQL.preparedStatement(qry.toString(), inParams, conn);
+			rs = stmt.executeQuery();
 			
 			String curDstID  = null;
 			String curDstIdf = null;
@@ -3950,7 +4236,8 @@ public class DDSearchEngine {
 				
 				String dstID  = rs.getString("DATASET.DATASET_ID");
 				String dstIdf = rs.getString("DATASET.IDENTIFIER");
-				if (dstID==null && dstIdf==null) continue;
+				if (dstID==null && dstIdf==null)
+					continue;
 				
 				// the following if block skips tables in non-latest DATASETS
 				if (curDstIdf==null || !curDstIdf.equals(dstIdf)){
@@ -3992,8 +4279,9 @@ public class DDSearchEngine {
 		}
 		finally{
 			try{
-				if (stmt!=null) stmt.close();
 				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+				if (stmt1!=null) stmt1.close();
 			}
 			catch (SQLException e){}
 		}
@@ -4010,14 +4298,27 @@ public class DDSearchEngine {
 	 */
 	public String getDatasetIdentifier(String dstID) throws SQLException {
 		
+		INParameters inParams = new INParameters();
 		StringBuffer buf = new StringBuffer("select IDENTIFIER from DATASET where DATASET_ID=");
-		buf.append(dstID);
+		buf.append(inParams.add(dstID, Types.INTEGER));
 		
-		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
-		if (rs!=null && rs.next())
-			return rs.getString(1);
-		else
-			return null;
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		try{
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			if (rs!=null && rs.next())
+				return rs.getString(1);
+			else
+				return null;
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
 	}
 	
 	/**
@@ -4027,34 +4328,41 @@ public class DDSearchEngine {
 	 */
 	public String getElmOwner(String elmIdfier) throws SQLException{
 		
+		INParameters inParams = new INParameters();
 		StringBuffer buf = new StringBuffer("select OWNER from ACLS where PARENT_NAME='/elements' ");
-		buf.append(" and ACL_NAME='");
-		buf.append(elmIdfier);
-		buf.append("'");
+		buf.append(" and ACL_NAME=").append(inParams.add(elmIdfier));
 		
-		ResultSet rs = conn.createStatement().executeQuery(buf.toString());
-		if (rs!=null && rs.next())
-			return rs.getString(1);
-		else
-			return null;
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		try{
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			if (rs!=null && rs.next())
+				return rs.getString(1);
+			else
+				return null;
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
 	}
 	
-	/**
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args){
-		
-		try{
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn =
-				DriverManager.getConnection(
-						"jdbc:mysql://192.168.10.15:3306/datadict", "root", "ABr00t");
-			
-			System.out.println();
-		}
-		catch (Exception e){
-			System.out.println(e.toString());
-		}
-	}
+//	public static void main(String[] args){
+//		
+//		try{
+//			Class.forName("com.mysql.jdbc.Driver");
+//			Connection conn =
+//				DriverManager.getConnection(
+//						"jdbc:mysql://192.168.10.15:3306/datadict", "root", "ABr00t");
+//			
+//			System.out.println();
+//		}
+//		catch (Exception e){
+//			System.out.println(e.toString());
+//		}
+//	}
 }
