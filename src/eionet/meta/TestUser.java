@@ -9,7 +9,6 @@ import eionet.util.PropsIF;
 
 public class TestUser implements AppUserIF {
     
-    private boolean authented = false;
     private String user = null;
     private String password = null;
     private String fullName = null;
@@ -26,26 +25,28 @@ public class TestUser implements AppUserIF {
                 Props.getProperty(PropsIF.DBPSW));
     }
 
-    public TestUser(boolean noPool) {}
+    /**
+     * 
+     * @param noPool
+     */
+    public TestUser(boolean noPool){
+    }
    
     /**
      *
      */
     public boolean authenticate(String userName, String userPws) {
         
-        invalidate();
-        authented = true;
         user = userName;
         password = userPws;
-        
-        return authented;
+        return true;
     }
     
     /**
      *
      */
     public boolean isAuthentic() {
-        return authented;
+        return true;
     }
     
     /**
@@ -102,9 +103,6 @@ public class TestUser implements AppUserIF {
      *
      */
     public void invalidate() {
-        authented = false;
-        user = null;
-        password = null;
     }
 
     /**
