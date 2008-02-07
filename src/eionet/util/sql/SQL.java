@@ -21,33 +21,33 @@ public class SQL {
 	/**
 	 * 
 	 * @param sql
-	 * @param sqlArgs
+	 * @param inParams
 	 * @param conn
 	 * @return
 	 * @throws SQLException 
 	 */
-	public static PreparedStatement preparedStatement(String sql, INParameters sqlArgs, Connection conn) throws SQLException{
+	public static PreparedStatement preparedStatement(String sql, INParameters inParams, Connection conn) throws SQLException{
 		
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		populate(stmt, sqlArgs);
+		populate(stmt, inParams);
 		return stmt;
 	}
 	
 	/**
 	 * 
 	 * @param stmt
-	 * @param sqlArgs
+	 * @param inParams
 	 * @throws SQLException 
 	 */
-	public static void populate(PreparedStatement stmt, INParameters sqlArgs) throws SQLException{
+	public static void populate(PreparedStatement stmt, INParameters inParams) throws SQLException{
 		
-		for (int i=0; stmt!=null && sqlArgs!=null && i<sqlArgs.size(); i++){
+		for (int i=0; stmt!=null && inParams!=null && i<inParams.size(); i++){
 			
-			int sqlType = sqlArgs.getSQLType(i);
+			int sqlType = inParams.getSQLType(i);
 			if (sqlType==Types.JAVA_OBJECT)
-				stmt.setObject(i+1, sqlArgs.getValue(i));
+				stmt.setObject(i+1, inParams.getValue(i));
 			else
-				stmt.setObject(i+1, sqlArgs.getValue(i), sqlType);
+				stmt.setObject(i+1, inParams.getValue(i), sqlType);
 		}
 	}
 	
