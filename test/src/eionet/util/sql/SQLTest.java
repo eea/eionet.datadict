@@ -2,11 +2,8 @@ package eionet.util.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 
 import eionet.test.MockDbPool;
@@ -51,4 +48,5 @@ public class SQLTest extends TestCase{
 			catch (SQLException e){}
 		}
 	}
+	
 }
