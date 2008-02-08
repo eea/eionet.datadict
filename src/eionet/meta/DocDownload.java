@@ -1,6 +1,8 @@
 package eionet.meta;
 
 import eionet.util.*;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -84,6 +86,12 @@ public class DocDownload extends HttpServlet{
 		}
 	}
 	
+	/**
+	 * 
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	private String getAbsPath(HttpServletRequest req) throws Exception{
 		
 		String md5 = req.getParameter(REQPAR_FILE);
@@ -92,16 +100,34 @@ public class DocDownload extends HttpServlet{
 			
 		openConnection();
 		String absPath = null;
-		String q = "select * from DOC where MD5_PATH=" + Util.strLiteral(md5);
-		ResultSet rs = conn.createStatement().executeQuery(q);
-		if (rs.next()){
-			absPath = rs.getString("ABS_PATH");
-			setMimeType(absPath);
+		INParameters inParams = new INParameters();
+		String q = "select * from DOC where MD5_PATH=" + inParams.add(md5);
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		try{
+			stmt = SQL.preparedStatement(q, inParams, conn);
+			rs = stmt.executeQuery();
+			if (rs.next()){
+				absPath = rs.getString("ABS_PATH");
+				setMimeType(absPath);
+			}
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
 		}
 		
 		return absPath;
 	}
 	
+	/**
+	 * 
+	 * @param absPath
+	 */
 	private void setMimeType(String absPath){
 		
 		String s = absPath.toLowerCase();

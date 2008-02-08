@@ -14,6 +14,8 @@ import eionet.meta.exports.pdf.*;
 import eionet.meta.exports.xls.*;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
 
 import com.tee.util.Util;
 import com.tee.xmlserver.*;
@@ -157,15 +159,40 @@ public class CacheServlet extends HttpServlet {
 		req.setAttribute("entries", objArticles);
 	}
 	
-	private void deleteCacheEntry(String objID, String objType, String article, Connection conn)
+	/**
+	 * 
+	 * @param objID
+	 * @param objType
+	 * @param article
+	 * @param conn
+	 * @throws SQLException
+	 */
+	protected static void deleteCacheEntry(String objID, String objType, String article, Connection conn)
 																throws SQLException{
-		StringBuffer buf = new StringBuffer("delete from CACHE where OBJ_ID=").
-		append(objID).append(" and OBJ_TYPE=").append(Util.strLiteral(objType)).
-		append(" and ARTICLE=").append(Util.strLiteral(article));
 		
-		conn.createStatement().executeUpdate(buf.toString());
+		INParameters inParams = new INParameters();
+		
+		StringBuffer buf = new StringBuffer("delete from CACHE where OBJ_ID=").
+		append(inParams.add(objID, Types.INTEGER)).append(" and OBJ_TYPE=").append(inParams.add(objType)).
+		append(" and ARTICLE=").append(inParams.add(article));
+		
+		PreparedStatement stmt = null;
+		try{
+			SQL.preparedStatement(buf.toString(), inParams, conn).executeUpdate();
+		}
+		finally{
+			try{
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
 	}
 	
+	/**
+	 * 
+	 * @param req
+	 * @return
+	 */
 	private Hashtable getArticles(HttpServletRequest req){
 		
 		Hashtable articles = (Hashtable)req.getAttribute("articles");
