@@ -10,6 +10,9 @@ import eionet.meta.*;
 import eionet.meta.exports.*;
 import eionet.meta.exports.pdf.PdfUtil;
 import eionet.util.Util;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
+
 import com.tee.util.SQLGenerator;
 
 import org.apache.poi.hssf.usermodel.*;
@@ -159,7 +162,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
 				os = new FileOutputStream(fn);
 				write(true);
 				os.flush();
-				storeCacheEntry(id, fileName);
+				storeCacheEntry(id, fileName, conn);
 			}
 			catch (Exception e){
 				try{
@@ -180,7 +183,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
 	 */
 	public void clearCache(String id) throws Exception{
 		
-		String fn = deleteCacheEntry(id);
+		String fn = deleteCacheEntry(id, conn);
 		File file = new File(cachePath + fn);
 		if (file.exists() && file.isFile())
 			file.delete();
@@ -248,69 +251,87 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
 		}
 	}
 
-	private void storeCacheEntry(String id, String fn) throws SQLException{
+	/**
+	 * 
+	 * @param id
+	 * @param fn
+	 * @param conn
+	 * @throws SQLException
+	 */
+	protected static int storeCacheEntry(String id, String fn, Connection conn) throws SQLException{
 		
-		if (id==null || fn==null || conn==null) return;
+		if (id==null || fn==null || conn==null)
+			return -1;
 
-		// first delete the old entry
-		StringBuffer buf = new StringBuffer().
-		append("delete from CACHE where OBJ_TYPE='dst' and ARTICLE='xls' and OBJ_ID=").append(id);
-		conn.createStatement().executeUpdate(buf.toString());
-		
-		// now create the new entry
-		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("CACHE");
-		gen.setFieldExpr("OBJ_ID", id);
-		gen.setField("OBJ_TYPE", "dst");
-		gen.setField("ARTICLE", "xls");
-		gen.setField("FILENAME", fn);
-		gen.setFieldExpr("CREATED", String.valueOf(System.currentTimeMillis()));
-		
-		conn.createStatement().executeUpdate(gen.insertStatement());
+		INParameters inParams = new INParameters();
+		PreparedStatement stmt = null;
+		try{
+			// first delete the old entry
+			StringBuffer buf = new StringBuffer().
+			append("delete from CACHE where OBJ_TYPE='dst' and ARTICLE='xls' and OBJ_ID=").append(inParams.add(id, Types.INTEGER));
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			stmt.executeUpdate();
+			stmt.close();
+			
+			// now create the new entry
+			inParams = new INParameters();
+			LinkedHashMap map = new LinkedHashMap();
+			map.put("OBJ_ID", inParams.add(id, Types.INTEGER));
+			map.put("OBJ_TYPE", SQL.addApos("dst"));
+			map.put("ARTICLE", SQL.addApos("xls"));
+			map.put("FILENAME", SQL.addApos(fn));
+			map.put("CREATED", inParams.add(String.valueOf(System.currentTimeMillis()), Types.BIGINT));			
+
+			stmt = SQL.preparedStatement(SQL.insertStatement("CACHE", map), inParams, conn);
+			return stmt.executeUpdate();
+		}
+		finally{
+			try{
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
 	}
 
-	private String deleteCacheEntry(String id) throws SQLException{
+	/**
+	 * 
+	 * @param id
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
+	protected static String deleteCacheEntry(String id, Connection conn) throws SQLException{
 		
-		if (id==null || conn==null) return null;
+		if (id==null || conn==null)
+			return null;
 		
+		INParameters inParams = new INParameters();
 		StringBuffer buf = new StringBuffer("select FILENAME from CACHE where ").
-		append("OBJ_TYPE='dst' and ARTICLE='xls' and OBJ_ID=").append(id);
+		append("OBJ_TYPE='dst' and ARTICLE='xls' and OBJ_ID=").append(inParams.add(id, Types.INTEGER));
 		
 		String fn = null;
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
-		if (rs.next()){
-			fn = rs.getString(1);
-			buf = new StringBuffer("delete from CACHE where ").
-			append("OBJ_TYPE='dst' and ARTICLE='xls' and OBJ_ID=").append(id);
-			stmt.executeUpdate(buf.toString());
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try{
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			if (rs.next()){
+				fn = rs.getString(1);
+				inParams = new INParameters();
+				buf = new StringBuffer("delete from CACHE where ").
+				append("OBJ_TYPE='dst' and ARTICLE='xls' and OBJ_ID=").append(inParams.add(id, Types.INTEGER));
+				stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+				stmt.executeUpdate();
+			}
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}			
 		}
 		
 		return fn;
-	}
-	
-	public static void main(String[] args) {
-		
-		Connection conn = null;
-		
-		try{
-			Class.forName("org.gjt.mm.mysql.Driver");
-			conn = DriverManager.getConnection(
-							"jdbc:mysql://195.250.186.33:3306/dd", "dduser", "xxx");
-							
-			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", null);
-			FileOutputStream fos = new FileOutputStream("d:\\tmp\\workbook.xls");
-			DstXls xls = new DstXls(searchEngine, fos);
-			
-			xls.create("1327");
-			xls.write();
-			
-			fos.close();
-			conn.close();
-		}
-		catch (Exception e){
-			if (conn!=null) try{ conn.close(); } catch (SQLException sqle) {}
-			e.printStackTrace(System.out);
-		}
-	}
+	}	
 }

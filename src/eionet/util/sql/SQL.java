@@ -108,4 +108,19 @@ public class SQL {
 		
 		return buf.toString();
 	}
+
+	/**
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static String addApos(String s){
+		
+		if (s==null)
+			return null;
+		else{
+			StringBuffer buf = new StringBuffer("'");
+			return buf.append(s).append("'").toString();
+		}
+	}
 }

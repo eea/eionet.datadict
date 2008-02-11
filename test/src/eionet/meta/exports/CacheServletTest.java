@@ -27,7 +27,7 @@ public class CacheServletTest extends TestCase{
 			CacheServlet.deleteCacheEntry("9999", "l'll", "a'sdasd", conn);
 		}
 		catch (Exception e){
-			fail("Was not expecting any exceptions");
+			fail("Was not expecting any exceptions, but catched " + e.toString());			
 		}
 		finally{
 			try{
