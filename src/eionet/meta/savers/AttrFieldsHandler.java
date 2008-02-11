@@ -9,6 +9,8 @@ import com.tee.util.*;
 import eionet.meta.DDSearchEngine;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
 
 public class AttrFieldsHandler extends BaseHandler {
 
@@ -104,145 +106,182 @@ public class AttrFieldsHandler extends BaseHandler {
         	insertFields(row_id, params);
     }
 
+    /**
+     * 
+     * @return
+     * @throws SQLException
+     */
     private String insertRow() throws SQLException {
 
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("COMPLEX_ATTR_ROW");
-
-        gen.setField("M_COMPLEX_ATTR_ID", m_attr_id);
-        gen.setField("PARENT_ID", parent_id);
-        gen.setField("PARENT_TYPE", parent_type);
+        INParameters inParams = new INParameters();
+        LinkedHashMap map = new LinkedHashMap();
+        map.put("M_COMPLEX_ATTR_ID", inParams.add(m_attr_id, Types.INTEGER));
+        map.put("PARENT_ID", inParams.add(parent_id, Types.INTEGER));
+        map.put("PARENT_TYPE", inParams.add(parent_type));
 
         String position = req.getParameter("position");
-        if (position == null || position.length()==0) position = "0";
-        gen.setField("POSITION", position);
+        if (position == null || position.length()==0)
+        	position = "0";
+        map.put("POSITION", inParams.add(position, Types.INTEGER));
 
-
-        String rowID = "md5('" + parent_id + parent_type + m_attr_id + position + "')";
-        gen.setFieldExpr("ROW_ID", rowID);
-        
+        String rowID = parent_id + parent_type + m_attr_id + position;
+        map.put("ROW_ID", "md5(" + inParams.add(rowID) + ")");
         if (!Util.nullString(harvAttrID))
-			gen.setField("HARV_ATTR_ID", harvAttrID);
+			map.put("HARV_ATTR_ID", inParams.add(harvAttrID));
 
-        String sql = gen.insertStatement();
-
-        logger.debug(sql);
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(sql);
-        stmt.close();
-
+        PreparedStatement stmt = null;
+        try{
+        	stmt = SQL.preparedStatement(SQL.insertStatement("COMPLEX_ATTR_ROW", map), inParams, conn);
+        	stmt.executeUpdate();
+        }
+        finally{
+        	try{
+        		if (stmt!=null) stmt.close();
+        	}
+        	catch (SQLException e){}
+        }
+        
         return rowID;
     }
 
-    private void insertFields(String row_id, Enumeration params) throws SQLException {
+    /**
+     * 
+     * @param rowID
+     * @param params
+     * @throws SQLException
+     */
+    private void insertFields(String rowID, Enumeration params) throws SQLException {
 
-        if (row_id == null)
+        if (rowID == null)
         	return;
 
+        PreparedStatement stmt = null;
         try{
 	        do {
 	            String parName = (String)params.nextElement();
-	            if (!parName.startsWith(FLD_PREFIX)) continue;
+	            if (!parName.startsWith(FLD_PREFIX))
+	            	continue;
 	
-	            if (Util.nullString(req.getParameter(parName))) continue;
+	            if (Util.nullString(req.getParameter(parName)))
+	            	continue;
 	
 	            String fieldID = parName.substring(FLD_PREFIX.length());
-	
-	            SQLGenerator gen = new SQLGenerator();
-	            gen.setTable("COMPLEX_ATTR_FIELD");
-	
-	            gen.setFieldExpr("ROW_ID", row_id);
-	            gen.setField("M_COMPLEX_ATTR_FIELD_ID", fieldID);
-	            gen.setField("VALUE", req.getParameter(parName));
-	
-	            String sql = gen.insertStatement();
-	            logger.debug(sql);
-	
-	            Statement stmt = conn.createStatement();
-	            stmt.executeUpdate(sql);
-	            stmt.close();
+
+	            INParameters inParams = new INParameters();
+	            LinkedHashMap map = new LinkedHashMap();
+	            map.put("ROW_ID", "md5(" + inParams.add(rowID) + ")");
+	            map.put("M_COMPLEX_ATTR_FIELD_ID", inParams.add(fieldID, Types.INTEGER));
+	            map.put("VALUE", inParams.add(req.getParameter(parName)));
+	            
+	            stmt = SQL.preparedStatement(SQL.insertStatement("COMPLEX_ATTR_FIELD", map), inParams, conn);
+	            stmt.executeUpdate();
 	        }
 	        while (params.hasMoreElements());
         }
         catch (SQLException sqle){
         	sqle.printStackTrace(System.out);
         }
+        finally{
+        	try{
+        		if (stmt!=null) stmt.close();
+        	}
+        	catch (SQLException e){}
+        }
     }
     
+    /**
+     * 
+     * @throws SQLException
+     */
     private void delete() throws SQLException {
         
         if (del_rows == null || del_rows.length == 0)
             setDelRows();
-        
         if (del_rows == null || del_rows.length == 0)
             return;
-        
+
+        INParameters inParamsRow = new INParameters();
         StringBuffer bufRow = new StringBuffer();
         bufRow.append("delete from COMPLEX_ATTR_ROW where ");
-        
         for (int i=0; del_rows!=null && i<del_rows.length; i++){
-            if (i>0) bufRow.append(" or ");
-            bufRow.append("ROW_ID='");
-            bufRow.append(del_rows[i]);
-            bufRow.append("'");
+            if (i>0)
+            	bufRow.append(" or ");
+            bufRow.append("ROW_ID=").append(inParamsRow.add(del_rows[i]));
         }
         
+        INParameters inParamsFld = new INParameters();
         StringBuffer bufFld = new StringBuffer();
         bufFld.append("delete from COMPLEX_ATTR_FIELD where ");
-        
         for (int i=0; del_rows!=null && i<del_rows.length; i++){
-            if (i>0) bufFld.append(" or ");
-            bufFld.append("ROW_ID='");
-            bufFld.append(del_rows[i]);
-            bufFld.append("'");
+            if (i>0)
+            	bufFld.append(" or ");
+            bufFld.append("ROW_ID=").append(inParamsFld.add(del_rows[i]));
         }
         
-        Statement stmt = conn.createStatement();
-        
-        logger.debug(bufRow.toString());
-        stmt.executeUpdate(bufRow.toString());
-        
-        logger.debug(bufFld.toString());
-        stmt.executeUpdate(bufFld.toString());
-        
-        stmt.close();
+        PreparedStatement stmt1 = null;
+        PreparedStatement stmt2 = null;
+        try{
+        	stmt1 = SQL.preparedStatement(bufRow.toString(), inParamsRow, conn);
+        	stmt2 = SQL.preparedStatement(bufFld.toString(), inParamsFld, conn);
+        	stmt1.executeUpdate();
+        	stmt2.executeUpdate();
+        }
+        finally{
+        	try{
+        		if (stmt1!=null) stmt1.close();
+        		if (stmt2!=null) stmt2.close();
+        	}
+        	catch (SQLException e){}
+        }
     }
     
+    /**
+     * 
+     * @throws SQLException
+     */
     private void setDelRows() throws SQLException {
         
+    	INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer();
-        buf.append("select distinct ROW_ID from COMPLEX_ATTR_ROW where PARENT_ID=");
-        buf.append(parent_id);
-        buf.append(" and PARENT_TYPE='");
-        buf.append(parent_type);
-        buf.append("'");
-        
+        buf.append("select distinct ROW_ID from COMPLEX_ATTR_ROW where PARENT_ID=").append(inParams.add(parent_id, Types.INTEGER)).
+        append(" and PARENT_TYPE=").append(inParams.add(parent_type));
         if (del_attrs != null && del_attrs.length != 0){
             buf.append(" and ("); 
-        
             for (int i=0; i<del_attrs.length; i++){
-                if (i>0) buf.append(" or ");
-                buf.append("M_COMPLEX_ATTR_ID=");
-                buf.append(del_attrs[i]);
+                if (i>0)
+                	buf.append(" or ");
+                buf.append("M_COMPLEX_ATTR_ID=").append(inParams.add(del_attrs[i], Types.INTEGER));
             }
-                
             buf.append(")");
         }
         
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
         Vector v = new Vector();
-        while (rs.next()){
-            v.add(rs.getString("ROW_ID"));
+        ResultSet rs = null;
+        PreparedStatement stmt = null;
+        try{
+        	stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+        	rs = stmt.executeQuery();
+            while (rs.next()){
+                v.add(rs.getString("ROW_ID"));
+            }
         }
-
-        stmt.close();
+        finally{
+        	try{
+        		if (rs!=null) rs.close();
+        		if (stmt!=null) stmt.close();
+        	}
+        	catch (SQLException e){}
+        }
 
         del_rows = new String[v.size()];
         for (int i=0; i<v.size(); i++)
             del_rows[i] = (String)v.get(i);
     }
+    
+    /**
+     * 
+     * @return
+     */
     private boolean hasFields(){
         Enumeration pars = req.getParameterNames();
         do {

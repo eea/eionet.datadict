@@ -1477,12 +1477,12 @@ public class DDSearchEngine {
 		// EK291003 search inhrted attributes from table and/or dataset level
 		if (!Util.nullString(inheritTblID)){
 			buf.append(" or (COMPLEX_ATTR_ROW.PARENT_ID=");
-			buf.append(inParams.add(inheritTblID, Types.INTEGER));
+			buf.append(inParams.add(inheritTblID));
 			buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE='T' and M_COMPLEX_ATTR.INHERIT!='0')");
 		}
 		if (!Util.nullString(inheritDstID)){
 			buf.append(" or (COMPLEX_ATTR_ROW.PARENT_ID=");
-			buf.append(inParams.add(inheritDstID, Types.INTEGER));
+			buf.append(inParams.add(inheritDstID));
 			buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE='DS' and M_COMPLEX_ATTR.INHERIT!='0')");
 		}
 		buf.append(")");
