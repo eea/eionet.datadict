@@ -6,6 +6,7 @@ import javax.servlet.*;
 import java.io.*;
 import java.net.*;
 import java.sql.*;
+import java.util.LinkedHashMap;
 
 import com.tee.util.*;
 import com.tee.xmlserver.*;
@@ -13,6 +14,8 @@ import com.tee.xmlserver.*;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
 
 import com.eteks.awt.PJAToolkit;
 
@@ -21,12 +24,20 @@ public class ImgUpload extends HttpServlet {
     private static final int BUF_SIZE = 1024;
 	private static final String QRYSTR_ATTR = "imgattr_qrystr";
     
+	/*
+	 *  (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
 		doPost(req,res);
     }
 
+    /*
+     *  (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
@@ -73,7 +84,7 @@ public class ImgUpload extends HttpServlet {
         if (!filePath.endsWith(File.separator))
             filePath = filePath + File.separator;
                 
-        StringBuffer buf = new StringBuffer();
+        
         
         // check mode
         String mode = req.getParameter("mode");
@@ -84,24 +95,25 @@ public class ImgUpload extends HttpServlet {
 			String[] fileNames = req.getParameterValues("file_name");
 			if (fileNames==null || fileNames.length==0)
 				throw new ServletException("No images selected!");
-			
-			buf.append("delete from ATTRIBUTE where M_ATTRIBUTE_ID=").
-			append(attrID).append(" and DATAELEM_ID=").append(objID).
-			append(" and PARENT_TYPE=").append(Util.strLiteral(objType)).
-			append(" and VALUE=");
-						
-			String s = buf.toString();
-						         
+		
+			String sqlStr = "delete from ATTRIBUTE where M_ATTRIBUTE_ID=? and DATAELEM_ID=? and PARENT_TYPE=? and VALUE=?";
+
+			PreparedStatement stmt = null;
             try{
-                // getting the DB pool through XmlServer
-                XDBApplication xdbapp =
-                			XDBApplication.getInstance(getServletContext());
-                DBPoolIF pool = XDBApplication.getDBPool();            
-                conn = pool.getConnection();
-                Statement stmt = conn.createStatement();
-                
-                for (int i=0; i<fileNames.length; i++)
-                	stmt.executeUpdate(s + Util.strLiteral(fileNames[i]));
+                XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
+                conn = XDBApplication.getDBPool().getConnection();
+                stmt = conn.prepareStatement(sqlStr);
+                for (int i=0; i<fileNames.length; i++){
+                	
+                	INParameters inParams = new INParameters();
+                	inParams.add(attrID, Types.INTEGER);
+                	inParams.add(objID, Types.INTEGER);
+                	inParams.add(objType);
+                	inParams.add(fileNames[i]);
+                	
+                	SQL.populate(stmt, inParams);
+                	stmt.executeUpdate();
+                }
                 
             }
             catch (Exception e){
@@ -109,6 +121,7 @@ public class ImgUpload extends HttpServlet {
             }
             finally{
             	try{
+            		if (stmt!=null) stmt.close();
             		if (conn!=null) conn.close();
             	}
             	catch (SQLException e){}
@@ -205,21 +218,27 @@ public class ImgUpload extends HttpServlet {
             }
                         
             // Now let's store the image relation in the DB as well.
-            
-            // getting the DB pool through XmlServer
             XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-            DBPoolIF pool = XDBApplication.getDBPool();            
-            conn = pool.getConnection();
-            Statement stmt = conn.createStatement();         
+            conn = XDBApplication.getDBPool().getConnection();
             
-			SQLGenerator gen = new SQLGenerator();
-			gen.setTable("ATTRIBUTE");
-			gen.setField("M_ATTRIBUTE_ID", attrID);
-			gen.setField("DATAELEM_ID", objID);
-			gen.setField("PARENT_TYPE", objType);
-			gen.setField("VALUE", fileName);
-			
-            stmt.executeUpdate(gen.insertStatement());
+            INParameters inParams = new INParameters();
+            LinkedHashMap map = new LinkedHashMap();
+            map.put("M_ATTRIBUTE_ID", inParams.add(attrID, Types.INTEGER));
+            map.put("DATAELEM_ID", inParams.add(objID, Types.INTEGER));
+            map.put("PARENT_TYPE", inParams.add(objType));
+            map.put("VALUE", inParams.add(fileName));
+            
+            PreparedStatement stmt = null;
+            try{
+            	stmt = SQL.preparedStatement(SQL.insertStatement("ATTRIBUTE", map), inParams, conn);
+            	stmt.executeUpdate();
+            }
+            finally{
+            	try{
+            		if (stmt!=null) stmt.close();
+            	}
+            	catch (SQLException e){}
+            }
         }
         catch (Exception e){
             throw new ServletException(e.toString());
@@ -234,6 +253,12 @@ public class ImgUpload extends HttpServlet {
 		res.sendRedirect("imgattr.jsp?" + qryStr);
     }
 
+    /**
+     * 
+     * @param raFile
+     * @param in
+     * @throws Exception
+     */
     private void writeToFile(RandomAccessFile raFile, InputStream in) throws Exception{
         
         byte[] buf = new byte[BUF_SIZE];
