@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import com.mysql.jdbc.ResultSet;
-
 import eionet.test.MockDbPool;
 import junit.framework.TestCase;
 
