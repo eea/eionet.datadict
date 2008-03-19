@@ -4,7 +4,9 @@ import java.sql.Types;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -114,13 +116,55 @@ public class SQL {
 	 * @param s
 	 * @return
 	 */
-	public static String addApos(String s){
+	public static String encloseWithApos(String s){
 		
 		if (s==null)
 			return null;
 		else{
 			StringBuffer buf = new StringBuffer("'");
 			return buf.append(s).append("'").toString();
+		}
+	}
+	
+	/**
+	 * 
+	 * @param conn
+	 */
+	public static void close(Connection conn){
+		
+		if (conn!=null){
+			try{
+				conn.close();
+			}
+			catch (SQLException e){}
+		}
+	}
+
+	/**
+	 * 
+	 * @param stmt
+	 */
+	public static void close(Statement stmt){
+		
+		if (stmt!=null){
+			try{
+				stmt.close();
+			}
+			catch (SQLException e){}
+		}
+	}
+
+	/**
+	 * 
+	 * @param rs
+	 */
+	public static void close(ResultSet rs){
+		
+		if (rs!=null){
+			try{
+				rs.close();
+			}
+			catch (SQLException e){}
 		}
 	}
 }

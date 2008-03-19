@@ -264,9 +264,9 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
 			inParams = new INParameters();
 			LinkedHashMap map = new LinkedHashMap();
 			map.put("OBJ_ID", inParams.add(id, Types.INTEGER));
-			map.put("OBJ_TYPE", SQL.addApos("tbl"));
-			map.put("ARTICLE", SQL.addApos("xls"));
-			map.put("FILENAME", SQL.addApos(fn));
+			map.put("OBJ_TYPE", SQL.encloseWithApos("tbl"));
+			map.put("ARTICLE", SQL.encloseWithApos("xls"));
+			map.put("FILENAME", SQL.encloseWithApos(fn));
 			map.put("CREATED", inParams.add(String.valueOf(System.currentTimeMillis()), Types.BIGINT));			
 
 			stmt = SQL.preparedStatement(SQL.insertStatement("CACHE", map), inParams, conn);

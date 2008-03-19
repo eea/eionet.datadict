@@ -907,9 +907,9 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 			inParams = new INParameters();
 			LinkedHashMap map = new LinkedHashMap();
 			map.put("OBJ_ID", inParams.add(id, Types.INTEGER));
-			map.put("OBJ_TYPE", SQL.addApos("dst"));
-			map.put("ARTICLE", SQL.addApos("pdf"));
-			map.put("FILENAME", SQL.addApos(fn));
+			map.put("OBJ_TYPE", SQL.encloseWithApos("dst"));
+			map.put("ARTICLE", SQL.encloseWithApos("pdf"));
+			map.put("FILENAME", SQL.encloseWithApos(fn));
 			map.put("CREATED", inParams.add(String.valueOf(System.currentTimeMillis()), Types.BIGINT));			
 			
 			stmt = SQL.preparedStatement(SQL.insertStatement("CACHE", map), inParams, conn);
@@ -963,23 +963,4 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 		
 		return fn;
 	}
-  
-    public static void main(String[] args){
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn = DriverManager.getConnection(
-					"jdbc:mysql://195.250.186.33:3306/dd", "dduser", "xxx");
-
-            DstPdfGuideline pdf = new DstPdfGuideline(conn);
-            pdf.setVsPath("d:\\projects\\datadict\\public\\visuals");
-            pdf.setLogo("d:\\projects\\datadict\\public\\images\\pdf_logo.png");
-			pdf.setCachePath("d:\\projects\\datadict\\doc\\");
-            pdf.updateCache("1552");
-            
-            System.out.println();
-        }
-        catch (Exception e){
-            System.out.println(e.toString());
-        }
-    }
 }

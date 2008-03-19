@@ -135,6 +135,18 @@ public class Parameters {
         this.contextPath = contextPath;
     }
     
+    /**
+     * 
+     * @return
+     */
+    public int getSize(){
+    	return params==null ? 0 : params.size();
+    }
+    
+    /**
+     * 
+     * @param args
+     */
     public static void main(String[] args){
         
         Parameters pars = new Parameters();

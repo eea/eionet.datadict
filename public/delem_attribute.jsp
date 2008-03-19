@@ -1211,7 +1211,6 @@ else
 			}
 			%>
 			<input type="hidden" name="mode" value="<%=mode%>" />		
-			<input type="hidden" name="ns" value="basens" />
 		</div>		
 	</form>
 </div> <!-- workarea -->

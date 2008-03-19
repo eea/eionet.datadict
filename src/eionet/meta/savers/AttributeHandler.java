@@ -5,6 +5,8 @@ import java.sql.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import eionet.meta.DElemAttribute;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
 
 import com.tee.util.*;
 import com.tee.xmlserver.AppUserIF;
@@ -79,205 +81,216 @@ public class AttributeHandler extends BaseHandler {
             cleanVisuals();
         }
     }
-    
+
+    /**
+     * 
+     * @throws Exception
+     */
     private void insert() throws Exception {
         
-        SQLGenerator sqlGenerator = new SQLGenerator();
-        if (type==null || type.equals(DElemAttribute.TYPE_SIMPLE))
-            sqlGenerator.setTable("M_ATTRIBUTE");
-        else
-            sqlGenerator.setTable("M_COMPLEX_ATTR");
+    	INParameters inParams = new INParameters();
+    	LinkedHashMap map = new LinkedHashMap();
+    	
+        map.put("SHORT_NAME", inParams.add(shortName));
+        map.put("NAME", inParams.add(name));
         
-        sqlGenerator.setField("SHORT_NAME", shortName);
-        sqlGenerator.setField("NAME", name);
-        
-        if (definition != null) sqlGenerator.setField("DEFINITION", definition);
-        if (ns_id != null) sqlGenerator.setField("NAMESPACE_ID", ns_id);
+        if (definition!=null)
+        	map.put("DEFINITION", inParams.add(definition));
+        if (ns_id!=null)
+        	map.put("NAMESPACE_ID", inParams.add(ns_id, Types.INTEGER));
 
         String dispOrder = req.getParameter("dispOrder");
-        if (dispOrder != null && dispOrder.length() != 0)
-            sqlGenerator.setField("DISP_ORDER", dispOrder);
+        if (dispOrder!=null && dispOrder.length()>0)
+            map.put("DISP_ORDER", inParams.add(dispOrder, Types.INTEGER));
 
         String inherit = req.getParameter("inheritable");
-        if (inherit != null && inherit.length() != 0)
-            sqlGenerator.setField("INHERIT", inherit);
+        if (inherit!=null && inherit.length()>0)
+            map.put("INHERIT", inParams.add(inherit));
 
-        String dispType = req.getParameter("dispType");
+        // simple attribute specific fields
         if (type==null || type.equals(DElemAttribute.TYPE_SIMPLE)){
 
-            sqlGenerator.setField("DISP_WHEN", getDisplayWhen());
-            sqlGenerator.setField("OBLIGATION", obligation);
+            map.put("DISP_WHEN", inParams.add(getDisplayWhen(), Types.INTEGER));
+            map.put("OBLIGATION", inParams.add(obligation));
 
-            if (dispType == null || dispType.length() == 0) dispType = "NULL";
-            sqlGenerator.setField("DISP_TYPE", dispType);
+            String dispType = req.getParameter("dispType");
+            map.put("DISP_TYPE", inParams.add(dispType==null || dispType.length()==0 ? null : dispType));
 
             String dispWidth = req.getParameter("dispWidth");
-            if (dispWidth != null && dispWidth.length() != 0)
-                sqlGenerator.setField("DISP_WIDTH", dispWidth);
+            if (dispWidth!=null && dispWidth.length()>0)
+                map.put("DISP_WIDTH", inParams.add(dispWidth, Types.INTEGER));
 
             String dispHeight = req.getParameter("dispHeight");
-            if (dispHeight != null && dispHeight.length() != 0)
-                sqlGenerator.setField("DISP_HEIGHT", dispHeight);
+            if (dispHeight!=null && dispHeight.length()>0)
+                map.put("DISP_HEIGHT", inParams.add(dispHeight));
 
             String dispMultiple = req.getParameter("dispMultiple");
-            if (dispMultiple != null && dispMultiple.length() != 0)
-                sqlGenerator.setField("DISP_MULTIPLE", dispMultiple);
+            if (dispMultiple!=null && dispMultiple.length()>0)
+                map.put("DISP_MULTIPLE", inParams.add(dispMultiple));
         }
         
+        // complex attribute specific fields
 		if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
 			String harvesterID = req.getParameter("harv_id");
-			if (harvesterID != null && !harvesterID.equals("null"))
-				sqlGenerator.setField("HARVESTER_ID", harvesterID);
+			if (harvesterID!=null && !harvesterID.equals("null"))
+				map.put("HARVESTER_ID", inParams.add(harvesterID));
 		}
         
-        String sql = sqlGenerator.insertStatement();
-        logger.debug(sql);
-        
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(sql);
-		setLastInsertID();
+		PreparedStatement stmt = null;
+		String tableName = (type==null || type.equals(DElemAttribute.TYPE_SIMPLE)) ? "M_ATTRIBUTE" : "M_COMPLEX_ATTR";
+		try{
+			stmt = SQL.preparedStatement(SQL.insertStatement(tableName, map), inParams, conn);
+			stmt.executeUpdate();
+			setLastInsertID();
+		}
+		finally{
+			SQL.close(stmt);
+		}
 		
-		String idPrefix = "";
-		if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
-			idPrefix = "c";
-		else if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE))
-			idPrefix = "s";
-        
         // add acl
 		if (user!=null){
+			
+			String idPrefix = "";
+			if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
+				idPrefix = "c";
+			else if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE))
+				idPrefix = "s";
+
+			
 			String aclPath = "/attributes/" + idPrefix + getLastInsertID();
 			String aclDesc = "Short name: " + shortName;
 			AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
 		}
-
-        stmt.close();
     }
     
+    /**
+     * 
+     * @throws SQLException
+     */
     private void update() throws SQLException {
         
         lastInsertID = attr_id;
+        String tableName = (type==null || type.equals(DElemAttribute.TYPE_SIMPLE)) ? "M_ATTRIBUTE" : "M_COMPLEX_ATTR";
+
+        INParameters inParams = new INParameters();
+        LinkedHashMap map = new LinkedHashMap();
+        map.put("SHORT_NAME", inParams.add(shortName));
+        map.put("NAME", inParams.add(name));
         
-        SQLGenerator sqlGenerator = new SQLGenerator();
-        if (type==null || type.equals(DElemAttribute.TYPE_SIMPLE))
-            sqlGenerator.setTable("M_ATTRIBUTE");
-        else
-            sqlGenerator.setTable("M_COMPLEX_ATTR");
-        
-        sqlGenerator.setField("SHORT_NAME", shortName);
-        sqlGenerator.setField("NAME", name);
-        
-        if (definition != null) sqlGenerator.setField("DEFINITION", definition);
-        if (ns_id != null) sqlGenerator.setField("NAMESPACE_ID", ns_id);
-        
+        if (definition!=null)
+        	map.put("DEFINITION", inParams.add(definition));
+        if (ns_id!=null)
+        	map.put("NAMESPACE_ID", inParams.add(ns_id, Types.INTEGER));
+
         String dispOrder = req.getParameter("dispOrder");
-        if (dispOrder == null || dispOrder.length() == 0) dispOrder = "999";
-        sqlGenerator.setField("DISP_ORDER", dispOrder);
+        map.put("DISP_ORDER", inParams.add((dispOrder==null || dispOrder.length()==0) ? "999" : dispOrder, Types.INTEGER));
 
         String inherit = req.getParameter("inheritable");
-        if (inherit != null && inherit.length() != 0)
-            sqlGenerator.setField("INHERIT", inherit);
-        else
-            sqlGenerator.setField("INHERIT", "0");
+        map.put("INHERIT", inParams.add((inherit!=null && inherit.length()>0) ? inherit : "0"));
 
+        // simple attribute specific fields
         if (type==null || type.equals(DElemAttribute.TYPE_SIMPLE)){
 
-            sqlGenerator.setField("OBLIGATION", obligation);
-            sqlGenerator.setField("DISP_WHEN", getDisplayWhen());
+            map.put("OBLIGATION", inParams.add(obligation));
+            map.put("DISP_WHEN", inParams.add(getDisplayWhen(), Types.INTEGER));
             
             String dispType = req.getParameter("dispType");
-            if (dispType == null || dispType.length() == 0)
-                sqlGenerator.setFieldExpr("DISP_TYPE", "NULL");
-            else
-                sqlGenerator.setField("DISP_TYPE", dispType);
+            map.put("DISP_TYPE", inParams.add(dispType==null || dispType.length()==0 ? null : dispType));
             
             String dispWidth = req.getParameter("dispWidth");
-            if (dispWidth == null || dispWidth.length() == 0) dispWidth = "20";
-            sqlGenerator.setField("DISP_WIDTH", dispWidth);
+            map.put("DISP_WIDTH", inParams.add((dispWidth==null || dispWidth.length()==0) ? "20" : dispWidth, Types.INTEGER));
             
             String dispHeight = req.getParameter("dispHeight");
-            if (dispHeight == null || dispHeight.length() == 0) dispHeight = "20";
-            sqlGenerator.setField("DISP_HEIGHT", dispHeight);
+            map.put("DISP_HEIGHT", inParams.add((dispHeight==null || dispHeight.length()==0) ? "20" : dispHeight, Types.INTEGER));
 
             String dispMultiple = req.getParameter("dispMultiple");
-            if (dispMultiple != null && dispMultiple.length() != 0)
-                sqlGenerator.setField("DISP_MULTIPLE", dispMultiple);
-            else
-                sqlGenerator.setField("DISP_MULTIPLE", "0");
+            map.put("DISP_MULTIPLE", inParams.add(dispMultiple!=null && dispMultiple.length()>0 ? dispMultiple : "0"));
         }
         
-		String harvesterID = req.getParameter("harv_id");
-		if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){			
-			if (harvesterID != null && !harvesterID.equals("null"))
-				sqlGenerator.setField("HARVESTER_ID", harvesterID);
-			else
-				sqlGenerator.setFieldExpr("HARVESTER_ID", "NULL");
+        // complex attribute specific fields
+		if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
+			String harvesterID = req.getParameter("harv_id");
+			map.put("HARVESTER_ID", inParams.add(harvesterID==null || harvesterID.equals("null") ? null : harvesterID));
 		}
 
-        StringBuffer buf = new StringBuffer(sqlGenerator.updateStatement());
-        if (type==null || type.equals(DElemAttribute.TYPE_SIMPLE))
-            buf.append(" where M_ATTRIBUTE_ID=");
-        else
-            buf.append(" where M_COMPLEX_ATTR_ID=");
-        buf.append(attr_id);
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        
-        // if this is a compelx attribute and harvester link is being
-        // removed, set all links to harvested rows to NULL as well
-		if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){			
-			if (harvesterID == null || harvesterID.equals("null")){
-				sqlGenerator = new SQLGenerator();
-				sqlGenerator.setTable("COMPLEX_ATTR_ROW");
-				sqlGenerator.setFieldExpr("HARV_ATTR_ID", "NULL");
-				buf = new StringBuffer(sqlGenerator.updateStatement());
-				buf.append(" where M_COMPLEX_ATTR_ID=").append(attr_id);
+		PreparedStatement stmt = null;
+		try{
+			StringBuffer buf = new StringBuffer(SQL.updateStatement(tableName, map));
+			buf.append(" where ").append(type==null || type.equals(DElemAttribute.TYPE_SIMPLE) ? "M_ATTRIBUTE_ID" : "M_COMPLEX_ATTR_ID").
+			append("=").append(inParams.add(attr_id, Types.INTEGER));
 				
-				stmt.executeUpdate(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			stmt.executeUpdate();
+			
+	        // if this is a compelx attribute and harvester link is being
+	        // removed, set all links to harvested rows to NULL as well
+			if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
+				
+				String harvesterID = req.getParameter("harv_id");
+				if (harvesterID==null || harvesterID.equals("null")){
+					
+					inParams = new INParameters();
+					map = new LinkedHashMap();
+
+					String s = "update COMPLEX_ATTR_ROW set HARV_ATTR_ID=NULL where M_COMPLEX_ATTR_ID=" + inParams.add(attr_id, Types.INTEGER);
+					SQL.close(stmt);
+					stmt = SQL.preparedStatement(s, inParams, conn);
+					stmt.executeUpdate();
+				}
 			}
 		}
-				
-        stmt.close();
+		finally{
+			SQL.close(stmt);
+		}
     }
-    
+
+    /**
+     * 
+     * @throws Exception
+     */
     private void delete() throws Exception {
         
         String[] simpleAttrs = req.getParameterValues("simple_attr_id");
         String[] complexAttrs = req.getParameterValues("complex_attr_id");
         
-        if (simpleAttrs != null && simpleAttrs.length != 0){
-            StringBuffer buf = new StringBuffer("delete from M_ATTRIBUTE where ");
-            for (int i=0; i<simpleAttrs.length; i++){
-                if (i>0) buf.append(" or ");
-                buf.append("M_ATTRIBUTE_ID=");
-                buf.append(simpleAttrs[i]);
-            }
-            
-            logger.debug(buf.toString());
-        
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(buf.toString());
-            stmt.close();
-            
-            deleteSimpleAttributeValues(simpleAttrs);
-            deleteFixedValues(simpleAttrs);
+        PreparedStatement stmt = null;
+        INParameters inParams = new INParameters();
+        try{
+	        if (simpleAttrs != null && simpleAttrs.length != 0){
+	        	
+	            StringBuffer buf = new StringBuffer("delete from M_ATTRIBUTE where ");
+	            for (int i=0; i<simpleAttrs.length; i++){
+	                if (i>0) buf.append(" or ");
+	                buf.append("M_ATTRIBUTE_ID=");
+	                buf.append(inParams.add(simpleAttrs[i], Types.INTEGER));
+	            }
+	            
+	            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+	            stmt.executeUpdate();
+	            
+	            deleteSimpleAttributeValues(simpleAttrs);
+	            deleteFixedValues(simpleAttrs);
+	        }
+	        
+	        if (complexAttrs != null && complexAttrs.length != 0){
+	        	
+	        	inParams = new INParameters();
+	            StringBuffer buf = new StringBuffer("delete from M_COMPLEX_ATTR where ");
+	            for (int i=0; i<complexAttrs.length; i++){
+	                if (i>0) buf.append(" or ");
+	                buf.append("M_COMPLEX_ATTR_ID=");
+	                buf.append(inParams.add(complexAttrs[i], Types.INTEGER));
+	            }
+	            
+	            SQL.close(stmt);
+	            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+	            stmt.executeUpdate();
+	            
+	            deleteComplexAttributeValues(complexAttrs);
+	        }
         }
-        
-        if (complexAttrs != null && complexAttrs.length != 0){
-            StringBuffer buf = new StringBuffer("delete from M_COMPLEX_ATTR where ");
-            for (int i=0; i<complexAttrs.length; i++){
-                if (i>0) buf.append(" or ");
-                buf.append("M_COMPLEX_ATTR_ID=");
-                buf.append(complexAttrs[i]);
-            }
-            
-            logger.debug(buf.toString());
-        
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(buf.toString());
-            stmt.close();
-            
-            deleteComplexAttributeValues(complexAttrs);
+        finally{
+        	SQL.close(stmt);
         }
         
 		// remove acls
@@ -287,125 +300,177 @@ public class AttributeHandler extends BaseHandler {
 			}
 			catch (Exception e){}
 		}
-		
 		for (int i=0; complexAttrs!=null && i<complexAttrs.length; i++){
 			try{
 				AccessController.removeAcl("/attributes/c" + complexAttrs[i]);
 			}
 			catch (Exception e){}
 		}
-
     }
-    
+
+    /**
+     * 
+     * @param attr_ids
+     * @throws SQLException
+     */
     private void deleteSimpleAttributeValues(String[] attr_ids) throws SQLException {
         
         if (attr_ids==null || attr_ids.length==0)
             return;
         
-        StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where ");
-        for (int i=0; i<attr_ids.length; i++){
-            if (i>0)
-                buf.append(" or ");
-            buf.append("M_ATTRIBUTE_ID=");
-            buf.append(attr_ids[i]);
+        PreparedStatement stmt = null;
+        INParameters inParams = new INParameters();
+        try{
+	        StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where ");
+	        for (int i=0; i<attr_ids.length; i++){
+	            if (i>0)
+	                buf.append(" or ");
+	            buf.append("M_ATTRIBUTE_ID=");
+	            buf.append(inParams.add(attr_ids[i], Types.INTEGER));
+	        }
+	        
+	        stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+	        stmt.executeUpdate();
         }
-        
-        logger.debug(buf.toString());
-        
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
+        finally{
+        	SQL.close(stmt);
+        }
     }
-    
+
+    /**
+     * 
+     * @param attr_ids
+     * @throws SQLException
+     */
     private void deleteComplexAttributeValues(String[] attr_ids) throws SQLException {
         
+    	INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("select distinct ROW_ID from COMPLEX_ATTR_ROW where ");
         for (int i=0; i<attr_ids.length; i++){
             if (i>0) buf.append(" or ");
             buf.append("M_COMPLEX_ATTR_ID=");
-            buf.append(attr_ids[i]);
+            buf.append(inParams.add(attr_ids[i], Types.INTEGER));
         }
         
-        logger.debug(buf.toString());
-        
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
-
-        buf = null;        
-        for (int i=0; rs.next(); i++){
-            if (buf == null)
-                buf = new StringBuffer("delete from COMPLEX_ATTR_FIELD where ");
-                
-            if (i>0) buf.append(" or ");
-            buf.append("ROW_ID='");
-            buf.append(rs.getString("ROW_ID"));
-            buf.append("'");
+        ResultSet rs = null;
+        PreparedStatement stmt = null;
+        try{
+	        stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+	        rs = stmt.executeQuery();
+	        
+	        buf = new StringBuffer();
+	        inParams = new INParameters();
+	        for (int i=0; rs.next(); i++){
+	        	
+	            if (buf.length()==0)
+	                buf.append("delete from COMPLEX_ATTR_FIELD where ");
+	                
+	            if (i>0)
+	            	buf.append(" or ");
+	            buf.append("ROW_ID=").append(inParams.add(rs.getString("ROW_ID")));
+	        }
+	        rs.close();
+	        
+	        if (buf.length()>0){
+	            SQL.close(stmt);
+	            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+	            stmt.executeUpdate();
+	        }
+	        
+	        inParams = new INParameters();
+	        buf = new StringBuffer("delete from COMPLEX_ATTR_ROW where ");
+	        for (int i=0; i<attr_ids.length; i++){
+	            if (i>0) buf.append(" or ");
+	            buf.append("M_COMPLEX_ATTR_ID=");
+	            buf.append(inParams.add(attr_ids[i], Types.INTEGER));
+	        }
+	        
+	        stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+	        stmt.executeUpdate();
         }
-        
-        if (buf != null){
-        	logger.debug(buf.toString());
-            
-            stmt = conn.createStatement();
-            stmt.executeUpdate(buf.toString());
+        finally{
+        	SQL.close(rs);
+        	SQL.close(stmt);
         }
-        
-        buf = new StringBuffer("delete from COMPLEX_ATTR_ROW where ");
-        for (int i=0; i<attr_ids.length; i++){
-            if (i>0) buf.append(" or ");
-            buf.append("M_COMPLEX_ATTR_ID=");
-            buf.append(attr_ids[i]);
-        }
-        
-        logger.debug(buf.toString());
-        
-        stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
     }
     
+    /**
+     * 
+     * @param attr_ids
+     * @throws Exception
+     */
     private void deleteFixedValues(String[] attr_ids) throws Exception {
         
         if (attr_ids==null || attr_ids.length==0)
             return;
         
+        INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer();
         buf.append("select distinct FXV_ID from FXV where OWNER_TYPE='attr' and (");
         for (int i=0; i<attr_ids.length; i++){
             if (i>0) buf.append(" or ");
             buf.append("OWNER_ID=");
-            buf.append(attr_ids[i]);
+            buf.append(inParams.add(attr_ids[i], Types.INTEGER));
         }
         buf.append(")");
         
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
+        ResultSet rs = null;
+        PreparedStatement stmt = null;
         Parameters pars = new Parameters();
-        while (rs.next()) pars.addParameterValue("del_id", rs.getString("FXV_ID"));
-        stmt.close();
+        try{
+        	stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+	        rs = stmt.executeQuery();
+	        while (rs.next()){
+	        	pars.addParameterValue("del_id", rs.getString("FXV_ID"));
+	        }
+        }
+        finally{
+        	SQL.close(rs);
+        	SQL.close(stmt);
+        }
         
-        pars.addParameterValue("mode", "delete");
-        FixedValuesHandler fvHandler = new FixedValuesHandler(conn, pars, ctx);
-        fvHandler.execute();
+        if (pars.getSize()>0){
+	        pars.addParameterValue("mode", "delete");
+	        FixedValuesHandler fvHandler = new FixedValuesHandler(conn, pars, ctx);
+	        fvHandler.execute();
+        }
     }
     
+    /**
+     * 
+     * @throws SQLException
+     */
     private void setLastInsertID() throws SQLException {
         
         String qry = "SELECT LAST_INSERT_ID()";
         
-        logger.debug(qry);
-        
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(qry);        
-        rs.clearWarnings();
-        if (rs.next())
-            lastInsertID = rs.getString(1);
-        stmt.close();
+        Statement stmt = null;
+        ResultSet rs = null;
+        try{
+        	stmt = conn.createStatement();
+        	rs = stmt.executeQuery(qry);
+	        rs.clearWarnings();
+	        if (rs.next())
+	            lastInsertID = rs.getString(1);
+        }
+        finally{
+        	SQL.close(rs);
+        	SQL.close(stmt);
+        }
     }
     
+    /**
+     * 
+     * @return
+     */
     public String getLastInsertID(){
         return lastInsertID;
     }
     
+    /**
+     * 
+     * @return
+     */
     private String getDisplayWhen(){
         
         // the default here is 2^typeWeights.size(), because if no
