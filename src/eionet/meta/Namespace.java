@@ -76,27 +76,4 @@ public class Namespace{
 		return this.workingUser;
 	}
     
-    /**
-    *
-    */
-    public static void main(String[] args){
-        
-        Connection conn = null;
-        
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-            DDSearchEngine searchEngine = new DDSearchEngine(conn);
-            
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        finally{
-            if (conn != null){
-                try{ conn.close(); }
-                catch (Exception e) {}
-            }
-        }
-    }
 }

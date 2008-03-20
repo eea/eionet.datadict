@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,eionet.util.Util,java.sql.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,eionet.util.Util,java.sql.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
@@ -6,8 +6,7 @@
 <%
 	request.setCharacterEncoding("UTF-8");
 	
-	XDBApplication.getInstance(getServletContext());
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -88,7 +87,6 @@
 <%
 
 ServletContext ctx = getServletContext();			
-String appName = ctx.getInitParameter("application-name");
 
 if (request.getMethod().equals("POST")){
 	if (user == null){
@@ -114,12 +112,10 @@ if (type==null || type.length()==0)
 	type = "simple";
 
 Connection conn = null;
-XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-DBPoolIF pool = xdbapp.getDBPool();
 
 try { // start the whole page try block
 
-conn = pool.getConnection();
+conn = ConnectionUtil.getConnection();
 DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 
 Dataset dataset = searchEngine.getDataset(ds_id);

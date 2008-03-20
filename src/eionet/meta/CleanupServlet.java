@@ -14,10 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tee.xmlserver.AppUserIF;
-import com.tee.xmlserver.DBPoolIF;
-import com.tee.xmlserver.XDBApplication;
-
 import eionet.util.DataManipulations;
 import eionet.util.DbTransactionPolite;
 import eionet.util.HttpUploader;
@@ -27,6 +23,7 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
+import eionet.util.sql.ConnectionUtil;
 
 /**
  * 
@@ -81,9 +78,7 @@ public class CleanupServlet extends HttpServlet{
 				throw new Exception("Missing request parameter: " + PAR_ACTION);
 			String objIDs = req.getParameter(PAR_OBJ_IDS);
 
-			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-			DBPoolIF pool = XDBApplication.getDBPool();
-			conn = pool.getConnection();
+			conn = ConnectionUtil.getConnection();
 			if (action.equals(ACTION_CLEANUP)){
 				res.setContentType("text/plain");				
 				dataManipulations = new DataManipulations(conn, writer);
@@ -168,7 +163,7 @@ public class CleanupServlet extends HttpServlet{
 	 * @throws Exception
 	 */
 	private void guard(HttpServletRequest req) throws Exception{
-		AppUserIF user = SecurityUtil.getUser(req);
+		DDUser user = SecurityUtil.getUser(req);
 		if (user == null)
 			throw new Exception("Not authenticated!");
 	}

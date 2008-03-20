@@ -15,6 +15,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import eionet.util.sql.ConnectionUtil;
+
 import junit.framework.TestCase;
 
 /**
@@ -23,6 +25,14 @@ import junit.framework.TestCase;
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  */
 public class DocDownloadTest extends TestCase {
+
+	/*
+	 *  (non-Javadoc)
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	protected void setUp() throws Exception {
+		ConnectionUtil.setConnectionType(ConnectionUtil.SIMPLE_CONNECTION);
+	}
 
 	/**
 	 * This one tests the private method <code>eionet.meta.DocDownload.getAbsPath(HttpServletRequest)</code>.
@@ -38,19 +48,14 @@ public class DocDownloadTest extends TestCase {
 		HttpServletRequest request = createMock(HttpServletRequest.class);
 		HttpServletResponse response = createMock(HttpServletResponse.class);
         ServletConfig servletConfig = createMock(ServletConfig.class);
-        ServletContext servletContext = createMock(ServletContext.class);
 
         // create DocDownload servlet object  
         DocDownload docDownloadInstance = new DocDownload();
         docDownloadInstance.init(servletConfig);
 
         // what we expect for the servletConfig object
-        expect(servletConfig.getServletContext()).andReturn(servletContext);
+        //expect(servletConfig.getServletContext()).andReturn(servletContext);
 		
-        // what we expect for the servletContext object
-        expect(servletContext.getInitParameter("module-db_pool")).andReturn("eionet.test.MockDbPool").times(0, 1);
-        expect(servletContext.getInitParameter(not(eq("module-db_pool")))).andStubReturn(null);
-
         // what we expect for the request object
         request.setCharacterEncoding("UTF-8");
 		expect(request.getParameter(DocDownload.REQPAR_FILE)).andReturn("...");
@@ -58,7 +63,6 @@ public class DocDownloadTest extends TestCase {
         // replay mocks
         replay(request);
         replay(servletConfig);
-        replay(servletContext);
 
         String message = null;
         try{
@@ -73,6 +77,5 @@ public class DocDownloadTest extends TestCase {
         // verify the responses
         verify(request);
         verify(servletConfig);
-        verify(servletContext);
 	}
 }

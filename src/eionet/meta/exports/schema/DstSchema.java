@@ -77,37 +77,4 @@ public class DstSchema extends Schema {
         newLine();
     }
     
-    public static void main(String[] args){
-        
-        Connection conn = null;
-        
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
-            DDSearchEngine searchEngine = new DDSearchEngine(conn);
-            
-            FileOutputStream os = new FileOutputStream("x:\\temp\\test_ds.xsd");
-            PrintWriter writer = new PrintWriter(os);
-            DstSchema dstSchema = new DstSchema(searchEngine, writer);
-            dstSchema.setIdentitation("\t");
-            dstSchema.setAppContext("http://127.0.0.1:8080/datadict/public");
-            dstSchema.write("631");
-            dstSchema.flush();
-            
-            writer.flush();
-            writer.close();
-            os.flush();
-            os.close();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            //System.out.println(e.toString());
-        }
-        finally{
-            if (conn != null){
-                try{ conn.close(); }
-                catch (Exception e) {}
-            }
-        }
-    }
 }

@@ -8,10 +8,10 @@ import java.sql.*;
 
 import eionet.meta.*;
 import eionet.meta.savers.*;
+import eionet.util.sql.ConnectionUtil;
 
 import javax.servlet.ServletContext;
 
-import com.tee.xmlserver.AppUserIF;
 import com.tee.util.*;
 
 import org.xml.sax.*;
@@ -79,7 +79,7 @@ public class DatasetImport{
     private String importParentID=null; // this can be delem_id, table_id or dataset_id, depends on the import_type
     
     /** */
-    private AppUserIF user = null;
+    private DDUser user = null;
 	private String date = null;
 	
 	/** */
@@ -836,7 +836,7 @@ public class DatasetImport{
      * 
      * @param user
      */
-    public void setUser(AppUserIF user){
+    public void setUser(DDUser user){
     	this.user = user;
     }
 
@@ -897,16 +897,15 @@ public class DatasetImport{
 	}
 	
 	/**
-	 * 
+	 * This main serves as a usage example
 	 * @param args
 	 */
     public static void main(String[] args){
     	
+    	Connection conn = null;
     	try{
     		
-			Class.forName("org.gjt.mm.mysql.Driver");
-			Connection conn =
-			DriverManager.getConnection("jdbc:mysql://195.250.186.33:3306/DataDict", "dduser", "xxx");
+			conn = ConnectionUtil.getSimpleConnection();
 							
 			DatasetImportHandler handler = new DatasetImportHandler();
 			SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -923,7 +922,7 @@ public class DatasetImport{
 				DatasetImport dbImport =
 					new DatasetImport((DatasetImportHandler)handler, conn, null);
 				
-				AppUserIF testUser = new TestUser();
+				DDUser testUser = new TestUser();
 				testUser.authenticate("jaanus", "jaanus");
 				
 				dbImport.setUser(testUser);

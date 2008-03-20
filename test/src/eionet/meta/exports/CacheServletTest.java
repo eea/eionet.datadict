@@ -4,7 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import eionet.test.MockDbPool;
+import eionet.util.sql.ConnectionUtil;
+
 import junit.framework.TestCase;
 
 /**
@@ -21,7 +22,7 @@ public class CacheServletTest extends TestCase{
 		
 		Connection conn = null;
 		try{
-			conn = (new MockDbPool()).getConnection();
+			conn = ConnectionUtil.getSimpleConnection();
 			CacheServlet.deleteCacheEntry("9999", "l'll", "a'sdasd", conn);
 		}
 		catch (Exception e){

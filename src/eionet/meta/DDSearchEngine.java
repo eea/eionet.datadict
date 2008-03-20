@@ -13,7 +13,6 @@ import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 import com.tee.util.*;
-import com.tee.xmlserver.AppUserIF;
 
 public class DDSearchEngine {
 	
@@ -29,7 +28,7 @@ public class DDSearchEngine {
 	private String predIdentifier = "http://purl.org/dc/elements/1.1/identifier";
 	private String predTitle = "http://purl.org/dc/elements/1.1/title";
 	
-	private AppUserIF user = null;
+	private DDUser user = null;
 	
 	private static LogServiceIF logger = new Log4jLoggerImpl();
 	
@@ -60,11 +59,11 @@ public class DDSearchEngine {
 		this.ctx = ctx;
 	}
 	
-	public void setUser(AppUserIF user){
+	public void setUser(DDUser user){
 		this.user = user;
 	}
 	
-	public AppUserIF getUser(){
+	public DDUser getUser(){
 		return this.user;
 	}
 	
@@ -4350,19 +4349,4 @@ public class DDSearchEngine {
 			catch (SQLException e){}
 		}
 	}
-	
-//	public static void main(String[] args){
-//		
-//		try{
-//			Class.forName("com.mysql.jdbc.Driver");
-//			Connection conn =
-//				DriverManager.getConnection(
-//						"jdbc:mysql://192.168.10.15:3306/datadict", "root", "ABr00t");
-//			
-//			System.out.println();
-//		}
-//		catch (Exception e){
-//			System.out.println(e.toString());
-//		}
-//	}
 }

@@ -10,13 +10,12 @@ import junit.framework.TestCase;
 
 import org.xml.sax.XMLReader;
 
-import com.tee.xmlserver.AppUserIF;
-
+import eionet.meta.DDUser;
 import eionet.meta.TestUser;
-import eionet.test.MockDbPool;
 import eionet.test.Seed;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.sql.ConnectionUtil;
 
 /**
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
@@ -34,9 +33,8 @@ public class DatasetImportHandlerTest extends TestCase {
 	 * The method expects <code>java.sql.Connection</code> object given via
 	 * @param systemID system ID of the file to be imported
 	 * @param conn <code>java.sql.Connection</code> to the DD database
-	 * @param user <code>com.tee.xmlserver.AppUserIF</code> instcnace that is <strong>authenticated</strong>
 	 */
-	public DatasetImport simpleDatasetImport(String systemID, Connection conn, AppUserIF user) throws Exception{
+	public DatasetImport simpleDatasetImport(String systemID, Connection conn, DDUser user) throws Exception{
 		
 		SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = factory.newSAXParser();
@@ -69,11 +67,11 @@ public class DatasetImportHandlerTest extends TestCase {
 	 */
 	public void testSimpleDatasetImport() throws Exception{
 		
-		TestUser testUser = new TestUser(true);
+		TestUser testUser = new TestUser();
         testUser.authenticate("heinlja", "");
         
 		DatasetImport dstImport = simpleDatasetImport(
-				getClass().getClassLoader().getResource(Seed.DST_IMPORT).getFile(), (new MockDbPool()).getConnection(), testUser);
+				getClass().getClassLoader().getResource(Seed.DST_IMPORT).getFile(), ConnectionUtil.getSimpleConnection(), testUser);
 		
 		assertEquals((int)0, dstImport.getErrorCount());
 		assertEquals((int)0, dstImport.getWarningCount());

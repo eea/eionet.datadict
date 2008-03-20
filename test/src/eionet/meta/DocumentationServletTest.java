@@ -20,6 +20,7 @@ import javax.servlet.RequestDispatcher;
 import eionet.test.Seed;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.sql.ConnectionUtil;
 
 import eionet.meta.DocumentationServlet;
 import static org.easymock.EasyMock.*;
@@ -39,12 +40,7 @@ public class DocumentationServletTest extends DatabaseTestCase {
      * Provide a connection to the database.
      */
     protected IDatabaseConnection getConnection() throws Exception {
-        Class.forName(Props.getProperty(PropsIF.DBDRV));
-        Connection jdbcConn = DriverManager.getConnection(
-                Props.getProperty(PropsIF.DBURL),
-                Props.getProperty(PropsIF.DBUSR),
-                Props.getProperty(PropsIF.DBPSW));
-		    
+        Connection jdbcConn = ConnectionUtil.getSimpleConnection();		    
         return new DatabaseConnection(jdbcConn);
     }
 

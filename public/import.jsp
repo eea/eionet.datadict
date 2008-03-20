@@ -1,11 +1,10 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
 	
-	XDBApplication.getInstance(getServletContext());
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/import", "x")){ %>
 		<b>Not allowed!</b><%
 		return;

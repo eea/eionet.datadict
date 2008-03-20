@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!
@@ -33,17 +33,9 @@ private String legalizeAlert(String in){
 			
 			request.setCharacterEncoding("UTF-8");
 			
-			XDBApplication.getInstance(getServletContext());
-			AppUserIF user = SecurityUtil.getUser(request);
+			DDUser user = SecurityUtil.getUser(request);
 			
 			ServletContext ctx = getServletContext();			
-			String appName = ctx.getInitParameter("application-name");
-			
-			/*DDuser user = new DDuser(DBPool.getPool(appName));
-	
-			String username = "root";
-			String password = "ABr00t";
-			boolean f = user.authenticate(username, password);*/
 			
 			String mode = request.getParameter("mode");
 			
@@ -154,12 +146,10 @@ private String legalizeAlert(String in){
 			}
 			
 			Connection conn = null;
-			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-			DBPoolIF pool = xdbapp.getDBPool();
 			
 			try { // start the whole page try block
 			
-			conn = pool.getConnection();
+			conn = ConnectionUtil.getConnection();
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			
 			Vector v = null;

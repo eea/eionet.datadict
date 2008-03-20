@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.net.URL,java.net.URLEncoder,java.net.MalformedURLException"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil,java.net.URL,java.net.URLEncoder,java.net.MalformedURLException"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private Vector complexAttrs=null;%>
@@ -27,8 +27,7 @@ private String legalizeAlert(String in){
 	request.setCharacterEncoding("UTF-8");
 	
 	ServletContext ctx = getServletContext();
-	XDBApplication.getInstance(ctx);
-	AppUserIF user = SecurityUtil.getUser(request);	
+	DDUser user = SecurityUtil.getUser(request);	
 	
 	// POST request not allowed for anybody who hasn't logged in			
 	if (request.getMethod().equals("POST") && user==null){
@@ -98,11 +97,10 @@ private String legalizeAlert(String in){
 	//// end of handle the POST request, all following code deals with GET //////////////////////
 	
 	Connection conn = null;
-	DBPoolIF pool = XDBApplication.getDBPool();
 	
 	// the whole page's try block
 	try {	
-		conn = pool.getConnection();
+		conn = ConnectionUtil.getConnection();
 		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 		Vector mComplexAttrs = searchEngine.getDElemAttributes(DElemAttribute.TYPE_COMPLEX);
 		if (mComplexAttrs == null)

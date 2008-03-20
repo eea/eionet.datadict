@@ -113,22 +113,4 @@ public class TblPdfFactsheet extends PdfHandout {
         // set the factsheet header
         setHeader("dataset table factsheet");
     }
-    
-    public static void main(String[] args){
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn =
-            DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
-            //DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-
-            String fileName = "x:\\projects\\datadict\\tmp\\tbl_test.pdf";
-            TblPdfFactsheet factsheet = new TblPdfFactsheet(conn, new FileOutputStream(fileName));
-            factsheet.setLogo("x:\\projects\\datadict\\images\\pdf_logo_small.png");
-            factsheet.write("657");
-            factsheet.flush();
-        }
-        catch (Exception e){
-            System.out.println(e.toString());
-        }
-    }
 }

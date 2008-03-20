@@ -551,23 +551,4 @@ public class DstPdfAll extends PdfHandout {
 		footer.setAlignment(Element.ALIGN_RIGHT);
 		footer.setBorder(com.lowagie.text.Rectangle.TOP);
 	}
-  
-    public static void main(String[] args){
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn =
-            //DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
-            DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-
-            String fileName = "x:\\projects\\datadict\\tmp\\ds_test_guideline.pdf";
-            DstPdfGuideline guideline = new DstPdfGuideline(conn, new FileOutputStream(fileName));
-            guideline.setVsPath("x:\\projects\\datadict\\visuals");
-            guideline.setLogo("x:\\projects\\datadict\\images\\pdf_logo_small.png");
-            guideline.write("1259");
-            guideline.flush();
-        }
-        catch (Exception e){
-            System.out.println(e.toString());
-        }
-    }
 }

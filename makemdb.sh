@@ -25,7 +25,6 @@ cp=$cp:$ad/lib/uit-definition.jar
 cp=$cp:$ad/lib/uit-help.jar
 cp=$cp:$ad/lib/uit-security.jar
 cp=$cp:$ad/lib/uit-server.jar
-cp=$cp:$ad/lib/xmlserver.jar
 cp=$cp:$CLASSPATH
 
 $java -cp $cp eionet.meta.exports.mdb.MdbFile $*

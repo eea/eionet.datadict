@@ -1,11 +1,10 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,com.tee.xmlserver.*,com.tee.uit.help.Helps"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,com.tee.uit.help.Helps"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
 
 <%
 	request.setCharacterEncoding("UTF-8");
-	XDBApplication.getInstance(getServletContext());
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">

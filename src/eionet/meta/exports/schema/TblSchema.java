@@ -112,38 +112,4 @@ public class TblSchema extends Schema {
         addString("\t</xs:complexType>");
         newLine();
     }
-    
-    public static void main(String[] args){
-        
-        Connection conn = null;
-        
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
-            DDSearchEngine searchEngine = new DDSearchEngine(conn);
-            
-            FileOutputStream os = new FileOutputStream("x:\\temp\\test_table.xsd");
-            PrintWriter writer = new PrintWriter(os);
-            TblSchema tblSchema = new TblSchema(searchEngine, writer);
-            tblSchema.setIdentitation("\t");
-            tblSchema.setAppContext("http://127.0.0.1:8080/datadict/public");
-            tblSchema.write("653");
-            tblSchema.flush();
-            
-            writer.flush();
-            writer.close();
-            os.flush();
-            os.close();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            //System.out.println(e.toString());
-        }
-        finally{
-            if (conn != null){
-                try{ conn.close(); }
-                catch (Exception e) {}
-            }
-        }
-    }
 }

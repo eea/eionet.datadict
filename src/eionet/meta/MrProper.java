@@ -11,8 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContext;
 
 import com.tee.util.Util;
-import com.tee.xmlserver.AppUserIF;
 
+/**
+ * 
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ *
+ */
 public class MrProper {
     
     public static final String FUNCTIONS_PAR = "functs";
@@ -32,7 +36,7 @@ public class MrProper {
     /** */
     private Connection conn = null;
     private ServletContext ctx = null;
-    private AppUserIF user = null;
+    private DDUser user = null;
     private Vector response = new Vector();
     
     private Hashtable funNames = null;
@@ -66,7 +70,7 @@ public class MrProper {
     /**
     *
     */
-    public void setUser(AppUserIF user){
+    public void setUser(DDUser user){
         this.user = user;
     }
     
@@ -860,58 +864,5 @@ public class MrProper {
     */
     public Vector getResponse(){
         return response;
-    }
-
-    /**
-    *
-    */
-    public static void main(String[] args){
-    	
-    	try{
-    		
-    		HashSet set = new HashSet();
-    		
-	    	HashMap hash1 = new HashMap();
-	    	hash1.put("kala", null);
-			hash1.put("mees", "auto");
-			set.add(hash1);
-			
-			HashMap hash2 = new HashMap();
-			hash2.put("kala", null);
-			hash2.put("mees", "auto");
-			
-			System.out.println(set.contains(hash2));
-    	}
-    	catch (Throwable t){
-    		t.printStackTrace(System.out);
-    	}
-    	
-        /*MrProper mrProper = null;
-        
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn = DriverManager.getConnection(
-			"jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-			//"jdbc:mysql://192.168.1.6:3306/DataDict", "dduser", "xxx");
-
-			AppUserIF testUser = new TestUser();
-			testUser.authenticate("jaanus", "jaanus");
-
-            mrProper = new MrProper(conn);    
-            mrProper.setUser(testUser);
-            
-            Parameters pars = new Parameters();
-			pars.addParameterValue(FUNCTIONS_PAR, MrProper.RLS_NOWC);
-            //pars.addParameterValue(FUNCTIONS_PAR, RMV_MULT_VERS);
-            
-            mrProper.execute(pars);
-            
-            System.out.println(mrProper.getResponse());
-        }
-        catch (Exception e){
-            System.out.println(e.toString());
-        }
-        finally{
-        }*/
     }
 }

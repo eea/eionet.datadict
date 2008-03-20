@@ -1,12 +1,10 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.sql.ConnectionUtil,eionet.util.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
 	
 	ServletContext ctx = getServletContext();			
-	String appName = ctx.getInitParameter("application-name");
-
 	
 	String type = request.getParameter("type");
 	String attr_id = request.getParameter("attr_id");
@@ -20,12 +18,10 @@
 	}
 
 	Connection conn = null;
-	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-	DBPoolIF pool = xdbapp.getDBPool();
 
 	try { // start the whole page try block
 		
-	conn = pool.getConnection();
+	conn = ConnectionUtil.getConnection();
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 	
 	Vector attrValues=null;

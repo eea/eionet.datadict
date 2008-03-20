@@ -9,16 +9,21 @@ import java.sql.*;
 import java.util.LinkedHashMap;
 
 import com.tee.util.*;
-import com.tee.xmlserver.*;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 import com.eteks.awt.PJAToolkit;
 
+/**
+ * 
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ *
+ */
 public class ImgUpload extends HttpServlet {
 
     private static final int BUF_SIZE = 1024;
@@ -55,7 +60,7 @@ public class ImgUpload extends HttpServlet {
 			session.removeAttribute(QRYSTR_ATTR);
         
         // authenticate user
-        AppUserIF user = SecurityUtil.getUser(req);
+		DDUser user = SecurityUtil.getUser(req);
 
         if (user == null)
             throw new ServletException("User not authenticated!");
@@ -72,10 +77,6 @@ public class ImgUpload extends HttpServlet {
 		if (Util.nullString(attrID))
 			throw new ServletException("Attribute ID not specified!");
 
-        String appName = ctx.getInitParameter("application-name");
-        if (Util.nullString(appName))
-            throw new ServletException("Application name in servlet conf is not specified!");
-        
         // get the file's physical path
         String filePath = Props.getProperty(PropsIF.VISUALS_PATH);
         if (filePath == null)
@@ -100,8 +101,7 @@ public class ImgUpload extends HttpServlet {
 
 			PreparedStatement stmt = null;
             try{
-                XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-                conn = XDBApplication.getDBPool().getConnection();
+                conn = ConnectionUtil.getConnection();
                 stmt = conn.prepareStatement(sqlStr);
                 for (int i=0; i<fileNames.length; i++){
                 	
@@ -218,8 +218,7 @@ public class ImgUpload extends HttpServlet {
             }
                         
             // Now let's store the image relation in the DB as well.
-            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-            conn = XDBApplication.getDBPool().getConnection();
+            conn = ConnectionUtil.getConnection();
             
             INParameters inParams = new INParameters();
             LinkedHashMap map = new LinkedHashMap();

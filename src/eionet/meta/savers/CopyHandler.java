@@ -9,7 +9,6 @@ import eionet.util.LogServiceIF;
 
 import javax.servlet.*;
 import com.tee.util.*;
-import com.tee.xmlserver.AppUserIF;
 import com.tee.uit.security.*;
 
 public class CopyHandler extends Object {
@@ -21,7 +20,7 @@ public class CopyHandler extends Object {
     private DDSearchEngine searchEngine = null;
     private ServletContext ctx = null;
     
-    private AppUserIF user = null;
+    private DDUser user = null;
     private static LogServiceIF logger = new Log4jLoggerImpl();
 
     /**
@@ -43,7 +42,7 @@ public class CopyHandler extends Object {
      * 
      * @param user
      */
-    public void setUser(AppUserIF user){
+    public void setUser(DDUser user){
         this.user = user;
     }
 
@@ -594,21 +593,6 @@ public class CopyHandler extends Object {
             
         stmt.close();
         return id;
-    }
-    
-    public static void main(String[] args){
-        
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn = DriverManager.getConnection(
-				"jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-            
-            CopyHandler copyHandler = new CopyHandler(conn, null, null);
-            copyHandler.copyFxv("9999999", "9922", "elem");
-       }
-        catch (Exception e){
-            System.out.println(e.toString());
-        }
     }
 }
 

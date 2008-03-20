@@ -250,36 +250,4 @@ public class TblXForm extends XForm {
 		
 		return buf.toString();
 	}
-
-	public static void main(String args[]){
-		
-		Connection conn = null;
-        
-		try{
-			Class.forName("org.gjt.mm.mysql.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://195.250.186.33:3306/DataDict", "dduser", "xxx");
-			DDSearchEngine searchEngine = new DDSearchEngine(conn);
-            
-			FileOutputStream os = new FileOutputStream("d:\\projects\\datadict\\tmp\\xformike.xml");
-			PrintWriter writer = new PrintWriter(os);
-			TblXForm tblFXorm = new TblXForm(searchEngine, writer);
-			tblFXorm.setAppContext("http://127.0.0.1:8080/datadict/public");
-			tblFXorm.write("1312");
-			tblFXorm.flush("d:\\projects\\datadict\\tmp\\xform.xhtml");
-            
-			writer.flush();
-			writer.close();
-			os.flush();
-			os.close();
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-		finally{
-			if (conn != null){
-				try{ conn.close(); }
-				catch (Exception e) {}
-			}
-		}
-	}
 }

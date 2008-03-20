@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
@@ -10,8 +10,7 @@
 	request.setCharacterEncoding("UTF-8");
 		
 	ServletContext ctx = getServletContext();
-	XDBApplication.getInstance(ctx);
-	AppUserIF user = SecurityUtil.getUser(request);	
+	DDUser user = SecurityUtil.getUser(request);	
 	
 	// POST request not allowed for anybody who hasn't logged in			
 	if (request.getMethod().equals("POST") && user==null){
@@ -115,12 +114,11 @@
 	//// end of handle the POST request //////////////////////
 
 	Connection conn = null;
-	DBPoolIF pool = XDBApplication.getDBPool();
 	boolean isBooleanDatatype = false;
 	
 	// the whole page's try block
 	try {
-		conn = pool.getConnection();
+		conn = ConnectionUtil.getConnection();
 		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 		
 		// make sure this a working copy of the current user

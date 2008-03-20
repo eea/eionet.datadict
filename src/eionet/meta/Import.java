@@ -18,7 +18,6 @@ import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
 
-import com.tee.xmlserver.AppUserIF;
 import com.tee.uit.security.*;
 
 public class Import extends HttpServlet {
@@ -70,7 +69,7 @@ public class Import extends HttpServlet {
         boolean bException = false;
 
         // authenticate user
-        AppUserIF user = SecurityUtil.getUser(req);
+        DDUser user = SecurityUtil.getUser(req);
         try{
 			AccessControlListIF acl = AccessController.getAcl("/import");
 			if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/import", "x")){

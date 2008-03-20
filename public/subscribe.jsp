@@ -2,7 +2,7 @@
 
 <%@ page import="java.util.*" %>
 <%@ page import="java.sql.*" %>
-<%@ page import="com.tee.xmlserver.*" %>
+<%@ page import="eionet.util.sql.ConnectionUtil" %>
 <%@ page import="eionet.meta.*" %>
 <%@ page import="eionet.util.*" %>
 <%@ page import="eionet.meta.notif.*" %>
@@ -17,14 +17,11 @@ Vector datasets = null;
 Vector tables = null;
 Vector commonElms = null;
 
-AppUserIF user = null;
+DDUser user = null;
 Connection conn = null;
-DBPoolIF pool = null;
 ServletContext ctx = getServletContext();
-XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
 try{
-	pool = xdbapp.getDBPool();	
-	conn = pool.getConnection();
+	conn = ConnectionUtil.getConnection();
 	
 	user = SecurityUtil.getUser(request);
 	

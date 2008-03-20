@@ -11,6 +11,7 @@ import java.util.*;
 
 import eionet.meta.*;
 import eionet.util.*;
+import eionet.util.sql.ConnectionUtil;
 
 /**
  * @author jaanus
@@ -337,9 +338,12 @@ public class MdbFile {
 		mdbFile.setVmdOnly(vmdOnly);
 		return mdbFile.create();
 	}
-	
-	/*
+
+	/**
+	 * This implementation of the main method is not only for testing purposes.
+	 * It is sometimes indeed invoked in the production environment. So please do not delete it.
 	 * 
+	 * @param args
 	 */
 	public static void main(String args[]){
 		
@@ -349,6 +353,7 @@ public class MdbFile {
 		
 		System.out.println("entered " + MdbFile.class.getName() + ".main() with " + args);
 		
+		Connection conn = null;
 		try{
 			if (dstID==null)
 				throw new MdbException("Missing command line argument for dataset id");
@@ -356,13 +361,7 @@ public class MdbFile {
 				throw new MdbException("Missing command line argument for file full path");
 			
 			Properties props = MdbFile.getProperties();
-			
-			Class.forName(props.getProperty(PropsIF.DBDRV));
-			Connection conn = DriverManager.getConnection(
-				props.getProperty(PropsIF.DBURL),
-				props.getProperty(PropsIF.DBUSR),
-				props.getProperty(PropsIF.DBPSW));
-			
+			conn = ConnectionUtil.getSimpleConnection();
 			if (vmdOnly==null)
 				MdbFile.create(conn, dstID, fileFullPath);
 			else
@@ -370,6 +369,7 @@ public class MdbFile {
 		}
 		catch (Throwable t){
 			try{
+				ConnectionUtil.close(conn);
 				System.err.println("============>");
 				System.err.println(t.getMessage());
 				t.printStackTrace(System.err);

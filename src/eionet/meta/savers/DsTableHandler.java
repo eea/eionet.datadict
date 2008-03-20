@@ -9,7 +9,6 @@ import javax.servlet.http.*;
 import eionet.meta.*;
 
 import com.tee.util.*;
-import com.tee.xmlserver.AppUserIF;
 import com.tee.uit.security.*;
 
 public class DsTableHandler extends BaseHandler {
@@ -644,7 +643,7 @@ public class DsTableHandler extends BaseHandler {
 
     }
 
-    public void setUser(AppUserIF user){
+    public void setUser(DDUser user){
         this.user = user;
     }
     
@@ -685,35 +684,6 @@ public class DsTableHandler extends BaseHandler {
     	}
     	
     	stmt.executeUpdate(buf.toString());
-    }
-
-    /**
-     * 
-     * @param args
-     */
-    public static void main(String[] args){
-
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn =
-                DriverManager.getConnection("jdbc:mysql://195.250.186.33:3306/dd",
-				"dduser", "xxx");
-
-            AppUserIF testUser = new TestUser();
-            testUser.authenticate("heinlja", "xxx");
-
-            Parameters pars = new Parameters();
-            pars.addParameterValue("mode", "delete");
-            pars.addParameterValue("del_id", "2010");
-
-            DsTableHandler handler = new DsTableHandler(conn, pars, null);
-            handler.setUser(testUser);
-            handler.setVersioning(true);
-            handler.execute();
-       }
-        catch (Exception e){
-            System.out.println(e.toString());
-        }
     }
 
 	/**

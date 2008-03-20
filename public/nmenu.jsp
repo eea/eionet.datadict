@@ -1,4 +1,4 @@
-<%@page import="eionet.util.SecurityUtil,com.tee.xmlserver.AppUserIF"%>
+<%@page import="eionet.util.SecurityUtil,eionet.meta.DDUser"%>
 
 <div id="leftcolumn" class="localnav">
 	<ul>
@@ -6,7 +6,7 @@
 		<li><a href="search_results_tbl.jsp?SearchType=SEARCH">Tables </a></li>
 		<li><a href="search.jsp">Data elements </a></li>
 		<%
-		AppUserIF _user = SecurityUtil.getUser(request);
+		DDUser _user = SecurityUtil.getUser(request);
 		if (_user!=null){
 			%>
 			<li><a href="attributes.jsp">Attributes </a></li>

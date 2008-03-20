@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,com.tee.xmlserver.*,eionet.util.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.sql.ConnectionUtil,eionet.util.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
@@ -50,19 +50,15 @@ private String setDefaultAttrs(String name){
 <%
 	request.setCharacterEncoding("UTF-8");
 	
-	XDBApplication.getInstance(getServletContext());
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	
 	ctx = getServletContext();
-	String appName = ctx.getInitParameter("application-name");
 	
 	Connection conn = null;
-	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-	DBPoolIF pool = xdbapp.getDBPool();
 	
 	try { // start the whole page try block
 	
-	conn = pool.getConnection();
+	conn = ConnectionUtil.getConnection();
 
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 

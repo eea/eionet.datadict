@@ -3,7 +3,8 @@ package eionet.meta.harvest;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import eionet.test.MockDbPool;
+import eionet.util.sql.ConnectionUtil;
+
 import junit.framework.TestCase;
 
 /**
@@ -22,7 +23,7 @@ public class DDHarvesterTest extends TestCase{
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		conn = (new MockDbPool()).getConnection();
+		conn = ConnectionUtil.getSimpleConnection();
 	}
 	
 	/**

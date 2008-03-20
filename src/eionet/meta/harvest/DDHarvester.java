@@ -28,6 +28,7 @@ import java.util.*;
 import com.tee.util.*;
 
 import eionet.util.*;
+import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
@@ -218,12 +219,8 @@ public abstract class DDHarvester implements HarvesterIF{
 	}
 	
 	private void getConnection() throws Exception{
-		if (conn==null || conn.isClosed()){			
-			Class.forName(Props.getProperty(PropsIF.DBDRV));
-			this.conn = DriverManager.getConnection(
-				Props.getProperty(PropsIF.DBURL),
-				Props.getProperty(PropsIF.DBUSR),
-				Props.getProperty(PropsIF.DBPSW));
+		if (conn==null || conn.isClosed()){
+			ConnectionUtil.getSimpleConnection();
 		}
 	}
 

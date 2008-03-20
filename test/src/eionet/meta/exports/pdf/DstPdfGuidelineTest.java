@@ -3,7 +3,7 @@ package eionet.meta.exports.pdf;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import eionet.test.MockDbPool;
+import eionet.util.sql.ConnectionUtil;
 
 import junit.framework.TestCase;
 
@@ -23,7 +23,7 @@ public class DstPdfGuidelineTest extends TestCase{
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		conn = (new MockDbPool()).getConnection();
+		conn = ConnectionUtil.getSimpleConnection();
 	}
 	
 	/**

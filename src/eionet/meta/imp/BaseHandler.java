@@ -5,7 +5,8 @@ package eionet.meta.imp;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 
-import com.tee.xmlserver.AppUserIF;
+import eionet.meta.DDUser;
+
 
 /**
  * A Class class.
@@ -18,7 +19,7 @@ public class BaseHandler extends DefaultHandler {
     private StringBuffer errorBuff;   // error description
     private Locator locator = null;
     
-    protected AppUserIF user = null;
+    protected DDUser user = null;
     
   /**
    * Constructor
@@ -50,7 +51,7 @@ public class BaseHandler extends DefaultHandler {
         errorBuff.append(err);
     }
     
-	public void setUser(AppUserIF user){
+	public void setUser(DDUser user){
 		this.user = user;
 	}
 }

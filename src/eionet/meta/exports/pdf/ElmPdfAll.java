@@ -176,23 +176,4 @@ public class ElmPdfAll {
 	public void setParameters(Parameters params){
 		this.params = params;
 	}
-	
-    public static void main(String[] args){
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn =
-            DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
-            //DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-
-            String fileName = "x:\\projects\\datadict\\tmp\\elm_test_guideline.pdf";
-            
-            DDSearchEngine searchEngine = new DDSearchEngine(conn);
-            Section chapter = (Section)new Chapter("test", 1);
-            ElmPdfGuideline guideline = new ElmPdfGuideline(searchEngine, null);//chapter);
-            guideline.write("4518");
-        }
-        catch (Exception e){
-            System.out.println(e.toString());
-        }
-    }
 }

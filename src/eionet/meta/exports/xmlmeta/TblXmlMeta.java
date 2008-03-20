@@ -29,7 +29,6 @@ import java.sql.*;
 import eionet.meta.*;
 import eionet.util.Util;
 
-import com.tee.xmlserver.AppUserIF;
 
 public class TblXmlMeta extends XmlMeta {
 

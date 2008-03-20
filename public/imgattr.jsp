@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,java.util.*,java.io.*,com.tee.xmlserver.*,eionet.util.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,java.util.*,java.io.*,eionet.util.sql.ConnectionUtil,eionet.util.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
@@ -6,8 +6,7 @@
 	session.setAttribute("imgattr_qrystr", request.getQueryString());
 	
 	ServletContext ctx = getServletContext();
-	XDBApplication.getInstance(ctx);
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	
 	// POST request not allowed for anybody who hasn't logged in			
 	if (request.getMethod().equals("POST") && user==null){
@@ -55,11 +54,10 @@
 	}
 
 	Connection conn = null;
-	DBPoolIF pool = XDBApplication.getDBPool();
 
 	// the whole page's try block
 	try {
-		conn = pool.getConnection();
+		conn = ConnectionUtil.getConnection();
 		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 		Vector attrs = searchEngine.getSimpleAttributes(objID, objType);
 %>

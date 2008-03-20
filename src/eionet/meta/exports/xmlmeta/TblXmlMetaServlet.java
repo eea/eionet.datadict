@@ -29,9 +29,9 @@ import java.io.*;
 import java.sql.*;
 
 import eionet.util.Util;
+import eionet.util.sql.ConnectionUtil;
 import eionet.meta.DDSearchEngine;
 
-import com.tee.xmlserver.*;
 
 public class TblXmlMetaServlet extends HttpServlet {
 
@@ -47,13 +47,9 @@ public class TblXmlMetaServlet extends HttpServlet {
 				throw new Exception("Table ID missing!");
 
 			ServletContext ctx = getServletContext();
-			String appName = ctx.getInitParameter("application-name");
 
-			// getting the DB pool through XmlServer
-			XDBApplication xdbapp = XDBApplication
-					.getInstance(getServletContext());
-			DBPoolIF pool = XDBApplication.getDBPool();
-			conn = pool.getConnection();
+			// get the DB connection
+			conn = ConnectionUtil.getConnection();
 
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			res.setContentType("text/xml; charset=UTF-8");

@@ -6,11 +6,9 @@ package eionet.meta.exports.mdb;
 import javax.servlet.http.*;
 import javax.servlet.*;
 
-import com.tee.xmlserver.DBPoolIF;
-import com.tee.xmlserver.XDBApplication;
-
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.sql.ConnectionUtil;
 
 import java.io.*;
 import java.sql.*;
@@ -52,9 +50,7 @@ public class MdbServlet extends HttpServlet {
 			else if (!filePath.endsWith(File.separator))
 				filePath = filePath + File.separator;
 
-			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-			DBPoolIF pool = XDBApplication.getDBPool();            
-			conn = pool.getConnection();
+			conn = ConnectionUtil.getConnection();
 			
 			if (!vmdOnly)
 				file = Mdb.getCached(conn, dstID, filePath);

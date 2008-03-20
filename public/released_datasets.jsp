@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,eionet.meta.*,eionet.util.*"%>
 
 <%
 request.setCharacterEncoding("UTF-8");

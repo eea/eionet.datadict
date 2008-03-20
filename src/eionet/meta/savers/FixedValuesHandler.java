@@ -8,6 +8,8 @@ import java.util.*;
 import eionet.meta.*;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
 
 import com.tee.util.*;
 
@@ -91,30 +93,46 @@ public class FixedValuesHandler extends BaseHandler{
             insertValue(newValues[i]);
     }
 
+    /**
+     * 
+     * @param value
+     * @throws Exception
+     */
     private void insertValue(String value) throws Exception {
 
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("FXV");
-        gen.setFieldExpr("OWNER_ID", ownerID);
-		gen.setField("OWNER_TYPE", ownerType);
-        gen.setField("VALUE", value);
+    	INParameters inParams = new INParameters();
+    	LinkedHashMap map = new LinkedHashMap();
+    	
+        map.put("OWNER_ID", inParams.add(ownerID, Types.INTEGER));
+		map.put("OWNER_TYPE", inParams.add(ownerType));
+		map.put("VALUE", inParams.add(value));
 
         String isDefault = req.getParameter("is_default");
         if (isDefault!=null && isDefault.equalsIgnoreCase("true"))
-            gen.setField("IS_DEFAULT", "Y");
+            map.put("IS_DEFAULT", "'Y'");
         
 		String definition = req.getParameter("definition");
-		if (definition!=null) gen.setField("DEFINITION", definition);
+		if (definition!=null)
+			map.put("DEFINITION", inParams.add(definition));
+		
 		String shortDesc = req.getParameter("short_desc");
-		if (shortDesc!=null) gen.setField("SHORT_DESC", shortDesc);
+		if (shortDesc!=null)
+			map.put("SHORT_DESC", inParams.add(shortDesc));
 
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(gen.insertStatement());
-        setLastInsertID();
-        
-        stmt.close();
+		PreparedStatement stmt = null;
+		try{
+			stmt = SQL.preparedStatement(SQL.insertStatement("FXV", map), inParams, conn);
+			stmt.executeUpdate();
+		}
+		finally{
+			SQL.close(stmt);
+		}
     }
 
+    /**
+     * 
+     * @throws SQLException
+     */
 	private void update() throws SQLException {
 		
 		String fxvID = req.getParameter("fxv_id");
@@ -125,26 +143,34 @@ public class FixedValuesHandler extends BaseHandler{
 		String definition = req.getParameter("definition");
 		String shortDesc = req.getParameter("short_desc");
 		
-		SQLGenerator gen = new SQLGenerator();
-		
+    	INParameters inParams = new INParameters();
+    	LinkedHashMap map = new LinkedHashMap();
 		if (isDefault!=null)
-			gen.setField("IS_DEFAULT", isDefault.equals("true") ? "Y" : "N");
+			map.put("IS_DEFAULT", isDefault.equals("true") ? "'Y'" : "'N'");
 		if (definition!=null)
-			gen.setField("DEFINITION", definition);
+			map.put("DEFINITION", inParams.add(definition));
 		if (definition!=null)
-			gen.setField("SHORT_DESC", shortDesc);
+			map.put("SHORT_DESC", inParams.add(shortDesc));
 
-		if (gen.getValues().length()==0) return;
-		
-		gen.setTable("FXV");
-		
-		StringBuffer buf = new StringBuffer(gen.updateStatement()).
-		append(" where FXV_ID=").append(fxvID);
-		Statement stmt = conn.createStatement();
-		stmt.executeUpdate(buf.toString());
-		stmt.close();
+		if (map.size()==0)
+			return;
+
+		PreparedStatement stmt = null;
+		try{
+			StringBuffer buf = new StringBuffer(SQL.updateStatement("FXV", map));
+			buf.append(" where FXV_ID=").append(inParams.add(fxvID, Types.INTEGER));
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			stmt.executeUpdate();
+		}
+		finally{
+			SQL.close(stmt);
+		}
 	}
 
+	/**
+	 * 
+	 * @throws Exception
+	 */
     private void delete() throws Exception {
 
         String[] fxvID = req.getParameterValues("del_id");
@@ -155,14 +181,31 @@ public class FixedValuesHandler extends BaseHandler{
         }
     }
 
+    /**
+     * 
+     * @param id
+     * @throws SQLException
+     */
     private void deleteValue(String id) throws SQLException {
+    	
+    	INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("delete from FXV where FXV_ID=").
-        append(id);
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
+        append(inParams.add(id, Types.INTEGER));
+        
+        PreparedStatement stmt = null;
+        try{
+        	stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+        	stmt.executeUpdate();
+        }
+        finally{
+        	SQL.close(stmt);
+        }
     }
-    
+
+    /**
+     * 
+     * @throws Exception
+     */
     private void checkAllowance() throws Exception {
     	
 		allowanceChecked = true;
@@ -199,48 +242,37 @@ public class FixedValuesHandler extends BaseHandler{
 			allowed = false;
     }
     
+    /**
+     * 
+     * @throws SQLException
+     */
     private void setLastInsertID() throws SQLException {
         
         String qry = "SELECT LAST_INSERT_ID()";
 
-        logger.debug(qry);
-
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(qry);
-        rs.clearWarnings();
-        if (rs.next())
-            lastInsertID = rs.getString(1);
-        stmt.close();
+        ResultSet rs = null;
+        Statement stmt = null;
+        try{
+        	stmt = conn.createStatement();
+        	rs = stmt.executeQuery(qry);
+            rs.clearWarnings();
+            if (rs.next())
+                lastInsertID = rs.getString(1);
+        }
+        finally{
+        	SQL.close(rs);
+        	SQL.close(stmt);
+        }
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getLastInsertID(){
         return lastInsertID;
     }
 
-    public static void main(String[] args){
-
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn = DriverManager.getConnection(
-				"jdbc:mysql://195.250.186.16:3306/DataDict", "root", "ABr00t");
-
-            Parameters pars = new Parameters();
-            pars.addParameterValue("mode", "edit");
-            pars.addParameterValue("fxv_id", "2324");
-            pars.addParameterValue("delem_id", "9923");
-            pars.addParameterValue("parent_type", "elem");
-			//pars.addParameterValue("new_value", "kola1");
-			pars.addParameterValue("definition", "plaaplaatt");
-            pars.addParameterValue("short_desc", "plaaplaarrrr");
-            
-            FixedValuesHandler handler = new FixedValuesHandler(conn, pars, null);
-            handler.execute();
-        }
-        catch (Exception e){
-            System.out.println(e.toString());
-        }
-    }
-    
     /**
      * 
      * @return

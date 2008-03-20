@@ -51,11 +51,10 @@ public class Log4jLoggerImpl implements LogServiceIF {
 	public static final String DEFAULT_CATEGORY = "datadict";
   
   Category logger;
-  
-/**
- * Package local method for initializing Logger. Does not do anything as the com.tee.xmlserver.Logger
- * will be initialized by the servlet container.
- */
+
+  /**
+  *
+  */
   public Log4jLoggerImpl() {
     logger = Category.getInstance(DEFAULT_CATEGORY);
     //logger.debug("****************************************************** ");

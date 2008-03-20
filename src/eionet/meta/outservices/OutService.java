@@ -14,6 +14,7 @@ import eionet.meta.DDSearchEngine;
 import eionet.meta.DsTable;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.sql.ConnectionUtil;
 
 public class OutService {
 	
@@ -120,11 +121,7 @@ public class OutService {
 	 * 
 	 */
 	private void getConnection() throws Exception{
-		Class.forName(Props.getProperty(PropsIF.DBDRV));
-		this.conn = DriverManager.getConnection(
-			Props.getProperty(PropsIF.DBURL),
-			Props.getProperty(PropsIF.DBUSR),
-			Props.getProperty(PropsIF.DBPSW));
+		conn = ConnectionUtil.getSimpleConnection();
 	}
 	
 	/*

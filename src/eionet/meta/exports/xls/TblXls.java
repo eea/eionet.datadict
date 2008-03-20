@@ -321,29 +321,4 @@ public class TblXls extends Xls implements XlsIF, CachableIF{
 		
 		return fn;
 	}
-	
-	public static void main(String[] args) {
-		
-		Connection conn = null;
-		
-		try{
-			Class.forName("org.gjt.mm.mysql.Driver");
-			conn = DriverManager.getConnection(
-							"jdbc:mysql://195.250.186.33:3306/dd", "dduser", "xxx");
-							
-			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", null);
-			FileOutputStream fos = new FileOutputStream("d:\\tmp\\workbook.xls");
-			TblXls xls = new TblXls(searchEngine, fos);
-			
-			xls.create("1327");
-			xls.write();
-			
-			fos.close();
-			conn.close();
-		}
-		catch (Exception e){
-			if (conn!=null) try{ conn.close(); } catch (SQLException sqle) {}
-			e.printStackTrace(System.out);
-		}
-	}
 }

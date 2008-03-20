@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
@@ -15,8 +15,7 @@
 	response.setDateHeader("Expires", 0);
 
 	ServletContext ctx = getServletContext();
-	XDBApplication.getInstance(ctx);
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	
 	// POST request not allowed for anybody who hasn't logged in			
 	if (request.getMethod().equals("POST") && user==null){
@@ -82,7 +81,6 @@
 	// any code below must not be reached when POST request!!!
 	
 	Connection conn = null;
-	DBPoolIF pool = XDBApplication.getDBPool();
 	
 	Vector tables = null;
 	Vector attributes=null;
@@ -92,7 +90,7 @@
 	try {
 		
 		// get db connection, init search engine object
-		conn = pool.getConnection();
+		conn = ConnectionUtil.getConnection();
 		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 		searchEngine.setUser(user);
 

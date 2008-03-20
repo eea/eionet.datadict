@@ -8,10 +8,17 @@ import java.sql.*;
 
 import eionet.meta.exports.schema.*;
 import eionet.util.*;
+import eionet.util.sql.ConnectionUtil;
 import eionet.meta.DDSearchEngine;
-import com.tee.xmlserver.*;
+import eionet.meta.DDUser;
+
 import com.tee.uit.security.*;
 
+/**
+ * 
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ *
+ */
 public class CodelistServlet extends HttpServlet {
 	
 	/*
@@ -46,12 +53,9 @@ public class CodelistServlet extends HttpServlet {
 	        
 	        // get the application name
 	        ServletContext ctx = getServletContext();
-	        String appName = ctx.getInitParameter("application-name");
 
-            // JH 300603 - getting the DB pool through XmlServer
-            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-            DBPoolIF pool = XDBApplication.getDBPool();            
-            conn = pool.getConnection();
+	        // get connection
+	        conn = ConnectionUtil.getConnection();
 
             // set response content type
 			if (format.equals("csv"))
@@ -91,7 +95,7 @@ public class CodelistServlet extends HttpServlet {
     
     private void guard(HttpServletRequest req) throws Exception{
     	
-		AppUserIF user = SecurityUtil.getUser(req);
+    	DDUser user = SecurityUtil.getUser(req);
 		if (user==null) throw new Exception("Not logged in!");
 		
 		if (!SecurityUtil.hasPerm(user.getUserName(), "/", "xmli"))

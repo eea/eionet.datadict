@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
@@ -92,8 +92,6 @@
 	response.setDateHeader("Expires", 0);
 
 	ServletContext ctx = getServletContext();
-	String appName = ctx.getInitParameter("application-name");
-
 	
 	Integer oSortCol=null;
     Integer oSortOrder=null;
@@ -113,10 +111,8 @@
 	DDSearchEngine searchEngine = null;
 	
 	Connection conn = null;
-	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-	DBPoolIF pool = xdbapp.getDBPool();
 	
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	
 	boolean wrkCopies = false;
 	
@@ -126,7 +122,7 @@
 		
 	if (searchType != null && searchType.equals(TYPE_SEARCH)){
 		
-		conn = pool.getConnection();
+		conn = ConnectionUtil.getConnection();
 	
 		if (request.getMethod().equals("POST")){
 		

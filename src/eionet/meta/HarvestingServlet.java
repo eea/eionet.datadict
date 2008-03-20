@@ -7,8 +7,11 @@ import java.io.*;
 import eionet.meta.harvest.*;
 import eionet.util.*;
 
-import com.tee.xmlserver.AppUserIF;
-
+/**
+ * 
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ *
+ */
 public class HarvestingServlet extends HttpServlet {
 	
     protected void service(HttpServletRequest req, HttpServletResponse res)
@@ -19,7 +22,7 @@ public class HarvestingServlet extends HttpServlet {
 		ServletOutputStream out = res.getOutputStream();
 		res.setContentType("text/plain");
 		
-		AppUserIF user = SecurityUtil.getUser(req);
+		DDUser user = SecurityUtil.getUser(req);
 		if (user==null || !user.isAuthentic())
 			throw new ServletException("User not authorized!");
 		

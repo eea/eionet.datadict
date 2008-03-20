@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private String mode=null;%>
@@ -34,11 +34,7 @@ private String legalizeAlert(String in){
 			
 			ServletContext ctx = getServletContext();	
 			
-			XDBApplication.getInstance(ctx);
-			AppUserIF user = SecurityUtil.getUser(request);
-			
-			String appName = ctx.getInitParameter("application-name");
-
+			DDUser user = SecurityUtil.getUser(request);
 			
 			if (request.getMethod().equals("POST")){
       			if (user == null){
@@ -119,12 +115,10 @@ private String legalizeAlert(String in){
 			}
 			
 			Connection conn = null;
-			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-			DBPoolIF pool = xdbapp.getDBPool();
 			
 			try { // start the whole page try block
 			
-			conn = pool.getConnection();
+			conn = ConnectionUtil.getConnection();
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			
 			attrField = searchEngine.getAttrField(field_id);		

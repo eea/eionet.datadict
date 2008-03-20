@@ -8,7 +8,6 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.meta.savers.Parameters;
 import com.tee.util.Util;
-import com.tee.xmlserver.AppUserIF;
 import junit.framework.TestCase;
 import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
@@ -76,7 +75,7 @@ public class MrProperTest extends DatabaseTestCase {
 
         MrProper mrProper = null;
         
-        AppUserIF testUser = new TestUser(true);
+        DDUser testUser = new TestUser();
 
         testUser.authenticate("jaanus", "jaanus");
 

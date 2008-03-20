@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*,java.io.*,javax.servlet.http.HttpUtils"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil,java.io.*,javax.servlet.http.HttpUtils"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final int MAX_CELL_LEN=40;%>
@@ -165,8 +165,7 @@
 	Vector fixedValues=null;
 	
 	ServletContext ctx = getServletContext();
-	XDBApplication.getInstance(ctx);
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	
 	// POST request not allowed for anybody who hasn't logged in			
 	if (request.getMethod().equals("POST") && user==null){
@@ -372,13 +371,12 @@
 	boolean isLatestElm = false;
 		
 	Connection conn = null;
-	DBPoolIF pool = XDBApplication.getDBPool();
 	
 	// the whole page's try block
 	try {
 		
 		// get db connection, init search engine object
-		conn = pool.getConnection();
+		conn = ConnectionUtil.getConnection();
 		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 		searchEngine.setUser(user);
 		

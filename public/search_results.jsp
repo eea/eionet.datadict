@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
@@ -93,7 +93,7 @@
 	}
 
 	// get user object from session
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	
 	// get search type
 	String searchType=request.getParameter("SearchType");
@@ -137,7 +137,7 @@
 			
 	       	// get the DB connection and set up search engine
 			ServletContext ctx = getServletContext();
-			conn = XDBApplication.getInstance(ctx).getDBPool().getConnection();
+			conn = ConnectionUtil.getConnection();
 			searchEngine = new DDSearchEngine(conn, "", ctx);
 			searchEngine.setUser(user);
 		

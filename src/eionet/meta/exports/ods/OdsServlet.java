@@ -12,13 +12,11 @@ import java.sql.Connection;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import com.tee.xmlserver.DBPoolIF;
-import com.tee.xmlserver.XDBApplication;
-
 import eionet.meta.DDSearchEngine;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
+import eionet.util.sql.ConnectionUtil;
 
 /**
  * 
@@ -52,10 +50,8 @@ public class OdsServlet extends HttpServlet{
 			// prepare workinf folder
 			workingFolderPath = prepareWorkingFolder(req.getSession().getId());
 
-            // get the DB pool through XmlServer
-            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-            DBPoolIF pool = XDBApplication.getDBPool();            
-            conn = pool.getConnection();
+			// get db connection
+			conn = ConnectionUtil.getConnection();
                 
 	        // set up the ods object
             Ods ods = null;

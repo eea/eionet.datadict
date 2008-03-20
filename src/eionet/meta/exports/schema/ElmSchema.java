@@ -166,40 +166,4 @@ public class ElmSchema extends Schema {
         newLine();
     }
 
-    public static void main(String[] args){
-        
-        Connection conn = null;
-        
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            //conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
-            conn = DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-            DDSearchEngine searchEngine = new DDSearchEngine(conn);
-            
-            FileOutputStream os = new FileOutputStream("x:\\temp\\test.xsd");
-            PrintWriter writer = new PrintWriter(os);
-            ElmSchema elmSchema = new ElmSchema(searchEngine, writer);
-            elmSchema.setIdentitation("\t");
-            elmSchema.setAppContext("http://localhost:8080/datadict/public");
-            //elmSchema.write("104");
-            //elmSchema.write("4593");
-            elmSchema.write("111");
-            elmSchema.flush();
-            
-            writer.flush();
-            writer.close();
-            os.flush();
-            os.close();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            //System.out.println(e.toString());
-        }
-        finally{
-            if (conn != null){
-                try{ conn.close(); }
-                catch (Exception e) {}
-            }
-        }
-    }
 }

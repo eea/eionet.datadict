@@ -1,11 +1,9 @@
-<%@page contentType="text/html;charset=UTF-8" import="com.tee.xmlserver.*,eionet.meta.CleanupServlet"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.util.sql.ConnectionUtil,eionet.meta.CleanupServlet,eionet.meta.DDUser"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
-	
-	XDBApplication.getInstance(getServletContext());
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/cleanup", "x")){
 		request.setAttribute("DD_ERR_MSG", "You have no permission to access this page");
 		request.getRequestDispatcher("error.jsp").forward(request, response);

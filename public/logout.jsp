@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <%@ page import="eionet.meta.filters.EionetCASFilter" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
@@ -14,8 +14,7 @@ Vector commonElements=null;
 <%
 	request.setCharacterEncoding("UTF-8");
 	
-	XDBApplication.getInstance(getServletContext());
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	
 	if (user==null){
 		response.sendRedirect("index.jsp");
@@ -23,16 +22,13 @@ Vector commonElements=null;
 	}
 	
 	ctx = getServletContext();
-	String appName = ctx.getInitParameter("application-name");
 	
 	Connection conn = null;
-	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-	DBPoolIF pool = xdbapp.getDBPool();
 	
 	// try-catch block of the whole page
 	try {
 	
-		conn = pool.getConnection();
+		conn = ConnectionUtil.getConnection();
 
 		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 		searchEngine.setUser(user);		

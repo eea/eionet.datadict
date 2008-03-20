@@ -143,22 +143,4 @@ public class ElmPdfFactsheet extends PdfHandout {
         // set the factsheet header
         setHeader("data element factsheet");
     }
-    
-    public static void main(String[] args){
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn =
-            DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
-            //DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-
-            String fileName = "x:\\projects\\datadict\\tmp\\elm_test.pdf";
-            ElmPdfFactsheet factsheet = new ElmPdfFactsheet(conn, new FileOutputStream(fileName));
-            factsheet.setLogo("x:\\projects\\datadict\\images\\pdf_logo_small.png");
-            factsheet.write("4733");
-            factsheet.flush();
-        }
-        catch (Exception e){
-            System.out.println(e.toString());
-        }
-    }
 }

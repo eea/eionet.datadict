@@ -1,115 +1,69 @@
 package eionet.meta;
 
 
-import com.tee.xmlserver.AppUserIF;
 import java.sql.*;
+
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.sql.ConnectionUtil;
 
 
-public class TestUser implements AppUserIF {
+public class TestUser extends DDUser {
     
-    private String user = null;
-    private String password = null;
-    private String fullName = null;
-    private String[] _roles = null;
-    private Connection dbPool = null;
-
     /**
      *
      */
-    public TestUser() throws Exception {
-        Class.forName(Props.getProperty(PropsIF.DBDRV));
-        dbPool = DriverManager.getConnection(Props.getProperty(PropsIF.DBURL),
-                Props.getProperty(PropsIF.DBUSR),
-                Props.getProperty(PropsIF.DBPSW));
+    public TestUser(){
+    	super();
     }
 
-    /**
-     * 
-     * @param noPool
-     */
-    public TestUser(boolean noPool){
-    }
-   
-    /**
-     *
+    /*
+     *  (non-Javadoc)
+     * @see eionet.meta.DDuser#authenticate(java.lang.String, java.lang.String)
      */
     public boolean authenticate(String userName, String userPws) {
         
-        user = userName;
+        username = userName;
+        fullName = userName;
         password = userPws;
         return true;
     }
-    
-    /**
-     *
+
+    /*
+     *  (non-Javadoc)
+     * @see eionet.meta.DDuser#isAuthentic()
      */
     public boolean isAuthentic() {
         return true;
     }
     
-    /**
-     *
-     */
-    public boolean isUserInRole(String role) {
-        
-        boolean b = false;
-
-        if (_roles == null) {
-            getUserRoles();
-        }
-                    
-        for (int i = 0; i < _roles.length; i++) {
-            if (_roles[i].equals(role)) {
-                b = true;
-            }
-        }
-                      
-        return b;
-    }
-
-    /**
-     * FullName
-     */
-    public String getFullName() {
-        return fullName;
-    }
-
-    /**
-     *
-     */
-    public String getUserName() {
-        return user;
-    }
-
-    /**
-     *
+    /*
+     *  (non-Javadoc)
+     * @see eionet.meta.DDUser#getConnection()
      */
     public Connection getConnection() {
-        return dbPool;
-    }
+		
+		try {
+			return ConnectionUtil.getSimpleConnection();
+		}
+		catch (Exception e) {
+			throw new DDRuntimeException(e);
+		}
+	}
 
-    /**
-     * Returns a string array of roles the user is linked to.
-     * Note that the method returns newly constructed array, leaving internal role list unrevealed.
+    /*
+     *  (non-Javadoc)
+     * @see eionet.meta.DDuser#getUserRoles()
      */
     public String[] getUserRoles() {
-    
-        return null;
+    	String[] ss = {};
+        return ss;
     }
 
-    /**
-     *
+    /*
+     *  (non-Javadoc)
+     * @see eionet.meta.DDuser#invalidate()
      */
     public void invalidate() {
     }
-
-    /**
-     *
-     */
-    public String toString() {
-        return (user == null ? "" : user);
-    }
-
 }

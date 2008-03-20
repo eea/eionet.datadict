@@ -1,6 +1,8 @@
 package eionet.meta;
 
 import eionet.util.*;
+import eionet.util.sql.ConnectionUtil;
+import eionet.util.sql.DDConnectionException;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
@@ -13,7 +15,6 @@ import java.util.*;
 import java.sql.*;
 
 import com.tee.uit.security.*;
-import com.tee.xmlserver.*;
 import com.tee.util.SQLGenerator;
 
 public class DocDownload extends HttpServlet{
@@ -158,19 +159,32 @@ public class DocDownload extends HttpServlet{
 			mimeType = "application/vnd.ms-access";
 	}
 
+	/**
+	 * 
+	 * @param req
+	 * @throws Exception
+	 */
 	private void guard(HttpServletRequest req) throws Exception{
-		AppUserIF user = SecurityUtil.getUser(req);
-		if (user == null) throw new Exception("Not authenticated!");
+		DDUser user = SecurityUtil.getUser(req);
+		if (user==null)
+			throw new Exception("Not authenticated!");
 	}
 
-	private void openConnection(){
+	/**
+	 * 
+	 * @throws DDConnectionException
+	 * @throws SQLException
+	 */
+	private void openConnection() throws DDConnectionException, SQLException{
 		if (conn==null){
-			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-			DBPoolIF pool = XDBApplication.getDBPool();            
-			conn = pool.getConnection();
+			conn = ConnectionUtil.getConnection();
 		}
 	}
 	
+	/**
+	 * 
+	 *
+	 */
 	private void closeConnection(){
 		if (conn!=null){
 			try {

@@ -173,27 +173,4 @@ public class CodelistXML extends Codelist {
 		ns.put(KEY_NS_URL, jspURLPrefix);
 		namespaces.add(ns);
 	}
-
-	/**
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args){
-		
-		try{
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn =
-				DriverManager.getConnection(
-			"jdbc:mysql://192.168.10.15:3306/jaanusdd", "dduser", "xxx");
-			
-			PrintWriter pw = new PrintWriter(System.out);
-			CodelistXML codelist = new CodelistXML(conn, pw);
-			codelist.write("16820", ELM);
-			codelist.flush();
-			pw.flush();
-		}
-		catch (Exception e){
-			e.printStackTrace(System.out);
-		}
-	}
 }

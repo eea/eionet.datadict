@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!static int iPageLen=0;%>
@@ -8,17 +8,14 @@
 <%
 	request.setCharacterEncoding("UTF-8");
 	ServletContext ctx = getServletContext();
-	String appName = ctx.getInitParameter("application-name");
 
 	Connection conn = null;
-	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-	DBPoolIF pool = xdbapp.getDBPool();
 
 	try { // start the whole page try block
 
-	conn = pool.getConnection();
+	conn = ConnectionUtil.getConnection();
 
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	if (user==null || !user.isAuthentic()){ %>
 		<b>Not allowed!</b><%
 		return;

@@ -1,4 +1,4 @@
-<%@page import="java.util.*,eionet.util.SecurityUtil,com.tee.xmlserver.AppUserIF,eionet.meta.LoginServlet,eionet.meta.filters.EionetCASFilter"%>
+<%@page import="java.util.*,eionet.util.SecurityUtil,eionet.meta.DDUser,eionet.meta.LoginServlet,eionet.meta.filters.EionetCASFilter"%>
 
 <div id="toolribbon">
 	<div id="lefttools">
@@ -7,7 +7,7 @@
     </div>
     <div id="righttools">    
     	<%
-		AppUserIF _user = SecurityUtil.getUser(request);
+		DDUser _user = SecurityUtil.getUser(request);
 		if (_user!=null){
 			%>
 			<a id="logoutlink" href="logout.jsp" title="Logout">Logout (<%=_user.getUserName()%>)</a><%

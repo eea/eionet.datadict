@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,com.tee.xmlserver.*,eionet.util.Util"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.sql.ConnectionUtil,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private String type=null;%>
@@ -13,13 +13,11 @@
 			request.setCharacterEncoding("UTF-8");
 			
 			ServletContext ctx = getServletContext();			
-			String appName = ctx.getInitParameter("application-name");
 			
 		    String urlPath = ctx.getInitParameter("basens-path");
 			if (urlPath == null) urlPath = "";
 
-			XDBApplication.getInstance(ctx);
-			AppUserIF user = SecurityUtil.getUser(request);
+			DDUser user = SecurityUtil.getUser(request);
 			
 			if (request.getMethod().equals("POST")){
       			if (user == null){
@@ -141,12 +139,10 @@
 			}
 			
 			Connection conn = null;
-			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-			DBPoolIF pool = xdbapp.getDBPool();
 			
 			try { // start the whole page try block
 			
-			conn = pool.getConnection();
+			conn = ConnectionUtil.getConnection();
 			searchEngine = new DDSearchEngine(conn, "", ctx);
 			
 			String attr_name = null;

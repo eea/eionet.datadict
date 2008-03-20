@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
@@ -9,16 +9,13 @@
 	request.setCharacterEncoding("UTF-8");
 	
 	ServletContext ctx = getServletContext();			
-	String appName = ctx.getInitParameter("application-name");
 	
 	Connection conn = null;
-	XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-	DBPoolIF pool = xdbapp.getDBPool();
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 
 	try { // start the whole page try block
 	
-	conn = pool.getConnection();
+	conn = ConnectionUtil.getConnection();
 
 	String short_name = request.getParameter("short_name");
 	String idfier = request.getParameter("idfier");

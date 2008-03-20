@@ -6,7 +6,6 @@ import java.util.*;
 import javax.servlet.ServletContext;
 
 import com.tee.util.*;
-import com.tee.xmlserver.AppUserIF;
 
 import eionet.meta.notif.*;
 import eionet.meta.savers.*;
@@ -25,7 +24,7 @@ public class VersionManager{
     
     private Connection conn = null;
     private DDSearchEngine searchEngine = null;
-    private AppUserIF user = null;
+    private DDUser user = null;
     private boolean upwardsVersioning = false;
 	private boolean versionUpdate = false;
     
@@ -39,15 +38,14 @@ public class VersionManager{
     /**
     *
     */
-    public VersionManager(Connection conn, AppUserIF user){
+    public VersionManager(Connection conn, DDUser user){
         this(conn, new DDSearchEngine(conn), user);
     }
     
     /**
     *
     */
-    public VersionManager(Connection conn, DDSearchEngine searchEngine,
-                                AppUserIF user){
+    public VersionManager(Connection conn, DDSearchEngine searchEngine, DDUser user){
         this();
         this.conn = conn;
         this.user = user;
@@ -1094,25 +1092,4 @@ public class VersionManager{
 	public Parameters getServlRequestParams(){
 		return this.servlRequestParams;
 	}
-	
-    /**
-    * main for testing
-    */
-    public static void main(String[] args){
-        
-        try{
-//            Class.forName("com.mysql.jdbc.Driver");
-//            Connection conn =
-//            DriverManager.getConnection(
-//            		"jdbc:mysql://192.168.10.15:3306/DataDict", "dduser", "xxx");
-//                
-//            AppUserIF user = new TestUser(false);
-//            user.authenticate("heinlja", "mi6");
-//            
-//			VersionManager verMan = new VersionManager(conn, user);
-        }
-        catch (Exception e){
-            System.out.println(e.toString());
-        }
-    }
 }

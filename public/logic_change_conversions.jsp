@@ -1,13 +1,10 @@
 <%@page contentType="text/plain"%>
-<%@ page import="java.sql.*,java.io.*,com.tee.xmlserver.*,eionet.util.LogicChangeConversions" %>
+<%@ page import="java.sql.*,java.io.*,eionet.util.sql.ConnectionUtil,eionet.util.LogicChangeConversions" %>
 <%
 Connection conn = null;
 PrintWriter writer = null;
 try{
-	XDBApplication.getInstance(getServletContext());
-	DBPoolIF pool = XDBApplication.getDBPool();
-	conn = pool.getConnection();
-	//conn = LogicChangeConversions.getTestConnection();
+	conn = ConnectionUtil.getConnection();
 	writer = response.getWriter();
 	
 	LogicChangeConversions logicChangeConversions = new LogicChangeConversions(conn, writer);

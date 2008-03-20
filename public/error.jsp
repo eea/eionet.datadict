@@ -1,11 +1,10 @@
-<%@page contentType="text/html;charset=UTF-8" import="com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.DDUser"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
 	request.setCharacterEncoding("UTF-8");
 	
-	XDBApplication.getInstance(getServletContext());
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	
 	String bodyClass = request.getParameter("class");
 	boolean isPopup = bodyClass!=null && bodyClass.equals("popup");

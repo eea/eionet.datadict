@@ -11,8 +11,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import com.tee.xmlserver.*;
-
+import eionet.meta.DDUser;
 import eionet.util.*;
 
 import org.apache.xmlrpc.XmlRpcClient;
@@ -90,7 +89,7 @@ public class Subscribe extends HttpServlet{
 	        req.getSession().removeAttribute("SUCCESS"); 
 	        
 	        // get user object from session
-			AppUserIF user = SecurityUtil.getUser(req);
+			DDUser user = SecurityUtil.getUser(req);
 			// if no user object found, it means the user's session has
 			// expired, so we refresh subscribe.jsp which enables login then
 			if (user==null)

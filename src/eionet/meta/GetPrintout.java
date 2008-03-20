@@ -7,13 +7,16 @@ import java.io.*;
 import java.sql.*;
 
 import eionet.util.*;
+import eionet.util.sql.ConnectionUtil;
 import eionet.meta.exports.*;
 import eionet.meta.exports.pdf.*;
 import eionet.meta.savers.Parameters;
 
-import com.tee.xmlserver.XDBApplication;
-import com.tee.xmlserver.DBPoolIF;
-
+/**
+ * 
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ *
+ */
 public class GetPrintout extends HttpServlet {
 	
 	public static final String PDF_LOGO_PATH = "images/pdf_logo.png";
@@ -23,11 +26,8 @@ public class GetPrintout extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse res)
                                 throws ServletException, IOException {
 
-        // get the servlet context and db-pool name
+        // get the servlet context
         ServletContext ctx = getServletContext();
-        String appName = ctx.getInitParameter("application-name");
-        if (Util.voidStr(appName))
-            throw new ServletException("Application name not specified!");
         
         String userAgent = req.getHeader("User-Agent");
         if (!Util.voidStr(userAgent))
@@ -66,15 +66,9 @@ public class GetPrintout extends HttpServlet {
 		String cachePath = Props.getProperty(PropsIF.DOC_PATH);
         
         Connection conn = null;
-        
-        // get to the business
         try{
-            // get database connection
-            
-	        // JH 300603 - getting the DB pool through XmlServer
-            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-            DBPoolIF pool = XDBApplication.getDBPool();            
-            conn = pool.getConnection();
+	        // get the DB connection
+        	conn = ConnectionUtil.getConnection();
     	
     	    // set up the OutputStream to write to
     	    ByteArrayOutputStream barray = new ByteArrayOutputStream();

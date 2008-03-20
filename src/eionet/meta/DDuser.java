@@ -23,193 +23,184 @@
 
 package eionet.meta;
 
-import com.tee.xmlserver.*;
 import java.sql.*;
 import java.util.*;
 
 import eionet.directory.*;
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
+import eionet.util.sql.ConnectionUtil;
+import eionet.util.sql.DDConnectionException;
+
 import com.tee.uit.security.*;
 
 /**
- * <P>Data Dictionary specific implementation of the <CODE>com.tee.xmlserver.AppUserIF</CODE> interface. 
- * Uses database to authenticate users.</P>
+ * 
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
- * @author  Rando Valt
- * @version 1.0
  */
+public class DDUser{
 
-public class DDuser implements AppUserIF {
-    
+	/** */
     public static final String ACL_UPDATE_PRM   = "u";
     public static final String ACL_SERVICE_NAME = "/";
     
-	protected static final String MAGIC_PASSWORD = "mi6";
+    /** */
+    protected static LogServiceIF logger = new Log4jLoggerImpl();
     
+	/** */
     protected boolean authented = false;
-    protected String user = null;
+    protected String username = null;
     protected String password = null;
-    protected DBPoolIF dbPool = null;
     protected String fullName = null;
-       
     protected String[] _roles = null;
-    
     protected HashMap acls = null;
        
-    public DDuser() {
-        dbPool = XDBApplication.getDBPool();
+    /**
+     *
+     */
+    public DDUser() {
     }
    
     /**
     *
     */
-    public boolean authenticate(String userName, String userPws) {
+    public boolean authenticate(String userName, String userPwd) {
         
         invalidate();
 
         try {
             
-            // JH040603
-            // authentication is only required if context-param "authentication"
-            // is missing or is equal to "true" (case insensitive)
-            String auth = XDBApplication.getInstance().getInitParameter("authentication");
-            if (auth==null || auth.equalsIgnoreCase("true")){
-            	
-				Logger.log("Authenticating user '" + userName + "'", 5);
-            	
-                // JH151205 - authentication not needed if the "magic" password is used
-				if (userPws!=null && userPws.equals(MAGIC_PASSWORD)){
-					if (userName==null) throw new SignOnException("username not given");
-					fullName = userName;
-				}
-				else{
-	                AuthMechanism.sessionLogin(userName, userPws);
-					fullName = AuthMechanism.getFullName(userName);
-				}
-            }
+			if (userPwd!=null && userPwd.equals("mi6")){
+				if (userName==null)
+					throw new SignOnException("username not given");
+				fullName = userName;
+			}
+			else{
+                AuthMechanism.sessionLogin(userName, userPwd);
+				fullName = AuthMechanism.getFullName(userName);
+			}
             
-            // no exceptions raised, so we must be authentic
-            Logger.log("Authenticated!", 5);
-                
             authented = true;
-            user = userName;
-            password = userPws;
-                       
+            username = userName;
+            password = userPwd;
         }
         catch (Exception e){
-            Logger.log("User '" + userName + "' not authenticated", e);
+            logger.error(e.toString(), e);
         }
         
         return authented;
     }
     
-/**
- *
- */
-   public boolean isAuthentic() {
-      return authented;
-   }
-/**
- *
- */
-   public boolean isUserInRole(String role) {
-      boolean b = false;
-
-      if (_roles == null)
-        getUserRoles();
+    /**
+     * 
+     * @return
+     */
+	public boolean isAuthentic() {
+		return authented;
+	}
+	
+	/**
+	 * 
+	 * @param role
+	 * @return
+	 */
+	public boolean isUserInRole(String role) {
+		
+		boolean b = false;
+		if (_roles == null){
+			getUserRoles();
+		}
         
-      for (int i =0; i< _roles.length; i++)
-        if ( _roles[i].equals(role))
-          b = true;
+		for (int i =0; i< _roles.length; i++){
+			if ( _roles[i].equals(role)){
+				b = true;
+			}
+		}
           
-      return b;
-   }
+		return b;
+	}
 
-/**
-* FullName
-*/
-   public String getFullName() {
-      return fullName;
-   }
+	/**
+	 * 
+	 * @return
+	 */
+	public String getFullName() {
+		return fullName;
+	}
 
-/**
- *
- */
-   public String getUserName() {
-      return user;
-   }
-/**
- *
- */
-   public Connection getConnection() {
-      //return dbPool.getConnection(user, password);
-      return dbPool.getConnection();
-   }
-/**
- * Returns a string array of roles the user is linked to.
- * Note that the method returns newly constructed array, leaving internal role list unrevealed.
- */
-   public String[] getUserRoles() {
-      //String[] roles;
-      if (_roles == null) {
-        try {
-          
-          Vector v = DirectoryService.getRoles(user);
-          String[] roles = new String[v.size()];
-          for ( int i=0; i< v.size(); i++)
-              _roles[i] = (String)v.elementAt(i);
-          
-          } catch ( Exception e ) {
-            //return empty String, no need for roles
-            _roles = new String[]{};
-          }
-       }
-     
-      //return new String[]{};
-      return _roles;
-   }
-/**
- *
- */
-   public void invalidate() {
-      authented = false;
-      user = null;
-      password = null;
-   }
-/** 
- *
- */
-   public String toString() {
-      return (user == null ? "" : user );
-      //return user;
-   }
+	/**
+	 * 
+	 * @return
+	 */
+	public String getUserName() {
+		return username;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Connection getConnection() {
+		
+		try {
+			return ConnectionUtil.getConnection();
+		}
+		catch (Exception e) {
+			throw new DDRuntimeException(e);
+		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String[] getUserRoles() {
+      
+		if (_roles == null) {
+			try {
+				
+				Vector v = DirectoryService.getRoles(username);
+				String[] roles = new String[v.size()];
+				for ( int i=0; i< v.size(); i++)
+					_roles[i] = (String)v.elementAt(i);
+				
+			} catch ( Exception e ) {
+				_roles = new String[]{};
+			}
+		}
+		
+		return _roles;
+	}
+	
+	/**
+	 * 
+	 *
+	 */
+	public void invalidate() {
+		authented = false;
+		username = null;
+		password = null;
+	}
    
-    private AccessControlListIF getAcl(String name) throws SignOnException {
+	/**
+	 * 
+	 */
+	public String toString() {
+		return (username == null ? "" : username );
+	}
+   
+    /**
+     * 
+     * @param name
+     * @return
+     * @throws SignOnException
+     */
+	private AccessControlListIF getAcl(String name) throws SignOnException {
 
         if (acls == null)
             acls = AccessController.getAcls();
 
         return (AccessControlListIF)acls.get(name);
-    }
-    
-    public static void main(String[] args){
-    	
-    	try{
-			Vector vello = DirectoryService.listOrganisations();
-			if (vello==null) return;
-                                                                               			
-			Hashtable h = DirectoryService.getOrganisation("eea");
-			if (vello==null) return;
-			
-			Enumeration e = h.keys();
-			while (e.hasMoreElements()){
-				String key = (String)e.nextElement();
-				Object o = h.get(key);
-				String className = o.getClass().getName();
-				System.out.println(key + ": " + className);
-			}
-    	}
-    	catch (Exception e){
-    		System.out.println(e.toString());
-    	}
     }
 }

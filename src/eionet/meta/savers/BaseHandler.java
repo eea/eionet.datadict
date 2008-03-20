@@ -11,7 +11,6 @@ import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
 
 import com.tee.util.Util;
-import com.tee.xmlserver.AppUserIF;
 import eionet.util.DbTransactionPolite;
 
 /**
@@ -26,7 +25,7 @@ public abstract class BaseHandler {
 	protected HttpServletRequest httpServletRequest = null;
 	
 	/** */
-	protected AppUserIF user = null;
+	protected DDUser user = null;
 	protected static LogServiceIF logger = new Log4jLoggerImpl();
 
 	/**

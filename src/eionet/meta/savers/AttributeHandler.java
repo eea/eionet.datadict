@@ -4,12 +4,13 @@ import java.util.*;
 import java.sql.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
+
+import eionet.meta.DDUser;
 import eionet.meta.DElemAttribute;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 import com.tee.util.*;
-import com.tee.xmlserver.AppUserIF;
 import com.tee.uit.security.*;
 
 public class AttributeHandler extends BaseHandler {
@@ -494,7 +495,7 @@ public class AttributeHandler extends BaseHandler {
         return String.valueOf(k);
     }
     
-	public void setUser(AppUserIF user){
+	public void setUser(DDUser user){
 		this.user = user;
 	}
 

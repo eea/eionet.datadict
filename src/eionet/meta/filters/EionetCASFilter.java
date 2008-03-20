@@ -16,10 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.tee.xmlserver.AppUserIF;
-import com.tee.xmlserver.XDBApplication;
-
 import edu.yale.its.tp.cas.client.filter.CASFilter;
+import eionet.meta.DDUser;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
 import eionet.util.SecurityUtil;
@@ -60,7 +58,7 @@ public class EionetCASFilter extends CASFilter {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpSession session = httpRequest.getSession();
 			if (session != null && session.getAttribute(SecurityUtil.REMOTEUSER) == null) {
-				AppUserIF user = XDBApplication.getAuthenticator();
+				DDUser user = new DDUser();
 				String userName = (String) session.getAttribute(CAS_FILTER_USER);
 				user.authenticate(userName, null);
 				session.setAttribute(SecurityUtil.REMOTEUSER, user);

@@ -14,13 +14,19 @@ import eionet.meta.exports.pdf.*;
 import eionet.meta.exports.xls.*;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.sql.ConnectionUtil;
+import eionet.util.sql.DDConnectionException;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 import com.tee.util.Util;
-import com.tee.xmlserver.*;
 import com.tee.uit.security.*;
 
+/**
+ * 
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ *
+ */
 public class CacheServlet extends HttpServlet {
 	
 	public static final String KEY_ARTICLE  = "article";
@@ -240,13 +246,18 @@ public class CacheServlet extends HttpServlet {
 		objTypes.put("elm", "element");
 	}
 	
-	private Connection getConnection(HttpServletRequest req){
+	/**
+	 * 
+	 * @param req
+	 * @return
+	 * @throws DDConnectionException
+	 * @throws SQLException
+	 */
+	private Connection getConnection(HttpServletRequest req) throws DDConnectionException, SQLException{
 		
 		Connection conn = (Connection)req.getAttribute("connection");
 		if (conn==null){
-			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-			DBPoolIF pool = XDBApplication.getDBPool();            
-			conn = pool.getConnection();
+			conn = ConnectionUtil.getConnection();
 		}
 		
 		return conn;

@@ -8,8 +8,10 @@ import java.sql.*;
 
 import eionet.meta.exports.schema.*;
 import eionet.util.*;
+import eionet.util.sql.ConnectionUtil;
 import eionet.meta.DDSearchEngine;
-import com.tee.xmlserver.*;
+import eionet.meta.DDUser;
+
 import com.tee.uit.security.*;
 
 public class XmlInstServlet extends HttpServlet {
@@ -33,12 +35,9 @@ public class XmlInstServlet extends HttpServlet {
 			if (Util.voidStr(type)) throw new Exception("Missing type!");
 	        
 	        ServletContext ctx = getServletContext();
-	        String appName = ctx.getInitParameter("application-name");
 
-            // JH 300603 - getting the DB pool through XmlServer
-            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-            DBPoolIF pool = XDBApplication.getDBPool();            
-            conn = pool.getConnection();
+            // get the DB connection
+	        conn = ConnectionUtil.getConnection();
                 
 	        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			res.setContentType("text/xml; charset=UTF-8");
@@ -80,7 +79,7 @@ public class XmlInstServlet extends HttpServlet {
     
     private void guard(HttpServletRequest req) throws Exception{
     	
-		AppUserIF user = SecurityUtil.getUser(req);
+    	DDUser user = SecurityUtil.getUser(req);
 		if (user==null) throw new Exception("Not logged in!");
 		
 		if (!SecurityUtil.hasPerm(user.getUserName(), "/", "xmli"))

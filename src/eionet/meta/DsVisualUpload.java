@@ -8,12 +8,12 @@ import java.net.*;
 import java.sql.*;
 
 import com.tee.util.Util;
-import com.tee.xmlserver.*;
 
 import eionet.meta.savers.*;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+import eionet.util.sql.ConnectionUtil;
 
 public class DsVisualUpload extends HttpServlet {
 
@@ -35,7 +35,7 @@ public class DsVisualUpload extends HttpServlet {
 		Connection conn = null;
         
         // authenticate user
-        AppUserIF user = SecurityUtil.getUser(req);
+		DDUser user = SecurityUtil.getUser(req);
 
         if (user == null)
             throw new ServletException("User not authenticated!");
@@ -50,10 +50,6 @@ public class DsVisualUpload extends HttpServlet {
             
         String dsVisual = req.getParameter("visual");
 
-        String appName = ctx.getInitParameter("application-name");
-        if (Util.nullString(appName))
-            throw new ServletException("Application name in servlet conf is not specified!");
-        
         // get the file's physical path        
         String filePath = Props.getProperty(PropsIF.VISUALS_PATH);
         if (filePath == null)
@@ -73,10 +69,7 @@ public class DsVisualUpload extends HttpServlet {
             pars.addParameterValue("str_type", strType);
             
             try{
-                // JH 300603 - getting the DB pool through XmlServer
-                XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-                DBPoolIF pool = XDBApplication.getDBPool();            
-                conn = pool.getConnection();
+                conn = ConnectionUtil.getConnection();
                 
                 DatasetHandler dsHandler = new DatasetHandler(conn, pars, ctx);
                 dsHandler.execute();
@@ -204,11 +197,7 @@ public class DsVisualUpload extends HttpServlet {
             //if (i == -1) i = 0;
             pars.addParameterValue("visual", newFileName.substring(i+1, newFileName.length()));
             
-            // JH 300603 - getting the DB pool through XmlServer
-            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-            DBPoolIF pool = XDBApplication.getDBPool();            
-            conn = pool.getConnection();
-                
+            conn = ConnectionUtil.getConnection();
             DatasetHandler dsHandler = new DatasetHandler(conn, pars, ctx);
             dsHandler.execute();
         }

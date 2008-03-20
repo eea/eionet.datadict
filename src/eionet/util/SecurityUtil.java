@@ -24,8 +24,11 @@
 package eionet.util;
 
 import javax.servlet.http.*;
-import com.tee.xmlserver.*;
 import com.tee.uit.security.*;
+
+import eionet.meta.DDRuntimeException;
+import eionet.meta.DDUser;
+
 import java.util.*; 
 
 /**
@@ -42,20 +45,15 @@ public class SecurityUtil {
     * Returns current user, or 'null', if the current session
     * does not have user attached to it.
     */
-    public static final AppUserIF getUser(HttpServletRequest servReq) {
+    public static final DDUser getUser(HttpServletRequest servReq) {
         
-        AppUserIF user = null;
+    	DDUser user = null;
               
         HttpSession httpSession = servReq.getSession(false);
         if (httpSession != null) {
-            user = (AppUserIF)httpSession.getAttribute(REMOTEUSER);
+            user = (DDUser)httpSession.getAttribute(REMOTEUSER);
         }
         
-        // DBG
-        if (Logger.enable(5))
-            Logger.log("getUser: session=" + httpSession + " user=" + user + " isAuthentic=" + 
-                    (user != null && user.isAuthentic() ? "true" : "false"));
-        //
         if (user != null)
             return user.isAuthentic() ? user : null;
         else 
@@ -67,17 +65,13 @@ public class SecurityUtil {
     * This method will be called anly by login servlet (<CODE>eionet.meta.LoginServlet</CODE>).
     * Throws GeneralException, if the passed user object is not authenticated.
     */
-    public static final AppUserIF allocSession(HttpServletRequest servReq, AppUserIF user) {
+    public static final DDUser allocSession(HttpServletRequest servReq, DDUser user) {
+    	
         HttpSession httpSession = servReq.getSession(true);
-        if (user.isAuthentic() == true) {
-            // DBG
-            if (Logger.enable(5))
-                Logger.log("allocSession: session=" + httpSession + " user=" + user);
-            //
+        if (user.isAuthentic())
             httpSession.setAttribute(REMOTEUSER, user);
-        }
         else
-            throw new GeneralException(null, "Attempted to store unauthorised user");
+            throw new DDRuntimeException("Attempted to store unauthorised user");
                 
         return user;
     }
@@ -88,15 +82,12 @@ public class SecurityUtil {
     public static final void freeSession(HttpServletRequest servReq) {
         HttpSession httpSession = servReq.getSession(false);
         if (httpSession != null) {
-            AppUserIF user = (AppUserIF)httpSession.getAttribute(REMOTEUSER);
+            DDUser user = (DDUser)httpSession.getAttribute(REMOTEUSER);
             if (user != null){
             	user.invalidate();
             	httpSession.removeAttribute(REMOTEUSER);
             }
                 
-            if (Logger.enable(5))
-            	Logger.log("freeSession: session=" + httpSession + " user=" + user);
-            
 	        httpSession.invalidate();
         }
     }

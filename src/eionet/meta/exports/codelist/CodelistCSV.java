@@ -89,25 +89,4 @@ public class CodelistCSV extends Codelist{
 		if (lines==null || lines.size()==0)
 			lines.add("No codelists found!");
 	}
-	
-	/**
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args){
-		
-		try{
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn =
-				DriverManager.getConnection(
-			"jdbc:mysql://195.250.186.33:3306/dd", "dduser", "xxx");
-			
-			CodelistCSV codelist = new CodelistCSV(conn, null, ",");
-			codelist.write("2440", TBL);
-			codelist.flush();
-		}
-		catch (Exception e){
-			e.printStackTrace(System.out);
-		}
-	}
 }

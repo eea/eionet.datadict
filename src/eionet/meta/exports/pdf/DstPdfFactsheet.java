@@ -157,37 +157,14 @@ public class DstPdfFactsheet extends PdfHandout {
         // set the factsheet header
         setHeader("dataset factsheet");
     }
-    
+
+    /**
+     * 
+     */
     protected boolean keepOnOnePage(int index){
         if (index == vsTableIndex)
             return true;
         else
             return false;
-    }
-    
-    public static void main(String[] args){
-        
-        String id = "";
-        
-        if (args!=null && args.length > 0)
-            id = args[0];
-        
-        try{
-            Class.forName("org.gjt.mm.mysql.Driver");
-            Connection conn =
-            //DriverManager.getConnection("jdbc:mysql://localhost:3306/DataDict", "dduser", "xxx");
-            DriverManager.getConnection("jdbc:mysql://195.250.186.16:3306/DataDict", "dduser", "xxx");
-
-            String fileName = "x:\\projects\\datadict\\tmp\\ds_test.pdf";
-            DstPdfFactsheet factsheet = new DstPdfFactsheet(conn, new FileOutputStream(fileName));
-            factsheet.setVsPath("x:\\projects\\datadict\\visuals");
-            factsheet.setLogo("x:\\projects\\datadict\\images\\pdf_logo.png");
-            factsheet.write(id);
-            factsheet.flush();
-        }
-        catch (Exception e){
-            System.out.println(e.toString());
-            e.printStackTrace();
-        }
     }
 }

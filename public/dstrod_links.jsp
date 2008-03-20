@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,com.tee.xmlserver.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String SUBMIT_ADD_NEW = "Add new";%>
@@ -30,7 +30,7 @@ response.setDateHeader("Expires", 0);
 Connection conn = null;
 try{
 	// check if the user exists
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	if (user == null)
 		throw new Exception("Not authenticated!");
 	
@@ -51,8 +51,7 @@ try{
 	
 	// init connection
 	ServletContext ctx = getServletContext();
-	XDBApplication xdbapp = XDBApplication.getInstance(ctx);
-	conn = xdbapp.getDBPool().getConnection();
+	conn = ConnectionUtil.getConnection();
 	
 	// handle the POST
 	if (request.getMethod().equals("POST")){

@@ -10,8 +10,8 @@ import java.util.HashSet;
 import eionet.meta.exports.*;
 import eionet.meta.exports.schema.*;
 import eionet.util.*;
+import eionet.util.sql.ConnectionUtil;
 import eionet.meta.DDSearchEngine;
-import com.tee.xmlserver.*;
 import com.tee.uit.security.*;
 
 public class XlsServlet extends HttpServlet {
@@ -43,13 +43,10 @@ public class XlsServlet extends HttpServlet {
 				throw new Exception("Missing object type or object type invalid!");
 	        
 	        ServletContext ctx = getServletContext();
-	        String appName = ctx.getInitParameter("application-name");
 			String cachePath = Props.getProperty(PropsIF.DOC_PATH);
 
-            // JH 300603 - getting the DB pool through XmlServer
-            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-            DBPoolIF pool = XDBApplication.getDBPool();            
-            conn = pool.getConnection();
+            // get the DB connection
+			conn = ConnectionUtil.getConnection();
                 
 	        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
             os = res.getOutputStream();

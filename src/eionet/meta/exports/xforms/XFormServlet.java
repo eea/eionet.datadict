@@ -8,9 +8,8 @@ import java.sql.*;
 
 import eionet.meta.exports.schema.*;
 import eionet.util.*;
+import eionet.util.sql.ConnectionUtil;
 import eionet.meta.DDSearchEngine;
-
-import com.tee.xmlserver.*;
 
 public class XFormServlet extends HttpServlet {
 	
@@ -34,11 +33,8 @@ public class XFormServlet extends HttpServlet {
 			if (Util.voidStr(template)) throw new Exception("Missing template path!");
 	        
 			ServletContext ctx = getServletContext();
-			String appName = ctx.getInitParameter("application-name");
 
-			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-			DBPoolIF pool = XDBApplication.getDBPool();            
-			conn = pool.getConnection();
+			conn = ConnectionUtil.getConnection();
                 
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 			res.setContentType("text/xml; charset=UTF-8");

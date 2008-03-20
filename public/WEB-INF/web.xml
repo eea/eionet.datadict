@@ -14,26 +14,6 @@
 	</context-param>
 
 	<context-param>
-		<param-name>log-level</param-name>
-		<param-value>3</param-value>
-	</context-param>
-
-	<context-param>
-		<param-name>module-cache</param-name>
-		<param-value>com.tee.xmlserver.tomcat.TCCache</param-value>
-	</context-param>
-
-	<context-param>
-		<param-name>module-db_pool</param-name>
-		<param-value>com.tee.xmlserver.tomcat.TCDBPool</param-value>
-	</context-param>
-
-	<context-param>
-		<param-name>authenticator</param-name>
-		<param-value>eionet.meta.DDCASuser</param-value>
-	</context-param>
-
-	<context-param>
 		<param-name>login-error-page</param-name>
 		<param-value>error.html</param-value>
 	</context-param>

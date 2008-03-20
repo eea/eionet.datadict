@@ -8,9 +8,13 @@ import java.sql.*;
 
 import eionet.meta.exports.schema.*;
 import eionet.util.Util;
+import eionet.util.sql.ConnectionUtil;
 
-import com.tee.xmlserver.*;
-
+/**
+ * 
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ *
+ */
 public class GetSchema extends HttpServlet {
     
     public static final String DST = "DST"; 
@@ -49,12 +53,9 @@ public class GetSchema extends HttpServlet {
 			servletPath!=null && servletPath.trim().startsWith("/GetContainerSchema");
 	        
 	        ServletContext ctx = getServletContext();
-	        String appName = ctx.getInitParameter("application-name");
 
-            // JH 300603 - getting the DB pool through XmlServer
-            XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-            DBPoolIF pool = XDBApplication.getDBPool();            
-            conn = pool.getConnection();
+            // get the DB connection
+	        conn = ConnectionUtil.getConnection();
                 
 	        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 	        res.setContentType("text/xml; charset=UTF-8");

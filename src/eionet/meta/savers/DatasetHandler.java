@@ -8,8 +8,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.tee.util.*;
-import com.tee.xmlserver.*;
 
+import eionet.meta.DDUser;
 import eionet.meta.TestUser;
 import eionet.meta.VersionManager;
 import eionet.meta.Dataset;
@@ -76,7 +76,7 @@ public class DatasetHandler extends BaseHandler {
         this.mode = mode;
     }
     
-    public void setUser(AppUserIF user){
+    public void setUser(DDUser user){
         this.user = user;
     }
     
@@ -899,40 +899,5 @@ public class DatasetHandler extends BaseHandler {
      */
     public void setUseForce(boolean useForce) {
 		this.useForce = useForce;
-	}
-    
-    /**
-     * 
-     * @param args
-     */
-    public static void main(String[] args){
-        
-        try{
-        	
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection conn =
-                DriverManager.getConnection("jdbc:mysql://192.168.10.15:3306/jaanusDD",
-                		"dduser", "xxx");
-            
-//            AppUserIF testUser = new TestUser();
-//            testUser.authenticate("jaanus", "jaanus");
-//
-//            Parameters pars = new Parameters();
-//            pars.addParameterValue("mode", "delete");
-//			pars.addParameterValue("complete", "true");
-//						
-//            pars.addParameterValue("ds_id", "1437");
-//			pars.addParameterValue("ds_id", "1431");
-//			pars.addParameterValue("ds_id", "1430");
-//            
-//            DatasetHandler handler = new DatasetHandler(conn, pars, null);
-//            handler.setUser(testUser);
-//            handler.execute();
-       }
-        catch (Exception e){
-            System.out.println(e.toString());
-            e.printStackTrace(new PrintStream(System.out));
-        }
-        
-    }
+	}    
 }

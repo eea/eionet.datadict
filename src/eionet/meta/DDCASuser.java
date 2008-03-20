@@ -1,33 +1,40 @@
 package eionet.meta;
 
-import com.tee.xmlserver.*;
-
 import com.tee.uit.security.*;
 
-public class DDCASuser extends DDuser {
+/**
+ * 
+ * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
+ *
+ */
+public class DDCASuser extends DDUser {
 	
+	/**
+	 *
+	 */
 	public DDCASuser() {
-		   super();
-	   }
-	
-	
+		super();
+	}
+
+	/*
+	 *  (non-Javadoc)
+	 * @see eionet.meta.DDuser#authenticate(java.lang.String, java.lang.String)
+	 */
 	public boolean authenticate(String userName, String userPws) {
+		
 		invalidate();
 
-		// LOG
-		if (Logger.enable(5))
-			Logger.log("Create DD user '" + userName + "'");
 		try {
 			fullName = AuthMechanism.getFullName(userName);
-		} catch (SignOnException e) {
-			Logger.log("Fatal error: can not get full name for authaticated user", e);
+		}
+		catch (SignOnException e) {
+			logger.error("Fatal error: can not get full name for authaticated user", e);
 		}
 		//
 		authented = true;
-		user = userName;
+		username = userName;
 		password = userPws;
 
 		return authented;
 	}
-
 }

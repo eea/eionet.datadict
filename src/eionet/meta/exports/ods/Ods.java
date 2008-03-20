@@ -515,37 +515,4 @@ public abstract class Ods {
         
         return time;
 	}
-
-	/**
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args){
-		
-		Connection conn = null;
-		try{
-	        Class.forName("com.mysql.jdbc.Driver");
-	        conn = DriverManager.getConnection(
-				"jdbc:mysql://192.168.10.15:3306/DataDict?useUnicode=true&characterEncoding=UTF-8",
-				"root",
-				"ABr00t");
-	
-			DDSearchEngine searchEngine = new DDSearchEngine(conn);
-	        Ods ods = new DstOds(searchEngine, "2444");
-	        ods.setWorkingFolderPath("D:\\projects\\datadict\\opendoc\\ods\\tmp");
-	        ods.processContent();
-	        
-	        System.out.println("done");
-		}
-		catch (Throwable e){
-			e.printStackTrace(System.out);
-		}
-		finally{
-			try{
-				if (conn!=null) conn.close();
-			}
-			catch (Exception sqle){				
-			}
-		}
-	}
 }

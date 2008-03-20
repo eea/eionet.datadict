@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.LinkedHashMap;
 
-import eionet.test.MockDbPool;
-
 import junit.framework.TestCase;
 
 /**
@@ -31,14 +29,14 @@ public class SQLTest extends TestCase{
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try{
-			conn = (new MockDbPool()).getConnection();
+			conn = ConnectionUtil.getSimpleConnection();
 			assertNotNull(conn);
 			
 			stmt = SQL.preparedStatement(SQL.insertStatement("TBL1", hash), inParams, conn);
 			assertNotNull(stmt);
 		}
-		catch (SQLException e){
-			fail("Was not expecting " + SQLException.class.getName());
+		catch (Exception e){
+			fail("Was not expecting this exception: " + e.getClass().getName());
 		}
 		finally{
 			try{				

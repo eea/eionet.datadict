@@ -9,8 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tee.xmlserver.DBPoolIF;
-import com.tee.xmlserver.XDBApplication;
+import eionet.util.sql.ConnectionUtil;
 
 /**
  * 
@@ -36,9 +35,7 @@ public class DbfServlet extends HttpServlet{
         try{
 
         	// init SQL connection
-			XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
-			DBPoolIF pool = XDBApplication.getDBPool();            
-			conn = pool.getConnection();
+			conn = ConnectionUtil.getConnection();
 			
 			// create DBF
 			Dbf dbf = new Dbf(pathInfo.substring(1), conn);

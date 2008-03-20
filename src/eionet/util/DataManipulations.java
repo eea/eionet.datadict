@@ -31,11 +31,11 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.tee.util.SQLGenerator;
-import com.tee.xmlserver.DBPoolIF;
-import com.tee.xmlserver.XDBApplication;
 
 import eionet.meta.savers.CopyHandler;
 import eionet.meta.savers.DataElementHandler;
+import eionet.util.sql.ConnectionUtil;
+import eionet.util.sql.DDConnectionException;
 
 /**
  * 
@@ -951,13 +951,10 @@ public class DataManipulations{
 	/**
 	 * 
 	 * @return
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
+	 * @throws DDConnectionException 
 	 */
-	public static Connection getTestConnection() throws ClassNotFoundException, SQLException{
-		Class.forName("com.mysql.jdbc.Driver");
-        return DriverManager.getConnection(
-			"jdbc:mysql://192.168.10.15:3306/jaanusdd?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&emptyStringsConvertToZero=false&jdbcCompliantTruncation=false", "dduser", "xxx");		
+	public static Connection getTestConnection() throws DDConnectionException{
+		return ConnectionUtil.getSimpleConnection();
 	}
 	
 	/**

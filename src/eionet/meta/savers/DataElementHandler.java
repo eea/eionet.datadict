@@ -11,7 +11,6 @@ import eionet.meta.*;
 import eionet.util.SecurityUtil;
 
 import com.tee.util.*;
-import com.tee.xmlserver.*;
 import com.tee.uit.security.*;
 
 public class DataElementHandler extends BaseHandler {
@@ -138,7 +137,7 @@ public class DataElementHandler extends BaseHandler {
         this.mode = mode;
     }
     
-    public void setUser(AppUserIF user){
+    public void setUser(DDUser user){
         this.user = user;
     }
     
@@ -1350,34 +1349,6 @@ public class DataElementHandler extends BaseHandler {
     		AccessController.removeAcl("/elements/" + (String)iter.next());
     	}		
     }
-
-	/**
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args){
-		Connection conn = null;
-		try{
-			Class.forName("org.gjt.mm.mysql.Driver");
-			conn =
-				DriverManager.getConnection("jdbc:mysql://192.168.10.15:3306/jaanusDD", "dduser", "xxx");
-
-			DataElementHandler.replaceID("16956", "16953", conn);
-	   }
-		catch (Exception e){
-			System.out.println(e.toString());
-			e.printStackTrace(new PrintStream(System.out));
-		}
-		finally{
-			if (conn!=null){
-				try{
-					conn.close();
-				}
-				catch (SQLException e){}
-			}
-		}
-        
-	}
 	
 	/**
 	 * @throws Exception 

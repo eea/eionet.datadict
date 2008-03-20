@@ -4,7 +4,6 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import com.tee.xmlserver.*;
 
 import eionet.util.SecurityUtil;
 import eionet.meta.filters.EionetCASFilter;
@@ -29,7 +28,7 @@ public class LogoutServlet extends HttpServlet {
         
 		req.setCharacterEncoding("UTF-8");
 		
-        AppUserIF user = SecurityUtil.getUser(req);
+		DDUser user = SecurityUtil.getUser(req);
         if (user != null)
             SecurityUtil.freeSession(req);
         

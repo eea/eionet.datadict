@@ -1,8 +1,8 @@
-<%@page import="eionet.util.SecurityUtil, com.tee.xmlserver.AppUserIF"%>
+<%@page import="eionet.util.SecurityUtil, eionet.meta.DDUser"%>
 
 <%
 boolean loggedIn = false;
-AppUserIF userProtarea = SecurityUtil.getUser(request);
+DDUser userProtarea = SecurityUtil.getUser(request);
 if (userProtarea!=null && userProtarea.isAuthentic()) loggedIn = true;
 %>
 

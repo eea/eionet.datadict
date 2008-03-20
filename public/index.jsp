@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,java.io.*,eionet.meta.*,com.tee.xmlserver.*,com.tee.uit.help.Helps,eionet.util.Util"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,java.io.*,eionet.meta.*,eionet.util.sql.ConnectionUtil,com.tee.uit.help.Helps,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!final static int MAX_DOCUMENTATION_ITEMS=5;%>
@@ -9,15 +9,12 @@
 request.setCharacterEncoding("UTF-8");
 
 Connection conn = null;
-DBPoolIF pool = null;
 ServletContext ctx = getServletContext();
-XDBApplication xdbapp = XDBApplication.getInstance(getServletContext());
 
 try{
-	pool = xdbapp.getDBPool();	
-	conn = pool.getConnection();
+	conn = ConnectionUtil.getConnection();
 	
-	AppUserIF user = SecurityUtil.getUser(request);
+	DDUser user = SecurityUtil.getUser(request);
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);	
 	searchEngine.setUser(user);
 	
