@@ -7,12 +7,12 @@ import com.tee.uit.security.*;
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class DDCASuser extends DDUser {
+public class DDCASUser extends DDUser {
 	
 	/**
 	 *
 	 */
-	public DDCASuser() {
+	public DDCASUser() {
 		super();
 	}
 

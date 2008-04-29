@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import edu.yale.its.tp.cas.client.filter.CASFilter;
+import eionet.meta.DDCASUser;
 import eionet.meta.DDUser;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
@@ -58,7 +59,7 @@ public class EionetCASFilter extends CASFilter {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpSession session = httpRequest.getSession();
 			if (session != null && session.getAttribute(SecurityUtil.REMOTEUSER) == null) {
-				DDUser user = new DDUser();
+				DDCASUser user = new DDCASUser();
 				String userName = (String) session.getAttribute(CAS_FILTER_USER);
 				user.authenticate(userName, null);
 				session.setAttribute(SecurityUtil.REMOTEUSER, user);
