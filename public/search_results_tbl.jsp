@@ -371,7 +371,7 @@
 								<%
 								// mark checked-out datasets
 								if (user!=null && workingUser!=null){ %>
-									<div title="<%=workingUser%>" style="color:red">*</div><%
+									<div title="<%=workingUser%>" class="checkedout">*</div><%
 			    				}
 			    				%>
 							</td>
@@ -455,7 +455,7 @@
 								<%
 								// mark checked-out datasets
 								if (user!=null && oEntry.workingUser!=null){ %>
-									<div title="<%=oEntry.workingUser%>" style="color:red">*</div><%
+									<div title="<%=oEntry.workingUser%>" class="checkedout">*</div><%
 			    				}
 			    				%>
 							</td>

@@ -34,7 +34,7 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 </head>
 
 
-<body">
+<body>
 
 <div id="container">
 <jsp:include page="nlocation.jsp" flush="true">
@@ -48,24 +48,24 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
 <h1>Upload document</h1>
 <p>
 This is a function enabling you to upload documents relevant to the given dataset.
-Data Dictionary recognizes the following document types: <b>doc, rtf, xls, ppt, mdb, zip, txt, html</b>.
+Data Dictionary recognises the following document types: <strong>doc, rtf, xls, ppt, mdb, zip, txt, html</strong>.
 However, you can upload any other types of files as well. Their type will simply be displayed as
-unknown. But whatever is the type of the file you upload, it can later be downloaded.
+unknown. But whatever the type of the file you upload, it can later be downloaded.
 </p>
 				
 <form id="form1" action="DocUpload" method="post" enctype="multipart/form-data">
 
-	<table width="660" cellspacing="0">
+	<table width="660">
 		<tr>
-			<td class="head0">Location:</td>
-			<td align="left">
-				<input type="file" name="file" size="40"/>
+			<td><label for="filefld" class="question required">Location</label></td>
+			<td>
+				<input type="file" name="file" id="filefld" size="40"/>
 			</td>
 		</tr>
 		<tr>
-			<td class="head0">Title:</td>
-			<td align="left">
-				<input type="text" class="smalltext" name="title" size="40"/><span style="font-size:0.7em">(if left empty, file name will serve as title)</span>
+			<td><label for="titlefld" class="question">Title</label></td>
+			<td>
+				<input type="text" name="title" id="titlefld" size="40"/><span style="font-size:0.7em">(if left empty, file name will serve as title)</span>
 			</td>
 		</tr>
 		<tr style="height:10px;"><td colspan="2"></td></tr>

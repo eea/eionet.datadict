@@ -106,6 +106,9 @@
 	vertical-align: middle;
 }
 
+.checkedout {
+	color: #A00000;
+}
 /*
 * Admonitions
 */

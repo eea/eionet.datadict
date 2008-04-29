@@ -171,18 +171,20 @@ private String setDefaultAttrs(String name){
 		<form id="form1" action="datasets.jsp" method="get">
 		<h1>Search datasets</h1>
 		<table width="600" cellspacing="0" style="padding-top:10px">
-		
-			<tr valign="top">
+			<col style="width: 14em"/>
+			<col style="width: 16px"/>
+			<col span="2"/>
+			<tr>
 				<td align="right">
-					<strong>RegistrationStatus</strong>
+					<label for="reg_status" class="question">Registration Status</label>
 				</td>
 				<td>
-					<a href="help.jsp?screen=dataset&area=regstatus" onclick="pop(this.href);return false;">
+					<a href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
 						<img style="border:0" src="images/info_icon.gif" alt="Help" width="16" height="16"/>
 					</a>
 				</td>
 				<td colspan="2">
-					<select name="reg_status" class="small">
+					<select name="reg_status" id="reg_status" class="small">
 						<option value="">All</option>
 						<option value="Released">Released</option>
 						<option value="Recorded">Recorded</option>
@@ -195,7 +197,7 @@ private String setDefaultAttrs(String name){
 								
 			<tr style="vertical-align:top">
 				<td align="right">
-					<b>Short name</b>
+					<label for="short_name" class="question">Short name</label>
 				</td>
 				<td>
 					<a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
@@ -203,13 +205,13 @@ private String setDefaultAttrs(String name){
 					</a>
 				</td>
 				<td colspan="2">
-					<input type="text" class="smalltext" size="59" name="short_name" value="<%=Util.replaceTags(short_name, true)%>"/>
+					<input type="text" class="smalltext" size="59" name="short_name" id="short_name" value="<%=Util.replaceTags(short_name, true)%>"/>
 				</td>
 			</tr>
 			
 			<tr style="vertical-align:top">
 				<td align="right">
-					<b>Identifier</b>
+					<label class="question">Identifier</label>
 				</td>
 				<td>
 					<a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
@@ -238,7 +240,7 @@ private String setDefaultAttrs(String name){
 						%>
 						<tr style="vertical-align:top">
 							<td align="right">
-								<b><%=Util.replaceTags(attrName)%></b>
+								<label class="question"><%=Util.replaceTags(attrName)%></label>
 							</td>
 							<td>
 								<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
@@ -270,7 +272,7 @@ private String setDefaultAttrs(String name){
 					%>
 					<tr style="vertical-align:top">
 						<td align="right">
-							<b><%=Util.replaceTags(attrName)%></b>
+							<label class="question"><%=Util.replaceTags(attrName)%></label>
 						</td>
 						<td>
 							<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
@@ -297,7 +299,7 @@ private String setDefaultAttrs(String name){
 					%>
 					<tr style="vertical-align:top">
 						<td align="right">
-							<b><%=Util.replaceTags(attrName)%></b>
+							<label class="question"><%=Util.replaceTags(attrName)%></label>
 						</td>
 						<td>
 							<a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
@@ -315,8 +317,8 @@ private String setDefaultAttrs(String name){
 				}
 			}
 			%>
-                <tr valign="bottom">
-            		<td style="width:150px" colspan="2">&nbsp;</td>
+                <tr>
+            		<td colspan="2">&nbsp;</td>
             		<td colspan="2">
             			<input type="radio" name="search_precision" id="ssubstr" value="substr" checked="checked"/><label for="ssubstr">Substring search</label>
             			<input type="radio" name="search_precision" id="sexact" value="exact"/><label for="sexact">Exact search</label>
@@ -328,20 +330,20 @@ private String setDefaultAttrs(String name){
 			if (user!=null && user.isAuthentic()){
 				%>
 				<tr style="vertical-align:top">
-					<td style="width:150px" colspan="2"></td>
+					<td colspan="2"></td>
 					<td colspan="2">
 						<input type="checkbox" name="wrk_copies" id="wrk_copies" value="true"/>
-						<label for="wrk_copies" class="smallfont" style="font-weight: normal">Working copies only</label>
+						<label for="wrk_copies" class="smallfont">Working copies only</label>
 					</td>
 				</tr>
 				<%
 			}
 			%>
 			<tr style="vertical-align:top">
-				<td style="width:150px" colspan="2"></td>
+				<td colspan="2"></td>
 				<td colspan="2">
 					<input type="checkbox" name="incl_histver" id="incl_histver" value="true"/>
-					<label for="incl_histver" class="smallfont" style="font-weight: normal">Include historic versions</label>
+					<label for="incl_histver" class="smallfont">Include historic versions</label>
 				</td>
 			</tr>
 			<tr style="vertical-align:top">

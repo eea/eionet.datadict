@@ -451,7 +451,7 @@
 		    				if (delPrm){
 		    					
 		    					if (topWorkingUser!=null){ // mark checked-out datasets
-			    					%> <font title="<%=Util.replaceTags(topWorkingUser, true)%>" color="red">*</font> <%
+			    					%> <span title="<%=Util.replaceTags(topWorkingUser, true)%>" class="checkedout">*</span> <%
 		    					}
 	    					
 		    					if (canDelete){ %>
@@ -483,7 +483,7 @@
 									<%=Util.replaceTags(table.getShortName())%>
 								<%
 								if (user!=null && tblWorkingUser!=null){ // mark checked-out elements
-									%>&nbsp;<font color="red">*</font> <%
+									%>&nbsp;<span class="checkedout">*</span> <%
 								}
 								%>
 								<br/><%

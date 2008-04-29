@@ -413,7 +413,7 @@ else{ %>
 							}
 							// mark checked-out elements
 							if (user!=null && workingUser!=null){ %>
-								<font title="<%=workingUser%>" color="red">*</font><%
+								<span title="<%=workingUser%>" class="checkedout">*</span><%
 		    				}
 		    				%>
 		    			</td>
@@ -480,7 +480,7 @@ else{ %>
 								}
 								// mark checked-out elements
 								if (user!=null && oEntry.workingUser!=null){ %>
-									<font title="<%=oEntry.workingUser%>" color="red">*</font><%
+									<span title="<%=oEntry.workingUser%>" class="checkedout">*</span><%
 			    				}
 								%>
 							</td>

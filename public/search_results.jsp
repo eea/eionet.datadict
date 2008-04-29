@@ -511,7 +511,7 @@ else{ %>
 							<%
 							// mark checked-out datasets
 							if (user!=null && dstWorkingUser!=null){ %>
-								<font title="<%=dstWorkingUser%>" color="red">*</font><%
+								<span title="<%=dstWorkingUser%>" class="checkedout">*</span><%
 		    				}
 		    				%>
 						</td>
@@ -585,7 +585,7 @@ else{ %>
 								<%
 								// mark checked-out datasets
 								if (user!=null && oEntry.dstWorkingUser!=null){ %>
-									<font title="<%=oEntry.dstWorkingUser%>" color="red">*</font><%
+									<span title="<%=oEntry.dstWorkingUser%>" class="attention">*</span><%
 			    				}
 			    				%>
 							</td>

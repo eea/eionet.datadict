@@ -548,7 +548,7 @@
 									countCheckboxes++;
 								}
 								else if (workingUser!=null){ %>
-									<div title="<%=Util.replaceTags(workingUser,true)%>" style="color:red">*</div><%
+									<div title="<%=Util.replaceTags(workingUser,true)%>" class="checkedout">*</div><%
 		    					}
 		    					else{ %>
 		    						&nbsp;<%
@@ -669,7 +669,7 @@
 										countCheckboxes++;
 									}
 			    					else if (oEntry.workingUser!=null){%>
-			    						<div title="<%=Util.replaceTags(oEntry.workingUser,true)%>" style="color:red">*</div><%
+			    						<div title="<%=Util.replaceTags(oEntry.workingUser,true)%>" class="checkedout">*</div><%
 			    					}
 									else{ %>
 										&nbsp;<%

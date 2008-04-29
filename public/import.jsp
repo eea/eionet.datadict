@@ -113,7 +113,7 @@
 		<%
 		if (mode.equals("FXV")){ %>
 			<p>
-					<span style="color:red">
+					<span class="attention">
 						You have chosen to import fixed values (i.e. codes)<br/> for the
 						<a href="data_element.jsp?mode=view&amp;delem_id=<%=delem_id%>"><%=Util.replaceTags(elmName)%></a> element!
 					</span>
@@ -123,20 +123,21 @@
 				
 				<form id="Upload" action="Import" method="post" enctype="multipart/form-data">
 
-				<table width="auto" cellspacing="0">
+				<table cellspacing="0">
 					<tr>
 						<td align="left" style="padding-right:5">
-							<input type="radio" name="fileORurl" value="file" checked="checked"/>&nbsp;File:</td>
+							<input type="radio" name="fileORurl" value="file" checked="checked"/>
+							 <label for="filefld" class="question">File</label></td>
 						<td align="left">
-							<input type="file" class="smalltext" name="file_input" size="40"/>
+							<input type="file" class="smalltext" id="filefld" name="file_input" size="40"/>
 						</td>
 					</tr>
 					<tr>
 						<td align="left" style="padding-right:5">
-							<input type="radio" class="smalltext" name="fileORurl" value="url"/>&nbsp;URL:
-						</td>
+							<input type="radio" class="smalltext" name="fileORurl" value="url"/>
+							<label for="urlfld" class="question">URL</label></td>
 						<td align="left">
-							<input type="text" class="smalltext" name="url_input" size="52"/>
+							<input type="text" class="smalltext" id="urlfld" name="url_input" size="52"/>
 						</td>
 					</tr>
 					<tr style="height:10px;"><td colspan="2"></td></tr>
@@ -147,13 +148,10 @@
 								<input name="SUBMIT" type="button" class="mediumbuttonb" value="Import" onclick="submitForm()" onkeypress="submitForm()"/>&nbsp;&nbsp;
 							<%}%>
 								<input name="RESET" type="reset" class="mediumbuttonb" value="Clear"/>
+								<input type="hidden" name="type" value="<%=mode%>"/>
 						</td>
 					</tr>
 				</table>
-				
-				<div style="display:none">
-					<input type="hidden" name="type" value="<%=mode%>"/>
-				</div>
 			</form>	
 </div> <!-- workarea -->
 </div> <!-- container -->
