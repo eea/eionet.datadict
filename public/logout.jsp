@@ -60,9 +60,9 @@ Vector commonElements=null;
 <%@ include file="nmenu.jsp" %>
 
 <div id="workarea">
-	<h2>Logging out</h2>	
-	<br/>
-	<p><strong>You have the following objects checked out:</strong></p>
+	<h1>Logging out</h1>	
+
+	<p class="advise-msg">You have the following objects checked out:</p>
 	<table class="datatable">
 		<tbody>
 			<% 			
@@ -137,11 +137,13 @@ Vector commonElements=null;
 		</tbody>
 	</table>
 	<br/>
-	<p class="caution">
-		NB!<br/>
+	<div class="note-msg">
+		<strong>Note</strong>
+		<p>
 		This is a reminder that you have the above objects checked out.<br/>
 		To complete the logout, click the button below.
-	</p>
+		</p>
+	</div>
 	<form id="form1" action="Logout" method="get">
 		<div>
 			<input type="submit" value="Logout" class="smallbutton"/>

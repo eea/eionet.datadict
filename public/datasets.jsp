@@ -356,10 +356,9 @@
 		
 			<%
 			if (user==null){ %>
-				<p>NB! Datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
+				<p class="advise-msg">Note: Datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
 		    }
 			%>
-			<br/>
 			<form id="form1" method="post" action="datasets.jsp" onsubmit="setLocation()">
 			<!-- the buttons part -->
 				<!-- update buttons -->

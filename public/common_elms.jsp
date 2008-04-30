@@ -254,13 +254,13 @@ else{ %>
 			
 			<%
 			if (user==null){ %>
-				<p>NB! Common elements NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
+				<p class="advise-msg">Note: Common elements NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
 		    }
 		    
 			if (searchType != null && searchType.equals(TYPE_SEARCH)){
         	    if (dataElements==null || dataElements.size()==0){
 	        	    %>
-	            	<b>No results matching the search criteria were found!</b>
+	            	<div class="system-msg">No results matching the search criteria were found!</div>
 	            	</div></body></html>
 	            	<%
 	            	return;

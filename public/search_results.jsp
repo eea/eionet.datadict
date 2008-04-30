@@ -290,6 +290,7 @@ else{ %>
 			<jsp:param name="helpscreen" value="elements"/>
 		</jsp:include>
     	<%@ include file="nmenu.jsp" %>
+		<div id="workarea">
 		<%
 }
             
@@ -299,15 +300,14 @@ else{ %>
         	    if (dataElements == null || dataElements.size()==0){
 	        	    
         	    	// prepare message trailer for un-authenticated users
-		    		String msgTrailer = user==null ? " for un-authenticated users" : "";
+		    		String msgTrailer = user==null ? " for unauthenticated users" : "";
 		    		%>
-        		    <h1>No element definitions matching the search criteria were found<%=Util.replaceTags(msgTrailer)%>!</h1>
+        		    <div class="error-msg">No element definitions matching the search criteria were found<%=Util.replaceTags(msgTrailer)%>!</div>
             		</div></body></html> <%
             		return;
         		}
             }
             %>
-		<div id="workarea">            
             
     		<%
     		if (popup){
@@ -326,8 +326,8 @@ else{ %>
 
 			<%
 			if (user==null){ %>
-				<p>
-					NB! Elements from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
+				<p class="advise-msg">
+					Note: Elements from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
 		        </p><%
 		    }
 			%>

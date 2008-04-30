@@ -176,8 +176,8 @@
 			<h1>Tables from latest versions of datasets in any status</h1>
 			<%
 			if (user==null){%>
-				<p>	
-					NB! Tables from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.<br/>
+				<p class="advise-msg">	
+					Note: Tables from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
 				</p><%
 		    }
 			%>

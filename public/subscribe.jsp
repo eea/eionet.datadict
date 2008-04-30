@@ -125,17 +125,16 @@ finally {
 		   		subscriptionsUrl = subscriptionsUrl + Props.getProperty(Subscribe.PROP_UNS_CHANNEL_NAME);
 		   		%>
 	   		
-				<p>
-			   		<strong>Note:</strong> This will make an additional subscription even if you have subscribed before.
+				<div class="note-msg">
+			   		<strong>Note</strong>
+					<p>This will make an additional subscription even if you have subscribed before.
 					To change or delete your existing subscriptions, go to the <a href="<%=subscriptionsUrl%>">Unified Notification Service (UNS)</a>.
-				</p>
-				<p>
-					<strong>My interests:</strong>
-				</p>
+					</p>
+				</div>
 				<%
 				if (user==null || !user.isAuthentic()){
 					%>
-					<p class="barfont">
+					<p class="advise-msg">
 						You are not authenticated!<br/>
 						Definitions whose Registration status
 						is not <em>Recorded</em> or <em>Released</em> are not listed for you!
@@ -143,6 +142,8 @@ finally {
 					<%
 				}
 				%>
+				<fieldset>
+					<legend>My interests:</legend>
 				<table>
 					<tr>
 						<td>&nbsp;</td>
@@ -162,14 +163,14 @@ finally {
 							<input type="checkbox" name="new_common_elems" id="new_common_elems"/><label for="new_common_elems">New common elements</label>
 						</td>
 					</tr>
-					<tr>
-						<td colspan="2">
-							Changes in:
-						</td>
-					</tr>
+					</table>
+				</fieldset>
+				<fieldset>
+					<legend>Changes in:</legend>
+				<table>
 					<tr>
 						<td>
-							<label for="dataset"><strong>Dataset:</strong></label>
+							<label for="dataset" class="question">Dataset:</label>
 						</td>
 						<td>
 							<%
@@ -199,7 +200,7 @@ finally {
 					</tr>
 					<tr>
 						<td>
-							<label for="table"><strong>Table:</strong></label>
+							<label for="table" class="question">Table:</label>
 						</td>
 						<td>
 							<%
@@ -236,7 +237,7 @@ finally {
 					</tr>
 					<tr>
 						<td>
-							<label for="common_element"><strong>Common element:</strong></label>
+							<label for="common_element" class="question">Common element:</label>
 						</td>
 						<td>
 							<%
@@ -266,7 +267,7 @@ finally {
 					</tr>
 					<tr>
 						<td>
-							<label for="reg_status"><strong>Registration Status:</strong></label>
+							<label for="reg_status" class="question">Registration Status:</label>
 						</td>
 						<td>
 							<select name="reg_status" id="reg_status">
@@ -282,6 +283,7 @@ finally {
 					</tr>
 
 				</table>
+				</fieldset>
 				<div style="margin-top:10px">
 					<input type="submit" name="action" value="Subscribe"/>
 				</div>
