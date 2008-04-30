@@ -164,6 +164,9 @@ input[type="submit"][disabled], input[type="reset"][disabled],  input[type="butt
 	padding-right: 20px;
 }
 
+.PopBoxImageLarge {
+	border: 1px solid black;
+}
 /*
 * Popups
 */

@@ -1818,17 +1818,27 @@ else{
 															}
 															// thumbnail
 															if (mode.equals("view") && !Util.voidStr(attrValue)){ %>
+<div class="figure-plus-container">
+  <div class="figure-plus">
+    <div class="figure-image">
+      <a href="visuals/<%=Util.replaceTags(attrValue)%>"><img src="visuals/<%=Util.replaceTags(attrValue)%>"
+         alt="thumbnail" class="scaled poponmouseclick"/></a>
+    </div>
+  </div>
+</div>
+
 																<a href="visuals/<%=Util.replaceTags(attrValue)%>" onclick="pop(this.href);return false;">
 																	<img src="visuals/<%=Util.replaceTags(attrValue)%>" style="border:0" height="100" width="100" alt=""/>
-																</a><br/><%
+																</a>
+<%
 															}
 															// link
 															if (mode.equals("edit") && user!=null){
 																String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
 																%>
-																<span class="barfont">
+																<div>
 																	[Click <a onclick="pop(this.href);return false;" href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dataElement.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>"><b>HERE</b></a> to <%=Util.replaceTags(actionText)%>]
-																</span><%
+																</div><%
 															}
 														}
 														// if view mode or Datatype in edit mode, display simple text
@@ -2578,8 +2588,21 @@ else{
 				<%
 			}
 			%>
-			
-
+<script type="text/javascript" src="popbox.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+        var popclickpop = {
+         'onclick' : function() { Pop(this,-50,'PopBoxImageLarge'); },
+         'pbShowPopBar' : false,
+         'pbShowPopImage' : false,
+         'pbShowPopText' : false,
+         'pbShowRevertImage': true,
+         'pbShowPopCaption' : true
+        };
+        PopRegisterClass('poponmouseclick', popclickpop);
+        popBoxShowPopBar = false;
+// ]]>
+</script>
 </body>
 </html>
 

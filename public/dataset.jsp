@@ -1488,12 +1488,18 @@ else if (mode.equals("add"))
 											// thumbnail
 											if (mode.equals("view") && dataset.getVisual()!=null){
 												if (imgVisual){ %>
-													<div style="text-align:right">
-														<a  href="visuals/<%=Util.replaceTags(dsVisual)%>" onfocus="blur()" onclick="pop(this.href);return false;">
-															<img src="visuals/<%=Util.replaceTags(dsVisual)%>" style="border:0" height="100" width="100" alt="thumbnail"/>
-														</a><br/>
-														[Click thumbnail to view large version of the data model]
-													</div><%
+<div class="figure-plus-container">
+  <div class="figure-plus">
+    <div class="figure-image">
+      <a href="visuals/<%=Util.replaceTags(dsVisual)%>"><img src="visuals/<%=Util.replaceTags(dsVisual)%>"
+         alt="thumbnail" class="scaled poponmouseclick"/></a>
+    </div>
+    <div class="figure-note">
+      Click thumbnail to view large version of the data model
+    </div>
+  </div>
+</div>
+													<%
 												}
 												else{ %>
 													<div style="text-align:right">
@@ -1858,6 +1864,21 @@ else if (mode.equals("add"))
 			</div> <!-- workarea -->
 			</div> <!-- container -->
 			<%@ include file="footer.txt" %>
+<script type="text/javascript" src="popbox.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+        var popclickpop = {
+         'onclick' : function() { Pop(this,-50,'PopBoxImageLarge'); },
+         'pbShowPopBar' : false,
+         'pbShowPopImage' : false,
+         'pbShowPopText' : false,
+         'pbShowRevertImage': true,
+         'pbShowPopCaption' : true
+        };
+        PopRegisterClass('poponmouseclick', popclickpop);
+	popBoxShowPopBar = false;
+// ]]>
+</script>
 </body>
 </html>
 
