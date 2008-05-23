@@ -1316,8 +1316,8 @@ else if (mode.equals("add"))
 											boolean hasCommonElms = false;
 											%>
 												
-												<h2>
-													<%=Util.replaceTags(title)%>
+												<h2><%=Util.replaceTags(title)%></h2>
+												<p>
 													<%
 													if (j<=1){%>
 														<a id="elements"></a><%
@@ -1330,10 +1330,10 @@ else if (mode.equals("add"))
 															<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 														</a>
 														<img style="border:0" src="images/optional.gif" alt="Optional" title="Optional"/>
-														[Click <a href="<%=elemLink%>"><b>HERE</b></a> to manage elements of this table]<%
+														[Click to <a href="<%=elemLink%>">manage elements</a> of this table]<%
 													}
 													%>
-												</h2>
+												</p>
 												
 												<%
 												// elements (or GIS elements) table
@@ -1406,7 +1406,7 @@ else if (mode.equals("add"))
 																				hasCommonElms = true;
 																			}
 																			
-																			// FK inidcator
+																			// FK indicator
 																			if (fks){ %>
 																				&nbsp;
 																				<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>">
@@ -1485,12 +1485,12 @@ else if (mode.equals("add"))
 										%>
 										
 										
-											<h2>
-													Complex attributes<a id="cattrs"></a>
+											<h2 id="cattrs">Complex attributes</h2>
 												
 												<%
 												if (!mode.equals("view")){
 													%>
+											<p>
 													<span class="simple_attr_help">
 														<a href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
 															<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
@@ -1499,18 +1499,17 @@ else if (mode.equals("add"))
 													<span class="simple_attr_help">
 														<img style="border:0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
 													</span><%
-												}
+												
 												
 												// the link
 												if (mode.equals("edit") && user!=null){ %>
 													<span class="barfont_bordered">
-														[Click <a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this table]
+														[Click to <a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">manage complex attributes</a> of this table]
 													</span><%
-												}
-												%>
-											</h2>
+												} %>
+											</p>
+												<% }
 											
-											<%
 											// the table
 											if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 												%>
