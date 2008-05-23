@@ -1211,6 +1211,9 @@ else{
 						<li><a href="Subscribe?common_element=<%=Util.replaceTags(dataElement.getIdentifier())%>">Subscribe</a></li>
 						<%
 					}
+					if (elmCommon && canNewVersion){%>
+						<li><a href="data_element.jsp?mode=view&amp;action=newversion&amp;delem_id=<%=delem_id%>')">New version</a></li><%
+					}
 					if (mode.equals("view") && elmCommon && !dataElement.isWorkingCopy()){
 						if (user!=null || (user==null && !isLatestRequested)){							
 							if (latestID!=null && !latestID.equals(dataElement.getID())){%>
@@ -1266,9 +1269,6 @@ else{
 				    			<%
 								if (!elmCommon && editDstPrm){ %>
 									<input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/><%
-								}
-								if (elmCommon && canNewVersion){%>
-									<input type="button" class="smallbutton" value="New version" onclick="goTo('newversion', '<%=delem_id%>')"/><%
 								}
 								if (elmCommon && canCheckout){%>
 									&nbsp;<input type="button" class="smallbutton" value="Check out" onclick="goTo('checkout', '<%=delem_id%>')"/><%
