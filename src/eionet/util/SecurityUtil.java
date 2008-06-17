@@ -67,9 +67,8 @@ public class SecurityUtil {
     */
     public static final DDUser allocSession(HttpServletRequest servReq, DDUser user) {
     	
-        HttpSession httpSession = servReq.getSession(true);
         if (user.isAuthentic())
-            httpSession.setAttribute(REMOTEUSER, user);
+        	servReq.getSession().setAttribute(REMOTEUSER, user);
         else
             throw new DDRuntimeException("Attempted to store unauthorised user");
                 

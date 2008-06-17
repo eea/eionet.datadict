@@ -1,12 +1,16 @@
 package eionet.meta.savers;
 
 import java.sql.*;
+import java.util.LinkedHashMap;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.tee.util.*;
 
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
 
 public class MAttrFieldsHandler extends BaseHandler{
     
@@ -66,35 +70,40 @@ public class MAttrFieldsHandler extends BaseHandler{
         }
     }
     
+    /**
+     * 
+     * @param field
+     * @throws SQLException
+     */
     private void insertField(String field) throws SQLException {
-        
-        String definition = req.getParameter("definition");
-        if (definition == null) definition = "";
+    	
+    	String definition = req.getParameter("definition");
+    	if (definition == null) definition = "";
+    	
+    	String position = req.getParameter("position");
+    	if (position == null || position.length()==0) position = "0";
+    	
+    	INParameters inParams = new INParameters();
+    	LinkedHashMap map = new LinkedHashMap();
 
-        String position = req.getParameter("position");
-        if (position == null || position.length()==0) position = "0";
-        
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("M_COMPLEX_ATTR_FIELD");
-        
-        gen.setField("M_COMPLEX_ATTR_ID", attr_id);
-        gen.setField("NAME", field);
-        gen.setField("DEFINITION", definition);
-        gen.setField("POSITION", position);
-        
-		String harvFld = req.getParameter("harv_fld");
-		if (harvFld != null && !harvFld.equals("null"))
-			gen.setField("HARV_ATTR_FLD_NAME", harvFld);
-		else
-			gen.setFieldExpr("HARV_ATTR_FLD_NAME", "NULL");
-        
-        String sql = gen.insertStatement();
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(sql);
-        stmt.close();
+    	map.put("M_COMPLEX_ATTR_ID", inParams.add(attr_id, Types.INTEGER));
+    	map.put("NAME", inParams.add(field));
+    	map.put("DEFINITION", inParams.add(definition));
+    	map.put("POSITION", inParams.add(position, Types.INTEGER));
+    	
+    	String harvFld = req.getParameter("harv_fld");
+    	if (harvFld != null && !harvFld.equals("null"))
+    		map.put("HARV_ATTR_FLD_NAME", inParams.add(harvFld));
+    	else
+    		map.put("HARV_ATTR_FLD_NAME", "NULL");
+    	
+    	SQL.executeUpdate(SQL.insertStatement("M_COMPLEX_ATTR_FIELD", map), inParams, conn);
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     private void delete() throws Exception {
 
         String[] del_Fields = req.getParameterValues("del_field");
@@ -105,55 +114,66 @@ public class MAttrFieldsHandler extends BaseHandler{
         }
     }
 
+    /**
+     * 
+     * @param id
+     * @throws SQLException
+     */
     private void deleteField(String id) throws SQLException {
+    	
+    	INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("delete from M_COMPLEX_ATTR_FIELD ");
         buf.append("where M_COMPLEX_ATTR_FIELD_ID=");
-        buf.append(id);
+        buf.append(inParams.add(id, Types.INTEGER));
+        SQL.executeUpdate(buf.toString(), inParams, conn);
 
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-
+        inParams = new INParameters();
         buf = new StringBuffer("delete from COMPLEX_ATTR_FIELD ");
         buf.append("where M_COMPLEX_ATTR_FIELD_ID=");
-        buf.append(id);
-
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
+        buf.append(inParams.add(id, Types.INTEGER));
+        SQL.executeUpdate(buf.toString(), inParams, conn);
     }
+    
+    /**
+     * 
+     * @throws SQLException
+     */
     private void update() throws SQLException {
 
         String field_id = req.getParameter("field_id");
-        if (field_id == null) return;
+        if (field_id == null)
+        	return;
 
         String definition = req.getParameter("definition");
-        if (definition == null) definition = "";
+        if (definition == null)
+        	definition = "";
 
         String priority = req.getParameter("priority");
-        if (priority == null) priority = "1";
+        if (priority == null)
+        	priority = "1";
 
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("M_COMPLEX_ATTR_FIELD");
+    	INParameters inParams = new INParameters();
+    	LinkedHashMap map = new LinkedHashMap();
 
-        gen.setField("DEFINITION", definition);
-        gen.setField("PRIORITY", priority);
+        map.put("DEFINITION", inParams.add(definition));
+        map.put("PRIORITY", inParams.add(priority));
         
 		String harvFld = req.getParameter("harv_fld");
 		if (harvFld != null && !harvFld.equals("null"))
-			gen.setField("HARV_ATTR_FLD_NAME", harvFld);
+			map.put("HARV_ATTR_FLD_NAME", inParams.add(harvFld));
 		else
-			gen.setFieldExpr("HARV_ATTR_FLD_NAME", "NULL");
+			map.put("HARV_ATTR_FLD_NAME", "NULL");
 
-        StringBuffer sqlBuf = new StringBuffer(gen.updateStatement());
-        sqlBuf.append(" where M_COMPLEX_ATTR_FIELD_ID=");
-        sqlBuf.append(field_id);
+        StringBuffer buf = new StringBuffer(SQL.updateStatement("M_COMPLEX_ATTR_FIELD", map));
+        buf.append(" where M_COMPLEX_ATTR_FIELD_ID=").append(inParams.add(field_id, Types.INTEGER));
 
-        logger.debug(sqlBuf.toString());
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(sqlBuf.toString());
-        stmt.close();
+        SQL.executeUpdate(buf.toString(), inParams, conn);
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
      private void processFields() throws Exception {
 
         String[] posIds = req.getParameterValues("pos_id");
@@ -175,20 +195,20 @@ public class MAttrFieldsHandler extends BaseHandler{
                 updateFieldPos(posIds[i], pos);
         }
     }
+     
+     /**
+      * 
+      * @param fieldId
+      * @param pos
+      * @throws Exception
+      */
     private void updateFieldPos(String fieldId, String pos) throws Exception {
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("M_COMPLEX_ATTR_FIELD");
-
-        gen.setField("POSITION", pos);
-
-        StringBuffer sqlBuf = new StringBuffer(gen.updateStatement());
-        sqlBuf.append(" where M_COMPLEX_ATTR_FIELD_ID=");
-        sqlBuf.append(fieldId);
-
-        logger.debug(sqlBuf.toString());
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(sqlBuf.toString());
-        stmt.close();
+    	
+    	INParameters inParams = new INParameters();
+    	LinkedHashMap map = new LinkedHashMap();
+        map.put("POSITION", inParams.add(pos, Types.INTEGER));
+        StringBuffer buf = new StringBuffer(SQL.updateStatement("M_COMPLEX_ATTR_FIELD", map));
+        buf.append(" where M_COMPLEX_ATTR_FIELD_ID=").append(inParams.add(fieldId, Types.INTEGER));
+        SQL.executeUpdate(buf.toString(), inParams, conn);
     }
 }

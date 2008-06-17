@@ -4,6 +4,8 @@
 package eionet.meta.savers;
 
 import java.sql.*;
+import java.util.LinkedHashMap;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -11,6 +13,8 @@ import com.tee.util.*;
 
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
 
 public class FKHandler extends BaseHandler{
 
@@ -44,6 +48,10 @@ public class FKHandler extends BaseHandler{
 			delete();
 	}
 	
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	private void insert() throws Exception {
 		
 		String aID = req.getParameter("a_id");
@@ -52,75 +60,83 @@ public class FKHandler extends BaseHandler{
 		if (Util.nullString(aID) || Util.nullString(bID))
 			throw new Exception("One or two of the element IDs is missing!");
 		
-		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("FK_RELATION");
-		gen.setField("A_ID", aID);
-		gen.setField("B_ID", bID);
+		INParameters inParams = new INParameters();
+        LinkedHashMap map = new LinkedHashMap();
+        
+		map.put("A_ID", inParams.add(aID, Types.INTEGER));
+		map.put("B_ID", inParams.add(bID, Types.INTEGER));
 		
 		String aCardin = req.getParameter("a_cardin");
 		if (!Util.nullString(aCardin))
-			gen.setField("A_CARDIN", aCardin);
+			map.put("A_CARDIN", inParams.add(aCardin));
 		String bCardin = req.getParameter("b_cardin");
 		if (!Util.nullString(bCardin))
-			gen.setField("B_CARDIN", bCardin);
+			map.put("B_CARDIN", inParams.add(bCardin));
 		String definition = req.getParameter("definition");
 		if (!Util.nullString(definition))
-			gen.setField("DEFINITION", definition);
+			map.put("DEFINITION", inParams.add(definition));
 		
-		Statement stmt = conn.createStatement();
-		stmt.executeUpdate(gen.insertStatement());
-		stmt.close();
-
+		SQL.executeUpdate(SQL.insertStatement("FK_RELATION", map), inParams, conn);
 		setLastInsertID();
 	}
 	
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	private void update() throws Exception {
 		
 		String rel_id = req.getParameter("rel_id");
 		if (Util.nullString(rel_id))
 			return;
-		
-		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("FK_RELATION");
+
+		INParameters inParams = new INParameters();
+        LinkedHashMap map = new LinkedHashMap();
+
+		//gen.setTable("FK_RELATION");
 		
 		String aCardin = req.getParameter("a_cardin");
 		if (!Util.nullString(aCardin))
-			gen.setField("A_CARDIN", aCardin);
+			map.put("A_CARDIN", inParams.add(aCardin));
 		String bCardin = req.getParameter("b_cardin");
 		if (!Util.nullString(bCardin))
-			gen.setField("B_CARDIN", bCardin);
+			map.put("B_CARDIN", inParams.add(bCardin));
 		String definition = req.getParameter("definition");
 		if (!Util.nullString(definition))
-			gen.setField("DEFINITION", definition);
+			map.put("DEFINITION", inParams.add(definition));
 		
-		Statement stmt = conn.createStatement();
-		stmt.executeUpdate(gen.updateStatement() + " where REL_ID=" + rel_id);
-		stmt.close();
+		StringBuffer buf = new StringBuffer(SQL.updateStatement("FK_RELATION", map));
+		buf.append(" where REL_ID=").append(inParams.add(rel_id, Types.INTEGER));
+		SQL.executeUpdate(buf.toString(), inParams, conn);
 		
 		lastInsertID = rel_id;
 	}
 
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	private void delete() throws Exception {
 		
 		String[] rel_ids = req.getParameterValues("rel_id");
 		if (rel_ids==null || rel_ids.length==0)
 			return;
         
+		INParameters inParams = new INParameters();
 		StringBuffer buf = new StringBuffer("delete from FK_RELATION where ");
 		for (int i=0; i<rel_ids.length; i++){
 			if (i>0)
 				buf.append(" or ");
-			buf.append("REL_ID=");
-			buf.append(rel_ids[i]);
+			buf.append("REL_ID=").append(inParams.add(rel_ids[i], Types.INTEGER));
 		}
-        
-		logger.debug(buf.toString());
 
-		Statement stmt = conn.createStatement();
-		stmt.executeUpdate(buf.toString());
-		stmt.close();
+		SQL.executeUpdate(buf.toString(), inParams, conn);
 	}
 
+	/**
+	 * 
+	 * @throws SQLException
+	 */
 	private void setLastInsertID() throws SQLException {
 
 		String qry = "SELECT LAST_INSERT_ID()";
@@ -133,6 +149,10 @@ public class FKHandler extends BaseHandler{
 		stmt.close();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public String getLastInsertID(){
 		return lastInsertID;
 	}

@@ -45,11 +45,11 @@ public class SQL {
 		
 		for (int i=0; stmt!=null && inParams!=null && i<inParams.size(); i++){
 			
-			int sqlType = inParams.getSQLType(i);
-			if (sqlType==Types.JAVA_OBJECT)
+			Integer sqlType = inParams.getSQLType(i);
+			if (sqlType==null)
 				stmt.setObject(i+1, inParams.getValue(i));
 			else
-				stmt.setObject(i+1, inParams.getValue(i), sqlType);
+				stmt.setObject(i+1, inParams.getValue(i), sqlType.intValue());
 		}
 	}
 	
@@ -124,6 +124,28 @@ public class SQL {
 			StringBuffer buf = new StringBuffer("'");
 			return buf.append(s).append("'").toString();
 		}
+	}
+	
+	/**
+	 * 
+	 * @param preparedSQL
+	 * @param inParams
+	 * @param conn
+	 * @throws SQLException 
+	 */
+	public static void executeUpdate(String preparedSQL, INParameters inParams, Connection conn) throws SQLException{
+		
+		PreparedStatement stmt = null;
+        try{
+        	stmt = SQL.preparedStatement(preparedSQL, inParams, conn);
+        	stmt.executeUpdate();
+        }
+        finally{
+        	try{
+        		if (stmt!=null) stmt.close();
+        	}
+        	catch (SQLException e){}
+        }
 	}
 	
 	/**

@@ -23,25 +23,38 @@ import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
 import eionet.util.SecurityUtil;
 
+/**
+ *
+ */
 public class EionetCASFilter extends CASFilter {
-	
-	private static boolean initCalled = false;
-	
+
+	/** */
 	public static final String EIONET_LOGIN_COOKIE_NAME = "eionetCasLogin";
 
-	private static LogServiceIF logger = new Log4jLoggerImpl();
-
+	/** */
 	private static final String EIONET_COOKIE_LOGIN_PATH = "eionetCookieLogin";
 
+	/** */
 	private static String CAS_LOGIN_URL = null;
 
+	/** */
 	private static String SERVER_NAME = null;
 
+	/** */
 	private static String EIONET_LOGIN_COOKIE_DOMAIN = null;
 
+	/** To enables to statically determine if init(FilterConfig) has been called. */
+	private static boolean initCalled = false;
+	
+	/** */
+	private static LogServiceIF logger = new Log4jLoggerImpl();
+
+	/*
+	 *  (non-Javadoc)
+	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+	 */
 	public void init(FilterConfig config) throws ServletException {
 		
-		// JH
 		EionetCASFilter.initCalled = true;
 		
 		CAS_LOGIN_URL = config.getInitParameter(LOGIN_INIT_PARAM);
@@ -50,11 +63,15 @@ public class EionetCASFilter extends CASFilter {
 		super.init(config);
 	}
 
+	/*
+	 *  (non-Javadoc)
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException, IOException {
 		
 		CASFilterChain chain = new CASFilterChain();
 		super.doFilter(request, response, chain);
-
+		
 		if (chain.isDoNext()) {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpSession session = httpRequest.getSession();
@@ -83,7 +100,13 @@ public class EionetCASFilter extends CASFilter {
 		}
 	}
 
+	/**
+	 * 
+	 * @param response
+	 * @param isLoggedIn
+	 */
 	public static void attachEionetLoginCookie(HttpServletResponse response, boolean isLoggedIn) {
+		
 		Cookie tgc = new Cookie(EIONET_LOGIN_COOKIE_NAME, isLoggedIn ? "loggedIn" : "loggedOut");
 		tgc.setMaxAge(-1);
 		if (!EIONET_LOGIN_COOKIE_DOMAIN.equalsIgnoreCase("localhost"))
@@ -92,15 +115,36 @@ public class EionetCASFilter extends CASFilter {
 		response.addCookie(tgc);		
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
 	public static String getCASLoginURL(HttpServletRequest request) {
-		request.getSession(true).setAttribute("afterLogin",request.getRequestURL().toString() + (request.getQueryString() != null ? ("?" +request.getQueryString()):"" ));
+		
+		StringBuffer buf = new StringBuffer(request.getRequestURL());
+		if (request.getQueryString()!=null)
+			buf.append("?").append(request.getQueryString());
+		
+		request.getSession().setAttribute("afterLogin", buf.toString());
+		
 		return CAS_LOGIN_URL + "?service=" + request.getScheme() + "://" + SERVER_NAME + request.getContextPath() + "/login";
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
 	public static String getCASLogoutURL(HttpServletRequest request) {
 		return CAS_LOGIN_URL.replaceFirst("/login", "/logout") + "?url=" + request.getScheme() + "://" + SERVER_NAME + request.getContextPath();
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
 	public static String getEionetCookieCASLoginURL(HttpServletRequest request) {
 
 		String contextPath = request.getContextPath();
@@ -130,9 +174,14 @@ public class EionetCASFilter extends CASFilter {
 		}
 		
 		return CAS_LOGIN_URL + "?service=" +   serviceURL ;
-
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
 	private void redirectAfterEionetCookieLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String requestUri = request.getRequestURI() + (request.getQueryString() != null ? ("?" +request.getQueryString()):"" );
 		if (request.getQueryString() != null && request.getQueryString().length() > 0){
@@ -154,73 +203,80 @@ public class EionetCASFilter extends CASFilter {
 		return EionetCASFilter.initCalled;
 	}
 
-	
-	
-	  public static String forRegex(String aRegexFragment){
-	    final StringBuffer result = new StringBuffer();
-
-	    final StringCharacterIterator iterator = new StringCharacterIterator(aRegexFragment);
-	    char character =  iterator.current();
-	    while (character != CharacterIterator.DONE ){
-	      /*
-	      * All literals need to have backslashes doubled.
-	      */
-	      if (character == '.') {
-	        result.append("\\.");
-	      }
-	      else if (character == '\\') {
-	        result.append("\\\\");
-	      }
-	      else if (character == '?') {
-	        result.append("\\?");
-	      }
-	      else if (character == '*') {
-	        result.append("\\*");
-	      }
-	      else if (character == '+') {
-	        result.append("\\+");
-	      }
-	      else if (character == '&') {
-	        result.append("\\&");
-	      }
-	      else if (character == ':') {
-	        result.append("\\:");
-	      }
-	      else if (character == '{') {
-	        result.append("\\{");
-	      }
-	      else if (character == '}') {
-	        result.append("\\}");
-	      }
-	      else if (character == '[') {
-	        result.append("\\[");
-	      }
-	      else if (character == ']') {
-	        result.append("\\]");
-	      }
-	      else if (character == '(') {
-	        result.append("\\(");
-	      }
-	      else if (character == ')') {
-	        result.append("\\)");
-	      }
-	      else if (character == '^') {
-	        result.append("\\^");
-	      }
-	      else if (character == '$') {
-	        result.append("\\$");
-	      }
-	      else {
-	        //the char is not a special one
-	        //add it to the result as is
-	        result.append(character);
-	      }
-	      character = iterator.next();
-	    }
-	    return result.toString();
-	  }
+	/**
+	 * 
+	 * @param aRegexFragment
+	 * @return
+	 */
+	public static String forRegex(String aRegexFragment){
+		
+		final StringBuffer result = new StringBuffer();
+		
+		final StringCharacterIterator iterator = new StringCharacterIterator(aRegexFragment);
+		char character =  iterator.current();
+		while (character != CharacterIterator.DONE ){
+			/*
+			 * All literals need to have backslashes doubled.
+			 */
+			if (character == '.') {
+				result.append("\\.");
+			}
+			else if (character == '\\') {
+				result.append("\\\\");
+			}
+			else if (character == '?') {
+				result.append("\\?");
+			}
+			else if (character == '*') {
+				result.append("\\*");
+			}
+			else if (character == '+') {
+				result.append("\\+");
+			}
+			else if (character == '&') {
+				result.append("\\&");
+			}
+			else if (character == ':') {
+				result.append("\\:");
+			}
+			else if (character == '{') {
+				result.append("\\{");
+			}
+			else if (character == '}') {
+				result.append("\\}");
+			}
+			else if (character == '[') {
+				result.append("\\[");
+			}
+			else if (character == ']') {
+				result.append("\\]");
+			}
+			else if (character == '(') {
+				result.append("\\(");
+			}
+			else if (character == ')') {
+				result.append("\\)");
+			}
+			else if (character == '^') {
+				result.append("\\^");
+			}
+			else if (character == '$') {
+				result.append("\\$");
+			}
+			else {
+				//the char is not a special one
+//				add it to the result as is
+				result.append(character);
+			}
+			character = iterator.next();
+		}
+		return result.toString();
+	}
 }
 
+/**
+ * 
+ */
 class CASFilterChain implements FilterChain {
 
 	private boolean doNext = false;

@@ -3400,17 +3400,19 @@ public class DDSearchEngine {
 			rs = stmt.executeQuery();
 			while (rs.next()){
 				String fldName = rs.getString("FLD_NAME");
-				if ((includeFields!=null && includeFields.contains(fldName)) || !taken.contains(fldName)){
-					
-					// ordering logic
-					String uc = new String(fldName);
-					int pos = order.indexOf(uc.toUpperCase());
-					if (pos == -1)
-						v.add(fldName);
-					else{
-						if (pos > v.size()-1)
-							v.setSize(pos+1);
-						v.add(pos, fldName);
+				if (fldName!=null){
+					if ((includeFields!=null && includeFields.contains(fldName)) || !taken.contains(fldName)){
+						
+						// ordering logic
+						String uc = new String(fldName);
+						int pos = order.indexOf(uc.toUpperCase());
+						if (pos == -1)
+							v.add(fldName);
+						else{
+							if (pos > v.size()-1)
+								v.setSize(pos+1);
+							v.add(pos, fldName);
+						}
 					}
 				}
 			}

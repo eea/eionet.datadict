@@ -129,17 +129,7 @@ public class AttrFieldsHandler extends BaseHandler {
         if (!Util.nullString(harvAttrID))
 			map.put("HARV_ATTR_ID", inParams.add(harvAttrID));
 
-        PreparedStatement stmt = null;
-        try{
-        	stmt = SQL.preparedStatement(SQL.insertStatement("COMPLEX_ATTR_ROW", map), inParams, conn);
-        	stmt.executeUpdate();
-        }
-        finally{
-        	try{
-        		if (stmt!=null) stmt.close();
-        	}
-        	catch (SQLException e){}
-        }
+        SQL.executeUpdate(SQL.insertStatement("COMPLEX_ATTR_ROW", map), inParams, conn);
         
         return rowID;
     }

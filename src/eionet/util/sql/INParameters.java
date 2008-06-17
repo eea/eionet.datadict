@@ -40,7 +40,9 @@ public class INParameters {
 	 * @return
 	 */
 	public String add(Object value){
-		return add(value, new Integer(Types.JAVA_OBJECT));
+		values.add(value);
+		sqlTypes.add(null);
+		return "?";
 	}
 	
 	/**
@@ -65,8 +67,8 @@ public class INParameters {
 	 * @param i
 	 * @return
 	 */
-	public int getSQLType(int i){
-		return ((Integer)sqlTypes.get(i)).intValue();
+	public Integer getSQLType(int i){
+		return (Integer)sqlTypes.get(i);
 	}
 	
 	/*
@@ -77,8 +79,10 @@ public class INParameters {
 		
 		StringBuffer buf = new StringBuffer(size()==0 ? "empty" : "");
 		for (int i=0; i<values.size(); i++){
-			buf.append((String)values.get(i)).
-			append(", ").append(sqlTypeLabel(((Integer)sqlTypes.get(i)).intValue())).
+			
+			buf.append((String)values.get(i));			
+			Integer sqlType = getSQLType(i);
+			buf.append(", ").append(sqlType==null ? "null" : sqlTypeLabel(sqlType)).
 			append("\n");
 		}
 		return buf.toString();
