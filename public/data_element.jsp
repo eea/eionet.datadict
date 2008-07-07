@@ -1212,7 +1212,7 @@ else{
 						<%
 					}
 					if (elmCommon && canNewVersion){%>
-						<li><a href="data_element.jsp?mode=view&amp;action=newversion&amp;delem_id=<%=delem_id%>')">New version</a></li><%
+						<li><a href="data_element.jsp?mode=view&amp;action=newversion&amp;delem_id=<%=delem_id%>">New version</a></li><%
 					}
 					if (mode.equals("view") && elmCommon && !dataElement.isWorkingCopy()){
 						if (user!=null || (user==null && !isLatestRequested)){							
