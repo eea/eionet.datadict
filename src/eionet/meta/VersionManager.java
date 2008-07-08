@@ -652,6 +652,15 @@ public class VersionManager{
 							null : servlRequestParams.getParameter("checkedout_copy_id");
 		if (checkedoutCopyID!=null){
 			if (!versionUpdate){
+				
+				// TODO - remember the id-identifier mappings of tables in the previous copy, before deleting it
+				Hashtable tableIdsAndIdentifiers = new Hashtable();
+				Vector v = searchEngine.getDatasetTables(checkedoutCopyID);
+				for (int i=0; v!=null && i<v.size(); i++){
+					DsTable tbl = (DsTable)v.get(i);
+					tableIdsAndIdentifiers.put(tbl.getIdentifier(), tbl.getID());
+				}
+				
 				// delete the previous copy                
 				Parameters params = new Parameters();
 				params.addParameterValue("mode", "delete");
@@ -673,6 +682,15 @@ public class VersionManager{
 				// the id of the new copy must be changed in all relations as well
 				DatasetHandler.replaceID(dstID, checkedoutCopyID, conn);
 				dstID = checkedoutCopyID;
+				
+				// the tables must get the ids of previous ones too
+				v = searchEngine.getDatasetTables(checkedoutCopyID);
+				for (int i=0; v!=null && i<v.size(); i++){
+					DsTable tbl = (DsTable)v.get(i);
+					String oldID = (String)tableIdsAndIdentifiers.get(tbl.getIdentifier());
+					if (oldID!=null)
+						DsTableHandler.replaceTableId(oldID, tbl.getID(), this.conn);
+				}
 			}
 			else{
 				// unlock the checked-out copy

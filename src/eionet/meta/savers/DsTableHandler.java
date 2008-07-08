@@ -718,4 +718,65 @@ public class DsTableHandler extends BaseHandler {
 		return parentNsID;
 	}
 
+	/**
+	 * 
+	 * @param oldID
+	 * @param newID
+	 * @throws SQLException 
+	 */
+	public static void replaceTableId(String oldID, String newID, Connection conn) throws SQLException{
+		
+		if (oldID==null || oldID.length()==0 || newID==null || newID.length()==0)
+			return;
+		
+		Statement stmt = null;
+		try{
+			stmt = conn.createStatement();
+			
+			SQLGenerator gen = new SQLGenerator();
+			gen.setTable("DS_TABLE");
+			gen.setFieldExpr("TABLE_ID", oldID);
+			StringBuffer buf = new StringBuffer(gen.updateStatement());
+			stmt.executeUpdate(buf.append(" where TABLE_ID=").append(newID).toString());
+	
+			gen.setTable("DST2TBL");
+			buf = new StringBuffer(gen.updateStatement());
+			stmt.executeUpdate(buf.append(" where TABLE_ID=").append(newID).toString());
+			
+			gen.setTable("TBL2ELEM");
+			buf = new StringBuffer(gen.updateStatement());
+			stmt.executeUpdate(buf.append(" where TABLE_ID=").append(newID).toString());
+			
+			gen = new SQLGenerator();
+			gen.setTable("ATTRIBUTE");
+			gen.setFieldExpr("DATAELEM_ID", oldID);
+			buf = new StringBuffer(gen.updateStatement());
+			stmt.executeUpdate(buf.append(" where PARENT_TYPE='T' and DATAELEM_ID=").append(newID).toString());
+			
+			gen = new SQLGenerator();
+			gen.setTable("COMPLEX_ATTR_ROW");
+			gen.setFieldExpr("PARENT_ID", oldID);
+			buf = new StringBuffer(gen.updateStatement());
+			stmt.executeUpdate(buf.append(" where PARENT_TYPE='T' and PARENT_ID=").append(newID).toString());
+	
+			gen = new SQLGenerator();
+			gen.setTable("CACHE");
+			gen.setFieldExpr("OBJ_ID", oldID);
+			buf = new StringBuffer(gen.updateStatement());
+			stmt.executeUpdate(buf.append(" where OBJ_TYPE='tbl' and OBJ_ID=").append(newID).toString());
+	
+			gen = new SQLGenerator();
+			gen.setTable("DOC");
+			gen.setFieldExpr("OWNER_ID", oldID);
+			buf = new StringBuffer(gen.updateStatement());
+			stmt.executeUpdate(buf.append(" where OWNER_TYPE='tbl' and OWNER_ID=").append(newID).toString());
+		}
+		finally{
+			try{
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
+	}
+
 }
