@@ -937,25 +937,7 @@ public class Util {
 	 */
 	public static boolean skipAttributeByDatatype(String attrShortName, String datatype){
 		
-		boolean result = false;
-		if (attrShortName==null || datatype==null) return result;
-		
-		if (datatype.equalsIgnoreCase("double")){
-			if (attrShortName.equalsIgnoreCase("MinSize")) result = true;		}
-		else if (datatype.equalsIgnoreCase("string") || datatype.equalsIgnoreCase("date")){
-			if (attrShortName.equalsIgnoreCase("MinValue") ||
-				attrShortName.equalsIgnoreCase("MaxValue") ||
-				attrShortName.equalsIgnoreCase("DecimalPrecision")) result = true;
-		}
-		else if (datatype.equalsIgnoreCase("float")){
-			if (attrShortName.equalsIgnoreCase("MinSize")) result = true;
-		}
-		else if (datatype.equalsIgnoreCase("integer")){
-			if (attrShortName.equalsIgnoreCase("MinSize") ||
-				attrShortName.equalsIgnoreCase("DecimalPrecision")) result = true;
-		}
-		
-		return result;
+		return (attrShortName==null || datatype==null) ? false : IrrelevantAttributes.getInstance().isIrrelevant(datatype, attrShortName);
 	}
 
 	/*

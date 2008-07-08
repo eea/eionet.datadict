@@ -53,6 +53,15 @@ public class Props implements PropsIF{
 	 * @param name
 	 * @return
 	 */
+	public static synchronized Enumeration getPropertyNames(){
+		return Props.getInstance().getBundle().getKeys();
+	}
+
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public static synchronized String getProperty(String name){
 		return Props.getInstance().getProperty_(name);
 	}
@@ -135,5 +144,13 @@ public class Props implements PropsIF{
 	 */
 	protected String getBundleName(){
 		return PROP_FILE;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	protected ResourceBundle getBundle(){
+		return bundle;
 	}
 }

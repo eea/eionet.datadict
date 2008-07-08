@@ -79,4 +79,7 @@ public interface PropsIF {
 
 	/** */
 	public static final String SCREEN_NAME = "documentation.screen-name";
+	
+	/** */
+	public static final String IRRELEVANT_ATTRS_PREFIX = "irrelevantAttrs.";
 }
