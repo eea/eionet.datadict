@@ -653,7 +653,7 @@ public class VersionManager{
 		if (checkedoutCopyID!=null){
 			if (!versionUpdate){
 				
-				// TODO - remember the id-identifier mappings of tables in the previous copy, before deleting it
+				// remember the id-identifier mappings of tables in the previous copy, before deleting it
 				Hashtable tableIdsAndIdentifiers = new Hashtable();
 				Vector v = searchEngine.getDatasetTables(checkedoutCopyID);
 				for (int i=0; v!=null && i<v.size(); i++){
