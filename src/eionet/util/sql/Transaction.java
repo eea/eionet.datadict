@@ -18,29 +18,39 @@
  * 
  * Contributor(s): 
  */
-package eionet.util;
+package eionet.util.sql;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Savepoint;
+import java.sql.Statement;
+
+import eionet.meta.DDRuntimeException;
 
 /**
  * 
  * @author Jaanus Heinlaid
  *
  */
-public class DbTransactionPolite{
+public class Transaction{
 	
 	/** */
-	private boolean isAnotherTransactionRunning = false;
+	private boolean anotherTransactionRunning = false;
 	
 	/** */
 	private Connection conn = null;
+	
+	/** */
+	private Savepoint startSavepoint = null;
 
 	/**
 	 * 
 	 * @param conn
 	 */
-	private DbTransactionPolite(Connection conn){
+	private Transaction(Connection conn){
+		if (conn==null)
+			throw new DDRuntimeException("The given connection is null");
 		this.conn = conn;
 	}
 
@@ -48,14 +58,17 @@ public class DbTransactionPolite{
 	 * 
 	 *
 	 */
-	private void start(){
-		boolean anotherTransactionRunning = false;
+	private void start_(){
+		
 		try{
-			anotherTransactionRunning = conn.getAutoCommit()==false;
-			if (!anotherTransactionRunning)
+			if (conn.getAutoCommit()==false)
+				anotherTransactionRunning = true;
+			else
 				conn.setAutoCommit(false);
+			startSavepoint = conn.setSavepoint();
 		}
 		catch (SQLException e){
+			throw new DDRuntimeException(e.toString(), e);
 		}
 	}
 	
@@ -64,24 +77,24 @@ public class DbTransactionPolite{
 	 * @param conn
 	 * @return
 	 */
-	public static DbTransactionPolite start(Connection conn){
-		DbTransactionPolite tx = new DbTransactionPolite(conn);
-		tx.start();
+	public static Transaction start(Connection conn){
+		Transaction tx = new Transaction(conn);
+		tx.start_();
 		return tx;
 	}
 	
 	/**
+	 * @throws SQLException 
 	 * 
 	 *
 	 */
-	public void commit(){
-		try {
-			if (!isAnotherTransactionRunning)
-				conn.commit();
-		}
-		catch (SQLException e){
-		}
+	public void commit() throws SQLException{
 		
+		if (startSavepoint==null)
+			throw new DDRuntimeException("Transaction not yet started");
+		
+		if (!anotherTransactionRunning)
+			conn.commit();
 	}
 	
 	/**
@@ -90,12 +103,11 @@ public class DbTransactionPolite{
 	 */
 	public void rollback(){
 		try {
-			if (!isAnotherTransactionRunning)
-				conn.rollback();
+			conn.rollback(startSavepoint);
 		}
-		catch (SQLException e){
+		catch (SQLException e) {
+			e.printStackTrace();
 		}
-		
 	}
 	
 	/**
@@ -104,7 +116,9 @@ public class DbTransactionPolite{
 	 */
 	public void end(){
 		try {
-			if (!isAnotherTransactionRunning)
+			conn.releaseSavepoint(startSavepoint);
+			startSavepoint = null;
+			if (!anotherTransactionRunning)
 				conn.setAutoCommit(true);
 		}
 		catch (SQLException e){
@@ -115,7 +129,7 @@ public class DbTransactionPolite{
 	 * 
 	 * @return
 	 */
-	public boolean getIsAnotherTransactionRunning() {
-		return isAnotherTransactionRunning;
+	public boolean isAnotherTransactionRunning() {
+		return anotherTransactionRunning;
 	}
 }

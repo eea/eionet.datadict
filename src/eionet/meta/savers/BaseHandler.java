@@ -11,7 +11,8 @@ import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
 
 import com.tee.util.Util;
-import eionet.util.DbTransactionPolite;
+
+import eionet.util.sql.Transaction;
 
 /**
  * @author Jaanus Heinlaid
@@ -34,7 +35,7 @@ public abstract class BaseHandler {
 	 */
 	public void execute() throws Exception {
 
-		DbTransactionPolite tx = DbTransactionPolite.start(conn);
+		Transaction tx = Transaction.start(conn);
 		try{
     		execute_();
     		tx.commit();

@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eionet.util.DataManipulations;
-import eionet.util.DbTransactionPolite;
 import eionet.util.HttpUploader;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
@@ -24,6 +23,7 @@ import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
+import eionet.util.sql.Transaction;
 
 /**
  * 
@@ -67,7 +67,7 @@ public class CleanupServlet extends HttpServlet{
 		Connection conn = null;
 		PrintWriter writer = null;
 		DataManipulations dataManipulations = null;
-		DbTransactionPolite tx = null;
+		Transaction tx = null;
 		try{
 			writer = res.getWriter();
 			guard(req);
@@ -83,7 +83,7 @@ public class CleanupServlet extends HttpServlet{
 				res.setContentType("text/plain");				
 				dataManipulations = new DataManipulations(conn, writer);
 				
-				tx = DbTransactionPolite.start(conn);
+				tx = Transaction.start(conn);
 				
 				dataManipulations.cleanup();
 				
@@ -95,7 +95,7 @@ public class CleanupServlet extends HttpServlet{
 			else if (action.equals(ACTION_DELETE_ELM) || action.equals(ACTION_DELETE_TBL) || action.equals(ACTION_DELETE_DST)){
 				if (objIDs!=null && objIDs.trim().length()>0){
 				
-					tx = DbTransactionPolite.start(conn);
+					tx = Transaction.start(conn);
 					StringTokenizer st = new StringTokenizer(objIDs);
 					while (st.hasMoreTokens()){
 						
