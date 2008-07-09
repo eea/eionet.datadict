@@ -144,17 +144,19 @@ public class ElmSchema extends Schema {
 				newLine();
 			}
             
-            Vector fixedValues = elem.getFixedValues();
-            for (int k=0; fixedValues!= null && k<fixedValues.size(); k++){
-                
-                FixedValue fxv = (FixedValue)fixedValues.get(k);
-            
-                addString("\t\t\t");
-                addString("<xs:enumeration value=\"");
-                addString(escape(fxv.getValue()));
-                addString("\"/>");
-                newLine();
-            }
+			if (!dataType.equalsIgnoreCase("boolean")){
+	            Vector fixedValues = elem.getFixedValues();
+	            for (int k=0; fixedValues!= null && k<fixedValues.size(); k++){
+	                
+	                FixedValue fxv = (FixedValue)fixedValues.get(k);
+	            
+	                addString("\t\t\t");
+	                addString("<xs:enumeration value=\"");
+	                addString(escape(fxv.getValue()));
+	                addString("\"/>");
+	                newLine();
+	            }
+			}
             
             addString("\t\t");
             addString("</xs:restriction>");
