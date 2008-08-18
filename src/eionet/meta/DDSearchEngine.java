@@ -3044,7 +3044,6 @@ public class DDSearchEngine {
 				if (rs.getString(1).equals("Y"))
 					return true;
 			}
-			else throw new Exception("Could not find such an object!");
 		}
 		finally{
 			try{

@@ -25,20 +25,20 @@ public class ElmSchema extends Schema {
         // Get the data element object. This will also give us the
         // element's simple attributes + tableID
         DataElement elem = searchEngine.getDataElement(elemID);
-        if (elem == null)
-            throw new Exception("Data element not found!");
-        
-        // get and set the element's complex attributes
-        elem.setComplexAttributes(searchEngine.getComplexAttributes(elemID, "E",null,elem.getTableID(),elem.getDatasetID()));
-        
-        if (elem.getType().equalsIgnoreCase("CH1")){
-        		
-		    Vector fixedValues =
-		        searchEngine.getFixedValues(elem.getID(), "elem");
-		    elem.setFixedValues(fixedValues);
+        if (elem != null){
+        	
+	        // get and set the element's complex attributes
+	        elem.setComplexAttributes(searchEngine.getComplexAttributes(elemID, "E",null,elem.getTableID(),elem.getDatasetID()));
+	        
+	        if (elem.getType().equalsIgnoreCase("CH1")){
+	        		
+			    Vector fixedValues =
+			        searchEngine.getFixedValues(elem.getID(), "elem");
+			    elem.setFixedValues(fixedValues);
+	        }
+	        
+	        write(elem);
         }
-        
-        write(elem);
     }
     
     /**

@@ -28,19 +28,18 @@ public class TblSchema extends Schema {
         // element's simple attributes + tableID
         
         DsTable dsTable = searchEngine.getDatasetTable(tblID);
-        if (dsTable == null)
-            throw new Exception("Dataset table not found!");
-        
-        // get simple attributes
-        Vector v = searchEngine.getSimpleAttributes(tblID, "T", null, dsTable.getDatasetID());
-        dsTable.setSimpleAttributes(v);
-        
-        // get data elements (this will set all the simple attributes,
-        // but no fixed values required by writer!)
-        v = searchEngine.getDataElements(null, null, null, null, tblID);
-        dsTable.setElements(v);
-        
-        write(dsTable);
+        if (dsTable != null){
+	        // get simple attributes
+	        Vector v = searchEngine.getSimpleAttributes(tblID, "T", null, dsTable.getDatasetID());
+	        dsTable.setSimpleAttributes(v);
+	        
+	        // get data elements (this will set all the simple attributes,
+	        // but no fixed values required by writer!)
+	        v = searchEngine.getDataElements(null, null, null, null, tblID);
+	        dsTable.setElements(v);
+	        
+	        write(dsTable);
+        }
     }
     
     /**

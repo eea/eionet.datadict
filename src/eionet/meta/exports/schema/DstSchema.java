@@ -23,17 +23,17 @@ public class DstSchema extends Schema {
             throw new Exception("Dataset ID not specified!");
         
         Dataset ds = searchEngine.getDataset(dsID);
-        if (ds == null)
-            throw new Exception("Dataset not found!");
+        if (ds != null){
         
-        Vector v = searchEngine.getSimpleAttributes(dsID, "DS");
-        ds.setSimpleAttributes(v);
-        v = searchEngine.getComplexAttributes(dsID, "DS");
-        ds.setComplexAttributes(v);
-        v = searchEngine.getDatasetTables(dsID);
-        ds.setTables(v);
-        
-        write(ds);
+	        Vector v = searchEngine.getSimpleAttributes(dsID, "DS");
+	        ds.setSimpleAttributes(v);
+	        v = searchEngine.getComplexAttributes(dsID, "DS");
+	        ds.setComplexAttributes(v);
+	        v = searchEngine.getDatasetTables(dsID);
+	        ds.setTables(v);
+	        
+	        write(ds);
+        }
     }
     
     /**
