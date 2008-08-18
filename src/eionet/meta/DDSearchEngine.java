@@ -1802,6 +1802,22 @@ public class DDSearchEngine {
 	 */
 	public Vector getNamespaces(String id) throws SQLException {
 		
+		if (id!=null)
+			id = id.trim();
+		
+		// this is for the case where id is given in the format "number url" (happens when someone clicks the schemaLocation given in generated XML Schemas) 
+		if (id!=null && id.length()>0){
+			String[] ss = id.split("\\s+");
+			if (ss.length==2){
+				try{
+					Integer.parseInt(ss[0]);
+					if (ss[1].startsWith("http://") && ss[1].indexOf("GetSchema")>6)
+						id = ss[0];
+				}
+				catch (NumberFormatException e){}
+			}
+		}
+		
 		INParameters inParams = new INParameters();
 		
 		StringBuffer buf = new StringBuffer("select * from NAMESPACE");
@@ -4351,4 +4367,5 @@ public class DDSearchEngine {
 			catch (SQLException e){}
 		}
 	}
+
 }
