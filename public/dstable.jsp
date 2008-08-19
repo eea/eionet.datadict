@@ -1396,13 +1396,13 @@ else if (mode.equals("add"))
 																	<tr>
 																		<!-- short name -->
 																		<td>
-																			<a href="<%=elemLink%>" title="<%=Util.replaceTags(linkTitle, true)%>">
+																			<a href="<%=elemLink%>" title="<%=Util.replaceTags(linkTitle, true, true)%>">
 																				<%=Util.replaceTags(elem.getShortName())%>
 																			</a>
 																			
 																			<%
 																			if (elmCommon){ %>
-																				<span style="color:#858585;font-weight:bold;"><sup>C</sup></span><%
+																				<sup style="color:#858585;font-weight:bold;">C</sup><%
 																				hasCommonElms = true;
 																			}
 																			
@@ -1410,7 +1410,7 @@ else if (mode.equals("add"))
 																			if (fks){ %>
 																				&nbsp;
 																				<a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>">
-																					<em style="font-weight:bold">(FK)</em>
+																					<span style="font: bold italic">(FK)</span>
 																				</a><%
 																				hasForeignKeys = true;
 																			}
@@ -1460,8 +1460,8 @@ else if (mode.equals("add"))
 														</div><%
 													}
 													if (elems!=null && elems.size()>0 && hasCommonElms){%>
-														<div class="barfont">
-																(the <sup style="color:#858585;">C</sup></span> sign marks a common element)
+														<div>
+																(the <sup style="color:#858585;">C</sup> sign marks a common element)
 														</div><%
 													}
 												}
