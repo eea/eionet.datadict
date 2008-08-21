@@ -23,7 +23,8 @@
     public String workingUser = null;
     public String status = null;
     public String checkInNo = null;
-    public String href = null;
+    public String viewLink = null;
+    public String selectLink = null;
     public boolean clickable = true;
 
     private String oCompStr=null;
@@ -103,6 +104,8 @@
         oSortOrder=null;
     }
     
+    String newerThan = request.getParameter("newerThan");
+    
     // declare some global stuff
     Connection conn = null;
     Vector dataElements = null;
@@ -162,7 +165,10 @@
 			}
 			
 			// all set up for search, do it
-			dataElements = searchEngine.getCommonElements(params, type, short_name, idfier, request.getParameter("reg_status"), wrkCopies, isIncludeHistoricVersions, oper);
+			if (newerThan!=null && newerThan.length()>0)
+				dataElements = searchEngine.getNewerReleases(idfier, newerThan);
+			else
+				dataElements = searchEngine.getCommonElements(params, type, short_name, idfier, request.getParameter("reg_status"), wrkCopies, isIncludeHistoricVersions, oper);
 			
 		} // end if in search mode
 
@@ -273,19 +279,6 @@ else{ %>
 			<table class="sortable" style="width:auto;clear:right">
 			<%
 			boolean isDisplayVersionColumn = isIncludeHistoricVersions;
-			if (isDisplayVersionColumn){
-				%>
-				<col style="width:31%"/>
-				<col style="width:23%"/>
-				<col style="width:23%"/>
-				<col style="width:23%"/><%
-			}
-			else{
-				%>
-				<col style="width:40%"/>
-				<col style="width:30%"/>
-				<col style="width:30%"/><%
-			}
 			%>
 			<thead>
 			<tr>
@@ -328,6 +321,12 @@ else{ %>
 	                      Status&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
 					</a>
 				</th>
+				<%
+				if (popup){
+					%>
+					<th>&nbsp;</th><%
+				}
+				%>
 			</tr>
 			</thead>
 			<tbody>
@@ -369,11 +368,14 @@ else{ %>
 					String workingUser = dataElement.getWorkingUser();
 					String status = dataElement.getStatus();
 					String checkInNo = dataElement.getVersion();
-					StringBuffer href = new StringBuffer();
-					if (!popup)
-						href.append("data_element.jsp?mode=view&amp;delem_id=").append(delem_id);
-					else
-						href.append("javascript:pickElem(").append(delem_id).append(",").append(displayed+1).append(")");
+					
+					StringBuffer viewLink = new StringBuffer("data_element.jsp?mode=view&amp;delem_id=");
+					viewLink.append(delem_id);
+					if (popup)
+						viewLink.append("&amp;popup=");
+					
+					StringBuffer selectLink = new StringBuffer("javascript:pickElem(");
+					selectLink.append(delem_id).append(",").append(displayed+1).append(")");
 					
 					boolean clickable = status!=null ? !searchEngine.skipByRegStatus(status) : true;
 					if (clickable){
@@ -394,7 +396,8 @@ else{ %>
 					oEntry.status = status;
 					oEntry.checkInNo = checkInNo;
 					oEntry.workingUser = workingUser;
-					oEntry.href = href.toString();
+					oEntry.viewLink = viewLink.toString();
+					oEntry.selectLink = selectLink.toString();
 					oResultSet.oElements.add(oEntry);
 					
 					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
@@ -404,7 +407,7 @@ else{ %>
 						<td<%=strDisabled%>>
 							<%
 							if (clickable){%>
-								<a href="<%=href%>">
+								<a href="<%=viewLink%>">
 									<%=Util.replaceTags(delem_name)%>
 								</a><%
 							}
@@ -439,6 +442,15 @@ else{ %>
 							}
 							%>
 						</td>
+						<%
+						if (popup && clickable){
+							%>
+							<td>
+								[<a href="<%=selectLink%>">select</a>]
+							</td>
+							<%
+						}
+						%>
 					</tr><%
 					displayed++;
 				}
@@ -471,7 +483,7 @@ else{ %>
 							<td<%=strDisabled%>>
 								<%
 								if (oEntry.clickable){%>
-									<a href="<%=oEntry.href%>">
+									<a href="<%=oEntry.viewLink%>">
 										<%=Util.replaceTags(oEntry.oShortName)%>
 									</a><%
 								}
@@ -506,6 +518,15 @@ else{ %>
 								}
 								%>
 							</td>
+						<%
+						if (popup && oEntry.clickable){
+							%>
+							<td>
+								[<a href="<%=oEntry.selectLink%>">select</a>]
+							</td>
+							<%
+						}
+						%>
 						</tr>
 						<%
 						displayed++;

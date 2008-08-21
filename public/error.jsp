@@ -35,7 +35,7 @@ else{
 	<body>
 		<div id="container">
 		<jsp:include page="nlocation.jsp" flush="true">
-			<jsp:param name="name" value="Error"/>			
+			<jsp:param name="isError" value="true"/>			
 		</jsp:include>
 		<%@ include file="nmenu.jsp" %>
 		<div id="workarea"><%

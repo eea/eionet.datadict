@@ -7,6 +7,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import eionet.meta.*;
+import eionet.util.RequestMessages;
 
 import com.tee.util.*;
 import com.tee.uit.security.*;
@@ -50,6 +51,7 @@ public class DsTableHandler extends BaseHandler {
 	 */
     public DsTableHandler(Connection conn, HttpServletRequest req, ServletContext ctx){
         this(conn, new Parameters(req), ctx);
+        httpServletRequest = req;
     }
 
     public DsTableHandler(Connection conn, Parameters req, ServletContext ctx){
@@ -129,6 +131,7 @@ public class DsTableHandler extends BaseHandler {
     	
     	// if linking to another element, do the linking and return
 		String link_elm = req.getParameter("link_elm");
+		String rplc_elm = req.getParameter("rplc_elm");
 		if (link_elm!=null && link_elm.length()>0){
 			SQLGenerator gen = new SQLGenerator();
 			gen.setTable("TBL2ELEM");
@@ -136,6 +139,20 @@ public class DsTableHandler extends BaseHandler {
 			gen.setFieldExpr("DATAELEM_ID", req.getParameter("link_elm"));
 			gen.setFieldExpr("POSITION", req.getParameter("elmpos"));
 			conn.createStatement().executeUpdate(gen.insertStatement());
+			return;
+		}
+		else if (rplc_elm!=null && rplc_elm.length()>0){
+			SQLGenerator gen = new SQLGenerator();
+			gen.setTable("TBL2ELEM");
+			gen.setFieldExpr("TABLE_ID", req.getParameter("table_id"));
+			gen.setFieldExpr("DATAELEM_ID", req.getParameter("rplc_elm"));
+			gen.setFieldExpr("POSITION", req.getParameter("rplc_pos"));
+			conn.createStatement().executeUpdate(gen.insertStatement());
+			conn.createStatement().executeUpdate("delete from TBL2ELEM where TABLE_ID=" + req.getParameter("table_id") +
+					" and DATAELEM_ID=" + req.getParameter("rplc_id"));
+			
+			RequestMessages.add(this.httpServletRequest, RequestMessages.system, "Replacement successful!");
+			
 			return;
 		}
         

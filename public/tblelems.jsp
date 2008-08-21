@@ -98,10 +98,11 @@
 		DsTableHandler tblHandler = null;
 		DataElementHandler elmHandler = null;
 		String link_elm = request.getParameter("link_elm");
+		String rplc_elm = request.getParameter("rplc_elm");
 		try{
 			try{
 				userConn = user.getConnection();
-				if (link_elm!=null && link_elm.length()!=0){
+				if ((link_elm!=null && link_elm.length()>0) || (rplc_elm!=null && rplc_elm.length()>0)){
 					tblHandler = new DsTableHandler(userConn, request, ctx);
 					tblHandler.setUser(user);
 					tblHandler.execute();
@@ -134,7 +135,7 @@
 		}
 
 		// disptach the POST request
-		if (link_elm==null || link_elm.length()==0){
+		if ((link_elm==null || link_elm.length()==0) && (rplc_elm==null || rplc_elm.length()==0)){
 			String redirUrl = "";
 			String mode = request.getParameter("mode");	
 			if (mode.equals("add") || mode.equals("copy"))
@@ -320,7 +321,7 @@
 			return document.forms["form1"].elements["changed"].value;
 		}
 		
-		var pickMode = "";
+		var pickMode = "";		
 		function copyElem(){
 			
 			if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
@@ -346,7 +347,20 @@
 		function linkElem(){
 			pickMode = "link";
 			var url="search.jsp?ctx=popup&common=&link=&exclude=" + document.forms["form1"].str_elem_ids.value;
-			wLink = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
+			wLink = window.open(url,"Search","height=500,width=700,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
+			if (window.focus){
+				wLink.focus();
+			}
+		}
+
+		var rplcId = "";
+		var rplcPos = ""; 
+		function getNewerReleases(elmId, elmIdf, position){
+			pickMode = "rplc";
+			rplcId = elmId;
+			rplcPos = position;
+			var url="common_elms.jsp?ctx=popup&SearchType=SEARCH&search_precision=exact&idfier=" + elmIdf + "&newerThan=" + elmId;
+			wLink = window.open(url,"Search","height=500,width=700,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
 			if (window.focus){
 				wLink.focus();
 			}
@@ -361,6 +375,12 @@
 			else if (pickMode=="link"){
 				document.forms["common_elm_link_form"].link_elm.value=id;
 				document.forms["common_elm_link_form"].submit();
+			}
+			else if (pickMode=="rplc"){
+				document.forms["common_elm_rplc_form"].rplc_id.value=rplcId;
+				document.forms["common_elm_rplc_form"].rplc_pos.value=rplcPos;
+				document.forms["common_elm_rplc_form"].rplc_elm.value=id;
+				document.forms["common_elm_rplc_form"].submit();
 			}
 			else
 				alert("Unknown pick mode: " + pickMode);
@@ -410,7 +430,15 @@
 	</jsp:include>
     <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-			
+
+<%
+String messages = RequestMessages.get(request, RequestMessages.system, RequestMessages.htmlLineBreak);
+if (messages.trim().length()>0){
+	%>
+	<div class="system-msg"><%=messages%></div><%
+}
+%>
+		
 <form id="form1" method="post" action="tblelems.jsp">
 
 	<!-- page title & the add new part -->
@@ -537,7 +565,10 @@
 						// see if the element is part of any foreign key relations
 						Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
 						boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
-						
+
+						// see if this element is common, and has any newer released version
+						boolean hasNewerReleases = elmCommon && searchEngine.hasNewerReleases(elem);
+
 						String elemDefinition = elem.getAttributeValueByShortName("Definition");
 						if (fks)
 							hasForeignKeys = true;
@@ -584,7 +615,13 @@
 								
 								// common elm indicator
 								if (elmCommon){ %>
-									<span class="commonelm"><sup>C</sup></span><%
+									<span class="commonelm"><sup>C</sup></span>
+									<%
+									if (hasNewerReleases){ %>
+										<a href="javascript:getNewerReleases('<%=elem.getID()%>', '<%=elem.getIdentifier()%>', <%=elem.getPositionInTable()%>)">
+											<img style="border:0" src="images/new.png" width="16" height="16" title="Has newer releases" alt="Has newer releases"/>
+										</a><%
+									}
 								}
 								
 								// FK indicator
@@ -724,6 +761,19 @@
 <form id="common_elm_link_form" method="post" action="tblelems.jsp">
 	<div style="display:none">
 		<input type="hidden" name="link_elm" value=""/>
+		<input type="hidden" name="mode" value="add"/>
+		<input type="hidden" name="table_id" value="<%=tableID%>"/>
+		<input type="hidden" name="ds_id" value="<%=dsID%>"/>
+		<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName, true)%>"/>
+		<input type="hidden" name="elmpos" value="<%=maxPos+1%>"/>
+	</div>
+</form>
+
+<form id="common_elm_rplc_form" method="post" action="tblelems.jsp">
+	<div style="display:none">
+		<input type="hidden" name="rplc_id" value=""/>
+		<input type="hidden" name="rplc_elm" value=""/>
+		<input type="hidden" name="rplc_pos" value="<%=maxPos+1%>"/>
 		<input type="hidden" name="mode" value="add"/>
 		<input type="hidden" name="table_id" value="<%=tableID%>"/>
 		<input type="hidden" name="ds_id" value="<%=dsID%>"/>

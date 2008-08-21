@@ -2998,6 +2998,7 @@ public class DDSearchEngine {
 	 * @throws SQLException
 	 */
 	public Vector getElmOtherVersions(String idfier, String ofID) throws SQLException{
+		
 		Vector v = getCommonElements(null, null, null, idfier, false, true, "=");
 		for (int i=0; v!=null && i<v.size(); i++){
 			if (((DataElement)v.get(i)).getID().equals(ofID)){
@@ -3135,6 +3136,69 @@ public class DDSearchEngine {
 		return 0;
 	}
 	
+	/**
+	 * Return true if the given common element has newer Released version.
+	 * Otherwise returns false.
+	 * 
+	 * Note that this method does not check whether the given element is really a common one,
+	 * so it's on caller's responsibility!
+	 *  
+	 * @param elm
+	 * @return
+	 * @throws SQLException 
+	 */
+	public boolean hasNewerReleases(DataElement elm) throws SQLException{
+		
+		if (elm==null)
+			return false;
+		
+		INParameters inParams = new INParameters();
+		String sql = "select DATAELEM_ID from DATAELEM where PARENT_NS is null and " +
+					"IDENTIFIER=" + inParams.add(elm.getIdentifier()) + " and REG_STATUS='Released' and WORKING_COPY='N' and " +
+					"CHECKEDOUT_COPY_ID is null and DATAELEM_ID > " + inParams.add(elm.getID(), Types.INTEGER) + " order by DATAELEM_ID desc limit 1";
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;		
+		try{
+			stmt = SQL.preparedStatement(sql, inParams, conn);
+			rs = stmt.executeQuery();
+			return rs!=null && rs.next();
+		}
+		finally{
+			try{
+				if (rs!=null) rs.close();
+				if (stmt!=null) stmt.close();
+			}
+			catch (SQLException e){}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param elmIdentifier
+	 * @param elmId
+	 * @return
+	 * @throws SQLException
+	 */
+	public Vector getNewerReleases(String elmIdentifier, String elmId) throws SQLException{
+		
+		Vector result = new Vector();
+		if (!Util.nullString(elmIdentifier) && !Util.nullString(elmId)){
+			Vector v = getCommonElements(null, null, null, elmIdentifier, "Released", false, true, "=");
+			if (v!=null){
+				for (int i=0; i<v.size(); i++){
+					DataElement elm = (DataElement)v.get(i);
+					String id = elm.getID();
+					if (!id.equals(elmId))
+						result.add(elm);
+				}
+			}
+		}
+
+		Collections.sort(result, new DataElementComparator(DataElementComparator.ID, DataElementComparator.DESC));
+		return result;
+	}
+
 	/**
 	 * 
 	 * @param relID
@@ -4366,5 +4430,41 @@ public class DDSearchEngine {
 			catch (SQLException e){}
 		}
 	}
+	
+	/**
+	 * 
+	 */
+	private static class DataElementComparator implements Comparator{
+		
+		/** */
+		private static final int ID = 0;
+		
+		/** */
+		private static final int ASC = 1;
+		private static final int DESC = -1;
+		
+		/** */
+		private int compField = -1;
+		private int sortOrder = DataElementComparator.ASC;
+		
+		/**
+		 * 
+		 */
+		private DataElementComparator(int compField, int sortOrder){
+			this.compField = compField;
+			this.sortOrder = sortOrder;
+		}
 
+		/*
+		 * (non-Javadoc)
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
+		public int compare(Object o1, Object o2){
+			
+			if (compField==DataElementComparator.ID)
+				return (int)(sortOrder * (((DataElement)o1).getID()).compareTo(((DataElement)o2).getID()));
+			else
+				throw new DDRuntimeException("Unknown comparator field: " + compField);
+		}
+	}
 }
