@@ -73,6 +73,7 @@ public class OdsServlet extends HttpServlet{
 	        ods.processMeta();
 	        
 	        // prepare response
+	        res.setContentType("application/vnd.oasis.opendocument.spreadsheet");
 			StringBuffer buf = new StringBuffer("attachment; filename=\"").
 			append(ods.getFinalFileName()).append("\"");
 			res.setHeader("Content-Disposition", buf.toString());
