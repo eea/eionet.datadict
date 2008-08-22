@@ -2,7 +2,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
-<%!final static String TYPE_SEARCH="SEARCH";%>
 <%!final static String oSearchCacheAttrName="datasets_search_cache";%>
 <%!final static String oSearchUrlAttrName="datasets_search_url";%>
 <%!private Vector attributes=null;%>
@@ -122,24 +121,19 @@
        	session.setAttribute(oSearchUrlAttrName, searchUrl);
    	}
 	
-    String searchType=request.getParameter("SearchType");
-	
     Vector datasets=null;
-    
 	DDSearchEngine searchEngine = null;
-	
 	Connection conn = null;
-	
 	DDUser user = SecurityUtil.getUser(request);
-
 	String _isSearchForWorkingCopies = request.getParameter("wrk_copies");
 	boolean isSearchForWorkingCopies = (_isSearchForWorkingCopies!=null && _isSearchForWorkingCopies.equals("true")) ? true : false;
-	
 	boolean isIncludeHistoricVersions = request.getParameter("incl_histver")!=null && request.getParameter("incl_histver").equals("true");
+	
+	String pageMode = request.getParameter("sort_column")!=null ? "sort" : "search";
 	
 	try { // start the whole page try block
 		
-	if (searchType != null && searchType.equals(TYPE_SEARCH)){
+		if (pageMode.equals("search")){
 		
 		conn = ConnectionUtil.getConnection();
 	
@@ -293,13 +287,11 @@
 
     	function deleteDatasetReady(){
 	    	document.forms["form1"].elements["mode"].value = "delete";
-	    	document.forms["form1"].elements["SearchType"].value="<%=TYPE_SEARCH%>";
        		document.forms["form1"].submit();
     	}
     	
     	function restoreDataset(){
 	    	document.forms["form1"].elements["mode"].value = "restore";
-	    	document.forms["form1"].elements["SearchType"].value="<%=TYPE_SEARCH%>";
        		document.forms["form1"].submit();
     	}
     	
@@ -375,7 +367,7 @@
 					%>		
 				</div>
 				<%
-				if (searchType != null && searchType.equals(TYPE_SEARCH)){
+				if (pageMode.equals("search")){
 	            
 		            // check if any results found
 					if (datasets == null || datasets.size()==0){
@@ -479,7 +471,7 @@
 			<%
 			DElemAttribute attr = null;
 			int countCheckboxes = 0;
-			if (searchType != null && searchType.equals(TYPE_SEARCH)){
+			if (pageMode.equals("search")){
 				
 				c_SearchResultSet oResultSet=new c_SearchResultSet();
 				oResultSet.isAuth = user!=null;
@@ -759,7 +751,6 @@
 		
 			<div style="display:none">
 				<input type="hidden" name="searchUrl" value=""/>
-				<input name="SearchType" type="hidden" value="<%=TYPE_SEARCH%>"/>
 				<input type="hidden" name="mode" value="view"/>
 				<input type="hidden" name="complete" value="false"/>
 				<%
@@ -779,7 +770,6 @@
 			<div style="display:none">
 				<input name="sort_column" type="hidden" value="<%=(oSortCol==null)? "":oSortCol.toString()%>"/>
 		        <input name="sort_order" type="hidden" value="<%=(oSortOrder==null)? "":oSortOrder.toString()%>"/>
-				<input name="SearchType" type="hidden" value="NoSearch"/>
 				<%
 				if (isSearchForWorkingCopies){ %>
 					<input name="wrk_copies" type="hidden" value="true"/><%

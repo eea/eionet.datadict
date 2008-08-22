@@ -52,7 +52,7 @@ Vector releasedDatasets = (Vector)request.getAttribute("rlsd_datasets");
 			%>
 			<tr>
 				<td style="vertical-align:top;text-align:right" colspan="3">
-					[<a href="datasets.jsp?SearchType=SEARCH">More...</a>]
+					[<a href="datasets.jsp">More...</a>]
 				</td>
 			</tr>
 			<%

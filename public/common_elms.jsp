@@ -3,7 +3,6 @@
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!static int iPageLen=0;%>
-<%!final static String TYPE_SEARCH="SEARCH";%>
 <%!final static String attrCommonElms="common_elms";%>
 <%!final static String oSearchUrlAttrName="elms_search_url";%>
 
@@ -86,8 +85,8 @@
 	// get user object from session
 	DDUser user = SecurityUtil.getUser(request);
 
-	// get search type
-	String searchType=request.getParameter("SearchType");
+	// get page mode
+	String pageMode = request.getParameter("sort_column")!=null ? "sort" : "search";
 	
 	// see if popup
 	boolean popup = request.getParameter("ctx")!=null && request.getParameter("ctx").equals("popup");
@@ -116,7 +115,7 @@
 	try {
 	
 		// if in search mode
-		if (searchType != null && searchType.equals(TYPE_SEARCH)){
+		if (pageMode.equals("search")){
 			
 			// remove the cached result set
 			session.removeAttribute(attrCommonElms);
@@ -263,7 +262,7 @@ else{ %>
 				<p class="advise-msg">Note: Common elements NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
 		    }
 		    
-			if (searchType != null && searchType.equals(TYPE_SEARCH)){
+			if (pageMode.equals("search")){
         	    if (dataElements==null || dataElements.size()==0){
 	        	    %>
 	            	<div class="system-msg">No results matching the search criteria were found!</div>
@@ -333,7 +332,7 @@ else{ %>
 				
 			<%
 			int displayed = 0;
-			if (searchType != null && searchType.equals(TYPE_SEARCH)){
+			if (pageMode.equals("search")){
 
 				// set up the search result set
 				c_SearchResultSet oResultSet=new c_SearchResultSet();
@@ -545,7 +544,6 @@ else{ %>
 			<div style="display:none">
 				<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
 	        	<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
-				<input name='SearchType' type='hidden' value='NoSearch'/>
 				<%
 				if (popup){ %>
 					<input type="hidden" name="ctx" value="popup"/><%

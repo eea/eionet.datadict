@@ -359,7 +359,7 @@
 			pickMode = "rplc";
 			rplcId = elmId;
 			rplcPos = position;
-			var url="common_elms.jsp?ctx=popup&SearchType=SEARCH&search_precision=exact&idfier=" + elmIdf + "&newerThan=" + elmId;
+			var url="common_elms.jsp?ctx=popup&search_precision=exact&idfier=" + elmIdf + "&newerThan=" + elmId;
 			wLink = window.open(url,"Search","height=500,width=700,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=no,location=no");
 			if (window.focus){
 				wLink.focus();

@@ -2,8 +2,8 @@
 
 <div id="leftcolumn" class="localnav">
 	<ul>
-		<li><a href="datasets.jsp?SearchType=SEARCH">Datasets </a></li>
-		<li><a href="search_results_tbl.jsp?SearchType=SEARCH">Tables </a></li>
+		<li><a href="datasets.jsp">Datasets </a></li>
+		<li><a href="search_results_tbl.jsp">Tables </a></li>
 		<li><a href="search.jsp">Data elements </a></li>
 		<%
 		DDUser _user = SecurityUtil.getUser(request);

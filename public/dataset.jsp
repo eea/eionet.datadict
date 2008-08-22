@@ -179,7 +179,7 @@
 		else if (mode.equals("delete")){
 			if (history!=null)
 				history.remove(history.getCurrentIndex());
-			redirUrl = "datasets.jsp?SearchType=SEARCH";
+			redirUrl = "datasets.jsp";
 		}
 		
 		response.sendRedirect(redirUrl);

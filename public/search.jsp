@@ -678,7 +678,6 @@ if (isDisplayOperations){
 						<!-- collect all the attributes already used in criterias -->
 						
 						<input type="hidden" name="collect_attrs" value="<%=Util.replaceTags(collect_attrs.toString(), true)%>"/>
-		                <input name='SearchType' type='hidden' value='SEARCH'/>
 		                <input name="ctx" type="hidden" value="<%=Util.replaceTags(contextParam, true)%>"/>
 		                
 		                <%

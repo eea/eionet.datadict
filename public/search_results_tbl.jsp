@@ -2,7 +2,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
-<%!final static String TYPE_SEARCH="SEARCH";%>
 <%!final static String oSearchCacheAttrName="tbl_search_cache";%>
 <%!final static String oSearchUrlAttrName="tbl_search_url";%>
 
@@ -120,9 +119,8 @@
 		}
 	}
    	
-    String searchType=request.getParameter("SearchType");
+	String pageMode = request.getParameter("sort_column")!=null ? "sort" : "search";
     String tableLink="";
-    
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -225,7 +223,7 @@
             
             try { // start the whole page try block
             
-			if (searchType != null && searchType.equals(TYPE_SEARCH)){
+			if (pageMode.equals("search")){
 				
 				session.removeAttribute(oSearchCacheAttrName);
 	                        
@@ -476,7 +474,6 @@
 			<div style="display:none">
 				<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
 				<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
-				<input name='SearchType' type='hidden' value='NoSearch'/>
 			</div>
 		</form>
 		

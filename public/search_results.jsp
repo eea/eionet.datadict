@@ -3,7 +3,6 @@
 
 <%!private static final String ATTR_PREFIX = "attr_";%>
 <%!static int iPageLen=0;%>
-<%!final static String TYPE_SEARCH="SEARCH";%>
 <%!final static String attrCommonElms="common_elms";%>
 <%!final static String oSearchCacheAttrName="elms_search_cache";%>
 <%!final static String oSearchUrlAttrName="elms_search_url";%>
@@ -95,8 +94,8 @@
 	// get user object from session
 	DDUser user = SecurityUtil.getUser(request);
 	
-	// get search type
-	String searchType=request.getParameter("SearchType");
+	// get page mode
+	String pageMode = request.getParameter("sort_column")!=null ? "sort" : "search";
 	
 	// see if popup
 	boolean popup = request.getParameter("ctx")!=null && request.getParameter("ctx").equals("popup");
@@ -130,7 +129,7 @@
 	try {
 	
 		// if in search mode
-		if (searchType != null && searchType.equals(TYPE_SEARCH)){
+		if (pageMode.equals("search")){
 			
 			// remove the cached result set
 			session.removeAttribute(oSearchCacheAttrName);
@@ -294,7 +293,7 @@ else{ %>
 		<%
 }
             
-			if (searchType != null && searchType.equals(TYPE_SEARCH)){
+			if (pageMode.equals("search")){
 				
 				// see if any results were found
         	    if (dataElements == null || dataElements.size()==0){
@@ -422,7 +421,7 @@ else{ %>
 			<%
 			
 			int displayed = 0;
-			if (searchType != null && searchType.equals(TYPE_SEARCH)){
+			if (pageMode.equals("search")){
 
 				// set up the search result set
 				c_SearchResultSet oResultSet=new c_SearchResultSet();
@@ -622,7 +621,6 @@ else{ %>
 			%>
 			<div style="display:none">
 				<input type="hidden" name="searchUrl" />
-				<input name="SearchType" type="hidden" value="<%=TYPE_SEARCH%>"/>
 				<input type="hidden" name="mode" value="view"/>
 				
 				<%
@@ -637,7 +635,6 @@ else{ %>
 			<div style="display:none">
 				<input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
 	        	<input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
-				<input name='SearchType' type='hidden' value='NoSearch'/>
 				<%
 				if (popup){ %>
 					<input type='hidden' name='ctx' value='popup'/><%
