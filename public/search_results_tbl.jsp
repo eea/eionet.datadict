@@ -132,17 +132,6 @@
 	<script type="text/javascript">
 	// <![CDATA[
 
-		function setLocation(){
-			var o = document.forms["form1"].searchUrl;
-			if (o!=null)
-				o.value=document.location.href;
-		}
-		
-		function goTo(mode){
-			if (mode == "add"){
-				document.location.assign('dstable.jsp?mode=add');
-			}
-		}
     	function showSortedList(clmn,ordr) {
     		if ((document.forms["sort_form"].elements["sort_column"].value != clmn)
        			|| (document.forms["sort_form"].elements["sort_order"].value != ordr)) {
@@ -181,8 +170,6 @@
 				</p><%
 		    }
 			%>
-		
-		<form id="form1" method="post" action="search_results_tbl.jsp" onsubmit="setLocation()">
 		
 		<!-- the result table -->		
 		<table width="100%" class="sortable" style="clear:both">
@@ -481,14 +468,9 @@
 			</tbody>
 		</table>
 		<p>Total results: <%=oResultSet.oElements.size()%></p><%
-            	}
-			}
-			%>
-			<div style="display:none">
-				<input type="hidden" name="searchUrl" value=""/>
-				<input type='hidden' name='SearchType' value='<%=TYPE_SEARCH%>'/>
-			</div>
-		</form>
+           	}
+		}
+		%>
 		
 		<form id="sort_form" action="search_results_tbl.jsp" method="get">
 			<div style="display:none">
