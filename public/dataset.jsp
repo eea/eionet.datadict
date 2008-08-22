@@ -853,7 +853,7 @@ else if (mode.equals("add"))
 																Create technical specification for this dataset
 															</td>
 															<td>
-																<a href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN">
+																<a rel="nofollow" href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN">
 																	<img style="border:0" src="images/pdf.png" width="16" height="16" alt="PDF" />
 																</a>
 															</td>
@@ -867,7 +867,7 @@ else if (mode.equals("add"))
 																Create an XML Schema for this dataset
 															</td>
 															<td>
-																<a href="GetSchema?id=DST<%=ds_id%>">
+																<a rel="nofollow" href="GetSchema?id=DST<%=ds_id%>">
 																	<img style="border:0" src="images/xsd.png" width="16" height="16" alt="XML icon"/>
 																</a>
 															</td>
@@ -881,7 +881,7 @@ else if (mode.equals("add"))
 																Create an instance XML for this dataset
 															</td>
 															<td>
-																<a href="GetXmlInstance?id=<%=dataset.getID()%>&amp;type=dst">
+																<a rel="nofollow" href="GetXmlInstance?id=<%=dataset.getID()%>&amp;type=dst">
 																	<img style="border:0" src="images/xml.png" width="16" height="16" alt="XML icon"/>
 																</a>
 															</td>
@@ -895,7 +895,7 @@ else if (mode.equals("add"))
 																Create an MS Excel template for this dataset&nbsp;<a href="help.jsp?screen=dataset&amp;area=excel" onclick="pop(this.href);return false;"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td>
-																<a href="GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img style="border:0" src="images/xls.png" width="16" height="16" alt="XLS icon"/></a>
+																<a rel="nofollow" href="GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img style="border:0" src="images/xls.png" width="16" height="16" alt="XLS icon"/></a>
 															</td>
 														</tr><%
 													}
@@ -907,7 +907,7 @@ else if (mode.equals("add"))
 																Create an OpenDocument spreadsheet template for this dataset&nbsp;<a href="help.jsp?screen=dataset&amp;area=ods" onclick="pop(this.href);return false;"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td>
-																<a href="GetOds?type=dst&amp;id=<%=ds_id%>"><img style="border:0" src="images/ods.png" width="16" height="16" alt="ODS icon"/></a>
+																<a rel="nofollow" href="GetOds?type=dst&amp;id=<%=ds_id%>"><img style="border:0" src="images/ods.png" width="16" height="16" alt="ODS icon"/></a>
 															</td>
 														</tr><%
 													}
@@ -919,7 +919,7 @@ else if (mode.equals("add"))
 																Create validation metadata for MS Access template&nbsp;<a  href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href);return false;"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
 															</td>
 															<td>
-																<a href="GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true"><img style="border:0" src="images/mdb.png" width="16" height="16" alt="MDB icon"/></a>
+																<a rel="nofollow" href="GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true"><img style="border:0" src="images/mdb.png" width="16" height="16" alt="MDB icon"/></a>
 															</td>
 														</tr><%
 													}
@@ -931,7 +931,7 @@ else if (mode.equals("add"))
 																Get the comma-separated codelists of this dataset
 															</td>
 															<td>
-																<a  href="CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST">
+																<a rel="nofollow" href="CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST">
 																	<img style="border:0" src="images/txt.png" width="16" height="16" alt=""/>
 																</a>
 															</td>
@@ -941,7 +941,7 @@ else if (mode.equals("add"))
 																Get the codelists of this dataset in XML format
 															</td>
 															<td>
-																<a  href="CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST&amp;format=xml">
+																<a rel="nofollow" href="CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST&amp;format=xml">
 																	<img style="border:0" src="images/xml.png" width="16" height="16" alt=""/>
 																</a>
 															</td>
@@ -959,7 +959,7 @@ else if (mode.equals("add"))
 														<tr>
 															<td><%=Util.replaceTags(title)%></td>
 															<td>
-																<a href="DocDownload?file=<%=Util.replaceTags(md5)%>"><img style="border:0" src="images/<%=Util.replaceTags(icon)%>" width="16" height="16" alt="icon"/></a>
+																<a rel="nofollow" href="DocDownload?file=<%=Util.replaceTags(md5)%>"><img style="border:0" src="images/<%=Util.replaceTags(icon)%>" width="16" height="16" alt="icon"/></a>
 																<%
 																if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){
 																	%>&nbsp;<a  href="DocUpload?ds_id=<%=ds_id%>&amp;delete=<%=Util.replaceTags(md5)%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>"><img style="border:0" src="images/delete.gif" width="14" height="14"/></a><%
@@ -976,10 +976,10 @@ else if (mode.equals("add"))
 														<tr style="height:20px;">
 															<td colspan="2">
 																<small>
-																	[ <a  href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>">Upload a document ...</a> ]
+																	[ <a rel="nofollow" href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>">Upload a document ...</a> ]
 																</small>
 																<small>
-																	[ <a  href="GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>">Open cache ...</a> ]
+																	[ <a rel="nofollow" href="GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.replaceTags(dataset.getIdentifier())%>">Open cache ...</a> ]
 																</small>
 															</td>
 														</tr>

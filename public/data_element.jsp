@@ -1360,7 +1360,7 @@ else{
 														Create an XML Schema for this element
 													</td>
 													<td style="width:27%">
-														<a href="GetSchema?id=ELM<%=delem_id%>">
+														<a rel="nofollow" href="GetSchema?id=ELM<%=delem_id%>">
 															<img style="border:0" src="images/xsd.png" width="16" height="16" alt=""/>
 														</a>
 													</td>
@@ -1372,7 +1372,7 @@ else{
 															Get the comma-separated codelist of this element
 														</td>
 														<td style="width:27%">
-															<a href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
+															<a rel="nofollow" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
 																<img style="border:0" src="images/txt.png" width="16" height="16" alt=""/>
 															</a>
 														</td>
@@ -1382,7 +1382,7 @@ else{
 															Get the codelist of this element in XML format
 														</td>
 														<td style="width:27%">
-															<a href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM&amp;format=xml">
+															<a rel="nofollow" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM&amp;format=xml">
 																<img style="border:0" src="images/xml.png" width="16" height="16" alt=""/>
 															</a>
 														</td>

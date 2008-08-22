@@ -752,7 +752,7 @@ else if (mode.equals("add"))
 															Create an XML Schema for this table
 														</td>
 														<td>
-															<a href="GetSchema?id=TBL<%=tableID%>">
+															<a rel="nofollow" href="GetSchema?id=TBL<%=tableID%>">
 																<img style="border:0" src="images/xsd.png" width="16" height="16" alt=""/>
 															</a>
 														</td>
@@ -766,7 +766,7 @@ else if (mode.equals("add"))
 															Create an instance XML for this table
 														</td>
 														<td>
-															<a href="GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
+															<a rel="nofollow" href="GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
 																<img style="border:0" src="images/xml.png" width="16" height="16" alt=""/>
 															</a>
 														</td>
@@ -780,7 +780,7 @@ else if (mode.equals("add"))
 															Create an XForm for this table
 														</td>
 														<td>
-															<a href="GetXForm?id=<%=tableID%>">
+															<a rel="nofollow" href="GetXForm?id=<%=tableID%>">
 																<img style="border:0" src="images/xml.png" width="16" height="16" alt=""/>
 															</a>
 														</td>
@@ -794,7 +794,7 @@ else if (mode.equals("add"))
 															Create an MS Excel template for this table&nbsp;<a onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=excel"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" /></a>
 														</td>
 														<td>
-															<a href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img style="border:0" src="images/xls.png" width="16" height="16" alt=""/></a>
+															<a rel="nofollow" href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img style="border:0" src="images/xls.png" width="16" height="16" alt=""/></a>
 														</td>
 													</tr><%
 												}
@@ -806,7 +806,7 @@ else if (mode.equals("add"))
 															Create an OpenDocument spreadsheet template for this table&nbsp;<a onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=ods"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" /></a>
 														</td>
 														<td>
-															<a href="GetOds?type=tbl&amp;id=<%=tableID%>"><img style="border:0" src="images/ods.png" width="16" height="16" alt=""/></a>
+															<a rel="nofollow" href="GetOds?type=tbl&amp;id=<%=tableID%>"><img style="border:0" src="images/ods.png" width="16" height="16" alt=""/></a>
 														</td>
 													</tr><%
 												}
@@ -818,7 +818,7 @@ else if (mode.equals("add"))
 															Get the comma-separated codelists of this table
 														</td>
 														<td>
-															<a href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL">
+															<a rel="nofollow" href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL">
 																<img style="border:0" src="images/txt.png" width="16" height="16" alt=""/>
 															</a>
 														</td>
@@ -828,7 +828,7 @@ else if (mode.equals("add"))
 															Get the codelists of this table in XML format
 														</td>
 														<td>
-															<a href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL&amp;format=xml">
+															<a rel="nofollow" href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL&amp;format=xml">
 																<img style="border:0" src="images/xml.png" width="16" height="16" alt=""/>
 															</a>
 														</td>
@@ -843,7 +843,7 @@ else if (mode.equals("add"))
 														<tr>
 															<td>Create dBaseII</td>
 															<td>
-																<a href="GetDbf/<%=dsTable.getID()%>">
+																<a rel="nofollow" href="GetDbf/<%=dsTable.getID()%>">
 																	<img style="border:0" src="images/txt.png" width="16" height="16" alt=""/>
 																</a>
 															</td>
@@ -859,7 +859,7 @@ else if (mode.equals("add"))
 													<tr style="height:20px;">
 														<td colspan="2">
 															<span class="barfont">
-																[ <a onclick="pop(this.href);return false;" href="GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
+																[ <a rel="nofollow" onclick="pop(this.href);return false;" href="GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
 															</span>
 														</td>
 													</tr>
@@ -1460,8 +1460,8 @@ else if (mode.equals("add"))
 														</div><%
 													}
 													if (elems!=null && elems.size()>0 && hasCommonElms){%>
-														<div>
-																(the <sup style="color:#858585;">C</sup> sign marks a common element)
+														<div class="barfont">
+															(the <sup style="color:#858585;">C</sup> sign marks a common element)
 														</div><%
 													}
 												}
