@@ -615,7 +615,7 @@ if (messages.trim().length()>0){
 								
 								// common elm indicator
 								if (elmCommon){ %>
-									<span class="commonelm"><sup>C</sup></span>
+									<sup class="commonelm">C</sup>
 									<%
 									if (hasNewerReleases){ %>
 										<a href="javascript:getNewerReleases('<%=elem.getID()%>', '<%=elem.getIdentifier()%>', <%=elem.getPositionInTable()%>)">
@@ -687,7 +687,7 @@ if (messages.trim().length()>0){
 					if (elems!=null && elems.size()>0 && hasCommonElms){%>
 						<tr style="height:10px;">
 							<td style="font-size:70%;width:100%" colspan="<%=String.valueOf(colCount)%>">
-								(the <span class="commonelm"><sup>C</sup></span> sign marks a common element)
+								(the <sup class="commonelm">C</sup> sign marks a common element)
 							</td>
 						</tr><%
 					}
