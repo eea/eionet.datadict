@@ -439,6 +439,12 @@ else{ %>
 									<strong><%=statusTxt%></strong>
 								</span><%
 							}
+							if (status.equals("Released")){
+								String releaseDate = dataElement.getDate();
+								releaseDate = releaseDate==null ? "" : eionet.util.Util.releasedDateShort(Long.parseLong(releaseDate));
+								%>
+								<sup class="commonelm"><%=releaseDate%></sup><%
+							}
 							%>
 						</td>
 						<%

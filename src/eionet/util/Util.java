@@ -125,12 +125,27 @@ public class Util {
         
         return time;
     }
+    
+    /**
+     * 
+     * @param timestamp
+     * @return
+     */
+    public static String releasedDateShort(long timestamp){
+    	return releasedDate(timestamp, true);
+    }
 
 	/**
 	 * A method for formatting the given timestamp into a String released_datasets.jsp.
 	 */
-     
 	public static String releasedDate(long timestamp){
+		return releasedDate(timestamp, false);
+	}
+	
+	/**
+	 * A method for formatting the given timestamp into a String released_datasets.jsp.
+	 */
+	private static String releasedDate(long timestamp, boolean shortMonth){
         
 		Date date = new Date(timestamp);
 		
@@ -153,7 +168,7 @@ public class Util {
 		months.put("10", "November");
 		months.put("11", "December");
 		
-		String time = day + " " + months.get(month) + " " + year;
+		String time = day + " " + (shortMonth ? months.get(month).toString().substring(0, 3) : months.get(month)) + " " + year;
 		return time;
 	}
 
