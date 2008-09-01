@@ -247,10 +247,10 @@
     <script type="text/javascript" src="modal_dialog.js"></script>
     <script type="text/javascript">
     // <![CDATA[
+    
 		function setLocation(){
-			var o = document.forms["form1"].searchUrl;
-			if (o!=null)
-				o.value=document.location.href;
+			if (document.forms["form1"].searchUrl)
+				document.forms["form1"].searchUrl.value = document.location.href;
 		}
 		
 		function goTo(mode){
@@ -258,6 +258,7 @@
 				document.location.assign("dataset.jsp?mode=add");
 			}
 		}
+		
     	function showSortedList(clmn,ordr) {
     		if ((document.forms["sort_form"].elements["sort_column"].value != clmn)
        			|| (document.forms["sort_form"].elements["sort_order"].value != ordr)) {
@@ -271,7 +272,8 @@
 	    	
 	    	// first confirm if the deletetion is about to take place at all
 			var b = confirm("Selected datasets will be deleted! You will be given a chance to delete them permanently or save them for restoring later. Click OK, if you want to continue. Otherwise click Cancel.");
-			if (b==false) return;
+			if (b==false)
+				return;
 				
 			// now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
 			openNoYes("yesno_dialog.html", "Do you want the selected datasets to be deleted permanently?\n(Note that working copies will always be permanently deleted)", delDialogReturn,100, 400);
@@ -279,7 +281,8 @@
     	
     	function delDialogReturn(){
 			var v = dialogWin.returnValue;
-			if (v==null || v=="" || v=="cancel") return;
+			if (v==null || v=="" || v=="cancel")
+				return;
 			
 			document.forms["form1"].elements["complete"].value = v;
 			deleteDatasetReady();
@@ -301,12 +304,13 @@
     	}
     	
     	function doLoad(){
-	    	if (document.forms["form1"]!=null && document.forms["form1"].elements["count_checkboxes"]!=null){
-		    	var v = document.forms["form1"].elements["count_checkboxes"].value;
-		    	if (v <= 0)
+	    	if (document.forms["form1"] && document.forms["form1"].elements["count_checkboxes"] && document.forms["form1"].elements["del_button"]){
+		    	if (document.forms["form1"].elements["count_checkboxes"].value <= 0){
 		    		document.forms["form1"].elements["del_button"].disabled = true;
+		    	}
     		}
     	}
+    	
     // ]]>
     </script>
 </head>

@@ -127,6 +127,7 @@ private String setDefaultAttrs(String name){
 	<title>Search elements - Data Dictionary</title>
 	<script type="text/javascript">
 	// <![CDATA[
+	
 		attrWindow=null;
 
 		function submitForm(action){
@@ -139,9 +140,10 @@ private String setDefaultAttrs(String name){
 			document.forms["form1"].sel_attr.value=id;
 			document.forms["form1"].sel_type.value=type;
 			submitForm('search.jsp');
-
 		}
+		
 		function onLoad(){
+		
 			<%
 			if (type != null){
 				%>
@@ -155,6 +157,7 @@ private String setDefaultAttrs(String name){
 				}
 				<% 
 			}
+			
 			if (search_precision != null){
 				%>
 				var sPrecision = '<%=search_precision%>';
@@ -169,32 +172,26 @@ private String setDefaultAttrs(String name){
 			}
 			%>
 			
-			if (document.forms["form1"].snoncom.checked)
+			if (document.forms["form1"].snoncom && document.forms["form1"].snoncom.checked)
 				changeFormStateForNonCommon();
-			else if (document.forms["form1"].scom.checked)
+			else if (document.forms["form1"].scom&& document.forms["form1"].scom.checked)
 				changeFormStateForCommon();
-		}
-		
-		function typeSelect(){
-			var o = document.forms["form1"].type;			
-			if (o!=null){
-				var sel = o.selectedIndex;
-				if (sel>=0){
-				}
-			}
 		}
 		
 		function changeFormStateForCommon(){
 			document.forms["form1"].dataset_idf.selectedIndex = 0;
 			document.forms["form1"].dataset_idf.disabled = true;
-			<%
-			if (isPopup){
-				%>document.forms["form1"].wrk_copies.disabled = true;<%
+			
+			if (document.forms["form1"].wrk_copies){
+				<%
+				if (isPopup){ %>
+					document.forms["form1"].wrk_copies.disabled = true;<%
+				}
+				else{ %>
+					document.forms["form1"].wrk_copies.disabled = false;<%
+				}
+				%>
 			}
-			else{
-				%>document.forms["form1"].wrk_copies.disabled = false;<%
-			}
-			%>
 			
 			if (document.forms["form1"].reg_status)
 				document.forms["form1"].reg_status.disabled = false;
@@ -202,9 +199,13 @@ private String setDefaultAttrs(String name){
 		}
 		
 		function changeFormStateForNonCommon(){
+		
 			document.forms["form1"].dataset_idf.disabled = false;
-			document.forms["form1"].wrk_copies.checked = false;
-			document.forms["form1"].wrk_copies.disabled = true;
+			
+			if (document.forms["form1"].wrk_copies){
+				document.forms["form1"].wrk_copies.checked = false;
+				document.forms["form1"].wrk_copies.disabled = true;
+			}
 			
 			if (document.forms["form1"].reg_status)
 				document.forms["form1"].reg_status.disabled = true;
@@ -350,7 +351,7 @@ if (isDisplayOperations){
 							</a>
 						</td>
 						<td colspan="2">
-							<select name="type" class="small" onchange="typeSelect()">
+							<select name="type" class="small">
 								<option value="">All</option>
 								<option value="CH1">Data element with fixed values (codes)</option>
 								<option value="CH2">Data element with quantitative values (e.g. measurements)</option>
