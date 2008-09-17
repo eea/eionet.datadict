@@ -9,6 +9,7 @@ import javax.servlet.http.*;
 
 import eionet.meta.*;
 import eionet.util.SecurityUtil;
+import eionet.util.sql.SQL;
 
 import com.tee.util.*;
 import com.tee.uit.security.*;

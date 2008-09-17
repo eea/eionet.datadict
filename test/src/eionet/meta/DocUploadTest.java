@@ -28,6 +28,7 @@ import javax.servlet.ServletInputStream;
 import eionet.test.Seed;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 
 import eionet.meta.DocUpload;
@@ -68,6 +69,7 @@ public class DocUploadTest extends DatabaseTestCase {
      */
 	protected void setUp() throws Exception {
 		ConnectionUtil.setConnectionType(ConnectionUtil.SIMPLE_CONNECTION);
+		super.setUp();
 	}
 
     /**
@@ -168,42 +170,85 @@ public class DocUploadTest extends DatabaseTestCase {
         TestCase.assertEquals(title, tmpTable.getValue(0, "TITLE"));
     }
 
+    /**
+     * 
+     * @param title
+     * @param ds_id
+     * @throws Exception
+     */
+    private void runSimpleDelete(String ds_id) throws Exception {
+
+        // Create the mock objects
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        HttpServletResponse response = createMock(HttpServletResponse.class);
+        ServletConfig servletConfig = createMock(ServletConfig.class);
+        HttpSession httpSession = createMock(HttpSession.class);
+		
+        // Create the target object        
+        DocUpload instance = new DocUpload();
+
+        // Call the init of the servlet with the mock ServletConfig
+        instance.init(servletConfig);
+
+        // This is what we expect for the request object
+        request.setCharacterEncoding("UTF-8");
+        expect(request.getSession(false)).andReturn((HttpSession) httpSession);
+        expect(request.getParameter("idf")).andReturn("CDDA");
+        expect(request.getParameter("ds_id")).andReturn(ds_id);
+
+        String absPath = DocUpload.getAbsFilePath(getClass().getClassLoader().getResource(Seed.HLP).getFile());
+        String legalizedAbsPath = DocUpload.legalizePath(absPath);
+        String filePathMd5 = Util.digestHexDec(legalizedAbsPath, "MD5");
+        expect(request.getParameter("delete")).andReturn(filePathMd5);
+
+        // this is what expect for the httpSession
+        DDUser user = new TestUser();
+        user.authenticate("heinlja", "heinlja"); // THIS USER ACCOUNT MUST BE LISTED IN dd.group!
+        
+        expect(httpSession.getAttribute("eionet.util.SecurityUtil.user")).andReturn(user);
+        expectLastCall().times(1, 2);
+
+        // this is what we expect for the response object
+        response.sendRedirect((String) anyObject());
+		
+        // start the replay for all mock objects
+        replay(request);
+        replay(response);
+        replay(servletConfig);
+        replay(httpSession);
+
+        // and call your doGet, doPost, or service methods at will.
+        instance.doPost(request, response);
+
+        // verify the responses
+        verify(request);
+        verify(response);
+        verify(servletConfig);
+        verify(httpSession);
+        
+        // verify that there are the expected number of rows in the DOC table
+        QueryDataSet queryDataSet = new QueryDataSet(getConnection());
+        queryDataSet.addTable("DOC", "select * from DOC where OWNER_TYPE='dst' and OWNER_ID=" + ds_id + " and MD5_PATH='" + filePathMd5 + "'");
+        ITable tmpTable = queryDataSet.getTable("DOC");
+        TestCase.assertEquals(tmpTable.getRowCount(), 0);
+    }
+
+    /**
+     * 
+     * @param title
+     * @throws Exception
+     */
     private void runSimpleUpload(String title) throws Exception {
         runSimpleUpload(title, "23");
     }
 
-    // -------------- The tests ------------
-    public void testUnicodeTitle() throws Exception {
+    /**
+     * 
+     * @throws Exception
+     */
+    public void testUploadAndDelete() throws Exception {
         runSimpleUpload("Test file for Dataset ¤23");
+        runSimpleDelete("23");
     }
-
-//    public void testQuote() throws Exception {
-//        // Here the quote must be escaped
-//        runSimpleUpload("Please don't fail!");
-//    }
-//
-//    public void testBackslashQuote() throws Exception {
-//        // Here the escape must be escaped (and the quote)
-//        runSimpleUpload("Please don\\'t fail!");
-//    }
-//
-//    public void testBackslashO() throws Exception {
-//        // \o is not a special escape sequence in MySQL
-//        runSimpleUpload("Please do n\\ot fail!");
-//    }
-//
-//    public void testBackslashT() throws Exception {
-//        // \t is an escape sequence for TAB, but must be escaped
-//        runSimpleUpload("Please do no\\t fail!");
-//    }
-//
-//    public void testLessThan() throws Exception {
-//        runSimpleUpload("2 is < ∞ (infinite)");
-//    }
-//
-//    public void testGreek() throws Exception {
-//        runSimpleUpload("Τίτλος: Ηλέκτρα");
-//    }
-
 }
 

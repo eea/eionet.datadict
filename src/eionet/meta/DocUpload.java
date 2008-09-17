@@ -58,7 +58,7 @@ public class DocUpload extends HttpServlet{
 
 			String del = req.getParameter(REQPAR_DELETE);
 			if (!Util.voidStr(del)){
-				delete(del);
+				delete(dstID, del);
 				res.sendRedirect("dataset.jsp?mode=view&ds_id=" + dstID);
 				return;
 			}
@@ -67,7 +67,7 @@ public class DocUpload extends HttpServlet{
 			if (Util.voidStr(filePath))
 				throw new ServletException("Missing property: " + PropsIF.DOC_PATH);
 			
-			File file = new File(getAbsFilePath(req));
+			File file = new File(getAbsFilePath(req.getParameter(REQPAR_FILE)));
 			HttpUploader.upload(req, file);
 			save(dstID, file, req.getParameter(REQPAR_TITLE));
 			res.sendRedirect("dataset.jsp?mode=view&ds_id=" + dstID);
@@ -90,28 +90,34 @@ public class DocUpload extends HttpServlet{
 	 * @return
 	 * @throws Exception
 	 */
-	private String getAbsFilePath(HttpServletRequest req) throws Exception{
+	public static String getAbsFilePath(String submittedFilePath) throws Exception{
 		
 		String path = Props.getProperty(PropsIF.DOC_PATH);
 		if (Util.voidStr(path))
 			throw new Exception("Missing property: " + PropsIF.DOC_PATH);
 			
-		if (!path.endsWith(File.separator)) path = path + File.separator;
-		return path + extractFileName(req);
+		File f = new File(path, extractFileName(submittedFilePath));
+		return f.getAbsolutePath();
 	}
 	
 	/**
 	 * @param req
 	 * @return
-	 * @throws Exception
+	 * @throws DDException
 	 */
-	private String extractFileName(HttpServletRequest req) throws Exception{
-		String fullName = req.getParameter(REQPAR_FILE);
-		if (Util.voidStr(fullName)) throw new Exception("Missing file path!");
-		int i = fullName.lastIndexOf("\\");
-		if (i==-1) i = fullName.lastIndexOf("/");
-		if (i==-1) throw new Exception("Invalid file path!");
-		return fullName.substring(i+1, fullName.length());
+	private static String extractFileName(String submittedFilePath) throws DDException{
+		
+		if (Util.voidStr(submittedFilePath))
+			throw new DDException("Missing file path!");
+		
+		if (submittedFilePath.indexOf("\\")<0 && submittedFilePath.indexOf("/")<0)
+			return submittedFilePath;
+		else{
+			int i = submittedFilePath.lastIndexOf("\\");
+			if (i<0)
+				i = submittedFilePath.lastIndexOf("/");
+			return submittedFilePath.substring(i+1, submittedFilePath.length());
+		}
 	}
 	
 	/**
@@ -157,23 +163,52 @@ public class DocUpload extends HttpServlet{
 
 	/**
 	 * @param md5
-	 * @throws Exception
+	 * @throws DDConnectionException 
+	 * @throws SQLException 
 	 */
-	private void delete(String md5) throws Exception{
+	private void delete(String dstId, String md5) throws DDConnectionException, SQLException{
 		
 		openConnection();
-		INParameters inParams = new INParameters();
-		String sqlStr = "select * from DOC where MD5_PATH=" + inParams.add(md5);
-		PreparedStatement stmt = SQL.preparedStatement(sqlStr, inParams, conn);
-		ResultSet rs = stmt.executeQuery();
-		String absPath = rs.next() ? rs.getString("ABS_PATH") : null;
-		if (absPath==null)
-			return;
 		
-		stmt = SQL.preparedStatement("delete from DOC where MD5_PATH=", inParams, conn);
-		stmt.executeUpdate();
-		File file = new File(absPath);
-		if (file.exists() && !file.isDirectory()) file.delete();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		try{
+			// we might need to delete the physical file as well, so before deleting the row in
+			// DOC table, we must query the physical path of the physical file 
+			INParameters inParams = new INParameters();
+			String sqlStr = "select * from DOC where MD5_PATH=" + inParams.add(md5) +
+				" and OWNER_TYPE='dst' and OWNER_ID=" + inParams.add(dstId, Types.INTEGER);
+			stmt = SQL.preparedStatement(sqlStr, inParams, conn);
+			rs = stmt.executeQuery();
+			String absPath = null;
+			if (rs.next())
+				absPath = rs.getString("ABS_PATH");
+			else
+				return; // if the above query returned no rows, there's nothing to de here no more
+			
+			SQL.close(rs);
+			SQL.close(stmt);
+			
+			// delete the row in DOC table
+			stmt = SQL.preparedStatement("delete from DOC where MD5_PATH=? and OWNER_TYPE='dst' and OWNER_ID=?", inParams, conn);
+			stmt.executeUpdate();
+			SQL.close(stmt);
+			
+			// see if there are any more rows left with the same file path,
+			// if no then delete the physically as well
+			stmt = conn.prepareStatement("select count(*) from DOC where MD5_PATH=?");
+			stmt.setString(1, md5);
+			rs = stmt.executeQuery();
+			if (rs.next() && rs.getInt(1)==0){
+				File file = new File(absPath);
+				if (file.exists() && !file.isDirectory())
+					file.delete();
+			}
+		}
+		finally{
+			SQL.close(rs);
+			SQL.close(stmt);
+		}
 	}
 		
 	/**
@@ -207,7 +242,7 @@ public class DocUpload extends HttpServlet{
 	 * @param path
 	 * @return
 	 */
-	private String legalizePath(String path){
+	public static String legalizePath(String path){
 		StringBuffer buf = new StringBuffer();
 		for (int i=0; path!=null && i<path.length(); i++){
 			char c = path.charAt(i);

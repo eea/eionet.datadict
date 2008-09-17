@@ -348,6 +348,12 @@ public class CopyHandler extends Object {
         // copy complex attributes
         copyComplexAttrs(newID, tblID, "T");
         
+		// copy documents
+		gen.clear();
+		gen.setTable("DOC");
+		gen.setField("OWNER_ID", newID);
+		copy(gen, "OWNER_TYPE='tbl' and OWNER_ID=" + tblID);
+
         // copy elements
         Vector elmsToCopy = new Vector();
         Vector elmsToRelate = new Vector();
@@ -380,13 +386,19 @@ public class CopyHandler extends Object {
     }
 
     /**
-    *
-    */
+     * 
+     * @param dstID
+     * @param isMakeWorkingCopy
+     * @param resetVersionAndStatus
+     * @return
+     * @throws Exception
+     */
     public String copyDst(String dstID,
                           boolean isMakeWorkingCopy,
                           boolean resetVersionAndStatus)throws Exception{
 
-        if (dstID==null) return null;
+        if (dstID==null)
+        	return null;
         
         // copy row in DATASET table
         SQLGenerator gen = new SQLGenerator();        
@@ -428,7 +440,13 @@ public class CopyHandler extends Object {
 		gen.setTable("DST2ROD");
 		gen.setField("DATASET_ID", newID);
 		copy(gen, "DATASET_ID=" + dstID);
-        
+		
+		// copy documents
+		gen.clear();
+		gen.setTable("DOC");
+		gen.setField("OWNER_ID", newID);
+		copy(gen, "OWNER_TYPE='dst' and OWNER_ID=" + dstID);
+
 		// copy tables
 		copyDstTables(dstID, newID);
         

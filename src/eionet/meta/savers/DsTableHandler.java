@@ -8,6 +8,7 @@ import javax.servlet.http.*;
 
 import eionet.meta.*;
 import eionet.util.RequestMessages;
+import eionet.util.sql.SQL;
 
 import com.tee.util.*;
 import com.tee.uit.security.*;
@@ -283,6 +284,9 @@ public class DsTableHandler extends BaseHandler {
  		} 		
 		stmt.executeUpdate(buf.toString());
 		
+		deleteDocs(del_IDs);
+		deleteCache(del_IDs);
+		
         // delete the tables themselves
         buf = new StringBuffer("delete from DS_TABLE where ");
         for (int i=0; i<del_IDs.length; i++){
@@ -297,7 +301,45 @@ public class DsTableHandler extends BaseHandler {
 
         stmt.close();
     }
-    
+
+	/**
+	 * 
+	 * @throws SQLException
+	 */
+	private void deleteDocs(String[] del_IDs) throws SQLException {
+
+		PreparedStatement stmt = null;
+		try{
+			stmt = conn.prepareStatement("delete from DOC where OWNER_TYPE='tbl' and OWNER_ID=?");
+			for (int i=0; i<del_IDs.length; i++){
+				stmt.setInt(1, Integer.valueOf(del_IDs[i]).intValue());
+				stmt.executeUpdate();
+			}
+		}
+		finally{
+			SQL.close(stmt);
+		}
+	}
+
+	/**
+	 * 
+	 * @throws SQLException
+	 */
+	private void deleteCache(String[] del_IDs) throws SQLException {
+
+		PreparedStatement stmt = null;
+		try{
+			stmt = conn.prepareStatement("delete from CACHE where OBJ_TYPE='tbl' and OBJ_ID=?");
+			for (int i=0; i<del_IDs.length; i++){
+				stmt.setInt(1, Integer.valueOf(del_IDs[i]).intValue());
+				stmt.executeUpdate();
+			}
+		}
+		finally{
+			SQL.close(stmt);
+		}
+	}
+
     /*
      * 
      */

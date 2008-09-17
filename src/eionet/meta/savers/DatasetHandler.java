@@ -17,6 +17,7 @@ import eionet.meta.Dataset;
 import com.tee.uit.security.*;
 
 import eionet.util.SecurityUtil;
+import eionet.util.sql.SQL;
 
 public class DatasetHandler extends BaseHandler {
 
@@ -414,6 +415,8 @@ public class DatasetHandler extends BaseHandler {
 		deleteAttributes();
 		deleteComplexAttributes();
 		deleteRodLinks();
+		deleteCache();
+		deleteDocs();
 		deleteTablesAndElements();
 		
 		// delete the datasets themselves
@@ -612,6 +615,10 @@ public class DatasetHandler extends BaseHandler {
         }
     }
 
+    /**
+     * 
+     * @throws SQLException
+     */
 	private void deleteRodLinks() throws SQLException {
 
 		StringBuffer buf = new StringBuffer("delete from DST2ROD where ");
@@ -629,7 +636,50 @@ public class DatasetHandler extends BaseHandler {
 			try{if (stmt != null) stmt.close();}catch (SQLException sqlee){}
 		}
 	}
+	
+	/**
+	 * 
+	 * @throws SQLException
+	 */
+	private void deleteDocs() throws SQLException {
 
+		PreparedStatement stmt = null;
+		try{
+			stmt = conn.prepareStatement("delete from DOC where OWNER_TYPE='dst' and OWNER_ID=?");
+			for (int i=0; i<ds_ids.length; i++){
+				stmt.setInt(1, Integer.valueOf(ds_ids[i]).intValue());
+				stmt.executeUpdate();
+			}
+		}
+		finally{
+			SQL.close(stmt);
+		}
+	}
+
+	/**
+	 * 
+	 * @throws SQLException
+	 */
+	private void deleteCache() throws SQLException {
+
+		PreparedStatement stmt = null;
+		try{
+			stmt = conn.prepareStatement("delete from CACHE where OBJ_TYPE='dst' and OBJ_ID=?");
+			for (int i=0; i<ds_ids.length; i++){
+				stmt.setInt(1, Integer.valueOf(ds_ids[i]).intValue());
+				stmt.executeUpdate();
+			}
+		}
+		finally{
+			SQL.close(stmt);
+		}
+	}
+
+
+	/**
+	 * 
+	 * @throws SQLException
+	 */
     private void processAttributes() throws SQLException {
         Enumeration parNames = req.getParameterNames();
         while (parNames.hasMoreElements()){
@@ -878,10 +928,10 @@ public class DatasetHandler extends BaseHandler {
         	stmt.executeUpdate(buf.toString());
         	
         	gen.clear();
-			gen.setTable("DST2ROD");
-        	gen.setFieldExpr("DATASET_ID", newID);
+			gen.setTable("DOC");
+        	gen.setFieldExpr("OWNER_ID", newID);
         	buf = new StringBuffer(gen.updateStatement());
-        	buf.append(" where DATASET_ID=").append(oldID);
+        	buf.append(" where OWNER_TYPE='dst' and OWNER_ID=").append(oldID);
         	stmt.executeUpdate(buf.toString());
         	
     	}
