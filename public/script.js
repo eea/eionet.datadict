@@ -113,7 +113,7 @@ function visibleInputsToQueryString(formName, skipByName){
 			if (val!=null && val.length>0){
 				if (result.length > 0)
 					result = result + "&";
-				result = result + elm.name + "=" + escape(values[i]);
+				result = result + encodeURIComponent(elm.name) + "=" + encodeURIComponent(values[i]);
 			}
 		}
 	}

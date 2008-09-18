@@ -29,10 +29,10 @@ function Querystring(qs) { // optionally pass a querystring to parse
 	for (var i=0;i<args.length;i++) {
 		var value;
 		var pair = args[i].split('=')
-		var name = unescape(pair[0])
+		var name = decodeURIComponent(pair[0])
 
 		if (pair.length == 2)
-			value = unescape(pair[1])
+			value = decodeURIComponent(pair[1])
 		else
 			value = name
 		
@@ -103,7 +103,7 @@ function Querystring_to_string(){
 					if (result.length>0)
 						result = result + "&";
 //					alert("__2: " + values[j]);
-					result = result + key + "=" + escape(values[j]);
+					result = result + key + "=" + encodeURIComponent(values[j]);
 				}
 			}
 		}

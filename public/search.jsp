@@ -588,8 +588,8 @@ if (isDisplayOperations){
 						<tr>
 							<td colspan="2">&nbsp;</td>
 							<td colspan="2" align="left" class="smallfont_light">
-								<input type="radio" name="common" value="false" id="snoncom" checked="checked" onchange="changeFormStateForNonCommon()"/><label for="snoncom">Non-common elements</label>
-								<input type="radio" name="common" id="scom" value="true" onchange="changeFormStateForCommon()"/><label for="scom">Common elements</label>
+								<input type="radio" name="common" value="false" id="snoncom" checked="checked" onclick="changeFormStateForNonCommon()"/><label for="snoncom">Non-common elements</label>
+								<input type="radio" name="common" id="scom" value="true" onclick="changeFormStateForCommon()"/><label for="scom">Common elements</label>
 							</td>
 						</tr><%
 					}

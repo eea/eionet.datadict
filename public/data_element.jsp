@@ -895,16 +895,25 @@
 			arr[0] = strType;
 			requestQS.setValues_("type", arr);
 			
-			//alert("requestQS = " + requestQS.toString());
-			
 			slctAllValues();
 			var s = visibleInputsToQueryString("form1");
 			var inputsQS = new Querystring(s);
 			inputsQS.remove("typeSelect");
 			
 			requestQS.removeAll(inputsQS);
-			var newLocation = "data_element.jsp?" + requestQS.toString() + "&" + inputsQS.toString();
-			document.location.assign(newLocation);
+			
+			// The reason we want to exclude "reg_status" is that IE will change occurance
+			// of "&reg_status" substring to "®_status". So we will add reg_status explicitly
+			// right to the start of the query string, so that in the final URL it appears right after the question mark.
+			requestQS.remove("reg_status");
+			inputsQS.remove("reg_status");
+			
+			var newLocation = "data_element.jsp?";
+			if (document.forms["form1"].reg_status)
+				newLocation = newLocation + "reg_status=" + escape(document.forms["form1"].reg_status.value) + "&";
+			newLocation = newLocation + requestQS.toString() + "&" + inputsQS.toString();
+			
+			window.location.assign(newLocation);
 		}
 		
 		function onBodyLoad(){
@@ -958,20 +967,33 @@
 				if (elmDataType == null || elmDataType.length==0)
 					return;
 				
-				var requestQS = new Querystring();
 				var arr = new Array();
 				arr[0] = elmDataType;
+				
+				var requestQS = new Querystring();				
 				requestQS.setValues_("elm_datatype", arr);
 				requestQS.remove("<%=datatypeID%>");
 				
 				slctAllValues();
+				
 				var s = visibleInputsToQueryString("form1");
 				var inputsQS = new Querystring(s);
 				inputsQS.remove("<%=datatypeID%>");
 				
 				requestQS.removeAll(inputsQS);
-				var newLocation = "data_element.jsp?" + requestQS.toString() + "&" + inputsQS.toString();
-				document.location.assign(newLocation);
+
+				// The reason we want to exclude "reg_status" is that IE will change occurance
+				// of "&reg_status" substring to "®_status". So we will add reg_status explicitly
+				// right to the start of the query string, so that in the final URL it appears right after the question mark.
+				requestQS.remove("reg_status");
+				inputsQS.remove("reg_status");
+				
+				var newLocation = "data_element.jsp?";
+				if (document.forms["form1"].reg_status)
+					newLocation = newLocation + "reg_status=" + escape(document.forms["form1"].reg_status.value) + "&";
+				newLocation = newLocation + requestQS.toString() + "&" + inputsQS.toString();
+				
+				window.location.assign(newLocation);
 				<%
 			}
 			%>
