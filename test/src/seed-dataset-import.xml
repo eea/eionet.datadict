@@ -4,7 +4,7 @@
 <DATASET>
 <Row>
   <DATASET_ID><![CDATA[4]]></DATASET_ID>
-  <Identifier><![CDATA[NiD]]></Identifier>
+  <Identifier><![CDATA[NiD_test]]></Identifier>
   <SHORT_NAME><![CDATA[NiD_water]]></SHORT_NAME>
   <Version><![CDATA[November 2007]]></Version>
   <Name><![CDATA[Evaluation of water quality under the Nitrates Directive.]]></Name>

@@ -936,7 +936,8 @@ public class DataElementHandler extends BaseHandler {
             // make sure that the value matches fixed values for 'Datatype'
             // we can do this in insertAttribute() only, because the problem
             // comes from Import tool only.
-            if (searchEngine==null) searchEngine = new DDSearchEngine(conn, "", ctx);
+            if (searchEngine==null)
+            	searchEngine = new DDSearchEngine(conn, "", ctx);
             Vector v = searchEngine.getFixedValues(attrId, "attr");
             boolean hasMatch = false;
             for (int i=0; v!=null && i<v.size(); i++){

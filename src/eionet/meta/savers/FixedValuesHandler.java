@@ -123,6 +123,7 @@ public class FixedValuesHandler extends BaseHandler{
 		try{
 			stmt = SQL.preparedStatement(SQL.insertStatement("FXV", map), inParams, conn);
 			stmt.executeUpdate();
+			setLastInsertID();
 		}
 		finally{
 			SQL.close(stmt);
@@ -161,6 +162,7 @@ public class FixedValuesHandler extends BaseHandler{
 			buf.append(" where FXV_ID=").append(inParams.add(fxvID, Types.INTEGER));
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
+			lastInsertID = fxvID;
 		}
 		finally{
 			SQL.close(stmt);
