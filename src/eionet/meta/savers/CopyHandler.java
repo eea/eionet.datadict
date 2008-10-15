@@ -6,6 +6,7 @@ import java.util.*;
 import eionet.meta.*;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
+import eionet.util.sql.SQL;
 
 import javax.servlet.*;
 import com.tee.util.*;
@@ -328,58 +329,69 @@ public class CopyHandler extends Object {
         if (newID==null)
             return null;
 
-        Statement stmt = conn.createStatement();
+        Statement stmt = null;
+        ResultSet rs = null;
+        try{
+        	stmt = conn.createStatement();
         
-        // set the date
-        gen.clear();
-        gen.setTable("DS_TABLE");
-        gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-        if (user!=null)
-        	gen.setField("USER", user.getUserName());
-        stmt.executeUpdate(gen.updateStatement() +
-                                            " where TABLE_ID=" + newID);
-        
-        // copy simple attributes
-        gen.clear();
-        gen.setTable("ATTRIBUTE");
-        gen.setField("DATAELEM_ID", newID);
-        copy(gen, "DATAELEM_ID=" + tblID + " and PARENT_TYPE='T'");
-        
-        // copy complex attributes
-        copyComplexAttrs(newID, tblID, "T");
-        
-		// copy documents
-		gen.clear();
-		gen.setTable("DOC");
-		gen.setField("OWNER_ID", newID);
-		copy(gen, "OWNER_TYPE='tbl' and OWNER_ID=" + tblID);
-
-        // copy elements
-        Vector elmsToCopy = new Vector();
-        Vector elmsToRelate = new Vector();
-        StringBuffer buf = new StringBuffer();
-        buf.append("select TBL2ELEM.DATAELEM_ID, DATAELEM.PARENT_NS from TBL2ELEM ").
-        append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID ").
-        append("where DATAELEM.DATAELEM_ID is not null and TABLE_ID=").
-        append(tblID).append(" order by POSITION asc");
-        ResultSet rs = stmt.executeQuery(buf.toString());
-        while (rs.next()){
-        	boolean isCommonElm = rs.getString("DATAELEM.PARENT_NS")==null;
-        	if (!isCommonElm)
-        		elmsToCopy.add(rs.getString(1));
-        	else
-        		elmsToRelate.add(rs.getString(1));
+	        // set the date
+	        gen.clear();
+	        gen.setTable("DS_TABLE");
+	        gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+	        if (user!=null)
+	        	gen.setField("USER", user.getUserName());
+	        stmt.executeUpdate(gen.updateStatement() +
+	                                            " where TABLE_ID=" + newID);
+	        
+	        // copy simple attributes
+	        gen.clear();
+	        gen.setTable("ATTRIBUTE");
+	        gen.setField("DATAELEM_ID", newID);
+	        copy(gen, "DATAELEM_ID=" + tblID + " and PARENT_TYPE='T'");
+	        
+	        // copy complex attributes
+	        copyComplexAttrs(newID, tblID, "T");
+	        
+			// copy documents
+			gen.clear();
+			gen.setTable("DOC");
+			gen.setField("OWNER_ID", newID);
+			copy(gen, "OWNER_TYPE='tbl' and OWNER_ID=" + tblID);
+	
+	        // copy elements
+			
+	        Vector elms = new Vector();
+	        Vector commonnessFlags = new Vector();
+	        
+	        StringBuffer buf = new StringBuffer();
+	        buf.append("select TBL2ELEM.DATAELEM_ID, DATAELEM.PARENT_NS from TBL2ELEM ").
+	        append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID ").
+	        append("where DATAELEM.DATAELEM_ID is not null and TABLE_ID=").
+	        append(tblID).append(" order by POSITION asc");
+	        
+	        rs = stmt.executeQuery(buf.toString());
+	        while (rs.next()){
+	        	elms.add(rs.getString(1));
+	        	commonnessFlags.add(new Boolean(rs.getString("DATAELEM.PARENT_NS")==null));
+	        }
+	        
+	        for (int i=0; i<elms.size(); i++){
+	        	
+	        	String elmId = (String)elms.get(i);
+	        	if (((Boolean)commonnessFlags.get(i)).booleanValue() == false) // non-common element, has to copied
+	        		elmId = copyElm(elmId, false, false, false);
+	        	
+	        	gen.clear();
+	            gen.setTable("TBL2ELEM");
+	            gen.setFieldExpr("TABLE_ID", newID);
+	            gen.setFieldExpr("DATAELEM_ID", elmId);
+	            gen.setFieldExpr("POSITION", String.valueOf(i+1));
+	            stmt.executeUpdate(gen.insertStatement());
+	        }
         }
-        for (int i=0; i<elmsToCopy.size(); i++){
-        	elmsToRelate.add(copyElm((String)elmsToCopy.get(i), false, false, false));
-        }
-        for (int i=0; i<elmsToRelate.size(); i++){
-        	gen.clear();
-            gen.setTable("TBL2ELEM");
-            gen.setFieldExpr("TABLE_ID", newID);
-            gen.setFieldExpr("DATAELEM_ID", (String)elmsToRelate.get(i));
-            gen.setFieldExpr("POSITION", String.valueOf(i+1));
-            stmt.executeUpdate(gen.insertStatement());
+        finally{
+        	SQL.close(rs);
+        	SQL.close(stmt);
         }
         
         return newID;
