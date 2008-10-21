@@ -6,6 +6,10 @@
 
 
 <%
+	response.setHeader("Pragma", "No-cache");
+	response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
+	response.setHeader("Expires", Util.getExpiresDateString());
+
 	request.setCharacterEncoding("UTF-8");
 	
 	ServletContext ctx = getServletContext();			

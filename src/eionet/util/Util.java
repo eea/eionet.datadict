@@ -52,6 +52,9 @@ public class Util {
 		{"integer", "double"},
 		{"float", "double"}
 		};
+	
+	/** */
+	private static String expiresDateString;
     
     /**
      * A method for determining if a String is void.
@@ -1087,9 +1090,27 @@ public class Util {
 		return false;
 	}
 	
-    /**
-    * main
-    */
+	/**
+	 * 
+	 * @return
+	 */
+	public static synchronized String getExpiresDateString(){
+		
+		if (expiresDateString==null){
+			java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.UK);
+	    	dateFormat.setTimeZone(TimeZone.getTimeZone(""));
+	    	expiresDateString = dateFormat.format(new Date(0));
+		}
+		
+		return expiresDateString;
+	}
+
+	/**
+	 * 
+	 * @param args
+	 */
     public static void main(String[] args){
+    	
+    	System.out.println(getExpiresDateString());
     }
 }

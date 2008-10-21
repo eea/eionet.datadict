@@ -1,7 +1,10 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
+response.setHeader("Pragma", "No-cache");
+response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
+response.setHeader("Expires", Util.getExpiresDateString());
 
 request.setCharacterEncoding("UTF-8");
 

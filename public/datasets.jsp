@@ -95,11 +95,11 @@
 }%>
 
 <%
-	request.setCharacterEncoding("UTF-8");
+	response.setHeader("Pragma", "No-cache");
+	response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
+	response.setHeader("Expires", Util.getExpiresDateString());
 
-	response.setHeader("Pragma", "no-cache");
-	response.setHeader("Cache-Control", "no-cache");
-	response.setDateHeader("Expires", 0);
+	request.setCharacterEncoding("UTF-8");
 
 	ServletContext ctx = getServletContext();
 	

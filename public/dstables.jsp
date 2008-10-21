@@ -10,9 +10,9 @@
 	request.setCharacterEncoding("UTF-8");
 	
 	// ensure the page is not cached
-	response.setHeader("Pragma", "no-cache");
-	response.setHeader("Cache-Control", "no-cache");
-	response.setDateHeader("Expires", 0);
+	response.setHeader("Pragma", "No-cache");
+	response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
+	response.setHeader("Expires", Util.getExpiresDateString());
 
 	ServletContext ctx = getServletContext();
 	DDUser user = SecurityUtil.getUser(request);

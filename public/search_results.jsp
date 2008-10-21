@@ -82,6 +82,10 @@
 }%>
 
 <%
+	response.setHeader("Pragma", "No-cache");
+	response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
+	response.setHeader("Expires", Util.getExpiresDateString());
+
 	request.setCharacterEncoding("UTF-8");
 	
 	// if this is a search for common elements only, forward the request to common_elms.jsp
