@@ -15,6 +15,7 @@ import com.tee.uit.security.*;
 import eionet.util.SecurityUtil;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.sql.SQL;
 import eionet.util.sql.Transaction;
 
 /*
@@ -870,33 +871,36 @@ public class VersionManager{
 	/**
 	*
 	*/
-	public String getLatestTblID(DsTable tbl) throws SQLException{
+	public String getLatestReleasedTblID(DsTable tbl) throws SQLException{
         
-		StringBuffer buf = new StringBuffer().
-		append("select DS_TABLE.TABLE_ID from DS_TABLE ").
+		String tblIdf = tbl.getIdentifier();
+		String parentNs = tbl.getParentNs();
+		if (Util.nullString(tblIdf) || Util.nullString(parentNs))
+			return null;
+		
+		StringBuffer buf = new StringBuffer();
+		buf.append("select DST2TBL.TABLE_ID from DS_TABLE ").
 		append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ").
 		append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ").
-		append("where DS_TABLE.WORKING_COPY='N' and DS_TABLE.PARENT_NS=").
-		append(tbl.getParentNs()).append(" and DS_TABLE.IDENTIFIER=").
-		append(Util.strLiteral(tbl.getIdentifier())).
-		append(" and DATASET.DELETED is null order by DATASET.DATASET_ID desc");
-        
-		Statement stmt = null;
+		append("where DS_TABLE.IDENTIFIER=? and DATASET.CORRESP_NS=? ").
+		append("and DATASET.REG_STATUS='Released' and DATASET.WORKING_COPY='N' ").
+		append("and DATASET.CHECKEDOUT_COPY_ID is null and DATASET.WORKING_USER is null and DATASET.DELETED is null ").
+		append("order by DST2TBL.DATASET_ID desc");
+		
+		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try{
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(buf.toString());
-			if (rs.next()) return rs.getString(1);
+			pstmt = conn.prepareStatement(buf.toString());
+			pstmt.setString(1, tblIdf);
+			pstmt.setInt(2, Integer.parseInt(parentNs));
+			
+			rs = pstmt.executeQuery();
+			return rs.next() ? rs.getString(1) : null;
 		}
 		finally{
-			try{
-				if (stmt!=null) stmt.close();
-				if (rs!=null) rs.close();
-			}
-			catch (SQLException e){}
+			SQL.close(rs);
+			SQL.close(pstmt);
 		}
-		
-		return null;
 	}
     
 	/**

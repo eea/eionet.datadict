@@ -930,7 +930,7 @@ public class DDSearchEngine {
 		if (!Util.nullString(pns))
 			tbl.setParentNs(pns);
 		
-		String latestID = verMan.getLatestTblID(tbl);
+		String latestID = verMan.getLatestReleasedTblID(tbl);
 		if (Util.nullString(latestID))
 			return null;
 		else

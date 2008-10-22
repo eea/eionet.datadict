@@ -130,7 +130,10 @@
 	String copy_tbl_id = request.getParameter("copy_tbl_id");
 	String dsID = request.getParameter("ds_id");
 	String dsName = request.getParameter("ds_name");
-	mode = request.getParameter("mode");	
+	String parentNs = request.getParameter("pns");
+	
+	mode = request.getParameter("mode");
+	
 	if (mode == null || mode.length()==0){
 		request.setAttribute("DD_ERR_MSG", "Missing request parameter: mode");
 		request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -144,8 +147,8 @@
 		}
 	}
 	else if (mode.equals("view")){
-		if (Util.voidStr(tableID) && (Util.voidStr(tableIdf))){
-			request.setAttribute("DD_ERR_MSG", "Missing request parameter: table_id or table_idf");
+		if (Util.voidStr(tableID) && (Util.voidStr(tableIdf) || Util.voidStr(parentNs))){
+			request.setAttribute("DD_ERR_MSG", "Missing request parameter: table_id or (table_idf and pns)");
 			request.getRequestDispatcher("error.jsp").forward(request, response);
 			return;
 		}
@@ -164,6 +167,9 @@
 			return;
 		}
 	}
+
+	// if requested by alphanumeric identifier, it means the table's latest version is requested 
+	boolean isLatestRequested = mode.equals("view") && !Util.voidStr(tableIdf) && !Util.voidStr(parentNs);
 
 	//// handle the POST request//////////////////////
 	//////////////////////////////////////////////////
@@ -258,9 +264,17 @@
 		// if not in add mode, get the table object
 		DsTable dsTable = null;
 		if (!mode.equals("add")){
-			dsTable = searchEngine.getDatasetTable(tableID);
+			
+			if (isLatestRequested){
+				dsTable = searchEngine.getLatestTbl(tableIdf, parentNs);
+				if (dsTable!=null)
+					tableID = dsTable.getID();
+			}
+			else
+				dsTable = searchEngine.getDatasetTable(tableID);
+			
 			if (dsTable == null){
-				request.setAttribute("DD_ERR_MSG", "No table found with this id number: " + tableID);
+				request.setAttribute("DD_ERR_MSG", "No such table found");
 				request.getRequestDispatcher("error.jsp").forward(request, response);
 				return;
 			}
