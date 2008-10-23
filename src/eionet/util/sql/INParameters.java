@@ -92,10 +92,10 @@ public class INParameters {
 	 * 
 	 * @return
 	 */
-	private static String sqlTypeLabel(int sqlType){
+	private static String sqlTypeLabel(Integer sqlType){
 		
 		String retString = "???";
-		switch (sqlType){
+		switch (sqlType.intValue()){
 			case Types.ARRAY:
 				retString = "Types.ARRAY";
 	            break;
