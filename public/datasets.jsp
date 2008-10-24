@@ -324,15 +324,9 @@
 <div id="workarea">
 
 				<!-- search, restore -->
-				
 				<div id="operations">
 				<ul>
 					<li><a href="search_dataset.jsp" title="Search datasets">Search</a></li>
-					<%
-					if (user!=null && user.isAuthentic() && !restore){%>
-						<li><a href="restore_datasets.jsp?SearchType=SEARCH&amp;restore=true" title="Restore datasets">Restore</a></li><%
-					}
-					%>
 				</ul>
 				</div>
 					<%
@@ -347,29 +341,39 @@
 					else{%>
 						<h1>Restore datasets</h1><%
 					}
+			if (user != null){
+			%>
+				<div id="h-operations">
+				<h2>Operations:</h2>
+				<ul>
+					<%
+					if (user.isAuthentic() && !restore){%>
+						<li><a href="restore_datasets.jsp?SearchType=SEARCH&amp;restore=true" title="Restore datasets">Restore</a></li><%
+					}
+					// update buttons
+					if (!isSearchForWorkingCopies && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")) {
 					%>
+					<li><a href="dataset.jsp?mode=add">Add</a></li>
+					<%
+					}
+					if (!isSearchForWorkingCopies) {
+					%>
+					<li><a href="javascript:deleteDataset()">Delete selected</a></li>
+					<%
+					}
+					%>
+				</ul>
+				</div>
 			
 		
 			<%
-			if (user==null){ %>
+			}
+			else { %>
 				<p class="advise-msg">Note: Datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
 		    }
 			%>
 			<form id="form1" method="post" action="datasets.jsp" onsubmit="setLocation()">
 			<!-- the buttons part -->
-				<!-- update buttons -->
-				<div>
-					<%
-					if (user != null){
-						String strAddDisabled = (!isSearchForWorkingCopies && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")) ?
-												"" : "disabled=\"disabled\"";
-						String strDeleteDisabled = (!isSearchForWorkingCopies) ? "" : "disabled=\"disabled\"";
-						%>
-						<input type="button" class="smallbutton" value="Add new" <%=strAddDisabled%> onclick="goTo('add')" style="vertical-align:baseline"/>&nbsp;
-						<input type="button" name="del_button" value="Delete selected" <%=strDeleteDisabled%> onclick="deleteDataset()"/><%
-					}
-					%>		
-				</div>
 				<%
 				if (pageMode.equals("search")){
 	            

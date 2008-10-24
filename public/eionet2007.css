@@ -233,3 +233,39 @@ div .multiselect{
 	overflow:auto;
 	border:1px solid #9E9E9E;
 }
+/* Horizontal menus */
+#h-operations {
+	float: left;
+	width: 100%;
+	font-size: 0.8em;
+	line-height: normal;
+}
+#h-operations h2 {
+	float:left;
+	font-size: 1em;
+	background: transparent;
+	border: none;
+}
+
+#h-operations ul {
+	margin: 0;
+	padding: 0px 0px 0;
+	list-style: none;
+	list-style-image: none;/* bug in IE */
+}
+#h-operations li {
+	float: left;
+	background-color: #f0f0f0;
+	margin: 0 2px;
+	padding: 0px;
+	white-space: nowrap;
+	border: 2px outset #a0a0a0;
+}
+#h-operations a {
+	display:block;
+	text-decoration: none;
+	font-weight: bold;
+	color: black;
+	padding:0px 3px;
+}
+

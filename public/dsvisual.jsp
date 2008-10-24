@@ -146,8 +146,8 @@ if (dsVisual!=null && dsVisual.length()!=0){
 <div id="workarea">
 	<h1>
 		Data model of
-		<em><%=Util.replaceTags(dataset.getShortName())%></em>
-		Dataset
+		<a href="dataset.jsp?mode=view&amp;ds_id=<%=ds_id%>"><%=Util.replaceTags(dataset.getShortName())%></a>
+		dataset
 	</h1>
 	<div id="tabbedmenu">
     <ul>

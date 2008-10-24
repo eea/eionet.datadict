@@ -214,7 +214,7 @@ if (dispParentName==null)
 	dispParentName = "";
 
 if (parentLink.length()>0)
-	parentLink.append(request.getParameter("parent_id")).append("&amp;mode=edit");
+	parentLink.append(request.getParameter("parent_id")).append("&amp;mode=view");
 		
 %>
 

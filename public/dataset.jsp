@@ -703,29 +703,68 @@ else if (mode.equals("add"))
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
 			<%
+				if (mode.equals("view") && !dataset.isWorkingCopy()){
+					if (user!=null || (user==null && !isLatestRequested)){
+						if (latestID!=null && !latestID.equals(dataset.getID())){ %>
+				<div id="operations">
+					<ul>
+							<li><a href="dataset.jsp?mode=view&amp;ds_id=<%=latestID%>">Go to newest</a></li>
+					</ul>
+				</div>
+			<%
+						}
+					}
+				}
 			String verb = "View";
 			if (mode.equals("add"))
 				verb = "Add";
 			else if (mode.equals("edit"))
 				verb = "Edit";
 			
+			%>
+			<h1><%=Util.replaceTags(verb)%> dataset definition</h1>
+			<%
 			boolean isDisplayOperations = mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null;
 			if (isDisplayOperations==false)
-				isDisplayOperations = (mode.equals("view") && !dataset.isWorkingCopy()) && (user!=null || (user==null && !isLatestRequested)) && (latestID!=null && !latestID.equals(dataset.getID()));
+				isDisplayOperations = (mode.equals("view") && !dataset.isWorkingCopy()) && user!=null && (latestID!=null && !latestID.equals(dataset.getID()));
 			
 			if (isDisplayOperations){
 				%>
-				<div id="operations">
+				<div id="h-operations">
+				<h2>Operations:</h2>
 					<ul>
 						<%
 						if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null){%>
 							<li><a href="Subscribe?dataset=<%=Util.replaceTags(dataset.getIdentifier())%>">Subscribe</a></li><%
 						}
-						if (mode.equals("view") && !dataset.isWorkingCopy()){
-							if (user!=null || (user==null && !isLatestRequested)){
-								if (latestID!=null && !latestID.equals(dataset.getID())){%>
-									<li><a href="dataset.jsp?mode=view&amp;ds_id=<%=latestID%>">Go to newest</a></li><%
-								}
+						// the link
+						if (mode.equals("view") && dataset!=null && dataset.isWorkingCopy()){
+							if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
+						%>
+							<li><a href="dataset.jsp?mode=edit&amp;ds_id=<%=ds_id%>">Edit metadata</a></li>
+							<li><a href="dsvisual.jsp?ds_id=<%=ds_id%>">Manage model</a></li>
+							<%
+							String dstrodLink = "dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
+							%>
+							<li><a href="<%=dstrodLink%>">Manage links to ROD</a></li>
+							<li><a href="javascript:checkIn()">Check in</a></li>
+							<li><a href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true">Edit complex attributes</a></li>
+							<li><a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.replaceTags(ds_name)%>">Manage tables</a></li>
+							<li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
+						<%
+							}
+						}
+						if (mode.equals("view")){
+							if (canNewVersion){
+						%>
+							<li><a href="dataset.jsp?mode=newversion&amp;ds_id=<%=ds_id%>">New version</a></li>
+						<%
+							}
+							if (canCheckout){
+						%>
+							<li><a href="dataset.jsp?mode=view&amp;action=checkout&amp;ds_id=<%=ds_id%>">Check out</a></li>
+							<li><a href="dataset.jsp?mode=delete&amp;ds_id=<%=ds_id%>">Delete</a></li>
+						<%
 							}
 						}
 						%>
@@ -734,29 +773,8 @@ else if (mode.equals("add"))
       		}
       		%>
 						
-			<div style="clear:right; float:right">
-				<%
-				if (mode.equals("view")){
-					if (canNewVersion){
-						%>
-						<input type="button" class="smallbutton" value="New version" onclick="goTo('newversion', '<%=ds_id%>')"/><%
-					}
-					if (canCheckout){
-						if (canNewVersion){
-							%>&nbsp;<%
-						}
-						%>
-						<input type="button" class="smallbutton" value="Check out" onclick="goTo('checkout', '<%=ds_id%>')"/>&nbsp;
-						<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
-					}
-				}
-				%>
-      		</div>
-      		
-			<h1><%=Util.replaceTags(verb)%> dataset definition</h1>
-							
 			<div style="clear:both">
-			<br/>
+
 			<form id="form1" method="post" action="dataset.jsp">
 				<div style="display:none">
 				<%
@@ -774,37 +792,6 @@ else if (mode.equals("add"))
 				<!-- main table inside div -->
 				<!--=======================-->
 	                
-	                			<!-- add, save, check-in, undo check-out buttons -->
-					
-								<div style="text-align:right;clear:left">
-									<%
-									// add case
-									if (mode.equals("add")){ %>
-										<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
-										<%
-									}
-									// view case
-									else if (mode.equals("view") && dataset!=null && dataset.isWorkingCopy()){
-										if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
-											%>
-											<input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=ds_id%>')"/>&nbsp;
-											<input type="button" class="mediumbuttonb" value="Check in" onclick="checkIn()" />&nbsp;
-											<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>
-											<%
-										}
-									}
-									// edit case
-									else if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy()){
-										if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
-											%>
-											<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-											<input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
-											<input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=ds_id%>')"/>
-											<%
-										}
-									}
-									%>
-								</div>
 		                    
 		                    	<!-- quick links -->
 		                    	
@@ -1476,22 +1463,13 @@ else if (mode.equals("add"))
 										
 										<%
 										if ((mode.equals("edit") && user!=null) || (mode.equals("view") && dataset.getVisual()!=null)){											
-											%>
-											<h2>
-												Data model<a id="model"></a>
-												<%
-												if (!mode.equals("view")){ %>
-													<a  href="help.jsp?screen=dataset&amp;area=data_model_link" onclick="pop(this.href);return false;">
-														<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
-													</a>
-													<img style="border:0" src="images/optional.gif" width="16" height="16" alt="optional"/>
-													[Click <a href="dsvisual.jsp?ds_id=<%=ds_id%>"><b>HERE</b></a> to manage the model of this dataset]<%
-												}
-												%>
-											</h2>
-											<%											
 											// thumbnail
 											if (mode.equals("view") && dataset.getVisual()!=null){
+											%>
+											<h2 id="model">
+												Data model
+											</h2>
+											<%											
 												if (imgVisual){ %>
 <div class="figure-plus-container">
   <div class="figure-plus">
@@ -1521,25 +1499,12 @@ else if (mode.equals("add"))
 										
 										<%
 										if ((mode.equals("view") && tables!=null && tables.size()>0) || mode.equals("edit")){
-											%>
-											<h2>
-												Dataset tables<a id="tables"></a>
-												<%
-												// tables link
-												if (mode.equals("edit")){
-													%>
-													<a  href="help.jsp?screen=dataset&amp;area=tables_link" onclick="pop(this.href);return false;">
-														<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
-													</a>
-													<img style="border:0" src="images/optional.gif" width="16" height="16" alt="optional"/>
-													[Click <a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.replaceTags(ds_name)%>"><b>HERE</b></a> to manage tables of this dataset]<%
-												}
-												%>
-											</h2>												
-											<%
 											// tables table
 											if (mode.equals("view")){
 												%>
+											<h2 id="tables">
+												Dataset tables
+											</h2>												
 												<table class="datatable" id="dataset-tables">
 													<col style="width:50%"/>
 													<col style="width:50%"/>
@@ -1597,42 +1562,15 @@ else if (mode.equals("add"))
 										if (mode.equals("edit") || (mode.equals("view") && rodLinks!=null && rodLinks.size()>0)){
 											
 											%>
-										
-											
+
 												<!-- title & link part -->
-												<h2>
-														<b>Obligations in ROD<a id="rodlinks"></a></b>
-													
-													<%
-													if (!mode.equals("view")){ %>
-														<span class="simple_attr_help">
-															<a  href="help.jsp?screen=dataset&amp;area=rod_links_link" onclick="pop(this.href);return false;">
-																<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
-															</a>
-														</span>
-														<span class="simple_attr_help">
-															<img style="border:0" src="images/optional.gif" width="16" height="16" alt="optional"/>
-														</span>
-														<span class="barfont_bordered"><%
-													}
-													else{ %>
-														<span class="barfont"><%
-													}
-													
-													// the link
-													if (mode.equals("edit")){
-														String dstrodLink = "dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
-														%>
-														[Click <a href="<%=dstrodLink%>"><b>HERE</b></a> to manage the dataset's links to ROD]
-														<%
-													}
-													%>
-													</span>
-												</h2>
-												
+
 												<!-- table part -->
 												<%
 												if (mode.equals("view") && rodLinks!=null && rodLinks.size()>0){%>
+												<h2 id="rodlinks">
+														Obligations in ROD
+												</h2>
 															<table class="datatable subtable">
 																<col style="width:20%"/>
 																<col style="width:40%"/>
@@ -1678,36 +1616,12 @@ else if (mode.equals("add"))
 										if ((mode.equals("edit") && user!=null) || (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0)){
 											
 											colspan = user==null ? 1 : 2;
-											%>
-											
-												<h2>
-													Complex attributes<a id="cattrs"></a>
-													<%
-													if (!mode.equals("view")){
-														%>
-														<span class="simple_attr_help">
-															<a  href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
-																<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
-															</a>
-														</span>
-														<span class="simple_attr_help">
-															<img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
-														</span><%
-													}
-													
-													// the link
-													if (mode.equals("edit")){ %>
-														<span style="width:<%=valueWidth%>%" class="barfont_bordered">
-															[Click <a href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true"><b>HERE</b></a> to manage complex attributes of this dataset]
-														</span><%
-													}
-													%>
-												</h2>
-												
-												<%
 												// the table
 												if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 													%>
+												<h2 id="cattrs">
+													Complex attributes
+												</h2>
 															<table class="datatable" id="dataset-attributes">																
 																<col style="width:29%"/>
 																<col style="width:4%"/>
@@ -1777,8 +1691,8 @@ else if (mode.equals("add"))
 											<%
 											// other versions
 											if (mode.equals("view") && otherVersions!=null && otherVersions.size()>0){%>
-												<h2>
-													Other versions<a id="versions"></a>
+												<h2 id="versions">
+													Other versions
 												</h2>
 												<table class="datatable" id="other-versions">
 													<col style="width:25%"/>
@@ -1863,6 +1777,27 @@ else if (mode.equals("add"))
 					}
 					%>
 				</div>				
+	                			<!-- add, save, check-in, undo check-out buttons -->
+					
+								<div style="text-align:right;clear:left">
+									<%
+									// add case
+									if (mode.equals("add")){ %>
+										<input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
+										<%
+									}
+									// edit case
+									else if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy()){
+										if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
+											%>
+											<input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
+											<input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
+											<input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=ds_id%>')"/>
+											<%
+										}
+									}
+									%>
+								</div>
 			</form>
 			</div>
 			
