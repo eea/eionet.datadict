@@ -1115,7 +1115,7 @@ else if (mode.equals("add"))
 															String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
 															%>
 															<span class="barfont">
-																[Click <a href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>"><b>HERE</b></a> to <%=Util.replaceTags(actionText)%>]
+																<a href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>">Click to <%=Util.replaceTags(actionText)%></a>]
 															</span><%
 														}
 													}

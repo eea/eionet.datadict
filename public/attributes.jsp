@@ -92,13 +92,8 @@
 				o.value=document.location.href;
 		}
 
-		function goTo(mode){
-			if (mode == "add"){
-				document.location.assign('delem_attribute.jsp?mode=add');
-			}
-		}
-		// ]]>
-    </script>
+  // ]]>
+  </script>
 </head>
 <body>
 <div id="container">
@@ -112,22 +107,26 @@
 
             if (attributes == null || attributes.size()==0){
 	            %>
-	            <b>No attributes were found!</b></div></td></tr></table></body></html>
+	            <div class="error-msg">No attributes were found!</div>
+			</div></div>
+		      <%@ include file="footer.txt" %>
+			</body></html>
 	            <%
 	            return;
             }
             %>
 
-			<form id="form1" method="post" action="attributes.jsp">
+		<h1>Attributes</h1>
 
 			<%
 			if (user != null && mode==null){
 				boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
 				if (addPrm){
 					%>
-					<div id="operations">
+					<div id="auth-operations">
+					<h2>Operations:</h2>
 						<ul>
-							<li><a href="javascript:goTo('add')">Add attribute</a></li>
+							<li><a href="delem_attribute.jsp?mode=add">Add attribute</a></li>
 						</ul>
 					</div>
 					<%
@@ -135,7 +134,7 @@
 			}
 			%>
 
-		<h1>Attributes</h1>
+			<form id="form1" method="post" action="attributes.jsp">
 		<p>
 			This is a list of all definition attributes used in Data Dictionary.
 			Every attribute is uniquely identifed by its short name. Click page help
@@ -185,7 +184,6 @@
 		    int iEndNode=(iCurrPage+1)*iPageLen;
 			if (iEndNode>=attributes.size())
 				iEndNode=attributes.size();
-	        //for (int i=iBeginNode;i<iEndNode;i++) {
 			for (int i=0; i<attributes.size(); i++){
 
 				DElemAttribute attribute = (DElemAttribute)attributes.get(i);

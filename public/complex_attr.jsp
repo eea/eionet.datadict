@@ -5,10 +5,10 @@
 
 
 private String legalizeAlert(String in){
-        
+
     in = (in != null ? in : "");
-    StringBuffer ret = new StringBuffer(); 
-  
+    StringBuffer ret = new StringBuffer();
+
     for (int i = 0; i < in.length(); i++) {
         char c = in.charAt(i);
         if (c == '\'')
@@ -28,20 +28,20 @@ private String legalizeAlert(String in){
 			response.setHeader("Pragma", "No-cache");
 			response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
 			response.setHeader("Expires", Util.getExpiresDateString());
-			
+
 			request.setCharacterEncoding("UTF-8");
-			
+
 			DDUser user = SecurityUtil.getUser(request);
-			
-			ServletContext ctx = getServletContext();			
-			
+
+			ServletContext ctx = getServletContext();
+
 			String mode = request.getParameter("mode");
-			
+
 			if (mode == null || mode.length()==0){ %>
 				<span class="error">Mode is missing!</span> <%
 				return;
 			}
-			
+
 			if (request.getMethod().equals("POST")){
       			if (user == null){
 	      			%>
@@ -56,43 +56,43 @@ private String legalizeAlert(String in){
 	      			<%
 	      			return;
       			}
-			}						
-			
+			}
+
 			String parent_id = request.getParameter("parent_id");
-			
+
 			if (parent_id == null || parent_id.length()==0){ %>
 				<span class="error">Parent ID is missing!</span> <%
 				return;
 			}
-			
+
 			String parent_type = request.getParameter("parent_type");
-			
+
 			if (parent_type == null || parent_type.length()==0){ %>
 				<span class="error">Parent type is missing!</span> <%
 				return;
 			}
-			
+
 			String parent_name = request.getParameter("parent_name");
 			if (parent_name == null) parent_name = "?";
-			
+
 			String parent_ns = request.getParameter("parent_ns");
 			if (parent_ns == null) parent_ns = "?";
-			
+
 			String attr_id = request.getParameter("attr_id");
-			
+
 			if (attr_id == null || attr_id.length()==0){ %>
 				<span class="error">Attribute ID is missing!</span> <%
 				return;
 			}
-			
+
 			String attr_name = request.getParameter("attr_name");
 			if (attr_name == null) attr_name = "?";
-			
+
 			String attr_ns = request.getParameter("attr_ns");
 			if (attr_ns == null) attr_ns = "?";
-			
+
 			String ds = request.getParameter("ds");
-			
+
 			// For getting inherited attributes
 			String dataset_id = request.getParameter("dataset_id");
 			if (dataset_id == null) dataset_id = "";
@@ -110,13 +110,13 @@ private String legalizeAlert(String in){
 				redirUrl = redirUrl + "&ds=" + ds;
 
 			if (request.getMethod().equals("POST")){
-				
+
 				Connection userConn = null;
-				
+
 				try{
 					userConn = user.getConnection();
 					AttrFieldsHandler handler = new AttrFieldsHandler(userConn, request, ctx);
-					
+
 					try{
 						handler.execute();
 					}
@@ -135,32 +135,32 @@ private String legalizeAlert(String in){
 					try { if (userConn!=null) userConn.close();
 					} catch (SQLException e) {}
 				}
-				
-				
+
+
 				if (mode.equals("delete"))
 					redirUrl = redirUrl + "&wasdel=true";
 				response.sendRedirect(redirUrl);
 				return;
 			}
-			
+
 			Connection conn = null;
-			
+
 			try { // start the whole page try block
-			
+
 			conn = ConnectionUtil.getConnection();
 			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-			
+
 			Vector v = null;
-			
+
 			if (mode.equals("add"))
 				v = searchEngine.getDElemAttributes(attr_id,DElemAttribute.TYPE_COMPLEX);
 			else
 				v = searchEngine.getComplexAttributes(parent_id, parent_type, attr_id, table_id, dataset_id);
-			
+
 			DElemAttribute attribute = (v==null || v.size()==0) ? null : (DElemAttribute)v.get(0);
-			
+
 			Vector attrFields = searchEngine.getAttrFields(attr_id);
-			
+
 			String _type = null;
 			if (parent_type.equals("E"))
 				_type="elm";
@@ -169,7 +169,7 @@ private String legalizeAlert(String in){
 			else if (parent_type.equals("T"))
 				_type="tbl";
 			boolean isWorkingCopy = _type==null ? true : searchEngine.isWorkingCopy(parent_id, _type);
-			
+
 			String backURL = "complex_attrs.jsp?parent_id=" + parent_id +
 															 "&parent_type=" + parent_type +
 															 "&parent_name=" + parent_name +
@@ -186,7 +186,7 @@ private String legalizeAlert(String in){
 				backURL = backURL + "&ds=" + ds;
 				backURLEscaped = backURLEscaped + "&amp;ds=" + ds;
 			}
-			
+
 			String wasDelete = request.getParameter("wasdel");
 			if (wasDelete!=null && attribute==null){
 				response.sendRedirect(backURL);
@@ -202,33 +202,28 @@ private String legalizeAlert(String in){
 	<script type="text/javascript">
 	// <![CDATA[
 			function submitForm(mode){
-				
+
 				if (mode == "delete"){
 					var b = confirm("This will delete all the rows you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
-					if (b==false) return;	
+					if (b==false) return;
 				}
-				
+
 				document.forms["form1"].elements["mode"].value = mode;
 				document.forms["form1"].submit();
 			}
-			function goTo(mode){
-				if (mode == "edit"){
-					document.location.assign("<%=redirUrl%>");
-				}
-			}
-			
+
 			function openValues(id){
 				document.forms["form1"].action = "pick_attrvalue.jsp";
 				document.forms["form1"].submit();
 			}
-			
+
 			function openHarvested(id){
 				document.forms["form1"].action = "pick_harvattr.jsp";
 				document.forms["form1"].submit();
 			}
-			
+
 			function doLoad(){
-				
+
 				var attrName = document.forms["form1"].elements["attrName"].value;
 				var allowToAdd = document.forms["form1"].elements["allowToAdd"].value;
 				if (attrName!=null && (attrName=="SubmitOrganisation" || attrName=="RespOrganisation")){
@@ -239,7 +234,7 @@ private String legalizeAlert(String in){
 					}
 				}
 			}
-			
+
 	// ]]>
 	</script>
 	</head>
@@ -277,14 +272,14 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 		<%
 		return;
 	}
-	
+
 	boolean inherit = attribute.getInheritable().equals("0") ? false:true;
 	String harvesterID = attribute.getHarvesterID();
-	
+
 	String attrName = attribute.getShortName();
 	int position = 0;
-	
-	
+
+
 	Vector rows = null;
 	Vector inheritRows=null;
 	Vector originalRows=null;
@@ -301,12 +296,12 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 	}
 	else
 		rows = attribute.getRows();
-	
-	
+
+
 	%>
-		
+
 <form id="form1" method="post" action="complex_attr.jsp">
-		
+
 	<%
 	if (!mode.equals("view") || (user != null && isWorkingCopy && mode.equals("view"))){
 		%>
@@ -317,7 +312,7 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 					<li><a href="javascript:window.location.replace('<%=backURLEscaped%>')">&lt; back to attributes</a></li><%
 				}
 				if (user != null && isWorkingCopy && mode.equals("view")){ %>
-					<li><a href="javascript:goTo('edit')">Edit</a></li> <%
+					<li><a href="<%=Util.replaceTags(redirUrl, true, true)%>">Edit</a></li> <%
 				}
 				%>
 			</ul>
@@ -336,7 +331,7 @@ else if (dispParentType.equals("T")){
 	dispParentType = "table";
 	parentLink.append("dstable.jsp?table_id=");
 }
-else if (dispParentType.equals("E")){			
+else if (dispParentType.equals("E")){
 	dispParentType = "element";
 	parentLink.append("data_element.jsp?delem_id=");
 }
@@ -346,7 +341,7 @@ if (dispParentName==null)
 	dispParentName = "";
 
 if (parentLink.length()>0)
-	parentLink.append(request.getParameter("parent_id")).append("&amp;mode=edit");	
+	parentLink.append(request.getParameter("parent_id")).append("&amp;mode=view");
 %>
 
 <h1 style="margin-bottom:20px">Complex attribute <a href=""><%=attrName%></a> of <%=dispParentType%> <a href="<%=parentLink%>"><%=dispParentName%></a></h1>
@@ -360,7 +355,7 @@ if (parentLink.length()>0)
 				%>
 				<input class="smallbutton" type="button" name="addbutton" value="Add" onclick="submitForm('add')" />
 				<input class="smallbutton" type="button" value="Copy" onclick="openValues('<%=attr_id%>')" />
-				<%				
+				<%
 				if (harvesterID!=null && harvesterID.length()>0){ %>
 					<input class="smallbutton" type="button" value="Get harvested"  onclick="openHarvested('<%=attr_id%>')" /><%
 				}
@@ -371,11 +366,11 @@ if (parentLink.length()>0)
 			}
 			%>
 		</div>
-	
+
 	<table class="datatable" cellspacing="0" cellpadding="0">
-	
+
 		<%
-		for (int t=0; attrFields!=null && t<attrFields.size(); t++){			
+		for (int t=0; attrFields!=null && t<attrFields.size(); t++){
 			Hashtable hash = (Hashtable)attrFields.get(t);
 			String id = (String)hash.get("id");
 			String name = (String)hash.get("name");
@@ -397,7 +392,7 @@ if (parentLink.length()>0)
 %>
 	<div style="overflow:auto">
 	<table cellpadding="0" cellspacing="0" class="datatable">
-	
+
 		<tr>
 			<%
 			if (!mode.equals("view")){
@@ -420,8 +415,8 @@ if (parentLink.length()>0)
 				<%
 			}
 			%>
-			
-			
+
+
 			<%
 			for (int t=0; attrFields!=null && t<attrFields.size(); t++){
 				Hashtable hash = (Hashtable)attrFields.get(t);
@@ -449,11 +444,11 @@ if (parentLink.length()>0)
 						<td class="small" align="right"><%=sInhText%></td>
 						<td style="width:10px">&nbsp;</td>
 					<%
-			
+
 					for (int t=0; t<attrFields.size(); t++){
 						Hashtable hash = (Hashtable)attrFields.get(t);
 						String fieldID = (String)hash.get("id");
-						String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);						
+						String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 						if (fieldValue == null) fieldValue = " ";
 							String tdStyle = "padding-left:5;padding-right:10";
 							if (displayed%2 != 0)
@@ -461,16 +456,16 @@ if (parentLink.length()>0)
 							%>
 							<td style="<%=tdStyle%>"><%=Util.replaceTags(fieldValue)%></td>
 							<%
-					}		
+					}
 					displayed++;
-					
+
 					%>
-					</tr>				
+					</tr>
 					<%
 				}
 			}
 		}
-		
+
 		int nonInheritedCount = 0;
 		for (int j=0; rows!=null && j<rows.size(); j++){
 			Hashtable rowHash = (Hashtable)rows.get(j);
@@ -488,7 +483,7 @@ if (parentLink.length()>0)
 			}
 			%>
 			<%
-			
+
 			for (int t=0; t<attrFields.size(); t++){
 				Hashtable hash = (Hashtable)attrFields.get(t);
 				String fieldID = (String)hash.get("id");
@@ -503,12 +498,12 @@ if (parentLink.length()>0)
 			}
 			displayed++;
 			nonInheritedCount++;
-			
+
 			%>
-			</tr>				
+			</tr>
 			<%
 		}
-		%>	
+		%>
 
 	</table>
 	</div>
@@ -516,10 +511,10 @@ if (parentLink.length()>0)
 <div style="display:none">
 	<input type="hidden" name="allowToAdd" value="<%=nonInheritedCount==0%>"/>
 	<input type="hidden" name="attrName" value="<%=attrName%>"/>
-	
+
 	<input type="hidden" name="mode" value="<%=mode%>"/>
 	<input type="hidden" name="type" value="COMPLEX"/>
-	
+
 	<input type="hidden" name="attr_id" value="<%=attr_id%>"/>
 	<input type="hidden" name="parent_id" value="<%=parent_id%>"/>
 	<input type="hidden" name="parent_name" value="<%=Util.replaceTags(parent_name, true)%>"/>
@@ -527,16 +522,16 @@ if (parentLink.length()>0)
 	<input type="hidden" name="parent_ns" value="<%=parent_ns%>"/>
 	<input type="hidden" name="table_id" value="<%=table_id%>"/>
 	<input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
-	
+
 	<input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
-	
+
 	<%
 	if (ds != null){
 		%>
 		<input type="hidden" name="ds" value="<%=ds%>"/>
 		<%
 	}
-	
+
 	String qryStr = request.getQueryString();
 	if (qryStr!=null && qryStr.length()>0){
 		int i = qryStr.indexOf(AttrFieldsHandler.FLD_PREFIX);
@@ -544,10 +539,10 @@ if (parentLink.length()>0)
 			qryStr = qryStr.substring(0,i);
 	}
 	%>
-	
+
 	<input type="hidden" name="requester_qrystr" value="<%=Util.replaceTags(qryStr, true, true)%>" />
 	<input type="hidden" name="requester_redir_url" value="<%=Util.replaceTags(redirUrl, true, true)%>" />
-	
+
 </div>
 </form>
 </div>

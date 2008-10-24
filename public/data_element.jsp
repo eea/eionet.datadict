@@ -1866,7 +1866,7 @@ else{
 																String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
 																%>
 																<div>
-																	[Click <a onclick="pop(this.href);return false;" href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dataElement.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>"><b>HERE</b></a> to <%=Util.replaceTags(actionText)%>]
+																	<a onclick="pop(this.href);return false;" href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dataElement.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>">[Click to <%=Util.replaceTags(actionText)%>]</a>
 																</div><%
 															}
 														}
@@ -2174,7 +2174,7 @@ else{
 													if (mode.equals("edit") && user!=null){
 														%>
 														<span class="barfont_bordered">
-															[Click <a href="<%=valuesLink%>"><b>HERE</b></a> to manage <%=Util.replaceTags(title.toLowerCase())%> of this element]
+															<a href="<%=valuesLink%>">[Click to manage <%=Util.replaceTags(title.toLowerCase())%> of this element]</a>
 														</span><%
 													}
 													%>
@@ -2277,7 +2277,7 @@ else{
 													if (mode.equals("edit")){
 														%>
 														<span class="barfont_bordered">
-															[Click <a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>"><b>HERE</b></a> to manage foreign keys of this element]
+															<a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>">[Click to manage foreign keys of this element]</a>
 														</span><%
 													}
 													%>
@@ -2417,7 +2417,7 @@ else{
 													// the link
 													if (mode.equals("edit") && user!=null){ %>
 														<span class="barfont_bordered">
-															[Click <a href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>"><b>HERE</b></a> to manage complex attributes of this element]
+															<a href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>">[Click to manage complex attributes of this element]</a>
 														</span><%
 													}
 													%>
