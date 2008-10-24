@@ -23,12 +23,19 @@
  
 package eionet.util;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.*;
+
 import com.tee.uit.security.*;
 
+import edu.yale.its.tp.cas.client.filter.CASFilter;
+import eionet.meta.AfterCASLoginServlet;
+import eionet.meta.DDCASUser;
 import eionet.meta.DDRuntimeException;
 import eionet.meta.DDUser;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*; 
 
 /**
@@ -39,56 +46,43 @@ import java.util.*;
  */
 public class SecurityUtil {
     
+	/** */
     public static final String REMOTEUSER = "eionet.util.SecurityUtil.user";
     
     /**
-    * Returns current user, or 'null', if the current session
+    * Returns current user, or null, if the current session
     * does not have user attached to it.
     */
-    public static final DDUser getUser(HttpServletRequest servReq) {
+    public static final DDUser getUser(HttpServletRequest request) {
         
-    	DDUser user = null;
-              
-        HttpSession httpSession = servReq.getSession(false);
-        if (httpSession != null) {
-            user = (DDUser)httpSession.getAttribute(REMOTEUSER);
+        HttpSession session = request.getSession();
+        DDUser user = session==null ? null : (DDUser)session.getAttribute(REMOTEUSER);
+        
+        if (user==null){
+        	String casUserName = (String)session.getAttribute(CASFilter.CAS_FILTER_USER);
+        	if (casUserName!=null){
+        		user = DDCASUser.create(casUserName);
+				session.setAttribute(REMOTEUSER, user);
+        	}
+        }
+        else if (user instanceof DDCASUser){
+        	String casUserName = (String)session.getAttribute(CASFilter.CAS_FILTER_USER);
+        	if (casUserName==null){
+        		user.invalidate();
+        		user = null;
+        		session.removeAttribute(REMOTEUSER);
+        	}
+        	else if (!casUserName.equals(user.getUserName())){
+        		user.invalidate();
+        		user = DDCASUser.create(casUserName);
+				session.setAttribute(REMOTEUSER, user);
+        	}
         }
         
         if (user != null)
             return user.isAuthentic() ? user : null;
         else 
             return null;
-    }
-    
-    /**
-    * If needed, creates new HttpSession and adds authenticated user object to it.
-    * This method will be called anly by login servlet (<CODE>eionet.meta.LoginServlet</CODE>).
-    * Throws GeneralException, if the passed user object is not authenticated.
-    */
-    public static final DDUser allocSession(HttpServletRequest servReq, DDUser user) {
-    	
-        if (user.isAuthentic())
-        	servReq.getSession().setAttribute(REMOTEUSER, user);
-        else
-            throw new DDRuntimeException("Attempted to store unauthorised user");
-                
-        return user;
-    }
-    
-    /**
-    * Frees current <CODE>HttpSession</CODE> object and if it had user attached to it, invalidates the user. 
-    */
-    public static final void freeSession(HttpServletRequest servReq) {
-        HttpSession httpSession = servReq.getSession(false);
-        if (httpSession != null) {
-            DDUser user = (DDUser)httpSession.getAttribute(REMOTEUSER);
-            if (user != null){
-            	user.invalidate();
-            	httpSession.removeAttribute(REMOTEUSER);
-            }
-                
-	        httpSession.invalidate();
-        }
     }
     
     /**
@@ -160,5 +154,75 @@ public class SecurityUtil {
 		}
 		
 		return false;
+	}
+
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String getLoginURL(HttpServletRequest request) {
+		
+		String result = "javascript:login()";
+		
+		String casLoginUrl = request.getSession().getServletContext().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
+		if (casLoginUrl!=null){
+
+			StringBuffer afterLoginUrl = new StringBuffer(request.getRequestURL());
+			if (request.getQueryString()!=null)
+				afterLoginUrl.append("?").append(request.getQueryString());
+			request.getSession().setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, afterLoginUrl.toString());
+
+			StringBuffer loginUrl = new StringBuffer(casLoginUrl);
+			loginUrl.append("?service=");
+			try {
+				loginUrl.append(URLEncoder.encode(getUrlWithContextPath(request) + "/login", "UTF-8"));
+				result = loginUrl.toString();
+			}
+			catch (UnsupportedEncodingException e) {
+				throw new DDRuntimeException(e.toString(), e);
+			}
+		}
+		
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String getLogoutURL(HttpServletRequest request){
+		
+		String result = "index.jsp";
+		
+		String casLoginUrl = request.getSession().getServletContext().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
+		if (casLoginUrl!=null){
+			
+			StringBuffer buf = new StringBuffer(casLoginUrl.replaceFirst("/login", "/logout"));
+			try {
+				buf.append("?url=").append(URLEncoder.encode(getUrlWithContextPath(request), "UTF-8"));
+				result = buf.toString();
+			}
+			catch (UnsupportedEncodingException e) {
+				throw new DDRuntimeException(e.toString(), e);
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	private static String getUrlWithContextPath(HttpServletRequest request){
+		
+		StringBuffer url = new StringBuffer(request.getScheme());
+		url.append("://").append(request.getServerName());
+		if (request.getServerPort()>0)
+			url.append(":").append(request.getServerPort());
+		url.append(request.getContextPath());
+		return url.toString();
 	}
 }

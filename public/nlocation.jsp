@@ -1,4 +1,4 @@
-<%@page import="java.util.*,eionet.util.SecurityUtil,eionet.meta.DDUser,eionet.meta.LoginServlet,eionet.meta.filters.EionetCASFilter"%>
+<%@page import="java.util.*,eionet.util.SecurityUtil,eionet.meta.DDUser,eionet.meta.LoginServlet"%>
 
 <div id="toolribbon">
 	<div id="lefttools">
@@ -13,9 +13,8 @@
 			<a id="logoutlink" href="logout.jsp" title="Logout">Logout (<%=_user.getUserName()%>)</a><%
 		}
 		else{
-	    	String loginUrl = EionetCASFilter.hasInitBeenCalled()==false ? "javascript:login()" : EionetCASFilter.getCASLoginURL(request);
 			%>
-			<a id="loginlink" href="<%=loginUrl%>" title="Login">Login</a><%
+			<a id="loginlink" href="<%=SecurityUtil.getLoginURL(request)%>" title="Login">Login</a><%
 		}
 		
 		String helpScreen = request.getParameter("helpscreen");

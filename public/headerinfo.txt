@@ -1,4 +1,3 @@
-<%@ page import="eionet.meta.filters.EionetCASFilter" %>
 
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 		
@@ -12,21 +11,3 @@
 		<script type="text/javascript" src="pageops.js"></script>
 		<script type="text/javascript" src="mark_special_links.js"></script>
 
-		<% if ( session.getAttribute(EionetCASFilter.CAS_FILTER_USER) == null )  {%>
-		<script type="text/javascript" >
-		// <![CDATA[
-				function get_cookie( cookie_name )
-				{
-				  var results = document.cookie.match ( cookie_name + '=(.*?)(;|$)' );				
-				  if ( results )
-				    return ( unescape ( results[1] ) );
-				  else
-				    return null;
-				}
-				eionetLoginCookieValue = get_cookie("<%= EionetCASFilter.EIONET_LOGIN_COOKIE_NAME %>");
-				if (eionetLoginCookieValue != null && eionetLoginCookieValue == "loggedIn"){	
-					window.location="<%=EionetCASFilter.getEionetCookieCASLoginURL(request) %>";
-				}
-		// ]]>
-		</script>
-		<%}%>

@@ -114,7 +114,7 @@ private String setDefaultAttrs(String name){
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<%@ include file="headerinfo.jsp" %>
+	<%@ include file="headerinfo.txt" %>
     <title>Data Dictionary</title>
     <script type="text/javascript">
 		// <![CDATA[

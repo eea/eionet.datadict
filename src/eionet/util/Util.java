@@ -1104,13 +1104,28 @@ public class Util {
 		
 		return expiresDateString;
 	}
-
+	
+	/**
+	 * 
+	 * @param url
+	 * @return
+	 * @throws MalformedURLException 
+	 */
+	public static String getUrlPathAndQuery(String urlString) throws MalformedURLException{
+		
+		java.net.URL url = new java.net.URL(urlString);
+		StringBuffer buf = new StringBuffer(url.getPath());
+		if (url.getQuery()!=null)
+			buf.append("?").append(url.getQuery());
+		
+		return  buf.toString();
+	}
+	
 	/**
 	 * 
 	 * @param args
 	 */
     public static void main(String[] args){
-    	
-    	System.out.println(getExpiresDateString());
+
     }
 }

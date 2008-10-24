@@ -37,4 +37,14 @@ public class DDCASUser extends DDUser {
 
 		return authented;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static DDCASUser create(String userName){
+		DDCASUser user = new DDCASUser();
+		user.authenticate(userName, null);
+		return user;
+	}
 }

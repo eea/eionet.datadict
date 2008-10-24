@@ -1,5 +1,4 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
-<%@ page import="eionet.meta.filters.EionetCASFilter" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!
@@ -53,7 +52,7 @@ Vector commonElements=null;
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<%@ include file="headerinfo.jsp" %>
+	<%@ include file="headerinfo.txt" %>
 	<title>Data Dictionary - Logging out</title>
 </head>
 <body>

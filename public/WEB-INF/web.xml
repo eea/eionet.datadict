@@ -17,12 +17,17 @@
 		<param-name>login-error-page</param-name>
 		<param-value>error.html</param-value>
 	</context-param>
+	<context-param>
+	
+		<param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
+		<param-value>https://sso.eionet.europa.eu/login</param-value>
+	</context-param>
 
 
 <!-- filters -->
 	<filter>
 	    <filter-name>CAS Filter</filter-name>
-	    <filter-class>eionet.meta.filters.EionetCASFilter</filter-class>
+	    <filter-class>edu.yale.its.tp.cas.client.filter.CASFilter</filter-class>
 	    <init-param>
 	      <param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
 	      <param-value>https://sso.eionet.europa.eu/login</param-value>
@@ -39,10 +44,6 @@
 	      <param-name>edu.yale.its.tp.cas.client.filter.wrapRequest</param-name>
 	      <param-value>true</param-value>
 	    </init-param>
-	    <init-param>
-	      <param-name>eionetLoginCookieDomain</param-name>
-	      <param-value>eionet.europa.eu</param-value>
-	    </init-param>	    
 	</filter>
 	<filter>
 	    <filter-name>Browser cache controller</filter-name>
@@ -94,6 +95,10 @@
 	<servlet>
 		<servlet-name>rpcrouter</servlet-name>
 		<servlet-class>com.tee.uit.servlets.XmlRpcRouter</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>AfterCASLoginServlet</servlet-name>
+		<servlet-class>eionet.meta.AfterCASLoginServlet</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>Login</servlet-name>
@@ -201,6 +206,10 @@
 	<servlet-mapping>
 		<servlet-name>rpcrouter</servlet-name>
 		<url-pattern>/rpcrouter</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AfterCASLoginServlet</servlet-name>
+		<url-pattern>/login</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Login</servlet-name>
