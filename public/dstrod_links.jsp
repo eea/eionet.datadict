@@ -5,12 +5,12 @@
 <%!private static final String SUBMIT_REMOVE_SELECTED = "Remove selected";%>
 
 <%!class RodLinkComparator implements Comparator {
-	
+
 	/**
 	*
 	*/
 	public int compare(Object o1, Object o2){
-		
+
 		Hashtable hash1 = (Hashtable)o1;
 		Hashtable hash2 = (Hashtable)o2;
 		String o1Title = (String)hash1.get("ra-title");
@@ -33,26 +33,26 @@ try{
 	DDUser user = SecurityUtil.getUser(request);
 	if (user == null)
 		throw new Exception("Not authenticated!");
-	
+
 	// get the dataset Identifier
 	String dstIdf = request.getParameter("dst_idf");
 	if (dstIdf == null || dstIdf.length()==0)
 		throw new Exception("Dataset Identifier is missing!");
-	
+
 	// check if the user is authorised
 	boolean prm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dstIdf, "u");
 	if (!prm)
 		throw new Exception("User is missing the required permissions: " + user.getUserName());
-		
+
 	// get dataset id
 	String dstID = request.getParameter("dst_id");
 	if (dstID == null || dstID.length()==0)
 		throw new Exception("Dataset ID is missing!");
-	
+
 	// init connection
 	ServletContext ctx = getServletContext();
 	conn = ConnectionUtil.getConnection();
-	
+
 	// handle the POST
 	if (request.getMethod().equals("POST")){
 		String submit = request.getParameter("submit");
@@ -63,21 +63,21 @@ try{
 			handler.execute(request);
 		}
 	}
-	
+
 	// ...
 	// handle the GET
 	// ...
-	
+
 	// get dataset name
 	String dstName = request.getParameter("dst_name");
 	if (dstName == null || dstName.length()==0) dstName = "?";
-	
+
 	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 	Vector rodLinks = searchEngine.getRodLinks(dstID);
 	if (rodLinks!=null)
 		Collections.sort(rodLinks, new RodLinkComparator());
 	%>
-	
+
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 		<head>
 			<%@ include file="headerinfo.jsp" %>
@@ -85,7 +85,7 @@ try{
 			<script type="text/javascript">
 			// <![CDATA[
 				function submitAdd(raID, raTitle, liID, liTitle){
-					
+
 					document.forms["rodlinks"].elements["mode"].value = "add";
 					document.forms["rodlinks"].elements["ra_id"].value = raID;
 					document.forms["rodlinks"].elements["ra_title"].value = raTitle;
@@ -123,12 +123,12 @@ try{
 									<%
 									int displayed = 0;
 									for (int i=0; rodLinks!=null && i<rodLinks.size(); i++){
-										
+
 										Hashtable rodLink = (Hashtable)rodLinks.get(i);
 										String raID = (String)rodLink.get("ra-id");
 										String raTitle = (String)rodLink.get("ra-title");
 										String raDetails = (String)rodLink.get("ra-url");
-										
+
 										String colorAttr = displayed % 2 != 0 ? "bgcolor=#CCCCCC" : "";
 										%>
 										<tr>
@@ -152,12 +152,12 @@ try{
 									<input type="hidden" name="dst_id" value="<%=dstID%>"/>
 									<input type="hidden" name="dst_idf" value="<%=Util.replaceTags(dstIdf, true)%>"/>
 									<input type="hidden" name="dst_name" value="<%=Util.replaceTags(dstName, true)%>"/>
-									
+
 									<input type="hidden" name="ra_id" value=""/>
 									<input type="hidden" name="ra_title" value=""/>
 									<input type="hidden" name="li_id" value=""/>
 									<input type="hidden" name="li_title" value=""/>
-									
+
 									<input type="hidden" name="client" value="webrod"/>
 									<input type="hidden" name="method" value="get_activities"/>
 								</div>
@@ -167,22 +167,22 @@ try{
 						<%@ include file="footer.txt" %>
 		</body>
 	</html>
-	
+
 	<%
 }
 catch (Exception e){
-	
-	ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();							
+
+	ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
 	e.printStackTrace(new PrintStream(bytesOut));
 	String trace = bytesOut.toString(response.getCharacterEncoding());
-						
+
 	request.setAttribute("DD_ERR_MSG", e.getMessage());
 	request.setAttribute("DD_ERR_TRC", trace);
-	
+
 	/*String qryStr = request.getQueryString();
 	qryStr = qryStr==null ? "" : "?" + qryStr;
 	request.setAttribute("DD_ERR_BACK_LINK", request.getRequestURL().append(qryStr).toString());*/
-	
+
 	request.getRequestDispatcher("error.jsp").forward(request, response);
 }
 finally {

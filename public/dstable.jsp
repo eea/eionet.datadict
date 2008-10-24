@@ -6,14 +6,14 @@
 	<%!
 	// servlet-scope helper functions
 	//////////////////////////////////
-	
+
 	/**
 	 *
 	 */
 	private String getValue(String id, String mode, Vector attributes){
 		return getValue(id, 0, mode, attributes);
 	}
-	
+
 	/**
 	 *	int val indicates which type of value is requested. the default is 0
 	 *	0 - display value (if original value is null, then show inherited value)
@@ -32,7 +32,7 @@
 					return attr.getInheritedValue();
 				else
 					return attr.getValue();
-				
+
 			}
 		}
 		return null;
@@ -40,12 +40,12 @@
 
 	/**
 	 *
-	 */	
+	 */
 	private Vector getValues(String id, String mode, Vector attributes){
 		return getValues(id, 0, mode, attributes);
 	}
 
-	/**	
+	/**
 	 *  int val indicates which group of values is requested. the default is 0
 	 *  0 - all
 	 *  1 - original
@@ -70,7 +70,7 @@
 
 	/**
 	 *
-	 */	
+	 */
 	private String getAttributeIdByName(String name, Vector mAttributes){
 		for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
 			DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
@@ -79,7 +79,7 @@
 		}
 	    return null;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -104,21 +104,21 @@
 	Vector elems = null;
 	String mode = null;
 	String dsIdf = null;
-		
-	// make sure page is not cached	
+
+	// make sure page is not cached
 	response.setHeader("Pragma", "No-cache");
 	response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
 	response.setHeader("Expires", Util.getExpiresDateString());
-	
+
 	DDUser user = SecurityUtil.getUser(request);
-	
-	// POST request not allowed for anybody who hasn't logged in			
+
+	// POST request not allowed for anybody who hasn't logged in
 	if (request.getMethod().equals("POST") && user==null){
 		request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
 		request.getRequestDispatcher("error.jsp").forward(request, response);
 		return;
 	}
-	
+
 	// get values of several request parameters:
 	// - mode
 	// - table's id number
@@ -131,9 +131,9 @@
 	String dsID = request.getParameter("ds_id");
 	String dsName = request.getParameter("ds_name");
 	String parentNs = request.getParameter("pns");
-	
+
 	mode = request.getParameter("mode");
-	
+
 	if (mode == null || mode.length()==0){
 		request.setAttribute("DD_ERR_MSG", "Missing request parameter: mode");
 		request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -168,13 +168,13 @@
 		}
 	}
 
-	// if requested by alphanumeric identifier, it means the table's latest version is requested 
+	// if requested by alphanumeric identifier, it means the table's latest version is requested
 	boolean isLatestRequested = mode.equals("view") && !Util.voidStr(tableIdf) && !Util.voidStr(parentNs);
 
 	//// handle the POST request//////////////////////
 	//////////////////////////////////////////////////
 	if (request.getMethod().equals("POST")){
-		
+
 		Connection userConn = null;
 		DsTableHandler handler = null;
 		try{
@@ -182,15 +182,15 @@
 			handler = new DsTableHandler(userConn, request, ctx);
 			handler.setUser(user);
 			handler.setVersioning(false);
-			
+
 			try{
 				handler.execute();
 			}
 			catch (Exception e){
-				String msg = e.getMessage();					
+				String msg = e.getMessage();
 				ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
 				e.printStackTrace(new PrintStream(bytesOut));
-				String trace = bytesOut.toString(response.getCharacterEncoding());					
+				String trace = bytesOut.toString(response.getCharacterEncoding());
 				request.setAttribute("DD_ERR_MSG", msg);
 				request.setAttribute("DD_ERR_TRC", trace);
 				String backLink = request.getParameter("submitter_url");
@@ -205,7 +205,7 @@
 			try { if (userConn!=null) userConn.close();
 			} catch (SQLException e) {}
 		}
-		
+
 		// disptach the POST request
 		////////////////////////////
 		String redirUrl = "";
@@ -218,7 +218,7 @@
 				redirUrl = redirUrl + "&ds_name=" + dsName;
 			if (dsID!=null)
 				redirUrl = redirUrl + "&ds_id=" + dsID;
-			
+
 			if (history!=null)
 				history.remove(history.getCurrentIndex());
 		}
@@ -260,11 +260,11 @@
 		conn = ConnectionUtil.getConnection();
 		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 		searchEngine.setUser(user);
-		
+
 		// if not in add mode, get the table object
 		DsTable dsTable = null;
 		if (!mode.equals("add")){
-			
+
 			if (isLatestRequested){
 				dsTable = searchEngine.getLatestTbl(tableIdf, parentNs);
 				if (dsTable!=null)
@@ -272,13 +272,13 @@
 			}
 			else
 				dsTable = searchEngine.getDatasetTable(tableID);
-			
+
 			if (dsTable == null){
 				request.setAttribute("DD_ERR_MSG", "No such table found");
 				request.getRequestDispatcher("error.jsp").forward(request, response);
 				return;
 			}
-			
+
 			// overwrite dataset id parameter with the one from table object
 			dsID = dsTable.getDatasetID();
 			if (dsID==null || dsID.length()==0){
@@ -287,7 +287,7 @@
 				return;
 			}
 		}
-		
+
 		// get the dataset object (having reached this point, dataset id number is not null)
 		String workingUser = null;
 		Dataset dataset = searchEngine.getDataset(dsID);
@@ -312,28 +312,28 @@
 		// set some helper variables
 		dsName = dataset.getShortName();
 		dsIdf = dataset.getIdentifier();
-		workingUser = dataset.getWorkingUser();		
+		workingUser = dataset.getWorkingUser();
 		boolean editDstPrm = user!=null && dataset.isWorkingCopy() && workingUser!=null && workingUser.equals(user.getUserName());
-		
+
 		// security checks for identified users
 		if (!mode.equals("view") && editDstPrm==false){
 			request.setAttribute("DD_ERR_MSG", "You have no permission to do modifications in this dataset!");
 			request.getRequestDispatcher("error.jsp").forward(request, response);
 			return;
 		}
-		
+
 		// get metadata of attributes
 		mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
 		// get values of attributes
 		attributes = searchEngine.getAttributes(tableID, "T", DElemAttribute.TYPE_SIMPLE, null, dsID);
-		complexAttrs = searchEngine.getComplexAttributes(tableID, "T", null, null, dsID);		
+		complexAttrs = searchEngine.getComplexAttributes(tableID, "T", null, null, dsID);
 		if (complexAttrs==null)
 			complexAttrs = new Vector();
 
 		// get the table's elements
 		if (mode.equals("view") && dsTable!=null)
 			elems = searchEngine.getDataElements(null, null, null, null, tableID);
-		
+
 		// prepare the page's HTML title, shown in browser title bar
 		StringBuffer pageTitle = new StringBuffer();
 		if (mode.equals("edit"))
@@ -356,9 +356,9 @@
 	<script type="text/javascript" src="modal_dialog.js"></script>
 	<script type="text/javascript">
 // <![CDATA[
-    
+
 		function submitForm(mode){
-			
+
 			if (mode == "delete"){
 				<%
 				if (dataset!=null && dataset.getStatus().equals("Released")){
@@ -372,18 +372,18 @@
 				}
 				%>
 			}
-			
+
 			if (mode != "delete"){
 				if (!checkObligations()){
 					alert("You have not specified one of the mandatory fields!");
 					return;
 				}
-				
+
 				if (hasWhiteSpace("idfier")){
 					alert("Identifier cannot contain any white space!");
 					return;
 				}
-				
+
 				if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
 					alert("Identifier not valid for usage as an XML tag! " +
 						  "In the first character only underscore or latin characters are allowed! " +
@@ -393,37 +393,37 @@
 			}
 
 			//slctAllValues();
-			
+
 			if (mode=="editclose"){
 				mode = "edit";
 				document.forms["form1"].elements["saveclose"].value = "true";
 			}
-			
-			document.forms["form1"].elements["mode"].value = mode;			
+
+			document.forms["form1"].elements["mode"].value = mode;
 			document.forms["form1"].submit();
 		}
-		
+
 		function delDialogReturn(){
 			var v = dialogWin.returnValue;
 			if (v==null || v=="" || v=="cancel") return;
-			
+
 			document.forms["form1"].elements["upd_version"].value = v;
 			deleteReady();
 		}
-		
+
 		function deleteReady(){
 			document.forms["form1"].elements["mode"].value = "delete";
 			document.forms["form1"].submit();
 		}
-		
+
 		function checkObligations(){
-			
+
 			var o = document.forms["form1"].short_name;
 			if (o!=null && o.value.length == 0) return false;
-			
+
 			o = document.forms["form1"].idfier;
 			if (o!=null && o.value.length == 0) return false;
-			
+
 			var elems = document.forms["form1"].elements;
 			for (var i=0; elems!=null && i<elems.length; i++){
 				var elem = elems[i];
@@ -439,12 +439,12 @@
 					}
 				}
 			}
-			
+
 			return true;
 		}
-		
+
 		function hasWhiteSpace(input_name){
-			
+
 			var elems = document.forms["form1"].elements;
 			if (elems == null) return false;
 			for (var i=0; i<elems.length; i++){
@@ -454,26 +454,26 @@
 					if (val.indexOf(" ") != -1) return true;
 				}
 			}
-			
+
 			return false;
 		}
-		
+
 		function goTo(mode, id){
 			document.location.assign("dstable.jsp?mode=" + mode + "&table_id=" + id + "&ds_id=<%=dsID%>&ds_name=<%=dsName%>");
 		}
-		
+
 		function openElements(uri){
 			//uri = uri + "&open=true";
 			wElems = window.open(uri,"TableElements","height=500,width=750,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=yes");
 			if (window.focus) {wElems.focus()}
 		}
 
-		
+
 		function rmvValue(id){
 
 			var optns;
 			var optnsLength;
-				
+
 			if (document.all){
 				optns = document.all('attr_mult_' + id).options;
 				optnsLength = optns.length;
@@ -502,7 +502,7 @@
 				else{
 					document.forms["form1"].elements["attr_mult_" + id].options[selected[i]-count] = null;
 				}
-				
+
 				count++;
 			}
  			form_changed('form1');
@@ -526,14 +526,14 @@
  			form_changed('form1');
 		}
 		function slctAllValues(){
-		
+
 			var elems = document.forms["form1"].elements;
 			if (elems == null) return true;
-			
+
 			for (var j=0; j<elems.length; j++){
 				var elem = elems[j];
 				var elemName = elem.name;
-				if (startsWith(elemName, "attr_mult_")){					
+				if (startsWith(elemName, "attr_mult_")){
 					var slct = document.forms["form1"].elements[elemName];
 					if (slct.options && slct.length){
 						if (slct.length==1 && slct.options[0].value=="" && slct.options[0].text==""){
@@ -548,7 +548,7 @@
 			}
 		}
 		function hasValue(id, val){
-			
+
 			var elemName = "attr_mult_" + id;
 			if (document.all){
 				var optns=document.all(elemName).options;
@@ -556,7 +556,7 @@
 					var optn = optns.item(i);
 					if (optn.value == val)
 						return true;
-				}	
+				}
 			}
 			else{
 				var slct = document.forms["form1"].elements[elemName];
@@ -575,41 +575,41 @@
 			else
 				return false;
 		}
-		
+
 		function copyTbl(){
-			
+
 			if (document.forms["form1"].elements["idfier"].value==""){
 				alert("Identifier cannot be empty!");
 				return;
 			}
 
 			var url='search_table.jsp?ctx=popup';
-			
+
 			wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=yes");
 			if (window.focus){wAdd.focus()}
 		}
-		
+
 		function pickTable(id, name){
-			
+
 			document.forms["form1"].elements["copy_tbl_id"].value=id;
 			document.forms["form1"].elements["mode"].value="copy";
 			document.forms["form1"].submit();
 			return true;
 		}
-		
+
 		function validForXMLTag(str){
-			
+
 			// if empty string not allowed for XML tag
 			if (str==null || str.length==0){
 				return false;
 			}
-			
+
 			// check the first character (only underscore or A-Z or a-z allowed)
 			var ch = str.charCodeAt(0);
 			if (!(ch==95 || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))){
 				return false;
 			}
-			
+
 			// check the rets of characters ((only underscore or hyphen or dot or 0-9 or A-Z or a-z allowed))
 			if (str.length==1) return true;
 			for (var i=1; i<str.length; i++){
@@ -618,7 +618,7 @@
 					return false;
 				}
 			}
-			
+
 			return true;
 		}
 // ]]>
@@ -631,7 +631,7 @@ if (mode.equals("edit"))
 	hlpScreen = "table_edit";
 else if (mode.equals("add"))
 	hlpScreen = "table_add";
-	
+
 %>
 
 <body>
@@ -641,9 +641,9 @@ else if (mode.equals("add"))
 		<jsp:param name="helpscreen" value="<%=hlpScreen%>"/>
 	</jsp:include>
 	<%@ include file="nmenu.jsp" %>
-        
+
 	<div id="workarea">
-		
+
 		<%
 		if (mode.equals("view") && user!=null && dsTable!=null && dsTable.getIdentifier()!=null && dataset!=null && dataset.getIdentifier()!=null){
 			%>
@@ -653,35 +653,38 @@ else if (mode.equals("add"))
 				</ul>
 			</div><%
 		}
-		%>
-			
-		<!-- The buttons displayed in view mode -->
-		<div style="clear:right; float:right">
-			<%
-			if (mode.equals("view")){
-				if (editDstPrm==true){
-					%>
-					<input type="button" class="smallbutton" value="Edit" onclick="goTo('edit', '<%=tableID%>')"/>
-					<input type="button" class="smallbutton" value="Delete" onclick="submitForm('delete')"/><%
-				}
-			}
-			%>
-		</div>
 
-		<!-- main table head -->
-		
-		<%
+		// main table head
+
 		String pageHeadingVerb = "View";
 		if (mode.equals("add"))
 			pageHeadingVerb = "Add";
 		else if (mode.equals("edit"))
 			pageHeadingVerb = "Edit";
-		%>	
+		%>
 		<h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a> dataset<%}%></h1>
-		
-		<div style="clear:both">
-		<br/>
-		<form id="form1" method="post" action="dstable.jsp">
+
+		<!-- The buttons displayed in view mode -->
+			<%
+			if (mode.equals("view") && editDstPrm==true){
+			%>
+			<div id="auth-operations">
+				<h2>Operations:</h2>
+				<ul>
+				<li><a href="dstable.jsp?mode=edit&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit</a></li>
+				<li><a href="javascript:submitForm('delete')">Delete</a></li>
+			<%
+			// elements link
+			String elemLink = "tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
+			%>
+				<li><a href="<%=elemLink%>">Manage elements</a></li>
+				<li><a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Manage complex attributes</a></li>
+				</ul>
+			</div>
+			<%
+			}
+			%>
+		<form id="form1" method="post" action="dstable.jsp" style="clear:both">
 
 				<!-- add, save, check-in, undo check-out buttons -->
 				<%
@@ -709,41 +712,41 @@ else if (mode.equals("add"))
 					</div><%
 				}
 				%>
-						
+
 			<!--=======================-->
 			<!-- main table inside div -->
 			<!--=======================-->
-			
+
 			<table cellspacing="0" cellpadding="0" style="clear:right;border:0">
-				               
+
                 <!-- main table body -->
-                
+
 				<tr>
 					<td style="width:100%;height:10" colspan="2">
-	                    
+
 	                    	<!-- quick links -->
-	                    	
+
 	                    	<%
 	                    	if (mode.equals("view")){
 		                    	Vector quicklinks = new Vector();
-		                    	
+
 		                    	if (elems!=null && elems.size()>0)
 		                    		quicklinks.add("Elements | elements");
 		                    	if (complexAttrs!=null && complexAttrs.size()>0)
 		                    		quicklinks.add("Complex attributes | cattrs");
-		                    	
+
 		                    	request.setAttribute("quicklinks", quicklinks);
 		                    	%>
 	                    		<jsp:include page="quicklinks.jsp" flush="true" />
 					            <%
 							}
 							%>
-							
+
 							<!-- schema, MS Excel template, XForm, XmlInst, etc -->
-							
+
 							<%
 							if (mode.equals("view")){
-								
+
 								boolean dispAll = editDstPrm;
 								boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
 								boolean dispODS = dataset!=null && dataset.displayCreateLink("ODS");
@@ -751,7 +754,7 @@ else if (mode.equals("add"))
 								boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
 								boolean dispXForm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xfrm");
 								boolean dispCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
-								
+
 								if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispXForm || dispCache || dispODS){
 									%>
 									<div id="createbox">
@@ -772,7 +775,7 @@ else if (mode.equals("add"))
 														</td>
 													</tr><%
 												}
-												
+
 												// XML Instance link
 												if (dispAll || dispXmlInstance){ %>
 													<tr>
@@ -786,7 +789,7 @@ else if (mode.equals("add"))
 														</td>
 													</tr><%
 												}
-												
+
 												// XForm link
 												if (dispAll || dispXForm){ %>
 													<tr>
@@ -800,7 +803,7 @@ else if (mode.equals("add"))
 														</td>
 													</tr><%
 												}
-												
+
 												// MS Excel link
 												if (dispAll || dispXLS){ %>
 													<tr>
@@ -824,7 +827,7 @@ else if (mode.equals("add"))
 														</td>
 													</tr><%
 												}
-												
+
 												// codelist
 												if (dispAll || dispXmlSchema){ %>
 													<tr>
@@ -866,7 +869,7 @@ else if (mode.equals("add"))
 													}
 												}
 
-																										
+
 												// display the link about cache
 												if (dispAll || dispCache){
 													%>
@@ -880,28 +883,28 @@ else if (mode.equals("add"))
 													<%
 												}
 												%>
-												
+
 											</table>
 									</div>
 									<%
 								}
 							}
 							%>
-													
+
 							<!-- start dotted -->
 							<div id="outerframe">
 
 									<!-- attributes -->
-								
+
 									<%
 									int displayed = 0;
 									int colspan = mode.equals("view") ? 3 : 4;
 									String titleWidth = colspan==3 ? "30" : "26";
 									String valueWidth = colspan==3 ? "66" : "62";
-									
+
 									String isOdd = Util.isOdd(displayed);
 									%>
-									
+
 									<table class="datatable" width="100%">
 											<col style="width:<%=titleWidth%>%"/>
 											<col style="width:4%"/>
@@ -909,10 +912,10 @@ else if (mode.equals("add"))
 											<col style="width:4%"/>
 											<% } %>
 											<col style="width:<%=valueWidth%>%"/>
-							  		
+
 							  			<!-- static attributes -->
-							  			
-										<!-- short name -->								  			
+
+										<!-- short name -->
 							    		<tr id="short_name_row">
 											<th scope="row" class="scope-row short_name">Short name</th>
 											<td class="short_name simple_attr_help">
@@ -942,12 +945,12 @@ else if (mode.equals("add"))
 												}
 												%>
 											</td>
-											
+
 											<%isOdd = Util.isOdd(++displayed);%>
 							    		</tr>
-							    		
+
 							    		<!-- dataset -->
-							    		
+
 							    		<tr class="zebra<%=isOdd%>">
 							    			<th scope="row" class="scope-row simple_attr_title">
 												Dataset
@@ -973,10 +976,10 @@ else if (mode.equals("add"))
 													<span class="caution">(Working copy)</span><%
 												}
 												%>
-											</td>												
+											</td>
 											<%isOdd = Util.isOdd(++displayed);%>
 							    		</tr>
-							    		
+
 							    		<!-- Reference URL -->
 							    		<%
 							    		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
@@ -996,60 +999,60 @@ else if (mode.equals("add"))
 												<td class="simple_attr_value">
 													<small><a href="<%=refUrl%>"><%=refUrl%></a></small>
 												</td>
-												
+
 												<%isOdd = Util.isOdd(++displayed);%>
 								    		</tr><%
 							    		}
 							    		%>
-							    		
+
 							    		<!-- dynamic attributes -->
-							    		
+
 							    		<%
 							    		String attrID = null;
 										String attrValue = null;
 							    		DElemAttribute attribute = null;
 							    		boolean imagesQuicklinkSet = false;
-							    		
+
 							    		for (int i=0; mAttributes!=null && i<mAttributes.size(); i++){
-								    		
+
 								    		attribute = (DElemAttribute)mAttributes.get(i);
 											String dispType = attribute.getDisplayType();
 											if (dispType == null) continue;
-											
+
 											String attrOblig = attribute.getObligation();
 											String obligImg  = "optional.gif";
 											if (attrOblig.equalsIgnoreCase("M"))
 												obligImg = "mandatory.gif";
 											else if (attrOblig.equalsIgnoreCase("C"))
 												obligImg = "conditional.gif";
-											
+
 											if (!attribute.displayFor("TBL")) continue;
-											
+
 											attrID = attribute.getID();
 											attrValue = getValue(attrID, mode, attributes);
-															
+
 											String width  = attribute.getDisplayWidth();
 											String height = attribute.getDisplayHeight();
-											
+
 											boolean dispMultiple = attribute.getDisplayMultiple().equals("1") ? true:false;
 											boolean inherit = attribute.getInheritable().equals("0") ? false:true;
-							
+
 											if (mode.equals("view") && (attrValue==null || attrValue.length()==0))
 												continue;
-											
+
 											// if image attribute and no reason to display then skip
 											if (dispType.equals("image")){
 												if (mode.equals("add") || (mode.equals("edit") && user==null) || (mode.equals("view") && Util.voidStr(attrValue)))
 													continue;
 											}
-											
+
 											Vector multiValues=null;
 											String inheritedValue=null;
-							
+
 											if (!mode.equals("view")){
-												
+
 												if (inherit) inheritedValue = getValue(attrID, 2, mode, attributes);
-													
+
 												if (mode.equals("edit")){
 													if (dispMultiple){
 														if (inherit){
@@ -1058,16 +1061,16 @@ else if (mode.equals("add"))
 														else{
 															multiValues = getValues(attrID, 0, mode, attributes);  //all values
 														}
-													
+
 													}
 													else{
 														if (inherit) attrValue = getValue(attrID, 1, mode, attributes);  //get original value
 													}
 												}
 											}
-								    		
-								    		%>								    		
-							    		
+
+								    		%>
+
 										    <tr class="zebra<%=isOdd%>">
 												<th scope="row" class="scope-row simple_attr_title">
 													<%=Util.replaceTags(attribute.getShortName())%>
@@ -1084,24 +1087,24 @@ else if (mode.equals("add"))
 													</td><%
 												}
 												%>
-												
+
 												<!-- dynamic attribute value display -->
-												
+
 												<td class="simple_attr_value"><%
-												
+
 													// handle image attribute first
 													if (dispType.equals("image")){
 														if (!imagesQuicklinkSet){ %>
 															<a id="images"></a><%
 															imagesQuicklinkSet = true;
 														}
-														
+
 														// thumbnail
 														if (mode.equals("view") && !Util.voidStr(attrValue)){
 															StringTokenizer st = new StringTokenizer(attrValue, ",");
 															while (st.hasMoreTokens()){
 																String token = st.nextToken().trim();
-																%>	
+																%>
 																<a href="visuals/<%=Util.replaceTags(token)%>">
 																	<img src="visuals/<%=Util.replaceTags(token)%>" style="border:0;max-width:100px;max-height:100px" alt=""/>
 																</a><br/><%
@@ -1122,30 +1125,30 @@ else if (mode.equals("add"))
 													}
 													// if non-view mode, display input
 													else{
-														
+
 														// inherited value(s)
 														if (inherit && inheritedValue!=null){
-															
+
 															String sInhText = (((dispMultiple && multiValues!=null) ||
 																				(!dispMultiple && attrValue!=null)) &&
 																				attribute.getInheritable().equals("2")) ?
 																				"Overriding parent level value: " :
 																				"Inherited from parent level: ";
-																				
+
 															if (sInhText.startsWith("Inherited")){ %>
 																<%=sInhText%><%=Util.replaceTags(inheritedValue)%><br/><%
 															}
 														}
-														
+
 														// mutliple display
 														if (dispMultiple && !dispType.equals("image")){
-															
+
 															Vector allPossibleValues = null;
 															if (dispType.equals("select"))
 																allPossibleValues = searchEngine.getFixedValues(attrID, "attr");
 															else if (dispType.equals("text"))
 																allPossibleValues = searchEngine.getSimpleAttributeValues(attrID);
-															
+
 															String divHeight = "7.5em";
 															String textName = "other_value_attr_" + attrID;
 															String divID = "multiselect_div_attr_" + attrID;
@@ -1162,16 +1165,16 @@ else if (mode.equals("add"))
 																<%
 																HashSet displayedSet = new HashSet();
 																for (int k=0; displayValues!=null && k<displayValues.size(); k++){
-																	
+
 																	Object valueObject = displayValues.get(k);
 																	attrValue = (valueObject instanceof FixedValue) ? ((FixedValue)valueObject).getValue() : valueObject.toString();
 																	if (displayedSet.contains(attrValue))
 																		continue;
-																		
+
 																	String strChecked = "";
 																	if (multiValues!=null && multiValues.contains(attrValue))
 																		strChecked = "checked=\"checked\"";
-																	%>		
+																	%>
 																	<label style="display:block">
 																		<input type="checkbox" name="<%=checkboxName%>" value="<%=attrValue%>" <%=strChecked%> style="margin-right:5px"/><%=attrValue%>
 																	</label>
@@ -1183,7 +1186,7 @@ else if (mode.equals("add"))
 														}
 														// no multiple display
 														else{
-															
+
 															if (dispType.equals("text")){
 																if (attrValue!=null){
 																	%>
@@ -1208,7 +1211,7 @@ else if (mode.equals("add"))
 																	<%
 																}
 															}
-															else if (dispType.equals("select")){ %>							
+															else if (dispType.equals("select")){ %>
 																<select class="small" name="attr_<%=attrID%>" onchange="form_changed('form1')">
 																	<%
 																	Vector fxValues = searchEngine.getFixedValues(attrID, "attr");
@@ -1239,19 +1242,19 @@ else if (mode.equals("add"))
 																Unknown display type!<%
 															}
 														}
-														
+
 													} // end display input
 													%>
 													<input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation(),true)%>"/>
 												</td>
 												<!-- end dynamic attribute value display -->
-												
+
 												<%isOdd = Util.isOdd(++displayed);%>
 										    </tr>
 										    <%
 									    }
 									    %>
-									    
+
 							    		<!-- Identifier -->
 							    		<tr class="zebra<%=isOdd%>">
 											<th scope="row" class="scope-row simple_attr_title">
@@ -1280,28 +1283,28 @@ else if (mode.equals("add"))
 												}
 												%>
 											</td>
-											
+
 											<%isOdd = Util.isOdd(++displayed);%>
 							    		</tr>
-									    
+
 									</table>
-									
+
 									<!-- end of attributes -->
-									
+
 									<%
 									boolean separ1displayed = false;
 									%>
-									
+
 									<!-- table elements -->
-									
+
 									<%
 									if ((mode.equals("view") && elems!=null && elems.size()>0) || mode.equals("edit")){
-										
-										
+
+
 										colspan = user==null ? 1 : 2;
-										
+
 										// check if has GIS elements
-										boolean hasGIS = false;	
+										boolean hasGIS = false;
 										for (int i=0; elems!=null && i<elems.size(); i++){
 											DataElement elm = (DataElement)elems.get(i);
 											if (elm.getGIS()!=null){
@@ -1309,11 +1312,11 @@ else if (mode.equals("add"))
 												break;
 											}
 										}
-										
+
 										// start the table elements loop
 										int loops = hasGIS ? 2 : 1;
 										for (int j=1; j<=loops; j++){
-											
+
 											String curMode = hasGIS && j==2 ? "GIS" : "NOGIS";
 											String title = "";
 											if (!hasGIS)
@@ -1324,41 +1327,31 @@ else if (mode.equals("add"))
 												else
 													title = "Metadata elements";
 											}
-											
+
 											boolean hasMarkedElems = false;
 											boolean hasForeignKeys = false;
 											boolean hasCommonElms = false;
 											%>
-												
+
 												<h2><%=Util.replaceTags(title)%></h2>
 												<p>
 													<%
 													if (j<=1){%>
 														<a id="elements"></a><%
 													}
-													// elements link
-													if (mode.equals("edit")){
-														String elemLink = "tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
-														%>
-														<a href="help.jsp?screen=dataset&amp;area=elements_link" onclick="pop(this.href);return false;">
-															<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
-														</a>
-														<img style="border:0" src="images/optional.gif" alt="Optional" title="Optional"/>
-														[Click to <a href="<%=elemLink%>">manage elements</a> of this table]<%
-													}
 													%>
 												</p>
-												
+
 												<%
 												// elements (or GIS elements) table
 												if (mode.equals("view") && elems!=null && elems.size()>0){
-													
+
 													// set colwidths depending on current mode (GIS or NOGIS)
 													String widthShortName = curMode.equals("NOGIS") ? "50%" : "40%";
 													String widthDatatype  = curMode.equals("NOGIS") ? "19%" : "15%";
 													String widthElemtype  = curMode.equals("NOGIS") ? "31%" : "30%";
 													String widthType      = "15%";
-													
+
 													Hashtable types = new Hashtable();
 													types.put("CH1", "Fixed values");
 													types.put("CH2", "Quantitative");
@@ -1380,19 +1373,19 @@ else if (mode.equals("add"))
 																	<th>Datatype</th>
 																	<th>Element type</th>
 																</tr>
-																
+
 																<%
 																// rows loop
 																for (int i=0; i<elems.size(); i++){
-																	
+
 																	DataElement elem = (DataElement)elems.get(i);
 																	String gisType = elem.getGIS();
-																	
+
 																	if (curMode.equals("GIS") && gisType==null)
 																		continue;
 																	if (curMode.equals("NOGIS") && gisType!=null)
 																		continue;
-																	
+
 																	boolean elmCommon = elem.getNamespace()==null || elem.getNamespace().getID()==null;
 																	String elemLink = "data_element.jsp?mode=view&amp;delem_id=" + elem.getID();
 																	String elemDefinition = elem.getAttributeValueByShortName("Definition");
@@ -1402,7 +1395,7 @@ else if (mode.equals("add"))
 																	if (datatype == null) datatype="";
 																	String max_size = getAttributeValue(elem, "MaxSize", mAttributes);
 																	if (max_size == null) max_size="";
-																	
+
 																	// see if the element is part of any foreign key relations
 																	Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
 																	boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
@@ -1413,13 +1406,13 @@ else if (mode.equals("add"))
 																			<a href="<%=elemLink%>" title="<%=Util.replaceTags(linkTitle, true, true)%>">
 																				<%=Util.replaceTags(elem.getShortName())%>
 																			</a>
-																			
+
 																			<%
 																			if (elmCommon){ %>
 																				<sup style="color:#858585;font-weight:bold;">C</sup><%
 																				hasCommonElms = true;
 																			}
-																			
+
 																			// FK indicator
 																			if (fks){ %>
 																				&nbsp;
@@ -1461,7 +1454,7 @@ else if (mode.equals("add"))
 																}
 																%>
 															</table>
-										      		
+
 										      		<%
 										      		if (user!=null && elems!=null && elems.size()>0 && hasMarkedElems){%>
 														<div class="barfont">
@@ -1488,42 +1481,20 @@ else if (mode.equals("add"))
 										}
 									}
 									%>
-									
-									
+
+
 									<!-- complex attributes -->
-									
-									<%											
+
+									<%
 									if ((mode.equals("edit") && user!=null) || (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0)){
-										
+
 										colspan = user==null ? 1 : 2;
 										%>
-										
-										
+
+
 											<h2 id="cattrs">Complex attributes</h2>
-												
 												<%
-												if (!mode.equals("view")){
-													%>
-											<p>
-													<span class="simple_attr_help">
-														<a href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
-															<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
-														</a>
-													</span>
-													<span class="simple_attr_help">
-														<img style="border:0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
-													</span><%
-												
-												
-												// the link
-												if (mode.equals("edit") && user!=null){ %>
-													<span class="barfont_bordered">
-														[Click to <a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">manage complex attributes</a> of this table]
-													</span><%
-												} %>
-											</p>
-												<% }
-											
+
 											// the table
 											if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0){
 												%>
@@ -1536,13 +1507,13 @@ else if (mode.equals("add"))
 												        	displayed = 1;
 												        	isOdd = Util.isOdd(displayed);
 												        	for (int i=0; i<complexAttrs.size(); i++){
-													        	
+
 																DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
 																attrID = attr.getID();
-																String attrName = attr.getShortName();   
+																String attrName = attr.getShortName();
 																Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
 																%>
-																
+
 																<tr class="zebra<%=isOdd%>">
 																	<td>
 																		<a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
@@ -1559,30 +1530,30 @@ else if (mode.equals("add"))
 																		StringBuffer rowValue=null;
 																		Vector rows = attr.getRows();
 																		for (int j=0; rows!=null && j<rows.size(); j++){
-																			
+
 																			if (j>0){%>---<br/><%}
-																			
+
 																			Hashtable rowHash = (Hashtable)rows.get(j);
 																			rowValue = new StringBuffer();
-																			
+
 																			for (int t=0; t<attrFields.size(); t++){
 																				Hashtable hash = (Hashtable)attrFields.get(t);
 																				String fieldID = (String)hash.get("id");
 																				String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
 																				if (fieldValue == null) fieldValue = "";
 																				if (fieldValue.trim().equals("")) continue;
-																				
+
 																				if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
 																					rowValue.append(", ");
-																					
+
 																				rowValue.append(Util.replaceTags(fieldValue));
 																				%>
 																				<%=Util.replaceTags(fieldValue)%><br/><%
-																			}	
+																			}
 																		}
 																		%>
 																	</td>
-																	
+
 																	<% isOdd = Util.isOdd(++displayed); %>
 																</tr><%
 															}
@@ -1593,15 +1564,15 @@ else if (mode.equals("add"))
 									}
 									%>
 									<!-- end complex attributes -->
-							        
+
 							<!-- end dotted -->
 			</div>
 					</td>
 				</tr>
-				
-				
+
+
 			</table>
-				
+
 				<!-- end main table body -->
 			<!-- end main table -->
 
@@ -1609,7 +1580,7 @@ else if (mode.equals("add"))
 				<%
 				// hidden inputs
 				////////////////
-				
+
 				// dataset name
 				if (dsName!=null && dsName.length()>0){ %>
 					<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName,true)%>"/> <%
@@ -1637,20 +1608,18 @@ else if (mode.equals("add"))
 					%>
 					<input type="hidden" name="submitter_url" value="<%=submitterUrl%>"/><%
 				}
-				%>				
+				%>
 				<input type="hidden" name="mode" value="<%=mode%>"/>
 				<input type="hidden" name="ds_id" value="<%=dsID%>"/>
 				<input type="hidden" name="copy_tbl_id" value=""/>
 				<input type="hidden" name="changed" value="0"/>
 				<input type="hidden" name="saveclose" value="false"/>
 			</div>
-			
+
 		</form>
-		</div>
 	</div> <!-- end workarea -->
 	</div> <!-- container -->
 	<%@ include file="footer.txt" %>
-
 </body>
 </html>
 
@@ -1662,7 +1631,7 @@ catch (Exception e){
 		e.printStackTrace(System.out);
 	else{
 		String msg = e.getMessage();
-		ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();							
+		ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
 		e.printStackTrace(new PrintStream(bytesOut));
 		String trace = bytesOut.toString(response.getCharacterEncoding());
 		String backLink = history.getBackUrl();

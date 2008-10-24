@@ -21,27 +21,27 @@
 
     private String oCompStr=null;
     private int iO=0;
-    
+
     private String regStatus = "";
     private String sortableStatus = "";
     public boolean clickable = false;
     public String workingUser = null;
     public boolean canDelete = false;
-    
+
     public c_SearchResultEntry(String _oID, String _oShortName, String _oVersion, String _oFName, Vector _oTables) {
-	    
+
             oID	= _oID==null ? "" : _oID;
             oShortName	= _oShortName==null ? "" : _oShortName;
             oFName	= _oFName==null ? "" : _oFName;
             oVersion	= _oVersion==null ? "" : _oVersion;
             oTables	= _oTables;
-    		
+
             oFullName = oFName;
 
             if (oFName.length() > 60)
 				oFName = oFName.substring(0,60) + " ...";
 	};
-    
+
     public void setComp(int i,int o) {
         switch(i) {
             case 1: oCompStr=oFName; break;
@@ -49,10 +49,10 @@
             case 3: oCompStr=oID; break;
             default: oCompStr=oFName; break;
 		}
-		
+
         iO=o;
 	}
-    
+
     public String toString() {
         return oCompStr;
     }
@@ -60,15 +60,15 @@
     public int compareTo(Object oC1) {
         return iO*oCompStr.compareToIgnoreCase(oC1.toString());
     }
-    
+
     public void setRegStatus(String stat){
 	    regStatus = stat;
     }
-    
+
     public String getRegStatus(){
 	    return regStatus;
     }
-    
+
     public void setSortableStatus(String sortableStatus){
 	    this.sortableStatus = sortableStatus;
     }
@@ -84,7 +84,7 @@
     public boolean SortByColumn(Integer oCol,Integer oOrder) {
         if ((iSortColumn!=oCol.intValue()) || (iSortOrder!=oOrder.intValue())) {
             for(int i=0; i<oElements.size(); i++) {
-                c_SearchResultEntry oEntry=(c_SearchResultEntry)oElements.elementAt(i); 
+                c_SearchResultEntry oEntry=(c_SearchResultEntry)oElements.elementAt(i);
                 oEntry.setComp(oCol.intValue(),oOrder.intValue());
             }
             Collections.sort(oElements);
@@ -102,7 +102,7 @@
 	request.setCharacterEncoding("UTF-8");
 
 	ServletContext ctx = getServletContext();
-	
+
 	Integer oSortCol=null;
     Integer oSortOrder=null;
     try {
@@ -113,14 +113,14 @@
     	oSortCol=null;
         oSortOrder=null;
     }
-    
+
     // if this is no sorting request, then remember the query string in session in order to come back if needed
     if (oSortCol==null){
 		String query = request.getQueryString() == null ? "" : request.getQueryString();
 		String searchUrl =  request.getRequestURI() + "?" + query;
        	session.setAttribute(oSearchUrlAttrName, searchUrl);
    	}
-	
+
     Vector datasets=null;
 	DDSearchEngine searchEngine = null;
 	Connection conn = null;
@@ -128,17 +128,17 @@
 	String _isSearchForWorkingCopies = request.getParameter("wrk_copies");
 	boolean isSearchForWorkingCopies = (_isSearchForWorkingCopies!=null && _isSearchForWorkingCopies.equals("true")) ? true : false;
 	boolean isIncludeHistoricVersions = request.getParameter("incl_histver")!=null && request.getParameter("incl_histver").equals("true");
-	
+
 	String pageMode = request.getParameter("sort_column")!=null ? "sort" : "search";
-	
+
 	try { // start the whole page try block
-		
+
 		if (pageMode.equals("search")){
-		
+
 		conn = ConnectionUtil.getConnection();
-	
+
 		if (request.getMethod().equals("POST")){
-		
+
 			if (user==null){ %>
 				<b>Not allowed!</b> <%
 				return;
@@ -152,10 +152,10 @@
 					}
 				}
 			}
-			
+
       		Connection userConn = null;
       		DatasetHandler handler = null;
-      		
+
       		try{
 	      		userConn = user.getConnection();
 				handler = new DatasetHandler(userConn, request, ctx);
@@ -168,10 +168,10 @@
 				} catch (SQLException e) {}
 			}
 		}
-       	
+
        	session.removeAttribute(oSearchCacheAttrName);
-		
-       	searchEngine = new DDSearchEngine(conn, "", ctx);	
+
+       	searchEngine = new DDSearchEngine(conn, "", ctx);
        	searchEngine.setUser(user);
 
 		String srchType = request.getParameter("search_precision");
@@ -181,21 +181,21 @@
 		if (srchType != null && srchType.equals("substr"))
 			oper=" like ";
 
-			
-		Vector params = new Vector();	
+
+		Vector params = new Vector();
 		Enumeration parNames = request.getParameterNames();
 		while (parNames.hasMoreElements()){
 			String parName = (String)parNames.nextElement();
 			if (!parName.startsWith(ATTR_PREFIX))
 				continue;
-		
+
 			String parValue = request.getParameter(parName);
 			if (parValue.length()==0)
 				continue;
-			
+
 			DDSearchParameter param =
 				new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
-		
+
             if (oper!= null && oper.trim().equalsIgnoreCase("like"))
 				param.addValue("'%" + parValue + "%'");
 			else
@@ -206,22 +206,22 @@
 		String idfier = request.getParameter("idfier");
 		String version = request.getParameter("version");
 
-		// see if looking for deleted datasets		
+		// see if looking for deleted datasets
 		String _restore = request.getParameter("restore");
 		if (_restore!=null && _restore.equals("true")){
 			if (user==null || !user.isAuthentic()){
 				Exception e = new Exception("User not authorized!");
 				String msg = e.getMessage();
-				ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();							
+				ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
 				e.printStackTrace(new PrintStream(bytesOut));
 				String trace = bytesOut.toString(response.getCharacterEncoding());
-				
+
 				String backLink = history.getBackUrl();
-				
+
 				request.setAttribute("DD_ERR_MSG", msg);
 				request.setAttribute("DD_ERR_TRC", trace);
 				request.setAttribute("DD_ERR_BACK_LINK", backLink);
-				
+
 				request.getRequestDispatcher("error.jsp").forward(request, response);
 				return;
 			}
@@ -237,7 +237,7 @@
 			}
 			datasets = searchEngine.getDatasets(params, short_name, idfier, version, oper, isSearchForWorkingCopies, isIncludeHistoricVersions, statuses);
 		}
-}	
+}
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -247,18 +247,18 @@
     <script type="text/javascript" src="modal_dialog.js"></script>
     <script type="text/javascript">
     // <![CDATA[
-    
+
 		function setLocation(){
 			if (document.forms["form1"].searchUrl)
 				document.forms["form1"].searchUrl.value = document.location.href;
 		}
-		
+
 		function goTo(mode){
 			if (mode == "add"){
 				document.location.assign("dataset.jsp?mode=add");
 			}
 		}
-		
+
     	function showSortedList(clmn,ordr) {
     		if ((document.forms["sort_form"].elements["sort_column"].value != clmn)
        			|| (document.forms["sort_form"].elements["sort_order"].value != ordr)) {
@@ -267,23 +267,23 @@
         		document.forms["sort_form"].submit();
     		}
 		}
-		
+
     	function deleteDataset(){
-	    	
+
 	    	// first confirm if the deletetion is about to take place at all
 			var b = confirm("Selected datasets will be deleted! You will be given a chance to delete them permanently or save them for restoring later. Click OK, if you want to continue. Otherwise click Cancel.");
 			if (b==false)
 				return;
-				
+
 			// now ask if the deletion should be complete (as opposed to settign the 'deleted' flag)
 			openNoYes("yesno_dialog.html", "Do you want the selected datasets to be deleted permanently?\n(Note that working copies will always be permanently deleted)", delDialogReturn,100, 400);
     	}
-    	
+
     	function delDialogReturn(){
 			var v = dialogWin.returnValue;
 			if (v==null || v=="" || v=="cancel")
 				return;
-			
+
 			document.forms["form1"].elements["complete"].value = v;
 			deleteDatasetReady();
 		}
@@ -292,17 +292,17 @@
 	    	document.forms["form1"].elements["mode"].value = "delete";
        		document.forms["form1"].submit();
     	}
-    	
+
     	function restoreDataset(){
 	    	document.forms["form1"].elements["mode"].value = "restore";
        		document.forms["form1"].submit();
     	}
-    	
+
     	function alertReleased(chkbox){
 	    	if (chkbox.checked==true)
 	    		alert("Please note that you selected a dataset in Released status!");
     	}
-    	
+
     	function doLoad(){
 	    	if (document.forms["form1"] && document.forms["form1"].elements["count_checkboxes"] && document.forms["form1"].elements["del_button"]){
 		    	if (document.forms["form1"].elements["count_checkboxes"].value <= 0){
@@ -310,7 +310,7 @@
 		    	}
     		}
     	}
-    	
+
     // ]]>
     </script>
 </head>
@@ -343,7 +343,7 @@
 					}
 			if (user != null){
 			%>
-				<div id="h-operations">
+				<div id="auth-operations">
 				<h2>Operations:</h2>
 				<ul>
 					<%
@@ -364,8 +364,8 @@
 					%>
 				</ul>
 				</div>
-			
-		
+
+
 			<%
 			}
 			else { %>
@@ -376,10 +376,10 @@
 			<!-- the buttons part -->
 				<%
 				if (pageMode.equals("search")){
-	            
+
 		            // check if any results found
 					if (datasets == null || datasets.size()==0){
-						
+
 			            // see if this is a search or just listing all the datasets
 						if (Util.voidStr(request.getParameter("search_precision"))){ // listing all the datasets
 							%>
@@ -390,21 +390,21 @@
 							<b>No dataset definitions matching the search criteria were found!</b><%
 						}
 	    	        	%>
-	    	        	
+
 		    	        </div></div><%@ include file="footer.txt" %></body></html>
 		        	    <%
 		            	return;
 		            }
 	        	}
 	            %>
-            		
+
 		<table class="sortable" width="100%" style="clear:both">
-		
+
 			<%
 			// temporarly we do not display version aka CheckInNo, because for the time being it doesn't function properly anyway
 			boolean isDisplayVersionColumn = isIncludeHistoricVersions;//false;//user!=null;
 			boolean isDisplayHelperColumn = user!=null;
-			
+
 			int colSpan = 3;
 			if (isDisplayHelperColumn)
 				colSpan++;
@@ -418,7 +418,7 @@
 			else { %>
 				<col style="width: 35%"/><%
 			}
-			
+
 			if (isDisplayVersionColumn){ %>
 				<col style="width: 10%"/>
 				<col style="width: 15%"/>
@@ -429,7 +429,7 @@
 				<col style="width: 45%"/><%
 			}
 			%>
-				
+
 			<!-- the table itself -->
 	   <thead>
 			<tr>
@@ -475,26 +475,26 @@
 			</tr>
       </thead>
       <tbody>
-			
+
 			<%
 			DElemAttribute attr = null;
 			int countCheckboxes = 0;
 			if (pageMode.equals("search")){
-				
+
 				c_SearchResultSet oResultSet=new c_SearchResultSet();
 				oResultSet.isAuth = user!=null;
-	        	oResultSet.oElements=new Vector(); 
+	        	oResultSet.oElements=new Vector();
 	        	session.setAttribute(oSearchCacheAttrName,oResultSet);
-	        	
+
 				for (int i=0; i<datasets.size(); i++){
-				
+
 					Dataset dataset = (Dataset)datasets.get(i);
-					
+
 					String ds_id = dataset.getID();
 					Vector tables = searchEngine.getDatasetTables(ds_id);
 					String regStatus = dataset.getStatus();
 					boolean clickable = searchEngine.skipByRegStatus(regStatus) ? false : true;
-					String linkDisabled = clickable ? "" : "class=\"disabled\"";					
+					String linkDisabled = clickable ? "" : "class=\"disabled\"";
 					String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
 					String ds_name = Util.replaceTags(dataset.getShortName());
 					String dsLink = clickable ? "dataset.jsp?mode=view&amp;ds_id=" + ds_id : "#";
@@ -507,7 +507,7 @@
 					String statusTxt   = Util.getStatusRadics(regStatus);
 					String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 					String alertReleased = regStatus.equals("Released") ? "onclick=\"alertReleased(this)\"" : "";
-					
+
 					boolean canDelete = !dataset.isWorkingCopy() && workingUser==null && regStatus!=null && user!=null;
 					if (canDelete){
 						boolean editPrm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
@@ -517,29 +517,29 @@
 						else
 							canDelete = editPrm || editReleasedPrm;
 					}
-						
+
 					c_SearchResultEntry oEntry = new c_SearchResultEntry(ds_id,
                															 ds_name,
                															 dsVersion,
                															 dsFullName,
-                														 tables);                														 
+                														 tables);
 					oEntry.setRegStatus(regStatus);
 					oEntry.workingUser = workingUser;
 					oEntry.setSortableStatus(Util.getStatusSortString(regStatus));
 					oEntry.clickable = clickable;
 					oEntry.oIdentifier = dataset.getIdentifier();
 					oEntry.canDelete = canDelete;
-					
-					oResultSet.oElements.add(oEntry);					
+
+					oResultSet.oElements.add(oEntry);
 					%>
-				
+
 					<tr valign="top" class="<%=zebraClass%>">
 						<%
 						// the 1st column: checkbox, red asterisk or nbsp
 						if (isDisplayHelperColumn){ %>
 							<td align="right">
 								<%
-								if (canDelete){									
+								if (canDelete){
 									%>
 									<input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=ds_id%>" <%=alertReleased%>/>
 									<input type="hidden" name="ds_idf_<%=dataset.getID()%>" value="<%=dataset.getIdentifier()%>"/>
@@ -555,7 +555,7 @@
 								%>
 							</td><%
 						}
-						
+
 						// the 2nd column: full name link
 						if (clickable==false){%>
 							<td title="<%=Util.replaceTags(dsFullName,true)%>" class="disabled">
@@ -570,7 +570,7 @@
 							</td><%
 						}
 						%>
-						
+
 						<%
 						// 3rd column: version aka CheckInNo
 						if (isDisplayVersionColumn){ %>
@@ -578,7 +578,7 @@
 								<%=dataset.getID()%>
 							</td><%
 						}
-						
+
 						// 4th column: Registration status
 						%>
 						<td>
@@ -599,11 +599,11 @@
 						<td>
 							<%
 							for (int c=0; tables!=null && c<tables.size(); c++){
-				
+
 								DsTable table = (DsTable)tables.get(c);
 								StringBuffer tableLink = new StringBuffer("dstable.jsp?mode=view&amp;table_id=");
 								tableLink.append(table.getID()).append("&amp;ds_id=").append(ds_id).append("&amp;ds_name=").append(ds_name);
-								
+
 								// it is probably less confusing if there are no links for tables of working copies
 								if (isSearchForWorkingCopies){ %>
 									<%=Util.replaceTags(table.getShortName())%><%
@@ -627,25 +627,25 @@
 					<%
 				}
 				%>
-		</tbody>	
+		</tbody>
 		</table>
 		<p>Total results: <%=datasets.size()%></p><%
 			}
 			else {
-				
+
 				// No search - return from another result set or a total stranger...
                 c_SearchResultSet oResultSet=(c_SearchResultSet)session.getAttribute(oSearchCacheAttrName);
                 if (oResultSet==null) {
                     %><p>This page has experienced a time-out. Try searching again.</p><%
                 }
                 else {
-	                
+
                     if ((oSortCol!=null) && (oSortOrder!=null))
                         oResultSet.SortByColumn(oSortCol,oSortOrder);
-                    
+
                     c_SearchResultEntry oEntry;
                     for (int i=0;i<oResultSet.oElements.size();i++) {
-	                    
+
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                         String linkDisabled = oEntry.clickable ? "" : "class=\"disabled\"";
                         String dsLink = oEntry.clickable ? "dataset.jsp?mode=view&amp;ds_id=" + oEntry.oID : "#";
@@ -655,7 +655,7 @@
                         String alertReleased = oEntry.getRegStatus().equals("Released") ? "onclick=\"alertReleased(this)\"" : "";
                         %>
 						<tr valign="top" class="<%=zebraClass%>">
-						
+
 							<%
 							// the 1st column: checkbox, red asterisk or nbsp
 							if (isDisplayHelperColumn){%>
@@ -676,7 +676,7 @@
 									%>
 								</td><%
 							}
-							
+
 							// 2nd column: full name link
 							if (oEntry.clickable==false){%>
 								<td title="<%=Util.replaceTags(oEntry.oFullName,true)%>" class="disabled">
@@ -690,16 +690,16 @@
 									</a>
 								</td><%
 							}
-							
+
 							// 3nd column: version aka CheckInNo
 							if (isDisplayVersionColumn){ %>
 								<td>
 									<%=oEntry.oID%>
 								</td><%
 							}
-							
+
 							// 4th column: Registration status
-							%>							
+							%>
 							<td>
 								<%
 								if (oEntry.clickable){ %>
@@ -719,12 +719,12 @@
 								<%
 								Vector tables = oEntry.oTables;
 								for (int c=0; tables!=null && c<tables.size(); c++){
-	
+
 									DsTable table = (DsTable)tables.get(c);
 									StringBuffer tableLink = new StringBuffer("dstable.jsp?mode=view&amp;table_id=");
 									tableLink.append(table.getID()).append("&amp;ds_id=").
 									append(oEntry.oID).append("&amp;ds_name=").append(oEntry.oShortName);
-									
+
 									// it is probbaly less confusing if there are no links for tables of working copies
 									if (isSearchForWorkingCopies){ %>
 										<%=Util.replaceTags(table.getShortName())%><%
@@ -748,7 +748,7 @@
 					<%
 					}
                 	%>
-			</tbody>	
+			</tbody>
 			</table>
 			<p>
 				Total results: <%=oResultSet.oElements.size()%>
@@ -756,7 +756,7 @@
                 }
             }
 			%>
-		
+
 			<div style="display:none">
 				<input type="hidden" name="searchUrl" value=""/>
 				<input type="hidden" name="mode" value="view"/>
@@ -771,9 +771,9 @@
 				// helper hidden input so that we can disable delete button if no checkboxes were displayed
 				%>
 				<input name="count_checkboxes" type="hidden" value="<%=countCheckboxes%>"/>
-			</div>		
+			</div>
 		</form>
-		
+
 		<form id="sort_form" action="datasets.jsp" method="get">
 			<div style="display:none">
 				<input name="sort_column" type="hidden" value="<%=(oSortCol==null)? "":oSortCol.toString()%>"/>
@@ -788,10 +788,10 @@
 				%>
 			</div>
 		</form>
-		
+
 </div> <!-- workarea -->
 </div> <!-- container -->
-<%@ include file="footer.txt" %>			
+<%@ include file="footer.txt" %>
 </body>
 </html>
 
