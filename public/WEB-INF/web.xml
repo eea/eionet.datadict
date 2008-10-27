@@ -17,12 +17,16 @@
 		<param-name>login-error-page</param-name>
 		<param-value>error.html</param-value>
 	</context-param>
-	<context-param>
 	
+	<context-param>
 		<param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
 		<param-value>https://sso.eionet.europa.eu/login</param-value>
 	</context-param>
 
+	<context-param>
+		<param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
+		<param-value>dd.eionet.europa.eu</param-value>
+	</context-param>
 
 <!-- filters -->
 	<filter>
