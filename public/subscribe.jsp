@@ -107,9 +107,9 @@ finally {
     	<%
     	if (user==null){
 	    	%>
-	    	<p class="caution">
+	    	<div class="error-msg">
 	    		You must <a href="javascript:login()">log in</a> to be able to subscribe to any notifications!
-	    	</p>
+	    	</div>
 	    	<%
     	}
     	else{
@@ -121,10 +121,10 @@ finally {
 		   		if (success!=null){
 			   		session.removeAttribute("SUCCESS");
 			   		%>
-			   		<p class="caution">Subscription successful!</p>
+			   		<div class="system-msg">Subscription successful!</div>
 			   		<%	   		
 		   		}
-		   		String subscriptionsUrl = Props.getProperty(Subscribe.PROP_UNS_SUBSCRIPTIONS_URL);
+		   		Sting subscriptionsUrl = Props.getProperty(Subscribe.PROP_UNS_SUBSCRIPTIONS_URL);
 		   		subscriptionsUrl = subscriptionsUrl + Props.getProperty(Subscribe.PROP_UNS_CHANNEL_NAME);
 		   		%>
 	   		
@@ -173,7 +173,7 @@ finally {
 				<table>
 					<tr>
 						<td>
-							<label for="dataset" class="question">Dataset:</label>
+							<label for="dataset" class="question">Dataset</label>
 						</td>
 						<td>
 							<%
@@ -203,7 +203,7 @@ finally {
 					</tr>
 					<tr>
 						<td>
-							<label for="table" class="question">Table:</label>
+							<label for="table" class="question">Table</label>
 						</td>
 						<td>
 							<%
@@ -240,7 +240,7 @@ finally {
 					</tr>
 					<tr>
 						<td>
-							<label for="common_element" class="question">Common element:</label>
+							<label for="common_element" class="question">Common element</label>
 						</td>
 						<td>
 							<%
@@ -270,7 +270,7 @@ finally {
 					</tr>
 					<tr>
 						<td>
-							<label for="reg_status" class="question">Registration Status:</label>
+							<label for="reg_status" class="question">Registration Status</label>
 						</td>
 						<td>
 							<select name="reg_status" id="reg_status">
