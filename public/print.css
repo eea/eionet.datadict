@@ -1,4 +1,4 @@
 /* Print stylesheet */
-auth-operations {
+#auth-operations, #drop-operations {
 	display: none;
 }
