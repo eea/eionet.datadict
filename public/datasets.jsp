@@ -324,28 +324,13 @@
 <div id="workarea">
 
 				<!-- search, restore -->
-				<div id="operations">
+				<div id="drop-operations">
+				<h2>Operations</h2>
 				<ul>
 					<li><a href="search_dataset.jsp" title="Search datasets">Search</a></li>
-				</ul>
-				</div>
 					<%
-					if (!restore && isSearchForWorkingCopies){ %>
-						<h1>Working copies of dataset definitions</h1><%
-					}
-					else if (!restore){
-						String strAllOrLatest = isIncludeHistoricVersions ? "All " : "Latest";
-						%>
-						<h1><%=strAllOrLatest%> versions of datasets in any status</h1><%
-					}
-					else{%>
-						<h1>Restore datasets</h1><%
-					}
 			if (user != null){
 			%>
-				<div id="auth-operations">
-				<h2>Operations:</h2>
-				<ul>
 					<%
 					if (user.isAuthentic() && !restore){%>
 						<li><a href="restore_datasets.jsp?SearchType=SEARCH&amp;restore=true" title="Restore datasets">Restore</a></li><%
@@ -362,13 +347,26 @@
 					<%
 					}
 					%>
-				</ul>
-				</div>
 
 
 			<%
 			}
-			else { %>
+			%>
+				</ul>
+				</div>
+			<%
+					if (!restore && isSearchForWorkingCopies){ %>
+						<h1>Working copies of dataset definitions</h1><%
+					}
+					else if (!restore){
+						String strAllOrLatest = isIncludeHistoricVersions ? "All " : "Latest";
+						%>
+						<h1><%=strAllOrLatest%> versions of datasets in any status</h1><%
+					}
+					else{%>
+						<h1>Restore datasets</h1><%
+					}
+			if (user == null) { %>
 				<p class="advise-msg">Note: Datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.</p><%
 		    }
 			%>
