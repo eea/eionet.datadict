@@ -9,6 +9,7 @@
 		DDUser _user = SecurityUtil.getUser(request);
 		if (_user!=null){
 			%>
+			<li><a href="checkedout.jsp">Your checkouts </a></li>
 			<li><a href="attributes.jsp">Attributes </a></li>
 			<%	
 			if (SecurityUtil.hasPerm(_user.getUserName(), "/import", "x")){ %>
