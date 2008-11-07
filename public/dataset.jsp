@@ -443,8 +443,8 @@
 				}
 
 				if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
-					alert("Identifier not valid for usage as an XML tag! "
-						  "In the first character only underscore or latin characters are allowed! "
+					alert("Identifier not valid for usage as an XML tag! " +
+						  "In the first character only underscore or latin characters are allowed! " +
 						  "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
 					return;
 				}
@@ -532,7 +532,7 @@
 			<%
 			if (regStatus!=null && regStatus.equals("Released")){
 				%>
-				var b = confirm("You are checking in with Released status! This will automatically release your changes into public view. "
+				var b = confirm("You are checking in with Released status! This will automatically release your changes into public view. " +
 							    "If you want to continue, click OK. Otherwise click Cancel.");
 				if (b==false) return;
 				<%
