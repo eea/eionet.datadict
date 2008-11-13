@@ -124,7 +124,7 @@ finally {
 			   		<div class="system-msg">Subscription successful!</div>
 			   		<%	   		
 		   		}
-		   		Sting subscriptionsUrl = Props.getProperty(Subscribe.PROP_UNS_SUBSCRIPTIONS_URL);
+		   		String subscriptionsUrl = Props.getProperty(Subscribe.PROP_UNS_SUBSCRIPTIONS_URL);
 		   		subscriptionsUrl = subscriptionsUrl + Props.getProperty(Subscribe.PROP_UNS_CHANNEL_NAME);
 		   		%>
 	   		
