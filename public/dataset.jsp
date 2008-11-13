@@ -757,7 +757,7 @@ else if (mode.equals("add"))
 						if (mode.equals("view")){
 							if (canNewVersion){
 						%>
-							<li><a href="dataset.jsp?mode=newversion&amp;ds_id=<%=ds_id%>">New version</a></li>
+							<li><a href="dataset.jsp?mode=view&amp;action=newversion&amp;ds_id=<%=ds_id%>">New version</a></li>
 						<%
 							}
 							if (canCheckout){
