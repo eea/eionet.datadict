@@ -1280,6 +1280,7 @@ else{
 				    			<%
 								if (!elmCommon && editDstPrm){ %>
 									<li><a href="data_element.jsp?mode=edit&amp;delem_id=<%=delem_id%>">Edit</a></li>
+									<li><a href="javascript:switchType()">Switch type</a></li>
 <%
 								}
 								if (elmCommon && canCheckout){%>
