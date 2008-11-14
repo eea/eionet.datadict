@@ -302,30 +302,35 @@
 		}
 		else if (mode.equals("edit")){
 
-			// if this was a "saveclose", send to view mode
 			String strSaveclose = request.getParameter("saveclose");
+			String checkIn = request.getParameter("check_in");
+			String switchType = request.getParameter("switch_type");
+
+			// if this was a "saveclose", send to view mode
 			if (strSaveclose!=null && strSaveclose.equals("true")){
 				QueryString qs = new QueryString(currentUrl);
 				qs.changeParam("mode", "view");
 				redirUrl = qs.getValue();
 			}
-			else{
-				// if this was check in, go to the view of checked in copy
-				String checkIn = request.getParameter("check_in");
-				if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
-					if (history!=null)
+			// if this was check in, go to the view of checked in copy
+			else if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
+				if (history!=null)
 						history.remove(history.getCurrentIndex());
 					QueryString qs = new QueryString(currentUrl);
 					qs.changeParam("mode", "view");
 					if (handler.getCheckedInCopyID()!=null)
 						qs.changeParam("delem_id", handler.getCheckedInCopyID());
 					redirUrl = qs.getValue();
-				}
-				// if this was just a save, send back to edit page
-				else{
-					QueryString qs = new QueryString(currentUrl);
-					redirUrl = qs.getValue();
-				}
+			}
+			// if this was a switch type
+			else if (switchType!=null && switchType.equalsIgnoreCase("true")){
+				QueryString qs = new QueryString(currentUrl);
+				redirUrl = qs.getValue();
+			}
+			// if this was just a save, send back to edit page
+			else{
+				QueryString qs = new QueryString(currentUrl);
+				redirUrl = qs.getValue();
 			}
 		}
 		else if (mode.equals("delete")){
@@ -640,6 +645,12 @@
 
 		function checkIn(){
 			submitCheckIn();
+		}
+
+		function switchType(){
+			document.forms["form1"].elements["switch_type"].value = "true";
+			document.forms["form1"].elements["mode"].value = "edit";
+			document.forms["form1"].submit();
 		}
 
 		function submitCheckIn(){
@@ -1326,8 +1337,9 @@ else{
 							else if (mode.equals("view") && isMyWorkingCopy){
 								%>
 								<input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/>
+								&nbsp;<input type="button" class="mediumbuttonb" value="Switch type" onclick="switchType()"/>
 								&nbsp;<input type="button" class="mediumbuttonb" value="Check in" onclick="checkIn()" />
-								&nbsp;<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>
+								&nbsp;<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>								
 								<%
 							}
 							// edit case
@@ -2563,6 +2575,7 @@ else{
 				<div style="display:none">
 					<input type="hidden" name="mode" value="<%=mode%>"/>
 					<input type="hidden" name="check_in" value="false"/>
+					<input type="hidden" name="switch_type" value="false"/>
 					<input type="hidden" name="copy_elem_id" value=""/>
 					<input type="hidden" name="changed" value="0"/>
 					<input type="hidden" name="saveclose" value="false"/>

@@ -116,7 +116,7 @@ public class DataElementHandler extends BaseHandler {
 	            setVersioning(false);
         }
         
-        // set the attributes prohibited to set for CH1 type elements
+        // loop over all possible attributes, set certain business rules
         try{
             searchEngine = new DDSearchEngine(conn, "", ctx);
             Vector v = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE);
@@ -393,11 +393,12 @@ public class DataElementHandler extends BaseHandler {
     	
 		// init the flag indicating if this is a common element
 		boolean elmCommon = req.getParameter("common")!=null;
-
+		
 		lastInsertID = delem_id;
+		String checkIn = req.getParameter("check_in");
+		String switchType = req.getParameter("switch_type");
 		
 		// if check-in, do the check-in and exit
-		String checkIn = req.getParameter("check_in");
 		if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
         	
 			VersionManager verMan = new VersionManager(conn, user);
@@ -413,6 +414,31 @@ public class DataElementHandler extends BaseHandler {
 				setCheckedInCopyID(req.getParameter("checkedout_copy_id"));
 			
 			verMan.checkIn(delem_id, "elm", req.getParameter("reg_status"));
+			return;
+		}
+		if (switchType!=null && switchType.equalsIgnoreCase("true")){
+			
+			String newType = elmValuesType.equals("CH1") ? "CH2" : "CH1";
+			
+			SQLGenerator gen = new SQLGenerator();
+			gen.setTable("DATAELEM");
+			gen.setField("TYPE", newType);
+			conn.createStatement().executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + delem_id);
+			
+			if (newType.equals("CH1") && !ch1ProhibitedAttrs.isEmpty()){
+				
+				StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID=");
+				buf.append(delem_id).append(" and M_ATTRIBUTE_ID in (");
+				int i=0;
+				for (Iterator iter = ch1ProhibitedAttrs.iterator(); iter.hasNext();i++){
+					if (i>0)
+						buf.append(",");
+					buf.append(iter.next());
+				}
+				buf.append(")");
+				conn.createStatement().executeUpdate(buf.toString());
+			}
+			
 			return;
 		}
 		
