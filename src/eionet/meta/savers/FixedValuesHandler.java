@@ -240,7 +240,7 @@ public class FixedValuesHandler extends BaseHandler{
 		String dtype = elm==null ? "" :
 								   elm.getAttributeValueByShortName("Datatype");
 		dtype = dtype==null ? "" : dtype.toUpperCase();
-		if (prhbDatatypes.contains(dtype.toUpperCase()))
+		if (prhbDatatypes.contains(dtype.toUpperCase()) && !mode.equalsIgnoreCase("edit"))
 			allowed = false;
     }
     
