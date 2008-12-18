@@ -82,6 +82,7 @@ public class OutService {
 				
 				HashSet dstStatuses = new HashSet();
 				dstStatuses.add("Released");
+				dstStatuses.add("Recorded");
 				Vector result = searchEngine.getDatasetTables(null, null, null, null, null, null, dstStatuses, false);
 		
 				Vector ret = new Vector();
@@ -100,7 +101,7 @@ public class OutService {
 					hash.put("shortName", table.getShortName());
 					hash.put("dataSet", table.getDatasetName());
 					
-					if (table.getDstDate()!=null){
+					if (table.getDstStatus()!=null && table.getDstStatus().equals("Released") && table.getDstDate()!=null){
 						String dateFormatted = (new SimpleDateFormat("ddMMyy")).format(new Date(Long.parseLong(table.getDstDate())));
 						hash.put("dateReleased", dateFormatted);
 					}
