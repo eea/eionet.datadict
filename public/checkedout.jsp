@@ -143,7 +143,7 @@ Vector commonElements=null;
 				<%
 		} else {
 			%>
-	<p class="advise-msg">You have not checked out any objects</p>
+	<p class="advise-msg">You have <em>no objects</em> checked out</p>
 			<%
 		} 
 			%>
