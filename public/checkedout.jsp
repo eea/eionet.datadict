@@ -41,12 +41,6 @@ Vector commonElements=null;
 			datasets = searchEngine.getDatasets(null, null, null, null, true);
 			commonElements = searchEngine.getCommonElements(null, null, null, null, true, "=");
 		}
-		else{
-			request.getRequestDispatcher("Logout").forward(request,response);
-			return;
-		}
-			
-			
 
 %>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -64,6 +58,9 @@ Vector commonElements=null;
 <div id="workarea">
 	<h1>Your checkouts</h1>	
 
+<%
+		if (userHasWorkingCopies){
+%>
 	<p class="advise-msg">You have checked out the following objects:</p>
 	<table class="datatable">
 		<tbody>
@@ -143,6 +140,13 @@ Vector commonElements=null;
 			%>
 		</tbody>
 	</table>
+				<%
+		} else {
+			%>
+	<p class="advise-msg">You have not checked out any objects</p>
+			<%
+		} 
+			%>
 </div> <!-- workarea -->
 </div> <!-- container -->
 <%@ include file="footer.txt" %>
