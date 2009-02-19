@@ -68,8 +68,12 @@ finally{
 					if (errMsg!=null){
 						String errTrc = (String)request.getAttribute("DD_ERR_TRC");
 						%>
-						<b>DD encountered the following error:</b><br/>
+						<div class="warning-msg">
+						<strong>DD encountered the following error:</strong>
+						<p>
 						<%=errMsg%>
+						</p>
+						</div>
 						<%
 						if (errTrc!=null){
 							%>
