@@ -57,14 +57,23 @@
 	      <param-value>true</param-value>
 	    </init-param>
 	</filter>
-
+	
+	<filter>
+	    <filter-name>Browser cache controller</filter-name>
+	    <filter-class>eionet.meta.filters.BrowserCacheController</filter-class>
+	    <init-param>
+	      <param-name>disableBrowserCache</param-name>
+	      <param-value>true</param-value>
+	    </init-param>
+	</filter>
+	
 	<!-- Filter Mappings -->
+
 	<filter-mapping>
     	<filter-name>Browser cache controller</filter-name>
 		<url-pattern>*.jsp</url-pattern>
-  	</filter-mapping>	
-
-
+  	</filter-mapping>
+  		
 	<filter-mapping>
     	<filter-name>CAS Filter</filter-name>
 		<url-pattern>/login</url-pattern>
@@ -200,6 +209,14 @@
 		<servlet-name>DbfServlet</servlet-name>
 		<servlet-class>eionet.meta.exports.dbf.DbfServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>RdfServlet</servlet-name>
+		<servlet-class>eionet.meta.exports.rdf.RdfServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>TablesServlet</servlet-name>
+		<servlet-class>eionet.meta.TablesServlet</servlet-class>
+	</servlet>
 
 <!-- servlet mappings -->
 
@@ -310,6 +327,14 @@
 	<servlet-mapping>
 		<servlet-name>DbfServlet</servlet-name>
 		<url-pattern>/GetDbf/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>RdfServlet</servlet-name>
+		<url-pattern>/GetRdf/*</url-pattern>
+	</servlet-mapping>	
+	<servlet-mapping>
+		<servlet-name>TablesServlet</servlet-name>
+		<url-pattern>/tables/*</url-pattern>
 	</servlet-mapping>
 
 <!-- the application server might allow directory listing.

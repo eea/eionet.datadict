@@ -31,11 +31,15 @@ import java.util.StringTokenizer;
 public class QueryString{
 	
 	/** */
-	private String queryString=null;
+	private String queryString = null;
 	
+	/**
+	 * 
+	 */
 	public QueryString(){
-		
+		this.queryString = "";
 	}
+	
 	/**
 	 * 
 	 * @param queryString
@@ -59,22 +63,13 @@ public class QueryString{
 	 * @return
 	 */
 	public String changeParam(String param, String value){
+		
 		if (hasParam(param))
 			change(param, value);
 		else
-			add(param, value);
+			append(param, value);
 		
 		return queryString;
-	}
-	
-	/**
-	 * 
-	 * @param param
-	 * @param value
-	 * @return
-	 */
-	public String addParam(String param, String value){
-		return changeParam(param, value);
 	}
 	
 	/**
@@ -114,7 +109,7 @@ public class QueryString{
 	 * @param value
 	 */
 	
-	private void add(String param, String value){
+	private void append(String param, String value){
 		
 		String s =queryString.indexOf("?")>0 ? "&" : "?";
 		

@@ -82,4 +82,7 @@ public interface PropsIF {
 	
 	/** */
 	public static final String IRRELEVANT_ATTRS_PREFIX = "irrelevantAttrs.";
+	
+	/** */
+	public static final String RDF_BASE_URI = "rdf.baseUri";
 }

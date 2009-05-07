@@ -1123,9 +1123,17 @@ public class Util {
 	
 	/**
 	 * 
-	 * @param args
+	 * @param s
+	 * @return
 	 */
-    public static void main(String[] args){
-
-    }
+	public static boolean isNumericID(String s){
+		
+		try{
+			Long.parseLong(s);
+			return true;
+		}
+		catch (NumberFormatException e){
+			return false;
+		}
+	}
 }
