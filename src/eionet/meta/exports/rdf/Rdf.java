@@ -29,6 +29,7 @@ public class Rdf {
 	private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
 	private static final String DC_NS = "http://purl.org/dc/elements/1.1/";
+	private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
 
 	/** */
 	private Connection conn;
@@ -75,10 +76,12 @@ public class Rdf {
 		
 		streamWriter.setPrefix("rdf", RDF_NS);
 		streamWriter.setPrefix("rdfs", RDFS_NS);
+		streamWriter.setPrefix("owl", OWL_NS);
 
 		streamWriter.writeStartElement(RDF_NS, "RDF");
 		streamWriter.writeNamespace("rdf", RDF_NS);
 		streamWriter.writeNamespace("rdfs", RDFS_NS);
+		streamWriter.writeNamespace("owl", OWL_NS);
 
 		streamWriter.writeStartElement(RDFS_NS, "Class");
 		streamWriter.writeAttribute(RDF_NS, "about", this.baseUri + tbl.getIdentifier());		
@@ -92,7 +95,7 @@ public class Rdf {
 			
 			DataElement elm = (DataElement)elms.get(i);
 			
-			streamWriter.writeStartElement(RDFS_NS, "Property");
+			streamWriter.writeStartElement(OWL_NS, "FunctionalProperty");
 			streamWriter.writeAttribute(RDF_NS, "ID", elm.getIdentifier());
 			
 			streamWriter.writeStartElement(RDFS_NS, "label");
