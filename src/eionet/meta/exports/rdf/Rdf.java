@@ -93,7 +93,7 @@ public class Rdf {
 			DataElement elm = (DataElement)elms.get(i);
 			
 			streamWriter.writeStartElement(RDFS_NS, "Property");
-			streamWriter.writeAttribute(RDF_NS, "id", elm.getIdentifier());
+			streamWriter.writeAttribute(RDF_NS, "ID", elm.getIdentifier());
 			
 			streamWriter.writeStartElement(RDFS_NS, "label");
 			streamWriter.writeCharacters(elm.getShortName());
