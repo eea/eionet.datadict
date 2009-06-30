@@ -3,6 +3,9 @@
 <%
 request.setCharacterEncoding("UTF-8");
 Vector releasedDatasets = (Vector)request.getAttribute("rlsd_datasets");
+if (releasedDatasets!=null){
+	Collections.sort(releasedDatasets, new DatasetDateComparator());
+}
 %>
 
 <h2>Latest released data definitions</h2>
