@@ -47,4 +47,16 @@ public class XmlRpcCallThread extends Thread{
 			e.printStackTrace(System.out);
 		}
 	}
+	
+	/**
+	 * 
+	 * @param client
+	 * @param methodName
+	 * @param params
+	 */
+	public static void execute(XmlRpcClient client, String methodName, Vector params){
+		
+		XmlRpcCallThread caller = new XmlRpcCallThread(client, methodName, params);
+		caller.start();
+	}
 }

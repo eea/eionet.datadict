@@ -312,8 +312,7 @@ public class UNSEventSender {
 	        params.add(rdfTriples);
 	        
 	        // perform the call
-	        XmlRpcCallThread caller = new XmlRpcCallThread(client, Props.getProperty(Subscribe.PROP_UNS_SEND_NOTIFICATION_FUNC), params);
-	        caller.start();
+	        XmlRpcCallThread.execute(client, Props.getProperty(Subscribe.PROP_UNS_SEND_NOTIFICATION_FUNC), params);
         }
         catch (IOException e){
         	e.printStackTrace(System.out);

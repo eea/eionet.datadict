@@ -149,18 +149,17 @@ public class Subscribe extends HttpServlet{
 	        if (filters.size()>0){
 		        	
 				// set up the xml-rpc server object
-	        	XmlRpcClient server = new XmlRpcClient(serverURL);
-				server.setBasicAuthentication(unsUsername, unsPassword);
+	        	XmlRpcClient client = new XmlRpcClient(serverURL);
+				client.setBasicAuthentication(unsUsername, unsPassword);
 	        	
 	            // make subscription
 				Vector params = new Vector();
 				params = new Vector();
 	            params.add(channelName);
 	            params.add(username);
-	            params.add(filters);            
-	            String makeSubscription =
-	            (String) server.execute(unsMakeSubscriptionFunction, params);
-	
+	            params.add(filters);
+	            
+	            XmlRpcCallThread.execute(client, unsMakeSubscriptionFunction, params);
 	        }
 	        
 	        req.getSession().setAttribute("SUCCESS", "");
@@ -240,17 +239,19 @@ public class Subscribe extends HttpServlet{
 			initialize();
 		
 		// set up the xml-rpc server object
-    	XmlRpcClient server = new XmlRpcClient(serverURL);
-		server.setBasicAuthentication(unsUsername, unsPassword);
+    	XmlRpcClient client = new XmlRpcClient(serverURL);
+		client.setBasicAuthentication(unsUsername, unsPassword);
     	
-        // make subscription
+        // make subscription for all users
 		for (int i=0; i<users.size(); i++){
+			
 			Vector params = new Vector();
 			params = new Vector();
 	        params.add(channelName);
 	        params.add(users.get(i));
-	        params.add(filters);            
-	        String s = (String) server.execute(unsMakeSubscriptionFunction, params);
+	        params.add(filters);
+	        
+	        XmlRpcCallThread.execute(client, unsMakeSubscriptionFunction, params);
 		}
 	}
 
