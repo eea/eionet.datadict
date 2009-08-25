@@ -2,34 +2,35 @@
 <!-- ================================================== -->
 <!-- BUILDFILE FOR DATA DICTIONARY
 
-	Ant reads the following arguments from build.properties file.
-		build.dir - directory where the application will be installed eg.  /tomcat/webapps
-		servletapi.jar - servletapi.jar file location eg. /tomcat/common/lib/srvletapi.jar
+Ant reads the following arguments from build.properties file.
+	webapp.home - directory where the application will be installed eg.  /tomcat/webapps
+	servletapi.jar - servletapi.jar file location eg. /tomcat/common/lib/srvletapi.jar
 
-	If build.properties doesn't exist yet, then make a copy from default.properties and rename it to build.properties. Modify properties, if needed.
-	
-
-
-     The main targets are:
-
-	compile
-	   compiles java classes into classes.dir.
-
-	buildjar
-	   builds datadict.jar into WEB-INF/lib directory. removes also compiled java classes from classes directory.
-
-     install
-        creates the correct deployment directory structure in the target build.dir and
-        copies all web (jsp, xsl, xml,images, css and js), configuration (web.xml)
-        related data there, java libraries and builds jar file.
-
-     clean
-        this target removes all compiled java classes from classes.dir,
-        but does not touch the rest (jsp, html, xml, stylesheets etc.)
+If build.properties doesn't exist yet, then make a copy from
+default.properties and rename it to build.properties. Modify properties,
+if needed.
 
 
-	 default is install 
-  -->
+The main targets are:
+
+compile
+   compiles java classes into classes.dir.
+
+buildjar
+   builds datadict.jar into WEB-INF/lib directory. removes also compiled java classes from classes directory.
+
+install
+    creates the correct deployment directory structure in the target webapp.home and
+    copies all web (jsp, xsl, xml,images, css and js), configuration (web.xml)
+    related data there, java libraries and builds jar file.
+
+clean
+    this target removes all compiled java classes from classes.dir,
+    but does not touch the rest (jsp, html, xml, stylesheets etc.)
+
+
+default is install 
+-->
 <!-- use JAR instead of classes because it makes it easier to debug errors -->
 
 
@@ -41,34 +42,33 @@
 
 	<target name="init">
 
-        <condition property="build.properties.exists">
-                <available file="build.properties" />
-        </condition>
+		<condition property="build.properties.exists">
+			<available file="build.properties" />
+		</condition>
 
-        <fail unless="build.properties.exists"
-            message="Couldn't find build.properties file! Make a copy from default.properties and rename it to build.properties. Modify properties, if needed."/>
+		<fail unless="build.properties.exists"
+		    message="Couldn't find build.properties file! Make a copy from default.properties and rename it to build.properties. Modify properties, if needed."/>
 
-		<loadproperties srcFile="build.properties"/>
+			<loadproperties srcFile="build.properties"/>
 
-        <fail unless="build.dir"
-            message="Mandatory build.dir property is missing in build.properties file. Please provide a directory name as build.dir property value where the application will be installed eg.  build.dir=/tomcat/webapps/datadict "/>
+		<fail unless="webapp.home"
+		    message="Mandatory webapp.home property is missing in build.properties file. Please provide a directory name as webapp.home property value where the application will be installed eg.  webapp.home=/tomcat/webapps/datadict "/>
 
-		<property name="src" value="src"/>
-		<property name="lib" value="public/WEB-INF/lib"/>
-		<property name="classes.dir" value="${build.dir}/public/WEB-INF/classes"/>
+			<property name="src" value="src"/>
+			<property name="classes.dir" value="${webapp.home}/WEB-INF/classes"/>
 
-	<!-- define external classpath, i.e. JARs and classes not found in WEB-INF/classes and WEB-INF/lib -->
-	<path id="classpath.externals">
-		<pathelement location="${servletapi.jar}"/>
-	</path>
+		<!-- define external classpath, i.e. JARs and classes not found in WEB-INF/classes and WEB-INF/lib -->
+		<path id="classpath.externals">
+			<pathelement location="${servletapi.jar}"/>
+		</path>
 
-	<!-- define classpath for compile -->
-	<path id="classpath.compile">
-		<path refid="classpath.externals"/>
-		<fileset dir="public/WEB-INF/lib">
-			<include name="*.jar"/>
-		</fileset>
-	</path>
+		<!-- define classpath for compile -->
+		<path id="classpath.compile">
+			<path refid="classpath.externals"/>
+			<fileset dir="public/WEB-INF/lib">
+				<include name="*.jar"/>
+			</fileset>
+		</path>
 
 	</target>
 
@@ -80,76 +80,97 @@
 		</javac>
 	</target>
 
-	<target name="buildjar" depends="compile" description="creates datadict.jar into WB-INF/lib">
-		<jar jarfile="${build.dir}/${lib}/datadict.jar"
+	<target name="buildjar" depends="compile" description="creates datadict.jar into WEB-INF/lib">
+		<jar jarfile="${webapp.home}/WEB-INF/lib/datadict.jar"
 		    includes="**/*.class" basedir="${classes.dir}" />
 		<!--delete dir='${classes.dir}/eionet' /-->
 		<antcall target="clean"/>
 	</target>
 
 	<target name="prepare" description="Creates folder structure if not existing yet">
-		<mkdir dir="${build.dir}"/>
-		<mkdir dir="${build.dir}/acl"/>
-		<mkdir dir="${build.dir}/opendoc"/>
-		<mkdir dir="${build.dir}/opendoc/ods"/>
-		<mkdir dir="${build.dir}/public"/>
-		<mkdir dir="${build.dir}/public/images"/>
-		<mkdir dir="${build.dir}/public/WEB-INF"/>
-		<mkdir dir="${build.dir}/public/WEB-INF/classes"/>
-		<mkdir dir="${build.dir}/public/WEB-INF/lib"/>
-		<mkdir dir="${build.dir}/public/visuals"/>
-		<mkdir dir="${build.dir}/tmp"/>
+		<mkdir dir="${app.home}"/>
+		<mkdir dir="${app.home}/acl"/>
+		<mkdir dir="${app.home}/opendoc"/>
+		<mkdir dir="${app.home}/opendoc/ods"/>
+		<mkdir dir="${app.home}/tmp"/>
+		<mkdir dir="${webapp.home}"/>
+		<mkdir dir="${webapp.home}/images"/>
+		<mkdir dir="${webapp.home}/META-INF"/>
+		<mkdir dir="${webapp.home}/WEB-INF"/>
+		<mkdir dir="${webapp.home}/WEB-INF/classes"/>
+		<mkdir dir="${webapp.home}/WEB-INF/lib"/>
+		<mkdir dir="${webapp.home}/visuals"/>
 	</target>
 
 	<target name="install" depends="init,copyfiles" description="complete installation">
 		<antcall target="checkProps"/>
 	</target>
 
-    <target name="copyfiles" depends="buildjar" description="Copies all files to deploy dir. Does not overwrite properties files!">
+	<target name="copyfiles" depends="buildjar" description="Copies all files to deploy dir. Does not overwrite properties files!">
         
-        <copy file="makemdb.sh" todir="${build.dir}" overwrite="false"/>
-        <copy file="VERSION.txt" todir="${build.dir}" overwrite="true"/>
-		<copy todir="${build.dir}/acl" overwrite="false">
-            <fileset dir="acl"/>
-        </copy>
-		<copy todir="${build.dir}/opendoc" overwrite="true">
-            <fileset dir="opendoc"/>
-        </copy>
-        <copy todir="${build.dir}/public" overwrite="true">
-            <fileset dir="public">
-                <exclude name="**/*.java" />
-                <exclude name="**/*.properties" />
+		<copy file="makemdb.sh" todir="${app.home}" overwrite="false">
+        		<filterchain>
+				<replacetokens>
+					<token key="WEBAPP.HOME" value="${webapp.home}"/>
+					<token key="APP.HOME" value="${app.home}"/>
+					<token key="MYSQL.JAR" value="${lib-mysql-connector-jar}"/>
+				</replacetokens>
+        		</filterchain>
+		</copy>
+		<copy file="src/arial.ttf" tofile="${classes.dir}/arial.ttf"/>
+		<copy file="VERSION.txt" todir="${app.home}" overwrite="true"/>
+		<copy todir="${app.home}/acl" overwrite="false">
+			<fileset dir="acl"/>
+			<globmapper from="*" to="*.dist"/>
+		</copy>
+		<copy todir="${app.home}/opendoc" overwrite="true">
+			<fileset dir="opendoc"/>
+		</copy>
+		<copy todir="${webapp.home}" overwrite="true">
+			<fileset dir="public">
+				<exclude name="**/*.java" />
+				<exclude name="**/*.properties" />
 				<exclude name="visuals/**" />
-            </fileset>
-        </copy>        
-        
-        <condition property="uit.needed">
-            <not>
-                <available file="${classes.dir}/uit.properties" />
-            </not>
-        </condition>
-        <condition property="datadict.needed">
-            <not>
-                <available file="${classes.dir}/datadict.properties" />
-            </not>
-        </condition>
-        <condition property="log4j.needed">
-            <not>
-                <available file="${classes.dir}/log4j.properties" />
-            </not>
-        </condition>
-        <condition property="eionetdir.needed">
-            <not>
-                <available file="${classes.dir}/eionetdir.properties" />
-            </not>
-        </condition>
-        <condition property="teXDBMsg.needed">
-            <not>
-                <available file="${classes.dir}/teXDBMsg.properties" />
-            </not>
-        </condition>
-        <antcall target="copy_props" />
-    </target>
+			</fileset>
+		</copy>
+		<copy file="context.xml" todir="${webapp.home}/META-INF" overwrite="true">
+        		<filterchain>
+				<replacetokens>
+					<token key="DB.USER" value="${db.user}"/>
+					<token key="DB.PASSWORD" value="${db.password}"/>
+					<token key="DB.HOST" value="${db.host}"/>
+					<token key="DB.DATABASE" value="${db.database}"/>
+				</replacetokens>
+        		</filterchain>
+		</copy>
+		
+		<condition property="uit.needed">
+		    <not>
+			<available file="${classes.dir}/uit.properties" />
+		    </not>
+		</condition>
+		<condition property="datadict.needed">
+		    <not>
+			<available file="${classes.dir}/datadict.properties" />
+		    </not>
+		</condition>
+		<condition property="log4j.needed">
+		    <not>
+			<available file="${classes.dir}/log4j.properties" />
+		    </not>
+		</condition>
+		<condition property="eionetdir.needed">
+		    <not>
+			<available file="${classes.dir}/eionetdir.properties" />
+		    </not>
+		</condition>
+		<condition property="teXDBMsg.needed">
+		    <not>
+			<available file="${classes.dir}/teXDBMsg.properties" />
+		    </not>
+		</condition>
+		<antcall target="copy_props" />
+	</target>
     
 	<target name="copy_props" description="Checks that certain properties files exist">
 		<antcall target="cp_uit"/>
@@ -158,48 +179,66 @@
 		<antcall target="cp_eionetdir"/>
 		<antcall target="cp_teXDBMsg"/>
 	</target>
+
 	<target name="cp_uit" if="uit.needed">
 <!--Create properties file from a template -->
 		<echo message="delete properties file"/>
-		<delete file="public/WEB-INF/classes/uit.properties"/>
-    		<copy file="public/WEB-INF/classes/uit.properties.tmpl"  tofile="public/WEB-INF/classes/uit.properties" >
+		<delete file="${classes.dir}/uit.properties"/>
+    		<copy file="src/uit.properties.tmpl" tofile="${classes.dir}/uit.properties" >
         		<filterchain>
            			<striplinecomments>
               				<comment value="!"/>
            			</striplinecomments>
            			<replacetokens>
-                			<token key="builddir" value="${build.dir}"/>
+					<token key="DB.USER" value="${db.user}"/>
+					<token key="DB.PASSWORD" value="${db.password}"/>
+					<token key="DB.HOST" value="${db.host}"/>
+					<token key="DB.DATABASE" value="${db.database}"/>
+					<token key="WEBAPP.HOME" value="${webapp.home}"/>
+                			<token key="APP.HOME" value="${app.home}"/>
             			</replacetokens>
         		</filterchain>
     		</copy>
-<!--Now copy the updated file -->
-		<copy file="public/WEB-INF/classes/uit.properties" tofile="${classes.dir}/uit.properties"/>
 	</target>
+
 	<target name="cp_log4j" if="log4j.needed">
-		<copy file="public/WEB-INF/classes/log4j.properties" tofile="${classes.dir}/log4j.properties"/>
+		<copy file="src/log4j.properties" tofile="${classes.dir}/log4j.properties">
+        		<filterchain>
+           			<replacetokens>
+					<token key="WEBAPP.HOME" value="${webapp.home}"/>
+                			<token key="APP.HOME" value="${app.home}"/>
+            			</replacetokens>
+        		</filterchain>
+    		</copy>
 	</target>
+
 	<target name="cp_datadict" if="datadict.needed">
 <!--Create properties file from a template -->
                 <echo message="delete properties file"/>
-                <delete file="public/WEB-INF/classes/datadict.properties"/>
-                <copy file="public/WEB-INF/classes/datadict.properties.tmpl"  tofile="public/WEB-INF/classes/datadict.properties" >
+                <delete file="${classes.dir}/datadict.properties"/>
+                <copy file="src/datadict.properties.tmpl"  tofile="${classes.dir}/datadict.properties" >
                         <filterchain>
                                 <striplinecomments>
                                         <comment value="!"/>
                                 </striplinecomments>
                                 <replacetokens>
-                                        <token key="builddir" value="${build.dir}"/>
+					<token key="DB.USER" value="${db.user}"/>
+					<token key="DB.PASSWORD" value="${db.password}"/>
+					<token key="DB.HOST" value="${db.host}"/>
+					<token key="DB.DATABASE" value="${db.database}"/>
+					<token key="WEBAPP.HOME" value="${webapp.home}"/>
+                			<token key="APP.HOME" value="${app.home}"/>
                                 </replacetokens>
                         </filterchain>
                 </copy>
-<!--Now copy the updated file -->
-		<copy file="public/WEB-INF/classes/datadict.properties" tofile="${classes.dir}/datadict.properties"/>
 	</target>
+
 	<target name="cp_eionetdir" if="eionetdir.needed">
-		<copy file="public/WEB-INF/classes/eionetdir.properties" tofile="${classes.dir}/eionetdir.properties"/>
+		<copy file="src/eionetdir.properties" tofile="${classes.dir}/eionetdir.properties"/>
 	</target>
+
 	<target name="cp_teXDBMsg" if="teXDBMsg.needed">
-		<copy file="public/WEB-INF/classes/teXDBMsg.properties" tofile="${classes.dir}/teXDBMsg.properties"/>
+		<copy file="src/teXDBMsg.properties" tofile="${classes.dir}/teXDBMsg.properties"/>
 	</target>
 	
 <!-- Check properties inside properties-files -->

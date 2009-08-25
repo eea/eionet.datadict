@@ -1,0 +1,14 @@
+<Context path="" debug="0" reloadable="true" crossContext="true">
+    <Resource auth='Container' name='jdbc/datadict' type='javax.sql.DataSource'
+	driverClassName="com.mysql.jdbc.Driver" 
+	username="@DB.USER@"
+	password="@DB.PASSWORD@"
+	maxIdle="30"
+	maxActive="100"
+	maxWait="10000"
+	logAbandoned="true"
+	removeAbandoned="true"
+	removeAbandonedTimeout="60"
+	factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+	url="jdbc:mysql://@DB.HOST@/@DB.DATABASE@?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+</Context>

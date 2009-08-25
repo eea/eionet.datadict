@@ -1,12 +1,9 @@
 <!-- START OF DATADICTIONARY -->
 	    <Host name="dd.eionet.europa.eu"
-		debug="0" appBase="/prj/datadict" 
+		debug="0" appBase="datadict_apps" 
 		unpackWARs="true">
-		<Context path='' docBase='/prj/datadict/public' debug='0'
-			reloadable='true' crossContext='true'>
-
-		    <Logger className="org.apache.catalina.logger.FileLogger"
-			timestamp="true" suffix=".txt" prefix="dd." />
+		<Context path=""  debug="0"
+			reloadable="true" crossContext="true">
 
 		    <Resource auth='Container' name='jdbc/datadict' type='javax.sql.DataSource'
 			driverClassName="com.mysql.jdbc.Driver" 

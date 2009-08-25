@@ -1,11 +1,11 @@
 #!/bin/sh
 
-topdir=/prj/datadict
-java=/usr/lib/jvm/java-1.4.2-sun-1.4.2.01
+topdir=@WEBAPP.HOME@
+java=/usr/bin/java
 
 cd $topdir
-ad=$topdir/public/WEB-INF
-cp=/usr/share/java/mysql-connector-java-3.0.11.jar
+ad=$topdir/WEB-INF
+cp=@MYSQL.JAR@
 cp=$cp:$ad/classes
 cp=$cp:$ad/lib/activation.jar
 cp=$cp:$ad/lib/castor.jar

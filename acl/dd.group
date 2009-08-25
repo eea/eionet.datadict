@@ -1,1 +1,49 @@
-dd_admin:jaanus,enriko
+<?xml version="1.0" encoding="UTF-8"?>
+<localgroups>
+<group id="dd_author">
+<member userid="cryan"/>
+<member userid="grossana"/>
+<member userid="willeann"/>
+<member userid="tennoan"/>
+<member userid="vreesfre"/>
+<member userid="fantamir"/>
+<member userid="christr"/>
+</group>
+<group id="testgroup">
+<member userid="testmember1"/>
+<member userid="testmember2"/>
+<member userid="testmember3"/>
+<member userid="testmember4"/>
+<member userid="testmember5"/>
+</group>
+<group id="soil">
+<member userid="cryan"/>
+</group>
+<group id="ozone">
+<member userid="desmepet"/>
+<member userid="wimmol"/>
+</group>
+<group id="dd_admin">
+<member userid="heinlja"/>
+<member userid="kasperen"/>
+<member userid="roug"/>
+<member userid="peifer"/>
+<member userid="staromar"/>
+<member userid="motusris"/>
+<member userid="uriiijuh"/>
+</group>
+<group id="canovrr">
+<member userid="roug"/>
+<member userid="heinlja"/>
+<member userid="staromar"/>
+<member userid="peifer"/>
+</group>
+<group id="xmlgroup">
+<member userid="circle"/>
+</group>
+<group id="cdda">
+<member userid="roekemar"/>
+<member userid="cryan"/>
+<member userid="kleinlau"/>
+</group>
+</localgroups>
