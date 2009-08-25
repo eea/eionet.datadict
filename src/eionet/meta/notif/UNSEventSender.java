@@ -9,11 +9,15 @@ package eionet.meta.notif;
 import eionet.meta.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 import javax.servlet.ServletException;
 import org.apache.xmlrpc.XmlRpcClient;
+import org.apache.xmlrpc.XmlRpcException;
+
 import eionet.util.*;
 
 /**
@@ -232,78 +236,88 @@ public class UNSEventSender {
 	 */
 	public static void sendEvent(Hashtable predicateObjects, String eventIDTrailer){
 		
+		if (predicateObjects==null || predicateObjects.size()==0)
+			return;
+		
+		Vector rdfTriples = new Vector();
+		RDFTriple rdfTriple = new RDFTriple();
+		String eventID = String.valueOf(System.currentTimeMillis());
+		if (eventIDTrailer!=null)
+			eventID = eventID + eventIDTrailer;
+		
 		try{
-			if (predicateObjects==null || predicateObjects.size()==0)
-				return;
-			
-			Vector rdfTriples = new Vector();
-			RDFTriple rdfTriple = new RDFTriple();
-			String eventID = String.valueOf(System.currentTimeMillis());
-			if (eventIDTrailer!=null)
-				eventID = eventID + eventIDTrailer;
-			
 			String digest = Util.digestHexDec(eventID, "MD5");
 			if (digest!=null && digest.length()>0)
 				eventID = digest;
+		}
+		catch (GeneralSecurityException e){
+			throw new DDRuntimeException("Error generating an MD5 hash", e);
+		}
+			
+		eventID = Props.getProperty(PROP_UNS_EVENTS_NAMESPACE) + eventID;
+		
+		rdfTriple.setSubject(eventID);
+		rdfTriple.setPredicate(Props.getProperty(PropsIF.PREDICATE_RDF_TYPE));
+		rdfTriple.setObject("Data Dictionary event");
+		rdfTriples.add(rdfTriple.toVector());
+		
+		Enumeration predicates = predicateObjects.keys();
+		while (predicates.hasMoreElements()){
+			String predicate = (String)predicates.nextElement();
+			Vector objects = (Vector)predicateObjects.get(predicate);
+			for (int i=0; objects!=null && i<objects.size(); i++){
+				String object = (String)objects.get(i);
 				
-			eventID = Props.getProperty(PROP_UNS_EVENTS_NAMESPACE) + eventID;
-			
-			rdfTriple.setSubject(eventID);
-			rdfTriple.setPredicate(Props.getProperty(PropsIF.PREDICATE_RDF_TYPE));
-			rdfTriple.setObject("Data Dictionary event");
-			rdfTriples.add(rdfTriple.toVector());
-			
-			Enumeration predicates = predicateObjects.keys();
-			while (predicates.hasMoreElements()){
-				String predicate = (String)predicates.nextElement();
-				Vector objects = (Vector)predicateObjects.get(predicate);
-				for (int i=0; objects!=null && i<objects.size(); i++){
-					String object = (String)objects.get(i);
-					
-					rdfTriple = new RDFTriple();
-					rdfTriple.setSubject(eventID);
-					rdfTriple.setPredicate(predicate);
-					rdfTriple.setObject(object);
-					rdfTriples.add(rdfTriple.toVector());
-				}
+				rdfTriple = new RDFTriple();
+				rdfTriple.setSubject(eventID);
+				rdfTriple.setPredicate(predicate);
+				rdfTriple.setObject(object);
+				rdfTriples.add(rdfTriple.toVector());
 			}
-			
-			// DEBUG
-			logTriples(rdfTriples);
-			
-			makeCall(rdfTriples);
 		}
-		catch (Exception e){
-			e.printStackTrace(System.out);			
-		}
+		
+		// DEBUG
+		logTriples(rdfTriples);
+		
+		makeCall(rdfTriples);
 	}
 
 	/*
 	 * 
 	 */
-	public static void makeCall(Object rdfTriples) throws Exception{
+	public static void makeCall(Object rdfTriples){
 		
 		// we don't make UNS calls when in development environment (assume it's Win32)
 		if (File.separatorChar == '\\')
 			return;
 
-		// don't send if property says so
+		// don't send if the configuration says so
 		String dontSendEvents = Props.getProperty(Subscribe.PROP_UNS_DONTSENDEVENTS);
 		if (dontSendEvents!=null && dontSendEvents.trim().length()>0)
 			return;
 		
+		// get server URL and channel name from configuration
         String serverURL = Props.getProperty(Subscribe.PROP_UNS_XMLRPC_SERVER_URL);
         String channelName = Props.getProperty(Subscribe.PROP_UNS_CHANNEL_NAME);
         
-        XmlRpcClient server = new XmlRpcClient(serverURL);
-        server.setBasicAuthentication(Props.getProperty(Subscribe.PROP_UNS_USERNAME),
-				Props.getProperty(Subscribe.PROP_UNS_PASSWORD));
-        
-        Vector params = new Vector();
-        params.add(channelName);
-        params.add(rdfTriples);
-        
-        String result = (String) server.execute(Props.getProperty(Subscribe.PROP_UNS_SEND_NOTIFICATION_FUNC), params);
+        try{
+	        // instantiate XML-RPC client object, set username/password from configuration
+	        XmlRpcClient client = new XmlRpcClient(serverURL);
+	        client.setBasicAuthentication(Props.getProperty(Subscribe.PROP_UNS_USERNAME),
+					Props.getProperty(Subscribe.PROP_UNS_PASSWORD));
+	        
+	        // prepare call parameters
+	        Vector params = new Vector();
+	        params.add(channelName);
+	        params.add(rdfTriples);
+	        
+	        // perform the call
+	        XmlRpcCallThread caller = new XmlRpcCallThread(client, Props.getProperty(Subscribe.PROP_UNS_SEND_NOTIFICATION_FUNC), params);
+	        caller.start();
+        }
+        catch (IOException e){
+        	e.printStackTrace(System.out);
+        }
     }
 	
 	/*
@@ -320,33 +334,5 @@ public class UNSEventSender {
 			System.out.println();
 		}
 		System.out.println();
-	}
-	
-	/*
-	 * 
-	 */
-	public static void main(String[] args){
-		
-		try{
-			String s = System.getProperty("os.name");
-//			DataElement elm = new DataElement();
-//			elm.setIdentifier("Percentile10");
-//			elm.setNamespace(new Namespace("11", null, null, null, null));
-//			
-//			definitionChanged(elm);
-			
-//			DsTable tbl = new DsTable(null, null, null);
-//			tbl.setIdentifier("Summer_ozone/Monthly-1h-max");
-//			tbl.setParentNs("12");
-//			
-//			definitionChanged(tbl);
-			
-			Dataset dst = new Dataset(null, null, null);
-			dst.setIdentifier("CLC2000");
-			definitionChanged(dst, Subscribe.DATASET_CHANGED_EVENT, "heinlja");
-		}
-		catch (Exception e){
-			e.printStackTrace(System.out);
-		}
 	}
 }
