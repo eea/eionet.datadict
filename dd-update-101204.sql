@@ -1,1 +1,0 @@
-alter table DATASET change column DISP_CREATE_LINKS DISP_CREATE_LINKS int(2) NOT NULL default '15',
