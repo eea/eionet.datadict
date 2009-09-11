@@ -328,7 +328,7 @@ public class DataElementHandler extends BaseHandler {
 				throw new Exception("Missing tableID");
 			StringBuffer sqlBuf = new StringBuffer("insert into TBL2ELEM (TABLE_ID, DATAELEM_ID, POSITION) select ");
 			sqlBuf.append(tableID).append(", ").append(getLastInsertID());
-			sqlBuf.append(", max(POSITION)+1 from TBL2ELEM where TABLE_ID=").append(tableID);
+			sqlBuf.append(", ifnull(max(POSITION)+1,1) from TBL2ELEM where TABLE_ID=").append(tableID);
 			stmt.executeUpdate(sqlBuf.toString());
 		}
 
