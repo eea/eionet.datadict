@@ -508,6 +508,16 @@ public class CopyHandler extends Object {
 													throws SQLException{
 	    	copyComplexAttrs(newID, oldID, type, null, null);
   	}
+    
+    /**
+     * 
+     * @param newID
+     * @param oldID
+     * @param type
+     * @param newType
+     * @param mAttrID
+     * @throws SQLException
+     */
     public void copyComplexAttrs(String newID, String oldID, String type, String newType, String mAttrID)
                                                     throws SQLException {
 
@@ -529,6 +539,7 @@ public class CopyHandler extends Object {
             Statement stmt = null;
             try{
             	stmt = conn.createStatement();
+            	
 			    // get the attribute rows
 			    Vector valueRows = attr.getRows();
 	            for (int j=0; valueRows!=null && j<valueRows.size(); j++){
@@ -552,7 +563,7 @@ public class CopyHandler extends Object {
 	                gen.setFieldExpr("POSITION", rowPos);
 	                
 					// JH131103 - here we need to know if the attribute is linked to
-					// an harevsted one
+					// an harvested one
 					String harvAttrID = (String)rowHash.get("harv_attr_id");				
 	                if (harvAttrID!=null)
 						gen.setField("HARV_ATTR_ID", harvAttrID);
@@ -570,12 +581,17 @@ public class CopyHandler extends Object {
 	
 					    // insert the field
 					    if (fieldID!=null && fieldValue!=null){
+					    	
 					        gen.clear();
 					        gen.setTable("COMPLEX_ATTR_FIELD");
 					        gen.setFieldExpr("ROW_ID", rowID);
 					        gen.setField("M_COMPLEX_ATTR_FIELD_ID", fieldID);
 					        gen.setField("VALUE", fieldValue);
-					        stmt.executeUpdate(gen.insertStatement());
+					        
+					        StringBuffer buf = new StringBuffer(gen.insertStatement()).
+					        append(" on duplicate key update VALUE=").append(eionet.util.Util.strLiteral(fieldValue));
+					        
+					        stmt.executeUpdate(buf.toString());
 					        insertedFields++;
 					    }
 	                }
