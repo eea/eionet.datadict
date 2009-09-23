@@ -112,7 +112,8 @@ public abstract class XForm implements XFormIF {
 	}
 	
 	private void writeInstance(String lead) throws Exception{
-		writer.println(lead + "<f:instance src=\"" + instance + "\"/>");
+		writer.println(lead + "<!-- Original instance in Data Dictinary (not used anymore - use default instance value with context parameter $instance) -->");
+		writer.println(lead + "<!--  <f:instance id=\"original\" src=\"" + instance + "\"/>  -->");
 	}
 
 	private void writeControlsLabel(String lead) throws Exception{
