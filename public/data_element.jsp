@@ -207,6 +207,13 @@
 	else if (request.getParameter("idfier")!=null)
 		idfier = request.getParameter("idfier");
 
+	// check missing request parameters
+	if (mode == null || mode.length()==0){
+		request.setAttribute("DD_ERR_MSG", "Missing request parameter: mode");
+		request.getRequestDispatcher("error.jsp").forward(request, response);
+		return;
+	}
+
 	// security for add common element
 	if (mode.equals("add") && elmCommon){
 		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")){
@@ -216,12 +223,6 @@
 		}
 	}
 
-	// check missing request parameters
-	if (mode == null || mode.length()==0){
-		request.setAttribute("DD_ERR_MSG", "Missing request parameter: mode");
-		request.getRequestDispatcher("error.jsp").forward(request, response);
-		return;
-	}
 	if (mode.equals("add") && !elmCommon){
 		if (Util.voidStr(tableID)){
 			request.setAttribute("DD_ERR_MSG", "Missing request parameter: table_id");
