@@ -21,7 +21,14 @@
 					<Value Type="ARRAY">
 						<Array Type="STRUCT"/>
 					</Value>
-			</Method>						
+			</Method>	
+			<Method Name="getDatasetWithReleaseInfo" Auth="false">
+					<Parameters>
+						<Parameter Name="objType" Type="STRING"/>
+						<Parameter Name="objId" Type="STRING"/>
+					</Parameters>
+					<Value Type="STRUCT"/>
+			</Method>
 		</Methods>		
 	</Service>
 </Services>
