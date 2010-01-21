@@ -129,8 +129,8 @@ public class Props implements PropsIF{
 	 */
 	protected void setDefaults(Hashtable defaults){
 		
-		defaults.put(XFORM_TEMPLATE_URL,"http://cdr-ewn.eionet.eu.int/webq/GetXFormTemplate");
-		defaults.put(INSERV_ROD_RA_URLPATTERN,"http://rod.eionet.eu.int/show.jsv?id=<RA_ID>&mode=A");
+		defaults.put(XFORM_TEMPLATE_URL,"http://cdr-ewn.eionet.europa.eu/webq/GetXFormTemplate");
+		defaults.put(INSERV_ROD_RA_URLPATTERN,"http://rod.eionet.europa.eu/obligations/<RA_ID>");
 		defaults.put(XLS_SCHEMA_URL_SHEET, "DO_NOT_DELETE_THIS_SHEET");
 		defaults.put(DD_RDF_SCHEMA_URL, "http://dd.eionet.europa.eu/schema.rdf#");
 		defaults.put(PREDICATE_RDF_TYPE, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
