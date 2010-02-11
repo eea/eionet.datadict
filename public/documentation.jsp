@@ -26,7 +26,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<base href="<%=Util.getBaseHref(request)%>" /><!--[if lt IE 7]></base><![endif]-->
+	<base href="<%=Util.getBaseHref(request)%>" />
 	<%@ include file="headerinfo.txt" %>
 	<title>Documentation</title>	
 </head>
