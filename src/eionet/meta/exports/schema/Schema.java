@@ -4,6 +4,8 @@ package eionet.meta.exports.schema;
 import java.io.*;
 import java.util.*;
 import eionet.meta.*;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.Util;
 
 /*
@@ -95,7 +97,7 @@ public abstract class Schema implements SchemaIF{
 	}
 	
 	protected String getNamespacePrefix(Namespace ns){
-		return "dd" + ns.getID();
+		return ns==null ? "dd" : "dd" + ns.getID();
 	}
     
     protected void addNamespace(Namespace ns){
@@ -108,7 +110,16 @@ public abstract class Schema implements SchemaIF{
         if (!namespaces.contains(nsDeclaration.toString()))
             namespaces.add(nsDeclaration.toString());
     }
-    
+
+    protected void addNamespace(String prefix, String uri){
+    	
+        StringBuffer nsDeclaration = new StringBuffer("xmlns:").
+        append(prefix).append("=\"").append(uri).append("\"");
+            
+        if (!namespaces.contains(nsDeclaration.toString()))
+            namespaces.add(nsDeclaration.toString());
+    }
+
 	protected void addContainerImport(String tblID){
 		
 		StringBuffer importClause = new StringBuffer("<xs:import namespace=\"");
@@ -260,7 +271,7 @@ public abstract class Schema implements SchemaIF{
             addString(" maxOccurs=\"" + maxOcc + "\"");
         addString(">");            
         newLine();
-            
+        
         for (int i=0; children!=null && i<children.size(); i++){
                 
             Object o = children.get(i);
@@ -297,13 +308,24 @@ public abstract class Schema implements SchemaIF{
                 //addString(referredNsPrefix + ":" + elem.getShortName());
                 
                 String minOccs = "1";
-                String maxOccs = "1";
+                String maxOccs = elem.getValueDelimiter()==null ? "1" : "unbounded";
                 
                 addString("\" minOccurs=\"");
                 addString(minOccs);
                 addString("\" maxOccurs=\"");
                 addString(maxOccs);
-                    
+                
+                if (elem.getValueDelimiter()!=null){
+                	
+                	String schemaUri = Props.getRequiredProperty(PropsIF.GENERAL_SCHEMA_URI);
+                	String delimAttr = Props.getRequiredProperty(PropsIF.MULTIVAL_DELIM_ATTR);
+                	String prefixedName = getNamespacePrefix(null) + ":" + delimAttr;
+                	addNamespace(getNamespacePrefix(null), schemaUri);
+                	
+                	addString("\" " + prefixedName + "=\"");
+                	addString(elem.getValueDelimiter());
+                }
+                
                 addString("\"/>");
                 newLine();
             }

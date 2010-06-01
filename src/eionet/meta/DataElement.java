@@ -49,6 +49,8 @@ public class DataElement implements Comparable{
 	
 	private String checkedoutCopyID = null;
 	private String date = null;
+	
+	private String valueDelimiter;
 
     /*
      * 
@@ -495,5 +497,19 @@ public class DataElement implements Comparable{
 	 */
 	public boolean isCommon(){
 		return (ns==null || ns.getID()==null);
+	}
+
+	/**
+	 * @return the valueDelimiter
+	 */
+	public String getValueDelimiter() {
+		return valueDelimiter;
+	}
+
+	/**
+	 * @param valueDelimiter the valueDelimiter to set
+	 */
+	public void setValueDelimiter(String valueDelimiter) {
+		this.valueDelimiter = valueDelimiter;
 	}
 }

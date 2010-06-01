@@ -5,6 +5,8 @@ package eionet.util;
 
 import java.util.*;
 
+import eionet.meta.DDRuntimeException;
+
 /**
  * 
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
@@ -74,6 +76,20 @@ public class Props implements PropsIF{
 	 */
 	public static synchronized int getIntProperty(String name) throws Exception{
 		return Props.getInstance().getIntProperty_(name);
+	}
+	
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static String getRequiredProperty(String name){
+		
+		String value = Props.getInstance().getProperty_(name);
+		if (value==null || value.trim().length()==0){
+			throw new DDRuntimeException("Failed to find required property: " + name);
+		}
+		return value;
 	}
 
 	/**

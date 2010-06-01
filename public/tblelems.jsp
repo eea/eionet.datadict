@@ -472,7 +472,7 @@ if (messages.trim().length()>0){
 	<!-- the first column contains the table of elements,      -->
 	<!-- the second one contains the ordering buttons          -->
 	
-	<table width="500" cellspacing="0"  style="border:0">
+	<table width="100%" cellspacing="0"  style="border:0">
 		<tr>
 		
 			<!-- table of elements -->
@@ -489,11 +489,7 @@ if (messages.trim().length()>0){
 						<tr>
 							<td colspan="<%=String.valueOf(colCount)%>">
 								<input type="button" value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/>
-								<%
-								if (elems.size()>1){ %>
-									<input type="button" value="Save order" class="smallbutton" onclick="saveChanges()" title="save the new order of elements"/><%
-								}
-								%>
+								<input type="button" value="Save form" class="smallbutton" onclick="saveChanges()" title="Save changes you made on this form (e.g. changes to elements order, value delimiters, etc)"/>
 							</td>
 						</tr><%
 					}
@@ -519,6 +515,7 @@ if (messages.trim().length()>0){
 						
 						<th scope="col" class="scope-col">Datatype</th>
 						<th scope="col" class="scope-col">Element type</th>
+						<th scope="col" class="scope-col">Value delimiter</th>
 					</tr>
 					</thead>
 
@@ -570,11 +567,18 @@ if (messages.trim().length()>0){
 						boolean hasNewerReleases = elmCommon && searchEngine.hasNewerReleases(elem);
 
 						String elemDefinition = elem.getAttributeValueByShortName("Definition");
-						if (fks)
+						if (fks){
 							hasForeignKeys = true;
-						if (elmCommon)
+						}
+						if (elmCommon){
 							hasCommonElms = true;
-							
+						}
+						
+						String valueDelimiter = elem.getValueDelimiter();
+						if (valueDelimiter==null){
+							valueDelimiter = "";
+						}
+						
 						String trStyle = (i%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
 					%>
 						
@@ -654,9 +658,22 @@ if (messages.trim().length()>0){
 								<%} else{ %>
 									<%=Util.replaceTags(elemType)%>
 								<% } %>
-								<input type="hidden" name="pos_id" value="<%=elem.getID()%>" size="5"/>
-								<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>" size="5"/>
-								<input type="hidden" name="pos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>" size="5"/>
+								<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>"/>
+								<input type="hidden" name="pos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>"/>
+							</td>
+							
+							<td style="text-align: left; padding-right:10px">
+								<select name="delim_<%=elem.getID()%>" onclick="tbl_obj.clickOtherObject();">
+									<%
+									for (Iterator iter = DataElementHandler.valueDelimiters.entrySet().iterator(); iter.hasNext();){
+										Map.Entry entry = (Map.Entry)iter.next();
+										String selected = entry.getKey().equals(valueDelimiter) ? "selected=\"selected\"" : "";
+										%>
+										<option value="<%=entry.getKey()%>" <%=selected%>><%=entry.getValue()%></option><%
+									}
+									%>								
+								</select>
+								<input type="hidden" name="olddelim_<%=elem.getID()%>" value="<%=valueDelimiter%>"/>
 							</td>
 						
 						</tr>

@@ -102,7 +102,7 @@ public class DDSearchEngine {
 		INParameters inPrms = new INParameters();
 		StringBuffer monsterQry = new StringBuffer().
 		append("select ").
-		append("distinct DATAELEM.*, TBL2ELEM.TABLE_ID, TBL2ELEM.POSITION, ").
+		append("distinct DATAELEM.*, TBL2ELEM.TABLE_ID, TBL2ELEM.POSITION, TBL2ELEM.MULTIVAL_DELIM, ").
 		append("DS_TABLE.TABLE_ID, DS_TABLE.IDENTIFIER, ").
 		append("DS_TABLE.SHORT_NAME, DS_TABLE.VERSION, ").
 		append("DATASET.DATASET_ID, DATASET.IDENTIFIER, DATASET.SHORT_NAME, ").
@@ -170,6 +170,7 @@ public class DDSearchEngine {
 				elm.setRodParam(elemsRs.getBoolean("DATAELEM.IS_ROD_PARAM"));
 				elm.setTableID(elemsRs.getString("TBL2ELEM.TABLE_ID"));
 				elm.setPositionInTable(elemsRs.getString("TBL2ELEM.POSITION"));
+				elm.setValueDelimiter(elemsRs.getString("TBL2ELEM.MULTIVAL_DELIM"));
 				elm.setDatasetID(elemsRs.getString("DATASET.DATASET_ID"));
 				elm.setDstShortName(elemsRs.getString("DATASET.SHORT_NAME"));
 				elm.setTblShortName(elemsRs.getString("DS_TABLE.SHORT_NAME"));

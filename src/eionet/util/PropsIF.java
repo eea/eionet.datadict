@@ -85,4 +85,8 @@ public interface PropsIF {
 	
 	/** */
 	public static final String RDF_BASE_URI = "rdf.baseUri";
+	
+	/** */
+	public static final String GENERAL_SCHEMA_URI = "dd.generalSchemaUri";
+	public static final String MULTIVAL_DELIM_ATTR = "dd.multiValueDelimAttrName";
 }

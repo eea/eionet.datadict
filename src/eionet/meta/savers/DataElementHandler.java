@@ -14,7 +14,26 @@ import eionet.util.sql.SQL;
 import com.tee.util.*;
 import com.tee.uit.security.*;
 
+/**
+ * 
+ * @author <a href="mailto:jaanus.heinlaid@tietoenator.com">Jaanus Heinlaid</a>
+ *
+ */
 public class DataElementHandler extends BaseHandler {
+	
+	/** */
+	public static LinkedHashMap valueDelimiters;
+	
+	/**
+	 * 
+	 */
+	static{
+		valueDelimiters = new LinkedHashMap();
+		valueDelimiters.put("", "None");
+		valueDelimiters.put(" ", "space");
+		valueDelimiters.put(",", ",");
+		valueDelimiters.put(";", ";");
+	}
 
     public static String ATTR_PREFIX = "attr_";
     public static String ATTR_MULT_PREFIX = "attr_mult_";
@@ -24,6 +43,8 @@ public class DataElementHandler extends BaseHandler {
 
     public static String POS_PREFIX = "pos_";
     public static String OLDPOS_PREFIX = "oldpos_";
+    public static String DELIM_PREFIX = "delim_";
+    public static String OLDDELIM_PREFIX = "olddelim_";
 
     private String mode = null;
     private String elmValuesType = null;
@@ -852,25 +873,124 @@ public class DataElementHandler extends BaseHandler {
         stmt.executeUpdate(buf.toString());
         stmt.close();
     }
+    
+    /**
+     * 
+     * @throws Exception
+     */
     private void processTableElems() throws Exception {
+    	
+    	// process element positions
+    	
+    	HashMap positions = new HashMap();
+    	Enumeration parNames = req.getParameterNames();
+    	while (parNames.hasMoreElements()){
+    		
+    		String parName = (String)parNames.nextElement();
+    		
+    		if (parName.startsWith(OLDPOS_PREFIX)){
+    			
+    			Integer id = Integer.valueOf(parName.substring(OLDPOS_PREFIX.length()));
+    			Integer oldPos = Integer.valueOf(req.getParameter(parName));
+    			Integer newPos = Integer.valueOf(req.getParameter(POS_PREFIX + id));
+    			
+    			if (!oldPos.equals(newPos)){
+    				positions.put(id, newPos);
+    			}
+    		}
+    	}
 
-        String[] posIds = req.getParameterValues("pos_id");
-        String old_pos=null;
-        String pos=null;
-        String parName=null;
-        if (posIds==null || posIds.length==0) return;
-        if (tableID==null || tableID.length()==0) return;
+    	// process element value delimiters
 
-        for (int i=0; i<posIds.length; i++){
-            old_pos = req.getParameter(OLDPOS_PREFIX + posIds[i]);
-            pos = req.getParameter(POS_PREFIX + posIds[i]);
-            if (old_pos.length()==0 || pos.length()==0)
-                continue;
-            if (!old_pos.equals(pos))
-                updateTableElems(posIds[i], pos);
-        }
+    	HashMap valueDelims = new HashMap();
+    	parNames = req.getParameterNames();
+    	while (parNames.hasMoreElements()){
+    		
+    		String parName = (String)parNames.nextElement();
+    		
+    		if (parName.startsWith(OLDDELIM_PREFIX)){
+    			
+    			Integer id = Integer.valueOf(parName.substring(OLDDELIM_PREFIX.length()));
+    			String oldDelim = req.getParameter(parName);
+    			String newDelim = req.getParameter(DELIM_PREFIX + id);
+    			if (newDelim.length()==0){
+    				newDelim = null;
+    			}
+    			
+    			if (!oldDelim.equals(newDelim)){
+    				valueDelims.put(id, newDelim);
+    			}
+    		}
+    	}
+    	
+    	if (!positions.isEmpty()){
+    		
+    		PreparedStatement stmt = null;
+    		try{    		
+    			stmt = conn.prepareStatement("update TBL2ELEM set POSITION=? where DATAELEM_ID=? and TABLE_ID=?");
+    			for (Iterator iter = positions.entrySet().iterator(); iter.hasNext();){
+    				
+    				Map.Entry entry = (Map.Entry)iter.next();
+    				stmt.setInt(1, ((Integer)entry.getValue()).intValue());
+    				stmt.setInt(2, ((Integer)entry.getKey()).intValue());
+    				stmt.setInt(3, Integer.valueOf(tableID));
+    				stmt.addBatch();
+    			}
+    			stmt.executeBatch();
+    		}
+    		finally{
+    			SQL.close(stmt);
+    		}
+    	}
+
+    	if (!valueDelims.isEmpty()){
+    		
+    		PreparedStatement stmt = null;
+    		try{    		
+    			stmt = conn.prepareStatement(
+    				"update TBL2ELEM set MULTIVAL_DELIM=? where DATAELEM_ID=? and TABLE_ID=?");
+    			for (Iterator iter = valueDelims.entrySet().iterator(); iter.hasNext();){
+    				
+    				Map.Entry entry = (Map.Entry)iter.next();
+    				stmt.setString(1, (String)entry.getValue());
+    				stmt.setInt(2, ((Integer)entry.getKey()).intValue());
+    				stmt.setInt(3, Integer.valueOf(tableID));
+    				stmt.addBatch();
+    			}
+    			stmt.executeBatch();
+    		}
+    		finally{
+    			SQL.close(stmt);
+    		}
+    	}
+
+//        String[] posIds = req.getParameterValues("pos_id");
+//        String old_pos=null;
+//        String pos=null;
+//        String parName=null;
+//        if (posIds==null || posIds.length==0) return;
+//        if (tableID==null || tableID.length()==0) return;
+//
+//        for (int i=0; i<posIds.length; i++){
+//            old_pos = req.getParameter(OLDPOS_PREFIX + posIds[i]);
+//            pos = req.getParameter(POS_PREFIX + posIds[i]);
+//            if (old_pos.length()==0 || pos.length()==0)
+//                continue;
+//            if (!old_pos.equals(pos))
+//                updateTableElemPos(posIds[i], pos);
+//        }
+//        
+//        // process element value delimiters
+//        Enumeration valueDelims = req.getParameterNames();
     }
-    private void updateTableElems(String elemId, String pos) throws Exception {
+    
+    /**
+     * 
+     * @param elemId
+     * @param pos
+     * @throws Exception
+     */
+    private void updateTableElemPos(String elemId, String pos) throws Exception {
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("TBL2ELEM");
 
