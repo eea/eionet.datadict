@@ -75,7 +75,7 @@ default is install
 	<target name="compile" depends="init,prepare,clean" description="compiles java classes into classes path">
 	    <!-- Compile the java code from ${src} into ${build} -->
 		<javac deprecation="off" srcdir="${src}"
-		    destdir="${classes.dir}" debug="on" source="1.4">
+		    destdir="${classes.dir}" debug="on">
 			<classpath refid="classpath.compile"/>
 		</javac>
 	</target>

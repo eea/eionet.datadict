@@ -933,7 +933,7 @@ public class DataElementHandler extends BaseHandler {
     				Map.Entry entry = (Map.Entry)iter.next();
     				stmt.setInt(1, ((Integer)entry.getValue()).intValue());
     				stmt.setInt(2, ((Integer)entry.getKey()).intValue());
-    				stmt.setInt(3, Integer.valueOf(tableID));
+    				stmt.setInt(3, Integer.parseInt(tableID));
     				stmt.addBatch();
     			}
     			stmt.executeBatch();
@@ -954,7 +954,7 @@ public class DataElementHandler extends BaseHandler {
     				Map.Entry entry = (Map.Entry)iter.next();
     				stmt.setString(1, (String)entry.getValue());
     				stmt.setInt(2, ((Integer)entry.getKey()).intValue());
-    				stmt.setInt(3, Integer.valueOf(tableID));
+    				stmt.setInt(3, Integer.parseInt(tableID));
     				stmt.addBatch();
     			}
     			stmt.executeBatch();
