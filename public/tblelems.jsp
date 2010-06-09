@@ -515,7 +515,21 @@ if (messages.trim().length()>0){
 						
 						<th scope="col" class="scope-col">Datatype</th>
 						<th scope="col" class="scope-col">Element type</th>
-						<th scope="col" class="scope-col">Value delimiter</th>
+						
+						<%
+						boolean hasFixedValueElements = false;
+						for (int i=0; elems!=null && i<elems.size(); i++){
+							String type = ((DataElement)elems.get(i)).getType();
+							if (type!=null && type.equals("CH1")){
+								hasFixedValueElements = true;
+								break;
+							}
+						}
+						if (hasFixedValueElements){
+							%>
+							<th scope="col" class="scope-col">Value delimiter</th><%
+							}
+						%>
 					</tr>
 					</thead>
 
@@ -662,19 +676,29 @@ if (messages.trim().length()>0){
 								<input type="hidden" name="pos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>"/>
 							</td>
 							
-							<td style="text-align: left; padding-right:10px">
-								<select name="delim_<%=elem.getID()%>" onclick="tbl_obj.clickOtherObject();">
-									<%
-									for (Iterator iter = DataElementHandler.valueDelimiters.entrySet().iterator(); iter.hasNext();){
-										Map.Entry entry = (Map.Entry)iter.next();
-										String selected = entry.getKey().equals(valueDelimiter) ? "selected=\"selected\"" : "";
-										%>
-										<option value="<%=entry.getKey()%>" <%=selected%>><%=entry.getValue()%></option><%
-									}
-									%>								
-								</select>
-								<input type="hidden" name="olddelim_<%=elem.getID()%>" value="<%=valueDelimiter%>"/>
-							</td>
+							<%
+							if (hasFixedValueElements){
+								if (elem.getType()!=null && elem.getType().equals("CH1")){
+									%>
+									<td style="text-align: left; padding-right:10px">
+										<select name="delim_<%=elem.getID()%>" onclick="tbl_obj.clickOtherObject();">
+											<%
+											for (Iterator iter = DataElementHandler.valueDelimiters.entrySet().iterator(); iter.hasNext();){
+												Map.Entry entry = (Map.Entry)iter.next();
+												String selected = entry.getKey().equals(valueDelimiter) ? "selected=\"selected\"" : "";
+												%>
+												<option value="<%=entry.getKey()%>" <%=selected%>><%=entry.getValue()%></option><%
+											}
+											%>								
+										</select>
+										<input type="hidden" name="olddelim_<%=elem.getID()%>" value="<%=valueDelimiter%>"/>
+									</td><%
+								}
+								else{
+									%><td style="text-align: left; padding-right:10px">&nbsp;</td><%
+								}
+							}
+							%>
 						
 						</tr>
 						<%
