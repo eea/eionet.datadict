@@ -117,6 +117,10 @@
 <head>
 	<%@ include file="headerinfo.txt" %>
 	<title>Meta</title>
+	
+	<script src="dynamic_table.js" type="text/javascript"></script>
+	<script src="modal_dialog.js" type="text/javascript"></script>
+	
 	<script type="text/javascript">
 	// <![CDATA[
 			function submitForm(mode){
@@ -129,11 +133,38 @@
 				document.forms["form1"].elements["mode"].value = mode;
 				document.forms["form1"].submit();
 			}
+			
+			function saveOrder(){
+				tbl_obj.insertNumbers("pos_");
+				submitForm("edit_order");
+			}
+			function start() {
+				tbl_obj=new dynamic_table("tbl"); //create dynamic_table object
+			}
+			function sel_row(o){
+				tbl_obj.selectRow(o);
+			}
+			function moveRowUp(){
+				tbl_obj.moveup();
+				setChanged();
+			}
+			function moveRowDown(){
+				tbl_obj.movedown();
+				setChanged();
+			}
+			function moveFirst(){
+				tbl_obj.movefirst();
+				setChanged();
+			}
+			function moveLast(){
+				tbl_obj.movelast();
+				setChanged();
+			}
 	// ]]>
 	</script>
 </head>
 	
-<body>
+<body onload="start()">
 <div id="container">
 <jsp:include page="nlocation.jsp" flush="true">
 	<jsp:param name="name" value="Dataset tables"/>
@@ -146,33 +177,42 @@
 	<h1>
 		Tables in <em><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dataset.getShortName())%></a></em> dataset
 	</h1>
-		
-	<table class="datatable" cellspacing="0" style="margin-top:20px;width:auto;border:0">
 	
+		<table width="100%" cellspacing="0"  style="border:0">
 		<tr>
-			<%
-			if (editPrm){
-				%>
-				<td colspan="4">
-					<input type="button" value="Add new" class="smallbutton"
-						   onclick="window.location.replace('dstable.jsp?mode=add&amp;ds_id=<%=dsID%>&#38;ds_name=<%=Util.replaceTags(dsName)%>&amp;ctx=ds')"/>
-					<%
-					if (tables!=null && tables.size()>0){%>
-						<input type="button" value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/><%
-					}
-					%>
-				</td><%
-			}
-			%>
-		</tr>
-		<tr style="height:5px;"><td colspan="4"></td></tr>
-		<tr>
-			<th align="right" style="padding-right:10px">&nbsp;</th>
-			<th align="left" style="padding-right:10px; border-left:0">Name</th>
-			<th align="left" style="padding-left:5px;padding-right:10px">Short name</th>
-			<th align="left" style="padding-right:10px;">Definition</th>
-		</tr>
+		
+			<!-- table of elements -->
 			
+			<td style="width:90%">
+				<table width="100%" cellspacing="0" id="tbl" class="datatable">
+	
+		<thead>
+			<tr>
+				<%
+				if (editPrm){
+					%>
+					<td colspan="4">
+						<input type="button" value="Add new" class="smallbutton"
+							   onclick="window.location.replace('dstable.jsp?mode=add&amp;ds_id=<%=dsID%>&#38;ds_name=<%=Util.replaceTags(dsName)%>&amp;ctx=ds')"/>
+						<%
+						if (tables!=null && tables.size()>0){%>
+							<input type="button" value="Remove selected" class="smallbutton" onclick="submitForm('delete')"/>
+							<input type="button" value="Save order" class="smallbutton" onclick="saveOrder()" title="Save the current order of tables"/><%
+						}
+						%>
+					</td><%
+				}
+				%>
+			</tr>
+			<tr style="height:5px;"><td colspan="4"></td></tr>
+			<tr>
+				<th align="right" style="padding-right:10px">&nbsp;</th>
+				<th align="left" style="padding-right:10px; border-left:0">Name</th>
+				<th align="left" style="padding-left:5px;padding-right:10px">Short name</th>
+				<th align="left" style="padding-right:10px;">Definition</th>
+			</tr>
+		</thead>
+		<tbody id="tbl_body">
 		<%
 		DElemAttribute attr = null;
 		for (int i=0; tables!=null && i<tables.size(); i++){
@@ -197,7 +237,7 @@
 			tblDef = tblDef.length()>40 && tblDef != null ? tblDef.substring(0,40) + " ..." : tblDef;
 			String trStyle = (i % 2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
 			%>
-			<tr <%=trStyle%>>
+			<tr id="tr<%=table.getID()%>" onclick="tbl_obj.selectRow(this);" <%=trStyle%>>
 				<td align="right" style="padding-right:10px">
 					<%
 					if (editPrm){
@@ -214,17 +254,63 @@
 				</td>
 				<td align="left" style="padding-right:10px" title="<%=Util.replaceTags(tblFullDef, true)%>">
 					<%=Util.replaceTags(tblDef)%>
-					<input type="hidden" name="mode" value="delete"/>
-					<input type="hidden" name="ds_id" value="<%=dsID%>"/>
-					<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dataset.getShortName(), true)%>"/>
-					<input type="hidden" name="ds_idf" value="<%=dataset.getIdentifier()%>"/>
+					<input type="hidden" name="oldpos_<%=table.getID()%>" value="<%=table.getPositionInDataset()%>"/>
+					<input type="hidden" name="pos_<%=table.getID()%>" value="<%=table.getPositionInDataset()%>"/>
 				</td>
 			</tr>
 			<%
 		}
 		%>
-
+		</tbody>
 	</table>
+	
+	</td>
+			
+			<!-- ordering buttons -->
+			
+			<%
+			if (tables.size()>1 && editPrm){ %>
+				<td style="text-align:left;padding-right:10px;vertical-align:middle;height:10px;width:10%">
+					<table cellspacing="2" cellpadding="2" style="border:0">
+						<tr>
+							<td>
+								<a href="javascript:moveFirst()"><img src="images/move_first.gif" style="border:0" alt="" title="move selected row to top"/></a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="javascript:moveRowUp()"><img src="images/move_up.gif" style="border:0" alt="" title="move selected row up"/></a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<img src="images/dot.gif" alt=""/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="javascript:moveRowDown()"><img alt="" src="images/move_down.gif" style="border:0" title="move selected row down"/></a>			
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="javascript:moveLast()"><img alt="" src="images/move_last.gif" style="border:0" title="move selected row last"/></a>			
+							</td>
+						</tr>
+					</table>					
+				</td><%
+			}
+			%>
+		</tr>
+		
+	</table>
+	
+	<div style="display:none">	
+		<input type="hidden" name="mode" value="delete"/>
+		<input type="hidden" name="ds_id" value="<%=dsID%>"/>
+		<input type="hidden" name="ds_name" value="<%=Util.replaceTags(dataset.getShortName(), true)%>"/>
+		<input type="hidden" name="ds_idf" value="<%=dataset.getIdentifier()%>"/>
+	</div>
 	
 </form>
 </div> <!-- workarea -->

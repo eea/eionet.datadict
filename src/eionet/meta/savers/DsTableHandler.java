@@ -21,6 +21,9 @@ public class DsTableHandler extends BaseHandler {
     public static String INHERIT_ATTR_PREFIX = "inherit_";
     public static String INHERIT_COMPLEX_ATTR_PREFIX = "inherit_complex_";
 
+    public static String POS_PREFIX = "pos_";
+    public static String OLDPOS_PREFIX = "oldpos_";
+
     private String mode = null;
     private String lastInsertID = null;
 
@@ -61,6 +64,8 @@ public class DsTableHandler extends BaseHandler {
         this.ctx  = ctx;
         this.mode = req.getParameter("mode");
         
+        dstID = req.getParameter("ds_id");
+
         if (ctx!=null){
 	        String _versioning = ctx.getInitParameter("versioning");
 	        if (_versioning!=null && _versioning.equalsIgnoreCase("false"))
@@ -111,13 +116,18 @@ public class DsTableHandler extends BaseHandler {
 
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
                            !mode.equalsIgnoreCase("edit") &&
-                           !mode.equalsIgnoreCase("delete")))
-            throw new Exception("DsTableHandler mode unspecified!");
+                           !mode.equalsIgnoreCase("delete") &&
+                           !mode.equalsIgnoreCase("edit_order"))){
+        	
+            throw new Exception("DsTableHandler mode unspecified or unknown!");
+        }
 
         if (mode.equalsIgnoreCase("add"))
             insert();
         else if (mode.equalsIgnoreCase("edit"))
             update();
+        else if (mode.equalsIgnoreCase("edit_order"))
+            saveTablesOrderInDataset();
         else{
             delete();
             cleanVisuals();
@@ -125,6 +135,55 @@ public class DsTableHandler extends BaseHandler {
     }
     
     /**
+     * @throws SQLException 
+     * 
+     */
+    private void saveTablesOrderInDataset() throws Exception {
+    	
+    	HashMap positions = new HashMap();
+    	
+    	Enumeration parNames = req.getParameterNames();
+    	while (parNames.hasMoreElements()){
+    		
+    		String parName = (String)parNames.nextElement();
+    		if (parName.startsWith(OLDPOS_PREFIX)){
+    			
+    			Integer id = Integer.valueOf(parName.substring(OLDPOS_PREFIX.length()));
+    			Integer oldPos = Integer.valueOf(req.getParameter(parName));
+    			Integer newPos = Integer.valueOf(req.getParameter(POS_PREFIX + id));
+    			
+    			if (!oldPos.equals(newPos)){
+    				positions.put(id, newPos);
+    			}
+    		}
+    	}
+    	
+    	if (!positions.isEmpty()){
+    		
+            if (dstID==null || dstID.length()==0)
+                throw new Exception("Missing request parameter: ds_id");
+
+    		PreparedStatement stmt = null;
+    		try{    		
+    			stmt = conn.prepareStatement(
+    					"update DST2TBL set POSITION=? where TABLE_ID=? and DATASET_ID=?");
+    			for (Iterator iter = positions.entrySet().iterator(); iter.hasNext();){
+    				
+    				Map.Entry entry = (Map.Entry)iter.next();
+    				stmt.setInt(1, ((Integer)entry.getValue()).intValue());
+    				stmt.setInt(2, ((Integer)entry.getKey()).intValue());
+    				stmt.setInt(3, Integer.parseInt(this.dstID));
+    				stmt.addBatch();
+    			}
+    			stmt.executeBatch();
+    		}
+    		finally{
+    			SQL.close(stmt);
+    		}
+    	}
+	}
+
+	/**
      * 
      * @throws Exception
      */
@@ -157,8 +216,7 @@ public class DsTableHandler extends BaseHandler {
 			return;
 		}
         
-        // get the dataset id number
-        dstID = req.getParameter("ds_id");
+        // check the dataset id number
         if (dstID==null || dstID.length()==0)
             throw new Exception("Missing request parameter: ds_id");
 

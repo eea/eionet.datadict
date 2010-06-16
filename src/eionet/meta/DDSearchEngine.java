@@ -2299,32 +2299,28 @@ public class DDSearchEngine {
 	/**
 	 * 
 	 * @param dstID
-	 * @param isOrderByFullName
+	 * @param isOrderByPositions
 	 * @return
 	 * @throws SQLException
 	 */
-	public Vector getDatasetTables(String dstID, boolean isOrderByFullName) throws SQLException {
+	public Vector getDatasetTables(String dstID, boolean isOrderByPositions) throws SQLException {
 		
 		INParameters inParams = new INParameters();
 		
 		// prepare the query
 		StringBuffer buf  = new StringBuffer();
-		buf.append("select distinct DS_TABLE.*");
-		if (isOrderByFullName)
-			buf.append(", ATTRIBUTE.VALUE");
+		buf.append("select distinct DS_TABLE.*, DST2TBL.POSITION");
 		buf.append(" from DS_TABLE ");
 		buf.append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ");
-		if (isOrderByFullName){
-			buf.append("left outer join ATTRIBUTE on DS_TABLE.TABLE_ID=ATTRIBUTE.DATAELEM_ID ").
-			append("left outer join M_ATTRIBUTE on ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID ");
-		}
 		buf.append("where DS_TABLE.CORRESP_NS is not null and ").
 		append("DST2TBL.DATASET_ID=").append(inParams.add(dstID, Types.INTEGER));
-		if (isOrderByFullName){
-			buf.append(" and M_ATTRIBUTE.SHORT_NAME='Name' and ").
-			append("ATTRIBUTE.PARENT_TYPE='T'");
+		
+		if (isOrderByPositions){
+			buf.append(" order by DST2TBL.POSITION asc");
 		}
-		buf.append(" order by DS_TABLE.IDENTIFIER,DS_TABLE.TABLE_ID desc");
+		else{
+			buf.append(" order by DS_TABLE.IDENTIFIER,DS_TABLE.TABLE_ID desc");
+		}
 		
 		logger.debug(buf.toString());
 		
@@ -2356,10 +2352,7 @@ public class DDSearchEngine {
 				dsTable.setNamespace(rs.getString("DS_TABLE.CORRESP_NS"));
 				dsTable.setParentNs(rs.getString("DS_TABLE.PARENT_NS"));
 				dsTable.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
-				if (isOrderByFullName){
-					dsTable.setName(rs.getString("ATTRIBUTE.VALUE"));
-					dsTable.setCompStr(dsTable.getName());
-				}
+				dsTable.setPositionInDataset(rs.getInt("DST2TBL.POSITION"));
 				
 				v.add(dsTable);
 			}
@@ -2370,9 +2363,6 @@ public class DDSearchEngine {
 				if (stmt != null) stmt.close();
 			} catch (SQLException sqle) {}
 		}
-		
-		if (isOrderByFullName)
-			Collections.sort(v);
 		
 		return v;
 	}

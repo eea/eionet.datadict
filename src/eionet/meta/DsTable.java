@@ -37,6 +37,8 @@ public class DsTable implements Comparable {
     private int dstVersion = -1;
     
 	private String owner = null;  
+	
+	private int positionInDataset;
     
     /**
      * 
@@ -363,5 +365,19 @@ public class DsTable implements Comparable {
 	 */
 	public void setDstDate(String dstDate) {
 		this.dstDate = dstDate;
+	}
+
+	/**
+	 * @return the positionInDataset
+	 */
+	public int getPositionInDataset() {
+		return positionInDataset;
+	}
+
+	/**
+	 * @param positionInDataset the positionInDataset to set
+	 */
+	public void setPositionInDataset(int positionInDataset) {
+		this.positionInDataset = positionInDataset;
 	}
 }
