@@ -33,7 +33,7 @@ public class DstPdfFactsheet extends PdfHandout {
         ds.setSimpleAttributes(v);
         v = searchEngine.getComplexAttributes(dsID, "DS");
         ds.setComplexAttributes(v);
-        v = searchEngine.getDatasetTables(dsID);
+        v = searchEngine.getDatasetTables(dsID, true);
         ds.setTables(v);
         
         write(ds);

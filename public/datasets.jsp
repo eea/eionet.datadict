@@ -489,7 +489,7 @@
 					Dataset dataset = (Dataset)datasets.get(i);
 
 					String ds_id = dataset.getID();
-					Vector tables = searchEngine.getDatasetTables(ds_id);
+					Vector tables = searchEngine.getDatasetTables(ds_id, true);
 					String regStatus = dataset.getStatus();
 					boolean clickable = searchEngine.skipByRegStatus(regStatus) ? false : true;
 					String linkDisabled = clickable ? "" : "class=\"disabled\"";

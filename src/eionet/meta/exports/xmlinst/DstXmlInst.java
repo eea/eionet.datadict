@@ -24,7 +24,7 @@ public class DstXmlInst extends XmlInst {
 		if (dst == null) throw new Exception("Dataset not found!");
 
 		// get the tables
-		dst.setTables(searchEngine.getDatasetTables(dstID));
+		dst.setTables(searchEngine.getDatasetTables(dstID, true));
 
 		write(dst);
 	}

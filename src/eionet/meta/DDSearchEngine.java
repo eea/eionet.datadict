@@ -2288,16 +2288,6 @@ public class DDSearchEngine {
 	
 	/**
 	 * 
-	 * @param dsID
-	 * @return
-	 * @throws SQLException
-	 */
-	public Vector getDatasetTables(String dsID) throws SQLException {
-		return getDatasetTables(dsID, false);
-	}
-	
-	/**
-	 * 
 	 * @param dstID
 	 * @param isOrderByPositions
 	 * @return

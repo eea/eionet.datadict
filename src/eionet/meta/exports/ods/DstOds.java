@@ -44,7 +44,7 @@ public class DstOds extends Ods {
 		finalFileName = dst.getIdentifier() + "." + DOS_EXTENSION;
 		schemaURLTrailer = "DST" + dst.getID();
 		
-		Vector tbls = searchEngine.getDatasetTables(dstID);
+		Vector tbls = searchEngine.getDatasetTables(dstID, true);
 		for (int i=0; tbls!=null && i<tbls.size(); i++)
 			prepareTbl((DsTable)tbls.get(i));
 	}

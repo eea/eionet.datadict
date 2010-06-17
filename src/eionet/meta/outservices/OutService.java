@@ -200,7 +200,7 @@ public class OutService {
 				reply.setVersion(dst.getVersion());
 				
 				// set table ids
-				Vector tables = searchEngine.getDatasetTables(dst.getID());
+				Vector tables = searchEngine.getDatasetTables(dst.getID(), false);
 				for (int i=0; i<tables.size(); i++){
 					reply.addTableId(((DsTable)tables.get(i)).getID());
 				}

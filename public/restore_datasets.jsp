@@ -407,7 +407,7 @@
 					if (ds_name == null) ds_name = "unknown";
 					if (ds_name.length() == 0) ds_name = "empty";
 					
-					Vector tables = searchEngine.getDatasetTables(ds_id);
+					Vector tables = searchEngine.getDatasetTables(ds_id, true);
 					
 					String dsFullName=dataset.getName();
 					

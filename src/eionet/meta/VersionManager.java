@@ -656,7 +656,7 @@ public class VersionManager{
 				
 				// remember the id-identifier mappings of tables in the previous copy, before deleting it
 				Hashtable tableIdsAndIdentifiers = new Hashtable();
-				Vector v = searchEngine.getDatasetTables(checkedoutCopyID);
+				Vector v = searchEngine.getDatasetTables(checkedoutCopyID, false);
 				for (int i=0; v!=null && i<v.size(); i++){
 					DsTable tbl = (DsTable)v.get(i);
 					tableIdsAndIdentifiers.put(tbl.getIdentifier(), tbl.getID());
@@ -685,7 +685,7 @@ public class VersionManager{
 				dstID = checkedoutCopyID;
 				
 				// the tables must get the ids of previous ones too
-				v = searchEngine.getDatasetTables(checkedoutCopyID);
+				v = searchEngine.getDatasetTables(checkedoutCopyID, false);
 				for (int i=0; v!=null && i<v.size(); i++){
 					DsTable tbl = (DsTable)v.get(i);
 					String oldID = (String)tableIdsAndIdentifiers.get(tbl.getIdentifier());
@@ -818,7 +818,7 @@ public class VersionManager{
         // get & set simple attributes, compelx attributes and tables
         ds.setSimpleAttributes(searchEngine.getSimpleAttributes(dstID, "DS"));
         ds.setComplexAttributes(searchEngine.getComplexAttributes(dstID, "DS"));
-        ds.setTables(searchEngine.getDatasetTables(dstID));
+        ds.setTables(searchEngine.getDatasetTables(dstID, false));
         
         return ds;
     }

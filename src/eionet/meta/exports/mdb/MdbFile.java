@@ -108,7 +108,7 @@ public class MdbFile {
 		try{
 			db = Database.create(file);
 			
-			Vector tables = searchEngine.getDatasetTables(dstID);
+			Vector tables = searchEngine.getDatasetTables(dstID, true);
 			for (int i=0; tables!=null && i<tables.size(); i++){
 				createTable((DsTable)tables.get(i), db);
 			}
@@ -266,7 +266,7 @@ public class MdbFile {
 
 		//"TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf", "DstNr", "DstNsID", "DstNsURL", "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"
 		
-		Vector ddTables = searchEngine.getDatasetTables(dstID);
+		Vector ddTables = searchEngine.getDatasetTables(dstID, true);
 		if (ddTables==null || ddTables.size()==0)
 			return null;
 		

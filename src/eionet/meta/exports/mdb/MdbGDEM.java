@@ -101,7 +101,7 @@ public static final String METADATA_TABLENAME = "Metadata_for_GDEM_(NOT_TO_BE_DE
 	private void addRows(Table table) throws Exception{
 		
 		String dstID = null;
-		Vector ddTables = searchEngine.getDatasetTables(dstID);
+		Vector ddTables = searchEngine.getDatasetTables(dstID, true);
 		for (int i=0; ddTables!=null && i<ddTables.size(); i++){
 			
 			DsTable ddTable = (DsTable)ddTables.get(i);

@@ -77,7 +77,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
 		// for the fileName we now use Identifier, cause short name might contain characters
 		// illegal for a filename
 		fileName = dst.getIdentifier() + FILE_EXT;  
-		tables = searchEngine.getDatasetTables(dstID);
+		tables = searchEngine.getDatasetTables(dstID, true);
 		for (int i=0; tables!=null && i<tables.size(); i++){
 			addTable((DsTable)tables.get(i));
 		}
