@@ -9,8 +9,10 @@ public interface XFormIF {
 	public static final String ATTR_NODESET  = "nodeset";
 	public static final String ATTR_MINSIZE  = "min-size";
 	public static final String ATTR_MAXSIZE  = "max-size";
-	public static final String ATTR_MINVALUE = "min-value";
-	public static final String ATTR_MAXVALUE = "max-value";
+	public static final String ATTR_MIN_INCL_VALUE = "min-incl-value";
+	public static final String ATTR_MAX_INCL_VALUE = "max-incl-value";
+	public static final String ATTR_MIN_EXCL_VALUE = "min-excl-value";
+	public static final String ATTR_MAX_EXCL_VALUE = "max-excl-value";
 	
 	public static final String CTRL_LABEL = "ctrl-label";
 	public static final String CTRL_HINT  = "ctrl-hint";

@@ -98,15 +98,38 @@ public class TblXForm extends XForm {
 			elmBind.put(ATTR_NODESET, nodeset);
 
 			if (!elm.getType().equalsIgnoreCase("CH1")){
+				
 				String minSize  = elm.getAttributeValueByShortName("MinSize");
 				String maxSize  = elm.getAttributeValueByShortName("MaxSize");
-				String minValue = elm.getAttributeValueByShortName("MinValue");
-				String maxValue = elm.getAttributeValueByShortName("MaxValue");			
-				if (!Util.voidStr(minSize)) elmBind.put(ATTR_MINSIZE, minSize);
-				if (!Util.voidStr(maxSize)) elmBind.put(ATTR_MAXSIZE, maxSize);
-				if (bindType.equalsIgnoreCase("float") || bindType.equalsIgnoreCase("integer")){
-					if (!Util.voidStr(minValue)) elmBind.put(ATTR_MINVALUE, minValue);
-					if (!Util.voidStr(maxValue)) elmBind.put(ATTR_MAXVALUE, maxValue);
+				String minInclusiveValue = elm.getAttributeValueByShortName("MinInclusiveValue");
+				String maxInclusiveValue = elm.getAttributeValueByShortName("MaxInclusiveValue");
+				String minExclusiveValue = elm.getAttributeValueByShortName("MinExclusiveValue");
+				String maxExclusiveValue = elm.getAttributeValueByShortName("MaxExclusiveValue");
+				
+				if (minSize!=null && minSize.trim().length()>0){
+					elmBind.put(ATTR_MINSIZE, minSize);
+				}
+				if (maxSize!=null && maxSize.trim().length()>0){
+					elmBind.put(ATTR_MAXSIZE, maxSize);
+				}
+				
+				if (bindType.equalsIgnoreCase("float")
+						|| bindType.equalsIgnoreCase("double")
+						|| bindType.equalsIgnoreCase("integer")){
+					
+					if (minInclusiveValue!=null && minInclusiveValue.trim().length()>0){
+						elmBind.put(ATTR_MIN_INCL_VALUE, minInclusiveValue);
+					}
+					if (maxInclusiveValue!=null && maxInclusiveValue.trim().length()>0){
+						elmBind.put(ATTR_MAX_INCL_VALUE, maxInclusiveValue);
+					}
+
+					if (minExclusiveValue!=null && minExclusiveValue.trim().length()>0){
+						elmBind.put(ATTR_MIN_EXCL_VALUE, minExclusiveValue);
+					}
+					if (maxExclusiveValue!=null && maxExclusiveValue.trim().length()>0){
+						elmBind.put(ATTR_MAX_EXCL_VALUE, maxExclusiveValue);
+					}
 				}
 			}
 			
@@ -233,16 +256,20 @@ public class TblXForm extends XForm {
 		if (datatype==null) datatype = DEFAULT_DATATYPE;
 		buf.append(datatype);
 		
-		String[] attrs = {"MinSize", "MaxSize", "MinValue", "MaxValue"};
+		String[] attrs = {"MinSize", "MaxSize", "MinInclusiveValue", "MaxInclusiveValue", "MinExclusiveValue", "MaxExclusiveValue"};
 		for (int i=0; i<attrs.length; i++){
 			
-			// allow no MinValue or MaxValue for non-string types, even if the user has specified
-			if (!datatype.equalsIgnoreCase("float") &&
-				!datatype.equalsIgnoreCase("integer") && attrs[i].endsWith("Value"))
+			// allow no MinInclusiveValue, MaxInclusiveValue, MinExclusiveValue, MaxExclusiveValue
+			// for non-numeric types, even if the user has specified
+			if (!datatype.equalsIgnoreCase("float")
+					&& !datatype.equalsIgnoreCase("double")
+					&& !datatype.equalsIgnoreCase("integer")
+					&& attrs[i].endsWith("Value")){
 				continue;
+			}
 				
 			String value = elm.getAttributeValueByShortName(attrs[i]);
-			if (!Util.voidStr(value)){
+			if (value!=null && value.trim().length()>0){
 				if (buf.length()>0) buf.append(";");
 				buf.append(attrs[i]).append("=").append(value);
 			}

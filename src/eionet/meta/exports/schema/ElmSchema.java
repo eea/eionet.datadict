@@ -77,14 +77,18 @@ public class ElmSchema extends Schema {
         String dataType = (String)nonAnnotationAttributes.get("Datatype");
         String minSize  = (String)nonAnnotationAttributes.get("MinSize");
         String maxSize  = (String)nonAnnotationAttributes.get("MaxSize");
-		String minValue = (String)nonAnnotationAttributes.get("MinValue");
-		String maxValue = (String)nonAnnotationAttributes.get("MaxValue");
+		String minInclusiveValue = (String)nonAnnotationAttributes.get("MinInclusiveValue");
+		String maxInclusiveValue = (String)nonAnnotationAttributes.get("MaxInclusiveValue");
+		String minExclusiveValue = (String)nonAnnotationAttributes.get("MinExclusiveValue");
+		String maxExclusiveValue = (String)nonAnnotationAttributes.get("MaxExclusiveValue");
 		String decPrec  = (String)nonAnnotationAttributes.get("DecimalPrecision");
 		
 		if (Util.skipAttributeByDatatype("MinSize", dataType)) minSize = null;
 		if (Util.skipAttributeByDatatype("MaxSize", dataType)) maxSize = null;
-		if (Util.skipAttributeByDatatype("minValue", dataType)) minValue = null;
-		if (Util.skipAttributeByDatatype("maxValue", dataType)) maxValue = null;
+		if (Util.skipAttributeByDatatype("MinInclusiveValue", dataType)) minInclusiveValue = null;
+		if (Util.skipAttributeByDatatype("MaxInclusiveValue", dataType)) maxInclusiveValue = null;
+		if (Util.skipAttributeByDatatype("MinExclusiveValue", dataType)) minExclusiveValue = null;
+		if (Util.skipAttributeByDatatype("MaxExclusiveValue", dataType)) maxExclusiveValue = null;
 		if (Util.skipAttributeByDatatype("DecimalPrecision", dataType)) decPrec = null;
         
         addString("\t");
@@ -120,18 +124,34 @@ public class ElmSchema extends Schema {
                 newLine();
             }
 
-			if (!Util.voidStr(minValue)){
+			if (minInclusiveValue!=null && minInclusiveValue.trim().length()>0){
 				addString("\t\t\t");
 				addString("<xs:minInclusive value=\"");
-				addString(minValue);
+				addString(minInclusiveValue);
 				addString("\"/>");
 				newLine();
 			}
 
-			if (!Util.voidStr(maxValue)){
+			if (maxInclusiveValue!=null && maxInclusiveValue.trim().length()>0){
 				addString("\t\t\t");
 				addString("<xs:maxInclusive value=\"");
-				addString(maxValue);
+				addString(maxInclusiveValue);
+				addString("\"/>");
+				newLine();
+			}
+
+			if (minExclusiveValue!=null && minExclusiveValue.trim().length()>0){
+				addString("\t\t\t");
+				addString("<xs:minExclusive value=\"");
+				addString(minExclusiveValue);
+				addString("\"/>");
+				newLine();
+			}
+
+			if (maxExclusiveValue!=null && maxExclusiveValue.trim().length()>0){
+				addString("\t\t\t");
+				addString("<xs:maxExclusive value=\"");
+				addString(maxExclusiveValue);
 				addString("\"/>");
 				newLine();
 			}

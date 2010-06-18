@@ -566,8 +566,10 @@ public class PdfUtil {
 					
 					String[][] ss = {{"MinSize", "Minimum size: "},
 								{"MaxSize", "Maximum size: "},
-								{"MinValue", "Minimum value: "},
-								{"MaxValue", "Maximum value: "},
+								{"MinInclusiveValue", "Minimum inclusive value: "},
+								{"MinExclusiveValue", "Minimum exclusive value: "},
+								{"MaxInclusiveValue", "Maximum inclusive value: "},								
+								{"MaxExclusiveValue", "Maximum exclusive value: "},
 								{"DecimalPrecision", "Decimal precision: "},
 								{"Unit", "Unit: "}};
 					for (int k=0; k<ss.length; k++){

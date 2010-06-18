@@ -53,8 +53,10 @@ public abstract class Schema implements SchemaIF{
         this.nonAnnotationAttributes.put("Datatype", "");
         this.nonAnnotationAttributes.put("MinSize", "");
         this.nonAnnotationAttributes.put("MaxSize", "");
-		this.nonAnnotationAttributes.put("MinValue", "");
-		this.nonAnnotationAttributes.put("MaxValue", "");
+		this.nonAnnotationAttributes.put("MinInclusiveValue", "");
+		this.nonAnnotationAttributes.put("MaxInclusiveValue", "");
+		this.nonAnnotationAttributes.put("MinExclusiveValue", "");
+		this.nonAnnotationAttributes.put("MaxExclusiveValue", "");
 		this.nonAnnotationAttributes.put("DecimalPrecision", "");
     }
     

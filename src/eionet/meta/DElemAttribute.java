@@ -397,8 +397,10 @@ public class DElemAttribute{
             verAttrs.add("MaxSize");
             verAttrs.add("Decimal precision");
             verAttrs.add("Unit");
-            verAttrs.add("MinValue");
-            verAttrs.add("MaxValue");
+            verAttrs.add("MinInclusiveValue");
+            verAttrs.add("MaxInclusiveValue");
+            verAttrs.add("MinExclusiveValue");
+            verAttrs.add("MaxExclusiveValue");
             verAttrs.add("Planned Upd Frequency");
         }
 

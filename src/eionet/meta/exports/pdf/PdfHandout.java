@@ -321,8 +321,10 @@ public abstract class PdfHandout implements PdfHandoutIF {
 		showedAttrs.add("MaxSize");
 		showedAttrs.add("DecimalPrecision");
 		showedAttrs.add("Unit");
-		showedAttrs.add("MinValue");
-		showedAttrs.add("MaxValue");
+		showedAttrs.add("MinInclusiveValue");
+		showedAttrs.add("MaxInclusiveValue");
+		showedAttrs.add("MinExclusiveValue");
+		showedAttrs.add("MaxExclusiveValue");
 		showedAttrs.add("PublicOrInternal");
 		showedAttrs.add("PlannedUpdFreq");
 		showedAttrs.add("ETCVersion");

@@ -100,6 +100,10 @@ public class DataElementHandler extends BaseHandler {
 	/** */
 	private String checkedInCopyID = null;
 
+	/** */
+	private HashMap attrShortNamesById = new HashMap();
+	private HashMap attrIdsByShortName = new HashMap();
+	
     /**
     *
     */
@@ -114,6 +118,7 @@ public class DataElementHandler extends BaseHandler {
      * @param ctx
      */
     public DataElementHandler(Connection conn, Parameters req, ServletContext ctx){
+    	
         this.conn = conn;
         this.req = req;
         this.ctx = ctx;
@@ -142,13 +147,20 @@ public class DataElementHandler extends BaseHandler {
             searchEngine = new DDSearchEngine(conn, "", ctx);
             Vector v = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE);
             for (int i=0; v!=null && i<v.size(); i++){
+            	
                 DElemAttribute attr = (DElemAttribute)v.get(i);
-                if (attr.getShortName().equalsIgnoreCase("MinSize"))
+                if (attr.getShortName().equalsIgnoreCase("MinSize")){
                     ch1ProhibitedAttrs.add(attr.getID());
-                if (attr.getShortName().equalsIgnoreCase("MaxSize"))
+                }
+                if (attr.getShortName().equalsIgnoreCase("MaxSize")){
                     ch1ProhibitedAttrs.add(attr.getID());
-                if (attr.getShortName().equalsIgnoreCase("Datatype"))
+                }
+                if (attr.getShortName().equalsIgnoreCase("Datatype")){
                     this.mDatatypeID = attr.getID();
+                }
+                
+                this.attrShortNamesById.put(new Integer(attr.getID()), attr.getShortName());
+                this.attrIdsByShortName.put(attr.getShortName(), attr.getID());
             }
         }
         catch (Exception e){}
@@ -1013,56 +1025,188 @@ public class DataElementHandler extends BaseHandler {
      * 
      * @throws Exception
      */
+    private void validateAttributes() throws Exception {
+
+    	validateMinMaxValues();
+    }
+
+    /**
+     * 
+     * @throws Exception
+     */
+	private void validateMinMaxValues() throws Exception {
+		
+		// TODO this needs a little better handling,
+		// right now it is not, for example, checked whether the entered number
+		// format matches the data element type (i.e. integer, float).
+		// All entered numbers are converted into Double.
+		// The comparison of min and max values does take into account the
+		// decimal precision of the data element if specified.
+		
+		Double minInclValue = getAttrDoubleValueByShortName("MinInclusiveValue");
+    	Double minExclValue = getAttrDoubleValueByShortName("MinExclusiveValue");
+    	if (minInclValue!=null && minExclValue!=null){
+    		throw new Exception("Either MinInclusiveValue or MinExclusiveValue can be specified!");
+    	}
+
+    	Double maxInclValue = getAttrDoubleValueByShortName("MaxInclusiveValue");
+    	Double maxExclValue = getAttrDoubleValueByShortName("MaxExclusiveValue");
+    	if (maxInclValue!=null && maxExclValue!=null){
+    		throw new Exception("Either MaxInclusiveValue or MaxExclusiveValue can be specified!");
+    	}
+
+    	boolean atLeastOneMinSpecified = minInclValue!=null || minExclValue!=null;
+    	boolean atLeastOneMaxSpecified = maxInclValue!=null || maxExclValue!=null;
+    	
+    	if (atLeastOneMinSpecified && atLeastOneMaxSpecified){
+
+    		boolean ok = true;
+    		if (minInclValue!=null){
+    			
+    			if (maxInclValue!=null){
+    				if (!(maxInclValue >= minInclValue)){
+    					ok = false;
+    				}
+    			}
+    			else if (maxExclValue!=null){
+    				if (!(maxExclValue > minInclValue)){
+    					ok = false;
+    				}
+    			}
+    		}
+    		else if (minExclValue!=null){
+    			
+    			if (maxInclValue!=null){
+    				if (!(maxInclValue > minExclValue)){
+    					ok = false;
+    				}
+    			}
+    			else if (maxExclValue!=null){
+    				if (!(maxExclValue > minExclValue)){
+    					ok = false;
+    				}
+    			}
+    		}
+    		
+    		if (ok==false){
+    			throw new Exception("The specified min-max values do not fit with each other!");
+    		}
+    	}
+	}
+    
+    /**
+     * 
+     * @param shortName
+     * @return
+     */
+    private String getAttrValueByShortName(String shortName){
+    	
+    	String attrId = (String)attrIdsByShortName.get(shortName);
+    	if (attrId!=null && attrId.trim().length()>0){
+    		return req.getParameter(ATTR_PREFIX + attrId);
+    	}
+    	else{
+    		return null;
+    	}
+    }
+
+    /**
+     * 
+     * @param shortName
+     * @return
+     * @throws Exception
+     */
+    private Double getAttrDoubleValueByShortName(String shortName) throws Exception{
+    	
+    	String stringValue = getAttrValueByShortName(shortName);
+    	if (stringValue==null || stringValue.trim().length()==0){
+    		return null; 
+    	}
+    	else{
+    		try{
+    			return Double.valueOf(stringValue);
+    		}
+    		catch (NumberFormatException e){
+    			throw new Exception("Illegal number format for attribute: " + shortName);
+    		}
+    	}
+    }
+    
+    /**
+     * 
+     * @throws Exception
+     */
     private void processAttributes() throws Exception {
-        String attrID=null;
-        Enumeration parNames = req.getParameterNames();
+    	
+    	validateAttributes();
+    	
+    	String attrID=null;
+    	Enumeration parNames = req.getParameterNames();
 
-        while (parNames.hasMoreElements()){
-            String parName = (String)parNames.nextElement();
-            if (parName.startsWith(ATTR_PREFIX) &&
-                  !parName.startsWith(ATTR_MULT_PREFIX)){
-              String attrValue = req.getParameter(parName);
-              if (attrValue.length()==0)
-                  continue;
-              attrID = parName.substring(ATTR_PREFIX.length());
-              if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID)!=null) continue;  //some attributes will be inherited from table level
-              insertAttribute(attrID, attrValue);
-            }
-            else if(parName.startsWith(ATTR_MULT_PREFIX)){
-              String[] attrValues = req.getParameterValues(parName);
-              if (attrValues == null || attrValues.length == 0) continue;
+    	while (parNames.hasMoreElements()){
 
-              attrID = parName.substring(ATTR_MULT_PREFIX.length());
-              if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID)!=null) continue;  //some attributes will be inherited from table level
+    		String parName = (String)parNames.nextElement();
+    		
+    		if (parName.startsWith(ATTR_PREFIX) && !parName.startsWith(ATTR_MULT_PREFIX)){
 
-              for (int i=0; i<attrValues.length; i++){
-                  insertAttribute(attrID, attrValues[i]);
-              }
-            }
-            else if (parName.startsWith(INHERIT_ATTR_PREFIX) &&
-                  !parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)){
-              attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
-              if (tableID==null) continue;
-              CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
-              ch.setUser(user);
-              ch.copyAttribute(lastInsertID, tableID, "E", "T", attrID);
-            }
-            else if (parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)){
-              attrID = parName.substring(INHERIT_COMPLEX_ATTR_PREFIX.length());
-              if (tableID==null) continue;
-              CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
-			  ch.setUser(user);
-              ch.copyComplexAttrs(lastInsertID, tableID, "T", "E", attrID);
-            }
-        }
+    			String attrValue = req.getParameter(parName);
+    			if (attrValue.length()==0){
+    				continue;
+    			}
+    			attrID = parName.substring(ATTR_PREFIX.length());
+    			if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID)!=null){
+    				continue;  //some attributes will be inherited from table level
+    			}
 
-        // if there is a Datatype attribute and its value wasn't specified,
-        // make it a string.
-        if (!Util.nullString(mDatatypeID)){
-            if (datatypeValue==null){
-                insertAttribute(mDatatypeID, "string");
-            }
-        }
+    			insertAttribute(attrID, attrValue);
+    		}
+    		else if(parName.startsWith(ATTR_MULT_PREFIX)){
+
+    			String[] attrValues = req.getParameterValues(parName);
+    			if (attrValues == null || attrValues.length == 0){
+    				continue;
+    			}
+
+    			attrID = parName.substring(ATTR_MULT_PREFIX.length());
+    			if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID)!=null){
+    				continue;  //some attributes will be inherited from table level
+    			}
+
+    			for (int i=0; i<attrValues.length; i++){
+    				insertAttribute(attrID, attrValues[i]);
+    			}
+    		}
+    		else if (parName.startsWith(INHERIT_ATTR_PREFIX)
+    				&& !parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)){
+
+    			attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
+    			if (tableID==null){
+    				continue;
+    			}
+
+    			CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
+    			ch.setUser(user);
+    			ch.copyAttribute(lastInsertID, tableID, "E", "T", attrID);
+    		}
+    		else if (parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)){
+
+    			attrID = parName.substring(INHERIT_COMPLEX_ATTR_PREFIX.length());
+    			if (tableID==null){
+    				continue;
+    			}
+    			CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
+    			ch.setUser(user);
+    			ch.copyComplexAttrs(lastInsertID, tableID, "T", "E", attrID);
+    		}
+    	}
+
+    	// if there is a Datatype attribute and its value wasn't specified,
+    	// make it a string.
+    	if (!Util.nullString(mDatatypeID)){
+    		if (datatypeValue==null){
+    			insertAttribute(mDatatypeID, "string");
+    		}
+    	}
     }
     
     private void insertAttribute(String attrId, String value) throws Exception {
@@ -1559,5 +1703,4 @@ public class DataElementHandler extends BaseHandler {
 		
 		return dstNamespaceID;
 	}
-
 }

@@ -275,16 +275,26 @@ public abstract class XForm implements XFormIF {
 			buf.append("string-length(.)&lt;=").append(maxSize);
 		}
 		
-		String minValue = (String)bind.get(ATTR_MINVALUE);
-		if (minValue!=null){
+		String minInclValue = (String)bind.get(ATTR_MIN_INCL_VALUE);
+		String minExclValue = (String)bind.get(ATTR_MIN_EXCL_VALUE);
+		if (minInclValue!=null){
 			if (buf.length()!=0) buf.append(" and ");
-			buf.append("number(.)&gt;=").append(minValue);
+			buf.append("number(.)&gt;=").append(minInclValue);
+		}
+		else if (minExclValue!=null){
+			if (buf.length()!=0) buf.append(" and ");
+			buf.append("number(.)&gt;").append(minExclValue);
 		}
 
-		String maxValue = (String)bind.get(ATTR_MAXVALUE);
-		if (maxValue!=null){
+		String maxInclValue = (String)bind.get(ATTR_MAX_INCL_VALUE);
+		String maxExclValue = (String)bind.get(ATTR_MAX_EXCL_VALUE);
+		if (maxInclValue!=null){
 			if (buf.length()!=0) buf.append(" and ");
-			buf.append("number(.)&lt;=").append(maxValue);
+			buf.append("number(.)&lt;=").append(maxInclValue);
+		}
+		else if (maxExclValue!=null){
+			if (buf.length()!=0) buf.append(" and ");
+			buf.append("number(.)&lt;").append(maxExclValue);
 		}
 		
 		if (buf.length()!=0)
