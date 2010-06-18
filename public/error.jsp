@@ -75,7 +75,7 @@ else{
 			
     		<h1>Error:</h1>
 			<p><strong><%=msg%></strong></p>
-			<p><strong><%=trc%></strong></p>
+			<input name="trc" type="hidden" value="<%=trc%>"/>
 		</form>
 </div> <!-- workarea -->
 <%
