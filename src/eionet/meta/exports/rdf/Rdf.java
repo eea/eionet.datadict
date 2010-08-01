@@ -95,7 +95,7 @@ public class Rdf {
 			
 			DataElement elm = (DataElement)elms.get(i);
 			
-			streamWriter.writeStartElement(OWL_NS, "FunctionalProperty");
+			streamWriter.writeStartElement(RDF_NS, "Property");
 			streamWriter.writeAttribute(RDF_NS, "ID", elm.getIdentifier());
 			
 			streamWriter.writeStartElement(RDFS_NS, "label");
@@ -106,7 +106,7 @@ public class Rdf {
 			streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri + tbl.getIdentifier());
 			streamWriter.writeEndElement(); // </rdfs:domain>
 
-			streamWriter.writeEndElement(); // </rdfs:Property>
+			streamWriter.writeEndElement(); // </rdf:Property>
 		}
 		
 		streamWriter.writeEndElement(); // </rdf:RDF>
