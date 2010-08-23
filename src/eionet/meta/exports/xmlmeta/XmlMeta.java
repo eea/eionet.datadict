@@ -23,6 +23,9 @@
 package eionet.meta.exports.xmlmeta;
 
 import eionet.meta.*;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+
 import java.io.*;
 import java.util.*;
 
@@ -49,7 +52,7 @@ public abstract class XmlMeta implements XmlMetaIF {
 	private Vector namespaces = new Vector();
 
 	private String schemaLocation = "";
-
+	
 	public XmlMeta(DDSearchEngine searchEngine, PrintWriter writer) {
 		this.searchEngine = searchEngine;
 		this.writer = writer;
@@ -332,7 +335,14 @@ public abstract class XmlMeta implements XmlMetaIF {
 				+ "</precision>";
 		addString(fPrec);
 		newLine();
-
+		
+		String multiValueDelim = elem.getValueDelimiter();
+		if (multiValueDelim!=null && multiValueDelim.length()>0){
+			String delimAttrName = Props.getRequiredProperty(PropsIF.MULTIVAL_DELIM_ATTR);
+			addString(getLead(delimAttrName)
+					+ "<" + delimAttrName + ">" + multiValueDelim + "</" + delimAttrName + ">");
+			newLine();
+		}
 	}
 
 	protected abstract String getSchemaLocation(String nsID, String id);
