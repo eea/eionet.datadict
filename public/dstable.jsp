@@ -1330,6 +1330,7 @@ else if (mode.equals("add"))
 
 											boolean hasMarkedElems = false;
 											boolean hasForeignKeys = false;
+											boolean hasMultivalElms = false;
 											boolean hasCommonElms = false;
 											%>
 
@@ -1399,6 +1400,9 @@ else if (mode.equals("add"))
 																	// see if the element is part of any foreign key relations
 																	Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
 																	boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
+																	
+																	// flag indicating if element can have multiple values
+																	boolean isMulitvalElem = elem.getValueDelimiter()!=null;
 																	%>
 																	<tr>
 																		<!-- short name -->
@@ -1448,6 +1452,11 @@ else if (mode.equals("add"))
 																			else{ %>
 																				<%=Util.replaceTags(elemType)%><%
 																			}
+																			
+																			if (isMulitvalElem){ %>
+																				<sup style="color:#858585;font-weight:bold;">(MV)</sup><%
+																				hasMultivalElms = true;
+																			}
 																			%>
 																		</td>
 																	</tr><%
@@ -1469,6 +1478,11 @@ else if (mode.equals("add"))
 													if (elems!=null && elems.size()>0 && hasCommonElms){%>
 														<div class="barfont">
 															(the <sup style="color:#858585;">C</sup> sign marks a common element)
+														</div><%
+													}
+													if (user!=null && elems!=null && elems.size()>0 && hasMultivalElms){%>
+														<div class="barfont">
+															(the <sup style="color:#858585;">(MV)</sup> sign marks an element that can have multiple values)
 														</div><%
 													}
 												}

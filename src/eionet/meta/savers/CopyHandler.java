@@ -359,33 +359,46 @@ public class CopyHandler extends Object {
 			copy(gen, "OWNER_TYPE='tbl' and OWNER_ID=" + tblID);
 	
 	        // copy elements
+			// (first get the IDs, parent namespace identifiers and multivalue-delimiters of
+			// elements in this table, then call copyElm() for each + copy TBL2ELEM relations too
 			
-	        Vector elms = new Vector();
-	        Vector commonnessFlags = new Vector();
+	        ArrayList elmIds = new ArrayList();
+	        ArrayList multivalDelims = new ArrayList();
+	        ArrayList commonnessFlags = new ArrayList();
 	        
+	        // get the IDs and parent namespace identifiers of elements in this table
 	        StringBuffer buf = new StringBuffer();
-	        buf.append("select TBL2ELEM.DATAELEM_ID, DATAELEM.PARENT_NS from TBL2ELEM ").
+	        buf.append("select TBL2ELEM.DATAELEM_ID, TBL2ELEM.MULTIVAL_DELIM, DATAELEM.PARENT_NS from TBL2ELEM ").
 	        append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID ").
 	        append("where DATAELEM.DATAELEM_ID is not null and TABLE_ID=").
 	        append(tblID).append(" order by POSITION asc");
 	        
 	        rs = stmt.executeQuery(buf.toString());
 	        while (rs.next()){
-	        	elms.add(rs.getString(1));
+	        	elmIds.add(rs.getString("TBL2ELEM.DATAELEM_ID"));
+	        	multivalDelims.add(rs.getString("TBL2ELEM.MULTIVAL_DELIM"));
 	        	commonnessFlags.add(new Boolean(rs.getString("DATAELEM.PARENT_NS")==null));
 	        }
 	        
-	        for (int i=0; i<elms.size(); i++){
+	        for (int i=0; i<elmIds.size(); i++){
 	        	
-	        	String elmId = (String)elms.get(i);
-	        	if (((Boolean)commonnessFlags.get(i)).booleanValue() == false) // non-common element, has to copied
+	        	// only non-common elements will be copied
+	        	String elmId = (String)elmIds.get(i);
+	        	if (((Boolean)commonnessFlags.get(i)).booleanValue() == false){ 
 	        		elmId = copyElm(elmId, false, false, false);
+	        	}
+
+	        	String multivalDelim = (String)multivalDelims.get(i);
 	        	
+	        	// regardless of element's commonality, TBL2ELEM relation shall be copied anyway
 	        	gen.clear();
 	            gen.setTable("TBL2ELEM");
 	            gen.setFieldExpr("TABLE_ID", newID);
 	            gen.setFieldExpr("DATAELEM_ID", elmId);
 	            gen.setFieldExpr("POSITION", String.valueOf(i+1));
+	            if (multivalDelim!=null){
+	            	gen.setField("MULTIVAL_DELIM", multivalDelim);
+	            }
 	            stmt.executeUpdate(gen.insertStatement());
 	        }
         }
