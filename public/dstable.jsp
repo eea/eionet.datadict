@@ -1107,7 +1107,7 @@ else if (mode.equals("add"))
 																<div class="figure-plus">
 																	<div class="figure-image">
 																		<a href="visuals/<%=Util.replaceTags(attrValue)%>">
-																			<img src="visuals/<%=Util.replaceTags(attrValue)%>" alt="thumbnail" class="scaled poponmouseclick"/>
+																			<img src="visuals/<%=Util.replaceTags(attrValue)%>" alt="Image file could not be found on the server" class="scaled poponmouseclick"/>
 																		</a>
 																	</div>
 																</div>

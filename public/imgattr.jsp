@@ -200,8 +200,8 @@
 						<td valign="top">
 							<input type="checkbox" name="file_name" value="<%=Util.replaceTags(value, true)%>"/>
 						</td>
-						<td align="left">
-							<img src="visuals/<%=Util.replaceTags(value, true)%>"/>
+						<td align="left" style="border:1px solid black;padding:5px">
+							<img src="visuals/<%=Util.replaceTags(value, true)%>" alt="The registered image file could not be found. Use the checkbox and 'Remove selected' button to remove it and then upload again."/>
 						</td>
 					</tr>
 					<tr height="10"><td colspan="2">&nbsp;</td></tr> <%
