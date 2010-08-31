@@ -1793,10 +1793,11 @@ else{
 												if (mode.equals("view") && (attrValue==null || attrValue.length()==0))
 													continue;
 
-												// if image attribute and no reason to display then skip
+												// if image attribute, but not the case to display it, then skip
 												if (dispType.equals("image")){
-													if (mode.equals("add") || (mode.equals("edit") && user==null) || (mode.equals("view") && Util.voidStr(attrValue)))
+													if (mode.equals("add") || (mode.equals("edit") && user==null) || (mode.equals("view") && Util.voidStr(attrValue))){
 														continue;
+													}
 												}
 
 												//displayed++; - done below
@@ -1855,32 +1856,32 @@ else{
 
 														// handle image attribute first
 														if (dispType.equals("image")){
+														
 															if (!imagesQuicklinkSet){ %>
 																<a id="images"></a><%
 																imagesQuicklinkSet = true;
 															}
+															
 															// thumbnail
-															if (mode.equals("view") && !Util.voidStr(attrValue)){ %>
-<div class="figure-plus-container">
-  <div class="figure-plus">
-    <div class="figure-image">
-      <a href="visuals/<%=Util.replaceTags(attrValue)%>"><img src="visuals/<%=Util.replaceTags(attrValue)%>"
-         alt="thumbnail" class="scaled poponmouseclick"/></a>
-    </div>
-  </div>
-</div>
-
-																<a href="visuals/<%=Util.replaceTags(attrValue)%>" onclick="pop(this.href);return false;">
-																	<img src="visuals/<%=Util.replaceTags(attrValue)%>" style="border:0" height="100" width="100" alt=""/>
-																</a>
-<%
+															if (mode.equals("view") && !Util.voidStr(attrValue)){
+																%>
+																<div class="figure-plus-container">
+																	<div class="figure-plus">
+																		<div class="figure-image">
+																			<a href="visuals/<%=Util.replaceTags(attrValue)%>">
+																				<img src="visuals/<%=Util.replaceTags(attrValue)%>" alt="thumbnail" class="scaled poponmouseclick"/>
+																			</a>
+																		</div>
+																	</div>
+																</div><%
 															}
-															// link
+															
+															// link to image edit page
 															if (mode.equals("edit") && user!=null){
 																String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
 																%>
 																<div>
-																	<a onclick="pop(this.href);return false;" href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dataElement.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>">[Click to <%=Util.replaceTags(actionText)%>]</a>
+																	<a href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dataElement.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>">[Click to <%=Util.replaceTags(actionText)%>]</a>
 																</div><%
 															}
 														}

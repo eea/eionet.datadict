@@ -1094,6 +1094,7 @@ else if (mode.equals("add"))
 
 													// handle image attribute first
 													if (dispType.equals("image")){
+														
 														if (!imagesQuicklinkSet){ %>
 															<a id="images"></a><%
 															imagesQuicklinkSet = true;
@@ -1101,16 +1102,19 @@ else if (mode.equals("add"))
 
 														// thumbnail
 														if (mode.equals("view") && !Util.voidStr(attrValue)){
-															StringTokenizer st = new StringTokenizer(attrValue, ",");
-															while (st.hasMoreTokens()){
-																String token = st.nextToken().trim();
-																%>
-																<a href="visuals/<%=Util.replaceTags(token)%>">
-																	<img src="visuals/<%=Util.replaceTags(token)%>" style="border:0;max-width:100px;max-height:100px" alt=""/>
-																</a><br/><%
-															}
+															%>
+															<div class="figure-plus-container">
+																<div class="figure-plus">
+																	<div class="figure-image">
+																		<a href="visuals/<%=Util.replaceTags(attrValue)%>">
+																			<img src="visuals/<%=Util.replaceTags(attrValue)%>" alt="thumbnail" class="scaled poponmouseclick"/>
+																		</a>
+																	</div>
+																</div>
+															</div><%
 														}
-														// link
+														
+														// link to image edit page
 														if (mode.equals("edit") && user!=null){
 															String actionText = Util.voidStr(attrValue) ? "add image" : "manage this image";
 															%>

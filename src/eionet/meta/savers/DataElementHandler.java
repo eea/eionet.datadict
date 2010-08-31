@@ -725,34 +725,34 @@ public class DataElementHandler extends BaseHandler {
      */
     private void deleteAttributes() throws SQLException {
     	
-    	// find out image attributes, so to skip them later
-		StringBuffer buf = new StringBuffer("select M_ATTRIBUTE_ID ");
-		buf.append("from M_ATTRIBUTE where DISP_TYPE='image'");
-		
-		Vector imgAttrs = new Vector();
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
-		while (rs.next())
-			imgAttrs.add(rs.getString(1));
+    	if (delem_ids==null || delem_ids.length==0){
+    		return;
+    	}
+    	
+    	StringBuffer buf = new StringBuffer().
+    	append("delete from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID in (").
+        append(eionet.util.Util.toCSV(delem_ids)).append(")");
         
-        buf = new StringBuffer("delete from ATTRIBUTE where (");
-        for (int i=0; i<delem_ids.length; i++){
-            if (i>0)
-                buf.append(" or ");
-            buf.append("DATAELEM_ID=");
-            buf.append(delem_ids[i]);
+    	// Skip the deletion of image-attributes if not in complete-delete mode.
+    	// That's because image-attributes are handled by image upload servlet instead.
+    	// Complete-delete mode is used for example by version manager, and means
+    	// that all must be deleted with no exceptions.
+        String completeDelete = req.getParameter("complete");
+        if (completeDelete==null || !completeDelete.equals("true")){
+        	buf.append(" and M_ATTRIBUTE_ID not in ").
+        	append("(select M_ATTRIBUTE_ID from M_ATTRIBUTE where DISP_TYPE='image')");
         }
-
-        buf.append(") and PARENT_TYPE='E'");
-
-		// skip image attributes        
-        for (int i=0; i<imgAttrs.size(); i++)
-        	buf.append(" and M_ATTRIBUTE_ID<>").append((String)imgAttrs.get(i));
 
         logger.debug(buf.toString());
 
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
+        Statement stmt = null;
+        try{
+        	stmt = conn.createStatement();
+        	stmt.executeUpdate(buf.toString());
+        }
+        finally{
+        	SQL.close(stmt);
+        }
     }
     
     private void deleteComplexAttributes() throws SQLException {

@@ -741,8 +741,15 @@ public class DatasetHandler extends BaseHandler {
             if (v.size()>0){	            
 	            Parameters params = new Parameters();
 	            params.addParameterValue("mode", "delete");
-	            for (int j=0; j<v.size(); j++)
+	            
+	            String completeDelete = req.getParameter("complete");
+	            if (completeDelete!=null && completeDelete.equals("true")){
+	            	params.addParameterValue("complete", "true");
+	            }
+	            	
+	            for (int j=0; j<v.size(); j++){
 	                params.addParameterValue("del_id", (String)v.get(j));
+	            }
 	                        
 	            DsTableHandler tableHandler = new DsTableHandler(conn, params, ctx);
 	            tableHandler.setUser(user);

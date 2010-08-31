@@ -1136,4 +1136,45 @@ public class Util {
 			return false;
 		}
 	}
+
+	/**
+	 * 
+	 * @param coll
+	 * @return
+	 */
+	public static String toCSV(Collection coll){
+		
+		StringBuffer buf = new StringBuffer();
+		if (coll!=null){
+			for (Iterator it = coll.iterator(); it.hasNext();){
+				
+				if (buf.length()>0){
+					buf.append(",");
+				}
+				buf.append(it.next());
+			}
+		}
+		return buf.toString();
+	}
+	
+	/**
+	 * 
+	 * @param coll
+	 * @return
+	 */
+	public static String toCSV(Object[] array){
+		
+		StringBuffer buf = new StringBuffer();
+		if (array!=null){
+			for (int i=0; i<array.length; i++){
+				
+				if (buf.length()>0){
+					buf.append(",");
+				}
+				buf.append(array[i]);
+			}
+		}
+		return buf.toString();
+	}
+
 }

@@ -421,8 +421,15 @@ public class DsTableHandler extends BaseHandler {
         
 		// delete the above found non-common elements
 		if (elems.size()>0){
+			
 			Parameters params = new Parameters();
 			params.addParameterValue("mode", "delete");
+			
+			String completeDelete = req.getParameter("complete");
+            if (completeDelete!=null && completeDelete.equals("true")){
+            	params.addParameterValue("complete", "true");
+            }
+            
 			for (Iterator iter = elems.iterator(); iter.hasNext(); ){
 				params.addParameterValue("delem_id", (String)iter.next());
 			}
@@ -520,35 +527,34 @@ public class DsTableHandler extends BaseHandler {
 
     private void deleteAttributes(String[] del_IDs) throws SQLException {
     	
-		// find out image attributes, so to skip them later
-		StringBuffer buf = new StringBuffer("select M_ATTRIBUTE_ID ");
-		buf.append("from M_ATTRIBUTE where DISP_TYPE='image'");
-		
-		Vector imgAttrs = new Vector();
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
-		while (rs.next())
-			imgAttrs.add(rs.getString(1));
-
-        buf = new StringBuffer("delete from ATTRIBUTE where (");
-        for (int i=0; i<del_IDs.length; i++){
-            if (i>0)
-                buf.append(" or ");
-            buf.append("DATAELEM_ID=");
-            buf.append(del_IDs[i]);
+    	if (del_IDs==null || del_IDs.length==0){
+    		return;
+    	}
+    	
+    	StringBuffer buf = new StringBuffer().
+    	append("delete from ATTRIBUTE where PARENT_TYPE='T' and DATAELEM_ID in (").
+        append(eionet.util.Util.toCSV(del_IDs)).append(")");
+        
+    	// Skip the deletion of image-attributes if not in complete-delete mode.
+    	// That's because image-attributes are handled by image upload servlet instead.
+    	// Complete-delete mode is used for example by version manager, and means
+    	// that all must be deleted with no exceptions.
+        String completeDelete = req.getParameter("complete");
+        if (completeDelete==null || !completeDelete.equals("true")){
+        	buf.append(" and M_ATTRIBUTE_ID not in ").
+        	append("(select M_ATTRIBUTE_ID from M_ATTRIBUTE where DISP_TYPE='image')");
         }
 
-        buf.append(") and PARENT_TYPE='T'");
-        
-		// skip image attributes        
-		for (int i=0; i<imgAttrs.size(); i++)
-			buf.append(" and M_ATTRIBUTE_ID<>").append((String)imgAttrs.get(i));
+        logger.debug(buf.toString());
 
-		logger.debug(buf.toString());
-
-        stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();
+        Statement stmt = null;
+        try{
+        	stmt = conn.createStatement();
+        	stmt.executeUpdate(buf.toString());
+        }
+        finally{
+        	SQL.close(stmt);
+        }
     }
 
     /**

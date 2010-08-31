@@ -45,11 +45,11 @@
 	String titleType = "";
 	if (objType.equals("E")){
 		titleType = " element";
-		titleLink = "data_element.jsp?mode=view&amp;delem_id=" + objID;
+		titleLink = "data_element.jsp?mode=edit&amp;delem_id=" + objID;
 	}
 	else if (objType.equals("T")){
 		titleType = " table";
-		titleLink = "dstable.jsp?mode=view&amp;table_id=" + objID;
+		titleLink = "dstable.jsp?mode=edit&amp;table_id=" + objID;
 	}
 	else if (objType.equals("DS")){
 		request.setAttribute("DD_ERR_MSG", "Images not allowed for datasets. Use data model instead.");
@@ -142,7 +142,11 @@
 <%@ include file="nmenu.jsp" %>
 
 <div id="workarea" style="clear:right;">
-
+<div id="operations">
+	<ul>
+		<li><a href="<%=Util.replaceTags(titleLink, true)%>">&lt; back to the <%=titleType%></a></li>
+	</ul>
+</div>
 <form id="Upload" action="ImgUpload" method="post" enctype="multipart/form-data">
 
 	<h1>
