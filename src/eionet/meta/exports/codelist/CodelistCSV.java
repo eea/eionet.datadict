@@ -60,21 +60,29 @@ public class CodelistCSV extends Codelist{
 			return;
 		}
 		
-		boolean elmOnly = objType.equalsIgnoreCase(ELM);
+		boolean elmObjType = objType.equalsIgnoreCase(ELM);
 		
 		for (int i=0; i<elms.size(); i++){
 			
 			DataElement elm = (DataElement)elms.get(i);
-			String dstShortName = elmOnly ? "" : elm.getDstShortName();
-			if (!elmOnly && Util.voidStr(dstShortName)){
-				throw new DDRuntimeException("Failed to get the dataset's short name");
+			String elmIdf = elm.getIdentifier();
+			if (Util.voidStr(elmIdf)){
+				throw new DDRuntimeException("Failed to get the element's identifier");
 			}
+			
+			String dstIdf = elmObjType ? "" : elm.getDstIdentifier();
+			String tblIdf = elmObjType ? "" : elm.getTblIdentifier();
+			if (!elmObjType || (elmObjType && !elm.isCommon())){
+				
+				if (Util.voidStr(dstIdf)){
+					throw new DDRuntimeException("Failed to get the dataset's identifier");
+				}
+				if (Util.voidStr(tblIdf)){
+					throw new DDRuntimeException("Failed to get the table's identifier");
+				}
 
-			String tblShortName = elmOnly ? "" : elm.getTblShortName();
-			if (!elmOnly && Util.voidStr(tblShortName)){
-				throw new DDRuntimeException("Failed to get the table's short name");
 			}
-
+				
 			Vector fxvs = searchEngine.getFixedValues(elm.getID());
 			for (int j=0; fxvs!=null && j<fxvs.size(); j++){
 
@@ -84,9 +92,9 @@ public class CodelistCSV extends Codelist{
 					
 					StringBuffer line = new StringBuffer();
 
-					append(line, dstShortName);
+					append(line, dstIdf);
 					line.append(",");
-					append(line, tblShortName);
+					append(line, tblIdf);
 					line.append(",");
 					append(line, elm.getShortName());
 					line.append(",");

@@ -129,7 +129,7 @@ public class CodelistXML extends Codelist {
 			return;
 		}
 		
-		boolean elmOnly = objType.equalsIgnoreCase(ELM);
+		boolean elmObjType = objType.equalsIgnoreCase(ELM);
 		
 		for (int i=0; elms!=null && i<elms.size(); i++){
 			
@@ -145,7 +145,7 @@ public class CodelistXML extends Codelist {
 			line.append(" ");
 			line.append(ATTR_ELEMENT).append("=\"").append(elmIdf).append("\"");
 			
-			if (elmOnly==false){
+			if (!elmObjType || (elmObjType && !elm.isCommon())){
 				
 				String tblIdf = elm.getTblIdentifier();
 				if (tblIdf==null || tblIdf.trim().length()==0){
