@@ -70,8 +70,8 @@ public class CodelistCSV extends Codelist{
 				throw new DDRuntimeException("Failed to get the element's identifier");
 			}
 			
-			String dstIdf = elmObjType ? "" : elm.getDstIdentifier();
-			String tblIdf = elmObjType ? "" : elm.getTblIdentifier();
+			String dstIdf = elm.getDstIdentifier();
+			String tblIdf = elm.getTblIdentifier();
 			if (!elmObjType || (elmObjType && !elm.isCommon())){
 				
 				if (Util.voidStr(dstIdf)){

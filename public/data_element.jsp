@@ -1409,7 +1409,7 @@ else{
 													</td>
 												</tr>
 												<%
-												if (dataElement.getType().equals("CH1") && fixedValues!=null && fixedValues.size()>0){%>
+												if (fixedValues!=null && fixedValues.size()>0){%>
 													<tr>
 														<td style="width:73%">
 															Get the comma-separated codelist of this element
