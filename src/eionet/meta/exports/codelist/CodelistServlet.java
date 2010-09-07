@@ -45,12 +45,10 @@ public class CodelistServlet extends HttpServlet {
 
 			// get codelist format
 			String format = req.getParameter("format");
-			if (Util.voidStr(format))
+			if (Util.voidStr(format)){
 				format = "csv";
+			}
 
-			// get the delimiter
-			String delim = req.getParameter("delim");
-	        
 	        // get the application name
 	        ServletContext ctx = getServletContext();
 
@@ -72,7 +70,7 @@ public class CodelistServlet extends HttpServlet {
             // construct codelist writer
 			Codelist codelist = null;
 			if (format.equals("csv"))
-				codelist = new CodelistCSV(conn, writer, delim);
+				codelist = new CodelistCSV(conn, writer);
 			else if (format.equals("xml"))
 				codelist = new CodelistXML(conn, writer);
 			
@@ -93,6 +91,11 @@ public class CodelistServlet extends HttpServlet {
 		}
     }
     
+    /**
+     * 
+     * @param req
+     * @throws Exception
+     */
     private void guard(HttpServletRequest req) throws Exception{
     	
     	DDUser user = SecurityUtil.getUser(req);

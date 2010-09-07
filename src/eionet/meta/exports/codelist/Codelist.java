@@ -39,9 +39,13 @@ public abstract class Codelist {
 	 * @throws IOException
 	 */
 	public void flush() throws IOException{
-		for (int i=0; lines!=null && i<lines.size(); i++){
-			writer.write(lines.get(i).toString());
-			writer.write(lineTerminator);			
+		
+		if (lines!=null && !lines.isEmpty()){
+		
+			for (int i=0; i<lines.size(); i++){
+				writer.write(lines.get(i).toString());
+				writer.write(lineTerminator);			
+			}
 		}
 	}
 }

@@ -9,22 +9,18 @@ import eionet.util.Util;
 
 public class CodelistCSV extends Codelist{
 	
-	/** */
-	private String delim = ",";
-	
 	/**
 	 * 
 	 * @param conn
 	 * @param writer
 	 * @param delim
 	 */
-	public CodelistCSV(Connection conn, PrintWriter writer, String delim){
+	public CodelistCSV(Connection conn, PrintWriter writer){
 		
 		this.writer = writer;
-		if (conn!=null)
+		if (conn!=null){
 			searchEngine = new DDSearchEngine(conn);
-		if (delim!=null && delim.trim().length()>0)
-			this.delim = delim; 
+		}
 	}
 
 	/*
@@ -36,17 +32,21 @@ public class CodelistCSV extends Codelist{
 		Vector elms = new Vector();
 		if (objType.equalsIgnoreCase(ELM)){
 			DataElement elm = searchEngine.getDataElement(objID);
-			if (elm!=null)
+			if (elm!=null){
 				elms.add(elm);
+			}
 		}
-		else if (objType.equalsIgnoreCase(TBL))
-			elms = searchEngine.getDataElements(null, "CH1", null, null, objID, null);
-		else if (objType.equalsIgnoreCase(DST))
-			elms = searchEngine.getDataElements(null, "CH1", null, null, null, objID);
-		else
-			throw new Exception("Unknown object type: " + objType);
+		else if (objType.equalsIgnoreCase(TBL)){
+			elms = searchEngine.getDataElements(null, null, null, null, objID, null);
+		}
+		else if (objType.equalsIgnoreCase(DST)){
+			elms = searchEngine.getDataElements(null, null, null, null, null, objID);
+		}
+		else{
+			throw new IllegalArgumentException("Unknown object type: " + objType);
+		}
 		
-		write(elms);
+		write(elms, objType);
 	}
 
 	/**
@@ -54,39 +54,74 @@ public class CodelistCSV extends Codelist{
 	 * @param elms
 	 * @throws Exception
 	 */
-	private void write(Vector elms) throws Exception{
+	private void write(Vector elms, String objType) throws Exception{
 		
-		for (int i=0; elms!=null && i<elms.size(); i++){
-			
-			DataElement elm = (DataElement)elms.get(i);
-			if (!elm.getType().equals("CH1")) continue;
-			Vector fxvs = searchEngine.getFixedValues(elm.getID());
-			if (fxvs==null || fxvs.size()==0) continue;
-			
-			StringBuffer line = new StringBuffer();
-			if (elm.isCommon()==false){			
-				String dstName = elm.getDstShortName();
-				if (Util.voidStr(dstName))
-					throw new Exception("failed to get dataset name");
-				String tblName = elm.getTblShortName();
-				if (Util.voidStr(tblName))
-					throw new Exception("failed to get table name");
-			
-				line.append(dstName).append("/").
-				append(tblName).append("/").
-				append(elm.getShortName()).
-				append(":");
-			}
-			for (int j=0; j<fxvs.size(); j++){
-				FixedValue fxv = (FixedValue)fxvs.get(j);
-				if (j>0) line.append(delim);
-				line.append(fxv.getValue());
-			}
-			
-			lines.add(line.toString());
+		if (elms==null || elms.isEmpty()){
+			return;
 		}
 		
-		if (lines==null || lines.size()==0)
+		boolean elmOnly = objType.equalsIgnoreCase(ELM);
+		
+		for (int i=0; i<elms.size(); i++){
+			
+			DataElement elm = (DataElement)elms.get(i);
+			String dstShortName = elmOnly ? "" : elm.getDstShortName();
+			if (!elmOnly && Util.voidStr(dstShortName)){
+				throw new DDRuntimeException("Failed to get the dataset's short name");
+			}
+
+			String tblShortName = elmOnly ? "" : elm.getTblShortName();
+			if (!elmOnly && Util.voidStr(tblShortName)){
+				throw new DDRuntimeException("Failed to get the table's short name");
+			}
+
+			Vector fxvs = searchEngine.getFixedValues(elm.getID());
+			for (int j=0; fxvs!=null && j<fxvs.size(); j++){
+
+				FixedValue fxv = (FixedValue)fxvs.get(j);
+				String value = fxv.getValue();
+				if (value!=null && value.trim().length()>0){
+					
+					StringBuffer line = new StringBuffer();
+
+					append(line, dstShortName);
+					line.append(",");
+					append(line, tblShortName);
+					line.append(",");
+					append(line, elm.getShortName());
+					line.append(",");
+
+					// append field indicating if the element has fixed or quantitative values
+					line.append(elm.getType().equals("CH1") ? Boolean.TRUE : Boolean.FALSE);
+					line.append(",");
+					
+					append(line, value);
+					line.append(",");
+					append(line, fxv.getDefinition()==null ? "" : fxv.getDefinition());
+					line.append(",");
+					append(line, fxv.getShortDesc()==null ? "" : fxv.getShortDesc());
+					
+					lines.add(line.toString());
+				}
+			}
+		}
+		
+		if (lines==null || lines.isEmpty()){
 			lines.add("No codelists found!");
+		}
+		else{
+			// header line where the field meanings are explained
+			lines.add(0, "Dataset,Table,Element,Fixed,Value,Definition,ShortDescription");
+		}
+	}
+	
+	/**
+	 * 
+	 * @param buf
+	 * @param s
+	 */
+	private void append(StringBuffer buf, String s){
+		
+		buf.append("\"").append(s.replaceAll("\"", "\"\"")).append("\"");
 	}
 }
