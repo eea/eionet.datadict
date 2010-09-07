@@ -1484,7 +1484,7 @@ else if (mode.equals("add"))
 															(the <sup style="color:#858585;">C</sup> sign marks a common element)
 														</div><%
 													}
-													if (user!=null && elems!=null && elems.size()>0 && hasMultivalElms){%>
+													if (elems!=null && elems.size()>0 && hasMultivalElms){%>
 														<div class="barfont">
 															(the <sup style="color:#858585;">(MV)</sup> sign marks an element that can have multiple values)
 														</div><%
