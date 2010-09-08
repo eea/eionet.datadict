@@ -68,6 +68,137 @@ public class DDSearchEngine {
 	}
 	
 	/**
+	 * 
+	 * @param datasetID
+	 * @return
+	 * @throws SQLException
+	 */
+	public Vector getAllDatasetElements(String datasetID) throws SQLException {
+		
+		if (datasetID==null || datasetID.trim().length()==0){
+			throw new IllegalArgumentException("Dataset ID must not be blank!");
+		}
+		
+		INParameters inPrms = new INParameters();
+		
+		StringBuffer buf = new StringBuffer().
+		append("select distinct DATAELEM.*, ").
+		append("TBL2ELEM.TABLE_ID, TBL2ELEM.POSITION, TBL2ELEM.MULTIVAL_DELIM, ").
+		append("DS_TABLE.TABLE_ID, DS_TABLE.IDENTIFIER, ").
+		append("DS_TABLE.SHORT_NAME, DS_TABLE.VERSION, ").
+		append("DATASET.DATASET_ID, DATASET.IDENTIFIER, DATASET.SHORT_NAME, ").
+		append("DATASET.VERSION, DATASET.REG_STATUS ").
+		append("from TBL2ELEM ").
+		append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID ").
+		append("left outer join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID ").
+		append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ").
+		append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ").
+		append("where ").
+		append("DST2TBL.DATASET_ID=").append(inPrms.add(datasetID, Types.INTEGER)).append(" and ").
+		append("DATASET.DELETED is null and DATAELEM.WORKING_COPY='N' ").
+		append("order by DATAELEM.DATAELEM_ID asc");
+		
+		logger.debug(buf.toString());
+		
+		// prepare the statement for dynamic attributes
+		ResultSet attrsRs=null;
+		PreparedStatement attrsStmt=null;
+		StringBuffer attrsQry = new StringBuffer().
+		append("select M_ATTRIBUTE.*, ATTRIBUTE.VALUE from M_ATTRIBUTE, ATTRIBUTE ").
+		append("where ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID and ").
+		append("ATTRIBUTE.PARENT_TYPE='E' and ATTRIBUTE.DATAELEM_ID=?");
+		attrsStmt = conn.prepareStatement(attrsQry.toString());
+		
+		// finally execute the monster query
+		Vector result = new Vector();
+		PreparedStatement elemsStmt = null;
+		ResultSet elemsRs = null;
+		
+		int counter = 0;
+		
+		try{
+			elemsStmt = SQL.preparedStatement(buf.toString(), inPrms, conn);
+			elemsRs = elemsStmt.executeQuery();
+			
+			
+			// process ResultSet
+			String curElmIdf = null;
+			while (elemsRs.next()){
+				
+				counter++;
+				
+				String elmIdf = elemsRs.getString("DATAELEM.IDENTIFIER");
+				if (elmIdf==null) continue;
+				
+				// the following if block skips non-latest ELEMENTS
+				if (curElmIdf!=null && elmIdf.equals(curElmIdf))
+					continue;
+				else
+					curElmIdf = elmIdf;
+				
+				// construct the element
+				int elmID = elemsRs.getInt("DATAELEM.DATAELEM_ID");
+				DataElement elm = new DataElement(String.valueOf(elmID),
+						elemsRs.getString("DATAELEM.SHORT_NAME"), elemsRs.getString("DATAELEM.TYPE"));
+				
+				elm.setIdentifier(elmIdf);
+				elm.setVersion(elemsRs.getString("DATAELEM.VERSION"));
+				elm.setWorkingCopy(elemsRs.getString("DATAELEM.WORKING_COPY"));
+				elm.setWorkingUser(elemsRs.getString("DATAELEM.WORKING_USER"));
+				elm.setTopNs(elemsRs.getString("DATAELEM.TOP_NS"));
+				elm.setGIS(elemsRs.getString("DATAELEM.GIS"));
+				elm.setRodParam(elemsRs.getBoolean("DATAELEM.IS_ROD_PARAM"));
+				elm.setTableID(elemsRs.getString("TBL2ELEM.TABLE_ID"));
+				elm.setPositionInTable(elemsRs.getString("TBL2ELEM.POSITION"));
+				elm.setValueDelimiter(elemsRs.getString("TBL2ELEM.MULTIVAL_DELIM"));
+				elm.setDatasetID(elemsRs.getString("DATASET.DATASET_ID"));
+				elm.setDstShortName(elemsRs.getString("DATASET.SHORT_NAME"));
+				elm.setTblShortName(elemsRs.getString("DS_TABLE.SHORT_NAME"));
+				elm.setTblIdentifier(elemsRs.getString("DS_TABLE.IDENTIFIER"));
+				elm.setDstIdentifier(elemsRs.getString("DATASET.IDENTIFIER"));
+				elm.setNamespace(new Namespace(
+						elemsRs.getString("DATAELEM.PARENT_NS"), "", "", "", ""));
+				elm.setCheckedoutCopyID(elemsRs.getString("DATAELEM.CHECKEDOUT_COPY_ID"));
+				elm.setDate(elemsRs.getString("DATAELEM.DATE"));
+				
+				// execute the statement prepared for dynamic attributes
+				attrsStmt.setInt(1, elmID);
+				attrsRs = attrsStmt.executeQuery();
+				while (attrsRs.next()){
+					String attrID = attrsRs.getString("M_ATTRIBUTE.M_ATTRIBUTE_ID");
+					DElemAttribute attr = elm.getAttributeById(attrID);
+					if (attr==null){
+						attr = new DElemAttribute(attrID,
+								attrsRs.getString("M_ATTRIBUTE.NAME"),
+								attrsRs.getString("M_ATTRIBUTE.SHORT_NAME"),
+								DElemAttribute.TYPE_SIMPLE,
+								attrsRs.getString("ATTRIBUTE.VALUE"),
+								attrsRs.getString("M_ATTRIBUTE.DEFINITION"),
+								attrsRs.getString("M_ATTRIBUTE.OBLIGATION"),
+								attrsRs.getString("M_ATTRIBUTE.DISP_MULTIPLE"));
+						elm.addAttribute(attr);
+					}
+					else
+						attr.addValue(attrsRs.getString("ATTRIBUTE.VALUE"));
+				}
+				
+				// add the element to the result Vector
+				result.add(elm);
+			}
+		}
+		finally{
+			try{
+				if (elemsRs != null) elemsRs.close();
+				if (attrsRs != null) attrsRs.close();
+				if (elemsStmt != null) elemsStmt.close();
+				if (attrsStmt != null) attrsStmt.close();
+			} catch (SQLException sqle) {}
+		}
+		
+		return result;
+	}
+	
+	/**
 	 *
 	 */
 	public Vector getDataElements() throws SQLException {

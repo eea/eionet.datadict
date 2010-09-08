@@ -74,10 +74,10 @@ public class CodelistXML extends Codelist {
 			}
 		}
 		else if (objType.equalsIgnoreCase(TBL)){
-			elms = searchEngine.getDataElements(null, null, null, null, objID, null);
+			elms = searchEngine.getDataElements(null, null, null, null, objID);
 		}
 		else if (objType.equalsIgnoreCase(DST)){
-			elms = searchEngine.getDataElements(null, null, null, null, null, objID);
+			elms = searchEngine.getAllDatasetElements(objID);
 		}
 		else{
 			throw new IllegalArgumentException("Unknown object type: " + objType);
@@ -134,7 +134,6 @@ public class CodelistXML extends Codelist {
 		for (int i=0; elms!=null && i<elms.size(); i++){
 			
 			DataElement elm = (DataElement)elms.get(i);
-			
 			String elmIdf = elm.getIdentifier();
 			if (elmIdf==null || elmIdf.trim().length()==0){
 				throw new DDRuntimeException("Failed to get the element's identifier");

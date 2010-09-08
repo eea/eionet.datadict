@@ -37,10 +37,10 @@ public class CodelistCSV extends Codelist{
 			}
 		}
 		else if (objType.equalsIgnoreCase(TBL)){
-			elms = searchEngine.getDataElements(null, null, null, null, objID, null);
+			elms = searchEngine.getDataElements(null, null, null, null, objID);
 		}
 		else if (objType.equalsIgnoreCase(DST)){
-			elms = searchEngine.getDataElements(null, null, null, null, null, objID);
+			elms = searchEngine.getAllDatasetElements(objID);
 		}
 		else{
 			throw new IllegalArgumentException("Unknown object type: " + objType);
@@ -70,8 +70,9 @@ public class CodelistCSV extends Codelist{
 				throw new DDRuntimeException("Failed to get the element's identifier");
 			}
 			
-			String dstIdf = elm.getDstIdentifier();
-			String tblIdf = elm.getTblIdentifier();
+			String dstIdf = elm.getDstIdentifier()==null ? "" : elm.getDstIdentifier();
+			String tblIdf = elm.getTblIdentifier()==null ? "" : elm.getTblIdentifier();
+			
 			if (!elmObjType || (elmObjType && !elm.isCommon())){
 				
 				if (Util.voidStr(dstIdf)){
@@ -80,7 +81,6 @@ public class CodelistCSV extends Codelist{
 				if (Util.voidStr(tblIdf)){
 					throw new DDRuntimeException("Failed to get the table's identifier");
 				}
-
 			}
 				
 			Vector fxvs = searchEngine.getFixedValues(elm.getID());
