@@ -861,62 +861,71 @@ public class DDSearchEngine {
 	 * @return
 	 * @throws SQLException
 	 */
-	public String getLatestElmID(String idf, Vector statuses) throws SQLException{
+	public String getLatestElmID(String idf, String parentNs, Vector statuses) throws SQLException{
 		
 		INParameters inParams = new INParameters();
 		
-		StringBuffer buf = new StringBuffer();
-		buf.append("select DATAELEM_ID from DATAELEM where WORKING_COPY='N'");
-		buf.append(" and PARENT_NS is null and IDENTIFIER=").append(inParams.add(idf));
-		if (statuses!=null && statuses.size()>0){
-			buf.append(" and (");
-			for (int i=0; i<statuses.size(); i++){
-				if (i>0) buf.append(" or ");
-				buf.append("REG_STATUS=").append(inParams.add((String)statuses.get(i)));
+        StringBuffer buf = new StringBuffer("select DATAELEM.DATAELEM_ID from DATAELEM");
+        if (parentNs!=null && parentNs.trim().length()>0){ // non-common element
+        	
+			buf.append(", TBL2ELEM, DST2TBL, DATASET ").
+			append("where ").
+			append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID and ").
+			append("TBL2ELEM.TABLE_ID=DST2TBL.TABLE_ID and ").
+			append("DST2TBL.DATASET_ID=DATASET.DATASET_ID and ").
+			append("DATASET.WORKING_COPY='N' and DATASET.DELETED is null and ");
+			
+			if (statuses!=null && !statuses.isEmpty()){
+				buf.append("DATASET.REG_STATUS in (").append(eionet.util.Util.toCSV(statuses)).
+				append(") and ");
 			}
-			buf.append(")");
-		}
-		buf.append(" order by DATAELEM_ID desc limit 0,1");
-		
-		String elmID = null;
+			
+			buf.append("DATAELEM.PARENT_NS=? and DATAELEM.IDENTIFIER=? ").
+			append("order by DATASET.DATASET_ID desc limit 1");
+			
+			inParams.add(parentNs);
+			inParams.add(idf);
+        }
+        else{
+			buf.append(" where ").
+			append("DATAELEM.WORKING_COPY='N' and DATAELEM.PARENT_NS is null and ");
+			
+			if (statuses!=null && !statuses.isEmpty()){
+				buf.append("DATAELEM.REG_STATUS in (").append(eionet.util.Util.toCSV(statuses)).
+				append(") and ");
+			}
+			
+			buf.append("DATAELEM.IDENTIFIER=? ").
+			append("order by DATAELEM.DATAELEM_ID desc limit 1");
+			
+			inParams.add(idf);
+        }
+
 		ResultSet rs = null;
 		PreparedStatement stmt = null;		
 		try{
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			rs = stmt.executeQuery();
-			if (rs.next())
-				return rs.getString(1);
+			return rs.next() ? rs.getString(1) : null;
 		}
 		finally{
-			try{
-				if (rs != null) rs.close();
-				if (stmt != null) rs.close();
-			} catch (SQLException sqle) {}
+			SQL.close(rs);
+			SQL.close(stmt);
 		}
-		
-		return null;
 	}
-	
+
 	/**
 	 * 
 	 * @param idf
+	 * @param parentNs
 	 * @param statuses
 	 * @return
 	 * @throws SQLException
 	 */
-	public DataElement getLatestElm(String idf, Vector statuses) throws SQLException {
-		String latestID = getLatestElmID(idf, statuses);
+	public DataElement getLatestElm(String idf, String parentNs, Vector statuses) throws SQLException {
+		
+		String latestID = getLatestElmID(idf, parentNs, statuses);
 		return latestID==null ? null : getDataElement(latestID);
-	}
-	
-	/**
-	 * 
-	 * @param idf
-	 * @return
-	 * @throws SQLException
-	 */
-	public DataElement getLatestElm(String idf) throws SQLException {
-		return getLatestElm(idf);
 	}
 	
 	/*

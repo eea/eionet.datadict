@@ -394,12 +394,12 @@
 
 			if (isLatestRequested){
 				Vector v = new Vector();
-				v.add("Released");
-				v.add("Recorded");
-				dataElement = searchEngine.getLatestElm(delemIdf, v);
+				v.add("'Released'");
+				dataElement = searchEngine.getLatestElm(delemIdf, request.getParameter("pns"), v);
 			}
-			else
+			else{
 				dataElement = searchEngine.getDataElement(delem_id);
+			}
 
 			if (dataElement==null){
 				request.setAttribute("DD_ERR_MSG", "No data element found with this id number or alphanumeric identifier!");
@@ -439,10 +439,9 @@
 				Vector v = null;
 				if (user==null){
 					v = new Vector();
-					v.add("Released");
-					v.add("Recorded");
+					v.add("'Released'");
 				}
-				latestID = searchEngine.getLatestElmID(delemIdf, v);
+				latestID = searchEngine.getLatestElmID(delemIdf, request.getParameter("pns"), v);
 				isLatestElm = latestID!=null && delem_id.equals(latestID);
 
 				editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements/" + delemIdf, "u");
