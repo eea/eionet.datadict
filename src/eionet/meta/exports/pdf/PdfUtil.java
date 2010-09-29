@@ -1097,8 +1097,8 @@ public class PdfUtil {
                 com.lowagie.text.Image.getInstance(jImg, null);
             vsImage.setAlignment(com.lowagie.text.Image.LEFT);
                 
-            float width = vsImage.scaledWidth();
-            float height = vsImage.scaledHeight();
+            float width = vsImage.getScaledWidth();
+            float height = vsImage.getScaledHeight();
                 
             if (width > MAX_IMG_WIDTH)
                 vsImage.scaleAbsoluteWidth(MAX_IMG_WIDTH);

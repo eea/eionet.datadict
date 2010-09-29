@@ -342,18 +342,11 @@ public class DstPdfAll extends PdfHandout {
 			}
 		}
 	}
-    
-    /*protected int addElement(Element elm){
-        
-        if (elm == null || chapter == null)
-		if (elm == null)
-            return elmCount;
-        
-        chapter.add(elm);
-        elmCount = elmCount + 1;
-        return elmCount;
-    }*/
-    
+
+	/*
+	 * (non-Javadoc)
+	 * @see eionet.meta.exports.pdf.PdfHandout#keepOnOnePage(int)
+	 */
     protected boolean keepOnOnePage(int index){
         if (index == vsTableIndex)
             return true;

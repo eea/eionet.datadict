@@ -59,9 +59,6 @@ public abstract class PdfHandout implements PdfHandoutIF {
 		PageOutline pageEvent = new PageOutline();
 		writer.setPageEvent(pageEvent);
         
-		//MyPageEvents events = new MyPageEvents();
-		//writer.setPageEvent(events);
-
 		// header and footer
 		if (header != null)
 			document.setHeader(header);
@@ -100,34 +97,16 @@ public abstract class PdfHandout implements PdfHandoutIF {
 					document.setPageSize(PageSize.A4);
                 document.newPage();
             }
-            else if (keepOnOnePage(i)){
-                if (elm.getClass().getName().endsWith(".PdfPTable")){
-                    if (!writer.fitsPage((PdfPTable)elm)){
-                        document.newPage();
-                    }
-                }
-            }
-            /*else if (elm.getClass().getName().endsWith(".PdfPTable")){
-				PdfPTable pdfpTbl = (PdfPTable) elm;
-				tblCounter++;
-				float pageHeight = document.getPageSize().height();
-				boolean fitsPage = writer.fitsPage(pdfpTbl);
-				float tableHeight = pdfpTbl.getTotalHeight();
-				tableHeight = tableHeight + pdfpTbl.getHeaderHeight();
-				if (!writer.fitsPage(pdfpTbl)){
-					if (tableHeight <= pageHeight/2)
-						document.newPage();
-				}
-            }*/
             
-			if (elm.getClass().getName().endsWith("ImgRaw")){
+			if (elm instanceof ImgRaw){
+				
 				ImgRaw img = (ImgRaw)elm;				
-				float h = img.scaledHeight();
+				float h = img.getScaledHeight();
 				if (yPos < h + IMG_FIT_RESERVE){
 					if (yPos < (h - h/IMG_FIT_RATIO) + IMG_FIT_RESERVE)
 						document.newPage();
 					else{
-						float w = img.scaledWidth();
+						float w = img.getScaledWidth();
 						img.scaleToFit(w, h - h/IMG_FIT_RATIO);
 					}
 				}
@@ -141,6 +120,11 @@ public abstract class PdfHandout implements PdfHandoutIF {
         document.close();
     }
     
+    /**
+     * 
+     * @param elm
+     * @return
+     */
     protected int addElement(Element elm){
         
         if (elm != null)
@@ -167,8 +151,10 @@ public abstract class PdfHandout implements PdfHandoutIF {
 		portraits.add(new Integer(docElements.size()));
 		insertPageBreak();
 	}
-    
-    // default implementation of keepOnOnePage()
+
+	/*
+	 * 
+	 */
     protected boolean keepOnOnePage(int index){
         return false;
     }
