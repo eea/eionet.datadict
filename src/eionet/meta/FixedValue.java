@@ -206,6 +206,14 @@ public class FixedValue {
 	public String getShortDesc(){
 		return shortDesc;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isEmpty(){
+		return value==null || value.length()==0;
+	}
     
     public String toString(){
 

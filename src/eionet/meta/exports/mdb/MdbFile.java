@@ -3,14 +3,29 @@
  */
 package eionet.meta.exports.mdb;
 
-import com.healthmarketscience.jackcess.*;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
 
-import java.sql.*;
-import java.io.*;
-import java.util.*;
+import com.healthmarketscience.jackcess.Column;
+import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.Table;
 
-import eionet.meta.*;
-import eionet.util.*;
+import eionet.meta.DDRuntimeException;
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DataElement;
+import eionet.meta.Dataset;
+import eionet.meta.DsTable;
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 
 /**
@@ -38,19 +53,20 @@ public class MdbFile {
 	private String dstID = null;
 	private String dstIdf = null;
 	private String dstNsID = null;
-	private String dstSchemaURL = null;
-	private String dstSchemaLocation = null;
+	
 	private Dataset dst = null;
 	
 	private String fullPath = null;
 	private DDSearchEngine searchEngine = null;
 	
 	private boolean vmdOnly = false;
+
+	//private static String dstSchemaURL = null;
+	//
 	
-	private String schemaURLBase = null;
-	private String tblSchemaURLPrefix = null;
-	private String dstSchemaURLPrefix = null;
-	private String namespaceURLPrefix = null;
+	private static String schemaURLBase = null;
+	private static String namespaceURLPrefix = null;
+	private static String dstSchemaLocationPrefix = null;
 		
 	/*
 	 * 
@@ -267,38 +283,54 @@ public class MdbFile {
 		//"TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf", "DstNr", "DstNsID", "DstNsURL", "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"
 		
 		Vector ddTables = searchEngine.getDatasetTables(dstID, true);
-		if (ddTables==null || ddTables.size()==0)
+		if (ddTables==null || ddTables.size()==0){
 			return null;
+		}
 		
 		Vector rows = new Vector();
 		for (int i=0; ddTables!=null && i<ddTables.size(); i++){
+			
 			DsTable tbl = (DsTable)ddTables.get(i);
+			
 			Vector ddElms = searchEngine.getDataElements(null, null, null, null, tbl.getID());
 			for (int j=0; ddElms!=null && j<ddElms.size(); j++){
+				
 				DataElement elm = (DataElement)ddElms.get(j);
-				
-				Object[] row = new Object[VMD_COLUMNS.length];
-				
-				row[0] = tbl.getIdentifier();							// TblIdf
-				row[1] = elm.getIdentifier();							// ElmIdf
-				row[2] = tbl.getID();									// TblNr
-				row[3] = NAMESPACE_PREFIX + tbl.getNamespace();			// TblNsID
-				row[4] = getNamespaceURLPrefix() + tbl.getNamespace();	// TblNsURL
-				row[5] = getTblSchemaURLPrefix() + tbl.getID();			// TblSchemaURL
-				row[6] = getDstIdf();									// DstIdf
-				row[7] = getDstID();									// DstNr
-				row[8] = NAMESPACE_PREFIX + getDstNsID();				// DstNsID
-				row[9] = getNamespaceURLPrefix() + getDstNsID();		// DstNsURL				
-				row[10] = getDstSchemaURL();							// DstSchemaURL
-				row[11] = getDstSchemaLocation();						// DstSchemaLocation
-				row[12] = NAMESPACE_PREFIX + DATASETS_NSID;				// DstsNsID
-				row[13] = getNamespaceURLPrefix() + DATASETS_NSID;		// DstsNsURL
-				
+				Object[] row = constructVmdRow(getDst(), tbl, elm);
 				rows.add(row);
 			}
 		}
 		
-		return (List)rows;
+		return rows;
+	}
+	
+	/**
+	 * 
+	 * @param dst
+	 * @param tbl
+	 * @param elm
+	 * @return
+	 */
+	public static Object[] constructVmdRow(Dataset dst, DsTable tbl, DataElement elm){
+		
+		Object[] row = new Object[VMD_COLUMNS.length];
+		
+		row[0]  = tbl.getIdentifier();									// TblIdf
+		row[1]  = elm.getIdentifier();									// ElmIdf
+		row[2]  = tbl.getID();											// TblNr
+		row[3]  = NAMESPACE_PREFIX + tbl.getNamespace();					// TblNsID
+		row[4]  = getNamespaceURLPrefix() + tbl.getNamespace();			// TblNsURL
+		row[5]  = getSchemaURLBase() + "TBL" + tbl.getID();				// TblSchemaURL
+		row[6]  = dst.getIdentifier();									// DstIdf
+		row[7]  = dst.getID();											// DstNr
+		row[8]  = NAMESPACE_PREFIX + dst.getNamespaceID();				// DstNsID
+		row[9]  = getNamespaceURLPrefix() + dst.getNamespaceID();		// DstNsURL				
+		row[10] = getSchemaURLBase() + "DST" + dst.getID();				// DstSchemaURL
+		row[11] = getDstSchemaLocationPrefix() + row[8] + " " + row[10];// DstSchemaLocation
+		row[12] = NAMESPACE_PREFIX + DATASETS_NSID;						// DstsNsID
+		row[13] = getNamespaceURLPrefix() + DATASETS_NSID;				// DstsNsURL
+		
+		return row;
 	}
 	
 	/*
@@ -500,8 +532,10 @@ public class MdbFile {
 	 * @throws SQLException 
 	 */
 	public Dataset getDst() throws SQLException {
-		if (dst==null)
+		
+		if (dst==null){
 			dst = searchEngine.getDataset(getDstID());
+		}
 		return dst;
 	}
 
@@ -519,93 +553,54 @@ public class MdbFile {
 	/**
 	 * 
 	 * @return
-	 * @throws MdbException 
 	 */
-	public String getTblSchemaURLPrefix() throws MdbException {
-		if (tblSchemaURLPrefix==null)
-			tblSchemaURLPrefix = getSchemaURLBase() + "TBL";
-		return tblSchemaURLPrefix;
+	private static String getSchemaURLBase(){
+		return Props.getRequiredProperty(PROP_SCHEMA_URL);
 	}
 
 	/**
 	 * 
 	 * @return
-	 * @throws MdbException 
 	 */
-	public String getDstSchemaURLPrefix() throws MdbException {
-		if (dstSchemaURLPrefix==null)
-			dstSchemaURLPrefix = getSchemaURLBase() + "DST";
-		return dstSchemaURLPrefix;
-	}
-
-	/**
-	 * 
-	 * @return
-	 * @throws MdbException 
-	 */
-	public String getSchemaURLBase() throws MdbException {
+	private static String getDstSchemaLocationPrefix(){
 		
-		if (schemaURLBase==null){
-			schemaURLBase = Props.getProperty(PROP_SCHEMA_URL);
-			if (schemaURLBase==null || schemaURLBase.length()==0)
-				throw new MdbException("Missing " + PROP_SCHEMA_URL + " property!");
-		}
-
-		return schemaURLBase;
-	}
-
-	/**
-	 * 
-	 * @return
-	 * @throws MdbException 
-	 * @throws SQLException 
-	 */
-	public String getDstSchemaLocation() throws SQLException, MdbException {
-		
-		if (dstSchemaLocation==null){
-			String jspURLPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-			if (jspURLPrefix==null || jspURLPrefix.length()==0)
-				throw new MdbException("Missing " + PropsIF.JSP_URL_PREFIX + " property!");
-			if (jspURLPrefix.endsWith("/")==false)
-				jspURLPrefix = jspURLPrefix + "/";
+		if (dstSchemaLocationPrefix==null){
 			
-			StringBuffer buf = new StringBuffer(jspURLPrefix);
-			buf.append("namespace.jsp?ns_id=").append(getDstNsID()).append(" ").append(getDstSchemaURL());
-			dstSchemaLocation = buf.toString();
+			String jspURLPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+			if (jspURLPrefix==null || jspURLPrefix.length()==0){
+				throw new DDRuntimeException("Missing " + PropsIF.JSP_URL_PREFIX + " property!");
+			}
+			
+			if (!jspURLPrefix.endsWith("/")){
+				jspURLPrefix = jspURLPrefix + "/";
+			}
+			
+			dstSchemaLocationPrefix =
+				new StringBuffer(jspURLPrefix).append("namespace.jsp?ns_id=").toString();
 		}
-
-		return dstSchemaLocation;
+		
+		return dstSchemaLocationPrefix;
 	}
 
 	/**
 	 * 
 	 * @return
-	 * @throws MdbException 
 	 */
-	public String getDstSchemaURL() throws MdbException {
-		if (dstSchemaURL==null)
-			dstSchemaURL = getDstSchemaURLPrefix() + getDstID();
-		return dstSchemaURL;
-	}
-
-	/**
-	 * 
-	 * @return
-	 * @throws MdbException 
-	 * @throws SQLException 
-	 */
-	public String getNamespaceURLPrefix() throws MdbException, SQLException {
+	private static String getNamespaceURLPrefix(){
 		
 		if (namespaceURLPrefix==null){
-			String jspURLPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-			if (jspURLPrefix==null || jspURLPrefix.length()==0)
-				throw new MdbException("Missing " + PropsIF.JSP_URL_PREFIX + " property!");
-			if (jspURLPrefix.endsWith("/")==false)
-				jspURLPrefix = jspURLPrefix + "/";
 			
-			StringBuffer buf = new StringBuffer(jspURLPrefix);
-			buf.append("namespace.jsp?ns_id=");
-			namespaceURLPrefix = buf.toString();
+			String jspURLPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+			if (jspURLPrefix==null || jspURLPrefix.length()==0){
+				throw new DDRuntimeException("Missing " + PropsIF.JSP_URL_PREFIX + " property!");
+			}
+			
+			if (!jspURLPrefix.endsWith("/")){
+				jspURLPrefix = jspURLPrefix + "/";
+			}
+			
+			namespaceURLPrefix =
+				new StringBuffer(jspURLPrefix).append("namespace.jsp?ns_id=").toString();
 		}
 
 		return namespaceURLPrefix;

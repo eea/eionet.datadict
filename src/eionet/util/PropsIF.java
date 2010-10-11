@@ -89,4 +89,7 @@ public interface PropsIF {
 	/** */
 	public static final String GENERAL_SCHEMA_URI = "dd.generalSchemaUri";
 	public static final String MULTIVAL_DELIM_ATTR = "dd.multiValueDelimAttrName";
+	
+	/** */
+	public static final String DATASET_MS_ACCESS_TEMPLTAE = "datasetMSAccessTemplate";
 }
