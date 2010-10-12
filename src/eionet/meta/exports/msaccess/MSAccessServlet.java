@@ -67,7 +67,9 @@ public class MSAccessServlet extends HttpServlet{
 			IOUtils.closeQuietly(output);
 			IOUtils.closeQuietly(input);
 			try{
-				generatedFile.delete();
+				if (generatedFile!=null && generatedFile.exists()){
+					generatedFile.delete();
+				}
 			}
 			catch (SecurityException e){
 				new DDException("Security exception when deleting generated MSAccess file", e).printStackTrace();
