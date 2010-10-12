@@ -307,9 +307,8 @@ public abstract class Schema implements SchemaIF{
                 addString(tab + "\t");
                 addString("<xs:element ref=\"");
 				addString(referredNsPrefix + ":" + elem.getIdentifier());
-                //addString(referredNsPrefix + ":" + elem.getShortName());
                 
-                String minOccs = "1";
+                String minOccs = elem.isMandatoryFlag() ? "1" : "0";
                 String maxOccs = elem.getValueDelimiter()==null ? "1" : "unbounded";
                 
                 addString("\" minOccurs=\"");

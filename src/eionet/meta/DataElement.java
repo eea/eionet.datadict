@@ -51,6 +51,8 @@ public class DataElement implements Comparable{
 	private String date = null;
 	
 	private String valueDelimiter;
+	
+	private boolean mandatoryFlag;
 
     /*
      * 
@@ -511,5 +513,19 @@ public class DataElement implements Comparable{
 	 */
 	public void setValueDelimiter(String valueDelimiter) {
 		this.valueDelimiter = valueDelimiter;
+	}
+
+	/**
+	 * @return the mandatoryFlag
+	 */
+	public boolean isMandatoryFlag() {
+		return mandatoryFlag;
+	}
+
+	/**
+	 * @param mandatoryFlag the mandatoryFlag to set
+	 */
+	public void setMandatoryFlag(boolean mandatoryFlag) {
+		this.mandatoryFlag = mandatoryFlag;
 	}
 }

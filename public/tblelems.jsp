@@ -515,6 +515,7 @@ if (messages.trim().length()>0){
 						
 						<th scope="col" class="scope-col">Datatype</th>
 						<th scope="col" class="scope-col">Element type</th>
+						<th scope="col" class="scope-col">Mandatory</th>
 						
 						<%
 						boolean hasFixedValueElements = false;
@@ -592,6 +593,9 @@ if (messages.trim().length()>0){
 						if (valueDelimiter==null){
 							valueDelimiter = "";
 						}
+						
+						String mandatoryFlag = elem.isMandatoryFlag() ? "T" : "F";
+						String mandatoryFlagChecked = elem.isMandatoryFlag() ? "checked=\"checked\"" : "";
 						
 						String trStyle = (i%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
 					%>
@@ -674,6 +678,11 @@ if (messages.trim().length()>0){
 								<% } %>
 								<input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>"/>
 								<input type="hidden" name="pos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>"/>
+							</td>
+							
+							<td style="text-align: left; padding-right:10px">
+								<input type="hidden" name="oldmndtry_<%=elem.getID()%>" value="<%=mandatoryFlag%>"/>
+								<input type="checkbox" name="mndtry_<%=elem.getID()%>"  value="T" onclick="tbl_obj.clickOtherObject();" <%=mandatoryFlagChecked%>/>
 							</td>
 							
 							<%

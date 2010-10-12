@@ -364,11 +364,13 @@ public class CopyHandler extends Object {
 			
 	        ArrayList elmIds = new ArrayList();
 	        ArrayList multivalDelims = new ArrayList();
+	        ArrayList mandatoryFlags = new ArrayList();
 	        ArrayList commonnessFlags = new ArrayList();
 	        
 	        // get the IDs and parent namespace identifiers of elements in this table
 	        StringBuffer buf = new StringBuffer();
-	        buf.append("select TBL2ELEM.DATAELEM_ID, TBL2ELEM.MULTIVAL_DELIM, DATAELEM.PARENT_NS from TBL2ELEM ").
+	        buf.append("select TBL2ELEM.DATAELEM_ID, TBL2ELEM.MULTIVAL_DELIM, TBL2ELEM.MANDATORY, ").
+	        append("DATAELEM.PARENT_NS from TBL2ELEM ").
 	        append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID ").
 	        append("where DATAELEM.DATAELEM_ID is not null and TABLE_ID=").
 	        append(tblID).append(" order by POSITION asc");
@@ -377,7 +379,8 @@ public class CopyHandler extends Object {
 	        while (rs.next()){
 	        	elmIds.add(rs.getString("TBL2ELEM.DATAELEM_ID"));
 	        	multivalDelims.add(rs.getString("TBL2ELEM.MULTIVAL_DELIM"));
-	        	commonnessFlags.add(new Boolean(rs.getString("DATAELEM.PARENT_NS")==null));
+	        	mandatoryFlags.add(Boolean.valueOf(rs.getBoolean("TBL2ELEM.MANDATORY")));
+	        	commonnessFlags.add(Boolean.valueOf(rs.getString("DATAELEM.PARENT_NS")==null));
 	        }
 	        
 	        for (int i=0; i<elmIds.size(); i++){
@@ -389,6 +392,7 @@ public class CopyHandler extends Object {
 	        	}
 
 	        	String multivalDelim = (String)multivalDelims.get(i);
+	        	Boolean mandatoryFlag = (Boolean)mandatoryFlags.get(i);
 	        	
 	        	// regardless of element's commonality, TBL2ELEM relation shall be copied anyway
 	        	gen.clear();
@@ -399,6 +403,7 @@ public class CopyHandler extends Object {
 	            if (multivalDelim!=null){
 	            	gen.setField("MULTIVAL_DELIM", multivalDelim);
 	            }
+	            gen.setFieldExpr("MANDATORY", mandatoryFlag.toString());
 	            stmt.executeUpdate(gen.insertStatement());
 	        }
         }

@@ -45,6 +45,8 @@ public class DataElementHandler extends BaseHandler {
     public static String OLDPOS_PREFIX = "oldpos_";
     public static String DELIM_PREFIX = "delim_";
     public static String OLDDELIM_PREFIX = "olddelim_";
+    public static String MANDATORYFLAG_PREFIX = "mndtry_";
+    public static String OLDMANDATORYFLAG_PREFIX = "oldmndtry_";
 
     private String mode = null;
     private String elmValuesType = null;
@@ -892,7 +894,16 @@ public class DataElementHandler extends BaseHandler {
      */
     private void processTableElems() throws Exception {
     	
-    	// process element positions
+    	processElmPositions();
+    	processValueDelimiters();
+    	processMandatoryFlags();
+    }
+
+    /**
+     * @throws SQLException 
+     * 
+     */
+    private void processElmPositions() throws SQLException{
     	
     	HashMap positions = new HashMap();
     	Enumeration parNames = req.getParameterNames();
@@ -908,29 +919,6 @@ public class DataElementHandler extends BaseHandler {
     			
     			if (!oldPos.equals(newPos)){
     				positions.put(id, newPos);
-    			}
-    		}
-    	}
-
-    	// process element value delimiters
-
-    	HashMap valueDelims = new HashMap();
-    	parNames = req.getParameterNames();
-    	while (parNames.hasMoreElements()){
-    		
-    		String parName = (String)parNames.nextElement();
-    		
-    		if (parName.startsWith(OLDDELIM_PREFIX)){
-    			
-    			Integer id = Integer.valueOf(parName.substring(OLDDELIM_PREFIX.length()));
-    			String oldDelim = req.getParameter(parName);
-    			String newDelim = req.getParameter(DELIM_PREFIX + id);
-    			if (newDelim.length()==0){
-    				newDelim = null;
-    			}
-    			
-    			if (!oldDelim.equals(newDelim)){
-    				valueDelims.put(id, newDelim);
     			}
     		}
     	}
@@ -954,7 +942,35 @@ public class DataElementHandler extends BaseHandler {
     			SQL.close(stmt);
     		}
     	}
-
+    }
+    
+    /**
+     * @throws SQLException 
+     * 
+     */
+    private void processValueDelimiters() throws SQLException{
+    	
+    	HashMap valueDelims = new HashMap();
+    	Enumeration parNames = req.getParameterNames();
+    	while (parNames.hasMoreElements()){
+    		
+    		String parName = (String)parNames.nextElement();
+    		
+    		if (parName.startsWith(OLDDELIM_PREFIX)){
+    			
+    			Integer id = Integer.valueOf(parName.substring(OLDDELIM_PREFIX.length()));
+    			String oldDelim = req.getParameter(parName);
+    			String newDelim = req.getParameter(DELIM_PREFIX + id);
+    			if (newDelim.length()==0){
+    				newDelim = null;
+    			}
+    			
+    			if (!oldDelim.equals(newDelim)){
+    				valueDelims.put(id, newDelim);
+    			}
+    		}
+    	}
+    	
     	if (!valueDelims.isEmpty()){
     		
     		PreparedStatement stmt = null;
@@ -975,25 +991,51 @@ public class DataElementHandler extends BaseHandler {
     			SQL.close(stmt);
     		}
     	}
-
-//        String[] posIds = req.getParameterValues("pos_id");
-//        String old_pos=null;
-//        String pos=null;
-//        String parName=null;
-//        if (posIds==null || posIds.length==0) return;
-//        if (tableID==null || tableID.length()==0) return;
-//
-//        for (int i=0; i<posIds.length; i++){
-//            old_pos = req.getParameter(OLDPOS_PREFIX + posIds[i]);
-//            pos = req.getParameter(POS_PREFIX + posIds[i]);
-//            if (old_pos.length()==0 || pos.length()==0)
-//                continue;
-//            if (!old_pos.equals(pos))
-//                updateTableElemPos(posIds[i], pos);
-//        }
-//        
-//        // process element value delimiters
-//        Enumeration valueDelims = req.getParameterNames();
+    }
+    
+    /**
+     * 
+     * @throws SQLException
+     */
+    private void processMandatoryFlags() throws SQLException{
+    	
+    	HashMap flags = new HashMap();
+    	Enumeration parNames = req.getParameterNames();
+    	while (parNames.hasMoreElements()){
+    		
+    		String parName = (String)parNames.nextElement();
+    		
+    		if (parName.startsWith(OLDMANDATORYFLAG_PREFIX)){
+    			
+    			Integer id = Integer.valueOf(parName.substring(OLDMANDATORYFLAG_PREFIX.length()));
+    			String oldFlag = req.getParameter(parName);
+    			String newFlag = req.getParameter(MANDATORYFLAG_PREFIX + id);
+    			
+    			if (!oldFlag.equals(newFlag)){
+    				flags.put(id, newFlag==null ? "" : newFlag);
+    			}
+    		}
+    	}
+    	
+    	if (!flags.isEmpty()){
+    		
+    		PreparedStatement stmt = null;
+    		try{    		
+    			stmt = conn.prepareStatement("update TBL2ELEM set MANDATORY=? where DATAELEM_ID=? and TABLE_ID=?");
+    			for (Iterator iter = flags.entrySet().iterator(); iter.hasNext();){
+    				
+    				Map.Entry entry = (Map.Entry)iter.next();
+    				stmt.setBoolean(1, Boolean.valueOf(entry.getValue().equals("T")));
+    				stmt.setInt(2, ((Integer)entry.getKey()).intValue());
+    				stmt.setInt(3, Integer.parseInt(tableID));
+    				stmt.addBatch();
+    			}
+    			stmt.executeBatch();
+    		}
+    		finally{
+    			SQL.close(stmt);
+    		}
+    	}
     }
     
     /**
