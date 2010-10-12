@@ -126,6 +126,15 @@ default is install
 		<copy todir="${app.home}/opendoc" overwrite="true">
 			<fileset dir="opendoc"/>
 		</copy>
+
+		<!--
+		To make sure that removed JSP files, JAR libraries, etc will also be removed from
+		the webapp home, clear the latter. 
+		-->
+		<delete includeemptydirs="true" description="Deletes all files and subdirectories of webapp.home, but not the webapp.home itself.">
+			<fileset dir="${webapp.home}" includes="**/*"/>
+		</delete>
+
 		<copy todir="${webapp.home}" overwrite="true">
 			<fileset dir="public">
 				<exclude name="**/*.java" />
