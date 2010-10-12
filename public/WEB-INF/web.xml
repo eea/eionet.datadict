@@ -25,7 +25,7 @@
 
 	<context-param>
 		<param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
-		<param-value>ww010646:8080</param-value>
+		<param-value>dd.eionet.europa.eu</param-value>
 	</context-param>
 
 <!-- filters -->
@@ -42,7 +42,7 @@
 	    </init-param>
 	    <init-param>
 	      <param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
-	      <param-value>ww010646:8080</param-value>
+	      <param-value>dd.eionet.europa.eu</param-value>
 	    </init-param>
 	   <init-param>
 	      <param-name>edu.yale.its.tp.cas.client.filter.wrapRequest</param-name>
