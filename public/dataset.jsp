@@ -914,6 +914,18 @@ else if (mode.equals("add"))
 															</td>
 														</tr><%
 													}
+													
+													// Advanced MS Access template generation link
+													if (editReleasedPrm==true){ %>
+														<tr>
+															<td>
+																Create advanced MS Access template&nbsp;<a  href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href);return false;"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
+															</td>
+															<td>
+																<a rel="nofollow" href="GetMSAccess?dstID=<%=ds_id%>"><img style="border:0" src="images/mdb.png" width="16" height="16" alt="MDB icon"/></a>
+															</td>
+														</tr><%
+													}
 
 													// codelists
 													if (dispAll || dispXmlSchema){ %>
