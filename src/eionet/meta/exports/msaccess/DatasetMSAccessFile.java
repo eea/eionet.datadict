@@ -346,6 +346,7 @@ public class DatasetMSAccessFile {
 		row.put(TblElmRelationsColumn.TBL_ID, tbl.getID());
 		row.put(TblElmRelationsColumn.ELM_ORDER, Integer.valueOf(elmOrder));
 		row.put(TblElmRelationsColumn.ELM_MULTIVALUEDELIM, elm.getValueDelimiter());
+		row.put(TblElmRelationsColumn.ELM_MANDATORY, Boolean.valueOf(elm.isMandatoryFlag()));
 		
 		return row;
 	}
