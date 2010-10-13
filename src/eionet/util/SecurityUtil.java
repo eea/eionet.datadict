@@ -33,6 +33,7 @@ import eionet.meta.AfterCASLoginServlet;
 import eionet.meta.DDCASUser;
 import eionet.meta.DDRuntimeException;
 import eionet.meta.DDUser;
+import eionet.meta.filters.CASFilterConfig;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -204,7 +205,8 @@ public class SecurityUtil {
 		
 		String result = "index.jsp";
 		
-		String casLoginUrl = request.getSession().getServletContext().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
+		//String casLoginUrl = request.getSession().getServletContext().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
+		String casLoginUrl = CASFilterConfig.getInstance().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
 		if (casLoginUrl!=null){
 			
 			String casServerName = getCasServerName(request);
@@ -250,10 +252,12 @@ public class SecurityUtil {
 	 */
 	public static String getCasLoginUrl(HttpServletRequest request) {
 		
-		if (SecurityUtil.casLoginUrl==null)
-			SecurityUtil.casLoginUrl = request.getSession().getServletContext().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
+		if (casLoginUrl==null){
+			//casLoginUrl = request.getSession().getServletContext().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
+			casLoginUrl = CASFilterConfig.getInstance().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
+		}
 		
-		return SecurityUtil.casLoginUrl;
+		return casLoginUrl;
 	}
 
 	/**
@@ -261,9 +265,11 @@ public class SecurityUtil {
 	 */
 	public static String getCasServerName(HttpServletRequest request){
 		
-		if (SecurityUtil.casServerName==null)
-			SecurityUtil.casServerName = request.getSession().getServletContext().getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
+		if (casServerName==null){
+			//casServerName = request.getSession().getServletContext().getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
+			casServerName = CASFilterConfig.getInstance().getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
+		}
 				
-		return SecurityUtil.casServerName;
+		return casServerName;
 	}
 }
