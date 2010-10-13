@@ -81,9 +81,9 @@ default is install
 	</target>
 
 	<target name="buildjar" depends="compile" description="creates datadict.jar into WEB-INF/lib">
-		<jar jarfile="${webapp.home}/WEB-INF/lib/datadict.jar"
-		    includes="**/*.class" basedir="${classes.dir}" />
-		<!--delete dir='${classes.dir}/eionet' /-->
+
+		<jar jarfile="public/WEB-INF/lib/datadict.jar" includes="**/*.class" basedir="${classes.dir}" />
+		<!-- Delete classes directory -->
 		<antcall target="clean"/>
 	</target>
 
