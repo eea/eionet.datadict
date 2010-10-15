@@ -1336,6 +1336,8 @@ else if (mode.equals("add"))
 											boolean hasForeignKeys = false;
 											boolean hasMultivalElms = false;
 											boolean hasCommonElms = false;
+											boolean hasMandatoryElms = false;
+											boolean isETCDD = conn==null ? false : conn.getMetaData().getURL().indexOf("etcdd?")>0;
 											%>
 
 												<h2><%=Util.replaceTags(title)%></h2>
@@ -1411,6 +1413,14 @@ else if (mode.equals("add"))
 																	<tr>
 																		<!-- short name -->
 																		<td>
+																			<%
+																			if (isETCDD && elem.isMandatoryFlag()){
+																				%>
+																				<span style="font:bold;font-size:1.2em">*</span>
+																				<%
+																				hasMandatoryElms = true;
+																			}
+																			%>
 																			<a href="<%=elemLink%>" title="<%=Util.replaceTags(linkTitle, true, true)%>">
 																				<%=Util.replaceTags(elem.getShortName())%>
 																			</a>
@@ -1469,6 +1479,12 @@ else if (mode.equals("add"))
 															</table>
 
 										      		<%
+										      		if (hasMandatoryElms){
+											      		%>
+											      		<div class="barfont">
+															(an asterisk in front of element short name indicates that the element is mandatory in this table)
+														</div><%
+										      		}
 										      		if (user!=null && elems!=null && elems.size()>0 && hasMarkedElems){%>
 														<div class="barfont">
 																(a red wildcard stands for checked-out element)
