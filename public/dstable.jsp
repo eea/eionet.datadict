@@ -1468,7 +1468,7 @@ else if (mode.equals("add"))
 																			}
 																			
 																			if (isMulitvalElem){ %>
-																				<sup style="color:#858585;font-weight:bold;">(MV)</sup><%
+																				<sup style="color:#858585;font-weight:bold;">+</sup><%
 																				hasMultivalElms = true;
 																			}
 																			%>
@@ -1502,7 +1502,7 @@ else if (mode.equals("add"))
 													}
 													if (elems!=null && elems.size()>0 && hasMultivalElms){%>
 														<div class="barfont">
-															(the <sup style="color:#858585;">(MV)</sup> sign marks an element that can have multiple values)
+															(the <sup style="color:#858585;">+</sup> sign right after the "Fixed values" link marks an element that can have multiple values)
 														</div><%
 													}
 												}
