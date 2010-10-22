@@ -13,7 +13,8 @@ public enum DstDefinitionColumn {
 	DST_DEFINITION ("ds_Definition"),
 	DST_METHODOLOGY ("ds_Methodology"),
 	DST_URL ("ds_URL"),
-	DST_NUMBER_OF_TABLES ("ds_ntbl");
+	DST_NUMBER_OF_TABLES ("ds_ntbl"),
+	DST_DATE ("ds_DateTime");
 	
 	/** */
 	private String columnName;

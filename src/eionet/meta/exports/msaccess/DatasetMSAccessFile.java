@@ -2,8 +2,15 @@ package eionet.meta.exports.msaccess;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
@@ -54,6 +61,8 @@ public class DatasetMSAccessFile {
 	
 	/** */
 	private String fileNameForDownload;
+	
+	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	/**
 	 * 
@@ -264,6 +273,7 @@ public class DatasetMSAccessFile {
 		row.put(DstDefinitionColumn.DST_METHODOLOGY, dst.getAttributeValueByShortName("Methodology"));
 		row.put(DstDefinitionColumn.DST_URL, DefinitionUrls.get(dst));
 		row.put(DstDefinitionColumn.DST_NUMBER_OF_TABLES, Integer.valueOf(noOfTables));
+		row.put(DstDefinitionColumn.DST_DATE, dateFormat.format(new Date(Long.valueOf(dst.getDate()))));
 		
 		return row;
 	}
@@ -532,13 +542,14 @@ public class DatasetMSAccessFile {
 	 * @throws DDException
 	 * @throws IOException
 	 * @throws SQLException
+	 * @throws URISyntaxException 
 	 */
-	public static void main(String[] args) throws DDException, IOException, SQLException{
+	public static void main(String[] args) throws DDException, IOException, SQLException, URISyntaxException{
 		
 		ConnectionUtil.setConnectionType(ConnectionUtil.SIMPLE_CONNECTION);
 		
 		long time = System.currentTimeMillis();
-		DatasetMSAccessFile msAccessFile = new DatasetMSAccessFile("1");
+		DatasetMSAccessFile msAccessFile = new DatasetMSAccessFile("2873");
 		msAccessFile.create();
 		System.out.println("Done! Time elapsed: " + (System.currentTimeMillis()-time) + " ms");
 	}
