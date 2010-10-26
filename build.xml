@@ -128,11 +128,12 @@ default is install
 		</copy>
 
 		<!--
-		To make sure that removed JSP files, JAR libraries, etc will also be removed from
-		the webapp home, clear the latter. 
+		To make sure that any removed JSP files, JAR libraries, etc will also be removed from
+		the webapp home, clear the latter. BUT exclude the visuals directory, as this contains
+		images uploaded by the users!!!
 		-->
 		<delete includeemptydirs="true" description="Deletes all files and subdirectories of webapp.home, but not the webapp.home itself.">
-			<fileset dir="${webapp.home}" includes="**/*"/>
+			<fileset dir="${webapp.home}" excludes="visuals/*"/>
 		</delete>
 
 		<copy todir="${webapp.home}" overwrite="true">
