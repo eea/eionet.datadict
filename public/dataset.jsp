@@ -916,7 +916,10 @@ else if (mode.equals("add"))
 													}
 													
 													// Advanced MS Access template generation link
-													if (editReleasedPrm==true){ %>
+													// TODO - allow display for all users if request comes from etcdd.eionet.europa.eu (to be removed later!)
+													String serverName = request.getServerName();
+													if (editReleasedPrm==true || (serverName!=null && serverName.startsWith("etcdd"))){
+														%>
 														<tr>
 															<td>
 																Create advanced MS Access template&nbsp;<a  href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href);return false;"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
