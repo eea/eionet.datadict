@@ -1868,7 +1868,7 @@ else{
 																	<div class="figure-plus">
 																		<div class="figure-image">
 																			<a href="visuals/<%=Util.replaceTags(attrValue)%>">
-																				<img src="visuals/<%=Util.replaceTags(attrValue)%>" alt="Image file could not be found on the server" class="scaled poponmouseclick"/>
+																				<img src="visuals/<%=Util.replaceTags(attrValue)%>" alt="Image file could not be found on the server" class="scaled2 poponmouseclick"/>
 																			</a>
 																		</div>
 																	</div>
