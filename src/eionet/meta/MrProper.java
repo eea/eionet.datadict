@@ -3,6 +3,8 @@ package eionet.meta;
 import eionet.meta.savers.*;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
 
 import java.util.*;
 import java.sql.*;
@@ -171,31 +173,35 @@ public class MrProper {
 	 */
 	private void removeDst(Parameters pars) throws Exception {
 		
+		INParameters inParams = new INParameters();
 		Vector v = new Vector();
 		StringBuffer buf = new StringBuffer();
 		String rmCrit = pars.getParameter("rm_crit");
-		if (rmCrit==null)
+		if (rmCrit==null){
 			return;
-		else if (rmCrit.equals("lid")){
+		} else if (rmCrit.equals("lid")){
 			String idfier = pars.getParameter("rm_idfier");
 			if (idfier!=null){
 				buf.append("select DATASET_ID from DATASET where "); 
-				buf.append("IDENTIFIER=").append(Util.strLiteral(idfier));
+				buf.append("IDENTIFIER=").append(inParams.add(Util.strLiteral(idfier)));
 			}
 		}
 		else if (rmCrit.equals("id")){
 			String id = pars.getParameter("rm_id");
 			if (id!=null){
 				StringTokenizer st = new StringTokenizer(id);
-				while (st.hasMoreTokens())
+				while (st.hasMoreTokens()){
 					v.add(st.nextToken());
+				}
 			}
 		}
 		
 		if (buf.length()>0){
-			ResultSet rs = conn.createStatement().executeQuery(buf.toString());
-			while (rs.next())
+			PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()){
 				v.add(rs.getString(1));
+			}
 		}
 		
 		if (v.size()==0) return;
@@ -203,8 +209,9 @@ public class MrProper {
 		Parameters ps = new Parameters();
 		ps.addParameterValue("mode", "delete");
 		ps.addParameterValue("complete", "true");
-		for (int i=0; i<v.size(); i++)
+		for (int i=0; i<v.size(); i++){
 			ps.addParameterValue("ds_id", (String)v.get(i));
+		}
 		
 		DatasetHandler handler = new DatasetHandler(conn, ps, ctx);
 		handler.setUser(user);
@@ -218,41 +225,47 @@ public class MrProper {
 	 */
 	private void removeTbl(Parameters pars) throws Exception {
 
+		INParameters inParams = new INParameters();
 		Vector v = new Vector();
 		StringBuffer buf = new StringBuffer();
 		String rmCrit = pars.getParameter("rm_crit");
-		if (rmCrit==null)
+		if (rmCrit==null){
 			return;
-		else if (rmCrit.equals("lid")){
+		} else if (rmCrit.equals("lid")){
 			String idfier = pars.getParameter("rm_idfier");
 			String ns = pars.getParameter("rm_ns");
 			if (idfier!=null && ns!=null){
 				buf.append("select TABLE_ID from DS_TABLE where "); 
-				buf.append("IDENTIFIER=").append(Util.strLiteral(idfier));
-				buf.append("and PARENT_NS=").append(ns);
+				buf.append("IDENTIFIER=").append(inParams.add(Util.strLiteral(idfier)));
+				buf.append("and PARENT_NS=").append(inParams.add(ns));
 			}
-		}
-		else if (rmCrit.equals("id")){
+		} else if (rmCrit.equals("id")){
 			String id = pars.getParameter("rm_id");
 			if (id!=null){
 				StringTokenizer st = new StringTokenizer(id);
-				while (st.hasMoreTokens())
+				while (st.hasMoreTokens()){
 					v.add(st.nextToken());
+				}
 			}
 		}
 		
 		if (buf.length()>0){
-			ResultSet rs = conn.createStatement().executeQuery(buf.toString());
-			while (rs.next())
+			PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()){
 				v.add(rs.getString(1));
+			}
 		}
 		
-		if (v.size()==0) return;
+		if (v.size()==0){
+			return;
+		}
 		
 		Parameters ps = new Parameters();
 		ps.addParameterValue("mode", "delete");
-		for (int i=0; i<v.size(); i++)
+		for (int i=0; i<v.size(); i++){
 			ps.addParameterValue("del_id", (String)v.get(i));
+		}
 		
 		DsTableHandler handler = new DsTableHandler(conn, ps, ctx);
 		handler.setUser(user);
@@ -278,12 +291,12 @@ public class MrProper {
 				append("IDENTIFIER=").append(Util.strLiteral(idfier));
 			}
 			
-			if (!Util.nullString(ns))
+			if (!Util.nullString(ns)){
 				buf.append(" and PARENT_NS=").append(ns);
-			else
+			} else {
 				buf.append(" and PARENT_NS is null");
-		}
-		else if (rmCrit.equals("id")){
+			}
+		} else if (rmCrit.equals("id")){
 			String id = pars.getParameter("rm_id");
 			if (id!=null){
 				StringTokenizer st = new StringTokenizer(id);
@@ -294,16 +307,18 @@ public class MrProper {
 		
 		if (buf.length()>0){
 			ResultSet rs = conn.createStatement().executeQuery(buf.toString());
-			while (rs.next())
+			while (rs.next()){
 				v.add(rs.getString(1));
+			}
 		}
 		
 		if (v.size()==0) return;
 		
 		Parameters ps = new Parameters();
 		ps.addParameterValue("mode", "delete");
-		for (int i=0; i<v.size(); i++)
+		for (int i=0; i<v.size(); i++){
 			ps.addParameterValue("delem_id", (String)v.get(i));
+		}
 		
 		DataElementHandler handler = new DataElementHandler(conn, ps, ctx);
 		handler.setUser(user);
@@ -323,21 +338,29 @@ public class MrProper {
     */
     private void releaseDataset(String idifier) throws Exception{
         
-        if (Util.nullString(idifier))
+    	INParameters inParams = new INParameters();
+    	
+        if (Util.nullString(idifier)){
             throw new Exception("Dataset identifier not given!");
+        }
         
         String q = "select distinct CORRESP_NS from DATASET where " +
-                   "IDENTIFIER=" + Util.strLiteral(idifier);
+                   "IDENTIFIER=" + inParams.add(Util.strLiteral(idifier));
         
         String ns = null;
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(q);
-        if (rs.next())
+        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()){
             ns = rs.getString(1);
+        }
         
-        if (ns!=null)
-            stmt.executeUpdate("update NAMESPACE set WORKING_USER=NULL " +
-                         "where NAMESPACE_ID=" + ns);
+        
+        if (ns!=null){
+        	inParams = new INParameters();
+        	q ="update NAMESPACE set WORKING_USER=NULL " + "where NAMESPACE_ID=" + inParams.add(ns); 
+        	stmt = SQL.preparedStatement(q, inParams, conn);
+            stmt.executeUpdate();
+        }
         stmt.close();
     }
 
@@ -346,12 +369,14 @@ public class MrProper {
 	*/
 	private void cleanVisuals(String visualsPath) throws Exception{
 		
-		if (Util.nullString(visualsPath))
+		if (Util.nullString(visualsPath)){
 			throw new Exception("Path to uploaded image files not given!");
+		}
         
         File dir = new File(visualsPath);
-        if (!dir.exists() || !dir.isDirectory())
+        if (!dir.exists() || !dir.isDirectory()){
         	return;
+        }
 
 		String q1 =
 		"select count(*) from DATASET where VISUAL=? or DETAILED_VISUAL=?";
@@ -414,12 +439,14 @@ public class MrProper {
 		Vector v = new Vector();
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(q);
-		while (rs.next())
+		while (rs.next()){
 			v.add(rs.getString(1));
+		}
 		
-		for (int i=0; i<v.size(); i++)
+		for (int i=0; i<v.size(); i++) {
 			stmt.executeQuery("delete from TBL2ELEM where TABLE_ID=" +
 															(String)v.get(i));
+		}
        
         // get the elements
         q =
@@ -432,16 +459,20 @@ public class MrProper {
         
         v = new Vector();
         rs = stmt.executeQuery(q);
-        while (rs.next())
+        while (rs.next()){
             v.add(rs.getString(1));
+        }
         
-        if (v.size()==0) return;
+        if (v.size()==0){
+        	return;
+        }
         
         // delete the found elements
         Parameters params = new Parameters();
         params.addParameterValue("mode", "delete");
-        for (int i=0; i<v.size(); i++)
+        for (int i=0; i<v.size(); i++){
 			params.addParameterValue("delem_id", (String)v.get(i));
+        }
 			
         DataElementHandler delemHandler =
 								new DataElementHandler(conn, params, ctx);
@@ -475,13 +506,14 @@ public class MrProper {
 		Vector v = new Vector();
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(q);
-		while (rs.next())
+		while (rs.next()){
 			v.add(rs.getString(1));
+		}
 		
-		for (int i=0; i<v.size(); i++)
+		for (int i=0; i<v.size(); i++){
 			stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" +
 															(String)v.get(i));
-		
+		}
         // get orphan tables
         q =
         "select distinct DS_TABLE.TABLE_ID from DS_TABLE " +
@@ -493,16 +525,20 @@ public class MrProper {
         
         v = new Vector();
         rs = stmt.executeQuery(q);
-        while (rs.next())
+        while (rs.next()){
             v.add(rs.getString(1));
+        }
         
-        if (v.size()==0) return;
+        if (v.size()==0) {
+        	return;
+        }
         
         // delete the found tables
         Parameters params = new Parameters();
         params.addParameterValue("mode", "delete");
-        for (int i=0; i<v.size(); i++)
+        for (int i=0; i<v.size(); i++){
 			params.addParameterValue("del_id", (String)v.get(i));
+        }
 			
         DsTableHandler dsTableHandler =
 								new DsTableHandler(conn, params, ctx);
@@ -531,24 +567,27 @@ public class MrProper {
 		ResultSet rs = stmt.executeQuery(buf.toString());
 		while (rs.next()){
 			
-			if (rs.getString("WORKING_COPY").equals("Y"))
+			if (rs.getString("WORKING_COPY").equals("Y")){
 				continue;
+			}
 			
 			HashMap hash = new HashMap();			
 			hash.put("IDENTIFIER", rs.getString("IDENTIFIER"));
 			hash.put("PARENT_NS", rs.getString("PARENT_NS"));
 			hash.put("VERSION", rs.getString("VERSION"));
-			if (all.contains(hash))
+			if (all.contains(hash)){
 				odd.add(rs.getString("DATAELEM_ID"));
-			else
+			} else {
 				all.add(hash);
+			}
 		}
 		
 		Parameters pars = new Parameters();
 		pars.addParameterValue("mode", "delete");
 		pars.addParameterValue("complete", "true");
-		for (int i=0; i<odd.size(); i++)
+		for (int i=0; i<odd.size(); i++){
 			pars.addParameterValue("delem_id", (String)odd.get(i));
+		}
 
 		DataElementHandler elmH = new DataElementHandler(conn, pars, ctx);
 		elmH.setUser(user);
@@ -600,24 +639,27 @@ public class MrProper {
 		rs = stmt.executeQuery(buf.toString());
 		while (rs.next()){
 			
-			if (rs.getString("WORKING_COPY").equals("Y"))
+			if (rs.getString("WORKING_COPY").equals("Y")){
 				continue;
+			}
 			
 			HashMap hash = new HashMap();
 			hash.put("IDENTIFIER", rs.getString("IDENTIFIER"));
 			hash.put("VERSION", rs.getString("VERSION"));
-			if (all.contains(hash))
+			if (all.contains(hash)){
 				odd.add(rs.getString("DATASET_ID"));
-			else
+			} else {
 				all.add(hash);
+			}
 		}
 		
 		pars = new Parameters();
 		pars.addParameterValue("mode", "delete");
 		pars.addParameterValue("complete", "true");
 		
-		for (int i=0; i<odd.size(); i++)
+		for (int i=0; i<odd.size(); i++){
 			pars.addParameterValue("ds_id", (String)odd.get(i));
+		}
 
 		DatasetHandler dstH = new DatasetHandler(conn, pars, ctx);
 		dstH.setUser(user);
@@ -640,18 +682,21 @@ public class MrProper {
     */
     private void releaseNonWC(String tblName) throws Exception{
         
+    	
+    	INParameters inParams = new INParameters();
         // get the locked non-wcs
         StringBuffer buf = new StringBuffer();
 		buf.append("select distinct IDENTIFIER, VERSION");
-        if (!tblName.equals("DATASET"))
+        if (!tblName.equals("DATASET")){
             buf.append(", PARENT_NS");
+        }
         buf.append(" from ");
-        buf.append(tblName);
+        buf.append(inParams.add(tblName));
         buf.append(" where WORKING_USER is not null");
         
         Vector v = new Vector();
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
+        PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+        ResultSet rs = stmt.executeQuery();
         while (rs.next()){
         	HashMap hash = new HashMap();
             hash.put("IDENTIFIER", rs.getString("IDENTIFIER"));
@@ -662,16 +707,22 @@ public class MrProper {
         
         
         // get the wcs
+        inParams = new INParameters();
         buf = new StringBuffer();
 		buf.append("select distinct IDENTIFIER, VERSION");
-        if (!tblName.equals("DATASET"))
+        if (!tblName.equals("DATASET")){
             buf.append(", PARENT_NS");
+        }
         buf.append(" from ");
-        buf.append(tblName);
+        buf.append(inParams.add(tblName));
         buf.append(" where WORKING_COPY='Y'");
         
         HashSet wcs = new HashSet();
-        rs = stmt.executeQuery(buf.toString());
+        
+        stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+        rs = stmt.executeQuery();
+        
+        
         while (rs.next()){
 			HashMap hash = new HashMap();
 			hash.put("IDENTIFIER", rs.getString("IDENTIFIER"));
@@ -685,26 +736,31 @@ public class MrProper {
             
             HashMap hash = (HashMap)v.get(i);
             
-            if (wcs.contains(hash)) // if has a WC then skip
+            if (wcs.contains(hash)){ // if has a WC then skip
             	continue;
-            	
+            }
+            
+            inParams = new INParameters();
+            
             buf = new StringBuffer();
             buf.append("update ");
-			buf.append(tblName);
+			buf.append(inParams.add(tblName));
 			buf.append(" set WORKING_USER=NULL where IDENTIFIER=");
-			buf.append(Util.strLiteral((String)hash.get("IDENTIFIER")));
+			buf.append(inParams.add(Util.strLiteral((String)hash.get("IDENTIFIER"))));
 			buf.append(" and VERSION=");
-			buf.append((String)hash.get("VERSION"));
+			buf.append(inParams.add((String)hash.get("VERSION")));
 			
 			if (!tblName.equals("DATASET")){
 				String pns = (String)hash.get("PARENT_NS");
-				if (pns!=null)
-					buf.append(" and PARENT_NS=").append(pns);
-				else
+				if (pns!=null){
+					buf.append(" and PARENT_NS=").append(inParams.add(pns));
+				} else {
 					buf.append(" and PARENT_NS is null");
+				}
 			}
 			
-            stmt.executeUpdate(buf.toString());
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+	        stmt.executeUpdate();
         }
         
         stmt.close();
@@ -728,12 +784,14 @@ public class MrProper {
 		// execute the statement for finding all all working copies
 		Vector hangingWcs = new Vector();
 		buf = new StringBuffer("select * from DATAELEM where WORKING_COPY='Y'");
-		if (!common)
+		if (!common){
 			buf.append(" and PARENT_NS is not null");
-		else
+		} else {
 			buf.append(" and PARENT_NS is null");
+		}
+		
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt. executeQuery(buf.toString());
+		ResultSet rs = stmt.executeQuery(buf.toString());
 		while (rs.next()){
 			// execute the prepared statement
 			pstmt.setString(1, rs.getString("IDENTIFIER"));

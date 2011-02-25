@@ -6,6 +6,7 @@ import java.util.*;
 import eionet.meta.*;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
+import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 import javax.servlet.*;
@@ -76,49 +77,60 @@ public class CopyHandler extends Object {
                         boolean includeDstGenFields) throws SQLException{
 
         if (dstGen==null) return null;
-        srcConstraint = srcConstraint==null ? "" : " where " + srcConstraint;
-
+        
         String tableName = dstGen.getTableName();
         Vector colNames = getTableColumnNames(tableName);
-        if (colNames==null || colNames.size()==0)
+        if (colNames==null || colNames.size()==0){
         	throw new SQLException("Failed to retreive any column names of this table: " + tableName);
+        }
         
-        String q = "select * from " + dstGen.getTableName() + srcConstraint;
+        INParameters inParams = new INParameters();
+        
+        String q = "select * from " + inParams.add(dstGen.getTableName());
+        if (srcConstraint != null){
+        	q += " where "+inParams.add(srcConstraint);
+        }
 
-        Statement stmt = null;
+        
+        PreparedStatement stmt = null;
         Statement stmt1 = null;
         ResultSet rs = null;
-        try{
-        	stmt = conn.createStatement();
-        	rs = stmt.executeQuery(q);
+        try {
+        	stmt = SQL.preparedStatement(q, inParams, conn);
+        	rs = stmt.executeQuery();
 	        while (rs.next()){
 	            SQLGenerator gen = (SQLGenerator)dstGen.clone();
 	            for (int i=0; i<colNames.size(); i++){
 	                String colName = (String)colNames.get(i);
 	                String colValue = rs.getString(colName);
 	                if ((dstGen.getFieldValue(colName))==null){
-	                    if (colValue!=null)
+	                    if (colValue!=null){
 	                        gen.setField(colName, colValue);
+	                    }
 	                }
 	                else if (!includeDstGenFields){
-	                    if(dstGen.getFieldValue(colName).equals(""))
+	                    if(dstGen.getFieldValue(colName).equals("")){
 	                        gen.removeField(colName);
+	                    }
 	                }
 	            }
 	            logger.debug(gen.insertStatement());
 	            
-	            if (stmt1==null)
+	            // no prepared statement needed as the query is generated from database results not ext. params.
+	            if (stmt1==null){
 	            	stmt1 = conn.createStatement();
+	            }
 	            stmt1.executeUpdate(gen.insertStatement());
 	        }
         }
         finally{
+        	
         	try{
 	        	if (rs!=null) rs.close();
 	        	if (stmt!=null) stmt.close();
 	        	if (stmt1!=null) stmt1.close();
+        	} catch (Exception e){
         	}
-        	catch (Exception e){}
         }
 
         if (includeDstGenFields)
@@ -139,17 +151,17 @@ public class CopyHandler extends Object {
     	if (tableName==null || tableName.length()==0)
     		return result;
     	
-    	StringBuffer buf = new StringBuffer("select * from ");
-    	buf.append(tableName);
-    	buf.append(" limit 0,1");
+    	INParameters inParams = new INParameters();
+    	
+    	String q = "select * from "+inParams.add(tableName)+" limit 0,1";
     	
     	int colCount = 0;
-    	Statement stmt = null;
+    	PreparedStatement stmt = null;
     	ResultSet rs = null;
     	ResultSetMetaData rsmd = null;
     	try{
-    		stmt = conn.createStatement();
-    		rs = stmt.executeQuery(buf.toString());
+    		stmt = SQL.preparedStatement(q, inParams, conn);
+    		rs = stmt.executeQuery();
     		rsmd = rs.getMetaData();
     		if (rsmd!=null){
     			colCount = rsmd.getColumnCount();
@@ -286,13 +298,15 @@ public class CopyHandler extends Object {
 	public void copyFxv(String newOwner, String oldOwner, String ownerType)
 														throws SQLException{
 		
-		StringBuffer buf = new StringBuffer("select * from FXV where ").
-		append("OWNER_ID=").append(oldOwner).append(" and OWNER_TYPE=").
-		append(Util.strLiteral(ownerType));
-
+		INParameters inParams = new INParameters();
+		
+		String q = "select * from FXV where " + "OWNER_ID="+ inParams.add(oldOwner)+ 
+			" and OWNER_TYPE="+inParams.add(ownerType);
+		
 		Vector v = new Vector();
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
+		PreparedStatement stmt = null; 
+		stmt = SQL.preparedStatement(q, inParams, conn);
+		ResultSet rs = stmt.executeQuery();
 		while (rs!=null && rs.next()){
 			SQLGenerator gen = new SQLGenerator();
 			gen.setTable("FXV");
@@ -453,6 +467,7 @@ public class CopyHandler extends Object {
         gen.setField("DATE", String.valueOf(System.currentTimeMillis()));
         if (user!=null)
         	gen.setField("USER", user.getUserName());
+        
         conn.createStatement().executeUpdate(gen.updateStatement() +
                 " where DATASET_ID=" + newID);
         
@@ -493,18 +508,24 @@ public class CopyHandler extends Object {
         
     	// get id numbers of tables to copy 
     	Vector tbls = new Vector();
-        StringBuffer buf = new StringBuffer();
-        buf.append("select TABLE_ID from DST2TBL where DATASET_ID=").append(oldDstID);
-        buf.append(" order by POSITION asc");
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
-        while (rs.next())
+    	
+    	INParameters inParams = new INParameters();
+    	
+    	String query = "select TABLE_ID from DST2TBL where DATASET_ID="+inParams.add(oldDstID, Types.VARCHAR);
+    	query += " order by POSITION asc";
+    	PreparedStatement stmt = null;
+    	stmt = SQL.preparedStatement(query, inParams, conn);
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()){
         	tbls.add(rs.getString(1));
+        }
         
         // copy the tables, get id numbers of new ones
         Vector newTbls = new Vector();
-        for (int i=0; i<tbls.size(); i++)
+        for (int i=0; i<tbls.size(); i++){
         	newTbls.add(copyTbl((String)tbls.get(i)));
+        }
         
         // relate new tables to new dataset
         SQLGenerator gen = new SQLGenerator();
@@ -646,6 +667,7 @@ public class CopyHandler extends Object {
     */
     private String getLastInsertID() throws SQLException {
         
+    	// No need for PreparedStatement.
         String qry = "SELECT LAST_INSERT_ID()";
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);        

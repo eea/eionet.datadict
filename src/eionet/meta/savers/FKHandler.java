@@ -40,12 +40,13 @@ public class FKHandler extends BaseHandler{
 		
 		mode = req.getParameter("mode");
 		
-		if (mode.equalsIgnoreCase("add"))
+		if (mode.equalsIgnoreCase("add")){
 			insert();
-		else if (mode.equalsIgnoreCase("edit"))
+		} else if (mode.equalsIgnoreCase("edit")){
 			update();
-		else
+		} else{
 			delete();
+		}
 	}
 	
 	/**
@@ -57,8 +58,9 @@ public class FKHandler extends BaseHandler{
 		String aID = req.getParameter("a_id");
 		String bID = req.getParameter("b_id");
 		
-		if (Util.nullString(aID) || Util.nullString(bID))
+		if (Util.nullString(aID) || Util.nullString(bID)){
 			throw new Exception("One or two of the element IDs is missing!");
+		}
 		
 		INParameters inParams = new INParameters();
         LinkedHashMap map = new LinkedHashMap();
@@ -67,14 +69,17 @@ public class FKHandler extends BaseHandler{
 		map.put("B_ID", inParams.add(bID, Types.INTEGER));
 		
 		String aCardin = req.getParameter("a_cardin");
-		if (!Util.nullString(aCardin))
+		if (!Util.nullString(aCardin)){
 			map.put("A_CARDIN", inParams.add(aCardin));
+		}
 		String bCardin = req.getParameter("b_cardin");
-		if (!Util.nullString(bCardin))
+		if (!Util.nullString(bCardin)){
 			map.put("B_CARDIN", inParams.add(bCardin));
+		}
 		String definition = req.getParameter("definition");
-		if (!Util.nullString(definition))
+		if (!Util.nullString(definition)){
 			map.put("DEFINITION", inParams.add(definition));
+		}
 		
 		SQL.executeUpdate(SQL.insertStatement("FK_RELATION", map), inParams, conn);
 		setLastInsertID();
@@ -87,8 +92,9 @@ public class FKHandler extends BaseHandler{
 	private void update() throws Exception {
 		
 		String rel_id = req.getParameter("rel_id");
-		if (Util.nullString(rel_id))
+		if (Util.nullString(rel_id)){
 			return;
+		}
 
 		INParameters inParams = new INParameters();
         LinkedHashMap map = new LinkedHashMap();
@@ -96,14 +102,17 @@ public class FKHandler extends BaseHandler{
 		//gen.setTable("FK_RELATION");
 		
 		String aCardin = req.getParameter("a_cardin");
-		if (!Util.nullString(aCardin))
+		if (!Util.nullString(aCardin)){
 			map.put("A_CARDIN", inParams.add(aCardin));
+		}
 		String bCardin = req.getParameter("b_cardin");
-		if (!Util.nullString(bCardin))
+		if (!Util.nullString(bCardin)){
 			map.put("B_CARDIN", inParams.add(bCardin));
+		}
 		String definition = req.getParameter("definition");
-		if (!Util.nullString(definition))
+		if (!Util.nullString(definition)){
 			map.put("DEFINITION", inParams.add(definition));
+		}
 		
 		StringBuffer buf = new StringBuffer(SQL.updateStatement("FK_RELATION", map));
 		buf.append(" where REL_ID=").append(inParams.add(rel_id, Types.INTEGER));
@@ -119,14 +128,16 @@ public class FKHandler extends BaseHandler{
 	private void delete() throws Exception {
 		
 		String[] rel_ids = req.getParameterValues("rel_id");
-		if (rel_ids==null || rel_ids.length==0)
+		if (rel_ids==null || rel_ids.length==0){
 			return;
+		}
         
 		INParameters inParams = new INParameters();
 		StringBuffer buf = new StringBuffer("delete from FK_RELATION where ");
 		for (int i=0; i<rel_ids.length; i++){
-			if (i>0)
+			if (i>0){
 				buf.append(" or ");
+			}
 			buf.append("REL_ID=").append(inParams.add(rel_ids[i], Types.INTEGER));
 		}
 

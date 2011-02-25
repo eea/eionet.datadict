@@ -3505,8 +3505,9 @@ public class DDSearchEngine {
 		try{
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(q);
-			while (rs.next())
+			while (rs.next()){
 				v.add(rs.getString("HARVESTER_ID"));
+			}
 		}
 		finally{
 			try{

@@ -451,8 +451,9 @@ public class AttributeHandler extends BaseHandler {
         	stmt = conn.createStatement();
         	rs = stmt.executeQuery(qry);
 	        rs.clearWarnings();
-	        if (rs.next())
+	        if (rs.next()){
 	            lastInsertID = rs.getString(1);
+	        }
         }
         finally{
         	SQL.close(rs);

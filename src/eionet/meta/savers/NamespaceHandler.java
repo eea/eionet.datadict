@@ -7,6 +7,8 @@ import com.tee.util.*;
 
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
+import eionet.util.sql.INParameters;
+import eionet.util.sql.SQL;
 
 /**
  * 
@@ -82,15 +84,17 @@ public class NamespaceHandler extends BaseHandler{
         
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
                           !mode.equalsIgnoreCase("edit") &&
-                          !mode.equalsIgnoreCase("delete")))
+                          !mode.equalsIgnoreCase("delete"))){
             throw new Exception("NamespaceHandler mode unspecified!");
+        }
 
-        if (mode.equalsIgnoreCase("add"))
+        if (mode.equalsIgnoreCase("add")){
             insert();
-        else if (mode.equalsIgnoreCase("edit"))
+        } else if (mode.equalsIgnoreCase("edit")){
             update();
-        else
+        } else{
             delete();
+        }
     }
     
     /**
@@ -100,34 +104,43 @@ public class NamespaceHandler extends BaseHandler{
     private void insert() throws Exception {
         
         // at least the short_name is required
-        if (Util.nullString(shortName))
+        if (Util.nullString(shortName)){
             throw new Exception("NamespaceHandler: at least the short_name " +
                                         "is required!");
+        }
         
+        INParameters inParams = new INParameters();
         // build SQL
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("NAMESPACE");
-        if (!Util.nullString(fullName))
-            gen.setField("FULL_NAME", fullName);
-        if (!Util.nullString(shortName))
-            gen.setField("SHORT_NAME", shortName);
-        if (!Util.nullString(definition))
-            gen.setField("DEFINITION", definition);
+        if (!Util.nullString(fullName)){
+            gen.setField("FULL_NAME", inParams.add(fullName));
+        }
+        if (!Util.nullString(shortName)){
+            gen.setField("SHORT_NAME",inParams.add(shortName));
+        }
+        if (!Util.nullString(definition)){
+            gen.setField("DEFINITION", inParams.add(definition));
+        }
 
         String wrkUser = req.getParameter("wrk_user");
-        if (!Util.nullString(wrkUser))
-            gen.setField("WORKING_USER", wrkUser);
-        else
-            gen.setFieldExpr("WORKING_USER", "NULL");
+        if (!Util.nullString(wrkUser)){
+            gen.setField("WORKING_USER", inParams.add(wrkUser));
+        } else {
+            gen.setFieldExpr("WORKING_USER", inParams.add("NULL"));
+        }
 
         String parentNS = req.getParameter("parent_ns");
-        if (!Util.nullString(parentNS))
-        	gen.setFieldExpr("PARENT_NS", parentNS);
+        if (!Util.nullString(parentNS)){
+        	gen.setFieldExpr("PARENT_NS", inParams.add(parentNS));
+        }
         
         // execute
         String sql = gen.insertStatement();
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(sql);
+        
+        
+        PreparedStatement stmt = SQL.preparedStatement(sql, inParams, conn);
+        stmt.executeUpdate();
         stmt.close();
         
         setLastInsertID();
@@ -135,33 +148,38 @@ public class NamespaceHandler extends BaseHandler{
     
     private void update() throws Exception {
         
-        if (nsID == null || nsID.length==0)
+        if (nsID == null || nsID.length==0){
             throw new Exception("Namespace ID not specified!");
-            
+        }
+        
+        INParameters inParams = new INParameters();
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("NAMESPACE");
         // don't allow change of SHORT_NAME in the first approach
         //if (!Util.nullString(shortName))
             //gen.setField("SHORT_NAME", shortName);
-        if (!Util.nullString(fullName))
-            gen.setField("FULL_NAME", fullName);
-        if (!Util.nullString(definition))
-            gen.setField("DEFINITION", definition);
+        if (!Util.nullString(fullName)){
+            gen.setField("FULL_NAME", inParams.add(fullName));
+        }
+        if (!Util.nullString(definition)){
+            gen.setField("DEFINITION", inParams.add(definition));
+        }
         
         String wrkUser = req.getParameter("wrk_user");
         if (!Util.nullString(wrkUser))
-            gen.setField("WORKING_USER", wrkUser);
+            gen.setField("WORKING_USER", inParams.add(wrkUser));
         else
-            gen.setFieldExpr("WORKING_USER", "NULL");
+            gen.setFieldExpr("WORKING_USER", inParams.add("NULL"));
         
         StringBuffer buf = new StringBuffer(gen.updateStatement());
         buf.append(" where NAMESPACE_ID=");
-        buf.append(nsID[0]);
+        buf.append(inParams.add(nsID[0]));
         
         logger.debug(buf.toString());
         
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
+        PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+        stmt.executeUpdate();
+
         stmt.close();
         
         lastInsertID = nsID[0];
@@ -210,32 +228,35 @@ public class NamespaceHandler extends BaseHandler{
     
     private boolean exists() throws SQLException {
         
+    	INParameters inParams = new INParameters();
         String qry = "";
         if (Util.nullString(dsID) && Util.nullString(tblID)){
             
             qry = "select count(*) as COUNT from NAMESPACE where " +
                     "DATASET_ID is null and TABLE_ID is null and SHORT_NAME=" +
-                    Util.strLiteral(shortName);
+                    inParams.add(Util.strLiteral(shortName));
         }
         else if (!Util.nullString(tblID)){
             
             qry = "select count(*) as COUNT from NAMESPACE where " +
-                    "TABLE_ID=" + tblID;
+                    "TABLE_ID=" + inParams.add(tblID);
         }
         else{
             
             qry = "select count(*) as COUNT from NAMESPACE where " +
-                    "TABLE_ID is null and DATASET_ID=" + dsID;
+                    "TABLE_ID is null and DATASET_ID=" + inParams.add(dsID);
         }
         
         logger.debug(qry);
         
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(qry);
+        PreparedStatement stmt = SQL.preparedStatement(qry, inParams, conn);
+        ResultSet rs = stmt.executeQuery();
             
-        if (rs.next())
-            if (rs.getInt("COUNT")>0)
+        if (rs.next()){
+            if (rs.getInt("COUNT")>0){
                 return true;
+            }
+        }
         
         stmt.close();
         

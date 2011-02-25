@@ -9,6 +9,7 @@ import javax.servlet.http.*;
 
 import eionet.meta.*;
 import eionet.util.SecurityUtil;
+import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 import com.tee.util.*;
@@ -204,22 +205,27 @@ public class DataElementHandler extends BaseHandler {
         
         if (!doCleanup) return;
         
-        Statement stmt = conn.createStatement();
+        INParameters inParams = new INParameters();
+        
+        PreparedStatement stmt = null;
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("DATAELEM");
         
         // release originals
 		for (Iterator i=originals.iterator(); i.hasNext(); ){
-			StringBuffer buf = new StringBuffer().
-			append("update DATAELEM set WORKING_USER=NULL where IDENTIFIER=");
+			
+			String q = "update DATAELEM set WORKING_USER=NULL where IDENTIFIER="; 
+
 			String origID = (String)i.next();
 			int commaPos = origID.indexOf(',');
-			if (commaPos<0)
-				buf.append(Util.strLiteral(origID));
-			else
-				buf.append(Util.strLiteral(origID.substring(0,commaPos))).
-				append(" and PARENT_NS=").append(origID.substring(commaPos+1));
-			stmt.executeUpdate(buf.toString());
+			if (commaPos<0){
+				q += inParams.add(Util.strLiteral(origID));
+			} else {
+				q += inParams.add(origID.substring(0,commaPos));
+				q += " and PARENT_NS=" + inParams.add(origID.substring(commaPos+1));
+			}
+			stmt = SQL.preparedStatement(q, inParams, conn);
+			stmt.executeQuery();
 		}
 		
         // release the top namespaces
@@ -278,29 +284,35 @@ public class DataElementHandler extends BaseHandler {
     	boolean elmCommon = req.getParameter("common")!=null; 
 
         // check missing parameters
-		if (elmIdfier == null)
+		if (elmIdfier == null){
 			throw new SQLException("Missing request parameter: idfier");
-		if (!elmCommon && (this.tableID==null || this.tableID.length()==0))
+		}
+		if (!elmCommon && (this.tableID==null || this.tableID.length()==0)){
 			throw new Exception("Missing request parameter: table_id");
+		}
 		
 		// if non-common element, make sure such does not already exist within this table
-		if (!elmCommon && existsInTable())
+		if (!elmCommon && existsInTable()){
 			throw new SQLException("The table already has an element with this Identifier");
+		}
 		
 		// if common element, make sure such does not already exist
-		if (elmCommon && existsCommon())
+		if (elmCommon && existsCommon()){
 			throw new SQLException("A common element with this Identifier already exists");
+		}
 
         // if making a copy, do the copy, create acl, and return
 		String copyElemID = req.getParameter("copy_elem_id");
 		if (copyElemID != null && copyElemID.length()!=0){
-			if (elmCommon)
+			if (elmCommon){
 				copyIntoCommon(copyElemID);
-			else
+			} else {
 				copyIntoNonCommon(copyElemID);
+			}
 			
-			if (elmCommon && user!=null)
+			if (elmCommon && user!=null){
 				createAclForCommonElm();
+			}
 			return;
 		}
 
@@ -308,10 +320,12 @@ public class DataElementHandler extends BaseHandler {
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("DATAELEM");
         gen.setField("IDENTIFIER", elmIdfier);
-        if (elmShortName!=null)
+        if (elmShortName!=null){
         	gen.setField("SHORT_NAME", elmShortName);
-        if (elmValuesType!=null)
+        }
+        if (elmValuesType!=null){
         	gen.setField("TYPE", elmValuesType);
+        }
         
         if (!elmCommon){
         	gen.setFieldExpr("PARENT_NS", getTblNamespaceID());
@@ -321,35 +335,42 @@ public class DataElementHandler extends BaseHandler {
 		// set the element's registration status (relevant for common elements only)
 		if (elmCommon){
 			String regStatus = req.getParameter("reg_status");
-			if (regStatus!=null && regStatus.length()>0)
+			if (regStatus!=null && regStatus.length()>0){
 				gen.setField("REG_STATUS", regStatus);
+			}
 		}
         
         // set gis type
 		String gisType = req.getParameter("gis");
-		if (gisType!=null && gisType.length()==0 && isImportMode)
+		if (gisType!=null && gisType.length()==0 && isImportMode){
 			gisType = null;
-		if (gisType!=null && !gisType.equals("nogis"))
+		}
+		if (gisType!=null && !gisType.equals("nogis")){
 			gen.setField("GIS", gisType);
+		}
 
 		// set IS_ROD_PARAM
 		String isRodParam = req.getParameter("is_rod_param");
 		if (isRodParam!=null){
-			if (!isRodParam.equals("true") && !isRodParam.equals("false"))
+			if (!isRodParam.equals("true") && !isRodParam.equals("false")){
 				throw new Exception("Invalid value for is_rod_param!");
+			}
 			gen.setField("IS_ROD_PARAM", isRodParam);
 		}
 
         // if not in import mode, treat new common elements as working copies until checked in
 		if (elmCommon && !isImportMode){
             gen.setField("WORKING_COPY", "Y");
-            if (user!=null && user.isAuthentic())
+            if (user!=null && user.isAuthentic()){
                 gen.setField("WORKING_USER", user.getUserName());
+            }
         }
-		if (user!=null)
+		if (user!=null){
 			gen.setField("USER", user.getUserName());
-		if (date==null)
+		}
+		if (date==null){
 			date = String.valueOf(System.currentTimeMillis());
+		}
 		gen.setFieldExpr("DATE", date);
 
 		// execute element insert SQL
@@ -359,8 +380,9 @@ public class DataElementHandler extends BaseHandler {
 		
 		// if non-common element, create row in TBL2ELEM
 		if (!elmCommon){
-			if (tableID==null || tableID.length()==0)
+			if (tableID==null || tableID.length()==0){
 				throw new Exception("Missing tableID");
+			}
 			StringBuffer sqlBuf = new StringBuffer("insert into TBL2ELEM (TABLE_ID, DATAELEM_ID, POSITION) select ");
 			sqlBuf.append(tableID).append(", ").append(getLastInsertID());
 			sqlBuf.append(", ifnull(max(POSITION)+1,1) from TBL2ELEM where TABLE_ID=").append(tableID);
@@ -371,13 +393,15 @@ public class DataElementHandler extends BaseHandler {
 		processAttributes();
 		
 		// if this is a boolean element, auto-create the fixed values ("true" and "false")
-		if (elmValuesType!=null && elmValuesType.equals("CH1") && mDatatypeID!=null && datatypeValue.equals("boolean"))
+		if (elmValuesType!=null && elmValuesType.equals("CH1") && mDatatypeID!=null && datatypeValue.equals("boolean")){
 			autoCreateBooleanFixedValues(stmt, getLastInsertID());
+		}
 		stmt.close();
 		
 		// if common element, create corresponding acl
-		if (elmCommon && user!=null)
+		if (elmCommon && user!=null){
 			createAclForCommonElm();
+		}
     }
 
     /**
@@ -480,8 +504,9 @@ public class DataElementHandler extends BaseHandler {
 		// prepare SQL generator for element update
 		SQLGenerator gen = new SQLGenerator();
 		gen.setTable("DATAELEM");
-		if (!Util.nullString(elmShortName))
+		if (!Util.nullString(elmShortName)){
 			gen.setField("SHORT_NAME", elmShortName);
+		}
 
 		// if common element, set regisration status
 		if (elmCommon){
@@ -493,30 +518,33 @@ public class DataElementHandler extends BaseHandler {
 		// set IS_ROD_PARAM
 		String isRodParam = req.getParameter("is_rod_param");
 		if (isRodParam!=null){
-			if (!isRodParam.equals("true") && !isRodParam.equals("false"))
+			if (!isRodParam.equals("true") && !isRodParam.equals("false")){
 				throw new Exception("Invalid value for is_rod_param!");
+			}
 			gen.setField("IS_ROD_PARAM", isRodParam);
 		}
 		
 		// set the gis type (relevant for common elements only)
 		String gisType = req.getParameter("gis");
-		if (gisType==null || gisType.equals("nogis"))
+		if (gisType==null || gisType.equals("nogis")){
 			gen.setFieldExpr("GIS", "NULL");
-		else
+		} else {
 			gen.setField("GIS", gisType);
+		}
         
 		// execute element update SQL if at least one field was set
-		if (!Util.nullString(gen.getValues()))
-			conn.createStatement().executeUpdate(gen.updateStatement() + 
-													" where DATAELEM_ID=" + delem_id);
+		if (!Util.nullString(gen.getValues())){
+			conn.createStatement().executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + delem_id);
+		}
         // handle element's attributes
         deleteAttributes();
         processAttributes();
         
         // handle the element's fixed/suggested values
         String rmvValues = req.getParameter("remove_values"); 
-        if (rmvValues!=null && rmvValues.equals("true"))
+        if (rmvValues!=null && rmvValues.equals("true")){
         	conn.createStatement().executeUpdate("delete from FXV where OWNER_TYPE='elem' and OWNER_ID=" + delem_id);
+        }
         
         // handle datatype conversion
         handleDatatypeConversion(req.getParameter("datatype_conversion"));
@@ -529,29 +557,33 @@ public class DataElementHandler extends BaseHandler {
      */
     private void handleDatatypeConversion(String conversion) throws Exception {
     	
-    	if (eionet.util.Util.voidStr(conversion))
+    	if (eionet.util.Util.voidStr(conversion)){
     		return;
+    	}
     	
     	// conversion is a string with pattern "oldtype-newtype", so check that '-' is indeed present
     	int i = conversion.indexOf('-');
-    	if (i<=0)
+    	if (i<=0){
     		throw new Exception("Invalid parameter value: " + conversion);
+    	}
     	
     	// extract old and new datatype
     	String oldDatatype = conversion.substring(0,i);
     	String newDatatype = conversion.substring(i+1);
     	
     	// setup search engine object
-    	if (searchEngine==null)
+    	if (searchEngine==null){
     		searchEngine = new DDSearchEngine(conn, "", ctx);
+    	}
     	
     	// find ids of attributes whose values must be deleted according to the new datatype's rules
     	HashSet deleteAttrs = new HashSet();
     	Vector v = searchEngine.getDElemAttributes(DElemAttribute.TYPE_SIMPLE);
     	for (i=0; v!=null && i<v.size(); i++){
     		DElemAttribute attr = (DElemAttribute)v.get(i);
-    		if (eionet.util.Util.skipAttributeByDatatype(attr.getShortName(), newDatatype))
+    		if (eionet.util.Util.skipAttributeByDatatype(attr.getShortName(), newDatatype)){
     			deleteAttrs.add(attr.getID());
+    		}
     	}
     	
     	// delete the values of teh above-found attributes
@@ -561,8 +593,9 @@ public class DataElementHandler extends BaseHandler {
     		buf.append(delem_id).append(" and (");
     		i=0;
 	    	for (Iterator iter=deleteAttrs.iterator(); iter.hasNext(); i++){
-	    		if (i>0)
+	    		if (i>0){
 	    			buf.append(" or ");
+	    		}
 	    		buf.append("M_ATTRIBUTE_ID=").append(iter.next());
 	    	}
 	    	buf.append(")");
@@ -574,8 +607,9 @@ public class DataElementHandler extends BaseHandler {
     	// if a fixed values element is converted into boolean datatype, auto-create "true" and "false" values
     	// (it is assumed here that the old non-boolean values have already been removed)
 		if (elmValuesType!=null && elmValuesType.equals("CH1") && newDatatype.equals("boolean")){
-			if (stmt==null)
+			if (stmt==null){
 				stmt = conn.createStatement();
+			}
 			autoCreateBooleanFixedValues(stmt, delem_id);
 		}
 
@@ -618,16 +652,23 @@ public class DataElementHandler extends BaseHandler {
     	// do them first
     	String[] linkelms = req.getParameterValues("linkelm_id");
         if (linkelms!=null && linkelms.length!=0){
-        	if (tableID==null || tableID.length()==0)
+        	if (tableID==null || tableID.length()==0){
         		throw new Exception("Missing request parameter: table_id");
-        	StringBuffer buf = new StringBuffer("delete from TBL2ELEM where TABLE_ID=");
-    		buf.append(tableID).append(" and (");
+        	}
+        	
+        	INParameters inParams = new INParameters();
+        	String q = "delete from TBL2ELEM where TABLE_ID="+inParams.add(tableID)+" and (";
+        	
     		for (int i=0; i<linkelms.length; i++){
-    			if (i>0) buf.append(" or ");
-    			buf.append("DATAELEM_ID=").append(linkelms[i]);
+    			if (i>0){ 
+    				q += " or ";
+    			}
+    			q += "DATAELEM_ID=" + inParams.add(linkelms[i]);
     		}
-    		buf.append(")");
-    		stmt.executeUpdate(buf.toString());
+    		q += ")";
+    		
+    		PreparedStatement preparedStatement = SQL.preparedStatement(q, inParams, conn);
+    		preparedStatement.executeQuery();
         }
         
         // if no deletion of elements requested, return
@@ -638,14 +679,22 @@ public class DataElementHandler extends BaseHandler {
         // and gather information we need when starting the deletion
         HashSet identifiers = new HashSet();
         HashSet unlockCheckedoutCopies = new HashSet();
-        StringBuffer buf = new StringBuffer("select * from DATAELEM where ");
+        
+        INParameters inParams = new INParameters();
+        String q = "select * from DATAELEM where ";
+        
+        //StringBuffer buf = new StringBuffer("select * from DATAELEM where ");
         for (int i=0; i<delem_ids.length; i++){
-            if (i>0)
-                buf.append(" or ");
-            buf.append("DATAELEM_ID=");
-            buf.append(delem_ids[i]);
+            if (i>0){
+            	q += " or ";
+            }
+            q += "DATAELEM_ID=";
+            q += inParams.add(delem_ids[i]);
         }
-        ResultSet rs = stmt.executeQuery(buf.toString());
+        
+        PreparedStatement preparedStatement = SQL.preparedStatement(q, inParams, conn);
+        ResultSet rs = preparedStatement.executeQuery();
+        
         while (rs.next()){
         	// skip non-common elements, as this loop is relevant for common elements only
         	String parentNS = rs.getString("PARENT_NS");
@@ -697,22 +746,28 @@ public class DataElementHandler extends BaseHandler {
 		deleteTableElem();
 		
 		// delete the elements themselves
-		buf = new StringBuffer("delete from DATAELEM where ");
+		
+		
+		inParams = new INParameters();
+		q = "delete from DATAELEM where ";
         for (int i=0; i<delem_ids.length; i++){
-            if (i>0)
-                buf.append(" or ");
-            buf.append("DATAELEM_ID=");
-            buf.append(delem_ids[i]);
+            if (i>0){
+                q += " or ";
+            }
+            q += "DATAELEM_ID=";
+            q += inParams.add(delem_ids[i]);
         }
-        stmt.executeUpdate(buf.toString());
 	
+        preparedStatement = SQL.preparedStatement(q, inParams, conn);
+        preparedStatement.executeQuery();
+        
         // remove acls of common elements whose identifiers are not present any more
         removeAcls(stmt, identifiers);
         
         // unlock checked out copies whose working copies were deleted
         if (unlockCheckedoutCopies.size()>0){
 	        int i=0;
-	        buf = new StringBuffer("update DATAELEM set WORKING_USER=NULL where ");
+	        StringBuffer buf = new StringBuffer("update DATAELEM set WORKING_USER=NULL where ");
 	        for (Iterator iter=unlockCheckedoutCopies.iterator(); iter.hasNext(); i++){
 	        	if (i>0) buf.append(" or ");
 	        	buf.append("DATAELEM_ID=").append(iter.next());
@@ -781,35 +836,49 @@ public class DataElementHandler extends BaseHandler {
     
     private void deleteRelations() throws SQLException {
         
-        StringBuffer buf = new StringBuffer("delete from RELATION where ");
+    	INParameters inParams = new INParameters();
+    	String q = "delete from RELATION where ";
+        StringBuffer buf = new StringBuffer(q);
+    	
         for (int i=0; i<delem_ids.length; i++){
-            if (i>0) buf.append(" or ");
+            if (i>0) {
+            	q += " or ";
+            	buf.append(" or ");
+            }
+            q += "PARENT_ID=";
             buf.append("PARENT_ID=");
+            q += inParams.add(delem_ids[i]);
             buf.append(delem_ids[i]);
         }
 
-        logger.debug(buf.toString());
+        
 
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
+        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        
+        logger.debug(buf.toString());
+        
+        stmt.executeUpdate();
         stmt.close();
     }
 
     private void deleteFixedValues() throws Exception {
         
-        StringBuffer buf = new StringBuffer().
-        append("select distinct FXV_ID from FXV where ").
-        append("OWNER_TYPE='elem' and (");
+    	INParameters inParams = new INParameters();
+    	String q = "select distinct FXV_ID from FXV where ";
+    	q += "OWNER_TYPE='elem' and (";
+    	
         for (int i=0; i<delem_ids.length; i++){
-            if (i>0)
-                buf.append(" or ");
-            buf.append("OWNER_ID=");
-            buf.append(delem_ids[i]);
+            if (i>0){
+                q += " or ";
+            }
+            q += "OWNER_ID=";
+            q += inParams.add(delem_ids[i]);
         }
-        buf.append(")");
+        q += ")";
         
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
+        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        ResultSet rs = stmt.executeQuery();
+		
         Parameters pars = new Parameters();
         while (rs.next()){
             pars.addParameterValue("del_id", rs.getString("FXV_ID"));
@@ -824,37 +893,44 @@ public class DataElementHandler extends BaseHandler {
     }
     
     private void deleteFkRelations() throws Exception{
-		StringBuffer buf = new StringBuffer();
-		buf.append("delete from FK_RELATION where ");
+    	
+    	String q = "delete from FK_RELATION where ";
+    	INParameters inParams = new INParameters();
 		for (int i=0; i<delem_ids.length; i++){
-			if (i>0)
-				buf.append(" or ");
-			buf.append("A_ID=");
-			buf.append(delem_ids[i]);
-			buf.append(" or B_ID=");
-			buf.append(delem_ids[i]);
+			if (i>0){
+				q += " or ";
+			}
+			q += "A_ID=";
+			q += inParams.add(delem_ids[i]);
+			q += " or B_ID=";
+			q += inParams.add(delem_ids[i]);
 		}
 		
-		Statement stmt = conn.createStatement();
-		stmt.executeUpdate(buf.toString());
+        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        stmt.executeQuery();
 		stmt.close();
     }
     
     private String getTableElemPos() throws SQLException{
 
+    	INParameters inParams = new INParameters();
+    	String q = "select max(POSITION) from TBL2ELEM where TABLE_ID=";
+    	q += inParams.add(tableID);
+    	
         StringBuffer buf = new StringBuffer().
 		append("select max(POSITION) from TBL2ELEM where TABLE_ID=").
         append(tableID);
 
         logger.debug(buf.toString());
 
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
+        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        ResultSet rs = stmt.executeQuery();
         rs.clearWarnings();
 
         String pos=null;
-        if (rs.next())
+        if (rs.next()){
             pos = rs.getString(1);
+        }
         stmt.close();
         if (pos != null){
             try {
@@ -870,21 +946,31 @@ public class DataElementHandler extends BaseHandler {
     }
     private void deleteTableElem() throws SQLException {
 
-        if (delem_ids==null || delem_ids.length==0)
+        if (delem_ids==null || delem_ids.length==0){
             return;
+        }
 
+        INParameters inParams = new INParameters();
+        String q = "delete from TBL2ELEM where ";
+        
         StringBuffer buf = new StringBuffer("delete from TBL2ELEM where ");
         for (int i=0; i<delem_ids.length; i++){
-            if (i>0)
+            if (i>0){
                 buf.append(" or ");
+                q += " or ";
+            }
+            q += "DATAELEM_ID=";
+            q += inParams.add(delem_ids[i]);
+
             buf.append("DATAELEM_ID=");
             buf.append(delem_ids[i]);
         }
 
         logger.debug(buf.toString());
 
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
+        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        stmt.executeQuery();
+        
         stmt.close();
     }
     
@@ -1047,9 +1133,16 @@ public class DataElementHandler extends BaseHandler {
     private void updateTableElemPos(String elemId, String pos) throws Exception {
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("TBL2ELEM");
-
         gen.setField("POSITION", pos);
 
+        INParameters inParams = new INParameters();
+        
+        String q = gen.updateStatement();
+        q += " where TABLE_ID=";
+        q += inParams.add(tableID);
+        q += " and DATAELEM_ID=";
+        q += inParams.add(elemId);
+        
         StringBuffer sqlBuf = new StringBuffer(gen.updateStatement());
         sqlBuf.append(" where TABLE_ID=");
         sqlBuf.append(tableID);
@@ -1058,8 +1151,9 @@ public class DataElementHandler extends BaseHandler {
 
         logger.debug(sqlBuf.toString());
 
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(sqlBuf.toString());
+        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        stmt.executeQuery();
+        
         stmt.close();
     }
     
@@ -1330,8 +1424,9 @@ public class DataElementHandler extends BaseHandler {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
         rs.clearWarnings();
-        if (rs.next())
+        if (rs.next()){
             lastInsertID = rs.getString(1);
+        }
         stmt.close();
     }
 
@@ -1356,8 +1451,9 @@ public class DataElementHandler extends BaseHandler {
         gen.setField("DATAELEM_ID", "");
         CopyHandler copyHandler = new CopyHandler(conn, null, null);
         lastInsertID = copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID, false);
-        if (lastInsertID==null)
+        if (lastInsertID==null){
         	return;
+        }
 
         Statement stmt = null;
     	try {
@@ -1423,8 +1519,9 @@ public class DataElementHandler extends BaseHandler {
     private void copyIntoCommon(String copyElmID) throws Exception{
 
     	// return if copyElemID is null
-        if (copyElmID==null)
+        if (copyElmID==null){
         	return;
+        }
         
         // copy row in DATAELEM table
         SQLGenerator gen = new SQLGenerator();
@@ -1432,8 +1529,9 @@ public class DataElementHandler extends BaseHandler {
         gen.setField("DATAELEM_ID", "");
         CopyHandler copyHandler = new CopyHandler(conn, null, null);
         lastInsertID = copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID, false);
-        if (lastInsertID==null)
+        if (lastInsertID==null){
         	return;
+        }
 
         Statement stmt = null;
     	try {
@@ -1478,8 +1576,9 @@ public class DataElementHandler extends BaseHandler {
 			throw e;
 		}
     	finally{
-			if (stmt!=null)
+			if (stmt!=null){
 				try{ stmt.close(); } catch (SQLException sqle){}
+			}
     	}
 	}
     
@@ -1490,6 +1589,15 @@ public class DataElementHandler extends BaseHandler {
 	 */
 	private boolean existsInTable() throws SQLException {
 		
+		INParameters inParams = new INParameters();
+		
+		String q = "select count(DATAELEM.DATAELEM_ID) from TBL2ELEM ";
+		q += "left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID where ";
+		q += "TBL2ELEM.TABLE_ID=";
+		q += inParams.add(this.tableID);
+		q += " and DATAELEM.DATAELEM_ID is not null and DATAELEM.IDENTIFIER=";
+		q += inParams.add(Util.strLiteral(this.elmIdfier));
+		
 		StringBuffer buf = new StringBuffer();
         buf.append("select count(DATAELEM.DATAELEM_ID) from TBL2ELEM ").
         append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID where ").
@@ -1497,11 +1605,13 @@ public class DataElementHandler extends BaseHandler {
         append(" and DATAELEM.DATAELEM_ID is not null and DATAELEM.IDENTIFIER=").
         append(Util.strLiteral(this.elmIdfier));
         
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(buf.toString());
+        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        ResultSet rs = stmt.executeQuery();
+        
         if (rs.next()){
-            if (rs.getInt(1)>0)
+            if (rs.getInt(1)>0){
                 return true;
+            }
         }
 
         return false;
@@ -1515,12 +1625,12 @@ public class DataElementHandler extends BaseHandler {
 	 */
 	private boolean existsCommon() throws SQLException {
 
-		StringBuffer buf = new StringBuffer();
-		buf.append("select count(*) as COUNT from DATAELEM where PARENT_NS is null and IDENTIFIER=");
-		buf.append(com.tee.util.Util.strLiteral(elmIdfier));
-    
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery(buf.toString());
+		INParameters inParams = new INParameters();
+		String q = "select count(*) as COUNT from DATAELEM where PARENT_NS is null and IDENTIFIER=";
+		q += inParams.add(com.tee.util.Util.strLiteral(elmIdfier));
+	
+		PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        ResultSet rs = stmt.executeQuery();
 		if (rs.next()){
 			if (rs.getInt("COUNT")>0){
 				return true;
@@ -1671,8 +1781,9 @@ public class DataElementHandler extends BaseHandler {
     	ResultSet rs = stmt.executeQuery("select distinct IDENTIFIER from DATAELEM");
     	while (rs.next()){
     		String identifier = rs.getString(1);
-    		if (identifiers.contains(identifier))
+    		if (identifiers.contains(identifier)){
     			identifiers.remove(identifier);
+    		}
     	}
     	
     	if (identifiers.size()==0)
@@ -1690,13 +1801,16 @@ public class DataElementHandler extends BaseHandler {
 	private String getTblNamespaceID() throws Exception{
 		
 		if (tblNamespaceID==null){
-			StringBuffer buf = new StringBuffer("select CORRESP_NS from DS_TABLE where TABLE_ID=");
-			buf.append(tableID);
-			Statement stmt = null;
+			
+			INParameters inParams = new INParameters();
+			String q = "select CORRESP_NS from DS_TABLE where TABLE_ID=";
+			q += inParams.add(tableID);
+
+			PreparedStatement stmt = null;
 			ResultSet rs = null;
 			try{
-				stmt = conn.createStatement();
-				rs = stmt.executeQuery(buf.toString());
+				stmt = SQL.preparedStatement(q, inParams, conn);
+		        rs = stmt.executeQuery();
 				tblNamespaceID = rs.next() ? rs.getString(1) : null;
 			}
 			catch (Exception e){
@@ -1721,13 +1835,15 @@ public class DataElementHandler extends BaseHandler {
 	private String getDstNamespaceID() throws Exception{
 		
 		if (dstNamespaceID==null){
-			StringBuffer buf = new StringBuffer("select PARENT_NS from DS_TABLE where TABLE_ID=");
-			buf.append(tableID);
-			Statement stmt = null;
+			INParameters inParams = new INParameters();
+			String q = "select PARENT_NS from DS_TABLE where TABLE_ID=";
+			q += inParams.add(tableID);
+
+			PreparedStatement stmt = null;
 			ResultSet rs = null;
 			try{
-				stmt = conn.createStatement();
-				rs = stmt.executeQuery(buf.toString());
+				stmt = SQL.preparedStatement(q, inParams, conn);
+		        rs = stmt.executeQuery();
 				dstNamespaceID = rs.next() ? rs.getString(1) : null;
 			}
 			catch (Exception e){
