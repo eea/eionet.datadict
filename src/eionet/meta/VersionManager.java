@@ -12,7 +12,7 @@ import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
-import com.tee.util.SQLGenerator;
+import eionet.util.sql.SQLGenerator;
 import com.tee.util.Util;
 
 import eionet.meta.notif.Subscribe;

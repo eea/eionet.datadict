@@ -16,7 +16,7 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import com.tee.util.SQLGenerator;
+import eionet.util.sql.SQLGenerator;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;

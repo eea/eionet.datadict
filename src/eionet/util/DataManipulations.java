@@ -34,7 +34,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
-import com.tee.util.SQLGenerator;
+import eionet.util.sql.SQLGenerator;
 
 import eionet.meta.savers.CopyHandler;
 import eionet.meta.savers.DataElementHandler;

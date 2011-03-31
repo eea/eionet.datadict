@@ -32,7 +32,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
-import com.tee.util.SQLGenerator;
+import eionet.util.sql.SQLGenerator;
 
 /**
  * 

@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.tee.uit.security.AccessController;
 import com.tee.uit.security.SignOnException;
-import com.tee.util.SQLGenerator;
+import eionet.util.sql.SQLGenerator;
 import com.tee.util.Util;
 
 import eionet.meta.DDSearchEngine;
