@@ -3,28 +3,21 @@
 package eionet.meta.savers;
 
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+
 import junit.framework.TestCase;
+
 import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
-import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import javax.servlet.http.*;
-
-// import eionet.test.Seed;
-// import eionet.test.TestingResources;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-
-import eionet.meta.savers.FixedValuesHandler;
 
 
 public class FixedValuesHandlerTest extends DatabaseTestCase {

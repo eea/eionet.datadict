@@ -1,7 +1,5 @@
 package eionet.util;
 
-import eionet.util.PropsIF;
-import eionet.util.Props;
 import junit.framework.TestCase;
 
 /**

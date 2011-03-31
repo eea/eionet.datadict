@@ -3,9 +3,8 @@ package eionet.meta.exports.xls;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import eionet.util.sql.ConnectionUtil;
-
 import junit.framework.TestCase;
+import eionet.util.sql.ConnectionUtil;
 
 /**
  * 

@@ -1,6 +1,5 @@
 package eionet.util;
 
-import eionet.util.UnicodeEscapes;
 import junit.framework.TestCase;
 
 /**

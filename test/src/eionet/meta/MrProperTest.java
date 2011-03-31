@@ -1,21 +1,23 @@
 package eionet.meta;
 
 
-import eionet.meta.MrProper;
-import java.util.*;
-import java.sql.*;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.meta.savers.Parameters;
-import com.tee.util.Util;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Vector;
+
 import junit.framework.TestCase;
+
 import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ITable;
-import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+
+import eionet.meta.savers.Parameters;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
 
 public class MrProperTest extends DatabaseTestCase {

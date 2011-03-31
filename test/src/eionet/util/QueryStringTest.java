@@ -1,6 +1,5 @@
 package eionet.util;
 
-import eionet.util.QueryString;
 import junit.framework.TestCase;
 
 /**

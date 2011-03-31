@@ -1,7 +1,6 @@
 package eionet.util;
 
 import junit.framework.TestCase;
-import eionet.util.Util;
 
 /**
  * 

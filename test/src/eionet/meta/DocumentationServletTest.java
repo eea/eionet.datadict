@@ -3,27 +3,27 @@
 package eionet.meta;
 
 
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+
+import java.sql.Connection;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.RequestDispatcher;
-
 import eionet.test.Seed;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 import eionet.util.sql.ConnectionUtil;
-
-import eionet.meta.DocumentationServlet;
-import static org.easymock.EasyMock.*;
 
 
 /**

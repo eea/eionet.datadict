@@ -1,14 +1,17 @@
 package eionet.meta;
 
 
-import junit.framework.TestCase;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import eionet.meta.LogoutServlet;
-import static org.easymock.EasyMock.*;
+import junit.framework.TestCase;
 
 
 /*

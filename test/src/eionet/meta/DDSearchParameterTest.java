@@ -1,8 +1,8 @@
 package eionet.meta;
 
 
-import eionet.meta.DDSearchParameter;
 import java.util.Vector;
+
 import junit.framework.TestCase;
 
 

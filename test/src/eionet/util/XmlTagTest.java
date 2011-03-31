@@ -20,7 +20,6 @@
  */
 package eionet.util;
 
-import eionet.util.XmlTag;
 import junit.framework.TestCase;
 
 /**

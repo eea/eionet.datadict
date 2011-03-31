@@ -1,6 +1,5 @@
 package eionet;
 
-import java.util.Date;
 import junit.framework.TestCase;
 
 /**

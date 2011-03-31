@@ -3,13 +3,10 @@
 package eionet.meta.savers;
 
 
-import junit.framework.TestCase;
-import java.io.IOException;
-import javax.servlet.http.*;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import eionet.meta.savers.Parameters;
+import junit.framework.TestCase;
 
 
 /**
