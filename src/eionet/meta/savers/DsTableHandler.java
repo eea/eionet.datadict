@@ -945,82 +945,66 @@ public class DsTableHandler extends BaseHandler {
 			return;
 		
 		PreparedStatement stmt = null;
-		INParameters inParams = null;
 		try{
-			
-			inParams = new INParameters();
 			SQLGenerator gen = new SQLGenerator();
-			gen.setTable("DS_TABLE");
-			gen.setFieldExpr("TABLE_ID", inParams.add(oldID, Types.INTEGER));
 			
+			INParameters inParams = new INParameters();
+			inParams.add(oldID, Types.INTEGER);
+			inParams.add(newID, Types.INTEGER);
+			
+			gen.setTable("DS_TABLE");
+			gen.setFieldExpr("TABLE_ID", "?");
 			StringBuffer buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where TABLE_ID=").append(inParams.add(newID, Types.INTEGER));
-	
+			buf.append(" where TABLE_ID=?");
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 			
-			
-			inParams = new INParameters();
 			gen.setTable("DST2TBL");
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where TABLE_ID=").append(inParams.add(newID, Types.INTEGER));
-			
+			buf.append(" where TABLE_ID=?");
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 			
-			inParams = new INParameters();
 			gen.setTable("TBL2ELEM");
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where TABLE_ID=").append(inParams.add(newID, Types.INTEGER));
+			buf.append(" where TABLE_ID=?");
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 			
-			inParams = new INParameters();
 			gen = new SQLGenerator();
 			gen.setTable("ATTRIBUTE");
-			gen.setFieldExpr("DATAELEM_ID", inParams.add(oldID, Types.INTEGER));
+			gen.setFieldExpr("DATAELEM_ID", "?");
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where PARENT_TYPE='T' and DATAELEM_ID=").
-			append(inParams.add(newID, Types.INTEGER));
+			buf.append(" where PARENT_TYPE='T' and DATAELEM_ID=?");
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 			
-			
-			inParams = new INParameters();
 			gen = new SQLGenerator();
 			gen.setTable("COMPLEX_ATTR_ROW");
-			gen.setFieldExpr("PARENT_ID", inParams.add(oldID, Types.INTEGER));
+			gen.setFieldExpr("PARENT_ID", "?");
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where PARENT_TYPE='T' and PARENT_ID=").
-			append(inParams.add(newID, Types.INTEGER));
+			buf.append(" where PARENT_TYPE='T' and PARENT_ID=?");
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 	
-			
-			inParams = new INParameters();
 			gen = new SQLGenerator();
 			gen.setTable("CACHE");
-			gen.setFieldExpr("OBJ_ID", inParams.add(oldID, Types.INTEGER));
+			gen.setFieldExpr("OBJ_ID", "?");
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where OBJ_TYPE='tbl' and OBJ_ID=").append(inParams.add(newID, Types.INTEGER));
+			buf.append(" where OBJ_TYPE='tbl' and OBJ_ID=?");
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 	
-			
-			inParams = new INParameters();
 			gen = new SQLGenerator();
 			gen.setTable("DOC");
-			gen.setFieldExpr("OWNER_ID", inParams.add(oldID, Types.INTEGER));
+			gen.setFieldExpr("OWNER_ID", "?");
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where OWNER_TYPE='tbl' and OWNER_ID=").append(inParams.add(newID, Types.INTEGER));
+			buf.append(" where OWNER_TYPE='tbl' and OWNER_ID=?");
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 		}
 		finally{
-			try{
-				if (stmt!=null) stmt.close();
-			}
-			catch (SQLException e){}
+			SQL.close(stmt);
 		}
 	}
 
