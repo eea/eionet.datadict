@@ -584,43 +584,48 @@ public class DatasetHandler extends BaseHandler {
     
     private void deleteAttributes() throws SQLException {
 
-		// find out image attributes, so to skip them later
-		StringBuffer buf = new StringBuffer("select M_ATTRIBUTE_ID ");
-		buf.append("from M_ATTRIBUTE where DISP_TYPE='image'");
-		
-		Vector imgAttrs = new Vector();
-		
-		INParameters inParams = new INParameters();
+		ResultSet rs = null;
 		PreparedStatement stmt = null;
-		
-		
-		
-		ResultSet rs = stmt.executeQuery(buf.toString());
-		while (rs.next()){
-			imgAttrs.add(rs.getString(1));
-		}
+		INParameters inParams = new INParameters();
+		try{
+			// find out image attributes, so to skip them later
+			
+			StringBuffer buf = new StringBuffer("select M_ATTRIBUTE_ID ");
+			buf.append("from M_ATTRIBUTE where DISP_TYPE='image'");
 
-        buf = new StringBuffer("delete from ATTRIBUTE where (");
-        for (int i=0; i<ds_ids.length; i++){
-            if (i>0){
-                buf.append(" or ");
-            }
-            buf.append("DATAELEM_ID=");
-            buf.append(inParams.add(ds_ids[i], Types.INTEGER));
-        }
-        
-        buf.append(") and PARENT_TYPE='DS'");
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = stmt.executeQuery();
+			
+			Vector imgAttrs = new Vector();
+			while (rs.next()){
+				imgAttrs.add(rs.getString(1));
+			}
+			SQL.close(rs);
+			SQL.close(stmt);
 
-		// skip image attributes        
-		for (int i=0; i<imgAttrs.size(); i++){
-			buf.append(" and M_ATTRIBUTE_ID<>").append((String)imgAttrs.get(i));
+			// prepare attribute deletion SQL
+			
+			buf = new StringBuffer("delete from ATTRIBUTE where (");
+			for (int i=0; i<ds_ids.length; i++){
+				if (i>0){
+					buf.append(" or ");
+				}
+				buf.append("DATAELEM_ID=");
+				buf.append(inParams.add(ds_ids[i], Types.INTEGER));
+			}
+			buf.append(") and PARENT_TYPE='DS'");
+			// skip image attributes        
+			for (int i=0; i<imgAttrs.size(); i++){
+				buf.append(" and M_ATTRIBUTE_ID<>").append((String)imgAttrs.get(i));
+			}
+
+			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			stmt.executeUpdate();
 		}
-       
-		logger.debug(buf.toString());
-        
-		stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-        stmt.executeUpdate();
-        stmt.close();
+		finally{
+			SQL.close(rs);
+			SQL.close(stmt);
+		}
     }
     
     private void deleteComplexAttributes() throws SQLException {

@@ -761,7 +761,7 @@ public class DataElementHandler extends BaseHandler {
         }
 	
         preparedStatement = SQL.preparedStatement(q, inParams, conn);
-        preparedStatement.executeQuery();
+        preparedStatement.executeUpdate();
         
         // remove acls of common elements whose identifiers are not present any more
         removeAcls(stmt, identifiers);
@@ -905,7 +905,7 @@ public class DataElementHandler extends BaseHandler {
 		}
 		
         PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
-        stmt.executeQuery();
+        stmt.executeUpdate();
 		stmt.close();
     }
     
@@ -960,7 +960,7 @@ public class DataElementHandler extends BaseHandler {
         logger.debug(buf.toString());
 
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-        stmt.executeQuery();
+        stmt.executeUpdate();
         
         stmt.close();
     }

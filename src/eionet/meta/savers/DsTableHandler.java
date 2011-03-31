@@ -365,8 +365,6 @@ public class DsTableHandler extends BaseHandler {
         }
         
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-		stmt.executeUpdate();
-        
         ResultSet rs = stmt.executeQuery();
         while (rs!=null && rs.next()){
         	correspNss.add(rs.getString("CORRESP_NS"));

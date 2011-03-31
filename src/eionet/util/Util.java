@@ -377,24 +377,28 @@ public class Util {
         
         return buf.toString();
     }
-    
-    ///
-    
+
+    /**
+     * 
+     * @param in
+     * @return
+     */
     public static String strLiteral(String in) {
-    in = (in != null ? in : "");
-    StringBuffer ret = new StringBuffer("'");
+    	
+    	in = (in != null ? in : "");
+    	StringBuffer ret = new StringBuffer("'");
 
-    for (int i = 0; i < in.length(); i++) {
-      char c = in.charAt(i);
-      if (c == '\'')
-        ret.append("''");
-      else
-        ret.append(c);
+    	for (int i = 0; i < in.length(); i++) {
+    		char c = in.charAt(i);
+    		if (c == '\'')
+    			ret.append("''");
+    		else
+    			ret.append(c);
+    	}
+    	ret.append('\'');
+
+    	return ret.toString();
     }
-    ret.append('\'');
-
-    return ret.toString();
-  }
 
     /**
      * Calls replaceTags(in, false, false). See the documentation of that method.
