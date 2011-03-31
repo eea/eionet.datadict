@@ -199,9 +199,9 @@ public class DsTableHandler extends BaseHandler {
 			INParameters inParams = new INParameters();
 			SQLGenerator gen = new SQLGenerator();
 			gen.setTable("TBL2ELEM");
-			gen.setFieldExpr("TABLE_ID", inParams.add(req.getParameter("table_id")));
-			gen.setFieldExpr("DATAELEM_ID", inParams.add(req.getParameter("link_elm")));
-			gen.setFieldExpr("POSITION", inParams.add(req.getParameter("elmpos")));
+			gen.setFieldExpr("TABLE_ID", inParams.add(req.getParameter("table_id"), Types.INTEGER));
+			gen.setFieldExpr("DATAELEM_ID", inParams.add(req.getParameter("link_elm"), Types.INTEGER));
+			gen.setFieldExpr("POSITION", inParams.add(req.getParameter("elmpos"), Types.INTEGER));
 			
 			PreparedStatement stmt = SQL.preparedStatement(gen.insertStatement(), inParams, conn);
 			stmt.executeUpdate();
@@ -209,19 +209,21 @@ public class DsTableHandler extends BaseHandler {
 			return;
 		}
 		else if (rplc_elm!=null && rplc_elm.length()>0){
+			
 			INParameters inParams = new INParameters();
 			SQLGenerator gen = new SQLGenerator();
 			gen.setTable("TBL2ELEM");
-			gen.setFieldExpr("TABLE_ID", inParams.add(req.getParameter("table_id")));
-			gen.setFieldExpr("DATAELEM_ID", inParams.add(req.getParameter("rplc_elm")));
-			gen.setFieldExpr("POSITION", inParams.add(req.getParameter("rplc_pos")));
+			gen.setFieldExpr("TABLE_ID", inParams.add(req.getParameter("table_id"), Types.INTEGER));
+			gen.setFieldExpr("DATAELEM_ID", inParams.add(req.getParameter("rplc_elm"), Types.INTEGER));
+			gen.setFieldExpr("POSITION", inParams.add(req.getParameter("rplc_pos"), Types.INTEGER));
 			
 			PreparedStatement stmt = SQL.preparedStatement(gen.insertStatement(), inParams, conn);
 			stmt.executeUpdate();
 			
 			inParams = new INParameters();
-			String q = "delete from TBL2ELEM where TABLE_ID=" + inParams.add(req.getParameter("table_id")) +
-			" and DATAELEM_ID=" + inParams.add(req.getParameter("rplc_id"));
+			String q = "delete from TBL2ELEM where TABLE_ID="
+				+ inParams.add(req.getParameter("table_id"), Types.INTEGER)
+				+ " and DATAELEM_ID=" + inParams.add(req.getParameter("rplc_id"), Types.INTEGER);
 			
 			stmt = SQL.preparedStatement(q, inParams, conn);
 			stmt.executeUpdate();
@@ -263,25 +265,25 @@ public class DsTableHandler extends BaseHandler {
         INParameters inParams = new INParameters();
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("DS_TABLE");
-        gen.setField("IDENTIFIER", inParams.add(idfier));
+        gen.setFieldExpr("IDENTIFIER", inParams.add(idfier, Types.VARCHAR));
 		if (user!=null){
-			gen.setField("USER", inParams.add(user.getUserName()));
+			gen.setFieldExpr("USER", inParams.add(user.getUserName(), Types.VARCHAR));
 		}
 		if (date==null){
 			date = String.valueOf(System.currentTimeMillis());
 		}
 		gen.setFieldExpr("DATE", inParams.add(date));
-		gen.setFieldExpr("CORRESP_NS", inParams.add(correspNS));
+		gen.setFieldExpr("CORRESP_NS", inParams.add(correspNS, Types.INTEGER));
 		
         if (parentNS!=null){
-        	gen.setFieldExpr("PARENT_NS", inParams.add(parentNS));
+        	gen.setFieldExpr("PARENT_NS", inParams.add(parentNS, Types.INTEGER));
         }
         
 		String shortName  = req.getParameter("short_name");
 		if (shortName==null || shortName.length()==0){
 			shortName = idfier;
 		}
-		gen.setField("SHORT_NAME", inParams.add(shortName));
+		gen.setFieldExpr("SHORT_NAME", inParams.add(shortName, Types.VARCHAR));
         
 		
 		PreparedStatement stmt = SQL.preparedStatement(gen.insertStatement(), inParams, conn);
@@ -294,8 +296,8 @@ public class DsTableHandler extends BaseHandler {
         inParams = new INParameters();
         gen.clear();
         gen.setTable("DST2TBL");
-        gen.setField("TABLE_ID", inParams.add(lastInsertID));
-        gen.setField("DATASET_ID", inParams.add(dstID));
+        gen.setFieldExpr("TABLE_ID", inParams.add(lastInsertID, Types.INTEGER));
+        gen.setFieldExpr("DATASET_ID", inParams.add(dstID, Types.INTEGER));
         
         stmt = SQL.preparedStatement(gen.insertStatement(), inParams, conn);
 		stmt.executeUpdate();
@@ -325,8 +327,8 @@ public class DsTableHandler extends BaseHandler {
 		if (shortName!=null && shortName.length()>0){
 			SQLGenerator gen = new SQLGenerator();
 			gen.setTable("DS_TABLE");
-			gen.setField("SHORT_NAME", inParams.add(shortName));
-			String q = gen.updateStatement() + " where TABLE_ID=" + inParams.add(tableID);
+			gen.setFieldExpr("SHORT_NAME", inParams.add(shortName, Types.VARCHAR));
+			String q = gen.updateStatement() + " where TABLE_ID=" + inParams.add(tableID, Types.INTEGER);
 			
 	        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
 			stmt.executeUpdate();
@@ -359,8 +361,7 @@ public class DsTableHandler extends BaseHandler {
             if (i>0){
                 buf.append(" or ");
             }
-            buf.append("TABLE_ID=");
-            buf.append(inParams.add(del_IDs[i]));
+            buf.append("TABLE_ID=").append(inParams.add(del_IDs[i], Types.INTEGER));
         }
         
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
@@ -383,8 +384,7 @@ public class DsTableHandler extends BaseHandler {
 		buf = new StringBuffer("delete from DST2TBL where ");
  		for (int i=0; i<del_IDs.length; i++){
 	 		if (i>0) buf.append(" or ");
- 			buf.append("TABLE_ID=");
-	 		buf.append(inParams.add(del_IDs[i]));
+ 			buf.append("TABLE_ID=").append(inParams.add(del_IDs[i], Types.INTEGER));
  		}
  		stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 		stmt.executeUpdate();
@@ -397,8 +397,7 @@ public class DsTableHandler extends BaseHandler {
         buf = new StringBuffer("delete from DS_TABLE where ");
         for (int i=0; i<del_IDs.length; i++){
             if (i>0) buf.append(" or ");
-            buf.append("TABLE_ID=");
-            buf.append(inParams.add(del_IDs[i]));
+            buf.append("TABLE_ID=").append(inParams.add(del_IDs[i], Types.INTEGER));
         }
         stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 		stmt.executeUpdate();
@@ -462,7 +461,7 @@ public class DsTableHandler extends BaseHandler {
 				buf.append(" or ");
 			}
 			buf.append("TBL2ELEM.TABLE_ID=");
-			buf.append(inParams.add(del_IDs[i]));
+			buf.append(inParams.add(del_IDs[i], Types.INTEGER));
 		}
 		buf.append(") and DATAELEM.DATAELEM_ID is not null and DATAELEM.PARENT_NS is not null");
 		
@@ -504,7 +503,7 @@ public class DsTableHandler extends BaseHandler {
 				buf.append(" or ");
 			}
 			buf.append("TABLE_ID=");
-			buf.append(inParams.add(del_IDs[i]));
+			buf.append(inParams.add(del_IDs[i], Types.INTEGER));
 		}
 		
 		stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
@@ -537,11 +536,10 @@ public class DsTableHandler extends BaseHandler {
             if (i>0) {
             	buf.append(" or ");
             }
-            buf.append("(IDENTIFIER='");
-            buf.append(inParams.add(tblName));
-            buf.append("' and PARENT_NS='");
-            buf.append(inParams.add(parentNs));
-            buf.append("')");
+            buf.append("(IDENTIFIER=");
+            buf.append(inParams.add(tblName, Types.VARCHAR));
+            buf.append(" and PARENT_NS=");
+            buf.append(inParams.add(parentNs, Types.INTEGER));
         }
         
         // execute the query
@@ -707,9 +705,9 @@ public class DsTableHandler extends BaseHandler {
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("ATTRIBUTE");
 
-        gen.setFieldExpr("M_ATTRIBUTE_ID", inParams.add(attrId));
-        gen.setField("DATAELEM_ID", inParams.add(lastInsertID));
-        gen.setField("VALUE", inParams.add(value));
+        gen.setFieldExpr("M_ATTRIBUTE_ID", inParams.add(attrId, Types.INTEGER));
+        gen.setFieldExpr("DATAELEM_ID", inParams.add(lastInsertID, Types.INTEGER));
+        gen.setFieldExpr("VALUE", inParams.add(value));
         gen.setField("PARENT_TYPE", "T");
 
         String sql = gen.insertStatement();
@@ -763,9 +761,9 @@ public class DsTableHandler extends BaseHandler {
         StringBuffer buf = new StringBuffer();
         buf.append("select count(DS_TABLE.TABLE_ID) from DST2TBL ").
         append("left outer join DS_TABLE on DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID where ").
-        append("DST2TBL.DATASET_ID=").append(inParams.add(dstID)).
+        append("DST2TBL.DATASET_ID=").append(inParams.add(dstID, Types.INTEGER)).
         append(" and DS_TABLE.TABLE_ID is not null and DS_TABLE.IDENTIFIER=").
-        append(inParams.add(Util.strLiteral(tblIdfier)));
+        append(inParams.add(tblIdfier, Types.VARCHAR));
         		
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -796,8 +794,8 @@ public class DsTableHandler extends BaseHandler {
         
     	String qry =
         "select distinct CORRESP_NS from DS_TABLE" +
-        " where DS_TABLE.IDENTIFIER=" + inParams.add(com.tee.util.Util.strLiteral(tblIdfier)) +
-        " and DS_TABLE.PARENT_NS=" + inParams.add(dstNamespaceID);
+        " where DS_TABLE.IDENTIFIER=" + inParams.add(tblIdfier, Types.VARCHAR) +
+        " and DS_TABLE.PARENT_NS=" + inParams.add(dstNamespaceID, Types.INTEGER);
 
     	PreparedStatement stmt = SQL.preparedStatement(qry, inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -901,7 +899,7 @@ public class DsTableHandler extends BaseHandler {
 		if (parentNsID==null){
 			INParameters inParams = new INParameters();
 			StringBuffer buf = new StringBuffer("select CORRESP_NS from DATASET where DATASET_ID=");
-			buf.append(inParams.add(dstID));
+			buf.append(inParams.add(dstID, Types.INTEGER));
 			
 			PreparedStatement stmt = null;
 			ResultSet rs = null;
@@ -944,9 +942,10 @@ public class DsTableHandler extends BaseHandler {
 			inParams = new INParameters();
 			SQLGenerator gen = new SQLGenerator();
 			gen.setTable("DS_TABLE");
-			gen.setFieldExpr("TABLE_ID", inParams.add(oldID));
+			gen.setFieldExpr("TABLE_ID", inParams.add(oldID, Types.INTEGER));
+			
 			StringBuffer buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where TABLE_ID=").append(inParams.add(newID));
+			buf.append(" where TABLE_ID=").append(inParams.add(newID, Types.INTEGER));
 	
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
@@ -955,25 +954,25 @@ public class DsTableHandler extends BaseHandler {
 			inParams = new INParameters();
 			gen.setTable("DST2TBL");
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where TABLE_ID=").append(inParams.add(newID));
+			buf.append(" where TABLE_ID=").append(inParams.add(newID, Types.INTEGER));
 			
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 			
-			
 			inParams = new INParameters();
 			gen.setTable("TBL2ELEM");
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where TABLE_ID=").append(inParams.add(newID));
+			buf.append(" where TABLE_ID=").append(inParams.add(newID, Types.INTEGER));
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 			
 			inParams = new INParameters();
 			gen = new SQLGenerator();
 			gen.setTable("ATTRIBUTE");
-			gen.setFieldExpr("DATAELEM_ID", inParams.add(oldID));
+			gen.setFieldExpr("DATAELEM_ID", inParams.add(oldID, Types.INTEGER));
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where PARENT_TYPE='T' and DATAELEM_ID=").append(inParams.add(newID));
+			buf.append(" where PARENT_TYPE='T' and DATAELEM_ID=").
+			append(inParams.add(newID, Types.INTEGER));
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 			
@@ -981,9 +980,10 @@ public class DsTableHandler extends BaseHandler {
 			inParams = new INParameters();
 			gen = new SQLGenerator();
 			gen.setTable("COMPLEX_ATTR_ROW");
-			gen.setFieldExpr("PARENT_ID", inParams.add(oldID));
+			gen.setFieldExpr("PARENT_ID", inParams.add(oldID, Types.INTEGER));
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where PARENT_TYPE='T' and PARENT_ID=").append(inParams.add(newID));
+			buf.append(" where PARENT_TYPE='T' and PARENT_ID=").
+			append(inParams.add(newID, Types.INTEGER));
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 	
@@ -991,9 +991,9 @@ public class DsTableHandler extends BaseHandler {
 			inParams = new INParameters();
 			gen = new SQLGenerator();
 			gen.setTable("CACHE");
-			gen.setFieldExpr("OBJ_ID", inParams.add(oldID));
+			gen.setFieldExpr("OBJ_ID", inParams.add(oldID, Types.INTEGER));
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where OBJ_TYPE='tbl' and OBJ_ID=").append(newID);
+			buf.append(" where OBJ_TYPE='tbl' and OBJ_ID=").append(inParams.add(newID, Types.INTEGER));
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 	
@@ -1001,9 +1001,9 @@ public class DsTableHandler extends BaseHandler {
 			inParams = new INParameters();
 			gen = new SQLGenerator();
 			gen.setTable("DOC");
-			gen.setFieldExpr("OWNER_ID", inParams.add(oldID));
+			gen.setFieldExpr("OWNER_ID", inParams.add(oldID, Types.INTEGER));
 			buf = new StringBuffer(gen.updateStatement());
-			buf.append(" where OWNER_TYPE='tbl' and OWNER_ID=").append(newID);
+			buf.append(" where OWNER_TYPE='tbl' and OWNER_ID=").append(inParams.add(newID, Types.INTEGER));
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 		}

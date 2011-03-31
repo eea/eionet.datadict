@@ -174,14 +174,16 @@ public class SecurityUtil {
 		if (casLoginUrl!=null){
 			
 			String casServerName = getCasServerName(request);
-			if (casServerName==null)
+			if (casServerName==null){
 				throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
 						+ " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
+			}
 
 			// set the after-login-url
 			StringBuffer afterLoginUrl = new StringBuffer(request.getRequestURL());
-			if (request.getQueryString()!=null)
+			if (request.getQueryString()!=null){
 				afterLoginUrl.append("?").append(request.getQueryString());
+			}
 			request.getSession().setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, afterLoginUrl.toString());
 
 			try {

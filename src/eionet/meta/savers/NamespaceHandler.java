@@ -114,25 +114,25 @@ public class NamespaceHandler extends BaseHandler{
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("NAMESPACE");
         if (!Util.nullString(fullName)){
-            gen.setField("FULL_NAME", inParams.add(fullName));
+            gen.setFieldExpr("FULL_NAME", inParams.add(fullName));
         }
         if (!Util.nullString(shortName)){
-            gen.setField("SHORT_NAME",inParams.add(shortName));
+            gen.setFieldExpr("SHORT_NAME",inParams.add(shortName));
         }
         if (!Util.nullString(definition)){
-            gen.setField("DEFINITION", inParams.add(definition));
+            gen.setFieldExpr("DEFINITION", inParams.add(definition));
         }
 
         String wrkUser = req.getParameter("wrk_user");
         if (!Util.nullString(wrkUser)){
-            gen.setField("WORKING_USER", inParams.add(wrkUser));
+            gen.setFieldExpr("WORKING_USER", inParams.add(wrkUser));
         } else {
-            gen.setFieldExpr("WORKING_USER", inParams.add("NULL"));
+            gen.setFieldExpr("WORKING_USER", "NULL");
         }
 
         String parentNS = req.getParameter("parent_ns");
         if (!Util.nullString(parentNS)){
-        	gen.setFieldExpr("PARENT_NS", inParams.add(parentNS));
+        	gen.setFieldExpr("PARENT_NS", inParams.add(parentNS, Types.INTEGER));
         }
         
         // execute
@@ -159,21 +159,21 @@ public class NamespaceHandler extends BaseHandler{
         //if (!Util.nullString(shortName))
             //gen.setField("SHORT_NAME", shortName);
         if (!Util.nullString(fullName)){
-            gen.setField("FULL_NAME", inParams.add(fullName));
+            gen.setFieldExpr("FULL_NAME", inParams.add(fullName));
         }
         if (!Util.nullString(definition)){
-            gen.setField("DEFINITION", inParams.add(definition));
+            gen.setFieldExpr("DEFINITION", inParams.add(definition));
         }
         
         String wrkUser = req.getParameter("wrk_user");
         if (!Util.nullString(wrkUser))
-            gen.setField("WORKING_USER", inParams.add(wrkUser));
+            gen.setFieldExpr("WORKING_USER", inParams.add(wrkUser));
         else
-            gen.setFieldExpr("WORKING_USER", inParams.add("NULL"));
+            gen.setFieldExpr("WORKING_USER", "NULL");
         
         StringBuffer buf = new StringBuffer(gen.updateStatement());
         buf.append(" where NAMESPACE_ID=");
-        buf.append(inParams.add(nsID[0]));
+        buf.append(inParams.add(nsID[0], Types.INTEGER));
         
         logger.debug(buf.toString());
         
@@ -234,17 +234,17 @@ public class NamespaceHandler extends BaseHandler{
             
             qry = "select count(*) as COUNT from NAMESPACE where " +
                     "DATASET_ID is null and TABLE_ID is null and SHORT_NAME=" +
-                    inParams.add(Util.strLiteral(shortName));
+                    inParams.add(shortName);
         }
         else if (!Util.nullString(tblID)){
             
             qry = "select count(*) as COUNT from NAMESPACE where " +
-                    "TABLE_ID=" + inParams.add(tblID);
+                    "TABLE_ID=" + inParams.add(tblID, Types.INTEGER);
         }
         else{
             
             qry = "select count(*) as COUNT from NAMESPACE where " +
-                    "TABLE_ID is null and DATASET_ID=" + inParams.add(dsID);
+                    "TABLE_ID is null and DATASET_ID=" + inParams.add(dsID, Types.INTEGER);
         }
         
         logger.debug(qry);

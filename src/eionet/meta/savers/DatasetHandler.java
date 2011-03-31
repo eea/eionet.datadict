@@ -256,7 +256,7 @@ public class DatasetHandler extends BaseHandler {
                 gen.setField(fldName, dsVisual);
             
             INParameters inParams = new INParameters();
-            String q = gen.updateStatement()+" where DATASET_ID="+inParams.add(ds_id); 
+            String q = gen.updateStatement()+" where DATASET_ID="+inParams.add(ds_id, Types.INTEGER); 
 
             PreparedStatement stmt = null;
             stmt = SQL.preparedStatement(q, inParams, conn);
@@ -282,7 +282,7 @@ public class DatasetHandler extends BaseHandler {
 		// execute the statement
 		
 		INParameters inParams = new INParameters();
-        String q = gen.updateStatement()+" where DATASET_ID="+inParams.add(ds_id); 
+        String q = gen.updateStatement()+" where DATASET_ID="+inParams.add(ds_id, Types.INTEGER); 
 
         PreparedStatement stmt = null;
         stmt = SQL.preparedStatement(q, inParams, conn);
@@ -304,8 +304,9 @@ public class DatasetHandler extends BaseHandler {
 				
 		PreparedStatement stmt = null;
 		for (int i=0; i<ds_ids.length; i++){
+			
 			INParameters inParams = new INParameters();
-			String q = gen.updateStatement() + " where DATASET_ID=" + inParams.add(ds_ids[i]);
+			String q = gen.updateStatement() + " where DATASET_ID=" + inParams.add(ds_ids[i], Types.INTEGER);
 			stmt = SQL.preparedStatement(q, inParams, conn);
 			stmt.executeUpdate();
 		}
@@ -605,7 +606,7 @@ public class DatasetHandler extends BaseHandler {
                 buf.append(" or ");
             }
             buf.append("DATAELEM_ID=");
-            buf.append(inParams.add(ds_ids[i]));
+            buf.append(inParams.add(ds_ids[i], Types.INTEGER));
         }
         
         buf.append(") and PARENT_TYPE='DS'");
@@ -655,7 +656,7 @@ public class DatasetHandler extends BaseHandler {
 		StringBuffer buf = new StringBuffer("delete from DST2ROD where ");
 		for (int i=0; i<ds_ids.length; i++){
 			if (i>0) buf.append(" or ");
-			buf.append("DATASET_ID=").append(inParams.add(ds_ids[i]));
+			buf.append("DATASET_ID=").append(inParams.add(ds_ids[i], Types.INTEGER));
 		}
 	
 		PreparedStatement stmt = null;
@@ -663,12 +664,8 @@ public class DatasetHandler extends BaseHandler {
 			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 			stmt.executeUpdate();
 		}
-		catch (SQLException sqle){
-			try{
-				if (stmt != null){ 
-					stmt.close();
-				}
-			} catch (SQLException sqlee){}
+		finally{
+			SQL.close(stmt);
 		}
 	}
 	
@@ -763,45 +760,65 @@ public class DatasetHandler extends BaseHandler {
     
     private void deleteTablesAndElements() throws Exception {
         
-        PreparedStatement stmt = null;
-        INParameters inParams = null;
-        
-        // do it dataset by dataset
-        for (int i=0; i<ds_ids.length; i++){
-        	
-        	inParams = new INParameters();
-            // get the tables in this dataset
-            String qry = "select distinct TABLE_ID from DST2TBL where DATASET_ID=" + inParams.add(ds_ids[i]);
-            ResultSet rs = stmt.executeQuery(qry);
-            Vector v = new Vector();
-            while (rs.next()){
-                v.add(rs.getString("TABLE_ID"));
-            }
-            
-            // delete the tables found
-            if (v.size()>0){	            
-	            Parameters params = new Parameters();
-	            params.addParameterValue("mode", "delete");
-	            
-	            String completeDelete = req.getParameter("complete");
-	            if (completeDelete!=null && completeDelete.equals("true")){
-	            	params.addParameterValue("complete", "true");
-	            }
-	            	
-	            for (int j=0; j<v.size(); j++){
-	                params.addParameterValue("del_id", (String)v.get(j));
-	            }
-	                        
-	            DsTableHandler tableHandler = new DsTableHandler(conn, params, ctx);
-	            tableHandler.setUser(user);
-	            tableHandler.setVersioning(false);
-	            tableHandler.execute();
-            }
-            stmt = SQL.preparedStatement(qry, inParams, conn);
-            stmt.executeUpdate();
-        }
-        
-        stmt.close();
+    	ResultSet rs = null;
+    	PreparedStatement pstmt1 = null;
+    	PreparedStatement pstmt2 = null;
+    	try{
+    		// loop through datasets
+    		for (int i=0; i<ds_ids.length; i++){
+
+    			// get the tables in this dataset
+    			
+    			INParameters inParams = new INParameters();
+    			String qry = "select distinct TABLE_ID from DST2TBL where DATASET_ID="
+    				+ inParams.add(ds_ids[i], Types.INTEGER);
+
+    			pstmt1 = SQL.preparedStatement(qry, inParams, conn);
+    			rs = pstmt1.executeQuery();
+    			
+    			Vector v = new Vector();
+    			while (rs.next()){
+    				v.add(rs.getString("TABLE_ID"));
+    			}
+    			SQL.close(rs);
+    			SQL.close(pstmt1);
+
+    			// delete the tables found
+    			if (v.size()>0){
+    				
+    				Parameters params = new Parameters();
+    				params.addParameterValue("mode", "delete");
+
+    				String completeDelete = req.getParameter("complete");
+    				if (completeDelete!=null && completeDelete.equals("true")){
+    					params.addParameterValue("complete", "true");
+    				}
+
+    				for (int j=0; j<v.size(); j++){
+    					params.addParameterValue("del_id", (String)v.get(j));
+    				}
+
+    				DsTableHandler tableHandler = new DsTableHandler(conn, params, ctx);
+    				tableHandler.setUser(user);
+    				tableHandler.setVersioning(false);
+    				tableHandler.execute();
+    			}
+
+    			// delete dataset-to-table relations 
+    			inParams = new INParameters();
+    			StringBuffer buf = new StringBuffer("delete from DST2TBL where DATASET_ID=");
+    			buf.append(inParams.add(ds_ids[i], Types.INTEGER));
+
+    			pstmt2 = SQL.preparedStatement(buf.toString(), inParams, conn);
+    			pstmt2.executeUpdate();
+    			SQL.close(pstmt2);
+    		}
+    	}
+    	finally{
+    		SQL.close(rs);
+    		SQL.close(pstmt1);
+    		SQL.close(pstmt2);
+    	}
 	}
     
     private void deleteNamespaces() throws SQLException{
@@ -813,7 +830,7 @@ public class DatasetHandler extends BaseHandler {
                 buf.append(" or ");
             }
             buf.append("NAMESPACE_ID=");
-            buf.append(inParams.add(ds_ids[i]));
+            buf.append(inParams.add(ds_ids[i], Types.INTEGER));
         }
         
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
@@ -846,7 +863,7 @@ public class DatasetHandler extends BaseHandler {
     	
         String qry =
         "select count(*) as COUNT from DATASET " +
-        "where IDENTIFIER=" + inParams.add(com.tee.util.Util.strLiteral(this.idfier));
+        "where IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR);
         
         PreparedStatement stmt = SQL.preparedStatement(qry, inParams, conn);
         ResultSet rs = stmt.executeQuery(qry);
@@ -876,13 +893,13 @@ public class DatasetHandler extends BaseHandler {
         // build the SQL
         StringBuffer buf = new StringBuffer();
         buf.append("update DATASET set WORKING_USER=NULL where ");
-        buf.append("WORKING_USER='" + inParams.add(user.getUserName()) + "' and (");
+        buf.append("WORKING_USER=" + inParams.add(user.getUserName(), Types.VARCHAR) + " and (");
         int i=0;
         for (Iterator iter=originals.iterator(); iter.hasNext(); i++){
             if (i>0) {
             	buf.append(" or ");
             }
-            buf.append("IDENTIFIER='" + inParams.add((String)iter.next()) + "'");
+            buf.append("IDENTIFIER=" + inParams.add((String)iter.next(), Types.VARCHAR));
         }
         buf.append(")");
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
@@ -893,7 +910,8 @@ public class DatasetHandler extends BaseHandler {
 		
 		INParameters inParams = new INParameters();
 		
-		String s = "update NAMESPACE set WORKING_USER=NULL where NAMESPACE_ID=" + inParams.add(nsID);
+		String s = "update NAMESPACE set WORKING_USER=NULL where NAMESPACE_ID="
+			+ inParams.add(nsID, Types.INTEGER);
 		
         PreparedStatement stmt = SQL.preparedStatement(s, inParams, conn);
         stmt.executeUpdate();
@@ -961,7 +979,7 @@ public class DatasetHandler extends BaseHandler {
         	gen.setTable("DATASET");
         	gen.setFieldExpr("DATASET_ID", newID);
         	buf = new StringBuffer(gen.updateStatement());
-        	buf.append(" where DATASET_ID=").append(inParams.add(oldID));
+        	buf.append(" where DATASET_ID=").append(inParams.add(oldID, Types.INTEGER));
 			
         	stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         	stmt.executeUpdate();
@@ -972,7 +990,8 @@ public class DatasetHandler extends BaseHandler {
 			gen.setTable("ATTRIBUTE");
         	gen.setFieldExpr("DATAELEM_ID", newID);
         	buf = new StringBuffer(gen.updateStatement());
-        	buf.append(" where PARENT_TYPE='DS' and DATAELEM_ID=").append(inParams.add(oldID));
+        	buf.append(" where PARENT_TYPE='DS' and DATAELEM_ID=").
+        	append(inParams.add(oldID, Types.INTEGER));
         	
         	stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         	stmt.executeUpdate();
@@ -982,18 +1001,19 @@ public class DatasetHandler extends BaseHandler {
 			gen.setTable("COMPLEX_ATTR_ROW");
         	gen.setFieldExpr("PARENT_ID", newID);
         	buf = new StringBuffer(gen.updateStatement());
-        	buf.append(" where PARENT_TYPE='DS' and PARENT_ID=").append(inParams.add(oldID));
+        	buf.append(" where PARENT_TYPE='DS' and PARENT_ID=").
+        	append(inParams.add(oldID, Types.INTEGER));
         	
         	stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         	stmt.executeUpdate();
-        	
         	
         	inParams = new INParameters();
         	gen.clear();
 			gen.setTable("DST2TBL");
         	gen.setFieldExpr("DATASET_ID", newID);
         	buf = new StringBuffer(gen.updateStatement());
-        	buf.append(" where DATASET_ID=").append(inParams.add(oldID));
+        	buf.append(" where DATASET_ID=").
+        	append(inParams.add(oldID, Types.INTEGER));
         	
         	stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         	stmt.executeUpdate();
@@ -1003,7 +1023,8 @@ public class DatasetHandler extends BaseHandler {
 			gen.setTable("DST2ROD");
         	gen.setFieldExpr("DATASET_ID", newID);
         	buf = new StringBuffer(gen.updateStatement());
-        	buf.append(" where DATASET_ID=").append(inParams.add(oldID));
+        	buf.append(" where DATASET_ID=").
+        	append(inParams.add(oldID, Types.INTEGER));
         	
         	stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         	stmt.executeUpdate();
@@ -1013,17 +1034,15 @@ public class DatasetHandler extends BaseHandler {
 			gen.setTable("DOC");
         	gen.setFieldExpr("OWNER_ID", newID);
         	buf = new StringBuffer(gen.updateStatement());
-        	buf.append(" where OWNER_TYPE='dst' and OWNER_ID=").append(inParams.add(oldID));
+        	buf.append(" where OWNER_TYPE='dst' and OWNER_ID=").
+        	append(inParams.add(oldID, Types.INTEGER));
         	
         	stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         	stmt.executeUpdate();
         	
     	}
     	finally{
-			try{
-				if (stmt!=null) stmt.close();
-			}
-			catch (SQLException e){}
+    		SQL.close(stmt);
     	}
     }
 

@@ -219,10 +219,11 @@ public class DataElementHandler extends BaseHandler {
 			String origID = (String)i.next();
 			int commaPos = origID.indexOf(',');
 			if (commaPos<0){
-				q += inParams.add(Util.strLiteral(origID));
-			} else {
-				q += inParams.add(origID.substring(0,commaPos));
-				q += " and PARENT_NS=" + inParams.add(origID.substring(commaPos+1));
+				q += inParams.add(origID, Types.VARCHAR);
+			}
+			else {
+				q += inParams.add(origID.substring(0,commaPos), Types.VARCHAR);
+				q += " and PARENT_NS=" + inParams.add(origID.substring(commaPos+1), Types.INTEGER);
 			}
 			stmt = SQL.preparedStatement(q, inParams, conn);
 			stmt.executeQuery();
@@ -657,13 +658,14 @@ public class DataElementHandler extends BaseHandler {
         	}
         	
         	INParameters inParams = new INParameters();
-        	String q = "delete from TBL2ELEM where TABLE_ID="+inParams.add(tableID)+" and (";
+        	String q = "delete from TBL2ELEM where TABLE_ID="
+        		+ inParams.add(tableID, Types.INTEGER)+" and (";
         	
     		for (int i=0; i<linkelms.length; i++){
     			if (i>0){ 
     				q += " or ";
     			}
-    			q += "DATAELEM_ID=" + inParams.add(linkelms[i]);
+    			q += "DATAELEM_ID=" + inParams.add(linkelms[i], Types.INTEGER);
     		}
     		q += ")";
     		
@@ -689,7 +691,7 @@ public class DataElementHandler extends BaseHandler {
             	q += " or ";
             }
             q += "DATAELEM_ID=";
-            q += inParams.add(delem_ids[i]);
+            q += inParams.add(delem_ids[i], Types.INTEGER);
         }
         
         PreparedStatement preparedStatement = SQL.preparedStatement(q, inParams, conn);
@@ -755,7 +757,7 @@ public class DataElementHandler extends BaseHandler {
                 q += " or ";
             }
             q += "DATAELEM_ID=";
-            q += inParams.add(delem_ids[i]);
+            q += inParams.add(delem_ids[i], Types.INTEGER);
         }
 	
         preparedStatement = SQL.preparedStatement(q, inParams, conn);
@@ -837,23 +839,18 @@ public class DataElementHandler extends BaseHandler {
     private void deleteRelations() throws SQLException {
         
     	INParameters inParams = new INParameters();
-    	String q = "delete from RELATION where ";
-        StringBuffer buf = new StringBuffer(q);
+    	StringBuffer buf = new StringBuffer("delete from RELATION where ");
     	
         for (int i=0; i<delem_ids.length; i++){
             if (i>0) {
-            	q += " or ";
             	buf.append(" or ");
             }
-            q += "PARENT_ID=";
             buf.append("PARENT_ID=");
-            q += inParams.add(delem_ids[i]);
-            buf.append(delem_ids[i]);
+            buf.append(inParams.add(delem_ids[i], Types.INTEGER));
         }
 
         
-
-        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         
         logger.debug(buf.toString());
         
@@ -872,7 +869,7 @@ public class DataElementHandler extends BaseHandler {
                 q += " or ";
             }
             q += "OWNER_ID=";
-            q += inParams.add(delem_ids[i]);
+            q += inParams.add(delem_ids[i], Types.INTEGER);
         }
         q += ")";
         
@@ -894,16 +891,17 @@ public class DataElementHandler extends BaseHandler {
     
     private void deleteFkRelations() throws Exception{
     	
-    	String q = "delete from FK_RELATION where ";
     	INParameters inParams = new INParameters();
+    	String q = "delete from FK_RELATION where ";
+    	
 		for (int i=0; i<delem_ids.length; i++){
 			if (i>0){
 				q += " or ";
 			}
 			q += "A_ID=";
-			q += inParams.add(delem_ids[i]);
+			q += inParams.add(delem_ids[i], Types.INTEGER);
 			q += " or B_ID=";
-			q += inParams.add(delem_ids[i]);
+			q += inParams.add(delem_ids[i], Types.INTEGER);
 		}
 		
         PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
@@ -914,16 +912,14 @@ public class DataElementHandler extends BaseHandler {
     private String getTableElemPos() throws SQLException{
 
     	INParameters inParams = new INParameters();
-    	String q = "select max(POSITION) from TBL2ELEM where TABLE_ID=";
-    	q += inParams.add(tableID);
     	
         StringBuffer buf = new StringBuffer().
 		append("select max(POSITION) from TBL2ELEM where TABLE_ID=").
-        append(tableID);
+        append(inParams.add(tableID, Types.INTEGER));
 
         logger.debug(buf.toString());
 
-        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         ResultSet rs = stmt.executeQuery();
         rs.clearWarnings();
 
@@ -951,24 +947,19 @@ public class DataElementHandler extends BaseHandler {
         }
 
         INParameters inParams = new INParameters();
-        String q = "delete from TBL2ELEM where ";
-        
         StringBuffer buf = new StringBuffer("delete from TBL2ELEM where ");
+        
         for (int i=0; i<delem_ids.length; i++){
             if (i>0){
                 buf.append(" or ");
-                q += " or ";
             }
-            q += "DATAELEM_ID=";
-            q += inParams.add(delem_ids[i]);
-
             buf.append("DATAELEM_ID=");
-            buf.append(delem_ids[i]);
+            buf.append(inParams.add(delem_ids[i], Types.INTEGER));
         }
 
         logger.debug(buf.toString());
 
-        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         stmt.executeQuery();
         
         stmt.close();
@@ -1131,27 +1122,22 @@ public class DataElementHandler extends BaseHandler {
      * @throws Exception
      */
     private void updateTableElemPos(String elemId, String pos) throws Exception {
+    	
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("TBL2ELEM");
         gen.setField("POSITION", pos);
 
         INParameters inParams = new INParameters();
         
-        String q = gen.updateStatement();
-        q += " where TABLE_ID=";
-        q += inParams.add(tableID);
-        q += " and DATAELEM_ID=";
-        q += inParams.add(elemId);
-        
         StringBuffer sqlBuf = new StringBuffer(gen.updateStatement());
         sqlBuf.append(" where TABLE_ID=");
-        sqlBuf.append(tableID);
+        sqlBuf.append(inParams.add(tableID, Types.INTEGER));
         sqlBuf.append(" and DATAELEM_ID=");
-        sqlBuf.append(elemId);
+        sqlBuf.append(inParams.add(elemId, Types.INTEGER));
 
         logger.debug(sqlBuf.toString());
 
-        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        PreparedStatement stmt = SQL.preparedStatement(sqlBuf.toString(), inParams, conn);
         stmt.executeQuery();
         
         stmt.close();
@@ -1591,21 +1577,15 @@ public class DataElementHandler extends BaseHandler {
 		
 		INParameters inParams = new INParameters();
 		
-		String q = "select count(DATAELEM.DATAELEM_ID) from TBL2ELEM ";
-		q += "left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID where ";
-		q += "TBL2ELEM.TABLE_ID=";
-		q += inParams.add(this.tableID);
-		q += " and DATAELEM.DATAELEM_ID is not null and DATAELEM.IDENTIFIER=";
-		q += inParams.add(Util.strLiteral(this.elmIdfier));
-		
 		StringBuffer buf = new StringBuffer();
         buf.append("select count(DATAELEM.DATAELEM_ID) from TBL2ELEM ").
         append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID where ").
-        append("TBL2ELEM.TABLE_ID=").append(this.tableID).
+        append("TBL2ELEM.TABLE_ID=").
+        append(inParams.add(tableID, Types.INTEGER)).
         append(" and DATAELEM.DATAELEM_ID is not null and DATAELEM.IDENTIFIER=").
-        append(Util.strLiteral(this.elmIdfier));
+        append(inParams.add(elmIdfier, Types.VARCHAR));
         
-        PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
+        PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         ResultSet rs = stmt.executeQuery();
         
         if (rs.next()){
@@ -1627,7 +1607,7 @@ public class DataElementHandler extends BaseHandler {
 
 		INParameters inParams = new INParameters();
 		String q = "select count(*) as COUNT from DATAELEM where PARENT_NS is null and IDENTIFIER=";
-		q += inParams.add(com.tee.util.Util.strLiteral(elmIdfier));
+		q += inParams.add(elmIdfier, Types.VARCHAR);
 	
 		PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -1804,7 +1784,7 @@ public class DataElementHandler extends BaseHandler {
 			
 			INParameters inParams = new INParameters();
 			String q = "select CORRESP_NS from DS_TABLE where TABLE_ID=";
-			q += inParams.add(tableID);
+			q += inParams.add(tableID, Types.INTEGER);
 
 			PreparedStatement stmt = null;
 			ResultSet rs = null;
@@ -1823,8 +1803,9 @@ public class DataElementHandler extends BaseHandler {
 			}
 		}
 		
-		if (tblNamespaceID==null)
+		if (tblNamespaceID==null){
 			throw new Exception("Failed to obtain table namespace ID which is required");
+		}
 		
 		return tblNamespaceID;
 	}
@@ -1835,9 +1816,10 @@ public class DataElementHandler extends BaseHandler {
 	private String getDstNamespaceID() throws Exception{
 		
 		if (dstNamespaceID==null){
+			
 			INParameters inParams = new INParameters();
 			String q = "select PARENT_NS from DS_TABLE where TABLE_ID=";
-			q += inParams.add(tableID);
+			q += inParams.add(tableID, Types.INTEGER);
 
 			PreparedStatement stmt = null;
 			ResultSet rs = null;
@@ -1856,8 +1838,9 @@ public class DataElementHandler extends BaseHandler {
 			}
 		}
 		
-		if (dstNamespaceID==null)
+		if (dstNamespaceID==null){
 			throw new Exception("Failed to obtain dataset namespace ID which is required");
+		}
 		
 		return dstNamespaceID;
 	}

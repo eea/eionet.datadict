@@ -77,27 +77,21 @@ public class CopyHandler extends Object {
                         boolean includeDstGenFields) throws SQLException{
 
         if (dstGen==null) return null;
-        
+        srcConstraint = srcConstraint==null ? "" : " where " + srcConstraint;
+
         String tableName = dstGen.getTableName();
         Vector colNames = getTableColumnNames(tableName);
-        if (colNames==null || colNames.size()==0){
+        if (colNames==null || colNames.size()==0)
         	throw new SQLException("Failed to retreive any column names of this table: " + tableName);
-        }
         
-        INParameters inParams = new INParameters();
-        
-        String q = "select * from " + inParams.add(dstGen.getTableName());
-        if (srcConstraint != null){
-        	q += " where "+inParams.add(srcConstraint);
-        }
+        String q = "select * from " + dstGen.getTableName() + srcConstraint;
 
-        
-        PreparedStatement stmt = null;
+        Statement stmt = null;
         Statement stmt1 = null;
         ResultSet rs = null;
-        try {
-        	stmt = SQL.preparedStatement(q, inParams, conn);
-        	rs = stmt.executeQuery();
+        try{
+        	stmt = conn.createStatement();
+        	rs = stmt.executeQuery(q);
 	        while (rs.next()){
 	            SQLGenerator gen = (SQLGenerator)dstGen.clone();
 	            for (int i=0; i<colNames.size(); i++){
@@ -116,7 +110,6 @@ public class CopyHandler extends Object {
 	            }
 	            logger.debug(gen.insertStatement());
 	            
-	            // no prepared statement needed as the query is generated from database results not ext. params.
 	            if (stmt1==null){
 	            	stmt1 = conn.createStatement();
 	            }
@@ -153,7 +146,7 @@ public class CopyHandler extends Object {
     	
     	INParameters inParams = new INParameters();
     	
-    	String q = "select * from "+inParams.add(tableName)+" limit 0,1";
+    	String q = "select * from " + tableName + " limit 0,1";
     	
     	int colCount = 0;
     	PreparedStatement stmt = null;
@@ -511,7 +504,7 @@ public class CopyHandler extends Object {
     	
     	INParameters inParams = new INParameters();
     	
-    	String query = "select TABLE_ID from DST2TBL where DATASET_ID="+inParams.add(oldDstID, Types.VARCHAR);
+    	String query = "select TABLE_ID from DST2TBL where DATASET_ID="+inParams.add(oldDstID, Types.INTEGER);
     	query += " order by POSITION asc";
     	PreparedStatement stmt = null;
     	stmt = SQL.preparedStatement(query, inParams, conn);

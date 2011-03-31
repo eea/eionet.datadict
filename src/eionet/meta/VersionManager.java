@@ -79,7 +79,7 @@ public class VersionManager{
      * Otherwise return null.
      * 
      * @param   type    object type ("elm", "tbl" or "dst")
-     * @param   ctxID    namespace id if type=="elm",
+     * @param   namespaceID    namespace id if type=="elm",
      *                   dataset id if type=="tbl",
      *                   ignored if type=="dst"
      * @param   shortName
@@ -87,7 +87,7 @@ public class VersionManager{
      * @return  the name of the working user or null if it's missing
      * @exception   SQLException
      */
-    public String getWorkingUser(String ctxID, String idfier, String type)
+    public String getWorkingUser(String namespaceID, String idfier, String type)
         throws SQLException {
         
         String tblName = null;
@@ -95,38 +95,42 @@ public class VersionManager{
         if (type.equals("elm")){
             tblName = "DATAELEM";
             idField = "DATAELEM_ID";
-        } else if (type.equals("tbl")){
+        }
+        else if (type.equals("tbl")){
             tblName = "DS_TABLE";
             idField = "TABLE_ID";
-        } else if (type.equals("dst")){
+        }
+        else if (type.equals("dst")){
             tblName = "DATASET";
             idField = "DATASET_ID";
-        } else {
+        }
+        else {
             throw new SQLException("Unknown type");
         }
         
-        String ctxField = null;
+        String namespaceField = null;
         if (type.equals("elm") || type.equals("tbl")){
-            ctxField = "PARENT_NS";
+            namespaceField = "PARENT_NS";
         }
         
         INParameters inParams = new INParameters();
         
         String qry = "select distinct WORKING_USER, " + idField + " from " + tblName +
-        " where IDENTIFIER='" + inParams.add(idfier) + "'";
-        if (ctxField!=null && ctxID!=null){
-            qry += " and " + inParams.add(ctxField) + "=" + inParams.add(ctxID);
+        " where IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR);
+        if (namespaceField!=null && namespaceID!=null){
+            qry += " and " + namespaceField + "=" + inParams.add(namespaceID, Types.INTEGER);
         }
         
-        qry += " and " + inParams.add(tblName) + ".WORKING_COPY='Y'";
-        qry += " order by " + inParams.add(idField) + " desc";
+        qry += " and " + tblName + ".WORKING_COPY='Y'";
+        qry += " order by " + idField + " desc";
 
         PreparedStatement stmt = SQL.preparedStatement(qry, inParams, conn);
         
         ResultSet rs = stmt.executeQuery();
         if (rs.next()){
             return rs.getString("WORKING_USER");
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -142,13 +146,14 @@ public class VersionManager{
         
         INParameters inParams = new INParameters();
         
-        String s = "select WORKING_USER from NAMESPACE where NAMESPACE_ID=" + inParams.add(nsID);
+        String s = "select WORKING_USER from NAMESPACE where NAMESPACE_ID=" + inParams.add(nsID, Types.INTEGER);
         
         PreparedStatement stmt = SQL.preparedStatement(s, inParams, conn);
         ResultSet rs = stmt.executeQuery();
         if (rs.next()){
             return rs.getString(1);
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -162,11 +167,11 @@ public class VersionManager{
     	INParameters inParams = new INParameters();
         String q =
         "select distinct DS_TABLE.WORKING_USER from DS_TABLE " +
-        "where IDENTIFIER=" + inParams.add(com.tee.util.Util.strLiteral(idfier)) +
+        "where IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR) +
         " and WORKING_COPY='Y'";
         
         if (parentNs!=null){
-            q = q + " and PARENT_NS=" + inParams.add(parentNs);
+            q = q + " and PARENT_NS=" + inParams.add(parentNs, Types.INTEGER);
         } else {
             q = q + " and PARENT_NS is null";
         }
@@ -188,7 +193,7 @@ public class VersionManager{
         
     	INParameters inParams = new INParameters();
         String q = "select distinct DATASET.WORKING_USER from DATASET " +
-        "where DATASET.IDENTIFIER='" + inParams.add(idfier) + "' and " +
+        "where DATASET.IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR) + " and " +
         "DATASET.WORKING_COPY='Y'";
         
         PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
@@ -208,7 +213,7 @@ public class VersionManager{
         
     	INParameters inParams = new INParameters();
     	StringBuffer buf = new StringBuffer("select WORKING_USER from DATASET ");
-    	buf.append("where DATASET_ID=").append(inParams.add(copyID));
+    	buf.append("where DATASET_ID=").append(inParams.add(copyID, Types.INTEGER));
         
     	PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -232,8 +237,8 @@ public class VersionManager{
     	INParameters inParams = new INParameters();
     	StringBuffer buf = new StringBuffer();
     	buf.append("select DATAELEM_ID from DATAELEM where WORKING_COPY='Y'").
-    	append(" and WORKING_USER=").append(inParams.add(Util.strLiteral(user.getUserName()))).
-    	append(" and CHECKEDOUT_COPY_ID=").append(inParams.add(elm.getID()));
+    	append(" and WORKING_USER=").append(inParams.add(user.getUserName(), Types.VARCHAR)).
+    	append(" and CHECKEDOUT_COPY_ID=").append(inParams.add(elm.getID(), Types.INTEGER));
         
     	PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -251,8 +256,8 @@ public class VersionManager{
         String q =
         "select distinct TABLE_ID from DS_TABLE " +
         "where WORKING_COPY='Y' and " +
-        "IDENTIFIER='" + inParams.add(tbl.getIdentifier()) + "' and " +
-        "PARENT_NS=" + inParams.add(tbl.getParentNs());
+        "IDENTIFIER=" + inParams.add(tbl.getIdentifier(), Types.VARCHAR) + " and " +
+        "PARENT_NS=" + inParams.add(tbl.getParentNs(), Types.INTEGER);
         
         PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -277,8 +282,8 @@ public class VersionManager{
     	
     	StringBuffer buf = new StringBuffer();
     	buf.append("select DATASET_ID from DATASET where WORKING_COPY='Y'").
-    	append(" and WORKING_USER=").append(inParams.add(Util.strLiteral(user.getUserName()))).
-    	append(" and CHECKEDOUT_COPY_ID=").append(inParams.add(dst.getID()));
+    	append(" and WORKING_USER=").append(inParams.add(user.getUserName(), Types.VARCHAR)).
+    	append(" and CHECKEDOUT_COPY_ID=").append(inParams.add(dst.getID(), Types.INTEGER));
     	
     	PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -344,9 +349,9 @@ public class VersionManager{
     		// set the working user of the original
 			SQLGenerator gen = new SQLGenerator();
 			gen.setTable("DATAELEM");
-			gen.setField("WORKING_USER", inParams.add(user.getUserName()));
+			gen.setFieldExpr("WORKING_USER", inParams.add(user.getUserName()));
 			
-			String q = gen.updateStatement() + " where DATAELEM_ID=" + inParams.add(elmID);
+			String q = gen.updateStatement() + " where DATAELEM_ID=" + inParams.add(elmID, Types.INTEGER);
 			
 	    	PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
 	        stmt.executeUpdate();
@@ -356,6 +361,7 @@ public class VersionManager{
 					null : servlRequestParams.getParameter("resetVersionAndStatus");
 			CopyHandler copyHandler = new CopyHandler(conn, ctx, searchEngine);
 			copyHandler.setUser(user);
+			
 			// copy TBL2ELEM relations too, because common elements have links to tables
 			newID = copyHandler.copyElm(elmID, true, strResetVersionAndStatus==null, strResetVersionAndStatus!=null);
 			if (newID!=null){
@@ -418,16 +424,16 @@ public class VersionManager{
 			// set the working user of the original
 			SQLGenerator gen = new SQLGenerator();
 			gen.setTable("DATASET");
-			gen.setField("WORKING_USER", inParams.add(user.getUserName()));
+			gen.setFieldExpr("WORKING_USER", inParams.add(user.getUserName()));
 			
-			String q = gen.updateStatement() + " where DATASET_ID=" + inParams.add(dstID);
+			String q = gen.updateStatement() + " where DATASET_ID=" + inParams.add(dstID, Types.INTEGER);
 			
 	    	PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
 	        stmt.executeUpdate();
 			
 			// set the WORKING_USER of top namespace
 	        inParams = new INParameters();
-	        q = "select CORRESP_NS from DATASET where DATASET_ID=" + inParams.add(dstID);
+	        q = "select CORRESP_NS from DATASET where DATASET_ID=" + inParams.add(dstID, Types.INTEGER);
 	        stmt = SQL.preparedStatement(q, inParams, conn);
 	        ResultSet rs = stmt.executeQuery();
 	        topNS = rs.next() ? rs.getString(1) : null;
@@ -435,8 +441,8 @@ public class VersionManager{
 	        	inParams = new INParameters();
 	            gen.clear();
 	            gen.setTable("NAMESPACE");
-	            gen.setField("WORKING_USER", inParams.add(user.getUserName()));
-	            q = gen.updateStatement() + " where NAMESPACE_ID=" + inParams.add(topNS);
+	            gen.setFieldExpr("WORKING_USER", inParams.add(user.getUserName()));
+	            q = gen.updateStatement() + " where NAMESPACE_ID=" + inParams.add(topNS, Types.INTEGER);
 	            
 	            stmt = SQL.preparedStatement(q, inParams, conn);
 	            stmt.executeUpdate();
@@ -452,8 +458,8 @@ public class VersionManager{
 				inParams = new INParameters();
 				gen.clear();
 				gen.setTable("DATASET");
-				gen.setFieldExpr("CHECKEDOUT_COPY_ID", inParams.add(dstID));
-				q = gen.updateStatement() + " where DATASET_ID=" + inParams.add(newID);
+				gen.setFieldExpr("CHECKEDOUT_COPY_ID", inParams.add(dstID, Types.INTEGER));
+				q = gen.updateStatement() + " where DATASET_ID=" + inParams.add(newID, Types.INTEGER);
 				stmt = SQL.preparedStatement(q, inParams, conn);
 	            stmt.executeUpdate();
 			}

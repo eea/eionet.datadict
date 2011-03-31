@@ -183,7 +183,7 @@ public class MrProper {
 			String idfier = pars.getParameter("rm_idfier");
 			if (idfier!=null){
 				buf.append("select DATASET_ID from DATASET where "); 
-				buf.append("IDENTIFIER=").append(inParams.add(Util.strLiteral(idfier)));
+				buf.append("IDENTIFIER=").append(inParams.add(idfier));
 			}
 		}
 		else if (rmCrit.equals("id")){
@@ -236,8 +236,8 @@ public class MrProper {
 			String ns = pars.getParameter("rm_ns");
 			if (idfier!=null && ns!=null){
 				buf.append("select TABLE_ID from DS_TABLE where "); 
-				buf.append("IDENTIFIER=").append(inParams.add(Util.strLiteral(idfier)));
-				buf.append("and PARENT_NS=").append(inParams.add(ns));
+				buf.append("IDENTIFIER=").append(inParams.add(idfier));
+				buf.append("and PARENT_NS=").append(inParams.add(ns, Types.INTEGER));
 			}
 		} else if (rmCrit.equals("id")){
 			String id = pars.getParameter("rm_id");
@@ -345,7 +345,7 @@ public class MrProper {
         }
         
         String q = "select distinct CORRESP_NS from DATASET where " +
-                   "IDENTIFIER=" + inParams.add(Util.strLiteral(idifier));
+                   "IDENTIFIER=" + inParams.add(idifier);
         
         String ns = null;
         PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
@@ -357,7 +357,8 @@ public class MrProper {
         
         if (ns!=null){
         	inParams = new INParameters();
-        	q ="update NAMESPACE set WORKING_USER=NULL " + "where NAMESPACE_ID=" + inParams.add(ns); 
+        	q ="update NAMESPACE set WORKING_USER=NULL where NAMESPACE_ID="
+        		+ inParams.add(ns, Types.INTEGER); 
         	stmt = SQL.preparedStatement(q, inParams, conn);
             stmt.executeUpdate();
         }
@@ -691,7 +692,7 @@ public class MrProper {
             buf.append(", PARENT_NS");
         }
         buf.append(" from ");
-        buf.append(inParams.add(tblName));
+        buf.append(tblName);
         buf.append(" where WORKING_USER is not null");
         
         Vector v = new Vector();
@@ -714,7 +715,7 @@ public class MrProper {
             buf.append(", PARENT_NS");
         }
         buf.append(" from ");
-        buf.append(inParams.add(tblName));
+        buf.append(tblName);
         buf.append(" where WORKING_COPY='Y'");
         
         HashSet wcs = new HashSet();
@@ -744,16 +745,16 @@ public class MrProper {
             
             buf = new StringBuffer();
             buf.append("update ");
-			buf.append(inParams.add(tblName));
+			buf.append(tblName);
 			buf.append(" set WORKING_USER=NULL where IDENTIFIER=");
-			buf.append(inParams.add(Util.strLiteral((String)hash.get("IDENTIFIER"))));
+			buf.append(inParams.add((String)hash.get("IDENTIFIER")));
 			buf.append(" and VERSION=");
-			buf.append(inParams.add((String)hash.get("VERSION")));
+			buf.append(inParams.add((String)hash.get("VERSION"), Types.INTEGER));
 			
 			if (!tblName.equals("DATASET")){
 				String pns = (String)hash.get("PARENT_NS");
 				if (pns!=null){
-					buf.append(" and PARENT_NS=").append(inParams.add(pns));
+					buf.append(" and PARENT_NS=").append(inParams.add(pns, Types.INTEGER));
 				} else {
 					buf.append(" and PARENT_NS is null");
 				}
