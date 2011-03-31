@@ -5,7 +5,7 @@ function login() {
 
 ///
 function form_changed(form_name){
-	document.forms[form_name].elements["changed"].value="1";		
+	document.forms[form_name].elements["changed"].value="1";
 }
 
 ///
@@ -18,17 +18,17 @@ function pop(link) {
 
 ///
 function populateInput(formName, inputName, popValues){
-			
+
 	if (document.forms[formName]==undefined)
 		return;
 
 	var elmsIdx;
 	var elms = document.forms[formName].elements;
 	for (elmsIdx=0; elmsIdx<elms.length; elmsIdx++){
-	
+
 		var elm = elms[elmsIdx];
 		if (elm.name==inputName){
-		
+
 			if (elm.type=="text" || elm.type=="textarea")
 				elm.value=popValues[0];
 			else if (elm.type=="select-one" || elm.type=="select-multiple"){
@@ -80,7 +80,7 @@ function visibleInputsToQueryString(formName, skipByName){
 	var elmsIdx;
 	var elms = document.forms[formName].elements;
 	for (elmsIdx=0; elmsIdx<elms.length; elmsIdx++){
-	
+
 		var values = new Array();
 		var elm = elms[elmsIdx];
 		if (arrayContains(skipByName, elm.name))
@@ -123,9 +123,9 @@ function visibleInputsToQueryString(formName, skipByName){
 
 function getFirstChildElement(n){
 	var x = n.firstChild;
-	while (x.nodeType!=1){
-		x=x.nextSibling;
-	}
+    while (x &&  x.nodeType!=1) {
+        x=x.nextSibling;
+    }
 	return x;
 }
 
@@ -137,7 +137,7 @@ function addMultiSelectRow(addValue, checkboxName, multiSelectDivName){
 	var div = document.getElementById(multiSelectDivName);
 	if (!div)
 		return;
-	
+
 	var label = document.createElement("label");
 	label.setAttribute("style", "display:block");
 
@@ -152,5 +152,12 @@ function addMultiSelectRow(addValue, checkboxName, multiSelectDivName){
 	var text = document.createTextNode(addValue);
 	label.appendChild(text);
 
-	div.insertBefore(label,getFirstChildElement(div));
+	var firstChild = getFirstChildElement(div);
+
+    if (firstChild){
+        div.insertBefore(label,firstChild);
+    }
+    else{
+        div.appendChild(label);
+    }
 }
