@@ -49,6 +49,19 @@ UNLOCK TABLES;
 /*!40000 ALTER TABLE `M_COMPLEX_ATTR_FIELD` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
+--
+-- Dumping data for table `FXV`
+--
+-- WHERE:  owner_type='attr'
+
+LOCK TABLES `FXV` WRITE;
+/*!40000 ALTER TABLE `FXV` DISABLE KEYS */;
+INSERT INTO `FXV` VALUES (218,25,'attr','integer','N','Represents a sequence of decimal digits with an optional leading sign (+ or -).\r\nIn common language they are known as whole numbers. For example 0, 1, 9, 756, -1021.',''),(219,25,'attr','string','N','Represents \'character strings\' or in other words \'sequences of characters\' or\r\nin common language simply \'text\'. Examples: \"EEA\", \"Romeo & Juliet\", \"year 2005\".',''),(220,25,'attr','date','N','Represents a calendar date.  The pattern you have to use is CCYY-MM-DD,\r\nwhere CC represents the century, YY the year, MM the month, and DD the day.\r\nFor example 2004-01-25 represents 25th of January, year 2004.',''),(320,25,'attr','float','N','Represents floating-point numbers. In common language, these are real numbers,\r\ni.e. numbers that can contain a fractional part. Such numbers are for example\r\n0.05, -3.0, 111.6777.',''),(381,25,'attr','boolean','N','Represents boolean values, which are either \'true\' or \'false\'.',''),(1271,28,'attr','Administrative attribute','N','',''),(1274,28,'attr','Public attribute','N','',''),(1278,28,'attr','undefined','Y','',''),(1280,37,'attr','Acidification','N','',''),(1281,37,'attr','Air quality and air pollution','N','',''),(1282,37,'attr','Climate change','N','',''),(1283,37,'attr','Natural resources (degradation and use of)','N','',''),(1284,37,'attr','Eutrophication ','N','',''),(1285,37,'attr','Genetically modified organisms and alien species','N','',''),(1286,37,'attr','Nature conservation and biodiversity','N','',''),(1287,37,'attr','Noise','N','',''),(1288,37,'attr','Ozone layer (stratospheric ozone) ','N','',''),(1289,37,'attr','Photochemical oxidants, (tropospheric ozone) ','N','',''),(1290,37,'attr','Pollution by metals ','N','',''),(1291,37,'attr','Chemicals','N','',''),(1292,37,'attr','Soil degradation and pollution','N','',''),(1293,37,'attr','Urban environment','N','',''),(1294,37,'attr','Waste and material flow','N','',''),(1295,37,'attr','Water','N','',''),(1296,37,'attr','Hazards','N','',''),(1297,37,'attr','Economic development','N','',''),(2074,38,'attr','NatRawData','N','For reporting from the national level','National Raw Dataset'),(2075,38,'attr','EuroRawData','N','For reporting at the European level','European Raw Dataset'),(2076,38,'attr','EuroRefData','N','For reporting at the European reference level','European Reference Dataset'),(17074,25,'attr','double','N','Represents floating-point numbers with double precision. Examples would be 3.14159265358979, 1.00000000002301, etc.','');
+/*!40000 ALTER TABLE `FXV` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
