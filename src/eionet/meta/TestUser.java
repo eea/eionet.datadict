@@ -1,10 +1,8 @@
 package eionet.meta;
 
 
-import java.sql.*;
+import java.sql.Connection;
 
-import eionet.util.Props;
-import eionet.util.PropsIF;
 import eionet.util.sql.ConnectionUtil;
 
 

@@ -1,6 +1,7 @@
 package eionet.meta.exports.pdf;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Vector;
 
 public class Sectioning {
 	

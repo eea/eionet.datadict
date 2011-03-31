@@ -3,15 +3,21 @@
  */
 package eionet.meta.exports.mdb;
 
-import javax.servlet.http.*;
-import javax.servlet.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.Connection;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.sql.ConnectionUtil;
-
-import java.io.*;
-import java.sql.*;
 
 /**
  * @author jaanus

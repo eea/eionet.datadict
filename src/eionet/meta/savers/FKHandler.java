@@ -3,16 +3,18 @@
  */
 package eionet.meta.savers;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.LinkedHashMap;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
-import com.tee.util.*;
+import com.tee.util.Util;
 
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 

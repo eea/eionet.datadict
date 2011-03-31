@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.util.Vector;
 
 import eionet.meta.DDSearchEngine;
-import eionet.meta.DataElement;
 
 /**
  * 

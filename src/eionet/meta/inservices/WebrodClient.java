@@ -1,9 +1,11 @@
 package eionet.meta.inservices;
 
-import javax.servlet.http.*;
-import eionet.util.*;
-import java.util.*;
-import java.io.*;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import eionet.util.Util;
 
 public class WebrodClient extends InServiceClient{
 	

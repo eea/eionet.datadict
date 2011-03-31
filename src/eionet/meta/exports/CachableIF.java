@@ -1,6 +1,5 @@
 package eionet.meta.exports;
 
-import java.sql.*;
 
 public interface CachableIF {
 	

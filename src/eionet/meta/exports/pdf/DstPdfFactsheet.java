@@ -1,15 +1,24 @@
 
 package eionet.meta.exports.pdf;
 
-import eionet.meta.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Element;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPTable;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DElemAttribute;
+import eionet.meta.Dataset;
+import eionet.meta.DsTable;
 import eionet.util.Util;
-
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.*;
 
 public class DstPdfFactsheet extends PdfHandout {
     

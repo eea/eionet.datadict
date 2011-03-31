@@ -22,11 +22,11 @@
 
 package eionet.meta.exports.xmlmeta;
 
-import java.io.*;
-import java.util.*;
-import java.sql.*;
+import java.io.PrintWriter;
+import java.util.Hashtable;
 
-import eionet.meta.*;
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DsTable;
 import eionet.util.Util;
 
 

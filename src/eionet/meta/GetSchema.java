@@ -1,12 +1,21 @@
 package eionet.meta;
 
-import javax.servlet.http.*;
-import javax.servlet.*;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.sql.Connection;
 
-import java.io.*;
-import java.sql.*;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import eionet.meta.exports.schema.*;
+import eionet.meta.exports.schema.DstSchema;
+import eionet.meta.exports.schema.ElmSchema;
+import eionet.meta.exports.schema.ElmsContainerSchema;
+import eionet.meta.exports.schema.SchemaIF;
+import eionet.meta.exports.schema.TblSchema;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 

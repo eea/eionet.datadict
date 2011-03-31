@@ -21,10 +21,8 @@
 package eionet.util.sql;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Savepoint;
-import java.sql.Statement;
 
 import eionet.meta.DDRuntimeException;
 

@@ -1,22 +1,15 @@
 package eionet.meta.exports.rdf;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.sql.Connection;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import eionet.meta.DDSearchEngine;
-import eionet.meta.exports.dbf.Dbf;
-import eionet.meta.exports.xmlinst.DstXmlInst;
-import eionet.meta.exports.xmlinst.TblXmlInst;
-import eionet.meta.exports.xmlinst.XmlInstIF;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 

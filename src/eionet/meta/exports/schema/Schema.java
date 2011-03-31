@@ -1,9 +1,18 @@
 
 package eionet.meta.exports.schema;
 
-import java.io.*;
-import java.util.*;
-import eionet.meta.*;
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DElemAttribute;
+import eionet.meta.DataElement;
+import eionet.meta.DsTable;
+import eionet.meta.GetSchema;
+import eionet.meta.Namespace;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;

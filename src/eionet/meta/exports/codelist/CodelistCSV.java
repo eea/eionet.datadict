@@ -1,10 +1,13 @@
 package eionet.meta.exports.codelist;
 
-import java.io.*;
-import java.util.*;
-import java.sql.*;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.util.Vector;
 
-import eionet.meta.*;
+import eionet.meta.DDRuntimeException;
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DataElement;
+import eionet.meta.FixedValue;
 import eionet.util.Util;
 
 public class CodelistCSV extends Codelist{

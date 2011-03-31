@@ -1,17 +1,28 @@
 
 package eionet.meta.exports.pdf;
 
-import eionet.meta.*;
-import eionet.util.Util;
-
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.*;
-import eionet.util.UnicodeEscapes;
-
-import java.util.*;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import com.eteks.awt.PJAToolkit;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+
+import eionet.meta.DElemAttribute;
+import eionet.meta.DataElement;
+import eionet.meta.DsTable;
+import eionet.meta.FixedValue;
+import eionet.util.UnicodeEscapes;
+import eionet.util.Util;
 
 public class PdfUtil {
     

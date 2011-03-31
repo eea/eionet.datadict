@@ -1,21 +1,16 @@
 package eionet.meta.outservices;
 
-import java.sql.SQLException;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.text.DateFormat;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import eionet.meta.DDException;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.Dataset;
 import eionet.meta.DsTable;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 

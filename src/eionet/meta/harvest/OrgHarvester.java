@@ -6,7 +6,8 @@
  */
 package eionet.meta.harvest;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import eionet.directory.DirServiceException;
 import eionet.directory.DirectoryService;

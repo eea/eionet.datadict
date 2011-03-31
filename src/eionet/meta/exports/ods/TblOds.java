@@ -6,10 +6,7 @@
  */
 package eionet.meta.exports.ods;
 
-import java.util.Vector;
-
 import eionet.meta.DDSearchEngine;
-import eionet.meta.Dataset;
 import eionet.meta.DsTable;
 
 /**

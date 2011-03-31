@@ -3,19 +3,29 @@
 package eionet.meta.imp;
 
 
-import java.util.*;
-import java.sql.*;
-
-import eionet.meta.*;
-import eionet.meta.savers.*;
-import eionet.util.sql.ConnectionUtil;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.servlet.ServletContext;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
-import com.tee.util.*;
+import org.xml.sax.XMLReader;
 
-import org.xml.sax.*;
-import javax.xml.parsers.*;
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DDUser;
+import eionet.meta.DElemAttribute;
+import eionet.meta.TestUser;
+import eionet.meta.savers.AttrFieldsHandler;
+import eionet.meta.savers.DataElementHandler;
+import eionet.meta.savers.DatasetHandler;
+import eionet.meta.savers.DsTableHandler;
+import eionet.meta.savers.FixedValuesHandler;
+import eionet.meta.savers.Parameters;
+import eionet.util.sql.ConnectionUtil;
 
 /**
  * This class is the core worker when importing definitions from XML into DD. The XML is

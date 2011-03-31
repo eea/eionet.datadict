@@ -1,6 +1,6 @@
 package eionet.meta.inservices;
 
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServletRequest;
 
 public interface InServiceClientIF {
 	

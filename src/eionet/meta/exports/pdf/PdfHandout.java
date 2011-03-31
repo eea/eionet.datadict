@@ -1,16 +1,32 @@
 
 package eionet.meta.exports.pdf;
 
-import eionet.meta.*;
-import eionet.util.Util;
-import eionet.meta.savers.Parameters;
-
-import java.util.*;
-import java.io.*;
 import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Vector;
 
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.*;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.HeaderFooter;
+import com.lowagie.text.Image;
+import com.lowagie.text.ImgRaw;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfPageEventHelper;
+import com.lowagie.text.pdf.PdfTemplate;
+import com.lowagie.text.pdf.PdfWriter;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.savers.Parameters;
+import eionet.util.Util;
 
 public abstract class PdfHandout implements PdfHandoutIF {
 	

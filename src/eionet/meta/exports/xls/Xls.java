@@ -1,18 +1,22 @@
 package eionet.meta.exports.xls;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
-import java.math.*;
-import java.lang.reflect.*;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.util.Hashtable;
+import java.util.Vector;
 
-import eionet.meta.*;
-import eionet.meta.exports.*;
-import eionet.meta.exports.pdf.PdfUtil;
-import eionet.util.*;
-import com.tee.util.SQLGenerator;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
-import org.apache.poi.hssf.usermodel.*;
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DsTable;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.Util;
 
 public abstract class Xls implements XlsIF{
 	

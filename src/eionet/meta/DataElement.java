@@ -1,10 +1,11 @@
 
 package eionet.meta;
 
-import java.util.*;
-import eionet.util.Util;
+import java.util.Vector;
+
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.Util;
 
 /*
  * 

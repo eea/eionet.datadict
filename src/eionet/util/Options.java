@@ -24,8 +24,8 @@
 package eionet.util;
 
 import java.util.Hashtable;
-import java.util.Vector;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * This is a utility class for retrieveing command line options.

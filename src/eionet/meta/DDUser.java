@@ -23,16 +23,19 @@
 
 package eionet.meta;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Vector;
 
-import eionet.directory.*;
+import com.tee.uit.security.AccessControlListIF;
+import com.tee.uit.security.AccessController;
+import com.tee.uit.security.AuthMechanism;
+import com.tee.uit.security.SignOnException;
+
+import eionet.directory.DirectoryService;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
 import eionet.util.sql.ConnectionUtil;
-import eionet.util.sql.DDConnectionException;
-
-import com.tee.uit.security.*;
 
 /**
  * 

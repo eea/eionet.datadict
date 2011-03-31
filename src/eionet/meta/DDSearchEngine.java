@@ -1,9 +1,22 @@
 package eionet.meta;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 
-import javax.servlet.*;
-import java.util.*;
+import javax.servlet.ServletContext;
+
+import com.tee.util.Util;
 
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
@@ -11,8 +24,6 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
-
-import com.tee.util.*;
 
 public class DDSearchEngine {
 	

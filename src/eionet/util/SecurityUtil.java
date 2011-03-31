@@ -23,10 +23,16 @@
  
 package eionet.util;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Iterator;
 
-import com.tee.uit.security.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import com.tee.uit.security.AccessControlListIF;
+import com.tee.uit.security.AccessController;
 
 import edu.yale.its.tp.cas.client.filter.CASFilter;
 import eionet.meta.AfterCASLoginServlet;
@@ -34,10 +40,6 @@ import eionet.meta.DDCASUser;
 import eionet.meta.DDRuntimeException;
 import eionet.meta.DDUser;
 import eionet.meta.filters.CASFilterConfig;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.*; 
 
 /**
  * This is a class containing several utility methods for keeping

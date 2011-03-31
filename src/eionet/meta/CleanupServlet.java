@@ -1,7 +1,6 @@
 package eionet.meta;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -15,13 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eionet.util.DataManipulations;
-import eionet.util.HttpUploader;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
-import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.Transaction;
 

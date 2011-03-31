@@ -23,11 +23,22 @@
 
 package eionet.meta.harvest;
 
-import java.sql.*;
-import java.util.*;
-import com.tee.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Vector;
 
-import eionet.util.*;
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;

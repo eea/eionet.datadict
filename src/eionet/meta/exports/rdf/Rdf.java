@@ -1,6 +1,5 @@
 package eionet.meta.exports.rdf;
 
-import java.io.OutputStream;
 import java.io.Writer;
 import java.sql.Connection;
 import java.text.MessageFormat;
@@ -10,7 +9,6 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
 import com.bea.xml.stream.XMLOutputFactoryBase;
-import com.linuxense.javadbf.DBFException;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;

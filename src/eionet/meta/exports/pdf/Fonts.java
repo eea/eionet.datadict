@@ -1,13 +1,15 @@
 
 package eionet.meta.exports.pdf;
 
+import java.awt.Color;
 import java.util.Hashtable;
+
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.pdf.BaseFont;
-import java.awt.Color;
 
-import eionet.util.*;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
 public class Fonts {
     

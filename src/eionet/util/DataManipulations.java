@@ -23,12 +23,16 @@
  */
 package eionet.util;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 
 import com.tee.util.SQLGenerator;
 

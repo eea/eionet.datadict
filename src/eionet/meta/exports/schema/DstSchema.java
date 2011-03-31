@@ -1,11 +1,12 @@
 
 package eionet.meta.exports.schema;
 
-import java.io.*;
-import java.util.*;
-import java.sql.*;
+import java.io.PrintWriter;
+import java.util.Vector;
 
-import eionet.meta.*;
+import eionet.meta.DDSearchEngine;
+import eionet.meta.Dataset;
+import eionet.meta.Namespace;
 import eionet.util.Util;
 
 public class DstSchema extends Schema {

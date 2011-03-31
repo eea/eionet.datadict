@@ -1,6 +1,7 @@
 package eionet.meta;
 
-import java.util.*;
+import java.util.Vector;
+
 import eionet.util.QueryString;
 /**
  * A Class class.

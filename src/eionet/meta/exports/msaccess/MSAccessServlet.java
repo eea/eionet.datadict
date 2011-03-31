@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 
 import eionet.meta.DDException;
-import eionet.meta.exports.mdb.MdbException;
 
 /**
  * 

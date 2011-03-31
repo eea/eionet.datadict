@@ -3,11 +3,14 @@
  */
 package eionet.meta.exports.mdb;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import java.io.File;
+import java.sql.Connection;
+import java.util.List;
+import java.util.Vector;
 
-import com.healthmarketscience.jackcess.*;
+import com.healthmarketscience.jackcess.Column;
+import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.Table;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DsTable;

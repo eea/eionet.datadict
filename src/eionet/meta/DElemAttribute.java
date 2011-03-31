@@ -1,10 +1,10 @@
 
 package eionet.meta;
-import com.tee.util.*;
-
-import java.util.Vector;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import com.tee.util.Util;
 
 public class DElemAttribute{
 

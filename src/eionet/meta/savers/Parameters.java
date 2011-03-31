@@ -1,8 +1,11 @@
 
 package eionet.meta.savers;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 public class Parameters {
     

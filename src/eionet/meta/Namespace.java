@@ -1,7 +1,6 @@
 
 package eionet.meta;
 
-import java.sql.*;
 
 public class Namespace{
     

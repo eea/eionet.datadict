@@ -3,7 +3,7 @@
  */
 package eionet.meta.exports.ods.tags;
 
-import java.util.*;
+import java.util.Vector;
 
 /**
  * 

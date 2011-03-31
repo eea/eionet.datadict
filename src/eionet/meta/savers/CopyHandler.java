@@ -1,17 +1,27 @@
 package eionet.meta.savers;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Vector;
 
-import eionet.meta.*;
+import javax.servlet.ServletContext;
+
+import com.tee.util.SQLGenerator;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DDUser;
+import eionet.meta.DElemAttribute;
 import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
-
-import javax.servlet.*;
-import com.tee.util.*;
-import com.tee.uit.security.*;
 
 public class CopyHandler extends Object {
 

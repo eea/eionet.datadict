@@ -22,12 +22,18 @@
 
 package eionet.meta.exports.xmlmeta;
 
-import eionet.meta.*;
+import java.io.PrintWriter;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DElemAttribute;
+import eionet.meta.DataElement;
+import eionet.meta.DsTable;
+import eionet.meta.Namespace;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-
-import java.io.*;
-import java.util.*;
 
 public abstract class XmlMeta implements XmlMetaIF {
 

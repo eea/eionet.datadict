@@ -1,9 +1,15 @@
 package eionet.meta.exports.xforms;
 
-import eionet.meta.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.FixedValue;
 import eionet.util.Util;
 
 public abstract class XForm implements XFormIF {

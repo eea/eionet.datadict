@@ -26,7 +26,8 @@
  */
 package eionet.util;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * 

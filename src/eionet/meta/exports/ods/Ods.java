@@ -6,17 +6,19 @@
  */
 package eionet.meta.exports.ods;
 
-import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.Vector;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
-import eionet.meta.exports.mdb.MdbTimeoutException;
-import eionet.meta.exports.ods.tags.*;
+import eionet.meta.exports.ods.tags.NumberStyle;
+import eionet.meta.exports.ods.tags.Style;
+import eionet.meta.exports.ods.tags.Table;
 
 /**
  * 

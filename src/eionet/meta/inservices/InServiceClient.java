@@ -1,9 +1,14 @@
 package eionet.meta.inservices;
 
-import javax.servlet.http.*;
-import com.tee.uit.client.*;
-import eionet.util.*;
-import java.util.*;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.tee.uit.client.ServiceClientIF;
+import com.tee.uit.client.ServiceClients;
+
+import eionet.util.Props;
+import eionet.util.Util;
 
 public abstract class InServiceClient implements InServiceClientIF{
 	

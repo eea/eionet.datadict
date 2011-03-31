@@ -1,7 +1,7 @@
 
 package eionet.meta;
 
-import java.util.*;
+import java.util.Vector;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;

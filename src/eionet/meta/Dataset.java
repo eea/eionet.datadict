@@ -1,7 +1,8 @@
 
 package eionet.meta;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;

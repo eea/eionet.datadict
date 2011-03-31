@@ -25,10 +25,10 @@
 
 package eionet.util;
 
+import java.util.Enumeration;
+
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
-
-import java.util.*;
 
 /**
  * Log4J specific LogServiceIF implementation.<BR><BR>

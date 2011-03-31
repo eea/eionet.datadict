@@ -2,7 +2,6 @@ package eionet.meta.filters;
 
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 

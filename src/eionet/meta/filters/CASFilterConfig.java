@@ -22,15 +22,11 @@ package eionet.meta.filters;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.ResourceBundle;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 
-import edu.yale.its.tp.cas.client.filter.CASFilter;
 import eionet.util.Props;
-import eionet.util.PropsIF;
 
 /**
  * 

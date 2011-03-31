@@ -13,7 +13,6 @@ import com.linuxense.javadbf.DBFWriter;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
-import eionet.meta.exports.mdb.MdbException;
 
 /**
  * 

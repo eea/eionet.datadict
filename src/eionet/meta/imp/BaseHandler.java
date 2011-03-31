@@ -2,8 +2,8 @@
 // Copyright (c) 2000 TietoEnator
 package eionet.meta.imp;
 
-import org.xml.sax.*;
-import org.xml.sax.helpers.*;
+import org.xml.sax.Locator;
+import org.xml.sax.helpers.DefaultHandler;
 
 import eionet.meta.DDUser;
 

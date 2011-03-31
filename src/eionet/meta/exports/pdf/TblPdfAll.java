@@ -1,13 +1,20 @@
 
 package eionet.meta.exports.pdf;
 
-import eionet.meta.*;
-import eionet.util.Util;
-import eionet.meta.savers.Parameters;
+import java.util.Hashtable;
+import java.util.Vector;
 
-import java.sql.*;
-import java.util.*;
-import com.lowagie.text.*;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DataElement;
+import eionet.meta.DsTable;
+import eionet.meta.savers.Parameters;
+import eionet.util.Util;
 
 public class TblPdfAll {
     

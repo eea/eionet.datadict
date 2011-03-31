@@ -1,14 +1,19 @@
 
 package eionet.meta.exports.pdf;
 
-import eionet.meta.*;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DataElement;
+import eionet.meta.Dataset;
+import eionet.meta.DsTable;
 import eionet.util.Util;
-
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-
-import com.lowagie.text.*;
 
 public class TblPdfFactsheet extends PdfHandout {
     

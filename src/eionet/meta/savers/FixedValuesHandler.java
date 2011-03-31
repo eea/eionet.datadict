@@ -1,17 +1,23 @@
 package eionet.meta.savers;
 
-import java.sql.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 
-import eionet.meta.*;
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import com.tee.util.Util;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DataElement;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
-
-import com.tee.util.*;
 
 public class FixedValuesHandler extends BaseHandler{
 	

@@ -1,7 +1,8 @@
 
 package eionet.meta;
 
-import java.util.*;
+import java.util.Vector;
+
 import com.tee.util.Util;
 
 public class FixedValue {

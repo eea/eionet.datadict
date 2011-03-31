@@ -1,17 +1,17 @@
 
 package eionet.meta.savers;
 
-import java.sql.*;
+import java.sql.Connection;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import eionet.meta.*;
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
-
 import com.tee.util.Util;
 
+import eionet.meta.DDUser;
+import eionet.meta.MrProper;
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
 import eionet.util.sql.Transaction;
 
 /**

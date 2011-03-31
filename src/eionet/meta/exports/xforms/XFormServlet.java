@@ -1,15 +1,21 @@
 package eionet.meta.exports.xforms;
 
-import javax.servlet.http.*;
-import javax.servlet.*;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.sql.Connection;
 
-import java.io.*;
-import java.sql.*;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import eionet.meta.exports.schema.*;
-import eionet.util.*;
-import eionet.util.sql.ConnectionUtil;
 import eionet.meta.DDSearchEngine;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.Util;
+import eionet.util.sql.ConnectionUtil;
 
 public class XFormServlet extends HttpServlet {
 	

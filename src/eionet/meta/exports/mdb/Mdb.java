@@ -3,15 +3,21 @@
  */
 package eionet.meta.exports.mdb;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.Types;
+import java.util.Hashtable;
+import java.util.Vector;
 
-import com.healthmarketscience.jackcess.*;
+import com.healthmarketscience.jackcess.Column;
+import com.healthmarketscience.jackcess.Database;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.exports.CachableIF;
-import eionet.util.*;
+import eionet.util.Props;
 
 /**
  * @author jaanus

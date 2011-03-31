@@ -1,8 +1,13 @@
 package eionet.meta.exports.xmlinst;
 
-import eionet.meta.*;
-import java.io.*;
-import java.util.*;
+import java.io.PrintWriter;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DataElement;
+import eionet.meta.Namespace;
 
 public abstract class XmlInst implements XmlInstIF {
 	

@@ -1,18 +1,29 @@
 package eionet.meta.savers;
 
-import java.util.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
-import eionet.meta.*;
+import com.tee.util.SQLGenerator;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DDUser;
+import eionet.meta.DataElement;
 import eionet.util.RequestMessages;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
-
-import com.tee.util.*;
-import com.tee.uit.security.*;
 
 public class DsTableHandler extends BaseHandler {
 

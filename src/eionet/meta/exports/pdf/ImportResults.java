@@ -3,8 +3,9 @@
  */
 package eionet.meta.exports.pdf;
 
-import java.io.*;
-import com.lowagie.text.*;
+import java.io.OutputStream;
+
+import com.lowagie.text.Phrase;
 
 /**
  * @author jaanus

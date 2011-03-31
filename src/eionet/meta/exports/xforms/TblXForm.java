@@ -1,9 +1,13 @@
 package eionet.meta.exports.xforms;
 
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-import eionet.meta.*;
+import java.io.PrintWriter;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DataElement;
+import eionet.meta.DsTable;
+import eionet.meta.Namespace;
 import eionet.util.Util;
 
 public class TblXForm extends XForm {

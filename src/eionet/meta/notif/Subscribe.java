@@ -6,15 +6,20 @@ package eionet.meta.notif;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import eionet.meta.DDUser;
-import eionet.util.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.xmlrpc.XmlRpcClient;
+
+import eionet.meta.DDUser;
+import eionet.util.Props;
+import eionet.util.SecurityUtil;
 
 /**
  * 

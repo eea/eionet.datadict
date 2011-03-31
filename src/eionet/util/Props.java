@@ -3,7 +3,10 @@
  */
 package eionet.util;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import eionet.meta.DDRuntimeException;
 

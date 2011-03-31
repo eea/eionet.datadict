@@ -3,7 +3,10 @@
  */
 package eionet.meta;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * 

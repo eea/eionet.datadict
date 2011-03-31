@@ -1,11 +1,11 @@
 package eionet.meta.exports.schema;
 
-import java.io.*;
-import java.util.*;
-import java.sql.*;
+import java.io.PrintWriter;
+import java.util.Vector;
 
-import eionet.meta.*;
-import eionet.util.Util;
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DataElement;
+import eionet.meta.DsTable;
 
 /**
  * @author jaanus

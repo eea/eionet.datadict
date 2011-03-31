@@ -5,18 +5,15 @@ package eionet.meta.exports.codelist;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.Vector;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import eionet.meta.DDRuntimeException;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.FixedValue;
-import eionet.meta.exports.mdb.MdbException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import eionet.util.Util;
 
 /**
  * 

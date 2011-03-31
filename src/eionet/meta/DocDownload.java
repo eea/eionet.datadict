@@ -1,21 +1,25 @@
 package eionet.meta;
 
-import eionet.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import eionet.util.SecurityUtil;
+import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.DDConnectionException;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.sql.*;
-
-import com.tee.uit.security.*;
-import com.tee.util.SQLGenerator;
 
 public class DocDownload extends HttpServlet{
 	

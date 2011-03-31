@@ -8,8 +8,9 @@ package eionet.meta.exports.ods;
 
 import java.util.Vector;
 
-import eionet.meta.*;
-import eionet.meta.exports.ods.tags.*;
+import eionet.meta.DDSearchEngine;
+import eionet.meta.Dataset;
+import eionet.meta.DsTable;
 
 /**
  * 

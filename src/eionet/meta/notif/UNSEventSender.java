@@ -6,19 +6,22 @@
  */
 package eionet.meta.notif;
 
-import eionet.meta.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-import javax.servlet.ServletException;
-import org.apache.xmlrpc.XmlRpcClient;
-import org.apache.xmlrpc.XmlRpcException;
 
-import eionet.util.*;
+import org.apache.xmlrpc.XmlRpcClient;
+
+import eionet.meta.DDRuntimeException;
+import eionet.meta.DataElement;
+import eionet.meta.Dataset;
+import eionet.meta.DsTable;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.Util;
 
 /**
  * @author jaanus

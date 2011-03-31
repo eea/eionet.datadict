@@ -1,6 +1,7 @@
 package eionet.meta;
 
-import com.tee.uit.security.*;
+import com.tee.uit.security.AuthMechanism;
+import com.tee.uit.security.SignOnException;
 
 /**
  * 

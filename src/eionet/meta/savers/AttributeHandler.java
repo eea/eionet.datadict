@@ -1,17 +1,23 @@
 package eionet.meta.savers;
 
-import java.util.*;
-import java.sql.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import com.tee.uit.security.AccessController;
 
 import eionet.meta.DDUser;
 import eionet.meta.DElemAttribute;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
-
-import com.tee.util.*;
-import com.tee.uit.security.*;
 
 public class AttributeHandler extends BaseHandler {
     

@@ -1,7 +1,6 @@
 package eionet.meta.exports.dbf;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.Connection;
 
 import javax.servlet.ServletException;

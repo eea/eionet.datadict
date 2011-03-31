@@ -1,8 +1,6 @@
 package eionet.util.sql;
 
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;

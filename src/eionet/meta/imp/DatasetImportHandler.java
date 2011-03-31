@@ -1,9 +1,14 @@
 
 package eionet.meta.imp;
 
-import org.xml.sax.*;
-import java.util.*;
-import javax.xml.parsers.*;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.XMLReader;
 
 import eionet.util.UnicodeEscapes;
 
