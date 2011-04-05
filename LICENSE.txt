@@ -16,5 +16,5 @@ Copyright (C) by European Environment Agency.  All
 Rights Reserved.
 
 Contributor(s): Jaanus Heinlaid (TietoEnator),
-                Enriko Käsper (TietoEnator),
-                S¸ren Roug (European Environment Agency)
+                Enriko KÃ¤sper (TietoEnator),
+                SÃ¸ren Roug (European Environment Agency)
