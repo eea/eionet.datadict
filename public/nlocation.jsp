@@ -1,11 +1,13 @@
 <%@page import="java.util.*,eionet.util.SecurityUtil,eionet.meta.DDUser,eionet.meta.LoginServlet"%>
-
+<%
+ServletContext ctx = getServletContext();
+String appName = ctx.getInitParameter("application-name");
+%>
 <div id="toolribbon">
 	<div id="lefttools">
-      <a id="eealink" href="http://www.eea.europa.eu/">EEA</a>
-      <a id="ewlink" href="http://ew.eea.europa.eu/">EnviroWindows</a>
+        <%@ include file="topleftlinks.txt" %>
     </div>
-    <div id="righttools">    
+    <div id="righttools">
     	<%
 		DDUser _user = SecurityUtil.getUser(request);
 		if (_user!=null){
@@ -16,7 +18,7 @@
 			%>
 			<a id="loginlink" href="<%=SecurityUtil.getLoginURL(request)%>" title="Login">Login</a><%
 		}
-		
+
 		String helpScreen = request.getParameter("helpscreen");
 		if (helpScreen!=null){
 			%>
@@ -37,10 +39,7 @@
 </div> <!-- toolribbon -->
 
 <div id="pagehead">
-    <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
-    <div id="networktitle">Eionet</div>
-    <div id="sitetitle">Data Dictionary (DD)</div>
-    <div id="sitetagline">This service is part of Reportnet</div>
+    <%@ include file="pagehead.txt" %>
 </div> <!-- pagehead -->
 
 
@@ -49,7 +48,7 @@
 </div>
 <div class="breadcrumbtrail">
 	<div class="breadcrumbhead">You are here:</div>
-	<div class="breadcrumbitem eionetaccronym"><a href="http://www.eionet.europa.eu">Eionet</a></div>	
+	<div class="breadcrumbitem eionetaccronym"><a href="http://www.eionet.europa.eu">Eionet</a></div>
 	<%
 	String contextName = request.getParameter("context_name");
 	String contextPath = request.getParameter("context_path");
@@ -58,23 +57,23 @@
 	String lastItemName = request.getParameter("name");
 	if (lastItemName!=null && contextName==null){
 		%>
-		<div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/index.jsp">Data Dictionary</a></div>
+		<div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/index.jsp"><%=appName %></a></div>
 		<div class="breadcrumbitemlast"><%=lastItemName%></div><%
 	}
 	else if (lastItemName==null && contextName!=null){
 		%>
-		<div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/index.jsp">Data Dictionary</a></div>
+		<div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/index.jsp"><%=appName %></a></div>
 		<div class="breadcrumbitemlast"><%=contextName%></div><%
 	}
 	else if (lastItemName!=null && contextName!=null){
 		%>
-		<div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/index.jsp">Data Dictionary</a></div>
+		<div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/index.jsp"><%=appName %></a></div>
 		<div class="breadcrumbitem"><a href="<%=contextPath%>"><%=contextName%></a></div>
 		<div class="breadcrumbitemlast"><%=lastItemName%></div><%
 	}
 	else if (lastItemName==null && contextName==null){
 		%>
-		<div class="breadcrumbitemlast">Data Dictionary</div><%
+		<div class="breadcrumbitemlast"><%=appName %></div><%
 	}
 	%>
 	<div class="breadcrumbtail">

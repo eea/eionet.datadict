@@ -14,28 +14,28 @@ inserv.webrod.ra-url-pattern=http://rod.eionet.europa.eu/obligations/<RA_ID>
 
 # properties of outgoing services like for ROD
 ##############################################
-outserv.elm-details-url=http://dd.eionet.europa.eu/data_element.jsp?mode=view&delem_id=<ELM_ID>
+outserv.elm-details-url=@DD.URL@/data_element.jsp?mode=view&delem_id=<ELM_ID>
 outserv.rod-obligation-url=http://rod.eionet.eu.int/obligations/
 outserv.pred-identifier=http://purl.org/dc/elements/1.1/identifier
 outserv.pred-title=http://purl.org/dc/elements/1.1/title
 
 # properties for MS Excel generation
 ######################################
-xls.schema-url=http://dd.eionet.europa.eu/GetSchema?id=
+xls.schema-url=@DD.URL@/GetSchema?id=
 xls.schema-url-sheet=DO_NOT_DELETE_THIS_SHEET
 
 # properties for MS Access generation
 #####################################
 mdb.executable=@APP.HOME@/makemdb.sh
-mdb.vmd-schema-url=http://dd.eionet.europa.eu/GetSchema?id=
+mdb.vmd-schema-url=@DD.URL@/GetSchema?id=
 
 # various properties
 #####################
 harvester.log=@APP.HOME@/harvester.log
 pdf.uni-font=@WEBAPP.HOME@/WEB-INF/classes/arial.ttf
 xforms.templ.url=http://cdr.eionet.europa.eu/webq/GetXFormTemplate
-jsp.url-prefix=http://dd.eionet.europa.eu/
-dd.rdf-schema.url=http://dd.eionet.europa.eu/schema.rdf#
+jsp.url-prefix=@DD.URL@/
+dd.rdf-schema.url=@DD.URL@/schema.rdf#
 predicate.rdf-type=http://www.w3.org/1999/02/22-rdf-syntax-ns#type
 predicate.rdf-label=http://www.w3.org/2000/01/rdf-schema#label
 visuals.path=@WEBAPP.HOME@/visuals
@@ -54,36 +54,36 @@ uns.xml.rpc.server.url=http://uns.eionet.europa.eu/receiver
 uns.channel.name=451146035889
 
 # UNS event namespace
-uns.events-namespace=http://dd.eionet.europa.eu/events/
+uns.events-namespace=@DD.URL@/events/
 
 # Event type predicate for UNS subscription method
-uns.eventtype.predicate=http://dd.eionet.europa.eu/schema.rdf#event_type
+uns.eventtype.predicate=@DD.URL@/schema.rdf#event_type
 
 # Dataset predicate for UNS subscription method
-uns.dataset.predicate=http://dd.eionet.europa.eu/schema.rdf#dataset
+uns.dataset.predicate=@DD.URL@/schema.rdf#dataset
 
 # Table predicate for UNS subscription method
-uns.table.predicate=http://dd.eionet.europa.eu/schema.rdf#table
+uns.table.predicate=@DD.URL@/schema.rdf#table
 
 # Common element predicate for UNS subscription method
-uns.commonelem.predicate=http://dd.eionet.europa.eu/schema.rdf#commonelem
+uns.commonelem.predicate=@DD.URL@/schema.rdf#commonelem
 
 # Definition URL predicate for UNS subscription method
-uns.definition-url.predicate=http://dd.eionet.europa.eu/schema.rdf#definition_url
+uns.definition-url.predicate=@DD.URL@/schema.rdf#definition_url
 
 # User predicate for UNS subscription method
-uns.user.predicate=http://dd.eionet.europa.eu/schema.rdf#user
+uns.user.predicate=@DD.URL@/schema.rdf#user
 
 # Definition status predicate for UNS subscription method
-uns.definition-status.predicate=http://dd.eionet.eu.int/schema.rdf#definition_status
+uns.definition-status.predicate=@DD.URL@/schema.rdf#definition_status
 
 # UNS subscriptions URL
-uns.subscriptions.url=http://uns.eionet.europa.eu/subsc/edit?sid=
+uns.subscriptions.url=@DD.URL@/subsc/edit?sid=
 
 # username for UNS subscriptions
 uns.username=ddnotif
 
-# password for UNS subscriptions 
+# password for UNS subscriptions
 uns.password=nucunexe
 
 #UNS xmlrpc function that is called for making subscription
@@ -104,10 +104,10 @@ irrelevantAttrs.integer=MinSize,DecimalPrecision
 
 # The base URI that uses in rdf:about and rdf:resource values in generated RDF files.
 # Argument {0} stands for table id (the numeric one).
-rdf.baseUri=http://dd.eionet.europa.eu/tables/{0}/rdf/
+rdf.baseUri=@DD.URL@/tables/{0}/rdf/
 
 # URI for the general RDF schema
-dd.generalSchemaUri=http://dd.eionet.eu.int/schema.rdf#
+dd.generalSchemaUri=@DD.URL@/schema.rdf#
 
 # Local name for the multivalue delimiter attribute name
 dd.multiValueDelimAttrName=multiValueDelim
@@ -118,5 +118,5 @@ datasetMSAccessTemplate=@APP.HOME@/msaccess/DD_generic_template.mdb
 # properties for CR CAS filter config
 edu.yale.its.tp.cas.client.filter.loginUrl=https://sso.eionet.europa.eu/login
 edu.yale.its.tp.cas.client.filter.validateUrl=https://sso.eionet.europa.eu/serviceValidate
-edu.yale.its.tp.cas.client.filter.serverName=dd.eionet.europa.eu
+edu.yale.its.tp.cas.client.filter.serverName=@DD.HOST@
 edu.yale.its.tp.cas.client.filter.wrapRequest=true

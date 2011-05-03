@@ -380,7 +380,7 @@ SET character_set_client = utf8;
 CREATE TABLE `M_COMPLEX_ATTR` (
   `M_COMPLEX_ATTR_ID` int(10) unsigned NOT NULL auto_increment,
   `NAME` varchar(255) NOT NULL default '',
-  `OBLIGATION` enum('M','O','C') NOT NULL default 'M',
+  `OBLIGATION` enum('M','O','C') NOT NULL default 'O',
   `DEFINITION` text NOT NULL,
   `SHORT_NAME` varchar(50) NOT NULL default '',
   `NAMESPACE_ID` int(10) unsigned NOT NULL default '1',

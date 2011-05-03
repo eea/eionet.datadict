@@ -29,7 +29,7 @@ clean
     but does not touch the rest (jsp, html, xml, stylesheets etc.)
 
 
-default is install 
+default is install
 -->
 <!-- use JAR instead of classes because it makes it easier to debug errors -->
 
@@ -107,7 +107,7 @@ default is install
 	</target>
 
 	<target name="copyfiles" depends="buildjar" description="Copies all files to deploy dir. Does not overwrite properties files!">
-        
+
 		<copy file="makemdb.sh" todir="${app.home}" overwrite="false">
         		<filterchain>
 				<replacetokens>
@@ -117,7 +117,7 @@ default is install
 				</replacetokens>
         		</filterchain>
 		</copy>
-		<copy file="src/arial.ttf" tofile="${classes.dir}/arial.ttf"/>
+		<copy file="src/arial.ttf" todir="${classes.dir}" overwrite="false"/>
 		<copy file="VERSION.txt" todir="${app.home}" overwrite="true"/>
 		<copy todir="${app.home}/acl" overwrite="false">
 			<fileset dir="acl"/>
@@ -143,6 +143,12 @@ default is install
 				<exclude name="visuals/**" />
 			</fileset>
 		</copy>
+        <copy todir="${webapp.home}" overwrite="true">
+            <fileset dir="custom">
+                <exclude name="README.txt" />
+                <exclude name="**/*.sample" />
+            </fileset>
+        </copy>
 		<copy file="context.xml" todir="${webapp.home}/META-INF" overwrite="true">
         		<filterchain>
 				<replacetokens>
@@ -153,8 +159,10 @@ default is install
 				</replacetokens>
         		</filterchain>
 		</copy>
-		
-		<condition property="uit.needed">
+
+        <replace file="${webapp.home}/WEB-INF/web.xml" token="@APP.NAME@" value="${app.name}"/>
+
+       	<condition property="uit.needed">
 		    <not>
 			<available file="${classes.dir}/uit.properties" />
 		    </not>
@@ -181,7 +189,7 @@ default is install
 		</condition>
 		<antcall target="copy_props" />
 	</target>
-    
+
 	<target name="copy_props" description="Checks that certain properties files exist">
 		<antcall target="cp_uit"/>
 		<antcall target="cp_datadict"/>
@@ -238,6 +246,8 @@ default is install
 					<token key="DB.DATABASE" value="${db.database}"/>
 					<token key="WEBAPP.HOME" value="${webapp.home}"/>
                 			<token key="APP.HOME" value="${app.home}"/>
+                                        <token key="DD.URL" value="${dd.url}"/>
+                                        <token key="DD.HOST" value="${dd.host}"/>
                                 </replacetokens>
                         </filterchain>
                 </copy>
@@ -250,7 +260,7 @@ default is install
 	<target name="cp_teXDBMsg" if="teXDBMsg.needed">
 		<copy file="src/teXDBMsg.properties" tofile="${classes.dir}/teXDBMsg.properties"/>
 	</target>
-	
+
 <!-- Check properties inside properties-files -->
 	<target name="checkProps">
 		<antcall target="checkUITProps"/>
@@ -280,7 +290,7 @@ default is install
 				<available file="${acl.localusers.xml}"/>
 			</not>
 		</condition>
-		
+
 		<antcall target="warn_definition"/>
 		<antcall target="warn_localgroup"/>
 		<antcall target="warn_prms"/>

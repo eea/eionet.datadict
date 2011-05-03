@@ -14,24 +14,24 @@ request.setCharacterEncoding("UTF-8");
 
 Connection conn = null;
 ServletContext ctx = getServletContext();
-
+String appName = ctx.getInitParameter("application-name");
 try{
 	conn = ConnectionUtil.getConnection();
-	
+
 	DDUser user = SecurityUtil.getUser(request);
-	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);	
+	DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
 	searchEngine.setUser(user);
-	
+
 	HashSet filterStatuses = new HashSet();
 	filterStatuses.add("Released");
 	Vector releasedDatasets = searchEngine.getDatasets(null, null, null, null, null, false, filterStatuses);
 	request.setAttribute("rlsd_datasets", releasedDatasets);
 }
 catch (Exception e){
-	
+
 	request.setAttribute("DD_ERR_MSG", e.toString());
-	
-	ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();							
+
+	ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
 	e.printStackTrace(new PrintStream(bytesOut));
 	String trace = bytesOut.toString(response.getCharacterEncoding());
 	if (trace!=null)
@@ -44,12 +44,12 @@ finally{
 	catch (SQLException e){}
 }
 
-	
+
 %>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<%@ include file="headerinfo.txt" %>
-	<title>Data Dictionary</title>
+	<title><%=appName %></title>
 </head>
 <body class="threecolumns">
 <div id="container">
@@ -60,9 +60,9 @@ finally{
 	</div>
 	<div id="workarea">
 
-				
+
 					<%
-					
+
 					// exceptionous part
 					String errMsg = (String)request.getAttribute("DD_ERR_MSG");
 					if (errMsg!=null){
@@ -87,8 +87,8 @@ finally{
 					}
 					// no exceptions
 					else{
-						%>					
-						<div id="outerframe">												
+						%>
+						<div id="outerframe">
 			                <jsp:include page="released_datasets.jsp" flush="true" />
 			                <div>
 			                    <h2>Documentation</h2>
@@ -125,7 +125,7 @@ finally{
 						<%
 					} // end of excpetions if/else
 					%>
-								
+
 </div> <!-- workarea -->
 </div> <!-- container -->
 <%@ include file="footer.txt" %>

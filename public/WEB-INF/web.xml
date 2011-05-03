@@ -9,21 +9,21 @@
 
 	<context-param>
 		<param-name>application-name</param-name>
-		<param-value>datadict</param-value>
+		<param-value>@APP.NAME@</param-value>
 	</context-param>
 
 	<context-param>
 		<param-name>login-error-page</param-name>
 		<param-value>error.html</param-value>
 	</context-param>
-	
+
 <!-- filters -->
 
 	<filter>
 		<filter-name>CAS Filter</filter-name>
 		<filter-class>eionet.meta.filters.EionetCASFilter</filter-class>
 	</filter>
-	
+
 	<filter>
 	    <filter-name>Browser cache controller</filter-name>
 	    <filter-class>eionet.meta.filters.BrowserCacheController</filter-class>
@@ -32,37 +32,37 @@
 	      <param-value>true</param-value>
 	    </init-param>
 	</filter>
-	
+
 	<!-- Filter Mappings -->
 
 	<filter-mapping>
     	<filter-name>Browser cache controller</filter-name>
 		<url-pattern>*.jsp</url-pattern>
   	</filter-mapping>
-  		
+
 	<filter-mapping>
     	<filter-name>CAS Filter</filter-name>
 		<url-pattern>/login</url-pattern>
   	</filter-mapping>
 	<filter-mapping>
     	<filter-name>CAS Filter</filter-name>
-		<url-pattern>/eionetCookieLogin/*</url-pattern>		
+		<url-pattern>/eionetCookieLogin/*</url-pattern>
   	</filter-mapping>
 	<filter-mapping>
     	<filter-name>CAS Filter</filter-name>
-		<url-pattern>/attributes.jsp</url-pattern>		
+		<url-pattern>/attributes.jsp</url-pattern>
   	</filter-mapping>
 	<filter-mapping>
     	<filter-name>CAS Filter</filter-name>
-		<url-pattern>/subscribe.jsp</url-pattern>		
+		<url-pattern>/subscribe.jsp</url-pattern>
   	</filter-mapping>
 	<filter-mapping>
     	<filter-name>CAS Filter</filter-name>
-		<url-pattern>/import.jsp</url-pattern>		
+		<url-pattern>/import.jsp</url-pattern>
   	</filter-mapping>
 	<filter-mapping>
     	<filter-name>CAS Filter</filter-name>
-		<url-pattern>/clean.jsp</url-pattern>		
+		<url-pattern>/clean.jsp</url-pattern>
   	</filter-mapping>
 
 <!-- servlets -->
@@ -169,7 +169,7 @@
 	</servlet>
 	<servlet>
 		<servlet-name>DocumentationServlet</servlet-name>
-		<servlet-class>eionet.meta.DocumentationServlet</servlet-class>		
+		<servlet-class>eionet.meta.DocumentationServlet</servlet-class>
 		<init-param>
 			<param-name>forward-jsp</param-name>
 			<param-value>documentation.jsp</param-value>
@@ -261,7 +261,7 @@
 	<servlet-mapping>
 		<servlet-name>InServicesServlet</servlet-name>
 		<url-pattern>/InServices</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Import</servlet-name>
 		<url-pattern>/Import</url-pattern>
@@ -277,7 +277,7 @@
 	<servlet-mapping>
 		<servlet-name>GetTableDef</servlet-name>
 		<url-pattern>/GetTableDef</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>MdbServlet</servlet-name>
 		<url-pattern>/GetMdb</url-pattern>
@@ -305,14 +305,14 @@
 	<servlet-mapping>
 		<servlet-name>RdfServlet</servlet-name>
 		<url-pattern>/GetRdf/*</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>TablesServlet</servlet-name>
 		<url-pattern>/tables/*</url-pattern>
 	</servlet-mapping>
 
 <!-- the application server might allow directory listing.
-       The welcome-files are used to overcome workings of such feature 
+       The welcome-files are used to overcome workings of such feature
   -->
 
 	<welcome-file-list>
@@ -339,7 +339,7 @@
        value to the SSL connector -->
   <!-- first match wins -->
   <!-- transport-guarantee can be NONE, INTEGRAL, CONFIDENTIAL -->
-  <!-- define SSL security> 
+  <!-- define SSL security>
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>XslXmlFiles</web-resource-name>

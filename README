@@ -1,3 +1,64 @@
 This is the EIONET datadictionary software.
 
 Read the doc/installationmanual.doc for installation instructions
+
+
+Quick Start - Installation Guide
+
+The following short installation guide gives some quick hints how to checkout DD code from SVN and set it up as a Tomcat web application
+
+1. Create build directory for SVN checkout
+shell>cd /var/local/build
+shell>svn checkout https://svn.eionet.europa.eu/repositories/Reportnet/datadict/trunk datadict
+
+2. Create DD database and database user in MySql
+mysql>create database DataDict;
+mysql>CREATE USER 'dduser'@'localhost' IDENTIFIED BY 'password';
+mysql>GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser'@'localhost'
+
+3. Import initial database structure and init data
+shell>cd datadict/sql
+shell>mysql -u root -p DataDict < dd-struct.sql
+shell>mysql -u root -p DataDict < dd-attrs-meta.sql
+shell>mysql -u root -p DataDict < help-data.sql
+
+4. create build.properties file by duplicating default.properties
+shell>cp default.properties build.properties
+
+5. modify the following environment specific properties in build.properties:
+app.name=Data Dictionary
+app.home=/var/local/seionet-java/datadict_contents
+webapp.home=/var/local/datadict_apps/ROOT
+servletapi.jar=/var/lib/tomcat/common/lib/servlet-api.jar
+#Note! Correct version of MySQl jdbc type 4 driver should be downloaded and copied into Tomcat lib folder
+lib-mysql-connector-jar==/var/lib/tomcat/common/lib/mysql-connector-java-5.1.15-bin.jar
+db.* - database specific properties
+dd.url=http://dd.eionet.europa.eu
+dd.host=dd.eionet.europa.eu
+
+6. Revise UNS properties in src/datadict.properties.tmpl (optional)
+
+7. Revise /custom/*.txt files for modifying header texts and links (optional)
+
+8. Setup Tomcat context in server.xml:
+copy the <Context> element from datadict/context.xml into tomcat/conf/server.xml betrween <Host> element.
+
+9. Run ant install in datadict root folder and restart Tomcat
+shell>ant install
+
+
+Additional web applications are available for modfying user privileges and help texts in DD:
+AclAdmin tool: https://svn.eionet.europa.eu/repositories/Reportnet/acladmin/trunk
+HelpAdmin tool: https://svn.eionet.europa.eu/repositories/Reportnet/helpadmin/trunk
+
+Installing these applciations follows the similar steps:
+1. Checkout from SVN
+2. Create build.properties from default.properties
+3. Modify environment specific properties in build.properties file
+4. call "ant install"
+5. Rename acladmin.properties.dist/helpadmin.properties.dist to acladmin.properties/helpadmin.properties in ROOT/WEB-INF/classes folder and revise the content of the properties files
+6. Rename *.acl.dist files to *.acl files in acladmin_contents/acls folder (only in AclAdminTool) and revise the contents of acladmin.gorpu file
+7. Create contexts for both applications in tomcat/conf/server.xml and restart Tomcat
+
+
+
