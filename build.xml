@@ -117,7 +117,7 @@ default is install
 				</replacetokens>
         		</filterchain>
 		</copy>
-		<copy file="src/arial.ttf" todir="${classes.dir}" overwrite="false"/>
+
 		<copy file="VERSION.txt" todir="${app.home}" overwrite="true"/>
 		<copy todir="${app.home}/acl" overwrite="false">
 			<fileset dir="acl"/>
@@ -135,6 +135,9 @@ default is install
 		<delete includeemptydirs="true" description="Deletes all files and subdirectories of webapp.home, but not the webapp.home itself.">
 			<fileset dir="${webapp.home}" excludes="visuals/*"/>
 		</delete>
+
+		<copy file="src/arial.ttf" todir="${classes.dir}" overwrite="false"/>
+		<mkdir dir="${webapp.home}/visuals"/>
 
 		<copy todir="${webapp.home}" overwrite="true">
 			<fileset dir="public">
