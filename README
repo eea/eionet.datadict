@@ -13,7 +13,7 @@ shell>svn checkout https://svn.eionet.europa.eu/repositories/Reportnet/datadict/
 
 2. Create DD database and database user in MySql
 mysql>create database DataDict;
-mysql>CREATE USER 'dduser'@'localhost' IDENTIFIED BY 'password';
+mysql>CREATE USER 'dduser'@'localhost' IDENTIFIED BY 'password-here';
 mysql>GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser'@'localhost'
 
 3. Import initial database structure and init data
@@ -22,28 +22,42 @@ shell>mysql -u root -p DataDict < dd-struct.sql
 shell>mysql -u root -p DataDict < dd-attrs-meta.sql
 shell>mysql -u root -p DataDict < help-data.sql
 
-4. create build.properties file by duplicating default.properties
+4. Create database and user that will be used by unit tests only!
+mysql>create database DD_test;
+mysql>CREATE USER 'ddtest'@'localhost' IDENTIFIED BY 'password-here';
+mysql>GRANT ALL PRIVILEGES ON DD_test.* TO 'ddtest'@'localhost'
+
+5. Import initial database structure into the database that will be used by unit tests only
+shell>cd datadict/sql
+shell>mysql -u root -p DD_test < dd-struct.sql
+
+6. create build.properties file by duplicating default.properties
 shell>cp default.properties build.properties
 
-5. modify the following environment specific properties in build.properties:
+7. modify the following environment specific properties in build.properties:
 app.name=Data Dictionary
 app.home=/var/local/seionet-java/datadict_contents
 webapp.home=/var/local/datadict_apps/ROOT
 servletapi.jar=/var/lib/tomcat/common/lib/servlet-api.jar
 #Note! Correct version of MySQl jdbc type 4 driver should be downloaded and copied into Tomcat lib folder
 lib-mysql-connector-jar==/var/lib/tomcat/common/lib/mysql-connector-java-5.1.15-bin.jar
-db.* - database specific properties
+commons-logging-jar=/usr/share/tomcat5/bin/commons-logging-api.jar
+db.* - properties of the database that will be used by the DD web application
+test.db.* - properties of the database that will be used by unit tests only!
 dd.url=http://dd.eionet.europa.eu
 dd.host=dd.eionet.europa.eu
 
-6. Revise UNS properties in src/datadict.properties.tmpl (optional)
+8. Revise UNS properties in src/datadict.properties.tmpl (optional)
 
-7. Revise /custom/*.txt files for modifying header texts and links (optional)
+9. Revise /custom/*.txt files for modifying header texts and links (optional)
 
-8. Setup Tomcat context in server.xml:
+10. Setup Tomcat context in server.xml:
 copy the <Context> element from datadict/context.xml into tomcat/conf/server.xml betrween <Host> element.
 
-9. Run ant install in datadict root folder and restart Tomcat
+11. Optional step: run unit tests by issuing the following command (note that this takes time to execute)
+shell>ant test
+
+12. Run ant install in datadict root folder and restart Tomcat
 shell>ant install
 
 
@@ -60,5 +74,8 @@ Installing these applciations follows the similar steps:
 6. Rename *.acl.dist files to *.acl files in acladmin_contents/acls folder (only in AclAdminTool) and revise the contents of acladmin.gorpu file
 7. Create contexts for both applications in tomcat/conf/server.xml and restart Tomcat
 
-
+REFERENCES for unit testing:
+ - http://realsolve.co.uk/site/tech/dbunit-quickstart.php
+ - http://www.onjava.com/pub/a/onjava/2004/01/21/dbunit.html
+ - http://www.dbunit.org/
 

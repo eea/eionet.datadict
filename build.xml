@@ -49,17 +49,21 @@ default is install
 		<fail unless="build.properties.exists"
 		    message="Couldn't find build.properties file! Make a copy from default.properties and rename it to build.properties. Modify properties, if needed."/>
 
-			<loadproperties srcFile="build.properties"/>
+		<loadproperties srcFile="build.properties"/>
 
 		<fail unless="webapp.home"
 		    message="Mandatory webapp.home property is missing in build.properties file. Please provide a directory name as webapp.home property value where the application will be installed eg.  webapp.home=/tomcat/webapps/datadict "/>
 
-			<property name="src" value="src"/>
-			<property name="classes.dir" value="${webapp.home}/WEB-INF/classes"/>
+		<property name="src" value="src"/>
+		<property name="classes.dir" value="${webapp.home}/WEB-INF/classes"/>
+		<property name="test.home" value="${app.home}/test"/>
+		<property name="test.classes.dir" value="${test.home}/classes"/>
 
 		<!-- define external classpath, i.e. JARs and classes not found in WEB-INF/classes and WEB-INF/lib -->
 		<path id="classpath.externals">
 			<pathelement location="${servletapi.jar}"/>
+			<pathelement location="${lib-mysql-connector-jar}"/>
+			<pathelement location="${commons-logging-jar}"/>
 		</path>
 
 		<!-- define classpath for compile -->
@@ -74,8 +78,7 @@ default is install
 
 	<target name="compile" depends="init,prepare,clean" description="compiles java classes into classes path">
 	    <!-- Compile the java code from ${src} into ${build} -->
-		<javac deprecation="off" srcdir="${src}"
-		    destdir="${classes.dir}" debug="on">
+		<javac deprecation="off" srcdir="${src}" destdir="${classes.dir}" debug="on">
 			<classpath refid="classpath.compile"/>
 		</javac>
 	</target>
@@ -87,12 +90,14 @@ default is install
 		<antcall target="clean"/>
 	</target>
 
-	<target name="prepare" description="Creates folder structure if not existing yet">
+	<target name="prepare.apphome" description="Creates folder structure for app.home, if not existing yet">
 		<mkdir dir="${app.home}"/>
 		<mkdir dir="${app.home}/acl"/>
 		<mkdir dir="${app.home}/opendoc"/>
 		<mkdir dir="${app.home}/opendoc/ods"/>
 		<mkdir dir="${app.home}/tmp"/>
+	</target>
+	<target name="prepare.webapphome" description="Creates folder structure for webapp.home, if not existing yet">
 		<mkdir dir="${webapp.home}"/>
 		<mkdir dir="${webapp.home}/images"/>
 		<mkdir dir="${webapp.home}/META-INF"/>
@@ -100,6 +105,10 @@ default is install
 		<mkdir dir="${webapp.home}/WEB-INF/classes"/>
 		<mkdir dir="${webapp.home}/WEB-INF/lib"/>
 		<mkdir dir="${webapp.home}/visuals"/>
+	</target>
+	<target name="prepare">
+		<antcall target="prepare.apphome"/>
+		<antcall target="prepare.webapphome"/>
 	</target>
 
 	<target name="install" depends="init,copyfiles" description="complete installation">
@@ -121,7 +130,7 @@ default is install
 		<copy file="VERSION.txt" todir="${app.home}" overwrite="true"/>
 		<copy todir="${app.home}/acl" overwrite="false">
 			<fileset dir="acl"/>
-			<globmapper from="*" to="*.dist"/>
+			<!-- <globmapper from="*" to="*.dist"/> -->
 		</copy>
 		<copy todir="${app.home}/opendoc" overwrite="true">
 			<fileset dir="opendoc"/>
@@ -194,74 +203,74 @@ default is install
 	</target>
 
 	<target name="copy_props" description="Checks that certain properties files exist">
-		<antcall target="cp_uit"/>
 		<antcall target="cp_datadict"/>
+		<antcall target="cp_uit"/>
 		<antcall target="cp_log4j"/>
 		<antcall target="cp_eionetdir"/>
 		<antcall target="cp_teXDBMsg"/>
 	</target>
 
-	<target name="cp_uit" if="uit.needed">
-<!--Create properties file from a template -->
-		<echo message="delete properties file"/>
-		<delete file="${classes.dir}/uit.properties"/>
-    		<copy file="src/uit.properties.tmpl" tofile="${classes.dir}/uit.properties" >
-        		<filterchain>
-           			<striplinecomments>
-              				<comment value="!"/>
-           			</striplinecomments>
-           			<replacetokens>
+	<target name="cp_datadict" if="datadict.needed">
+
+		<!--Create properties file from template -->
+		<delete file="${classes.dir}/datadict.properties"/>
+		<copy file="${src}/datadict.properties.tmpl"  tofile="${classes.dir}/datadict.properties" >
+			<filterchain>
+				<striplinecomments>
+						<comment value="!"/>
+				</striplinecomments>
+				<replacetokens>
 					<token key="DB.USER" value="${db.user}"/>
 					<token key="DB.PASSWORD" value="${db.password}"/>
 					<token key="DB.HOST" value="${db.host}"/>
 					<token key="DB.DATABASE" value="${db.database}"/>
 					<token key="WEBAPP.HOME" value="${webapp.home}"/>
-                			<token key="APP.HOME" value="${app.home}"/>
-            			</replacetokens>
-        		</filterchain>
-    		</copy>
+					<token key="APP.HOME" value="${app.home}"/>
+					<token key="DD.URL" value="${dd.url}"/>
+					<token key="DD.HOST" value="${dd.host}"/>
+				</replacetokens>
+			</filterchain>
+		</copy>
+	</target>
+
+	<target name="cp_uit" if="uit.needed">
+
+		<!--Create properties file from template -->
+		<delete file="${classes.dir}/uit.properties"/>
+		<copy file="${src}/uit.properties.tmpl" tofile="${classes.dir}/uit.properties" >
+			<filterchain>
+				<striplinecomments>
+					<comment value="!"/>
+				</striplinecomments>
+				<replacetokens>
+					<token key="DB.USER" value="${db.user}"/>
+					<token key="DB.PASSWORD" value="${db.password}"/>
+					<token key="DB.HOST" value="${db.host}"/>
+					<token key="DB.DATABASE" value="${db.database}"/>
+					<token key="WEBAPP.HOME" value="${webapp.home}"/>
+					<token key="APP.HOME" value="${app.home}"/>
+				</replacetokens>
+			</filterchain>
+		</copy>
 	</target>
 
 	<target name="cp_log4j" if="log4j.needed">
-		<copy file="src/log4j.properties" tofile="${classes.dir}/log4j.properties">
-        		<filterchain>
-           			<replacetokens>
+		<copy file="${src}/log4j.properties.tmpl" tofile="${classes.dir}/log4j.properties">
+			<filterchain>
+				<replacetokens>
 					<token key="WEBAPP.HOME" value="${webapp.home}"/>
-                			<token key="APP.HOME" value="${app.home}"/>
-            			</replacetokens>
-        		</filterchain>
-    		</copy>
-	</target>
-
-	<target name="cp_datadict" if="datadict.needed">
-<!--Create properties file from a template -->
-                <echo message="delete properties file"/>
-                <delete file="${classes.dir}/datadict.properties"/>
-                <copy file="src/datadict.properties.tmpl"  tofile="${classes.dir}/datadict.properties" >
-                        <filterchain>
-                                <striplinecomments>
-                                        <comment value="!"/>
-                                </striplinecomments>
-                                <replacetokens>
-					<token key="DB.USER" value="${db.user}"/>
-					<token key="DB.PASSWORD" value="${db.password}"/>
-					<token key="DB.HOST" value="${db.host}"/>
-					<token key="DB.DATABASE" value="${db.database}"/>
-					<token key="WEBAPP.HOME" value="${webapp.home}"/>
-                			<token key="APP.HOME" value="${app.home}"/>
-                                        <token key="DD.URL" value="${dd.url}"/>
-                                        <token key="DD.HOST" value="${dd.host}"/>
-                                </replacetokens>
-                        </filterchain>
-                </copy>
+					<token key="APP.HOME" value="${app.home}"/>
+				</replacetokens>
+			</filterchain>
+   		</copy>
 	</target>
 
 	<target name="cp_eionetdir" if="eionetdir.needed">
-		<copy file="src/eionetdir.properties" tofile="${classes.dir}/eionetdir.properties"/>
+		<copy file="${src}/eionetdir.properties" tofile="${classes.dir}/eionetdir.properties"/>
 	</target>
 
 	<target name="cp_teXDBMsg" if="teXDBMsg.needed">
-		<copy file="src/teXDBMsg.properties" tofile="${classes.dir}/teXDBMsg.properties"/>
+		<copy file="${src}/teXDBMsg.properties" tofile="${classes.dir}/teXDBMsg.properties"/>
 	</target>
 
 <!-- Check properties inside properties-files -->
@@ -416,6 +425,103 @@ default is install
 
 	<target name="clean">
 		<delete dir="${classes.dir}/eionet"/>
+	</target>
+
+<!-- ******************************************************************** -->
+<!-- ************ TASKS AND TARGETS RELATED TO UNIT-TESTS *************** -->
+<!-- ******************************************************************** -->
+
+	<target name="test" depends="init,test.prepare,test.clean">
+		<antcall target="test.compile"/>
+		<antcall target="test.copyfiles"/>
+		<antcall target="test.copy_props"/>
+		<antcall target="test.seed"/>
+		<antcall target="test.run"/>
+	</target>
+
+	<target name="test.prepare" description="Creates folder structure for test.home, if not existing yet">
+		<mkdir dir="${test.home}"/>
+		<mkdir dir="${test.home}/acl"/>
+		<mkdir dir="${test.home}/opendoc"/>
+		<mkdir dir="${test.home}/opendoc/ods"/>
+		<mkdir dir="${test.home}/tmp"/>
+		<mkdir dir="${test.home}/classes"/>
+	</target>
+
+	<target name="test.clean">
+		<delete includeemptydirs="true">
+			<fileset dir="${test.classes.dir}" includes="**/*"/>
+		</delete>
+	</target>
+
+	<target name="test.compile">
+		<javac srcdir="${src}" destdir="${test.classes.dir}" source="1.5" target="1.5" debug="on" encoding="UTF-8">
+			<classpath refid="classpath.compile"/>
+		</javac>
+		<javac srcdir="test/src" destdir="${test.classes.dir}" source="1.5" target="1.5" debug="on" encoding="UTF-8">
+			<classpath>
+				<pathelement path="${test.classes.dir}"/>
+				<path refid="classpath.compile"/>
+				<fileset dir="test/lib">
+					<include name="*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="test.copyfiles" description="Copies resource files to ${test.home}/classes dir.">
+
+		<copy todir="${test.home}/acl" overwrite="false">
+			<fileset dir="acl"/>
+		</copy>
+		<copy todir="${test.home}/opendoc" overwrite="true">
+			<fileset dir="opendoc"/>
+		</copy>
+	</target>
+
+	<target name="test.copy_props">
+		<antcall target="copy_props">
+			<param name="uit.needed" value="true"/>
+			<param name="datadict.needed" value="true"/>
+			<param name="log4j.needed" value="true"/>
+			<param name="eionetdir.needed" value="true"/>
+			<param name="teXDBMsg.needed" value="true"/>
+
+			<param name="classes.dir" value="${test.classes.dir}"/>
+			<param name="app.home" value="${test.home}"/>
+
+			<param name="db.host" value="${test.db.host}"/>
+			<param name="db.database" value="${test.db.database}"/>
+			<param name="db.user" value="${test.db.user}"/>
+			<param name="db.password" value="${test.db.password}"/>
+		</antcall>
+	</target>
+
+	<target name="test.seed">
+		<copy todir="${test.classes.dir}" overwrite="true">
+			<fileset dir="test/src">
+				<include name="**/seed-*.*"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="test.run">
+		<junit haltonfailure="yes" failureproperty="unittestFailed" showoutput="yes" printsummary="yes">
+			<classpath>
+				<pathelement path="${test.classes.dir}"/>
+				<path refid="classpath.compile"/>
+				<fileset dir="test/lib">
+					<include name="*.jar"/>
+				</fileset>
+			</classpath>
+			<formatter type="brief" usefile="false"/>
+			<batchtest fork="yes">				
+				<fileset dir="test/src">
+					<include name="**/*Test.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+		<fail if="unittestFailed" message="One or more unit tests failed."/>
 	</target>
 
 </project>

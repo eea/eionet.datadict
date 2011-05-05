@@ -35,6 +35,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
 import eionet.test.Seed;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.SecurityUtil;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 
@@ -122,7 +123,7 @@ public class DocUploadTest extends DatabaseTestCase {
 
         // This is what we expect for the request object
         request.setCharacterEncoding("UTF-8");
-        expect(request.getSession(false)).andReturn((HttpSession) httpSession);
+        expect(request.getSession()).andReturn((HttpSession) httpSession);
         expect(request.getParameter("idf")).andReturn("CDDA");
         // ds_id seems to only be used for ACL check. Can easily be spoofed
         expect(request.getParameter("ds_id")).andReturn(ds_id);
@@ -141,7 +142,7 @@ public class DocUploadTest extends DatabaseTestCase {
         DDUser user = new TestUser();
         user.authenticate("heinlja", "heinlja"); // THIS USER ACCOUNT MUST BE LISTED IN dd.group!
         
-        expect(httpSession.getAttribute("eionet.util.SecurityUtil.user")).andReturn(user);
+        expect(httpSession.getAttribute(SecurityUtil.REMOTEUSER)).andReturn(user);
         expectLastCall().times(1, 2);
 		
 
@@ -196,7 +197,7 @@ public class DocUploadTest extends DatabaseTestCase {
 
         // This is what we expect for the request object
         request.setCharacterEncoding("UTF-8");
-        expect(request.getSession(false)).andReturn((HttpSession) httpSession);
+        expect(request.getSession()).andReturn((HttpSession) httpSession);
         expect(request.getParameter("idf")).andReturn("CDDA");
         expect(request.getParameter("ds_id")).andReturn(ds_id);
 

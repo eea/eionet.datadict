@@ -878,16 +878,23 @@ public class DatasetHandler extends BaseHandler {
         "select count(*) as COUNT from DATASET " +
         "where IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR);
         
-        PreparedStatement stmt = SQL.preparedStatement(qry, inParams, conn);
-        ResultSet rs = stmt.executeQuery(qry);
-        
-        if (rs.next()){
-            if (rs.getInt("COUNT")>0){
-                return true;
+        ResultSet rs = null;
+        PreparedStatement stmt = null;
+        try{
+        	stmt = SQL.preparedStatement(qry, inParams, conn);
+            rs = stmt.executeQuery();
+            
+            if (rs!=null && rs.next()){
+                if (rs.getInt("COUNT")>0){
+                    return true;
+                }
             }
+
         }
-        
-        stmt.close();
+        finally{
+        	SQL.close(rs);
+        	SQL.close(stmt);
+        }
         
         return false;
     }

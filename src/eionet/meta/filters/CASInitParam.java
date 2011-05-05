@@ -15,14 +15,14 @@ public enum CASInitParam {
 	CAS_WRAP_REQUEST(CASFilter.WRAP_REQUESTS_INIT_PARAM);
 	
 	/** */
-	private String paramName;
+	private String propertyName;
 	
 	/**
 	 * 
-	 * @param paramName
+	 * @param propertyName
 	 */
-	private CASInitParam(String paramName){
-		this.paramName = paramName;
+	private CASInitParam(String propertyName){
+		this.propertyName = propertyName;
 	}
 	
 	/*
@@ -30,6 +30,6 @@ public enum CASInitParam {
 	 * @see java.lang.Enum#toString()
 	 */
 	public String toString(){
-		return paramName;
+		return propertyName;
 	}
 }

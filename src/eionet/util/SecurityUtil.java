@@ -66,7 +66,7 @@ public class SecurityUtil {
         DDUser user = session==null ? null : (DDUser)session.getAttribute(REMOTEUSER);
         
         if (user==null){
-        	String casUserName = (String)session.getAttribute(CASFilter.CAS_FILTER_USER);
+        	String casUserName = session==null ? null : (String)session.getAttribute(CASFilter.CAS_FILTER_USER);
         	if (casUserName!=null){
         		user = DDCASUser.create(casUserName);
 				session.setAttribute(REMOTEUSER, user);
@@ -172,28 +172,32 @@ public class SecurityUtil {
 		
 		String result = "javascript:login()";
 		
-		String casLoginUrl = getCasLoginUrl(request);
-		if (casLoginUrl!=null){
+		CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
+		if (casFilterConfig!=null){
 			
-			String casServerName = getCasServerName(request);
-			if (casServerName==null){
-				throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
-						+ " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
-			}
+			String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
+			if (casLoginUrl!=null){
 
-			// set the after-login-url
-			StringBuffer afterLoginUrl = new StringBuffer(request.getRequestURL());
-			if (request.getQueryString()!=null){
-				afterLoginUrl.append("?").append(request.getQueryString());
-			}
-			request.getSession().setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, afterLoginUrl.toString());
+				String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
+				if (casServerName==null){
+					throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
+							+ " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
+				}
 
-			try {
-				result = casLoginUrl + "?service=" + URLEncoder.encode(
-						request.getScheme() + "://" + casServerName + request.getContextPath() + "/login", "UTF-8");
-			}
-			catch (UnsupportedEncodingException e) {
-				throw new DDRuntimeException(e.toString(), e);
+				// set the after-login-url
+				StringBuffer afterLoginUrl = new StringBuffer(request.getRequestURL());
+				if (request.getQueryString()!=null){
+					afterLoginUrl.append("?").append(request.getQueryString());
+				}
+				request.getSession().setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, afterLoginUrl.toString());
+
+				try {
+					result = casLoginUrl + "?service=" + URLEncoder.encode(
+							request.getScheme() + "://" + casServerName + request.getContextPath() + "/login", "UTF-8");
+				}
+				catch (UnsupportedEncodingException e) {
+					throw new DDRuntimeException(e.toString(), e);
+				}
 			}
 		}
 		
@@ -209,21 +213,24 @@ public class SecurityUtil {
 		
 		String result = "index.jsp";
 		
-		//String casLoginUrl = request.getSession().getServletContext().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
-		String casLoginUrl = CASFilterConfig.getInstance().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
-		if (casLoginUrl!=null){
+		CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
+		if (casFilterConfig!=null){
 			
-			String casServerName = getCasServerName(request);
-			if (casServerName==null)
-				throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
-						+ " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
+			String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
+			if (casLoginUrl!=null){
 
-			try {
-				result = casLoginUrl.replaceFirst("/login", "/logout") + "?url=" + URLEncoder.encode(
-						request.getScheme() + "://" + casServerName + request.getContextPath(), "UTF-8");
-			}
-			catch (UnsupportedEncodingException e) {
-				throw new DDRuntimeException(e.toString(), e);
+				String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
+				if (casServerName==null)
+					throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
+							+ " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
+
+				try {
+					result = casLoginUrl.replaceFirst("/login", "/logout") + "?url=" + URLEncoder.encode(
+							request.getScheme() + "://" + casServerName + request.getContextPath(), "UTF-8");
+				}
+				catch (UnsupportedEncodingException e) {
+					throw new DDRuntimeException(e.toString(), e);
+				}
 			}
 		}
 		
@@ -249,31 +256,5 @@ public class SecurityUtil {
 	 */
 	public static String getREMOTEUSER() {
 		return REMOTEUSER;
-	}
-
-	/**
-	 * @return the casLoginUrl
-	 */
-	public static String getCasLoginUrl(HttpServletRequest request) {
-		
-		if (casLoginUrl==null){
-			//casLoginUrl = request.getSession().getServletContext().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
-			casLoginUrl = CASFilterConfig.getInstance().getInitParameter(CASFilter.LOGIN_INIT_PARAM);
-		}
-		
-		return casLoginUrl;
-	}
-
-	/**
-	 * @return the casServerName
-	 */
-	public static String getCasServerName(HttpServletRequest request){
-		
-		if (casServerName==null){
-			//casServerName = request.getSession().getServletContext().getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
-			casServerName = CASFilterConfig.getInstance().getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
-		}
-				
-		return casServerName;
 	}
 }

@@ -1,5 +1,6 @@
 package eionet.meta.imp;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -44,17 +45,15 @@ public class DatasetImportHandlerTest extends DatabaseTestCase {
         return new DatabaseConnection(jdbcConn);
     }
 
-	/**
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
+    /*
+     * (non-Javadoc)
+     * @see org.dbunit.DatabaseTestCase#getDataSet()
+     */
     protected IDataSet getDataSet() throws Exception {
-        loadedDataSet = new FlatXmlDataSet(
-                getClass().getClassLoader().getResourceAsStream(
-                        "seed-datatype.xml"));
+        loadedDataSet = new FlatXmlDataSet(getClass().getClassLoader().getResourceAsStream("seed-emptydb.xml"));
         return loadedDataSet;
     }
+
     
 	/**
 	 * Imports the contents of a file with a given systemID into DD database. The file is expected to be in the XML

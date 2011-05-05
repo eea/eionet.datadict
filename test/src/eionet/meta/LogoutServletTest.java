@@ -6,10 +6,17 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import eionet.meta.filters.CASFilterConfig;
+import eionet.meta.filters.CASInitParam;
+import eionet.util.Props;
 
 import junit.framework.TestCase;
 
@@ -21,8 +28,15 @@ import junit.framework.TestCase;
  */
 public class LogoutServletTest extends TestCase {
 
-    public void testService() throws Exception {
+	private static final String CONTEXT_PATH = "testContext";
+	private static final String REQUEST_SCHEME = "http";
 
+	/**
+	 * 
+	 * @throws Exception
+	 */
+    public void testService() throws Exception {
+    	
         // Create the mock objects
         HttpServletRequest request = createMock(HttpServletRequest.class);
         HttpServletResponse response = createMock(HttpServletResponse.class);
@@ -37,11 +51,20 @@ public class LogoutServletTest extends TestCase {
 
         // This is what we expect for the request object
         request.setCharacterEncoding("UTF-8"); // Needs no return value
+        
         // We simulate that the user has no session variable by returning NULL
-        expect(request.getSession(false)).andReturn(null);
+        expect(request.getSession()).andReturn(null);
+        
+        // a couple of more expected calls to request
+        expect(request.getScheme()).andReturn(REQUEST_SCHEME);
+        expect(request.getContextPath()).andReturn(CONTEXT_PATH);
+        String expectedLogoutUrl = getExpectedLogoutUrl();
+        
+        // CASFilterConfig must be initialized
+        CASFilterConfig.init(null);
 
         // This is what we expect to be called for the request object
-        response.sendRedirect("index.jsp"); // Needs no return value
+        response.sendRedirect(expectedLogoutUrl); // Needs no return value
 		
         // start the replay for all mock objects
         replay(request);
@@ -58,5 +81,19 @@ public class LogoutServletTest extends TestCase {
         verify(response);
         verify(servletConfig);
         verify(servletContext);
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    private String getExpectedLogoutUrl() throws UnsupportedEncodingException{
+    	
+    	String casLoginUrl = Props.getRequiredProperty(CASInitParam.CAS_LOGIN_URL.toString());
+    	String casServerName = Props.getRequiredProperty(CASInitParam.CAS_SERVER_NAME.toString());
+    	
+    	return casLoginUrl.replaceFirst("/login", "/logout") + "?url=" + URLEncoder.encode(
+    			REQUEST_SCHEME + "://" + casServerName + CONTEXT_PATH, "UTF-8");
     }
 }

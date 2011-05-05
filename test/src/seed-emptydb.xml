@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<ACL_ROWS/>
+	<ACLS/>
+	<ATTRIBUTE/>
+	<CACHE/>
+	<COMPLEX_ATTR_FIELD/>
+	<COMPLEX_ATTR_ROW/>
+	<DATAELEM/>
+	<DATASET/>
+	<DOC/>
+	<DS_TABLE/>
+	<DST2ROD/>
+	<DST2TBL/>
+	<FK_RELATION/>
+	<FXV/>
+	<HARV_ATTR/>
+	<HARV_ATTR_FIELD/>
+	<HLP_AREA/>
+	<HLP_SCREEN/>
+	<M_ATTRIBUTE/>
+	<M_COMPLEX_ATTR/>
+	<M_COMPLEX_ATTR_FIELD/>
+	<NAMESPACE/>
+	<ROD_ACTIVITIES/>
+	<TBL2ELEM/>
+</dataset>
