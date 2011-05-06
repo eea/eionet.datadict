@@ -139,7 +139,7 @@
 			String redirUrl = "";
 			String mode = request.getParameter("mode");	
 			if (mode.equals("add") || mode.equals("copy"))
-				redirUrl = "data_element.jsp?mode=view&amp;delem_id=" + elmHandler.getLastInsertID();
+				redirUrl = "data_element.jsp?delem_id=" + elmHandler.getLastInsertID();
 			else{
 				redirUrl = "tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID;
 				if (dsName!=null && dsName.length()>0)
@@ -445,13 +445,13 @@ if (messages.trim().length()>0){
 	<h1>
 		Elements in
 		<em>
-			<a href="dstable.jsp?mode=view&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=Util.replaceTags(dsName)%>">
+			<a href="dstable.jsp?table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=Util.replaceTags(dsName)%>">
 				<%=Util.replaceTags(tableName)%>
 			</a>
 		</em>
 		table,
 		<em>
-			<a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view">
+			<a href="dataset.jsp?ds_id=<%=dsID%>">
 				<%=Util.replaceTags(dsName)%>
 			</a>
 		</em>
@@ -570,9 +570,9 @@ if (messages.trim().length()>0){
 						
 						String elemLink = null;
 						if (!elmCommon)
-							elemLink = "data_element.jsp?mode=view&amp;delem_id=" + elem.getID() + "&amp;ds_id=" + dsID + "&amp;table_id=" + tableID;
+							elemLink = "data_element.jsp?delem_id=" + elem.getID() + "&amp;ds_id=" + dsID + "&amp;table_id=" + tableID;
 						else
-							elemLink = "data_element.jsp?mode=view&amp;delem_id=" + elem.getID();
+							elemLink = "data_element.jsp?delem_id=" + elem.getID();
 						
 						// see if the element is part of any foreign key relations
 						Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
@@ -672,7 +672,7 @@ if (messages.trim().length()>0){
 							
 							<td style="text-align: left; padding-right:10px">
 								<% if (elem.getType().equals("CH1")){ %>
-									<a href="javascript:clickLink('fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>')"><%=Util.replaceTags(elemType)%></a>
+									<a href="javascript:clickLink('fixed_values.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>')"><%=Util.replaceTags(elemType)%></a>
 								<%} else{ %>
 									<%=Util.replaceTags(elemType)%>
 								<% } %>

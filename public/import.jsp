@@ -15,8 +15,9 @@
 	}
 	
 	String mode = request.getParameter("mode");
-	if (mode==null || mode.length()==0)
+	if (mode==null || mode.trim().length()==0){
 		mode = "DST";
+	}
 	else if (!mode.equals("FXV")){ %>
 		<b>Unknown mode!</b><%
 	}
@@ -119,7 +120,7 @@
 			<p>
 					<span class="attention">
 						You have chosen to import fixed values (i.e. codes)<br/> for the
-						<a href="data_element.jsp?mode=view&amp;delem_id=<%=delem_id%>"><%=Util.replaceTags(elmName)%></a> element!
+						<a href="data_element.jsp?delem_id=<%=delem_id%>"><%=Util.replaceTags(elmName)%></a> element!
 					</span>
 			</p><%
 		}

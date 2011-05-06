@@ -196,8 +196,9 @@
 	String dsID = request.getParameter("ds_id");
 	String tableID = request.getParameter("table_id");
 	String type = request.getParameter("type"); // indicates whether element is fixed values or quantitative
-	if (type!=null && type.length()==0)
+	if (type!=null && type.length()==0){
 		type = null;
+	}
 
 	// for historic reasons reference URL uses "delem_idf" while as internally DD pages are used to "idfier"
 	String idfier = "";
@@ -208,10 +209,8 @@
 		idfier = request.getParameter("idfier");
 
 	// check missing request parameters
-	if (mode == null || mode.length()==0){
-		request.setAttribute("DD_ERR_MSG", "Missing request parameter: mode");
-		request.getRequestDispatcher("error.jsp").forward(request, response);
-		return;
+	if (mode == null || mode.trim().length()==0){
+		mode = "view";
 	}
 
 	// security for add common element
@@ -297,7 +296,7 @@
 		if (mode.equals("add") || mode.equals("copy")){
 			String id = handler.getLastInsertID();
 			if (id!=null && id.length()>0)
-				redirUrl = redirUrl + "data_element.jsp?mode=view&delem_id=" + id;
+				redirUrl = redirUrl + "data_element.jsp?delem_id=" + id;
 			if (history!=null)
 				history.remove(history.getCurrentIndex());
 		}
@@ -337,12 +336,12 @@
 		else if (mode.equals("delete")){
 			String checkedoutCopyID = request.getParameter("checkedout_copy_id");
 			if (checkedoutCopyID!=null && checkedoutCopyID.length()>0)
-				redirUrl = "data_element.jsp?mode=view&delem_id=" + checkedoutCopyID;
+				redirUrl = "data_element.jsp?delem_id=" + checkedoutCopyID;
 			else
 				redirUrl = "index.jsp";
 			if (!elmCommon){
 				if (tableID!=null && tableID.length()>0)
-					redirUrl = "dstable.jsp?mode=view&table_id=" + tableID;
+					redirUrl = "dstable.jsp?table_id=" + tableID;
 			}
 		}
 
@@ -563,7 +562,7 @@
 			    if (!delem_id.equals(copyID)){
 				    // send to copy if created successfully, remove previous url (edit original) from history
 				    history.remove(history.getCurrentIndex());
-				    StringBuffer buf = new StringBuffer("data_element.jsp?mode=view&delem_id=");
+				    StringBuffer buf = new StringBuffer("data_element.jsp?delem_id=");
 				    buf.append(copyID);
 			        response.sendRedirect(buf.toString());
 		        }
@@ -584,7 +583,7 @@
 				// redircet user to his working copy of this element (if such exists)
 				String workingCopyID = verMan.getWorkingCopyID(dataElement);
 				if (workingCopyID!=null && workingCopyID.length()>0){
-					StringBuffer buf = new StringBuffer("data_element.jsp?mode=view&delem_id=");
+					StringBuffer buf = new StringBuffer("data_element.jsp?delem_id=");
 				    buf.append(workingCopyID);
 			        response.sendRedirect(buf.toString());
 				}
@@ -673,13 +672,13 @@
 				document.location.assign("data_element.jsp?mode=edit&delem_id=" + id);
 			}
 			else if (mode=="checkout"){
-				document.location.assign("data_element.jsp?mode=view&action=checkout&delem_id=" + id);
+				document.location.assign("data_element.jsp?action=checkout&delem_id=" + id);
 			}
 			else if (mode=="newversion"){
-				document.location.assign("data_element.jsp?mode=view&action=newversion&delem_id=" + id);
+				document.location.assign("data_element.jsp?action=newversion&delem_id=" + id);
 			}
 			else if (mode=="view"){
-				document.location.assign("data_element.jsp?mode=view&delem_id=" + id);
+				document.location.assign("data_element.jsp?delem_id=" + id);
 			}
 		}
 
@@ -1245,12 +1244,12 @@ else{
 						<%
 					}
 					if (elmCommon && canNewVersion){%>
-						<li><a href="data_element.jsp?mode=view&amp;action=newversion&amp;delem_id=<%=delem_id%>">New version</a></li><%
+						<li><a href="data_element.jsp?action=newversion&amp;delem_id=<%=delem_id%>">New version</a></li><%
 					}
 					if (mode.equals("view") && elmCommon && !dataElement.isWorkingCopy()){
 						if (user!=null || (user==null && !isLatestRequested)){
 							if (latestID!=null && !latestID.equals(dataElement.getID())){%>
-								<li><a href="data_element.jsp?mode=view&amp;delem_id=<%=latestID%>">Go to newest</a></li><%
+								<li><a href="data_element.jsp?delem_id=<%=latestID%>">Go to newest</a></li><%
 							}
 						}
 					}
@@ -1284,7 +1283,7 @@ else{
 <%
 								}
 								if (elmCommon && canCheckout){%>
-									<li><a href="data_element.jsp?mode=view&amp;action=checkout&amp;delem_id=<%=delem_id%>">Check out</a></li>
+									<li><a href="data_element.jsp?action=checkout&amp;delem_id=<%=delem_id%>">Check out</a></li>
 <%
 								}
 								if ((elmCommon && canCheckout) || (!elmCommon && editDstPrm)){%>
@@ -1547,7 +1546,7 @@ else{
 													%>
 													<td class="simple_attr_value">
 														<em>
-															<a href="dataset.jsp?mode=view&amp;ds_id=<%=dsID%>">
+															<a href="dataset.jsp?ds_id=<%=dsID%>">
 																<b><%=Util.replaceTags(dataset.getShortName())%></b>
 															</a>
 														</em>
@@ -1582,7 +1581,7 @@ else{
 													%>
 													<td class="simple_attr_value">
 														<em>
-															<a href="dstable.jsp?mode=view&amp;table_id=<%=dsTable.getID()%>">
+															<a href="dstable.jsp?table_id=<%=dsTable.getID()%>">
 																<%=Util.replaceTags(dsTable.getShortName())%>
 															</a>
 														</em>
@@ -1705,7 +1704,7 @@ else{
 								    		<%
 								    		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
 								    		if (mode.equals("view") && jspUrlPrefix!=null){
-									    		String refUrl = jspUrlPrefix + "data_element.jsp?mode=view&amp;delem_idf=" + dataElement.getIdentifier();
+									    		String refUrl = jspUrlPrefix + "data_element.jsp?delem_idf=" + dataElement.getIdentifier();
 									    		if (dataElement.getNamespace()!=null && dataElement.getNamespace().getID()!=null)
 									    			refUrl = refUrl + "&amp;pns=" + dataElement.getNamespace().getID();
 									    		%>
@@ -2015,7 +2014,7 @@ else{
 																		}
 																		%>
 																	</select>
-																	<a onclick="pop(this.href);return false;" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
+																	<a onclick="pop(this.href);return false;" href="fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
 																		<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
 																	</a>
 																	<%
@@ -2184,7 +2183,7 @@ else{
 													}
 
 													// the link
-													String valuesLink = "fixed_values.jsp?delem_id=" + delem_id + "&amp;delem_name=" + delem_name + "&amp;mode=view&amp;parent_type=" + type;
+													String valuesLink = "fixed_values.jsp?delem_id=" + delem_id + "&amp;delem_name=" + delem_name + "&amp;parent_type=" + type;
 													if (mode.equals("edit") && user!=null){
 														%>
 														<span class="barfont_bordered">
@@ -2321,7 +2320,7 @@ else{
 																	%>
 																	<tr>
 																		<td style="width:50%">
-																			<a href="data_element.jsp?delem_id=<%=fkElmID%>&amp;mode=view">
+																			<a href="data_element.jsp?delem_id=<%=fkElmID%>">
 																				<%=Util.replaceTags(fkElmName)%>
 																			</a>
 																		</td>
@@ -2368,12 +2367,12 @@ else{
 																String tblLink = "";
 																String dstLink = "";
 																if (isLatestRequested){
-																	tblLink = "dstable.jsp?mode=view&amp;table_idf=" + tbl.getIdentifier() + "&amp;pns=" + tbl.getParentNs();
-																	dstLink = "dataset.jsp?mode=view&amp;ds_idf=" + tbl.getDstIdentifier();
+																	tblLink = "dstable.jsp?table_idf=" + tbl.getIdentifier() + "&amp;pns=" + tbl.getParentNs();
+																	dstLink = "dataset.jsp?ds_idf=" + tbl.getDstIdentifier();
 																}
 																else{
-																	tblLink = "dstable.jsp?mode=view&amp;table_id=" + tbl.getID();
-																	dstLink = "dataset.jsp?mode=view&amp;ds_id=" + tbl.getDatasetID();
+																	tblLink = "dstable.jsp?table_id=" + tbl.getID();
+																	dstLink = "dataset.jsp?ds_id=" + tbl.getDatasetID();
 																}
 
 																String owner = tbl.getOwner();
@@ -2458,7 +2457,7 @@ else{
 
 																	<tr class="zebra<%=isOdd%>">
 																		<td>
-																			<a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+																			<a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
@@ -2553,7 +2552,7 @@ else{
 																&nbsp;<%
 															}
 															else{ %>
-																[<a href="data_element.jsp?mode=view&amp;delem_id=<%=otherVer.getID()%>">view</a>]<%
+																[<a href="data_element.jsp?delem_id=<%=otherVer.getID()%>">view</a>]<%
 															}
 															%>
 														</td>

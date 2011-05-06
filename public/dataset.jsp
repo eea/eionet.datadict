@@ -76,11 +76,10 @@
 	String dstIdf = request.getParameter("ds_idf");
 	String ds_id = request.getParameter("ds_id");
 	mode = request.getParameter("mode");
-	if (mode == null || mode.length()==0){
-		request.setAttribute("DD_ERR_MSG", "Missing request parameter: mode");
-		request.getRequestDispatcher("error.jsp").forward(request, response);
-		return;
+	if (mode == null || mode.trim().length()==0){
+		mode = "view";
 	}
+	
 	if (mode.equals("add")){
 		if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){
 			request.setAttribute("DD_ERR_MSG", "You have no permission to add a dataset!");
@@ -88,6 +87,7 @@
 			return;
 		}
 	}
+	
 	if (mode.equals("view")){
 		if (Util.voidStr(dstIdf) && Util.voidStr(ds_id)){
 			request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id or ds_idf");
@@ -151,7 +151,7 @@
 		if (mode.equals("add")){
 			String id = handler.getLastInsertID();
 			if (id!=null && id.length()>0)
-				redirUrl = redirUrl + "dataset.jsp?mode=view&ds_id=" + id;
+				redirUrl = redirUrl + "dataset.jsp?ds_id=" + id;
 			if (history!=null)
 				history.remove(history.getCurrentIndex());
 		}
@@ -341,7 +341,7 @@
 		    if (!ds_id.equals(copyID)){
 			    // send to copy if created successfully, remove previous url (edit original) from history
 			    history.remove(history.getCurrentIndex());
-			    StringBuffer buf = new StringBuffer("dataset.jsp?mode=view&ds_id=");
+			    StringBuffer buf = new StringBuffer("dataset.jsp?ds_id=");
 			    buf.append(copyID);
 		        response.sendRedirect(buf.toString());
 	        }
@@ -362,7 +362,7 @@
 			// redircet user to his working copy of this dataset (if such exists)
 			String workingCopyID = verMan.getWorkingCopyID(dataset);
 			if (workingCopyID!=null && workingCopyID.length()>0){
-				StringBuffer buf = new StringBuffer("dataset.jsp?mode=view&ds_id=");
+				StringBuffer buf = new StringBuffer("dataset.jsp?ds_id=");
 			    buf.append(workingCopyID);
 		        response.sendRedirect(buf.toString());
 			}
@@ -548,13 +548,13 @@
 				document.location.assign("dataset.jsp?mode=edit&ds_id=" + id);
 			}
 			else if (mode=="checkout"){
-				document.location.assign("dataset.jsp?mode=view&action=checkout&ds_id=" + id);
+				document.location.assign("dataset.jsp?action=checkout&ds_id=" + id);
 			}
 			else if (mode=="newversion"){
-				document.location.assign("dataset.jsp?mode=view&action=newversion&ds_id=" + id);
+				document.location.assign("dataset.jsp?action=newversion&ds_id=" + id);
 			}
 			else if (mode=="view"){
-				document.location.assign("dataset.jsp?mode=view&ds_id=" + id);
+				document.location.assign("dataset.jsp?ds_id=" + id);
 			}
 		}
 
@@ -708,7 +708,7 @@ else if (mode.equals("add"))
 						if (latestID!=null && !latestID.equals(dataset.getID())){ %>
 				<div id="operations">
 					<ul>
-							<li><a href="dataset.jsp?mode=view&amp;ds_id=<%=latestID%>">Go to newest</a></li>
+							<li><a href="dataset.jsp?ds_id=<%=latestID%>">Go to newest</a></li>
 					</ul>
 				</div>
 			<%
@@ -757,12 +757,12 @@ else if (mode.equals("add"))
 						if (mode.equals("view")){
 							if (canNewVersion){
 						%>
-							<li><a href="dataset.jsp?mode=view&amp;action=newversion&amp;ds_id=<%=ds_id%>">New version</a></li>
+							<li><a href="dataset.jsp?action=newversion&amp;ds_id=<%=ds_id%>">New version</a></li>
 						<%
 							}
 							if (canCheckout){
 						%>
-							<li><a href="dataset.jsp?mode=view&amp;action=checkout&amp;ds_id=<%=ds_id%>">Check out</a></li>
+							<li><a href="dataset.jsp?action=checkout&amp;ds_id=<%=ds_id%>">Check out</a></li>
 							<li><a href="javascript:submitForm('delete')">Delete</a></li>
 						<%
 							}
@@ -1116,7 +1116,7 @@ else if (mode.equals("add"))
 								    		<%
 								    		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
 								    		if (mode.equals("view") && jspUrlPrefix!=null){
-									    		String refUrl = jspUrlPrefix + "dataset.jsp?mode=view&amp;ds_idf=" + dataset.getIdentifier();
+									    		String refUrl = jspUrlPrefix + "dataset.jsp?ds_idf=" + dataset.getIdentifier();
 									    		%>
 								    		  <tr class="zebra<%=isOdd%>">
 													<th scope="row" class="scope-row simple_attr_title">
@@ -1312,7 +1312,7 @@ else if (mode.equals("add"))
 																		}
 																		%>
 																	</select>
-																	<a  href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr" onclick="pop(this.href);return false;">
+																	<a  href="fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr" onclick="pop(this.href);return false;">
 																		<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
 																	</a>
 																	<%
@@ -1536,9 +1536,9 @@ else if (mode.equals("add"))
 														DsTable table = (DsTable)tables.get(i);
 														String tableLink = "";
 														if (isLatestRequested)
-															tableLink = "dstable.jsp?mode=view&amp;table_idf=" + table.getIdentifier() + "&amp;pns=" + dataset.getNamespaceID();
+															tableLink = "dstable.jsp?table_idf=" + table.getIdentifier() + "&amp;pns=" + dataset.getNamespaceID();
 														else
-															tableLink = "dstable.jsp?mode=view&amp;table_id=" + table.getID();
+															tableLink = "dstable.jsp?table_id=" + table.getID();
 
 														String tblFullName = "";
 														attributes = searchEngine.getAttributes(table.getID(), "T", DElemAttribute.TYPE_SIMPLE);
@@ -1653,7 +1653,7 @@ else if (mode.equals("add"))
 
 																	<tr class="zebra<%=isOdd%>">
 																		<td>
-																			<a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
+																			<a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
 																				<%=Util.replaceTags(attrName)%>
 																			</a>
 																		</td>
@@ -1745,7 +1745,7 @@ else if (mode.equals("add"))
 																	&nbsp;<%
 																}
 																else{ %>
-																	[<a href="dataset.jsp?mode=view&amp;ds_id=<%=otherVer.getID()%>">view</a>]<%
+																	[<a href="dataset.jsp?ds_id=<%=otherVer.getID()%>">view</a>]<%
 																}
 																%>
 															</td>

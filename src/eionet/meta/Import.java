@@ -243,7 +243,7 @@ public class Import extends HttpServlet {
             
             // if was fixed values import explicitly, add a link back to the element
             if (type.equals("FXV")){
-				responseText.append("<br><br><a href='data_element.jsp?mode=view&delem_id=" + delem_id + "'>Back to data element</a>");
+				responseText.append("<br><br><a href='data_element.jsp?delem_id=" + delem_id + "'>Back to data element</a>");
             }
         }
 

@@ -311,7 +311,7 @@
 						String tblFullName = tblName;
 						String workingUser = table.getDstWorkingUser();
 						
-						tableLink = "dstable.jsp?mode=view&amp;table_id=" + table_id + "&amp;ds_id=" + ds_id + "&amp;ds_name=" + ds_name;
+						tableLink = "dstable.jsp?table_id=" + table_id + "&amp;ds_id=" + ds_id + "&amp;ds_name=" + ds_name;
 
 						String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
 						String regStatus = table.getDstStatus();
@@ -409,7 +409,7 @@
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                         String strDisabled = oEntry.clickable ? "" : " class=\"disabled\"";
                         String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
-                        tableLink = "dstable.jsp?mode=view&amp;table_id=" + oEntry.oID + "&amp;ds_id=" + oEntry.oDsID + "&amp;ds_name=" + oEntry.oDsName;
+                        tableLink = "dstable.jsp?table_id=" + oEntry.oID + "&amp;ds_id=" + oEntry.oDsID + "&amp;ds_name=" + oEntry.oDsName;
                         String statusImg   = "images/" + Util.getStatusImage(oEntry.regStatus);
 						String statusTxt   = Util.getStatusRadics(oEntry.regStatus);
                         

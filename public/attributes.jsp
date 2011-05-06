@@ -216,7 +216,7 @@
 						attrTypeDisp = "Complex";
 					%>
 					<td>
-						<a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>&amp;mode=view">
+						<a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>">
 						<%=Util.replaceTags(attr_name)%></a>
 					</td>
 					<td><%=Util.replaceTags(attrTypeDisp)%></td>

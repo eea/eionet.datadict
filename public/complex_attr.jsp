@@ -37,9 +37,8 @@ private String legalizeAlert(String in){
 
 			String mode = request.getParameter("mode");
 
-			if (mode == null || mode.length()==0){ %>
-				<span class="error">Mode is missing!</span> <%
-				return;
+			if (mode == null || mode.trim().length()==0){
+				mode = "view";
 			}
 
 			if (request.getMethod().equals("POST")){
@@ -341,7 +340,7 @@ if (dispParentName==null)
 	dispParentName = "";
 
 if (parentLink.length()>0)
-	parentLink.append(request.getParameter("parent_id")).append("&amp;mode=view");
+	parentLink.append(request.getParameter("parent_id"));
 %>
 
 <h1 style="margin-bottom:20px">Complex attribute <a href=""><%=attrName%></a> of <%=dispParentType%> <a href="<%=parentLink%>"><%=dispParentName%></a></h1>

@@ -470,7 +470,7 @@ else{ %>
 
 					StringBuffer href = new StringBuffer();
 					if (!popup)
-						href.append("data_element.jsp?mode=view&amp;delem_id=").append(delem_id);
+						href.append("data_element.jsp?delem_id=").append(delem_id);
 					else
 						href.append("javascript:pickElem(").append(delem_id).append(",").append(displayed+1).append(")");
 						

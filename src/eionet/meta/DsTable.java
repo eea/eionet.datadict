@@ -308,7 +308,7 @@ public class DsTable implements Comparable {
 		if (jspUrlPrefix!=null)
 			buf.append(jspUrlPrefix);
 		
-		buf.append("dstable.jsp?mode=view&table_idf=");
+		buf.append("dstable.jsp?table_idf=");
 		buf.append(getIdentifier());
 		
 		if (getParentNs()!=null){

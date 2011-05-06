@@ -403,7 +403,7 @@ public class DataElement implements Comparable{
 		if (jspUrlPrefix!=null)
 			buf.append(jspUrlPrefix);
 		
-		buf.append("data_element.jsp?mode=view&delem_idf=");
+		buf.append("data_element.jsp?delem_idf=");
 		buf.append(getIdentifier());
 		
 		if (getNamespace()!=null && getNamespace().getID()!=null){

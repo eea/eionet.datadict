@@ -175,7 +175,7 @@
 <form id="form1" method="post" action="dstables.jsp">
 
 	<h1>
-		Tables in <em><a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dataset.getShortName())%></a></em> dataset
+		Tables in <em><a href="dataset.jsp?ds_id=<%=dsID%>"><%=Util.replaceTags(dataset.getShortName())%></a></em> dataset
 	</h1>
 	
 		<table width="100%" cellspacing="0"  style="border:0">
@@ -220,7 +220,7 @@
 			String tblName = "";
 			String tblDef = "";
 			DsTable table = (DsTable)tables.get(i);
-			String tableLink = "dstable.jsp?mode=view&amp;table_id=" + table.getID() + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ctx=ds";
+			String tableLink = "dstable.jsp?table_id=" + table.getID() + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ctx=ds";
 			attributes = searchEngine.getAttributes(table.getID(), "T", DElemAttribute.TYPE_SIMPLE);
 		
 			for (int c=0; c<attributes.size(); c++){

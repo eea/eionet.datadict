@@ -70,13 +70,9 @@ private String legalizeAlert(String in){
 			
 
 			mode = request.getParameter("mode");
-			if (mode == null || mode.length()==0) { %>
-				<b>Mode paramater is missing!</b>
-				<%
-				return;
+			if (mode == null || mode.trim().length()==0) {
+				mode = "view";
 			}
-			
-
 			
 			if (request.getMethod().equals("POST")){
 

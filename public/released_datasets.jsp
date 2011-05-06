@@ -26,7 +26,7 @@ if (releasedDatasets!=null){
 			%>
 			<tr>				
 				<td style="vertical-align:top">
-					<a href="dataset.jsp?mode=view&amp;ds_id=<%=dst.getID()%>">
+					<a href="dataset.jsp?ds_id=<%=dst.getID()%>">
 						<%=Util.replaceTags(name)%>
 					</a>
 				</td>

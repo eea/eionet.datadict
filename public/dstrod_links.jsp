@@ -105,7 +105,7 @@ try{
 			<%@ include file="nmenu.jsp" %>
 			<div id="workarea"> <!-- start work area -->
 				<form id="rodlinks" action="dstrod_links.jsp" method="post">
-					<h1>ROD obligations corresponding to <a href="dataset.jsp?mode=view&amp;ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset</h1>
+					<h1>ROD obligations corresponding to <a href="dataset.jsp?ds_id=<%=dstID%>"><%=Util.replaceTags(dstName)%></a> dataset</h1>
 					<div style="float:left;margin-top:20px;">
 						<input type="submit" name="submit" value="<%=SUBMIT_ADD_NEW%>"/>
 						<%

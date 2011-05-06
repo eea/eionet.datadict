@@ -187,14 +187,14 @@
 					<input type="checkbox" name="rel_id" value="<%=fkRelID%>"/>
 				</td>
 				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-					<a href="data_element.jsp?delem_id=<%=fkElmID%>&amp;mode=view"><%=fkElmName%></a>
+					<a href="data_element.jsp?delem_id=<%=fkElmID%>"><%=fkElmName%></a>
 				</td>
 				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<%=fkTblName%>
 				</td>
 				<td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
 					<a  title="<%=relDefin%>"
-						href="fk_relation.jsp?rel_id=<%=fkRelID%>&amp;mode=view"><%=cardinality%></a>
+						href="fk_relation.jsp?rel_id=<%=fkRelID%>"><%=cardinality%></a>
 				</td>
 			</tr>
 			<%

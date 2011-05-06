@@ -33,8 +33,10 @@
 		return;
 	}
 	mode = request.getParameter("mode");
-	if (mode == null || mode.length()==0)
+	if (mode == null || mode.trim().length()==0){
 		mode = "view";
+	}
+	
 	if (!mode.equals("view") && user==null){
 		request.setAttribute("DD_ERR_MSG", "Mode not allowed for anonymous users: " + mode);
 		request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -181,7 +183,7 @@
 		//find parent url from history
 		String parentUrl="";
 		if (parent_type.equals("elem")){
-			parentUrl="data_element.jsp?mode=view&amp;delem_id="+delem_id;
+			parentUrl="data_element.jsp?delem_id="+delem_id;
 			if (history!=null){
 				String elemUrl = history.getLastMatching("data_element.jsp");
 			

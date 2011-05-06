@@ -495,7 +495,7 @@
 					String linkDisabled = clickable ? "" : "class=\"disabled\"";
 					String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
 					String ds_name = Util.replaceTags(dataset.getShortName());
-					String dsLink = clickable ? "dataset.jsp?mode=view&amp;ds_id=" + ds_id : "#";
+					String dsLink = clickable ? "dataset.jsp?ds_id=" + ds_id : "#";
 					String dsFullName=dataset.getName();
 					if (dsFullName!=null && dsFullName.length()>60)
 						dsFullName = dsFullName.substring(0,60) + " ...";
@@ -599,7 +599,7 @@
 							for (int c=0; tables!=null && c<tables.size(); c++){
 
 								DsTable table = (DsTable)tables.get(c);
-								StringBuffer tableLink = new StringBuffer("dstable.jsp?mode=view&amp;table_id=");
+								StringBuffer tableLink = new StringBuffer("dstable.jsp?table_id=");
 								tableLink.append(table.getID()).append("&amp;ds_id=").append(ds_id).append("&amp;ds_name=").append(ds_name);
 
 								// it is probably less confusing if there are no links for tables of working copies
@@ -646,7 +646,7 @@
 
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                         String linkDisabled = oEntry.clickable ? "" : "class=\"disabled\"";
-                        String dsLink = oEntry.clickable ? "dataset.jsp?mode=view&amp;ds_id=" + oEntry.oID : "#";
+                        String dsLink = oEntry.clickable ? "dataset.jsp?ds_id=" + oEntry.oID : "#";
                         String statusImg = "images/" + Util.getStatusImage(oEntry.getRegStatus());
                         String statusTxt   = Util.getStatusRadics(oEntry.getRegStatus());
 					              String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
@@ -719,7 +719,7 @@
 								for (int c=0; tables!=null && c<tables.size(); c++){
 
 									DsTable table = (DsTable)tables.get(c);
-									StringBuffer tableLink = new StringBuffer("dstable.jsp?mode=view&amp;table_id=");
+									StringBuffer tableLink = new StringBuffer("dstable.jsp?table_id=");
 									tableLink.append(table.getID()).append("&amp;ds_id=").
 									append(oEntry.oID).append("&amp;ds_name=").append(oEntry.oShortName);
 

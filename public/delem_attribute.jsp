@@ -38,10 +38,8 @@
 			String attr_id = request.getParameter("attr_id");
 			
 			mode = request.getParameter("mode");
-			if (mode == null || mode.length()==0) { %>
-				<b>Mode paramater is missing!</b>
-				<%
-				return;
+			if (mode == null || mode.trim().length()==0) {
+				mode = "view";
 			}
 			
 			if (mode.equals("add")){
@@ -765,7 +763,7 @@ else
 				%>
 					<tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
 						<th scope="row" class="scope-row">
-								<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=Util.replaceTags(attr_shortname)%>&amp;parent_type=attr">
+								<a href="fixed_values.jsp?delem_id=<%=attr_id%>&amp;delem_name=<%=Util.replaceTags(attr_shortname)%>&amp;parent_type=attr">
 									Fixed values
 								</a>
 						</th>
@@ -1132,7 +1130,7 @@ else
 							String name = (String)hash.get("name");
 							String definition = (String)hash.get("definition");
 							if (definition.length()>50) definition = definition.substring(0,50) + " ...";
-							String fieldLink = "m_attr_field.jsp?mode=view&amp;attr_id=" + attr_id + "&amp;attr_name=" + attr_name + "&amp;attr_ns=basens&amp;field_id=" + id;
+							String fieldLink = "m_attr_field.jsp?attr_id=" + attr_id + "&amp;attr_name=" + attr_name + "&amp;attr_ns=basens&amp;field_id=" + id;
 			
 							int pos = Integer.parseInt((String)hash.get("position"));
 							if (pos >= position) position = pos +1;

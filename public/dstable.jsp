@@ -134,11 +134,10 @@
 
 	mode = request.getParameter("mode");
 
-	if (mode == null || mode.length()==0){
-		request.setAttribute("DD_ERR_MSG", "Missing request parameter: mode");
-		request.getRequestDispatcher("error.jsp").forward(request, response);
-		return;
+	if (mode == null || mode.trim().length()==0){
+		mode = "view";
 	}
+	
 	if (mode.equals("add")){
 		if (Util.voidStr(dsID)){
 			request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id");
@@ -213,7 +212,7 @@
 			// if this was add, send to the added copy
 			String id = handler.getLastInsertID();
 			if (id!=null && id.length()>0)
-				redirUrl = redirUrl + "dstable.jsp?mode=view&table_id=" + id;
+				redirUrl = redirUrl + "dstable.jsp?table_id=" + id;
 			if (dsName!=null)
 				redirUrl = redirUrl + "&ds_name=" + dsName;
 			if (dsID!=null)
@@ -235,7 +234,7 @@
 		else if (mode.equals("delete")){
 			// if dataset id number given, send to view mode of the dataset working copy, otherwise to home page
 			if (dsID!=null && dsID.length()>0)
-				redirUrl = "dataset.jsp?mode=view&ds_id=" + dsID;
+				redirUrl = "dataset.jsp?ds_id=" + dsID;
 			else
 				redirUrl = "index.jsp";
 		}
@@ -662,7 +661,7 @@ else if (mode.equals("add"))
 		else if (mode.equals("edit"))
 			pageHeadingVerb = "Edit";
 		%>
-		<h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="dataset.jsp?ds_id=<%=dsID%>&amp;mode=view"><%=Util.replaceTags(dsName)%></a> dataset<%}%></h1>
+		<h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="dataset.jsp?ds_id=<%=dsID%>"><%=Util.replaceTags(dsName)%></a> dataset<%}%></h1>
 
 		<!-- The buttons displayed in view mode -->
 			<%
@@ -968,7 +967,7 @@ else if (mode.equals("add"))
 											}
 											%>
 											<td class="simple_attr_value">
-												<a href="dataset.jsp?mode=view&amp;ds_id=<%=dsID%>">
+												<a href="dataset.jsp?ds_id=<%=dsID%>">
 													<b><%=Util.replaceTags(dsName)%></b>
 												</a>
 												<%
@@ -984,7 +983,7 @@ else if (mode.equals("add"))
 							    		<%
 							    		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
 							    		if (mode.equals("view") && jspUrlPrefix!=null){
-								    		String refUrl = jspUrlPrefix + "dstable.jsp?mode=view&amp;table_idf=" +
+								    		String refUrl = jspUrlPrefix + "dstable.jsp?table_idf=" +
 								    						dsTable.getIdentifier() + "&amp;pns=" + dsTable.getParentNs();
 								    		%>
 								    		<tr class="zebra<%=isOdd%>">
@@ -1237,7 +1236,7 @@ else if (mode.equals("add"))
 																	}
 																	%>
 																</select>
-																<a onclick="pop(this.href);return false;" href="fixed_values.jsp?mode=view&amp;delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
+																<a onclick="pop(this.href);return false;" href="fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
 																	<img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
 																</a>
 																<%
@@ -1394,7 +1393,7 @@ else if (mode.equals("add"))
 																		continue;
 
 																	boolean elmCommon = elem.getNamespace()==null || elem.getNamespace().getID()==null;
-																	String elemLink = "data_element.jsp?mode=view&amp;delem_id=" + elem.getID();
+																	String elemLink = "data_element.jsp?delem_id=" + elem.getID();
 																	String elemDefinition = elem.getAttributeValueByShortName("Definition");
 																	String linkTitle = elemDefinition==null ? "" : elemDefinition;
 																	String elemType = (String)types.get(elem.getType());
@@ -1459,7 +1458,7 @@ else if (mode.equals("add"))
 																		<td>
 																			<%
 																			if (elem.getType().equals("CH1")){ %>
-																				<a href="fixed_values.jsp?mode=view&amp;delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>">
+																				<a href="fixed_values.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>">
 																					<%=Util.replaceTags(elemType)%>
 																				</a> <%
 																			}
@@ -1550,7 +1549,7 @@ else if (mode.equals("add"))
 
 																<tr class="zebra<%=isOdd%>">
 																	<td>
-																		<a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;mode=view&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+																		<a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
 																			<%=Util.replaceTags(attrName)%>
 																		</a>
 																	</td>

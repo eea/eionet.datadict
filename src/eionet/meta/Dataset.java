@@ -327,7 +327,7 @@ public class Dataset implements Comparable{
 		if (jspUrlPrefix!=null)
 			buf.append(jspUrlPrefix);
 		
-		buf.append("dataset.jsp?mode=view&ds_idf=");
+		buf.append("dataset.jsp?ds_idf=");
 		buf.append(getIdentifier());
 		
 		return buf.toString();

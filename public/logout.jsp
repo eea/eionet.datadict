@@ -94,7 +94,7 @@ Vector commonElements=null;
 					<tr>					
 						<td colspan="2" title="<%=dsFullName%>">
 							Dataset:&nbsp;
-							<a href="dataset.jsp?ds_id=<%=ds_id%>&amp;mode=view">
+							<a href="dataset.jsp?ds_id=<%=ds_id%>">
 								<%=Util.replaceTags(dsFullName)%>
 							</a>
 						</td>
@@ -127,7 +127,7 @@ Vector commonElements=null;
 					<tr>
 						<td colspan="2">
 							Common element:&nbsp;
-							<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>&amp;mode=view">
+							<a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>">
 								<%=Util.replaceTags(delem_name)%>
 							</a>
 						(<%=displayType%>)

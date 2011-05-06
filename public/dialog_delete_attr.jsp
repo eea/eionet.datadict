@@ -116,21 +116,21 @@ ServletContext ctx = null;
 							String version="";
 							if (parent_type.equals("DS")){
 								type_name="Dataset";
-								link="dataset.jsp?mode=view&ds_id=" + parent_id;
+								link="dataset.jsp?ds_id=" + parent_id;
 							}
 							else if (parent_type.equals("T")){
 								type_name="Table";
-								link="dstable.jsp?mode=view&table_id=" + parent_id;
+								link="dstable.jsp?table_id=" + parent_id;
 							}
 							else if (parent_type.equals("CSI")){
 								type_name="Allowable value";
 								String comp_id = (String)object.get("component_id");
 								String comp_type = (String)object.get("component_type");
-								link="fixed_value.jsp?mode=view&fxv_id=" + parent_id+ "&delem_id=" + comp_id + "&parent_type=" + comp_type;
+								link="fixed_value.jsp?fxv_id=" + parent_id+ "&delem_id=" + comp_id + "&parent_type=" + comp_type;
 							}
 							else if (parent_type.equals("E")){
 								type_name="Data element";
-								link="data_element.jsp?mode=view&delem_id=" + parent_id;
+								link="data_element.jsp?delem_id=" + parent_id;
 							}
 							if (!parent_type.equals("CSI")){
 								version = "version: " + (String)object.get("version");

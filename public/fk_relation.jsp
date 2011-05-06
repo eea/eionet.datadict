@@ -34,6 +34,9 @@ if (relID == null || relID.length()==0) {%>
 }
 
 String mode = request.getParameter("mode");
+if (mode==null || mode.trim().length()==0){
+	mode = "view";
+}
 
 if (request.getMethod().equals("POST")){
 	

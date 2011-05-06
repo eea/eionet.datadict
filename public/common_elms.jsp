@@ -372,7 +372,7 @@ else{ %>
 					String status = dataElement.getStatus();
 					String checkInNo = dataElement.getVersion();
 					
-					StringBuffer viewLink = new StringBuffer("data_element.jsp?mode=view&amp;delem_id=");
+					StringBuffer viewLink = new StringBuffer("data_element.jsp?delem_id=");
 					viewLink.append(delem_id);
 					if (popup)
 						viewLink.append("&amp;popup=");

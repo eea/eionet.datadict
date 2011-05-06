@@ -53,10 +53,8 @@
 	String delem_name = request.getParameter("delem_name");
 				
 	mode = request.getParameter("mode");
-	if (mode == null || mode.length()==0) {
-		request.setAttribute("DD_ERR_MSG", "Missing request parameter: mode");
-		request.getRequestDispatcher("error.jsp").forward(request, response);
-		return;
+	if (mode == null || mode.trim().length()==0) {
+		mode = "view";
 	}
 	if (!mode.equals("add") && (fxv_id == null || fxv_id.length()==0)){
 		request.setAttribute("DD_ERR_MSG", "Missing request parameter: fxv_id");
@@ -197,7 +195,7 @@
 		//find parent url from history
 		String parentUrl="";
 		if (parent_type.equals("elem")){
-			parentUrl="data_element.jsp?mode=view&amp;delem_id="+delem_id;
+			parentUrl="data_element.jsp?delem_id="+delem_id;
 			if (history!=null){
 				String elemUrl = history.getLastMatching("data_element.jsp");
 			
