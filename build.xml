@@ -78,7 +78,7 @@ default is install
 
 	<target name="compile" depends="init,prepare,clean" description="compiles java classes into classes path">
 	    <!-- Compile the java code from ${src} into ${build} -->
-		<javac deprecation="off" srcdir="${src}" destdir="${classes.dir}" debug="on">
+		<javac deprecation="off" srcdir="${src}" destdir="${classes.dir}" debug="on" includeAntRuntime="false">
 			<classpath refid="classpath.compile"/>
 		</javac>
 	</target>
@@ -431,13 +431,7 @@ default is install
 <!-- ************ TASKS AND TARGETS RELATED TO UNIT-TESTS *************** -->
 <!-- ******************************************************************** -->
 
-	<target name="test" depends="init,test.prepare,test.clean">
-		<antcall target="test.compile"/>
-		<antcall target="test.copyfiles"/>
-		<antcall target="test.copy_props"/>
-		<antcall target="test.seed"/>
-		<antcall target="test.run"/>
-	</target>
+	<target name="test" depends="init,test.prepare,test.clean,test.compile,test.copyfiles,test.copy_props,test.seed,test.run"/>
 
 	<target name="test.prepare" description="Creates folder structure for test.home, if not existing yet">
 		<mkdir dir="${test.home}"/>
@@ -455,10 +449,10 @@ default is install
 	</target>
 
 	<target name="test.compile">
-		<javac srcdir="${src}" destdir="${test.classes.dir}" source="1.5" target="1.5" debug="on" encoding="UTF-8">
+		<javac srcdir="${src}" destdir="${test.classes.dir}" source="1.5" target="1.5" debug="on" encoding="UTF-8" deprecation="off" includeAntRuntime="false">
 			<classpath refid="classpath.compile"/>
 		</javac>
-		<javac srcdir="test/src" destdir="${test.classes.dir}" source="1.5" target="1.5" debug="on" encoding="UTF-8">
+		<javac srcdir="test/src" destdir="${test.classes.dir}" source="1.5" target="1.5" debug="on" encoding="UTF-8" deprecation="off" includeAntRuntime="false">
 			<classpath>
 				<pathelement path="${test.classes.dir}"/>
 				<path refid="classpath.compile"/>
