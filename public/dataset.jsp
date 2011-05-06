@@ -763,7 +763,7 @@ else if (mode.equals("add"))
 							if (canCheckout){
 						%>
 							<li><a href="dataset.jsp?mode=view&amp;action=checkout&amp;ds_id=<%=ds_id%>">Check out</a></li>
-							<li><a href="dataset.jsp?mode=delete&amp;ds_id=<%=ds_id%>">Delete</a></li>
+							<li><a href="javascript:submitForm('delete')">Delete</a></li>
 						<%
 							}
 						}

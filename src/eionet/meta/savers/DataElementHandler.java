@@ -687,7 +687,7 @@ public class DataElementHandler extends BaseHandler {
     		q += ")";
     		
     		PreparedStatement preparedStatement = SQL.preparedStatement(q, inParams, conn);
-    		preparedStatement.executeQuery();
+    		preparedStatement.executeUpdate();
         }
         
         // if no deletion of elements requested, return
