@@ -89,14 +89,24 @@ public class CacheServlet extends HttpServlet {
 	private void post(HttpServletRequest req) throws Exception {
 		
 		String objID = req.getParameter("obj_id");
-		if (Util.nullString(objID)) throw new Exception("Missing object ID!");
+		if (Util.nullString(objID)){
+			throw new Exception("Missing object ID!");
+		}
+		
 		String objType = req.getParameter("obj_type");
-		if (objType==null || !objTypes.containsKey(objType))
-				throw new Exception("Object type is missing or is illegal!");
+		if (objType==null || !objTypes.containsKey(objType)){
+			throw new Exception("Object type is missing or is illegal!");
+		}
+		
 		String action = req.getParameter("action");
-		if (Util.nullString(action)) throw new Exception("Missing action parameter!");
+		if (Util.nullString(action)){
+			throw new Exception("Missing action parameter!");
+		}
+		
 		String[] articles = req.getParameterValues("article");
-		if (articles==null || articles.length==0) throw new Exception("Missing articles!");
+		if (articles==null || articles.length==0){
+			throw new Exception("No articles selected!");
+		}
 		
 		ServletContext ctx = getServletContext();
 		

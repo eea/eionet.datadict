@@ -44,7 +44,17 @@
 				handler.execute();
 			}
 			catch (Exception e){
-				e.printStackTrace(new PrintStream(response.getOutputStream()));
+				String msg = e.getMessage();
+				ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+				e.printStackTrace(new PrintStream(bytesOut));
+				String trace = bytesOut.toString(response.getCharacterEncoding());
+				request.setAttribute("DD_ERR_MSG", msg);
+				request.setAttribute("DD_ERR_TRC", trace);
+				String backLink = request.getParameter("submitter_url");
+				if (backLink==null || backLink.length()==0)
+					backLink = history.getBackUrl();
+				request.setAttribute("DD_ERR_BACK_LINK", backLink);
+				request.getRequestDispatcher("error.jsp").forward(request, response);
 				return;
 			}
 		}
@@ -221,7 +231,11 @@
 // end the whole page try block
 }
 finally {
-	try { if (conn!=null) conn.close();
-	} catch (SQLException e) {}
+	try {
+		if (conn!=null){
+			conn.close();
+		}
+	}
+	catch (SQLException e) {}
 }
 %>
