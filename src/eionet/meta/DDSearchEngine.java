@@ -12,6 +12,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.servlet.ServletContext;
@@ -1020,8 +1021,16 @@ public class DDSearchEngine {
 			append("DATASET.WORKING_COPY='N' and DATASET.DELETED is null and ");
 			
 			if (statuses!=null && !statuses.isEmpty()){
-				buf.append("DATASET.REG_STATUS in (").append(eionet.util.Util.toCSV(statuses)).
-				append(") and ");
+
+				buf.append("(");
+				for (int i=0; i<statuses.size(); i++){
+					
+					if (i>0){
+						buf.append(" or ");
+					}
+					buf.append("DATASET.REG_STATUS=").append(inParams.add(statuses.get(i).toString(), Types.VARCHAR));
+				}
+				buf.append(") and ");
 			}
 			
 			buf.append("DATAELEM.PARENT_NS=? and DATAELEM.IDENTIFIER=? ").
@@ -1035,8 +1044,16 @@ public class DDSearchEngine {
 			append("DATAELEM.WORKING_COPY='N' and DATAELEM.PARENT_NS is null and ");
 			
 			if (statuses!=null && !statuses.isEmpty()){
-				buf.append("DATAELEM.REG_STATUS in (").append(eionet.util.Util.toCSV(statuses)).
-				append(") and ");
+
+				buf.append("(");
+				for (int i=0; i<statuses.size(); i++){
+					
+					if (i>0){
+						buf.append(" or ");
+					}
+					buf.append("DATAELEM.REG_STATUS=").append(inParams.add(statuses.get(i).toString(), Types.VARCHAR));
+				}
+				buf.append(") and ");
 			}
 			
 			buf.append("DATAELEM.IDENTIFIER=? ").
@@ -1072,23 +1089,70 @@ public class DDSearchEngine {
 		return latestID==null ? null : getDataElement(latestID);
 	}
 	
-	/*
-	 * idf - identifier
-	 * pns - parent ns
+	/**
+	 * 
+	 * @param identifier
+	 * @param parentNamespace
+	 * @param statuses
+	 * @return
+	 * @throws SQLException
 	 */
-	public DsTable getLatestTbl(String idf, String pns) throws SQLException {
+	public DsTable getLatestTbl(String identifier, String parentNamespace, List statuses) throws SQLException {
 		
-		VersionManager verMan = new VersionManager(conn, user);
-		DsTable tbl = new DsTable(null, null, null);
-		tbl.setIdentifier(idf);
-		if (!Util.nullString(pns))
-			tbl.setParentNs(pns);
+		String latestID = getLatestTblID(identifier, parentNamespace, statuses);
+		return latestID==null ? null : getDatasetTable(latestID);
+	}
+
+	/**
+	 * 
+	 * @param identifier
+	 * @param parentNamespace
+	 * @param statuses
+	 * @return
+	 * @throws SQLException
+	 */
+	public String getLatestTblID(String identifier, String parentNamespace, List statuses) throws SQLException {
 		
-		String latestID = verMan.getLatestReleasedTblID(tbl);
-		if (Util.nullString(latestID))
+		if (Util.nullString(identifier) || Util.nullString(parentNamespace)){
 			return null;
-		else
-			return getDatasetTable(latestID);
+		}
+		
+		INParameters inParams = new INParameters();
+		
+		StringBuffer buf = new StringBuffer();
+		buf.append("select DST2TBL.TABLE_ID from DS_TABLE").
+		append(" left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID").
+		append(" left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID").
+		append(" where DS_TABLE.IDENTIFIER=").append(inParams.add(identifier, Types.VARCHAR)).
+		append(" and DATASET.CORRESP_NS=").append(inParams.add(parentNamespace, Types.INTEGER)).
+		append(" and DATASET.WORKING_COPY='N' and DATASET.CHECKEDOUT_COPY_ID is null").
+		append(" and DATASET.WORKING_USER is null and DATASET.DELETED is null");
+		
+		if (statuses!=null && !statuses.isEmpty()){
+			
+			buf.append(" and (");
+			for (int i=0; i<statuses.size(); i++){
+				
+				if (i>0){
+					buf.append(" or ");
+				}
+				buf.append("DATASET.REG_STATUS=").append(inParams.add((String)statuses.get(i)));
+			}
+			buf.append(")");
+		}
+		buf.append(" order by DST2TBL.DATASET_ID desc");
+		
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try{
+			pstmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+			rs = pstmt.executeQuery();
+			return rs.next() ? rs.getString(1) : null;
+		}
+		finally{
+			SQL.close(rs);
+			SQL.close(pstmt);
+		}
 	}
 	
 	/**

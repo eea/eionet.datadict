@@ -16,6 +16,9 @@ public class AfterCASLoginServlet extends HttpServlet{
 	
 	/** */
 	public static final String AFTER_LOGIN_ATTR_NAME = "afterLogin";
+	
+	/** */
+	private static final String[] skipUrlPatterns = {"error.jsp"};
 
 	/*
 	 * (non-Javadoc)
@@ -28,6 +31,24 @@ public class AfterCASLoginServlet extends HttpServlet{
 			((HttpServletResponse)response).sendRedirect(afterLogin);
 		else
 			request.getRequestDispatcher("/").forward(request,response);
+    }
+    
+    /**
+     * 
+     * @param url
+     * @return
+     */
+    public static boolean isSkipUrl(String url){
+
+    	if (url!=null){
+    		for (int i=0; i<skipUrlPatterns.length; i++){
+    			if (url.indexOf(skipUrlPatterns[i])>0){
+    				return true;
+    			}
+    		}
+    	}
+    	
+    	return false;
     }
 }
 

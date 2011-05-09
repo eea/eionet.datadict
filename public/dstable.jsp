@@ -167,8 +167,9 @@
 		}
 	}
 
-	// if requested by alphanumeric identifier, it means the table's latest version is requested
-	boolean isLatestRequested = mode.equals("view") && !Util.voidStr(tableIdf) && !Util.voidStr(parentNs);
+	// if requested by alphanumeric identifier and not by auto-generated id,
+	// then it means the table's latest version is requested
+	boolean isLatestRequested = mode.equals("view") && !Util.voidStr(tableIdf) && !Util.voidStr(parentNs) && Util.voidStr(tableID);
 
 	//// handle the POST request//////////////////////
 	//////////////////////////////////////////////////
@@ -265,15 +266,30 @@
 		if (!mode.equals("add")){
 
 			if (isLatestRequested){
-				dsTable = searchEngine.getLatestTbl(tableIdf, parentNs);
-				if (dsTable!=null)
+				
+				Vector v = new Vector();
+				if (user==null){
+					v.add("Recorded");
+					v.add("Released");
+				}
+				dsTable = searchEngine.getLatestTbl(tableIdf, parentNs, v);
+				if (dsTable!=null){
 					tableID = dsTable.getID();
+				}
 			}
-			else
+			else{
 				dsTable = searchEngine.getDatasetTable(tableID);
+			}
 
 			if (dsTable == null){
-				request.setAttribute("DD_ERR_MSG", "No such table found");
+				if (user!=null){
+					request.setAttribute("DD_ERR_MSG", "Could not find a table of this id or identifier in any status");
+				}
+				else{
+					request.setAttribute("DD_ERR_MSG", "Could not find a table of this id or identifier in 'Recorded' or 'Released' status! " +
+					"As an anonymous user, you are not allowed to see definitions in any other status.");
+				}
+				session.setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, SecurityUtil.buildAfterLoginURL(request));
 				request.getRequestDispatcher("error.jsp").forward(request, response);
 				return;
 			}

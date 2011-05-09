@@ -185,11 +185,11 @@ public class SecurityUtil {
 				}
 
 				// set the after-login-url
-				StringBuffer afterLoginUrl = new StringBuffer(request.getRequestURL());
-				if (request.getQueryString()!=null){
-					afterLoginUrl.append("?").append(request.getQueryString());
+				String requestURL = request.getRequestURL().toString();
+				if (requestURL!=null && !AfterCASLoginServlet.isSkipUrl(requestURL)){
+					
+					request.getSession().setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, buildAfterLoginURL(request));
 				}
-				request.getSession().setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, afterLoginUrl.toString());
 
 				try {
 					result = casLoginUrl + "?service=" + URLEncoder.encode(
@@ -256,5 +256,20 @@ public class SecurityUtil {
 	 */
 	public static String getREMOTEUSER() {
 		return REMOTEUSER;
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String buildAfterLoginURL(HttpServletRequest request){
+		
+		StringBuffer result = new StringBuffer(request.getRequestURL());
+		if (request.getQueryString()!=null){
+			result.append("?").append(request.getQueryString());
+		}
+		
+		return result.toString();
 	}
 }

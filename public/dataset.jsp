@@ -107,8 +107,9 @@
 	String action = request.getParameter("action");
 	if (action!=null && action.trim().length()==0) action = null;
 
-	// if requested by alphanumeric identifier, it means the dataset's latest version is requested
-	boolean isLatestRequested = mode.equals("view") && !Util.voidStr(dstIdf);
+	// if requested by alphanumeric identifier and not by auto-generated id,
+	// then it means the dataset's latest version is requested
+	boolean isLatestRequested = mode.equals("view") && !Util.voidStr(dstIdf) && Util.voidStr(ds_id);
 
 
 	//// handle the POST request//////////////////////
@@ -225,15 +226,22 @@
 
 			// get the dataset object
 			if (isLatestRequested){
+				
 				Vector v = new Vector();
-				v.add("Released");
-				v.add("Recorded");
+				if (user==null){
+					v.add("Released");
+					v.add("Recorded");
+				}
 				dataset = searchEngine.getLatestDst(dstIdf, v);
-				if (dataset!=null)
+				
+				if (dataset!=null){
+					// double-making-sure that ds_id value is correct
 					ds_id = dataset.getID();
+				}
 			}
-			else
+			else{
 				dataset = searchEngine.getDataset(ds_id);
+			}
 
 			// if dataset object found, populate some parameters based on it
 			if (dataset!=null){
@@ -287,7 +295,14 @@
 					otherVersions = searchEngine.getDstOtherVersions(dataset.getIdentifier(), dataset.getID());
 			}
 			else{
-				request.setAttribute("DD_ERR_MSG", "No dataset found with this id number or alphanumeric identifier!");
+				if (user!=null){
+					request.setAttribute("DD_ERR_MSG", "Could not find a dataset of this id or identifier in any status!");
+				}
+				else{
+					request.setAttribute("DD_ERR_MSG", "Could not find a dataset of this id or identifier in 'Recorded' or 'Released' status! " +
+							"As an anonymous user, you are not allowed to see definitions in any other status.");
+				}
+				session.setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, SecurityUtil.buildAfterLoginURL(request));
 				request.getRequestDispatcher("error.jsp").forward(request, response);
 				return;
 			}
