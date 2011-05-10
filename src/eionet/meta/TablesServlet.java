@@ -18,7 +18,7 @@ import eionet.util.QueryString;
  *
  */
 public class TablesServlet extends HttpServlet{
-
+	
 	/*
 	 * (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -26,25 +26,74 @@ public class TablesServlet extends HttpServlet{
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		
 		String pathInfo = request.getPathInfo();
-		if (pathInfo==null || pathInfo.length()==0){
-			request.getRequestDispatcher("search_results_tbl.jsp").forward(request, response);
+		if (pathInfo==null || pathInfo.length()==0 || pathInfo.equals("/")){
+			request.getRequestDispatcher("/search_results_tbl.jsp").forward(request, response);
+		}
+
+		String[] pathInfoParts = splitPathInfo(pathInfo);
+		if (pathInfoParts.length==1 && pathInfoParts[0].equals("rdf")){
+			
+			DDHttpServletRequestWrapper wrappedRequest = new DDHttpServletRequestWrapper(request);
+			wrappedRequest.getRequestDispatcher("/GetRdf").forward(wrappedRequest, response);
+			return;
+		}
+
+		// at this point we can assume the array length >= 1
+		String tableId = pathInfoParts[0];
+		String mode = "view";
+		
+		if (pathInfoParts.length>=2){
+			mode = pathInfoParts[1];
+		}
+		
+		if (mode.equals("rdf")){
+			
+			DDHttpServletRequestWrapper wrappedRequest = new DDHttpServletRequestWrapper(request);
+			wrappedRequest.addParameter("id", tableId);
+			wrappedRequest.getRequestDispatcher("/GetRdf").forward(wrappedRequest, response);
+		}
+		else if (mode.equals("view") || mode.equals("edit")){
+			
+			QueryString qs = new QueryString(request.getContextPath() + "/dstable.jsp");
+			qs.changeParam("table_id", tableId);
+			qs.changeParam("mode", mode);
+			response.sendRedirect(qs.getValue());
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	protected void service_(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+		
+		String pathInfo = request.getPathInfo();
+		String[] pathInfoParts = null;
+		if (pathInfo!=null && pathInfo.length()>0){
+			pathInfoParts = splitPathInfo(pathInfo);
+		}
+		
+		if (pathInfoParts==null || pathInfoParts.length==0){
+			request.getRequestDispatcher("/search_results_tbl.jsp").forward(request, response);
 		}
 		else{
-			String[] parts = splitPathInfo(pathInfo);
+			String tableId = pathInfoParts[0];
+			String action = "view";
+			if (pathInfoParts.length>1 && pathInfoParts[1].length()>0){
+				action = pathInfoParts[1];			
+			}
 			
-			String id = parts[0];
-			String action = parts.length==1 ? "view" : (parts[1].length()==0 ? "view" : parts[1]);			
 			if (action.equals("view") || action.equals("edit")){
 				
 				QueryString qs = new QueryString(request.getContextPath() + "/dstable.jsp");
-				qs.changeParam("table_id", id);
+				qs.changeParam("table_id", tableId);
 				qs.changeParam("mode", action);
 				
 				response.sendRedirect(qs.getValue());
 			}
 			else if (action.equals("rdf")){
 				DDHttpServletRequestWrapper wrappedRequest = new DDHttpServletRequestWrapper(request);
-				wrappedRequest.addParameter("id", id);
+				wrappedRequest.addParameter("id", tableId);
 				wrappedRequest.getRequestDispatcher("/GetRdf").forward(wrappedRequest, response);
 			}
 		}

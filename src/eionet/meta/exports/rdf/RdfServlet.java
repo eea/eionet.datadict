@@ -29,12 +29,9 @@ public class RdfServlet extends HttpServlet{
 		PrintWriter writer = null;
         Connection conn = null;
         try{
-            String id = request.getParameter("id");
-            if (Util.voidStr(id))
-            	throw new Exception("Missing id!");
-
+            String tblID = request.getParameter("id");
 	        conn = ConnectionUtil.getConnection();
-	        Rdf rdf = new Rdf(id, conn);
+	        Rdf rdf = new Rdf(tblID, conn);
 	        
 			response.setContentType("text/xml; charset=UTF-8");
             writer = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
