@@ -121,7 +121,7 @@ public class Rdf {
 			String tableRdfUrl = MessageFormat.format(baseUri, tableId);
 			
 			streamWriter.writeStartElement(DD_NS, "TableSchema");
-			streamWriter.writeAttribute(RDF_NS, "resource", tableRdfUrl);		
+			streamWriter.writeAttribute(RDF_NS, "about", tableRdfUrl);		
 			streamWriter.writeEndElement(); // </dd:TableSchema>
 		}
 		
