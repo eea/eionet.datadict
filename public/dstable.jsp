@@ -1352,7 +1352,6 @@ else if (mode.equals("add"))
 											boolean hasMultivalElms = false;
 											boolean hasCommonElms = false;
 											boolean hasMandatoryElms = false;
-											boolean isETCDD = conn==null ? false : conn.getMetaData().getURL().indexOf("etcdd?")>0;
 											%>
 
 												<h2><%=Util.replaceTags(title)%></h2>
@@ -1429,7 +1428,7 @@ else if (mode.equals("add"))
 																		<!-- short name -->
 																		<td>
 																			<%
-																			if (isETCDD && elem.isMandatoryFlag()){
+																			if (elem.isMandatoryFlag()){
 																				%>
 																				<span style="font:bold;font-size:1.2em">*</span>
 																				<%
