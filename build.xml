@@ -93,6 +93,7 @@ default is install
 	<target name="prepare.apphome" description="Creates folder structure for app.home, if not existing yet">
 		<mkdir dir="${app.home}"/>
 		<mkdir dir="${app.home}/acl"/>
+		<mkdir dir="${app.home}/msaccess"/>
 		<mkdir dir="${app.home}/opendoc"/>
 		<mkdir dir="${app.home}/opendoc/ods"/>
 		<mkdir dir="${app.home}/tmp"/>
@@ -134,6 +135,9 @@ default is install
 		</copy>
 		<copy todir="${app.home}/opendoc" overwrite="true">
 			<fileset dir="opendoc"/>
+		</copy>
+		<copy todir="${app.home}/msaccess" overwrite="true">
+			<fileset dir="msaccess"/>
 		</copy>
 
 		<!--

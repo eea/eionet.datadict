@@ -66,7 +66,8 @@ public class Util {
     private static Hashtable xmlEscapes = null;
     private static String[][] allowedFxvDatatypeConversions = { { "boolean", "string" }, { "date", "string" },
             { "float", "string" }, { "double", "string" }, { "integer", "string" }, { "integer", "float" },
-            { "integer", "double" }, { "float", "double" } };
+            { "integer", "double" }, { "integer", "decimal" }, { "float", "double" }, { "float", "decimal" },
+            { "double", "decimal" }, { "decimal", "string" } };
 
     /** */
     private static final SimpleDateFormat hhmmssFormat = new SimpleDateFormat("HH:mm:ss");

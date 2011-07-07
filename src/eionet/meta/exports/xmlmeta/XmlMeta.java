@@ -37,323 +37,312 @@ import eionet.util.PropsIF;
 
 public abstract class XmlMeta implements XmlMetaIF {
 
-	protected static final int ROW_COUNT = 1;
+    protected static final int ROW_COUNT = 1;
 
-	protected DDSearchEngine searchEngine = null;
+    protected DDSearchEngine searchEngine = null;
 
-	private PrintWriter writer = null;
+    private PrintWriter writer = null;
 
-	protected String appContext = "";
+    protected String appContext = "";
 
-	protected String lineTerminator = "\n";
+    protected String lineTerminator = "\n";
 
-	private String docElement = null;
+    private String docElement = null;
 
-	protected Hashtable leads = null;
+    protected Hashtable leads = null;
 
-	private String curLead = "";
+    private String curLead = "";
 
-	private Vector content = new Vector();
+    private Vector content = new Vector();
 
-	private Vector namespaces = new Vector();
+    private Vector namespaces = new Vector();
 
-	private String schemaLocation = "";
-	
-	public XmlMeta(DDSearchEngine searchEngine, PrintWriter writer) {
-		this.searchEngine = searchEngine;
-		this.writer = writer;
-	}
+    private String schemaLocation = "";
 
-	public void setAppContext(String appContext) {
-		if (appContext != null) {
-			if (!appContext.endsWith("/"))
-				appContext = appContext + "/";
-			this.appContext = appContext;
-		}
-	}
+    public XmlMeta(DDSearchEngine searchEngine, PrintWriter writer) {
+        this.searchEngine = searchEngine;
+        this.writer = writer;
+    }
 
-	protected void addString(String s) {
-		content.add(s);
-	}
+    public void setAppContext(String appContext) {
+        if (appContext != null) {
+            if (!appContext.endsWith("/"))
+                appContext = appContext + "/";
+            this.appContext = appContext;
+        }
+    }
 
-	protected void newLine() {
-		content.add(lineTerminator);
-	}
+    protected void addString(String s) {
+        content.add(s);
+    }
 
-	protected String getNamespacePrefix(Namespace ns) {
-		return ns.getPrefix();
-	}
+    protected void newLine() {
+        content.add(lineTerminator);
+    }
 
-	protected void addNamespace(Namespace ns) {
-		addNamespace(getNamespacePrefix(ns), appContext
-				+ "namespace.jsp?ns_id=" + ns.getID());
-	}
+    protected String getNamespacePrefix(Namespace ns) {
+        return ns.getPrefix();
+    }
 
-	protected void addNamespace(String prefix, String url) {
+    protected void addNamespace(Namespace ns) {
+        addNamespace(getNamespacePrefix(ns), appContext + "namespace.jsp?ns_id=" + ns.getID());
+    }
 
-		StringBuffer buf = new StringBuffer("xmlns:").append(prefix).append(
-				"=\"").append(url).append("\"");
+    protected void addNamespace(String prefix, String url) {
 
-		if (!namespaces.contains(buf.toString()))
-			namespaces.add(buf.toString());
-	}
+        StringBuffer buf = new StringBuffer("xmlns:").append(prefix).append("=\"").append(url).append("\"");
 
-	protected void setDocElement(String docElement) {
-		this.docElement = docElement;
-	}
+        if (!namespaces.contains(buf.toString()))
+            namespaces.add(buf.toString());
+    }
 
-	private void startDocElement() {
+    protected void setDocElement(String docElement) {
+        this.docElement = docElement;
+    }
 
-		writer.print("<" + docElement);
-		writeNamespaces();
-		writeSchemaLocation();
-		writer.print(">");
-		writer.print(lineTerminator);
-	}
+    private void startDocElement() {
 
-	private void endDocElement() {
-		writer.print("</" + docElement + ">");
-	}
+        writer.print("<" + docElement);
+        writeNamespaces();
+        writeSchemaLocation();
+        writer.print(">");
+        writer.print(lineTerminator);
+    }
 
-	private void writeNamespaces() {
+    private void endDocElement() {
+        writer.print("</" + docElement + ">");
+    }
 
-		Iterator iter = namespaces.iterator();
-		while (iter.hasNext()) {
-			writer.print(" ");
-			writer.print(iter.next());
-		}
-	}
+    private void writeNamespaces() {
 
-	private void writeSchemaLocation() {
-		writer.print(" xsi:noNamespaceSchemaLocation=\"" + schemaLocation
-				+ "\"");
-	}
+        Iterator iter = namespaces.iterator();
+        while (iter.hasNext()) {
+            writer.print(" ");
+            writer.print(iter.next());
+        }
+    }
 
-	private void writeHeader() {
-		writer.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		writer.print(lineTerminator);
-	}
+    private void writeSchemaLocation() {
+        writer.print(" xsi:noNamespaceSchemaLocation=\"" + schemaLocation + "\"");
+    }
 
-	/**
-	 * Flush the written content into the writer.
-	 */
-	public void flush() throws Exception {
-
-		writeHeader();
-
-		for (int i = 0; i < content.size(); i++) {
-			writer.print((String) content.get(i));
-		}
-
-	}
-
-	protected String escape(String s) {
-
-		if (s == null)
-			return null;
-
-		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < s.length(); i++) {
-			char c = s.charAt(i);
-			if (c == '<')
-				buf.append("&lt;");
-			else if (c == '>')
-				buf.append("&gt;");
-			else if (c == '&')
-				buf.append("&amp;");
-			else
-				buf.append(c);
-		}
-
-		return buf.toString();
-	}
-
-	protected String escapeCDATA(String s) {
-
-		if (s == null)
-			return null;
-
-		StringBuffer buf = new StringBuffer("<![CDATA[");
-		for (int i = 0; i < s.length(); i++) {
-			char c = s.charAt(i);
-			if (Character.isISOControl(c)) {
-				if (Character.isWhitespace(c))
-					buf.append(c);
-			} else
-				buf.append(c);
-		}
-
-		buf.append("]]>");
-		return buf.toString();
-	}
-
-	protected String getLead(String leadName) {
-
-		if (leads == null || leads.size() == 0) {
-			setLeads();
-		}
-
-		String lead = (String) leads.get(leadName);
-		if (lead == null)
-			lead = curLead;
-		else
-			curLead = lead;
-
-		return lead;
-	}
-
-	private void addFixedNamespaces() {
-
-	}
-
-	protected void setSchemaLocation(String schemaLocation) {
-		this.schemaLocation = schemaLocation;
-	}
-
-	protected void writeTable(DsTable tbl) {
-		addString(startTable());
-		newLine();
-
-		String id = tbl.getID();
-		String name = tbl.getIdentifier();
-		String correspondingNS = tbl.getNamespace();
-		String parentNS = tbl.getParentNs();
-
-		String fApp = getLead("appContext") + "<appContext>" + appContext
-				+ "</appContext>";
-		addString(fApp);
-		newLine();
-
-		String fId = getLead("tableid") + "<tableid>" + id + "</tableid>";
-		addString(fId);
-		newLine();
-
-		String fName = getLead("identifier") + "<identifier>" + name
-				+ "</identifier>";
-		addString(fName);
-		newLine();
-
-		String fCorrres = getLead("correspondingNS") + "<correspondingNS>"
-				+ correspondingNS + "</correspondingNS>";
-		addString(fCorrres);
-		newLine();
-
-		String fParentNS = getLead("parentNS") + "<parentNS>" + parentNS
-				+ "</parentNS>";
-		addString(fParentNS);
-		newLine();
-
-		writeElements(tbl.getElements());
-
-		addString(endTable());
-		newLine();
-	}
-
-	protected void writeElements(Vector elms) {
-		addString(startElements());
-		newLine();
-
-		for (int i = 0; elms != null && i < elms.size(); i++) {
-			addString(startElement());
-			newLine();
-			DataElement elm = (DataElement) elms.get(i);
-			writeElement(elm);
-			addString(endElement());
-			newLine();
-		}
-
-		addString(endElements());
-		newLine();
-	}
-
-	protected String startTable() {
-		return getLead("table") + "<table>";
-	}
-
-	private String endTable() {
-		return getLead("table") + "</table>";
-	}
-
-	protected String startElements() {
-		return getLead("elements") + "<elements>";
-	}
-
-	private String endElements() {
-		return getLead("elements") + "</elements>";
-	}
-
-	protected String startElement() {
-		return getLead("element") + "<element>";
-	}
-
-	private String endElement() {
-		return getLead("element") + "</element>";
-	}
-
-	private void writeElement(DataElement elem) {
-		String id = elem.getID();
-		String name = elem.getIdentifier();
-		String parentNS = ((Namespace) elem.getNamespace()).getID();
-
-		DElemAttribute attrib1 = elem.getAttributeByShortName("Datatype");
-		String type = attrib1.getValue();
-
-		DElemAttribute attrib2 = elem.getAttributeById("24");
-		String length = "";
-		if (attrib2 == null) {
-			type = "";
-			length = "";
-		} else {
-			length = attrib2.getValue();
-		}
-
-		DElemAttribute precAtt = elem
-				.getAttributeByShortName("DecimalPrecision");
-		String prec = "";
-
-		if (precAtt != null) {
-			prec = precAtt.getValue();
-		}
-
-		String fId = getLead("elementid") + "<elementid>" + id + "</elementid>";
-		addString(fId);
-		newLine();
-
-		String fName = getLead("identifier") + "<identifier>" + name
-				+ "</identifier>";
-		addString(fName);
-		newLine();
-
-		String fParentNS = getLead("parentNS") + "<parentNS>" + parentNS
-				+ "</parentNS>";
-		addString(fParentNS);
-		newLine();
-
-		String fType = getLead("type") + "<type>" + type + "</type>";
-		addString(fType);
-		newLine();
-
-		String fLength = getLead("length") + "<length>" + length + "</length>";
-		addString(fLength);
-		newLine();
-
-		String fPrec = getLead("precision") + "<precision>" + prec
-				+ "</precision>";
-		addString(fPrec);
-		newLine();
-		
-		String multiValueDelim = elem.getValueDelimiter();
-		if (multiValueDelim!=null && multiValueDelim.length()>0){
-			String delimAttrName = Props.getRequiredProperty(PropsIF.MULTIVAL_DELIM_ATTR);
-			addString(getLead(delimAttrName)
-					+ "<" + delimAttrName + ">" + multiValueDelim + "</" + delimAttrName + ">");
-			newLine();
-		}
-	}
-
-	protected abstract String getSchemaLocation(String nsID, String id);
-
-	protected abstract void setLeads();
-
-	public abstract void write(String objID) throws Exception;
+    private void writeHeader() {
+        writer.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        writer.print(lineTerminator);
+    }
+
+    /**
+     * Flush the written content into the writer.
+     */
+    public void flush() throws Exception {
+
+        writeHeader();
+
+        for (int i = 0; i < content.size(); i++) {
+            writer.print((String) content.get(i));
+        }
+
+    }
+
+    protected String escape(String s) {
+
+        if (s == null)
+            return null;
+
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '<')
+                buf.append("&lt;");
+            else if (c == '>')
+                buf.append("&gt;");
+            else if (c == '&')
+                buf.append("&amp;");
+            else
+                buf.append(c);
+        }
+
+        return buf.toString();
+    }
+
+    protected String escapeCDATA(String s) {
+
+        if (s == null)
+            return null;
+
+        StringBuffer buf = new StringBuffer("<![CDATA[");
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (Character.isISOControl(c)) {
+                if (Character.isWhitespace(c))
+                    buf.append(c);
+            } else
+                buf.append(c);
+        }
+
+        buf.append("]]>");
+        return buf.toString();
+    }
+
+    protected String getLead(String leadName) {
+
+        if (leads == null || leads.size() == 0) {
+            setLeads();
+        }
+
+        String lead = (String) leads.get(leadName);
+        if (lead == null)
+            lead = curLead;
+        else
+            curLead = lead;
+
+        return lead;
+    }
+
+    private void addFixedNamespaces() {
+
+    }
+
+    protected void setSchemaLocation(String schemaLocation) {
+        this.schemaLocation = schemaLocation;
+    }
+
+    protected void writeTable(DsTable tbl) {
+        addString(startTable());
+        newLine();
+
+        String id = tbl.getID();
+        String name = tbl.getIdentifier();
+        String correspondingNS = tbl.getNamespace();
+        String parentNS = tbl.getParentNs();
+
+        String fApp = getLead("appContext") + "<appContext>" + appContext + "</appContext>";
+        addString(fApp);
+        newLine();
+
+        String fId = getLead("tableid") + "<tableid>" + id + "</tableid>";
+        addString(fId);
+        newLine();
+
+        String fName = getLead("identifier") + "<identifier>" + name + "</identifier>";
+        addString(fName);
+        newLine();
+
+        String fCorrres = getLead("correspondingNS") + "<correspondingNS>" + correspondingNS + "</correspondingNS>";
+        addString(fCorrres);
+        newLine();
+
+        String fParentNS = getLead("parentNS") + "<parentNS>" + parentNS + "</parentNS>";
+        addString(fParentNS);
+        newLine();
+
+        writeElements(tbl.getElements());
+
+        addString(endTable());
+        newLine();
+    }
+
+    protected void writeElements(Vector elms) {
+        addString(startElements());
+        newLine();
+
+        for (int i = 0; elms != null && i < elms.size(); i++) {
+            addString(startElement());
+            newLine();
+            DataElement elm = (DataElement) elms.get(i);
+            writeElement(elm);
+            addString(endElement());
+            newLine();
+        }
+
+        addString(endElements());
+        newLine();
+    }
+
+    protected String startTable() {
+        return getLead("table") + "<table>";
+    }
+
+    private String endTable() {
+        return getLead("table") + "</table>";
+    }
+
+    protected String startElements() {
+        return getLead("elements") + "<elements>";
+    }
+
+    private String endElements() {
+        return getLead("elements") + "</elements>";
+    }
+
+    protected String startElement() {
+        return getLead("element") + "<element>";
+    }
+
+    private String endElement() {
+        return getLead("element") + "</element>";
+    }
+
+    /**
+     * 
+     * @param elem
+     */
+    private void writeElement(DataElement elem) {
+
+        String id = elem.getID();
+        String name = elem.getIdentifier();
+        String parentNS = ((Namespace) elem.getNamespace()).getID();
+
+        DElemAttribute datatypeAttr = elem.getAttributeByShortName("Datatype");
+        String elementDataType = datatypeAttr.getValue();
+
+        DElemAttribute maxSizeAttr = elem.getAttributeByShortName("MaxSize");
+        String elementValueMaxSize = "";
+        if (maxSizeAttr == null) {
+            elementDataType = "";
+            elementValueMaxSize = "";
+        } else {
+            elementValueMaxSize = maxSizeAttr.getValue();
+        }
+
+        DElemAttribute decimalPrecisionAttr = elem.getAttributeByShortName("DecimalPrecision");
+        String elementValueDecimalPrecision = decimalPrecisionAttr == null ? "" : decimalPrecisionAttr.getValue();
+
+        String fId = getLead("elementid") + "<elementid>" + id + "</elementid>";
+        addString(fId);
+        newLine();
+
+        String fName = getLead("identifier") + "<identifier>" + name + "</identifier>";
+        addString(fName);
+        newLine();
+
+        String fParentNS = getLead("parentNS") + "<parentNS>" + parentNS + "</parentNS>";
+        addString(fParentNS);
+        newLine();
+
+        String fType = getLead("type") + "<type>" + elementDataType + "</type>";
+        addString(fType);
+        newLine();
+
+        String fLength = getLead("length") + "<length>" + elementValueMaxSize + "</length>";
+        addString(fLength);
+        newLine();
+
+        String fPrec = getLead("precision") + "<precision>" + elementValueDecimalPrecision + "</precision>";
+        addString(fPrec);
+        newLine();
+
+        String multiValueDelim = elem.getValueDelimiter();
+        if (multiValueDelim != null && multiValueDelim.length() > 0) {
+            String delimAttrName = Props.getRequiredProperty(PropsIF.MULTIVAL_DELIM_ATTR);
+            addString(getLead(delimAttrName) + "<" + delimAttrName + ">" + multiValueDelim + "</" + delimAttrName + ">");
+            newLine();
+        }
+    }
+
+    protected abstract String getSchemaLocation(String nsID, String id);
+
+    protected abstract void setLeads();
+
+    public abstract void write(String objID) throws Exception;
 }

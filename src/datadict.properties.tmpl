@@ -96,11 +96,13 @@ uns.send.notification.function=UNSService.sendNotification
 documentation.screen-name=documentation
 
 # Attributes irrelevant for certain data types
-irrelevantAttrs.double=MinSize
+irrelevantAttrs.float=MinSize,MaxSize,DecimalPrecision
+irrelevantAttrs.double=MinSize,MaxSize,DecimalPrecision
+irrelevantAttrs.integer=MinSize,DecimalPrecision
+irrelevantAttrs.decimal=MinSize
 irrelevantAttrs.string=MinInclusiveValue,MaxInclusiveValue,MinExclusiveValue,MaxExclusiveValue,DecimalPrecision
 irrelevantAttrs.date=MinInclusiveValue,MaxInclusiveValue,MinExclusiveValue,MaxExclusiveValue,DecimalPrecision,MinSize,MaxSize
-irrelevantAttrs.float=MinSize
-irrelevantAttrs.integer=MinSize,DecimalPrecision
+irrelevantAttrs.boolean=MinInclusiveValue,MaxInclusiveValue,MinExclusiveValue,MaxExclusiveValue,DecimalPrecision,MinSize,MaxSize
 
 # The base URI that uses in rdf:about and rdf:resource values in generated RDF files.
 # Argument {0} stands for table id (the numeric one).
