@@ -202,8 +202,10 @@ public class ImgUpload extends HttpServlet {
                 req.setAttribute("DD_ERR_MSG", msg);
                 req.setAttribute("DD_ERR_BACK_LINK", "imgattr.jsp?" + qryStr);
                 req.getRequestDispatcher("error.jsp").forward(req, res);
+                return;
             }
 
+            file.getParentFile().mkdirs();
             RandomAccessFile raFile = new RandomAccessFile(file, "rw");
 
             // set up the stream to read from and call file writer
