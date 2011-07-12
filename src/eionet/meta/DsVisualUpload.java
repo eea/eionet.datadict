@@ -224,7 +224,7 @@ public class DsVisualUpload extends HttpServlet {
                         } else {
                             storedFile = new File(getVisualsStorePath(), item.getName());
                             LOGGER.debug("Storing uploaded file to " + storedFile);
-                            storedFile.mkdirs();
+                            storedFile.getParentFile().mkdirs();
                             try {
                                 item.write(storedFile);
                             } catch (Exception e) {
