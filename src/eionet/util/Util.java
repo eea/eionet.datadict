@@ -56,7 +56,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * This is a class containing several useful utility methods.
- * 
+ *
  * @author Jaanus Heinlaid
  */
 public class Util {
@@ -64,10 +64,9 @@ public class Util {
     /** */
     private static final int BUF_SIZE = 1024;
     private static Hashtable xmlEscapes = null;
-    private static String[][] allowedFxvDatatypeConversions = { { "boolean", "string" }, { "date", "string" },
-            { "float", "string" }, { "double", "string" }, { "integer", "string" }, { "integer", "float" },
-            { "integer", "double" }, { "integer", "decimal" }, { "float", "double" }, { "float", "decimal" },
-            { "double", "decimal" }, { "decimal", "string" } };
+    private static String[][] allowedFxvDatatypeConversions = { {"boolean", "string"}, {"date", "string"}, {"float", "string"},
+        {"double", "string"}, {"integer", "string"}, {"integer", "float"}, {"integer", "double"}, {"integer", "decimal"},
+        {"float", "double"}, {"float", "decimal"}, {"double", "decimal"}, {"decimal", "string"}};
 
     /** */
     private static final SimpleDateFormat hhmmssFormat = new SimpleDateFormat("HH:mm:ss");
@@ -146,7 +145,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param timestamp
      * @return
      */
@@ -192,7 +191,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param timestamp
      * @return
      */
@@ -202,8 +201,8 @@ public class Util {
     }
 
     /**
-	 * 
-	 */
+     *
+     */
 
     public static String pdfDate(long timestamp) {
 
@@ -223,7 +222,7 @@ public class Util {
      * date-time.<BR>
      * <BR>
      * This should be useful for calculating sleep time for code that has a certain schedule for execution.
-     * 
+     *
      * @param hour
      *            An integer from 0 to 23. If less than 0 or more than 23, then the closest next hour to current hour is taken.
      * @param date
@@ -260,7 +259,7 @@ public class Util {
         // here we assume that every full hour is accepted
         /*
          * if (hour < 0 || hour > 23){
-         * 
+         *
          * hour = cur_hour>=23 ? 0 : cur_hour + 1; }
          */
 
@@ -351,7 +350,7 @@ public class Util {
 
     /**
      * A method for creating a unique digest of a String message.
-     * 
+     *
      * @param src
      *            String to be digested.
      * @param algosrithm
@@ -379,7 +378,7 @@ public class Util {
 
     /**
      * A method for creating a unique Hexa-Decimal digest of a String message.
-     * 
+     *
      * @param src
      *            String to be digested.
      * @param algosrithm
@@ -410,7 +409,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param in
      * @return
      */
@@ -433,7 +432,7 @@ public class Util {
 
     /**
      * Calls replaceTags(in, false, false). See the documentation of that method.
-     * 
+     *
      * @param in
      * @return
      */
@@ -443,7 +442,7 @@ public class Util {
 
     /**
      * Calls replaceTags(in, dontCreateHTMLAnchors, false). See the documentation of that method.
-     * 
+     *
      * @param in
      * @param dontCreateHTMLAnchors
      * @return
@@ -455,12 +454,12 @@ public class Util {
     /**
      * Replaces the following characters with their XML escape codes: ', ", <, >, \, &. If an ampersand is found and it is the start
      * of an escape sequence, the ampersand is not escaped.
-     * 
+     *
      * By default, this method creates HTML anchors (<a href"...">...</a>) for URLs it finds in the string. This can be switched off
      * by setting dontCreateHTMLAnchors to true. Also by default, this method converts discovered line breaks into HTML line breaks
      * (<br>
      * ). This can be switched off by setting dontCreateHTMLLineBreaks to true.
-     * 
+     *
      * @param in
      * @param inTextarea
      * @return
@@ -510,7 +509,7 @@ public class Util {
             if (c == '\n' && dontCreateHTMLLineBreaks == false)
                 ret.append("<br/>");
             else if (c == '\r' && i != (retString.length() - 1) && retString.charAt(i + 1) == '\n'
-                    && dontCreateHTMLLineBreaks == false) {
+                && dontCreateHTMLLineBreaks == false) {
                 ret.append("<br/>");
                 i = i + 1;
             } else
@@ -575,7 +574,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param s
      * @return
      */
@@ -660,8 +659,8 @@ public class Util {
     }
 
     /**
-    *
-    */
+     *
+     */
     public static boolean implementsIF(Class c, String ifName) {
 
         boolean f = false;
@@ -751,8 +750,8 @@ public class Util {
     }
 
     /*
-	 * 
-	 */
+     *
+     */
     public static String getIcon(String path) {
 
         String s = path == null ? null : path.toLowerCase();
@@ -814,8 +813,8 @@ public class Util {
     }
 
     /**
-	 *  
-	 */
+     *
+     */
     public static String getUrlContent(String url) {
 
         int i;
@@ -856,25 +855,25 @@ public class Util {
 
         /*
          * if (literal == null) return null;
-         * 
+         *
          * UnicodeEscapes unicodeEscapes = null;
-         * 
+         *
          * StringBuffer buf = new StringBuffer(); for (int i=0; i<literal.length(); i++){
-         * 
+         *
          * char c = literal.charAt(i);
-         * 
+         *
          * if (c=='&'){ int j = literal.indexOf(";", i); if (j > i){ char cc = literal.charAt(i+1); int decimal = -1; if (cc=='#'){
          * // handle Unicode decimal escape String sDecimal = literal.substring(i+2, j);
-         * 
+         *
          * try{ decimal = Integer.parseInt(sDecimal); } catch (Exception e){} } else{ // handle entity String ent =
          * literal.substring(i+1, j); if (unicodeEscapes == null) unicodeEscapes = new UnicodeEscapes(); decimal =
          * unicodeEscapes.getDecimal(ent); }
-         * 
+         *
          * if (decimal >= 0){ // if decimal was found, use the corresponding char. otherwise stick to c. c = (char)decimal; i = j; }
          * } }
-         * 
+         *
          * buf.append(c); }
-         * 
+         *
          * return buf.toString();
          */
     }
@@ -973,8 +972,8 @@ public class Util {
     }
 
     /*
-	 * 
-	 */
+     *
+     */
     public static String getObligationID(String obligDetailsUrl) {
 
         if (obligDetailsUrl == null || obligDetailsUrl.length() == 0)
@@ -1001,10 +1000,10 @@ public class Util {
     }
 
     /*
-	 * 
-	 */
+     *
+     */
     public static void forward2errorpage(HttpServletRequest request, HttpServletResponse response, Throwable t, String backURL)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
 
         String msg = t.getMessage();
 
@@ -1021,9 +1020,9 @@ public class Util {
     }
 
     /**
-	 * 
-	 *
-	 */
+     *
+     *
+     */
     public static String getServletPathWithQueryString(HttpServletRequest request) {
 
         StringBuffer result = new StringBuffer();
@@ -1040,7 +1039,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param str
      * @param token
      * @return
@@ -1061,7 +1060,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param request
      * @return
      */
@@ -1085,7 +1084,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param from
      * @param to
      * @return
@@ -1106,7 +1105,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public static synchronized String getExpiresDateString() {
@@ -1121,7 +1120,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param url
      * @return
      * @throws MalformedURLException
@@ -1137,7 +1136,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param s
      * @return
      */
@@ -1152,7 +1151,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param coll
      * @return
      */
@@ -1172,7 +1171,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param coll
      * @return
      */

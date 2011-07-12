@@ -188,6 +188,11 @@
 		<servlet-class>eionet.meta.TablesServlet</servlet-class>
 	</servlet>
 
+    <servlet>
+        <servlet-name>DownloadServlet</servlet-name>
+        <servlet-class>eionet.meta.DownloadServlet</servlet-class>
+    </servlet>
+
 <!-- servlet mappings -->
 
 	<servlet-mapping>
@@ -310,6 +315,10 @@
 		<servlet-name>TablesServlet</servlet-name>
 		<url-pattern>/tables/*</url-pattern>
 	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DownloadServlet</servlet-name>
+        <url-pattern>/visuals/*</url-pattern>
+    </servlet-mapping>
 
 <!-- the application server might allow directory listing.
        The welcome-files are used to overcome workings of such feature

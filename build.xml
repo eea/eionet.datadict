@@ -105,7 +105,6 @@ default is install
 		<mkdir dir="${webapp.home}/WEB-INF"/>
 		<mkdir dir="${webapp.home}/WEB-INF/classes"/>
 		<mkdir dir="${webapp.home}/WEB-INF/lib"/>
-		<mkdir dir="${webapp.home}/visuals"/>
 	</target>
 	<target name="prepare">
 		<antcall target="prepare.apphome"/>
@@ -142,21 +141,18 @@ default is install
 
 		<!--
 		To make sure that any removed JSP files, JAR libraries, etc will also be removed from
-		the webapp home, clear the latter. BUT exclude the visuals directory, as this contains
-		images uploaded by the users!!!
+		the webapp home, clear the latter.
 		-->
 		<delete includeemptydirs="true" description="Deletes all files and subdirectories of webapp.home, but not the webapp.home itself.">
-			<fileset dir="${webapp.home}" excludes="visuals/*"/>
+			<fileset dir="${webapp.home}"/>
 		</delete>
 
 		<copy file="src/arial.ttf" todir="${classes.dir}" overwrite="false"/>
-		<mkdir dir="${webapp.home}/visuals"/>
 
 		<copy todir="${webapp.home}" overwrite="true">
 			<fileset dir="public">
 				<exclude name="**/*.java" />
 				<exclude name="**/*.properties" />
-				<exclude name="visuals/**" />
 			</fileset>
 		</copy>
         <copy todir="${webapp.home}" overwrite="true">
@@ -326,9 +322,9 @@ default is install
 				<available file="${pdf.uni-font}"/>
 			</not>
 		</condition>
-		<condition property="visualspath.not.available">
+		<condition property="filestore.not.available">
 			<not>
-				<available file="${visuals.path}" type="dir"/>
+				<available file="${filestore.path}" type="dir"/>
 			</not>
 		</condition>
 		<condition property="odspath.not.available">
@@ -349,7 +345,7 @@ default is install
 
 		<antcall target="warn_mdbexecutable"/>
 		<antcall target="warn_pdfunifont"/>
-		<antcall target="warn_visualspath"/>
+		<antcall target="warn_filestore"/>
 		<antcall target="warn_odspath"/>
 		<antcall target="warn_tempfilepath"/>
 		<antcall target="warn_docpath"/>
@@ -402,9 +398,9 @@ default is install
 		<echo message="Please specify the correct location in datadict.properties"/>
 		<echo message="==================================================================="/>
 	</target>
-	<target name="warn_visualspath" if="visualspath.not.available">
+	<target name="warn_filestore" if="filestore.not.available">
 		<echo message="==================================================================="/>
-		<echo message="The folder specified in visuals.path is not available at: ${visuals.path}"/>
+		<echo message="The folder specified in filestore.path is not available at: ${filestore.path}"/>
 		<echo message="Please specify the correct location in datadict.properties"/>
 		<echo message="==================================================================="/>
 	</target>
@@ -513,7 +509,7 @@ default is install
 				</fileset>
 			</classpath>
 			<formatter type="brief" usefile="false"/>
-			<batchtest fork="yes">				
+			<batchtest fork="yes">
 				<fileset dir="test/src">
 					<include name="**/*Test.java"/>
 				</fileset>
