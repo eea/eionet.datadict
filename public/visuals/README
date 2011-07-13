@@ -1,2 +1,0 @@
-The servlet engine must have write access to this directory, and the path
-must be specified in web.xml

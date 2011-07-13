@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+
+    <Resource
+	    name="jdbc/datadict"
+        auth="Container"
+        type="javax.sql.DataSource"
+        maxActive="100"
+        maxIdle="30"
+        maxWait="10000"
+        username="${db.user}"
+        password="${db.password}"
+        driverClassName="com.mysql.jdbc.Driver"
+        url="jdbc:mysql://${db.host}/${db.database}?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;emptyStringsConvertToZero=false&amp;jdbcCompliantTruncation=false">
+    </Resource>
+
+</Context>

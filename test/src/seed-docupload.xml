@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-<!-- seed the DOC table -->
-  <DOC OWNER_ID="27" OWNER_TYPE="dst"
-    MD5_PATH="ac377ae1430ee2ea3e7dec72317d3a95" ABS_PATH="/tmp/nosuchfile.txt"
-    TITLE="No such file" />
-</dataset>

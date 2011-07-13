@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+	<link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/print.css" media="print" />
+	<link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/handheld.css" media="handheld" />
+	<link rel="stylesheet" type="text/css" href="http://www.eionet.europa.eu/styles/eionet2007/screen.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="eionet2007.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="print.css" media="print" />
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+
+	<title>Data Dictionary - User Authentication</title>
+	<script type="text/javascript">
+	// <![CDATA[
+	function setFocus(){
+		document.forms["LOGIN"].elements["j_username"].focus();
+	}
+
+	function keyDown(input, keyCode){
+		if (keyCode == 13)
+			input.form.submit();
+	}
+	// ]]>
+	</script>
+</head>
+
+<body class="popup" onload="setFocus()" onunload="window.opener.location.reload(true)">
+<form id="LOGIN" method="post" action="Login">
+<table width="100%" cellspacing="0" cellpadding="0">
+	<tr>
+		<td align="right" class="login">&nbsp;Username:&nbsp;</td>
+		<td class="login">
+			<input size="25" type="text" class="smalltext" name="j_username"/>
+		</td>
+	</tr>
+	<tr>
+		<td align="right" class="login">&nbsp;Password:&nbsp;</td>
+		<td class="login">
+			<input size="25" type="password" class="smalltext" name="j_password" onkeydown="keyDown(this, event.keyCode)"/>
+		</td>
+	</tr>
+	<tr>
+		<td align="right" colspan="2">
+			<input name="SUBMIT" type="submit" class="mediumbuttonb" value="Login"/>
+		</td>
+	</tr>
+	<tr>
+		<td align="right" colspan="2">
+			<input name="RESET" type="reset" class="mediumbuttonb" value="Clear Fields"/>
+		</td>
+	</tr>
+</table>
+</form>
+</body>
+</html>
