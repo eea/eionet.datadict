@@ -1,71 +1,76 @@
-This is the EIONET datadictionary software.
 
-Read the doc/installationmanual.doc for installation instructions
+*************************************************
+This is the EIONET Data Dictionary (DD) software.
+*************************************************
 
+Read the doc/installationmanual.doc for detailed installation instructions.
+For doing a quick-start installation, read the following instructions. They
+give some hints on how to quickly checkout DD code from SVN, and how to set
+it up as a Tomcat web application.
 
-Quick Start - Installation Guide
-
-The following short installation guide gives some quick hints how to checkout DD code from SVN and set it up as a Tomcat web application
+****************************************************************************
 
 1. Create build directory for SVN checkout
+
 shell>cd /var/local/build
 shell>svn checkout https://svn.eionet.europa.eu/repositories/Reportnet/datadict/trunk datadict
 
+NB! The resulting /var/local/build/datadict directory will be denoted below as $CHECKOUT_HOME
+
 2. Create DD database and database user in MySql
+
 mysql>create database DataDict;
 mysql>CREATE USER 'dduser'@'localhost' IDENTIFIED BY 'password-here';
 mysql>GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser'@'localhost'
 
 3. Import initial database structure and init data
-shell>cd datadict/sql
+
+shell>cd $CHECKOUT_HOME/sql
 shell>mysql -u root -p DataDict < dd-struct.sql
 shell>mysql -u root -p DataDict < dd-attrs-meta.sql
 shell>mysql -u root -p DataDict < help-data.sql
 
-4. Create database and user that will be used by unit tests only!
+4. Create the database and user that will be used by unit tests only!
+
 mysql>create database DD_test;
 mysql>CREATE USER 'ddtest'@'localhost' IDENTIFIED BY 'password-here';
 mysql>GRANT ALL PRIVILEGES ON DD_test.* TO 'ddtest'@'localhost'
 
 5. Import initial database structure into the database that will be used by unit tests only
-shell>cd datadict/sql
+
+shell>cd $CHECKOUT_HOME/sql
 shell>mysql -u root -p DD_test < dd-struct.sql
 
-6. create build.properties file by duplicating default.properties
-shell>cp default.properties build.properties
+6. Create local.properties file by making a copy of default.properties
 
-7. modify the following environment specific properties in build.properties:
-app.name=Data Dictionary
-app.home=/var/local/seionet-java/datadict_contents
-webapp.home=/var/local/datadict_apps/ROOT
-servletapi.jar=/var/lib/tomcat/common/lib/servlet-api.jar
-#Note! Correct version of MySQl jdbc type 4 driver should be downloaded and copied into Tomcat lib folder
-lib-mysql-connector-jar==/var/lib/tomcat/common/lib/mysql-connector-java-5.1.15-bin.jar
-commons-logging-jar=/usr/share/tomcat5/bin/commons-logging-api.jar
-db.* - properties of the database that will be used by the DD web application
-test.db.* - properties of the database that will be used by unit tests only!
-dd.url=http://dd.eionet.europa.eu
-dd.host=dd.eionet.europa.eu
+shell>cd $CHECKOUT_HOME
+shell>cp default.properties local.properties
 
-8. Revise UNS properties in src/datadict.properties.tmpl (optional)
+7. In the freshly created local.properties file, change property values as appropriate for your environment.
+   You will find meanings of every property from inside the file as comments.
 
-9. Revise /custom/*.txt files for modifying header texts and links (optional)
+8. Optional step: revise $CHECKOUT_HOME/custom/*.txt files for modifying the content of headers and footers in DD web pages texts and links.
+   You will find guidelines from inside $CHECKOUT_HOME/custom/README.txt.
 
-10. Setup Tomcat context in server.xml:
-copy the <Context> element from datadict/context.xml into tomcat/conf/server.xml betrween <Host> element.
+9. Build the DD web application by issuing the following Maven command
 
-11. Optional step: run unit tests by issuing the following command (note that this takes time to execute)
-shell>ant test
+shell>cd $CHECKOUT_HOME
+shell>mvn -Dmaven.test.skip=true clean install
 
-12. Run ant install in datadict root folder and restart Tomcat
-shell>ant install
+10. Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.
 
+
+
+**************************************************************************
+Additional applications for modifying DD access permissions and help texts
+**************************************************************************
 
 Additional web applications are available for modfying user privileges and help texts in DD:
 AclAdmin tool: https://svn.eionet.europa.eu/repositories/Reportnet/acladmin/trunk
 HelpAdmin tool: https://svn.eionet.europa.eu/repositories/Reportnet/helpadmin/trunk
 
-Installing these applciations follows the similar steps:
+Installing these applciations is done by similar steps:
+
 1. Checkout from SVN
 2. Create build.properties from default.properties
 3. Modify environment specific properties in build.properties file
