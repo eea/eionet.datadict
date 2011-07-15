@@ -1,4 +1,4 @@
-<!-- Last updated: 2011-03-01T10:41:29Z
+<!-- Last updated: 2011-04-19T15:08:55Z
      To update download http://www.eionet.europa.eu/dropdownmenus.txt -->
         <ul id="dropdowns">
          <li><a href="http://www.eionet.europa.eu/services">Services</a>
@@ -20,9 +20,11 @@
            <li><a href="http://cdr.eionet.europa.eu/">CDR Repository</a></li>
            <li><a href="http://rod.eionet.europa.eu/">ROD Obligations</a></li>
            <li><a href="http://dd.eionet.europa.eu/">Data Dictionary</a></li>
+           <li><a href="http://etcdd.eionet.europa.eu/">ETC Data Dictionary</a></li>
            <li><a href="http://cr.eionet.europa.eu/">Content Registry</a></li>
            <li><a href="http://converters.eionet.europa.eu/">Conversion service</a></li>
            <li><a href="http://dampos.eionet.europa.eu/">Dam Positioning</a></li>
+           <li><a href="http://www.eionet.europa.eu/reportnet">Reportnet Documents</a></li>
           </ul>
          </li>
          <li><a href="http://www.eionet.europa.eu/tools">Tools</a>
@@ -30,7 +32,7 @@
            <li><a href="http://www.eionet.europa.eu/gis/">GIS</a></li>
            <li><a href="http://www.eionet.europa.eu/seis/">SEIS</a></li>
            <li><a href="http://www.eionet.europa.eu/software/">Software</a></li>
-           <li><a href="http://svn.eionet.europa.eu/">SVN Repository</a></li>
+           <li><a href="https://svn.eionet.europa.eu/">SVN Repository</a></li>
            <li><a href="https://taskman.eionet.europa.eu/">Task Management</a></li>
            <li><a href="http://www.eionet.europa.eu/software/design">Design Guidelines</a></li>
            <li><a href="http://www.eionet.europa.eu/software/swstandards">Standards</a></li>
