@@ -40,9 +40,9 @@ import eionet.util.sql.DDConnectionException;
 import eionet.util.sql.SQL;
 
 /**
- * 
+ *
  * @author <a href="mailto:jaanus.heinlaid@tieto.com">Jaanus Heinlaid</a>
- * 
+ *
  */
 public class DatasetMSAccessFile {
 
@@ -69,7 +69,7 @@ public class DatasetMSAccessFile {
     private static List<String> dataTypes = Arrays.asList("boolean", "date", "double", "float", "integer", "string", "decimal");
 
     /**
-     * 
+     *
      * @param dstId
      */
     public DatasetMSAccessFile(String datasetId) {
@@ -91,7 +91,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param datasetId
      * @return
      * @throws SQLException
@@ -109,7 +109,7 @@ public class DatasetMSAccessFile {
      * @throws DDException
      * @throws IOException
      * @throws SQLException
-     * 
+     *
      */
     private void create() throws DDException, IOException, SQLException {
 
@@ -140,9 +140,9 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * Try to silently close the database and to delete the generated file.
-     * 
+     *
      * @param database
      */
     private void cleanup(Database database) {
@@ -154,7 +154,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param database
      * @throws SQLException
      * @throws DDException
@@ -248,7 +248,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param dst
      * @return
      * @throws IOException
@@ -271,7 +271,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param tbl
      * @return
      * @throws IOException
@@ -286,6 +286,7 @@ public class DatasetMSAccessFile {
         row.put(TblDefinitionColumn.TBL_NAME, tbl.getAttributeValueByShortName("Name"));
         row.put(TblDefinitionColumn.TBL_DEFINITION, tbl.getAttributeValueByShortName("Definition"));
         row.put(TblDefinitionColumn.TBL_METHODOLOGY, tbl.getAttributeValueByShortName("Methodology"));
+        row.put(TblDefinitionColumn.TBL_SHORTDESC, tbl.getAttributeValueByShortName("ShortDescription"));
         row.put(TblDefinitionColumn.TBL_URL, DefinitionUrls.get(tbl));
         row.put(TblDefinitionColumn.TBL_NUMBER_OF_ELEMENTS, Integer.valueOf(noOfElements));
         row.put(TblDefinitionColumn.TBL_ID, tbl.getID());
@@ -294,7 +295,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param elm
      * @param tbl
      * @param elmOrder
@@ -334,7 +335,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param elm
      * @param tbl
      * @param elmOrder
@@ -355,7 +356,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param elm
      * @return
      * @throws IOException
@@ -373,8 +374,8 @@ public class DatasetMSAccessFile {
     }
 
     /**
-	 * 
-	 */
+     *
+     */
     protected void close(Database database) {
 
         if (database != null) {
@@ -386,7 +387,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DDConnectionException
      */
@@ -400,15 +401,15 @@ public class DatasetMSAccessFile {
     }
 
     /**
-	 * 
-	 */
+     *
+     */
     protected void closeConnection() {
 
         SQL.close(connection);
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DDConnectionException
      */
@@ -422,7 +423,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param elm
      * @param attrName
      * @return
@@ -434,7 +435,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param type
      * @return
      */
@@ -454,7 +455,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param datatype
      * @return
      */
@@ -473,7 +474,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param publicOrInternal
      * @return
      */
@@ -507,7 +508,7 @@ public class DatasetMSAccessFile {
     }
 
     /**
-     * 
+     *
      * @param args
      * @throws DDException
      * @throws IOException
