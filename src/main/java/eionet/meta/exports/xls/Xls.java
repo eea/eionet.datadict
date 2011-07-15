@@ -39,7 +39,7 @@ public abstract class Xls implements XlsIF {
     protected String fileName = "xls.xls";
 
     /*
-     * 
+     *
      */
     protected void setSchemaUrl(String id) throws Exception {
 
@@ -149,7 +149,7 @@ public abstract class Xls implements XlsIF {
     }
 
     /**
-     * 
+     *
      */
     protected void setCellTypes() {
 

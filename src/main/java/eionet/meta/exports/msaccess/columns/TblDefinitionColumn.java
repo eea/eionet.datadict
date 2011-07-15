@@ -26,7 +26,7 @@ public enum TblDefinitionColumn {
      *
      * @param columnName
      */
-    private TblDefinitionColumn(String columnName){
+    private TblDefinitionColumn(String columnName) {
         this.columnName = columnName;
     }
 
@@ -34,7 +34,7 @@ public enum TblDefinitionColumn {
      * (non-Javadoc)
      * @see java.lang.Enum#toString()
      */
-    public String toString(){
+    public String toString() {
         return columnName;
     }
 

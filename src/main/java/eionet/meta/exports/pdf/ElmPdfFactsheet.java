@@ -81,8 +81,8 @@ public class ElmPdfFactsheet extends PdfHandout {
         }
 
         /*
-         * extends String extID = elem.getExtension(); if (!Util.voidStr(extID)){ DataElement extElem =
-         * searchEngine.getDataElement(elemID); if (extElem != null){ hash = new Hashtable(); hash.put("name", "Extends");
+         * extends String extID = elem.getExtension(); if (!Util.voidStr(extID)) { DataElement extElem =
+         * searchEngine.getDataElement(elemID); if (extElem != null) { hash = new Hashtable(); hash.put("name", "Extends");
          * hash.put("value", extElem.getShortName()); v.add(0, hash); } }
          */
 
@@ -133,7 +133,7 @@ public class ElmPdfFactsheet extends PdfHandout {
         // addElement(PdfUtil.imgAttributes(elem.getAttributes(), vsPath));
 
         /*
-         * write image attributes Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath); if (imgAttrs!=null){ addElement(new
+         * write image attributes Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath); if (imgAttrs!=null) { addElement(new
          * Phrase("\n")); addElement(imgAttrs); }
          */
 

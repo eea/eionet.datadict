@@ -29,7 +29,7 @@ import javax.servlet.ServletContext;
 import eionet.util.Props;
 
 /**
- * 
+ *
  * @author <a href="mailto:jaanus.heinlaid@tieto.com">Jaanus Heinlaid</a>
  *
  */
@@ -38,23 +38,23 @@ public class CASFilterConfig extends Hashtable<String,String> implements FilterC
     /** */
     private static CASFilterConfig instance;
     private static Object lock = new Object();
-    
+
     /** */
     private String filterName;
     private ServletContext servletContext;
 
     /**
-     * 
+     *
      * @param defaultConfig
      */
     private CASFilterConfig(FilterConfig defaultConfig) {
 
         super();
-        
-        if (defaultConfig!=null){
-        
+
+        if (defaultConfig!=null) {
+
             // load default configuration supplied by CAS
-            for (Enumeration names=defaultConfig.getInitParameterNames(); names.hasMoreElements();){
+            for (Enumeration names=defaultConfig.getInitParameterNames(); names.hasMoreElements();) {
 
                 String name = names.nextElement().toString();
                 put(name, defaultConfig.getInitParameter(name));
@@ -64,46 +64,46 @@ public class CASFilterConfig extends Hashtable<String,String> implements FilterC
             filterName = defaultConfig.getFilterName();
             servletContext = defaultConfig.getServletContext();
         }
-        
+
         // overwrite with DD's own values
-        for (CASInitParam casInitParam : CASInitParam.values()){
-            
+        for (CASInitParam casInitParam : CASInitParam.values()) {
+
             String name = casInitParam.toString();
             put(name, Props.getRequiredProperty(name));
         }
     }
 
     /**
-     * 
+     *
      * @param defaultConfig
      */
-    public static void init(FilterConfig defaultConfig){
-        
-        if (instance==null){
+    public static void init(FilterConfig defaultConfig) {
+
+        if (instance==null) {
 
             synchronized (lock) {
 
                 // double-checked locking pattern
                 // (http://www.ibm.com/developerworks/java/library/j-dcl.html)
-                if (instance==null){
+                if (instance==null) {
                     instance = new CASFilterConfig(defaultConfig);
                 }
             }
         }
     }
-    
+
     /**
-     * 
+     *
      * @param defaultConfig
      * @return
      */
-    public static CASFilterConfig getInstance(){
-        
-        if (instance==null){
+    public static CASFilterConfig getInstance() {
+
+        if (instance==null) {
             throw new IllegalStateException(
                     CASFilterConfig.class.getSimpleName() + " not yet initialized");
         }
-        else{
+        else {
             return instance;
         }
     }
@@ -112,8 +112,8 @@ public class CASFilterConfig extends Hashtable<String,String> implements FilterC
      * (non-Javadoc)
      * @see javax.servlet.FilterConfig#getFilterName()
      */
-    public String getFilterName(){
-        
+    public String getFilterName() {
+
         return filterName;
     }
 
@@ -122,7 +122,7 @@ public class CASFilterConfig extends Hashtable<String,String> implements FilterC
      * @see javax.servlet.FilterConfig#getInitParameter(java.lang.String)
      */
     public String getInitParameter(String paramName) {
-        
+
         return get(paramName);
     }
 
@@ -131,7 +131,7 @@ public class CASFilterConfig extends Hashtable<String,String> implements FilterC
      * @see javax.servlet.FilterConfig#getInitParameterNames()
      */
     public Enumeration<String> getInitParameterNames() {
-        
+
         return keys();
     }
 
@@ -140,7 +140,7 @@ public class CASFilterConfig extends Hashtable<String,String> implements FilterC
      * @see javax.servlet.FilterConfig#getServletContext()
      */
     public ServletContext getServletContext() {
-        
+
         return servletContext;
     }
 }

@@ -4,12 +4,12 @@ import java.sql.Types;
 import java.util.ArrayList;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
 public class INParameters {
-    
+
     /** */
     ArrayList values = null;
     ArrayList sqlTypes = null;
@@ -17,85 +17,85 @@ public class INParameters {
     /**
      *
      */
-    public INParameters(){
+    public INParameters() {
         values = new ArrayList();
         sqlTypes = new ArrayList();
     }
-    
+
     /**
-     * 
+     *
      * @param value
      * @param sqlType
      * @return
      */
-    public String add(Object value, int sqlType){
+    public String add(Object value, int sqlType) {
         values.add(value);
         sqlTypes.add(new Integer(sqlType));
         return "?";
     }
-    
+
     /**
-     * 
+     *
      * @param value
      * @return
      */
-    public String add(Object value){
+    public String add(Object value) {
         values.add(value);
         sqlTypes.add(null);
         return "?";
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
-    public int size(){
+    public int size() {
         return values.size();
     }
-    
+
     /**
-     * 
+     *
      * @param i
      * @return
      */
-    public Object getValue(int i){
+    public Object getValue(int i) {
         return values.get(i);
     }
 
     /**
-     * 
+     *
      * @param i
      * @return
      */
-    public Integer getSQLType(int i){
+    public Integer getSQLType(int i) {
         return (Integer)sqlTypes.get(i);
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see java.lang.Object#toString()
      */
-    public String toString(){
-        
+    public String toString() {
+
         StringBuffer buf = new StringBuffer(size()==0 ? "empty" : "");
-        for (int i=0; i<values.size(); i++){
-            
-            buf.append((String)values.get(i));          
+        for (int i=0; i<values.size(); i++) {
+
+            buf.append((String)values.get(i));
             Integer sqlType = getSQLType(i);
             buf.append(", ").append(sqlType==null ? "null" : sqlTypeLabel(sqlType)).
             append("\n");
         }
         return buf.toString();
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
-    private static String sqlTypeLabel(Integer sqlType){
-        
+    private static String sqlTypeLabel(Integer sqlType) {
+
         String retString = "???";
-        switch (sqlType.intValue()){
+        switch (sqlType.intValue()) {
             case Types.ARRAY:
                 retString = "Types.ARRAY";
                 break;
@@ -189,7 +189,7 @@ public class INParameters {
             default:
                 break;
         }
-        
+
         return retString;
     }
 }

@@ -18,17 +18,17 @@ import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 
 public class XmlInstServlet extends HttpServlet {
-    
+
     protected void service(HttpServletRequest req, HttpServletResponse res)
                                 throws ServletException, IOException {
 
         PrintWriter writer = null;
         Connection conn = null;
-        
-        try{
-            
+
+        try {
+
             //guard(req);
-            
+
             // get the object ID
             String id = req.getParameter("id");
             if (Util.voidStr(id)) throw new Exception("Missing id!");
@@ -36,12 +36,12 @@ public class XmlInstServlet extends HttpServlet {
             // get the object type
             String type = req.getParameter("type");
             if (Util.voidStr(type)) throw new Exception("Missing type!");
-            
+
             ServletContext ctx = getServletContext();
 
             // get the DB connection
             conn = ConnectionUtil.getConnection();
-                
+
             DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
             res.setContentType("text/xml; charset=UTF-8");
             OutputStreamWriter osw = new OutputStreamWriter(res.getOutputStream(), "UTF-8");
@@ -54,12 +54,12 @@ public class XmlInstServlet extends HttpServlet {
                 xmlInst = new DstXmlInst(searchEngine, writer);
             else
                 throw new Exception("Unknown type: " + type);
-            
+
             // build application context
             String reqUri = req.getRequestURL().toString();
             int i = reqUri.lastIndexOf("/");
             if (i != -1) xmlInst.setAppContext(reqUri.substring(0,i));
-            
+
             xmlInst.write(id);
             xmlInst.flush();
             writer.flush();
@@ -67,24 +67,24 @@ public class XmlInstServlet extends HttpServlet {
             writer.close();
             osw.close();
         }
-        catch (Exception e){
+        catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException(e.toString());
         }
-        finally{
-            try{
+        finally {
+            try {
                 if (writer != null) writer.close();
                 if (conn != null) conn.close();
             }
-            catch(Exception ee){}
+            catch (Exception ee) {}
         }
     }
-    
-    private void guard(HttpServletRequest req) throws Exception{
-        
+
+    private void guard(HttpServletRequest req) throws Exception {
+
         DDUser user = SecurityUtil.getUser(req);
         if (user==null) throw new Exception("Not logged in!");
-        
+
         if (!SecurityUtil.hasPerm(user.getUserName(), "/", "xmli"))
             throw new Exception("Not permitted!");
     }

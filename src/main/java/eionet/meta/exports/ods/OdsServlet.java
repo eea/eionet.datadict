@@ -25,7 +25,7 @@ import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 
 /**
- * 
+ *
  * @author jaanus
  */
 public class OdsServlet extends HttpServlet{
@@ -36,10 +36,10 @@ public class OdsServlet extends HttpServlet{
      */
     protected void service(HttpServletRequest req, HttpServletResponse res)
                                                     throws ServletException, IOException {
-        
+
         Connection conn = null;
         String workingFolderPath = null;
-        try{
+        try {
             // get object id
             String id = req.getParameter("id");
             if (Util.voidStr(id)) throw new Exception("Missing request parameter: id");
@@ -47,7 +47,7 @@ public class OdsServlet extends HttpServlet{
             // get object type
             String type = req.getParameter("type");
             if (Util.voidStr(type)) throw new Exception("Missing request parameter: type");
-            
+
             // get schema URL base
             String schemaURLBase = Props.getProperty(PropsIF.XLS_SCHEMA_URL);
             if (Util.voidStr(schemaURLBase))
@@ -58,14 +58,14 @@ public class OdsServlet extends HttpServlet{
 
             // get db connection
             conn = ConnectionUtil.getConnection();
-                
+
             // set up the ods object
             Ods ods = null;
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
-            if (type.equals("dst")){
+            if (type.equals("dst")) {
                 ods = new DstOds(searchEngine, id);
             }
-            else if (type.equals("tbl")){
+            else if (type.equals("tbl")) {
                 ods = new TblOds(searchEngine, id);
             }
             else
@@ -73,46 +73,46 @@ public class OdsServlet extends HttpServlet{
 
             ods.setWorkingFolderPath(workingFolderPath);
             ods.setSchemaURLBase(schemaURLBase);
-            
+
             // process the ods object
             ods.processContent();
             ods.processMeta();
-            
+
             // prepare response
             res.setContentType("application/vnd.oasis.opendocument.spreadsheet");
             StringBuffer buf = new StringBuffer("attachment; filename=\"").
             append(ods.getFinalFileName()).append("\"");
             res.setHeader("Content-Disposition", buf.toString());
-            
+
             // write the ods result file into response
-            writeFileIntoResponse(new File(ods.getWorkingFolderPath() + Ods.ODS_FILE_NAME), res);           
+            writeFileIntoResponse(new File(ods.getWorkingFolderPath() + Ods.ODS_FILE_NAME), res);
         }
-        catch (Exception e){
+        catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException(Util.getStack(e));
         }
-        finally{
-            
+        finally {
+
             // close DB connection
-            try{
-                if (conn != null) conn.close();             
+            try {
+                if (conn != null) conn.close();
             }
-            catch(Exception e){}
-            
+            catch (Exception e) {}
+
             // clean up the working folder
-            try{
+            try {
                 if (req.getParameter("keep_working_folder")==null)
                     deleteFolder(workingFolderPath);
             }
-            catch(Exception e){}
+            catch (Exception e) {}
         }
     }
-    
+
     /**
-     * 
+     *
      *
      */
-    private String prepareWorkingFolder(String sessionID) throws Exception{
+    private String prepareWorkingFolder(String sessionID) throws Exception {
 
         // get ods-folder path
         String odsFolder = Props.getProperty(PropsIF.OPENDOC_ODS_PATH);
@@ -120,26 +120,26 @@ public class OdsServlet extends HttpServlet{
             throw new Exception("Missing property: " + PropsIF.OPENDOC_ODS_PATH);
         else if (!odsFolder.endsWith(File.separator))
             odsFolder = odsFolder + File.separator;
-        
+
         // get DD temporary folder
         String tmpFilePath = Props.getProperty(PropsIF.TEMP_FILE_PATH);
         if (tmpFilePath==null)
             throw new Exception("Missing property: " + PropsIF.TEMP_FILE_PATH);
         else if (!tmpFilePath.endsWith(File.separator))
             tmpFilePath = tmpFilePath + File.separator;
-        
+
         // build working folder name
         StringBuffer buf = new StringBuffer(tmpFilePath);
         buf.append("ods_");
         buf.append(sessionID);
         buf.append("_");
         buf.append(System.currentTimeMillis());
-        
+
         // create working folder
         File workginFolder = new File(buf.toString());
         if (workginFolder.mkdir()==false)
             throw new Exception("Failed to create directory: " + buf.toString());
-        
+
         String s = buf.toString() + File.separator;
 
         // copy ods-file into working folder
@@ -150,78 +150,78 @@ public class OdsServlet extends HttpServlet{
         // copy content-file into working folder
         File contentFile = new File(odsFolder + Ods.CONTENT_FILE_NAME);
         File cpyContentFile = new File(s + Ods.CONTENT_FILE_NAME);
-        copyFile(contentFile, cpyContentFile);        
+        copyFile(contentFile, cpyContentFile);
 
         // copy meta-file into working folder
         File metaFile = new File(odsFolder + Ods.META_FILE_NAME);
         File cpyMetaFile = new File(s + Ods.META_FILE_NAME);
-        copyFile(metaFile, cpyMetaFile);        
-        
+        copyFile(metaFile, cpyMetaFile);
+
         // return the newly created working folder's path
         return buf.toString();
     }
-    
+
     /*
-     * 
+     *
      */
-    private void deleteFolder(String folderPath){
-        
+    private void deleteFolder(String folderPath) {
+
         File folder = new File(folderPath);
         File[] files = folder.listFiles();
-        for (int i=0; files!=null && i<files.length; i++){
+        for (int i=0; files!=null && i<files.length; i++) {
             files[i].delete();
         }
-        
+
         folder.delete();
     }
-    
+
     /**
-     * 
+     *
      * @param in
      * @param out
      * @throws Exception
      */
     public void copyFile(File in, File out) throws Exception {
-        
+
         FileInputStream fis = null;
         FileOutputStream fos = null;
-        try{
+        try {
             fis = new FileInputStream(in);
             fos = new FileOutputStream(out);
             byte[] buf = new byte[1024];
             int i = 0;
-            while((i=fis.read(buf))!=-1){
+            while ((i=fis.read(buf))!=-1) {
                 fos.write(buf, 0, i);
             }
         }
-        finally{
+        finally {
             if (fis!=null) fis.close();
             if (fos!=null) fos.close();
         }
     }
-    
+
     /**
-     * 
+     *
      * @param file
      * @param res
      * @throws IOException
      */
-    private void writeFileIntoResponse(File file, HttpServletResponse res) throws IOException{
-        
+    private void writeFileIntoResponse(File file, HttpServletResponse res) throws IOException {
+
         int i = 0;
         byte[] buf = new byte[1024];
         FileInputStream in = null;
         OutputStream out = null;
-        
-        try{
+
+        try {
             in = new FileInputStream(file);
             res.setContentLength(in.available());
             out = res.getOutputStream();
-            while ((i=in.read(buf, 0, buf.length)) != -1){
+            while ((i=in.read(buf, 0, buf.length)) != -1) {
                 out.write(buf, 0, i);
             }
         }
-        finally{
+        finally {
             if (in!=null) in.close();
             if (out!=null) out.close();
         }

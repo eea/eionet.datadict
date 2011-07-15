@@ -7,7 +7,7 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 
 /*
- * 
+ *
  */
 public class Dataset implements Comparable {
 
@@ -43,7 +43,7 @@ public class Dataset implements Comparable {
     private String user;
 
     /*
-     * 
+     *
      */
     public Dataset(String id, String shortName, String version) {
         this.id = id;
@@ -296,7 +296,7 @@ public class Dataset implements Comparable {
     }
 
     /*
-     * 
+     *
      */
     public void setComparation(String sortString, int sortOrder) {
 
@@ -306,7 +306,7 @@ public class Dataset implements Comparable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     public String toString() {
@@ -314,14 +314,14 @@ public class Dataset implements Comparable {
     }
 
     /*
-     * 
+     *
      */
     public int compareTo(Object o) {
         return this.sortOrder * this.sortString.compareTo(o.toString());
     }
 
     /*
-     * 
+     *
      */
     public String getReferenceURL() {
 
@@ -341,7 +341,7 @@ public class Dataset implements Comparable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getCheckedoutCopyID() {
@@ -349,7 +349,7 @@ public class Dataset implements Comparable {
     }
 
     /**
-     * 
+     *
      * @param checkedoutCopyID
      */
     public void setCheckedoutCopyID(String checkedoutCopyID) {
@@ -357,7 +357,7 @@ public class Dataset implements Comparable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getWorkingUser() {
@@ -365,7 +365,7 @@ public class Dataset implements Comparable {
     }
 
     /**
-     * 
+     *
      * @param workingUser
      */
     public void setWorkingUser(String workingUser) {

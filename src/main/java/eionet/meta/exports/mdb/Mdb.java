@@ -36,7 +36,7 @@ public class Mdb implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.CachableIF#updateCache(java.lang.String)
      */
     public void updateCache(String id) throws Exception {
@@ -46,7 +46,7 @@ public class Mdb implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.CachableIF#clearCache(java.lang.String)
      */
     public void clearCache(String id) throws Exception {
@@ -56,7 +56,7 @@ public class Mdb implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.CachableIF#setCachePath(java.lang.String)
      */
     public void setCachePath(String path) throws Exception {
@@ -67,7 +67,7 @@ public class Mdb implements CachableIF {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.CachableIF#isCached(java.lang.String)
      */
     public boolean isCached(String id) throws Exception {
@@ -75,7 +75,7 @@ public class Mdb implements CachableIF {
     }
 
     /*
-     * 
+     *
      */
     public static File getUploaded(Connection conn, String dstID, String cachePath) throws Exception {
 
@@ -90,7 +90,7 @@ public class Mdb implements CachableIF {
     }
 
     /*
-     * 
+     *
      */
     public static File getCached(Connection conn, String dstID, String cachePath) throws Exception {
 
@@ -105,7 +105,7 @@ public class Mdb implements CachableIF {
     }
 
     /*
-     * 
+     *
      */
     public static File getCached(DDSearchEngine searchEngine, String dstID, String cachePath) throws Exception {
         if (searchEngine == null)
@@ -132,14 +132,14 @@ public class Mdb implements CachableIF {
     }
 
     /*
-     * 
+     *
      */
     public static File getNew(Connection conn, String dstID, String fullPath) throws Exception {
         return Mdb.getNew(conn, dstID, fullPath, false);
     }
 
     /*
-     * 
+     *
      */
     public static File getNew(Connection conn, String dstID, String fullPath, boolean vmdOnly) throws Exception {
 
@@ -176,14 +176,14 @@ public class Mdb implements CachableIF {
     }
 
     /*
-     * 
+     *
      */
     private static void createInBackground(String dstID, String fullPath) throws Exception {
         createInBackground(dstID, fullPath, false);
     }
 
     /*
-     * 
+     *
      */
     private static void createInBackground(String dstID, String fullPath, boolean vmdOnly) throws Exception {
 
@@ -265,7 +265,7 @@ public class Mdb implements CachableIF {
     }
 
     /*
-     * 
+     *
      */
     public static String getFileNameFor(Connection conn, String dstID, boolean vmdOnly) throws Exception {
         if (conn == null)
@@ -277,7 +277,7 @@ public class Mdb implements CachableIF {
     }
 
     /*
-     * 
+     *
      */
     public static String getFileNameFor(DDSearchEngine searchEgnine, String dstID, boolean vmdOnly) throws Exception {
         if (searchEgnine == null)
@@ -300,14 +300,14 @@ public class Mdb implements CachableIF {
     }
 
     /*
-     * 
+     *
      */
     public static int getVmdColumnType(String vmdColumnName) {
         return Types.LONGVARCHAR;
     }
 
     /*
-     * 
+     *
      */
     public static int getMdbType(String elmDataType) {
 
@@ -324,7 +324,7 @@ public class Mdb implements CachableIF {
     }
 
     /*
-     * 
+     *
      */
     private static void initElmTypeMappings() {
 
@@ -340,7 +340,7 @@ public class Mdb implements CachableIF {
     }
 
     /*
-     * 
+     *
      */
     public static void main(String[] args) {
 

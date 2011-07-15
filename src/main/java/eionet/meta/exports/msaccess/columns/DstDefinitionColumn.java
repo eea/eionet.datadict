@@ -1,9 +1,9 @@
 package eionet.meta.exports.msaccess.columns;
 
 /**
- * 
+ *
  * @author <a href="mailto:jaanus.heinlaid@tieto.com">Jaanus Heinlaid</a>
- * 
+ *
  */
 public enum DstDefinitionColumn {
 
@@ -14,7 +14,7 @@ public enum DstDefinitionColumn {
     private String columnName;
 
     /**
-     * 
+     *
      * @param columnName
      */
     private DstDefinitionColumn(String columnName) {
@@ -23,7 +23,7 @@ public enum DstDefinitionColumn {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Enum#toString()
      */
     public String toString() {

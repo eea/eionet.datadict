@@ -20,80 +20,80 @@ public class FixedValue {
     private String csID = null;
     private String type = null;
     private int level = 0;
-    
+
     private String definition = null;
     private String shortDesc = null;
 
-    public FixedValue(){
+    public FixedValue() {
     }
 
-    public FixedValue(String id){
+    public FixedValue(String id) {
         this.id = id;
     }
 
-    public FixedValue(String id, String elem_id, String value){
+    public FixedValue(String id, String elem_id, String value) {
         this.id = id;
         this.elem_id = elem_id;
         this.value = value;
     }
-    public FixedValue(String id, String elem_id, String value, String position){
+    public FixedValue(String id, String elem_id, String value, String position) {
         this (id, elem_id, value);
         this.position = position;
     }
-    
+
     /**
     * Overrides equals() in class Object.
     */
     public boolean equals(Object o) {
-        
+
         if (!(o instanceof FixedValue))
             return false;
-        
+
         // comapre the two attr values
         return value.equals(((FixedValue)o).getValue());
     }
 
-    public String getID(){
+    public String getID() {
         return id;
     }
 
-    public String getValue(){
+    public String getValue() {
         return value;
     }
-    public String getPosition(){
+    public String getPosition() {
         return position;
     }
-    public void setPosition(String position){
+    public void setPosition(String position) {
         this.position = position;
     }
 
-    public void setCsID(String csID){
+    public void setCsID(String csID) {
         this.csID = csID;
     }
 
-    public String getCsID(){
+    public String getCsID() {
         return this.csID;
     }
 
-    public void setType(String type){
+    public void setType(String type) {
         this.type = type;
     }
 
-    public String getType(){
+    public String getType() {
         return this.type;
     }
 
-    public void addAttribute(Object attr){
+    public void addAttribute(Object attr) {
         attributes.add(attr);
     }
 
-    public Vector getAttributes(){
+    public Vector getAttributes() {
         return attributes;
     }
 
-    public DElemAttribute getAttributeByShortName(String name){
+    public DElemAttribute getAttributeByShortName(String name) {
 
-        for (int i=0; i<attributes.size(); i++){
+        for (int i=0; i<attributes.size(); i++) {
             DElemAttribute attr = (DElemAttribute)attributes.get(i);
             if (attr.getShortName().equalsIgnoreCase(name))
                 return attr;
@@ -102,9 +102,9 @@ public class FixedValue {
         return null;
     }
 
-    public DElemAttribute getAttributeByName(String name){
+    public DElemAttribute getAttributeByName(String name) {
 
-        for (int i=0; i<attributes.size(); i++){
+        for (int i=0; i<attributes.size(); i++) {
             DElemAttribute attr = (DElemAttribute)attributes.get(i);
             if (attr.getName().equalsIgnoreCase(name))
                 return attr;
@@ -113,9 +113,9 @@ public class FixedValue {
         return null;
     }
 
-    public DElemAttribute getAttributeById(String id){
+    public DElemAttribute getAttributeById(String id) {
 
-        for (int i=0; i<attributes.size(); i++){
+        for (int i=0; i<attributes.size(); i++) {
             DElemAttribute attr = (DElemAttribute)attributes.get(i);
             if (attr.getID().equalsIgnoreCase(id))
                 return attr;
@@ -124,10 +124,10 @@ public class FixedValue {
         return null;
     }
 
-    public String getAttributeValueByShortName(String name){
+    public String getAttributeValueByShortName(String name) {
 
         DElemAttribute attr = null;
-        for (int i=0; i<attributes.size(); i++){
+        for (int i=0; i<attributes.size(); i++) {
             attr = (DElemAttribute)attributes.get(i);
             if (attr.getShortName().equalsIgnoreCase(name))
                 return attr.getValue();
@@ -136,10 +136,10 @@ public class FixedValue {
         return null;
     }
 
-    public String getAttributeValueByID(String id){
+    public String getAttributeValueByID(String id) {
 
         DElemAttribute attr = null;
-        for (int i=0; i<attributes.size(); i++){
+        for (int i=0; i<attributes.size(); i++) {
             attr = (DElemAttribute)attributes.get(i);
             if (attr.getID().equalsIgnoreCase(id))
                 return attr.getValue();
@@ -148,10 +148,10 @@ public class FixedValue {
         return null;
     }
 
-    public String getAttributeValueByName(String name){
+    public String getAttributeValueByName(String name) {
 
         DElemAttribute attr = null;
-        for (int i=0; i<attributes.size(); i++){
+        for (int i=0; i<attributes.size(); i++) {
             attr = (DElemAttribute)attributes.get(i);
             if (attr.getName().equalsIgnoreCase(name))
                 return attr.getValue();
@@ -160,63 +160,63 @@ public class FixedValue {
         return null;
     }
 
-    public void setDefault(){
+    public void setDefault() {
         this.isDefault = true;
     }
 
-    public boolean getDefault(){
+    public boolean getDefault() {
         return this.isDefault;
     }
 
-    public void setParentType(String type){
+    public void setParentType(String type) {
         if (!Util.nullString(type))
             parent_type = type;
     }
 
-    public String getParentType(){
+    public String getParentType() {
         return parent_type;
     }
 
-    public void setLevel(int level){
+    public void setLevel(int level) {
         this.level = level;
     }
-    public int getLevel(){
+    public int getLevel() {
        return level;
     }
 
-    public void addItem(Object item){
+    public void addItem(Object item) {
         items.add(item);
     }
 
-    public Vector getItems(){
+    public Vector getItems() {
         return items;
     }
-    
-    public void setDefinition(String definition){
+
+    public void setDefinition(String definition) {
         this.definition= definition;
     }
-    
-    public String getDefinition(){
+
+    public String getDefinition() {
         return definition;
     }
 
-    public void setShortDesc(String shortDesc){
+    public void setShortDesc(String shortDesc) {
         this.shortDesc = shortDesc;
     }
-    
-    public String getShortDesc(){
+
+    public String getShortDesc() {
         return shortDesc;
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return value==null || value.length()==0;
     }
-    
-    public String toString(){
+
+    public String toString() {
 
         StringBuffer buf = new StringBuffer();
 
@@ -234,7 +234,7 @@ public class FixedValue {
 
 
         buf.append("\nAttributes:\n");
-        for (int i=0; attributes!=null && i<attributes.size(); i++){
+        for (int i=0; attributes!=null && i<attributes.size(); i++) {
             DElemAttribute attr = (DElemAttribute)attributes.get(i);
             buf.append(attr.getShortName());
             buf.append("=");

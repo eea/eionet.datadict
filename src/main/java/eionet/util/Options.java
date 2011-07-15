@@ -20,7 +20,7 @@
  *
  * Original Code: Jaanus Heinlaid (TietoEnator)
  */
- 
+
 package eionet.util;
 
 import java.util.Hashtable;
@@ -43,9 +43,9 @@ import java.util.Vector;
  *
  * @author Jaanus Heinlaid
  */
- 
+
 public class Options{
-    
+
     private Hashtable map = new Hashtable();
     private Hashtable options = new Hashtable();
     private String errMsg = "";
@@ -55,57 +55,57 @@ public class Options{
  * Constructor. Usage guide is input parameter.
  *
  */
-    public Options(String usage){
+    public Options(String usage) {
         this.usage = usage==null ? usage : ("\n" + usage);
     }
-    
+
 /**
  * Add allowable option with allowable values (comma separated).
  *
  */
-    public void add(String option, String sValues){
-        
+    public void add(String option, String sValues) {
+
         if (option == null)
             return;
         if (sValues == null)
             sValues = "";
-        
+
         StringTokenizer tokenizer = new StringTokenizer(sValues, ",");
         Vector values = new Vector();
-        while(tokenizer.hasMoreTokens()){
+        while (tokenizer.hasMoreTokens()) {
             values.add((tokenizer.nextToken()).trim());
         }
-        
+
         map.put(option, values);
     }
-    
+
 /**
  * Parse command line arguments to find out the passed options.
  *
  */
-    public boolean parse(String[] args){
-        
+    public boolean parse(String[] args) {
+
         boolean eofoptions = false;
         boolean error = false;
         int i;
-        
-        for (i=0; !eofoptions && !error && i<args.length; i++){
-            
-            switch(args[i].charAt(0)){
+
+        for (i=0; !eofoptions && !error && i<args.length; i++) {
+
+            switch(args[i].charAt(0)) {
                 case '-' :
                     String option = args[i].substring(1);
-                    if (map.containsKey(option)){
+                    if (map.containsKey(option)) {
                         i++;
                         Vector values = (Vector)map.get(option);
-                        if (values.contains(args[i]) || values.size()==0){
+                        if (values.contains(args[i]) || values.size()==0) {
                             options.put(option, args[i]);
                         }
-                        else{
+                        else {
                             error = true;
                             break;
                         }
                     }
-                    else{
+                    else {
                         error = true;
                         break;
                     }
@@ -116,35 +116,35 @@ public class Options{
                     break;
             }
         }
-        
+
         if (error)
             errMsg = "Illegal option or option value " + args[i-1] + " !";
-        
+
         return error;
     }
-    
+
 /**
  * Get value of the specified option.
  *
  */
-    public String get(String option){
+    public String get(String option) {
         return (String)options.get(option);
     }
-    
-    public String getErrorMsg(){
+
+    public String getErrorMsg() {
         return errMsg + usage;
     }
-    
+
     /* Main function for testing
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Options opts = new Options("");
         opts.add("kala", "ahven, angerjas");
         opts.add("auto", "ford, nissan, bmw");
         opts.add("loom", null);
-        if (opts.parse(args)){
+        if (opts.parse(args)) {
             System.out.println(opts.getErrorMsg());
         }
-        
+
         System.out.println("kala\t" + opts.get("kala"));
         System.out.println("auto\t" + opts.get("auto"));
         System.out.println("loom\t" + opts.get("loom"));

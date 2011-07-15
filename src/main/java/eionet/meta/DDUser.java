@@ -38,7 +38,7 @@ import eionet.util.LogServiceIF;
 import eionet.util.sql.ConnectionUtil;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
@@ -47,10 +47,10 @@ public class DDUser{
     /** */
     public static final String ACL_UPDATE_PRM   = "u";
     public static final String ACL_SERVICE_NAME = "/";
-    
+
     /** */
     protected static LogServiceIF logger = new Log4jLoggerImpl();
-    
+
     /** */
     protected boolean authented = false;
     protected String username = null;
@@ -58,74 +58,74 @@ public class DDUser{
     protected String fullName = null;
     protected String[] _roles = null;
     protected HashMap acls = null;
-       
+
     /**
      *
      */
     public DDUser() {
     }
-   
+
     /**
     *
     */
     public boolean authenticate(String userName, String userPwd) {
-        
+
         invalidate();
 
         try {
-            
-            if (userPwd!=null && userPwd.equals("mi6")){
+
+            if (userPwd!=null && userPwd.equals("mi6")) {
                 if (userName==null)
                     throw new SignOnException("username not given");
                 fullName = userName;
             }
-            else{
+            else {
                 AuthMechanism.sessionLogin(userName, userPwd);
                 fullName = AuthMechanism.getFullName(userName);
             }
-            
+
             authented = true;
             username = userName;
             password = userPwd;
         }
-        catch (Exception e){
+        catch (Exception e) {
             logger.error(e.toString(), e);
         }
-        
+
         return authented;
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
     public boolean isAuthentic() {
         return authented;
     }
-    
+
     /**
-     * 
+     *
      * @param role
      * @return
      */
     public boolean isUserInRole(String role) {
-        
+
         boolean b = false;
-        if (_roles == null){
+        if (_roles == null) {
             getUserRoles();
         }
-        
-        for (int i =0; i< _roles.length; i++){
-            if ( _roles[i].equals(role)){
+
+        for (int i =0; i< _roles.length; i++) {
+            if ( _roles[i].equals(role)) {
                 b = true;
             }
         }
-          
+
         return b;
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getFullName() {
@@ -133,19 +133,19 @@ public class DDUser{
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getUserName() {
         return username;
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
     public Connection getConnection() {
-        
+
         try {
             return ConnectionUtil.getConnection();
         }
@@ -155,29 +155,29 @@ public class DDUser{
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String[] getUserRoles() {
-      
+
         if (_roles == null) {
             try {
-                
+
                 Vector v = DirectoryService.getRoles(username);
                 String[] roles = new String[v.size()];
                 for ( int i=0; i< v.size(); i++)
                     _roles[i] = (String)v.elementAt(i);
-                
+
             } catch ( Exception e ) {
                 _roles = new String[]{};
             }
         }
-        
+
         return _roles;
     }
-    
+
     /**
-     * 
+     *
      *
      */
     public void invalidate() {
@@ -185,16 +185,16 @@ public class DDUser{
         username = null;
         password = null;
     }
-   
+
     /**
-     * 
+     *
      */
     public String toString() {
         return (username == null ? "" : username );
     }
-   
+
     /**
-     * 
+     *
      * @param name
      * @return
      * @throws SignOnException

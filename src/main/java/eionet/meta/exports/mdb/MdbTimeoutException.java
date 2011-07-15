@@ -6,18 +6,18 @@ package eionet.meta.exports.mdb;
 /**
  * @author jaanus
  */
-public class MdbTimeoutException extends MdbException{
-    
+public class MdbTimeoutException extends MdbException {
+
     /*
-     * 
+     *
      */
-    public MdbTimeoutException(){
+    public MdbTimeoutException() {
     }
-    
+
     /*
-     * 
+     *
      */
-    public MdbTimeoutException(String s){
+    public MdbTimeoutException(String s) {
         super(s);
     }
 }

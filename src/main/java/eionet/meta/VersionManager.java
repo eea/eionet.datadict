@@ -26,7 +26,7 @@ import eionet.util.sql.SQL;
 import eionet.util.sql.Transaction;
 
 /*
- * 
+ *
  */
 public class VersionManager {
 
@@ -80,13 +80,13 @@ public class VersionManager {
     /**
      * See if the specified object type has the specified short name in the specified namespace (or dataset if object type is "tbl")
      * checked out. If yes then return the name of the user who checked it out. Otherwise return null.
-     * 
+     *
      * @param type
      *            object type ("elm", "tbl" or "dst")
      * @param namespaceID
      *            namespace id if type=="elm", dataset id if type=="tbl", ignored if type=="dst"
      * @param shortName
-     * 
+     *
      * @return the name of the working user or null if it's missing
      * @exception SQLException
      */
@@ -282,7 +282,7 @@ public class VersionManager {
 
     /**
      * Check out the specified object. Meaning a working copy of the object will be created.
-     * 
+     *
      * @param id
      *            object id.
      * @param type
@@ -302,7 +302,7 @@ public class VersionManager {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @return
      * @throws Exception
@@ -370,7 +370,7 @@ public class VersionManager {
     }
 
     /**
-     * 
+     *
      * @param dstID
      * @return
      * @throws Exception
@@ -392,7 +392,7 @@ public class VersionManager {
 
     /**
      * Check out the specified dataset.
-     * 
+     *
      * @param dstID
      *            dataset id.
      * @return id of the working copy
@@ -461,7 +461,7 @@ public class VersionManager {
     }
 
     /**
-     * 
+     *
      *
      */
     private void cleanupCheckout(String objID, String objTable, String topNS, String newID) throws Exception {
@@ -519,7 +519,7 @@ public class VersionManager {
 
     /**
      * Check in the specified object.
-     * 
+     *
      * @param objID
      *            object id
      * @param objType
@@ -540,7 +540,7 @@ public class VersionManager {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @param status
      * @return
@@ -641,7 +641,7 @@ public class VersionManager {
     }
 
     /**
-     * 
+     *
      * @param dstID
      * @param status
      * @return
@@ -1015,7 +1015,7 @@ public class VersionManager {
     }
 
     /**
-     * 
+     *
      * @param id
      * @param idf
      * @return
@@ -1028,7 +1028,7 @@ public class VersionManager {
     }
 
     /**
-     * 
+     *
      * @param idf
      * @return
      * @throws SQLException
@@ -1073,7 +1073,7 @@ public class VersionManager {
     }
 
     /**
-     * 
+     *
      * @param elm
      * @param latestElm
      * @return
@@ -1114,7 +1114,7 @@ public class VersionManager {
     }
 
     /**
-     * 
+     *
      * @param servlRequestParams
      */
     public void setServlRequestParams(Parameters servlRequestParams) {
@@ -1122,7 +1122,7 @@ public class VersionManager {
     }
 
     /**
-     * 
+     *
      *
      */
     public Parameters getServlRequestParams() {

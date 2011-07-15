@@ -258,7 +258,7 @@ public class Util {
 
         // here we assume that every full hour is accepted
         /*
-         * if (hour < 0 || hour > 23){
+         * if (hour < 0 || hour > 23) {
          *
          * hour = cur_hour>=23 ? 0 : cur_hour + 1; }
          */
@@ -858,18 +858,18 @@ public class Util {
          *
          * UnicodeEscapes unicodeEscapes = null;
          *
-         * StringBuffer buf = new StringBuffer(); for (int i=0; i<literal.length(); i++){
+         * StringBuffer buf = new StringBuffer(); for (int i=0; i<literal.length(); i++) {
          *
          * char c = literal.charAt(i);
          *
-         * if (c=='&'){ int j = literal.indexOf(";", i); if (j > i){ char cc = literal.charAt(i+1); int decimal = -1; if (cc=='#'){
+         * if (c=='&') { int j = literal.indexOf(";", i); if (j > i){ char cc = literal.charAt(i+1); int decimal = -1; if (cc=='#'){
          * // handle Unicode decimal escape String sDecimal = literal.substring(i+2, j);
          *
-         * try{ decimal = Integer.parseInt(sDecimal); } catch (Exception e){} } else{ // handle entity String ent =
+         * try { decimal = Integer.parseInt(sDecimal); } catch (Exception e) {} } else { // handle entity String ent =
          * literal.substring(i+1, j); if (unicodeEscapes == null) unicodeEscapes = new UnicodeEscapes(); decimal =
          * unicodeEscapes.getDecimal(ent); }
          *
-         * if (decimal >= 0){ // if decimal was found, use the corresponding char. otherwise stick to c. c = (char)decimal; i = j; }
+         * if (decimal >= 0) { // if decimal was found, use the corresponding char. otherwise stick to c. c = (char)decimal; i = j; }
          * } }
          *
          * buf.append(c); }

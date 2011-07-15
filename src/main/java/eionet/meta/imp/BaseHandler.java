@@ -18,9 +18,9 @@ public class BaseHandler extends DefaultHandler {
     private boolean errorOrWarning;   //true, if any error found
     private StringBuffer errorBuff;   // error description
     private Locator locator = null;
-    
+
     protected DDUser user = null;
-    
+
   /**
    * Constructor
    */
@@ -30,28 +30,28 @@ public class BaseHandler extends DefaultHandler {
     }
 
 
-    public void setDocumentLocator(Locator locator){
+    public void setDocumentLocator(Locator locator) {
         this.locator = locator;
     }
 
-    public int getLine(){
+    public int getLine() {
         if (this.locator != null)
             return locator.getLineNumber();
         else
             return -1;
     }
-    public boolean hasError(){
+    public boolean hasError() {
         return errorOrWarning;
     }
-    public StringBuffer getErrorBuff(){
+    public StringBuffer getErrorBuff() {
         return errorBuff;
     }
-    public void setError(String err){
+    public void setError(String err) {
         errorOrWarning = true;
         errorBuff.append(err);
     }
-    
-    public void setUser(DDUser user){
+
+    public void setUser(DDUser user) {
         this.user = user;
     }
 }

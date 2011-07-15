@@ -3,43 +3,43 @@
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
  * the License at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the License is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
- * 
+ *
  * The Original Code is Data Dictionary.
- * 
+ *
  * The Initial Owner of the Original Code is European Environment
  * Agency.  Portions created by TietoEnator Estonia are
  * Copyright (C) 2003 European Environment Agency. All
  * Rights Reserved.
- * 
- * Contributor(s): 
+ *
+ * Contributor(s):
  */
 /**
  * Original Code: Jaanus Heinlaid (TietoEnator)
  */
- 
+
 package eionet.util;
 
 import java.util.Hashtable;
 
 /**
- * 
+ *
  * @author jaanus
  */
 public class UnicodeEscapes{
-    
+
     /** */
     private Hashtable unicodeEscapes = new Hashtable();
-    
+
     /**
-     * 
+     *
      *
      */
-    public UnicodeEscapes(){
+    public UnicodeEscapes() {
         unicodeEscapes.put("nbsp", "160");
         unicodeEscapes.put("iexcl", "161");
         unicodeEscapes.put("cent", "162");
@@ -293,57 +293,57 @@ public class UnicodeEscapes{
         unicodeEscapes.put("rsaquo", "8250");
         unicodeEscapes.put("euro", "8364");
     }
-    
+
     /**
-     * 
+     *
      * @param ent
      * @return
      */
-    public int getDecimal(String ent){
-        
+    public int getDecimal(String ent) {
+
         String sDecimal = (String) unicodeEscapes.get(ent);
         if (sDecimal==null) return -1;
         return Integer.parseInt(sDecimal);
     }
-    
+
     /**
-     * 
+     *
      * @param s
      * @return
      */
-    public boolean isXHTMLEntity(String s){
-        
+    public boolean isXHTMLEntity(String s) {
+
         if (s==null || s.length()==0) return false;
         if (!(s.startsWith("&") && s.endsWith(";"))) return false;
 
         if (s.length()==2) return false;
-        
+
         String ss = s.substring(1, s.length()-1);
         return unicodeEscapes.containsKey(ss);
     }
 
     /**
-     * 
+     *
      * @param s
      * @return
      */
-    public boolean isNumericHTMLEscapeCode(String s){
-        
+    public boolean isNumericHTMLEscapeCode(String s) {
+
         if (s==null || s.length()==0) return false;
         if (!(s.startsWith("&") && s.endsWith(";"))) return false;
-        
+
         char c = s.charAt(1);
         if (c!='#') return false;
-        
+
         if (s.length()==3) return false;
-        
-        try{
+
+        try {
             Integer.parseInt(s.substring(2, s.length()-1));
         }
-        catch (NumberFormatException e){
+        catch (NumberFormatException e) {
             return false;
         }
-        
+
         return true;
     }
 }

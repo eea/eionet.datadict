@@ -21,12 +21,12 @@ import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.Transaction;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid
  *
  */
 public class CleanupServlet extends HttpServlet{
-    
+
     /** */
     public static final String PAR_ACTION = "action";
     public static final String PAR_OBJ_TYPE = "obj_type";
@@ -37,10 +37,10 @@ public class CleanupServlet extends HttpServlet{
     public static final String ACTION_DELETE_ELM = "Delete elements";
     public static final String ACTION_DELETE_TBL = "Delete tables";
     public static final String ACTION_DELETE_DST = "Delete datasets";
-    
+
     /** */
     protected LogServiceIF logger = null;
-    
+
     /*
      *  (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -48,55 +48,55 @@ public class CleanupServlet extends HttpServlet{
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         doPost(req,res);
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        
+
         res.setCharacterEncoding("UTF-8");
         req.removeAttribute(ATTR_DELETE_SUCCESS);
-        
+
         String action = null;
         Connection conn = null;
         PrintWriter writer = null;
         DataManipulations dataManipulations = null;
         Transaction tx = null;
-        try{
+        try {
             writer = res.getWriter();
             guard(req);
             res.setContentType("text/plain");
-            
+
             action = req.getParameter(PAR_ACTION);
             if (action==null)
                 throw new Exception("Missing request parameter: " + PAR_ACTION);
             String objIDs = req.getParameter(PAR_OBJ_IDS);
 
             conn = ConnectionUtil.getConnection();
-            if (action.equals(ACTION_CLEANUP)){
-                res.setContentType("text/plain");               
+            if (action.equals(ACTION_CLEANUP)) {
+                res.setContentType("text/plain");
                 dataManipulations = new DataManipulations(conn, writer);
-                
+
                 tx = Transaction.start(conn);
-                
+
                 dataManipulations.cleanup();
-                
+
                 tx.commit();
-                
+
                 dataManipulations.outputWriteln("");
                 dataManipulations.outputWriteln("ALL DONE!");
             }
-            else if (action.equals(ACTION_DELETE_ELM) || action.equals(ACTION_DELETE_TBL) || action.equals(ACTION_DELETE_DST)){
-                if (objIDs!=null && objIDs.trim().length()>0){
-                
+            else if (action.equals(ACTION_DELETE_ELM) || action.equals(ACTION_DELETE_TBL) || action.equals(ACTION_DELETE_DST)) {
+                if (objIDs!=null && objIDs.trim().length()>0) {
+
                     tx = Transaction.start(conn);
                     StringTokenizer st = new StringTokenizer(objIDs);
-                    while (st.hasMoreTokens()){
-                        
+                    while (st.hasMoreTokens()) {
+
                         if (dataManipulations==null)
                             dataManipulations = new DataManipulations(conn, null);
-                        
+
                         String objID = st.nextToken();
                         if (action.equals(ACTION_DELETE_ELM))
                             dataManipulations.deleteElm(objID);
@@ -105,9 +105,9 @@ public class CleanupServlet extends HttpServlet{
                         else if (action.equals(ACTION_DELETE_DST))
                             dataManipulations.deleteDstWithTablesAndElements(objID);;
                     }
-                    
+
                     tx.commit();
-                    
+
                     req.setAttribute(ATTR_DELETE_SUCCESS, "");
                     req.getRequestDispatcher("clean.jsp").forward(req,res);
                 }
@@ -115,59 +115,59 @@ public class CleanupServlet extends HttpServlet{
             else
                 throw new Exception("Unkown parameter value: " + action);
         }
-        catch (Exception e){
-            
+        catch (Exception e) {
+
             if (tx!=null)
                 tx.rollback();
-            
+
             String trace = null;
-            try{
-                ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();                           
+            try {
+                ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
                 e.printStackTrace(new PrintStream(bytesOut));
                 trace = bytesOut.toString(res.getCharacterEncoding());
             }
-            catch (Exception ee){}
+            catch (Exception ee) {}
 
             if (trace==null || trace.trim().length()==0)
                 trace = e.toString();
-            
+
             getLogger().error(trace);
-            if (writer!=null){
+            if (writer!=null) {
                 writer.println(trace);
                 writer.flush();
             }
         }
-        finally{
-            
+        finally {
+
             if (tx!=null)
                 tx.end();
 
             if (writer!=null)
                 writer.close();
-            try{
+            try {
                 if (conn!=null)
                     conn.close();
             }
-            catch (SQLException e){}
+            catch (SQLException e) {}
         }
     }
 
     /**
-     * 
+     *
      * @param req
      * @throws Exception
      */
-    private void guard(HttpServletRequest req) throws Exception{
+    private void guard(HttpServletRequest req) throws Exception {
         DDUser user = SecurityUtil.getUser(req);
         if (user == null)
             throw new Exception("Not authenticated!");
     }
 
     /**
-     * 
+     *
      * @return
      */
-    protected LogServiceIF getLogger(){
+    protected LogServiceIF getLogger() {
         if (logger==null)
             logger = new Log4jLoggerImpl();
         return logger;

@@ -21,7 +21,7 @@ import eionet.meta.exports.ods.tags.Style;
 import eionet.meta.exports.ods.tags.Table;
 
 /**
- * 
+ *
  * @author jaanus
  */
 public abstract class Ods {
@@ -50,7 +50,7 @@ public abstract class Ods {
     private String schemaURLBase = null;
 
     /**
-     * 
+     *
      * @return
      */
     protected final int getTableCount() {
@@ -58,7 +58,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @return
      */
     protected final int getTotalColumnCount() {
@@ -75,7 +75,7 @@ public abstract class Ods {
     }
 
     /*
-     * 
+     *
      */
     protected void addNumberStyle(NumberStyle numberStyle) {
 
@@ -86,7 +86,7 @@ public abstract class Ods {
     }
 
     /*
-     * 
+     *
      */
     protected void addStyle(Style style) {
 
@@ -97,7 +97,7 @@ public abstract class Ods {
     }
 
     /*
-     * 
+     *
      */
     protected void addTable(Table table) {
 
@@ -108,7 +108,7 @@ public abstract class Ods {
     }
 
     /*
-     * 
+     *
      */
     protected void prepareTbl(DsTable tbl) throws Exception {
 
@@ -128,7 +128,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @param elm
      * @return
      */
@@ -171,7 +171,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @param intoStr
      */
     private String writeContentInto(String intoStr) {
@@ -197,7 +197,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @param intoStr
      * @return
      */
@@ -280,7 +280,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @param folderPath
      */
     public void setWorkingFolderPath(String folderPath) {
@@ -290,7 +290,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      *
      */
     private String fileToString(File file) throws Exception {
@@ -322,7 +322,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      *
      */
     private String contentFileToString() throws Exception {
@@ -331,7 +331,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      *
      */
     private String metaFileToString() throws Exception {
@@ -340,7 +340,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -361,7 +361,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -371,7 +371,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -381,7 +381,7 @@ public abstract class Ods {
     }
 
     /*
-     * 
+     *
      */
     private void writeContentIntoFile() throws Exception {
 
@@ -391,7 +391,7 @@ public abstract class Ods {
     }
 
     /*
-     * 
+     *
      */
     private void writeMetaIntoFile() throws Exception {
 
@@ -401,7 +401,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      *
      */
     private void zip(String fileToZip) throws Exception {
@@ -433,7 +433,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      *
      */
     private void zipContent() throws Exception {
@@ -442,7 +442,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      *
      */
     private void zipMeta() throws Exception {
@@ -451,7 +451,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     public void processContent() throws Exception {
@@ -460,7 +460,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     public void processMeta() throws Exception {
@@ -469,7 +469,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getFinalFileName() {
@@ -477,7 +477,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getWorkingFolderPath() {
@@ -485,7 +485,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @param schemaURLBase
      */
     public void setSchemaURLBase(String schemaURLBase) {
@@ -493,7 +493,7 @@ public abstract class Ods {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public static String getDate(long timestamp) {

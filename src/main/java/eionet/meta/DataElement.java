@@ -8,17 +8,17 @@ import eionet.util.PropsIF;
 import eionet.util.Util;
 
 /*
- * 
+ *
  */
 public class DataElement implements Comparable{
-    
+
     private String id = null;
     private String shortName = null;
     private String type = null;
     private String version = null;
     private String status = null;
     private String identifier = null;
-    
+
     private String tableID = null;
     private String datasetID = null;
     private String dstShortName = null; // used in the data elements search
@@ -27,7 +27,7 @@ public class DataElement implements Comparable{
     private String dstIdentifier = null; // used in setting target namespaces in schemas
     private String dstWorkingUser = null;
     private String dstStatus = null;
-    
+
     private String gis = null;
     private String positionInTable = null;
     private boolean isRodParam = true;
@@ -37,9 +37,9 @@ public class DataElement implements Comparable{
 
     private Namespace ns = null; // parent namespace
     private String topNS = null; // top namespace
-    
+
     private String user = null; // element creator
-    
+
     private Vector simpleAttrs = new Vector();
     private Vector complexAttrs = new Vector();
     private Vector fixedValues = null;
@@ -47,237 +47,237 @@ public class DataElement implements Comparable{
 
     private int sortOrder = 1;
     private String sortString = null;
-    
+
     private String checkedoutCopyID = null;
     private String date = null;
-    
+
     private String valueDelimiter;
-    
+
     private boolean mandatoryFlag;
 
     /*
-     * 
+     *
      */
-    public DataElement(){
+    public DataElement() {
     }
-        
-    public DataElement(String id, String shortName, String type){
+
+    public DataElement(String id, String shortName, String type) {
         this.id = id;
         this.shortName = shortName;
         this.type = type;
     }
-    
-    public String getTableID(){
+
+    public String getTableID() {
         return tableID;
     }
 
-    public void setTableID(String tableID){
+    public void setTableID(String tableID) {
         this.tableID = tableID;
     }
 
-    public String getTblShortName(){
+    public String getTblShortName() {
         return tblShortName;
     }
 
-    public void setTblShortName(String tblShortName){
+    public void setTblShortName(String tblShortName) {
         this.tblShortName = tblShortName;
     }
-    
-    public String getDatasetID(){
+
+    public String getDatasetID() {
         return datasetID;
     }
 
-    public void setDatasetID(String datasetID){
+    public void setDatasetID(String datasetID) {
         this.datasetID = datasetID;
     }
 
-    public String getDstShortName(){
+    public String getDstShortName() {
         return dstShortName;
     }
 
-    public void setDstShortName(String dstShortName){
+    public void setDstShortName(String dstShortName) {
         this.dstShortName = dstShortName;
     }
 
-    public String getTblIdentifier(){
+    public String getTblIdentifier() {
         return tblIdentifier;
     }
 
-    public void setTblIdentifier(String tblIdentifier){
+    public void setTblIdentifier(String tblIdentifier) {
         this.tblIdentifier = tblIdentifier;
     }
 
-    public String getDstIdentifier(){
+    public String getDstIdentifier() {
         return dstIdentifier;
     }
 
-    public void setDstIdentifier(String dstIdentifier){
+    public void setDstIdentifier(String dstIdentifier) {
         this.dstIdentifier = dstIdentifier;
     }
 
-    public String getID(){
+    public String getID() {
         return id;
     }
-    
-    public String getShortName(){
+
+    public String getShortName() {
         return shortName;
     }
-    
-    public String getType(){
+
+    public String getType() {
         return type;
     }
-    
-    public void addAttribute(Object attr){
+
+    public void addAttribute(Object attr) {
         simpleAttrs.add(attr);
     }
-    public void setAttributes(Vector attrs){
+    public void setAttributes(Vector attrs) {
         simpleAttrs = attrs;
     }
 
-    public Vector getAttributes(){
+    public Vector getAttributes() {
         return simpleAttrs;
     }
-    
-    public Vector getVersioningAttributes(){
+
+    public Vector getVersioningAttributes() {
         if (simpleAttrs==null)
             return null;
-        
+
         Vector set = new Vector();
-        for (int i=0; i<simpleAttrs.size(); i++){
+        for (int i=0; i<simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.effectsVersion())
                 set.add(attr);
         }
-        
+
         return set;
     }
-    
-    public void setFixedValues(Vector fixedValues){
+
+    public void setFixedValues(Vector fixedValues) {
         this.fixedValues = fixedValues;
     }
-    
-    public Vector getFixedValues(){
+
+    public Vector getFixedValues() {
         return fixedValues;
     }
-    
-    public DElemAttribute getAttributeByShortName(String name){
-        
+
+    public DElemAttribute getAttributeByShortName(String name) {
+
         // look from simple attributes
-        for (int i=0; i<simpleAttrs.size(); i++){
+        for (int i=0; i<simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name))
                 return attr;
         }
-        
+
         // if it wasn't in the simple attributes, look from complex ones
-        for (int i=0; i<complexAttrs.size(); i++){
+        for (int i=0; i<complexAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name))
                 return attr;
         }
-        
+
         return null;
     }
-    
-    public DElemAttribute getAttributeByName(String name){
-        
-        for (int i=0; i<simpleAttrs.size(); i++){
+
+    public DElemAttribute getAttributeByName(String name) {
+
+        for (int i=0; i<simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getName().equalsIgnoreCase(name))
                 return attr;
         }
-        
+
         return null;
     }
-    
-    public DElemAttribute getAttributeById(String id){
-        
-        for (int i=0; i<simpleAttrs.size(); i++){
+
+    public DElemAttribute getAttributeById(String id) {
+
+        for (int i=0; i<simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getID().equalsIgnoreCase(id))
                 return attr;
         }
-        
+
         return null;
     }
-    
-    public String getAttributeValueByShortName(String name){
-        
+
+    public String getAttributeValueByShortName(String name) {
+
         DElemAttribute attr = null;
-        for (int i=0; i<simpleAttrs.size(); i++){
+        for (int i=0; i<simpleAttrs.size(); i++) {
             attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name))
                 return attr.getValue();
         }
-        
+
         return null;
     }
-    
-    public String getAttributeValueByName(String name){
-        
+
+    public String getAttributeValueByName(String name) {
+
         DElemAttribute attr = null;
-        for (int i=0; i<simpleAttrs.size(); i++){
+        for (int i=0; i<simpleAttrs.size(); i++) {
             attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getName().equalsIgnoreCase(name))
                 return attr.getValue();
         }
-        
+
         return null;
     }
-    
-    public void setNamespace(Namespace ns){
+
+    public void setNamespace(Namespace ns) {
         this.ns = ns;
     }
-    
-    public Namespace getNamespace(){
+
+    public Namespace getNamespace() {
         return ns;
     }
-    
-    public void setTopNs(String nsid){
+
+    public void setTopNs(String nsid) {
         this.topNS = nsid;
     }
-    
-    public String getTopNs(){
+
+    public String getTopNs() {
         return topNS;
     }
-    
-    public String getPositionInTable(){
+
+    public String getPositionInTable() {
         return positionInTable;
     }
-    
-    public void setPositionInTable(String pos){
+
+    public void setPositionInTable(String pos) {
         this.positionInTable = pos;
     }
-    
-    public void setComplexAttributes(Vector v){
+
+    public void setComplexAttributes(Vector v) {
         this.complexAttrs = v;
     }
-    
-    public Vector getComplexAttributes(){
+
+    public Vector getComplexAttributes() {
         return this.complexAttrs;
     }
-    
-    public void setVersion(String version){
+
+    public void setVersion(String version) {
         this.version = version;
     }
-    
-    public String getVersion(){
+
+    public String getVersion() {
         return this.version;
     }
-    
-    public void setWorkingUser(String workingUser){
+
+    public void setWorkingUser(String workingUser) {
         this.workingUser = workingUser;
     }
-    
-    public String getWorkingUser(){
+
+    public String getWorkingUser() {
         return this.workingUser;
     }
-    
-    public void setWorkingCopy(String workingCopy){
+
+    public void setWorkingCopy(String workingCopy) {
         this.workingCopy = workingCopy;
     }
-    
-    public boolean isWorkingCopy(){
+
+    public boolean isWorkingCopy() {
         if (workingCopy==null)
             return false;
         else if (workingCopy.equals("Y"))
@@ -285,48 +285,48 @@ public class DataElement implements Comparable{
         else
             return false;
     }
-    
-    public void setIdentifier(String identifier){
+
+    public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
-    
-    public String getIdentifier(){
+
+    public String getIdentifier() {
         return this.identifier;
     }
-    
-    public void setStatus(String status){
+
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public String getStatus(){
+    public String getStatus() {
         return this.status;
     }
-    
-    public void setGIS(String gis){
+
+    public void setGIS(String gis) {
         this.gis = gis;
     }
 
-    public String getGIS(){
+    public String getGIS() {
         return this.gis;
     }
-    
-    public void setRodParam(boolean isRodParam){
+
+    public void setRodParam(boolean isRodParam) {
         this.isRodParam = isRodParam;
     }
 
-    public boolean isRodParameter(){
+    public boolean isRodParameter() {
         return isRodParam;
     }
-    
-    public void setFKRelations(Vector fks){
+
+    public void setFKRelations(Vector fks) {
         this.fks = fks;
     }
-    
-    public Vector getFKRelations(){
+
+    public Vector getFKRelations() {
         return this.fks;
     }
-    
-    public static Vector getGisTypes(){
+
+    public static Vector getGisTypes() {
         Vector v = new Vector();
         v.add("");
         v.add("class");
@@ -334,30 +334,30 @@ public class DataElement implements Comparable{
         v.add("subtype");
         return v;
     }
-    
-    public boolean hasImages(){
+
+    public boolean hasImages() {
         boolean hasImages = false;
-        for (int t=0; simpleAttrs!=null && t<simpleAttrs.size(); t++){
+        for (int t=0; simpleAttrs!=null && t<simpleAttrs.size(); t++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(t);
             String dispType = attr.getDisplayType();
             Vector values = attr.getValues();
             if (dispType!=null &&
                 dispType.equals("image") &&
                 values!=null &&
-                values.size()>0){
+                values.size()>0) {
                     hasImages = true;
                     break;
                 }
         }
-        
+
         return hasImages;
     }
-    
-    public String getRelativeTargetNs(){
-        
+
+    public String getRelativeTargetNs() {
+
         if (ns==null || Util.voidStr(ns.getID()))
             return "/elements/" + identifier;
-        else{
+        else {
             if (Util.voidStr(dstIdentifier) || Util.voidStr(tblIdentifier))
                 return "/namespaces/" + ns.getID();
             else
@@ -366,56 +366,56 @@ public class DataElement implements Comparable{
     }
 
     /*
-     * 
+     *
      */
     public void setComparation(String sortString, int sortOrder) {
-        
+
         this.sortString = sortString;
-        this.sortOrder = sortOrder; 
+        this.sortOrder = sortOrder;
     }
 
     /*
      *  (non-Javadoc)
      * @see java.lang.Object#toString()
      */
-    public String toString(){
+    public String toString() {
         return this.sortString;
     }
 
     /*
-     * 
+     *
      */
     public int compareTo(Object o) {
         return this.sortOrder*this.sortString.compareTo(o.toString());
     }
-    
+
     /*
-     * 
+     *
      */
-    public String getReferenceURL(){
-        
+    public String getReferenceURL() {
+
         if (getIdentifier()==null)
             return null;
-            
+
         StringBuffer buf = new StringBuffer();
-        
+
         String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
         if (jspUrlPrefix!=null)
             buf.append(jspUrlPrefix);
-        
+
         buf.append("data_element.jsp?delem_idf=");
         buf.append(getIdentifier());
-        
-        if (getNamespace()!=null && getNamespace().getID()!=null){
+
+        if (getNamespace()!=null && getNamespace().getID()!=null) {
             buf.append("&pns=");
             buf.append(getNamespace().getID());
         }
-        
+
         return buf.toString();
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getUser() {
@@ -423,15 +423,15 @@ public class DataElement implements Comparable{
     }
 
     /**
-     * 
+     *
      * @param user
      */
     public void setUser(String user) {
         this.user = user;
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
     public String getCheckedoutCopyID() {
@@ -439,7 +439,7 @@ public class DataElement implements Comparable{
     }
 
     /**
-     * 
+     *
      * @param checkedoutCopyID
      */
     public void setCheckedoutCopyID(String checkedoutCopyID) {
@@ -447,7 +447,7 @@ public class DataElement implements Comparable{
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getDstStatus() {
@@ -455,7 +455,7 @@ public class DataElement implements Comparable{
     }
 
     /**
-     * 
+     *
      * @param dstStatus
      */
     public void setDstStatus(String dstStatus) {
@@ -463,7 +463,7 @@ public class DataElement implements Comparable{
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getDstWorkingUser() {
@@ -471,7 +471,7 @@ public class DataElement implements Comparable{
     }
 
     /**
-     * 
+     *
      * @param dstWorkingUser
      */
     public void setDstWorkingUser(String dstWorkingUser) {
@@ -479,7 +479,7 @@ public class DataElement implements Comparable{
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getDate() {
@@ -487,18 +487,18 @@ public class DataElement implements Comparable{
     }
 
     /**
-     * 
+     *
      * @param date
      */
     public void setDate(String date) {
         this.date = date;
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
-    public boolean isCommon(){
+    public boolean isCommon() {
         return (ns==null || ns.getID()==null);
     }
 

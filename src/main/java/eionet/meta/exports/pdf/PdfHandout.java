@@ -153,7 +153,7 @@ public abstract class PdfHandout implements PdfHandoutIF {
     }
 
     /*
-     * protected void rotatePage(){ rotates.add(new Integer(docElements.size())); insertPageBreak(); }
+     * protected void rotatePage() { rotates.add(new Integer(docElements.size())); insertPageBreak(); }
      */
 
     protected void pageToLandscape() {

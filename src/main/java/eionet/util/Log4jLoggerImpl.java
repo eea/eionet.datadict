@@ -37,19 +37,19 @@ import org.apache.log4j.Priority;
  * Updates: <UL>15.02.02 log4j version</UL>
  *
  * @author  Rando Valt
- * @version $Revision: 1.1 $    
+ * @version $Revision: 1.1 $
  */
 
 public class Log4jLoggerImpl implements LogServiceIF {
-  
+
     public static final int DEBUG       = 5;
     public static final int INFO        = 4;
     public static final int WARNING     = 3;
     public static final int ERROR       = 2;
     public static final int EMERGENCY   = 1;
-    
+
     public static final String DEFAULT_CATEGORY = "datadict";
-  
+
   Category logger;
 
   /**
@@ -59,21 +59,21 @@ public class Log4jLoggerImpl implements LogServiceIF {
     logger = Category.getInstance(DEFAULT_CATEGORY);
     //logger.debug("****************************************************** ");
   }
-  
+
   public Log4jLoggerImpl(String catName) {
-    
-      if (catName==null){
+
+      if (catName==null) {
         logger = Category.getInstance(DEFAULT_CATEGORY);
         return;
       }
-      
+
       logger = Category.getInstance(catName);
       Enumeration appenders = logger.getAllAppenders();
       if (!appenders.hasMoreElements())
         logger = Category.getInstance(DEFAULT_CATEGORY);
       //logger.debug("****************************************************** ");
     }
-    
+
   private Priority convSeverity(int severity) {
     switch (severity) {
       case EMERGENCY:
@@ -103,18 +103,18 @@ public class Log4jLoggerImpl implements LogServiceIF {
   public void debug(Object msg) {
     logger.debug(msg);
   }
-  
+
   public void debug(Object msg, Throwable t)  {
     logger.debug(msg, t);
   }
-  
+
 /**
  * Logs info level message.
  */
   public void info(Object msg)  {
     logger.info(msg);
   }
-  
+
   public void info(Object msg, Throwable t) {
     logger.info(msg, t);
   }
@@ -125,7 +125,7 @@ public class Log4jLoggerImpl implements LogServiceIF {
   public void warning(Object msg) {
     logger.warn(msg);
   }
-  
+
   public void warning(Object msg, Throwable t)  {
     logger.warn(msg, t);
   }
@@ -136,27 +136,27 @@ public class Log4jLoggerImpl implements LogServiceIF {
   public void error(Object msg) {
     logger.error(msg);
   }
-  
+
   public void error(Object msg, Throwable t)  {
     logger.error(msg);
   }
-  
+
 /**
  * Logs error level message.
  */
   public void fatal(Object msg) {
     logger.fatal(msg);
   }
-  
+
   public void fatal(Object msg, Throwable t)  {
     logger.fatal(msg);
   }
-  
+
     /**
-     * 
+     *
      * @param args
      */
-    public static void main(String[] args){
+    public static void main(String[] args) {
         LogServiceIF log = new Log4jLoggerImpl();
         log.debug("halloooooooooooooo????????????????");
     }

@@ -20,7 +20,7 @@
  *
  * Original Code: Jaanus Heinlaid (TietoEnator)
  */
- 
+
 package eionet.util;
 
 import java.io.UnsupportedEncodingException;
@@ -48,52 +48,52 @@ import eionet.meta.filters.CASFilterConfig;
  * @author Jaanus Heinlaid
  */
 public class SecurityUtil {
-    
+
     /** */
     public static final String REMOTEUSER = "eionet.util.SecurityUtil.user";
-    
+
     /** */
     private static String casLoginUrl;
     private static String casServerName;
-    
+
     /**
     * Returns current user, or null, if the current session
     * does not have user attached to it.
     */
     public static final DDUser getUser(HttpServletRequest request) {
-        
+
         HttpSession session = request.getSession();
         DDUser user = session==null ? null : (DDUser)session.getAttribute(REMOTEUSER);
-        
-        if (user==null){
+
+        if (user==null) {
             String casUserName = session==null ? null : (String)session.getAttribute(CASFilter.CAS_FILTER_USER);
-            if (casUserName!=null){
+            if (casUserName!=null) {
                 user = DDCASUser.create(casUserName);
                 session.setAttribute(REMOTEUSER, user);
             }
         }
-        else if (user instanceof DDCASUser){
+        else if (user instanceof DDCASUser) {
             String casUserName = (String)session.getAttribute(CASFilter.CAS_FILTER_USER);
-            if (casUserName==null){
+            if (casUserName==null) {
                 user.invalidate();
                 user = null;
                 session.removeAttribute(REMOTEUSER);
             }
-            else if (!casUserName.equals(user.getUserName())){
+            else if (!casUserName.equals(user.getUserName())) {
                 user.invalidate();
                 user = DDCASUser.create(casUserName);
                 session.setAttribute(REMOTEUSER, user);
             }
         }
-        
+
         if (user != null)
             return user.isAuthentic() ? user : null;
-        else 
+        else
             return null;
     }
-    
+
     /**
-     * 
+     *
      * @param usr
      * @param aclPath
      * @param prm
@@ -101,45 +101,45 @@ public class SecurityUtil {
      * @throws Exception
      */
     public static boolean hasPerm(String usr, String aclPath, String prm)
-                                                            throws Exception{
+                                                            throws Exception {
         if (!aclPath.startsWith("/")) return false;
-        
+
         boolean has = false;
         AccessControlListIF acl = null;
         int i =
         aclPath.length()<=1 ? -1 : aclPath.indexOf("/", 1); // not forgetting root path ("/")
-        while (i!=-1 && !has){
+        while (i!=-1 && !has) {
             String subPath = aclPath.substring(0,i);
-            try{
+            try {
                 acl = AccessController.getAcl(subPath);
             }
-            catch (Exception e){
+            catch (Exception e) {
                 acl = null;
             }
-            
+
             if (acl!=null)
                 has = acl.checkPermission(usr, prm);
-            
+
             i = aclPath.indexOf("/", i+1);
         }
-        
-        if (!has){
-            try{
+
+        if (!has) {
+            try {
                 acl = AccessController.getAcl(aclPath);
             }
-            catch (Exception e){
+            catch (Exception e) {
                 acl = null;
             }
-            
+
             if (acl!=null)
                 has = acl.checkPermission(usr, prm);
         }
-        
+
         return has;
     }
-    
+
     /**
-     * 
+     *
      * @param usr
      * @param aclPath
      * @param prm
@@ -147,47 +147,47 @@ public class SecurityUtil {
      * @throws Exception
      */
     public static boolean hasChildPerm(String usr, String aclPath, String prm)
-                                                            throws Exception{
+                                                            throws Exception {
         HashMap acls = AccessController.getAcls();
         Iterator aclNames = acls.keySet().iterator();
         AccessControlListIF acl;
-        while (aclNames.hasNext()){
+        while (aclNames.hasNext()) {
             String aclName = (String)aclNames.next();
-            if (aclName.startsWith(aclPath)){
+            if (aclName.startsWith(aclPath)) {
                 acl = (AccessControlListIF)acls.get(aclName);
                 if (acl.checkPermission(usr, prm))
                     return true;
             }
         }
-        
+
         return false;
     }
 
     /**
-     * 
+     *
      * @param request
      * @return
      */
     public static String getLoginURL(HttpServletRequest request) {
-        
+
         String result = "javascript:login()";
-        
+
         CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
-        if (casFilterConfig!=null){
-            
+        if (casFilterConfig!=null) {
+
             String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
-            if (casLoginUrl!=null){
+            if (casLoginUrl!=null) {
 
                 String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
-                if (casServerName==null){
+                if (casServerName==null) {
                     throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
                             + " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
                 }
 
                 // set the after-login-url
                 String requestURL = request.getRequestURL().toString();
-                if (requestURL!=null && !AfterCASLoginServlet.isSkipUrl(requestURL)){
-                    
+                if (requestURL!=null && !AfterCASLoginServlet.isSkipUrl(requestURL)) {
+
                     request.getSession().setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, buildAfterLoginURL(request));
                 }
 
@@ -200,24 +200,24 @@ public class SecurityUtil {
                 }
             }
         }
-        
+
         return result;
     }
 
     /**
-     * 
+     *
      * @param request
      * @return
      */
-    public static String getLogoutURL(HttpServletRequest request){
-        
+    public static String getLogoutURL(HttpServletRequest request) {
+
         String result = "index.jsp";
-        
+
         CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
-        if (casFilterConfig!=null){
-            
+        if (casFilterConfig!=null) {
+
             String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
-            if (casLoginUrl!=null){
+            if (casLoginUrl!=null) {
 
                 String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
                 if (casServerName==null)
@@ -233,16 +233,16 @@ public class SecurityUtil {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
-    private static String getUrlWithContextPath(HttpServletRequest request){
-        
+    private static String getUrlWithContextPath(HttpServletRequest request) {
+
         StringBuffer url = new StringBuffer(request.getScheme());
         url.append("://").append(request.getServerName());
         if (request.getServerPort()>0)
@@ -257,19 +257,19 @@ public class SecurityUtil {
     public static String getREMOTEUSER() {
         return REMOTEUSER;
     }
-    
+
     /**
-     * 
+     *
      * @param request
      * @return
      */
-    public static String buildAfterLoginURL(HttpServletRequest request){
-        
+    public static String buildAfterLoginURL(HttpServletRequest request) {
+
         StringBuffer result = new StringBuffer(request.getRequestURL());
-        if (request.getQueryString()!=null){
+        if (request.getQueryString()!=null) {
             result.append("?").append(request.getQueryString());
         }
-        
+
         return result.toString();
     }
 }

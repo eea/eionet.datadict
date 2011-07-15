@@ -7,25 +7,25 @@ import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
 
 /**
- * 
+ *
  * @author <a href="mailto:jaanus.heinlaid@tietoenator.com">Jaanus Heinlaid</a>
  *
  */
 public class XmlRpcCallThread extends Thread{
-    
+
     /** */
     private XmlRpcClient client;
     private String methodName;
     private Vector params;
-    
+
     /**
-     * 
+     *
      * @param client
      * @param methodName
      * @param params
      */
-    public XmlRpcCallThread(XmlRpcClient client, String methodName, Vector params){
-        
+    public XmlRpcCallThread(XmlRpcClient client, String methodName, Vector params) {
+
         this.client = client;
         this.methodName = methodName;
         this.params = params;
@@ -35,27 +35,27 @@ public class XmlRpcCallThread extends Thread{
      * (non-Javadoc)
      * @see java.lang.Thread#run()
      */
-    public void run(){
-        
-        try{
+    public void run() {
+
+        try {
             client.execute(methodName, params);
         }
-        catch (XmlRpcException e){
+        catch (XmlRpcException e) {
             e.printStackTrace(System.out);
         }
-        catch (IOException e){
+        catch (IOException e) {
             e.printStackTrace(System.out);
         }
     }
-    
+
     /**
-     * 
+     *
      * @param client
      * @param methodName
      * @param params
      */
-    public static void execute(XmlRpcClient client, String methodName, Vector params){
-        
+    public static void execute(XmlRpcClient client, String methodName, Vector params) {
+
         XmlRpcCallThread caller = new XmlRpcCallThread(client, methodName, params);
         caller.start();
     }

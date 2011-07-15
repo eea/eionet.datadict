@@ -10,7 +10,7 @@ import java.util.Vector;
 import eionet.meta.DDSearchEngine;
 
 /**
- * 
+ *
  * @author jaanus
  */
 public abstract class Codelist {
@@ -18,15 +18,15 @@ public abstract class Codelist {
     protected static final String ELM = "ELM";
     protected static final String TBL = "TBL";
     protected static final String DST = "DST";
-    
+
     protected DDSearchEngine searchEngine = null;
     protected PrintWriter writer = null;
-    
+
     protected Vector lines = new Vector();
     protected String lineTerminator = "\n";
-    
+
     /**
-     * 
+     *
      * @param objID
      * @param objType
      * @throws Exception
@@ -34,16 +34,16 @@ public abstract class Codelist {
     public abstract void write(String objID, String objType) throws Exception;
 
     /**
-     * 
+     *
      * @throws IOException
      */
-    public void flush() throws IOException{
-        
-        if (lines!=null && !lines.isEmpty()){
-        
-            for (int i=0; i<lines.size(); i++){
+    public void flush() throws IOException {
+
+        if (lines!=null && !lines.isEmpty()) {
+
+            for (int i=0; i<lines.size(); i++) {
                 writer.write(lines.get(i).toString());
-                writer.write(lineTerminator);           
+                writer.write(lineTerminator);
             }
         }
     }

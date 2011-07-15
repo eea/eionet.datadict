@@ -49,34 +49,34 @@ public interface LogServiceIF {
  * Logs debug level message.
  */
     public void debug(Object msg);
-  
+
   public void debug(Object msg, Throwable t);
-  
+
 /**
  * Logs info level message.
  */
     public void info(Object msg);
-  
+
   public void info(Object msg, Throwable t);
 
 /**
  * Logs debug warning message.
  */
     public void warning(Object msg);
-  
+
   public void warning(Object msg, Throwable t);
 
 /**
  * Logs error level message.
  */
     public void error(Object msg);
-  
+
   public void error(Object msg, Throwable t);
 
 /**
  * Logs error level message.
  */
     public void fatal(Object msg);
-  
+
   public void fatal(Object msg, Throwable t);
 }

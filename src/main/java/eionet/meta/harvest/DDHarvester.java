@@ -44,51 +44,51 @@ import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 public abstract class DDHarvester implements HarvesterIF{
-    
+
     private String harvesterID = null;
     private Connection conn = null;
     private long harvestingTime = 0;
-    
+
     protected LogServiceIF log = null;
-    
-    protected DDHarvester(String harvesterID){      
+
+    protected DDHarvester(String harvesterID) {
         this.harvesterID = harvesterID;
-        log = new Log4jLoggerImpl(Props.getProperty(PropsIF.HRV_LOG));      
+        log = new Log4jLoggerImpl(Props.getProperty(PropsIF.HRV_LOG));
     }
 
     /**
-     * 
+     *
      * @param hash
      * @param id
      * @throws Exception
      */
-    protected void store(Hashtable hash, String id) throws Exception{
-        
+    protected void store(Hashtable hash, String id) throws Exception {
+
         if (hash == null) return;
         Enumeration flds = hash.keys();
         if (flds==null || !flds.hasMoreElements()) return;
-        
+
         if (harvesterID==null || harvestingTime==0)
             throw new Exception("Failed to find the harvesting ID and time!");
-        
+
         getConnection();
         if (conn==null || conn.isClosed())
             throw new Exception("Failed to get the DB connection!");
-        
+
         PreparedStatement stmt = null;
-        try{
+        try {
             // store in HARV_ATTR
             String[] ids = new String[3];
             ids[0] = id;
             ids[1] = harvesterID;
             ids[2] = String.valueOf(harvestingTime);
             String md5key = getMD5(ids);
-            
+
             ids = new String[2];
             ids[0] = id;
             ids[1] = harvesterID;
             String logID = getMD5(ids);
-            
+
             INParameters inParams = new INParameters();
             LinkedHashMap map = new LinkedHashMap();
             map.put("HARV_ATTR_ID", inParams.add(id));
@@ -96,30 +96,30 @@ public abstract class DDHarvester implements HarvesterIF{
             map.put("HARVESTED", inParams.add(String.valueOf(harvestingTime), Types.BIGINT));
             map.put("MD5KEY", inParams.add(md5key));
             map.put("LOGICAL_ID", inParams.add(logID));
-            
+
             stmt = SQL.preparedStatement(SQL.insertStatement("HARV_ATTR", map), inParams, conn);
             stmt.executeUpdate();
             stmt.close();
-            
+
             // store in HARV_ATTR_FIELD (using a do-while cause hasMoreElements() has been called already)
             do{
                 String fldName  = (String)flds.nextElement();
                 HashSet fldValues = new HashSet();
-                            
+
                 Object o = hash.get(fldName);
                 if (o==null) o = "";
-                
-                if (o.getClass().getName().endsWith("Vector")){
+
+                if (o.getClass().getName().endsWith("Vector")) {
                     for (int i=0; i<((Vector)o).size(); i++)
-                        fldValues.add(((Vector)o).get(i));                      
+                        fldValues.add(((Vector)o).get(i));
                 }
                 else if (o.getClass().getName().endsWith("String"))
                     fldValues.add(o);
                 else
                     continue; //FIX ME! should through an exception
-                
+
                 Iterator iter = fldValues.iterator();
-                while (iter.hasNext()){
+                while (iter.hasNext()) {
                     inParams = new INParameters();
                     map = new LinkedHashMap();
                     map.put("HARV_ATTR_MD5", inParams.add(md5key));
@@ -128,56 +128,11 @@ public abstract class DDHarvester implements HarvesterIF{
                     stmt = SQL.preparedStatement(SQL.insertStatement("HARV_ATTR_FIELD", map), inParams, conn);
                     stmt.executeUpdate();
                 }
-                            
+
             }
             while (flds.hasMoreElements());
         }
-        finally{
-            try{
-                if (stmt!=null) stmt.close();
-                if (conn!=null) conn.close();
-            }
-            catch (SQLException e){}
-        }
-    }
-    
-    /**
-     * 
-     */
-    public void harvest() throws Exception{
-        this.harvestingTime = System.currentTimeMillis();
-        doHarvest();
-        cleanup();
-    }
-
-    /**
-     * 
-     * @throws Exception
-     */
-    protected abstract void doHarvest() throws Exception;
-    
-    /**
-     * 
-     */
-    public void cleanup(){
-        
-        if (conn==null)
-            return;
-
-        PreparedStatement stmt = null;
-        try{
-            INParameters inParams = new INParameters();
-            StringBuffer buf = new StringBuffer("delete from HARV_ATTR where HARVESTER_ID=");
-            buf.append(inParams.add(harvesterID)).append(" and HARVESTED<").append(inParams.add(String.valueOf(harvestingTime), Types.BIGINT));
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            stmt.executeUpdate();
-            
-            rmvDeleted(conn);
-        }
-        catch (Exception e){
-            log.fatal("Failed to delete old harvested attributes", e);
-        }
-        finally{
+        finally {
             try {
                 if (stmt!=null) stmt.close();
                 if (conn!=null) conn.close();
@@ -185,17 +140,62 @@ public abstract class DDHarvester implements HarvesterIF{
             catch (SQLException e) {}
         }
     }
-    
-    public LogServiceIF getLog(){
-        return this.log;
-    }
-    
+
     /**
-     * 
+     *
+     */
+    public void harvest() throws Exception {
+        this.harvestingTime = System.currentTimeMillis();
+        doHarvest();
+        cleanup();
+    }
+
+    /**
+     *
      * @throws Exception
      */
-    protected static void rmvDeleted(Connection conn) throws Exception{
-        
+    protected abstract void doHarvest() throws Exception;
+
+    /**
+     *
+     */
+    public void cleanup() {
+
+        if (conn==null)
+            return;
+
+        PreparedStatement stmt = null;
+        try {
+            INParameters inParams = new INParameters();
+            StringBuffer buf = new StringBuffer("delete from HARV_ATTR where HARVESTER_ID=");
+            buf.append(inParams.add(harvesterID)).append(" and HARVESTED<").append(inParams.add(String.valueOf(harvestingTime), Types.BIGINT));
+            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+            stmt.executeUpdate();
+
+            rmvDeleted(conn);
+        }
+        catch (Exception e) {
+            log.fatal("Failed to delete old harvested attributes", e);
+        }
+        finally {
+            try {
+                if (stmt!=null) stmt.close();
+                if (conn!=null) conn.close();
+            }
+            catch (SQLException e) {}
+        }
+    }
+
+    public LogServiceIF getLog() {
+        return this.log;
+    }
+
+    /**
+     *
+     * @throws Exception
+     */
+    protected static void rmvDeleted(Connection conn) throws Exception {
+
         String q = "select distinct ROW_ID from COMPLEX_ATTR_ROW " +
                     "left outer join HARV_ATTR on " +
                     "COMPLEX_ATTR_ROW.HARV_ATTR_ID=HARV_ATTR.LOGICAL_ID " +
@@ -205,14 +205,14 @@ public abstract class DDHarvester implements HarvesterIF{
         Vector v = new Vector();
         ResultSet rs = null;
         PreparedStatement stmt = null;
-        try{
+        try {
             stmt = conn.prepareStatement(q);
             rs = stmt.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 v.add(rs.getString(1));
             }
-                        
-            for (int i=0; i<v.size(); i++){
+
+            for (int i=0; i<v.size(); i++) {
                 INParameters inParams = new INParameters();
                 StringBuffer buf = new StringBuffer("delete from COMPLEX_ATTR_ROW where ROW_ID=");
                 buf.append(inParams.add((String)v.get(i)));
@@ -221,28 +221,28 @@ public abstract class DDHarvester implements HarvesterIF{
                 stmt.executeUpdate();
             }
         }
-        finally{
-            try{
+        finally {
+            try {
                 if (rs!=null) rs.close();
             }
-            catch(SQLException e){}
+            catch (SQLException e) {}
         }
     }
-    
-    private void getConnection() throws Exception{
-        if (conn==null || conn.isClosed()){
+
+    private void getConnection() throws Exception {
+        if (conn==null || conn.isClosed()) {
             ConnectionUtil.getSimpleConnection();
         }
     }
 
-    private void closeConnection(){
-        try{
+    private void closeConnection() {
+        try {
             if (conn!=null) conn.close();
         }
-        catch (SQLException e){}
+        catch (SQLException e) {}
     }
-    
-    private String getMD5(String[] flds){
+
+    private String getMD5(String[] flds) {
         StringBuffer buf = new StringBuffer("md5('");
         for (int i=0; i<flds.length; i++)
             buf.append(flds[i]);

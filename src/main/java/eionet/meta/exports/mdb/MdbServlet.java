@@ -37,9 +37,9 @@ public class MdbServlet extends HttpServlet {
         OutputStream os = null;
         FileInputStream in = null;
         File file = null;
-        
+
         boolean cacheUsed = true;
-        try{
+        try {
             String dstID = req.getParameter("dstID");
             if (dstID==null || dstID.length()==0)
                 throw new MdbException("Missing request parameter: dstID");
@@ -57,22 +57,22 @@ public class MdbServlet extends HttpServlet {
                 filePath = filePath + File.separator;
 
             conn = ConnectionUtil.getConnection();
-            
+
             if (!vmdOnly)
                 file = Mdb.getCached(conn, dstID, filePath);
-                
-            if (file==null || !file.exists()){
+
+            if (file==null || !file.exists()) {
                 cacheUsed = false;
                 String fullPath = filePath + dstID + "-" + req.getSession().getId() + ".mdb";
                 file = Mdb.getNew(conn, dstID, fullPath, vmdOnly);
             }
-            
+
             if (file==null || !file.exists())
                 throw new MdbException("No exceptions thrown, but no file created either");
 
             os = res.getOutputStream();
             in = new FileInputStream(file);
-            
+
             String downloadFileName = Mdb.getFileNameFor(conn, dstID, vmdOnly);
             StringBuffer strBuf = new StringBuffer("attachment; filename=\"").
             append(downloadFileName).append("\"");
@@ -80,24 +80,24 @@ public class MdbServlet extends HttpServlet {
 
             int i = 0;
             byte[] buf = new byte[1024];
-            while ((i=in.read(buf, 0, buf.length)) != -1){
+            while ((i=in.read(buf, 0, buf.length)) != -1) {
                 os.write(buf, 0, i);
             }
-            
+
             os.flush();
         }
-        catch (Throwable t){
+        catch (Throwable t) {
             t.printStackTrace(System.out);
             throw new ServletException(t.toString());
         }
-        finally{
-            try{
+        finally {
+            try {
                 if (conn != null) conn.close();
                 if (in!=null) in.close();
                 if (os != null) os.close();
                 if (!cacheUsed && file!=null && file.exists()) file.delete();
             }
-            catch(Exception ee){}
+            catch (Exception ee) {}
         }
     }
 }

@@ -3,16 +3,16 @@ package eionet.util.sql;
 import eionet.meta.DDException;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class DDConnectionException extends DDException{
+public class DDConnectionException extends DDException {
 
     /**
      *
      */
-    public DDConnectionException(){
+    public DDConnectionException() {
         super();
    }
 
@@ -22,21 +22,21 @@ public class DDConnectionException extends DDException{
    public DDConnectionException(String msg) {
        super(msg);
    }
-   
+
    /**
-     * 
+     *
      * @param message
      * @param cause
      */
-    public DDConnectionException(String msg, Throwable cause){
+    public DDConnectionException(String msg, Throwable cause) {
         super(msg, cause);
     }
 
     /**
-     * 
+     *
      * @param cause
      */
-    public DDConnectionException(Throwable cause){
+    public DDConnectionException(Throwable cause) {
         super(cause);
     }
 }

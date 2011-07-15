@@ -1,12 +1,12 @@
 package eionet.meta.exports.xls;
 
 public class XlsException extends Throwable {
-    
-    public XlsException(){
+
+    public XlsException() {
         super();
     }
-    
-    public XlsException(String msg){
+
+    public XlsException(String msg) {
         super(msg);
     }
 }

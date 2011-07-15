@@ -22,30 +22,30 @@ import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 public class DocDownload extends HttpServlet{
-    
+
     private static final int BUF_SIZE = 1024;
     public  static final String REQPAR_FILE  = "file";
-    
+
     private Connection conn = null;
     private String mimeType = null;
-    
+
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
                                                     throws ServletException, IOException {
-        
+
         req.setCharacterEncoding("UTF-8");
-        
-        try{
+
+        try {
             //guard(req);
-            
+
             mimeType = "application/octet-stream";
             String absPath = getAbsPath(req);
             if (Util.voidStr(absPath))
                 throw new Exception("Failed to get the file path from db!");
-            
+
             File file = new File(absPath);
             if (!file.exists() || file.isDirectory())
                 throw new Exception("The file does not exist!");
-            
+
             String fileName = file.getName();
             if (fileName==null) fileName = "unknown.unknown";
 
@@ -54,13 +54,13 @@ public class DocDownload extends HttpServlet{
             StringBuffer strBuf = new StringBuffer("attachment; filename=\"").
             append(fileName).append("\"");
             res.setHeader("Content-Disposition", strBuf.toString());
-            
+
             writeFile(file, res);
         }
-        catch (Exception e){
+        catch (Exception e) {
             throw new ServletException(e.toString());
         }
-        finally{
+        finally {
             closeConnection();
         }
     }
@@ -69,78 +69,78 @@ public class DocDownload extends HttpServlet{
                                                     throws ServletException, IOException {
         doGet(req,res);
     }
-    
-    private void writeFile(File file, HttpServletResponse res) throws IOException{
-        
+
+    private void writeFile(File file, HttpServletResponse res) throws IOException {
+
         int i = 0;
         byte[] buf = new byte[BUF_SIZE];
         FileInputStream in = null;
         OutputStream out = null;
-        
-        try{
+
+        try {
             in = new FileInputStream(file);
             res.setContentLength(in.available());
             out = res.getOutputStream();
-            while ((i=in.read(buf, 0, buf.length)) != -1){
+            while ((i=in.read(buf, 0, buf.length)) != -1) {
                 out.write(buf, 0, i);
             }
         }
-        finally{
+        finally {
             if (in!=null) in.close();
             out.close();
         }
     }
-    
+
     /**
-     * 
+     *
      * @param req
      * @return
      * @throws Exception
      */
-    private String getAbsPath(HttpServletRequest req) throws Exception{
-        
+    private String getAbsPath(HttpServletRequest req) throws Exception {
+
         String md5 = req.getParameter(REQPAR_FILE);
         if (Util.voidStr(md5))
             throw new Exception("Missing " + REQPAR_FILE + " request parameter!");
-            
+
         openConnection();
         String absPath = null;
         INParameters inParams = new INParameters();
         String q = "select * from DOC where MD5_PATH=" + inParams.add(md5);
-        
+
         ResultSet rs = null;
         PreparedStatement stmt = null;
-        try{
+        try {
             stmt = SQL.preparedStatement(q, inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 absPath = rs.getString("ABS_PATH");
                 setMimeType(absPath);
             }
         }
-        finally{
-            try{
+        finally {
+            try {
                 if (rs!=null) rs.close();
                 if (stmt!=null) stmt.close();
             }
-            catch (SQLException e){}
+            catch (SQLException e) {}
         }
-        
+
         return absPath;
     }
-    
+
     /**
-     * 
+     *
      * @param absPath
      */
-    private void setMimeType(String absPath){
-        
+    private void setMimeType(String absPath) {
+
         String s = absPath.toLowerCase();
-        
+
         if (s.endsWith(".pdf"))
             mimeType = "application/pdf";
         else if (s.endsWith(".doc"))
-            mimeType = "application/msword"; 
+            mimeType = "application/msword";
         else if (s.endsWith(".rtf"))
             mimeType = "text/rtf";
         else if (s.endsWith(".xls"))
@@ -164,37 +164,37 @@ public class DocDownload extends HttpServlet{
     }
 
     /**
-     * 
+     *
      * @param req
      * @throws Exception
      */
-    private void guard(HttpServletRequest req) throws Exception{
+    private void guard(HttpServletRequest req) throws Exception {
         DDUser user = SecurityUtil.getUser(req);
         if (user==null)
             throw new Exception("Not authenticated!");
     }
 
     /**
-     * 
+     *
      * @throws DDConnectionException
      * @throws SQLException
      */
-    private void openConnection() throws DDConnectionException, SQLException{
-        if (conn==null){
+    private void openConnection() throws DDConnectionException, SQLException {
+        if (conn==null) {
             conn = ConnectionUtil.getConnection();
         }
     }
-    
+
     /**
-     * 
+     *
      *
      */
-    private void closeConnection(){
-        if (conn!=null){
+    private void closeConnection() {
+        if (conn!=null) {
             try {
                 conn.close();
             }
-            catch (SQLException sqle){
+            catch (SQLException sqle) {
             }
             finally {
                 conn=null;

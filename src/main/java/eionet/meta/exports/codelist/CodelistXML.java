@@ -18,7 +18,7 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 
 /**
- * 
+ *
  * @author jaanus
  */
 public class CodelistXML extends Codelist {
@@ -46,7 +46,7 @@ public class CodelistXML extends Codelist {
     private Vector namespaces = null;
 
     /**
-     * 
+     *
      * @param conn
      * @param writer
      * @param delim
@@ -61,7 +61,7 @@ public class CodelistXML extends Codelist {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see eionet.meta.exports.codelist.Codelist#write(java.lang.String, java.lang.String)
      */
     public void write(String objID, String objType) throws Exception {
@@ -87,7 +87,7 @@ public class CodelistXML extends Codelist {
     }
 
     /**
-     * 
+     *
      *
      */
     private void writeHeader() {
@@ -106,7 +106,7 @@ public class CodelistXML extends Codelist {
     }
 
     /**
-     * 
+     *
      *
      */
     private void writeFooter() {
@@ -116,7 +116,7 @@ public class CodelistXML extends Codelist {
     }
 
     /**
-     * 
+     *
      * @param elms
      * @throws Exception
      */
@@ -236,7 +236,7 @@ public class CodelistXML extends Codelist {
     }
 
     /**
-     * 
+     *
      *
      */
     private void initNamespaces() throws Exception {

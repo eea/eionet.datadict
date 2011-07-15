@@ -377,12 +377,12 @@ public class ImgUpload extends HttpServlet {
  *
  * private String absPath = null; private boolean wasOK = false;
  *
- * PJAThread(String absPath){ super(); this.absPath = absPath; }
+ * PJAThread(String absPath) { super(); this.absPath = absPath; }
  *
  * public void run() {
  *
- * try{ ImgUpload.checkPJA(absPath); wasOK = true; } catch (Exception e){ File file = new File(absPath); file.renameTo(new
+ * try { ImgUpload.checkPJA(absPath); wasOK = true; } catch (Exception e) { File file = new File(absPath); file.renameTo(new
  * File(absPath + ".rmv")); } }
  *
- * public boolean success(){ return wasOK; } }
+ * public boolean success() { return wasOK; } }
  */

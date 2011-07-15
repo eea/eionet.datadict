@@ -9,40 +9,40 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 /**
- * 
+ *
  * @author jaanus
  */
 public class PublicOutputs {
-    
+
     /** */
     public static Hashtable orders = null;
     public static Hashtable weights = null;
 
     /**
-     * 
+     *
      */
-    public static HashSet process(int number, Class c){
-        
+    public static HashSet process(int number, Class c) {
+
         HashSet result = new HashSet();
         Hashtable w = getWeights(c);
-        for (Enumeration e=w.keys(); e.hasMoreElements();){
+        for (Enumeration e=w.keys(); e.hasMoreElements();) {
             String output = (String)e.nextElement();
             Integer weight = (Integer)w.get(output);
             int div = number/weight.intValue();
             if (div % 2 != 0)
                 result.add(output);
         }
-        
+
         return result;
     }
-    
+
     /**
-     * 
+     *
      * @param c
      * @return
      */
-    public static Vector getOrder(Class c){
-        
+    public static Vector getOrder(Class c) {
+
         if (orders==null)
             init();
         return (Vector)orders.get(c);
@@ -51,17 +51,17 @@ public class PublicOutputs {
      * @param c
      * @return
      */
-    public static Hashtable getWeights(Class c){
-        
+    public static Hashtable getWeights(Class c) {
+
         if (weights==null)
             init();
         return (Hashtable)weights.get(c);
     }
-    
+
     /**
-     * 
+     *
      */
-    private static void init(){
+    private static void init() {
 
         orders = new Hashtable();
         weights = new Hashtable();

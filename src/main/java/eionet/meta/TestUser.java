@@ -7,11 +7,11 @@ import eionet.util.sql.ConnectionUtil;
 
 
 public class TestUser extends DDUser {
-    
+
     /**
      *
      */
-    public TestUser(){
+    public TestUser() {
         super();
     }
 
@@ -20,7 +20,7 @@ public class TestUser extends DDUser {
      * @see eionet.meta.DDuser#authenticate(java.lang.String, java.lang.String)
      */
     public boolean authenticate(String userName, String userPws) {
-        
+
         username = userName;
         fullName = userName;
         password = userPws;
@@ -34,13 +34,13 @@ public class TestUser extends DDUser {
     public boolean isAuthentic() {
         return true;
     }
-    
+
     /*
      *  (non-Javadoc)
      * @see eionet.meta.DDUser#getConnection()
      */
     public Connection getConnection() {
-        
+
         try {
             return ConnectionUtil.getSimpleConnection();
         }

@@ -9,7 +9,7 @@ import java.util.Set;
 import eionet.util.Util;
 
 /**
- * 
+ *
  * @author <a href="mailto:jaanus.heinlaid@tieto.com">Jaanus Heinlaid</a>
  *
  */
@@ -77,7 +77,7 @@ public class SQLGenerator implements Cloneable {
             return null;
 
         int len = value.length();
-        if (len > 1 && value.charAt(0) == '\'' && value.charAt(len-1) == '\'') 
+        if (len > 1 && value.charAt(0) == '\'' && value.charAt(len-1) == '\'')
             // strip the enclosing apostrophes
             return value.substring(1, len-1);
         else
@@ -104,7 +104,7 @@ public class SQLGenerator implements Cloneable {
 
         int i = 0;
         Collection values = fields.values();
-        for (Iterator iter = values.iterator(); iter.hasNext();){
+        for (Iterator iter = values.iterator(); iter.hasNext();) {
 
             String value = (String)iter.next();
             buf.append(value);
@@ -130,22 +130,22 @@ public class SQLGenerator implements Cloneable {
         Collection values = fields.values();
 
         Set entries = fields.entrySet();
-        for (Iterator iter = entries.iterator(); iter.hasNext();){
-            
+        for (Iterator iter = entries.iterator(); iter.hasNext();) {
+
             Map.Entry entry = (Map.Entry)iter.next();
             String name = (String)entry.getKey();
             String value = (String)entry.getValue();
 
             // skip primary key field from update statement
-            if (pkField != null && pkField.equals(name)){
+            if (pkField != null && pkField.equals(name)) {
                 continue;
             }
-            
+
             // not first field
-            if (i++ != 0){
+            if (i++ != 0) {
                 buf.append(',');
             }
-            
+
             buf.append(name);
             buf.append('=');
             buf.append(value);
@@ -166,10 +166,10 @@ public class SQLGenerator implements Cloneable {
         buf.append(" (");
 
         int i = 0;
-        
+
         Set names = fields.keySet();
-        for (Iterator iter = names.iterator(); iter.hasNext();){
-            
+        for (Iterator iter = names.iterator(); iter.hasNext();) {
+
             String name = (String)iter.next();
             buf.append(name);
             if (i++ != numElems-1)
@@ -181,7 +181,7 @@ public class SQLGenerator implements Cloneable {
 
         return buf.toString();
     }
-    
+
     /**
      * Generates DELETE statement (withoud constraint part)
      */
@@ -211,13 +211,13 @@ public class SQLGenerator implements Cloneable {
      * Overrides Object.clone() method.
      */
     public Object clone() {
-        
+
         SQLGenerator theNew = null;
         try {
             theNew = (SQLGenerator)super.clone();
             theNew.fields = new LinkedHashMap(fields);
         }
-        catch (CloneNotSupportedException e){
+        catch (CloneNotSupportedException e) {
             throw new RuntimeException(e.toString(), e);
         }
 

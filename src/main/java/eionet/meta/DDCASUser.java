@@ -4,12 +4,12 @@ import com.tee.uit.security.AuthMechanism;
 import com.tee.uit.security.SignOnException;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
 public class DDCASUser extends DDUser {
-    
+
     /**
      *
      */
@@ -22,7 +22,7 @@ public class DDCASUser extends DDUser {
      * @see eionet.meta.DDuser#authenticate(java.lang.String, java.lang.String)
      */
     public boolean authenticate(String userName, String userPws) {
-        
+
         invalidate();
 
         try {
@@ -38,12 +38,12 @@ public class DDCASUser extends DDUser {
 
         return authented;
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
-    public static DDCASUser create(String userName){
+    public static DDCASUser create(String userName) {
         DDCASUser user = new DDCASUser();
         user.authenticate(userName, null);
         return user;

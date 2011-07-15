@@ -1,16 +1,16 @@
 package eionet.meta;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class DDException extends Exception{
+public class DDException extends Exception {
 
     /**
      *
      */
-    public DDException(){
+    public DDException() {
         super();
     }
 
@@ -20,21 +20,21 @@ public class DDException extends Exception{
     public DDException(String msg) {
         super(msg);
     }
-    
+
     /**
-     * 
+     *
      * @param message
      * @param cause
      */
-    public DDException(String msg, Throwable cause){
+    public DDException(String msg, Throwable cause) {
         super(msg, cause);
     }
 
     /**
-     * 
+     *
      * @param cause
      */
-    public DDException(Throwable cause){
+    public DDException(Throwable cause) {
         super(cause);
     }
 }

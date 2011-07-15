@@ -15,9 +15,9 @@ import eionet.meta.DataElement;
 import eionet.meta.DsTable;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
- * 
+ *
  */
 public class Dbf {
 
@@ -48,8 +48,8 @@ public class Dbf {
 
     /**
      * @throws Exception
-     * 
-     * 
+     *
+     *
      */
     public Dbf(String tblID, Connection conn) throws Exception {
 
@@ -63,7 +63,7 @@ public class Dbf {
     }
 
     /**
-     * 
+     *
      * @return
      */
     private void create() throws Exception {
@@ -113,7 +113,7 @@ public class Dbf {
     }
 
     /**
-     * 
+     *
      * @param out
      * @throws DBFException
      */
@@ -123,7 +123,7 @@ public class Dbf {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getFileName() {
@@ -131,7 +131,7 @@ public class Dbf {
     }
 
     /**
-     * 
+     *
      * @param fld
      * @param elm
      */
@@ -152,7 +152,7 @@ public class Dbf {
     }
 
     /**
-     * 
+     *
      * @param fld
      * @param elm
      * @throws Exception
@@ -196,7 +196,7 @@ public class Dbf {
     }
 
     /**
-     * 
+     *
      * @param elm
      */
     private static void setDecimalCount(DBFField fld, DataElement elm) {
@@ -222,7 +222,7 @@ public class Dbf {
     }
 
     /**
-     * 
+     *
      * @param dataType
      * @return
      * @throws Exception

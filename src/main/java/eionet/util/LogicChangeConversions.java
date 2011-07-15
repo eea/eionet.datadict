@@ -3,20 +3,20 @@
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
  * the License at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the License is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
- * 
+ *
  * The Original Code is Data Dictionary.
- * 
+ *
  * The Initial Owner of the Original Code is European Environment
  * Agency.  Portions created by TietoEnator Estonia are
  * Copyright (C) 2003 European Environment Agency. All
  * Rights Reserved.
- * 
- * Contributor(s): 
+ *
+ * Contributor(s):
  */
 package eionet.util;
 
@@ -35,33 +35,33 @@ import java.util.Vector;
 import eionet.util.sql.SQLGenerator;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid
  *
  */
 public class LogicChangeConversions extends DataManipulations {
-    
+
     /**
-     * 
+     *
      * @param conn
      * @param outputWriter
      * @throws IOException
      */
-    public LogicChangeConversions(Connection conn, PrintWriter outputWriter) throws IOException{
+    public LogicChangeConversions(Connection conn, PrintWriter outputWriter) throws IOException {
         super(conn, outputWriter);
     }
 
     /**
-     * @throws SQLException 
+     * @throws SQLException
      */
-    public void createTables() throws Exception{
+    public void createTables() throws Exception {
 
         // get existing datasets and tables
         HashSet existingDatasets = new HashSet();
         HashMap existingTables = new HashMap();
         Statement stmt = null;
         ResultSet rs = null;
-        try{
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery("select DATASET_ID from DATASET");
             while (rs.next())
@@ -71,14 +71,14 @@ public class LogicChangeConversions extends DataManipulations {
             while (rs.next())
                 existingTables.put(rs.getString(1), null);
             rs.close();
-            
+
             // get each table's datasets, skip non-existing ones (ie datasets whose ID is in DST2TBL but do not actually exist in DATASET)
             int countTblDatasets = 0;
             rs = stmt.executeQuery("select TABLE_ID, DATASET_ID from DST2TBL order by DATASET_ID");
-            while (rs.next()){
+            while (rs.next()) {
                 String tblID = rs.getString(1);
                 String dstID = rs.getString(2);
-                if (existingDatasets.contains(dstID) && existingTables.containsKey(tblID)){
+                if (existingDatasets.contains(dstID) && existingTables.containsKey(tblID)) {
                     Vector tblDatasets = (Vector)existingTables.get(tblID);
                     if (tblDatasets==null)
                         tblDatasets = new Vector();
@@ -92,20 +92,20 @@ public class LogicChangeConversions extends DataManipulations {
             outputWriteln("Found " + existingTables.size() + " existing tables");
             outputWrite("Creating " + (countTblDatasets-existingTables.size()) + " new tables...");
 
-            // go through each table's datasets, create table copy for every dataset                        
+            // go through each table's datasets, create table copy for every dataset
             int countTablesCreated = 0;
             int outputRefreshStep = 90;
             int countOutputRefreshSteps = 1;
-            StringBuffer buf = null; 
+            StringBuffer buf = null;
             long timeStart = System.currentTimeMillis();
-            if (!existingTables.isEmpty()){
+            if (!existingTables.isEmpty()) {
                 Iterator iterTables = existingTables.keySet().iterator();
-                while (iterTables!=null && iterTables.hasNext()){
+                while (iterTables!=null && iterTables.hasNext()) {
                     String tblID = (String)iterTables.next();
                     Vector tblDatasets = (Vector)existingTables.get(tblID);
-                    SQLGenerator gen = new SQLGenerator(); 
+                    SQLGenerator gen = new SQLGenerator();
                     // skip first dataset since for one dataset the table copy already exists
-                    for (int i=1; tblDatasets!=null && i<tblDatasets.size(); i++){
+                    for (int i=1; tblDatasets!=null && i<tblDatasets.size(); i++) {
                         String dstID = (String)tblDatasets.get(i);
                         // delete the table's relation with this dataset,
                         // since that relation will now be created with the new table copy
@@ -114,15 +114,15 @@ public class LogicChangeConversions extends DataManipulations {
                         stmt.executeUpdate(buf.toString());
                         // create new table copy, relate it to this dataset
                         String newTblID = copyTbl(tblID);
-                        if (newTblID!=null && newTblID.length()>0){
-                            countTablesCreated++;           
+                        if (newTblID!=null && newTblID.length()>0) {
+                            countTablesCreated++;
                             gen.clear();
                             gen.setTable("DST2TBL");
                             gen.setFieldExpr("DATASET_ID", dstID);
                             gen.setFieldExpr("TABLE_ID", newTblID);
                             stmt.executeUpdate(gen.insertStatement());
-                            
-                            if (countTablesCreated==(outputRefreshStep*countOutputRefreshSteps)){
+
+                            if (countTablesCreated==(outputRefreshStep*countOutputRefreshSteps)) {
                                 outputWrite(".");
                                 countOutputRefreshSteps++;
                             }
@@ -136,26 +136,26 @@ public class LogicChangeConversions extends DataManipulations {
             outputWriteln("");
             outputWriteln(countTablesCreated + " new tables created, time spent: " + durationMillis/1000 + " sec");
         }
-        finally{
-            try{
+        finally {
+            try {
                 if (rs!=null) rs.close();
                 if (stmt!=null) stmt.close();
             }
-            catch (SQLException e){}
+            catch (SQLException e) {}
         }
     }
-    
+
     /**
-     * @throws SQLException 
+     * @throws SQLException
      */
-    public void createNonCommonElements() throws Exception{
+    public void createNonCommonElements() throws Exception {
 
         // get existing tables and elements
         HashSet existingTables = new HashSet();
         HashMap existingNonCommonElements = new HashMap();
         Statement stmt = null;
         ResultSet rs = null;
-        try{
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery("select TABLE_ID from DS_TABLE");
             while (rs.next())
@@ -165,15 +165,15 @@ public class LogicChangeConversions extends DataManipulations {
             while (rs.next())
                 existingNonCommonElements.put(rs.getString(1), null);
             rs.close();
-            
+
             // get each non-common element's tables, skip non-existing ones
             int countElmTables = 0;
             rs = stmt.executeQuery("select * from TBL2ELEM order by TABLE_ID");
-            while (rs.next()){
+            while (rs.next()) {
                 String tblID  = rs.getString("TABLE_ID");
                 String elmID  = rs.getString("DATAELEM_ID");
                 String elmPos = rs.getString("POSITION");
-                if (existingTables.contains(tblID) && existingNonCommonElements.containsKey(elmID)){
+                if (existingTables.contains(tblID) && existingNonCommonElements.containsKey(elmID)) {
                     Vector elmTables = (Vector)existingNonCommonElements.get(elmID);
                     if (elmTables==null)
                         elmTables = new Vector();
@@ -191,20 +191,20 @@ public class LogicChangeConversions extends DataManipulations {
             outputWrite("Creating " + (countElmTables-existingNonCommonElements.size()) +
                     " new non-common elements...");
 
-            // go through each non-common element's tables, create element copy for every table                     
+            // go through each non-common element's tables, create element copy for every table
             int countElmsCreated = 0;
             int outputRefreshStep = 100;
             int countOutputRefreshSteps = 1;
             StringBuffer buf = null;
             long timeStart = System.currentTimeMillis();
-            if (!existingNonCommonElements.isEmpty()){
+            if (!existingNonCommonElements.isEmpty()) {
                 Iterator iterElements = existingNonCommonElements.keySet().iterator();
-                while (iterElements!=null && iterElements.hasNext()){
+                while (iterElements!=null && iterElements.hasNext()) {
                     String elmID = (String)iterElements.next();
                     Vector elmTables = (Vector)existingNonCommonElements.get(elmID);
-                    SQLGenerator gen = new SQLGenerator(); 
+                    SQLGenerator gen = new SQLGenerator();
                     // skip first table since for one table the element copy already exists
-                    for (int i=1; elmTables!=null && i<elmTables.size(); i++){
+                    for (int i=1; elmTables!=null && i<elmTables.size(); i++) {
                         String[] table = (String[])elmTables.get(i);
                         String tblID = table[IDX_TBL];
                         String tblPos = table[IDX_POS];
@@ -215,15 +215,15 @@ public class LogicChangeConversions extends DataManipulations {
                         stmt.executeUpdate(buf.toString());
                         // create new element copy, relate it to this table
                         String newElmID = copyElm(elmID);
-                        if (newElmID!=null && newElmID.length()>0){
+                        if (newElmID!=null && newElmID.length()>0) {
                             countElmsCreated++;
                             gen.clear();
                             gen.setTable("TBL2ELEM");
                             gen.setFieldExpr("TABLE_ID", tblID);
                             gen.setFieldExpr("DATAELEM_ID", newElmID);
                             stmt.executeUpdate(gen.insertStatement());
-                            
-                            if (countElmsCreated==(outputRefreshStep*countOutputRefreshSteps)){
+
+                            if (countElmsCreated==(outputRefreshStep*countOutputRefreshSteps)) {
                                 outputWrite(".");
                                 countOutputRefreshSteps++;
                             }
@@ -237,12 +237,12 @@ public class LogicChangeConversions extends DataManipulations {
             outputWriteln("");
             outputWriteln(countElmsCreated + " new non-common elements created, time spent: " + durationMillis/1000 + " sec");
         }
-        finally{
-            try{
+        finally {
+            try {
                 if (rs!=null) rs.close();
                 if (stmt!=null) stmt.close();
             }
-            catch (SQLException e){}
+            catch (SQLException e) {}
         }
     }
 
@@ -250,10 +250,10 @@ public class LogicChangeConversions extends DataManipulations {
      * Deletes DST2TBL relations where the table has a newer version in the same dataset.
      * @throws Exception
      */
-    public void deleteExpiredDstToTblRelations() throws Exception{
+    public void deleteExpiredDstToTblRelations() throws Exception {
         ResultSet rs = null;
-        Statement stmt = null;      
-        try{
+        Statement stmt = null;
+        try {
             // delete DST2TBL relations where the table has a newer version in the same dataset
             outputWriteln("searching DST2TBL relations where the table has a newer version in the same dataset...");
             StringBuffer buf = new StringBuffer();
@@ -266,16 +266,16 @@ public class LogicChangeConversions extends DataManipulations {
             Hashtable prevOne = null;
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()){
+            while (rs!=null && rs.next()) {
                 String dstID = rs.getString("DST2TBL.DATASET_ID");
-                Hashtable thisOne = new Hashtable();                
+                Hashtable thisOne = new Hashtable();
                 thisOne.put("DST2TBL.DATASET_ID", dstID);
                 thisOne.put("DS_TABLE.IDENTIFIER", rs.getString("DS_TABLE.IDENTIFIER"));
-                if (prevOne!=null && prevOne.equals(thisOne)){                  
+                if (prevOne!=null && prevOne.equals(thisOne)) {
                     Hashtable hash = new Hashtable();
                     hash.put("DATASET_ID", dstID);
                     hash.put("TABLE_ID", rs.getString("DS_TABLE.TABLE_ID"));
-                    if (!hashSet.contains(hash)){
+                    if (!hashSet.contains(hash)) {
                         hashSet.add(hash);
                         count++;
                     }
@@ -284,17 +284,17 @@ public class LogicChangeConversions extends DataManipulations {
                     prevOne = thisOne;
             }
             rs.close();
-            
+
             boolean attemptingDelete = false;
-            if (count>0){
+            if (count>0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such relations found, now deleting them...");
             }
             else
                 outputWriteln(count + " such relations found");
-            
+
             count = 0;
-            for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();){
+            for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
                 Hashtable hash = (Hashtable)i.next();
                 buf = new StringBuffer();
                 buf.append("delete from DST2TBL where DATASET_ID=").append(hash.get("DATASET_ID")).
@@ -302,16 +302,16 @@ public class LogicChangeConversions extends DataManipulations {
                 stmt.executeUpdate(buf.toString());
                 count++;
             }
-            
+
             if (attemptingDelete)
                 outputWriteln(count + " deleted");
         }
-        finally{
-            try{
+        finally {
+            try {
                 if (rs!=null) rs.close();
                 if (stmt!=null) stmt.close();
             }
-            catch (SQLException e){}
+            catch (SQLException e) {}
         }
     }
 
@@ -320,29 +320,29 @@ public class LogicChangeConversions extends DataManipulations {
      * <b>Do not use this method if the database contents already follow the new versioning logic!</b>
      * @throws Exception
      */
-    public void cleanup() throws Exception{
-        
+    public void cleanup() throws Exception {
+
         // cleanup elements
         deleteBrokenTblToElmRelations();
         deleteExpiredTblToElmRelations();
         deleteOrphanNonCommonElements();
-        
+
         // cleanup tables
         deleteBrokenDstToTblRelations();
         deleteExpiredDstToTblRelations();
         deleteOrphanTables();
-        
+
         // cleanup namespaces
         deleteOrphanNamespaces();
-        
+
         // cleanup acls
         deleteOrphanAcls();
     }
 
     /**
-     * @throws Exception 
+     * @throws Exception
      */
-    public void create() throws Exception{
+    public void create() throws Exception {
         createTables();
         createNonCommonElements();
         createBooleanFixedValues();
@@ -352,11 +352,11 @@ public class LogicChangeConversions extends DataManipulations {
      * Deletes TBL2ELEM relations where the non-common element has a newer version in the same table.
      * @throws Exception
      */
-    public void deleteExpiredTblToElmRelations() throws Exception{
-        
+    public void deleteExpiredTblToElmRelations() throws Exception {
+
         ResultSet rs = null;
         Statement stmt = null;
-        try{
+        try {
             // delete TBL2ELEM relations where the non-common element has a newer version in the same table
             outputWriteln("searching TBL2ELEM relations where the non-common element has a newer version in the same table...");
             StringBuffer buf = new StringBuffer();
@@ -370,16 +370,16 @@ public class LogicChangeConversions extends DataManipulations {
             Hashtable prevOne = null;
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()){              
+            while (rs!=null && rs.next()) {
                 String tblID = rs.getString("TBL2ELEM.TABLE_ID");
                 Hashtable thisOne = new Hashtable();
                 thisOne.put("TBL2ELEM.TABLE_ID", tblID);
                 thisOne.put("DATAELEM.IDENTIFIER", rs.getString("DATAELEM.IDENTIFIER"));
-                if (prevOne!=null && prevOne.equals(thisOne)){
+                if (prevOne!=null && prevOne.equals(thisOne)) {
                     Hashtable hash = new Hashtable();
                     hash.put("TABLE_ID", tblID);
                     hash.put("DATAELEM_ID", rs.getString("DATAELEM.DATAELEM_ID"));
-                    if (!hashSet.contains(hash)){
+                    if (!hashSet.contains(hash)) {
                         hashSet.add(hash);
                         count++;
                     }
@@ -388,17 +388,17 @@ public class LogicChangeConversions extends DataManipulations {
                     prevOne = thisOne;
             }
             rs.close();
-            
+
             boolean attemptingDelete = false;
-            if (count>0){
+            if (count>0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such relations found, now deleting them...");
             }
             else
                 outputWriteln(count + " such relations found");
-            
+
             count = 0;
-            for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();){
+            for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
                 Hashtable hash = (Hashtable)i.next();
                 buf = new StringBuffer();
                 buf.append("delete from TBL2ELEM where DATAELEM_ID=").append(hash.get("DATAELEM_ID")).
@@ -406,16 +406,16 @@ public class LogicChangeConversions extends DataManipulations {
                 stmt.executeUpdate(buf.toString());
                 count++;
             }
-            
+
             if (attemptingDelete)
-                outputWriteln(count + " deleted");          
+                outputWriteln(count + " deleted");
         }
-        finally{
-            try{
+        finally {
+            try {
                 if (rs!=null) rs.close();
                 if (stmt!=null) stmt.close();
             }
-            catch (SQLException e){}
+            catch (SQLException e) {}
         }
     }
 }

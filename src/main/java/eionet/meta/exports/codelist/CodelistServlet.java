@@ -17,12 +17,12 @@ import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
 public class CodelistServlet extends HttpServlet {
-    
+
     /*
      *  (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -33,10 +33,10 @@ public class CodelistServlet extends HttpServlet {
         PrintWriter writer = null;
         OutputStreamWriter osw = null;
         Connection conn = null;
-        
-        try{
+
+        try {
             //guard(req);
-            
+
             // get the object ID
             String id = req.getParameter("id");
             if (Util.voidStr(id)) throw new Exception("Missing object id!");
@@ -47,7 +47,7 @@ public class CodelistServlet extends HttpServlet {
 
             // get codelist format
             String format = req.getParameter("format");
-            if (Util.voidStr(format)){
+            if (Util.voidStr(format)) {
                 format = "csv";
             }
 
@@ -64,7 +64,7 @@ public class CodelistServlet extends HttpServlet {
                 res.setContentType("text/xml; charset=UTF-8");
             else
                 throw new Exception("Unknown codelist format requested: " + format);
-            
+
             // prepare output stream and writer
             osw = new OutputStreamWriter(res.getOutputStream(), "UTF-8");
             writer = new PrintWriter(osw);
@@ -75,7 +75,7 @@ public class CodelistServlet extends HttpServlet {
                 codelist = new CodelistCSV(conn, writer);
             else if (format.equals("xml"))
                 codelist = new CodelistXML(conn, writer);
-            
+
             // write & flush
             codelist.write(id, type);
             codelist.flush();
@@ -84,25 +84,25 @@ public class CodelistServlet extends HttpServlet {
             writer.close();
             osw.close();
         }
-        catch (Exception e){
+        catch (Exception e) {
             e.printStackTrace(System.out);
             throw new ServletException(e.toString());
         }
-        finally{
-            try{ if (conn != null) conn.close(); } catch(Exception ee){}
+        finally {
+            try { if (conn != null) conn.close(); } catch (Exception ee) {}
         }
     }
-    
+
     /**
-     * 
+     *
      * @param req
      * @throws Exception
      */
-    private void guard(HttpServletRequest req) throws Exception{
-        
+    private void guard(HttpServletRequest req) throws Exception {
+
         DDUser user = SecurityUtil.getUser(req);
         if (user==null) throw new Exception("Not logged in!");
-        
+
         if (!SecurityUtil.hasPerm(user.getUserName(), "/", "xmli"))
             throw new Exception("Not permitted!");
     }
