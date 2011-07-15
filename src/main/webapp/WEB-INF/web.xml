@@ -9,7 +9,7 @@
 
 	<context-param>
 		<param-name>application-name</param-name>
-		<param-value>${app.name}</param-value>
+		<param-value>${app.displayName}</param-value>
 	</context-param>
 
 	<context-param>
