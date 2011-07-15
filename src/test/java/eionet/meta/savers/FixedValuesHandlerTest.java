@@ -21,7 +21,7 @@ import eionet.util.PropsIF;
 
 
 public class FixedValuesHandlerTest extends DatabaseTestCase {
-	
+    
     private FlatXmlDataSet loadedDataSet;
 
     /**
@@ -33,7 +33,7 @@ public class FixedValuesHandlerTest extends DatabaseTestCase {
                 Props.getProperty(PropsIF.DBURL),
                 Props.getProperty(PropsIF.DBUSR),
                 Props.getProperty(PropsIF.DBPSW));
-		    
+            
         return new DatabaseConnection(jdbcConn);
     }
 
@@ -75,7 +75,7 @@ public class FixedValuesHandlerTest extends DatabaseTestCase {
         FixedValuesHandler handler = new FixedValuesHandler(jdbcConn, pars, null);
 
         handler.execute();
-	
+    
         // Verify that there are the expected number of rows in the table
         tmpTable = queryDataSet.getTable("FXV");
         TestCase.assertEquals("20", tmpTable.getValue(0, "C").toString());

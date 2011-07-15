@@ -21,7 +21,7 @@ import eionet.util.PropsIF;
 
 
 public class DataElementHandlerTest extends DatabaseTestCase {
-	
+    
     private FlatXmlDataSet loadedDataSet;
 
     /**
@@ -33,7 +33,7 @@ public class DataElementHandlerTest extends DatabaseTestCase {
                 Props.getProperty(PropsIF.DBURL),
                 Props.getProperty(PropsIF.DBUSR),
                 Props.getProperty(PropsIF.DBPSW));
-		    
+            
         return new DatabaseConnection(jdbcConn);
     }
 

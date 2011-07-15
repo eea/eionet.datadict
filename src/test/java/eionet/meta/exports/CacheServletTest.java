@@ -13,24 +13,24 @@ import eionet.util.sql.ConnectionUtil;
  */
 public class CacheServletTest extends TestCase{
 
-	/**
-	 * 
-	 */
-	public void test_deleteCacheEntry(){
-		
-		Connection conn = null;
-		try{
-			conn = ConnectionUtil.getSimpleConnection();
-			CacheServlet.deleteCacheEntry("9999", "l'll", "a'sdasd", conn);
-		}
-		catch (Exception e){
-			fail("Was not expecting any exceptions, but catched " + e.toString());			
-		}
-		finally{
-			try{
-				if (conn!=null) conn.close();
-			}
-			catch (SQLException e){}
-		}
-	}
+    /**
+     * 
+     */
+    public void test_deleteCacheEntry(){
+        
+        Connection conn = null;
+        try{
+            conn = ConnectionUtil.getSimpleConnection();
+            CacheServlet.deleteCacheEntry("9999", "l'll", "a'sdasd", conn);
+        }
+        catch (Exception e){
+            fail("Was not expecting any exceptions, but catched " + e.toString());          
+        }
+        finally{
+            try{
+                if (conn!=null) conn.close();
+            }
+            catch (SQLException e){}
+        }
+    }
 }

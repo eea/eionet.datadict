@@ -36,7 +36,7 @@ import eionet.util.PropsIF;
  * See www.easymock.org and http://www.evolutionnext.com/blog/2006/01/27.html
  */
 public class AttributeHandlerTest extends DatabaseTestCase {
-	
+    
     /** */
     private FlatXmlDataSet loadedDataSet;
 
@@ -49,7 +49,7 @@ public class AttributeHandlerTest extends DatabaseTestCase {
                 Props.getProperty(PropsIF.DBURL),
                 Props.getProperty(PropsIF.DBUSR),
                 Props.getProperty(PropsIF.DBPSW));
-		    
+            
         return new DatabaseConnection(jdbcConn);
     }
 
@@ -90,9 +90,9 @@ public class AttributeHandlerTest extends DatabaseTestCase {
         HttpServletResponse response = createMock(HttpServletResponse.class);
         ServletConfig servletConfig = createMock(ServletConfig.class);
         ServletContext servletContext = createMock(ServletContext.class);
-		
+        
         Connection jdbcConn = getConnection().getConnection();
-	
+    
         // This is what we expect for the servletContext object
         expect(servletContext.getInitParameter("visuals-path")).andReturn(
                 "HERE-IS-VISUALS-PATH");
@@ -115,7 +115,7 @@ public class AttributeHandlerTest extends DatabaseTestCase {
         vs[0] = attribute_to_delete;
         expect(request.getParameterValues("simple_attr_id")).andReturn(vs);
         expect(request.getParameterValues("complex_attr_id")).andReturn(null);
-		
+        
         // start the replay for all mock objects
         replay(request);
         replay(response);

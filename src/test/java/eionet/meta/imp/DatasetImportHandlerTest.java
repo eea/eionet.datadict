@@ -41,7 +41,7 @@ public class DatasetImportHandlerTest extends DatabaseTestCase {
                 Props.getProperty(PropsIF.DBURL),
                 Props.getProperty(PropsIF.DBUSR),
                 Props.getProperty(PropsIF.DBPSW));
-		    
+            
         return new DatabaseConnection(jdbcConn);
     }
 
@@ -55,18 +55,18 @@ public class DatasetImportHandlerTest extends DatabaseTestCase {
     }
 
     
-	/**
-	 * Imports the contents of a file with a given systemID into DD database. The file is expected to be in the XML
-	 * format that is produced by DD's MS-Access import tool and it is expected that the file contains import data for
-	 * a dataset or several datasets only. i.e. it is not expected that the file contains an import for fixed values only.
-	 * 
-	 * The method expects <code>java.sql.Connection</code> object given via
-	 * @param systemID system ID of the file to be imported
-	 * @param conn <code>java.sql.Connection</code> to the DD database
-	 */
-	public DatasetImport simpleDatasetImport(String systemID, Connection conn, DDUser user) throws Exception{
-		
-		SAXParserFactory factory = SAXParserFactory.newInstance();
+    /**
+     * Imports the contents of a file with a given systemID into DD database. The file is expected to be in the XML
+     * format that is produced by DD's MS-Access import tool and it is expected that the file contains import data for
+     * a dataset or several datasets only. i.e. it is not expected that the file contains an import for fixed values only.
+     * 
+     * The method expects <code>java.sql.Connection</code> object given via
+     * @param systemID system ID of the file to be imported
+     * @param conn <code>java.sql.Connection</code> to the DD database
+     */
+    public DatasetImport simpleDatasetImport(String systemID, Connection conn, DDUser user) throws Exception{
+        
+        SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = factory.newSAXParser();
         XMLReader reader = parser.getXMLReader();
         
@@ -80,8 +80,8 @@ public class DatasetImportHandlerTest extends DatabaseTestCase {
             DatasetImport dstImport =
                 new DatasetImport(handler, conn, null);
             
-			dstImport.setUser(user);
-			dstImport.setDate(String.valueOf(System.currentTimeMillis()));
+            dstImport.setUser(user);
+            dstImport.setDate(String.valueOf(System.currentTimeMillis()));
             dstImport.setImportType("DST");
             dstImport.execute();
             
@@ -89,24 +89,24 @@ public class DatasetImportHandlerTest extends DatabaseTestCase {
         }
         else
             throw new Exception(handler.getErrorBuff().toString());
-	}
+    }
 
-	/**
-	 * @throws Exception 
-	 *
-	 */
-	public void testSimpleDatasetImport() throws Exception{
-		
-		TestUser testUser = new TestUser();
+    /**
+     * @throws Exception 
+     *
+     */
+    public void testSimpleDatasetImport() throws Exception{
+        
+        TestUser testUser = new TestUser();
         testUser.authenticate("heinlja", "");
         
-		DatasetImport dstImport = simpleDatasetImport(
-				getClass().getClassLoader().getResource(Seed.DST_IMPORT).getFile(), ConnectionUtil.getSimpleConnection(), testUser);
-		
-		assertEquals((int)0, dstImport.getErrorCount());
-//		assertEquals((int)0, dstImport.getWarningCount());
-		assertEquals(dstImport.getCountDatasetsImported(), dstImport.getCountDatasetsFound());
-		assertEquals(dstImport.getCountTablesImported(), dstImport.getCountTablesFound());
-		assertEquals(dstImport.getCountElementsImported(), dstImport.getCountElementsFound());
-	}
+        DatasetImport dstImport = simpleDatasetImport(
+                getClass().getClassLoader().getResource(Seed.DST_IMPORT).getFile(), ConnectionUtil.getSimpleConnection(), testUser);
+        
+        assertEquals((int)0, dstImport.getErrorCount());
+//      assertEquals((int)0, dstImport.getWarningCount());
+        assertEquals(dstImport.getCountDatasetsImported(), dstImport.getCountDatasetsFound());
+        assertEquals(dstImport.getCountTablesImported(), dstImport.getCountTablesFound());
+        assertEquals(dstImport.getCountElementsImported(), dstImport.getCountElementsFound());
+    }
 }

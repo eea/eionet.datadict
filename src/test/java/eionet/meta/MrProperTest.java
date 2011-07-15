@@ -33,7 +33,7 @@ public class MrProperTest extends DatabaseTestCase {
                 Props.getProperty(PropsIF.DBURL),
                 Props.getProperty(PropsIF.DBUSR),
                 Props.getProperty(PropsIF.DBPSW));
-		    
+            
         return new DatabaseConnection(conn);
     }
 
@@ -53,18 +53,18 @@ public class MrProperTest extends DatabaseTestCase {
      */
     public static void test_hashsets() {
         HashSet set = new HashSet();
-    		
+            
         HashMap hash1 = new HashMap();
 
         hash1.put("kala", null);
         hash1.put("mees", "auto");
         set.add(hash1);
-		
+        
         HashMap hash2 = new HashMap();
 
         hash2.put("kala", null);
         hash2.put("mees", "auto");
-			
+            
         TestCase.assertTrue(set.contains(hash2));
     }
 

@@ -8,36 +8,36 @@ import junit.framework.TestCase;
  *
  */
 public class PropsTest extends TestCase {
-	
-	/**
-	 * 
-	 * @param name
-	 */
-	public PropsTest(String name) {
-		super(name);
-	}
+    
+    /**
+     * 
+     * @param name
+     */
+    public PropsTest(String name) {
+        super(name);
+    }
 
-	/*
-	 *  (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
+    /*
+     *  (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
 
-	/*
-	 *  (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
+    /*
+     *  (non-Javadoc)
+     * @see junit.framework.TestCase#tearDown()
+     */
+    protected void tearDown() throws Exception {
+        super.tearDown();
+    }
 
-	/*
-	 * Test method for 'eionet.util.Props.isXHTMLEntity(String)'
-	 */
-	public void test_getProperty() {
-		assertEquals("com.mysql.jdbc.Driver", Props.getProperty(PropsIF.DBDRV));
-	}
+    /*
+     * Test method for 'eionet.util.Props.isXHTMLEntity(String)'
+     */
+    public void test_getProperty() {
+        assertEquals("com.mysql.jdbc.Driver", Props.getProperty(PropsIF.DBDRV));
+    }
 
 }

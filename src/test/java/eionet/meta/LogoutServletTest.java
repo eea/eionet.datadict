@@ -28,21 +28,21 @@ import junit.framework.TestCase;
  */
 public class LogoutServletTest extends TestCase {
 
-	private static final String CONTEXT_PATH = "testContext";
-	private static final String REQUEST_SCHEME = "http";
+    private static final String CONTEXT_PATH = "testContext";
+    private static final String REQUEST_SCHEME = "http";
 
-	/**
-	 * 
-	 * @throws Exception
-	 */
+    /**
+     * 
+     * @throws Exception
+     */
     public void testService() throws Exception {
-    	
+        
         // Create the mock objects
         HttpServletRequest request = createMock(HttpServletRequest.class);
         HttpServletResponse response = createMock(HttpServletResponse.class);
         ServletConfig servletConfig = createMock(ServletConfig.class);
         ServletContext servletContext = createMock(ServletContext.class);
-		
+        
         // Create the target object        
         LogoutServlet instance = new LogoutServlet();
 
@@ -65,7 +65,7 @@ public class LogoutServletTest extends TestCase {
 
         // This is what we expect to be called for the request object
         response.sendRedirect(expectedLogoutUrl); // Needs no return value
-		
+        
         // start the replay for all mock objects
         replay(request);
         replay(response);
@@ -89,11 +89,11 @@ public class LogoutServletTest extends TestCase {
      * @throws UnsupportedEncodingException
      */
     private String getExpectedLogoutUrl() throws UnsupportedEncodingException{
-    	
-    	String casLoginUrl = Props.getRequiredProperty(CASInitParam.CAS_LOGIN_URL.toString());
-    	String casServerName = Props.getRequiredProperty(CASInitParam.CAS_SERVER_NAME.toString());
-    	
-    	return casLoginUrl.replaceFirst("/login", "/logout") + "?url=" + URLEncoder.encode(
-    			REQUEST_SCHEME + "://" + casServerName + CONTEXT_PATH, "UTF-8");
+        
+        String casLoginUrl = Props.getRequiredProperty(CASInitParam.CAS_LOGIN_URL.toString());
+        String casServerName = Props.getRequiredProperty(CASInitParam.CAS_SERVER_NAME.toString());
+        
+        return casLoginUrl.replaceFirst("/login", "/logout") + "?url=" + URLEncoder.encode(
+                REQUEST_SCHEME + "://" + casServerName + CONTEXT_PATH, "UTF-8");
     }
 }

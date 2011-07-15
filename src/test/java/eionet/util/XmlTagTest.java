@@ -39,7 +39,7 @@ public class XmlTagTest extends TestCase {
                 assertEquals(tag.toString(),"<jaanus vanues=\"32\" pikkus=\"186cm\">tore mees on &amp;</jaanus>");
         }
 
-	// Show that &, " and < are NOT automatically escaped
+    // Show that &, " and < are NOT automatically escaped
         public void testShowNoEscapes(){
                 XmlTag tag = new XmlTag();
                 tag.setTagName("produce");

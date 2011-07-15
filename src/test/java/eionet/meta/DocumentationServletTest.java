@@ -32,7 +32,7 @@ import eionet.util.sql.ConnectionUtil;
  * See www.easymock.org and http://www.evolutionnext.com/blog/2006/01/27.html
  */
 public class DocumentationServletTest extends DatabaseTestCase {
-	
+    
     /** */
     private FlatXmlDataSet loadedDataSet;
 
@@ -40,7 +40,7 @@ public class DocumentationServletTest extends DatabaseTestCase {
      * Provide a connection to the database.
      */
     protected IDatabaseConnection getConnection() throws Exception {
-        Connection jdbcConn = ConnectionUtil.getSimpleConnection();		    
+        Connection jdbcConn = ConnectionUtil.getSimpleConnection();         
         return new DatabaseConnection(jdbcConn);
     }
 
@@ -65,7 +65,7 @@ public class DocumentationServletTest extends DatabaseTestCase {
         ServletConfig servletConfig = createMock(ServletConfig.class);
         ServletContext servletContext = createMock(ServletContext.class);
         RequestDispatcher requestDispatcher = createMock(RequestDispatcher.class);
-		
+        
         // Create the target object        
         DocumentationServlet instance = new DocumentationServlet();
 
@@ -122,7 +122,7 @@ public class DocumentationServletTest extends DatabaseTestCase {
         ServletConfig servletConfig = createMock(ServletConfig.class);
         ServletContext servletContext = createMock(ServletContext.class);
         RequestDispatcher requestDispatcher = createMock(RequestDispatcher.class);
-		
+        
         // Create the target object        
         DocumentationServlet instance = new DocumentationServlet();
 

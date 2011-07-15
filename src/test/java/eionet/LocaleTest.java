@@ -9,9 +9,9 @@ import junit.framework.TestCase;
  */
 public class LocaleTest extends TestCase {
     
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     public void test_javac_utf8() {
         // Verify that javac can handle "Elektra" in the Greek alphabet
         char elektra[] = { 

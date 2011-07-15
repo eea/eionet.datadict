@@ -64,7 +64,7 @@ class MockServletInputStream extends ServletInputStream {
  * See www.easymock.org and http://www.evolutionnext.com/blog/2006/01/27.html
  */
 public class DocUploadTest extends DatabaseTestCase {
-	
+    
     /** */
     private FlatXmlDataSet loadedDataSet;
 
@@ -72,10 +72,10 @@ public class DocUploadTest extends DatabaseTestCase {
      *  (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
-	protected void setUp() throws Exception {
-		ConnectionUtil.setConnectionType(ConnectionUtil.SIMPLE_CONNECTION);
-		super.setUp();
-	}
+    protected void setUp() throws Exception {
+        ConnectionUtil.setConnectionType(ConnectionUtil.SIMPLE_CONNECTION);
+        super.setUp();
+    }
 
     /**
      * Provide a connection to the database.
@@ -86,7 +86,7 @@ public class DocUploadTest extends DatabaseTestCase {
                 Props.getProperty(PropsIF.DBURL),
                 Props.getProperty(PropsIF.DBUSR),
                 Props.getProperty(PropsIF.DBPSW));
-		    
+            
         return new DatabaseConnection(jdbcConn);
     }
 
@@ -114,7 +114,7 @@ public class DocUploadTest extends DatabaseTestCase {
         HttpServletResponse response = createMock(HttpServletResponse.class);
         ServletConfig servletConfig = createMock(ServletConfig.class);
         HttpSession httpSession = createMock(HttpSession.class);
-		
+        
         // Create the target object        
         DocUpload instance = new DocUpload();
 
@@ -144,11 +144,11 @@ public class DocUploadTest extends DatabaseTestCase {
         
         expect(httpSession.getAttribute(SecurityUtil.REMOTEUSER)).andReturn(user);
         expectLastCall().times(1, 2);
-		
+        
 
         // this is what expect for the response object
         response.sendRedirect((String) anyObject());
-		
+        
         // start the replay for all mock objects
         replay(request);
         replay(response);
@@ -188,7 +188,7 @@ public class DocUploadTest extends DatabaseTestCase {
         HttpServletResponse response = createMock(HttpServletResponse.class);
         ServletConfig servletConfig = createMock(ServletConfig.class);
         HttpSession httpSession = createMock(HttpSession.class);
-		
+        
         // Create the target object        
         DocUpload instance = new DocUpload();
 
@@ -215,7 +215,7 @@ public class DocUploadTest extends DatabaseTestCase {
 
         // this is what we expect for the response object
         response.sendRedirect((String) anyObject());
-		
+        
         // start the replay for all mock objects
         replay(request);
         replay(response);
