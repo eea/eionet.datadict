@@ -12,51 +12,51 @@ import org.apache.xmlrpc.XmlRpcException;
  *
  */
 public class XmlRpcCallThread extends Thread{
-	
-	/** */
-	private XmlRpcClient client;
-	private String methodName;
-	private Vector params;
-	
-	/**
-	 * 
-	 * @param client
-	 * @param methodName
-	 * @param params
-	 */
-	public XmlRpcCallThread(XmlRpcClient client, String methodName, Vector params){
-		
-		this.client = client;
-		this.methodName = methodName;
-		this.params = params;
-	}
+    
+    /** */
+    private XmlRpcClient client;
+    private String methodName;
+    private Vector params;
+    
+    /**
+     * 
+     * @param client
+     * @param methodName
+     * @param params
+     */
+    public XmlRpcCallThread(XmlRpcClient client, String methodName, Vector params){
+        
+        this.client = client;
+        this.methodName = methodName;
+        this.params = params;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Thread#run()
-	 */
-	public void run(){
-		
-		try{
-			client.execute(methodName, params);
-		}
-		catch (XmlRpcException e){
-			e.printStackTrace(System.out);
-		}
-		catch (IOException e){
-			e.printStackTrace(System.out);
-		}
-	}
-	
-	/**
-	 * 
-	 * @param client
-	 * @param methodName
-	 * @param params
-	 */
-	public static void execute(XmlRpcClient client, String methodName, Vector params){
-		
-		XmlRpcCallThread caller = new XmlRpcCallThread(client, methodName, params);
-		caller.start();
-	}
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Thread#run()
+     */
+    public void run(){
+        
+        try{
+            client.execute(methodName, params);
+        }
+        catch (XmlRpcException e){
+            e.printStackTrace(System.out);
+        }
+        catch (IOException e){
+            e.printStackTrace(System.out);
+        }
+    }
+    
+    /**
+     * 
+     * @param client
+     * @param methodName
+     * @param params
+     */
+    public static void execute(XmlRpcClient client, String methodName, Vector params){
+        
+        XmlRpcCallThread caller = new XmlRpcCallThread(client, methodName, params);
+        caller.start();
+    }
 }

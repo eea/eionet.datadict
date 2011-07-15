@@ -25,14 +25,14 @@ public class TblPdfGuideline {
     
     //private Vector docElements = new Vector();
     
-	private String vsPath = null;
-	private Parameters params = null;
-	private DstPdfGuideline owner = null;
-	private boolean hasGIS = false;
-	protected Vector showedAttrs = new Vector();
-	
-	// methods
-	/////////////
+    private String vsPath = null;
+    private Parameters params = null;
+    private DstPdfGuideline owner = null;
+    private boolean hasGIS = false;
+    protected Vector showedAttrs = new Vector();
+    
+    // methods
+    /////////////
     
     public TblPdfGuideline(DDSearchEngine searchEngine, DstPdfGuideline owner)//, Section parentSection)
         throws Exception {
@@ -45,12 +45,12 @@ public class TblPdfGuideline {
         this.searchEngine = searchEngine;
         //this.parentSection = parentSection;
         this.owner = owner;
-		setShowedAttributes();
+        setShowedAttributes();
     }
     
-	public void write(String tblID) throws Exception {
-		write(tblID, null);
-	}
+    public void write(String tblID) throws Exception {
+        write(tblID, null);
+    }
     
     protected void write(String tblID, String dstID) throws Exception {
         
@@ -90,20 +90,20 @@ public class TblPdfGuideline {
         if (dsTable==null)
             throw new Exception("Table object was null!");
 
-		String s = dsTable.getAttributeValueByShortName("Name");
-		String tblName = Util.voidStr(s) ? dsTable.getShortName() : s;
-		
-		String titleTail = hasGIS ? "" : " table";
-				
-		String nr = "";		
-		if (owner != null)
-			nr = owner.getSectioning().level(tblName + titleTail, 2);
-		nr = nr==null ? "" : nr + " ";
-		
+        String s = dsTable.getAttributeValueByShortName("Name");
+        String tblName = Util.voidStr(s) ? dsTable.getShortName() : s;
+        
+        String titleTail = hasGIS ? "" : " table";
+                
+        String nr = "";     
+        if (owner != null)
+            nr = owner.getSectioning().level(tblName + titleTail, 2);
+        nr = nr==null ? "" : nr + " ";
+        
         Paragraph prg = new Paragraph();
         prg.add(new Chunk(nr + tblName, Fonts.getUnicode(14, Font.BOLD)));
         if (titleTail.length()>0)
-        	prg.add(new Chunk(titleTail, Fonts.getUnicode(14)));
+            prg.add(new Chunk(titleTail, Fonts.getUnicode(14)));
         
         //section = parentSection.addSection(prg, 2);
         
@@ -132,13 +132,13 @@ public class TblPdfGuideline {
         addElement(PdfUtil.simpleAttributesTable(v, showedAttrs));
         addElement(new Phrase("\n"));
 
-		/* write image attributes
-		Element imgAttrs = PdfUtil.imgAttributes(v, vsPath);
-		if (imgAttrs!=null){
-			addElement(new Phrase("\n"));
-			addElement(imgAttrs);
-		}*/
-		
+        /* write image attributes
+        Element imgAttrs = PdfUtil.imgAttributes(v, vsPath);
+        if (imgAttrs!=null){
+            addElement(new Phrase("\n"));
+            addElement(imgAttrs);
+        }*/
+        
         // write table elements factlist,
         // but first get fixed values & fk rels
         // and split the elements vector into GIS and non-GIS
@@ -147,108 +147,108 @@ public class TblPdfGuideline {
         if (v==null || v.size()==0)
             return;
 
-		Vector gisElms = new Vector();
-		Vector nonGisElms = new Vector();
-		        
+        Vector gisElms = new Vector();
+        Vector nonGisElms = new Vector();
+                
         DataElement elem = null;
-		String dstID = params==null ? null : params.getParameter("dstID");
+        String dstID = params==null ? null : params.getParameter("dstID");
         for (int i=0; i<v.size(); i++){
             elem = (DataElement)v.get(i);
             Vector fxValues = searchEngine.getFixedValues(elem.getID(), "elem");
             elem.setFixedValues(fxValues);
-			Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
-			elem.setFKRelations(fks);
-			Vector attrs = searchEngine.getSimpleAttributes(elem.getID(), "E");
-			elem.setAttributes(attrs);
-			
-			// split vector by GIS
-			if (elem.getGIS()!=null)
-				gisElms.add(elem);
-			else
-				nonGisElms.add(elem);
+            Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
+            elem.setFKRelations(fks);
+            Vector attrs = searchEngine.getSimpleAttributes(elem.getID(), "E");
+            elem.setAttributes(attrs);
+            
+            // split vector by GIS
+            if (elem.getGIS()!=null)
+                gisElms.add(elem);
+            else
+                nonGisElms.add(elem);
         }
         
         if (owner!=null){
-        	owner.addTblElms(dsTable.getID(), v);
-			owner.addTblNames(dsTable.getID(), tblName);
+            owner.addTblElms(dsTable.getID(), v);
+            owner.addTblNames(dsTable.getID(), tblName);
         }
 
         String nonGisTitle = " table:";
         String gisTitle = " metadata table:";
 
-		// write non-GIS elements factlist        
-		prg = new Paragraph();
-		prg.add(new Chunk("Columns in ",
-						FontFactory.getFont(FontFactory.HELVETICA, 12)));
-		prg.add(new Chunk(tblName,
-        				FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
-		prg.add(new Chunk(nonGisTitle,
-						FontFactory.getFont(FontFactory.HELVETICA, 12)));
-		addElement(prg);
-		
-        addElement(
-        	PdfUtil.tableElements(nonGisElms, null, owner.getSectioning()));
+        // write non-GIS elements factlist        
+        prg = new Paragraph();
+        prg.add(new Chunk("Columns in ",
+                        FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        prg.add(new Chunk(tblName,
+                        FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+        prg.add(new Chunk(nonGisTitle,
+                        FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        addElement(prg);
         
-		// write GIS elements factlist
-		if (gisElms.size()>0){
-			addElement(new Phrase("\n"));
-			
-			prg = new Paragraph();
-			prg.add(new Chunk("Columns in ",
-							FontFactory.getFont(FontFactory.HELVETICA, 12)));
-			prg.add(new Chunk(tblName,
-							FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
-			prg.add(new Chunk(gisTitle,
-							FontFactory.getFont(FontFactory.HELVETICA, 12)));
-			addElement(prg);
-			
-			addElement(
-				PdfUtil.tableElements(gisElms, null, owner.getSectioning()));
-		}
+        addElement(
+            PdfUtil.tableElements(nonGisElms, null, owner.getSectioning()));
+        
+        // write GIS elements factlist
+        if (gisElms.size()>0){
+            addElement(new Phrase("\n"));
+            
+            prg = new Paragraph();
+            prg.add(new Chunk("Columns in ",
+                            FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            prg.add(new Chunk(tblName,
+                            FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+            prg.add(new Chunk(gisTitle,
+                            FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            addElement(prg);
+            
+            addElement(
+                PdfUtil.tableElements(gisElms, null, owner.getSectioning()));
+        }
         
         /* write data element full guidelines, each into a separate chapter
-		for (int i=0; v!=null && i<v.size(); i++){
+        for (int i=0; v!=null && i<v.size(); i++){
             elem = (DataElement)v.get(i);
             addElement(new Paragraph("\n"));
             ElmPdfGuideline elmGuideln = new ElmPdfGuideline(searchEngine, this); //, section);
-			elmGuideln.setVsPath(this.vsPath);
+            elmGuideln.setVsPath(this.vsPath);
             elmGuideln.write(elem.getID(), dsTable.getID());
         }*/
     }
     
     protected void addElement(Element elm){
-    	
-    	if (owner!=null)
-    		owner.addElement(elm);
+        
+        if (owner!=null)
+            owner.addElement(elm);
         
         //if (elm != null) section.add(elm);        
         //return docElements.size();
     }
 
-	public void setVsPath(String vsPath){
-		this.vsPath = vsPath;
-	}
+    public void setVsPath(String vsPath){
+        this.vsPath = vsPath;
+    }
 
-	public void setParameters(Parameters params){
-		this.params = params;
-	}
-	
-	protected Sectioning getSectioning(){
-		if (owner!=null)
-			return owner.getSectioning();
-		else
-			return null;
-	}
-	
-	public void setGIS(boolean hasGIS){
-		this.hasGIS = hasGIS;
-	}
-	
-	protected void setShowedAttributes(){
-		
-		showedAttrs.add("Short name");
-		showedAttrs.add("Definition");
-		showedAttrs.add("ShortDescription");
-		showedAttrs.add("Methodology");
-	}
+    public void setParameters(Parameters params){
+        this.params = params;
+    }
+    
+    protected Sectioning getSectioning(){
+        if (owner!=null)
+            return owner.getSectioning();
+        else
+            return null;
+    }
+    
+    public void setGIS(boolean hasGIS){
+        this.hasGIS = hasGIS;
+    }
+    
+    protected void setShowedAttributes(){
+        
+        showedAttrs.add("Short name");
+        showedAttrs.add("Definition");
+        showedAttrs.add("ShortDescription");
+        showedAttrs.add("Methodology");
+    }
 }

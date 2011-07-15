@@ -7,17 +7,17 @@ package eionet.meta.exports.mdb;
  * @author jaanus
  */
 public class MdbException extends Exception{
-	
-	/*
-	 * 
-	 */
-	public MdbException(){
-	}
+    
+    /*
+     * 
+     */
+    public MdbException(){
+    }
 
-	/*
-	 * 
-	 */
-	public MdbException(String s){
-		super(s);
-	}
+    /*
+     * 
+     */
+    public MdbException(String s){
+        super(s);
+    }
 }

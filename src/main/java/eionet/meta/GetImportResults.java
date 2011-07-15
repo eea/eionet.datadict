@@ -14,7 +14,7 @@ import eionet.meta.exports.pdf.ImportResults;
 import eionet.meta.exports.pdf.PdfHandoutIF;
 
 public class GetImportResults extends HttpServlet {
-	
+    
     protected void service(HttpServletRequest req, HttpServletResponse res)
                                 throws ServletException, IOException {
 
@@ -23,24 +23,24 @@ public class GetImportResults extends HttpServlet {
         if (text==null)
             throw new ServletException("Text was null!");
             
-	    // set up the OutputStream to write to
-	    ByteArrayOutputStream barray = new ByteArrayOutputStream();
-    	    
-		// construct the PDF
-		PdfHandoutIF pdf = new ImportResults(barray);
-
-		try{		
-	        // write the text
-			pdf.write(text);
-			
-			// flush the text to barray
-			pdf.flush();
-		}
-		catch (Exception e){
-			e.printStackTrace(new PrintStream(res.getOutputStream()));
-		}
+        // set up the OutputStream to write to
+        ByteArrayOutputStream barray = new ByteArrayOutputStream();
             
-		// flush the document to the servlet output stream
+        // construct the PDF
+        PdfHandoutIF pdf = new ImportResults(barray);
+
+        try{        
+            // write the text
+            pdf.write(text);
+            
+            // flush the text to barray
+            pdf.flush();
+        }
+        catch (Exception e){
+            e.printStackTrace(new PrintStream(res.getOutputStream()));
+        }
+            
+        // flush the document to the servlet output stream
         res.setContentType("application/pdf");
         res.setContentLength(barray.size()); // not supported by Resin version < 2.x.x
             

@@ -44,8 +44,8 @@ public class DElemAttribute{
     private String displayHeight = "1";
     private String displayMultiple   = "0";
     private String inheritable   = "0";    
-	private String harvesterID   = null;
-	private String harvAttrID   = null;
+    private String harvesterID   = null;
+    private String harvAttrID   = null;
 
     private Vector fields = null;
     private Vector rows = null;
@@ -194,17 +194,17 @@ public class DElemAttribute{
     }
     
     public void setHarvesterID(String harvesterID){
-    	this.harvesterID = harvesterID; 
+        this.harvesterID = harvesterID; 
     }
     
-	public String getHarvesterID(){
-		return this.harvesterID; 
-	}
+    public String getHarvesterID(){
+        return this.harvesterID; 
+    }
 
-	public void setDisplayType(String displayType){
-		this.displayType = displayType;
-	}
-	
+    public void setDisplayType(String displayType){
+        this.displayType = displayType;
+    }
+    
     public String getDisplayType(){
         return displayType;
     }
@@ -306,11 +306,11 @@ public class DElemAttribute{
         Vector _rows = getRows();
         for (int i=0; _rows!=null && i<_rows.size(); i++){
             Hashtable rowHash = (Hashtable)_rows.get(i);
-			String value = (String)rowHash.get(fldID);
-			if (value==null)
-				continue;
-			else
-				return value;
+            String value = (String)rowHash.get(fldID);
+            if (value==null)
+                continue;
+            else
+                return value;
         }
         
         return null;
@@ -356,7 +356,7 @@ public class DElemAttribute{
     public boolean equals(Object o) {
         
         if (!(o instanceof DElemAttribute))
-	        return false;
+            return false;
         
         DElemAttribute oAttr = (DElemAttribute)o;
         
@@ -481,27 +481,27 @@ public class DElemAttribute{
         inheritedValue=null;
     }
 
-	public static Vector orderAttrs(Vector attrs, Vector order){
-		
-		if (order==null || order.size()==0 || attrs==null || attrs.size()==0) return attrs;
-		
-		for (int i=0; i<attrs.size(); i++){
-			DElemAttribute attr = (DElemAttribute)attrs.get(i);
-			String shortName = attr.getShortName();
-			int pos = order.indexOf(shortName);
-			if (pos == -1)
-				order.add(attr);
-			else{
-				order.remove(pos);
-				order.insertElementAt(attr, pos);
-			}
-		}
-		
-		for (int i=0; i<order.size(); i++)
-			if (!order.get(i).getClass().getName().endsWith("DElemAttribute")) order.remove(i--);
-		
-		return order;
-	}
+    public static Vector orderAttrs(Vector attrs, Vector order){
+        
+        if (order==null || order.size()==0 || attrs==null || attrs.size()==0) return attrs;
+        
+        for (int i=0; i<attrs.size(); i++){
+            DElemAttribute attr = (DElemAttribute)attrs.get(i);
+            String shortName = attr.getShortName();
+            int pos = order.indexOf(shortName);
+            if (pos == -1)
+                order.add(attr);
+            else{
+                order.remove(pos);
+                order.insertElementAt(attr, pos);
+            }
+        }
+        
+        for (int i=0; i<order.size(); i++)
+            if (!order.get(i).getClass().getName().endsWith("DElemAttribute")) order.remove(i--);
+        
+        return order;
+    }
 
     /**
     *

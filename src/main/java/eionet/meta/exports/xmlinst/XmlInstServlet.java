@@ -26,66 +26,66 @@ public class XmlInstServlet extends HttpServlet {
         Connection conn = null;
         
         try{
-        	
-			//guard(req);
-			
+            
+            //guard(req);
+            
             // get the object ID
             String id = req.getParameter("id");
-	        if (Util.voidStr(id)) throw new Exception("Missing id!");
+            if (Util.voidStr(id)) throw new Exception("Missing id!");
 
-			// get the object type
-			String type = req.getParameter("type");
-			if (Util.voidStr(type)) throw new Exception("Missing type!");
-	        
-	        ServletContext ctx = getServletContext();
+            // get the object type
+            String type = req.getParameter("type");
+            if (Util.voidStr(type)) throw new Exception("Missing type!");
+            
+            ServletContext ctx = getServletContext();
 
             // get the DB connection
-	        conn = ConnectionUtil.getConnection();
+            conn = ConnectionUtil.getConnection();
                 
-	        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-			res.setContentType("text/xml; charset=UTF-8");
-			OutputStreamWriter osw = new OutputStreamWriter(res.getOutputStream(), "UTF-8");
+            DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+            res.setContentType("text/xml; charset=UTF-8");
+            OutputStreamWriter osw = new OutputStreamWriter(res.getOutputStream(), "UTF-8");
             writer = new PrintWriter(osw);
 
-			XmlInstIF xmlInst = null;
-			if (type.equals("tbl"))
-            	xmlInst = new TblXmlInst(searchEngine, writer);
+            XmlInstIF xmlInst = null;
+            if (type.equals("tbl"))
+                xmlInst = new TblXmlInst(searchEngine, writer);
             else if (type.equals("dst"))
-				xmlInst = new DstXmlInst(searchEngine, writer);
-			else
-				throw new Exception("Unknown type: " + type);
+                xmlInst = new DstXmlInst(searchEngine, writer);
+            else
+                throw new Exception("Unknown type: " + type);
             
             // build application context
             String reqUri = req.getRequestURL().toString();
             int i = reqUri.lastIndexOf("/");
             if (i != -1) xmlInst.setAppContext(reqUri.substring(0,i));
             
-			xmlInst.write(id);
-			xmlInst.flush();
-	        writer.flush();
-	        osw.flush();
-	        writer.close();
-	        osw.close();
-	    }
-	    catch (Exception e){
-	        e.printStackTrace(System.out);
-			throw new ServletException(e.toString());
-	    }
-		finally{
-			try{
-				if (writer != null) writer.close();
-				if (conn != null) conn.close();
-			}
-			catch(Exception ee){}
-		}
+            xmlInst.write(id);
+            xmlInst.flush();
+            writer.flush();
+            osw.flush();
+            writer.close();
+            osw.close();
+        }
+        catch (Exception e){
+            e.printStackTrace(System.out);
+            throw new ServletException(e.toString());
+        }
+        finally{
+            try{
+                if (writer != null) writer.close();
+                if (conn != null) conn.close();
+            }
+            catch(Exception ee){}
+        }
     }
     
     private void guard(HttpServletRequest req) throws Exception{
-    	
-    	DDUser user = SecurityUtil.getUser(req);
-		if (user==null) throw new Exception("Not logged in!");
-		
-		if (!SecurityUtil.hasPerm(user.getUserName(), "/", "xmli"))
-			throw new Exception("Not permitted!");
+        
+        DDUser user = SecurityUtil.getUser(req);
+        if (user==null) throw new Exception("Not logged in!");
+        
+        if (!SecurityUtil.hasPerm(user.getUserName(), "/", "xmli"))
+            throw new Exception("Not permitted!");
     }
 }

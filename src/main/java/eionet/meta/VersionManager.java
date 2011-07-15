@@ -891,8 +891,8 @@ public class VersionManager {
     }
 
     /**
-	*
-	*/
+    *
+    */
     public String getLatestReleasedTblID(DsTable tbl) throws SQLException {
 
         String tblIdf = tbl.getIdentifier();
@@ -925,8 +925,8 @@ public class VersionManager {
     }
 
     /**
-	*
-	*/
+    *
+    */
     public String getCheckedOutCopyID(Dataset dst) throws SQLException {
 
         StringBuffer buf = new StringBuffer();
@@ -964,8 +964,8 @@ public class VersionManager {
     }
 
     /**
-	*
-	*/
+    *
+    */
     public Vector getRegStatuses() {
         return regStatuses;
     }
@@ -1059,15 +1059,15 @@ public class VersionManager {
     }
 
     /**
-	*
-	*/
+    *
+    */
     public void setContext(ServletContext ctx) {
         this.ctx = ctx;
     }
 
     /**
-	*
-	*/
+    *
+    */
     public void setVersionUpdate(boolean b) {
         this.versionUpdate = b;
     }
@@ -1122,9 +1122,9 @@ public class VersionManager {
     }
 
     /**
-	 * 
-	 *
-	 */
+     * 
+     *
+     */
     public Parameters getServlRequestParams() {
         return this.servlRequestParams;
     }

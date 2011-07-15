@@ -24,14 +24,14 @@ public class ElmPdfGuideline {
     
     //private Vector docElements = new Vector();
     
-	private String vsPath = null;
-	
-	private Parameters params = null;
-	
-	private TblPdfGuideline owner = null;
-	
-	// methods
-	///////////	
+    private String vsPath = null;
+    
+    private Parameters params = null;
+    
+    private TblPdfGuideline owner = null;
+    
+    // methods
+    /////////// 
     
     public ElmPdfGuideline(DDSearchEngine searchEngine, TblPdfGuideline owner) //Section parentSection)
         throws Exception {
@@ -45,9 +45,9 @@ public class ElmPdfGuideline {
         this.owner = owner;
     }
     
-	public void write(String elemID) throws Exception {
-		write(elemID, null);
-	}
+    public void write(String elemID) throws Exception {
+        write(elemID, null);
+    }
     
     protected void write(String elemID, String tblID) throws Exception {
         
@@ -74,14 +74,14 @@ public class ElmPdfGuideline {
         if (elem==null)
             throw new Exception("Element object was null!");
         
-		String nr = "";
-		Sectioning sect = null;
-		if (owner != null)
-			sect = owner.getSectioning();
-		if (sect != null)
-			nr = sect.level(elem.getShortName() + " element", 3);
-		nr = nr==null ? "" : nr + " ";
-				
+        String nr = "";
+        Sectioning sect = null;
+        if (owner != null)
+            sect = owner.getSectioning();
+        if (sect != null)
+            nr = sect.level(elem.getShortName() + " element", 3);
+        nr = nr==null ? "" : nr + " ";
+                
         Paragraph prg = new Paragraph();
         prg.add(new Chunk(nr + elem.getShortName(), Fonts.getUnicode(12, Font.BOLDITALIC)));
         prg.add(new Chunk(" data element", Fonts.getUnicode(12, Font.BOLD)));
@@ -138,14 +138,14 @@ public class ElmPdfGuideline {
         addElement(PdfUtil.simpleAttributesTable(attrs));
         addElement(new Phrase("\n"));
         
-		// write foreign key reltaions if any exist
-		String dstID = params==null ? null : params.getParameter("dstID");
-		Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
-		if (fks!=null && fks.size()>0){
-			addElement(PdfUtil.foreignKeys(fks));
-			addElement(new Phrase("\n"));
-		}
-			 
+        // write foreign key reltaions if any exist
+        String dstID = params==null ? null : params.getParameter("dstID");
+        Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
+        if (fks!=null && fks.size()>0){
+            addElement(PdfUtil.foreignKeys(fks));
+            addElement(new Phrase("\n"));
+        }
+             
         // write complex attributes, one table for each
         Vector v = elem.getComplexAttributes();
         if (v!=null && v.size()>0){
@@ -171,28 +171,28 @@ public class ElmPdfGuideline {
             addElement(PdfUtil.fixedValuesTable(v, false));
         }
 
-		/*/ write image attributes
-		Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath);
-		if (imgAttrs!=null){
-			addElement(new Phrase("\n"));
-			addElement(imgAttrs);
-		}*/
+        /*/ write image attributes
+        Element imgAttrs = PdfUtil.imgAttributes(attrs, vsPath);
+        if (imgAttrs!=null){
+            addElement(new Phrase("\n"));
+            addElement(imgAttrs);
+        }*/
     }
     
-	private void addElement(Element elm){
-    	
-		if (owner!=null)
-			owner.addElement(elm);
+    private void addElement(Element elm){
         
-		//if (elm != null) section.add(elm);        
-		//return docElements.size();
-	}
+        if (owner!=null)
+            owner.addElement(elm);
+        
+        //if (elm != null) section.add(elm);        
+        //return docElements.size();
+    }
 
-	public void setVsPath(String vsPath){
-		this.vsPath = vsPath;
-	}
+    public void setVsPath(String vsPath){
+        this.vsPath = vsPath;
+    }
 
-	public void setParameters(Parameters params){
-		this.params = params;
-	}
+    public void setParameters(Parameters params){
+        this.params = params;
+    }
 }

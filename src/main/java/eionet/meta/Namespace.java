@@ -27,9 +27,9 @@ public class Namespace{
         return id;
     }
 
-	public String getPrefix(){
-		return "dd" + id;
-	}
+    public String getPrefix(){
+        return "dd" + id;
+    }
     
     public String getShortName(){
         return shortName;
@@ -67,12 +67,12 @@ public class Namespace{
         return dsID;
     }
     
-	public void setWorkingUser(String user){
-		this.workingUser = user;
-	}
+    public void setWorkingUser(String user){
+        this.workingUser = user;
+    }
 
-	public String getWorkingUser(){
-		return this.workingUser;
-	}
+    public String getWorkingUser(){
+        return this.workingUser;
+    }
     
 }

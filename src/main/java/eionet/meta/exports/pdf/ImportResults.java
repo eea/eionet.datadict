@@ -12,13 +12,13 @@ import com.lowagie.text.Phrase;
  *
  */
 public class ImportResults extends PdfHandout {
-	
-	public ImportResults(OutputStream os){
-			this.os = os;
-		}
-	
-	public void write(String text) throws Exception {
-		addElement(new Phrase(text, Fonts.get(Fonts.CELL_VALUE)));
+    
+    public ImportResults(OutputStream os){
+            this.os = os;
+        }
+    
+    public void write(String text) throws Exception {
+        addElement(new Phrase(text, Fonts.get(Fonts.CELL_VALUE)));
     setHeader("Import results");
-	}
+    }
 }

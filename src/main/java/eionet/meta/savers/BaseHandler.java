@@ -19,79 +19,79 @@ import eionet.util.sql.Transaction;
  */
 public abstract class BaseHandler {
 
-	/** */
-	protected Connection conn = null;
-	protected Parameters req = null;
-	protected ServletContext ctx = null;
-	protected HttpServletRequest httpServletRequest = null;
-	
-	/** */
-	protected DDUser user = null;
-	protected static LogServiceIF logger = new Log4jLoggerImpl();
+    /** */
+    protected Connection conn = null;
+    protected Parameters req = null;
+    protected ServletContext ctx = null;
+    protected HttpServletRequest httpServletRequest = null;
+    
+    /** */
+    protected DDUser user = null;
+    protected static LogServiceIF logger = new Log4jLoggerImpl();
 
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	public void execute() throws Exception {
+    /**
+     * 
+     * @throws Exception
+     */
+    public void execute() throws Exception {
 
-		Transaction tx = Transaction.start(conn);
-		try{
-    		execute_();
-    		tx.commit();
-    	}
-    	catch (Exception e){
-    		tx.rollback();
-    		throw e;
-    	}
-    	finally{    		
-    		tx.end();
-    	}
-	}
+        Transaction tx = Transaction.start(conn);
+        try{
+            execute_();
+            tx.commit();
+        }
+        catch (Exception e){
+            tx.rollback();
+            throw e;
+        }
+        finally{            
+            tx.end();
+        }
+    }
 
-	/**
-	 * 
-	 * @param pars
-	 * @throws Exception
-	 */
-	public void execute(Parameters pars) throws Exception {
-		this.req = pars;
-		execute();
-	}
+    /**
+     * 
+     * @param pars
+     * @throws Exception
+     */
+    public void execute(Parameters pars) throws Exception {
+        this.req = pars;
+        execute();
+    }
 
-	/**
-	 * 
-	 * @param pars
-	 * @throws Exception
-	 */
-	public void execute(HttpServletRequest req) throws Exception {
-		this.httpServletRequest = req;
-		execute();
-	}
-	
-	/**
-	 *
-	 */
-	protected void cleanVisuals(){
-		
-		String vp = ctx==null ? null : ctx.getInitParameter("visuals-path");
-		if (Util.nullString(vp))
-			logger.error("cleanVisuals() failed to find visuals path!");
-		
-		MrProper mrProper = new MrProper(conn);
-		mrProper.setUser(user);
-				
-		Parameters pars = new Parameters();
-		pars.addParameterValue(MrProper.FUNCTIONS_PAR, MrProper.CLN_VISUALS);
-		pars.addParameterValue(MrProper.VISUALS_PATH, vp);
-		
-		mrProper.execute(pars);
-		logger.debug(mrProper.getResponse().toString());
-	}
-	
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	public abstract void execute_() throws Exception;
+    /**
+     * 
+     * @param pars
+     * @throws Exception
+     */
+    public void execute(HttpServletRequest req) throws Exception {
+        this.httpServletRequest = req;
+        execute();
+    }
+    
+    /**
+     *
+     */
+    protected void cleanVisuals(){
+        
+        String vp = ctx==null ? null : ctx.getInitParameter("visuals-path");
+        if (Util.nullString(vp))
+            logger.error("cleanVisuals() failed to find visuals path!");
+        
+        MrProper mrProper = new MrProper(conn);
+        mrProper.setUser(user);
+                
+        Parameters pars = new Parameters();
+        pars.addParameterValue(MrProper.FUNCTIONS_PAR, MrProper.CLN_VISUALS);
+        pars.addParameterValue(MrProper.VISUALS_PATH, vp);
+        
+        mrProper.execute(pars);
+        logger.debug(mrProper.getResponse().toString());
+    }
+    
+    /**
+     * 
+     * @throws Exception
+     */
+    public abstract void execute_() throws Exception;
 }

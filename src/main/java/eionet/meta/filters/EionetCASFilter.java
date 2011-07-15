@@ -12,13 +12,13 @@ import edu.yale.its.tp.cas.client.filter.CASFilter;
  */
 public class EionetCASFilter extends CASFilter{
 
-	/*
-	 * (non-Javadoc)
-	 * @see edu.yale.its.tp.cas.client.filter.CASFilter#init(javax.servlet.FilterConfig)
-	 */
-	public void init(FilterConfig config) throws ServletException {
-		
-		CASFilterConfig.init(config);
-		super.init(CASFilterConfig.getInstance());
-	}
+    /*
+     * (non-Javadoc)
+     * @see edu.yale.its.tp.cas.client.filter.CASFilter#init(javax.servlet.FilterConfig)
+     */
+    public void init(FilterConfig config) throws ServletException {
+        
+        CASFilterConfig.init(config);
+        super.init(CASFilterConfig.getInstance());
+    }
 }

@@ -17,7 +17,7 @@
  * 
  * Contributors(s):
  *    Original code: Dusko Kolundzija (ED)
- *    				 Istvan Alfeldi (ED)
+ *                   Istvan Alfeldi (ED)
  */
 
 package eionet.meta.exports.xmlmeta;
@@ -32,47 +32,47 @@ import eionet.util.Util;
 
 public class TblXmlMeta extends XmlMeta {
 
-	public TblXmlMeta(DDSearchEngine searchEngine, PrintWriter writer) {
-		super(searchEngine, writer);
-	}
+    public TblXmlMeta(DDSearchEngine searchEngine, PrintWriter writer) {
+        super(searchEngine, writer);
+    }
 
-	public void write(String tblID) throws Exception {
+    public void write(String tblID) throws Exception {
 
-		if (Util.voidStr(tblID))
-			throw new Exception("Table ID not specified!");
+        if (Util.voidStr(tblID))
+            throw new Exception("Table ID not specified!");
 
-		// Get the table object.
-		DsTable tbl = searchEngine.getDatasetTable(tblID);
-		if (tbl == null)
-			throw new Exception("Table not found!");
+        // Get the table object.
+        DsTable tbl = searchEngine.getDatasetTable(tblID);
+        if (tbl == null)
+            throw new Exception("Table not found!");
 
-		// get data elements (this will set all the simple attributes of
-		// elements)
-		tbl.setElements(searchEngine.getDataElements(null, null, null, null,
-				tblID));
+        // get data elements (this will set all the simple attributes of
+        // elements)
+        tbl.setElements(searchEngine.getDataElements(null, null, null, null,
+                tblID));
 
-		write(tbl);
-	}
+        write(tbl);
+    }
 
-	/**
-	 * Write a schema for a given object.
-	 */
-	private void write(DsTable tbl) throws Exception {
+    /**
+     * Write a schema for a given object.
+     */
+    private void write(DsTable tbl) throws Exception {
 
-		writeTable(tbl);
-	}
+        writeTable(tbl);
+    }
 
-	protected String getSchemaLocation(String nsID, String id) {
-		StringBuffer buf = new StringBuffer().append(this.appContext).append(
-				"GetSchema?id=TBL").append(id);
+    protected String getSchemaLocation(String nsID, String id) {
+        StringBuffer buf = new StringBuffer().append(this.appContext).append(
+                "GetSchema?id=TBL").append(id);
 
-		return buf.toString();
-	}
+        return buf.toString();
+    }
 
-	protected void setLeads() {
-		leads = new Hashtable();
-		leads.put("row", "\t");
-		leads.put("elm", "\t\t");
-	}
+    protected void setLeads() {
+        leads = new Hashtable();
+        leads.put("row", "\t");
+        leads.put("elm", "\t\t");
+    }
 
 }

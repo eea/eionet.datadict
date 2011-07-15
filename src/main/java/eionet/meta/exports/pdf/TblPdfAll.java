@@ -24,14 +24,14 @@ public class TblPdfAll {
     
     //private Vector docElements = new Vector();
     
-	private String vsPath = null;
-	
-	private Parameters params = null;
-	
-	private DstPdfAll owner = null;
-	
-	// methods
-	/////////////
+    private String vsPath = null;
+    
+    private Parameters params = null;
+    
+    private DstPdfAll owner = null;
+    
+    // methods
+    /////////////
     
     public TblPdfAll(DDSearchEngine searchEngine, DstPdfAll owner)
         throws Exception {
@@ -46,9 +46,9 @@ public class TblPdfAll {
         this.owner = owner;
     }
     
-	public void write(String tblID) throws Exception {
-		write(tblID, null);
-	}
+    public void write(String tblID) throws Exception {
+        write(tblID, null);
+    }
     
     protected void write(String tblID, String dstID) throws Exception {
         
@@ -88,14 +88,14 @@ public class TblPdfAll {
         if (dsTable==null)
             throw new Exception("Table object was null!");
 
-		String s = dsTable.getAttributeValueByShortName("Name");
-		String tblName = Util.voidStr(s) ? dsTable.getShortName() : s;
-				
-		String nr = "";
-		if (owner != null)
-			nr = owner.getSectioning().level(tblName + " table", 2);
-		nr = nr==null ? "" : nr + " ";
-		
+        String s = dsTable.getAttributeValueByShortName("Name");
+        String tblName = Util.voidStr(s) ? dsTable.getShortName() : s;
+                
+        String nr = "";
+        if (owner != null)
+            nr = owner.getSectioning().level(tblName + " table", 2);
+        nr = nr==null ? "" : nr + " ";
+        
         Paragraph prg = new Paragraph();
         prg.add(new Chunk(nr + tblName, Fonts.getUnicode(14, Font.BOLD)));
         prg.add(new Chunk(" table", Fonts.getUnicode(14)));
@@ -115,14 +115,14 @@ public class TblPdfAll {
         hash.put("value", dsTable.getShortName());
         v.add(0, hash);
         
-		// version
-		String ver = dsTable.getVersion();
-		if (!Util.voidStr(ver)){
-			hash = new Hashtable();
-			hash.put("name", "Version");
-			hash.put("value", ver);
-			v.add(0, hash);
-		}
+        // version
+        String ver = dsTable.getVersion();
+        if (!Util.voidStr(ver)){
+            hash = new Hashtable();
+            hash.put("name", "Version");
+            hash.put("value", ver);
+            v.add(0, hash);
+        }
 
         addElement(PdfUtil.simpleAttributesTable(v));
         addElement(new Phrase("\n"));
@@ -133,57 +133,57 @@ public class TblPdfAll {
             return;
         
         DataElement elem = null;
-		String dstID = params==null ? null : params.getParameter("dstID");
+        String dstID = params==null ? null : params.getParameter("dstID");
         for (int i=0; i<v.size(); i++){
             elem = (DataElement)v.get(i);
             Vector fxValues = searchEngine.getFixedValues(elem.getID(), "elem");
             elem.setFixedValues(fxValues);
-			Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
-			elem.setFKRelations(fks);
-			Vector attrs = searchEngine.getSimpleAttributes(elem.getID(), "E");
-			elem.setAttributes(attrs);
+            Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
+            elem.setFKRelations(fks);
+            Vector attrs = searchEngine.getSimpleAttributes(elem.getID(), "E");
+            elem.setAttributes(attrs);
         }
         
         if (owner!=null){
-        	owner.addTblElms(dsTable.getID(), v);
-			owner.addTblNames(dsTable.getID(), tblName);
+            owner.addTblElms(dsTable.getID(), v);
+            owner.addTblNames(dsTable.getID(), tblName);
         }
         
-		addElement(new Paragraph("Columns in the table:",
-											Fonts.get(Fonts.HEADING_0)));
+        addElement(new Paragraph("Columns in the table:",
+                                            Fonts.get(Fonts.HEADING_0)));
         addElement(PdfUtil.tableElements(v, null, null));
         
         // write data element full guidelines, each into a separate chapter
-		for (int i=0; v!=null && i<v.size(); i++){
+        for (int i=0; v!=null && i<v.size(); i++){
             elem = (DataElement)v.get(i);
             addElement(new Paragraph("\n"));
             ElmPdfAll elmAll = new ElmPdfAll(searchEngine, this);
-			elmAll.setVsPath(this.vsPath);
-			elmAll.write(elem.getID(), dsTable.getID());
+            elmAll.setVsPath(this.vsPath);
+            elmAll.write(elem.getID(), dsTable.getID());
         }
     }
     
     protected void addElement(Element elm){
-    	
-    	if (owner!=null)
-    		owner.addElement(elm);
+        
+        if (owner!=null)
+            owner.addElement(elm);
         
         //if (elm != null) section.add(elm);        
         //return docElements.size();
     }
 
-	public void setVsPath(String vsPath){
-		this.vsPath = vsPath;
-	}
+    public void setVsPath(String vsPath){
+        this.vsPath = vsPath;
+    }
 
-	public void setParameters(Parameters params){
-		this.params = params;
-	}
-	
-	protected Sectioning getSectioning(){
-		if (owner!=null)
-			return owner.getSectioning();
-		else
-			return null;
-	}
+    public void setParameters(Parameters params){
+        this.params = params;
+    }
+    
+    protected Sectioning getSectioning(){
+        if (owner!=null)
+            return owner.getSectioning();
+        else
+            return null;
+    }
 }

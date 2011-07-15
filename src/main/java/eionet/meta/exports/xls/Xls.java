@@ -39,8 +39,8 @@ public abstract class Xls implements XlsIF {
     protected String fileName = "xls.xls";
 
     /*
-	 * 
-	 */
+     * 
+     */
     protected void setSchemaUrl(String id) throws Exception {
 
         // first make sure we have the schema url
@@ -149,8 +149,8 @@ public abstract class Xls implements XlsIF {
     }
 
     /**
-	 * 
-	 */
+     * 
+     */
     protected void setCellTypes() {
 
         cellTypes.put("string", new Integer(HSSFCell.CELL_TYPE_STRING));

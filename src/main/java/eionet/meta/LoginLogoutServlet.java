@@ -19,9 +19,9 @@ public abstract class LoginLogoutServlet extends HttpServlet{
      * Throws GeneralException, if the passed user object is not authenticated.
      */
      protected DDUser allocSession(HttpServletRequest servReq, DDUser user) {
-     	
+        
          if (user.isAuthentic())
-         	servReq.getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
+            servReq.getSession().setAttribute(SecurityUtil.REMOTEUSER, user);
          else
              throw new DDRuntimeException("Attempted to store unauthorised user");
                  
@@ -36,11 +36,11 @@ public abstract class LoginLogoutServlet extends HttpServlet{
           if (httpSession != null) {
               DDUser user = (DDUser)httpSession.getAttribute(SecurityUtil.REMOTEUSER);
               if (user != null){
-              	user.invalidate();
-              	httpSession.removeAttribute(SecurityUtil.REMOTEUSER);
+                user.invalidate();
+                httpSession.removeAttribute(SecurityUtil.REMOTEUSER);
               }
                   
-  	        httpSession.invalidate();
+            httpSession.invalidate();
           }
       }
 }

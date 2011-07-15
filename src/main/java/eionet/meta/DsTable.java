@@ -12,33 +12,33 @@ public class DsTable implements Comparable {
     private String id = null;
     private String dsID = null;
     private String shortName = null;
-	private String identifier = null;
-	private String version = null;
+    private String identifier = null;
+    private String version = null;
     
-	private String name = null;
+    private String name = null;
     private String nsID = null;
-	private String parentNS = null;
-	private String datasetName = null;
-	private String dstIdentifier = null;
-	private String dstStatus = null;
-	private String dstWorkingUser = null;
-	private String dstDate = null;
-	private boolean gis = false;
-	
-	private String workingUser = null;
+    private String parentNS = null;
+    private String datasetName = null;
+    private String dstIdentifier = null;
+    private String dstStatus = null;
+    private String dstWorkingUser = null;
+    private String dstDate = null;
+    private boolean gis = false;
+    
+    private String workingUser = null;
     private String workingCopy = null;
     
-	private String compStr = null;
-	
+    private String compStr = null;
+    
     private Vector elements = new Vector();
     private Vector simpleAttrs = new Vector();
     private Vector complexAttrs = new Vector();
     
     private int dstVersion = -1;
     
-	private String owner = null;  
-	
-	private int positionInDataset;
+    private String owner = null;  
+    
+    private int positionInDataset;
     
     /**
      * 
@@ -64,13 +64,13 @@ public class DsTable implements Comparable {
         return shortName;
     }
     
-	public void setName(String name){
-		this.name = name;
-	}
+    public void setName(String name){
+        this.name = name;
+    }
 
-	public String getName(){
-		return name;
-	}
+    public String getName(){
+        return name;
+    }
     
     public void addElement(DataElement element){
         elements.add(element);
@@ -160,21 +160,21 @@ public class DsTable implements Comparable {
         return parentNS;
     }
 
-	public void setIdentifier(String identifier){
-		this.identifier = identifier;
-	}
+    public void setIdentifier(String identifier){
+        this.identifier = identifier;
+    }
     
-	public String getIdentifier(){
-		return this.identifier;
-	}
+    public String getIdentifier(){
+        return this.identifier;
+    }
     
-	public void setWorkingUser(String workingUser){
-		this.workingUser = workingUser;
-	}
+    public void setWorkingUser(String workingUser){
+        this.workingUser = workingUser;
+    }
     
-	public String getWorkingUser(){
-		return this.workingUser;
-	}
+    public String getWorkingUser(){
+        return this.workingUser;
+    }
 
     
     public Vector getVersioningAttributes(){
@@ -223,161 +223,161 @@ public class DsTable implements Comparable {
     }
     
     public void setCompStr(String compStr){
-    	this.compStr = compStr;
+        this.compStr = compStr;
     }
     
-	public String getCompStr(){
-		return compStr;
-	}
+    public String getCompStr(){
+        return compStr;
+    }
 
-	public void setGIS(boolean gis){
-		this.gis = gis;
-	}
+    public void setGIS(boolean gis){
+        this.gis = gis;
+    }
     
-	public boolean hasGIS(){
-		return gis;
-	}
+    public boolean hasGIS(){
+        return gis;
+    }
 
-	public String getDstIdentifier(){
-		return dstIdentifier;
-	}
+    public String getDstIdentifier(){
+        return dstIdentifier;
+    }
 
-	public void setDstIdentifier(String dstIdentifier){
-		this.dstIdentifier = dstIdentifier;
-	}
-	
-	public String getOwner(){
-		return owner;
-	}
+    public void setDstIdentifier(String dstIdentifier){
+        this.dstIdentifier = dstIdentifier;
+    }
+    
+    public String getOwner(){
+        return owner;
+    }
 
-	public void setOwner(String owner){
-		this.owner = owner;
-	}
+    public void setOwner(String owner){
+        this.owner = owner;
+    }
 
-	public int compareTo(Object o){
-		
-		if (!o.getClass().getName().endsWith("DsTable")) return 1;
-		
-		DsTable oTbl = (DsTable)o;
-		String oCompStr = oTbl.getCompStr();
-		if (oCompStr==null && compStr==null)
-			return 0;
-		else if (oCompStr==null)
-			return 1;
-		else if (compStr==null)
-			return -1;
-		
-		return compStr.compareToIgnoreCase(oCompStr);
-	}
+    public int compareTo(Object o){
+        
+        if (!o.getClass().getName().endsWith("DsTable")) return 1;
+        
+        DsTable oTbl = (DsTable)o;
+        String oCompStr = oTbl.getCompStr();
+        if (oCompStr==null && compStr==null)
+            return 0;
+        else if (oCompStr==null)
+            return 1;
+        else if (compStr==null)
+            return -1;
+        
+        return compStr.compareToIgnoreCase(oCompStr);
+    }
 
-	public String getRelativeTargetNs(){
-		
-		if (Util.voidStr(dstIdentifier)){
-			if (Util.voidStr(parentNS))
-				return "";
-			else
-				return "/namespaces/" + parentNS;
-		}
-		else
-			return "/datasets/" + dstIdentifier;
-	}
-	
-	public String getRelativeCorrespNs(){
-		
-		if (Util.voidStr(dstIdentifier)){
-			if (Util.voidStr(nsID))
-				return "";
-			else
-				return "/namespaces/" + nsID;
-		}
-		else
-			return "/datasets/" + dstIdentifier + "/tables/" + identifier;
-	}
+    public String getRelativeTargetNs(){
+        
+        if (Util.voidStr(dstIdentifier)){
+            if (Util.voidStr(parentNS))
+                return "";
+            else
+                return "/namespaces/" + parentNS;
+        }
+        else
+            return "/datasets/" + dstIdentifier;
+    }
+    
+    public String getRelativeCorrespNs(){
+        
+        if (Util.voidStr(dstIdentifier)){
+            if (Util.voidStr(nsID))
+                return "";
+            else
+                return "/namespaces/" + nsID;
+        }
+        else
+            return "/datasets/" + dstIdentifier + "/tables/" + identifier;
+    }
 
     /*
      * 
      */
     public String getReferenceURL(){
-    	
-    	if (getIdentifier()==null)
-    		return null;
-    		
-		StringBuffer buf = new StringBuffer();
-		
-		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-		if (jspUrlPrefix!=null)
-			buf.append(jspUrlPrefix);
-		
-		buf.append("dstable.jsp?table_idf=");
-		buf.append(getIdentifier());
-		
-		if (getParentNs()!=null){
-			buf.append("&pns=");
-			buf.append(getParentNs());
-		}
-		
-		return buf.toString();
+        
+        if (getIdentifier()==null)
+            return null;
+            
+        StringBuffer buf = new StringBuffer();
+        
+        String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+        if (jspUrlPrefix!=null)
+            buf.append(jspUrlPrefix);
+        
+        buf.append("dstable.jsp?table_idf=");
+        buf.append(getIdentifier());
+        
+        if (getParentNs()!=null){
+            buf.append("&pns=");
+            buf.append(getParentNs());
+        }
+        
+        return buf.toString();
     }
-
-	/**
-	 * 
-	 * @return
-	 */
-    public String getDstStatus() {
-		return dstStatus;
-	}
-
-	/**
-	 * 
-	 * @param dstStatus
-	 */
-    public void setDstStatus(String dstStatus) {
-		this.dstStatus = dstStatus;
-	}
 
     /**
      * 
      * @return
      */
-	public String getDstWorkingUser() {
-		return dstWorkingUser;
-	}
+    public String getDstStatus() {
+        return dstStatus;
+    }
 
-	/**
-	 * 
-	 * @param dstWorkingUser
-	 */
-	public void setDstWorkingUser(String dstWorkingUser) {
-		this.dstWorkingUser = dstWorkingUser;
-	}
+    /**
+     * 
+     * @param dstStatus
+     */
+    public void setDstStatus(String dstStatus) {
+        this.dstStatus = dstStatus;
+    }
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getDstDate() {
-		return dstDate;
-	}
+    /**
+     * 
+     * @return
+     */
+    public String getDstWorkingUser() {
+        return dstWorkingUser;
+    }
 
-	/**
-	 * 
-	 * @param dstDate
-	 */
-	public void setDstDate(String dstDate) {
-		this.dstDate = dstDate;
-	}
+    /**
+     * 
+     * @param dstWorkingUser
+     */
+    public void setDstWorkingUser(String dstWorkingUser) {
+        this.dstWorkingUser = dstWorkingUser;
+    }
 
-	/**
-	 * @return the positionInDataset
-	 */
-	public int getPositionInDataset() {
-		return positionInDataset;
-	}
+    /**
+     * 
+     * @return
+     */
+    public String getDstDate() {
+        return dstDate;
+    }
 
-	/**
-	 * @param positionInDataset the positionInDataset to set
-	 */
-	public void setPositionInDataset(int positionInDataset) {
-		this.positionInDataset = positionInDataset;
-	}
+    /**
+     * 
+     * @param dstDate
+     */
+    public void setDstDate(String dstDate) {
+        this.dstDate = dstDate;
+    }
+
+    /**
+     * @return the positionInDataset
+     */
+    public int getPositionInDataset() {
+        return positionInDataset;
+    }
+
+    /**
+     * @param positionInDataset the positionInDataset to set
+     */
+    public void setPositionInDataset(int positionInDataset) {
+        this.positionInDataset = positionInDataset;
+    }
 }

@@ -17,7 +17,7 @@
  * 
  * Contributors(s):
  *    Original code: Dusko Kolundzija (ED)
- *    				 Istvan Alfeldi (ED)
+ *                   Istvan Alfeldi (ED)
  */
 
 package eionet.meta.exports.xmlmeta;
@@ -40,56 +40,56 @@ import eionet.util.sql.ConnectionUtil;
 
 public class TblXmlMetaServlet extends HttpServlet {
 
-	protected void service(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
 
-		PrintWriter writer = null;
-		Connection conn = null;
+        PrintWriter writer = null;
+        Connection conn = null;
 
-		try {
-			String compID = req.getParameter("id");
-			if (Util.voidStr(compID))
-				throw new Exception("Table ID missing!");
+        try {
+            String compID = req.getParameter("id");
+            if (Util.voidStr(compID))
+                throw new Exception("Table ID missing!");
 
-			ServletContext ctx = getServletContext();
+            ServletContext ctx = getServletContext();
 
-			// get the DB connection
-			conn = ConnectionUtil.getConnection();
+            // get the DB connection
+            conn = ConnectionUtil.getConnection();
 
-			DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-			res.setContentType("text/xml; charset=UTF-8");
-			OutputStreamWriter osw = new OutputStreamWriter(res
-					.getOutputStream(), "UTF-8");
-			writer = new PrintWriter(osw);
+            DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
+            res.setContentType("text/xml; charset=UTF-8");
+            OutputStreamWriter osw = new OutputStreamWriter(res
+                    .getOutputStream(), "UTF-8");
+            writer = new PrintWriter(osw);
 
-			XmlMetaIF schema = null;
+            XmlMetaIF schema = null;
 
-			schema = new TblXmlMeta(searchEngine, writer);
+            schema = new TblXmlMeta(searchEngine, writer);
 
-			// build application context
-			String reqUri = req.getRequestURL().toString();
-			int i = reqUri.lastIndexOf("/");
-			if (i != -1)
-				schema.setAppContext(reqUri.substring(0, i));
+            // build application context
+            String reqUri = req.getRequestURL().toString();
+            int i = reqUri.lastIndexOf("/");
+            if (i != -1)
+                schema.setAppContext(reqUri.substring(0, i));
 
-			schema.write(compID);
-			schema.flush();
+            schema.write(compID);
+            schema.flush();
 
-			writer.flush();
-			osw.flush();
-			writer.close();
-			osw.close();
-		} catch (Exception e) {
-			e.printStackTrace(System.out);
-			throw new ServletException(e.toString());
-		} finally {
-			try {
-				if (writer != null)
-					writer.close();
-				if (conn != null)
-					conn.close();
-			} catch (Exception ee) {
-			}
-		}
-	}
+            writer.flush();
+            osw.flush();
+            writer.close();
+            osw.close();
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            throw new ServletException(e.toString());
+        } finally {
+            try {
+                if (writer != null)
+                    writer.close();
+                if (conn != null)
+                    conn.close();
+            } catch (Exception ee) {
+            }
+        }
+    }
 }

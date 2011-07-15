@@ -17,18 +17,18 @@ import eionet.util.SecurityUtil;
 public class LogoutServlet extends LoginLogoutServlet {
     
     /** */
-	public static final String LOGOUT_PAGE = "logout-page";
+    public static final String LOGOUT_PAGE = "logout-page";
 
     /*
      *  (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     public void service(HttpServletRequest req, HttpServletResponse res)
-    										throws ServletException, IOException {
+                                            throws ServletException, IOException {
         
-		req.setCharacterEncoding("UTF-8");
-		
-		DDUser user = SecurityUtil.getUser(req);
+        req.setCharacterEncoding("UTF-8");
+        
+        DDUser user = SecurityUtil.getUser(req);
         if (user != null)
             freeSession(req);
         

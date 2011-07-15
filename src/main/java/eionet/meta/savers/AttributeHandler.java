@@ -95,16 +95,16 @@ public class AttributeHandler extends BaseHandler {
      */
     private void insert() throws Exception {
         
-    	INParameters inParams = new INParameters();
-    	LinkedHashMap map = new LinkedHashMap();
-    	
+        INParameters inParams = new INParameters();
+        LinkedHashMap map = new LinkedHashMap();
+        
         map.put("SHORT_NAME", inParams.add(shortName));
         map.put("NAME", inParams.add(name));
         
         if (definition!=null)
-        	map.put("DEFINITION", inParams.add(definition));
+            map.put("DEFINITION", inParams.add(definition));
         if (ns_id!=null)
-        	map.put("NAMESPACE_ID", inParams.add(ns_id, Types.INTEGER));
+            map.put("NAMESPACE_ID", inParams.add(ns_id, Types.INTEGER));
 
         String dispOrder = req.getParameter("dispOrder");
         if (dispOrder!=null && dispOrder.length()>0)
@@ -137,37 +137,37 @@ public class AttributeHandler extends BaseHandler {
         }
         
         // complex attribute specific fields
-		if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
-			String harvesterID = req.getParameter("harv_id");
-			if (harvesterID!=null && !harvesterID.equals("null"))
-				map.put("HARVESTER_ID", inParams.add(harvesterID));
-		}
+        if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
+            String harvesterID = req.getParameter("harv_id");
+            if (harvesterID!=null && !harvesterID.equals("null"))
+                map.put("HARVESTER_ID", inParams.add(harvesterID));
+        }
         
-		PreparedStatement stmt = null;
-		String tableName = (type==null || type.equals(DElemAttribute.TYPE_SIMPLE)) ? "M_ATTRIBUTE" : "M_COMPLEX_ATTR";
-		try{
-			stmt = SQL.preparedStatement(SQL.insertStatement(tableName, map), inParams, conn);
-			stmt.executeUpdate();
-			setLastInsertID();
-		}
-		finally{
-			SQL.close(stmt);
-		}
-		
+        PreparedStatement stmt = null;
+        String tableName = (type==null || type.equals(DElemAttribute.TYPE_SIMPLE)) ? "M_ATTRIBUTE" : "M_COMPLEX_ATTR";
+        try{
+            stmt = SQL.preparedStatement(SQL.insertStatement(tableName, map), inParams, conn);
+            stmt.executeUpdate();
+            setLastInsertID();
+        }
+        finally{
+            SQL.close(stmt);
+        }
+        
         // add acl
-		if (user!=null){
-			
-			String idPrefix = "";
-			if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
-				idPrefix = "c";
-			else if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE))
-				idPrefix = "s";
+        if (user!=null){
+            
+            String idPrefix = "";
+            if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
+                idPrefix = "c";
+            else if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE))
+                idPrefix = "s";
 
-			
-			String aclPath = "/attributes/" + idPrefix + getLastInsertID();
-			String aclDesc = "Short name: " + shortName;
-			AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
-		}
+            
+            String aclPath = "/attributes/" + idPrefix + getLastInsertID();
+            String aclDesc = "Short name: " + shortName;
+            AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
+        }
     }
     
     /**
@@ -185,9 +185,9 @@ public class AttributeHandler extends BaseHandler {
         map.put("NAME", inParams.add(name));
         
         if (definition!=null)
-        	map.put("DEFINITION", inParams.add(definition));
+            map.put("DEFINITION", inParams.add(definition));
         if (ns_id!=null)
-        	map.put("NAMESPACE_ID", inParams.add(ns_id, Types.INTEGER));
+            map.put("NAMESPACE_ID", inParams.add(ns_id, Types.INTEGER));
 
         String dispOrder = req.getParameter("dispOrder");
         map.put("DISP_ORDER", inParams.add((dispOrder==null || dispOrder.length()==0) ? "999" : dispOrder, Types.INTEGER));
@@ -215,40 +215,40 @@ public class AttributeHandler extends BaseHandler {
         }
         
         // complex attribute specific fields
-		if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
-			String harvesterID = req.getParameter("harv_id");
-			map.put("HARVESTER_ID", inParams.add(harvesterID==null || harvesterID.equals("null") ? null : harvesterID));
-		}
+        if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
+            String harvesterID = req.getParameter("harv_id");
+            map.put("HARVESTER_ID", inParams.add(harvesterID==null || harvesterID.equals("null") ? null : harvesterID));
+        }
 
-		PreparedStatement stmt = null;
-		try{
-			StringBuffer buf = new StringBuffer(SQL.updateStatement(tableName, map));
-			buf.append(" where ").append(type==null || type.equals(DElemAttribute.TYPE_SIMPLE) ? "M_ATTRIBUTE_ID" : "M_COMPLEX_ATTR_ID").
-			append("=").append(inParams.add(attr_id, Types.INTEGER));
-				
-			stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-			stmt.executeUpdate();
-			
-	        // if this is a compelx attribute and harvester link is being
-	        // removed, set all links to harvested rows to NULL as well
-			if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
-				
-				String harvesterID = req.getParameter("harv_id");
-				if (harvesterID==null || harvesterID.equals("null")){
-					
-					inParams = new INParameters();
-					map = new LinkedHashMap();
+        PreparedStatement stmt = null;
+        try{
+            StringBuffer buf = new StringBuffer(SQL.updateStatement(tableName, map));
+            buf.append(" where ").append(type==null || type.equals(DElemAttribute.TYPE_SIMPLE) ? "M_ATTRIBUTE_ID" : "M_COMPLEX_ATTR_ID").
+            append("=").append(inParams.add(attr_id, Types.INTEGER));
+                
+            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+            stmt.executeUpdate();
+            
+            // if this is a compelx attribute and harvester link is being
+            // removed, set all links to harvested rows to NULL as well
+            if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
+                
+                String harvesterID = req.getParameter("harv_id");
+                if (harvesterID==null || harvesterID.equals("null")){
+                    
+                    inParams = new INParameters();
+                    map = new LinkedHashMap();
 
-					String s = "update COMPLEX_ATTR_ROW set HARV_ATTR_ID=NULL where M_COMPLEX_ATTR_ID=" + inParams.add(attr_id, Types.INTEGER);
-					SQL.close(stmt);
-					stmt = SQL.preparedStatement(s, inParams, conn);
-					stmt.executeUpdate();
-				}
-			}
-		}
-		finally{
-			SQL.close(stmt);
-		}
+                    String s = "update COMPLEX_ATTR_ROW set HARV_ATTR_ID=NULL where M_COMPLEX_ATTR_ID=" + inParams.add(attr_id, Types.INTEGER);
+                    SQL.close(stmt);
+                    stmt = SQL.preparedStatement(s, inParams, conn);
+                    stmt.executeUpdate();
+                }
+            }
+        }
+        finally{
+            SQL.close(stmt);
+        }
     }
 
     /**
@@ -263,56 +263,56 @@ public class AttributeHandler extends BaseHandler {
         PreparedStatement stmt = null;
         INParameters inParams = new INParameters();
         try{
-	        if (simpleAttrs != null && simpleAttrs.length != 0){
-	        	
-	            StringBuffer buf = new StringBuffer("delete from M_ATTRIBUTE where ");
-	            for (int i=0; i<simpleAttrs.length; i++){
-	                if (i>0) buf.append(" or ");
-	                buf.append("M_ATTRIBUTE_ID=");
-	                buf.append(inParams.add(simpleAttrs[i], Types.INTEGER));
-	            }
-	            
-	            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-	            stmt.executeUpdate();
-	            
-	            deleteSimpleAttributeValues(simpleAttrs);
-	            deleteFixedValues(simpleAttrs);
-	        }
-	        
-	        if (complexAttrs != null && complexAttrs.length != 0){
-	        	
-	        	inParams = new INParameters();
-	            StringBuffer buf = new StringBuffer("delete from M_COMPLEX_ATTR where ");
-	            for (int i=0; i<complexAttrs.length; i++){
-	                if (i>0) buf.append(" or ");
-	                buf.append("M_COMPLEX_ATTR_ID=");
-	                buf.append(inParams.add(complexAttrs[i], Types.INTEGER));
-	            }
-	            
-	            SQL.close(stmt);
-	            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-	            stmt.executeUpdate();
-	            
-	            deleteComplexAttributeValues(complexAttrs);
-	        }
+            if (simpleAttrs != null && simpleAttrs.length != 0){
+                
+                StringBuffer buf = new StringBuffer("delete from M_ATTRIBUTE where ");
+                for (int i=0; i<simpleAttrs.length; i++){
+                    if (i>0) buf.append(" or ");
+                    buf.append("M_ATTRIBUTE_ID=");
+                    buf.append(inParams.add(simpleAttrs[i], Types.INTEGER));
+                }
+                
+                stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+                stmt.executeUpdate();
+                
+                deleteSimpleAttributeValues(simpleAttrs);
+                deleteFixedValues(simpleAttrs);
+            }
+            
+            if (complexAttrs != null && complexAttrs.length != 0){
+                
+                inParams = new INParameters();
+                StringBuffer buf = new StringBuffer("delete from M_COMPLEX_ATTR where ");
+                for (int i=0; i<complexAttrs.length; i++){
+                    if (i>0) buf.append(" or ");
+                    buf.append("M_COMPLEX_ATTR_ID=");
+                    buf.append(inParams.add(complexAttrs[i], Types.INTEGER));
+                }
+                
+                SQL.close(stmt);
+                stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+                stmt.executeUpdate();
+                
+                deleteComplexAttributeValues(complexAttrs);
+            }
         }
         finally{
-        	SQL.close(stmt);
+            SQL.close(stmt);
         }
         
-		// remove acls
-		for (int i=0; simpleAttrs!=null && i<simpleAttrs.length; i++){
-			try{
-				AccessController.removeAcl("/attributes/s" + simpleAttrs[i]);
-			}
-			catch (Exception e){}
-		}
-		for (int i=0; complexAttrs!=null && i<complexAttrs.length; i++){
-			try{
-				AccessController.removeAcl("/attributes/c" + complexAttrs[i]);
-			}
-			catch (Exception e){}
-		}
+        // remove acls
+        for (int i=0; simpleAttrs!=null && i<simpleAttrs.length; i++){
+            try{
+                AccessController.removeAcl("/attributes/s" + simpleAttrs[i]);
+            }
+            catch (Exception e){}
+        }
+        for (int i=0; complexAttrs!=null && i<complexAttrs.length; i++){
+            try{
+                AccessController.removeAcl("/attributes/c" + complexAttrs[i]);
+            }
+            catch (Exception e){}
+        }
     }
 
     /**
@@ -328,19 +328,19 @@ public class AttributeHandler extends BaseHandler {
         PreparedStatement stmt = null;
         INParameters inParams = new INParameters();
         try{
-	        StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where ");
-	        for (int i=0; i<attr_ids.length; i++){
-	            if (i>0)
-	                buf.append(" or ");
-	            buf.append("M_ATTRIBUTE_ID=");
-	            buf.append(inParams.add(attr_ids[i], Types.INTEGER));
-	        }
-	        
-	        stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-	        stmt.executeUpdate();
+            StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where ");
+            for (int i=0; i<attr_ids.length; i++){
+                if (i>0)
+                    buf.append(" or ");
+                buf.append("M_ATTRIBUTE_ID=");
+                buf.append(inParams.add(attr_ids[i], Types.INTEGER));
+            }
+            
+            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+            stmt.executeUpdate();
         }
         finally{
-        	SQL.close(stmt);
+            SQL.close(stmt);
         }
     }
 
@@ -351,7 +351,7 @@ public class AttributeHandler extends BaseHandler {
      */
     private void deleteComplexAttributeValues(String[] attr_ids) throws SQLException {
         
-    	INParameters inParams = new INParameters();
+        INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("select distinct ROW_ID from COMPLEX_ATTR_ROW where ");
         for (int i=0; i<attr_ids.length; i++){
             if (i>0) buf.append(" or ");
@@ -362,42 +362,42 @@ public class AttributeHandler extends BaseHandler {
         ResultSet rs = null;
         PreparedStatement stmt = null;
         try{
-	        stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-	        rs = stmt.executeQuery();
-	        
-	        buf = new StringBuffer();
-	        inParams = new INParameters();
-	        for (int i=0; rs.next(); i++){
-	        	
-	            if (buf.length()==0)
-	                buf.append("delete from COMPLEX_ATTR_FIELD where ");
-	                
-	            if (i>0)
-	            	buf.append(" or ");
-	            buf.append("ROW_ID=").append(inParams.add(rs.getString("ROW_ID")));
-	        }
-	        rs.close();
-	        
-	        if (buf.length()>0){
-	            SQL.close(stmt);
-	            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-	            stmt.executeUpdate();
-	        }
-	        
-	        inParams = new INParameters();
-	        buf = new StringBuffer("delete from COMPLEX_ATTR_ROW where ");
-	        for (int i=0; i<attr_ids.length; i++){
-	            if (i>0) buf.append(" or ");
-	            buf.append("M_COMPLEX_ATTR_ID=");
-	            buf.append(inParams.add(attr_ids[i], Types.INTEGER));
-	        }
-	        
-	        stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-	        stmt.executeUpdate();
+            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+            rs = stmt.executeQuery();
+            
+            buf = new StringBuffer();
+            inParams = new INParameters();
+            for (int i=0; rs.next(); i++){
+                
+                if (buf.length()==0)
+                    buf.append("delete from COMPLEX_ATTR_FIELD where ");
+                    
+                if (i>0)
+                    buf.append(" or ");
+                buf.append("ROW_ID=").append(inParams.add(rs.getString("ROW_ID")));
+            }
+            rs.close();
+            
+            if (buf.length()>0){
+                SQL.close(stmt);
+                stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+                stmt.executeUpdate();
+            }
+            
+            inParams = new INParameters();
+            buf = new StringBuffer("delete from COMPLEX_ATTR_ROW where ");
+            for (int i=0; i<attr_ids.length; i++){
+                if (i>0) buf.append(" or ");
+                buf.append("M_COMPLEX_ATTR_ID=");
+                buf.append(inParams.add(attr_ids[i], Types.INTEGER));
+            }
+            
+            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+            stmt.executeUpdate();
         }
         finally{
-        	SQL.close(rs);
-        	SQL.close(stmt);
+            SQL.close(rs);
+            SQL.close(stmt);
         }
     }
     
@@ -425,21 +425,21 @@ public class AttributeHandler extends BaseHandler {
         PreparedStatement stmt = null;
         Parameters pars = new Parameters();
         try{
-        	stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-	        rs = stmt.executeQuery();
-	        while (rs.next()){
-	        	pars.addParameterValue("del_id", rs.getString("FXV_ID"));
-	        }
+            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+            rs = stmt.executeQuery();
+            while (rs.next()){
+                pars.addParameterValue("del_id", rs.getString("FXV_ID"));
+            }
         }
         finally{
-        	SQL.close(rs);
-        	SQL.close(stmt);
+            SQL.close(rs);
+            SQL.close(stmt);
         }
         
         if (pars.getSize()>0){
-	        pars.addParameterValue("mode", "delete");
-	        FixedValuesHandler fvHandler = new FixedValuesHandler(conn, pars, ctx);
-	        fvHandler.execute();
+            pars.addParameterValue("mode", "delete");
+            FixedValuesHandler fvHandler = new FixedValuesHandler(conn, pars, ctx);
+            fvHandler.execute();
         }
     }
     
@@ -454,16 +454,16 @@ public class AttributeHandler extends BaseHandler {
         Statement stmt = null;
         ResultSet rs = null;
         try{
-        	stmt = conn.createStatement();
-        	rs = stmt.executeQuery(qry);
-	        rs.clearWarnings();
-	        if (rs.next()){
-	            lastInsertID = rs.getString(1);
-	        }
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(qry);
+            rs.clearWarnings();
+            if (rs.next()){
+                lastInsertID = rs.getString(1);
+            }
         }
         finally{
-        	SQL.close(rs);
-        	SQL.close(stmt);
+            SQL.close(rs);
+            SQL.close(stmt);
         }
     }
     
@@ -502,8 +502,8 @@ public class AttributeHandler extends BaseHandler {
         return String.valueOf(k);
     }
     
-	public void setUser(DDUser user){
-		this.user = user;
-	}
+    public void setUser(DDUser user){
+        this.user = user;
+    }
 
 }

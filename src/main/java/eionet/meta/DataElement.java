@@ -17,48 +17,48 @@ public class DataElement implements Comparable{
     private String type = null;
     private String version = null;
     private String status = null;
-	private String identifier = null;
-	
-	private String tableID = null;
-	private String datasetID = null;
-	private String dstShortName = null; // used in the data elements search
-	private String tblShortName = null; // used in the data elements search
-	private String tblIdentifier = null; // used in setting target namespaces in schemas
-	private String dstIdentifier = null; // used in setting target namespaces in schemas
-	private String dstWorkingUser = null;
-	private String dstStatus = null;
+    private String identifier = null;
     
-	private String gis = null;
-	private String positionInTable = null;
-	private boolean isRodParam = true;
+    private String tableID = null;
+    private String datasetID = null;
+    private String dstShortName = null; // used in the data elements search
+    private String tblShortName = null; // used in the data elements search
+    private String tblIdentifier = null; // used in setting target namespaces in schemas
+    private String dstIdentifier = null; // used in setting target namespaces in schemas
+    private String dstWorkingUser = null;
+    private String dstStatus = null;
+    
+    private String gis = null;
+    private String positionInTable = null;
+    private boolean isRodParam = true;
 
-	private String workingUser = null;
-	private String workingCopy = null;
+    private String workingUser = null;
+    private String workingCopy = null;
 
-	private Namespace ns = null; // parent namespace
-	private String topNS = null; // top namespace
-	
-	private String user = null; // element creator
+    private Namespace ns = null; // parent namespace
+    private String topNS = null; // top namespace
+    
+    private String user = null; // element creator
     
     private Vector simpleAttrs = new Vector();
     private Vector complexAttrs = new Vector();
     private Vector fixedValues = null;
-	private Vector fks = new Vector();
+    private Vector fks = new Vector();
 
-	private int sortOrder = 1;
-	private String sortString = null;
-	
-	private String checkedoutCopyID = null;
-	private String date = null;
-	
-	private String valueDelimiter;
-	
-	private boolean mandatoryFlag;
+    private int sortOrder = 1;
+    private String sortString = null;
+    
+    private String checkedoutCopyID = null;
+    private String date = null;
+    
+    private String valueDelimiter;
+    
+    private boolean mandatoryFlag;
 
     /*
      * 
      */
-	public DataElement(){
+    public DataElement(){
     }
         
     public DataElement(String id, String shortName, String type){
@@ -75,13 +75,13 @@ public class DataElement implements Comparable{
         this.tableID = tableID;
     }
 
-	public String getTblShortName(){
-		return tblShortName;
-	}
+    public String getTblShortName(){
+        return tblShortName;
+    }
 
-	public void setTblShortName(String tblShortName){
-		this.tblShortName = tblShortName;
-	}
+    public void setTblShortName(String tblShortName){
+        this.tblShortName = tblShortName;
+    }
     
     public String getDatasetID(){
         return datasetID;
@@ -91,29 +91,29 @@ public class DataElement implements Comparable{
         this.datasetID = datasetID;
     }
 
-	public String getDstShortName(){
-		return dstShortName;
-	}
+    public String getDstShortName(){
+        return dstShortName;
+    }
 
-	public void setDstShortName(String dstShortName){
-		this.dstShortName = dstShortName;
-	}
+    public void setDstShortName(String dstShortName){
+        this.dstShortName = dstShortName;
+    }
 
-	public String getTblIdentifier(){
-		return tblIdentifier;
-	}
+    public String getTblIdentifier(){
+        return tblIdentifier;
+    }
 
-	public void setTblIdentifier(String tblIdentifier){
-		this.tblIdentifier = tblIdentifier;
-	}
+    public void setTblIdentifier(String tblIdentifier){
+        this.tblIdentifier = tblIdentifier;
+    }
 
-	public String getDstIdentifier(){
-		return dstIdentifier;
-	}
+    public String getDstIdentifier(){
+        return dstIdentifier;
+    }
 
-	public void setDstIdentifier(String dstIdentifier){
-		this.dstIdentifier = dstIdentifier;
-	}
+    public void setDstIdentifier(String dstIdentifier){
+        this.dstIdentifier = dstIdentifier;
+    }
 
     public String getID(){
         return id;
@@ -286,105 +286,105 @@ public class DataElement implements Comparable{
             return false;
     }
     
-	public void setIdentifier(String identifier){
-		this.identifier = identifier;
-	}
-    
-	public String getIdentifier(){
-		return this.identifier;
-	}
-	
-	public void setStatus(String status){
-		this.status = status;
-	}
-
-	public String getStatus(){
-		return this.status;
-	}
-    
-	public void setGIS(String gis){
-		this.gis = gis;
-	}
-
-	public String getGIS(){
-		return this.gis;
-	}
-	
-	public void setRodParam(boolean isRodParam){
-		this.isRodParam = isRodParam;
-	}
-
-	public boolean isRodParameter(){
-		return isRodParam;
-	}
-    
-    public void setFKRelations(Vector fks){
-    	this.fks = fks;
+    public void setIdentifier(String identifier){
+        this.identifier = identifier;
     }
     
-	public Vector getFKRelations(){
-		return this.fks;
-	}
-	
-	public static Vector getGisTypes(){
-		Vector v = new Vector();
-		v.add("");
-		v.add("class");
-		v.add("subclass");
-		v.add("subtype");
-		return v;
-	}
-	
-	public boolean hasImages(){
-		boolean hasImages = false;
-		for (int t=0; simpleAttrs!=null && t<simpleAttrs.size(); t++){
-			DElemAttribute attr = (DElemAttribute)simpleAttrs.get(t);
-			String dispType = attr.getDisplayType();
-			Vector values = attr.getValues();
-			if (dispType!=null &&
-				dispType.equals("image") &&
-				values!=null &&
-				values.size()>0){
-					hasImages = true;
-					break;
-				}
-		}
-		
-		return hasImages;
-	}
-	
-	public String getRelativeTargetNs(){
-		
-		if (ns==null || Util.voidStr(ns.getID()))
-			return "/elements/" + identifier;
-		else{
-			if (Util.voidStr(dstIdentifier) || Util.voidStr(tblIdentifier))
-				return "/namespaces/" + ns.getID();
-			else
-				return "/datasets/" + dstIdentifier + "/tables/" + tblIdentifier;
-		}
-	}
+    public String getIdentifier(){
+        return this.identifier;
+    }
+    
+    public void setStatus(String status){
+        this.status = status;
+    }
 
-	/*
-	 * 
-	 */
-	public void setComparation(String sortString, int sortOrder) {
-		
+    public String getStatus(){
+        return this.status;
+    }
+    
+    public void setGIS(String gis){
+        this.gis = gis;
+    }
+
+    public String getGIS(){
+        return this.gis;
+    }
+    
+    public void setRodParam(boolean isRodParam){
+        this.isRodParam = isRodParam;
+    }
+
+    public boolean isRodParameter(){
+        return isRodParam;
+    }
+    
+    public void setFKRelations(Vector fks){
+        this.fks = fks;
+    }
+    
+    public Vector getFKRelations(){
+        return this.fks;
+    }
+    
+    public static Vector getGisTypes(){
+        Vector v = new Vector();
+        v.add("");
+        v.add("class");
+        v.add("subclass");
+        v.add("subtype");
+        return v;
+    }
+    
+    public boolean hasImages(){
+        boolean hasImages = false;
+        for (int t=0; simpleAttrs!=null && t<simpleAttrs.size(); t++){
+            DElemAttribute attr = (DElemAttribute)simpleAttrs.get(t);
+            String dispType = attr.getDisplayType();
+            Vector values = attr.getValues();
+            if (dispType!=null &&
+                dispType.equals("image") &&
+                values!=null &&
+                values.size()>0){
+                    hasImages = true;
+                    break;
+                }
+        }
+        
+        return hasImages;
+    }
+    
+    public String getRelativeTargetNs(){
+        
+        if (ns==null || Util.voidStr(ns.getID()))
+            return "/elements/" + identifier;
+        else{
+            if (Util.voidStr(dstIdentifier) || Util.voidStr(tblIdentifier))
+                return "/namespaces/" + ns.getID();
+            else
+                return "/datasets/" + dstIdentifier + "/tables/" + tblIdentifier;
+        }
+    }
+
+    /*
+     * 
+     */
+    public void setComparation(String sortString, int sortOrder) {
+        
         this.sortString = sortString;
         this.sortOrder = sortOrder; 
-	}
+    }
 
-	/*
-	 *  (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+    /*
+     *  (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     public String toString(){
         return this.sortString;
     }
 
-	/*
-	 * 
-	 */
+    /*
+     * 
+     */
     public int compareTo(Object o) {
         return this.sortOrder*this.sortString.compareTo(o.toString());
     }
@@ -393,140 +393,140 @@ public class DataElement implements Comparable{
      * 
      */
     public String getReferenceURL(){
-    	
-    	if (getIdentifier()==null)
-    		return null;
-    		
-		StringBuffer buf = new StringBuffer();
-		
-		String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-		if (jspUrlPrefix!=null)
-			buf.append(jspUrlPrefix);
-		
-		buf.append("data_element.jsp?delem_idf=");
-		buf.append(getIdentifier());
-		
-		if (getNamespace()!=null && getNamespace().getID()!=null){
-			buf.append("&pns=");
-			buf.append(getNamespace().getID());
-		}
-		
-		return buf.toString();
+        
+        if (getIdentifier()==null)
+            return null;
+            
+        StringBuffer buf = new StringBuffer();
+        
+        String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+        if (jspUrlPrefix!=null)
+            buf.append(jspUrlPrefix);
+        
+        buf.append("data_element.jsp?delem_idf=");
+        buf.append(getIdentifier());
+        
+        if (getNamespace()!=null && getNamespace().getID()!=null){
+            buf.append("&pns=");
+            buf.append(getNamespace().getID());
+        }
+        
+        return buf.toString();
     }
 
-	/**
-	 * 
-	 * @return
-	 */
+    /**
+     * 
+     * @return
+     */
     public String getUser() {
-		return user;
-	}
+        return user;
+    }
 
-	/**
-	 * 
-	 * @param user
-	 */
+    /**
+     * 
+     * @param user
+     */
     public void setUser(String user) {
-		this.user = user;
-	}
+        this.user = user;
+    }
     
-	/**
-	 * 
-	 * @return
-	 */
+    /**
+     * 
+     * @return
+     */
     public String getCheckedoutCopyID() {
-		return checkedoutCopyID;
-	}
+        return checkedoutCopyID;
+    }
 
     /**
      * 
      * @param checkedoutCopyID
      */
-	public void setCheckedoutCopyID(String checkedoutCopyID) {
-		this.checkedoutCopyID = checkedoutCopyID;
-	}
+    public void setCheckedoutCopyID(String checkedoutCopyID) {
+        this.checkedoutCopyID = checkedoutCopyID;
+    }
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getDstStatus() {
-		return dstStatus;
-	}
+    /**
+     * 
+     * @return
+     */
+    public String getDstStatus() {
+        return dstStatus;
+    }
 
-	/**
-	 * 
-	 * @param dstStatus
-	 */
-	public void setDstStatus(String dstStatus) {
-		this.dstStatus = dstStatus;
-	}
+    /**
+     * 
+     * @param dstStatus
+     */
+    public void setDstStatus(String dstStatus) {
+        this.dstStatus = dstStatus;
+    }
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getDstWorkingUser() {
-		return dstWorkingUser;
-	}
+    /**
+     * 
+     * @return
+     */
+    public String getDstWorkingUser() {
+        return dstWorkingUser;
+    }
 
-	/**
-	 * 
-	 * @param dstWorkingUser
-	 */
-	public void setDstWorkingUser(String dstWorkingUser) {
-		this.dstWorkingUser = dstWorkingUser;
-	}
+    /**
+     * 
+     * @param dstWorkingUser
+     */
+    public void setDstWorkingUser(String dstWorkingUser) {
+        this.dstWorkingUser = dstWorkingUser;
+    }
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getDate() {
-		return date;
-	}
+    /**
+     * 
+     * @return
+     */
+    public String getDate() {
+        return date;
+    }
 
-	/**
-	 * 
-	 * @param date
-	 */
-	public void setDate(String date) {
-		this.date = date;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean isCommon(){
-		return (ns==null || ns.getID()==null);
-	}
+    /**
+     * 
+     * @param date
+     */
+    public void setDate(String date) {
+        this.date = date;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean isCommon(){
+        return (ns==null || ns.getID()==null);
+    }
 
-	/**
-	 * @return the valueDelimiter
-	 */
-	public String getValueDelimiter() {
-		return valueDelimiter;
-	}
+    /**
+     * @return the valueDelimiter
+     */
+    public String getValueDelimiter() {
+        return valueDelimiter;
+    }
 
-	/**
-	 * @param valueDelimiter the valueDelimiter to set
-	 */
-	public void setValueDelimiter(String valueDelimiter) {
-		this.valueDelimiter = valueDelimiter;
-	}
+    /**
+     * @param valueDelimiter the valueDelimiter to set
+     */
+    public void setValueDelimiter(String valueDelimiter) {
+        this.valueDelimiter = valueDelimiter;
+    }
 
-	/**
-	 * @return the mandatoryFlag
-	 */
-	public boolean isMandatoryFlag() {
-		return mandatoryFlag;
-	}
+    /**
+     * @return the mandatoryFlag
+     */
+    public boolean isMandatoryFlag() {
+        return mandatoryFlag;
+    }
 
-	/**
-	 * @param mandatoryFlag the mandatoryFlag to set
-	 */
-	public void setMandatoryFlag(boolean mandatoryFlag) {
-		this.mandatoryFlag = mandatoryFlag;
-	}
+    /**
+     * @param mandatoryFlag the mandatoryFlag to set
+     */
+    public void setMandatoryFlag(boolean mandatoryFlag) {
+        this.mandatoryFlag = mandatoryFlag;
+    }
 }

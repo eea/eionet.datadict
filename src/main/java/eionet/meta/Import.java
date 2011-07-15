@@ -60,8 +60,8 @@ public class Import extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
-		req.setCharacterEncoding("UTF-8");
-		
+        req.setCharacterEncoding("UTF-8");
+        
        req.getRequestDispatcher("import_results.jsp").forward(req, res);
     }
 
@@ -72,8 +72,8 @@ public class Import extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
                     throws ServletException, java.io.IOException {
 
-		req.setCharacterEncoding("UTF-8");
-						
+        req.setCharacterEncoding("UTF-8");
+                        
         ServletContext ctx = getServletContext();
         
         // init response text and exception indicator
@@ -84,15 +84,15 @@ public class Import extends HttpServlet {
         // authenticate user
         DDUser user = SecurityUtil.getUser(req);
         try{
-			AccessControlListIF acl = AccessController.getAcl("/import");
-			if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/import", "x")){
-				responseText.append("<h1>Not allowed!</h1><br/>");
-				bException = true;
-			}
+            AccessControlListIF acl = AccessController.getAcl("/import");
+            if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/import", "x")){
+                responseText.append("<h1>Not allowed!</h1><br/>");
+                bException = true;
+            }
         }
         catch (Exception e){
-			responseText.append("<h1>" + e.toString() + "</h1><br/>");
-			bException = true;
+            responseText.append("<h1>" + e.toString() + "</h1><br/>");
+            bException = true;
         }
 
         // get content type, check that it's valid
@@ -168,8 +168,8 @@ public class Import extends HttpServlet {
 
         // if no exceptions, get the data and save to file, parse
         if (!bException){
-        	
-        	Connection userConn = user.getConnection();
+            
+            Connection userConn = user.getConnection();
 
             try{
                 // get the data and save to file
@@ -197,8 +197,8 @@ public class Import extends HttpServlet {
 
                     DatasetImport dbImport =
                         new DatasetImport((DatasetImportHandler)handler, userConn, ctx);
-					dbImport.setUser(user);
-					dbImport.setDate(String.valueOf(System.currentTimeMillis()));
+                    dbImport.setUser(user);
+                    dbImport.setDate(String.valueOf(System.currentTimeMillis()));
                     dbImport.setImportType(type);
                     if (type.equals("FXV")) {
                         dbImport.setParentID(delem_id);
@@ -221,8 +221,8 @@ public class Import extends HttpServlet {
 
                 msg.append(Util.getStack(e));
                 responseText.append("<h1>Data Dictionary importer encountered").
-                	append(" an exception:</h1><br/>").append(msg.toString()).
-                	append("<br/><br/>");
+                    append(" an exception:</h1><br/>").append(msg.toString()).
+                    append("<br/><br/>");
             }
             catch (OutOfMemoryError oome){
 
@@ -235,15 +235,15 @@ public class Import extends HttpServlet {
                                     "</h1><br/>" + msg.toString() + "<br/><br/>");
             }
             finally{
-            	try{
-            		if (userConn!=null) userConn.close();
-            	}
-            	catch (SQLException e){}
+                try{
+                    if (userConn!=null) userConn.close();
+                }
+                catch (SQLException e){}
             }
             
             // if was fixed values import explicitly, add a link back to the element
             if (type.equals("FXV")){
-				responseText.append("<br><br><a href='data_element.jsp?delem_id=" + delem_id + "'>Back to data element</a>");
+                responseText.append("<br><br><a href='data_element.jsp?delem_id=" + delem_id + "'>Back to data element</a>");
             }
         }
 

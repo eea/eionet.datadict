@@ -17,7 +17,7 @@ import eionet.util.UnicodeEscapes;
  */
 public class DatasetImportHandler extends BaseHandler{
 
-	/** */
+    /** */
     public static String ROWSET = "RowSet";
     public static String ROW = "Row";
     public static String IMPORT = "import";
@@ -37,50 +37,50 @@ public class DatasetImportHandler extends BaseHandler{
     private String importType;
     
     /** */
-	private UnicodeEscapes unicodeEscapes = new UnicodeEscapes();
+    private UnicodeEscapes unicodeEscapes = new UnicodeEscapes();
 
-	/**
-	 *
-	 */
-	public DatasetImportHandler() {
-	    super();
-	    tables = new Hashtable();
-	    table = new Vector();
-	    row = new Hashtable();
-	}
+    /**
+     *
+     */
+    public DatasetImportHandler() {
+        super();
+        tables = new Hashtable();
+        table = new Vector();
+        row = new Hashtable();
+    }
 
-	/*
-	 *  (non-Javadoc)
-	 * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-	 */
+    /*
+     *  (non-Javadoc)
+     * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
+     */
     public void startElement(String uri, String localName, String name, Attributes attributes){
 
-	      if (bTableStart==true){   //start of table
-	          bTableStart=false;
-	          tableName=name;
-	      }
-	      
-	      if (name.equals(ROWSET)){
-	          bTableStart=true;
-	          table = new Vector();
-	      }
-	      
-	      if (name.equals(ROW)){
-	          row = new Hashtable();
-	          bOK = true;
-	      }
-	      
-	      if (name.equals(IMPORT))
-	          this.importType = attributes.getValue("name");
-	}
+          if (bTableStart==true){   //start of table
+              bTableStart=false;
+              tableName=name;
+          }
+          
+          if (name.equals(ROWSET)){
+              bTableStart=true;
+              table = new Vector();
+          }
+          
+          if (name.equals(ROW)){
+              row = new Hashtable();
+              bOK = true;
+          }
+          
+          if (name.equals(IMPORT))
+              this.importType = attributes.getValue("name");
+    }
 
     /*
      *  (non-Javadoc)
      * @see org.xml.sax.ContentHandler#characters(char[], int, int)
      */
     public void characters(char[] ch,int start,int len){
-		  if (bOK==true)
-			  fieldData.append(ch, start, len);
+          if (bOK==true)
+              fieldData.append(ch, start, len);
     }
 
     /*
@@ -88,7 +88,7 @@ public class DatasetImportHandler extends BaseHandler{
      * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
      */
     public void endElement(String uri, String localName, String name){
-    	
+        
       if (name.equals(ROWSET))  //end of table
           tables.put(tableName, table);
 
@@ -97,8 +97,8 @@ public class DatasetImportHandler extends BaseHandler{
           bOK = false;
       }
       else{
-	        if (bOK==true)
-	            row.put(name.toLowerCase(), processFieldData(fieldData.toString().trim()));
+            if (bOK==true)
+                row.put(name.toLowerCase(), processFieldData(fieldData.toString().trim()));
       }
       
       fieldData =  new StringBuffer();
@@ -126,99 +126,99 @@ public class DatasetImportHandler extends BaseHandler{
      * @return
      */
     private String processFieldData(String data){
-    	
-		return processUnicodeEscapes(data);
+        
+        return processUnicodeEscapes(data);
     }
 
-	/**
-	 * Turns all UNICODE esacpes like &#000; and &nbsp; into correct UTF-8 chars 
-	 */
-	private String processUnicodeEscapes(String data){
-		
-		if (data==null || data.length()==0) return data;
-		StringBuffer buf = new StringBuffer();
-		for (int i=0; i<data.length(); i++){
-			
-			char c = data.charAt(i);
-			
-			if (c=='&'){
-				int j = data.indexOf(";", i);
-				if (j > i){
-					char cc = data.charAt(i+1);
-					int decimal = -1;
-					if (cc=='#'){
-						// handle Unicode decimal escape
-						String sDecimal = data.substring(i+2, j);
-						try{
-							decimal = Integer.parseInt(sDecimal);
-						}
-						catch (Exception e){}
-					}
-					else{
-						// handle entity
-						String ent = data.substring(i+1, j);
-						decimal = unicodeEscapes.getDecimal(ent);
-					}
+    /**
+     * Turns all UNICODE esacpes like &#000; and &nbsp; into correct UTF-8 chars 
+     */
+    private String processUnicodeEscapes(String data){
+        
+        if (data==null || data.length()==0) return data;
+        StringBuffer buf = new StringBuffer();
+        for (int i=0; i<data.length(); i++){
             
-					// if decimal found, use the corresponding char, otherwise stick to c.
-					if (decimal >= 0){
-						c = (char)decimal;
-						i = j;
-					}
-				}
-			}
+            char c = data.charAt(i);
+            
+            if (c=='&'){
+                int j = data.indexOf(";", i);
+                if (j > i){
+                    char cc = data.charAt(i+1);
+                    int decimal = -1;
+                    if (cc=='#'){
+                        // handle Unicode decimal escape
+                        String sDecimal = data.substring(i+2, j);
+                        try{
+                            decimal = Integer.parseInt(sDecimal);
+                        }
+                        catch (Exception e){}
+                    }
+                    else{
+                        // handle entity
+                        String ent = data.substring(i+1, j);
+                        decimal = unicodeEscapes.getDecimal(ent);
+                    }
+            
+                    // if decimal found, use the corresponding char, otherwise stick to c.
+                    if (decimal >= 0){
+                        c = (char)decimal;
+                        i = j;
+                    }
+                }
+            }
     
-			buf.append(c);
-		}
-		
-		return buf.toString();
-	}
-	
+            buf.append(c);
+        }
+        
+        return buf.toString();
+    }
+    
     
     /**
      * Substitutes &apos; entities with &#39;, because &apos; is not supported in older
      * browsers and IE6.
      */
     private String processApos(String data){
-    	
-    	String oldEntity = "&apos;";
-		String newEntity = "&#39;";
-    	
-		StringBuffer buf = null;
-		int i = data.indexOf(oldEntity);
-		while (i != -1){
-			buf = new StringBuffer(data);
-			buf.replace(i, i + oldEntity.length(), newEntity);
-			data = buf.toString();
-			i = data.indexOf(oldEntity);
-		}
+        
+        String oldEntity = "&apos;";
+        String newEntity = "&#39;";
+        
+        StringBuffer buf = null;
+        int i = data.indexOf(oldEntity);
+        while (i != -1){
+            buf = new StringBuffer(data);
+            buf.replace(i, i + oldEntity.length(), newEntity);
+            data = buf.toString();
+            i = data.indexOf(oldEntity);
+        }
 
-		return data;
+        return data;
     }
     
     /**
      * 
      */
     public static void main(String[] args){
-    	
-    	StringBuffer errorBuff = new StringBuffer();
-    	String srcFile = "D:\\projects\\datadict\\tmp\\valid_nuka_tbl.xml";
+        
+        StringBuffer errorBuff = new StringBuffer();
+        String srcFile = "D:\\projects\\datadict\\tmp\\valid_nuka_tbl.xml";
 
-    	try{
-	        DatasetImportHandler handler=new DatasetImportHandler();
-	        SAXParserFactory spfact = SAXParserFactory.newInstance();
-	        SAXParser parser = spfact.newSAXParser();
-	        XMLReader reader = parser.getXMLReader();
-	        spfact.setValidating(true);
+        try{
+            DatasetImportHandler handler=new DatasetImportHandler();
+            SAXParserFactory spfact = SAXParserFactory.newInstance();
+            SAXParser parser = spfact.newSAXParser();
+            XMLReader reader = parser.getXMLReader();
+            spfact.setValidating(true);
 
-	        reader.setContentHandler(handler);
-	        reader.parse(srcFile);
-	        if (handler.hasError())
-	        	System.out.println(handler.getErrorBuff().toString());
+            reader.setContentHandler(handler);
+            reader.parse(srcFile);
+            if (handler.hasError())
+                System.out.println(handler.getErrorBuff().toString());
 
-    	}
-    	catch (Exception e){
-    		System.out.println(e.toString());
-    	}
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+        }
     }
 }

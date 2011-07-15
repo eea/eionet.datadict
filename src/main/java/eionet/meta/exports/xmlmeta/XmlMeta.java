@@ -17,7 +17,7 @@
  * 
  * Contributors(s):
  *    Original code: Dusko Kolundzija (ED)
- *    				 Istvan Alfeldi (ED)
+ *                   Istvan Alfeldi (ED)
  */
 
 package eionet.meta.exports.xmlmeta;

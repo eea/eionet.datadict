@@ -9,34 +9,34 @@ import eionet.meta.DDException;
  */
 public class DDConnectionException extends DDException{
 
-	/**
-	 *
-	 */
-	public DDConnectionException(){
-		super();
+    /**
+     *
+     */
+    public DDConnectionException(){
+        super();
    }
 
-	/**
-	 * @param msg the detail message.
-	 */
+    /**
+     * @param msg the detail message.
+     */
    public DDConnectionException(String msg) {
        super(msg);
    }
    
    /**
-	 * 
-	 * @param message
-	 * @param cause
-	 */
-	public DDConnectionException(String msg, Throwable cause){
-		super(msg, cause);
-	}
+     * 
+     * @param message
+     * @param cause
+     */
+    public DDConnectionException(String msg, Throwable cause){
+        super(msg, cause);
+    }
 
-	/**
-	 * 
-	 * @param cause
-	 */
-	public DDConnectionException(Throwable cause){
-		super(cause);
-	}
+    /**
+     * 
+     * @param cause
+     */
+    public DDConnectionException(Throwable cause){
+        super(cause);
+    }
 }

@@ -47,12 +47,12 @@ public class AttrFieldsHandler extends BaseHandler {
         this.del_rows = req.getParameterValues("del_row");
         this.del_attrs = req.getParameterValues("del_attr");
         
-		harvAttrID = req.getParameter("harv_attr_id");
+        harvAttrID = req.getParameter("harv_attr_id");
 
         if (ctx!=null){
-	        String _versioning = ctx.getInitParameter("versioning");
-	        if (_versioning!=null && _versioning.equalsIgnoreCase("false"))
-	            setVersioning(false);
+            String _versioning = ctx.getInitParameter("versioning");
+            if (_versioning!=null && _versioning.equalsIgnoreCase("false"))
+                setVersioning(false);
         }
     }
 
@@ -66,7 +66,7 @@ public class AttrFieldsHandler extends BaseHandler {
     }
 
     public void execute_() throws Exception {
-    	
+        
         if (mode==null || (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("delete")))
             throw new Exception("AttrFieldsHandler mode unspecified!");
         
@@ -100,15 +100,15 @@ public class AttrFieldsHandler extends BaseHandler {
     }
 
     private void insert() throws Exception {
-    	
+        
         Enumeration params = req.getParameterNames();
         if (params == null || !params.hasMoreElements()) return;
 
         if (Util.nullString(harvAttrID) && !hasFields()) return;
 
         String row_id = insertRow();
-		if (Util.nullString(harvAttrID))
-        	insertFields(row_id, params);
+        if (Util.nullString(harvAttrID))
+            insertFields(row_id, params);
     }
 
     /**
@@ -126,13 +126,13 @@ public class AttrFieldsHandler extends BaseHandler {
 
         String position = req.getParameter("position");
         if (position == null || position.length()==0)
-        	position = "0";
+            position = "0";
         map.put("POSITION", inParams.add(position, Types.INTEGER));
 
         String rowID = parent_id + parent_type + m_attr_id + position;
         map.put("ROW_ID", "md5(" + inParams.add(rowID) + ")");
         if (!Util.nullString(harvAttrID))
-			map.put("HARV_ATTR_ID", inParams.add(harvAttrID));
+            map.put("HARV_ATTR_ID", inParams.add(harvAttrID));
 
         SQL.executeUpdate(SQL.insertStatement("COMPLEX_ATTR_ROW", map), inParams, conn);
         
@@ -148,39 +148,39 @@ public class AttrFieldsHandler extends BaseHandler {
     private void insertFields(String rowID, Enumeration params) throws SQLException {
 
         if (rowID == null)
-        	return;
+            return;
 
         PreparedStatement stmt = null;
         try{
-	        do {
-	            String parName = (String)params.nextElement();
-	            if (!parName.startsWith(FLD_PREFIX))
-	            	continue;
-	
-	            if (Util.nullString(req.getParameter(parName)))
-	            	continue;
-	
-	            String fieldID = parName.substring(FLD_PREFIX.length());
+            do {
+                String parName = (String)params.nextElement();
+                if (!parName.startsWith(FLD_PREFIX))
+                    continue;
+    
+                if (Util.nullString(req.getParameter(parName)))
+                    continue;
+    
+                String fieldID = parName.substring(FLD_PREFIX.length());
 
-	            INParameters inParams = new INParameters();
-	            LinkedHashMap map = new LinkedHashMap();
-	            map.put("ROW_ID", "md5(" + inParams.add(rowID) + ")");
-	            map.put("M_COMPLEX_ATTR_FIELD_ID", inParams.add(fieldID, Types.INTEGER));
-	            map.put("VALUE", inParams.add(req.getParameter(parName)));
-	            
-	            stmt = SQL.preparedStatement(SQL.insertStatement("COMPLEX_ATTR_FIELD", map), inParams, conn);
-	            stmt.executeUpdate();
-	        }
-	        while (params.hasMoreElements());
+                INParameters inParams = new INParameters();
+                LinkedHashMap map = new LinkedHashMap();
+                map.put("ROW_ID", "md5(" + inParams.add(rowID) + ")");
+                map.put("M_COMPLEX_ATTR_FIELD_ID", inParams.add(fieldID, Types.INTEGER));
+                map.put("VALUE", inParams.add(req.getParameter(parName)));
+                
+                stmt = SQL.preparedStatement(SQL.insertStatement("COMPLEX_ATTR_FIELD", map), inParams, conn);
+                stmt.executeUpdate();
+            }
+            while (params.hasMoreElements());
         }
         catch (SQLException sqle){
-        	sqle.printStackTrace(System.out);
+            sqle.printStackTrace(System.out);
         }
         finally{
-        	try{
-        		if (stmt!=null) stmt.close();
-        	}
-        	catch (SQLException e){}
+            try{
+                if (stmt!=null) stmt.close();
+            }
+            catch (SQLException e){}
         }
     }
     
@@ -200,7 +200,7 @@ public class AttrFieldsHandler extends BaseHandler {
         bufRow.append("delete from COMPLEX_ATTR_ROW where ");
         for (int i=0; del_rows!=null && i<del_rows.length; i++){
             if (i>0)
-            	bufRow.append(" or ");
+                bufRow.append(" or ");
             bufRow.append("ROW_ID=").append(inParamsRow.add(del_rows[i]));
         }
         
@@ -209,24 +209,24 @@ public class AttrFieldsHandler extends BaseHandler {
         bufFld.append("delete from COMPLEX_ATTR_FIELD where ");
         for (int i=0; del_rows!=null && i<del_rows.length; i++){
             if (i>0)
-            	bufFld.append(" or ");
+                bufFld.append(" or ");
             bufFld.append("ROW_ID=").append(inParamsFld.add(del_rows[i]));
         }
         
         PreparedStatement stmt1 = null;
         PreparedStatement stmt2 = null;
         try{
-        	stmt1 = SQL.preparedStatement(bufRow.toString(), inParamsRow, conn);
-        	stmt2 = SQL.preparedStatement(bufFld.toString(), inParamsFld, conn);
-        	stmt1.executeUpdate();
-        	stmt2.executeUpdate();
+            stmt1 = SQL.preparedStatement(bufRow.toString(), inParamsRow, conn);
+            stmt2 = SQL.preparedStatement(bufFld.toString(), inParamsFld, conn);
+            stmt1.executeUpdate();
+            stmt2.executeUpdate();
         }
         finally{
-        	try{
-        		if (stmt1!=null) stmt1.close();
-        		if (stmt2!=null) stmt2.close();
-        	}
-        	catch (SQLException e){}
+            try{
+                if (stmt1!=null) stmt1.close();
+                if (stmt2!=null) stmt2.close();
+            }
+            catch (SQLException e){}
         }
     }
     
@@ -236,7 +236,7 @@ public class AttrFieldsHandler extends BaseHandler {
      */
     private void setDelRows() throws SQLException {
         
-    	INParameters inParams = new INParameters();
+        INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer();
         buf.append("select distinct ROW_ID from COMPLEX_ATTR_ROW where PARENT_ID=").append(inParams.add(parent_id, Types.INTEGER)).
         append(" and PARENT_TYPE=").append(inParams.add(parent_type));
@@ -244,7 +244,7 @@ public class AttrFieldsHandler extends BaseHandler {
             buf.append(" and ("); 
             for (int i=0; i<del_attrs.length; i++){
                 if (i>0)
-                	buf.append(" or ");
+                    buf.append(" or ");
                 buf.append("M_COMPLEX_ATTR_ID=").append(inParams.add(del_attrs[i], Types.INTEGER));
             }
             buf.append(")");
@@ -254,18 +254,18 @@ public class AttrFieldsHandler extends BaseHandler {
         ResultSet rs = null;
         PreparedStatement stmt = null;
         try{
-        	stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-        	rs = stmt.executeQuery();
+            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+            rs = stmt.executeQuery();
             while (rs.next()){
                 v.add(rs.getString("ROW_ID"));
             }
         }
         finally{
-        	try{
-        		if (rs!=null) rs.close();
-        		if (stmt!=null) stmt.close();
-        	}
-        	catch (SQLException e){}
+            try{
+                if (rs!=null) rs.close();
+                if (stmt!=null) stmt.close();
+            }
+            catch (SQLException e){}
         }
 
         del_rows = new String[v.size()];

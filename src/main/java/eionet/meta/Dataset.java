@@ -296,8 +296,8 @@ public class Dataset implements Comparable {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public void setComparation(String sortString, int sortOrder) {
 
         this.sortString = sortString;
@@ -314,8 +314,8 @@ public class Dataset implements Comparable {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public int compareTo(Object o) {
         return this.sortOrder * this.sortString.compareTo(o.toString());
     }

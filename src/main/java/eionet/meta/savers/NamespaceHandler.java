@@ -21,7 +21,7 @@ import eionet.util.sql.SQLGenerator;
  * @author jaanus
  */
 public class NamespaceHandler extends BaseHandler{
-	
+    
     /** */
     private String mode = null;
     private String[] nsID = null;
@@ -138,7 +138,7 @@ public class NamespaceHandler extends BaseHandler{
 
         String parentNS = req.getParameter("parent_ns");
         if (!Util.nullString(parentNS)){
-        	gen.setFieldExpr("PARENT_NS", inParams.add(parentNS, Types.INTEGER));
+            gen.setFieldExpr("PARENT_NS", inParams.add(parentNS, Types.INTEGER));
         }
         
         // execute
@@ -232,7 +232,7 @@ public class NamespaceHandler extends BaseHandler{
     
     private boolean exists() throws SQLException {
         
-    	INParameters inParams = new INParameters();
+        INParameters inParams = new INParameters();
         String qry = "";
         if (Util.nullString(dsID) && Util.nullString(tblID)){
             

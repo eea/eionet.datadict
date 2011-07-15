@@ -17,25 +17,25 @@
  * 
  * Contributors(s):
  *    Original code: Dusko Kolundzija (ED)
- *    				 Istvan Alfeldi (ED)
+ *                   Istvan Alfeldi (ED)
  */
 
 package eionet.meta.exports.xmlmeta;
 
 public interface XmlMetaIF {
 
-	/**
-	 * Write an XML instance for the given object.
-	 */
-	public abstract void write(String objID) throws Exception;
+    /**
+     * Write an XML instance for the given object.
+     */
+    public abstract void write(String objID) throws Exception;
 
-	/**
-	 * Flush the written content into the writer.
-	 */
-	public abstract void flush() throws Exception;
+    /**
+     * Flush the written content into the writer.
+     */
+    public abstract void flush() throws Exception;
 
-	/**
-	 * Sets the request URI up to servlet name. Does not have to end with slash.
-	 */
-	public abstract void setAppContext(String appContext);
+    /**
+     * Sets the request URI up to servlet name. Does not have to end with slash.
+     */
+    public abstract void setAppContext(String appContext);
 }

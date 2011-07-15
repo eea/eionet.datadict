@@ -7,35 +7,35 @@ package eionet.meta;
  */
 public class DDRuntimeException extends RuntimeException{
 
-	/**
-	 *
-	 */
-	public DDRuntimeException(){
-		super();
-	}
-	
-	/**
-	 * 
-	 * @param message
-	 */
-	public DDRuntimeException(String message) {
-		super(message);
-	}
-	
-	/**
-	 * 
-	 * @param message
-	 * @param cause
-	 */
-	public DDRuntimeException(String message, Throwable cause) {
+    /**
+     *
+     */
+    public DDRuntimeException(){
+        super();
+    }
+    
+    /**
+     * 
+     * @param message
+     */
+    public DDRuntimeException(String message) {
+        super(message);
+    }
+    
+    /**
+     * 
+     * @param message
+     * @param cause
+     */
+    public DDRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
-	
-	/**
-	 * 
-	 * @param cause
-	 */
-	public DDRuntimeException(Throwable cause) {
+    
+    /**
+     * 
+     * @param cause
+     */
+    public DDRuntimeException(Throwable cause) {
         super(cause);
     }
 }

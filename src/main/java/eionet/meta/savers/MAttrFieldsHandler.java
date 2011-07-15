@@ -75,28 +75,28 @@ public class MAttrFieldsHandler extends BaseHandler{
      * @throws SQLException
      */
     private void insertField(String field) throws SQLException {
-    	
-    	String definition = req.getParameter("definition");
-    	if (definition == null) definition = "";
-    	
-    	String position = req.getParameter("position");
-    	if (position == null || position.length()==0) position = "0";
-    	
-    	INParameters inParams = new INParameters();
-    	LinkedHashMap map = new LinkedHashMap();
+        
+        String definition = req.getParameter("definition");
+        if (definition == null) definition = "";
+        
+        String position = req.getParameter("position");
+        if (position == null || position.length()==0) position = "0";
+        
+        INParameters inParams = new INParameters();
+        LinkedHashMap map = new LinkedHashMap();
 
-    	map.put("M_COMPLEX_ATTR_ID", inParams.add(attr_id, Types.INTEGER));
-    	map.put("NAME", inParams.add(field));
-    	map.put("DEFINITION", inParams.add(definition));
-    	map.put("POSITION", inParams.add(position, Types.INTEGER));
-    	
-    	String harvFld = req.getParameter("harv_fld");
-    	if (harvFld != null && !harvFld.equals("null"))
-    		map.put("HARV_ATTR_FLD_NAME", inParams.add(harvFld));
-    	else
-    		map.put("HARV_ATTR_FLD_NAME", "NULL");
-    	
-    	SQL.executeUpdate(SQL.insertStatement("M_COMPLEX_ATTR_FIELD", map), inParams, conn);
+        map.put("M_COMPLEX_ATTR_ID", inParams.add(attr_id, Types.INTEGER));
+        map.put("NAME", inParams.add(field));
+        map.put("DEFINITION", inParams.add(definition));
+        map.put("POSITION", inParams.add(position, Types.INTEGER));
+        
+        String harvFld = req.getParameter("harv_fld");
+        if (harvFld != null && !harvFld.equals("null"))
+            map.put("HARV_ATTR_FLD_NAME", inParams.add(harvFld));
+        else
+            map.put("HARV_ATTR_FLD_NAME", "NULL");
+        
+        SQL.executeUpdate(SQL.insertStatement("M_COMPLEX_ATTR_FIELD", map), inParams, conn);
     }
 
     /**
@@ -119,8 +119,8 @@ public class MAttrFieldsHandler extends BaseHandler{
      * @throws SQLException
      */
     private void deleteField(String id) throws SQLException {
-    	
-    	INParameters inParams = new INParameters();
+        
+        INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("delete from M_COMPLEX_ATTR_FIELD ");
         buf.append("where M_COMPLEX_ATTR_FIELD_ID=");
         buf.append(inParams.add(id, Types.INTEGER));
@@ -141,27 +141,27 @@ public class MAttrFieldsHandler extends BaseHandler{
 
         String field_id = req.getParameter("field_id");
         if (field_id == null)
-        	return;
+            return;
 
         String definition = req.getParameter("definition");
         if (definition == null)
-        	definition = "";
+            definition = "";
 
         String priority = req.getParameter("priority");
         if (priority == null)
-        	priority = "1";
+            priority = "1";
 
-    	INParameters inParams = new INParameters();
-    	LinkedHashMap map = new LinkedHashMap();
+        INParameters inParams = new INParameters();
+        LinkedHashMap map = new LinkedHashMap();
 
         map.put("DEFINITION", inParams.add(definition));
         map.put("PRIORITY", inParams.add(priority));
         
-		String harvFld = req.getParameter("harv_fld");
-		if (harvFld != null && !harvFld.equals("null"))
-			map.put("HARV_ATTR_FLD_NAME", inParams.add(harvFld));
-		else
-			map.put("HARV_ATTR_FLD_NAME", "NULL");
+        String harvFld = req.getParameter("harv_fld");
+        if (harvFld != null && !harvFld.equals("null"))
+            map.put("HARV_ATTR_FLD_NAME", inParams.add(harvFld));
+        else
+            map.put("HARV_ATTR_FLD_NAME", "NULL");
 
         StringBuffer buf = new StringBuffer(SQL.updateStatement("M_COMPLEX_ATTR_FIELD", map));
         buf.append(" where M_COMPLEX_ATTR_FIELD_ID=").append(inParams.add(field_id, Types.INTEGER));
@@ -202,9 +202,9 @@ public class MAttrFieldsHandler extends BaseHandler{
       * @throws Exception
       */
     private void updateFieldPos(String fieldId, String pos) throws Exception {
-    	
-    	INParameters inParams = new INParameters();
-    	LinkedHashMap map = new LinkedHashMap();
+        
+        INParameters inParams = new INParameters();
+        LinkedHashMap map = new LinkedHashMap();
         map.put("POSITION", inParams.add(pos, Types.INTEGER));
         StringBuffer buf = new StringBuffer(SQL.updateStatement("M_COMPLEX_ATTR_FIELD", map));
         buf.append(" where M_COMPLEX_ATTR_FIELD_ID=").append(inParams.add(fieldId, Types.INTEGER));

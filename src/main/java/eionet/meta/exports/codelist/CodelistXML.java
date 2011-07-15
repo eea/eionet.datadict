@@ -87,9 +87,9 @@ public class CodelistXML extends Codelist {
     }
 
     /**
-	 * 
-	 *
-	 */
+     * 
+     *
+     */
     private void writeHeader() {
         lines.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         StringBuffer line = new StringBuffer("<");
@@ -106,9 +106,9 @@ public class CodelistXML extends Codelist {
     }
 
     /**
-	 * 
-	 *
-	 */
+     * 
+     *
+     */
     private void writeFooter() {
         StringBuffer line = new StringBuffer("</");
         line.append(DD_NAMESPACE).append(":").append(TAG_VALUE_LISTS).append(">");
@@ -236,9 +236,9 @@ public class CodelistXML extends Codelist {
     }
 
     /**
-	 * 
-	 *
-	 */
+     * 
+     *
+     */
     private void initNamespaces() throws Exception {
         namespaces = new Vector();
         Hashtable ns = new Hashtable();

@@ -21,8 +21,8 @@ public class FixedValue {
     private String type = null;
     private int level = 0;
     
-	private String definition = null;
-	private String shortDesc = null;
+    private String definition = null;
+    private String shortDesc = null;
 
     public FixedValue(){
     }
@@ -31,12 +31,12 @@ public class FixedValue {
         this.id = id;
     }
 
-	public FixedValue(String id, String elem_id, String value){
+    public FixedValue(String id, String elem_id, String value){
         this.id = id;
         this.elem_id = elem_id;
         this.value = value;
     }
-	public FixedValue(String id, String elem_id, String value, String position){
+    public FixedValue(String id, String elem_id, String value, String position){
         this (id, elem_id, value);
         this.position = position;
     }
@@ -47,7 +47,7 @@ public class FixedValue {
     public boolean equals(Object o) {
         
         if (!(o instanceof FixedValue))
-	        return false;
+            return false;
         
         // comapre the two attr values
         return value.equals(((FixedValue)o).getValue());
@@ -193,28 +193,28 @@ public class FixedValue {
     }
     
     public void setDefinition(String definition){
-    	this.definition= definition;
+        this.definition= definition;
     }
     
-	public String getDefinition(){
-		return definition;
-	}
+    public String getDefinition(){
+        return definition;
+    }
 
-	public void setShortDesc(String shortDesc){
-		this.shortDesc = shortDesc;
-	}
+    public void setShortDesc(String shortDesc){
+        this.shortDesc = shortDesc;
+    }
     
-	public String getShortDesc(){
-		return shortDesc;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean isEmpty(){
-		return value==null || value.length()==0;
-	}
+    public String getShortDesc(){
+        return shortDesc;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean isEmpty(){
+        return value==null || value.length()==0;
+    }
     
     public String toString(){
 

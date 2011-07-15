@@ -7,34 +7,34 @@ package eionet.meta;
  */
 public class DDException extends Exception{
 
-	/**
-	 *
-	 */
-	public DDException(){
-		super();
+    /**
+     *
+     */
+    public DDException(){
+        super();
     }
 
-	/**
-	 * @param msg the detail message.
-	 */
+    /**
+     * @param msg the detail message.
+     */
     public DDException(String msg) {
         super(msg);
     }
     
     /**
-	 * 
-	 * @param message
-	 * @param cause
-	 */
-	public DDException(String msg, Throwable cause){
-		super(msg, cause);
-	}
+     * 
+     * @param message
+     * @param cause
+     */
+    public DDException(String msg, Throwable cause){
+        super(msg, cause);
+    }
 
-	/**
-	 * 
-	 * @param cause
-	 */
-	public DDException(Throwable cause){
-		super(cause);
-	}
+    /**
+     * 
+     * @param cause
+     */
+    public DDException(Throwable cause){
+        super(cause);
+    }
 }

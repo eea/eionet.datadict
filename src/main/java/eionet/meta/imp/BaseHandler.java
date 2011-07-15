@@ -51,8 +51,8 @@ public class BaseHandler extends DefaultHandler {
         errorBuff.append(err);
     }
     
-	public void setUser(DDUser user){
-		this.user = user;
-	}
+    public void setUser(DDUser user){
+        this.user = user;
+    }
 }
 

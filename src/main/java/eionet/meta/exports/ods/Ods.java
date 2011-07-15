@@ -75,8 +75,8 @@ public abstract class Ods {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     protected void addNumberStyle(NumberStyle numberStyle) {
 
         if (numberStyles == null)
@@ -86,8 +86,8 @@ public abstract class Ods {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     protected void addStyle(Style style) {
 
         if (styles == null)
@@ -97,8 +97,8 @@ public abstract class Ods {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     protected void addTable(Table table) {
 
         if (tables == null)
@@ -108,8 +108,8 @@ public abstract class Ods {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     protected void prepareTbl(DsTable tbl) throws Exception {
 
         Table tableTag = new Table();
@@ -290,9 +290,9 @@ public abstract class Ods {
     }
 
     /**
-	 * 
-	 *
-	 */
+     * 
+     *
+     */
     private String fileToString(File file) throws Exception {
 
         String result = null;
@@ -322,18 +322,18 @@ public abstract class Ods {
     }
 
     /**
-	 * 
-	 *
-	 */
+     * 
+     *
+     */
     private String contentFileToString() throws Exception {
 
         return fileToString(new File(workingFolderPath + CONTENT_FILE_NAME));
     }
 
     /**
-	 * 
-	 *
-	 */
+     * 
+     *
+     */
     private String metaFileToString() throws Exception {
 
         return fileToString(new File(workingFolderPath + META_FILE_NAME));
@@ -381,8 +381,8 @@ public abstract class Ods {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     private void writeContentIntoFile() throws Exception {
 
         String str = contentFileToString();
@@ -391,8 +391,8 @@ public abstract class Ods {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     private void writeMetaIntoFile() throws Exception {
 
         String str = metaFileToString();
@@ -401,9 +401,9 @@ public abstract class Ods {
     }
 
     /**
-	 * 
-	 *
-	 */
+     * 
+     *
+     */
     private void zip(String fileToZip) throws Exception {
 
         String[] command = new String[4];
@@ -433,18 +433,18 @@ public abstract class Ods {
     }
 
     /**
-	 * 
-	 *
-	 */
+     * 
+     *
+     */
     private void zipContent() throws Exception {
 
         zip(workingFolderPath + CONTENT_FILE_NAME);
     }
 
     /**
-	 * 
-	 *
-	 */
+     * 
+     *
+     */
     private void zipMeta() throws Exception {
 
         zip(workingFolderPath + META_FILE_NAME);

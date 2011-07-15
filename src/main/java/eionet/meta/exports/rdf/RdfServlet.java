@@ -20,34 +20,34 @@ import eionet.util.sql.ConnectionUtil;
  */
 public class RdfServlet extends HttpServlet{
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 */
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+    /*
+     * (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 
-		PrintWriter writer = null;
+        PrintWriter writer = null;
         Connection conn = null;
         try{
             String tblID = request.getParameter("id");
-	        conn = ConnectionUtil.getConnection();
-	        Rdf rdf = new Rdf(tblID, conn);
-	        
-			response.setContentType("text/xml; charset=UTF-8");
+            conn = ConnectionUtil.getConnection();
+            Rdf rdf = new Rdf(tblID, conn);
+            
+            response.setContentType("text/xml; charset=UTF-8");
             writer = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
-			rdf.write(writer);
-	        writer.flush();
-	    }
-	    catch (Exception e){
-	        e.printStackTrace(System.out);
-			throw new ServletException(e.toString(), e);
-	    }
-		finally{
-			try{
-				if (writer != null) writer.close();
-				if (conn != null) conn.close();
-			}
-			catch(Exception ee){}
-		}
-	}
+            rdf.write(writer);
+            writer.flush();
+        }
+        catch (Exception e){
+            e.printStackTrace(System.out);
+            throw new ServletException(e.toString(), e);
+        }
+        finally{
+            try{
+                if (writer != null) writer.close();
+                if (conn != null) conn.close();
+            }
+            catch(Exception ee){}
+        }
+    }
 }

@@ -23,7 +23,7 @@ public class Fonts {
     
     public static final String ATTR_TITLE       = "attr-title";
     public static final String CELL_VALUE       = "cell-value";
-	public static final String CELL_VALUE_BOLD  = "cell-value-bold";
+    public static final String CELL_VALUE_BOLD  = "cell-value-bold";
     
     public static final String WARNING     = "warning";
     
@@ -38,7 +38,7 @@ public class Fonts {
     
     public static final String ANCHOR = "anchor";
     
-	public static final String FK_INDICATOR = "fk-indicator";
+    public static final String FK_INDICATOR = "fk-indicator";
     
     private static Hashtable fonts = null;
     
@@ -70,41 +70,41 @@ public class Fonts {
         fonts.put(ATTR_TITLE, font);
         
         // set simple value cell font
-		BaseFont bf = null;
-		try{
-			bf = BaseFont.createFont(Props.getProperty(PropsIF.UNI_FONT),
-							BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-			font = new Font(bf, 10);
-		}
-		catch (Exception e){
-			font = FontFactory.getFont(FontFactory.HELVETICA, 10);
-			System.out.println("Problem with unicode font: " + e.toString());
-		}
-		
-		fonts.put(CELL_VALUE, font);
+        BaseFont bf = null;
+        try{
+            bf = BaseFont.createFont(Props.getProperty(PropsIF.UNI_FONT),
+                            BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            font = new Font(bf, 10);
+        }
+        catch (Exception e){
+            font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+            System.out.println("Problem with unicode font: " + e.toString());
+        }
+        
+        fonts.put(CELL_VALUE, font);
 
-		// set simple value cell bold font
-		try{
-			bf = BaseFont.createFont(Props.getProperty(PropsIF.UNI_FONT),
-							BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-			font = new Font(bf, 10, Font.BOLD);
-		}
-		catch (Exception e){
-			font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
-			System.out.println("Problem with unicode font: " + e.toString());
-		}
-						
-		fonts.put(CELL_VALUE_BOLD, font);
+        // set simple value cell bold font
+        try{
+            bf = BaseFont.createFont(Props.getProperty(PropsIF.UNI_FONT),
+                            BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            font = new Font(bf, 10, Font.BOLD);
+        }
+        catch (Exception e){
+            font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
+            System.out.println("Problem with unicode font: " + e.toString());
+        }
+                        
+        fonts.put(CELL_VALUE_BOLD, font);
         
         // set warning font
         font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
         font.setColor(new Color(255,0,0));
         fonts.put(WARNING, font);
 
-		// set fk indicator font
-		font = FontFactory.getFont(FontFactory.HELVETICA, 10);
-		font.setColor(new Color(255,0,0));
-		fonts.put(FK_INDICATOR, font);
+        // set fk indicator font
+        font = FontFactory.getFont(FontFactory.HELVETICA, 10);
+        font.setColor(new Color(255,0,0));
+        fonts.put(FK_INDICATOR, font);
 
         
         // set Heading 0 font
@@ -149,19 +149,19 @@ public class Fonts {
         return (Font)fonts.get(style);
     }
 
-	public static Font getUnicode(){
-		return getUnicode(10, Font.NORMAL);
-	}
+    public static Font getUnicode(){
+        return getUnicode(10, Font.NORMAL);
+    }
 
-	public static Font getUnicode(float size){
-		return getUnicode(size, Font.NORMAL);
-	}
+    public static Font getUnicode(float size){
+        return getUnicode(size, Font.NORMAL);
+    }
 
-	public static Font getUnicode(float size, int style){
-		
-		if (fonts == null) init();
-		Font f =(Font)fonts.get(Fonts.CELL_VALUE);
-		BaseFont bf = f.getBaseFont();
-		return new Font(bf, size, style);
-	}
+    public static Font getUnicode(float size, int style){
+        
+        if (fonts == null) init();
+        Font f =(Font)fonts.get(Fonts.CELL_VALUE);
+        BaseFont bf = f.getBaseFont();
+        return new Font(bf, size, style);
+    }
 }

@@ -207,15 +207,15 @@ public class DDSearchEngine {
     }
 
     /**
-	 *
-	 */
+     *
+     */
     public Vector getDataElements() throws SQLException {
         return getDataElements(null, null, null, null);
     }
 
     /**
-	 *
-	 */
+     *
+     */
     public Vector getDataElements(Vector params, String type, String datasetIdf, String short_name) throws SQLException {
         return getDataElements(params, type, datasetIdf, short_name, null);
     }
@@ -1132,15 +1132,15 @@ public class DDSearchEngine {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public DataElement getDataElement(String elmID) throws SQLException {
         return getDataElement(elmID, null);
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public DataElement getDataElement(String elmID, String tblID) throws SQLException {
         return getDataElement(elmID, tblID, true);
     }
@@ -3611,8 +3611,8 @@ public class DDSearchEngine {
     }
 
     /**
-	 * 
-	 */
+     * 
+     */
     public Vector getHarvestedAttrs(String attrID) throws SQLException {
 
         INParameters inParams = new INParameters();
@@ -4502,8 +4502,8 @@ public class DDSearchEngine {
     }
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static class DataElementComparator implements Comparator {
 
         /** */
@@ -4518,8 +4518,8 @@ public class DDSearchEngine {
         private int sortOrder = DataElementComparator.ASC;
 
         /**
-		 * 
-		 */
+         * 
+         */
         private DataElementComparator(int compField, int sortOrder) {
             this.compField = compField;
             this.sortOrder = sortOrder;

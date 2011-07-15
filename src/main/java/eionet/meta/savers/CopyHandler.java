@@ -45,9 +45,9 @@ public class CopyHandler extends Object {
         this.conn = conn;
         this.ctx = ctx;
         if (searchEngine!=null)
-        	this.searchEngine = searchEngine;
+            this.searchEngine = searchEngine;
         else
-        	this.searchEngine = new DDSearchEngine(conn);
+            this.searchEngine = new DDSearchEngine(conn);
     }
     
     /**
@@ -92,7 +92,7 @@ public class CopyHandler extends Object {
         String tableName = dstGen.getTableName();
         Vector colNames = getTableColumnNames(tableName);
         if (colNames==null || colNames.size()==0)
-        	throw new SQLException("Failed to retreive any column names of this table: " + tableName);
+            throw new SQLException("Failed to retreive any column names of this table: " + tableName);
         
         String q = "select * from " + dstGen.getTableName() + srcConstraint;
 
@@ -100,40 +100,40 @@ public class CopyHandler extends Object {
         Statement stmt1 = null;
         ResultSet rs = null;
         try{
-        	stmt = conn.createStatement();
-        	rs = stmt.executeQuery(q);
-	        while (rs.next()){
-	            SQLGenerator gen = (SQLGenerator)dstGen.clone();
-	            for (int i=0; i<colNames.size(); i++){
-	                String colName = (String)colNames.get(i);
-	                String colValue = rs.getString(colName);
-	                if ((dstGen.getFieldValue(colName))==null){
-	                    if (colValue!=null){
-	                        gen.setField(colName, colValue);
-	                    }
-	                }
-	                else if (!includeDstGenFields){
-	                    if(dstGen.getFieldValue(colName).equals("")){
-	                        gen.removeField(colName);
-	                    }
-	                }
-	            }
-	            logger.debug(gen.insertStatement());
-	            
-	            if (stmt1==null){
-	            	stmt1 = conn.createStatement();
-	            }
-	            stmt1.executeUpdate(gen.insertStatement());
-	        }
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(q);
+            while (rs.next()){
+                SQLGenerator gen = (SQLGenerator)dstGen.clone();
+                for (int i=0; i<colNames.size(); i++){
+                    String colName = (String)colNames.get(i);
+                    String colValue = rs.getString(colName);
+                    if ((dstGen.getFieldValue(colName))==null){
+                        if (colValue!=null){
+                            gen.setField(colName, colValue);
+                        }
+                    }
+                    else if (!includeDstGenFields){
+                        if(dstGen.getFieldValue(colName).equals("")){
+                            gen.removeField(colName);
+                        }
+                    }
+                }
+                logger.debug(gen.insertStatement());
+                
+                if (stmt1==null){
+                    stmt1 = conn.createStatement();
+                }
+                stmt1.executeUpdate(gen.insertStatement());
+            }
         }
         finally{
-        	
-        	try{
-	        	if (rs!=null) rs.close();
-	        	if (stmt!=null) stmt.close();
-	        	if (stmt1!=null) stmt1.close();
-        	} catch (Exception e){
-        	}
+            
+            try{
+                if (rs!=null) rs.close();
+                if (stmt!=null) stmt.close();
+                if (stmt1!=null) stmt1.close();
+            } catch (Exception e){
+            }
         }
 
         if (includeDstGenFields)
@@ -149,61 +149,61 @@ public class CopyHandler extends Object {
      * @throws SQLException 
      */
     private Vector getTableColumnNames(String tableName) throws SQLException{
-    	
-    	Vector result = new Vector();
-    	if (tableName==null || tableName.length()==0)
-    		return result;
-    	
-    	INParameters inParams = new INParameters();
-    	
-    	String q = "select * from " + tableName + " limit 0,1";
-    	
-    	int colCount = 0;
-    	PreparedStatement stmt = null;
-    	ResultSet rs = null;
-    	ResultSetMetaData rsmd = null;
-    	try{
-    		stmt = SQL.preparedStatement(q, inParams, conn);
-    		rs = stmt.executeQuery();
-    		rsmd = rs.getMetaData();
-    		if (rsmd!=null){
-    			colCount = rsmd.getColumnCount();
-    			for (int i=1; colCount>0 && i<=colCount; i++){
-	                String colName = rsmd.getColumnName(i);
-	                if (colName!=null && colName.length()>0)
-	                	result.add(colName);
-    			}
-    		}
-    	}
-    	finally{
-    		try{
-	        	if (rs!=null) rs.close();
-	        	if (stmt!=null) stmt.close();
-        	}
-        	catch (Exception e){}
-    	}
-    	
-    	if (result.size()<colCount)
-    		throw new SQLException("Failed to retreive names of all columns of this table: " + tableName);
-    	
-    	return result;
+        
+        Vector result = new Vector();
+        if (tableName==null || tableName.length()==0)
+            return result;
+        
+        INParameters inParams = new INParameters();
+        
+        String q = "select * from " + tableName + " limit 0,1";
+        
+        int colCount = 0;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        ResultSetMetaData rsmd = null;
+        try{
+            stmt = SQL.preparedStatement(q, inParams, conn);
+            rs = stmt.executeQuery();
+            rsmd = rs.getMetaData();
+            if (rsmd!=null){
+                colCount = rsmd.getColumnCount();
+                for (int i=1; colCount>0 && i<=colCount; i++){
+                    String colName = rsmd.getColumnName(i);
+                    if (colName!=null && colName.length()>0)
+                        result.add(colName);
+                }
+            }
+        }
+        finally{
+            try{
+                if (rs!=null) rs.close();
+                if (stmt!=null) stmt.close();
+            }
+            catch (Exception e){}
+        }
+        
+        if (result.size()<colCount)
+            throw new SQLException("Failed to retreive names of all columns of this table: " + tableName);
+        
+        return result;
     }
     
-	/**
-	 * 
-	 * @param elmID
-	 * @param isMakeWorkingCopy
-	 * @param isCopyTbl2ElmRelations
-	 * @return
-	 * @throws Exception
-	 */
+    /**
+     * 
+     * @param elmID
+     * @param isMakeWorkingCopy
+     * @param isCopyTbl2ElmRelations
+     * @return
+     * @throws Exception
+     */
     public String copyElm(String elmID,
-    					   boolean isMakeWorkingCopy,
-    					   boolean isCopyTbl2ElmRelations,
-    					   boolean resetVersionAndStatus) throws Exception{
+                           boolean isMakeWorkingCopy,
+                           boolean isCopyTbl2ElmRelations,
+                           boolean resetVersionAndStatus) throws Exception{
 
         if (elmID==null)
-        	return null;
+            return null;
         
         // copy row in DATAELEM table
         SQLGenerator gen = new SQLGenerator();
@@ -214,121 +214,121 @@ public class CopyHandler extends Object {
         if (newID==null)
             return null;
 
-		// if requestd, make it a working copy
+        // if requestd, make it a working copy
         gen.clear();
         gen.setTable("DATAELEM");
         if (isMakeWorkingCopy)
             gen.setField("WORKING_COPY", "Y");            
         // if requested, reset VERSION and REG_STATUS
         if (resetVersionAndStatus){
-        	gen.setFieldExpr("VERSION", "1");
-        	gen.setField("REG_STATUS", "Incomplete");
+            gen.setFieldExpr("VERSION", "1");
+            gen.setField("REG_STATUS", "Incomplete");
         }
         else
-        	gen.setFieldExpr("VERSION", "VERSION+1");
+            gen.setFieldExpr("VERSION", "VERSION+1");
         gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
         if (user!=null)
-        	gen.setField("USER", user.getUserName());
+            gen.setField("USER", user.getUserName());
         // update the new copy
         conn.createStatement().executeUpdate(gen.updateStatement() +
                 " where DATAELEM_ID=" + newID);
         
-		// if requested, copy TBL2ELEM relations
-		if (isCopyTbl2ElmRelations){
-			gen.clear();
-			gen.setTable("TBL2ELEM");
-			gen.setField("DATAELEM_ID", newID);
-			copy(gen, "DATAELEM_ID=" + elmID);
-		}
-		
-		// copy simple attributes
-		gen.clear();
-		gen.setTable("ATTRIBUTE");
-		gen.setField("DATAELEM_ID", newID);
-		copy(gen, "DATAELEM_ID=" + elmID + " and PARENT_TYPE='E'");
-		
+        // if requested, copy TBL2ELEM relations
+        if (isCopyTbl2ElmRelations){
+            gen.clear();
+            gen.setTable("TBL2ELEM");
+            gen.setField("DATAELEM_ID", newID);
+            copy(gen, "DATAELEM_ID=" + elmID);
+        }
+        
+        // copy simple attributes
+        gen.clear();
+        gen.setTable("ATTRIBUTE");
+        gen.setField("DATAELEM_ID", newID);
+        copy(gen, "DATAELEM_ID=" + elmID + " and PARENT_TYPE='E'");
+        
         // copy complex attributes
         copyComplexAttrs(newID, elmID, "E");
         
         // copy fixed values
-		copyFxv(newID, elmID, "elem");
-		
+        copyFxv(newID, elmID, "elem");
+        
         // copy fk relations
-		gen.clear();
-		gen.setTable("FK_RELATION");
-		gen.setField("REL_ID", "");
-		gen.setField("A_ID", newID);
-		copy(gen, "A_ID=" + elmID, false);
-		gen.clear();
-		gen.setTable("FK_RELATION");
-		gen.setField("REL_ID", "");
-		gen.setField("B_ID", newID);
-		copy(gen, "B_ID=" + elmID);
-		
+        gen.clear();
+        gen.setTable("FK_RELATION");
+        gen.setField("REL_ID", "");
+        gen.setField("A_ID", newID);
+        copy(gen, "A_ID=" + elmID, false);
+        gen.clear();
+        gen.setTable("FK_RELATION");
+        gen.setField("REL_ID", "");
+        gen.setField("B_ID", newID);
+        copy(gen, "B_ID=" + elmID);
+        
         return newID;
     }
     
-	/*
-	 * 
-	 */
-	public String convertElm(String elmID) throws Exception{
-		
-		if (elmID==null) return null;
+    /*
+     * 
+     */
+    public String convertElm(String elmID) throws Exception{
         
-		SQLGenerator gen = new SQLGenerator();
-		gen.setTable("DATAELEM");
-		gen.setField("DATAELEM_ID", "");
-		String newID = copy(gen, "DATAELEM_ID=" + elmID, false);
-		if (newID==null) return null;
+        if (elmID==null) return null;
+        
+        SQLGenerator gen = new SQLGenerator();
+        gen.setTable("DATAELEM");
+        gen.setField("DATAELEM_ID", "");
+        String newID = copy(gen, "DATAELEM_ID=" + elmID, false);
+        if (newID==null) return null;
 
-		// copy rows in ATTRIBUTE, with lastInsertID
-		gen.clear();
-		gen.setTable("ATTRIBUTE");
-		gen.setField("DATAELEM_ID", newID);
-		copy(gen, "DATAELEM_ID=" + elmID + " and PARENT_TYPE='E'");
+        // copy rows in ATTRIBUTE, with lastInsertID
+        gen.clear();
+        gen.setTable("ATTRIBUTE");
+        gen.setField("DATAELEM_ID", newID);
+        copy(gen, "DATAELEM_ID=" + elmID + " and PARENT_TYPE='E'");
 
-		// copy fixed values
-		copyFxv(newID, elmID, "elem");
+        // copy fixed values
+        copyFxv(newID, elmID, "elem");
 
-		return newID;
-	}
+        return newID;
+    }
     
     /**
-	 * @param newOwner
-	 * @param oldOwner
-	 * @param ownerType
-	 */
-	public void copyFxv(String newOwner, String oldOwner, String ownerType)
-														throws SQLException{
-		
-		INParameters inParams = new INParameters();
-		
-		String q = "select * from FXV where " + "OWNER_ID="+ inParams.add(oldOwner)+ 
-			" and OWNER_TYPE="+inParams.add(ownerType);
-		
-		Vector v = new Vector();
-		PreparedStatement stmt = null; 
-		stmt = SQL.preparedStatement(q, inParams, conn);
-		ResultSet rs = stmt.executeQuery();
-		while (rs!=null && rs.next()){
-			SQLGenerator gen = new SQLGenerator();
-			gen.setTable("FXV");
-			gen.setFieldExpr("OWNER_ID", newOwner);
-			gen.setField("OWNER_TYPE", ownerType);
-			gen.setField("VALUE", rs.getString("VALUE"));
-			gen.setField("IS_DEFAULT", rs.getString("IS_DEFAULT"));
-			gen.setField("DEFINITION", rs.getString("DEFINITION"));
-			gen.setField("SHORT_DESC", rs.getString("SHORT_DESC"));
-			v.add(gen);
-		}
-		rs.close();
-		for (int i=0; i<v.size(); i++){
-			SQLGenerator gen = (SQLGenerator)v.get(i);
-			stmt.executeUpdate(gen.insertStatement());
-		}
-		
-		stmt.close();
-	}
+     * @param newOwner
+     * @param oldOwner
+     * @param ownerType
+     */
+    public void copyFxv(String newOwner, String oldOwner, String ownerType)
+                                                        throws SQLException{
+        
+        INParameters inParams = new INParameters();
+        
+        String q = "select * from FXV where " + "OWNER_ID="+ inParams.add(oldOwner)+ 
+            " and OWNER_TYPE="+inParams.add(ownerType);
+        
+        Vector v = new Vector();
+        PreparedStatement stmt = null; 
+        stmt = SQL.preparedStatement(q, inParams, conn);
+        ResultSet rs = stmt.executeQuery();
+        while (rs!=null && rs.next()){
+            SQLGenerator gen = new SQLGenerator();
+            gen.setTable("FXV");
+            gen.setFieldExpr("OWNER_ID", newOwner);
+            gen.setField("OWNER_TYPE", ownerType);
+            gen.setField("VALUE", rs.getString("VALUE"));
+            gen.setField("IS_DEFAULT", rs.getString("IS_DEFAULT"));
+            gen.setField("DEFINITION", rs.getString("DEFINITION"));
+            gen.setField("SHORT_DESC", rs.getString("SHORT_DESC"));
+            v.add(gen);
+        }
+        rs.close();
+        for (int i=0; i<v.size(); i++){
+            SQLGenerator gen = (SQLGenerator)v.get(i);
+            stmt.executeUpdate(gen.insertStatement());
+        }
+        
+        stmt.close();
+    }
     
     /**
     *
@@ -336,7 +336,7 @@ public class CopyHandler extends Object {
     public String copyTbl(String tblID) throws Exception{
 
         if (tblID==null)
-        	return null;
+            return null;
 
         // copy row in DS_TABLE table
         SQLGenerator gen = new SQLGenerator();
@@ -349,84 +349,84 @@ public class CopyHandler extends Object {
         Statement stmt = null;
         ResultSet rs = null;
         try{
-        	stmt = conn.createStatement();
+            stmt = conn.createStatement();
         
-	        // set the date
-	        gen.clear();
-	        gen.setTable("DS_TABLE");
-	        gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-	        if (user!=null)
-	        	gen.setField("USER", user.getUserName());
-	        stmt.executeUpdate(gen.updateStatement() +
-	                                            " where TABLE_ID=" + newID);
-	        
-	        // copy simple attributes
-	        gen.clear();
-	        gen.setTable("ATTRIBUTE");
-	        gen.setField("DATAELEM_ID", newID);
-	        copy(gen, "DATAELEM_ID=" + tblID + " and PARENT_TYPE='T'");
-	        
-	        // copy complex attributes
-	        copyComplexAttrs(newID, tblID, "T");
-	        
-			// copy documents
-			gen.clear();
-			gen.setTable("DOC");
-			gen.setField("OWNER_ID", newID);
-			copy(gen, "OWNER_TYPE='tbl' and OWNER_ID=" + tblID);
-	
-	        // copy elements
-			// (first get the IDs, parent namespace identifiers and multivalue-delimiters of
-			// elements in this table, then call copyElm() for each + copy TBL2ELEM relations too
-			
-	        ArrayList elmIds = new ArrayList();
-	        ArrayList multivalDelims = new ArrayList();
-	        ArrayList mandatoryFlags = new ArrayList();
-	        ArrayList commonnessFlags = new ArrayList();
-	        
-	        // get the IDs and parent namespace identifiers of elements in this table
-	        StringBuffer buf = new StringBuffer();
-	        buf.append("select TBL2ELEM.DATAELEM_ID, TBL2ELEM.MULTIVAL_DELIM, TBL2ELEM.MANDATORY, ").
-	        append("DATAELEM.PARENT_NS from TBL2ELEM ").
-	        append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID ").
-	        append("where DATAELEM.DATAELEM_ID is not null and TABLE_ID=").
-	        append(tblID).append(" order by POSITION asc");
-	        
-	        rs = stmt.executeQuery(buf.toString());
-	        while (rs.next()){
-	        	elmIds.add(rs.getString("TBL2ELEM.DATAELEM_ID"));
-	        	multivalDelims.add(rs.getString("TBL2ELEM.MULTIVAL_DELIM"));
-	        	mandatoryFlags.add(Boolean.valueOf(rs.getBoolean("TBL2ELEM.MANDATORY")));
-	        	commonnessFlags.add(Boolean.valueOf(rs.getString("DATAELEM.PARENT_NS")==null));
-	        }
-	        
-	        for (int i=0; i<elmIds.size(); i++){
-	        	
-	        	// only non-common elements will be copied
-	        	String elmId = (String)elmIds.get(i);
-	        	if (((Boolean)commonnessFlags.get(i)).booleanValue() == false){ 
-	        		elmId = copyElm(elmId, false, false, false);
-	        	}
+            // set the date
+            gen.clear();
+            gen.setTable("DS_TABLE");
+            gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
+            if (user!=null)
+                gen.setField("USER", user.getUserName());
+            stmt.executeUpdate(gen.updateStatement() +
+                                                " where TABLE_ID=" + newID);
+            
+            // copy simple attributes
+            gen.clear();
+            gen.setTable("ATTRIBUTE");
+            gen.setField("DATAELEM_ID", newID);
+            copy(gen, "DATAELEM_ID=" + tblID + " and PARENT_TYPE='T'");
+            
+            // copy complex attributes
+            copyComplexAttrs(newID, tblID, "T");
+            
+            // copy documents
+            gen.clear();
+            gen.setTable("DOC");
+            gen.setField("OWNER_ID", newID);
+            copy(gen, "OWNER_TYPE='tbl' and OWNER_ID=" + tblID);
+    
+            // copy elements
+            // (first get the IDs, parent namespace identifiers and multivalue-delimiters of
+            // elements in this table, then call copyElm() for each + copy TBL2ELEM relations too
+            
+            ArrayList elmIds = new ArrayList();
+            ArrayList multivalDelims = new ArrayList();
+            ArrayList mandatoryFlags = new ArrayList();
+            ArrayList commonnessFlags = new ArrayList();
+            
+            // get the IDs and parent namespace identifiers of elements in this table
+            StringBuffer buf = new StringBuffer();
+            buf.append("select TBL2ELEM.DATAELEM_ID, TBL2ELEM.MULTIVAL_DELIM, TBL2ELEM.MANDATORY, ").
+            append("DATAELEM.PARENT_NS from TBL2ELEM ").
+            append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID ").
+            append("where DATAELEM.DATAELEM_ID is not null and TABLE_ID=").
+            append(tblID).append(" order by POSITION asc");
+            
+            rs = stmt.executeQuery(buf.toString());
+            while (rs.next()){
+                elmIds.add(rs.getString("TBL2ELEM.DATAELEM_ID"));
+                multivalDelims.add(rs.getString("TBL2ELEM.MULTIVAL_DELIM"));
+                mandatoryFlags.add(Boolean.valueOf(rs.getBoolean("TBL2ELEM.MANDATORY")));
+                commonnessFlags.add(Boolean.valueOf(rs.getString("DATAELEM.PARENT_NS")==null));
+            }
+            
+            for (int i=0; i<elmIds.size(); i++){
+                
+                // only non-common elements will be copied
+                String elmId = (String)elmIds.get(i);
+                if (((Boolean)commonnessFlags.get(i)).booleanValue() == false){ 
+                    elmId = copyElm(elmId, false, false, false);
+                }
 
-	        	String multivalDelim = (String)multivalDelims.get(i);
-	        	Boolean mandatoryFlag = (Boolean)mandatoryFlags.get(i);
-	        	
-	        	// regardless of element's commonality, TBL2ELEM relation shall be copied anyway
-	        	gen.clear();
-	            gen.setTable("TBL2ELEM");
-	            gen.setFieldExpr("TABLE_ID", newID);
-	            gen.setFieldExpr("DATAELEM_ID", elmId);
-	            gen.setFieldExpr("POSITION", String.valueOf(i+1));
-	            if (multivalDelim!=null){
-	            	gen.setField("MULTIVAL_DELIM", multivalDelim);
-	            }
-	            gen.setFieldExpr("MANDATORY", mandatoryFlag.toString());
-	            stmt.executeUpdate(gen.insertStatement());
-	        }
+                String multivalDelim = (String)multivalDelims.get(i);
+                Boolean mandatoryFlag = (Boolean)mandatoryFlags.get(i);
+                
+                // regardless of element's commonality, TBL2ELEM relation shall be copied anyway
+                gen.clear();
+                gen.setTable("TBL2ELEM");
+                gen.setFieldExpr("TABLE_ID", newID);
+                gen.setFieldExpr("DATAELEM_ID", elmId);
+                gen.setFieldExpr("POSITION", String.valueOf(i+1));
+                if (multivalDelim!=null){
+                    gen.setField("MULTIVAL_DELIM", multivalDelim);
+                }
+                gen.setFieldExpr("MANDATORY", mandatoryFlag.toString());
+                stmt.executeUpdate(gen.insertStatement());
+            }
         }
         finally{
-        	SQL.close(rs);
-        	SQL.close(stmt);
+            SQL.close(rs);
+            SQL.close(stmt);
         }
         
         return newID;
@@ -445,7 +445,7 @@ public class CopyHandler extends Object {
                           boolean resetVersionAndStatus)throws Exception{
 
         if (dstID==null)
-        	return null;
+            return null;
         
         // copy row in DATASET table
         SQLGenerator gen = new SQLGenerator();        
@@ -462,14 +462,14 @@ public class CopyHandler extends Object {
         if (isMakeWorkingCopy)
             gen.setField("WORKING_COPY", "Y");            
         if (resetVersionAndStatus){
-        	gen.setFieldExpr("VERSION", "1");
-        	gen.setField("REG_STATUS", "Incomplete");
+            gen.setFieldExpr("VERSION", "1");
+            gen.setField("REG_STATUS", "Incomplete");
         }
         else
-        	gen.setFieldExpr("VERSION", "VERSION+1");
+            gen.setFieldExpr("VERSION", "VERSION+1");
         gen.setField("DATE", String.valueOf(System.currentTimeMillis()));
         if (user!=null)
-        	gen.setField("USER", user.getUserName());
+            gen.setField("USER", user.getUserName());
         
         conn.createStatement().executeUpdate(gen.updateStatement() +
                 " where DATASET_ID=" + newID);
@@ -484,19 +484,19 @@ public class CopyHandler extends Object {
         copyComplexAttrs(newID, dstID, "DS");
         
         // copy rod links
-		gen.clear();
-		gen.setTable("DST2ROD");
-		gen.setField("DATASET_ID", newID);
-		copy(gen, "DATASET_ID=" + dstID);
-		
-		// copy documents
-		gen.clear();
-		gen.setTable("DOC");
-		gen.setField("OWNER_ID", newID);
-		copy(gen, "OWNER_TYPE='dst' and OWNER_ID=" + dstID);
+        gen.clear();
+        gen.setTable("DST2ROD");
+        gen.setField("DATASET_ID", newID);
+        copy(gen, "DATASET_ID=" + dstID);
+        
+        // copy documents
+        gen.clear();
+        gen.setTable("DOC");
+        gen.setField("OWNER_ID", newID);
+        copy(gen, "OWNER_TYPE='dst' and OWNER_ID=" + dstID);
 
-		// copy tables
-		copyDstTables(dstID, newID);
+        // copy tables
+        copyDstTables(dstID, newID);
         
         return newID;
     }
@@ -509,32 +509,32 @@ public class CopyHandler extends Object {
      */
     public void copyDstTables(String oldDstID, String newDstID) throws Exception{
         
-    	// get id numbers of tables to copy 
-    	Vector tbls = new Vector();
-    	
-    	INParameters inParams = new INParameters();
-    	
-    	String query = "select TABLE_ID from DST2TBL where DATASET_ID="+inParams.add(oldDstID, Types.INTEGER);
-    	query += " order by POSITION asc";
-    	PreparedStatement stmt = null;
-    	stmt = SQL.preparedStatement(query, inParams, conn);
+        // get id numbers of tables to copy 
+        Vector tbls = new Vector();
+        
+        INParameters inParams = new INParameters();
+        
+        String query = "select TABLE_ID from DST2TBL where DATASET_ID="+inParams.add(oldDstID, Types.INTEGER);
+        query += " order by POSITION asc";
+        PreparedStatement stmt = null;
+        stmt = SQL.preparedStatement(query, inParams, conn);
         ResultSet rs = stmt.executeQuery();
 
         while (rs.next()){
-        	tbls.add(rs.getString(1));
+            tbls.add(rs.getString(1));
         }
         
         // copy the tables, get id numbers of new ones
         Vector newTbls = new Vector();
         for (int i=0; i<tbls.size(); i++){
-        	newTbls.add(copyTbl((String)tbls.get(i)));
+            newTbls.add(copyTbl((String)tbls.get(i)));
         }
         
         // relate new tables to new dataset
         SQLGenerator gen = new SQLGenerator();
         for (int i=0; i<newTbls.size(); i++){
-        	if (i>0)
-        		gen.clear();
+            if (i>0)
+                gen.clear();
             gen.setTable("DST2TBL");
             gen.setFieldExpr("DATASET_ID", newDstID);
             gen.setFieldExpr("TABLE_ID", (String)newTbls.get(i));
@@ -547,9 +547,9 @@ public class CopyHandler extends Object {
     *
     */
     public void copyComplexAttrs(String newID, String oldID, String type)
-													throws SQLException{
-	    	copyComplexAttrs(newID, oldID, type, null, null);
-  	}
+                                                    throws SQLException{
+            copyComplexAttrs(newID, oldID, type, null, null);
+    }
     
     /**
      * 
@@ -573,86 +573,86 @@ public class CopyHandler extends Object {
             DElemAttribute attr = (DElemAttribute)v.get(i);
             String attrID = attr.getID();
 
-		    // get the attribute fields
+            // get the attribute fields
             Vector fields = searchEngine.getAttrFields(attrID);
             if (fields==null || fields.size()==0)
                 continue;
 
             Statement stmt = null;
             try{
-            	stmt = conn.createStatement();
-            	
-			    // get the attribute rows
-			    Vector valueRows = attr.getRows();
-	            for (int j=0; valueRows!=null && j<valueRows.size(); j++){
-	
-	                Hashtable rowHash = (Hashtable)valueRows.get(j);
-	                String rowPos = (String)rowHash.get("position");
-	                rowPos = rowPos==null ? "0" : rowPos;
-	
-	                // insert a new row
-	                if (newType!=null)
-	                    type=newType;
-	                String rowID =
-	                "md5('" + newID + type + attrID + rowPos + "')";
-	
-	                SQLGenerator gen = new SQLGenerator();
-					gen.setTable("COMPLEX_ATTR_ROW");
-					gen.setField("PARENT_ID", newID);
-					gen.setField("PARENT_TYPE", type);
-					gen.setField("M_COMPLEX_ATTR_ID", attrID);
-	                gen.setFieldExpr("ROW_ID", rowID);
-	                gen.setFieldExpr("POSITION", rowPos);
-	                
-					// JH131103 - here we need to know if the attribute is linked to
-					// an harvested one
-					String harvAttrID = (String)rowHash.get("harv_attr_id");				
-	                if (harvAttrID!=null)
-						gen.setField("HARV_ATTR_ID", harvAttrID);
-	                
-					stmt.executeUpdate(gen.insertStatement());
-					if (harvAttrID!=null)
-						continue;
-	
-	                // get the value of each field in the given row
-	                int insertedFields = 0;
-	                for (int t=0; rowID!=null && t<fields.size(); t++){
-	                    Hashtable fieldHash = (Hashtable)fields.get(t);
-					    String fieldID    = (String)fieldHash.get("id");
-					    String fieldValue = (String)rowHash.get(fieldID);
-	
-					    // insert the field
-					    if (fieldID!=null && fieldValue!=null){
-					    	
-					        gen.clear();
-					        gen.setTable("COMPLEX_ATTR_FIELD");
-					        gen.setFieldExpr("ROW_ID", rowID);
-					        gen.setField("M_COMPLEX_ATTR_FIELD_ID", fieldID);
-					        gen.setField("VALUE", fieldValue);
-					        
-					        StringBuffer buf = new StringBuffer(gen.insertStatement()).
-					        append(" on duplicate key update VALUE=").append(eionet.util.Util.strLiteral(fieldValue));
-					        
-					        stmt.executeUpdate(buf.toString());
-					        insertedFields++;
-					    }
-	                }
-	                
-	                // if no fields were actually inserted, delete the row
-	                if (insertedFields==0)
-	                    stmt.executeUpdate("delete from COMPLEX_ATTR_ROW " +
-					                               "where ROW_ID=" + rowID);
-	            }
+                stmt = conn.createStatement();
+                
+                // get the attribute rows
+                Vector valueRows = attr.getRows();
+                for (int j=0; valueRows!=null && j<valueRows.size(); j++){
+    
+                    Hashtable rowHash = (Hashtable)valueRows.get(j);
+                    String rowPos = (String)rowHash.get("position");
+                    rowPos = rowPos==null ? "0" : rowPos;
+    
+                    // insert a new row
+                    if (newType!=null)
+                        type=newType;
+                    String rowID =
+                    "md5('" + newID + type + attrID + rowPos + "')";
+    
+                    SQLGenerator gen = new SQLGenerator();
+                    gen.setTable("COMPLEX_ATTR_ROW");
+                    gen.setField("PARENT_ID", newID);
+                    gen.setField("PARENT_TYPE", type);
+                    gen.setField("M_COMPLEX_ATTR_ID", attrID);
+                    gen.setFieldExpr("ROW_ID", rowID);
+                    gen.setFieldExpr("POSITION", rowPos);
+                    
+                    // JH131103 - here we need to know if the attribute is linked to
+                    // an harvested one
+                    String harvAttrID = (String)rowHash.get("harv_attr_id");                
+                    if (harvAttrID!=null)
+                        gen.setField("HARV_ATTR_ID", harvAttrID);
+                    
+                    stmt.executeUpdate(gen.insertStatement());
+                    if (harvAttrID!=null)
+                        continue;
+    
+                    // get the value of each field in the given row
+                    int insertedFields = 0;
+                    for (int t=0; rowID!=null && t<fields.size(); t++){
+                        Hashtable fieldHash = (Hashtable)fields.get(t);
+                        String fieldID    = (String)fieldHash.get("id");
+                        String fieldValue = (String)rowHash.get(fieldID);
+    
+                        // insert the field
+                        if (fieldID!=null && fieldValue!=null){
+                            
+                            gen.clear();
+                            gen.setTable("COMPLEX_ATTR_FIELD");
+                            gen.setFieldExpr("ROW_ID", rowID);
+                            gen.setField("M_COMPLEX_ATTR_FIELD_ID", fieldID);
+                            gen.setField("VALUE", fieldValue);
+                            
+                            StringBuffer buf = new StringBuffer(gen.insertStatement()).
+                            append(" on duplicate key update VALUE=").append(eionet.util.Util.strLiteral(fieldValue));
+                            
+                            stmt.executeUpdate(buf.toString());
+                            insertedFields++;
+                        }
+                    }
+                    
+                    // if no fields were actually inserted, delete the row
+                    if (insertedFields==0)
+                        stmt.executeUpdate("delete from COMPLEX_ATTR_ROW " +
+                                                   "where ROW_ID=" + rowID);
+                }
             }
             catch (SQLException e){
-            	e.printStackTrace(System.out);
-            	throw e;
+                e.printStackTrace(System.out);
+                throw e;
             }
             finally{
-            	try{
-            		if (stmt!=null) stmt.close();
-            	}
-            	catch (SQLException e){}
+                try{
+                    if (stmt!=null) stmt.close();
+                }
+                catch (SQLException e){}
             }
         }
     }
@@ -670,7 +670,7 @@ public class CopyHandler extends Object {
     */
     private String getLastInsertID() throws SQLException {
         
-    	// No need for PreparedStatement.
+        // No need for PreparedStatement.
         String qry = "SELECT LAST_INSERT_ID()";
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);        

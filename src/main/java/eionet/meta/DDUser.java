@@ -44,14 +44,14 @@ import eionet.util.sql.ConnectionUtil;
  */
 public class DDUser{
 
-	/** */
+    /** */
     public static final String ACL_UPDATE_PRM   = "u";
     public static final String ACL_SERVICE_NAME = "/";
     
     /** */
     protected static LogServiceIF logger = new Log4jLoggerImpl();
     
-	/** */
+    /** */
     protected boolean authented = false;
     protected String username = null;
     protected String password = null;
@@ -74,15 +74,15 @@ public class DDUser{
 
         try {
             
-			if (userPwd!=null && userPwd.equals("mi6")){
-				if (userName==null)
-					throw new SignOnException("username not given");
-				fullName = userName;
-			}
-			else{
+            if (userPwd!=null && userPwd.equals("mi6")){
+                if (userName==null)
+                    throw new SignOnException("username not given");
+                fullName = userName;
+            }
+            else{
                 AuthMechanism.sessionLogin(userName, userPwd);
-				fullName = AuthMechanism.getFullName(userName);
-			}
+                fullName = AuthMechanism.getFullName(userName);
+            }
             
             authented = true;
             username = userName;
@@ -99,99 +99,99 @@ public class DDUser{
      * 
      * @return
      */
-	public boolean isAuthentic() {
-		return authented;
-	}
-	
-	/**
-	 * 
-	 * @param role
-	 * @return
-	 */
-	public boolean isUserInRole(String role) {
-		
-		boolean b = false;
-		if (_roles == null){
-			getUserRoles();
-		}
+    public boolean isAuthentic() {
+        return authented;
+    }
+    
+    /**
+     * 
+     * @param role
+     * @return
+     */
+    public boolean isUserInRole(String role) {
         
-		for (int i =0; i< _roles.length; i++){
-			if ( _roles[i].equals(role)){
-				b = true;
-			}
-		}
+        boolean b = false;
+        if (_roles == null){
+            getUserRoles();
+        }
+        
+        for (int i =0; i< _roles.length; i++){
+            if ( _roles[i].equals(role)){
+                b = true;
+            }
+        }
           
-		return b;
-	}
+        return b;
+    }
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getFullName() {
-		return fullName;
-	}
+    /**
+     * 
+     * @return
+     */
+    public String getFullName() {
+        return fullName;
+    }
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getUserName() {
-		return username;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public Connection getConnection() {
-		
-		try {
-			return ConnectionUtil.getConnection();
-		}
-		catch (Exception e) {
-			throw new DDRuntimeException(e);
-		}
-	}
+    /**
+     * 
+     * @return
+     */
+    public String getUserName() {
+        return username;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public Connection getConnection() {
+        
+        try {
+            return ConnectionUtil.getConnection();
+        }
+        catch (Exception e) {
+            throw new DDRuntimeException(e);
+        }
+    }
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String[] getUserRoles() {
+    /**
+     * 
+     * @return
+     */
+    public String[] getUserRoles() {
       
-		if (_roles == null) {
-			try {
-				
-				Vector v = DirectoryService.getRoles(username);
-				String[] roles = new String[v.size()];
-				for ( int i=0; i< v.size(); i++)
-					_roles[i] = (String)v.elementAt(i);
-				
-			} catch ( Exception e ) {
-				_roles = new String[]{};
-			}
-		}
-		
-		return _roles;
-	}
-	
-	/**
-	 * 
-	 *
-	 */
-	public void invalidate() {
-		authented = false;
-		username = null;
-		password = null;
-	}
+        if (_roles == null) {
+            try {
+                
+                Vector v = DirectoryService.getRoles(username);
+                String[] roles = new String[v.size()];
+                for ( int i=0; i< v.size(); i++)
+                    _roles[i] = (String)v.elementAt(i);
+                
+            } catch ( Exception e ) {
+                _roles = new String[]{};
+            }
+        }
+        
+        return _roles;
+    }
+    
+    /**
+     * 
+     *
+     */
+    public void invalidate() {
+        authented = false;
+        username = null;
+        password = null;
+    }
    
-	/**
-	 * 
-	 */
-	public String toString() {
-		return (username == null ? "" : username );
-	}
+    /**
+     * 
+     */
+    public String toString() {
+        return (username == null ? "" : username );
+    }
    
     /**
      * 
@@ -199,7 +199,7 @@ public class DDUser{
      * @return
      * @throws SignOnException
      */
-	private AccessControlListIF getAcl(String name) throws SignOnException {
+    private AccessControlListIF getAcl(String name) throws SignOnException {
 
         if (acls == null)
             acls = AccessController.getAcls();

@@ -89,11 +89,11 @@ public class TblPdfFactsheet extends PdfHandout {
         addElement(new Phrase("\n"));
         
         /* write image attributes
-		Element imgAttrs = PdfUtil.imgAttributes(v, vsPath);
-		if (imgAttrs!=null){
-			addElement(new Phrase("\n"));
-			addElement(imgAttrs);
-		}*/
+        Element imgAttrs = PdfUtil.imgAttributes(v, vsPath);
+        if (imgAttrs!=null){
+            addElement(new Phrase("\n"));
+            addElement(imgAttrs);
+        }*/
         
         // write table elements, but 1st get their fixed values & FK relations
         
@@ -107,9 +107,9 @@ public class TblPdfFactsheet extends PdfHandout {
             Vector fxValues = searchEngine.getFixedValues(elem.getID(), "elem");
             elem.setFixedValues(fxValues);
             
-			String dstID = getParameter("dstID");
-			Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
-			elem.setFKRelations(fks);
+            String dstID = getParameter("dstID");
+            Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
+            elem.setFKRelations(fks);
         }
         
         addElement(new Paragraph("Elements in this table:\n", Fonts.get(Fonts.HEADING_0)));

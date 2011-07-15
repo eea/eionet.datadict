@@ -12,7 +12,7 @@ public class TestUser extends DDUser {
      *
      */
     public TestUser(){
-    	super();
+        super();
     }
 
     /*
@@ -40,21 +40,21 @@ public class TestUser extends DDUser {
      * @see eionet.meta.DDUser#getConnection()
      */
     public Connection getConnection() {
-		
-		try {
-			return ConnectionUtil.getSimpleConnection();
-		}
-		catch (Exception e) {
-			throw new DDRuntimeException(e);
-		}
-	}
+        
+        try {
+            return ConnectionUtil.getSimpleConnection();
+        }
+        catch (Exception e) {
+            throw new DDRuntimeException(e);
+        }
+    }
 
     /*
      *  (non-Javadoc)
      * @see eionet.meta.DDuser#getUserRoles()
      */
     public String[] getUserRoles() {
-    	String[] ss = {};
+        String[] ss = {};
         return ss;
     }
 

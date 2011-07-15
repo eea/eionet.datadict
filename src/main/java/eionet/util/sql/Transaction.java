@@ -32,102 +32,102 @@ import eionet.meta.DDRuntimeException;
  *
  */
 public class Transaction{
-	
-	/** */
-	private boolean anotherTransactionRunning = false;
-	
-	/** */
-	private Connection conn = null;
-	
-	/** */
-	private Savepoint startSavepoint = null;
+    
+    /** */
+    private boolean anotherTransactionRunning = false;
+    
+    /** */
+    private Connection conn = null;
+    
+    /** */
+    private Savepoint startSavepoint = null;
 
-	/**
-	 * 
-	 * @param conn
-	 */
-	private Transaction(Connection conn){
-		if (conn==null)
-			throw new DDRuntimeException("The given connection is null");
-		this.conn = conn;
-	}
+    /**
+     * 
+     * @param conn
+     */
+    private Transaction(Connection conn){
+        if (conn==null)
+            throw new DDRuntimeException("The given connection is null");
+        this.conn = conn;
+    }
 
-	/**
-	 * 
-	 *
-	 */
-	private void start_(){
-		
-		try{
-			if (conn.getAutoCommit()==false)
-				anotherTransactionRunning = true;
-			else
-				conn.setAutoCommit(false);
-			startSavepoint = conn.setSavepoint();
-		}
-		catch (SQLException e){
-			throw new DDRuntimeException(e.toString(), e);
-		}
-	}
-	
-	/**
-	 * 
-	 * @param conn
-	 * @return
-	 */
-	public static Transaction start(Connection conn){
-		Transaction tx = new Transaction(conn);
-		tx.start_();
-		return tx;
-	}
-	
-	/**
-	 * @throws SQLException 
-	 * 
-	 *
-	 */
-	public void commit() throws SQLException{
-		
-		if (startSavepoint==null)
-			throw new DDRuntimeException("Transaction not yet started");
-		
-		if (!anotherTransactionRunning)
-			conn.commit();
-	}
-	
-	/**
-	 * 
-	 *
-	 */
-	public void rollback(){
-		try {
-			conn.rollback(startSavepoint);
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * 
-	 *
-	 */
-	public void end(){
-		try {
-			conn.releaseSavepoint(startSavepoint);
-			startSavepoint = null;
-			if (!anotherTransactionRunning)
-				conn.setAutoCommit(true);
-		}
-		catch (SQLException e){
-		}
-	}
+    /**
+     * 
+     *
+     */
+    private void start_(){
+        
+        try{
+            if (conn.getAutoCommit()==false)
+                anotherTransactionRunning = true;
+            else
+                conn.setAutoCommit(false);
+            startSavepoint = conn.setSavepoint();
+        }
+        catch (SQLException e){
+            throw new DDRuntimeException(e.toString(), e);
+        }
+    }
+    
+    /**
+     * 
+     * @param conn
+     * @return
+     */
+    public static Transaction start(Connection conn){
+        Transaction tx = new Transaction(conn);
+        tx.start_();
+        return tx;
+    }
+    
+    /**
+     * @throws SQLException 
+     * 
+     *
+     */
+    public void commit() throws SQLException{
+        
+        if (startSavepoint==null)
+            throw new DDRuntimeException("Transaction not yet started");
+        
+        if (!anotherTransactionRunning)
+            conn.commit();
+    }
+    
+    /**
+     * 
+     *
+     */
+    public void rollback(){
+        try {
+            conn.rollback(startSavepoint);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * 
+     *
+     */
+    public void end(){
+        try {
+            conn.releaseSavepoint(startSavepoint);
+            startSavepoint = null;
+            if (!anotherTransactionRunning)
+                conn.setAutoCommit(true);
+        }
+        catch (SQLException e){
+        }
+    }
 
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean isAnotherTransactionRunning() {
-		return anotherTransactionRunning;
-	}
+    /**
+     * 
+     * @return
+     */
+    public boolean isAnotherTransactionRunning() {
+        return anotherTransactionRunning;
+    }
 }

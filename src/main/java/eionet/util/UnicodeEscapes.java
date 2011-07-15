@@ -33,12 +33,12 @@ import java.util.Hashtable;
 public class UnicodeEscapes{
     
     /** */
-	private Hashtable unicodeEscapes = new Hashtable();
+    private Hashtable unicodeEscapes = new Hashtable();
     
-	/**
-	 * 
-	 *
-	 */
+    /**
+     * 
+     *
+     */
     public UnicodeEscapes(){
         unicodeEscapes.put("nbsp", "160");
         unicodeEscapes.put("iexcl", "161");
@@ -312,38 +312,38 @@ public class UnicodeEscapes{
      * @return
      */
     public boolean isXHTMLEntity(String s){
-    	
-		if (s==null || s.length()==0) return false;
-		if (!(s.startsWith("&") && s.endsWith(";"))) return false;
+        
+        if (s==null || s.length()==0) return false;
+        if (!(s.startsWith("&") && s.endsWith(";"))) return false;
 
-		if (s.length()==2) return false;
-		
-		String ss = s.substring(1, s.length()-1);
-		return unicodeEscapes.containsKey(ss);
+        if (s.length()==2) return false;
+        
+        String ss = s.substring(1, s.length()-1);
+        return unicodeEscapes.containsKey(ss);
     }
 
-	/**
-	 * 
-	 * @param s
-	 * @return
-	 */
+    /**
+     * 
+     * @param s
+     * @return
+     */
     public boolean isNumericHTMLEscapeCode(String s){
-		
-		if (s==null || s.length()==0) return false;
-		if (!(s.startsWith("&") && s.endsWith(";"))) return false;
-		
-		char c = s.charAt(1);
-		if (c!='#') return false;
-		
-		if (s.length()==3) return false;
-		
-		try{
-			Integer.parseInt(s.substring(2, s.length()-1));
-		}
-		catch (NumberFormatException e){
-			return false;
-		}
-		
-		return true;
-	}
+        
+        if (s==null || s.length()==0) return false;
+        if (!(s.startsWith("&") && s.endsWith(";"))) return false;
+        
+        char c = s.charAt(1);
+        if (c!='#') return false;
+        
+        if (s.length()==3) return false;
+        
+        try{
+            Integer.parseInt(s.substring(2, s.length()-1));
+        }
+        catch (NumberFormatException e){
+            return false;
+        }
+        
+        return true;
+    }
 }

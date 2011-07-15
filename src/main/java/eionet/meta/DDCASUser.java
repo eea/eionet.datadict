@@ -9,43 +9,43 @@ import com.tee.uit.security.SignOnException;
  *
  */
 public class DDCASUser extends DDUser {
-	
-	/**
-	 *
-	 */
-	public DDCASUser() {
-		super();
-	}
+    
+    /**
+     *
+     */
+    public DDCASUser() {
+        super();
+    }
 
-	/*
-	 *  (non-Javadoc)
-	 * @see eionet.meta.DDuser#authenticate(java.lang.String, java.lang.String)
-	 */
-	public boolean authenticate(String userName, String userPws) {
-		
-		invalidate();
+    /*
+     *  (non-Javadoc)
+     * @see eionet.meta.DDuser#authenticate(java.lang.String, java.lang.String)
+     */
+    public boolean authenticate(String userName, String userPws) {
+        
+        invalidate();
 
-		try {
-			fullName = AuthMechanism.getFullName(userName);
-		}
-		catch (SignOnException e) {
-			logger.error("Fatal error: can not get full name for authaticated user", e);
-		}
-		//
-		authented = true;
-		username = userName;
-		password = userPws;
+        try {
+            fullName = AuthMechanism.getFullName(userName);
+        }
+        catch (SignOnException e) {
+            logger.error("Fatal error: can not get full name for authaticated user", e);
+        }
+        //
+        authented = true;
+        username = userName;
+        password = userPws;
 
-		return authented;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public static DDCASUser create(String userName){
-		DDCASUser user = new DDCASUser();
-		user.authenticate(userName, null);
-		return user;
-	}
+        return authented;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static DDCASUser create(String userName){
+        DDCASUser user = new DDCASUser();
+        user.authenticate(userName, null);
+        return user;
+    }
 }

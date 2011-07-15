@@ -75,8 +75,8 @@ public class Mdb implements CachableIF {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public static File getUploaded(Connection conn, String dstID, String cachePath) throws Exception {
 
         if (conn == null)
@@ -90,8 +90,8 @@ public class Mdb implements CachableIF {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public static File getCached(Connection conn, String dstID, String cachePath) throws Exception {
 
         if (conn == null)
@@ -105,8 +105,8 @@ public class Mdb implements CachableIF {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public static File getCached(DDSearchEngine searchEngine, String dstID, String cachePath) throws Exception {
         if (searchEngine == null)
             throw new MdbException("DDSearchEngine not given");
@@ -132,15 +132,15 @@ public class Mdb implements CachableIF {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public static File getNew(Connection conn, String dstID, String fullPath) throws Exception {
         return Mdb.getNew(conn, dstID, fullPath, false);
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public static File getNew(Connection conn, String dstID, String fullPath, boolean vmdOnly) throws Exception {
 
         if (conn == null)
@@ -176,15 +176,15 @@ public class Mdb implements CachableIF {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     private static void createInBackground(String dstID, String fullPath) throws Exception {
         createInBackground(dstID, fullPath, false);
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     private static void createInBackground(String dstID, String fullPath, boolean vmdOnly) throws Exception {
 
         String executable = Props.getProperty(PROP_EXECUTABLE);
@@ -265,8 +265,8 @@ public class Mdb implements CachableIF {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public static String getFileNameFor(Connection conn, String dstID, boolean vmdOnly) throws Exception {
         if (conn == null)
             throw new MdbException("SQL connection not given");
@@ -277,8 +277,8 @@ public class Mdb implements CachableIF {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public static String getFileNameFor(DDSearchEngine searchEgnine, String dstID, boolean vmdOnly) throws Exception {
         if (searchEgnine == null)
             throw new MdbException("DDSearchEngine not given");
@@ -300,15 +300,15 @@ public class Mdb implements CachableIF {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public static int getVmdColumnType(String vmdColumnName) {
         return Types.LONGVARCHAR;
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public static int getMdbType(String elmDataType) {
 
         if (elmDataType == null)
@@ -324,8 +324,8 @@ public class Mdb implements CachableIF {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     private static void initElmTypeMappings() {
 
         mdbTypeMappings = new Hashtable();
@@ -340,8 +340,8 @@ public class Mdb implements CachableIF {
     }
 
     /*
-	 * 
-	 */
+     * 
+     */
     public static void main(String[] args) {
 
         File file = new File("D:\\projects\\datadict\\tmp\\test3.mdb");
