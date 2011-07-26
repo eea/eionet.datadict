@@ -79,7 +79,7 @@
     if (mode == null || mode.trim().length()==0){
         mode = "view";
     }
-    
+
     if (mode.equals("add")){
         if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){
             request.setAttribute("DD_ERR_MSG", "You have no permission to add a dataset!");
@@ -87,7 +87,7 @@
             return;
         }
     }
-    
+
     if (mode.equals("view")){
         if (Util.voidStr(dstIdf) && Util.voidStr(ds_id)){
             request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id or ds_idf");
@@ -226,14 +226,14 @@
 
             // get the dataset object
             if (isLatestRequested){
-                
+
                 Vector v = new Vector();
                 if (user==null){
                     v.add("Released");
                     v.add("Recorded");
                 }
                 dataset = searchEngine.getLatestDst(dstIdf, v);
-                
+
                 if (dataset!=null){
                     // double-making-sure that ds_id value is correct
                     ds_id = dataset.getID();
@@ -929,15 +929,14 @@ else if (mode.equals("add"))
                                                             </td>
                                                         </tr><%
                                                     }
-                                                    
+
                                                     // Advanced MS Access template generation link
-                                                    // TODO - allow display for all users if request comes from etcdd.eionet.europa.eu (to be removed later!)
-                                                    String serverName = request.getServerName();
-                                                    if (editReleasedPrm==true || (serverName!=null && serverName.startsWith("etcdd"))){
+                                                    boolean displayAdvancedMDB = true;
+                                                    if (displayAdvancedMDB){
                                                         %>
                                                         <tr>
                                                             <td>
-                                                                Create advanced MS Access template&nbsp;<a  href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href);return false;"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
+                                                                Create advanced MS Access template&nbsp;<a  href="help.jsp?screen=dataset&amp;area=advancedMSAccess" onclick="pop(this.href);return false;"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
                                                             </td>
                                                             <td>
                                                                 <a rel="nofollow" href="GetMSAccess?dstID=<%=ds_id%>"><img style="border:0" src="images/mdb.png" width="16" height="16" alt="MDB icon"/></a>
@@ -1100,7 +1099,7 @@ else if (mode.equals("add"))
                                                         long timestamp = dataset.getDate()==null ? 0 : Long.parseLong(dataset.getDate());
                                                         String dateString = timestamp==0 ? "" : eionet.util.Util.releasedDate(timestamp);
                                                         String dateTimeString = timestamp==0 ? "" : dateString + " " + eionet.util.Util.hoursMinutesSeconds(timestamp);
-                                                        
+
                                                         if (workingUser!=null){
                                                             if (dataset.isWorkingCopy() && user!=null && workingUser.equals(user.getUserName())){
                                                                 %>
