@@ -11,7 +11,8 @@ import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
-import eionet.util.sql.SQLGenerator;
+import org.apache.log4j.Logger;
+
 import com.tee.util.Util;
 
 import eionet.meta.notif.Subscribe;
@@ -23,12 +24,18 @@ import eionet.meta.savers.DsTableHandler;
 import eionet.meta.savers.Parameters;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import eionet.util.sql.SQLGenerator;
 import eionet.util.sql.Transaction;
 
-/*
+/**
+ *
+ * @author Jaanus Heinlaid
  *
  */
 public class VersionManager {
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(VersionManager.class);
 
     private Connection conn = null;
     private DDSearchEngine searchEngine = null;
@@ -44,15 +51,15 @@ public class VersionManager {
     protected Parameters servlRequestParams = null;
 
     /**
-    *
-    */
+     *
+     */
     public VersionManager(Connection conn, DDUser user) {
         this(conn, new DDSearchEngine(conn), user);
     }
 
     /**
-    *
-    */
+     *
+     */
     public VersionManager(Connection conn, DDSearchEngine searchEngine, DDUser user) {
         this();
         this.conn = conn;
@@ -61,8 +68,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public VersionManager() {
 
         // init registration statuses vector
@@ -114,8 +121,9 @@ public class VersionManager {
 
         INParameters inParams = new INParameters();
 
-        String qry = "select distinct WORKING_USER, " + idField + " from " + tblName + " where IDENTIFIER="
-                + inParams.add(idfier, Types.VARCHAR);
+        String qry =
+            "select distinct WORKING_USER, " + idField + " from " + tblName + " where IDENTIFIER="
+            + inParams.add(idfier, Types.VARCHAR);
         if (namespaceField != null && namespaceID != null) {
             qry += " and " + namespaceField + "=" + inParams.add(namespaceID, Types.INTEGER);
         }
@@ -134,8 +142,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public String getWorkingUser(String nsID) throws SQLException {
 
         if (nsID == null) {
@@ -156,13 +164,14 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public String getTblWorkingUser(String idfier, String parentNs) throws SQLException {
 
         INParameters inParams = new INParameters();
-        String q = "select distinct DS_TABLE.WORKING_USER from DS_TABLE " + "where IDENTIFIER="
-                + inParams.add(idfier, Types.VARCHAR) + " and WORKING_COPY='Y'";
+        String q =
+            "select distinct DS_TABLE.WORKING_USER from DS_TABLE " + "where IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR)
+            + " and WORKING_COPY='Y'";
 
         if (parentNs != null) {
             q = q + " and PARENT_NS=" + inParams.add(parentNs, Types.INTEGER);
@@ -180,13 +189,14 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public String getDstWorkingUser(String idfier) throws SQLException {
 
         INParameters inParams = new INParameters();
-        String q = "select distinct DATASET.WORKING_USER from DATASET " + "where DATASET.IDENTIFIER="
-                + inParams.add(idfier, Types.VARCHAR) + " and " + "DATASET.WORKING_COPY='Y'";
+        String q =
+            "select distinct DATASET.WORKING_USER from DATASET " + "where DATASET.IDENTIFIER="
+            + inParams.add(idfier, Types.VARCHAR) + " and " + "DATASET.WORKING_COPY='Y'";
 
         PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -198,8 +208,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public String getDstCopyWorkingUser(String copyID) throws SQLException {
 
         INParameters inParams = new INParameters();
@@ -217,8 +227,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public String getWorkingCopyID(DataElement elm) throws SQLException {
 
         if (elm == null || user == null) {
@@ -228,8 +238,8 @@ public class VersionManager {
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer();
         buf.append("select DATAELEM_ID from DATAELEM where WORKING_COPY='Y'").append(" and WORKING_USER=")
-                .append(inParams.add(user.getUserName(), Types.VARCHAR)).append(" and CHECKEDOUT_COPY_ID=")
-                .append(inParams.add(elm.getID(), Types.INTEGER));
+        .append(inParams.add(user.getUserName(), Types.VARCHAR)).append(" and CHECKEDOUT_COPY_ID=")
+        .append(inParams.add(elm.getID(), Types.INTEGER));
 
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -238,15 +248,16 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public String getWorkingCopyID(DsTable tbl) throws SQLException {
 
         INParameters inParams = new INParameters();
 
-        String q = "select distinct TABLE_ID from DS_TABLE " + "where WORKING_COPY='Y' and " + "IDENTIFIER="
-                + inParams.add(tbl.getIdentifier(), Types.VARCHAR) + " and " + "PARENT_NS="
-                + inParams.add(tbl.getParentNs(), Types.INTEGER);
+        String q =
+            "select distinct TABLE_ID from DS_TABLE " + "where WORKING_COPY='Y' and " + "IDENTIFIER="
+            + inParams.add(tbl.getIdentifier(), Types.VARCHAR) + " and " + "PARENT_NS="
+            + inParams.add(tbl.getParentNs(), Types.INTEGER);
 
         PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -259,8 +270,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public String getWorkingCopyID(Dataset dst) throws SQLException {
 
         if (dst == null || user == null) {
@@ -271,8 +282,8 @@ public class VersionManager {
 
         StringBuffer buf = new StringBuffer();
         buf.append("select DATASET_ID from DATASET where WORKING_COPY='Y'").append(" and WORKING_USER=")
-                .append(inParams.add(user.getUserName(), Types.VARCHAR)).append(" and CHECKEDOUT_COPY_ID=")
-                .append(inParams.add(dst.getID(), Types.INTEGER));
+        .append(inParams.add(user.getUserName(), Types.VARCHAR)).append(" and CHECKEDOUT_COPY_ID=")
+        .append(inParams.add(dst.getID(), Types.INTEGER));
 
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -345,8 +356,8 @@ public class VersionManager {
             stmt.executeUpdate();
 
             // copy the element
-            String strResetVersionAndStatus = servlRequestParams == null ? null : servlRequestParams
-                    .getParameter("resetVersionAndStatus");
+            String strResetVersionAndStatus =
+                servlRequestParams == null ? null : servlRequestParams.getParameter("resetVersionAndStatus");
             CopyHandler copyHandler = new CopyHandler(conn, ctx, searchEngine);
             copyHandler.setUser(user);
 
@@ -400,8 +411,11 @@ public class VersionManager {
      */
     private String checkOutDst_(String dstID) throws Exception {
 
-        if (dstID == null)
+        if (dstID == null){
             throw new Exception("Dataset ID missing!");
+        }
+
+        LOGGER.debug("Checking out dataset with id " + dstID);
 
         String newID = null;
         String topNS = null;
@@ -435,8 +449,8 @@ public class VersionManager {
             }
 
             // copy the dataset
-            String strResetVersionAndStatus = servlRequestParams == null ? null : servlRequestParams
-                    .getParameter("resetVersionAndStatus");
+            String strResetVersionAndStatus =
+                servlRequestParams == null ? null : servlRequestParams.getParameter("resetVersionAndStatus");
             CopyHandler copyHandler = new CopyHandler(conn, ctx, searchEngine);
             copyHandler.setUser(user);
             newID = copyHandler.copyDst(dstID, true, strResetVersionAndStatus != null);
@@ -632,12 +646,13 @@ public class VersionManager {
         } catch (Throwable t) {
             t.printStackTrace(System.out);
         }
-        String eventType = checkedoutCopyID != null && checkedoutCopyID.length() > 0 ? Subscribe.COMMON_ELEMENT_CHANGED_EVENT
-                : Subscribe.NEW_COMMON_ELEMENT_EVENT;
-        UNSEventSender.definitionChanged(elm, eventType, user == null ? null : user.getUserName());
+        String eventType =
+            checkedoutCopyID != null && checkedoutCopyID.length() > 0 ? Subscribe.COMMON_ELEMENT_CHANGED_EVENT
+                    : Subscribe.NEW_COMMON_ELEMENT_EVENT;
+            UNSEventSender.definitionChanged(elm, eventType, user == null ? null : user.getUserName());
 
-        stmt.close();
-        return true;
+            stmt.close();
+            return true;
     }
 
     /**
@@ -747,11 +762,12 @@ public class VersionManager {
         }
 
         // send UNS notification
-        String eventType = checkedoutCopyID != null && checkedoutCopyID.length() > 0 ? Subscribe.DATASET_CHANGED_EVENT
-                : Subscribe.NEW_DATASET_EVENT;
-        UNSEventSender.definitionChanged(dst, eventType, user == null ? null : user.getUserName());
+        String eventType =
+            checkedoutCopyID != null && checkedoutCopyID.length() > 0 ? Subscribe.DATASET_CHANGED_EVENT
+                    : Subscribe.NEW_DATASET_EVENT;
+            UNSEventSender.definitionChanged(dst, eventType, user == null ? null : user.getUserName());
 
-        return true;
+            return true;
     }
 
     private void checkRequirements(DataElement elm, String status) throws Exception {
@@ -782,8 +798,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     private DataElement loadElm(String elmID) throws Exception {
 
         if (Util.nullString(elmID))
@@ -804,8 +820,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     private DsTable loadTbl(String tblID) throws Exception {
 
         if (Util.nullString(tblID))
@@ -830,8 +846,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     private Dataset loadDst(String dstID) throws Exception {
 
         if (Util.nullString(dstID))
@@ -850,8 +866,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public String getLatestElmID(DataElement elm) throws SQLException {
 
         // see if this is a common element and behave relevantly
@@ -860,14 +876,14 @@ public class VersionManager {
         StringBuffer buf = new StringBuffer("select DATAELEM.DATAELEM_ID from DATAELEM");
         if (elm.getNamespace() != null && elm.getNamespace().getID() != null) { // non-common element
             buf.append(", TBL2ELEM, DST2TBL, DATASET ").append("where ").append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID and ")
-                    .append("TBL2ELEM.TABLE_ID=DST2TBL.TABLE_ID and ").append("DST2TBL.DATASET_ID=DATASET.DATASET_ID and ")
-                    .append("DATAELEM.WORKING_COPY='N' and DATAELEM.PARENT_NS=").append(elm.getNamespace().getID())
-                    .append(" and DATAELEM.IDENTIFIER=").append(Util.strLiteral(elm.getIdentifier()))
-                    .append(" and DATASET.DELETED is null order by DATASET.DATASET_ID desc");
+            .append("TBL2ELEM.TABLE_ID=DST2TBL.TABLE_ID and ").append("DST2TBL.DATASET_ID=DATASET.DATASET_ID and ")
+            .append("DATAELEM.WORKING_COPY='N' and DATAELEM.PARENT_NS=").append(elm.getNamespace().getID())
+            .append(" and DATAELEM.IDENTIFIER=").append(Util.strLiteral(elm.getIdentifier()))
+            .append(" and DATASET.DELETED is null order by DATASET.DATASET_ID desc");
         } else {
             buf.append(" where ").append("DATAELEM.WORKING_COPY='N' and DATAELEM.PARENT_NS is null and ")
-                    .append("DATAELEM.IDENTIFIER=").append(Util.strLiteral(elm.getIdentifier()))
-                    .append(" order by DATAELEM.DATAELEM_ID desc");
+            .append("DATAELEM.IDENTIFIER=").append(Util.strLiteral(elm.getIdentifier()))
+            .append(" order by DATAELEM.DATAELEM_ID desc");
         }
 
         Statement stmt = null;
@@ -891,8 +907,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public String getLatestReleasedTblID(DsTable tbl) throws SQLException {
 
         String tblIdf = tbl.getIdentifier();
@@ -902,12 +918,12 @@ public class VersionManager {
 
         StringBuffer buf = new StringBuffer();
         buf.append("select DST2TBL.TABLE_ID from DS_TABLE ")
-                .append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ")
-                .append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ")
-                .append("where DS_TABLE.IDENTIFIER=? and DATASET.CORRESP_NS=? ")
-                .append("and DATASET.REG_STATUS='Released' and DATASET.WORKING_COPY='N' ")
-                .append("and DATASET.CHECKEDOUT_COPY_ID is null and DATASET.WORKING_USER is null and DATASET.DELETED is null ")
-                .append("order by DST2TBL.DATASET_ID desc");
+        .append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ")
+        .append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ")
+        .append("where DS_TABLE.IDENTIFIER=? and DATASET.CORRESP_NS=? ")
+        .append("and DATASET.REG_STATUS='Released' and DATASET.WORKING_COPY='N' ")
+        .append("and DATASET.CHECKEDOUT_COPY_ID is null and DATASET.WORKING_USER is null and DATASET.DELETED is null ")
+        .append("order by DST2TBL.DATASET_ID desc");
 
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -925,13 +941,13 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public String getCheckedOutCopyID(Dataset dst) throws SQLException {
 
         StringBuffer buf = new StringBuffer();
         buf.append("select DATASET_ID from DATASET where WORKING_COPY='N' and DELETED is null and ").append("IDENTIFIER=")
-                .append(Util.strLiteral(dst.getIdentifier())).append(" order by DATASET_ID desc");
+        .append(Util.strLiteral(dst.getIdentifier())).append(" order by DATASET_ID desc");
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -954,8 +970,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     private String composeNewVersion(String oldVersion) {
         if (oldVersion == null)
             oldVersion = "0";
@@ -964,8 +980,8 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public Vector getRegStatuses() {
         return regStatuses;
     }
@@ -975,9 +991,10 @@ public class VersionManager {
      */
     public boolean isLastTbl(String id, String idfier, String parentNS) throws SQLException {
 
-        String s = "select count(*) from DS_TABLE " + "left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID "
-                + "left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID " + "where DS_TABLE.IDENTIFIER='" + idfier
-                + "' and DATASET.DELETED is null and " + "DS_TABLE.TABLE_ID<>" + id + " and ";
+        String s =
+            "select count(*) from DS_TABLE " + "left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID "
+            + "left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID " + "where DS_TABLE.IDENTIFIER='"
+            + idfier + "' and DATASET.DELETED is null and " + "DS_TABLE.TABLE_ID<>" + id + " and ";
 
         if (parentNS == null)
             s = s + "DS_TABLE.PARENT_NS is null";
@@ -1000,8 +1017,9 @@ public class VersionManager {
      */
     public boolean isLastDst(String id, String idfier) throws SQLException {
 
-        String s = "select count(*) from DATASET " + "where IDENTIFIER='" + idfier + "' and DELETED is null and " + "DATASET_ID<>"
-                + id;
+        String s =
+            "select count(*) from DATASET " + "where IDENTIFIER='" + idfier + "' and DELETED is null and " + "DATASET_ID<>"
+            + id;
 
         boolean f = false;
 
@@ -1035,8 +1053,9 @@ public class VersionManager {
      */
     public boolean isFirstCommonElm(String idf) throws SQLException {
 
-        StringBuffer buf = new StringBuffer().append("select count(*) from DATAELEM where IDENTIFIER=")
-                .append(Util.strLiteral(idf)).append(" and PARENT_NS is null");
+        StringBuffer buf =
+            new StringBuffer().append("select count(*) from DATAELEM where IDENTIFIER=").append(Util.strLiteral(idf))
+            .append(" and PARENT_NS is null");
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -1059,15 +1078,15 @@ public class VersionManager {
     }
 
     /**
-    *
-    */
+     *
+     */
     public void setContext(ServletContext ctx) {
         this.ctx = ctx;
     }
 
     /**
-    *
-    */
+     *
+     */
     public void setVersionUpdate(boolean b) {
         this.versionUpdate = b;
     }

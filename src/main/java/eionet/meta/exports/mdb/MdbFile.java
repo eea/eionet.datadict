@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
@@ -21,8 +23,6 @@ import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.Dataset;
 import eionet.meta.DsTable;
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
@@ -34,6 +34,9 @@ import eionet.util.sql.ConnectionUtil;
 public class MdbFile {
 
     /** */
+    private static final Logger LOGGER = Logger.getLogger(MdbFile.class);
+
+    /** */
     public static final String PROP_TMP_FILE_PATH = "mdb.tmp-file-path";
     public static final String PROP_LOG_FILE = "mdb.log-file";
     public static final String PROP_SCHEMA_URL = "mdb.vmd-schema-url";
@@ -42,10 +45,7 @@ public class MdbFile {
 
     public static final String   VMD_TABLENAME = "VALIDATION_METADATA_DO_NOT_MODIFY";
     public static final String[] VMD_COLUMNS   =
-        {"TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf", "DstNr", "DstNsID", "DstNsURL", "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"};
-
-    /** */
-    private static LogServiceIF log = new Log4jLoggerImpl();
+    {"TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf", "DstNr", "DstNsID", "DstNsURL", "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"};
 
     /** */
     private Connection conn = null;
@@ -349,9 +349,9 @@ public class MdbFile {
         return cols;
     }
 
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////
 
     /*
      *
@@ -365,7 +365,7 @@ public class MdbFile {
      *
      */
     public static File create(Connection conn, String dstID, String fullPath, boolean vmdOnly)
-                                                                                    throws Exception {
+    throws Exception {
         MdbFile mdbFile = new MdbFile(conn, dstID, fullPath);
         mdbFile.setVmdOnly(vmdOnly);
         return mdbFile.create();
@@ -445,8 +445,8 @@ public class MdbFile {
      */
     private static void log(String msg) {
 
-        if (log!=null)
-            log.debug(msg);
+        if (LOGGER!=null)
+            LOGGER.debug(msg);
         else
             System.out.println(msg);
     }
@@ -456,9 +456,9 @@ public class MdbFile {
      */
     private static void log(String msg, Throwable t) {
 
-        if (log!=null) {
-            log.debug(msg);
-            log.debug(Util.getStack(t));
+        if (LOGGER!=null) {
+            LOGGER.debug(msg);
+            LOGGER.debug(Util.getStack(t));
         }
         else {
             System.out.println(msg);
@@ -471,8 +471,8 @@ public class MdbFile {
      */
     private static void log(Throwable t) {
 
-        if (log!=null)
-            log.debug(Util.getStack(t));
+        if (LOGGER!=null)
+            LOGGER.debug(Util.getStack(t));
         else
             System.out.println(Util.getStack(t));
     }

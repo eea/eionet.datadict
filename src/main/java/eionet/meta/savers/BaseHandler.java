@@ -6,18 +6,21 @@ import java.sql.Connection;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 import com.tee.util.Util;
 
 import eionet.meta.DDUser;
 import eionet.meta.MrProper;
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
 import eionet.util.sql.Transaction;
 
 /**
  * @author Jaanus Heinlaid
  */
 public abstract class BaseHandler {
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(BaseHandler.class);
 
     /** */
     protected Connection conn = null;
@@ -27,7 +30,6 @@ public abstract class BaseHandler {
 
     /** */
     protected DDUser user = null;
-    protected static LogServiceIF logger = new Log4jLoggerImpl();
 
     /**
      *
@@ -76,7 +78,7 @@ public abstract class BaseHandler {
 
         String vp = ctx==null ? null : ctx.getInitParameter("visuals-path");
         if (Util.nullString(vp))
-            logger.error("cleanVisuals() failed to find visuals path!");
+            LOGGER.error("cleanVisuals() failed to find visuals path!");
 
         MrProper mrProper = new MrProper(conn);
         mrProper.setUser(user);
@@ -86,7 +88,7 @@ public abstract class BaseHandler {
         pars.addParameterValue(MrProper.VISUALS_PATH, vp);
 
         mrProper.execute(pars);
-        logger.debug(mrProper.getResponse().toString());
+        LOGGER.debug(mrProper.getResponse().toString());
     }
 
     /**

@@ -1,5 +1,7 @@
 package eionet.meta;
 
+import org.apache.log4j.Logger;
+
 import com.tee.uit.security.AuthMechanism;
 import com.tee.uit.security.SignOnException;
 
@@ -9,6 +11,9 @@ import com.tee.uit.security.SignOnException;
  *
  */
 public class DDCASUser extends DDUser {
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(DDCASUser.class);
 
     /**
      *
@@ -29,7 +34,7 @@ public class DDCASUser extends DDUser {
             fullName = AuthMechanism.getFullName(userName);
         }
         catch (SignOnException e) {
-            logger.error("Fatal error: can not get full name for authaticated user", e);
+            LOGGER.error("Fatal error: can not get full name for authaticated user", e);
         }
         //
         authented = true;

@@ -16,7 +16,7 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import eionet.util.sql.SQLGenerator;
+import org.apache.log4j.Logger;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
@@ -24,8 +24,12 @@ import eionet.meta.DataElement;
 import eionet.util.RequestMessages;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import eionet.util.sql.SQLGenerator;
 
 public class DsTableHandler extends BaseHandler {
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(DsTableHandler.class);
 
     public static String ATTR_PREFIX = "attr_";
     public static String ATTR_MULT_PREFIX = "attr_mult_";
@@ -127,9 +131,9 @@ public class DsTableHandler extends BaseHandler {
         }
 
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
-                           !mode.equalsIgnoreCase("edit") &&
-                           !mode.equalsIgnoreCase("delete") &&
-                           !mode.equalsIgnoreCase("edit_order"))) {
+                !mode.equalsIgnoreCase("edit") &&
+                !mode.equalsIgnoreCase("delete") &&
+                !mode.equalsIgnoreCase("edit_order"))) {
 
             throw new Exception("DsTableHandler mode unspecified or unknown!");
         }
@@ -179,7 +183,7 @@ public class DsTableHandler extends BaseHandler {
             PreparedStatement stmt = null;
             try {
                 stmt = conn.prepareStatement(
-                        "update DST2TBL set POSITION=? where TABLE_ID=? and DATASET_ID=?");
+                "update DST2TBL set POSITION=? where TABLE_ID=? and DATASET_ID=?");
                 for (Iterator iter = positions.entrySet().iterator(); iter.hasNext();) {
 
                     Map.Entry entry = (Map.Entry)iter.next();
@@ -316,7 +320,7 @@ public class DsTableHandler extends BaseHandler {
         stmt.close();
 
         if (!copy) {
-           processAttributes();
+            processAttributes();
         }
     }
 
@@ -496,7 +500,7 @@ public class DsTableHandler extends BaseHandler {
             }
 
             DataElementHandler delemHandler =
-                                new DataElementHandler(conn, params, ctx);
+                new DataElementHandler(conn, params, ctx);
             delemHandler.setUser(user);
             delemHandler.setSuperUser(superUser);
             delemHandler.setVersioning(false);
@@ -566,15 +570,15 @@ public class DsTableHandler extends BaseHandler {
         Statement statement = conn.createStatement();
         while (iter.hasNext()) {
             statement.executeUpdate("update DS_TABLE set WORKING_USER=NULL " +
-                                    "where TABLE_ID=" + (String)iter.next());
+                    "where TABLE_ID=" + (String)iter.next());
         }
     }
 
     /**
-    *
-    */
+     *
+     */
     private String createNamespace(String dstName, String tblIdfier, String tblParentNS)
-                                                    throws Exception {
+    throws Exception {
         dstName = dstName==null ? "" : dstName;
         String shortName  = tblIdfier + "_tbl_" + dstName + "_dst";
         String fullName   = tblIdfier + " table in " + dstName + " dataset";
@@ -615,7 +619,7 @@ public class DsTableHandler extends BaseHandler {
             append("(select M_ATTRIBUTE_ID from M_ATTRIBUTE where DISP_TYPE='image')");
         }
 
-        logger.debug(buf.toString());
+        LOGGER.debug(buf.toString());
 
         Statement stmt = null;
         try {
@@ -628,8 +632,8 @@ public class DsTableHandler extends BaseHandler {
     }
 
     /**
-    *
-    */
+     *
+     */
     private void deleteComplexAttributes(String[] del_IDs) throws SQLException {
 
         for (int i=0; del_IDs!=null && i<del_IDs.length; i++) {
@@ -641,7 +645,7 @@ public class DsTableHandler extends BaseHandler {
             params.addParameterValue("parent_type", "T");
 
             AttrFieldsHandler attrFieldsHandler =
-                                new AttrFieldsHandler(conn, params, ctx);
+                new AttrFieldsHandler(conn, params, ctx);
             //attrFieldsHandler.setVersioning(this.versioning);
             attrFieldsHandler.setVersioning(false);
             try {
@@ -653,56 +657,56 @@ public class DsTableHandler extends BaseHandler {
     }
 
     /**
-    *
-    */
+     *
+     */
     private void processAttributes() throws SQLException {
         String attrID=null;
         Enumeration parNames = req.getParameterNames();
         while (parNames.hasMoreElements()) {
             String parName = (String)parNames.nextElement();
             if (parName.startsWith(ATTR_PREFIX) &&
-                  !parName.startsWith(ATTR_MULT_PREFIX)) {
-               String attrValue = req.getParameter(parName);
-               if (attrValue.length()==0) {
-                  continue;
-               }
-               attrID = parName.substring(ATTR_PREFIX.length());
-               if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID)!=null) continue;  //some attributes will be inherited from dataset level
-               insertAttribute(attrID, attrValue);
+                    !parName.startsWith(ATTR_MULT_PREFIX)) {
+                String attrValue = req.getParameter(parName);
+                if (attrValue.length()==0) {
+                    continue;
+                }
+                attrID = parName.substring(ATTR_PREFIX.length());
+                if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID)!=null) continue;  //some attributes will be inherited from dataset level
+                insertAttribute(attrID, attrValue);
             }
             else if (parName.startsWith(ATTR_MULT_PREFIX)) {
-              String[] attrValues = req.getParameterValues(parName);
-              if (attrValues == null || attrValues.length == 0) {
-                  continue;
-              }
-              attrID = parName.substring(ATTR_MULT_PREFIX.length());
+                String[] attrValues = req.getParameterValues(parName);
+                if (attrValues == null || attrValues.length == 0) {
+                    continue;
+                }
+                attrID = parName.substring(ATTR_MULT_PREFIX.length());
 
-              if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID)!=null) {
-                  continue;  //some attributes will be inherited from dataset level
-              }
+                if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID)!=null) {
+                    continue;  //some attributes will be inherited from dataset level
+                }
 
-              for (int i=0; i<attrValues.length; i++) {
-                  insertAttribute(attrID, attrValues[i]);
-              }
+                for (int i=0; i<attrValues.length; i++) {
+                    insertAttribute(attrID, attrValues[i]);
+                }
             }
             else if (parName.startsWith(INHERIT_ATTR_PREFIX) &&
-                  !parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
-              attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
-              if (dstID==null) {
-                  continue;
-              }
-              CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
-              ch.setUser(user);
-              ch.copyAttribute(lastInsertID, dstID, "T", "DS", attrID);
+                    !parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
+                attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
+                if (dstID==null) {
+                    continue;
+                }
+                CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
+                ch.setUser(user);
+                ch.copyAttribute(lastInsertID, dstID, "T", "DS", attrID);
             }
             else if (parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
-              attrID = parName.substring(INHERIT_COMPLEX_ATTR_PREFIX.length());
-              if (dstID==null) {
-                  continue;
-              }
-              CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
-              ch.setUser(user);
-              ch.copyComplexAttrs(lastInsertID, dstID, "DS", "T", attrID);
+                attrID = parName.substring(INHERIT_COMPLEX_ATTR_PREFIX.length());
+                if (dstID==null) {
+                    continue;
+                }
+                CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
+                ch.setUser(user);
+                ch.copyComplexAttrs(lastInsertID, dstID, "DS", "T", attrID);
             }
         }
     }
@@ -720,7 +724,7 @@ public class DsTableHandler extends BaseHandler {
         gen.setField("PARENT_TYPE", "T");
 
         String sql = gen.insertStatement();
-        logger.debug(sql);
+        LOGGER.debug(sql);
 
         PreparedStatement stmt = SQL.preparedStatement(sql, inParams, conn);
         stmt.executeUpdate();
@@ -730,7 +734,7 @@ public class DsTableHandler extends BaseHandler {
 
         String qry = "SELECT LAST_INSERT_ID()";
 
-        logger.debug(qry);
+        LOGGER.debug(qry);
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
@@ -802,9 +806,9 @@ public class DsTableHandler extends BaseHandler {
         INParameters inParams = new INParameters();
 
         String qry =
-        "select distinct CORRESP_NS from DS_TABLE" +
-        " where DS_TABLE.IDENTIFIER=" + inParams.add(tblIdfier, Types.VARCHAR) +
-        " and DS_TABLE.PARENT_NS=" + inParams.add(dstNamespaceID, Types.INTEGER);
+            "select distinct CORRESP_NS from DS_TABLE" +
+            " where DS_TABLE.IDENTIFIER=" + inParams.add(tblIdfier, Types.VARCHAR) +
+            " and DS_TABLE.PARENT_NS=" + inParams.add(dstNamespaceID, Types.INTEGER);
 
         PreparedStatement stmt = SQL.preparedStatement(qry, inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -813,8 +817,8 @@ public class DsTableHandler extends BaseHandler {
     }
 
     /**
-    *
-    */
+     *
+     */
     public void copyTbl2Elem(String srcTblID) throws SQLException {
 
         if (searchEngine==null) {

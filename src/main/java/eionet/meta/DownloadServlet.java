@@ -17,10 +17,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import eionet.meta.filestore.FileStore;
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
 
 /**
  * This servlet provides download services for file stored in DD's file store. The service is provided through
@@ -40,7 +39,7 @@ public class DownloadServlet extends HttpServlet {
     private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
-    private static final LogServiceIF LOGGER = new Log4jLoggerImpl();
+    private static final Logger LOGGER = Logger.getLogger(DownloadServlet.class);
 
     // Properties ---------------------------------------------------------------------------------
 

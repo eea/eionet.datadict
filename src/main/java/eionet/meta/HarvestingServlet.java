@@ -9,9 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import eionet.meta.harvest.HarvesterIF;
 import eionet.meta.harvest.OrgHarvester;
-import eionet.util.LogServiceIF;
 import eionet.util.SecurityUtil;
 
 /**
@@ -21,8 +22,15 @@ import eionet.util.SecurityUtil;
  */
 public class HarvestingServlet extends HttpServlet {
 
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(HarvestingServlet.class);
+
+    /*
+     * (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
     protected void service(HttpServletRequest req, HttpServletResponse res)
-                                throws ServletException, IOException {
+    throws ServletException, IOException {
 
         req.setCharacterEncoding("UTF-8");
 
@@ -43,12 +51,11 @@ public class HarvestingServlet extends HttpServlet {
             out.println("Successfully done!!!");
         }
         catch (Exception e) {
+
             out.println("Encountered the following exception:");
             e.printStackTrace(new PrintStream(out));
 
-            LogServiceIF log = harvester.getLog();
-            log.fatal("", e);
-            e.printStackTrace(System.out);
+            LOGGER.fatal(e);
             harvester.cleanup();
         }
 

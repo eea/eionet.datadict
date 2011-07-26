@@ -8,6 +8,8 @@ import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.apache.log4j.Logger;
+
 import eionet.meta.DDRuntimeException;
 
 /**
@@ -18,12 +20,14 @@ import eionet.meta.DDRuntimeException;
 public class Props implements PropsIF{
 
     /** */
+    private static final Logger LOGGER = Logger.getLogger(Props.class);
+
+    /** */
     private ResourceBundle bundle = null;
     private Hashtable defaults = null;
 
     /** */
     private static Props instance = null;
-    private static LogServiceIF logger = new Log4jLoggerImpl();
 
     /**
      *
@@ -35,7 +39,7 @@ public class Props implements PropsIF{
             bundle = ResourceBundle.getBundle(getBundleName());
         }
         catch (MissingResourceException mre) {
-            logger.warning("Properties file " + getBundleName() + ".properties not found. Using defaults.");
+            LOGGER.warn("Properties file " + getBundleName() + ".properties not found. Using defaults.");
         }
 
         defaults = new Hashtable();
@@ -112,8 +116,9 @@ public class Props implements PropsIF{
 
         if (value==null) {
             value = (String)defaults.get(name);
-            if (value!=null)
-                logger.warning("Property value for key " + name + " not found. Using default.");
+            if (value!=null){
+                LOGGER.warn("Property value for key " + name + " not found. Using default.");
+            }
         }
 
         return value;
@@ -134,7 +139,7 @@ public class Props implements PropsIF{
         catch (NumberFormatException nfe) {
             String deflt = (String)defaults.get(name);
             if (deflt!=null) {
-                logger.warning("Invalid property value for key " + name + ". Using default.");
+                LOGGER.warn("Invalid property value for key " + name + ". Using default.");
                 return Integer.parseInt(deflt);
             }
             else

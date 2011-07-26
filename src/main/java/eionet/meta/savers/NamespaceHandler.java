@@ -10,6 +10,8 @@ import java.sql.Types;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 import com.tee.util.Util;
 
 import eionet.util.sql.INParameters;
@@ -21,6 +23,9 @@ import eionet.util.sql.SQLGenerator;
  * @author jaanus
  */
 public class NamespaceHandler extends BaseHandler{
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(NamespaceHandler.class);
 
     /** */
     private String mode = null;
@@ -89,8 +94,8 @@ public class NamespaceHandler extends BaseHandler{
     public void execute_() throws Exception {
 
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
-                          !mode.equalsIgnoreCase("edit") &&
-                          !mode.equalsIgnoreCase("delete"))) {
+                !mode.equalsIgnoreCase("edit") &&
+                !mode.equalsIgnoreCase("delete"))) {
             throw new Exception("NamespaceHandler mode unspecified!");
         }
 
@@ -112,7 +117,7 @@ public class NamespaceHandler extends BaseHandler{
         // at least the short_name is required
         if (Util.nullString(shortName)) {
             throw new Exception("NamespaceHandler: at least the short_name " +
-                                        "is required!");
+            "is required!");
         }
 
         INParameters inParams = new INParameters();
@@ -161,7 +166,7 @@ public class NamespaceHandler extends BaseHandler{
         gen.setTable("NAMESPACE");
         // don't allow change of SHORT_NAME in the first approach
         //if (!Util.nullString(shortName))
-            //gen.setField("SHORT_NAME", shortName);
+        //gen.setField("SHORT_NAME", shortName);
         if (!Util.nullString(fullName)) {
             gen.setFieldExpr("FULL_NAME", inParams.add(fullName));
         }
@@ -179,7 +184,7 @@ public class NamespaceHandler extends BaseHandler{
         buf.append(" where NAMESPACE_ID=");
         buf.append(inParams.add(nsID[0], Types.INTEGER));
 
-        logger.debug(buf.toString());
+        LOGGER.debug(buf.toString());
 
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         stmt.executeUpdate();
@@ -237,21 +242,21 @@ public class NamespaceHandler extends BaseHandler{
         if (Util.nullString(dsID) && Util.nullString(tblID)) {
 
             qry = "select count(*) as COUNT from NAMESPACE where " +
-                    "DATASET_ID is null and TABLE_ID is null and SHORT_NAME=" +
-                    inParams.add(shortName);
+            "DATASET_ID is null and TABLE_ID is null and SHORT_NAME=" +
+            inParams.add(shortName);
         }
         else if (!Util.nullString(tblID)) {
 
             qry = "select count(*) as COUNT from NAMESPACE where " +
-                    "TABLE_ID=" + inParams.add(tblID, Types.INTEGER);
+            "TABLE_ID=" + inParams.add(tblID, Types.INTEGER);
         }
         else {
 
             qry = "select count(*) as COUNT from NAMESPACE where " +
-                    "TABLE_ID is null and DATASET_ID=" + inParams.add(dsID, Types.INTEGER);
+            "TABLE_ID is null and DATASET_ID=" + inParams.add(dsID, Types.INTEGER);
         }
 
-        logger.debug(qry);
+        LOGGER.debug(qry);
 
         PreparedStatement stmt = SQL.preparedStatement(qry, inParams, conn);
         ResultSet rs = stmt.executeQuery();

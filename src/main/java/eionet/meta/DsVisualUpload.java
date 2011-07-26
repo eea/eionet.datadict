@@ -21,12 +21,11 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 import com.tee.util.Util;
 
 import eionet.meta.savers.DatasetHandler;
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
@@ -41,7 +40,7 @@ import eionet.util.sql.SQL;
 public class DsVisualUpload extends HttpServlet {
 
     /** */
-    private static final LogServiceIF LOGGER = new Log4jLoggerImpl();
+    private static final Logger LOGGER = Logger.getLogger(DsVisualUpload.class);
 
     /*
      * (non-Javadoc)

@@ -8,10 +8,15 @@ import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 public class MAttrFieldsHandler extends BaseHandler{
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(MAttrFieldsHandler.class);
 
     public static String POS_PREFIX = "pos_";
     public static String OLDPOS_PREFIX = "oldpos_";
@@ -44,7 +49,7 @@ public class MAttrFieldsHandler extends BaseHandler{
      */
     public void execute_() throws Exception {
         if (mode==null ||
-           (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("delete") && !mode.equalsIgnoreCase("edit") && !mode.equalsIgnoreCase("edit_pos")))
+                (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("delete") && !mode.equalsIgnoreCase("edit") && !mode.equalsIgnoreCase("edit_pos")))
             throw new Exception("MAttrFieldsHandler mode unspecified!");
 
         if (attr_id == null) throw new Exception("MAttrFieldsHandler attr_id unspecified!");
@@ -173,7 +178,7 @@ public class MAttrFieldsHandler extends BaseHandler{
      *
      * @throws Exception
      */
-     private void processFields() throws Exception {
+    private void processFields() throws Exception {
 
         String[] posIds = req.getParameterValues("pos_id");
         String old_pos=null;
@@ -181,13 +186,13 @@ public class MAttrFieldsHandler extends BaseHandler{
         String parName=null;
         if (posIds==null || posIds.length==0) return;
 
-        logger.debug(Integer.toString(posIds.length));
-        logger.debug(posIds[0]);
+        LOGGER.debug(Integer.toString(posIds.length));
+        LOGGER.debug(posIds[0]);
 
         for (int i=0; i<posIds.length; i++) {
             old_pos = req.getParameter(OLDPOS_PREFIX + posIds[i]);
             pos = req.getParameter(POS_PREFIX + posIds[i]);
-            logger.debug(old_pos + "|" + pos + "|" + posIds[i]);
+            LOGGER.debug(old_pos + "|" + pos + "|" + posIds[i]);
             if (old_pos.length()==0 || pos.length()==0)
                 continue;
             if (!old_pos.equals(pos))
@@ -195,12 +200,12 @@ public class MAttrFieldsHandler extends BaseHandler{
         }
     }
 
-     /**
-      *
-      * @param fieldId
-      * @param pos
-      * @throws Exception
-      */
+    /**
+     *
+     * @param fieldId
+     * @param pos
+     * @throws Exception
+     */
     private void updateFieldPos(String fieldId, String pos) throws Exception {
 
         INParameters inParams = new INParameters();

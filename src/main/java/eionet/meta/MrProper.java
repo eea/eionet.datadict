@@ -15,14 +15,14 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 import com.tee.util.Util;
 
 import eionet.meta.savers.DataElementHandler;
 import eionet.meta.savers.DatasetHandler;
 import eionet.meta.savers.DsTableHandler;
 import eionet.meta.savers.Parameters;
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
@@ -33,6 +33,10 @@ import eionet.util.sql.SQL;
  */
 public class MrProper {
 
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(MrProper.class);
+
+    /** */
     public static final String FUNCTIONS_PAR = "functs";
     public static final String DST_NAME   = "dsname";
     public static final String DST_IDFIER = "idfier";
@@ -55,11 +59,10 @@ public class MrProper {
 
     private Hashtable funNames = null;
     private boolean wasExc = false;
-    private static LogServiceIF logger = new Log4jLoggerImpl();
 
     /**
-    *
-    */
+     *
+     */
     public MrProper(Connection conn) {
         this.conn = conn;
 
@@ -75,29 +78,29 @@ public class MrProper {
     }
 
     /**
-    *
-    */
+     *
+     */
     public void setContext(ServletContext ctx) {
         this.ctx = ctx;
     }
 
     /**
-    *
-    */
+     *
+     */
     public void setUser(DDUser user) {
         this.user = user;
     }
 
     /**
-    *
-    */
+     *
+     */
     public void execute(HttpServletRequest req) {
         execute(new Parameters(req));
     }
 
     /**
-    *
-    */
+     *
+     */
     public void execute(Parameters pars) {
 
         // check if user is authentic
@@ -153,9 +156,9 @@ public class MrProper {
                 wasExc = true;
                 String stackTrace = eionet.util.Util.getStack(e);
                 if (stackTrace==null) stackTrace = e.toString();
-                logger.fatal(stackTrace);
+                LOGGER.fatal(stackTrace);
                 response.add((String)funNames.get(fun) +
-                                " failed: <b>" + stackTrace + "</b>");
+                        " failed: <b>" + stackTrace + "</b>");
                 continue;
             }
 
@@ -339,15 +342,15 @@ public class MrProper {
     }
 
     /**
-    *
-    */
+     *
+     */
     public boolean wasException() {
         return this.wasExc;
     }
 
     /**
-    *
-    */
+     *
+     */
     private void releaseDataset(String idifier) throws Exception {
 
         INParameters inParams = new INParameters();
@@ -357,7 +360,7 @@ public class MrProper {
         }
 
         String q = "select distinct CORRESP_NS from DATASET where " +
-                   "IDENTIFIER=" + inParams.add(idifier);
+        "IDENTIFIER=" + inParams.add(idifier);
 
         String ns = null;
         PreparedStatement stmt = SQL.preparedStatement(q, inParams, conn);
@@ -378,8 +381,8 @@ public class MrProper {
     }
 
     /**
-    *
-    */
+     *
+     */
     private void cleanVisuals(String visualsPath) throws Exception {
 
         if (Util.nullString(visualsPath)) {
@@ -392,11 +395,11 @@ public class MrProper {
         }
 
         String q1 =
-        "select count(*) from DATASET where VISUAL=? or DETAILED_VISUAL=?";
+            "select count(*) from DATASET where VISUAL=? or DETAILED_VISUAL=?";
         String q2 =
-        "select count(*) from ATTRIBUTE, M_ATTRIBUTE where " +
-        "ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID and " +
-        "M_ATTRIBUTE.DISP_TYPE='image' and VALUE=?";
+            "select count(*) from ATTRIBUTE, M_ATTRIBUTE where " +
+            "ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID and " +
+            "M_ATTRIBUTE.DISP_TYPE='image' and VALUE=?";
 
         PreparedStatement pstmt1 = conn.prepareStatement(q1);
         PreparedStatement pstmt2 = conn.prepareStatement(q2);
@@ -430,8 +433,8 @@ public class MrProper {
     }
 
     /**
-    *
-    */
+     *
+     */
     private void orphanElements() throws Exception {
 
         // There might be elements that have relations
@@ -444,10 +447,10 @@ public class MrProper {
 
         // find & delete related, yet non-existing tables
         String q =
-        "select distinct TBL2ELEM.TABLE_ID from TBL2ELEM " +
-        "left outer join DS_TABLE " +
-        "on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID " +
-        "where DS_TABLE.IDENTIFIER is null";
+            "select distinct TBL2ELEM.TABLE_ID from TBL2ELEM " +
+            "left outer join DS_TABLE " +
+            "on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID " +
+            "where DS_TABLE.IDENTIFIER is null";
 
         Vector v = new Vector();
         Statement stmt = conn.createStatement();
@@ -458,17 +461,17 @@ public class MrProper {
 
         for (int i=0; i<v.size(); i++) {
             stmt.executeQuery("delete from TBL2ELEM where TABLE_ID=" +
-                                                            (String)v.get(i));
+                    (String)v.get(i));
         }
 
         // get the elements
         q =
-        "select distinct DATAELEM.DATAELEM_ID from DATAELEM " +
-        "left outer join TBL2ELEM " +
-        "on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID " +
-        "left outer join DS_TABLE " +
-        "on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID " +
-        "where DATAELEM.PARENT_NS is not null and DS_TABLE.IDENTIFIER is null";
+            "select distinct DATAELEM.DATAELEM_ID from DATAELEM " +
+            "left outer join TBL2ELEM " +
+            "on DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID " +
+            "left outer join DS_TABLE " +
+            "on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID " +
+            "where DATAELEM.PARENT_NS is not null and DS_TABLE.IDENTIFIER is null";
 
         v = new Vector();
         rs = stmt.executeQuery(q);
@@ -488,7 +491,7 @@ public class MrProper {
         }
 
         DataElementHandler delemHandler =
-                                new DataElementHandler(conn, params, ctx);
+            new DataElementHandler(conn, params, ctx);
         delemHandler.setUser(user);
         delemHandler.setVersioning(false);
         delemHandler.setSuperUser(true);
@@ -511,10 +514,10 @@ public class MrProper {
 
         // find & delete related, yet non-existing datasets
         String q =
-        "select distinct DST2TBL.DATASET_ID from DST2TBL " +
-        "left outer join DATASET " +
-        "on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +
-        "where DATASET.IDENTIFIER is null";
+            "select distinct DST2TBL.DATASET_ID from DST2TBL " +
+            "left outer join DATASET " +
+            "on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +
+            "where DATASET.IDENTIFIER is null";
 
         Vector v = new Vector();
         Statement stmt = conn.createStatement();
@@ -525,16 +528,16 @@ public class MrProper {
 
         for (int i=0; i<v.size(); i++) {
             stmt.executeUpdate("delete from DST2TBL where DATASET_ID=" +
-                                                            (String)v.get(i));
+                    (String)v.get(i));
         }
         // get orphan tables
         q =
-        "select distinct DS_TABLE.TABLE_ID from DS_TABLE " +
-        "left outer join DST2TBL " +
-        "on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID " +
-        "left outer join DATASET " +
-        "on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +
-        "where DATASET.IDENTIFIER is null";
+            "select distinct DS_TABLE.TABLE_ID from DS_TABLE " +
+            "left outer join DST2TBL " +
+            "on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID " +
+            "left outer join DATASET " +
+            "on DST2TBL.DATASET_ID=DATASET.DATASET_ID " +
+            "where DATASET.IDENTIFIER is null";
 
         v = new Vector();
         rs = stmt.executeQuery(q);
@@ -554,7 +557,7 @@ public class MrProper {
         }
 
         DsTableHandler dsTableHandler =
-                                new DsTableHandler(conn, params, ctx);
+            new DsTableHandler(conn, params, ctx);
         dsTableHandler.setUser(user);
         dsTableHandler.setVersioning(false);
         dsTableHandler.setSuperUser(true);
@@ -565,8 +568,8 @@ public class MrProper {
     }
 
     /**
-    *
-    */
+     *
+     */
     private void multipleVersions() throws Exception {
 
         //data elements
@@ -682,8 +685,8 @@ public class MrProper {
     }
 
     /**
-    *
-    */
+     *
+     */
     private void releaseNonWC() throws Exception {
         releaseNonWC("DATAELEM");
         releaseNonWC("DS_TABLE");
@@ -691,8 +694,8 @@ public class MrProper {
     }
 
     /**
-    *
-    */
+     *
+     */
     private void releaseNonWC(String tblName) throws Exception {
 
 
@@ -759,9 +762,9 @@ public class MrProper {
             buf.append("update ");
             buf.append(tblName);
             buf.append(" set WORKING_USER=NULL where IDENTIFIER=");
-            buf.append(inParams.add((String)hash.get("IDENTIFIER")));
+            buf.append(inParams.add(hash.get("IDENTIFIER")));
             buf.append(" and VERSION=");
-            buf.append(inParams.add((String)hash.get("VERSION"), Types.INTEGER));
+            buf.append(inParams.add(hash.get("VERSION"), Types.INTEGER));
 
             if (!tblName.equals("DATASET")) {
                 String pns = (String)hash.get("PARENT_NS");
@@ -931,8 +934,8 @@ public class MrProper {
     }
 
     /**
-    *
-    */
+     *
+     */
     public Vector getResponse() {
         return response;
     }

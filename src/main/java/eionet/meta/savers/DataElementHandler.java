@@ -19,6 +19,8 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 import com.tee.uit.security.AccessController;
 import com.tee.uit.security.SignOnException;
 import com.tee.util.Util;
@@ -29,8 +31,6 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
 import eionet.meta.FixedValue;
 import eionet.meta.VersionManager;
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
 import eionet.util.SecurityUtil;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
@@ -44,7 +44,7 @@ import eionet.util.sql.SQLGenerator;
 public class DataElementHandler extends BaseHandler {
 
     /** */
-    private static final LogServiceIF LOGGER = new Log4jLoggerImpl();
+    private static final Logger LOGGER = Logger.getLogger(DataElementHandler.class);
 
     /** */
     public static LinkedHashMap valueDelimiters;
@@ -826,7 +826,7 @@ public class DataElementHandler extends BaseHandler {
             append("(select M_ATTRIBUTE_ID from M_ATTRIBUTE where DISP_TYPE='image')");
         }
 
-        logger.debug(buf.toString());
+        LOGGER.debug(buf.toString());
 
         Statement stmt = null;
         try {
@@ -876,7 +876,7 @@ public class DataElementHandler extends BaseHandler {
 
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
 
-        logger.debug(buf.toString());
+        LOGGER.debug(buf.toString());
 
         stmt.executeUpdate();
         stmt.close();
@@ -941,7 +941,7 @@ public class DataElementHandler extends BaseHandler {
         append("select max(POSITION) from TBL2ELEM where TABLE_ID=").
         append(inParams.add(tableID, Types.INTEGER));
 
-        logger.debug(buf.toString());
+        LOGGER.debug(buf.toString());
 
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -981,7 +981,7 @@ public class DataElementHandler extends BaseHandler {
             buf.append(inParams.add(delem_ids[i], Types.INTEGER));
         }
 
-        logger.debug(buf.toString());
+        LOGGER.debug(buf.toString());
 
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
         stmt.executeUpdate();
@@ -1159,7 +1159,7 @@ public class DataElementHandler extends BaseHandler {
         sqlBuf.append(" and DATAELEM_ID=");
         sqlBuf.append(inParams.add(elemId, Types.INTEGER));
 
-        logger.debug(sqlBuf.toString());
+        LOGGER.debug(sqlBuf.toString());
 
         PreparedStatement stmt = SQL.preparedStatement(sqlBuf.toString(), inParams, conn);
         stmt.executeQuery();
@@ -1400,7 +1400,7 @@ public class DataElementHandler extends BaseHandler {
         gen.setField("PARENT_TYPE", "E");
 
         String sql = gen.insertStatement();
-        logger.debug(sql);
+        LOGGER.debug(sql);
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
@@ -1418,7 +1418,7 @@ public class DataElementHandler extends BaseHandler {
         gen.setField("VALUE", value);
 
         String sql = gen.updateStatement();
-        logger.debug(sql);
+        LOGGER.debug(sql);
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
@@ -1429,7 +1429,7 @@ public class DataElementHandler extends BaseHandler {
 
         String qry = "SELECT LAST_INSERT_ID()";
 
-        logger.debug(qry);
+        LOGGER.debug(qry);
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
@@ -1489,7 +1489,7 @@ public class DataElementHandler extends BaseHandler {
             // execute SQL
             StringBuffer sqlBuf = new StringBuffer(gen.updateStatement());
             sqlBuf.append(" where DATAELEM_ID=").append(lastInsertID);
-            logger.debug(sqlBuf.toString());
+            LOGGER.debug(sqlBuf.toString());
             stmt = conn.createStatement();
             stmt.executeUpdate(sqlBuf.toString());
 
@@ -1565,7 +1565,7 @@ public class DataElementHandler extends BaseHandler {
             // execute SQL
             StringBuffer sqlBuf = new StringBuffer(gen.updateStatement());
             sqlBuf.append(" where DATAELEM_ID=").append(lastInsertID);
-            logger.debug(sqlBuf.toString());
+            LOGGER.debug(sqlBuf.toString());
             stmt = conn.createStatement();
             stmt.executeUpdate(sqlBuf.toString());
 

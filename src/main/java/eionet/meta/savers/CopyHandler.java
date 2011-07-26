@@ -13,27 +13,30 @@ import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
-import eionet.util.sql.SQLGenerator;
+import org.apache.log4j.Logger;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
 import eionet.meta.DElemAttribute;
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import eionet.util.sql.SQLGenerator;
 
+/**
+ *
+ * @author Jaanus Heinlaid
+ *
+ */
 public class CopyHandler extends Object {
 
-  /**
-   * Constructor
-   */
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(CopyHandler.class);
+
     private Connection conn = null;
     private DDSearchEngine searchEngine = null;
     private ServletContext ctx = null;
 
     private DDUser user = null;
-    private static LogServiceIF logger = new Log4jLoggerImpl();
 
     /**
      *
@@ -66,7 +69,7 @@ public class CopyHandler extends Object {
      * @throws SQLException
      */
     public String copy(SQLGenerator dstGen, String srcConstraint)
-        throws SQLException {
+    throws SQLException {
 
         return copy(dstGen, srcConstraint, true);
     }
@@ -84,7 +87,7 @@ public class CopyHandler extends Object {
      * @exception   SQLException
      */
     public String copy(SQLGenerator dstGen, String srcConstraint,
-                        boolean includeDstGenFields) throws SQLException {
+            boolean includeDstGenFields) throws SQLException {
 
         if (dstGen==null) return null;
         srcConstraint = srcConstraint==null ? "" : " where " + srcConstraint;
@@ -118,7 +121,7 @@ public class CopyHandler extends Object {
                         }
                     }
                 }
-                logger.debug(gen.insertStatement());
+                LOGGER.debug(gen.insertStatement());
 
                 if (stmt1==null) {
                     stmt1 = conn.createStatement();
@@ -198,9 +201,9 @@ public class CopyHandler extends Object {
      * @throws Exception
      */
     public String copyElm(String elmID,
-                           boolean isMakeWorkingCopy,
-                           boolean isCopyTbl2ElmRelations,
-                           boolean resetVersionAndStatus) throws Exception {
+            boolean isMakeWorkingCopy,
+            boolean isCopyTbl2ElmRelations,
+            boolean resetVersionAndStatus) throws Exception {
 
         if (elmID==null)
             return null;
@@ -299,12 +302,12 @@ public class CopyHandler extends Object {
      * @param ownerType
      */
     public void copyFxv(String newOwner, String oldOwner, String ownerType)
-                                                        throws SQLException {
+    throws SQLException {
 
         INParameters inParams = new INParameters();
 
         String q = "select * from FXV where " + "OWNER_ID="+ inParams.add(oldOwner)+
-            " and OWNER_TYPE="+inParams.add(ownerType);
+        " and OWNER_TYPE="+inParams.add(ownerType);
 
         Vector v = new Vector();
         PreparedStatement stmt = null;
@@ -331,8 +334,8 @@ public class CopyHandler extends Object {
     }
 
     /**
-    *
-    */
+     *
+     */
     public String copyTbl(String tblID) throws Exception {
 
         if (tblID==null)
@@ -358,7 +361,7 @@ public class CopyHandler extends Object {
             if (user!=null)
                 gen.setField("USER", user.getUserName());
             stmt.executeUpdate(gen.updateStatement() +
-                                                " where TABLE_ID=" + newID);
+                    " where TABLE_ID=" + newID);
 
             // copy simple attributes
             gen.clear();
@@ -441,8 +444,8 @@ public class CopyHandler extends Object {
      * @throws Exception
      */
     public String copyDst(String dstID,
-                          boolean isMakeWorkingCopy,
-                          boolean resetVersionAndStatus)throws Exception {
+            boolean isMakeWorkingCopy,
+            boolean resetVersionAndStatus)throws Exception {
 
         if (dstID==null)
             return null;
@@ -544,11 +547,11 @@ public class CopyHandler extends Object {
     }
 
     /**
-    *
-    */
+     *
+     */
     public void copyComplexAttrs(String newID, String oldID, String type)
-                                                    throws SQLException {
-            copyComplexAttrs(newID, oldID, type, null, null);
+    throws SQLException {
+        copyComplexAttrs(newID, oldID, type, null, null);
     }
 
     /**
@@ -561,7 +564,7 @@ public class CopyHandler extends Object {
      * @throws SQLException
      */
     public void copyComplexAttrs(String newID, String oldID, String type, String newType, String mAttrID)
-                                                    throws SQLException {
+    throws SQLException {
 
         if (newID==null || oldID==null || type==null)
             return;
@@ -594,7 +597,7 @@ public class CopyHandler extends Object {
                     if (newType!=null)
                         type=newType;
                     String rowID =
-                    "md5('" + newID + type + attrID + rowPos + "')";
+                        "md5('" + newID + type + attrID + rowPos + "')";
 
                     SQLGenerator gen = new SQLGenerator();
                     gen.setTable("COMPLEX_ATTR_ROW");
@@ -641,7 +644,7 @@ public class CopyHandler extends Object {
                     // if no fields were actually inserted, delete the row
                     if (insertedFields==0)
                         stmt.executeUpdate("delete from COMPLEX_ATTR_ROW " +
-                                                   "where ROW_ID=" + rowID);
+                                "where ROW_ID=" + rowID);
                 }
             }
             catch (SQLException e) {
@@ -658,7 +661,7 @@ public class CopyHandler extends Object {
     }
 
     public void copyAttribute(String newID, String oldID, String newType, String oldType, String mAttrID)
-                                                    throws SQLException {
+    throws SQLException {
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("ATTRIBUTE");
         gen.setField("DATAELEM_ID", newID);
@@ -666,8 +669,8 @@ public class CopyHandler extends Object {
         copy(gen, "M_ATTRIBUTE_ID=" + mAttrID + " and DATAELEM_ID=" + oldID + " and PARENT_TYPE='" + oldType + "'");
     }
     /**
-    *
-    */
+     *
+     */
     private String getLastInsertID() throws SQLException {
 
         // No need for PreparedStatement.

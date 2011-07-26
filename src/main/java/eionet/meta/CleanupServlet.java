@@ -1,8 +1,6 @@
 package eionet.meta;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,8 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import eionet.util.DataManipulations;
-import eionet.util.Log4jLoggerImpl;
 import eionet.util.LogServiceIF;
 import eionet.util.SecurityUtil;
 import eionet.util.sql.ConnectionUtil;
@@ -26,6 +25,9 @@ import eionet.util.sql.Transaction;
  *
  */
 public class CleanupServlet extends HttpServlet{
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(CleanupServlet.class);
 
     /** */
     public static final String PAR_ACTION = "action";
@@ -117,23 +119,15 @@ public class CleanupServlet extends HttpServlet{
         }
         catch (Exception e) {
 
-            if (tx!=null)
+            if (tx!=null){
                 tx.rollback();
-
-            String trace = null;
-            try {
-                ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-                e.printStackTrace(new PrintStream(bytesOut));
-                trace = bytesOut.toString(res.getCharacterEncoding());
             }
-            catch (Exception ee) {}
 
-            if (trace==null || trace.trim().length()==0)
-                trace = e.toString();
+            LOGGER.error(e);
 
-            getLogger().error(trace);
             if (writer!=null) {
-                writer.println(trace);
+                String trace = eionet.util.Util.getStack(e);
+                writer.println(trace==null ? e.toString() : trace);
                 writer.flush();
             }
         }
@@ -161,15 +155,5 @@ public class CleanupServlet extends HttpServlet{
         DDUser user = SecurityUtil.getUser(req);
         if (user == null)
             throw new Exception("Not authenticated!");
-    }
-
-    /**
-     *
-     * @return
-     */
-    protected LogServiceIF getLogger() {
-        if (logger==null)
-            logger = new Log4jLoggerImpl();
-        return logger;
     }
 }

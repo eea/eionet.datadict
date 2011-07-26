@@ -9,8 +9,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
+import org.apache.log4j.Logger;
+
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -22,15 +22,15 @@ import eionet.util.PropsIF;
 public class ConnectionUtil {
 
     /** */
+    private static final Logger LOGGER = Logger.getLogger(ConnectionUtil.class);
+
+    /** */
     public static final String SIMPLE_CONNECTION = "simple";
     public static final String JNDI_CONNECTION = "jndi";
     private static final String DEFAULT_CONNECTION = JNDI_CONNECTION;
 
     /** */
     private static final String DATA_SOURCE_NAME = "jdbc/datadict";
-
-    /** */
-    private static LogServiceIF logger = new Log4jLoggerImpl();
 
     /** */
     private static DataSource dataSource = null;
@@ -124,7 +124,7 @@ public class ConnectionUtil {
                 conn.close();
         }
         catch (SQLException e) {
-            logger.error("Failed to close connection", e);
+            LOGGER.error("Failed to close connection", e);
         }
     }
 

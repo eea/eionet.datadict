@@ -27,14 +27,14 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import com.tee.uit.security.AccessControlListIF;
 import com.tee.uit.security.AccessController;
 import com.tee.uit.security.AuthMechanism;
 import com.tee.uit.security.SignOnException;
 
 import eionet.directory.DirectoryService;
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
 import eionet.util.sql.ConnectionUtil;
 
 /**
@@ -45,11 +45,11 @@ import eionet.util.sql.ConnectionUtil;
 public class DDUser{
 
     /** */
-    public static final String ACL_UPDATE_PRM   = "u";
-    public static final String ACL_SERVICE_NAME = "/";
+    private static final Logger LOGGER = Logger.getLogger(DDUser.class);
 
     /** */
-    protected static LogServiceIF logger = new Log4jLoggerImpl();
+    public static final String ACL_UPDATE_PRM   = "u";
+    public static final String ACL_SERVICE_NAME = "/";
 
     /** */
     protected boolean authented = false;
@@ -66,8 +66,8 @@ public class DDUser{
     }
 
     /**
-    *
-    */
+     *
+     */
     public boolean authenticate(String userName, String userPwd) {
 
         invalidate();
@@ -89,7 +89,7 @@ public class DDUser{
             password = userPwd;
         }
         catch (Exception e) {
-            logger.error(e.toString(), e);
+            LOGGER.error(e.toString(), e);
         }
 
         return authented;

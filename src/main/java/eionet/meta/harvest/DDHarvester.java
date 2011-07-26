@@ -35,25 +35,27 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
-import eionet.util.Props;
-import eionet.util.PropsIF;
+import org.apache.log4j.Logger;
+
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 public abstract class DDHarvester implements HarvesterIF{
 
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(DDHarvester.class);
+
     private String harvesterID = null;
     private Connection conn = null;
     private long harvestingTime = 0;
 
-    protected LogServiceIF log = null;
-
+    /**
+     *
+     * @param harvesterID
+     */
     protected DDHarvester(String harvesterID) {
         this.harvesterID = harvesterID;
-        log = new Log4jLoggerImpl(Props.getProperty(PropsIF.HRV_LOG));
     }
 
     /**
@@ -124,7 +126,7 @@ public abstract class DDHarvester implements HarvesterIF{
                     map = new LinkedHashMap();
                     map.put("HARV_ATTR_MD5", inParams.add(md5key));
                     map.put("FLD_NAME", inParams.add(fldName));
-                    map.put("FLD_VALUE", inParams.add((String)iter.next()));
+                    map.put("FLD_VALUE", inParams.add(iter.next()));
                     stmt = SQL.preparedStatement(SQL.insertStatement("HARV_ATTR_FIELD", map), inParams, conn);
                     stmt.executeUpdate();
                 }
@@ -175,7 +177,7 @@ public abstract class DDHarvester implements HarvesterIF{
             rmvDeleted(conn);
         }
         catch (Exception e) {
-            log.fatal("Failed to delete old harvested attributes", e);
+            LOGGER.fatal("Failed to delete old harvested attributes", e);
         }
         finally {
             try {
@@ -186,10 +188,6 @@ public abstract class DDHarvester implements HarvesterIF{
         }
     }
 
-    public LogServiceIF getLog() {
-        return this.log;
-    }
-
     /**
      *
      * @throws Exception
@@ -197,10 +195,10 @@ public abstract class DDHarvester implements HarvesterIF{
     protected static void rmvDeleted(Connection conn) throws Exception {
 
         String q = "select distinct ROW_ID from COMPLEX_ATTR_ROW " +
-                    "left outer join HARV_ATTR on " +
-                    "COMPLEX_ATTR_ROW.HARV_ATTR_ID=HARV_ATTR.LOGICAL_ID " +
-                    "where COMPLEX_ATTR_ROW.HARV_ATTR_ID is not null and " +
-                    "HARV_ATTR.LOGICAL_ID is null";
+        "left outer join HARV_ATTR on " +
+        "COMPLEX_ATTR_ROW.HARV_ATTR_ID=HARV_ATTR.LOGICAL_ID " +
+        "where COMPLEX_ATTR_ROW.HARV_ATTR_ID is not null and " +
+        "HARV_ATTR.LOGICAL_ID is null";
 
         Vector v = new Vector();
         ResultSet rs = null;
@@ -215,7 +213,7 @@ public abstract class DDHarvester implements HarvesterIF{
             for (int i=0; i<v.size(); i++) {
                 INParameters inParams = new INParameters();
                 StringBuffer buf = new StringBuffer("delete from COMPLEX_ATTR_ROW where ROW_ID=");
-                buf.append(inParams.add((String)v.get(i)));
+                buf.append(inParams.add(v.get(i)));
                 stmt.close();
                 stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
                 stmt.executeUpdate();

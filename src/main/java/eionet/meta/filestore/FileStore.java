@@ -8,10 +8,9 @@ import java.io.Reader;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 import eionet.meta.DownloadServlet;
-import eionet.util.Log4jLoggerImpl;
-import eionet.util.LogServiceIF;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -30,7 +29,7 @@ import eionet.util.PropsIF;
 public class FileStore {
 
     /** Static logger. */
-    private static final LogServiceIF LOGGER = new Log4jLoggerImpl();
+    private static final Logger LOGGER = Logger.getLogger(FileStore.class);
 
     /** Full path to the file store's root directory. */
     public static final String PATH = Props.getRequiredProperty(PropsIF.FILESTORE_PATH);

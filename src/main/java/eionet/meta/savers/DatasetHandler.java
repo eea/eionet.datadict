@@ -16,9 +16,10 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 import com.tee.uit.security.AccessController;
 import com.tee.uit.security.SignOnException;
-import eionet.util.sql.SQLGenerator;
 import com.tee.util.Util;
 
 import eionet.meta.DDUser;
@@ -27,8 +28,12 @@ import eionet.meta.VersionManager;
 import eionet.util.SecurityUtil;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import eionet.util.sql.SQLGenerator;
 
 public class DatasetHandler extends BaseHandler {
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(DatasetHandler.class);
 
     public static String ATTR_PREFIX = "attr_";
     public static String ATTR_MULT_PREFIX = "attr_mult_";
@@ -117,17 +122,17 @@ public class DatasetHandler extends BaseHandler {
         gen.setTable("NAMESPACE");
         gen.setFieldExpr("WORKING_USER", "NULL");
         for (Iterator i=nss.iterator(); i.hasNext(); ) {
-         conn.createStatement().executeUpdate(gen.updateStatement() +
-                     " where NAMESPACE_ID=" + (String)i.next());
+            conn.createStatement().executeUpdate(gen.updateStatement() +
+                    " where NAMESPACE_ID=" + (String)i.next());
         }
     }
 
     public void execute_() throws Exception {
 
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
-                          !mode.equalsIgnoreCase("edit") &&
-                          !mode.equalsIgnoreCase("restore") &&
-                          !mode.equalsIgnoreCase("delete")))
+                !mode.equalsIgnoreCase("edit") &&
+                !mode.equalsIgnoreCase("restore") &&
+                !mode.equalsIgnoreCase("delete")))
             throw new Exception("DatasetHandler mode unspecified!");
 
         if (mode.equalsIgnoreCase("add")) {
@@ -199,7 +204,7 @@ public class DatasetHandler extends BaseHandler {
             gen.setTable("DATASET");
             gen.setField("CORRESP_NS", correspNS);
             stmt.executeUpdate(gen.updateStatement() +
-                        " where DATASET_ID=" + lastInsertID);
+                    " where DATASET_ID=" + lastInsertID);
         }
 
         stmt.close();
@@ -242,7 +247,7 @@ public class DatasetHandler extends BaseHandler {
                 setCheckedInCopyID(req.getParameter("checkedout_copy_id"));
 
             verMan.checkIn(ds_id, "dst",
-                                    req.getParameter("reg_status"));
+                    req.getParameter("reg_status"));
 
             return;
         }
@@ -256,7 +261,7 @@ public class DatasetHandler extends BaseHandler {
 
             String strType = req.getParameter("str_type");
             String fldName = strType.equals("simple") ? "VISUAL" :
-                                                        "DETAILED_VISUAL";
+                "DETAILED_VISUAL";
 
             if (dsVisual.equalsIgnoreCase("NULL"))
                 gen.setFieldExpr(fldName, dsVisual);
@@ -419,7 +424,7 @@ public class DatasetHandler extends BaseHandler {
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "er");
                 } else {
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "u") ||
-                                SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "er");
+                    SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "er");
                 }
                 if (!canDelete) {
                     throw new Exception("You have no permission to delete this dataset: " +
@@ -566,8 +571,8 @@ public class DatasetHandler extends BaseHandler {
     }
 
     /**
-    *
-    */
+     *
+     */
     private String createNamespace(String idfier) throws Exception {
 
         String shortName  = idfier + "_dst";
@@ -647,7 +652,7 @@ public class DatasetHandler extends BaseHandler {
             params.addParameterValue("parent_type", "DS");
 
             AttrFieldsHandler attrFieldsHandler =
-                        new AttrFieldsHandler(conn, params, ctx);
+                new AttrFieldsHandler(conn, params, ctx);
             //attrFieldsHandler.setVersioning(this.versioning);
             attrFieldsHandler.setVersioning(false);
             try {
@@ -734,21 +739,21 @@ public class DatasetHandler extends BaseHandler {
                 continue;
             }
             if (parName.startsWith(ATTR_MULT_PREFIX)) {
-              String[] attrValues = req.getParameterValues(parName);
-              if (attrValues == null || attrValues.length == 0) {
-                  continue;
-              }
-              String attrID = parName.substring(ATTR_MULT_PREFIX.length());
-              for (int i=0; i<attrValues.length; i++) {
-                  insertAttribute(attrID, attrValues[i]);
-              }
+                String[] attrValues = req.getParameterValues(parName);
+                if (attrValues == null || attrValues.length == 0) {
+                    continue;
+                }
+                String attrID = parName.substring(ATTR_MULT_PREFIX.length());
+                for (int i=0; i<attrValues.length; i++) {
+                    insertAttribute(attrID, attrValues[i]);
+                }
             }
             else {
-              String attrValue = req.getParameter(parName);
-              if (attrValue.length()==0)
-                  continue;
-              String attrID = parName.substring(ATTR_PREFIX.length());
-              insertAttribute(attrID, attrValue);
+                String attrValue = req.getParameter(parName);
+                if (attrValue.length()==0)
+                    continue;
+                String attrID = parName.substring(ATTR_PREFIX.length());
+                insertAttribute(attrID, attrValue);
             }
         }
     }
@@ -764,7 +769,7 @@ public class DatasetHandler extends BaseHandler {
         gen.setField("PARENT_TYPE", "DS");
 
         String sql = gen.insertStatement();
-        logger.debug(sql);
+        LOGGER.debug(sql);
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(sql);
@@ -855,7 +860,7 @@ public class DatasetHandler extends BaseHandler {
 
         String qry = "SELECT LAST_INSERT_ID()";
 
-        logger.debug(qry);
+        LOGGER.debug(qry);
 
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
@@ -875,8 +880,8 @@ public class DatasetHandler extends BaseHandler {
         INParameters inParams = new INParameters();
 
         String qry =
-        "select count(*) as COUNT from DATASET " +
-        "where IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR);
+            "select count(*) as COUNT from DATASET " +
+            "where IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR);
 
         ResultSet rs = null;
         PreparedStatement stmt = null;
@@ -900,8 +905,8 @@ public class DatasetHandler extends BaseHandler {
     }
 
     /**
-    *
-    */
+     *
+     */
     private void processOriginals(HashSet originals) throws Exception {
 
         if (originals==null || originals.size()==0) {
@@ -919,7 +924,7 @@ public class DatasetHandler extends BaseHandler {
             if (i>0) {
                 buf.append(" or ");
             }
-            buf.append("IDENTIFIER=" + inParams.add((String)iter.next(), Types.VARCHAR));
+            buf.append("IDENTIFIER=" + inParams.add(iter.next(), Types.VARCHAR));
         }
         buf.append(")");
         PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
