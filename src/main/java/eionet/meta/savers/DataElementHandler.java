@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.tee.uit.security.AccessController;
 import com.tee.uit.security.SignOnException;
-import eionet.util.sql.SQLGenerator;
 import com.tee.util.Util;
 
 import eionet.meta.DDSearchEngine;
@@ -28,9 +29,12 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
 import eionet.meta.FixedValue;
 import eionet.meta.VersionManager;
+import eionet.util.Log4jLoggerImpl;
+import eionet.util.LogServiceIF;
 import eionet.util.SecurityUtil;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import eionet.util.sql.SQLGenerator;
 
 /**
  *
@@ -38,6 +42,9 @@ import eionet.util.sql.SQL;
  *
  */
 public class DataElementHandler extends BaseHandler {
+
+    /** */
+    private static final LogServiceIF LOGGER = new Log4jLoggerImpl();
 
     /** */
     public static LinkedHashMap valueDelimiters;
@@ -125,8 +132,8 @@ public class DataElementHandler extends BaseHandler {
     private HashMap attrIdsByShortName = new HashMap();
 
     /**
-    *
-    */
+     *
+     */
     public DataElementHandler(Connection conn, HttpServletRequest req, ServletContext ctx) {
         this(conn, new Parameters(req), ctx);
     }
@@ -216,8 +223,8 @@ public class DataElementHandler extends BaseHandler {
     }
 
     /**
-    *
-    */
+     *
+     */
     public void cleanup() throws Exception {
 
         if (!doCleanup) return;
@@ -266,15 +273,15 @@ public class DataElementHandler extends BaseHandler {
         doCleanup = false;
 
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
-                          !mode.equalsIgnoreCase("edit") &&
-                          !mode.equalsIgnoreCase("delete") &&
-                          !mode.equalsIgnoreCase("copy") &&
-                          !mode.equalsIgnoreCase("edit_tblelems")))
+                !mode.equalsIgnoreCase("edit") &&
+                !mode.equalsIgnoreCase("delete") &&
+                !mode.equalsIgnoreCase("copy") &&
+                !mode.equalsIgnoreCase("edit_tblelems")))
             throw new Exception("DataElementHandler mode unspecified!");
 
         if (mode.equalsIgnoreCase("add")) {
             if (elmValuesType==null || (!elmValuesType.equalsIgnoreCase("CH1") &&
-                            !elmValuesType.equalsIgnoreCase("CH2")))
+                    !elmValuesType.equalsIgnoreCase("CH2")))
                 throw new Exception("Element type not specified!");
         }
 
@@ -750,7 +757,7 @@ public class DataElementHandler extends BaseHandler {
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "er");
                 else
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "u") ||
-                                SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "er");
+                    SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "er");
                 if (!canDelete)
                     throw new Exception("You have no permission to delete this element: " +
                             rs.getString("DATAELEM_ID"));
@@ -781,7 +788,7 @@ public class DataElementHandler extends BaseHandler {
         preparedStatement.executeUpdate();
 
         // remove acls of common elements whose identifiers are not present any more
-        removeAcls(stmt, identifiers);
+        removeAcls(identifiers);
 
         // unlock checked out copies whose working copies were deleted
         if (unlockCheckedoutCopies.size()>0) {
@@ -842,7 +849,7 @@ public class DataElementHandler extends BaseHandler {
             params.addParameterValue("parent_type", "E");
 
             AttrFieldsHandler attrFieldsHandler =
-                                new AttrFieldsHandler(conn, params, ctx);
+                new AttrFieldsHandler(conn, params, ctx);
             attrFieldsHandler.setVersioning(versioning);
             try {
                 attrFieldsHandler.execute();
@@ -947,8 +954,8 @@ public class DataElementHandler extends BaseHandler {
         stmt.close();
         if (pos != null) {
             try {
-              int i = Integer.parseInt(pos) + 1;
-              return Integer.toString(i);
+                int i = Integer.parseInt(pos) + 1;
+                return Integer.toString(i);
             }
             catch (Exception e) {
                 return "1";
@@ -1070,7 +1077,7 @@ public class DataElementHandler extends BaseHandler {
             PreparedStatement stmt = null;
             try {
                 stmt = conn.prepareStatement(
-                    "update TBL2ELEM set MULTIVAL_DELIM=? where DATAELEM_ID=? and TABLE_ID=?");
+                "update TBL2ELEM set MULTIVAL_DELIM=? where DATAELEM_ID=? and TABLE_ID=?");
                 for (Iterator iter = valueDelims.entrySet().iterator(); iter.hasNext();) {
 
                     Map.Entry entry = (Map.Entry)iter.next();
@@ -1767,28 +1774,51 @@ public class DataElementHandler extends BaseHandler {
     }
 
     /**
-     * Removes ACLs of those common elements not present any more in IDENTIFIER from DATAELEM.
-     * NB! Modifies the identifiers HashSet by removing those whose acl is not to be deleted.
+     * Removes ACLs of elements that had the given identifiers, but are not present in DATAELEM any more.
      *
+     * @param elementIdentifiers The identifiers of the elements
      * @throws SQLException
      * @throws SignOnException
      */
-    private void removeAcls(Statement stmt, HashSet identifiers) throws SQLException, SignOnException {
+    private void removeAcls(HashSet elementIdentifiers) throws SQLException, SignOnException {
 
-        ResultSet rs = stmt.executeQuery("select distinct IDENTIFIER from DATAELEM");
-        while (rs.next()) {
-            String identifier = rs.getString(1);
-            if (identifiers.contains(identifier)) {
-                identifiers.remove(identifier);
-            }
+        if (elementIdentifiers == null || elementIdentifiers.isEmpty()) {
+            return;
         }
 
-        if (identifiers.size()==0)
-            return;
+        LOGGER.debug("Checking if ACLs of these elements need to be deleted: " + elementIdentifiers);
 
-        int i=0;
-        for (Iterator iter = identifiers.iterator(); iter.hasNext(); i++) {
-            AccessController.removeAcl("/elements/" + (String)iter.next());
+        String[] questionMarksArray = new String[elementIdentifiers.size()];
+        Arrays.fill(questionMarksArray, "?");
+        String questionMarks = eionet.util.Util.toCSV(questionMarksArray);
+
+        String sqlQuery =
+            "select ACL_NAME from ACLS where PARENT_NAME='/elements' and ACL_NAME in (" + questionMarks
+            + ") and ACL_NAME not in (select IDENTIFIER from DATAELEM where PARENT_NS is null and IDENTIFIER in (" + questionMarks + "))";
+
+        HashSet<String> aclsToDelete = new HashSet<String>();
+        ResultSet rs = null;
+        PreparedStatement stmt = null;
+        try {
+            ArrayList<Object> values = new ArrayList<Object>(elementIdentifiers);
+            values.addAll(elementIdentifiers);
+            stmt = SQL.preparedStatement(sqlQuery, values, conn);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                aclsToDelete.add(rs.getString(1));
+            }
+        } finally {
+            SQL.close(stmt);
+        }
+
+        if (aclsToDelete.isEmpty()) {
+            LOGGER.debug("Found no ACLs that need to be deleted");
+        } else {
+            LOGGER.debug("Going to delete the following element ACLs: " + aclsToDelete);
+
+            for (String aclName : aclsToDelete) {
+                AccessController.removeAcl("/elements/" + aclName);
+            }
         }
     }
 

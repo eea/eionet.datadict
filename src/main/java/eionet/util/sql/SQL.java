@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
@@ -29,6 +30,37 @@ public class SQL {
         populate(stmt, inParams);
         return stmt;
     }
+
+    /**
+     *
+     * @param parameterizedSQL
+     * @param values
+     * @param conn
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement preparedStatement(String parameterizedSQL, Collection<Object> values, Connection conn) throws SQLException{
+
+        PreparedStatement stmt = conn.prepareStatement(parameterizedSQL);
+        populate(stmt, values);
+        return stmt;
+    }
+
+    /**
+     *
+     * @param stmt
+     * @param values
+     * @throws SQLException
+     */
+    public static void populate(PreparedStatement stmt, Collection<Object> values) throws SQLException{
+
+        int i = 1;
+        for (Object value : values){
+            stmt.setObject(i, value);
+            i++;
+        }
+    }
+
 
     /**
      *
