@@ -13,11 +13,15 @@ import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import com.tee.util.Util;
-
+import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
+/**
+ *
+ * @author Jaanus Heinlaid
+ *
+ */
 public class FKHandler extends BaseHandler{
 
     private String mode = null;
@@ -60,7 +64,7 @@ public class FKHandler extends BaseHandler{
         String aID = req.getParameter("a_id");
         String bID = req.getParameter("b_id");
 
-        if (Util.nullString(aID) || Util.nullString(bID)) {
+        if (Util.voidStr(aID) || Util.voidStr(bID)) {
             throw new Exception("One or two of the element IDs is missing!");
         }
 
@@ -71,15 +75,15 @@ public class FKHandler extends BaseHandler{
         map.put("B_ID", inParams.add(bID, Types.INTEGER));
 
         String aCardin = req.getParameter("a_cardin");
-        if (!Util.nullString(aCardin)) {
+        if (!Util.voidStr(aCardin)) {
             map.put("A_CARDIN", inParams.add(aCardin));
         }
         String bCardin = req.getParameter("b_cardin");
-        if (!Util.nullString(bCardin)) {
+        if (!Util.voidStr(bCardin)) {
             map.put("B_CARDIN", inParams.add(bCardin));
         }
         String definition = req.getParameter("definition");
-        if (!Util.nullString(definition)) {
+        if (!Util.voidStr(definition)) {
             map.put("DEFINITION", inParams.add(definition));
         }
 
@@ -94,7 +98,7 @@ public class FKHandler extends BaseHandler{
     private void update() throws Exception {
 
         String rel_id = req.getParameter("rel_id");
-        if (Util.nullString(rel_id)) {
+        if (Util.voidStr(rel_id)) {
             return;
         }
 
@@ -104,15 +108,15 @@ public class FKHandler extends BaseHandler{
         //gen.setTable("FK_RELATION");
 
         String aCardin = req.getParameter("a_cardin");
-        if (!Util.nullString(aCardin)) {
+        if (!Util.voidStr(aCardin)) {
             map.put("A_CARDIN", inParams.add(aCardin));
         }
         String bCardin = req.getParameter("b_cardin");
-        if (!Util.nullString(bCardin)) {
+        if (!Util.voidStr(bCardin)) {
             map.put("B_CARDIN", inParams.add(bCardin));
         }
         String definition = req.getParameter("definition");
-        if (!Util.nullString(definition)) {
+        if (!Util.voidStr(definition)) {
             map.put("DEFINITION", inParams.add(definition));
         }
 

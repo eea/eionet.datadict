@@ -23,12 +23,11 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-import com.tee.util.Util;
-
 import eionet.meta.savers.DatasetHandler;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.SQL;
 
@@ -91,13 +90,13 @@ public class DsVisualUpload extends HttpServlet {
 
         // Get dataset ID from request
         String dstId = request.getParameter("ds_id");
-        if (Util.nullString(dstId)) {
+        if (Util.voidStr(dstId)) {
             throw new ServletException("Dataset ID is not specified!");
         }
 
         // Get the visual file's type (i.e. whether it's the detailed or general model).
         String visualType = request.getParameter("str_type");
-        if (Util.nullString(visualType)) {
+        if (Util.voidStr(visualType)) {
             throw new ServletException("Structure type not specified!");
         }
 
@@ -166,12 +165,12 @@ public class DsVisualUpload extends HttpServlet {
 
         String urlInput = request.getParameter("url_input");
         String fileInput = request.getParameter("file_input");
-        if (!Util.nullString(urlInput) && !Util.nullString(fileInput)) {
+        if (!Util.voidStr(urlInput) && !Util.voidStr(fileInput)) {
             throw new ServletException("Either local file or URL must be supplied- both must not be specififed!");
-        } else if (!Util.nullString(urlInput)) {
+        } else if (!Util.voidStr(urlInput)) {
             LOGGER.debug("File to be downloaded from " + urlInput);
             storedFile = processDownload(urlInput);
-        } else if (!Util.nullString(fileInput)) {
+        } else if (!Util.voidStr(fileInput)) {
             LOGGER.debug("Local file that was uploaded: " + fileInput);
             storedFile = processUpload(request);
         } else {
@@ -258,7 +257,7 @@ public class DsVisualUpload extends HttpServlet {
 
         // sanity checking
         String existingFileName = request.getParameter("visual");
-        if (Util.nullString(existingFileName)) {
+        if (Util.voidStr(existingFileName)) {
             throw new ServletException("Currently existing file name is missing from the request!");
         }
 
@@ -306,7 +305,7 @@ public class DsVisualUpload extends HttpServlet {
         }
 
         String fileName = new File(url.getPath()).getName();
-        if (Util.nullString(fileName)) {
+        if (Util.voidStr(fileName)) {
             throw new ServletException("Could not extract file name from this URL: " + urlString);
         }
 

@@ -19,13 +19,17 @@ import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 
-import com.tee.util.Util;
-
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
+/**
+ *
+ * @author Jaanus Heinlaid
+ *
+ */
 public class DDSearchEngine {
 
     /** */
@@ -229,7 +233,7 @@ public class DDSearchEngine {
     throws SQLException {
 
         // make sure we have the tableID
-        if (Util.nullString(tableID))
+        if (Util.voidStr(tableID))
             throw new SQLException("getDataElements(): tableID is missing!");
 
         // build the monster query.
@@ -538,7 +542,7 @@ public class DDSearchEngine {
         // prepare the relevant statement
         ResultSet attrsRs = null;
         PreparedStatement attrsStmt = null;
-        boolean getAttributes = Util.nullString(tableID) ? false : true;
+        boolean getAttributes = Util.voidStr(tableID) ? false : true;
         if (getAttributes) {
             StringBuffer attrsQry = new StringBuffer().append("select M_ATTRIBUTE.*, ATTRIBUTE.VALUE from M_ATTRIBUTE, ATTRIBUTE ")
             .append("where ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID and ")
@@ -1024,7 +1028,7 @@ public class DDSearchEngine {
      */
     public String getLatestTblID(String identifier, String parentNamespace, List statuses) throws SQLException {
 
-        if (Util.nullString(identifier) || Util.nullString(parentNamespace)) {
+        if (Util.voidStr(identifier) || Util.voidStr(parentNamespace)) {
             return null;
         }
 
@@ -1170,7 +1174,7 @@ public class DDSearchEngine {
             rs = stmt.executeQuery();
             if (!rs.next())
                 return null;
-            boolean elmCommon = Util.nullString(rs.getString("PARENT_NS"));
+            boolean elmCommon = Util.voidStr(rs.getString("PARENT_NS"));
 
             // Build the query which takes into account the tblID.
             // If the latter is null then take the table which is latest in history,
@@ -1190,7 +1194,7 @@ public class DDSearchEngine {
                 .append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID");
             }
             qry.append(" where DATAELEM.DATAELEM_ID=").append(inParams.add(elmID, Types.INTEGER));
-            if (!elmCommon && !Util.nullString(tblID))
+            if (!elmCommon && !Util.voidStr(tblID))
                 qry.append(" and DS_TABLE.TABLE_ID=").append(inParams.add(tblID, Types.INTEGER));
 
             qry.append(" order by ").append("DATAELEM.DATAELEM_ID desc");
@@ -1588,12 +1592,12 @@ public class DDSearchEngine {
         buf.append(")");
 
         // EK291003 search inhrted attributes from table and/or dataset level
-        if (!Util.nullString(inheritTblID)) {
+        if (!Util.voidStr(inheritTblID)) {
             buf.append(" or (COMPLEX_ATTR_ROW.PARENT_ID=");
             buf.append(inParams.add(inheritTblID));
             buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE='T' and M_COMPLEX_ATTR.INHERIT!='0')");
         }
-        if (!Util.nullString(inheritDstID)) {
+        if (!Util.voidStr(inheritDstID)) {
             buf.append(" or (COMPLEX_ATTR_ROW.PARENT_ID=");
             buf.append(inParams.add(inheritDstID));
             buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE='DS' and M_COMPLEX_ATTR.INHERIT!='0')");
@@ -2048,7 +2052,7 @@ public class DDSearchEngine {
 
         // JH141003
         // if datasetID specified, ignore the DELETED flag, otherwise follow it
-        if (!Util.nullString(datasetID))
+        if (!Util.voidStr(datasetID))
             buf.append(" ");
         else if (deleted && user != null)
             buf.append(" and DATASET.DELETED=").append(inParams.add(user.getUserName())).append(" ");
@@ -2059,7 +2063,7 @@ public class DDSearchEngine {
         // (the business logic at edit view will lead the user eventually
         // to the working copy anyway)
         // But only in case if the ID is not exolicitly specified
-        if (Util.nullString(datasetID)) {
+        if (Util.voidStr(datasetID)) {
             if (wrkCopies && (user == null || !user.isAuthentic()))
                 wrkCopies = false;
             if (buf.length() != 0)
@@ -2754,7 +2758,7 @@ public class DDSearchEngine {
         buf.append("where DS_TABLE.CORRESP_NS is not null and DS_TABLE.TABLE_ID=");
         buf.append(inParams.add(tableID, Types.INTEGER));
 
-        if (Util.nullString(dstID))
+        if (Util.voidStr(dstID))
             buf.append(" and DATASET.DELETED is null");
         else
             buf.append(" and DATASET.DATASET_ID=").append(inParams.add(dstID, Types.INTEGER));
@@ -2863,12 +2867,12 @@ public class DDSearchEngine {
         qry.append(" and ATTRIBUTE.PARENT_TYPE=").append(inParams.add(parentType)).append(")");
 
         // Ek 291003 search inhrted attributes from table and/or dataset level
-        if (!Util.nullString(inheritTblID)) {
+        if (!Util.voidStr(inheritTblID)) {
             qry.append(" or (ATTRIBUTE.DATAELEM_ID=");
             qry.append(inParams.add(inheritTblID, Types.INTEGER));
             qry.append(" and ATTRIBUTE.PARENT_TYPE='T' and M_ATTRIBUTE.INHERIT!='0')");
         }
-        if (!Util.nullString(inheritDstID)) {
+        if (!Util.voidStr(inheritDstID)) {
             qry.append(" or (ATTRIBUTE.DATAELEM_ID=");
             qry.append(inParams.add(inheritDstID, Types.INTEGER));
             qry.append(" and ATTRIBUTE.PARENT_TYPE='DS' and M_ATTRIBUTE.INHERIT!='0')");
@@ -3251,7 +3255,7 @@ public class DDSearchEngine {
     public Vector getNewerReleases(String elmIdentifier, String elmId) throws SQLException {
 
         Vector result = new Vector();
-        if (!Util.nullString(elmIdentifier) && !Util.nullString(elmId)) {
+        if (!Util.voidStr(elmIdentifier) && !Util.voidStr(elmId)) {
             Vector v = getCommonElements(null, null, null, elmIdentifier, "Released", false, true, "=");
             if (v != null) {
                 for (int i = 0; i < v.size(); i++) {
@@ -3275,7 +3279,7 @@ public class DDSearchEngine {
      */
     public Hashtable getFKRelation(String relID) throws SQLException {
 
-        if (Util.nullString(relID))
+        if (Util.voidStr(relID))
             return null;
 
         INParameters inParams = new INParameters();
@@ -3369,7 +3373,7 @@ public class DDSearchEngine {
                 buf.append("TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID ");
                 buf.append("left outer join DST2TBL on ");
                 buf.append("DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ");
-                if (!Util.nullString(elmID)) {
+                if (!Util.voidStr(elmID)) {
                     buf.append(" where ");
                     buf.append(side);
                     buf.append("=");
@@ -3633,7 +3637,7 @@ public class DDSearchEngine {
             if (rs.next())
                 lastHarvested = rs.getString(1);
 
-            if (Util.nullString(lastHarvested))
+            if (Util.voidStr(lastHarvested))
                 return vv;
 
             inParams = new INParameters();
@@ -4041,7 +4045,7 @@ public class DDSearchEngine {
                 String filename = rs.getString("FILENAME");
                 String article = rs.getString("ARTICLE");
                 Long created = new Long(rs.getLong("CREATED"));
-                if (Util.nullString(filename))
+                if (Util.voidStr(filename))
                     continue;
 
                 Hashtable hash = new Hashtable();
@@ -4071,7 +4075,7 @@ public class DDSearchEngine {
      */
     public Vector getRodLinks(String dstID) throws Exception {
 
-        if (Util.nullString(dstID))
+        if (Util.voidStr(dstID))
             throw new Exception("getRodLinks(): dstID missing!");
 
         Vector v = new Vector();
@@ -4125,8 +4129,9 @@ public class DDSearchEngine {
      */
     public Vector getParametersByActivityID(String raID) throws Exception {
 
-        if (Util.nullString(raID))
+        if (Util.voidStr(raID)){
             throw new Exception("getParametersByActivityID(): activity ID missing!");
+        }
 
         Vector result = new Vector();
 

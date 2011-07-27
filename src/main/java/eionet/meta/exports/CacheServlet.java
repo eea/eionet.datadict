@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tee.util.Util;
-
 import eionet.meta.DDSearchEngine;
 import eionet.meta.GetPrintout;
 import eionet.meta.exports.pdf.DstPdfGuideline;
@@ -25,6 +23,7 @@ import eionet.meta.exports.xls.DstXls;
 import eionet.meta.exports.xls.TblXls;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.DDConnectionException;
 import eionet.util.sql.INParameters;
@@ -46,7 +45,7 @@ public class CacheServlet extends HttpServlet {
 
     public void init() throws ServletException {
         cachePath = Props.getProperty(PropsIF.DOC_PATH);
-        if (!Util.nullString(cachePath)) {
+        if (!Util.voidStr(cachePath)) {
             cachePath.trim();
             if (!cachePath.endsWith(File.separator))
                 cachePath = cachePath + File.separator;
@@ -59,7 +58,7 @@ public class CacheServlet extends HttpServlet {
 
         if (objTypes == null)
             setObjectTypes();
-        if (Util.nullString(cachePath))
+        if (Util.voidStr(cachePath))
             throw new ServletException("Missing the path to cache directory!");
 
         try {
@@ -87,7 +86,7 @@ public class CacheServlet extends HttpServlet {
     private void post(HttpServletRequest req) throws Exception {
 
         String objID = req.getParameter("obj_id");
-        if (Util.nullString(objID)) {
+        if (Util.voidStr(objID)) {
             throw new Exception("Missing object ID!");
         }
 
@@ -97,7 +96,7 @@ public class CacheServlet extends HttpServlet {
         }
 
         String action = req.getParameter("action");
-        if (Util.nullString(action)) {
+        if (Util.voidStr(action)) {
             throw new Exception("Missing action parameter!");
         }
 
@@ -138,10 +137,15 @@ public class CacheServlet extends HttpServlet {
         }
     }
 
+    /**
+     *
+     * @param req
+     * @throws Exception
+     */
     private void loadEntries(HttpServletRequest req) throws Exception {
 
         String objID = req.getParameter("obj_id");
-        if (Util.nullString(objID))
+        if (Util.voidStr(objID))
             throw new Exception("Missing object ID!");
         String objType = req.getParameter("obj_type");
         if (objType == null || !objTypes.containsKey(objType))

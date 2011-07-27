@@ -20,11 +20,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.eteks.awt.PJAToolkit;
-import com.tee.util.Util;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
@@ -75,7 +75,7 @@ public class ImgUpload extends HttpServlet {
         ServletContext ctx = getServletContext();
         HttpSession session = req.getSession();
         String qryStr = (String) session.getAttribute(QRYSTR_ATTR);
-        if (Util.nullString(qryStr))
+        if (Util.voidStr(qryStr))
             qryStr = "index.jsp";
         else
             session.removeAttribute(QRYSTR_ATTR);
@@ -87,15 +87,15 @@ public class ImgUpload extends HttpServlet {
             throw new ServletException("User not authenticated!");
 
         String objID = req.getParameter("obj_id");
-        if (Util.nullString(objID))
+        if (Util.voidStr(objID))
             throw new ServletException("Object ID is not specified!");
 
         String objType = req.getParameter("obj_type");
-        if (Util.nullString(objType))
+        if (Util.voidStr(objType))
             throw new ServletException("Object type not specified!");
 
         String attrID = req.getParameter("attr_id");
-        if (Util.nullString(attrID))
+        if (Util.voidStr(attrID))
             throw new ServletException("Attribute ID not specified!");
 
         // get the file's physical path
@@ -143,7 +143,7 @@ public class ImgUpload extends HttpServlet {
             }
 
             for (int i = 0; i < fileNames.length; i++) {
-                if (!Util.nullString(fileNames[i])) {
+                if (!Util.voidStr(fileNames[i])) {
                     File file = new File(visualsPath + fileNames[i]);
                     if (file.exists())
                         file.delete();
@@ -176,7 +176,7 @@ public class ImgUpload extends HttpServlet {
             sFile = req.getParameter("file_input");
         }
 
-        if (Util.nullString(sFile) && Util.nullString(sUrl))
+        if (Util.voidStr(sFile) && Util.voidStr(sUrl))
             throw new ServletException("You have to specify at least a file or url!");
 
         String fileName = null;
@@ -190,8 +190,9 @@ public class ImgUpload extends HttpServlet {
             fileName = sFile.substring(i + 1, sFile.length());
         }
 
-        if (Util.nullString(fileName))
+        if (Util.voidStr(fileName)){
             throw new ServletException("Failed to extract the file name!");
+        }
 
         try {
             // set up the file to write to

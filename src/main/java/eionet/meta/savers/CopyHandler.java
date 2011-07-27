@@ -438,12 +438,12 @@ public class CopyHandler extends Object {
     /**
      *
      * @param dstID
-     * @param isMakeWorkingCopy
+     * @param maktItWorkingCopy
      * @param resetVersionAndStatus
      * @return
      * @throws Exception
      */
-    public String copyDst(String dstID, boolean isMakeWorkingCopy, boolean resetVersionAndStatus) throws Exception {
+    public String copyDst(String dstID, boolean maktItWorkingCopy, boolean resetVersionAndStatus) throws Exception {
 
         if (dstID==null){
             return null;
@@ -461,7 +461,7 @@ public class CopyHandler extends Object {
         // also change the value of VERSION
         gen.clear();
         gen.setTable("DATASET");
-        if (isMakeWorkingCopy)
+        if (maktItWorkingCopy)
             gen.setField("WORKING_COPY", "Y");
         if (resetVersionAndStatus) {
             gen.setFieldExpr("VERSION", "1");

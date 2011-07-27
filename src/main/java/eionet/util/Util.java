@@ -75,17 +75,14 @@ public class Util {
     private static String expiresDateString;
 
     /**
-     * A method for determining if a String is void. And by void we mean either null or zero-length. Returns true, if the string IS
-     * void.
+     * Returns true if the given string is null or its length is 0.
+     *
+     * @param str The given string.
+     * @return
      */
+    public static boolean voidStr(String str) {
 
-    public static boolean voidStr(String s) {
-        if (s == null)
-            return true;
-        if (s.length() == 0)
-            return true;
-
-        return false;
+        return str == null || str.length() == 0;
     }
 
     /**

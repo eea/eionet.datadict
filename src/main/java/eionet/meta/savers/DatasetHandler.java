@@ -20,16 +20,21 @@ import org.apache.log4j.Logger;
 
 import com.tee.uit.security.AccessController;
 import com.tee.uit.security.SignOnException;
-import com.tee.util.Util;
 
 import eionet.meta.DDUser;
 import eionet.meta.Dataset;
 import eionet.meta.VersionManager;
 import eionet.util.SecurityUtil;
+import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
 
+/**
+ *
+ * @author Jaanus Heinlaid
+ *
+ */
 public class DatasetHandler extends BaseHandler {
 
     /** */
@@ -156,7 +161,7 @@ public class DatasetHandler extends BaseHandler {
 
         if (exists()) throw new SQLException("Such a dataset already exists!");
 
-        if (Util.nullString(ds_name))
+        if (Util.voidStr(ds_name))
             ds_name = idfier;
 
         SQLGenerator gen = new SQLGenerator();
@@ -179,7 +184,7 @@ public class DatasetHandler extends BaseHandler {
 
         // set the status
         String status = req.getParameter("reg_status");
-        if (!Util.nullString(status))
+        if (!Util.voidStr(status))
             gen.setField("REG_STATUS", status);
 
         Statement stmt = conn.createStatement();
@@ -254,7 +259,7 @@ public class DatasetHandler extends BaseHandler {
 
         // handle the update of data model
         String dsVisual = req.getParameter("visual");
-        if (!Util.nullString(dsVisual)) {
+        if (!Util.voidStr(dsVisual)) {
 
             SQLGenerator gen = new SQLGenerator();
             gen.setTable("DATASET");
@@ -284,10 +289,10 @@ public class DatasetHandler extends BaseHandler {
 
         // set the status
         String status = req.getParameter("reg_status");
-        if (!Util.nullString(status)) gen.setField("REG_STATUS", status);
+        if (!Util.voidStr(status)) gen.setField("REG_STATUS", status);
 
         // short name
-        if (!Util.nullString(ds_name)) gen.setField("SHORT_NAME", ds_name);
+        if (!Util.voidStr(ds_name)) gen.setField("SHORT_NAME", ds_name);
 
         // display create links
         gen.setFieldExpr("DISP_CREATE_LINKS", getDisplayCreateLinks());

@@ -13,8 +13,6 @@ import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 
-import com.tee.util.Util;
-
 import eionet.meta.notif.Subscribe;
 import eionet.meta.notif.UNSEventSender;
 import eionet.meta.savers.CopyHandler;
@@ -22,6 +20,7 @@ import eionet.meta.savers.DataElementHandler;
 import eionet.meta.savers.DatasetHandler;
 import eionet.meta.savers.DsTableHandler;
 import eionet.meta.savers.Parameters;
+import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
@@ -811,7 +810,7 @@ public class VersionManager {
      */
     private DataElement loadElm(String elmID) throws Exception {
 
-        if (Util.nullString(elmID))
+        if (Util.voidStr(elmID))
             throw new Exception("Data element ID not specified!");
 
         // get the element (this will return simple attributes + tableID
@@ -833,7 +832,7 @@ public class VersionManager {
      */
     private DsTable loadTbl(String tblID) throws Exception {
 
-        if (Util.nullString(tblID))
+        if (Util.voidStr(tblID))
             throw new Exception("Table ID not specified!");
 
         // get the table
@@ -859,7 +858,7 @@ public class VersionManager {
      */
     private Dataset loadDst(String dstID) throws Exception {
 
-        if (Util.nullString(dstID))
+        if (Util.voidStr(dstID))
             throw new Exception("Dataset ID not specified!");
 
         Dataset ds = searchEngine.getDataset(dstID);
@@ -917,13 +916,17 @@ public class VersionManager {
 
     /**
      *
+     * @param tbl
+     * @return
+     * @throws SQLException
      */
     public String getLatestReleasedTblID(DsTable tbl) throws SQLException {
 
         String tblIdf = tbl.getIdentifier();
         String parentNs = tbl.getParentNs();
-        if (Util.nullString(tblIdf) || Util.nullString(parentNs))
+        if (Util.voidStr(tblIdf) || Util.voidStr(parentNs)){
             return null;
+        }
 
         StringBuffer buf = new StringBuffer();
         buf.append("select DST2TBL.TABLE_ID from DS_TABLE ")

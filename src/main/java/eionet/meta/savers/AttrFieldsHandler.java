@@ -12,11 +12,15 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import com.tee.util.Util;
-
+import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
+/**
+ *
+ * @author Jaanus Heinlaid
+ *
+ */
 public class AttrFieldsHandler extends BaseHandler {
 
     public static final String FLD_PREFIX = "field_";
@@ -104,10 +108,10 @@ public class AttrFieldsHandler extends BaseHandler {
         Enumeration params = req.getParameterNames();
         if (params == null || !params.hasMoreElements()) return;
 
-        if (Util.nullString(harvAttrID) && !hasFields()) return;
+        if (Util.voidStr(harvAttrID) && !hasFields()) return;
 
         String row_id = insertRow();
-        if (Util.nullString(harvAttrID))
+        if (Util.voidStr(harvAttrID))
             insertFields(row_id, params);
     }
 
@@ -131,7 +135,7 @@ public class AttrFieldsHandler extends BaseHandler {
 
         String rowID = parent_id + parent_type + m_attr_id + position;
         map.put("ROW_ID", "md5(" + inParams.add(rowID) + ")");
-        if (!Util.nullString(harvAttrID))
+        if (!Util.voidStr(harvAttrID))
             map.put("HARV_ATTR_ID", inParams.add(harvAttrID));
 
         SQL.executeUpdate(SQL.insertStatement("COMPLEX_ATTR_ROW", map), inParams, conn);
@@ -157,7 +161,7 @@ public class AttrFieldsHandler extends BaseHandler {
                 if (!parName.startsWith(FLD_PREFIX))
                     continue;
 
-                if (Util.nullString(req.getParameter(parName)))
+                if (Util.voidStr(req.getParameter(parName)))
                     continue;
 
                 String fieldID = parName.substring(FLD_PREFIX.length());
@@ -283,7 +287,7 @@ public class AttrFieldsHandler extends BaseHandler {
             String parName = (String)pars.nextElement();
             if (!parName.startsWith(FLD_PREFIX)) continue;
 
-            if (Util.nullString(req.getParameter(parName))) continue;
+            if (Util.voidStr(req.getParameter(parName))) continue;
 
             return true;
         }

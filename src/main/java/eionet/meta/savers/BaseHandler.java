@@ -8,10 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
-import com.tee.util.Util;
-
 import eionet.meta.DDUser;
 import eionet.meta.MrProper;
+import eionet.util.Util;
 import eionet.util.sql.Transaction;
 
 /**
@@ -77,8 +76,9 @@ public abstract class BaseHandler {
     protected void cleanVisuals() {
 
         String vp = ctx==null ? null : ctx.getInitParameter("visuals-path");
-        if (Util.nullString(vp))
+        if (Util.voidStr(vp)){
             LOGGER.error("cleanVisuals() failed to find visuals path!");
+        }
 
         MrProper mrProper = new MrProper(conn);
         mrProper.setUser(user);

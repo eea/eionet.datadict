@@ -12,15 +12,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
-import com.tee.util.Util;
-
+import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
 
 /**
  *
- * @author jaanus
+ * @author Jaanus Heinlaid
+ *
  */
 public class NamespaceHandler extends BaseHandler{
 
@@ -115,7 +115,7 @@ public class NamespaceHandler extends BaseHandler{
     private void insert() throws Exception {
 
         // at least the short_name is required
-        if (Util.nullString(shortName)) {
+        if (Util.voidStr(shortName)) {
             throw new Exception("NamespaceHandler: at least the short_name " +
             "is required!");
         }
@@ -124,25 +124,25 @@ public class NamespaceHandler extends BaseHandler{
         // build SQL
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("NAMESPACE");
-        if (!Util.nullString(fullName)) {
+        if (!Util.voidStr(fullName)) {
             gen.setFieldExpr("FULL_NAME", inParams.add(fullName));
         }
-        if (!Util.nullString(shortName)) {
+        if (!Util.voidStr(shortName)) {
             gen.setFieldExpr("SHORT_NAME",inParams.add(shortName));
         }
-        if (!Util.nullString(definition)) {
+        if (!Util.voidStr(definition)) {
             gen.setFieldExpr("DEFINITION", inParams.add(definition));
         }
 
         String wrkUser = req.getParameter("wrk_user");
-        if (!Util.nullString(wrkUser)) {
+        if (!Util.voidStr(wrkUser)) {
             gen.setFieldExpr("WORKING_USER", inParams.add(wrkUser));
         } else {
             gen.setFieldExpr("WORKING_USER", "NULL");
         }
 
         String parentNS = req.getParameter("parent_ns");
-        if (!Util.nullString(parentNS)) {
+        if (!Util.voidStr(parentNS)) {
             gen.setFieldExpr("PARENT_NS", inParams.add(parentNS, Types.INTEGER));
         }
 
@@ -165,17 +165,17 @@ public class NamespaceHandler extends BaseHandler{
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("NAMESPACE");
         // don't allow change of SHORT_NAME in the first approach
-        //if (!Util.nullString(shortName))
+        //if (!Util.voidStr(shortName))
         //gen.setField("SHORT_NAME", shortName);
-        if (!Util.nullString(fullName)) {
+        if (!Util.voidStr(fullName)) {
             gen.setFieldExpr("FULL_NAME", inParams.add(fullName));
         }
-        if (!Util.nullString(definition)) {
+        if (!Util.voidStr(definition)) {
             gen.setFieldExpr("DEFINITION", inParams.add(definition));
         }
 
         String wrkUser = req.getParameter("wrk_user");
-        if (!Util.nullString(wrkUser))
+        if (!Util.voidStr(wrkUser))
             gen.setFieldExpr("WORKING_USER", inParams.add(wrkUser));
         else
             gen.setFieldExpr("WORKING_USER", "NULL");
@@ -198,24 +198,6 @@ public class NamespaceHandler extends BaseHandler{
 
         // don't allow manual deletion of namespaces in the first approach
         return;
-
-        /*if (nsID==null || nsID.length==0)
-            return;
-
-        StringBuffer buf = new StringBuffer("delete from NAMESPACE where ");
-        for (int i=0; i<nsID.length; i++) {
-
-            if (nsID[i].equals(BASENS))
-                throw new Exception("NamespaceHandler: " + BASENS + " is reserved, it cannot be deleted");
-
-            if (i>0) buf.append(" or ");
-            buf.append("NAMESPACE_ID=");
-            buf.append(com.tee.util.Util.strLiteral(nsID[i]));
-        }
-
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate(buf.toString());
-        stmt.close();*/
     }
 
     private void setLastInsertID() throws SQLException {
@@ -239,13 +221,13 @@ public class NamespaceHandler extends BaseHandler{
 
         INParameters inParams = new INParameters();
         String qry = "";
-        if (Util.nullString(dsID) && Util.nullString(tblID)) {
+        if (Util.voidStr(dsID) && Util.voidStr(tblID)) {
 
             qry = "select count(*) as COUNT from NAMESPACE where " +
             "DATASET_ID is null and TABLE_ID is null and SHORT_NAME=" +
             inParams.add(shortName);
         }
-        else if (!Util.nullString(tblID)) {
+        else if (!Util.voidStr(tblID)) {
 
             qry = "select count(*) as COUNT from NAMESPACE where " +
             "TABLE_ID=" + inParams.add(tblID, Types.INTEGER);

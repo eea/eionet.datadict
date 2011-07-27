@@ -299,11 +299,6 @@
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>com.tee</groupId>
-            <artifactId>tee-util</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.lowagie</groupId>
             <artifactId>itext</artifactId>
             <version>2.1.7</version>

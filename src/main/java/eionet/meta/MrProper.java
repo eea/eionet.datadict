@@ -17,12 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
-import com.tee.util.Util;
-
 import eionet.meta.savers.DataElementHandler;
 import eionet.meta.savers.DatasetHandler;
 import eionet.meta.savers.DsTableHandler;
 import eionet.meta.savers.Parameters;
+import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
@@ -306,7 +305,7 @@ public class MrProper {
                 append("IDENTIFIER=").append(Util.strLiteral(idfier));
             }
 
-            if (!Util.nullString(ns)) {
+            if (!Util.voidStr(ns)) {
                 buf.append(" and PARENT_NS=").append(ns);
             } else {
                 buf.append(" and PARENT_NS is null");
@@ -355,7 +354,7 @@ public class MrProper {
 
         INParameters inParams = new INParameters();
 
-        if (Util.nullString(idifier)) {
+        if (Util.voidStr(idifier)) {
             throw new Exception("Dataset identifier not given!");
         }
 
@@ -385,7 +384,7 @@ public class MrProper {
      */
     private void cleanVisuals(String visualsPath) throws Exception {
 
-        if (Util.nullString(visualsPath)) {
+        if (Util.voidStr(visualsPath)) {
             throw new Exception("Path to uploaded image files not given!");
         }
 
@@ -407,8 +406,9 @@ public class MrProper {
         File[] files = dir.listFiles();
         for (int i=0; files!=null && i<files.length; i++) {
             String fileName = files[i].getName();
-            if (Util.nullString(fileName))
+            if (Util.voidStr(fileName)){
                 continue;
+            }
 
             boolean delete = true;
 

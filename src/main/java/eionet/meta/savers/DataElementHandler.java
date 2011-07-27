@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 
 import com.tee.uit.security.AccessController;
 import com.tee.uit.security.SignOnException;
-import com.tee.util.Util;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
@@ -32,6 +31,7 @@ import eionet.meta.DataElement;
 import eionet.meta.FixedValue;
 import eionet.meta.VersionManager;
 import eionet.util.SecurityUtil;
+import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
@@ -529,14 +529,14 @@ public class DataElementHandler extends BaseHandler {
         // prepare SQL generator for element update
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("DATAELEM");
-        if (!Util.nullString(elmShortName)) {
+        if (!Util.voidStr(elmShortName)) {
             gen.setField("SHORT_NAME", elmShortName);
         }
 
         // if common element, set regisration status
         if (elmCommon) {
             String elmRegStatus = req.getParameter("reg_status");
-            if (!Util.nullString(elmRegStatus))
+            if (!Util.voidStr(elmRegStatus))
                 gen.setField("REG_STATUS", elmRegStatus);
         }
 
@@ -558,7 +558,7 @@ public class DataElementHandler extends BaseHandler {
         }
 
         // execute element update SQL if at least one field was set
-        if (!Util.nullString(gen.getValues())) {
+        if (!Util.voidStr(gen.getValues())) {
             conn.createStatement().executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + delem_id);
         }
         // handle element's attributes
@@ -1348,7 +1348,7 @@ public class DataElementHandler extends BaseHandler {
 
         // if there is a Datatype attribute and its value wasn't specified,
         // make it a string.
-        if (!Util.nullString(mDatatypeID)) {
+        if (!Util.voidStr(mDatatypeID)) {
             if (datatypeValue==null) {
                 insertAttribute(mDatatypeID, "string");
             }

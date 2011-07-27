@@ -4,8 +4,13 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import com.tee.util.Util;
+import eionet.util.Util;
 
+/**
+ *
+ * @author Jaanus Heinlaid
+ *
+ */
 public class DElemAttribute{
 
     public static String TYPE_SIMPLE = "SIMPLE";
@@ -83,8 +88,8 @@ public class DElemAttribute{
         this(id, name, shortName, type, value, definition, obligation);
         this.displayMultiple = multiple;
         if (this.displayMultiple.equals("1")) {
-          if (!Util.nullString(value))
-              addValue(value);
+            if (!Util.voidStr(value))
+                addValue(value);
         }
     }
 
@@ -113,8 +118,8 @@ public class DElemAttribute{
             value=inheritedValue;
 
         //if (displayMultiple!=null && displayMultiple.equals("1")) {
-            if (values!=null) {
-              if (values.size()>0) {
+        if (values!=null) {
+            if (values.size()>0) {
                 StringBuffer buf = new StringBuffer();
                 for (int i=0; i<values.size(); i++) {
                     buf.append(values.get(i));
@@ -123,8 +128,8 @@ public class DElemAttribute{
                 }
 
                 return buf.toString();
-              }
             }
+        }
         //}
 
         return value;
@@ -132,8 +137,8 @@ public class DElemAttribute{
 
     public void setValue(String value) {
         if (this.displayMultiple.equals("1") || this.inheritable.equals("1")) {
-          if (!Util.nullString(value))
-              addValue(value);
+            if (!Util.voidStr(value))
+                addValue(value);
         }
         this.value = value;
     }
@@ -175,11 +180,11 @@ public class DElemAttribute{
     }
 
     public void setDisplayProps(String displayType,
-                                  int displayOrder,
-                                  int displayWhen,
-                                  String displayWidth,
-                                  String displayHeight,
-                                  String displayMultiple) {
+            int displayOrder,
+            int displayWhen,
+            String displayWidth,
+            String displayHeight,
+            String displayMultiple) {
 
         this.displayType   = displayType;
         this.displayOrder  = displayOrder;
@@ -293,10 +298,10 @@ public class DElemAttribute{
     }
 
     /**
-    * A function for getting value of the specified field.
-    * Meant for complex attributes only and return the field
-    * value as soon as it finds it in one of the rows.
-    */
+     * A function for getting value of the specified field.
+     * Meant for complex attributes only and return the field
+     * value as soon as it finds it in one of the rows.
+     */
 
     public String getFieldValueByID(String fldID) {
 
@@ -317,10 +322,10 @@ public class DElemAttribute{
     }
 
     /**
-    * A function for getting value of the specified field.
-    * Meant for complex attributes only and return the field
-    * value as soon as it finds it in one of the rows.
-    */
+     * A function for getting value of the specified field.
+     * Meant for complex attributes only and return the field
+     * value as soon as it finds it in one of the rows.
+     */
 
     public String getFieldValueByName(String fldName) {
         return getFieldValueByID(getFieldIdByName(fldName));
@@ -351,8 +356,8 @@ public class DElemAttribute{
     }
 
     /**
-    * Overrides equals() in class Object.
-    */
+     * Overrides equals() in class Object.
+     */
     public boolean equals(Object o) {
 
         if (!(o instanceof DElemAttribute))
@@ -363,7 +368,7 @@ public class DElemAttribute{
         // for now, we don't support complex attributes here
         String oType = oAttr.getType();
         if ((type!=null && type.equals(TYPE_COMPLEX)) ||
-            (oType!=null && oType.equals(TYPE_COMPLEX)))
+                (oType!=null && oType.equals(TYPE_COMPLEX)))
             return false;
 
         // compare the two attr names
@@ -381,8 +386,8 @@ public class DElemAttribute{
     }
 
     /**
-    *
-    */
+     *
+     */
     public boolean effectsVersion() {
 
         if (verAttrs==null) {
@@ -414,31 +419,32 @@ public class DElemAttribute{
     }
     public void setInheritedValue(String value) {
         if (this.displayMultiple.equals("1") || this.inheritable.equals("1")) {
-          if (!Util.nullString(value))
-              addInheritedValue(value);
+            if (!Util.voidStr(value))
+                addInheritedValue(value);
         }
         this.inheritedValue = value;
     }
     public String getInheritedValue() {
         //if (displayMultiple!=null && displayMultiple.equals("1")) {
-            if (inheritedValues!=null) {
-                if (inheritedValues.size()>0) {
-                  StringBuffer buf = new StringBuffer();
-                  for (int i=0; i<inheritedValues.size(); i++) {
-                      buf.append(inheritedValues.get(i));
-                      if (i!=inheritedValues.size()-1)
-                          buf.append(", ");
-                  }
-                  return buf.toString();
+        if (inheritedValues!=null) {
+            if (inheritedValues.size()>0) {
+                StringBuffer buf = new StringBuffer();
+                for (int i=0; i<inheritedValues.size(); i++) {
+                    buf.append(inheritedValues.get(i));
+                    if (i!=inheritedValues.size()-1)
+                        buf.append(", ");
                 }
+                return buf.toString();
             }
+        }
         //}
         return inheritedValue;
     }
     public void setOriginalValue(String value) {
         if (this.displayMultiple.equals("1")) {
-          if (!Util.nullString(value))
-              addOriginalValue(value);
+            if (!Util.voidStr(value)){
+                addOriginalValue(value);
+            }
         }
         this.originalValue = value;
     }
@@ -464,7 +470,7 @@ public class DElemAttribute{
         if (originalValues==null) originalValues = new Vector();
 
         if (!originalValues.contains(value))
-          originalValues.add(value);
+            originalValues.add(value);
     }
     public Vector getInheritedValues() {
         return inheritedValues;
@@ -473,7 +479,7 @@ public class DElemAttribute{
         if (inheritedValues==null) inheritedValues = new Vector();
 
         if (!inheritedValues.contains(value))
-          inheritedValues.add(value);
+            inheritedValues.add(value);
     }
     public void clearInherited() {
         //if (inheritedValues!=null)
@@ -504,8 +510,8 @@ public class DElemAttribute{
     }
 
     /**
-    *
-    */
+     *
+     */
     public void main(String[] args) {
 
         Object o = null;

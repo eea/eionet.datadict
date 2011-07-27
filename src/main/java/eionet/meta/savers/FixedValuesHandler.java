@@ -12,13 +12,17 @@ import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import com.tee.util.Util;
-
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
+import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
+/**
+ *
+ * @author Jaanus Heinlaid
+ *
+ */
 public class FixedValuesHandler extends BaseHandler{
 
     private static final String DEFAULT_OWNER_TYPE = "elem";
@@ -47,7 +51,7 @@ public class FixedValuesHandler extends BaseHandler{
         mode = req.getParameter("mode");
         ownerID = req.getParameter("delem_id");
         String _ownerType = req.getParameter("parent_type");
-        if (!Util.nullString(_ownerType)) {
+        if (!Util.voidStr(_ownerType)) {
             ownerType = _ownerType;
         }
 
@@ -82,7 +86,7 @@ public class FixedValuesHandler extends BaseHandler{
     public void execute_() throws Exception {
 
         if (!allowanceChecked) {
-             checkAllowance();
+            checkAllowance();
         }
         if (!allowed) {
             return;
@@ -152,7 +156,7 @@ public class FixedValuesHandler extends BaseHandler{
     private void update() throws SQLException {
 
         String fxvID = req.getParameter("fxv_id");
-        if (Util.nullString(fxvID)) {
+        if (Util.voidStr(fxvID)) {
             return;
         }
 
@@ -236,9 +240,9 @@ public class FixedValuesHandler extends BaseHandler{
 
         // check if legal mode
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
-                           !mode.equalsIgnoreCase("edit") &&
-                           !mode.equalsIgnoreCase("delete")) &&
-                           !mode.equalsIgnoreCase("edit_positions")) {
+                !mode.equalsIgnoreCase("edit") &&
+                !mode.equalsIgnoreCase("delete")) &&
+                !mode.equalsIgnoreCase("edit_positions")) {
             throw new Exception("FixedValuesHandler mode unspecified!");
         }
 
@@ -265,7 +269,7 @@ public class FixedValuesHandler extends BaseHandler{
         DDSearchEngine eng = new DDSearchEngine(conn);
         DataElement elm = eng.getDataElement(ownerID);
         String dtype = elm==null ? "" :
-                                   elm.getAttributeValueByShortName("Datatype");
+            elm.getAttributeValueByShortName("Datatype");
         dtype = dtype==null ? "" : dtype.toUpperCase();
         if (prhbDatatypes.contains(dtype.toUpperCase()) && !mode.equalsIgnoreCase("edit")) {
             allowed = false;

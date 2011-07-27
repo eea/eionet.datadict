@@ -9,11 +9,15 @@ import java.util.LinkedHashMap;
 
 import javax.servlet.ServletContext;
 
-import com.tee.util.Util;
-
+import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
+/**
+ *
+ * @author Jaanus Heinlaid
+ *
+ */
 public class RodLinksHandler extends BaseHandler{
 
     /**
@@ -52,7 +56,7 @@ public class RodLinksHandler extends BaseHandler{
     private void addRodLinks(String dstID) throws Exception {
 
         String raID = httpServletRequest.getParameter("ra_id");
-        if (Util.nullString(raID))
+        if (Util.voidStr(raID))
             throw new Exception("ra_id is missing!");
 
         INParameters inParams = new INParameters();

@@ -3,8 +3,13 @@ package eionet.meta;
 
 import java.util.Vector;
 
-import com.tee.util.Util;
+import eionet.util.Util;
 
+/**
+ *
+ * @author Jaanus Heinlaid
+ *
+ */
 public class FixedValue {
 
     private String id = null;
@@ -42,8 +47,8 @@ public class FixedValue {
     }
 
     /**
-    * Overrides equals() in class Object.
-    */
+     * Overrides equals() in class Object.
+     */
     public boolean equals(Object o) {
 
         if (!(o instanceof FixedValue))
@@ -169,7 +174,7 @@ public class FixedValue {
     }
 
     public void setParentType(String type) {
-        if (!Util.nullString(type))
+        if (!Util.voidStr(type))
             parent_type = type;
     }
 
@@ -181,7 +186,7 @@ public class FixedValue {
         this.level = level;
     }
     public int getLevel() {
-       return level;
+        return level;
     }
 
     public void addItem(Object item) {
