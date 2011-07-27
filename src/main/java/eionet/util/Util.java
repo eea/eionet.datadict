@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
@@ -237,8 +238,9 @@ public class Util {
     public static long timeDiff(int hour, int date, int month, int wday, String zone) {
 
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone(zone));
-        if (cal == null)
+        if (cal == null) {
             cal = new GregorianCalendar(TimeZone.getDefault());
+        }
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
@@ -250,8 +252,9 @@ public class Util {
          */
         int cur_hour = cal.get(Calendar.HOUR);
 
-        if (cal.get(Calendar.AM_PM) == Calendar.PM)
+        if (cal.get(Calendar.AM_PM) == Calendar.PM) {
             cur_hour = 12 + cur_hour;
+        }
 
         // here we assume that every full hour is accepted
         /*
@@ -264,57 +267,67 @@ public class Util {
 
             int cur_wday = cal.get(Calendar.DAY_OF_WEEK);
             if (hour < 0 || hour > 23) {
-                if (cur_wday != wday)
+                if (cur_wday != wday) {
                     hour = 0;
-                else
+                } else {
                     hour = cur_hour >= 23 ? 0 : cur_hour + 1;
+                }
             }
 
             int amount = wday - cur_wday;
-            if (amount < 0)
+            if (amount < 0) {
                 amount = 7 + amount;
-            if (amount == 0 && cur_hour >= hour)
+            }
+            if (amount == 0 && cur_hour >= hour) {
                 amount = 7;
+            }
             cal.add(Calendar.DAY_OF_WEEK, amount);
         }
         // do something about when every date is accepted
         else if (month >= Calendar.JANUARY && month <= Calendar.DECEMBER) {
-            if (date < 1)
+            if (date < 1) {
                 date = 1;
-            if (date > 31)
+            }
+            if (date > 31) {
                 date = 31;
+            }
             int cur_month = cal.get(Calendar.MONTH);
             int amount = month - cur_month;
-            if (amount < 0)
+            if (amount < 0) {
                 amount = 12 + amount;
+            }
             if (amount == 0) {
-                if (cal.get(Calendar.DATE) > date)
+                if (cal.get(Calendar.DATE) > date) {
                     amount = 12;
-                else if (cal.get(Calendar.DATE) == date) {
-                    if (cur_hour >= hour)
+                } else if (cal.get(Calendar.DATE) == date) {
+                    if (cur_hour >= hour) {
                         amount = 12;
+                    }
                 }
             }
             // cal.set(Calendar.DATE, date);
             cal.add(Calendar.MONTH, amount);
-            if (date > cal.getActualMaximum(Calendar.DATE))
+            if (date > cal.getActualMaximum(Calendar.DATE)) {
                 date = cal.getActualMaximum(Calendar.DATE);
+            }
             cal.set(Calendar.DATE, date);
         } else if (date >= 1 && date <= 31) {
             int cur_date = cal.get(Calendar.DATE);
-            if (cur_date > date)
+            if (cur_date > date) {
                 cal.add(Calendar.MONTH, 1);
-            else if (cur_date == date) {
-                if (cur_hour >= hour)
+            } else if (cur_date == date) {
+                if (cur_hour >= hour) {
                     cal.add(Calendar.MONTH, 1);
+                }
             }
             cal.set(Calendar.DATE, date);
         } else {
             if (hour < 0 || hour > 23) {
                 hour = cur_hour >= 23 ? 0 : cur_hour + 1;
             }
-            if (cur_hour >= hour)
+            if (cur_hour >= hour) {
                 cal.add(Calendar.DATE, 1);
+            }
         }
 
         if (hour >= 12) {
@@ -397,8 +410,9 @@ public class Util {
             Byte byteWrapper = new Byte(dstBytes[i]);
             int k = byteWrapper.intValue();
             String s = Integer.toHexString(byteWrapper.intValue());
-            if (s.length() == 1)
+            if (s.length() == 1) {
                 s = "0" + s;
+            }
             buf.append(s.substring(s.length() - 2));
         }
 
@@ -446,49 +460,54 @@ public class Util {
         StringBuffer ret = new StringBuffer();
         for (int i = 0; i < in.length(); i++) {
             char c = in.charAt(i);
-            if (c == '<') // less than
+            if (c == '<') {
                 ret.append("&lt;");
-            else if (c == '>') // greater than
+            } else if (c == '>') {
                 ret.append("&gt;");
-            else if (c == '"') // quotation
+            } else if (c == '"') {
                 ret.append("&quot;");
-            else if (c == '\'') // apostrophe
+            } else if (c == '\'') {
                 ret.append("&#039;");
-            else if (c == '\\') // backslash
+            } else if (c == '\\') {
                 ret.append("&#092;");
-            else if (c == '&') { // ampersand
+            } else if (c == '&') { // ampersand
                 boolean startsEscapeSequence = false;
                 int j = in.indexOf(';', i);
                 if (j > 0) {
                     String s = in.substring(i, j + 1);
                     UnicodeEscapes unicodeEscapes = new UnicodeEscapes();
-                    if (unicodeEscapes.isXHTMLEntity(s) || unicodeEscapes.isNumericHTMLEscapeCode(s))
+                    if (unicodeEscapes.isXHTMLEntity(s) || unicodeEscapes.isNumericHTMLEscapeCode(s)) {
                         startsEscapeSequence = true;
+                    }
                 }
 
-                if (startsEscapeSequence)
+                if (startsEscapeSequence) {
                     ret.append(c);
-                else
+                } else {
                     ret.append("&amp;");
-            } else
+                }
+            } else {
                 ret.append(c);
+            }
         }
 
         String retString = ret.toString();
-        if (dontCreateHTMLAnchors == false)
+        if (dontCreateHTMLAnchors == false) {
             retString = setAnchors(retString, true, 50);
+        }
 
         ret = new StringBuffer();
         for (int i = 0; i < retString.length(); i++) {
             char c = retString.charAt(i);
-            if (c == '\n' && dontCreateHTMLLineBreaks == false)
+            if (c == '\n' && dontCreateHTMLLineBreaks == false) {
                 ret.append("<br/>");
-            else if (c == '\r' && i != (retString.length() - 1) && retString.charAt(i + 1) == '\n'
+            } else if (c == '\r' && i != (retString.length() - 1) && retString.charAt(i + 1) == '\n'
                 && dontCreateHTMLLineBreaks == false) {
                 ret.append("<br/>");
                 i = i + 1;
-            } else
+            } else {
                 ret.append(c);
+            }
         }
 
         return ret.toString();
@@ -555,8 +574,9 @@ public class Util {
      */
     public static String processForLink(String in, boolean newWindow, int cutLink) {
 
-        if (in == null || in.trim().length() == 0)
+        if (in == null || in.trim().length() == 0) {
             return in;
+        }
 
         HashSet urlSchemes = new HashSet();
         urlSchemes.add("http://");
@@ -568,22 +588,26 @@ public class Util {
 
         int beginIndex = -1;
         Iterator iter = urlSchemes.iterator();
-        while (iter.hasNext() && beginIndex < 0)
+        while (iter.hasNext() && beginIndex < 0) {
             beginIndex = in.indexOf((String) iter.next());
+        }
 
-        if (beginIndex < 0)
+        if (beginIndex < 0) {
             return in;
+        }
 
         int endIndex = -1;
         String s = null;
         for (endIndex = in.length(); endIndex > beginIndex; endIndex--) {
             s = in.substring(beginIndex, endIndex);
-            if (isURI(s))
+            if (isURI(s)) {
                 break;
+            }
         }
 
-        if (s == null)
+        if (s == null) {
             return in;
+        }
 
         HashSet endChars = new HashSet();
         endChars.add(new Character('!'));
@@ -596,8 +620,9 @@ public class Util {
 
         for (endIndex = endIndex - 1; endIndex > beginIndex; endIndex--) {
             char c = in.charAt(endIndex);
-            if (!endChars.contains(new Character(c)))
+            if (!endChars.contains(new Character(c))) {
                 break;
+            }
         }
 
         StringBuffer buf = new StringBuffer(in.substring(0, beginIndex));
@@ -608,10 +633,11 @@ public class Util {
         _buf.append(link);
         _buf.append("\">");
 
-        if (cutLink < link.length())
+        if (cutLink < link.length()) {
             _buf.append(link.substring(0, cutLink)).append("...");
-        else
+        } else {
             _buf.append(link);
+        }
 
         _buf.append("</a>");
         buf.append(_buf.toString());
@@ -642,8 +668,9 @@ public class Util {
         Class[] ifs = c.getInterfaces();
         for (int i = 0; ifs != null && i < ifs.length; i++) {
             Class ifClass = ifs[i];
-            if (ifClass.getName().endsWith(ifName))
+            if (ifClass.getName().endsWith(ifName)) {
                 return true;
+            }
         }
 
         return f;
@@ -663,21 +690,23 @@ public class Util {
      */
     public static String getStatusImage(String status) {
 
-        if (status == null)
+        if (status == null) {
             status = "Incomplete";
+        }
 
-        if (status.equals("Incomplete"))
+        if (status.equals("Incomplete")) {
             return "dd_status_1.gif";
-        else if (status.equals("Candidate"))
+        } else if (status.equals("Candidate")) {
             return "dd_status_2.gif";
-        else if (status.equals("Recorded"))
+        } else if (status.equals("Recorded")) {
             return "dd_status_3.gif";
-        else if (status.equals("Qualified"))
+        } else if (status.equals("Qualified")) {
             return "dd_status_4.gif";
-        else if (status.equals("Released"))
+        } else if (status.equals("Released")) {
             return "dd_status_5.gif";
-        else
+        } else {
             return "dd_status_1.gif";
+        }
     }
 
     /*
@@ -685,21 +714,23 @@ public class Util {
      */
     public static String getStatusRadics(String status) {
 
-        if (status == null)
+        if (status == null) {
             status = "Incomplete";
+        }
 
-        if (status.equals("Incomplete"))
+        if (status.equals("Incomplete")) {
             return "&radic;";
-        else if (status.equals("Candidate"))
+        } else if (status.equals("Candidate")) {
             return "&radic;&radic;";
-        else if (status.equals("Recorded"))
+        } else if (status.equals("Recorded")) {
             return "&radic;&radic;&radic;";
-        else if (status.equals("Qualified"))
+        } else if (status.equals("Qualified")) {
             return "&radic;&radic;&radic;&radic;";
-        else if (status.equals("Released"))
+        } else if (status.equals("Released")) {
             return "&radic;&radic;&radic;&radic;&radic;";
-        else
+        } else {
             return "&radic;";
+        }
     }
 
     /*
@@ -707,21 +738,23 @@ public class Util {
      */
     public static String getStatusSortString(String status) {
 
-        if (status == null)
+        if (status == null) {
             status = "Incomplete";
+        }
 
-        if (status.equals("Incomplete"))
+        if (status.equals("Incomplete")) {
             return "1";
-        else if (status.equals("Candidate"))
+        } else if (status.equals("Candidate")) {
             return "2";
-        else if (status.equals("Recorded"))
+        } else if (status.equals("Recorded")) {
             return "3";
-        else if (status.equals("Qualified"))
+        } else if (status.equals("Qualified")) {
             return "4";
-        else if (status.equals("Released"))
+        } else if (status.equals("Released")) {
             return "5";
-        else
+        } else {
             return "1";
+        }
     }
 
     /*
@@ -731,51 +764,51 @@ public class Util {
 
         String s = path == null ? null : path.toLowerCase();
 
-        if (s == null)
+        if (s == null) {
             return "file.png";
-        else if (s.endsWith(".pdf"))
+        } else if (s.endsWith(".pdf")) {
             return "pdf.png";
-        else if (s.endsWith(".doc"))
+        } else if (s.endsWith(".doc")) {
             return "doc.png";
-        else if (s.endsWith(".rtf"))
+        } else if (s.endsWith(".rtf")) {
             return "rtf.png";
-        else if (s.endsWith(".xls"))
+        } else if (s.endsWith(".xls")) {
             return "xls.png";
-        else if (s.endsWith(".ppt"))
+        } else if (s.endsWith(".ppt")) {
             return "ppt.png";
-        else if (s.endsWith(".txt"))
+        } else if (s.endsWith(".txt")) {
             return "txt.png";
-        else if (s.endsWith(".zip"))
+        } else if (s.endsWith(".zip")) {
             return "zip.png";
-        else if (s.endsWith(".htm"))
+        } else if (s.endsWith(".htm")) {
             return "htm.png";
-        else if (s.endsWith(".html"))
+        } else if (s.endsWith(".html")) {
             return "html.png";
-        else if (s.endsWith(".xml"))
+        } else if (s.endsWith(".xml")) {
             return "xml.png";
-        else if (s.endsWith(".xsd"))
+        } else if (s.endsWith(".xsd")) {
             return "xsd.png";
-        else if (s.endsWith(".mdb"))
+        } else if (s.endsWith(".mdb")) {
             return "mdb.png";
-        else if (s.endsWith(".gif"))
+        } else if (s.endsWith(".gif")) {
             return "gif.png";
-        else if (s.endsWith(".jpeg"))
+        } else if (s.endsWith(".jpeg")) {
             return "jpeg.png";
-        else if (s.endsWith(".jpg"))
+        } else if (s.endsWith(".jpg")) {
             return "jpg.png";
-        else if (s.endsWith(".png"))
+        } else if (s.endsWith(".png")) {
             return "png.png";
-        else if (s.endsWith(".rar"))
+        } else if (s.endsWith(".rar")) {
             return "rar.png";
-        else if (s.endsWith(".tar"))
+        } else if (s.endsWith(".tar")) {
             return "tar.png";
-        else if (s.endsWith(".tgz"))
+        } else if (s.endsWith(".tgz")) {
             return "tgz.png";
-        else if (s.endsWith(".xsl"))
+        } else if (s.endsWith(".xsl")) {
             return "xsl.png";
-
-        else
+        } else {
             return "file.png";
+        }
     }
 
     /**
@@ -810,10 +843,12 @@ public class Util {
             return e.toString().trim();
         } finally {
             try {
-                if (in != null)
+                if (in != null) {
                     in.close();
-                if (out != null)
+                }
+                if (out != null) {
                     out.close();
+                }
             } catch (IOException e) {
             }
         }
@@ -863,44 +898,51 @@ public class Util {
                 out.write(buf, 0, i);
             }
         } finally {
-            if (in != null)
+            if (in != null) {
                 in.close();
+            }
             out.close();
         }
     }
 
     public static String htmlAttr(String name, String value) {
         StringBuffer buf = new StringBuffer();
-        if (value != null)
+        if (value != null) {
             buf.append(name).append("=\"").append(value).append("\"");
+        }
         return buf.toString();
     }
 
     public static String escapeXML(String text) {
 
-        if (text == null)
+        if (text == null) {
             return null;
-        if (text.length() == 0)
+        }
+        if (text.length() == 0) {
             return text;
+        }
 
         StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < text.length(); i++)
+        for (int i = 0; i < text.length(); i++) {
             buf.append(escapeXML(i, text));
+        }
 
         return buf.toString();
     }
 
     public static String escapeXML(int pos, String text) {
 
-        if (xmlEscapes == null)
+        if (xmlEscapes == null) {
             setXmlEscapes();
+        }
         Character c = new Character(text.charAt(pos));
         for (Enumeration e = xmlEscapes.elements(); e.hasMoreElements();) {
             String esc = (String) e.nextElement();
             if (pos + esc.length() < text.length()) {
                 String sub = text.substring(pos, pos + esc.length());
-                if (sub.equals(esc))
+                if (sub.equals(esc)) {
                     return c.toString();
+                }
             }
         }
 
@@ -912,8 +954,9 @@ public class Util {
                     try {
                         // if the string between # and ; is a number then return true,
                         // because it is most probably an escape sequence
-                        if (Integer.parseInt(sub) >= 0)
+                        if (Integer.parseInt(sub) >= 0) {
                             return c.toString();
+                        }
                     } catch (NumberFormatException nfe) {
                     }
                 }
@@ -921,10 +964,11 @@ public class Util {
         }
 
         String esc = (String) xmlEscapes.get(c);
-        if (esc != null)
+        if (esc != null) {
             return esc;
-        else
+        } else {
             return c.toString();
+        }
     }
 
     private static void setXmlEscapes() {
@@ -951,19 +995,22 @@ public class Util {
      */
     public static String getObligationID(String obligDetailsUrl) {
 
-        if (obligDetailsUrl == null || obligDetailsUrl.length() == 0)
+        if (obligDetailsUrl == null || obligDetailsUrl.length() == 0) {
             return null;
+        }
 
         String obligationID = "";
         String s = new String("id=");
         int j = obligDetailsUrl.indexOf(s);
-        if (j < 0)
+        if (j < 0) {
             return null;
+        }
         int k = obligDetailsUrl.indexOf("&", j);
-        if (k < 0)
+        if (k < 0) {
             obligationID = obligDetailsUrl.substring(j + s.length());
-        else
+        } else {
             obligationID = obligDetailsUrl.substring(j + s.length(), k);
+        }
 
         try {
             int oid = Integer.parseInt(obligationID);
@@ -1003,11 +1050,13 @@ public class Util {
         StringBuffer result = new StringBuffer();
         String servletPath = request.getServletPath();
         if (servletPath != null && servletPath.length() > 0) {
-            if (servletPath.startsWith("/") && servletPath.length() > 1)
+            if (servletPath.startsWith("/") && servletPath.length() > 1) {
                 result.append(servletPath.substring(1));
+            }
             String queryString = request.getQueryString();
-            if (queryString != null && queryString.length() > 0)
+            if (queryString != null && queryString.length() > 0) {
                 result.append("?").append(queryString);
+            }
         }
 
         return result.toString();
@@ -1025,8 +1074,9 @@ public class Util {
             StringTokenizer tokenizer = new StringTokenizer(str, delim);
             while (tokenizer.hasMoreTokens()) {
                 String token = tokenizer.nextToken();
-                if (token != null && token.length() > 0)
+                if (token != null && token.length() > 0) {
                     result.add(token);
+                }
             }
         }
 
@@ -1043,17 +1093,21 @@ public class Util {
 
         String protocol = request.getProtocol().toLowerCase();
         int i = protocol.indexOf('/');
-        if (i >= 0)
+        if (i >= 0) {
             protocol = protocol.substring(0, i);
+        }
 
         StringBuffer buf = new StringBuffer(protocol);
         buf.append("://").append(request.getServerName());
-        if (request.getServerPort() > 0)
+        if (request.getServerPort() > 0) {
             buf.append(":").append(request.getServerPort());
-        if (request.getContextPath() != null)
+        }
+        if (request.getContextPath() != null) {
             buf.append(request.getContextPath());
-        if (buf.toString().endsWith("/") == false)
+        }
+        if (buf.toString().endsWith("/") == false) {
             buf.append("/");
+        }
 
         return buf.toString();
     }
@@ -1071,8 +1125,9 @@ public class Util {
             int TO = 1;
             for (int i = 0; i < allowedFxvDatatypeConversions.length; i++) {
                 String[] pair = allowedFxvDatatypeConversions[i];
-                if (pair[FROM].equals(from) && pair[TO].equals(to))
+                if (pair[FROM].equals(from) && pair[TO].equals(to)) {
                     return true;
+                }
             }
         }
 
@@ -1104,8 +1159,9 @@ public class Util {
 
         java.net.URL url = new java.net.URL(urlString);
         StringBuffer buf = new StringBuffer(url.getPath());
-        if (url.getQuery() != null)
+        if (url.getQuery() != null) {
             buf.append("?").append(url.getQuery());
+        }
 
         return buf.toString();
     }
@@ -1164,4 +1220,25 @@ public class Util {
         }
         return buf.toString();
     }
+
+    /**
+     *
+     * @param collection
+     * @return
+     */
+    public static boolean isEmpty(Collection<?> collection){
+
+        return collection==null || collection.isEmpty();
+    }
+
+    /**
+     *
+     * @param map
+     * @return
+     */
+    public static boolean isEmpty(Map<?, ?> map){
+
+        return map==null || map.isEmpty();
+    }
+
 }

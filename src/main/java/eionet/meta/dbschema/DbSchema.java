@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,6 +100,26 @@ public class DbSchema implements ServletContextListener{
             HashSet<String> result = new HashSet<String>(instance.tablesColumns.get(tableName));
             for (int i=0; i<skipColumns.length; i++){
                 result.remove(skipColumns[i]);
+            }
+            return result;
+        }
+    }
+
+    /**
+     *
+     * @param tableName
+     * @param skipColumns
+     * @return
+     */
+    public static Set<String> getTableColumns(String tableName, Collection<String> skipColumns){
+
+        if (skipColumns==null || skipColumns.isEmpty()){
+            return getTableColumns(tableName);
+        }
+        else{
+            HashSet<String> result = new HashSet<String>(instance.tablesColumns.get(tableName));
+            for (String skipColumn : skipColumns){
+                result.remove(skipColumn);
             }
             return result;
         }

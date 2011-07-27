@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.Vector;
 
@@ -751,18 +752,17 @@ public class CopyHandler extends Object {
     private String getLastInsertID(Statement stmt) throws SQLException {
 
         ResultSet rs = null;
-        boolean statementGiven = stmt!=null;
-        try{
-            if (!statementGiven){
+        boolean statementGiven = stmt != null;
+        try {
+            if (!statementGiven) {
                 stmt = conn.createStatement();
             }
 
             rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
             rs.clearWarnings();
             return rs.next() ? rs.getString(1) : null;
-        }
-        finally{
-            if (!statementGiven){
+        } finally {
+            if (!statementGiven) {
                 SQL.close(stmt);
             }
         }
@@ -798,18 +798,76 @@ public class CopyHandler extends Object {
         }
 
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
             stmt.executeUpdate(sql.toString());
-            try{
+            try {
                 return Integer.parseInt(getLastInsertID(stmt));
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 return 0;
             }
-        }
-        finally{
+        } finally {
             SQL.close(stmt);
         }
+    }
+
+    /**
+     *
+     * @param tableName
+     * @param whereClause
+     * @param newValues
+     * @return
+     */
+    private static String copyRowsStatement(String tableName, String whereClause, LinkedHashMap<String, Object> newValues) {
+
+        if (Util.isEmpty(tableName)) {
+            throw new IllegalArgumentException("Table name must be given!");
+        }
+
+        boolean isNewValuesEmpty = Util.isEmpty(newValues);
+        Set<String> columnNames = DbSchema.getTableColumns(tableName, isNewValuesEmpty ? null : newValues.keySet());
+        boolean isColumnNamesEmpty = Util.isEmpty(columnNames);
+        StringBuilder sql = new StringBuilder();
+
+        if (isNewValuesEmpty && isColumnNamesEmpty) {
+
+            sql.append("insert into ").append(tableName).append(" select * from ").append(tableName);
+
+        } else {
+
+            sql.append("insert into ").append(tableName).append(" (");
+
+            int i = 0;
+            if (!isNewValuesEmpty){
+                for (String columnName : newValues.keySet()){
+                    sql.append(i++ > 0 ? "," : "").append(columnName);
+                }
+            }
+
+            String columnNamesCSV = Util.toCSV(columnNames);
+            if (!isColumnNamesEmpty){
+                sql.append(i==0 ? "" : ",").append(columnNamesCSV);
+            }
+
+            sql.append(") select ");
+
+            if (!isNewValuesEmpty){
+                for (Object value : newValues.values()){
+                    sql.append(i++ > 0 ? "," : "").append(value);
+                }
+            }
+
+            if (!isColumnNamesEmpty){
+                sql.append(i==0 ? "" : ",").append(columnNamesCSV);
+            }
+
+            sql.append(" from ").append(tableName);
+        }
+
+        if (!Util.isEmpty(whereClause)) {
+            sql.append(" where ").append(whereClause);
+        }
+
+        return sql.toString();
     }
 }
