@@ -411,7 +411,7 @@ public class VersionManager {
      */
     private String checkOutDst_(String dstID) throws Exception {
 
-        if (dstID == null){
+        if (dstID == null) {
             throw new Exception("Dataset ID missing!");
         }
 
@@ -420,8 +420,11 @@ public class VersionManager {
         String newID = null;
         String topNS = null;
         try {
-            INParameters inParams = new INParameters();
             // set the working user of the original
+
+            LOGGER.debug("Setting the working user of the original copy");
+
+            INParameters inParams = new INParameters();
             SQLGenerator gen = new SQLGenerator();
             gen.setTable("DATASET");
             gen.setFieldExpr("WORKING_USER", inParams.add(user.getUserName()));
@@ -432,6 +435,9 @@ public class VersionManager {
             stmt.executeUpdate();
 
             // set the WORKING_USER of top namespace
+
+            LOGGER.debug("Setting the working user of the top namespace");
+
             inParams = new INParameters();
             q = "select CORRESP_NS from DATASET where DATASET_ID=" + inParams.add(dstID, Types.INTEGER);
             stmt = SQL.preparedStatement(q, inParams, conn);
@@ -449,6 +455,7 @@ public class VersionManager {
             }
 
             // copy the dataset
+
             String strResetVersionAndStatus =
                 servlRequestParams == null ? null : servlRequestParams.getParameter("resetVersionAndStatus");
             CopyHandler copyHandler = new CopyHandler(conn, ctx, searchEngine);
@@ -463,7 +470,9 @@ public class VersionManager {
                 stmt = SQL.preparedStatement(q, inParams, conn);
                 stmt.executeUpdate();
             }
+
         } catch (Exception e) {
+
             try {
                 cleanupCheckout(dstID, "DATASET", topNS, newID);
             } catch (Exception ee) {

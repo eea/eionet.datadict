@@ -443,12 +443,11 @@ public class CopyHandler extends Object {
      * @return
      * @throws Exception
      */
-    public String copyDst(String dstID,
-            boolean isMakeWorkingCopy,
-            boolean resetVersionAndStatus)throws Exception {
+    public String copyDst(String dstID, boolean isMakeWorkingCopy, boolean resetVersionAndStatus) throws Exception {
 
-        if (dstID==null)
+        if (dstID==null){
             return null;
+        }
 
         // copy row in DATASET table
         SQLGenerator gen = new SQLGenerator();
