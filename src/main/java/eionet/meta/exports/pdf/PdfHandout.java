@@ -180,7 +180,7 @@ public abstract class PdfHandout implements PdfHandoutIF {
         Phrase phr = new Phrase();
         phr.add(new Chunk(buf.toString(), Fonts.get(Fonts.DOC_HEADER_BLACK)));
 
-        if (!Util.voidStr(logo)) {
+        if (!Util.isEmpty(logo)) {
             Image img = Image.getInstance(logo);
             img.setAlignment(Image.LEFT);
 
@@ -261,7 +261,7 @@ public abstract class PdfHandout implements PdfHandoutIF {
 
         this.visualsPath = visualsPath;
 
-        if (!Util.voidStr(this.visualsPath)) {
+        if (!Util.isEmpty(this.visualsPath)) {
             if (!this.visualsPath.endsWith(File.separator)) {
                 this.visualsPath = this.visualsPath + File.separator;
             }

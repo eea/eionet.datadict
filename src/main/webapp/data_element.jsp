@@ -242,7 +242,7 @@
         }
 
         if (mode.equals("add") && !elmCommon) {
-            if (Util.voidStr(tableID)) {
+            if (Util.isEmpty(tableID)) {
                 request.setAttribute("DD_ERR_MSG",
                         "Missing request parameter: table_id");
                 request.getRequestDispatcher("error.jsp").forward(request,
@@ -250,7 +250,7 @@
                 return;
             }
         } else if (mode.equals("view")) {
-            if (Util.voidStr(delem_id) && Util.voidStr(delemIdf)) {
+            if (Util.isEmpty(delem_id) && Util.isEmpty(delemIdf)) {
                 request.setAttribute("DD_ERR_MSG",
                         "Missing request parameter: delem_id or delem_idf");
                 request.getRequestDispatcher("error.jsp").forward(request,
@@ -258,7 +258,7 @@
                 return;
             }
         } else if (mode.equals("edit")) {
-            if (Util.voidStr(delem_id)) {
+            if (Util.isEmpty(delem_id)) {
                 request.setAttribute("DD_ERR_MSG",
                         "Missing request parameter: delem_id");
                 request.getRequestDispatcher("error.jsp").forward(request,
@@ -266,7 +266,7 @@
                 return;
             }
         } else if (mode.equals("copy")) {
-            if (Util.voidStr(copy_elem_id)) {
+            if (Util.isEmpty(copy_elem_id)) {
                 request.setAttribute("DD_ERR_MSG",
                         "Missing request parameter: copy_elem_id");
                 request.getRequestDispatcher("error.jsp").forward(request,
@@ -385,7 +385,7 @@
         // if requested by alphanumeric identifier and not by auto-generated id,
         // then it means the common element's latest version is requested
         boolean isLatestRequested = mode.equals("view")
-                && !Util.voidStr(delemIdf) && Util.voidStr(delem_id);
+                && !Util.isEmpty(delemIdf) && Util.isEmpty(delem_id);
 
         Dataset dataset = null;
         DsTable dsTable = null;
@@ -2043,7 +2043,7 @@
                                                                                 }
 
                                                                                 // thumbnail
-                                                                                if (mode.equals("view") && !Util.voidStr(attrValue)) {
+                                                                                if (mode.equals("view") && !Util.isEmpty(attrValue)) {
                                                                 %>
                                                                 <div class="figure-plus-container">
                                                                     <div class="figure-plus">
@@ -2058,7 +2058,7 @@
 
                                                                                 // link to image edit page
                                                                                 if (mode.equals("edit") && user != null) {
-                                                                                    String actionText = Util.voidStr(attrValue) ? "add image"
+                                                                                    String actionText = Util.isEmpty(attrValue) ? "add image"
                                                                                             : "manage this image";
                                                                 %>
                                                                 <div>

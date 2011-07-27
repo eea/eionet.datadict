@@ -242,7 +242,7 @@ public abstract class Schema implements SchemaIF {
 
             // put attributes value or values into a vector
             String dispMultiple = attr.getDisplayMultiple();
-            if (Util.voidStr(dispMultiple))
+            if (Util.isEmpty(dispMultiple))
                 dispMultiple = "0";
 
             Vector values = null;
@@ -250,7 +250,7 @@ public abstract class Schema implements SchemaIF {
                 values = attr.getValues();
             } else {
                 String _value = attr.getValue();
-                if (!Util.voidStr(_value)) {
+                if (!Util.isEmpty(_value)) {
                     values = new Vector();
                     values.add(_value);
                 }
@@ -357,7 +357,7 @@ public abstract class Schema implements SchemaIF {
 
                 Namespace ns = null;
                 String nsID = dsTable.getNamespace();
-                if (!Util.voidStr(nsID))
+                if (!Util.isEmpty(nsID))
                     ns = searchEngine.getNamespace(nsID);
 
                 if (ns == null)

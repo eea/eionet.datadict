@@ -45,7 +45,7 @@ public abstract class Xls implements XlsIF {
 
         // first make sure we have the schema url
         String schemaUrl = Props.getProperty(PropsIF.XLS_SCHEMA_URL);
-        if (Util.voidStr(schemaUrl))
+        if (Util.isEmpty(schemaUrl))
             throw new Exception("Missing " + PropsIF.XLS_SCHEMA_URL + " property!");
 
         // create the sheet
@@ -83,7 +83,7 @@ public abstract class Xls implements XlsIF {
 
         // first make sure we have the schema url base
         String schemaUrlBase = Props.getProperty(PropsIF.XLS_SCHEMA_URL);
-        if (Util.voidStr(schemaUrlBase))
+        if (Util.isEmpty(schemaUrlBase))
             throw new Exception("Missing " + PropsIF.XLS_SCHEMA_URL + " property!");
 
         // create the sheet

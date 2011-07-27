@@ -45,7 +45,7 @@ public class GetSchema extends HttpServlet {
             // get request parameters
 
             String compID = req.getParameter("id");
-            if (Util.voidStr(compID))
+            if (Util.isEmpty(compID))
                 throw new Exception("Schema ID missing!");
 
             String compType = null;

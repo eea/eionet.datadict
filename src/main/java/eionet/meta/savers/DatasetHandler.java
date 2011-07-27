@@ -161,7 +161,7 @@ public class DatasetHandler extends BaseHandler {
 
         if (exists()) throw new SQLException("Such a dataset already exists!");
 
-        if (Util.voidStr(ds_name))
+        if (Util.isEmpty(ds_name))
             ds_name = idfier;
 
         SQLGenerator gen = new SQLGenerator();
@@ -184,7 +184,7 @@ public class DatasetHandler extends BaseHandler {
 
         // set the status
         String status = req.getParameter("reg_status");
-        if (!Util.voidStr(status))
+        if (!Util.isEmpty(status))
             gen.setField("REG_STATUS", status);
 
         Statement stmt = conn.createStatement();
@@ -259,7 +259,7 @@ public class DatasetHandler extends BaseHandler {
 
         // handle the update of data model
         String dsVisual = req.getParameter("visual");
-        if (!Util.voidStr(dsVisual)) {
+        if (!Util.isEmpty(dsVisual)) {
 
             SQLGenerator gen = new SQLGenerator();
             gen.setTable("DATASET");
@@ -289,10 +289,10 @@ public class DatasetHandler extends BaseHandler {
 
         // set the status
         String status = req.getParameter("reg_status");
-        if (!Util.voidStr(status)) gen.setField("REG_STATUS", status);
+        if (!Util.isEmpty(status)) gen.setField("REG_STATUS", status);
 
         // short name
-        if (!Util.voidStr(ds_name)) gen.setField("SHORT_NAME", ds_name);
+        if (!Util.isEmpty(ds_name)) gen.setField("SHORT_NAME", ds_name);
 
         // display create links
         gen.setFieldExpr("DISP_CREATE_LINKS", getDisplayCreateLinks());

@@ -355,10 +355,10 @@ public class DataElement implements Comparable{
 
     public String getRelativeTargetNs() {
 
-        if (ns==null || Util.voidStr(ns.getID()))
+        if (ns==null || Util.isEmpty(ns.getID()))
             return "/elements/" + identifier;
         else {
-            if (Util.voidStr(dstIdentifier) || Util.voidStr(tblIdentifier))
+            if (Util.isEmpty(dstIdentifier) || Util.isEmpty(tblIdentifier))
                 return "/namespaces/" + ns.getID();
             else
                 return "/datasets/" + dstIdentifier + "/tables/" + tblIdentifier;

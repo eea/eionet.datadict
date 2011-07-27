@@ -17,7 +17,7 @@ public class TblXmlInst extends XmlInst {
 
     public void write(String tblID) throws Exception {
 
-        if (Util.voidStr(tblID))
+        if (Util.isEmpty(tblID))
             throw new Exception("Table ID not specified!");
 
         // Get the table object.
@@ -37,7 +37,7 @@ public class TblXmlInst extends XmlInst {
 
         // set the dataset namespace
         String nsID = tbl.getParentNs();
-        if (!Util.voidStr(nsID)) {
+        if (!Util.isEmpty(nsID)) {
             Namespace ns = searchEngine.getNamespace(nsID);
             if (ns != null) {
                 addNamespace(ns);
@@ -48,7 +48,7 @@ public class TblXmlInst extends XmlInst {
 
         // set the table namespace
         nsID = tbl.getNamespace();
-        if (!Util.voidStr(nsID)) {
+        if (!Util.isEmpty(nsID)) {
             Namespace ns = searchEngine.getNamespace(nsID);
             if (ns != null) {
                 addNamespace(ns);

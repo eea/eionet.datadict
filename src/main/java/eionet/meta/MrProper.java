@@ -305,7 +305,7 @@ public class MrProper {
                 append("IDENTIFIER=").append(Util.strLiteral(idfier));
             }
 
-            if (!Util.voidStr(ns)) {
+            if (!Util.isEmpty(ns)) {
                 buf.append(" and PARENT_NS=").append(ns);
             } else {
                 buf.append(" and PARENT_NS is null");
@@ -354,7 +354,7 @@ public class MrProper {
 
         INParameters inParams = new INParameters();
 
-        if (Util.voidStr(idifier)) {
+        if (Util.isEmpty(idifier)) {
             throw new Exception("Dataset identifier not given!");
         }
 
@@ -384,7 +384,7 @@ public class MrProper {
      */
     private void cleanVisuals(String visualsPath) throws Exception {
 
-        if (Util.voidStr(visualsPath)) {
+        if (Util.isEmpty(visualsPath)) {
             throw new Exception("Path to uploaded image files not given!");
         }
 
@@ -406,7 +406,7 @@ public class MrProper {
         File[] files = dir.listFiles();
         for (int i=0; files!=null && i<files.length; i++) {
             String fileName = files[i].getName();
-            if (Util.voidStr(fileName)){
+            if (Util.isEmpty(fileName)){
                 continue;
             }
 

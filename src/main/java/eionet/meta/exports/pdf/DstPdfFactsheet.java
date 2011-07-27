@@ -30,7 +30,7 @@ public class DstPdfFactsheet extends PdfHandout {
 
     public void write(String dsID) throws Exception {
 
-        if (Util.voidStr(dsID))
+        if (Util.isEmpty(dsID))
             throw new Exception("Dataset ID not specified");
 
         Dataset ds = searchEngine.getDataset(dsID);
@@ -70,7 +70,7 @@ public class DstPdfFactsheet extends PdfHandout {
         attrs.add(0, hash);
 
         String version = ds.getVersion();
-        if (!Util.voidStr(version)) {
+        if (!Util.isEmpty(version)) {
             hash = new Hashtable();
             hash.put("name", "Version");
             hash.put("value", version);
@@ -78,7 +78,7 @@ public class DstPdfFactsheet extends PdfHandout {
         }
 
         String regStatus = ds.getStatus();
-        if (!Util.voidStr(regStatus)) {
+        if (!Util.isEmpty(regStatus)) {
             hash = new Hashtable();
             hash.put("name", "Registration status");
             hash.put("value", regStatus);
@@ -121,7 +121,7 @@ public class DstPdfFactsheet extends PdfHandout {
             DsTable dsTable = (DsTable) tables.get(i);
             Vector captions = new Vector();
             captions.add(dsTable.getShortName());
-            if (!Util.voidStr(dsTable.getName()))
+            if (!Util.isEmpty(dsTable.getName()))
                 captions.add(dsTable.getName());
 
             // write table elements

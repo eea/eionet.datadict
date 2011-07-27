@@ -48,7 +48,7 @@ public class DstPdfAll extends PdfHandout {
 
     public void write(String dsID) throws Exception {
 
-        if (Util.voidStr(dsID))
+        if (Util.isEmpty(dsID))
             throw new Exception("Dataset ID not specified");
 
         Dataset ds = searchEngine.getDataset(dsID);
@@ -78,10 +78,10 @@ public class DstPdfAll extends PdfHandout {
             throw new Exception("Dataset object is null!");
 
         String s = ds.getAttributeValueByShortName("Name");
-        dsName = Util.voidStr(s) ? ds.getShortName() : s;
+        dsName = Util.isEmpty(s) ? ds.getShortName() : s;
 
         s = ds.getAttributeValueByShortName("ETCVersion");
-        dsVersion = Util.voidStr(s) ? ds.getVersion() : s;
+        dsVersion = Util.isEmpty(s) ? ds.getVersion() : s;
 
         String title = dsName + " dataset";
         String nr = sect.level(title, 1);
@@ -104,7 +104,7 @@ public class DstPdfAll extends PdfHandout {
         attrs.add(0, hash);
 
         String version = ds.getVersion();
-        if (!Util.voidStr(version)) {
+        if (!Util.isEmpty(version)) {
             hash = new Hashtable();
             hash.put("name", "Version");
             hash.put("value", version);
@@ -112,7 +112,7 @@ public class DstPdfAll extends PdfHandout {
         }
 
         String regStatus = ds.getStatus();
-        if (!Util.voidStr(regStatus)) {
+        if (!Util.isEmpty(regStatus)) {
             hash = new Hashtable();
             hash.put("name", "Registration status");
             hash.put("value", regStatus);
@@ -237,7 +237,7 @@ public class DstPdfAll extends PdfHandout {
                 // add table title
                 if (!lv2added) {
                     s = (String) tblNames.get(tbl.getID());
-                    String tblName = Util.voidStr(s) ? tbl.getShortName() : s;
+                    String tblName = Util.isEmpty(s) ? tbl.getShortName() : s;
                     title = "Codelists for " + tblName + " table";
                     nr = sect.level(title, 2, false);
                     nr = nr == null ? "" : nr + " ";
@@ -255,7 +255,7 @@ public class DstPdfAll extends PdfHandout {
 
                 // add element title
                 s = elm.getAttributeValueByShortName("Name");
-                String elmName = Util.voidStr(s) ? elm.getShortName() : s;
+                String elmName = Util.isEmpty(s) ? elm.getShortName() : s;
                 title = elmName + " codelist";
                 nr = sect.level(title, 3, false);
                 nr = nr == null ? "" : nr + " ";
@@ -309,7 +309,7 @@ public class DstPdfAll extends PdfHandout {
                 // add table title
                 if (!lv2added) {
                     s = (String) tblNames.get(tbl.getID());
-                    String tblName = Util.voidStr(s) ? tbl.getShortName() : s;
+                    String tblName = Util.isEmpty(s) ? tbl.getShortName() : s;
                     title = "Illustrations for " + tblName + " table";
                     nr = sect.level(title, 2, false);
                     nr = nr == null ? "" : nr + " ";
@@ -327,7 +327,7 @@ public class DstPdfAll extends PdfHandout {
 
                 // add element title
                 s = elm.getAttributeValueByShortName("Name");
-                String elmName = Util.voidStr(s) ? elm.getShortName() : s;
+                String elmName = Util.isEmpty(s) ? elm.getShortName() : s;
                 title = elmName + " illustrations";
                 nr = sect.level(title, 3, false);
                 nr = nr == null ? "" : nr + " ";
@@ -415,7 +415,7 @@ public class DstPdfAll extends PdfHandout {
         prg = new Paragraph("European Environment Agency", font);
         prg.setAlignment(Element.ALIGN_CENTER);
 
-        if (!Util.voidStr(logo)) {
+        if (!Util.isEmpty(logo)) {
             Image img = Image.getInstance(logo);
             img.setAlignment(Image.LEFT);
 
@@ -526,15 +526,15 @@ public class DstPdfAll extends PdfHandout {
         phr.setLeading(10 * 1.2f);
 
         String submOrgName = (String) submitOrg.get("name");
-        if (!Util.voidStr(submOrgName) && !submOrgName.trim().equals("European Environment Agency")) {
-            if (!Util.voidStr(submOrgName)) {
+        if (!Util.isEmpty(submOrgName) && !submOrgName.trim().equals("European Environment Agency")) {
+            if (!Util.isEmpty(submOrgName)) {
                 font = Fonts.getUnicode(9, Font.BOLD);
                 font.setColor(Color.gray);
                 phr.add(new Chunk("\n" + submOrgName, font));
             }
 
             String submOrgUrl = (String) submitOrg.get("url");
-            if (!Util.voidStr(submOrgUrl)) {
+            if (!Util.isEmpty(submOrgUrl)) {
                 font = Fonts.getUnicode(9);
                 font.setColor(Color.lightGray);
                 phr.add(new Chunk("  *  " + submOrgUrl, font));

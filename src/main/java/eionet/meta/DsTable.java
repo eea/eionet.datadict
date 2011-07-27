@@ -272,8 +272,8 @@ public class DsTable implements Comparable {
 
     public String getRelativeTargetNs() {
 
-        if (Util.voidStr(dstIdentifier)) {
-            if (Util.voidStr(parentNS))
+        if (Util.isEmpty(dstIdentifier)) {
+            if (Util.isEmpty(parentNS))
                 return "";
             else
                 return "/namespaces/" + parentNS;
@@ -284,8 +284,8 @@ public class DsTable implements Comparable {
 
     public String getRelativeCorrespNs() {
 
-        if (Util.voidStr(dstIdentifier)) {
-            if (Util.voidStr(nsID))
+        if (Util.isEmpty(dstIdentifier)) {
+            if (Util.isEmpty(nsID))
                 return "";
             else
                 return "/namespaces/" + nsID;

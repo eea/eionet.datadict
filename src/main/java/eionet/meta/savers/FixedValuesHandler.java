@@ -51,7 +51,7 @@ public class FixedValuesHandler extends BaseHandler{
         mode = req.getParameter("mode");
         ownerID = req.getParameter("delem_id");
         String _ownerType = req.getParameter("parent_type");
-        if (!Util.voidStr(_ownerType)) {
+        if (!Util.isEmpty(_ownerType)) {
             ownerType = _ownerType;
         }
 
@@ -156,7 +156,7 @@ public class FixedValuesHandler extends BaseHandler{
     private void update() throws SQLException {
 
         String fxvID = req.getParameter("fxv_id");
-        if (Util.voidStr(fxvID)) {
+        if (Util.isEmpty(fxvID)) {
             return;
         }
 

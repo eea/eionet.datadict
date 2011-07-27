@@ -54,7 +54,7 @@ public class TblPdfGuideline {
 
     protected void write(String tblID, String dstID) throws Exception {
 
-        if (Util.voidStr(tblID))
+        if (Util.isEmpty(tblID))
             throw new Exception("Table ID not specified");
 
         // get the table
@@ -91,7 +91,7 @@ public class TblPdfGuideline {
             throw new Exception("Table object was null!");
 
         String s = dsTable.getAttributeValueByShortName("Name");
-        String tblName = Util.voidStr(s) ? dsTable.getShortName() : s;
+        String tblName = Util.isEmpty(s) ? dsTable.getShortName() : s;
 
         String titleTail = hasGIS ? "" : " table";
 
@@ -116,7 +116,7 @@ public class TblPdfGuideline {
 
         // name
         String name = dsTable.getName();
-        if (!Util.voidStr(name)) {
+        if (!Util.isEmpty(name)) {
             hash = new Hashtable();
             hash.put("name", "Name");
             hash.put("value", name);

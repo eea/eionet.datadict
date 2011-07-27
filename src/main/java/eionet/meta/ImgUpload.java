@@ -75,7 +75,7 @@ public class ImgUpload extends HttpServlet {
         ServletContext ctx = getServletContext();
         HttpSession session = req.getSession();
         String qryStr = (String) session.getAttribute(QRYSTR_ATTR);
-        if (Util.voidStr(qryStr))
+        if (Util.isEmpty(qryStr))
             qryStr = "index.jsp";
         else
             session.removeAttribute(QRYSTR_ATTR);
@@ -87,15 +87,15 @@ public class ImgUpload extends HttpServlet {
             throw new ServletException("User not authenticated!");
 
         String objID = req.getParameter("obj_id");
-        if (Util.voidStr(objID))
+        if (Util.isEmpty(objID))
             throw new ServletException("Object ID is not specified!");
 
         String objType = req.getParameter("obj_type");
-        if (Util.voidStr(objType))
+        if (Util.isEmpty(objType))
             throw new ServletException("Object type not specified!");
 
         String attrID = req.getParameter("attr_id");
-        if (Util.voidStr(attrID))
+        if (Util.isEmpty(attrID))
             throw new ServletException("Attribute ID not specified!");
 
         // get the file's physical path
@@ -143,7 +143,7 @@ public class ImgUpload extends HttpServlet {
             }
 
             for (int i = 0; i < fileNames.length; i++) {
-                if (!Util.voidStr(fileNames[i])) {
+                if (!Util.isEmpty(fileNames[i])) {
                     File file = new File(visualsPath + fileNames[i]);
                     if (file.exists())
                         file.delete();
@@ -176,7 +176,7 @@ public class ImgUpload extends HttpServlet {
             sFile = req.getParameter("file_input");
         }
 
-        if (Util.voidStr(sFile) && Util.voidStr(sUrl))
+        if (Util.isEmpty(sFile) && Util.isEmpty(sUrl))
             throw new ServletException("You have to specify at least a file or url!");
 
         String fileName = null;
@@ -190,7 +190,7 @@ public class ImgUpload extends HttpServlet {
             fileName = sFile.substring(i + 1, sFile.length());
         }
 
-        if (Util.voidStr(fileName)){
+        if (Util.isEmpty(fileName)){
             throw new ServletException("Failed to extract the file name!");
         }
 

@@ -88,7 +88,7 @@ public class DElemAttribute{
         this(id, name, shortName, type, value, definition, obligation);
         this.displayMultiple = multiple;
         if (this.displayMultiple.equals("1")) {
-            if (!Util.voidStr(value))
+            if (!Util.isEmpty(value))
                 addValue(value);
         }
     }
@@ -137,7 +137,7 @@ public class DElemAttribute{
 
     public void setValue(String value) {
         if (this.displayMultiple.equals("1") || this.inheritable.equals("1")) {
-            if (!Util.voidStr(value))
+            if (!Util.isEmpty(value))
                 addValue(value);
         }
         this.value = value;
@@ -419,7 +419,7 @@ public class DElemAttribute{
     }
     public void setInheritedValue(String value) {
         if (this.displayMultiple.equals("1") || this.inheritable.equals("1")) {
-            if (!Util.voidStr(value))
+            if (!Util.isEmpty(value))
                 addInheritedValue(value);
         }
         this.inheritedValue = value;
@@ -442,7 +442,7 @@ public class DElemAttribute{
     }
     public void setOriginalValue(String value) {
         if (this.displayMultiple.equals("1")) {
-            if (!Util.voidStr(value)){
+            if (!Util.isEmpty(value)){
                 addOriginalValue(value);
             }
         }

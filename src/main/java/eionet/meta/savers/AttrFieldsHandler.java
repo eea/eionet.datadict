@@ -108,10 +108,10 @@ public class AttrFieldsHandler extends BaseHandler {
         Enumeration params = req.getParameterNames();
         if (params == null || !params.hasMoreElements()) return;
 
-        if (Util.voidStr(harvAttrID) && !hasFields()) return;
+        if (Util.isEmpty(harvAttrID) && !hasFields()) return;
 
         String row_id = insertRow();
-        if (Util.voidStr(harvAttrID))
+        if (Util.isEmpty(harvAttrID))
             insertFields(row_id, params);
     }
 
@@ -135,7 +135,7 @@ public class AttrFieldsHandler extends BaseHandler {
 
         String rowID = parent_id + parent_type + m_attr_id + position;
         map.put("ROW_ID", "md5(" + inParams.add(rowID) + ")");
-        if (!Util.voidStr(harvAttrID))
+        if (!Util.isEmpty(harvAttrID))
             map.put("HARV_ATTR_ID", inParams.add(harvAttrID));
 
         SQL.executeUpdate(SQL.insertStatement("COMPLEX_ATTR_ROW", map), inParams, conn);
@@ -161,7 +161,7 @@ public class AttrFieldsHandler extends BaseHandler {
                 if (!parName.startsWith(FLD_PREFIX))
                     continue;
 
-                if (Util.voidStr(req.getParameter(parName)))
+                if (Util.isEmpty(req.getParameter(parName)))
                     continue;
 
                 String fieldID = parName.substring(FLD_PREFIX.length());
@@ -287,7 +287,7 @@ public class AttrFieldsHandler extends BaseHandler {
             String parName = (String)pars.nextElement();
             if (!parName.startsWith(FLD_PREFIX)) continue;
 
-            if (Util.voidStr(req.getParameter(parName))) continue;
+            if (Util.isEmpty(req.getParameter(parName))) continue;
 
             return true;
         }

@@ -51,7 +51,7 @@ public class ElmPdfGuideline {
 
     protected void write(String elemID, String tblID) throws Exception {
 
-        if (Util.voidStr(elemID))
+        if (Util.isEmpty(elemID))
             throw new Exception("Data element ID not specified!");
 
         // Get the data element object. This will also give us the
@@ -93,7 +93,7 @@ public class ElmPdfGuideline {
         // latter's information.
 
         String tableID = elem.getTableID();
-        if (Util.voidStr(tableID)) {
+        if (Util.isEmpty(tableID)) {
 
             String msg =
             "\nWarning! This guideline does not fully reflect the " +

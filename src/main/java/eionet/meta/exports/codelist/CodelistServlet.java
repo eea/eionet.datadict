@@ -39,15 +39,15 @@ public class CodelistServlet extends HttpServlet {
 
             // get the object ID
             String id = req.getParameter("id");
-            if (Util.voidStr(id)) throw new Exception("Missing object id!");
+            if (Util.isEmpty(id)) throw new Exception("Missing object id!");
 
             // get the object type
             String type = req.getParameter("type");
-            if (Util.voidStr(type)) throw new Exception("Missing object type!");
+            if (Util.isEmpty(type)) throw new Exception("Missing object type!");
 
             // get codelist format
             String format = req.getParameter("format");
-            if (Util.voidStr(format)) {
+            if (Util.isEmpty(format)) {
                 format = "csv";
             }
 

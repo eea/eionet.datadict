@@ -24,7 +24,7 @@ public class TblPdfFactsheet extends PdfHandout {
 
     public void write(String tblID) throws Exception {
 
-        if (Util.voidStr(tblID))
+        if (Util.isEmpty(tblID))
             throw new Exception("Table ID not specified");
 
         // get the table
@@ -43,7 +43,7 @@ public class TblPdfFactsheet extends PdfHandout {
 
         // get the dataset basic info
         Dataset ds = null;
-        if (!Util.voidStr(dsTable.getDatasetID())) {
+        if (!Util.isEmpty(dsTable.getDatasetID())) {
             ds = searchEngine.getDataset(dsTable.getDatasetID());
         }
 
@@ -72,7 +72,7 @@ public class TblPdfFactsheet extends PdfHandout {
 
         // name
         String name = dsTable.getName();
-        if (!Util.voidStr(name)) {
+        if (!Util.isEmpty(name)) {
             hash = new Hashtable();
             hash.put("name", "Name");
             hash.put("value", name);

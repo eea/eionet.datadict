@@ -115,7 +115,7 @@ public class NamespaceHandler extends BaseHandler{
     private void insert() throws Exception {
 
         // at least the short_name is required
-        if (Util.voidStr(shortName)) {
+        if (Util.isEmpty(shortName)) {
             throw new Exception("NamespaceHandler: at least the short_name " +
             "is required!");
         }
@@ -124,25 +124,25 @@ public class NamespaceHandler extends BaseHandler{
         // build SQL
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("NAMESPACE");
-        if (!Util.voidStr(fullName)) {
+        if (!Util.isEmpty(fullName)) {
             gen.setFieldExpr("FULL_NAME", inParams.add(fullName));
         }
-        if (!Util.voidStr(shortName)) {
+        if (!Util.isEmpty(shortName)) {
             gen.setFieldExpr("SHORT_NAME",inParams.add(shortName));
         }
-        if (!Util.voidStr(definition)) {
+        if (!Util.isEmpty(definition)) {
             gen.setFieldExpr("DEFINITION", inParams.add(definition));
         }
 
         String wrkUser = req.getParameter("wrk_user");
-        if (!Util.voidStr(wrkUser)) {
+        if (!Util.isEmpty(wrkUser)) {
             gen.setFieldExpr("WORKING_USER", inParams.add(wrkUser));
         } else {
             gen.setFieldExpr("WORKING_USER", "NULL");
         }
 
         String parentNS = req.getParameter("parent_ns");
-        if (!Util.voidStr(parentNS)) {
+        if (!Util.isEmpty(parentNS)) {
             gen.setFieldExpr("PARENT_NS", inParams.add(parentNS, Types.INTEGER));
         }
 
@@ -167,15 +167,15 @@ public class NamespaceHandler extends BaseHandler{
         // don't allow change of SHORT_NAME in the first approach
         //if (!Util.voidStr(shortName))
         //gen.setField("SHORT_NAME", shortName);
-        if (!Util.voidStr(fullName)) {
+        if (!Util.isEmpty(fullName)) {
             gen.setFieldExpr("FULL_NAME", inParams.add(fullName));
         }
-        if (!Util.voidStr(definition)) {
+        if (!Util.isEmpty(definition)) {
             gen.setFieldExpr("DEFINITION", inParams.add(definition));
         }
 
         String wrkUser = req.getParameter("wrk_user");
-        if (!Util.voidStr(wrkUser))
+        if (!Util.isEmpty(wrkUser))
             gen.setFieldExpr("WORKING_USER", inParams.add(wrkUser));
         else
             gen.setFieldExpr("WORKING_USER", "NULL");
@@ -221,13 +221,13 @@ public class NamespaceHandler extends BaseHandler{
 
         INParameters inParams = new INParameters();
         String qry = "";
-        if (Util.voidStr(dsID) && Util.voidStr(tblID)) {
+        if (Util.isEmpty(dsID) && Util.isEmpty(tblID)) {
 
             qry = "select count(*) as COUNT from NAMESPACE where " +
             "DATASET_ID is null and TABLE_ID is null and SHORT_NAME=" +
             inParams.add(shortName);
         }
-        else if (!Util.voidStr(tblID)) {
+        else if (!Util.isEmpty(tblID)) {
 
             qry = "select count(*) as COUNT from NAMESPACE where " +
             "TABLE_ID=" + inParams.add(tblID, Types.INTEGER);

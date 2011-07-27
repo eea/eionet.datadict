@@ -24,7 +24,7 @@ public class ElmPdfFactsheet extends PdfHandout {
 
     public void write(String elemID) throws Exception {
 
-        if (Util.voidStr(elemID))
+        if (Util.isEmpty(elemID))
             throw new Exception("Data element ID not specified!");
 
         // Get the data element object. This will also give us the
@@ -45,7 +45,7 @@ public class ElmPdfFactsheet extends PdfHandout {
     private void write(DataElement elem) throws Exception {
 
         String tableID = elem.getTableID();
-        if (!Util.voidStr(tableID)) {
+        if (!Util.isEmpty(tableID)) {
 
             String msg =
                 "\nWarning! This factsheet does not fully reflect the "
@@ -62,7 +62,7 @@ public class ElmPdfFactsheet extends PdfHandout {
         Vector attrs = elem.getAttributes();
 
         // dataset name, table name
-        if (!Util.voidStr(tableID)) {
+        if (!Util.isEmpty(tableID)) {
             DsTable dsTable = searchEngine.getDatasetTable(tableID);
             if (dsTable != null) {
                 Dataset ds = searchEngine.getDataset(dsTable.getDatasetID());

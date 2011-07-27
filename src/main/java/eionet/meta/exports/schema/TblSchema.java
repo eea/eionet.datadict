@@ -22,7 +22,7 @@ public class TblSchema extends Schema {
     */
     public void write(String tblID) throws Exception {
 
-        if (Util.voidStr(tblID))
+        if (Util.isEmpty(tblID))
             throw new Exception("Dataset table ID not specified!");
 
         // Get the dataset table object. This will also give us the
@@ -54,7 +54,7 @@ public class TblSchema extends Schema {
 
         // set the table's corresponding namespace (referred namespace for children)
         String nsID = dsTable.getNamespace();
-        if (!Util.voidStr(nsID)) {
+        if (!Util.isEmpty(nsID)) {
             Namespace ns = searchEngine.getNamespace(nsID);
             if (ns != null) {
                 addNamespace(ns);

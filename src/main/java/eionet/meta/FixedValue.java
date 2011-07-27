@@ -174,7 +174,7 @@ public class FixedValue {
     }
 
     public void setParentType(String type) {
-        if (!Util.voidStr(type))
+        if (!Util.isEmpty(type))
             parent_type = type;
     }
 

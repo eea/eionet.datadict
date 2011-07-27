@@ -20,7 +20,7 @@ public class DstSchema extends Schema {
     */
     public void write(String dsID) throws Exception {
 
-        if (Util.voidStr(dsID))
+        if (Util.isEmpty(dsID))
             throw new Exception("Dataset ID not specified!");
 
         Dataset ds = searchEngine.getDataset(dsID);
@@ -47,7 +47,7 @@ public class DstSchema extends Schema {
 
         // set the dataset corresponding namespace
         String nsID = ds.getNamespaceID();
-        if (!Util.voidStr(nsID)) {
+        if (!Util.isEmpty(nsID)) {
             Namespace ns = searchEngine.getNamespace(nsID);
             if (ns != null) {
                 addNamespace(ns);

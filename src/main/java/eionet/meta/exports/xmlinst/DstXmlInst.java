@@ -22,7 +22,7 @@ public class DstXmlInst extends XmlInst {
 
     public void write(String dstID) throws Exception {
 
-        if (Util.voidStr(dstID)) throw new Exception("Dataset ID not specified!");
+        if (Util.isEmpty(dstID)) throw new Exception("Dataset ID not specified!");
 
         Dataset dst = searchEngine.getDataset(dstID);
         if (dst == null) throw new Exception("Dataset not found!");
@@ -37,7 +37,7 @@ public class DstXmlInst extends XmlInst {
 
         // set and add the dataset namespace
         String nsID = dst.getNamespaceID();
-        if (!Util.voidStr(nsID)) {
+        if (!Util.isEmpty(nsID)) {
             Namespace ns = searchEngine.getNamespace(nsID);
             if (ns != null) {
                 addNamespace(ns);
@@ -68,7 +68,7 @@ public class DstXmlInst extends XmlInst {
 
         // set and add the table's namespace
         String nsID = tbl.getNamespace();
-        if (!Util.voidStr(nsID)) {
+        if (!Util.isEmpty(nsID)) {
             Namespace ns = searchEngine.getNamespace(nsID);
             if (ns != null) {
                 addNamespace(ns);

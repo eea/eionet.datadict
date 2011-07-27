@@ -219,7 +219,7 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
             throw new Exception("DstXls.isCached(): missing searchEngine!");
 
         cacheFileName = searchEngine.getCacheFileName(id, "dst", "xls");
-        if (Util.voidStr(cacheFileName)) return false;
+        if (Util.isEmpty(cacheFileName)) return false;
 
         // if the file is referenced in CACHE table, but does not actually exist, we say false
         File file = new File(cachePath + cacheFileName);
@@ -237,8 +237,8 @@ public class DstXls extends Xls implements XlsIF, CachableIF{
      */
     public void writeFromCache() throws Exception {
 
-        if (Util.voidStr(cachePath)) throw new Exception("Cache path is missing!");
-        if (Util.voidStr(cacheFileName)) throw new Exception("Cache file name is missing!");
+        if (Util.isEmpty(cachePath)) throw new Exception("Cache path is missing!");
+        if (Util.isEmpty(cacheFileName)) throw new Exception("Cache file name is missing!");
 
         String fullName = cachePath + cacheFileName;
         File file = new File(fullName);

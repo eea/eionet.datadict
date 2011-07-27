@@ -169,7 +169,7 @@ public class PdfUtil {
                 }*/
             }
 
-            if (Util.voidStr(value) || Util.voidStr(name)) continue;
+            if (Util.isEmpty(value) || Util.isEmpty(name)) continue;
             int pos = map==null ? show.size() : show.indexOf(name);
             if (pos<0) continue;
 
@@ -462,7 +462,7 @@ public class PdfUtil {
 
             // add short name+full name+public or internal+foreign key+GIS
             String s = elem.getAttributeValueByShortName("Name");
-            String name = Util.voidStr(s) ? elem.getShortName() : s;
+            String name = Util.isEmpty(s) ? elem.getShortName() : s;
             String shortName = elem.getShortName();
             Vector fks = elem.getFKRelations();
 
@@ -473,7 +473,7 @@ public class PdfUtil {
             phr.add(process(name + "\n", Fonts.get(Fonts.CELL_VALUE_BOLD)));
             phr.add(process("(" + shortName + ")\n",
                                         Fonts.get(Fonts.CELL_VALUE)));
-            if (!Util.voidStr(pori))
+            if (!Util.isEmpty(pori))
                 phr.add(new Chunk("\n" + pori,
                     FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
             if (fks!=null && fks.size()>0)
@@ -586,7 +586,7 @@ public class PdfUtil {
                     for (int k=0; k<ss.length; k++) {
                         String value =
                             elem.getAttributeValueByShortName(ss[k][0]);
-                        if (!Util.voidStr(value))
+                        if (!Util.isEmpty(value))
                             dataspecs.append("\n").
                             append(ss[k][1]).append(value);
                     }
@@ -722,7 +722,7 @@ public class PdfUtil {
         for (int i=0; i<fxvs.size(); i++) {
             FixedValue fxv = (FixedValue)fxvs.get(i);
             String val = fxv.getValue();
-            if (Util.voidStr(val)) continue;
+            if (Util.isEmpty(val)) continue;
 
             String def = fxv.getDefinition();
             def = def==null ? "" : def;
@@ -801,7 +801,7 @@ public class PdfUtil {
 
         PdfPCell cell = null;
 
-        if (!Util.voidStr(vsTitle)) {
+        if (!Util.isEmpty(vsTitle)) {
             cell = new PdfPCell(new Phrase(vsTitle, Fonts.get(Fonts.HEADING_0)));
             cell.setPaddingRight(0);
             cell.setPaddingLeft(0);
@@ -889,7 +889,7 @@ public class PdfUtil {
 
             // definition
             String definition = fxv.getDefinition();
-            if (Util.voidStr(definition))
+            if (Util.isEmpty(definition))
                 definition = " ";
             phr = process(definition, Fonts.get(Fonts.CELL_VALUE));
             cell = new PdfPCell(phr);
@@ -979,7 +979,7 @@ public class PdfUtil {
                 String attr = (String)hash.get("attr");
 
                 String val = dsTable.getAttributeValueByShortName(attr);
-                val = Util.voidStr(val) ? "" : val;
+                val = Util.isEmpty(val) ? "" : val;
                 Phrase phr = process(val, Fonts.get(Fonts.CELL_VALUE));
                 cell = new PdfPCell(phr);
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -1080,7 +1080,7 @@ public class PdfUtil {
     public static com.lowagie.text.Image vsImage(String filePath)
         throws Exception {
 
-        if (Util.voidStr(filePath))
+        if (Util.isEmpty(filePath))
             return null;
 
         // we're using PJA's toolkit, because iText cannot handle some

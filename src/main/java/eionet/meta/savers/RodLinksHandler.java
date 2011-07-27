@@ -56,7 +56,7 @@ public class RodLinksHandler extends BaseHandler{
     private void addRodLinks(String dstID) throws Exception {
 
         String raID = httpServletRequest.getParameter("ra_id");
-        if (Util.voidStr(raID))
+        if (Util.isEmpty(raID))
             throw new Exception("ra_id is missing!");
 
         INParameters inParams = new INParameters();

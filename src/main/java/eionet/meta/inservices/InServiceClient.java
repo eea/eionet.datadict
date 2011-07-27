@@ -20,11 +20,11 @@ public abstract class InServiceClient implements InServiceClientIF{
 
     protected void load() throws Exception {
 
-        if (Util.voidStr(serviceName) || Util.voidStr(serviceUrl))
+        if (Util.isEmpty(serviceName) || Util.isEmpty(serviceUrl))
             throw new Exception("serviceName or serviceUrl is missing!");
 
         client = ServiceClients.getServiceClient(serviceName, serviceUrl);
-        if (!Util.voidStr(serviceUsr) && !Util.voidStr(serviceUsr))
+        if (!Util.isEmpty(serviceUsr) && !Util.isEmpty(serviceUsr))
             client.setCredentials(serviceUsr,servicePsw);
     }
 

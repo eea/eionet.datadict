@@ -25,7 +25,7 @@ public class TblXForm extends XForm {
 
     public void write(String tblID) throws Exception {
 
-        if (Util.voidStr(tblID))
+        if (Util.isEmpty(tblID))
             throw new Exception("Table ID not specified!");
 
         // Get the table object.
@@ -43,13 +43,13 @@ public class TblXForm extends XForm {
         // set namespaces
         Namespace ns = null;
         String nsID = tbl.getParentNs();
-        if (!Util.voidStr(nsID)) {
+        if (!Util.isEmpty(nsID)) {
             ns = searchEngine.getNamespace(nsID);
             if (ns != null)
                 dstNs = ns.getPrefix() + ":";
         }
         nsID = tbl.getNamespace();
-        if (!Util.voidStr(nsID)) {
+        if (!Util.isEmpty(nsID)) {
             ns = searchEngine.getNamespace(nsID);
             if (ns != null)
                 tblNs = ns.getPrefix() + ":";

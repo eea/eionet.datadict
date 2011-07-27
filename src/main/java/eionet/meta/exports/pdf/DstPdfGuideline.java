@@ -80,7 +80,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
     private void write(String dsID, boolean caching) throws Exception {
 
-        if (Util.voidStr(dsID))
+        if (Util.isEmpty(dsID))
             throw new Exception("Dataset ID not specified");
 
         // See if this output has been cached.
@@ -123,7 +123,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             throw new Exception("Dataset object is null!");
 
         String s = ds.getAttributeValueByShortName("Name");
-        dsName = Util.voidStr(s) ? ds.getShortName() : s;
+        dsName = Util.isEmpty(s) ? ds.getShortName() : s;
 
         dsVersion = ds.getAttributeValueByShortName("Version");
 
@@ -167,7 +167,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         hash.put("value", ds.getShortName());
         attrs.add(hash);
 
-        if (!Util.voidStr(dsVersion)) {
+        if (!Util.isEmpty(dsVersion)) {
             hash = new Hashtable();
             hash.put("name", "Version");
             hash.put("value", dsVersion);
@@ -332,7 +332,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 // add table title
                 if (!lv2added) {
                     s = (String) tblNames.get(tbl.getID());
-                    String tblName = Util.voidStr(s) ? tbl.getShortName() : s;
+                    String tblName = Util.isEmpty(s) ? tbl.getShortName() : s;
                     title = "Codelists for " + tblName + " table";
                     nr = sect.level(title, 2, false);
                     nr = nr == null ? "" : nr + " ";
@@ -350,7 +350,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
                 // add element title
                 s = elm.getAttributeValueByShortName("Name");
-                String elmName = Util.voidStr(s) ? elm.getShortName() : s;
+                String elmName = Util.isEmpty(s) ? elm.getShortName() : s;
                 title = elmName + " codelist";
                 nr = sect.level(title, 3, false);
                 nr = nr == null ? "" : nr + " ";
@@ -396,7 +396,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
                 // add level 2 title
                 s = (String) tblNames.get(tbl.getID());
-                String tblName = Util.voidStr(s) ? tbl.getShortName() : s;
+                String tblName = Util.isEmpty(s) ? tbl.getShortName() : s;
                 title = "Illustrations for " + tblName + " table";
                 nr = sect.level(title, 2, false);
                 nr = nr == null ? "" : nr + " ";
@@ -442,7 +442,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
                 // add table title
                 if (!lv2added) {
                     s = (String) tblNames.get(tbl.getID());
-                    String tblName = Util.voidStr(s) ? tbl.getShortName() : s;
+                    String tblName = Util.isEmpty(s) ? tbl.getShortName() : s;
                     title = "Illustrations for " + tblName + " table";
                     nr = sect.level(title, 2, false);
                     nr = nr == null ? "" : nr + " ";
@@ -460,7 +460,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
                 // add element title
                 s = elm.getAttributeValueByShortName("Name");
-                String elmName = Util.voidStr(s) ? elm.getShortName() : s;
+                String elmName = Util.isEmpty(s) ? elm.getShortName() : s;
                 title = elmName + " illustrations";
                 nr = sect.level(title, 3, false);
                 nr = nr == null ? "" : nr + " ";
@@ -550,7 +550,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         prg = new Paragraph("European Environment Agency", font);
         prg.setAlignment(Element.ALIGN_CENTER);
 
-        if (!Util.voidStr(logo)) {
+        if (!Util.isEmpty(logo)) {
             Image img = Image.getInstance(logo);
             img.setAlignment(Image.LEFT);
 
@@ -664,13 +664,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         Phrase phr = new Phrase();
 
         String submOrgName = (String) submitOrg.get("name");
-        if (!Util.voidStr(submOrgName)) {
+        if (!Util.isEmpty(submOrgName)) {
             font = Fonts.getUnicode(9, Font.BOLD);
             font.setColor(Color.gray);
             phr.add(new Chunk(submOrgName, font));
 
             String submOrgUrl = (String) submitOrg.get("url");
-            if (!Util.voidStr(submOrgUrl)) {
+            if (!Util.isEmpty(submOrgUrl)) {
                 font = Fonts.getUnicode(9);
                 font.setColor(Color.lightGray);
                 phr.add(new Chunk("  *  " + submOrgUrl, font));
@@ -683,13 +683,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
         if (respOrg != null) {
             String respOrgName = (String) respOrg.get("name");
-            if (!Util.voidStr(respOrgName) && !respOrgName.equals(submOrgName)) {
+            if (!Util.isEmpty(respOrgName) && !respOrgName.equals(submOrgName)) {
                 font = Fonts.getUnicode(9, Font.BOLD);
                 font.setColor(Color.gray);
                 phr.add(new Chunk("\n" + respOrgName, font));
 
                 String respOrgUrl = (String) respOrg.get("url");
-                if (!Util.voidStr(respOrgUrl)) {
+                if (!Util.isEmpty(respOrgUrl)) {
                     font = Fonts.getUnicode(9);
                     font.setColor(Color.lightGray);
                     phr.add(new Chunk("  *  " + respOrgUrl, font));
@@ -734,7 +734,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             String fldName = (String) fld.get("name");
             if (fldName != null) {
                 String fldValue = (String) submitOrg.get(fldName);
-                if (!Util.voidStr(fldValue)) {
+                if (!Util.isEmpty(fldValue)) {
                     if (buf == null)
                         buf = new StringBuffer();
                     if (buf.length() > 0)
@@ -762,7 +762,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             String fldName = (String) fld.get("name");
             if (fldName != null) {
                 String fldValue = (String) submitOrg.get(fldName);
-                if (!Util.voidStr(fldValue)) {
+                if (!Util.isEmpty(fldValue)) {
                     if (buf == null)
                         buf = new StringBuffer();
                     if (buf.length() > 0)
@@ -841,7 +841,7 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             throw new Exception("DstPdfGuideline.isCached(): missing searchEngine!");
 
         cacheFileName = searchEngine.getCacheFileName(id, "dst", "pdf");
-        if (Util.voidStr(cacheFileName))
+        if (Util.isEmpty(cacheFileName))
             return false;
 
         // if the file is referenced in CACHE table, but does not actually exist, we say false
@@ -859,9 +859,9 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      */
     public void writeFromCache() throws Exception {
 
-        if (Util.voidStr(cachePath))
+        if (Util.isEmpty(cachePath))
             throw new Exception("Cache path is missing!");
-        if (Util.voidStr(cacheFileName))
+        if (Util.isEmpty(cacheFileName))
             throw new Exception("Cache file name is missing!");
 
         fileName = cacheFileName;

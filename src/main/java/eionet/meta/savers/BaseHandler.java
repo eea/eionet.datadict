@@ -76,7 +76,7 @@ public abstract class BaseHandler {
     protected void cleanVisuals() {
 
         String vp = ctx==null ? null : ctx.getInitParameter("visuals-path");
-        if (Util.voidStr(vp)){
+        if (Util.isEmpty(vp)){
             LOGGER.error("cleanVisuals() failed to find visuals path!");
         }
 

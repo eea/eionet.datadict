@@ -52,7 +52,7 @@ public class TblPdfAll {
 
     protected void write(String tblID, String dstID) throws Exception {
 
-        if (Util.voidStr(tblID))
+        if (Util.isEmpty(tblID))
             throw new Exception("Table ID not specified");
 
         // get the table
@@ -89,7 +89,7 @@ public class TblPdfAll {
             throw new Exception("Table object was null!");
 
         String s = dsTable.getAttributeValueByShortName("Name");
-        String tblName = Util.voidStr(s) ? dsTable.getShortName() : s;
+        String tblName = Util.isEmpty(s) ? dsTable.getShortName() : s;
 
         String nr = "";
         if (owner != null)
@@ -117,7 +117,7 @@ public class TblPdfAll {
 
         // version
         String ver = dsTable.getVersion();
-        if (!Util.voidStr(ver)) {
+        if (!Util.isEmpty(ver)) {
             hash = new Hashtable();
             hash.put("name", "Version");
             hash.put("value", ver);

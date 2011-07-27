@@ -42,15 +42,15 @@ public class OdsServlet extends HttpServlet{
         try {
             // get object id
             String id = req.getParameter("id");
-            if (Util.voidStr(id)) throw new Exception("Missing request parameter: id");
+            if (Util.isEmpty(id)) throw new Exception("Missing request parameter: id");
 
             // get object type
             String type = req.getParameter("type");
-            if (Util.voidStr(type)) throw new Exception("Missing request parameter: type");
+            if (Util.isEmpty(type)) throw new Exception("Missing request parameter: type");
 
             // get schema URL base
             String schemaURLBase = Props.getProperty(PropsIF.XLS_SCHEMA_URL);
-            if (Util.voidStr(schemaURLBase))
+            if (Util.isEmpty(schemaURLBase))
                 throw new Exception("Missing property: " + PropsIF.XLS_SCHEMA_URL);
 
             // prepare workinf folder

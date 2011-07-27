@@ -80,7 +80,7 @@ public class Util {
      * @param str The given string.
      * @return
      */
-    public static boolean voidStr(String str) {
+    public static boolean isEmpty(String str) {
 
         return str == null || str.length() == 0;
     }

@@ -89,14 +89,14 @@
     }
 
     if (mode.equals("view")){
-        if (Util.voidStr(dstIdf) && Util.voidStr(ds_id)){
+        if (Util.isEmpty(dstIdf) && Util.isEmpty(ds_id)){
             request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id or ds_idf");
             request.getRequestDispatcher("error.jsp").forward(request, response);
             return;
         }
     }
     else if (mode.equals("edit")){
-        if (Util.voidStr(ds_id)){
+        if (Util.isEmpty(ds_id)){
             request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id");
             request.getRequestDispatcher("error.jsp").forward(request, response);
             return;
@@ -109,7 +109,7 @@
 
     // if requested by alphanumeric identifier and not by auto-generated id,
     // then it means the dataset's latest version is requested
-    boolean isLatestRequested = mode.equals("view") && !Util.voidStr(dstIdf) && Util.voidStr(ds_id);
+    boolean isLatestRequested = mode.equals("view") && !Util.isEmpty(dstIdf) && Util.isEmpty(ds_id);
 
 
     //// handle the POST request//////////////////////

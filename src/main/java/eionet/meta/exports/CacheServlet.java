@@ -45,7 +45,7 @@ public class CacheServlet extends HttpServlet {
 
     public void init() throws ServletException {
         cachePath = Props.getProperty(PropsIF.DOC_PATH);
-        if (!Util.voidStr(cachePath)) {
+        if (!Util.isEmpty(cachePath)) {
             cachePath.trim();
             if (!cachePath.endsWith(File.separator))
                 cachePath = cachePath + File.separator;
@@ -58,7 +58,7 @@ public class CacheServlet extends HttpServlet {
 
         if (objTypes == null)
             setObjectTypes();
-        if (Util.voidStr(cachePath))
+        if (Util.isEmpty(cachePath))
             throw new ServletException("Missing the path to cache directory!");
 
         try {
@@ -86,7 +86,7 @@ public class CacheServlet extends HttpServlet {
     private void post(HttpServletRequest req) throws Exception {
 
         String objID = req.getParameter("obj_id");
-        if (Util.voidStr(objID)) {
+        if (Util.isEmpty(objID)) {
             throw new Exception("Missing object ID!");
         }
 
@@ -96,7 +96,7 @@ public class CacheServlet extends HttpServlet {
         }
 
         String action = req.getParameter("action");
-        if (Util.voidStr(action)) {
+        if (Util.isEmpty(action)) {
             throw new Exception("Missing action parameter!");
         }
 
@@ -145,7 +145,7 @@ public class CacheServlet extends HttpServlet {
     private void loadEntries(HttpServletRequest req) throws Exception {
 
         String objID = req.getParameter("obj_id");
-        if (Util.voidStr(objID))
+        if (Util.isEmpty(objID))
             throw new Exception("Missing object ID!");
         String objType = req.getParameter("obj_type");
         if (objType == null || !objTypes.containsKey(objType))

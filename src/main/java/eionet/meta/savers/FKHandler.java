@@ -64,7 +64,7 @@ public class FKHandler extends BaseHandler{
         String aID = req.getParameter("a_id");
         String bID = req.getParameter("b_id");
 
-        if (Util.voidStr(aID) || Util.voidStr(bID)) {
+        if (Util.isEmpty(aID) || Util.isEmpty(bID)) {
             throw new Exception("One or two of the element IDs is missing!");
         }
 
@@ -75,15 +75,15 @@ public class FKHandler extends BaseHandler{
         map.put("B_ID", inParams.add(bID, Types.INTEGER));
 
         String aCardin = req.getParameter("a_cardin");
-        if (!Util.voidStr(aCardin)) {
+        if (!Util.isEmpty(aCardin)) {
             map.put("A_CARDIN", inParams.add(aCardin));
         }
         String bCardin = req.getParameter("b_cardin");
-        if (!Util.voidStr(bCardin)) {
+        if (!Util.isEmpty(bCardin)) {
             map.put("B_CARDIN", inParams.add(bCardin));
         }
         String definition = req.getParameter("definition");
-        if (!Util.voidStr(definition)) {
+        if (!Util.isEmpty(definition)) {
             map.put("DEFINITION", inParams.add(definition));
         }
 
@@ -98,7 +98,7 @@ public class FKHandler extends BaseHandler{
     private void update() throws Exception {
 
         String rel_id = req.getParameter("rel_id");
-        if (Util.voidStr(rel_id)) {
+        if (Util.isEmpty(rel_id)) {
             return;
         }
 
@@ -108,15 +108,15 @@ public class FKHandler extends BaseHandler{
         //gen.setTable("FK_RELATION");
 
         String aCardin = req.getParameter("a_cardin");
-        if (!Util.voidStr(aCardin)) {
+        if (!Util.isEmpty(aCardin)) {
             map.put("A_CARDIN", inParams.add(aCardin));
         }
         String bCardin = req.getParameter("b_cardin");
-        if (!Util.voidStr(bCardin)) {
+        if (!Util.isEmpty(bCardin)) {
             map.put("B_CARDIN", inParams.add(bCardin));
         }
         String definition = req.getParameter("definition");
-        if (!Util.voidStr(definition)) {
+        if (!Util.isEmpty(definition)) {
             map.put("DEFINITION", inParams.add(definition));
         }
 

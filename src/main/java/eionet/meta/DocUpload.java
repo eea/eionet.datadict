@@ -61,18 +61,18 @@ public class DocUpload extends HttpServlet{
             guard(req);
 
             String dstID = req.getParameter(REQPAR_DSID);
-            if (Util.voidStr(dstID))
+            if (Util.isEmpty(dstID))
                 throw new ServletException("Missing " + REQPAR_DSID + " request parameter!");
 
             String del = req.getParameter(REQPAR_DELETE);
-            if (!Util.voidStr(del)) {
+            if (!Util.isEmpty(del)) {
                 delete(dstID, del);
                 res.sendRedirect("dataset.jsp?ds_id=" + dstID);
                 return;
             }
 
             String filePath = Props.getProperty(PropsIF.DOC_PATH);
-            if (Util.voidStr(filePath))
+            if (Util.isEmpty(filePath))
                 throw new ServletException("Missing property: " + PropsIF.DOC_PATH);
 
             File file = new File(getAbsFilePath(req.getParameter(REQPAR_FILE)));
@@ -101,7 +101,7 @@ public class DocUpload extends HttpServlet{
     public static String getAbsFilePath(String submittedFilePath) throws Exception {
 
         String path = Props.getProperty(PropsIF.DOC_PATH);
-        if (Util.voidStr(path))
+        if (Util.isEmpty(path))
             throw new Exception("Missing property: " + PropsIF.DOC_PATH);
 
         File f = new File(path, extractFileName(submittedFilePath));
@@ -115,7 +115,7 @@ public class DocUpload extends HttpServlet{
      */
     private static String extractFileName(String submittedFilePath) throws DDException {
 
-        if (Util.voidStr(submittedFilePath))
+        if (Util.isEmpty(submittedFilePath))
             throw new DDException("Missing file path!");
 
         if (submittedFilePath.indexOf("\\")<0 && submittedFilePath.indexOf("/")<0)
@@ -137,7 +137,7 @@ public class DocUpload extends HttpServlet{
         if (user == null) throw new Exception("Not authenticated!");
 
         String idf = req.getParameter(REQPAR_IDF);
-        if (Util.voidStr(idf))
+        if (Util.isEmpty(idf))
             throw new Exception("Missing " + REQPAR_IDF + " request parameter!");
 
         if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + idf, "u"))

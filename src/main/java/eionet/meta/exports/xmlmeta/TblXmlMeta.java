@@ -38,7 +38,7 @@ public class TblXmlMeta extends XmlMeta {
 
     public void write(String tblID) throws Exception {
 
-        if (Util.voidStr(tblID))
+        if (Util.isEmpty(tblID))
             throw new Exception("Table ID not specified!");
 
         // Get the table object.

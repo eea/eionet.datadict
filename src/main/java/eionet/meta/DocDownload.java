@@ -39,7 +39,7 @@ public class DocDownload extends HttpServlet{
 
             mimeType = "application/octet-stream";
             String absPath = getAbsPath(req);
-            if (Util.voidStr(absPath))
+            if (Util.isEmpty(absPath))
                 throw new Exception("Failed to get the file path from db!");
 
             File file = new File(absPath);
@@ -100,7 +100,7 @@ public class DocDownload extends HttpServlet{
     private String getAbsPath(HttpServletRequest req) throws Exception {
 
         String md5 = req.getParameter(REQPAR_FILE);
-        if (Util.voidStr(md5))
+        if (Util.isEmpty(md5))
             throw new Exception("Missing " + REQPAR_FILE + " request parameter!");
 
         openConnection();

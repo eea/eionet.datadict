@@ -529,14 +529,14 @@ public class DataElementHandler extends BaseHandler {
         // prepare SQL generator for element update
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("DATAELEM");
-        if (!Util.voidStr(elmShortName)) {
+        if (!Util.isEmpty(elmShortName)) {
             gen.setField("SHORT_NAME", elmShortName);
         }
 
         // if common element, set regisration status
         if (elmCommon) {
             String elmRegStatus = req.getParameter("reg_status");
-            if (!Util.voidStr(elmRegStatus))
+            if (!Util.isEmpty(elmRegStatus))
                 gen.setField("REG_STATUS", elmRegStatus);
         }
 
@@ -558,7 +558,7 @@ public class DataElementHandler extends BaseHandler {
         }
 
         // execute element update SQL if at least one field was set
-        if (!Util.voidStr(gen.getValues())) {
+        if (!Util.isEmpty(gen.getValues())) {
             conn.createStatement().executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + delem_id);
         }
         // handle element's attributes
@@ -582,7 +582,7 @@ public class DataElementHandler extends BaseHandler {
      */
     private void handleDatatypeConversion(String conversion) throws Exception {
 
-        if (eionet.util.Util.voidStr(conversion)) {
+        if (eionet.util.Util.isEmpty(conversion)) {
             return;
         }
 
@@ -1348,7 +1348,7 @@ public class DataElementHandler extends BaseHandler {
 
         // if there is a Datatype attribute and its value wasn't specified,
         // make it a string.
-        if (!Util.voidStr(mDatatypeID)) {
+        if (!Util.isEmpty(mDatatypeID)) {
             if (datatypeValue==null) {
                 insertAttribute(mDatatypeID, "string");
             }

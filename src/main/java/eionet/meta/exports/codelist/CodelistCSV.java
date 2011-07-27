@@ -69,7 +69,7 @@ public class CodelistCSV extends Codelist{
 
             DataElement elm = (DataElement)elms.get(i);
             String elmIdf = elm.getIdentifier();
-            if (Util.voidStr(elmIdf)) {
+            if (Util.isEmpty(elmIdf)) {
                 throw new DDRuntimeException("Failed to get the element's identifier");
             }
 
@@ -78,10 +78,10 @@ public class CodelistCSV extends Codelist{
 
             if (!elmObjType || (elmObjType && !elm.isCommon())) {
 
-                if (Util.voidStr(dstIdf)) {
+                if (Util.isEmpty(dstIdf)) {
                     throw new DDRuntimeException("Failed to get the dataset's identifier");
                 }
-                if (Util.voidStr(tblIdf)) {
+                if (Util.isEmpty(tblIdf)) {
                     throw new DDRuntimeException("Failed to get the table's identifier");
                 }
             }

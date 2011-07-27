@@ -20,7 +20,7 @@ public class ElmSchema extends Schema {
      */
     public void write(String elemID) throws Exception {
 
-        if (Util.voidStr(elemID))
+        if (Util.isEmpty(elemID))
             throw new Exception("Data element ID not specified!");
 
         // Get the data element object. This will also give us the
@@ -51,9 +51,9 @@ public class ElmSchema extends Schema {
         // if (parentNsID!=null) setTargetNsUrl(parentNsID);
 
         String cNamespaceID = getContainerNamespaceID();
-        if (Util.voidStr(cNamespaceID)) {
+        if (Util.isEmpty(cNamespaceID)) {
             Namespace parentNs = elem.getNamespace();
-            if (parentNs == null || Util.voidStr(parentNs.getID()))
+            if (parentNs == null || Util.isEmpty(parentNs.getID()))
                 this.targetNsUrl = this.appContext + "elements/" + elem.getIdentifier();
             else
                 setTargetNsUrl(parentNs.getID());
@@ -117,7 +117,7 @@ public class ElmSchema extends Schema {
             addString("\">");
             newLine();
 
-            if (!Util.voidStr(minSize)) {
+            if (!Util.isEmpty(minSize)) {
                 addString("\t\t\t");
                 addString("<xs:minLength value=\"");
                 addString(minSize);
@@ -125,7 +125,7 @@ public class ElmSchema extends Schema {
                 newLine();
             }
 
-            if (!Util.voidStr(maxSize)) {
+            if (!Util.isEmpty(maxSize)) {
                 addString("\t\t\t");
                 if (dataType.equalsIgnoreCase("string"))
                     addString("<xs:maxLength value=\"");
@@ -168,7 +168,7 @@ public class ElmSchema extends Schema {
                 newLine();
             }
 
-            if (!Util.voidStr(decPrec)) {
+            if (!Util.isEmpty(decPrec)) {
                 addString("\t\t\t");
                 addString("<xs:fractionDigits value=\"");
                 addString(decPrec);

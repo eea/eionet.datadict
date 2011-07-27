@@ -30,13 +30,13 @@ public class XFormServlet extends HttpServlet {
         try {
             // get ID of table whose form to create
             String id = req.getParameter("id");
-            if (Util.voidStr(id)) throw new Exception("Missing id!");
+            if (Util.isEmpty(id)) throw new Exception("Missing id!");
             id = parseID(id);
 
             // get url of the template
             String template = req.getParameter("template");
-            if (Util.voidStr(template)) template = Props.getProperty(PropsIF.XFORM_TEMPLATE_URL);
-            if (Util.voidStr(template)) throw new Exception("Missing template path!");
+            if (Util.isEmpty(template)) template = Props.getProperty(PropsIF.XFORM_TEMPLATE_URL);
+            if (Util.isEmpty(template)) throw new Exception("Missing template path!");
 
             ServletContext ctx = getServletContext();
 

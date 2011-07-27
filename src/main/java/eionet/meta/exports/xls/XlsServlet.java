@@ -39,11 +39,11 @@ public class XlsServlet extends HttpServlet {
         try {
 
             String id = req.getParameter("obj_id");
-            if (Util.voidStr(id))
+            if (Util.isEmpty(id))
                 throw new Exception("Missing object id!");
 
             String type = req.getParameter("obj_type");
-            if (Util.voidStr(type) || !validObjTypes.contains(type))
+            if (Util.isEmpty(type) || !validObjTypes.contains(type))
                 throw new Exception("Missing object type or object type invalid!");
 
             ServletContext ctx = getServletContext();

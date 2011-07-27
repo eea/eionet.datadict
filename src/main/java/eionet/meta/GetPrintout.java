@@ -42,12 +42,12 @@ public class GetPrintout extends HttpServlet {
         ServletContext ctx = getServletContext();
 
         String userAgent = req.getHeader("User-Agent");
-        if (!Util.voidStr(userAgent))
+        if (!Util.isEmpty(userAgent))
             ctx.log("User-Agent= " + userAgent);
 
         // get printout format
         String printoutFormat = req.getParameter("format");
-        if (Util.voidStr(printoutFormat))
+        if (Util.isEmpty(printoutFormat))
             printoutFormat = "PDF";
 
         if (!printoutFormat.equals("PDF") && !printoutFormat.equals("RTF"))
@@ -59,17 +59,17 @@ public class GetPrintout extends HttpServlet {
 
         // get object type
         String objType = req.getParameter("obj_type");
-        if (Util.voidStr(objType))
+        if (Util.isEmpty(objType))
             throw new ServletException("Object type not specified!");
 
         // get handout type
         String outType = req.getParameter("out_type");
-        if (Util.voidStr(outType))
+        if (Util.isEmpty(outType))
             outType = DEFAULT_HANDOUT_TYPE;
 
         // get object ID
         String objID = req.getParameter("obj_id");
-        if (Util.voidStr(objID))
+        if (Util.isEmpty(objID))
             throw new ServletException("Object ID not specified!");
 
         // get the paths of images and cache

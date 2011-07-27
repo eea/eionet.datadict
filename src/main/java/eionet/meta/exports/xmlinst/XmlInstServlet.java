@@ -31,11 +31,11 @@ public class XmlInstServlet extends HttpServlet {
 
             // get the object ID
             String id = req.getParameter("id");
-            if (Util.voidStr(id)) throw new Exception("Missing id!");
+            if (Util.isEmpty(id)) throw new Exception("Missing id!");
 
             // get the object type
             String type = req.getParameter("type");
-            if (Util.voidStr(type)) throw new Exception("Missing type!");
+            if (Util.isEmpty(type)) throw new Exception("Missing type!");
 
             ServletContext ctx = getServletContext();
 

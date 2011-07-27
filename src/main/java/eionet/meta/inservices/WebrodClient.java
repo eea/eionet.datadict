@@ -22,7 +22,7 @@ public class WebrodClient extends InServiceClient{
         req.setAttribute(Attrs.ERR_HANDLER, "error.jsp?class=popup");
 
         String method = req.getParameter(Params.METHOD);
-        if (Util.voidStr(method))
+        if (Util.isEmpty(method))
             throw new Exception(Params.METHOD + " is missing!");
 
         if (method.equals(GET_ACTIVITIES))

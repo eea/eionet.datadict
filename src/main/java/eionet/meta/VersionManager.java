@@ -810,7 +810,7 @@ public class VersionManager {
      */
     private DataElement loadElm(String elmID) throws Exception {
 
-        if (Util.voidStr(elmID))
+        if (Util.isEmpty(elmID))
             throw new Exception("Data element ID not specified!");
 
         // get the element (this will return simple attributes + tableID
@@ -832,7 +832,7 @@ public class VersionManager {
      */
     private DsTable loadTbl(String tblID) throws Exception {
 
-        if (Util.voidStr(tblID))
+        if (Util.isEmpty(tblID))
             throw new Exception("Table ID not specified!");
 
         // get the table
@@ -858,7 +858,7 @@ public class VersionManager {
      */
     private Dataset loadDst(String dstID) throws Exception {
 
-        if (Util.voidStr(dstID))
+        if (Util.isEmpty(dstID))
             throw new Exception("Dataset ID not specified!");
 
         Dataset ds = searchEngine.getDataset(dstID);
@@ -924,7 +924,7 @@ public class VersionManager {
 
         String tblIdf = tbl.getIdentifier();
         String parentNs = tbl.getParentNs();
-        if (Util.voidStr(tblIdf) || Util.voidStr(parentNs)){
+        if (Util.isEmpty(tblIdf) || Util.isEmpty(parentNs)){
             return null;
         }
 

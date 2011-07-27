@@ -48,7 +48,7 @@ public class TblXmlMetaServlet extends HttpServlet {
 
         try {
             String compID = req.getParameter("id");
-            if (Util.voidStr(compID))
+            if (Util.isEmpty(compID))
                 throw new Exception("Table ID missing!");
 
             ServletContext ctx = getServletContext();

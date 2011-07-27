@@ -90,13 +90,13 @@ public class DsVisualUpload extends HttpServlet {
 
         // Get dataset ID from request
         String dstId = request.getParameter("ds_id");
-        if (Util.voidStr(dstId)) {
+        if (Util.isEmpty(dstId)) {
             throw new ServletException("Dataset ID is not specified!");
         }
 
         // Get the visual file's type (i.e. whether it's the detailed or general model).
         String visualType = request.getParameter("str_type");
-        if (Util.voidStr(visualType)) {
+        if (Util.isEmpty(visualType)) {
             throw new ServletException("Structure type not specified!");
         }
 
@@ -165,12 +165,12 @@ public class DsVisualUpload extends HttpServlet {
 
         String urlInput = request.getParameter("url_input");
         String fileInput = request.getParameter("file_input");
-        if (!Util.voidStr(urlInput) && !Util.voidStr(fileInput)) {
+        if (!Util.isEmpty(urlInput) && !Util.isEmpty(fileInput)) {
             throw new ServletException("Either local file or URL must be supplied- both must not be specififed!");
-        } else if (!Util.voidStr(urlInput)) {
+        } else if (!Util.isEmpty(urlInput)) {
             LOGGER.debug("File to be downloaded from " + urlInput);
             storedFile = processDownload(urlInput);
-        } else if (!Util.voidStr(fileInput)) {
+        } else if (!Util.isEmpty(fileInput)) {
             LOGGER.debug("Local file that was uploaded: " + fileInput);
             storedFile = processUpload(request);
         } else {
@@ -257,7 +257,7 @@ public class DsVisualUpload extends HttpServlet {
 
         // sanity checking
         String existingFileName = request.getParameter("visual");
-        if (Util.voidStr(existingFileName)) {
+        if (Util.isEmpty(existingFileName)) {
             throw new ServletException("Currently existing file name is missing from the request!");
         }
 
@@ -305,7 +305,7 @@ public class DsVisualUpload extends HttpServlet {
         }
 
         String fileName = new File(url.getPath()).getName();
-        if (Util.voidStr(fileName)) {
+        if (Util.isEmpty(fileName)) {
             throw new ServletException("Could not extract file name from this URL: " + urlString);
         }
 

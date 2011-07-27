@@ -35,7 +35,7 @@ public class InServicesServlet extends HttpServlet {
     private void act(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
         String clientName = req.getParameter(Params.CLIENT);
-        if (Util.voidStr(clientName))
+        if (Util.isEmpty(clientName))
             throw new Exception(Params.CLIENT + " is missing!");
 
         InServiceClientIF client = (InServiceClientIF)clients.get(clientName);
@@ -54,7 +54,7 @@ public class InServicesServlet extends HttpServlet {
                                                     throws ServletException,IOException {
 
         String errHandler = (String)req.getAttribute(Attrs.ERR_HANDLER);
-        if (Util.voidStr(errHandler)) errHandler = "error.jsp";
+        if (Util.isEmpty(errHandler)) errHandler = "error.jsp";
 
         req.getRequestDispatcher(errHandler).forward(req,res);
     }
