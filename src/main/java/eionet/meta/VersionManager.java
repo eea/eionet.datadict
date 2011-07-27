@@ -886,11 +886,11 @@ public class VersionManager {
             buf.append(", TBL2ELEM, DST2TBL, DATASET ").append("where ").append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID and ")
             .append("TBL2ELEM.TABLE_ID=DST2TBL.TABLE_ID and ").append("DST2TBL.DATASET_ID=DATASET.DATASET_ID and ")
             .append("DATAELEM.WORKING_COPY='N' and DATAELEM.PARENT_NS=").append(elm.getNamespace().getID())
-            .append(" and DATAELEM.IDENTIFIER=").append(Util.strLiteral(elm.getIdentifier()))
+            .append(" and DATAELEM.IDENTIFIER=").append(SQL.toLiteral(elm.getIdentifier()))
             .append(" and DATASET.DELETED is null order by DATASET.DATASET_ID desc");
         } else {
             buf.append(" where ").append("DATAELEM.WORKING_COPY='N' and DATAELEM.PARENT_NS is null and ")
-            .append("DATAELEM.IDENTIFIER=").append(Util.strLiteral(elm.getIdentifier()))
+            .append("DATAELEM.IDENTIFIER=").append(SQL.toLiteral(elm.getIdentifier()))
             .append(" order by DATAELEM.DATAELEM_ID desc");
         }
 
@@ -959,7 +959,7 @@ public class VersionManager {
 
         StringBuffer buf = new StringBuffer();
         buf.append("select DATASET_ID from DATASET where WORKING_COPY='N' and DELETED is null and ").append("IDENTIFIER=")
-        .append(Util.strLiteral(dst.getIdentifier())).append(" order by DATASET_ID desc");
+        .append(SQL.toLiteral(dst.getIdentifier())).append(" order by DATASET_ID desc");
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -1066,7 +1066,7 @@ public class VersionManager {
     public boolean isFirstCommonElm(String idf) throws SQLException {
 
         StringBuffer buf =
-            new StringBuffer().append("select count(*) from DATAELEM where IDENTIFIER=").append(Util.strLiteral(idf))
+            new StringBuffer().append("select count(*) from DATAELEM where IDENTIFIER=").append(SQL.toLiteral(idf))
             .append(" and PARENT_NS is null");
 
         Statement stmt = null;

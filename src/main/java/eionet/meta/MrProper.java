@@ -302,7 +302,7 @@ public class MrProper {
             String ns = pars.getParameter("rm_ns");
             if (idfier!=null) {
                 buf.append("select DATAELEM_ID from DATAELEM where ").
-                append("IDENTIFIER=").append(Util.strLiteral(idfier));
+                append("IDENTIFIER=").append(SQL.toLiteral(idfier));
             }
 
             if (!Util.isEmpty(ns)) {

@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import eionet.util.Util;
 
 /**
  *
@@ -54,7 +53,7 @@ public class SQLGenerator implements Cloneable {
             // fldValue is already escaped
             fields.put(fldName, fldValue);
         else
-            fields.put(fldName, Util.strLiteral(fldValue));
+            fields.put(fldName, SQL.toLiteral(fldValue));
     }
     /**
      * Sets unquoted field expression.

@@ -216,4 +216,34 @@ public class SQL {
             catch (SQLException e) {}
         }
     }
+
+    /**
+     * Returns a new string by putting the given input string between apostrophes
+     * and SQL-escaping all other apostrophes inside it.
+     *
+     * @param str Given input string.
+     *
+     * @return
+     */
+    public static String toLiteral(String str) {
+
+        if (str==null){
+            return "''";
+        }
+
+        StringBuffer result = new StringBuffer("'");
+        for (int i = 0; i < str.length(); i++) {
+
+            char c = str.charAt(i);
+            if (c == '\''){
+                result.append("''");
+            }
+            else{
+                result.append(c);
+            }
+        }
+        result.append('\'');
+
+        return result.toString();
+    }
 }

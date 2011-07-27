@@ -563,7 +563,7 @@ public class DatasetHandler extends BaseHandler {
             return;
 
         StringBuffer buf = new StringBuffer("update DATASET set DELETED=");
-        buf.append(Util.strLiteral(user.getUserName()));
+        buf.append(SQL.toLiteral(user.getUserName()));
         buf.append(" where ");
         for (int i=0; i<ds_ids.length; i++) {
             if (i>0)

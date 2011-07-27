@@ -3881,7 +3881,7 @@ public class DDSearchEngine {
      * @return
      */
     public String getSimpleAttrHelpByShortName(String shortName) {
-        return getSimpleAttrHelp("SHORT_NAME", Util.strLiteral(shortName));
+        return getSimpleAttrHelp("SHORT_NAME", SQL.toLiteral(shortName));
     }
 
     /**
@@ -3939,7 +3939,7 @@ public class DDSearchEngine {
      * @return
      */
     public String getComplexAttrHelpByShortName(String shortName) {
-        return getComplexAttrHelp("SHORT_NAME", Util.strLiteral(shortName));
+        return getComplexAttrHelp("SHORT_NAME", SQL.toLiteral(shortName));
     }
 
     /**

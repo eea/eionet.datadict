@@ -633,7 +633,7 @@ public class CopyHandler extends Object {
                             gen.setField("VALUE", fieldValue);
 
                             StringBuffer buf = new StringBuffer(gen.insertStatement()).
-                            append(" on duplicate key update VALUE=").append(eionet.util.Util.strLiteral(fieldValue));
+                            append(" on duplicate key update VALUE=").append(eionet.util.sql.SQL.toLiteral(fieldValue));
 
                             stmt.executeUpdate(buf.toString());
                             insertedFields++;
