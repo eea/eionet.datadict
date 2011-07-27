@@ -922,9 +922,9 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
             inParams = new INParameters();
             LinkedHashMap map = new LinkedHashMap();
             map.put("OBJ_ID", inParams.add(id, Types.INTEGER));
-            map.put("OBJ_TYPE", SQL.encloseWithApos("dst"));
-            map.put("ARTICLE", SQL.encloseWithApos("pdf"));
-            map.put("FILENAME", SQL.encloseWithApos(fn));
+            map.put("OBJ_TYPE", SQL.surroundWithApostrophes("dst"));
+            map.put("ARTICLE", SQL.surroundWithApostrophes("pdf"));
+            map.put("FILENAME", SQL.surroundWithApostrophes(fn));
             map.put("CREATED", inParams.add(String.valueOf(System.currentTimeMillis()), Types.BIGINT));
 
             stmt = SQL.preparedStatement(SQL.insertStatement("CACHE", map), inParams, conn);
