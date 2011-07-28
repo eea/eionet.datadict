@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -68,7 +69,7 @@ public class DbSchema{
 
             for (String tableName : tablesColumns.keySet()){
 
-                HashSet<String> columns = new HashSet<String>();
+                LinkedHashSet<String> columns = new LinkedHashSet<String>();
 
                 rs = stmt.executeQuery("describe " + tableName);
                 while (rs.next()){

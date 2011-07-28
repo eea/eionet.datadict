@@ -10,6 +10,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -818,15 +820,25 @@ public class CopyHandler extends Object {
      * @param newValues
      * @return
      */
-    protected static String copyRowsStatement(String tableName, String whereClause, LinkedHashMap<String, Object> newValues) {
+    protected static String copyRowsStatement(String tableName, String whereClause, Map<String, Object> newValuesMap) {
 
         if (Util.isEmpty(tableName)) {
             throw new IllegalArgumentException("Table name must be given!");
         }
 
+        LinkedHashMap<String, Object> newValues = new LinkedHashMap<String, Object>();
+        if (newValuesMap!=null){
+            newValues.putAll(newValuesMap);
+        }
         boolean isNewValuesEmpty = Util.isEmpty(newValues);
-        Set<String> columnNames = DbSchema.getTableColumns(tableName, isNewValuesEmpty ? null : newValues.keySet());
+
+        LinkedHashSet<String> columnNames = new LinkedHashSet<String>();
+        Set<String> columnSet = DbSchema.getTableColumns(tableName, isNewValuesEmpty ? null : newValues.keySet());
+        if (columnSet!=null){
+            columnNames.addAll(columnSet);
+        }
         boolean isColumnNamesEmpty = Util.isEmpty(columnNames);
+
         StringBuilder sql = new StringBuilder();
 
         if (isNewValuesEmpty && isColumnNamesEmpty) {
@@ -851,9 +863,10 @@ public class CopyHandler extends Object {
 
             sql.append(") select ");
 
+            i = 0;
             if (!isNewValuesEmpty){
                 for (Object value : newValues.values()){
-                    sql.append(i++ > 0 ? "," : "").append(value);
+                    sql.append(i++ > 0 ? "," : "").append(value==null ? "NULL" : value);
                 }
             }
 
