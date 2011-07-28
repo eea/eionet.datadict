@@ -34,12 +34,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
-import eionet.util.sql.SQLGenerator;
-
 import eionet.meta.savers.CopyHandler;
 import eionet.meta.savers.DataElementHandler;
 import eionet.util.sql.ConnectionUtil;
-import eionet.util.sql.DDConnectionException;
+import eionet.util.sql.SQLGenerator;
 
 /**
  *
@@ -124,8 +122,12 @@ public class DataManipulations{
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -247,9 +249,9 @@ public class DataManipulations{
             if (count>0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such tables found, now deleting them...");
-            }
-            else
+            } else {
                 outputWriteln(count + " such tables found");
+            }
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
@@ -257,13 +259,18 @@ public class DataManipulations{
                 count++;
             }
 
-            if (attemptingDelete)
+            if (attemptingDelete) {
                 outputWriteln(count + " deleted");
+            }
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -306,9 +313,9 @@ public class DataManipulations{
             if (count>0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such relations found, now deleting them...");
-            }
-            else
+            } else {
                 outputWriteln(count + " such relations found");
+            }
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
@@ -320,13 +327,18 @@ public class DataManipulations{
                 count++;
             }
 
-            if (attemptingDelete)
+            if (attemptingDelete) {
                 outputWriteln(count + " deleted");
+            }
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -365,9 +377,9 @@ public class DataManipulations{
             if (count>0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such non-common elements found, now deleting them...");
-            }
-            else
+            } else {
                 outputWriteln(count + " such non-common elements found");
+            }
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
@@ -375,13 +387,18 @@ public class DataManipulations{
                 count++;
             }
 
-            if (attemptingDelete)
+            if (attemptingDelete) {
                 outputWriteln(count + " deleted");
+            }
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -426,9 +443,9 @@ public class DataManipulations{
             if (count>0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such relations found, now deleting them...");
-            }
-            else
+            } else {
                 outputWriteln(count + " such relations found");
+            }
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
@@ -440,13 +457,18 @@ public class DataManipulations{
                 count++;
             }
 
-            if (attemptingDelete)
+            if (attemptingDelete) {
                 outputWriteln(count + " deleted");
+            }
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -459,8 +481,9 @@ public class DataManipulations{
      */
     public void deleteTblWithElements(String tblID) throws Exception {
 
-        if (tblID==null)
+        if (tblID==null) {
             return;
+        }
 
         ResultSet rs = null;
         Statement stmt = null;
@@ -476,16 +499,21 @@ public class DataManipulations{
             }
 
             // delete the elements found
-            for (int i=0; i<elmIDs.size(); i++)
+            for (int i=0; i<elmIDs.size(); i++) {
                 this.deleteElm((String)elmIDs.get(i));
+            }
 
             // now delete the table itself
             this.deleteTbl(tblID);
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -497,8 +525,9 @@ public class DataManipulations{
      */
     public void deleteTbl(String tblID) throws Exception {
 
-        if (tblID==null)
+        if (tblID==null) {
             return;
+        }
 
         ResultSet rs = null;
         Statement stmt = null;
@@ -560,8 +589,12 @@ public class DataManipulations{
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -574,8 +607,9 @@ public class DataManipulations{
      */
     public void deleteDstWithTablesAndElements(String dstID) throws Exception {
 
-        if (dstID==null)
+        if (dstID==null) {
             return;
+        }
 
         ResultSet rs = null;
         Statement stmt = null;
@@ -591,16 +625,21 @@ public class DataManipulations{
             }
 
             // delete the tables found
-            for (int i=0; i<tblIDs.size(); i++)
+            for (int i=0; i<tblIDs.size(); i++) {
                 deleteTblWithElements((String)tblIDs.get(i));
+            }
 
             // now delete the dataset itself
             deleteDst(dstID);
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -614,8 +653,9 @@ public class DataManipulations{
      */
     public void deleteDst(String dstID) throws Exception {
 
-        if (dstID==null)
+        if (dstID==null) {
             return;
+        }
 
         ResultSet rs = null;
         Statement stmt = null;
@@ -675,8 +715,12 @@ public class DataManipulations{
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -688,8 +732,9 @@ public class DataManipulations{
      */
     public void deleteElm(String elmID) throws Exception {
 
-        if (elmID==null)
+        if (elmID==null) {
             return;
+        }
 
         ResultSet rs = null;
         Statement stmt = null;
@@ -757,8 +802,12 @@ public class DataManipulations{
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -801,9 +850,9 @@ public class DataManipulations{
             if (count>0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such namespaces found, now deleting them...");
-            }
-            else
+            } else {
                 outputWriteln(count + " such namespaces found");
+            }
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
@@ -813,13 +862,18 @@ public class DataManipulations{
                 count++;
             }
 
-            if (attemptingDelete)
+            if (attemptingDelete) {
                 outputWriteln(count + " deleted");
+            }
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -874,9 +928,9 @@ public class DataManipulations{
             if (count>0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such ACLs found, now deleting them...");
-            }
-            else
+            } else {
                 outputWriteln(count + " such ACLs found");
+            }
 
             count = 0;
             for (Iterator i = hashSet.iterator(); !hashSet.isEmpty() && i.hasNext();) {
@@ -890,13 +944,18 @@ public class DataManipulations{
                 count++;
             }
 
-            if (attemptingDelete)
+            if (attemptingDelete) {
                 outputWriteln(count + " deleted");
+            }
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -954,15 +1013,6 @@ public class DataManipulations{
 
     /**
      *
-     * @return
-     * @throws DDConnectionException
-     */
-    public static Connection getTestConnection() throws DDConnectionException {
-        return ConnectionUtil.getSimpleConnection();
-    }
-
-    /**
-     *
      * @param args
      */
     public static void main(String[] args) {
@@ -971,16 +1021,22 @@ public class DataManipulations{
         Statement stmt = null;
         ResultSet rs = null;
         try {
-            DataManipulations script = new DataManipulations(DataManipulations.getTestConnection(), new PrintWriter(System.out));
-    }
+            DataManipulations script = new DataManipulations(ConnectionUtil.getConnection(), new PrintWriter(System.out));
+        }
         catch (Exception e) {
             e.printStackTrace(System.out);
         }
         finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
-                if (conn!=null) conn.close();
+                if (rs!=null) {
+                    rs.close();
+                }
+                if (stmt!=null) {
+                    stmt.close();
+                }
+                if (conn!=null) {
+                    conn.close();
+                }
             }
             catch (SQLException e) {}
         }

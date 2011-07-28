@@ -390,8 +390,9 @@ public class DatasetMSAccessFile {
      *
      * @return
      * @throws DDConnectionException
+     * @throws SQLException
      */
-    protected Connection getConnection() throws DDConnectionException {
+    protected Connection getConnection() throws DDConnectionException, SQLException {
 
         if (connection == null) {
             connection = ConnectionUtil.getConnection();
@@ -412,8 +413,9 @@ public class DatasetMSAccessFile {
      *
      * @return
      * @throws DDConnectionException
+     * @throws SQLException
      */
-    protected DDSearchEngine getSearchEngine() throws DDConnectionException {
+    protected DDSearchEngine getSearchEngine() throws DDConnectionException, SQLException {
 
         if (searchEngine == null) {
             searchEngine = new DDSearchEngine(getConnection());
@@ -516,8 +518,6 @@ public class DatasetMSAccessFile {
      * @throws URISyntaxException
      */
     public static void main(String[] args) throws DDException, IOException, SQLException, URISyntaxException {
-
-        ConnectionUtil.setConnectionType(ConnectionUtil.SIMPLE_CONNECTION);
 
         long time = System.currentTimeMillis();
         DatasetMSAccessFile msAccessFile = new DatasetMSAccessFile("2873");

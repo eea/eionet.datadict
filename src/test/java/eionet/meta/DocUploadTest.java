@@ -37,7 +37,6 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
-import eionet.util.sql.ConnectionUtil;
 
 
 /*
@@ -54,28 +53,19 @@ class MockServletInputStream extends ServletInputStream {
     public int read() throws IOException {
         return instream.read();
     }
-        
+
 }
 
 
 /**
  * This unittest tests the DocUpload servlet
- * 
+ *
  * See www.easymock.org and http://www.evolutionnext.com/blog/2006/01/27.html
  */
 public class DocUploadTest extends DatabaseTestCase {
-    
+
     /** */
     private FlatXmlDataSet loadedDataSet;
-
-    /*
-     *  (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        ConnectionUtil.setConnectionType(ConnectionUtil.SIMPLE_CONNECTION);
-        super.setUp();
-    }
 
     /**
      * Provide a connection to the database.
@@ -86,7 +76,7 @@ public class DocUploadTest extends DatabaseTestCase {
                 Props.getProperty(PropsIF.DBURL),
                 Props.getProperty(PropsIF.DBUSR),
                 Props.getProperty(PropsIF.DBPSW));
-            
+
         return new DatabaseConnection(jdbcConn);
     }
 
@@ -97,7 +87,7 @@ public class DocUploadTest extends DatabaseTestCase {
     protected IDataSet getDataSet() throws Exception {
         loadedDataSet = new FlatXmlDataSet(
                 getClass().getClassLoader().getResourceAsStream(
-                        "seed-docupload.xml"));
+                "seed-docupload.xml"));
         return loadedDataSet;
     }
 
@@ -114,8 +104,8 @@ public class DocUploadTest extends DatabaseTestCase {
         HttpServletResponse response = createMock(HttpServletResponse.class);
         ServletConfig servletConfig = createMock(ServletConfig.class);
         HttpSession httpSession = createMock(HttpSession.class);
-        
-        // Create the target object        
+
+        // Create the target object
         DocUpload instance = new DocUpload();
 
         // Call the init of the servlet with the mock ServletConfig
@@ -123,7 +113,7 @@ public class DocUploadTest extends DatabaseTestCase {
 
         // This is what we expect for the request object
         request.setCharacterEncoding("UTF-8");
-        expect(request.getSession()).andReturn((HttpSession) httpSession);
+        expect(request.getSession()).andReturn(httpSession);
         expect(request.getParameter("idf")).andReturn("CDDA");
         // ds_id seems to only be used for ACL check. Can easily be spoofed
         expect(request.getParameter("ds_id")).andReturn(ds_id);
@@ -136,19 +126,19 @@ public class DocUploadTest extends DatabaseTestCase {
         expect(request.getParameter("delete")).andReturn("");
         MockServletInputStream instream = new MockServletInputStream(filename);
 
-        expect(request.getInputStream()).andReturn((ServletInputStream) instream);
+        expect(request.getInputStream()).andReturn(instream);
 
         // this is what expect for the httpSession
         DDUser user = new TestUser();
         user.authenticate("heinlja", "heinlja"); // THIS USER ACCOUNT MUST BE LISTED IN dd.group!
-        
+
         expect(httpSession.getAttribute(SecurityUtil.REMOTEUSER)).andReturn(user);
         expectLastCall().times(1, 2);
-        
+
 
         // this is what expect for the response object
         response.sendRedirect((String) anyObject());
-        
+
         // start the replay for all mock objects
         replay(request);
         replay(response);
@@ -176,7 +166,7 @@ public class DocUploadTest extends DatabaseTestCase {
     }
 
     /**
-     * 
+     *
      * @param title
      * @param ds_id
      * @throws Exception
@@ -188,8 +178,8 @@ public class DocUploadTest extends DatabaseTestCase {
         HttpServletResponse response = createMock(HttpServletResponse.class);
         ServletConfig servletConfig = createMock(ServletConfig.class);
         HttpSession httpSession = createMock(HttpSession.class);
-        
-        // Create the target object        
+
+        // Create the target object
         DocUpload instance = new DocUpload();
 
         // Call the init of the servlet with the mock ServletConfig
@@ -197,7 +187,7 @@ public class DocUploadTest extends DatabaseTestCase {
 
         // This is what we expect for the request object
         request.setCharacterEncoding("UTF-8");
-        expect(request.getSession()).andReturn((HttpSession) httpSession);
+        expect(request.getSession()).andReturn(httpSession);
         expect(request.getParameter("idf")).andReturn("CDDA");
         expect(request.getParameter("ds_id")).andReturn(ds_id);
 
@@ -209,13 +199,13 @@ public class DocUploadTest extends DatabaseTestCase {
         // this is what expect for the httpSession
         DDUser user = new TestUser();
         user.authenticate("heinlja", "heinlja"); // THIS USER ACCOUNT MUST BE LISTED IN dd.group!
-        
+
         expect(httpSession.getAttribute("eionet.util.SecurityUtil.user")).andReturn(user);
         expectLastCall().times(1, 2);
 
         // this is what we expect for the response object
         response.sendRedirect((String) anyObject());
-        
+
         // start the replay for all mock objects
         replay(request);
         replay(response);
@@ -230,7 +220,7 @@ public class DocUploadTest extends DatabaseTestCase {
         verify(response);
         verify(servletConfig);
         verify(httpSession);
-        
+
         // verify that there are the expected number of rows in the DOC table
         QueryDataSet queryDataSet = new QueryDataSet(getConnection());
         queryDataSet.addTable("DOC", "select * from DOC where OWNER_TYPE='dst' and OWNER_ID=" + ds_id + " and MD5_PATH='" + filePathMd5 + "'");
@@ -239,7 +229,7 @@ public class DocUploadTest extends DatabaseTestCase {
     }
 
     /**
-     * 
+     *
      * @param title
      * @throws Exception
      */
@@ -248,7 +238,7 @@ public class DocUploadTest extends DatabaseTestCase {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     public void testUploadAndDelete() throws Exception {

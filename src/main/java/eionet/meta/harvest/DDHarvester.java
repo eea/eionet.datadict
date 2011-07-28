@@ -66,16 +66,22 @@ public abstract class DDHarvester implements HarvesterIF{
      */
     protected void store(Hashtable hash, String id) throws Exception {
 
-        if (hash == null) return;
+        if (hash == null) {
+            return;
+        }
         Enumeration flds = hash.keys();
-        if (flds==null || !flds.hasMoreElements()) return;
+        if (flds==null || !flds.hasMoreElements()) {
+            return;
+        }
 
-        if (harvesterID==null || harvestingTime==0)
+        if (harvesterID==null || harvestingTime==0) {
             throw new Exception("Failed to find the harvesting ID and time!");
+        }
 
         getConnection();
-        if (conn==null || conn.isClosed())
+        if (conn==null || conn.isClosed()) {
             throw new Exception("Failed to get the DB connection!");
+        }
 
         PreparedStatement stmt = null;
         try {
@@ -109,16 +115,21 @@ public abstract class DDHarvester implements HarvesterIF{
                 HashSet fldValues = new HashSet();
 
                 Object o = hash.get(fldName);
-                if (o==null) o = "";
+                if (o==null) {
+                    o = "";
+                }
 
                 if (o.getClass().getName().endsWith("Vector")) {
-                    for (int i=0; i<((Vector)o).size(); i++)
+                    for (int i=0; i<((Vector)o).size(); i++) {
                         fldValues.add(((Vector)o).get(i));
+                    }
                 }
-                else if (o.getClass().getName().endsWith("String"))
+                else if (o.getClass().getName().endsWith("String")) {
                     fldValues.add(o);
-                else
+                }
+                else {
                     continue; //FIX ME! should through an exception
+                }
 
                 Iterator iter = fldValues.iterator();
                 while (iter.hasNext()) {
@@ -136,8 +147,12 @@ public abstract class DDHarvester implements HarvesterIF{
         }
         finally {
             try {
-                if (stmt!=null) stmt.close();
-                if (conn!=null) conn.close();
+                if (stmt!=null) {
+                    stmt.close();
+                }
+                if (conn!=null) {
+                    conn.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -163,8 +178,9 @@ public abstract class DDHarvester implements HarvesterIF{
      */
     public void cleanup() {
 
-        if (conn==null)
+        if (conn==null) {
             return;
+        }
 
         PreparedStatement stmt = null;
         try {
@@ -181,8 +197,12 @@ public abstract class DDHarvester implements HarvesterIF{
         }
         finally {
             try {
-                if (stmt!=null) stmt.close();
-                if (conn!=null) conn.close();
+                if (stmt!=null) {
+                    stmt.close();
+                }
+                if (conn!=null) {
+                    conn.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -221,7 +241,9 @@ public abstract class DDHarvester implements HarvesterIF{
         }
         finally {
             try {
-                if (rs!=null) rs.close();
+                if (rs!=null) {
+                    rs.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -229,21 +251,24 @@ public abstract class DDHarvester implements HarvesterIF{
 
     private void getConnection() throws Exception {
         if (conn==null || conn.isClosed()) {
-            ConnectionUtil.getSimpleConnection();
+            ConnectionUtil.getConnection();
         }
     }
 
     private void closeConnection() {
         try {
-            if (conn!=null) conn.close();
+            if (conn!=null) {
+                conn.close();
+            }
         }
         catch (SQLException e) {}
     }
 
     private String getMD5(String[] flds) {
         StringBuffer buf = new StringBuffer("md5('");
-        for (int i=0; i<flds.length; i++)
+        for (int i=0; i<flds.length; i++) {
             buf.append(flds[i]);
+        }
         return buf.append("')").toString();
     }
 }

@@ -27,6 +27,7 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
+import eionet.util.sql.SQL;
 
 /**
  * @author jaanus
@@ -73,9 +74,15 @@ public class MdbFile {
      */
     private MdbFile(Connection conn, String dstID, String fullPath) throws MdbException {
 
-        if (conn==null) throw new MdbException("SQL connection not given");
-        if (dstID==null) throw new MdbException("Dataset ID not given");
-        if (fullPath==null) throw new MdbException("File path not given");
+        if (conn==null) {
+            throw new MdbException("SQL connection not given");
+        }
+        if (dstID==null) {
+            throw new MdbException("Dataset ID not given");
+        }
+        if (fullPath==null) {
+            throw new MdbException("File path not given");
+        }
 
         this.conn = conn;
         this.dstID = dstID;
@@ -103,12 +110,14 @@ public class MdbFile {
     private File create() throws Exception {
 
         // if only creating metadata for automatic validation
-        if (vmdOnly)
+        if (vmdOnly) {
             return createVmdOnly();
+        }
 
         Dataset dst = searchEngine.getDataset(dstID);
-        if (dst==null)
+        if (dst==null) {
             throw new MdbException("Dataset not found, id=" + dstID);
+        }
 
         File file = new File(fullPath);
         createDatabase(dst, file);
@@ -143,8 +152,12 @@ public class MdbFile {
      */
     private void createTable(DsTable tbl, Database db) throws Exception {
 
-        if (tbl==null) return;
-        if (db==null) return;
+        if (tbl==null) {
+            return;
+        }
+        if (db==null) {
+            return;
+        }
 
         Vector gisColumns = new Vector();
         Vector nonGisColumns = new Vector();
@@ -165,7 +178,9 @@ public class MdbFile {
 
         //if (nonGisColumns!=null && nonGisColumns.size()>0) {
         if (gisColumns!=null && gisColumns.size()>0) {
-            if (atLeastOneCreated) tableName = tableName + "_meta";
+            if (atLeastOneCreated) {
+                tableName = tableName + "_meta";
+            }
             //db.createTable(tableName, nonGisColumns);
             db.createTable(tableName, gisColumns);
             atLeastOneCreated = true;
@@ -183,7 +198,9 @@ public class MdbFile {
 
         Vector result = new Vector();
 
-        if (elems==null || elems.size()==0) return result;
+        if (elems==null || elems.size()==0) {
+            return result;
+        }
 
         int done = 0;
         for (int i=0; i<elems.size(); i++) {
@@ -192,7 +209,9 @@ public class MdbFile {
             DataElement elm = (DataElement)elems.get(i);
             if (elm.getGIS()!=null) { // we want only GIS elements here!
                 col = createColumn((DataElement)elems.get(i));
-                if (col!=null) result.add(col);
+                if (col!=null) {
+                    result.add(col);
+                }
             }
         }
 
@@ -206,7 +225,9 @@ public class MdbFile {
 
         Vector result = new Vector();
 
-        if (elems==null || elems.size()==0) return result;
+        if (elems==null || elems.size()==0) {
+            return result;
+        }
 
         int done = 0;
         for (int i=0; i<elems.size(); i++) {
@@ -215,7 +236,9 @@ public class MdbFile {
             DataElement elm = (DataElement)elems.get(i);
             if (elm.getGIS()==null) { // we want only NON-GIS elements here!
                 col = createColumn((DataElement)elems.get(i));
-                if (col!=null) result.add(col);
+                if (col!=null) {
+                    result.add(col);
+                }
             }
         }
 
@@ -227,10 +250,14 @@ public class MdbFile {
      */
     private Column createColumn(DataElement elm) throws SQLException {
 
-        if (elm==null) return null;
+        if (elm==null) {
+            return null;
+        }
         String colName = elm.getIdentifier();
         String elmDataType = elm.getAttributeValueByShortName("Datatype");
-        if (colName==null || elmDataType==null) return null;
+        if (colName==null || elmDataType==null) {
+            return null;
+        }
 
         int colType = Mdb.getMdbType(elmDataType);
 
@@ -252,17 +279,20 @@ public class MdbFile {
             db = Database.create(file);
 
             List cols = getVmdColumns();
-            if (cols==null || cols.size()==0)
+            if (cols==null || cols.size()==0) {
                 throw new MdbException("No columns were added for validation metadata");
+            }
 
             db.createTable(VMD_TABLENAME, cols);
             Table vmdTable = db.getTable(VMD_TABLENAME);
-            if (vmdTable==null)
+            if (vmdTable==null) {
                 throw new NullPointerException();
+            }
 
             List rows = createVmdRows();
-            if (rows==null || rows.size()==0)
+            if (rows==null || rows.size()==0) {
                 throw new MdbException("No rows were added for validation metadata");
+            }
 
             vmdTable.addRows(rows);
         }
@@ -387,21 +417,24 @@ public class MdbFile {
 
         Connection conn = null;
         try {
-            if (dstID==null)
+            if (dstID==null) {
                 throw new MdbException("Missing command line argument for dataset id");
-            if (fileFullPath==null)
+            }
+            if (fileFullPath==null) {
                 throw new MdbException("Missing command line argument for file full path");
+            }
 
             Properties props = MdbFile.getProperties();
-            conn = ConnectionUtil.getSimpleConnection();
-            if (vmdOnly==null)
+            conn = ConnectionUtil.getConnection();
+            if (vmdOnly==null) {
                 MdbFile.create(conn, dstID, fileFullPath);
-            else
+            } else {
                 MdbFile.create(conn, dstID, fileFullPath, Boolean.valueOf(vmdOnly).booleanValue());
+            }
         }
         catch (Throwable t) {
             try {
-                ConnectionUtil.close(conn);
+                SQL.close(conn);
                 System.err.println("============>");
                 System.err.println(t.getMessage());
                 t.printStackTrace(System.err);
@@ -431,10 +464,11 @@ public class MdbFile {
         for (int i=0; i<v.size(); i++) {
             String propName  = (String)v.get(i);
             String propValue = Props.getProperty(propName);
-            if (propValue==null || propValue.length()==0)
+            if (propValue==null || propValue.length()==0) {
                 throw new MdbException("Could not find property: " + propName);
-            else
+            } else {
                 props.setProperty(propName, propValue);
+            }
         }
 
         return props;
@@ -445,10 +479,11 @@ public class MdbFile {
      */
     private static void log(String msg) {
 
-        if (LOGGER!=null)
+        if (LOGGER!=null) {
             LOGGER.debug(msg);
-        else
+        } else {
             System.out.println(msg);
+        }
     }
 
     /*
@@ -471,10 +506,11 @@ public class MdbFile {
      */
     private static void log(Throwable t) {
 
-        if (LOGGER!=null)
+        if (LOGGER!=null) {
             LOGGER.debug(Util.getStack(t));
-        else
+        } else {
             System.out.println(Util.getStack(t));
+        }
     }
 
     /*
@@ -483,10 +519,11 @@ public class MdbFile {
     private static void createTest() throws Exception {
 
         File file = null;
-        if (File.separator.equals("/"))
+        if (File.separator.equals("/")) {
             file = new File("/home/jaanus/test.mdb");
-        else
+        } else {
             file = new File("D:\\projects\\datadict\\doc\\test.mdb");
+        }
 
         Database db = Database.create(file);
 
@@ -521,8 +558,9 @@ public class MdbFile {
      * @throws SQLException
      */
     public String getDstIdf() throws SQLException {
-        if (dstIdf==null)
+        if (dstIdf==null) {
             dstIdf = getDst().getIdentifier();
+        }
         return dstIdf;
     }
 
@@ -545,8 +583,9 @@ public class MdbFile {
      * @throws SQLException
      */
     public String getDstNsID() throws SQLException {
-        if (dstNsID==null)
+        if (dstNsID==null) {
             dstNsID = getDst().getNamespaceID();
+        }
         return dstNsID;
     }
 

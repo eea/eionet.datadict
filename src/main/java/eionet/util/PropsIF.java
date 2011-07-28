@@ -29,16 +29,23 @@ package eionet.util;
  */
 public interface PropsIF {
 
-    /** properties file name prefix */
+    /** */
     public static final String PROP_FILE = "datadict";
     public static final String TEST_PROP_FILE = "datadict-test";
 
-    /** properties names */
+    /** */
     public static final String DBDRV = "db.drv";
     public static final String DBURL = "db.url";
     public static final String DBUSR = "db.usr";
     public static final String DBPSW = "db.psw";
 
+    /** */
+    public static final String DB_UNITTEST_DRV = "db.unitest.drv";
+    public static final String DB_UNITTEST_URL = "db.unitest.url";
+    public static final String DB_UNITTEST_USR = "db.unitest.usr";
+    public static final String DB_UNITTEST_PWD = "db.unitest.pwd";
+
+    /** */
     public static final String HRV_LOG = "harvester.log";
     public static final String HRV_LOGLEV = "harvester.log-level";
 

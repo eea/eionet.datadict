@@ -7,14 +7,14 @@ import junit.framework.TestCase;
 import eionet.util.sql.ConnectionUtil;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
 public class TblXlsTest extends TestCase{
 
     /** */
-    private Connection conn = null; 
+    private Connection conn = null;
 
     /*
      *  (non-Javadoc)
@@ -22,11 +22,11 @@ public class TblXlsTest extends TestCase{
      */
     protected void setUp() throws Exception {
         super.setUp();
-        conn = ConnectionUtil.getSimpleConnection();
+        conn = ConnectionUtil.getConnection();
     }
-    
+
     /**
-     * @throws SQLException 
+     * @throws SQLException
      */
     public void testStoreAndDelete(){
         try{
@@ -48,7 +48,9 @@ public class TblXlsTest extends TestCase{
     protected void tearDown() throws Exception {
         super.tearDown();
         try{
-            if (conn!=null) conn.close();
+            if (conn!=null) {
+                conn.close();
+            }
         }
         catch (SQLException e){}
     }

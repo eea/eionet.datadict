@@ -37,7 +37,9 @@ public class OutService {
     public Vector getParametersByActivityID(String raID) throws Exception {
 
         try {
-            if (conn==null) getConnection();
+            if (conn==null) {
+                getConnection();
+            }
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
             return searchEngine.getParametersByActivityID(raID);
         }
@@ -56,7 +58,9 @@ public class OutService {
     public Vector getObligationsWithDatasets() throws Exception {
 
         try {
-            if (conn==null) getConnection();
+            if (conn==null) {
+                getConnection();
+            }
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
             return searchEngine.getObligationsWithDatasets();
         }
@@ -85,7 +89,9 @@ public class OutService {
     public Vector getDSTables() throws Exception {
 
         try {
-            if (conn==null) getConnection();
+            if (conn==null) {
+                getConnection();
+            }
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
 
             HashSet dstStatuses = new HashSet();
@@ -131,14 +137,16 @@ public class OutService {
      * @throws Exception
      */
     private void getConnection() throws Exception {
-        conn = ConnectionUtil.getSimpleConnection();
+        conn = ConnectionUtil.getConnection();
     }
 
     /**
      *
      */
     private void closeConnection() {
-        try { if (conn!=null) conn.close(); } catch (SQLException e) {}
+        try { if (conn!=null) {
+            conn.close();
+        } } catch (SQLException e) {}
     }
 
     /**

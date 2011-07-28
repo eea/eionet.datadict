@@ -32,7 +32,7 @@ import eionet.util.sql.ConnectionUtil;
  * See www.easymock.org and http://www.evolutionnext.com/blog/2006/01/27.html
  */
 public class DocumentationServletTest extends DatabaseTestCase {
-    
+
     /** */
     private FlatXmlDataSet loadedDataSet;
 
@@ -40,7 +40,7 @@ public class DocumentationServletTest extends DatabaseTestCase {
      * Provide a connection to the database.
      */
     protected IDatabaseConnection getConnection() throws Exception {
-        Connection jdbcConn = ConnectionUtil.getSimpleConnection();         
+        Connection jdbcConn = ConnectionUtil.getConnection();
         return new DatabaseConnection(jdbcConn);
     }
 
@@ -65,8 +65,8 @@ public class DocumentationServletTest extends DatabaseTestCase {
         ServletConfig servletConfig = createMock(ServletConfig.class);
         ServletContext servletContext = createMock(ServletContext.class);
         RequestDispatcher requestDispatcher = createMock(RequestDispatcher.class);
-        
-        // Create the target object        
+
+        // Create the target object
         DocumentationServlet instance = new DocumentationServlet();
 
         // Call the init of the servlet with the mock ServletConfig
@@ -74,7 +74,7 @@ public class DocumentationServletTest extends DatabaseTestCase {
 
         expect(servletConfig.getServletContext()).andReturn(servletContext).anyTimes();
         expect(servletConfig.getInitParameter("forward-jsp")).andReturn(
-                "documentation.jsp");
+        "documentation.jsp");
         expect(servletContext.getRequestDispatcher("/documentation.jsp")).andReturn(
                 requestDispatcher);
 
@@ -85,9 +85,9 @@ public class DocumentationServletTest extends DatabaseTestCase {
 
         // The next two values are retrieved from the database
         request.setAttribute("doc-heading",
-                "Data Dictionary - functions (from seed-hlp.xml)");
+        "Data Dictionary - functions (from seed-hlp.xml)");
         request.setAttribute("doc-string",
-                "<h1>Data Dictionary - functions</h1>");
+        "<h1>Data Dictionary - functions</h1>");
 
         // This is what we expect for the RequestDispatcher
         requestDispatcher.forward(request, response);
@@ -122,8 +122,8 @@ public class DocumentationServletTest extends DatabaseTestCase {
         ServletConfig servletConfig = createMock(ServletConfig.class);
         ServletContext servletContext = createMock(ServletContext.class);
         RequestDispatcher requestDispatcher = createMock(RequestDispatcher.class);
-        
-        // Create the target object        
+
+        // Create the target object
         DocumentationServlet instance = new DocumentationServlet();
 
         // Call the init of the servlet with the mock ServletConfig
@@ -131,7 +131,7 @@ public class DocumentationServletTest extends DatabaseTestCase {
 
         expect(servletConfig.getServletContext()).andReturn(servletContext).anyTimes();
         expect(servletConfig.getInitParameter("forward-jsp")).andReturn(
-                "documentation.jsp");
+        "documentation.jsp");
 
         expect(servletContext.getRequestDispatcher("/documentation.jsp")).andReturn(
                 requestDispatcher);

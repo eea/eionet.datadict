@@ -45,7 +45,7 @@ public class DocUpload extends HttpServlet{
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
-                                                    throws ServletException, IOException {
+    throws ServletException, IOException {
         doPost(req,res);
     }
 
@@ -53,7 +53,7 @@ public class DocUpload extends HttpServlet{
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
-                                                    throws ServletException, IOException {
+    throws ServletException, IOException {
 
         req.setCharacterEncoding("UTF-8");
 
@@ -61,8 +61,9 @@ public class DocUpload extends HttpServlet{
             guard(req);
 
             String dstID = req.getParameter(REQPAR_DSID);
-            if (Util.isEmpty(dstID))
+            if (Util.isEmpty(dstID)) {
                 throw new ServletException("Missing " + REQPAR_DSID + " request parameter!");
+            }
 
             String del = req.getParameter(REQPAR_DELETE);
             if (!Util.isEmpty(del)) {
@@ -72,8 +73,9 @@ public class DocUpload extends HttpServlet{
             }
 
             String filePath = Props.getProperty(PropsIF.DOC_PATH);
-            if (Util.isEmpty(filePath))
+            if (Util.isEmpty(filePath)) {
                 throw new ServletException("Missing property: " + PropsIF.DOC_PATH);
+            }
 
             File file = new File(getAbsFilePath(req.getParameter(REQPAR_FILE)));
             HttpUploader.upload(req, file);
@@ -101,8 +103,9 @@ public class DocUpload extends HttpServlet{
     public static String getAbsFilePath(String submittedFilePath) throws Exception {
 
         String path = Props.getProperty(PropsIF.DOC_PATH);
-        if (Util.isEmpty(path))
+        if (Util.isEmpty(path)) {
             throw new Exception("Missing property: " + PropsIF.DOC_PATH);
+        }
 
         File f = new File(path, extractFileName(submittedFilePath));
         return f.getAbsolutePath();
@@ -115,15 +118,17 @@ public class DocUpload extends HttpServlet{
      */
     private static String extractFileName(String submittedFilePath) throws DDException {
 
-        if (Util.isEmpty(submittedFilePath))
+        if (Util.isEmpty(submittedFilePath)) {
             throw new DDException("Missing file path!");
+        }
 
-        if (submittedFilePath.indexOf("\\")<0 && submittedFilePath.indexOf("/")<0)
+        if (submittedFilePath.indexOf("\\")<0 && submittedFilePath.indexOf("/")<0) {
             return submittedFilePath;
-        else {
+        } else {
             int i = submittedFilePath.lastIndexOf("\\");
-            if (i<0)
+            if (i<0) {
                 i = submittedFilePath.lastIndexOf("/");
+            }
             return submittedFilePath.substring(i+1, submittedFilePath.length());
         }
     }
@@ -134,14 +139,18 @@ public class DocUpload extends HttpServlet{
      */
     private void guard(HttpServletRequest req) throws Exception {
         DDUser user = SecurityUtil.getUser(req);
-        if (user == null) throw new Exception("Not authenticated!");
+        if (user == null) {
+            throw new Exception("Not authenticated!");
+        }
 
         String idf = req.getParameter(REQPAR_IDF);
-        if (Util.isEmpty(idf))
+        if (Util.isEmpty(idf)) {
             throw new Exception("Missing " + REQPAR_IDF + " request parameter!");
+        }
 
-        if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + idf, "u"))
+        if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + idf, "u")) {
             throw new Exception("Not permitted!");
+        }
     }
 
     /**
@@ -162,8 +171,9 @@ public class DocUpload extends HttpServlet{
         insertCols.put("MD5_PATH", "md5(" + inParams.add(legalizedPath) + ")");
         insertCols.put("ABS_PATH", inParams.add(legalizedPath));
 
-        if (title==null || title.length()==0)
+        if (title==null || title.length()==0) {
             title = file.getName();
+        }
         insertCols.put("TITLE", inParams.add(title));
 
         SQL.preparedStatement(SQL.insertStatement("DOC", insertCols), inParams, conn).executeUpdate();
@@ -185,14 +195,16 @@ public class DocUpload extends HttpServlet{
             // DOC table, we must query the physical path of the physical file
             INParameters inParams = new INParameters();
             String sqlStr = "select * from DOC where MD5_PATH=" + inParams.add(md5) +
-                " and OWNER_TYPE='dst' and OWNER_ID=" + inParams.add(dstId, Types.INTEGER);
+            " and OWNER_TYPE='dst' and OWNER_ID=" + inParams.add(dstId, Types.INTEGER);
             stmt = SQL.preparedStatement(sqlStr, inParams, conn);
             rs = stmt.executeQuery();
             String absPath = null;
-            if (rs.next())
+            if (rs.next()) {
                 absPath = rs.getString("ABS_PATH");
-            else
+            }
+            else {
                 return; // if the above query returned no rows, there's nothing to de here no more
+            }
 
             SQL.close(rs);
             SQL.close(stmt);
@@ -209,8 +221,9 @@ public class DocUpload extends HttpServlet{
             rs = stmt.executeQuery();
             if (rs.next() && rs.getInt(1)==0) {
                 File file = new File(absPath);
-                if (file.exists() && !file.isDirectory())
+                if (file.exists() && !file.isDirectory()) {
                     file.delete();
+                }
             }
         }
         finally {
@@ -224,7 +237,7 @@ public class DocUpload extends HttpServlet{
      * @throws DDConnectionException
      *
      */
-    private void openConnection() throws DDConnectionException {
+    private void openConnection() throws DDConnectionException, SQLException {
         if (conn==null) {
             conn = ConnectionUtil.getConnection();
         }
@@ -254,10 +267,11 @@ public class DocUpload extends HttpServlet{
         StringBuffer buf = new StringBuffer();
         for (int i=0; path!=null && i<path.length(); i++) {
             char c = path.charAt(i);
-            if (c=='\\')
+            if (c=='\\') {
                 buf.append("\\\\");
-            else
+            } else {
                 buf.append(c);
+            }
         }
 
         return buf.toString();

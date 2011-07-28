@@ -42,7 +42,7 @@ public class TestUser extends DDUser {
     public Connection getConnection() {
 
         try {
-            return ConnectionUtil.getSimpleConnection();
+            return ConnectionUtil.getConnection();
         }
         catch (Exception e) {
             throw new DDRuntimeException(e);

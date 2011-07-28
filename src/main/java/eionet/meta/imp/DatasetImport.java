@@ -123,10 +123,12 @@ public class DatasetImport{
 
         // get import type
         String importTypeInXML = handler.getImportType();
-        if (importTypeInXML==null)
+        if (importTypeInXML==null) {
             importTypeInXML=IMPORT_TYPE_WHOLE_DATASETS;
-        if (importType==null)
+        }
+        if (importType==null) {
             importType=IMPORT_TYPE_WHOLE_DATASETS;
+        }
 
         // check if the XML file has the expected import type declared in it
         if (!importType.equalsIgnoreCase(importTypeInXML)) {
@@ -194,8 +196,12 @@ public class DatasetImport{
         dstID = new Hashtable();
 
         Vector ds_params = (Vector)allParams.get("DATASET");
-        if (ds_params == null) return;
-        if (ds_params.size()==0) return;
+        if (ds_params == null) {
+            return;
+        }
+        if (ds_params.size()==0) {
+            return;
+        }
 
         for (int i=0; i< ds_params.size(); i++) {
             par =(Parameters)ds_params.get(i);
@@ -206,11 +212,11 @@ public class DatasetImport{
                 dsHandler.setImportMode(true);
                 dsHandler.execute();
                 countDatasetsImported++;
-                dstID.put((String)par.getParameter("ds_id"), (String)dsHandler.getLastInsertID());
+                dstID.put(par.getParameter("ds_id"), dsHandler.getLastInsertID());
             }
             catch (Exception e) {
                 handleError(e, "Import had errors! Failed storing dataset: " + par.getParameter("ds_name") + RESPONSE_NEW_LINE +
-                                e.toString() + RESPONSE_NEW_LINE);
+                        e.toString() + RESPONSE_NEW_LINE);
             }
         }
     }
@@ -228,8 +234,12 @@ public class DatasetImport{
 
         Vector tbl_params = (Vector)allParams.get("DS_TABLE");
 
-        if (tbl_params == null) return;
-        if (tbl_params.size()==0) return;
+        if (tbl_params == null) {
+            return;
+        }
+        if (tbl_params.size()==0) {
+            return;
+        }
 
         for (int i=0; i< tbl_params.size(); i++) {
             par =(Parameters)tbl_params.get(i);
@@ -251,7 +261,7 @@ public class DatasetImport{
                 tblHandler.setImport(true);
                 tblHandler.execute();
                 countTablesImported++;
-                tblID.put((String)par.getParameter("tbl_id"), (String)tblHandler.getLastInsertID());
+                tblID.put(par.getParameter("tbl_id"), tblHandler.getLastInsertID());
             }
             catch (Exception e) {
                 handleError(e, "Import had errors! Failed storing table: " + par.getParameter("short_name") + RESPONSE_NEW_LINE +
@@ -273,12 +283,16 @@ public class DatasetImport{
 
         Vector delem_params = (Vector)allParams.get("DATAELEM");
 
-        if (delem_params == null) return;
-        if (delem_params.size()==0) return;
+        if (delem_params == null) {
+            return;
+        }
+        if (delem_params.size()==0) {
+            return;
+        }
 
         for (int i=0; i< delem_params.size(); i++) {
             par =(Parameters)delem_params.get(i);
-            delem_id=(String)par.getParameter("delem_id");
+            delem_id=par.getParameter("delem_id");
             getTbl2elem(delem_id, par);
             par.removeParameter("delem_id");
             try {
@@ -289,7 +303,7 @@ public class DatasetImport{
                 delemHandler.setImportMode(true);
                 delemHandler.execute();
                 countElementsImported++;
-                elmID.put(delem_id, (String)delemHandler.getLastInsertID());
+                elmID.put(delem_id, delemHandler.getLastInsertID());
             }
             catch (Exception e) {
                 handleError(e, "Import had errors! Failed storing element: " + par.getParameter("delem_name") + RESPONSE_NEW_LINE +
@@ -312,9 +326,9 @@ public class DatasetImport{
 
         for (int i=0; i<tbl2elem_params.size(); i++) {
             tbl2elem_par = (Parameters)tbl2elem_params.get(i);
-            parelem_id = (String)tbl2elem_par.getParameter("delem_id");
+            parelem_id = tbl2elem_par.getParameter("delem_id");
             if (parelem_id.equals(elem_id)) {
-                tbl_id = (String)tbl2elem_par.getParameter("table_id");
+                tbl_id = tbl2elem_par.getParameter("table_id");
                 par.addParameterValue("table_id", (String)tblID.get(tbl_id));
                 break;
             }
@@ -337,8 +351,12 @@ public class DatasetImport{
 
         Vector fxv_params = (Vector)allParams.get("FIXED_VALUE");
 
-        if (fxv_params == null) return;
-        if (fxv_params.size()==0) return;
+        if (fxv_params == null) {
+            return;
+        }
+        if (fxv_params.size()==0) {
+            return;
+        }
 
         countFixedValuesFound = fxv_params.size();
 
@@ -346,16 +364,20 @@ public class DatasetImport{
             par =(Parameters)fxv_params.get(i);
 
             fxv_val = par.getParameter("new_value");
-            if (fxv_val == null) par.addParameterValue("new_value", "");
+            if (fxv_val == null) {
+                par.addParameterValue("new_value", "");
+            }
 
             delem_id = par.getParameter("delem_id");
             parent_id = par.getParameter("parent_id");
 
-            if (delem_id==null) delem_id="0";
+            if (delem_id==null) {
+                delem_id="0";
+            }
 
             if (importType.equalsIgnoreCase(IMPORT_TYPE_FXV_ONLY))
             {
-              elmID.put(delem_id, importParentID);
+                elmID.put(delem_id, importParentID);
             }
 
             if (elmID.containsKey(delem_id)) {
@@ -365,7 +387,7 @@ public class DatasetImport{
             }
             else {
                 responseText.append("Data element id was not found for fixed value " +
-                fxv_val + RESPONSE_NEW_LINE);
+                        fxv_val + RESPONSE_NEW_LINE);
                 continue;
             }
 
@@ -403,8 +425,12 @@ public class DatasetImport{
         String parent_id;
         String parent_type;
 
-        if (complexAttrs == null) return;
-        if (complexAttrs.size()==0) return;
+        if (complexAttrs == null) {
+            return;
+        }
+        if (complexAttrs.size()==0) {
+            return;
+        }
 
         for (int i=0; i< complexAttrs.size(); i++) {
             par =(Parameters)complexAttrs.get(i);
@@ -430,14 +456,14 @@ public class DatasetImport{
                     responseText.append("Data element id was not found for complex attribute.").append(RESPONSE_NEW_LINE);
                     continue;
                 }
-            }
-            else
+            } else {
                 continue;
+            }
             try {
                 saveHandler = new AttrFieldsHandler(conn, par, ctx);
                 saveHandler.setVersioning(false);
                 saveHandler.execute();
-             }
+            }
             catch (Exception e) {
                 handleError(e, "Could not store complex attributes into database, " +e.toString() + RESPONSE_NEW_LINE);
             }
@@ -481,12 +507,13 @@ public class DatasetImport{
         tbl_params=new Vector();
 
         Vector tbl = (Vector)tables.get(table);
-        if (table.equals("DATASET"))
+        if (table.equals("DATASET")) {
             countDatasetsFound=tbl.size();
-        else if (table.equals("DS_TABLE"))
+        } else if (table.equals("DS_TABLE")) {
             countTablesFound=tbl.size();
-        else if (table.equals("DATAELEM"))
+        } else if (table.equals("DATAELEM")) {
             countElementsFound=tbl.size();
+        }
 
         for (int i=0; i<tbl.size(); i++) {
             row= (Hashtable)tbl.get(i);
@@ -497,7 +524,7 @@ public class DatasetImport{
             rowMap=(Vector)tblMap.get(table);
             for (int c=0; c<rowMap.size(); c++) {
                 fieldMap=(Hashtable)rowMap.get(c);
-                importValue = (String)row.get((String)fieldMap.get("imp"));
+                importValue = (String)row.get(fieldMap.get("imp"));
                 allowNull=(String)fieldMap.get("allowNull");
                 if (allowNull.equals("false")) {
                     if (importValue==null || importValue.length() == 0) {
@@ -505,18 +532,19 @@ public class DatasetImport{
                         break;
                     }
                 }
-                row.remove((String)fieldMap.get("imp"));
+                row.remove(fieldMap.get("imp"));
                 params.addParameterValue((String)fieldMap.get("param"), importValue);
             }
             if (hasAttrs) {
 
-                if (type==null || table.equals("DATAELEM"))
+                if (type==null || table.equals("DATAELEM")) {
                     type=params.getParameter("type");
+                }
 
-                getSimpleAttrs(row, params, type, (String)params.getParameter(context));
+                getSimpleAttrs(row, params, type, params.getParameter(context));
                 if (parent_type!=null) {
                     try {
-                        getComplexAttrs(row, (String)params.getParameter(id_field), parent_type);
+                        getComplexAttrs(row, params.getParameter(id_field), parent_type);
                     }
                     catch (Exception e) {
                         handleError(e, "Failed reading complex attributes: " + params.getParameter("context") + RESPONSE_NEW_LINE +
@@ -549,51 +577,51 @@ public class DatasetImport{
             DElemAttribute delemAttr = (DElemAttribute)dbSimpleAttrs.get(i);
             attrName = delemAttr.getShortName();
             if (delemAttr.displayFor(type)) {
-              dispMult = delemAttr.getDisplayMultiple().equals("1") ? true:false;
+                dispMult = delemAttr.getDisplayMultiple().equals("1") ? true:false;
 
-//find attributes with multiple values
-              if (dispMult) {
-                for (int c=1; c<=9; c++) {
-                  impAttrName = attrName.toLowerCase() + SEPARATOR + Integer.toString(c);
-                  if (row.containsKey(impAttrName)) {
-                    impAttrValue = (String)row.get(impAttrName);
-                    if (impAttrValue != null && impAttrValue.length() > 0) {
-                      params.addParameterValue(DataElementHandler.ATTR_MULT_PREFIX + delemAttr.getID(), impAttrValue);
+                //find attributes with multiple values
+                if (dispMult) {
+                    for (int c=1; c<=9; c++) {
+                        impAttrName = attrName.toLowerCase() + SEPARATOR + Integer.toString(c);
+                        if (row.containsKey(impAttrName)) {
+                            impAttrValue = (String)row.get(impAttrName);
+                            if (impAttrValue != null && impAttrValue.length() > 0) {
+                                params.addParameterValue(DataElementHandler.ATTR_MULT_PREFIX + delemAttr.getID(), impAttrValue);
+                            }
+                            row.remove(impAttrName);
+                        }
                     }
-                    row.remove(impAttrName);
-                 }
                 }
-              }
-              else {
-//find mandatory attributes
-                if (delemAttr.getObligation().equals("M")) {
-                    if (row.containsKey(attrName.toLowerCase())) {
-                        attrValue = (String)row.get(attrName.toLowerCase());
-                        if (attrValue == null || attrValue.length()==0) {
+                else {
+                    //find mandatory attributes
+                    if (delemAttr.getObligation().equals("M")) {
+                        if (row.containsKey(attrName.toLowerCase())) {
+                            attrValue = (String)row.get(attrName.toLowerCase());
+                            if (attrValue == null || attrValue.length()==0) {
+                                handleError(null, "Could not find mandatory attribute (" + attrName + ") value from specified xml for " +
+                                        getContextName(type) + " - " + context_name + "!" + RESPONSE_NEW_LINE);
+                            }
+                            else {
+                                params.addParameterValue(DataElementHandler.ATTR_PREFIX + delemAttr.getID(), attrValue);
+                            }
+                            row.remove(attrName.toLowerCase());
+                        }
+                        else {
                             handleError(null, "Could not find mandatory attribute (" + attrName + ") value from specified xml for " +
                                     getContextName(type) + " - " + context_name + "!" + RESPONSE_NEW_LINE);
                         }
-                        else {
-                            params.addParameterValue(DataElementHandler.ATTR_PREFIX + delemAttr.getID(), attrValue);
-                        }
-                        row.remove(attrName.toLowerCase());
                     }
+                    //find other attributes
                     else {
-                        handleError(null, "Could not find mandatory attribute (" + attrName + ") value from specified xml for " +
-                                getContextName(type) + " - " + context_name + "!" + RESPONSE_NEW_LINE);
-                    }
-                }
-//find other attributes
-                else {
-                    if (row.containsKey(attrName.toLowerCase())) {
-                        attrValue = (String)row.get(attrName.toLowerCase());
-                        if (attrValue != null && attrValue.length() != 0) {
-                            params.addParameterValue(DataElementHandler.ATTR_PREFIX + delemAttr.getID(), attrValue);
+                        if (row.containsKey(attrName.toLowerCase())) {
+                            attrValue = (String)row.get(attrName.toLowerCase());
+                            if (attrValue != null && attrValue.length() != 0) {
+                                params.addParameterValue(DataElementHandler.ATTR_PREFIX + delemAttr.getID(), attrValue);
+                            }
+                            row.remove(attrName.toLowerCase());
                         }
-                        row.remove(attrName.toLowerCase());
                     }
                 }
-              }
             }
             // this attribute is irrelevant for this element type, but nevertheless
             // remove it from row, because otherwise the output will say it's an unknown field
@@ -625,8 +653,9 @@ public class DatasetImport{
         boolean bHasAttr=false;
         boolean bHasField=true;
 
-        if (complexAttrs == null)
+        if (complexAttrs == null) {
             complexAttrs = new Vector();
+        }
 
         for (int i=0; i< dbComplexAttrs.size(); i++) {
 
@@ -638,11 +667,15 @@ public class DatasetImport{
             while (impAttrKeys.hasMoreElements()) {
                 impFieldName = (String)impAttrKeys.nextElement();
                 bHasAttr = (impFieldName.startsWith(attrName.toLowerCase() + SEPARATOR)) ? true : false;
-                if (bHasAttr) break;
+                if (bHasAttr) {
+                    break;
+                }
             }
             if (bHasAttr) {
                 attrFields = searchEngine.getAttrFields(attr_id);
-                if (attrFields==null) continue;
+                if (attrFields==null) {
+                    continue;
+                }
                 for (int c=1; bHasField; c++) {
                     bHasField = false;
                     par = new Parameters();
@@ -682,8 +715,9 @@ public class DatasetImport{
                 for (int j=0; j< attrFields.size(); j++) {
                     field =  (Hashtable)attrFields.get(j);
                     fieldName = (String)field.get("name");
-                    if (impFieldName.startsWith(attrName.toLowerCase() + SEPARATOR + fieldName.toLowerCase()))
+                    if (impFieldName.startsWith(attrName.toLowerCase() + SEPARATOR + fieldName.toLowerCase())) {
                         row.remove(impFieldName);
+                    }
                 }
             }
         }
@@ -760,11 +794,15 @@ public class DatasetImport{
         Vector unknown=null;
         String field;
 
-        if (unknownTbl == null) unknownTbl = new Hashtable();
+        if (unknownTbl == null) {
+            unknownTbl = new Hashtable();
+        }
         if (unknownTbl.containsKey(table)) {
             unknown=(Vector)unknownTbl.get(table);
         }
-        if (unknown==null) unknown=new Vector();
+        if (unknown==null) {
+            unknown=new Vector();
+        }
         Enumeration keys = row.keys();
         while (keys.hasMoreElements()) {
             field = (String)keys.nextElement();
@@ -772,7 +810,9 @@ public class DatasetImport{
                 unknown.add(field);
             }
         }
-        if (unknown.size()>0) unknownTbl.put(table, unknown);
+        if (unknown.size()>0) {
+            unknownTbl.put(table, unknown);
+        }
 
     }
 
@@ -802,16 +842,21 @@ public class DatasetImport{
      */
     private String getContextName(String code) {
         String ret="";
-        if (code.equals("DST"))
+        if (code.equals("DST")) {
             ret = "dataset";
-        if (code.equals("FXV"))
+        }
+        if (code.equals("FXV")) {
             ret = "allowable value";
-        if (code.equals("CH1"))
+        }
+        if (code.equals("CH1")) {
             ret = "data element with fixed values";
-        if (code.equals("CH2"))
+        }
+        if (code.equals("CH2")) {
             ret = "data element with quantitative values";
-        if (code.equals("TBL"))
+        }
+        if (code.equals("TBL")) {
             ret = "dataset table";
+        }
         return ret;
     }
 
@@ -828,10 +873,11 @@ public class DatasetImport{
      * @param type
      */
     public void setImportType(String type) {
-      if (type.equals("FXV"))
-          importType= IMPORT_TYPE_FXV_ONLY;
-      else
-          importType= IMPORT_TYPE_WHOLE_DATASETS;
+        if (type.equals("FXV")) {
+            importType= IMPORT_TYPE_FXV_ONLY;
+        } else {
+            importType= IMPORT_TYPE_WHOLE_DATASETS;
+        }
     }
 
     /**
@@ -867,11 +913,13 @@ public class DatasetImport{
 
         errorCount++;
 
-        if (t!=null)
+        if (t!=null) {
             t.printStackTrace();
+        }
 
-        if (errMsg!=null)
+        if (errMsg!=null) {
             responseText.append(errMsg);
+        }
     }
 
     /**
@@ -883,11 +931,13 @@ public class DatasetImport{
 
         warningCount++;
 
-        if (t!=null)
+        if (t!=null) {
             t.printStackTrace();
+        }
 
-        if (errMsg!=null)
+        if (errMsg!=null) {
             responseText.append(errMsg);
+        }
     }
 
     /**
@@ -915,7 +965,7 @@ public class DatasetImport{
         Connection conn = null;
         try {
 
-            conn = ConnectionUtil.getSimpleConnection();
+            conn = ConnectionUtil.getConnection();
 
             DatasetImportHandler handler = new DatasetImportHandler();
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -930,7 +980,7 @@ public class DatasetImport{
             if (!handler.hasError()) {
 
                 DatasetImport dbImport =
-                    new DatasetImport((DatasetImportHandler)handler, conn, null);
+                    new DatasetImport(handler, conn, null);
 
                 DDUser testUser = new TestUser();
                 testUser.authenticate("jaanus", "jaanus");

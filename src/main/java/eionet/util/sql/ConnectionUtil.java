@@ -11,6 +11,8 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
+import eionet.meta.DDRuntimeException;
+import eionet.util.IsJUnitRuntime;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -25,59 +27,27 @@ public class ConnectionUtil {
     private static final Logger LOGGER = Logger.getLogger(ConnectionUtil.class);
 
     /** */
-    public static final String SIMPLE_CONNECTION = "simple";
-    public static final String JNDI_CONNECTION = "jndi";
-    private static final String DEFAULT_CONNECTION = JNDI_CONNECTION;
-
-    /** */
-    private static final String DATA_SOURCE_NAME = "jdbc/datadict";
+    private static final String DATASOURCE_NAME = "jdbc/datadict";
 
     /** */
     private static DataSource dataSource = null;
-    private static String connectionType = DEFAULT_CONNECTION;
+    private static String connectionUrl = null;
+    private static Boolean isJNDIDataSource = null;
 
-    /**
-     *
-     * @throws NamingException
-     * @throws DAOException
-     */
-    private static void initDataSource() throws NamingException {
-        Context initContext = new InitialContext();
-        Context context = (Context) initContext.lookup("java:comp/env");
-        dataSource = (javax.sql.DataSource)context.lookup(DATA_SOURCE_NAME);
-    }
+    /** Lock objects */
+    private static Object isJNDIDataSourceLock = new Object();
 
     /**
      *
      * @return
      * @throws SQLException
      */
-    public static Connection getConnection() throws DDConnectionException {
+    public static Connection getConnection() throws SQLException {
 
-        if (ConnectionUtil.connectionType.equals(SIMPLE_CONNECTION))
-            return getSimpleConnection();
-        else if (ConnectionUtil.connectionType.equals(JNDI_CONNECTION))
-            return getJNDIConnection();
-        else
-            throw new DDConnectionException("Unknown connection type: " + ConnectionUtil.connectionType);
-    }
-
-    /**
-     *
-     * @return
-     * @throws SQLException
-     */
-    private static synchronized Connection getJNDIConnection() throws DDConnectionException {
-
-        try {
-            if (dataSource==null) {
-                initDataSource();
-            }
+        if (isJNDIDataSource()) {
             return dataSource.getConnection();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            throw new DDConnectionException("Failed to get connection through JNDI: " + e.toString(), e);
+        } else {
+            return getSimpleConnection(IsJUnitRuntime.VALUE);
         }
     }
 
@@ -85,64 +55,73 @@ public class ConnectionUtil {
      *
      * @return
      * @throws SQLException
-     * @throws SQLException
      */
-    public static Connection getSimpleConnection() throws DDConnectionException {
+    private static Connection getSimpleConnection(boolean isUnitTest) throws SQLException {
 
-        String drv = Props.getProperty(PropsIF.DBDRV);
-        if (drv==null || drv.trim().length()==0)
-            throw new DDConnectionException("Failed to get connection, missing property: " + PropsIF.DBDRV);
+        // property names depending on whether the code is being run by a unit test
+        // (this is just to avoid shooting in the leg by running unit tests
+        // accidentally against the real database)
+        String drvProperty = isUnitTest ? PropsIF.DB_UNITTEST_DRV : PropsIF.DBDRV;
+        String urlProperty = isUnitTest ? PropsIF.DB_UNITTEST_URL : PropsIF.DBURL;
+        String usrProperty = isUnitTest ? PropsIF.DB_UNITTEST_USR : PropsIF.DBUSR;
+        String pwdProperty = isUnitTest ? PropsIF.DB_UNITTEST_PWD : PropsIF.DBPSW;
 
-        String url = Props.getProperty(PropsIF.DBURL);
-        if (url==null || url.trim().length()==0)
-            throw new DDConnectionException("Failed to get connection, missing property: " + PropsIF.DBURL);
+        String drv = Props.getProperty(drvProperty);
+        if (drv == null || drv.trim().length() == 0) {
+            throw new SQLException("Failed to get connection, missing property: " + drvProperty);
+        }
 
-        String usr = Props.getProperty(PropsIF.DBUSR);
-        if (usr==null || usr.trim().length()==0)
-            throw new DDConnectionException("Failed to get connection, missing property: " + PropsIF.DBUSR);
+        String url = Props.getProperty(urlProperty);
+        if (url == null || url.trim().length() == 0) {
+            throw new SQLException("Failed to get connection, missing property: " + urlProperty);
+        }
 
-        String pwd = Props.getProperty(PropsIF.DBPSW);
-        if (pwd==null || pwd.trim().length()==0)
-            throw new DDConnectionException("Failed to get connection, missing property: " + PropsIF.DBPSW);
+        String usr = Props.getProperty(usrProperty);
+        if (usr == null || usr.trim().length() == 0) {
+            throw new SQLException("Failed to get connection, missing property: " + usrProperty);
+        }
+
+        String pwd = Props.getProperty(pwdProperty);
+        if (pwd == null || pwd.trim().length() == 0) {
+            throw new SQLException("Failed to get connection, missing property: " + pwdProperty);
+        }
 
         try {
             Class.forName(drv);
             return DriverManager.getConnection(url, usr, pwd);
-        }
-        catch (Exception e) {
-            throw new DDConnectionException("Failed to get connection through DriverManager: " + e.toString(), e);
+        } catch (ClassNotFoundException e) {
+            throw new DDRuntimeException("Failed to get connection, driver class not found: " + drv, e);
         }
     }
 
     /**
      *
-     * @param conn
+     * @return
      */
-    public static void close(Connection conn) {
-        try {
-            if (conn!=null && !conn.isClosed())
-                conn.close();
+    private static boolean isJNDIDataSource() {
+
+        if (isJNDIDataSource == null) {
+            synchronized (isJNDIDataSourceLock) {
+
+                // double-checked locking pattern
+                // (http://www.ibm.com/developerworks/java/library/j-dcl.html)
+                if (isJNDIDataSource == null) {
+
+                    try {
+                        Context initContext = new InitialContext();
+                        Context context = (Context) initContext.lookup("java:comp/env");
+                        dataSource = (javax.sql.DataSource) context.lookup(DATASOURCE_NAME);
+
+                        isJNDIDataSource = Boolean.TRUE;
+                        LOGGER.info("Found and initialized JNDI data source named " + DATASOURCE_NAME);
+                    } catch (NamingException e) {
+                        isJNDIDataSource = Boolean.FALSE;
+                        LOGGER.info("No JNDI data source named " + DATASOURCE_NAME + " could be found: " + e.toString());
+                    }
+                }
+            }
         }
-        catch (SQLException e) {
-            LOGGER.error("Failed to close connection", e);
-        }
-    }
 
-    /**
-     * @return Returns the connectionType.
-     */
-    public static String getConnectionType() {
-        return connectionType;
-    }
-
-    /**
-     *
-     * @param connectionType The connectionType to set.
-     */
-    public static synchronized void setConnectionType(String type) {
-
-        if (type==null)
-            throw new NullPointerException();
-        ConnectionUtil.connectionType = type;
+        return isJNDIDataSource.booleanValue();
     }
 }
