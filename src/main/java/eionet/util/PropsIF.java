@@ -43,7 +43,7 @@ public interface PropsIF {
     public static final String DB_UNITTEST_DRV = "db.unitest.drv";
     public static final String DB_UNITTEST_URL = "db.unitest.url";
     public static final String DB_UNITTEST_USR = "db.unitest.usr";
-    public static final String DB_UNITTEST_PWD = "db.unitest.pwd";
+    public static final String DB_UNITTEST_PWD = "db.unitest.psw";
 
     /** */
     public static final String HRV_LOG = "harvester.log";
