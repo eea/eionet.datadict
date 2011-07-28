@@ -8,11 +8,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletContext;
@@ -480,6 +480,10 @@ public class CopyHandler extends Object {
         return newID;
     }
 
+    /** */
+    private static final String UPDATE_NEW_DATASET_ROW = "update DATASET set DATE=?, WORKING_COPY=?, VERSION=ifnull(?,VERSION+1)," +
+    " REG_STATUS=ifnull(?,REG_STATUS), USER=ifnull(?,USER) where DATASET_ID=?";
+
     /**
      *
      * @param dstID
@@ -495,59 +499,56 @@ public class CopyHandler extends Object {
         }
 
         // copy row in DATASET table
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("DATASET");
-        gen.setField("DATASET_ID", "");
-        String newID = copy(gen, "DATASET_ID=" + dstID, false);
-
+        LOGGER.debug("Copying dataset row");
+        String newID = String.valueOf(copyAutoIncRow("DATASET", "DATASET_ID=" + dstID, "DATASET_ID"));
         if (newID == null) {
             return null;
         }
+        LOGGER.debug("Updating the new dataset row, whose id = " + newID);
 
-        // make it a working copy if needed,
-        // also change the value of VERSION
-        gen.clear();
-        gen.setTable("DATASET");
-        if (maktItWorkingCopy) {
-            gen.setField("WORKING_COPY", "Y");
+        // make it a working copy if needed, also change the value of VERSION
+        ArrayList<Object> values = new ArrayList<Object>();
+        values.add(Long.valueOf(System.currentTimeMillis()));
+        values.add(maktItWorkingCopy ? "Y" : "N");
+        values.add(resetVersionAndStatus ? Integer.valueOf(1) : null);
+        values.add(resetVersionAndStatus ? "Incomplete" : null);
+        values.add(user!=null ? user.getUserName() : null);
+        values.add(Integer.valueOf(newID));
+
+        SQL.executeUpdate(UPDATE_NEW_DATASET_ROW, values, conn);
+
+        Statement stmt = null;
+        try{
+            stmt = conn.createStatement();
+
+            LOGGER.debug("Copying the dataset's simple and complex attributes, ROD links, and documents");
+
+            // statement for copying simple attributes
+            stmt.addBatch(simpleAttrsCopyStatement(dstID, newID, "DS"));
+
+            // statements for copying complex-attributes
+            stmt.addBatch(complexAttrRowsCopyStatement(dstID, newID, "DS"));
+            stmt.addBatch(complexAttrFieldsCopyStatement(dstID, newID, "DS"));
+
+            // statement for copying documents
+            stmt.addBatch(documentsCopyStatement(dstID, newID, "dst"));
+
+            // statement for copying ROD links
+            Map<String,Object> newValues = toValueMap("DATASET_ID", newID);
+            String whereClause = "DATASET_ID=" + dstID;
+            stmt.addBatch(rowsCopyStatement("DST2ROD", whereClause, newValues));
+
+            stmt.executeBatch();
         }
-        if (resetVersionAndStatus) {
-            gen.setFieldExpr("VERSION", "1");
-            gen.setField("REG_STATUS", "Incomplete");
-        } else {
-            gen.setFieldExpr("VERSION", "VERSION+1");
+        finally{
+            SQL.close(stmt);
         }
-        gen.setField("DATE", String.valueOf(System.currentTimeMillis()));
-        if (user != null) {
-            gen.setField("USER", user.getUserName());
-        }
-
-        conn.createStatement().executeUpdate(gen.updateStatement() + " where DATASET_ID=" + newID);
-
-        // copy simple attributes
-        gen.clear();
-        gen.setTable("ATTRIBUTE");
-        gen.setField("DATAELEM_ID", newID);
-        copy(gen, "DATAELEM_ID=" + dstID + " and PARENT_TYPE='DS'");
-
-        // copy complex attributes
-        copyComplexAttrs(newID, dstID, "DS");
-
-        // copy rod links
-        gen.clear();
-        gen.setTable("DST2ROD");
-        gen.setField("DATASET_ID", newID);
-        copy(gen, "DATASET_ID=" + dstID);
-
-        // copy documents
-        gen.clear();
-        gen.setTable("DOC");
-        gen.setField("OWNER_ID", newID);
-        copy(gen, "OWNER_TYPE='dst' and OWNER_ID=" + dstID);
 
         // copy tables
+        LOGGER.debug("Copying the dataset's tables");
         copyDstTables(dstID, newID);
 
+        LOGGER.debug("Dataset copying finished");
         return newID;
     }
 
@@ -785,7 +786,7 @@ public class CopyHandler extends Object {
         }
 
         StringBuilder sql = new StringBuilder();
-        Set<String> columnNames = DbSchema.getTableColumns(tableName, autoIncColumn);
+        List<String> columnNames = DbSchema.getTableColumns(tableName, autoIncColumn);
         if (columnNames != null && !columnNames.isEmpty()) {
 
             String columnNamesCSV = Util.toCSV(columnNames);
@@ -817,10 +818,22 @@ public class CopyHandler extends Object {
      *
      * @param tableName
      * @param whereClause
+     * @param newValuesMap
+     * @return
+     */
+    protected static String rowsCopyStatement(String tableName, String whereClause, Map<String, Object> newValuesMap) {
+
+        return rowsCopyStatement(tableName, tableName, whereClause, newValuesMap);
+    }
+
+    /**
+     *
+     * @param tableName
+     * @param whereClause
      * @param newValues
      * @return
      */
-    protected static String copyRowsStatement(String tableName, String whereClause, Map<String, Object> newValuesMap) {
+    protected static String rowsCopyStatement(String tableName, String fromClause, String whereClause, Map<String, Object> newValuesMap) {
 
         if (Util.isEmpty(tableName)) {
             throw new IllegalArgumentException("Table name must be given!");
@@ -832,18 +845,14 @@ public class CopyHandler extends Object {
         }
         boolean isNewValuesEmpty = Util.isEmpty(newValues);
 
-        LinkedHashSet<String> columnNames = new LinkedHashSet<String>();
-        Set<String> columnSet = DbSchema.getTableColumns(tableName, isNewValuesEmpty ? null : newValues.keySet());
-        if (columnSet!=null){
-            columnNames.addAll(columnSet);
-        }
+        List<String> columnNames = DbSchema.getTableColumns(tableName, isNewValuesEmpty ? null : newValues.keySet());
         boolean isColumnNamesEmpty = Util.isEmpty(columnNames);
 
         StringBuilder sql = new StringBuilder();
 
         if (isNewValuesEmpty && isColumnNamesEmpty) {
 
-            sql.append("insert into ").append(tableName).append(" select * from ").append(tableName);
+            sql.append("insert into ").append(tableName).append(" select * from ").append(fromClause);
 
         } else {
 
@@ -874,7 +883,7 @@ public class CopyHandler extends Object {
                 sql.append(i==0 ? "" : ",").append(columnNamesCSV);
             }
 
-            sql.append(" from ").append(tableName);
+            sql.append(" from ").append(fromClause);
         }
 
         if (!Util.isEmpty(whereClause)) {
@@ -882,5 +891,76 @@ public class CopyHandler extends Object {
         }
 
         return sql.toString();
+    }
+
+    /**
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    private static Map<String, Object> toValueMap(String key, Object value){
+
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put(key,value);
+        return map;
+    }
+
+    /**
+     *
+     * @param oldId
+     * @param newId
+     * @param parentType
+     * @return
+     */
+    protected static String simpleAttrsCopyStatement(String oldId, String newId, String parentType){
+
+        Map<String,Object> newValues = toValueMap("DATAELEM_ID", newId);
+        String whereClause = "PARENT_TYPE='" + parentType + "' and DATAELEM_ID=" + oldId;
+        return rowsCopyStatement("ATTRIBUTE", whereClause, newValues);
+    }
+
+    /**
+     *
+     * @param oldId
+     * @param newId
+     * @param parentType
+     * @return
+     */
+    protected static String complexAttrRowsCopyStatement(String oldId, String newId, String parentType){
+
+        Map<String,Object> newValues = toValueMap("PARENT_ID", newId);
+        newValues.put("ROW_ID", "md5(concat('" + newId + "',PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION))");
+        String whereClause = "PARENT_TYPE='" + parentType + "' and PARENT_ID=" + oldId;
+        return rowsCopyStatement("COMPLEX_ATTR_ROW", whereClause, newValues);
+    }
+
+    /**
+     *
+     * @param oldId
+     * @param newId
+     * @param parentType
+     * @return
+     */
+    protected static String complexAttrFieldsCopyStatement(String oldId, String newId, String parentType){
+
+        Map<String,Object> newValues = toValueMap("ROW_ID", "md5(concat('" + newId + "',PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION))");
+        String fromClause = "COMPLEX_ATTR_FIELD,COMPLEX_ATTR_ROW";
+        String whereClause = "COMPLEX_ATTR_FIELD.ROW_ID=COMPLEX_ATTR_ROW.ROW_ID and PARENT_TYPE='" + parentType + "' and PARENT_ID=" + oldId;
+        return rowsCopyStatement("COMPLEX_ATTR_FIELD", fromClause, whereClause, newValues);
+    }
+
+    /**
+     *
+     * @param oldId
+     * @param newId
+     * @param ownerType
+     * @return
+     */
+    protected static String documentsCopyStatement(String oldId, String newId, String ownerType){
+
+        Map<String,Object> newValues = toValueMap("OWNER_ID", newId);
+        String whereClause = "OWNER_TYPE='" + ownerType + "' and OWNER_ID=" + oldId;
+        return rowsCopyStatement("DOC", whereClause, newValues);
     }
 }

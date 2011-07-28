@@ -1,6 +1,7 @@
 package eionet.meta.savers;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
@@ -12,6 +13,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.junit.Test;
 
 import eionet.util.sql.ConnectionUtil;
+import eionet.util.sql.SQL;
 
 /**
  *
@@ -49,24 +51,50 @@ public class CopyHandlerTest extends DatabaseTestCase {
     public void testCopyAutoIncRow() throws SQLException, Exception{
 
         QueryDataSet queryDataSet = new QueryDataSet(getConnection());
-        queryDataSet.addTable("DATASET", "select * from DATASET where SHORT_NAME='test_dataset1'");
+        queryDataSet.addTable("DATASET", "select * from DATASET where SHORT_NAME='test_dataset1' order by DATASET_ID");
         ITable table = queryDataSet.getTable("DATASET");
-        int rowCountBefore = table.getRowCount();
 
-        assertEquals(1, rowCountBefore);
+        assertEquals(1, table.getRowCount());
 
         CopyHandler copyHandler = new CopyHandler(getConnection().getConnection(), null, null);
-        copyHandler.copyAutoIncRow("DATASET", "SHORT_NAME='test_dataset1'", "DATASET_ID");
+        int newId = copyHandler.copyAutoIncRow("DATASET", "SHORT_NAME='test_dataset1'", "DATASET_ID");
 
         queryDataSet = new QueryDataSet(getConnection());
         queryDataSet.addTable("DATASET", "select * from DATASET where SHORT_NAME='test_dataset1'");
         table = queryDataSet.getTable("DATASET");
 
-        int rowCountAfter = table.getRowCount();
         assertEquals(2, table.getRowCount());
 
         int dstId1 = Integer.parseInt(table.getValue(0, "DATASET_ID").toString());
         int dstId2 = Integer.parseInt(table.getValue(1, "DATASET_ID").toString());
         assertTrue(dstId1 != dstId2);
+        assertTrue(newId == dstId2);
+    }
+
+    /**
+     * @throws Exception
+     * @throws SQLException
+     *
+     */
+    @Test
+    public void testPreparedStatementWithNullValues() throws SQLException, Exception{
+
+        String sql1 = "update DATASET set USER=ifnull(?,USER) where IDENTIFIER='test_dataset1'";
+
+        Object[] values = {null};
+        SQL.executeUpdate(sql1, Arrays.asList(values), getConnection().getConnection());
+
+        QueryDataSet queryDataSet = new QueryDataSet(getConnection());
+        queryDataSet.addTable("DATASET", "select * from DATASET where IDENTIFIER='test_dataset1'");
+        ITable table = queryDataSet.getTable("DATASET");
+        assertEquals("heinlja", table.getValue(0, "USER").toString());
+
+        Object[] values2 = {"kasperen"};
+        SQL.executeUpdate(sql1, Arrays.asList(values2), getConnection().getConnection());
+
+        queryDataSet = new QueryDataSet(getConnection());
+        queryDataSet.addTable("DATASET", "select * from DATASET where IDENTIFIER='test_dataset1'");
+        table = queryDataSet.getTable("DATASET");
+        assertEquals("kasperen", table.getValue(0, "USER").toString());
     }
 }

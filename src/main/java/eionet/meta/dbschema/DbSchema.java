@@ -4,12 +4,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -31,7 +30,7 @@ public class DbSchema{
     private static DbSchema instance = new DbSchema();
 
     /** */
-    private HashMap<String,Set<String>> tablesColumns = new HashMap<String, Set<String>>();
+    private HashMap<String,List<String>> tablesColumns = new HashMap<String, List<String>>();
 
     /**
      *
@@ -69,7 +68,7 @@ public class DbSchema{
 
             for (String tableName : tablesColumns.keySet()){
 
-                LinkedHashSet<String> columns = new LinkedHashSet<String>();
+                ArrayList<String> columns = new ArrayList<String>();
 
                 rs = stmt.executeQuery("describe " + tableName);
                 while (rs.next()){
@@ -77,7 +76,7 @@ public class DbSchema{
                 }
                 SQL.close(rs);
 
-                tablesColumns.put(tableName, Collections.unmodifiableSet(columns));
+                tablesColumns.put(tableName, Collections.unmodifiableList(columns));
             }
         }
         finally{
@@ -92,8 +91,7 @@ public class DbSchema{
      * @param tableName
      * @return
      */
-    @SuppressWarnings("unchecked")
-    public static Set<String> getTableColumns(String tableName){
+    public static List<String> getTableColumns(String tableName){
 
         return instance.tablesColumns.get(tableName);
     }
@@ -103,13 +101,14 @@ public class DbSchema{
      * @param tableName
      * @return
      */
-    public static Set<String> getTableColumns(String tableName, String... skipColumns){
+    public static List<String> getTableColumns(String tableName, String... skipColumns){
 
         if (skipColumns==null || skipColumns.length==0){
             return getTableColumns(tableName);
         }
         else{
-            HashSet<String> result = new HashSet<String>(instance.tablesColumns.get(tableName));
+            List<String> columns = getTableColumns(tableName);
+            List<String> result = columns==null ? new ArrayList<String>() : new ArrayList<String>(columns);
             for (int i=0; i<skipColumns.length; i++){
                 result.remove(skipColumns[i]);
             }
@@ -123,13 +122,14 @@ public class DbSchema{
      * @param skipColumns
      * @return
      */
-    public static Set<String> getTableColumns(String tableName, Collection<String> skipColumns){
+    public static List<String> getTableColumns(String tableName, Collection<String> skipColumns){
 
         if (skipColumns==null || skipColumns.isEmpty()){
             return getTableColumns(tableName);
         }
         else{
-            HashSet<String> result = new HashSet<String>(instance.tablesColumns.get(tableName));
+            List<String> columns = getTableColumns(tableName);
+            List<String> result = columns==null ? new ArrayList<String>() : new ArrayList<String>(columns);
             for (String skipColumn : skipColumns){
                 result.remove(skipColumn);
             }

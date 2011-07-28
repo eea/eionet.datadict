@@ -25,7 +25,7 @@ public class CopyHandlerStaticTest extends TestCase{
 
         String whereClause = "USER='heinlja'";
         String start = "insert into DATASET (";
-        String actual = CopyHandler.copyRowsStatement("DATASET", whereClause, null);
+        String actual = CopyHandler.rowsCopyStatement("DATASET", whereClause, null);
 
         assertTrue(actual.startsWith(start));
         int i = actual.indexOf(")", start.length());
@@ -49,7 +49,7 @@ public class CopyHandlerStaticTest extends TestCase{
 
         String whereClause = "USER='heinlja'";
         String start = "insert into DATASET (";
-        String actual = CopyHandler.copyRowsStatement("DATASET", whereClause, newValues);
+        String actual = CopyHandler.rowsCopyStatement("DATASET", whereClause, newValues);
 
         System.out.println("actual: " + actual);
 
