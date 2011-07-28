@@ -65,15 +65,6 @@
 		<url-pattern>/clean.jsp</url-pattern>
   	</filter-mapping>
 
-  	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <!--              listeners                 -->
-    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-
-    <listener>
-        <listener-class>eionet.meta.dbschema.DbSchema</listener-class>
-    </listener>
-
-
 <!-- servlets -->
 
 	<servlet>

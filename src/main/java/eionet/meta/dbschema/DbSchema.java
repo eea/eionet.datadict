@@ -10,9 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
 import org.apache.log4j.Logger;
 
 import eionet.util.sql.ConnectionUtil;
@@ -24,16 +21,30 @@ import eionet.util.sql.SQL;
  * @author Jaanus Heinlaid
  *
  */
-public class DbSchema implements ServletContextListener{
+public class DbSchema{
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(DbSchema.class);
 
     /** */
-    private static DbSchema instance;
+    private static DbSchema instance = new DbSchema();
 
     /** */
     private HashMap<String,Set<String>> tablesColumns = new HashMap<String, Set<String>>();
+
+    /**
+     *
+     */
+    private DbSchema(){
+
+        try {
+            init();
+        } catch (DDConnectionException e) {
+            LOGGER.fatal("Failed to get connection", e);
+        } catch (SQLException e) {
+            LOGGER.fatal("Failed to initialize " + DbSchema.class.getSimpleName(), e);
+        }
+    }
 
     /**
      * @throws DDConnectionException
@@ -123,33 +134,5 @@ public class DbSchema implements ServletContextListener{
             }
             return result;
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
-     */
-    @Override
-    public void contextInitialized(ServletContextEvent contextEvent) {
-
-        String simpleName = DbSchema.class.getSimpleName();
-        LOGGER.debug("Initializing " + simpleName);
-        try {
-            init();
-            instance = this;
-
-        } catch (DDConnectionException e) {
-            LOGGER.fatal("Failed to get connection", e);
-        } catch (SQLException e) {
-            LOGGER.fatal("Failed to initialize " + simpleName, e);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
-     */
-    @Override
-    public void contextDestroyed(ServletContextEvent contextEvent) {
     }
 }

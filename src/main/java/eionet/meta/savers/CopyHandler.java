@@ -776,7 +776,7 @@ public class CopyHandler extends Object {
      * @return
      * @throws SQLException
      */
-    private int copyAutoIncRow(String tableName, String whereClause, String autoIncColumn) throws SQLException {
+    protected int copyAutoIncRow(String tableName, String whereClause, String autoIncColumn) throws SQLException {
 
         if (Util.isEmpty(tableName) || Util.isEmpty(autoIncColumn)) {
             throw new IllegalArgumentException("Table name and auto-increment column name must be given!");
@@ -818,7 +818,7 @@ public class CopyHandler extends Object {
      * @param newValues
      * @return
      */
-    private static String copyRowsStatement(String tableName, String whereClause, LinkedHashMap<String, Object> newValues) {
+    protected static String copyRowsStatement(String tableName, String whereClause, LinkedHashMap<String, Object> newValues) {
 
         if (Util.isEmpty(tableName)) {
             throw new IllegalArgumentException("Table name must be given!");
