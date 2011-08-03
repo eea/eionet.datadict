@@ -24,14 +24,16 @@ public class ElmPdfFactsheet extends PdfHandout {
 
     public void write(String elemID) throws Exception {
 
-        if (Util.isEmpty(elemID))
+        if (Util.isEmpty(elemID)) {
             throw new Exception("Data element ID not specified!");
+        }
 
         // Get the data element object. This will also give us the
         // element's simple attributes + tableID
         DataElement elem = searchEngine.getDataElement(elemID);
-        if (elem == null)
+        if (elem == null) {
             throw new Exception("Data element not found!");
+        }
 
         // get and set the element's complex attributes
         elem.setComplexAttributes(searchEngine.getComplexAttributes(elemID, "E", null, elem.getTableID(), elem.getDatasetID()));
@@ -79,12 +81,6 @@ public class ElmPdfFactsheet extends PdfHandout {
                 attrs.add(0, hash);
             }
         }
-
-        /*
-         * extends String extID = elem.getExtension(); if (!Util.voidStr(extID)) { DataElement extElem =
-         * searchEngine.getDataElement(elemID); if (extElem != null) { hash = new Hashtable(); hash.put("name", "Extends");
-         * hash.put("value", extElem.getShortName()); v.add(0, hash); } }
-         */
 
         // short name
         hash = new Hashtable();

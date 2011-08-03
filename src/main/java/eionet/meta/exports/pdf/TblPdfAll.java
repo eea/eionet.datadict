@@ -34,12 +34,13 @@ public class TblPdfAll {
     /////////////
 
     public TblPdfAll(DDSearchEngine searchEngine, DstPdfAll owner)
-        throws Exception {
+    throws Exception {
 
         //if (parentSection==null) throw new Exception("parentSection cannot be null!");
 
-        if (searchEngine==null)
+        if (searchEngine==null) {
             throw new Exception("searchEngine cannot be null!");
+        }
 
         this.searchEngine = searchEngine;
         //this.parentSection = parentSection;
@@ -52,13 +53,15 @@ public class TblPdfAll {
 
     protected void write(String tblID, String dstID) throws Exception {
 
-        if (Util.isEmpty(tblID))
+        if (Util.isEmpty(tblID)) {
             throw new Exception("Table ID not specified");
+        }
 
         // get the table
         DsTable dsTable = searchEngine.getDatasetTable(tblID, dstID);
-        if (dsTable == null)
+        if (dsTable == null) {
             throw new Exception("Table not found!");
+        }
 
         // get simple attributes
         Vector v = searchEngine.getSimpleAttributes(tblID, "T");
@@ -69,31 +72,25 @@ public class TblPdfAll {
         v = searchEngine.getDataElements(null, null, null, null, tblID);
         dsTable.setElements(v);
 
-        // get the dataset basic info
-        /* JH151003 - not needed, cause tbl gdln is always part of a dst gdln
-        Dataset ds = null;
-        if (!Util.voidStr(dsTable.getDatasetID())) {
-            ds = searchEngine.getDataset(dsTable.getDatasetID());
-        }
-        */
-
         write(dsTable);
     }
 
     /**
-    * Write a full guideline for a dataset table given by table object.
-    */
+     * Write a full guideline for a dataset table given by table object.
+     */
     private void write(DsTable dsTable) throws Exception {
 
-        if (dsTable==null)
+        if (dsTable==null) {
             throw new Exception("Table object was null!");
+        }
 
         String s = dsTable.getAttributeValueByShortName("Name");
         String tblName = Util.isEmpty(s) ? dsTable.getShortName() : s;
 
         String nr = "";
-        if (owner != null)
+        if (owner != null) {
             nr = owner.getSectioning().level(tblName + " table", 2);
+        }
         nr = nr==null ? "" : nr + " ";
 
         Paragraph prg = new Paragraph();
@@ -129,8 +126,9 @@ public class TblPdfAll {
 
         // write table elements factlist, but first get fixed values & fk rels
         v = dsTable.getElements();
-        if (v==null || v.size()==0)
+        if (v==null || v.size()==0) {
             return;
+        }
 
         DataElement elem = null;
         String dstID = params==null ? null : params.getParameter("dstID");
@@ -150,7 +148,7 @@ public class TblPdfAll {
         }
 
         addElement(new Paragraph("Columns in the table:",
-                                            Fonts.get(Fonts.HEADING_0)));
+                Fonts.get(Fonts.HEADING_0)));
         addElement(PdfUtil.tableElements(v, null, null));
 
         // write data element full guidelines, each into a separate chapter
@@ -165,8 +163,9 @@ public class TblPdfAll {
 
     protected void addElement(Element elm) {
 
-        if (owner!=null)
+        if (owner!=null) {
             owner.addElement(elm);
+        }
 
         //if (elm != null) section.add(elm);
         //return docElements.size();
@@ -181,9 +180,10 @@ public class TblPdfAll {
     }
 
     protected Sectioning getSectioning() {
-        if (owner!=null)
+        if (owner!=null) {
             return owner.getSectioning();
-        else
+        } else {
             return null;
+        }
     }
 }

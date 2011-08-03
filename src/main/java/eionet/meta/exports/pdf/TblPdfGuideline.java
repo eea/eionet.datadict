@@ -35,12 +35,13 @@ public class TblPdfGuideline {
     /////////////
 
     public TblPdfGuideline(DDSearchEngine searchEngine, DstPdfGuideline owner)//, Section parentSection)
-        throws Exception {
+    throws Exception {
 
         //if (parentSection==null) throw new Exception("parentSection cannot be null!");
 
-        if (searchEngine==null)
+        if (searchEngine==null) {
             throw new Exception("searchEngine cannot be null!");
+        }
 
         this.searchEngine = searchEngine;
         //this.parentSection = parentSection;
@@ -54,13 +55,15 @@ public class TblPdfGuideline {
 
     protected void write(String tblID, String dstID) throws Exception {
 
-        if (Util.isEmpty(tblID))
+        if (Util.isEmpty(tblID)) {
             throw new Exception("Table ID not specified");
+        }
 
         // get the table
         DsTable dsTable = searchEngine.getDatasetTable(tblID, dstID);
-        if (dsTable == null)
+        if (dsTable == null) {
             throw new Exception("Table not found!");
+        }
 
         // get simple attributes
         Vector v = searchEngine.getSimpleAttributes(tblID, "T");
@@ -71,24 +74,17 @@ public class TblPdfGuideline {
         v = searchEngine.getDataElements(null, null, null, null, tblID);
         dsTable.setElements(v);
 
-        // get the dataset basic info
-        /* JH151003 - not needed, cause tbl gdln is always part of a dst gdln
-        Dataset ds = null;
-        if (!Util.voidStr(dsTable.getDatasetID())) {
-            ds = searchEngine.getDataset(dsTable.getDatasetID());
-        }
-        */
-
         write(dsTable);
     }
 
     /**
-    * Write a full guideline for a dataset table given by table object.
-    */
+     * Write a full guideline for a dataset table given by table object.
+     */
     private void write(DsTable dsTable) throws Exception {
 
-        if (dsTable==null)
+        if (dsTable==null) {
             throw new Exception("Table object was null!");
+        }
 
         String s = dsTable.getAttributeValueByShortName("Name");
         String tblName = Util.isEmpty(s) ? dsTable.getShortName() : s;
@@ -96,14 +92,16 @@ public class TblPdfGuideline {
         String titleTail = hasGIS ? "" : " table";
 
         String nr = "";
-        if (owner != null)
+        if (owner != null) {
             nr = owner.getSectioning().level(tblName + titleTail, 2);
+        }
         nr = nr==null ? "" : nr + " ";
 
         Paragraph prg = new Paragraph();
         prg.add(new Chunk(nr + tblName, Fonts.getUnicode(14, Font.BOLD)));
-        if (titleTail.length()>0)
+        if (titleTail.length()>0) {
             prg.add(new Chunk(titleTail, Fonts.getUnicode(14)));
+        }
 
         //section = parentSection.addSection(prg, 2);
 
@@ -144,8 +142,9 @@ public class TblPdfGuideline {
         // and split the elements vector into GIS and non-GIS
 
         v = dsTable.getElements();
-        if (v==null || v.size()==0)
+        if (v==null || v.size()==0) {
             return;
+        }
 
         Vector gisElms = new Vector();
         Vector nonGisElms = new Vector();
@@ -162,10 +161,11 @@ public class TblPdfGuideline {
             elem.setAttributes(attrs);
 
             // split vector by GIS
-            if (elem.getGIS()!=null)
+            if (elem.getGIS()!=null) {
                 gisElms.add(elem);
-            else
+            } else {
                 nonGisElms.add(elem);
+            }
         }
 
         if (owner!=null) {
@@ -179,15 +179,15 @@ public class TblPdfGuideline {
         // write non-GIS elements factlist
         prg = new Paragraph();
         prg.add(new Chunk("Columns in ",
-                        FontFactory.getFont(FontFactory.HELVETICA, 12)));
+                FontFactory.getFont(FontFactory.HELVETICA, 12)));
         prg.add(new Chunk(tblName,
-                        FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
         prg.add(new Chunk(nonGisTitle,
-                        FontFactory.getFont(FontFactory.HELVETICA, 12)));
+                FontFactory.getFont(FontFactory.HELVETICA, 12)));
         addElement(prg);
 
         addElement(
-            PdfUtil.tableElements(nonGisElms, null, owner.getSectioning()));
+                PdfUtil.tableElements(nonGisElms, null, owner.getSectioning()));
 
         // write GIS elements factlist
         if (gisElms.size()>0) {
@@ -195,15 +195,15 @@ public class TblPdfGuideline {
 
             prg = new Paragraph();
             prg.add(new Chunk("Columns in ",
-                            FontFactory.getFont(FontFactory.HELVETICA, 12)));
+                    FontFactory.getFont(FontFactory.HELVETICA, 12)));
             prg.add(new Chunk(tblName,
-                            FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
             prg.add(new Chunk(gisTitle,
-                            FontFactory.getFont(FontFactory.HELVETICA, 12)));
+                    FontFactory.getFont(FontFactory.HELVETICA, 12)));
             addElement(prg);
 
             addElement(
-                PdfUtil.tableElements(gisElms, null, owner.getSectioning()));
+                    PdfUtil.tableElements(gisElms, null, owner.getSectioning()));
         }
 
         /* write data element full guidelines, each into a separate chapter
@@ -218,8 +218,9 @@ public class TblPdfGuideline {
 
     protected void addElement(Element elm) {
 
-        if (owner!=null)
+        if (owner!=null) {
             owner.addElement(elm);
+        }
 
         //if (elm != null) section.add(elm);
         //return docElements.size();
@@ -234,10 +235,11 @@ public class TblPdfGuideline {
     }
 
     protected Sectioning getSectioning() {
-        if (owner!=null)
+        if (owner!=null) {
             return owner.getSectioning();
-        else
+        } else {
             return null;
+        }
     }
 
     public void setGIS(boolean hasGIS) {

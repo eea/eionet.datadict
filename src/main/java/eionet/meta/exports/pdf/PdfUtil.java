@@ -45,7 +45,7 @@ public class PdfUtil {
 
         // add caption row
         PdfPCell cell = new PdfPCell(new Phrase("Foreign keys",
-                                     Fonts.get(Fonts.TBL_CAPTION)));
+                Fonts.get(Fonts.TBL_CAPTION)));
 
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setPaddingLeft(5);
@@ -89,29 +89,32 @@ public class PdfUtil {
                 cell.setPaddingLeft(5);
                 cell.setBorder(Rectangle.NO_BORDER);
 
-                if (i % 2 == 1)
+                if (i % 2 == 1) {
                     cell.setGrayFill(0.9f);
+                }
 
                 table.addCell(cell);
             }
         }
 
-        if (table.size() > 0)
+        if (table.size() > 0) {
             return table;
-        else
+        } else {
             return null;
+        }
     }
 
     public static PdfPTable simpleAttributesTable(Vector attrs)
-            throws Exception {
+    throws Exception {
         return simpleAttributesTable(attrs, null);
     }
 
     public static PdfPTable simpleAttributesTable(Vector attrs, Vector map)
-        throws Exception {
+    throws Exception {
 
-        if (attrs ==null || attrs.size() == 0)
+        if (attrs ==null || attrs.size() == 0) {
             return null;
+        }
 
         Vector show = map==null ? new Vector() : (Vector)map.clone();
         // set up the table
@@ -139,11 +142,6 @@ public class PdfUtil {
                 name = (String)((Hashtable)o).get("name");
                 dispName = name;
                 value = (String)((Hashtable)o).get("value");
-                /*String _value = (String)((Hashtable)o).get("value");
-                if (!Util.voidStr(_value)) {
-                    values = new Vector();
-                    values.add(_value);
-                }*/
             }
             else if (o.getClass().getName().endsWith("DElemAttribute")) {
                 name = ((DElemAttribute)o).getShortName();
@@ -152,26 +150,18 @@ public class PdfUtil {
 
                 // JH201103 - skip image attributes, will be treated later
                 String dispType = ((DElemAttribute)o).getDisplayType();
-                if (dispType!=null && dispType.equals("image"))
+                if (dispType!=null && dispType.equals("image")){
                     continue;
-
-                /*String dispMultiple = ((DElemAttribute)o).getDisplayMultiple();
-                if (Util.voidStr(dispMultiple)) dispMultiple = "0";
-                if (dispMultiple.equals("1")) {
-                    values = ((DElemAttribute)o).getValues();
                 }
-                else {
-                    String _value = ((DElemAttribute)o).getValue();
-                    if (!Util.voidStr(_value)) {
-                        values = new Vector();
-                        values.add(_value);
-                    }
-                }*/
             }
 
-            if (Util.isEmpty(value) || Util.isEmpty(name)) continue;
+            if (Util.isEmpty(value) || Util.isEmpty(name)) {
+                continue;
+            }
             int pos = map==null ? show.size() : show.indexOf(name);
-            if (pos<0) continue;
+            if (pos<0) {
+                continue;
+            }
 
             /*if (show!=null && !show.contains(name)) continue;
             if (name.equalsIgnoreCase("methodology")) {
@@ -182,32 +172,37 @@ public class PdfUtil {
             //int c;
             Vector values = new Vector();
             StringTokenizer st = new StringTokenizer(value, "\n");
-            while (st.hasMoreTokens()) values.add(st.nextToken());
+            while (st.hasMoreTokens()) {
+                values.add(st.nextToken());
+            }
 
             Hashtable hash = new Hashtable();
             hash.put("name", dispName);
             hash.put("values", values);
 
-            if (map!=null)
+            if (map!=null) {
                 show.remove(pos);
+            }
             show.add(pos, hash);
         }
 
-            /*for (c=0; c<(value.length() / MAX_VALUE_LEN); c++)
+        /*for (c=0; c<(value.length() / MAX_VALUE_LEN); c++)
                 values.add(value.substring(c*MAX_VALUE_LEN, (c+1)*MAX_VALUE_LEN));
             if (value.length() > c*MAX_VALUE_LEN)
                 values.add(value.substring(c*MAX_VALUE_LEN));*/
 
-            //if (values==null || values.size()==0) continue;
-            //for (int j=0; j<values.size(); j++) {
-            //String _name = j==0 ? name : "";
-            //nameCell = new PdfPCell(new Phrase(_name, Fonts.get(Fonts.ATTR_TITLE)));
-            //valueCell = new PdfPCell(processLinks((String)values.get(j), Fonts.get(Fonts.CELL_VALUE)));
+        //if (values==null || values.size()==0) continue;
+        //for (int j=0; j<values.size(); j++) {
+        //String _name = j==0 ? name : "";
+        //nameCell = new PdfPCell(new Phrase(_name, Fonts.get(Fonts.ATTR_TITLE)));
+        //valueCell = new PdfPCell(processLinks((String)values.get(j), Fonts.get(Fonts.CELL_VALUE)));
 
         for (int i=0; show!=null && i<show.size(); i++) {
 
             Object o = show.get(i);
-            if (!o.getClass().getName().endsWith("Hashtable")) continue;
+            if (!o.getClass().getName().endsWith("Hashtable")) {
+                continue;
+            }
             Hashtable hash = (Hashtable)o;
             String dispName = (String)hash.get("name");
             Vector values   = (Vector)hash.get("values");
@@ -218,12 +213,12 @@ public class PdfUtil {
                 String value = PdfUtil.rmvCR((String)values.get(j));
 
                 nameCell = new PdfPCell(new Phrase(dispName,
-                                            Fonts.get(Fonts.ATTR_TITLE)));
+                        Fonts.get(Fonts.ATTR_TITLE)));
                 /*BaseFont bf = BaseFont.createFont("/home/www/webs/datadict/public/WEB-INF/classes/arial.ttf",
                                 BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
                 Font font = new Font(bf, 10);*/
                 valueCell = new PdfPCell(process(value,
-                                            Fonts.get(Fonts.CELL_VALUE)));
+                        Fonts.get(Fonts.CELL_VALUE)));
                 valueCell.setLeading(9*1.2f, 0);
 
                 nameCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -243,19 +238,21 @@ public class PdfUtil {
             rowCount++;
         }
 
-        if (table.size() > 0)
+        if (table.size() > 0) {
             return table;
-        else
+        } else {
             return null;
+        }
     }
 
     public static PdfPTable complexAttributeTable(DElemAttribute attr)
-        throws Exception {
+    throws Exception {
 
         // get the attribute fields
         Vector fields = attr.getFields();
-        if (fields==null || fields.size()==0)
+        if (fields==null || fields.size()==0) {
             return null;
+        }
 
         int fieldCount = fields.size();
 
@@ -278,9 +275,9 @@ public class PdfUtil {
         // add caption row
         PdfPCell cell =
             new PdfPCell(new Phrase(attr.getName()==null ?
-                                    attr.getShortName() :
-                                    attr.getName(),
-                                    Fonts.get(Fonts.TBL_CAPTION)));
+                    attr.getShortName() :
+                        attr.getName(),
+                        Fonts.get(Fonts.TBL_CAPTION)));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setPaddingLeft(5);
         cell.setColspan(fieldCount);
@@ -314,7 +311,9 @@ public class PdfUtil {
                 String fieldID = (String)fieldHash.get("id");
                 String fieldValue = fieldID==null ? " " : (String)rowHash.get(fieldID);
 
-                if (fieldValue == null) fieldValue = " ";
+                if (fieldValue == null) {
+                    fieldValue = " ";
+                }
 
                 Phrase phr = process(fieldValue, Fonts.get(Fonts.CELL_VALUE));
                 cell = new PdfPCell(phr);
@@ -322,31 +321,34 @@ public class PdfUtil {
                 cell.setPaddingLeft(5);
                 cell.setBorder(Rectangle.NO_BORDER);
 
-                if (i % 2 == 1)
+                if (i % 2 == 1) {
                     cell.setGrayFill(0.9f);
+                }
 
                 table.addCell(cell);
             }
         }
 
-        if (table.size() > 0)
+        if (table.size() > 0) {
             return table;
-        else
+        } else {
             return null;
+        }
     }
 
     public static PdfPTable tableElements(Vector tblElems, Vector captions)
-                                                            throws Exception {
+    throws Exception {
         return tableElements(tblElems, captions, null);
     }
 
     public static PdfPTable tableElements(Vector tblElems,
-                                          Vector captions,
-                                          Sectioning sect)
-        throws Exception {
+            Vector captions,
+            Sectioning sect)
+    throws Exception {
 
-        if (tblElems ==null || tblElems.size() == 0)
+        if (tblElems ==null || tblElems.size() == 0) {
             return null;
+        }
 
         // set up the PDF table
         int colCount = sect==null ? 3 : 5;
@@ -356,10 +358,11 @@ public class PdfUtil {
         // set the column widths
         float headerwidths1[] = {7, 17, 26, 23, 17}; // percentage
         float headerwidths2[] = {25, 45, 30}; // percentage
-        if (sect!=null)
+        if (sect!=null) {
             table.setWidths(headerwidths1);
-        else
+        } else {
             table.setWidths(headerwidths2);
+        }
         table.setWidthPercentage(100); // percentage
 
         // start adding rows and cells
@@ -449,13 +452,15 @@ public class PdfUtil {
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setPaddingLeft(5);
 
-                if (i == tblElems.size()-1)
+                if (i == tblElems.size()-1) {
                     cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
-                else
+                } else {
                     cell.setBorder(Rectangle.LEFT);
+                }
 
-                if (i % 2 == 1)
+                if (i % 2 == 1) {
                     cell.setGrayFill(0.9f);
+                }
 
                 table.addCell(cell);
             }
@@ -467,34 +472,40 @@ public class PdfUtil {
             Vector fks = elem.getFKRelations();
 
             String pori = elem.getAttributeValueByShortName("PublicOrInternal");
-            if (pori!=null && pori.equalsIgnoreCase("undefined")) pori = null;
+            if (pori!=null && pori.equalsIgnoreCase("undefined")) {
+                pori = null;
+            }
 
             Phrase phr = new Phrase();
             phr.add(process(name + "\n", Fonts.get(Fonts.CELL_VALUE_BOLD)));
             phr.add(process("(" + shortName + ")\n",
-                                        Fonts.get(Fonts.CELL_VALUE)));
-            if (!Util.isEmpty(pori))
+                    Fonts.get(Fonts.CELL_VALUE)));
+            if (!Util.isEmpty(pori)) {
                 phr.add(new Chunk("\n" + pori,
-                    FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
-            if (fks!=null && fks.size()>0)
+                        FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
+            }
+            if (fks!=null && fks.size()>0) {
                 phr.add(new Chunk("\nForeign key",
-                    FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
+                        FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
+            }
             if (elem.getGIS()!=null) {
                 phr.add(new Chunk("\n" + elem.getGIS(),
-                    FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
+                        FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
             }
 
             cell = new PdfPCell(phr);
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
 
-            if (i == tblElems.size()-1)
+            if (i == tblElems.size()-1) {
                 cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
-            else
+            } else {
                 cell.setBorder(Rectangle.LEFT);
+            }
 
-            if (i % 2 == 1)
+            if (i % 2 == 1) {
                 cell.setGrayFill(0.9f);
+            }
 
             table.addCell(cell);
 
@@ -507,13 +518,15 @@ public class PdfUtil {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
 
-            if (i == tblElems.size()-1)
+            if (i == tblElems.size()-1) {
                 cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
-            else
+            } else {
                 cell.setBorder(Rectangle.LEFT);
+            }
 
-            if (i % 2 == 1)
+            if (i % 2 == 1) {
                 cell.setGrayFill(0.9f);
+            }
 
             table.addCell(cell);
 
@@ -522,9 +535,11 @@ public class PdfUtil {
                 String method =elem.getAttributeValueByShortName("Methodology");
                 method = method==null ? "" : method;
                 if (elem.hasImages()) {
-                    if (method.length()>0) method = method + "\n";
+                    if (method.length()>0) {
+                        method = method + "\n";
+                    }
                     method = method + "Illustrations(s): see section " +
-                        sect.getRefIllustrations();
+                    sect.getRefIllustrations();
                 }
 
                 phr = process(method, Fonts.get(Fonts.CELL_VALUE));
@@ -532,13 +547,15 @@ public class PdfUtil {
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setPaddingLeft(5);
 
-                if (i == tblElems.size()-1)
+                if (i == tblElems.size()-1) {
                     cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
-                else
+                } else {
                     cell.setBorder(Rectangle.LEFT);
+                }
 
-                if (i % 2 == 1)
+                if (i % 2 == 1) {
                     cell.setGrayFill(0.9f);
+                }
 
                 table.addCell(cell);
             }
@@ -546,29 +563,33 @@ public class PdfUtil {
             // add data specs
             StringBuffer dataspecs = new StringBuffer();
             String datatype = elem.getAttributeValueByShortName("Datatype");
-            if (datatype!=null)
+            if (datatype!=null) {
                 dataspecs.append(datatype);
+            }
 
 
             if (elemType.equals("CH1")) {
                 Vector fxvs = elem.getFixedValues();
                 if (fxvs==null || fxvs.size()==0) {
-                    if (dataspecs.length()>0)
+                    if (dataspecs.length()>0) {
                         dataspecs.append(" codelist");
-                    else
+                    } else {
                         dataspecs.append("Codelist");
+                    }
                 }
                 else {
-                    if (dataspecs.length()>0)
+                    if (dataspecs.length()>0) {
                         dataspecs.append(" codelist:\nsee ");
-                    else
+                    } else {
                         dataspecs.append("Codelist:\nsee ");
+                    }
 
-                    if (sect==null)
+                    if (sect==null) {
                         dataspecs.append("below");
-                    else
+                    } else {
                         dataspecs.append("section ").
                         append(sect.getRefCodelists());
+                    }
                 }
             }
             else if (elemType.equals("CH2")) {
@@ -576,66 +597,42 @@ public class PdfUtil {
                     dataspecs.insert(0, "Datatype: ");
 
                     String[][] ss = {{"MinSize", "Minimum size: "},
-                                {"MaxSize", "Maximum size: "},
-                                {"MinInclusiveValue", "Minimum inclusive value: "},
-                                {"MinExclusiveValue", "Minimum exclusive value: "},
-                                {"MaxInclusiveValue", "Maximum inclusive value: "},
-                                {"MaxExclusiveValue", "Maximum exclusive value: "},
-                                {"DecimalPrecision", "Decimal precision: "},
-                                {"Unit", "Unit: "}};
+                            {"MaxSize", "Maximum size: "},
+                            {"MinInclusiveValue", "Minimum inclusive value: "},
+                            {"MinExclusiveValue", "Minimum exclusive value: "},
+                            {"MaxInclusiveValue", "Maximum inclusive value: "},
+                            {"MaxExclusiveValue", "Maximum exclusive value: "},
+                            {"DecimalPrecision", "Decimal precision: "},
+                            {"Unit", "Unit: "}};
                     for (int k=0; k<ss.length; k++) {
                         String value =
                             elem.getAttributeValueByShortName(ss[k][0]);
-                        if (!Util.isEmpty(value))
+                        if (!Util.isEmpty(value)) {
                             dataspecs.append("\n").
                             append(ss[k][1]).append(value);
+                        }
                     }
-                }
-                else
+                } else {
                     dataspecs = new StringBuffer(" ");
+                }
             }
 
             cell = new PdfPCell(process(dataspecs.toString(),
-                                            Fonts.get(Fonts.CELL_VALUE)));
+                    Fonts.get(Fonts.CELL_VALUE)));
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
 
-            if (i == tblElems.size()-1)
+            if (i == tblElems.size()-1) {
                 cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
-            else
+            } else {
                 cell.setBorder(Rectangle.LEFT);
+            }
 
-            if (i % 2 == 1)
+            if (i % 2 == 1) {
                 cell.setGrayFill(0.9f);
+            }
 
             table.addCell(cell);
-
-            /* add definition
-            String definition = elem.getAttributeValueByShortName("Definition");
-            if (Util.voidStr(definition)) definition = " ";
-            cell = new PdfPCell(processLinks(definition, Fonts.get(Fonts.CELL_VALUE)));
-            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            cell.setPaddingLeft(5);
-
-            if (i == tblElems.size()-1)
-                cell.setBorder(Rectangle.LEFT + Rectangle.RIGHT + Rectangle.BOTTOM);
-            else
-                cell.setBorder(Rectangle.LEFT + Rectangle.RIGHT);
-
-            if (i % 2 == 1)
-                cell.setGrayFill(0.9f);
-
-            table.addCell(cell);
-
-            // add foreign key indicator if the elem is part of an FK
-            Vector fks = elem.getFKRelations();
-            wasFK = fks!=null && fks.size()>0;
-            String phr = (fks!=null && fks.size()>0) ? "(FK)" : "    ";
-            cell = new PdfPCell(new Phrase(phr, Fonts.get(Fonts.FK_INDICATOR)));
-            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            cell.setPaddingLeft(5);
-            cell.setBorder(Rectangle.NO_BORDER);
-            table.addCell(cell);*/
         }
 
         if (wasFK) {
@@ -661,13 +658,13 @@ public class PdfUtil {
         if (table.size() > 0) {
             table.setHeaderRows(1);
             return table;
-        }
-        else
+        } else {
             return null;
+        }
     }
 
     public static PdfPTable tableElements(Vector tblElems)
-        throws Exception {
+    throws Exception {
 
         return tableElements(tblElems, null);
     }
@@ -675,8 +672,9 @@ public class PdfUtil {
     public static PdfPTable codelist(Vector fxvs) throws Exception {
 
 
-        if (fxvs ==null || fxvs.size() == 0)
+        if (fxvs ==null || fxvs.size() == 0) {
             return null;
+        }
 
         // set up the PDF table
         PdfPTable table = new PdfPTable(3);
@@ -722,7 +720,9 @@ public class PdfUtil {
         for (int i=0; i<fxvs.size(); i++) {
             FixedValue fxv = (FixedValue)fxvs.get(i);
             String val = fxv.getValue();
-            if (Util.isEmpty(val)) continue;
+            if (Util.isEmpty(val)) {
+                continue;
+            }
 
             String def = fxv.getDefinition();
             def = def==null ? "" : def;
@@ -736,13 +736,15 @@ public class PdfUtil {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
 
-            if (i == fxvs.size()-1)
+            if (i == fxvs.size()-1) {
                 cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
-            else
+            } else {
                 cell.setBorder(Rectangle.LEFT);
+            }
 
-            if (i % 2 == 1)
+            if (i % 2 == 1) {
                 cell.setGrayFill(0.9f);
+            }
 
             table.addCell(cell);
 
@@ -752,13 +754,15 @@ public class PdfUtil {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
 
-            if (i == fxvs.size()-1)
+            if (i == fxvs.size()-1) {
                 cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
-            else
+            } else {
                 cell.setBorder(Rectangle.LEFT);
+            }
 
-            if (i % 2 == 1)
+            if (i % 2 == 1) {
                 cell.setGrayFill(0.9f);
+            }
 
             table.addCell(cell);
 
@@ -768,13 +772,15 @@ public class PdfUtil {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
 
-            if (i == fxvs.size()-1)
+            if (i == fxvs.size()-1) {
                 cell.setBorder(Rectangle.LEFT + Rectangle.BOTTOM);
-            else
+            } else {
                 cell.setBorder(Rectangle.LEFT);
+            }
 
-            if (i % 2 == 1)
+            if (i % 2 == 1) {
                 cell.setGrayFill(0.9f);
+            }
 
             table.addCell(cell);
         }
@@ -782,17 +788,18 @@ public class PdfUtil {
         if (table.size() > 0) {
             table.setHeaderRows(1);
             return table;
-        }
-        else
+        } else {
             return null;
+        }
     }
 
     public static PdfPTable vsTable(String filePath, String vsTitle)
-        throws Exception {
+    throws Exception {
 
         com.lowagie.text.Image vsImage = vsImage(filePath);
-        if (vsImage == null)
+        if (vsImage == null) {
             return null;
+        }
 
         PdfPTable table = new PdfPTable(1);
         int headerwidths[] = {100}; // percentage
@@ -827,17 +834,19 @@ public class PdfUtil {
         cell.setBorder(com.lowagie.text.Rectangle.NO_BORDER);
         table.addCell(cell);
 
-        if (table.size() > 0)
+        if (table.size() > 0) {
             return table;
-        else
+        } else {
             return null;
+        }
     }
 
     public static PdfPTable fixedValuesTable(Vector fxValues, boolean levelled)
-        throws Exception {
+    throws Exception {
 
-        if (fxValues==null || fxValues.size()==0)
+        if (fxValues==null || fxValues.size()==0) {
             return null;
+        }
 
         // set up the PDF table
         PdfPTable table = new PdfPTable(2);
@@ -882,31 +891,35 @@ public class PdfUtil {
             cell.setPaddingLeft(5);
             cell.setBorder(Rectangle.NO_BORDER);
 
-            if (i % 2 == 1)
+            if (i % 2 == 1) {
                 cell.setGrayFill(0.9f);
+            }
 
             table.addCell(cell);
 
             // definition
             String definition = fxv.getDefinition();
-            if (Util.isEmpty(definition))
+            if (Util.isEmpty(definition)) {
                 definition = " ";
+            }
             phr = process(definition, Fonts.get(Fonts.CELL_VALUE));
             cell = new PdfPCell(phr);
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setPaddingLeft(5);
             cell.setBorder(Rectangle.NO_BORDER);
 
-            if (i % 2 == 1)
+            if (i % 2 == 1) {
                 cell.setGrayFill(0.9f);
+            }
 
             table.addCell(cell);
         }
 
-        if (table.size() > 0)
+        if (table.size() > 0) {
             return table;
-        else
+        } else {
             return null;
+        }
     }
 
     public static PdfPTable tablesList(Vector tables) throws Exception {
@@ -914,11 +927,12 @@ public class PdfUtil {
     }
 
     public static PdfPTable tablesList(Vector tables, Vector headers)
-                                                            throws Exception {
+    throws Exception {
 
         // get the attribute fields
-        if (tables==null || tables.size()==0)
+        if (tables==null || tables.size()==0) {
             return null;
+        }
 
         if (headers==null) {
             headers = new Vector();
@@ -986,8 +1000,9 @@ public class PdfUtil {
                 cell.setPaddingLeft(5);
                 cell.setBorder(Rectangle.NO_BORDER);
 
-                if (i % 2 == 1)
+                if (i % 2 == 1) {
                     cell.setGrayFill(0.9f);
+                }
 
                 table.addCell(cell);
             }
@@ -996,17 +1011,18 @@ public class PdfUtil {
         if (table.size() > 0) {
             table.setHeaderRows(1);
             return table;
-        }
-        else
+        } else {
             return null;
+        }
     }
 
     //public static PdfPTable imgAttributes(Vector attrs, String imgPath)
     public static Vector imgAttributes(Vector attrs, String imgPath)
-                                                        throws Exception {
+    throws Exception {
 
-        if (imgPath==null || attrs==null || attrs.size()==0)
+        if (imgPath==null || attrs==null || attrs.size()==0) {
             return null;
+        }
 
         // set up the table
         PdfPTable table = new PdfPTable(1);
@@ -1018,13 +1034,15 @@ public class PdfUtil {
         for (int i=0; attrs!=null && i<attrs.size(); i++) {
 
             Object o = attrs.get(i);
-            if (o.getClass().getName().endsWith("Hashtable"))
+            if (o.getClass().getName().endsWith("Hashtable")) {
                 continue;
+            }
 
             DElemAttribute attr = (DElemAttribute)o;
             String dispType = attr.getDisplayType();
-            if (dispType==null || !dispType.equals("image"))
+            if (dispType==null || !dispType.equals("image")) {
                 continue;
+            }
 
             String name = attr.getShortName();
             Vector values = attr.getValues();
@@ -1047,8 +1065,9 @@ public class PdfUtil {
                 // add image
                 String filePath = imgPath + value;
                 com.lowagie.text.Image vsImage = vsImage(filePath);
-                if (vsImage!=null)
+                if (vsImage!=null) {
                     imgVector.add(vsImage);
+                }
 
                 /*cell = new PdfPCell(vsImage);
                 cell.setPaddingRight(0);
@@ -1070,18 +1089,20 @@ public class PdfUtil {
         }
 
         //if (table.size() > 0)
-            //return table;
-        if (imgVector.size() > 0)
+        //return table;
+        if (imgVector.size() > 0) {
             return imgVector;
-        else
+        } else {
             return null;
+        }
     }
 
     public static com.lowagie.text.Image vsImage(String filePath)
-        throws Exception {
+    throws Exception {
 
-        if (Util.isEmpty(filePath))
+        if (Util.isEmpty(filePath)) {
             return null;
+        }
 
         // we're using PJA's toolkit, because iText cannot handle some
         // of the GIFs and Java needs X11 on Linux
@@ -1101,7 +1122,9 @@ public class PdfUtil {
 
             // create java.awt.Image
             java.awt.Image jImg = kit.createImage(filePath);
-            if (jImg==null) return null;
+            if (jImg==null) {
+                return null;
+            }
 
             // of the java.awt.Image, create com.lowagie.text.Image
             com.lowagie.text.Image vsImage =
@@ -1111,30 +1134,38 @@ public class PdfUtil {
             float width = vsImage.getScaledWidth();
             float height = vsImage.getScaledHeight();
 
-            if (width > MAX_IMG_WIDTH)
+            if (width > MAX_IMG_WIDTH) {
                 vsImage.scaleAbsoluteWidth(MAX_IMG_WIDTH);
-            if (height > MAX_IMG_HEIGHT)
+            }
+            if (height > MAX_IMG_HEIGHT) {
                 vsImage.scaleAbsoluteHeight(MAX_IMG_HEIGHT);
+            }
 
             // reset old properties
-            if (propToolkit != null)
+            if (propToolkit != null) {
                 System.setProperty ("awt.toolkit", propToolkit);
-            if (propGraphics != null)
+            }
+            if (propGraphics != null) {
                 System.setProperty ("java.awt.graphicsenv", propGraphics);
-            if (propFonts != null)
+            }
+            if (propFonts != null) {
                 System.setProperty ("java.awt.fonts", propFonts);
+            }
 
             return vsImage;
         }
         catch (Exception e) {
 
             // reset old properties
-            if (propToolkit != null)
+            if (propToolkit != null) {
                 System.setProperty ("awt.toolkit", propToolkit);
-            if (propGraphics != null)
+            }
+            if (propGraphics != null) {
                 System.setProperty ("java.awt.graphicsenv", propGraphics);
-            if (propFonts != null)
+            }
+            if (propFonts != null) {
                 System.setProperty ("java.awt.fonts", propFonts);
+            }
 
             throw e;
         }
@@ -1147,9 +1178,9 @@ public class PdfUtil {
         StringTokenizer st = new StringTokenizer(value, " \t\n\r\f", true);
         while (st.hasMoreTokens()) {
             String s = st.nextToken();
-            if (!isLink(s))
+            if (!isLink(s)) {
                 phr.add(new Chunk(s, font));
-            else {
+            } else {
                 Chunk ch = new Chunk(s, Fonts.get(Fonts.ANCHOR));
                 ch.setAnchor(s);
 
@@ -1173,13 +1204,16 @@ public class PdfUtil {
 
     public static String rmvCR(String s) {
 
-        if (s==null) return s;
+        if (s==null) {
+            return s;
+        }
 
         StringBuffer buf = new StringBuffer();
         for (int i=0; i<s.length(); i++) {
             char c = s.charAt(i);
-            if (c!='\r')
+            if (c!='\r') {
                 buf.append(c);
+            }
         }
 
         return buf.toString();
@@ -1187,8 +1221,9 @@ public class PdfUtil {
 
     private static Phrase process(String value, Font font) throws Exception {
 
-        if (value==null)
+        if (value==null) {
             return new Phrase();
+        }
 
         String s = processUnicode(value);
         return processLinks(s, font);
@@ -1196,7 +1231,9 @@ public class PdfUtil {
 
     public static String processUnicode(String s) {
 
-        if (s==null) return null;
+        if (s==null) {
+            return null;
+        }
 
         StringBuffer buf = new StringBuffer();
         UnicodeEscapes unicodeEscapes = new UnicodeEscapes();

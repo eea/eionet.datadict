@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
 import eionet.meta.DElemAttribute;
+import eionet.meta.Tbl2ElmRelation;
 import eionet.meta.dbschema.DbSchema;
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
@@ -49,6 +50,14 @@ public class CopyHandler extends Object {
 
     /**  */
     private DDUser user = null;
+
+    /** */
+    private Hashtable<String,String> oldNewElements = new Hashtable<String, String>();
+    private Hashtable<String,String> oldNewTables = new Hashtable<String, String>();
+    private Hashtable<String,String> oldNewDatasets = new Hashtable<String, String>();
+
+    /** */
+    private boolean isRecordOldNewMappings = false;
 
     /**
      *
@@ -220,83 +229,89 @@ public class CopyHandler extends Object {
     /**
      *
      *
-     * @param elmID
-     * @param isMakeWorkingCopy
+     * @param elmId
+     * @param makeItWorkingCopy
      * @param isCopyTbl2ElmRelations
      * @param resetVersionAndStatus
      * @return
      * @throws Exception
      */
-    public String copyElm(String elmID, boolean isMakeWorkingCopy, boolean isCopyTbl2ElmRelations, boolean resetVersionAndStatus)
+    public String copyElm(String elmId, boolean makeItWorkingCopy, boolean isCopyTbl2ElmRelations, boolean resetVersionAndStatus)
     throws Exception {
 
-        if (elmID == null) {
+        if (elmId == null) {
             return null;
         }
 
         // copy row in DATAELEM table
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("DATAELEM");
-        gen.setField("DATAELEM_ID", "");
-        String newID = copy(gen, "DATAELEM_ID=" + elmID, false);
-
-        if (newID == null) {
+        LOGGER.debug("Copying element row");
+        Map<String, Object> newValues = toValueMap("DATE", Long.valueOf(System.currentTimeMillis()));
+        if (makeItWorkingCopy) {
+            newValues.put("WORKING_COPY", SQL.toLiteral("Y"));
+        }
+        if (user != null) {
+            newValues.put("USER", SQL.toLiteral(user.getUserName()));
+        }
+        if (resetVersionAndStatus) {
+            newValues.put("VERSION", Integer.valueOf(1));
+            newValues.put("REG_STATUS", SQL.toLiteral("Incomplete"));
+        } else {
+            newValues.put("VERSION", "VERSION+1");
+        }
+        String newId = String.valueOf(copyAutoIncRow("DATAELEM", "DATAELEM_ID=" + elmId, "DATAELEM_ID", newValues));
+        if (newId == null) {
             return null;
         }
-
-        // if requestd, make it a working copy
-        gen.clear();
-        gen.setTable("DATAELEM");
-        if (isMakeWorkingCopy) {
-            gen.setField("WORKING_COPY", "Y");
-        }
-        // if requested, reset VERSION and REG_STATUS
-        if (resetVersionAndStatus) {
-            gen.setFieldExpr("VERSION", "1");
-            gen.setField("REG_STATUS", "Incomplete");
-        } else {
-            gen.setFieldExpr("VERSION", "VERSION+1");
-        }
-        gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-        if (user != null) {
-            gen.setField("USER", user.getUserName());
-        }
-        // update the new copy
-        conn.createStatement().executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + newID);
-
-        // if requested, copy TBL2ELEM relations
-        if (isCopyTbl2ElmRelations) {
-            gen.clear();
-            gen.setTable("TBL2ELEM");
-            gen.setField("DATAELEM_ID", newID);
-            copy(gen, "DATAELEM_ID=" + elmID);
+        else if (isRecordOldNewMappings){
+            oldNewElements.put(elmId, newId);
         }
 
-        // copy simple attributes
-        gen.clear();
-        gen.setTable("ATTRIBUTE");
-        gen.setField("DATAELEM_ID", newID);
-        copy(gen, "DATAELEM_ID=" + elmID + " and PARENT_TYPE='E'");
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
 
-        // copy complex attributes
-        copyComplexAttrs(newID, elmID, "E");
+            // if requested, copy TBL2ELEM relations
+            if (isCopyTbl2ElmRelations) {
 
-        // copy fixed values
-        copyFxv(newID, elmID, "elem");
+                newValues = toValueMap("DATAELEM_ID", newId);
+                String whereClause = "DATAELEM_ID=" + elmId;
+                stmt.addBatch(rowsCopyStatement("TBL2ELEM", whereClause, newValues));
+            }
 
-        // copy fk relations
-        gen.clear();
-        gen.setTable("FK_RELATION");
-        gen.setField("REL_ID", "");
-        gen.setField("A_ID", newID);
-        copy(gen, "A_ID=" + elmID, false);
-        gen.clear();
-        gen.setTable("FK_RELATION");
-        gen.setField("REL_ID", "");
-        gen.setField("B_ID", newID);
-        copy(gen, "B_ID=" + elmID);
+            // statement for copying simple attributes
+            stmt.addBatch(simpleAttrsCopyStatement(elmId, newId, "E"));
 
-        return newID;
+            // statements for copying complex-attributes
+            stmt.addBatch(complexAttrRowsCopyStatement(elmId, newId, "E"));
+            stmt.addBatch(complexAttrFieldsCopyStatement(elmId, newId, "E"));
+
+            // statement for copying fixed values
+
+            newValues = toValueMap("OWNER_ID", newId);
+            newValues.put("FXV_ID", null);
+            String whereClause = "OWNER_TYPE='elem' and OWNER_ID=" + elmId;
+            stmt.addBatch(rowsCopyStatement("FXV", whereClause, newValues));
+
+            // statements for copying foreign-key relations
+
+            newValues = toValueMap("A_ID", newId);
+            newValues.put("REL_ID", null);
+            whereClause = "A_ID=" + elmId;
+            stmt.addBatch(rowsCopyStatement("FK_RELATION", whereClause, newValues));
+            newValues = toValueMap("B_ID", newId);
+            newValues.put("REL_ID", null);
+            whereClause = "B_ID=" + elmId;
+            stmt.addBatch(rowsCopyStatement("FK_RELATION", whereClause, newValues));
+
+            // execute the above batched statements
+            LOGGER.debug("Copying the element's simple and complex attributes, fixed/suggested values and foreign-key relations");
+            stmt.executeBatch();
+
+        } finally {
+            SQL.close(stmt);
+        }
+
+        return newId;
     }
 
     /*
@@ -376,24 +391,29 @@ public class CopyHandler extends Object {
 
     /**
      *
-     *
-     * @param tblID
+     * @param tblId
      * @return
      * @throws Exception
      */
-    public String copyTbl(String tblID) throws Exception {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public String copyTbl(String tblId) throws Exception {
 
-        if (tblID == null) {
+        if (tblId == null) {
             return null;
         }
 
         // copy row in DS_TABLE table
-        SQLGenerator gen = new SQLGenerator();
-        gen.setTable("DS_TABLE");
-        gen.setField("TABLE_ID", "");
-        String newID = copy(gen, "TABLE_ID=" + tblID, false);
-        if (newID == null) {
+        LOGGER.debug("Copying table row");
+        Map<String, Object> newValues = toValueMap("DATE", Long.valueOf(System.currentTimeMillis()));
+        if (user != null) {
+            newValues.put("USER", SQL.toLiteral(user.getUserName()));
+        }
+        String newId = String.valueOf(copyAutoIncRow("DS_TABLE", "TABLE_ID=" + tblId, "TABLE_ID", newValues));
+        if (newId == null) {
             return null;
+        }
+        else if (isRecordOldNewMappings){
+            oldNewTables.put(tblId, newId);
         }
 
         Statement stmt = null;
@@ -401,197 +421,231 @@ public class CopyHandler extends Object {
         try {
             stmt = conn.createStatement();
 
-            // set the date
-            gen.clear();
-            gen.setTable("DS_TABLE");
-            gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
-            if (user != null) {
-                gen.setField("USER", user.getUserName());
-            }
-            stmt.executeUpdate(gen.updateStatement() + " where TABLE_ID=" + newID);
+            LOGGER.debug("Copying the table's simple and complex attributes, and documents");
 
-            // copy simple attributes
-            gen.clear();
-            gen.setTable("ATTRIBUTE");
-            gen.setField("DATAELEM_ID", newID);
-            copy(gen, "DATAELEM_ID=" + tblID + " and PARENT_TYPE='T'");
+            // statement for copying simple attributes
+            stmt.addBatch(simpleAttrsCopyStatement(tblId, newId, "T"));
 
-            // copy complex attributes
-            copyComplexAttrs(newID, tblID, "T");
+            // statements for copying complex-attributes
+            stmt.addBatch(complexAttrRowsCopyStatement(tblId, newId, "T"));
+            stmt.addBatch(complexAttrFieldsCopyStatement(tblId, newId, "T"));
 
-            // copy documents
-            gen.clear();
-            gen.setTable("DOC");
-            gen.setField("OWNER_ID", newID);
-            copy(gen, "OWNER_TYPE='tbl' and OWNER_ID=" + tblID);
+            // statement for copying documents
+            stmt.addBatch(documentsCopyStatement(tblId, newId, "tbl"));
 
-            // copy elements
-            // (first get the IDs, parent namespace identifiers and multivalue-delimiters of
-            // elements in this table, then call copyElm() for each + copy TBL2ELEM relations too
+            // execute above-batched statements
+            stmt.executeBatch();
 
-            ArrayList elmIds = new ArrayList();
-            ArrayList multivalDelims = new ArrayList();
-            ArrayList mandatoryFlags = new ArrayList();
-            ArrayList commonnessFlags = new ArrayList();
-
-            // get the IDs and parent namespace identifiers of elements in this table
-            StringBuffer buf = new StringBuffer();
-            buf.append("select TBL2ELEM.DATAELEM_ID, TBL2ELEM.MULTIVAL_DELIM, TBL2ELEM.MANDATORY, ")
-            .append("DATAELEM.PARENT_NS from TBL2ELEM ")
-            .append("left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID ")
-            .append("where DATAELEM.DATAELEM_ID is not null and TABLE_ID=").append(tblID).append(" order by POSITION asc");
-
-            rs = stmt.executeQuery(buf.toString());
-            while (rs.next()) {
-                elmIds.add(rs.getString("TBL2ELEM.DATAELEM_ID"));
-                multivalDelims.add(rs.getString("TBL2ELEM.MULTIVAL_DELIM"));
-                mandatoryFlags.add(Boolean.valueOf(rs.getBoolean("TBL2ELEM.MANDATORY")));
-                commonnessFlags.add(Boolean.valueOf(rs.getString("DATAELEM.PARENT_NS") == null));
-            }
-
-            for (int i = 0; i < elmIds.size(); i++) {
-
-                // only non-common elements will be copied
-                String elmId = (String) elmIds.get(i);
-                if (((Boolean) commonnessFlags.get(i)).booleanValue() == false) {
-                    elmId = copyElm(elmId, false, false, false);
-                }
-
-                String multivalDelim = (String) multivalDelims.get(i);
-                Boolean mandatoryFlag = (Boolean) mandatoryFlags.get(i);
-
-                // regardless of element's commonality, TBL2ELEM relation shall be copied anyway
-                gen.clear();
-                gen.setTable("TBL2ELEM");
-                gen.setFieldExpr("TABLE_ID", newID);
-                gen.setFieldExpr("DATAELEM_ID", elmId);
-                gen.setFieldExpr("POSITION", String.valueOf(i + 1));
-                if (multivalDelim != null) {
-                    gen.setField("MULTIVAL_DELIM", multivalDelim);
-                }
-                gen.setFieldExpr("MANDATORY", mandatoryFlag.toString());
-                stmt.executeUpdate(gen.insertStatement());
-            }
         } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
 
-        return newID;
+        // copy table elements
+        LOGGER.debug("Copying the table's elements");
+        copyTableElements(tblId, newId);
+
+        return newId;
     }
 
     /** */
-    private static final String UPDATE_NEW_DATASET_ROW = "update DATASET set DATE=?, WORKING_COPY=?, VERSION=ifnull(?,VERSION+1)," +
-    " REG_STATUS=ifnull(?,REG_STATUS), USER=ifnull(?,USER) where DATASET_ID=?";
+    private static final String GET_TABLE_ELEMENTS = "select TBL2ELEM.DATAELEM_ID, TBL2ELEM.MULTIVAL_DELIM, TBL2ELEM.MANDATORY, "
+        + "DATAELEM.PARENT_NS from TBL2ELEM left outer join DATAELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID "
+        + "where DATAELEM.DATAELEM_ID is not null and TABLE_ID=? order by POSITION asc";
 
     /**
      *
-     * @param dstID
-     * @param maktItWorkingCopy
+     * @param oldTblId
+     * @param newTblId
+     * @throws Exception
+     */
+    private void copyTableElements(String oldTblId, String newTblId) throws Exception {
+
+        ResultSet rs = null;
+        PreparedStatement stmt = null;
+        try {
+            // Collect the ids of elements in the old table.
+
+            stmt = SQL.preparedStatement(GET_TABLE_ELEMENTS, Collections.singletonList(Integer.valueOf(oldTblId)), conn);
+            rs = stmt.executeQuery();
+
+            ArrayList<Tbl2ElmRelation> oldRelations = new ArrayList<Tbl2ElmRelation>();
+            while (rs.next()) {
+
+                Tbl2ElmRelation relation = new Tbl2ElmRelation();
+                relation.setElmId(rs.getInt("TBL2ELEM.DATAELEM_ID"));
+                relation.setElmMultivalueDelimiter(rs.getString("TBL2ELEM.MULTIVAL_DELIM"));
+                relation.setElmMandatory(rs.getBoolean("TBL2ELEM.MANDATORY"));
+                relation.setElmCommon(rs.getString("DATAELEM.PARENT_NS") == null);
+                oldRelations.add(relation);
+            }
+            SQL.close(rs);
+
+            if (!oldRelations.isEmpty()) {
+
+                LOGGER.debug("Found " + oldRelations.size() + " elements in table " + oldTblId);
+
+                // Statement for relating new elements to new tables (uses multiple rows insert syntax).
+                StringBuilder sql =
+                    new StringBuilder("insert into TBL2ELEM (TABLE_ID,DATAELEM_ID,POSITION,MULTIVAL_DELIM,MANDATORY) values");
+
+                int i = 1;
+                for (Tbl2ElmRelation oldRelation : oldRelations) {
+
+                    // Copy element, but only if it's non-common.
+                    // Common elements will simply be linked to the new table (see further below).
+                    String newElmId = null;
+                    if (!oldRelation.isElmCommon()){
+                        newElmId = copyElm(String.valueOf(oldRelation.getElmId()), false, false, false);
+                    }
+
+                    // Append new element / new table relation to the statement.
+                    if (i > 1) {
+                        sql.append(",");
+                    }
+                    sql.append("(");
+                    sql.append(newTblId);
+                    sql.append(",").append(oldRelation.isElmCommon() ? oldRelation.getElmId() : newElmId);
+                    sql.append(",").append(i);
+                    sql.append(",").append(SQL.toLiteral(oldRelation.getElmMultivalueDelimiter()));
+                    sql.append(",").append(oldRelation.isElmMandatory());
+                    sql.append(")");
+                    i++;
+                }
+
+                LOGGER.debug("Copying table-to-element relations");
+                stmt.executeUpdate(sql.toString());
+            }
+        } finally {
+            SQL.close(rs);
+            SQL.close(stmt);
+        }
+    }
+
+    /**
+     *
+     * @param dstId
+     * @param makeItWorkingCopy
      * @param resetVersionAndStatus
      * @return
      * @throws Exception
      */
-    public String copyDst(String dstID, boolean maktItWorkingCopy, boolean resetVersionAndStatus) throws Exception {
+    public String copyDst(String dstId, boolean makeItWorkingCopy, boolean resetVersionAndStatus) throws Exception {
 
-        if (dstID == null) {
+        if (dstId == null) {
             return null;
         }
 
         // copy row in DATASET table
         LOGGER.debug("Copying dataset row");
-        String newID = String.valueOf(copyAutoIncRow("DATASET", "DATASET_ID=" + dstID, "DATASET_ID"));
-        if (newID == null) {
+        Map<String, Object> newValues = toValueMap("DATE", Long.valueOf(System.currentTimeMillis()));
+        if (makeItWorkingCopy) {
+            newValues.put("WORKING_COPY", SQL.toLiteral("Y"));
+        }
+        if (user != null) {
+            newValues.put("USER", SQL.toLiteral(user.getUserName()));
+        }
+        if (resetVersionAndStatus) {
+            newValues.put("VERSION", Integer.valueOf(1));
+            newValues.put("REG_STATUS", SQL.toLiteral("Incomplete"));
+        } else {
+            newValues.put("VERSION", "VERSION+1");
+        }
+        String newId = String.valueOf(copyAutoIncRow("DATASET", "DATASET_ID=" + dstId, "DATASET_ID", newValues));
+        if (newId == null) {
             return null;
         }
-        LOGGER.debug("Updating the new dataset row, whose id = " + newID);
-
-        // make it a working copy if needed, also change the value of VERSION
-        ArrayList<Object> values = new ArrayList<Object>();
-        values.add(Long.valueOf(System.currentTimeMillis()));
-        values.add(maktItWorkingCopy ? "Y" : "N");
-        values.add(resetVersionAndStatus ? Integer.valueOf(1) : null);
-        values.add(resetVersionAndStatus ? "Incomplete" : null);
-        values.add(user!=null ? user.getUserName() : null);
-        values.add(Integer.valueOf(newID));
-
-        SQL.executeUpdate(UPDATE_NEW_DATASET_ROW, values, conn);
+        else if (isRecordOldNewMappings){
+            oldNewDatasets.put(dstId, newId);
+        }
 
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
 
             LOGGER.debug("Copying the dataset's simple and complex attributes, ROD links, and documents");
 
             // statement for copying simple attributes
-            stmt.addBatch(simpleAttrsCopyStatement(dstID, newID, "DS"));
+            stmt.addBatch(simpleAttrsCopyStatement(dstId, newId, "DS"));
 
             // statements for copying complex-attributes
-            stmt.addBatch(complexAttrRowsCopyStatement(dstID, newID, "DS"));
-            stmt.addBatch(complexAttrFieldsCopyStatement(dstID, newID, "DS"));
+            stmt.addBatch(complexAttrRowsCopyStatement(dstId, newId, "DS"));
+            stmt.addBatch(complexAttrFieldsCopyStatement(dstId, newId, "DS"));
 
             // statement for copying documents
-            stmt.addBatch(documentsCopyStatement(dstID, newID, "dst"));
+            stmt.addBatch(documentsCopyStatement(dstId, newId, "dst"));
 
             // statement for copying ROD links
-            Map<String,Object> newValues = toValueMap("DATASET_ID", newID);
-            String whereClause = "DATASET_ID=" + dstID;
+            newValues = toValueMap("DATASET_ID", newId);
+            String whereClause = "DATASET_ID=" + dstId;
             stmt.addBatch(rowsCopyStatement("DST2ROD", whereClause, newValues));
 
             stmt.executeBatch();
-        }
-        finally{
+        } finally {
             SQL.close(stmt);
         }
 
         // copy tables
         LOGGER.debug("Copying the dataset's tables");
-        copyDstTables(dstID, newID);
+        copyDstTables(dstId, newId);
 
         LOGGER.debug("Dataset copying finished");
-        return newID;
+        return newId;
     }
+
+    /** */
+    private static final String GET_DATASET_TABLES = "select TABLE_ID from DST2TBL where DATASET_ID=? order by POSITION asc";
 
     /**
      *
-     * @param oldDstID
-     * @param newDstID
+     * @param oldDstId
+     * @param newDstId
      * @throws Exception
      */
-    public void copyDstTables(String oldDstID, String newDstID) throws Exception {
+    public void copyDstTables(String oldDstId, String newDstId) throws Exception {
 
-        // get id numbers of tables to copy
-        Vector tbls = new Vector();
-
-        INParameters inParams = new INParameters();
-
-        String query = "select TABLE_ID from DST2TBL where DATASET_ID=" + inParams.add(oldDstID, Types.INTEGER);
-        query += " order by POSITION asc";
+        ResultSet rs = null;
         PreparedStatement stmt = null;
-        stmt = SQL.preparedStatement(query, inParams, conn);
-        ResultSet rs = stmt.executeQuery();
+        try {
+            // Collect the ids of tables in the old dataset.
 
-        while (rs.next()) {
-            tbls.add(rs.getString(1));
-        }
+            stmt = SQL.preparedStatement(GET_DATASET_TABLES, Collections.singletonList(Integer.valueOf(oldDstId)), conn);
+            rs = stmt.executeQuery();
 
-        // copy the tables, get id numbers of new ones
-        Vector newTbls = new Vector();
-        for (int i = 0; i < tbls.size(); i++) {
-            newTbls.add(copyTbl((String) tbls.get(i)));
-        }
-
-        // relate new tables to new dataset
-        SQLGenerator gen = new SQLGenerator();
-        for (int i = 0; i < newTbls.size(); i++) {
-            if (i > 0) {
-                gen.clear();
+            ArrayList<String> oldTblIds = new ArrayList<String>();
+            while (rs.next()) {
+                oldTblIds.add(rs.getString(1));
             }
-            gen.setTable("DST2TBL");
-            gen.setFieldExpr("DATASET_ID", newDstID);
-            gen.setFieldExpr("TABLE_ID", (String) newTbls.get(i));
-            gen.setFieldExpr("POSITION", String.valueOf(i + 1));
-            stmt.executeUpdate(gen.insertStatement());
+            SQL.close(rs);
+
+            // Copy each table found in the old dataset, and relate new ones to the new dataset.
+
+            if (!oldTblIds.isEmpty()) {
+
+                LOGGER.debug("Found " + oldTblIds.size() + " tables in the dataset");
+
+                int i = 1;
+                // Statement for relating new tables to new dataset (uses multiple rows insert syntax).
+                StringBuilder sql = new StringBuilder("insert into DST2TBL (DATASET_ID,TABLE_ID,POSITION) values");
+                for (String oldTblId : oldTblIds) {
+
+                    // Copy table.
+                    String newTblId = copyTbl(oldTblId);
+                    // Append new table / new dataset relation to the statement.
+                    if (i > 1) {
+                        sql.append(",");
+                    }
+                    sql.append("(").append(newDstId).append(",").append(newTblId).append(",").append(i).append(")");
+                    i++;
+                }
+
+                LOGGER.debug("Copying dataset-to-table relations");
+
+                stmt.executeUpdate(sql.toString());
+            }
+        } finally {
+            SQL.close(rs);
+            SQL.close(stmt);
         }
     }
 
@@ -781,29 +835,34 @@ public class CopyHandler extends Object {
      */
     protected int copyAutoIncRow(String tableName, String whereClause, String autoIncColumn) throws SQLException {
 
+        return copyAutoIncRow(tableName, whereClause, autoIncColumn, null);
+    }
+
+    /**
+     *
+     * @param tableName
+     * @param whereClause
+     * @param autoIncColumn
+     * @param newValuesMap
+     * @return
+     * @throws SQLException
+     */
+    protected int
+    copyAutoIncRow(String tableName, String whereClause, String autoIncColumn, final Map<String, Object> newValuesMap)
+    throws SQLException {
+
         if (Util.isEmpty(tableName) || Util.isEmpty(autoIncColumn)) {
             throw new IllegalArgumentException("Table name and auto-increment column name must be given!");
         }
 
-        StringBuilder sql = new StringBuilder();
-        List<String> columnNames = DbSchema.getTableColumns(tableName, autoIncColumn);
-        if (columnNames != null && !columnNames.isEmpty()) {
-
-            String columnNamesCSV = Util.toCSV(columnNames);
-            sql.append("insert into ").append(tableName).append(" (").append(columnNamesCSV).append(") ");
-            sql.append("select ").append(columnNamesCSV).append(" from ").append(tableName);
-        } else {
-            sql.append("insert into ").append(tableName).append(" select * from ").append(tableName);
-        }
-
-        if (!Util.isEmpty(whereClause)) {
-            sql.append(" where ").append(whereClause);
-        }
+        Map<String, Object> map = newValuesMap == null ? new HashMap<String, Object>() : new HashMap<String, Object>(newValuesMap);
+        map.put(autoIncColumn, null);
+        String sql = rowsCopyStatement(tableName, whereClause, map);
 
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            stmt.executeUpdate(sql.toString());
+            stmt.executeUpdate(sql);
             try {
                 return Integer.parseInt(getLastInsertID(stmt));
             } catch (Exception e) {
@@ -833,14 +892,15 @@ public class CopyHandler extends Object {
      * @param newValues
      * @return
      */
-    protected static String rowsCopyStatement(String tableName, String fromClause, String whereClause, Map<String, Object> newValuesMap) {
+    protected static String rowsCopyStatement(String tableName, String fromClause, String whereClause,
+            Map<String, Object> newValuesMap) {
 
         if (Util.isEmpty(tableName)) {
             throw new IllegalArgumentException("Table name must be given!");
         }
 
         LinkedHashMap<String, Object> newValues = new LinkedHashMap<String, Object>();
-        if (newValuesMap!=null){
+        if (newValuesMap != null) {
             newValues.putAll(newValuesMap);
         }
         boolean isNewValuesEmpty = Util.isEmpty(newValues);
@@ -859,28 +919,28 @@ public class CopyHandler extends Object {
             sql.append("insert into ").append(tableName).append(" (");
 
             int i = 0;
-            if (!isNewValuesEmpty){
-                for (String columnName : newValues.keySet()){
+            if (!isNewValuesEmpty) {
+                for (String columnName : newValues.keySet()) {
                     sql.append(i++ > 0 ? "," : "").append(columnName);
                 }
             }
 
             String columnNamesCSV = Util.toCSV(columnNames);
-            if (!isColumnNamesEmpty){
-                sql.append(i==0 ? "" : ",").append(columnNamesCSV);
+            if (!isColumnNamesEmpty) {
+                sql.append(i == 0 ? "" : ",").append(columnNamesCSV);
             }
 
             sql.append(") select ");
 
             i = 0;
-            if (!isNewValuesEmpty){
-                for (Object value : newValues.values()){
-                    sql.append(i++ > 0 ? "," : "").append(value==null ? "NULL" : value);
+            if (!isNewValuesEmpty) {
+                for (Object value : newValues.values()) {
+                    sql.append(i++ > 0 ? "," : "").append(value == null ? "NULL" : value);
                 }
             }
 
-            if (!isColumnNamesEmpty){
-                sql.append(i==0 ? "" : ",").append(columnNamesCSV);
+            if (!isColumnNamesEmpty) {
+                sql.append(i == 0 ? "" : ",").append(columnNamesCSV);
             }
 
             sql.append(" from ").append(fromClause);
@@ -899,10 +959,10 @@ public class CopyHandler extends Object {
      * @param value
      * @return
      */
-    private static Map<String, Object> toValueMap(String key, Object value){
+    private static Map<String, Object> toValueMap(String key, Object value) {
 
         HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put(key,value);
+        map.put(key, value);
         return map;
     }
 
@@ -913,9 +973,9 @@ public class CopyHandler extends Object {
      * @param parentType
      * @return
      */
-    protected static String simpleAttrsCopyStatement(String oldId, String newId, String parentType){
+    protected static String simpleAttrsCopyStatement(String oldId, String newId, String parentType) {
 
-        Map<String,Object> newValues = toValueMap("DATAELEM_ID", newId);
+        Map<String, Object> newValues = toValueMap("DATAELEM_ID", newId);
         String whereClause = "PARENT_TYPE='" + parentType + "' and DATAELEM_ID=" + oldId;
         return rowsCopyStatement("ATTRIBUTE", whereClause, newValues);
     }
@@ -927,9 +987,9 @@ public class CopyHandler extends Object {
      * @param parentType
      * @return
      */
-    protected static String complexAttrRowsCopyStatement(String oldId, String newId, String parentType){
+    protected static String complexAttrRowsCopyStatement(String oldId, String newId, String parentType) {
 
-        Map<String,Object> newValues = toValueMap("PARENT_ID", newId);
+        Map<String, Object> newValues = toValueMap("PARENT_ID", newId);
         newValues.put("ROW_ID", "md5(concat('" + newId + "',PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION))");
         String whereClause = "PARENT_TYPE='" + parentType + "' and PARENT_ID=" + oldId;
         return rowsCopyStatement("COMPLEX_ATTR_ROW", whereClause, newValues);
@@ -942,11 +1002,13 @@ public class CopyHandler extends Object {
      * @param parentType
      * @return
      */
-    protected static String complexAttrFieldsCopyStatement(String oldId, String newId, String parentType){
+    protected static String complexAttrFieldsCopyStatement(String oldId, String newId, String parentType) {
 
-        Map<String,Object> newValues = toValueMap("ROW_ID", "md5(concat('" + newId + "',PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION))");
+        Map<String, Object> newValues =
+            toValueMap("ROW_ID", "md5(concat('" + newId + "',PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION))");
         String fromClause = "COMPLEX_ATTR_FIELD,COMPLEX_ATTR_ROW";
-        String whereClause = "COMPLEX_ATTR_FIELD.ROW_ID=COMPLEX_ATTR_ROW.ROW_ID and PARENT_TYPE='" + parentType + "' and PARENT_ID=" + oldId;
+        String whereClause =
+            "COMPLEX_ATTR_FIELD.ROW_ID=COMPLEX_ATTR_ROW.ROW_ID and PARENT_TYPE='" + parentType + "' and PARENT_ID=" + oldId;
         return rowsCopyStatement("COMPLEX_ATTR_FIELD", fromClause, whereClause, newValues);
     }
 
@@ -957,10 +1019,38 @@ public class CopyHandler extends Object {
      * @param ownerType
      * @return
      */
-    protected static String documentsCopyStatement(String oldId, String newId, String ownerType){
+    protected static String documentsCopyStatement(String oldId, String newId, String ownerType) {
 
-        Map<String,Object> newValues = toValueMap("OWNER_ID", newId);
+        Map<String, Object> newValues = toValueMap("OWNER_ID", newId);
         String whereClause = "OWNER_TYPE='" + ownerType + "' and OWNER_ID=" + oldId;
         return rowsCopyStatement("DOC", whereClause, newValues);
+    }
+
+    /**
+     * @param isRecordOldNewMappings the isRecordOldNewMappings to set
+     */
+    protected void setRecordOldNewMappings(boolean isRecordOldNewMappings) {
+        this.isRecordOldNewMappings = isRecordOldNewMappings;
+    }
+
+    /**
+     * @return the oldNewElements
+     */
+    protected Hashtable<String, String> getOldNewElements() {
+        return oldNewElements;
+    }
+
+    /**
+     * @return the oldNewTables
+     */
+    protected Hashtable<String, String> getOldNewTables() {
+        return oldNewTables;
+    }
+
+    /**
+     * @return the oldNewDatasets
+     */
+    protected Hashtable<String, String> getOldNewDatasets() {
+        return oldNewDatasets;
     }
 }

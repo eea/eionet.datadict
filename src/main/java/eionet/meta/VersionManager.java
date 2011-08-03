@@ -459,7 +459,10 @@ public class VersionManager {
                 servlRequestParams == null ? null : servlRequestParams.getParameter("resetVersionAndStatus");
             CopyHandler copyHandler = new CopyHandler(conn, ctx, searchEngine);
             copyHandler.setUser(user);
+
+            long startTime = System.currentTimeMillis();
             newID = copyHandler.copyDst(dstID, true, strResetVersionAndStatus != null);
+            LOGGER.info("Copying dataset " + dstID + " took " + (System.currentTimeMillis() - startTime) + " ms");
             if (newID != null) {
                 inParams = new INParameters();
                 gen.clear();
@@ -517,8 +520,9 @@ public class VersionManager {
         }
 
         // destroy the copy
-        if (newID == null)
+        if (newID == null) {
             return;
+        }
 
         MrProper mrProper = new MrProper(conn);
         mrProper.setContext(ctx);
@@ -526,12 +530,14 @@ public class VersionManager {
 
         Parameters pars = new Parameters();
         String objType = null;
-        if (objTable.equals("DATASET"))
+        if (objTable.equals("DATASET")) {
             objType = "dst";
-        else if (objTable.equals("DS_TABLE"))
+        } else if (objTable.equals("DS_TABLE")) {
             objType = "tbl";
-        if (objTable.equals("DATAELEM"))
+        }
+        if (objTable.equals("DATAELEM")) {
             objType = "elm";
+        }
         pars.addParameterValue("rm_obj_type", objType);
         pars.addParameterValue("rm_crit", "id");
         pars.addParameterValue("rm_id", newID);
@@ -553,12 +559,13 @@ public class VersionManager {
      */
     public boolean checkIn(String objID, String objType, String status) throws Exception {
 
-        if (objType.equals("elm"))
+        if (objType.equals("elm")) {
             return checkInElm(objID, status);
-        else if (objType.equals("dst"))
+        } else if (objType.equals("dst")) {
             return checkInDst(objID, status);
-        else
+        } else {
             throw new Exception("Unknown object type: " + objType);
+        }
     }
 
     /**
@@ -645,12 +652,14 @@ public class VersionManager {
             String checkedoutCopyUser = null;
             if (checkedoutCopyID != null) {
                 ResultSet rs = stmt.executeQuery("select USER from DATAELEM where DATAELEM_ID=" + checkedoutCopyID);
-                if (rs != null && rs.next())
+                if (rs != null && rs.next()) {
                     checkedoutCopyUser = rs.getString(1);
+                }
             }
             Vector mustBeSubscribed = getMustBeSubscribedUsers(elm, checkedoutCopyID, stmt);
-            if (mustBeSubscribed != null && mustBeSubscribed.size() > 0)
+            if (mustBeSubscribed != null && mustBeSubscribed.size() > 0) {
                 Subscribe.subscribeToCommonElement(mustBeSubscribed, elm.getIdentifier());
+            }
         } catch (Throwable t) {
             t.printStackTrace(System.out);
         }
@@ -739,8 +748,9 @@ public class VersionManager {
                 for (int i = 0; v != null && i < v.size(); i++) {
                     DsTable tbl = (DsTable) v.get(i);
                     String oldID = (String) tableIdsAndIdentifiers.get(tbl.getIdentifier());
-                    if (oldID != null)
+                    if (oldID != null) {
                         DsTableHandler.replaceTableId(oldID, tbl.getID(), this.conn);
+                    }
                 }
             } else {
                 // unlock the checked-out copy
@@ -781,8 +791,9 @@ public class VersionManager {
     private void checkRequirements(DataElement elm, String status) throws Exception {
         // check Submitting Org
         DElemAttribute submOrg = elm.getAttributeByShortName("SubmitOrganisation");
-        if (submOrg == null)
+        if (submOrg == null) {
             throw new Exception("SubmitOrganisation complex attribute required!");
+        }
     }
 
     /**
@@ -791,8 +802,9 @@ public class VersionManager {
     private void checkRequirements(DsTable tbl, String status) throws Exception {
         // check Submitting Org
         DElemAttribute submOrg = tbl.getAttributeByShortName("SubmitOrganisation");
-        if (submOrg == null)
+        if (submOrg == null) {
             throw new Exception("SubmitOrganisation complex attribute required!");
+        }
     }
 
     /**
@@ -801,8 +813,9 @@ public class VersionManager {
     private void checkRequirements(Dataset dst, String status) throws Exception {
         // check Submitting Org
         DElemAttribute submOrg = dst.getAttributeByShortName("SubmitOrganisation");
-        if (submOrg == null)
+        if (submOrg == null) {
             throw new Exception("SubmitOrganisation complex attribute required!");
+        }
     }
 
     /**
@@ -810,13 +823,15 @@ public class VersionManager {
      */
     private DataElement loadElm(String elmID) throws Exception {
 
-        if (Util.isEmpty(elmID))
+        if (Util.isEmpty(elmID)) {
             throw new Exception("Data element ID not specified!");
+        }
 
         // get the element (this will return simple attributes + tableID
         DataElement elem = searchEngine.getDataElement(elmID);
-        if (elem == null)
+        if (elem == null) {
             throw new Exception("Element not found!");
+        }
 
         // get and set the element's complex attributes
         elem.setComplexAttributes(searchEngine.getComplexAttributes(elmID, "E", null, elem.getTableID(), elem.getDatasetID()));
@@ -832,13 +847,15 @@ public class VersionManager {
      */
     private DsTable loadTbl(String tblID) throws Exception {
 
-        if (Util.isEmpty(tblID))
+        if (Util.isEmpty(tblID)) {
             throw new Exception("Table ID not specified!");
+        }
 
         // get the table
         DsTable dsTable = searchEngine.getDatasetTable(tblID);
-        if (dsTable == null)
+        if (dsTable == null) {
             throw new Exception("Table not found!");
+        }
 
         // get simple attributes
         Vector v = searchEngine.getSimpleAttributes(tblID, "T");
@@ -858,12 +875,14 @@ public class VersionManager {
      */
     private Dataset loadDst(String dstID) throws Exception {
 
-        if (Util.isEmpty(dstID))
+        if (Util.isEmpty(dstID)) {
             throw new Exception("Dataset ID not specified!");
+        }
 
         Dataset ds = searchEngine.getDataset(dstID);
-        if (ds == null)
+        if (ds == null) {
             throw new Exception("Dataset not found!");
+        }
 
         // get & set simple attributes, compelx attributes and tables
         ds.setSimpleAttributes(searchEngine.getSimpleAttributes(dstID, "DS"));
@@ -899,14 +918,17 @@ public class VersionManager {
         try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            if (rs.next())
+            if (rs.next()) {
                 return rs.getString(1);
+            }
         } finally {
             try {
-                if (stmt != null)
+                if (stmt != null) {
                     stmt.close();
-                if (rs != null)
+                }
+                if (rs != null) {
                     rs.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -966,14 +988,17 @@ public class VersionManager {
         try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            if (rs.next())
+            if (rs.next()) {
                 return rs.getString(1);
+            }
         } finally {
             try {
-                if (stmt != null)
+                if (stmt != null) {
                     stmt.close();
-                if (rs != null)
+                }
+                if (rs != null) {
                     rs.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -985,8 +1010,9 @@ public class VersionManager {
      *
      */
     private String composeNewVersion(String oldVersion) {
-        if (oldVersion == null)
+        if (oldVersion == null) {
             oldVersion = "0";
+        }
         int oldVer = Integer.parseInt(oldVersion);
         return String.valueOf(oldVer + 1);
     }
@@ -1008,17 +1034,19 @@ public class VersionManager {
             + "left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID " + "where DS_TABLE.IDENTIFIER='"
             + idfier + "' and DATASET.DELETED is null and " + "DS_TABLE.TABLE_ID<>" + id + " and ";
 
-        if (parentNS == null)
+        if (parentNS == null) {
             s = s + "DS_TABLE.PARENT_NS is null";
-        else
+        } else {
             s = s + "DS_TABLE.PARENT_NS=" + parentNS;
+        }
 
         boolean f = false;
 
         ResultSet rs = conn.createStatement().executeQuery(s);
         if (rs.next()) {
-            if (rs.getInt(1) == 0)
+            if (rs.getInt(1) == 0) {
                 f = true;
+            }
         }
 
         return f;
@@ -1037,8 +1065,9 @@ public class VersionManager {
 
         ResultSet rs = conn.createStatement().executeQuery(s);
         if (rs.next()) {
-            if (rs.getInt(1) == 0)
+            if (rs.getInt(1) == 0) {
                 f = true;
+            }
         }
 
         return f;
@@ -1074,14 +1103,17 @@ public class VersionManager {
         try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            if (rs.next() && rs.getInt(1) == 1)
+            if (rs.next() && rs.getInt(1) == 1) {
                 return true;
+            }
         } finally {
             try {
-                if (stmt != null)
+                if (stmt != null) {
                     stmt.close();
-                if (rs != null)
+                }
+                if (rs != null) {
                     rs.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -1115,16 +1147,18 @@ public class VersionManager {
 
         // add owner of this element
         String owner = searchEngine.getElmOwner(elm.getIdentifier());
-        if (owner != null)
+        if (owner != null) {
             result.add(owner);
+        }
 
         // add owners of datasets of referring tables
         Vector refTables = searchEngine.getReferringTables(elm.getID());
         for (int i = 0; refTables != null && i < refTables.size(); i++) {
             DsTable tbl = (DsTable) refTables.get(i);
             String tblOwner = tbl.getOwner();
-            if (tblOwner != null && !result.contains(tblOwner))
+            if (tblOwner != null && !result.contains(tblOwner)) {
                 result.add(tblOwner);
+            }
         }
 
         // add creator of checked-out copy
@@ -1132,14 +1166,16 @@ public class VersionManager {
             ResultSet rs = stmt.executeQuery("select USER from DATAELEM where DATAELEM_ID=" + checkedoutCopyID);
             if (rs != null && rs.next()) {
                 String checkedoutCopyUser = rs.getString(1);
-                if (checkedoutCopyUser != null)
+                if (checkedoutCopyUser != null) {
                     result.add(checkedoutCopyUser);
+                }
             }
         }
 
         // finally, remove this.user he doesn't need a notification anyway
-        if (user != null && user.getUserName() != null)
+        if (user != null && user.getUserName() != null) {
             result.remove(user.getUserName());
+        }
 
         return result.size() > 0 ? result : null;
     }

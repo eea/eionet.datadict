@@ -276,7 +276,7 @@ public class SQL {
     public static String toLiteral(String str) {
 
         if (str == null) {
-            return "''";
+            return null;
         }
 
         StringBuffer result = new StringBuffer("'");

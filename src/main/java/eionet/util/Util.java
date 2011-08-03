@@ -53,6 +53,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import eionet.meta.DDRuntimeException;
+
 //import eionet.meta.Log;
 
 /**
@@ -417,6 +419,20 @@ public class Util {
         }
 
         return buf.toString();
+    }
+
+    /**
+     *
+     * @param str
+     * @return
+     */
+    public static String md5(String str){
+
+        try {
+            return digestHexDec(str, "MD5");
+        } catch (GeneralSecurityException e) {
+            throw new DDRuntimeException("Failed to generate MD5 hash", e);
+        }
     }
 
     /**
@@ -1241,4 +1257,25 @@ public class Util {
         return map==null || map.isEmpty();
     }
 
+    public static void main(String[] args){
+
+        StringBuilder str = new StringBuilder();
+        str.append((String)null);
+        System.out.println(str);
+        System.out.println(Util.md5("111DS141"));
+        System.out.println(Util.md5("111DS151"));
+        System.out.println(Util.md5("222T141"));
+        System.out.println(Util.md5("222T151"));
+        System.out.println(Util.md5("333T141"));
+        System.out.println(Util.md5("333T151"));
+        System.out.println(Util.md5("444E141"));
+        System.out.println(Util.md5("444E151"));
+        System.out.println(Util.md5("555E141"));
+        System.out.println(Util.md5("555E151"));
+        System.out.println();
+        System.out.println(Util.md5("666E141"));
+        System.out.println(Util.md5("666E151"));
+        System.out.println(Util.md5("777E141"));
+        System.out.println(Util.md5("777E151"));
+    }
 }

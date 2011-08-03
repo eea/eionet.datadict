@@ -164,9 +164,6 @@ public class NamespaceHandler extends BaseHandler{
         INParameters inParams = new INParameters();
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("NAMESPACE");
-        // don't allow change of SHORT_NAME in the first approach
-        //if (!Util.voidStr(shortName))
-        //gen.setField("SHORT_NAME", shortName);
         if (!Util.isEmpty(fullName)) {
             gen.setFieldExpr("FULL_NAME", inParams.add(fullName));
         }
@@ -175,10 +172,11 @@ public class NamespaceHandler extends BaseHandler{
         }
 
         String wrkUser = req.getParameter("wrk_user");
-        if (!Util.isEmpty(wrkUser))
+        if (!Util.isEmpty(wrkUser)) {
             gen.setFieldExpr("WORKING_USER", inParams.add(wrkUser));
-        else
+        } else {
             gen.setFieldExpr("WORKING_USER", "NULL");
+        }
 
         StringBuffer buf = new StringBuffer(gen.updateStatement());
         buf.append(" where NAMESPACE_ID=");
@@ -207,8 +205,9 @@ public class NamespaceHandler extends BaseHandler{
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
         rs.clearWarnings();
-        if (rs.next())
+        if (rs.next()) {
             lastInsertID = rs.getString(1);
+        }
 
         stmt.close();
     }

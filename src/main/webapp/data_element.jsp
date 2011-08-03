@@ -1446,7 +1446,7 @@
                                 <input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/>
                                 &nbsp;<input type="button" class="mediumbuttonb" value="Switch type" onclick="switchType()"/>
                                 &nbsp;<input type="button" class="mediumbuttonb" value="Check in" onclick="checkIn()" />
-                                &nbsp;<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>                                
+                                &nbsp;<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>
                                 <%
                                                                     }
                                                                         // edit case
@@ -1754,7 +1754,7 @@
                                                             long timestamp = dataElement.getDate()==null ? 0 : Long.parseLong(dataElement.getDate());
                                                             String dateString = timestamp==0 ? "" : eionet.util.Util.releasedDate(timestamp);
                                                             String dateTimeString = timestamp==0 ? "" : dateString + " " + eionet.util.Util.hoursMinutesSeconds(timestamp);
-                                                            
+
                                                             if (elmWorkingUser != null) {
                                                                 if (dataElement.isWorkingCopy() && user != null && elmWorkingUser.equals(user.getUserName())){
                                                                      %>
@@ -1969,8 +1969,7 @@
                                                         if (dispType.equals("image")) {
                                                             if (mode.equals("add")
                                                                     || (mode.equals("edit") && user == null)
-                                                                    || (mode.equals("view") && Util
-                                                                            .voidStr(attrValue))) {
+                                                                    || (mode.equals("view") && Util.isEmpty(attrValue))) {
                                                                 continue;
                                                             }
                                                         }
@@ -2780,12 +2779,12 @@
                                                 <%
                                                 DataElement otherVer;
                                                 for (int i = 0; i < otherVersions.size(); i++) {
-                                                    
+
                                                     otherVer = (DataElement) otherVersions.get(i);
                                                     String status = otherVer.getStatus();
                                                     String releaseDate = null;
                                                     String releaseDateHint = null;
-                                                    
+
                                                     if (status.equals("Released")){
                                                         releaseDate = otherVer.getDate();
                                                     }

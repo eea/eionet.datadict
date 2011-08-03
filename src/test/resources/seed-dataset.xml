@@ -1,5 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-    <DATASET IDENTIFIER="test_dataset1" SHORT_NAME="test_dataset1" USER="heinlja" CORRESP_NS="1111"/>
-    <DATASET IDENTIFIER="test_dataset2" SHORT_NAME="test_dataset2" USER="heinlja" CORRESP_NS="2222"/>
-</dataset>

@@ -34,11 +34,12 @@ public class ElmPdfGuideline {
     ///////////
 
     public ElmPdfGuideline(DDSearchEngine searchEngine, TblPdfGuideline owner) //Section parentSection)
-        throws Exception {
+    throws Exception {
 
         //if (parentSection==null) throw new Exception("parentSection cannot be null!");
-        if (searchEngine==null)
+        if (searchEngine==null) {
             throw new Exception("searchEngine cannot be null!");
+        }
 
         this.searchEngine = searchEngine;
         //this.parentSection = parentSection;
@@ -51,14 +52,16 @@ public class ElmPdfGuideline {
 
     protected void write(String elemID, String tblID) throws Exception {
 
-        if (Util.isEmpty(elemID))
+        if (Util.isEmpty(elemID)) {
             throw new Exception("Data element ID not specified!");
+        }
 
         // Get the data element object. This will also give us the
         // element's simple attributes + tableID
         DataElement elem = searchEngine.getDataElement(elemID, tblID, false);
-        if (elem == null)
+        if (elem == null) {
             throw new Exception("Data element not found!");
+        }
 
         // get and set the element's complex attributes
         elem.setComplexAttributes(searchEngine.getComplexAttributes(elemID, "E"));
@@ -67,19 +70,22 @@ public class ElmPdfGuideline {
     }
 
     /**
-    * Write a factsheet for a data element given by object.
-    */
+     * Write a factsheet for a data element given by object.
+     */
     private void write(DataElement elem) throws Exception {
 
-        if (elem==null)
+        if (elem==null) {
             throw new Exception("Element object was null!");
+        }
 
         String nr = "";
         Sectioning sect = null;
-        if (owner != null)
+        if (owner != null) {
             sect = owner.getSectioning();
-        if (sect != null)
+        }
+        if (sect != null) {
             nr = sect.level(elem.getShortName() + " element", 3);
+        }
         nr = nr==null ? "" : nr + " ";
 
         Paragraph prg = new Paragraph();
@@ -96,8 +102,8 @@ public class ElmPdfGuideline {
         if (Util.isEmpty(tableID)) {
 
             String msg =
-            "\nWarning! This guideline does not fully reflect the " +
-            "table and dataset where this data element belongs to!\n\n";
+                "\nWarning! This guideline does not fully reflect the " +
+                "table and dataset where this data element belongs to!\n\n";
 
             addElement(new Phrase(msg, Fonts.get(Fonts.WARNING)));
         }
@@ -107,27 +113,6 @@ public class ElmPdfGuideline {
 
         Hashtable hash = null;
         Vector attrs = elem.getAttributes();
-
-        // dataset name, table name
-        /* JH151003 - not needed, cause elm gdln is always part of a tbl gdln
-        if (!Util.voidStr(tableID)) {
-            DsTable dsTable = searchEngine.getDatasetTable(tableID);
-            if (dsTable != null) {
-                Dataset ds = searchEngine.getDataset(dsTable.getDatasetID());
-                if (ds != null) {
-                    hash = new Hashtable();
-                    hash.put("name", "Dataset");
-                    hash.put("value", ds.getShortName());
-                    v.add(0, hash);
-                }
-
-                hash = new Hashtable();
-                hash.put("name", "Table");
-                hash.put("value", dsTable.getShortName());
-                v.add(0, hash);
-            }
-        }
-        */
 
         // short name
         hash = new Hashtable();
@@ -167,7 +152,7 @@ public class ElmPdfGuideline {
         v = searchEngine.getFixedValues(elem.getID(), "elem");
         if (v!=null && v.size()>0) {
             addElement(new Phrase("! This data element may only have the " +
-                                "following fixed values:\n", Fonts.get(Fonts.HEADING_0)));
+                    "following fixed values:\n", Fonts.get(Fonts.HEADING_0)));
             addElement(PdfUtil.fixedValuesTable(v, false));
         }
 
@@ -181,8 +166,9 @@ public class ElmPdfGuideline {
 
     private void addElement(Element elm) {
 
-        if (owner!=null)
+        if (owner!=null) {
             owner.addElement(elm);
+        }
 
         //if (elm != null) section.add(elm);
         //return docElements.size();
