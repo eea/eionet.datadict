@@ -2,7 +2,7 @@ package eionet.meta.savers;
 
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.dbunit.DatabaseTestCase;
@@ -88,7 +88,6 @@ public class CopyHandlerTest extends DatabaseTestCase {
     public void testCopyDst() throws SQLException, Exception {
 
         CopyHandler copyHandler = new CopyHandler(getConnection().getConnection(), null, null);
-        copyHandler.setRecordOldNewMappings(true);
 
         String oldDstId = "111";
         String newDstId = copyHandler.copyDst(oldDstId, false, false);
@@ -99,11 +98,11 @@ public class CopyHandlerTest extends DatabaseTestCase {
         compareDocs("dst", oldDstId, newDstId);
         compareDst2Rod(oldDstId, newDstId);
 
-        Hashtable<String, String> oldNewTables = copyHandler.getOldNewTables();
+        Map<String, String> oldNewTables = copyHandler.getOldNewTables();
         assertEquals(2, oldNewTables.size());
         compareDst2Tbl(oldDstId, newDstId, oldNewTables);
 
-        Hashtable<String, String> oldNewElements = copyHandler.getOldNewElements();
+        Map<String, String> oldNewElements = copyHandler.getOldNewElements();
         // Although there is 4 elements in the loaded XML dataset, the copy handler will copy only non-common elements,
         // of which there is 2. So we expect no more than 4-2=2 entries in old-new element mappings recorded.
         assertEquals(2, oldNewElements.size());
@@ -129,8 +128,35 @@ public class CopyHandlerTest extends DatabaseTestCase {
             compareSimpleAttributes("E", oldElmId, newElmId);
             compareComplexAttributes("E", oldElmId, newElmId);
             compareFixedValues(oldElmId, newElmId);
+            compareFkRelations(oldElmId, newElmId, oldNewElements);
         }
 
+    }
+
+    /**
+     *
+     * @throws SQLException
+     * @throws Exception
+     */
+    public void testCopyElm() throws SQLException, Exception {
+
+        CopyHandler copyHandler = new CopyHandler(getConnection().getConnection(), null, null);
+
+        String oldElmId = "777";
+        String newElmId = copyHandler.copyElm(oldElmId, false, true, false);
+
+        assertTrue(newElmId!=null);
+        assertTrue(oldElmId!=newElmId);
+
+        Map<String, String> oldNewElements = copyHandler.getOldNewElements();
+        assertEquals(1, oldNewElements.size());
+
+        compareDefinitionRows("DATAELEM", "DATAELEM_ID", oldElmId, newElmId);
+        compareSimpleAttributes("DS", oldElmId, newElmId);
+        compareComplexAttributes("DS", oldElmId, newElmId);
+        compareFixedValues(oldElmId, newElmId);
+        compareFkRelations(oldElmId, newElmId, oldNewElements);
+        compareElmToTblRelations(oldElmId, newElmId);
     }
 
     /**
@@ -288,11 +314,46 @@ public class CopyHandlerTest extends DatabaseTestCase {
 
     /**
      *
+     * @param oldId
+     * @param newId
+     * @throws Exception
+     */
+    private void compareFkRelations(String oldElmId, String newElmId, Map<String,String> oldNewElements) throws Exception {
+
+        if (oldNewElements==null || oldNewElements.isEmpty()){
+            return;
+        }
+
+        // get the tables from database
+        QueryDataSet queryDataSet = new QueryDataSet(getConnection());
+        queryDataSet.addTable("OLD", "select * from FK_RELATION where A_ID=" + oldElmId + " or B_ID=" + oldElmId);
+        queryDataSet.addTable("NEW", "select * from FK_RELATION where A_ID=" + newElmId + " or B_ID=" + newElmId);
+
+        // process the "old" table
+        ITable filteredTable = new ColumnFilterTable(queryDataSet.getTable("OLD"), new ColumnFilterImpl("REL_ID"));
+        ColumnSpecificReplacementTable replacementTable = new ColumnSpecificReplacementTable(filteredTable, "A_ID", "B_ID");
+        for (Entry<String, String> entry : oldNewElements.entrySet()){
+            replacementTable.addReplacementObject(Integer.valueOf(entry.getKey()), Integer.valueOf(entry.getValue()));
+        }
+        ITable tableOld = new SortedTable(replacementTable);
+
+        // process the "new" table
+        filteredTable = new ColumnFilterTable(queryDataSet.getTable("NEW"), new ColumnFilterImpl("REL_ID"));
+        ITable tableNew = new SortedTable(replacementTable);
+
+        // finally, compare the two resulting tables
+        assertEquals(tableOld.getRowCount(), tableNew.getRowCount());
+        DbUnitAssert dbUnitAssert = new DbUnitAssert();
+        dbUnitAssert.assertEquals(tableOld, tableNew);
+    }
+
+    /**
+     *
      * @param oldDstId
      * @param newDstId
      * @throws Exception
      */
-    private void compareDst2Tbl(String oldDstId, String newDstId, Hashtable<String, String> oldNewTables) throws Exception {
+    private void compareDst2Tbl(String oldDstId, String newDstId, Map<String, String> oldNewTables) throws Exception {
 
         if (oldNewTables==null || oldNewTables.isEmpty()){
             return;
@@ -339,7 +400,7 @@ public class CopyHandlerTest extends DatabaseTestCase {
      * @param oldNewElements
      * @throws Exception
      */
-    private void compareTbl2Elm(String oldTblId, String newTblId, Hashtable<String, String> oldNewElements) throws Exception {
+    private void compareTbl2Elm(String oldTblId, String newTblId, Map<String, String> oldNewElements) throws Exception {
 
         if (oldNewElements==null || oldNewElements.isEmpty()){
             return;
@@ -376,6 +437,28 @@ public class CopyHandlerTest extends DatabaseTestCase {
 
         // finally, compare the two resulting tables
         assertEquals(tableOld.getRowCount(), tableNew.getRowCount());
+        DbUnitAssert dbUnitAssert = new DbUnitAssert();
+        dbUnitAssert.assertEquals(tableOld, tableNew);
+    }
+
+    /**
+     *
+     * @param oldId
+     * @param newId
+     * @throws Exception
+     */
+    private void compareElmToTblRelations(String oldElmId, String newElmId) throws Exception {
+
+        QueryDataSet queryDataSet = new QueryDataSet(getConnection());
+        queryDataSet.addTable("OLD", "select * from TBL2ELEM where DATAELEM_ID=" + oldElmId);
+        queryDataSet.addTable("NEW", "select * from TBL2ELEM where DATAELEM_ID=" + newElmId);
+
+        ColumnFilterImpl colFilter = new ColumnFilterImpl("TABLE_ID", "DATAELEM_ID");
+        ITable tableOld = new SortedTable(new ColumnFilterTable(queryDataSet.getTable("OLD"), colFilter));
+        ITable tableNew = new SortedTable(new ColumnFilterTable(queryDataSet.getTable("NEW"), colFilter));
+
+        assertEquals(tableOld.getRowCount(), tableNew.getRowCount());
+
         DbUnitAssert dbUnitAssert = new DbUnitAssert();
         dbUnitAssert.assertEquals(tableOld, tableNew);
     }
