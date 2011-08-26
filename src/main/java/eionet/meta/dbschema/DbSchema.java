@@ -62,7 +62,7 @@ public class DbSchema{
             rs = stmt.executeQuery("show tables");
 
             while (rs.next()){
-                tablesColumns.put(rs.getString(1), null);
+                tablesColumns.put(rs.getString(1).toUpperCase(), null);
             }
             SQL.close(rs);
 
@@ -76,7 +76,7 @@ public class DbSchema{
                 }
                 SQL.close(rs);
 
-                tablesColumns.put(tableName, Collections.unmodifiableList(columns));
+                tablesColumns.put(tableName.toUpperCase(), Collections.unmodifiableList(columns));
             }
         }
         finally{
@@ -93,7 +93,7 @@ public class DbSchema{
      */
     public static List<String> getTableColumns(String tableName){
 
-        return instance.tablesColumns.get(tableName);
+        return instance.tablesColumns.get(tableName.toUpperCase());
     }
 
     /**
