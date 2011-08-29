@@ -256,7 +256,7 @@
         <dependency>
             <groupId>eionet</groupId>
             <artifactId>uit-security</artifactId>
-            <version>1.1b</version>
+            <version>1.1c</version>
         </dependency>
         <dependency>
             <groupId>eionet</groupId>
@@ -352,6 +352,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.0</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
     <reporting>
