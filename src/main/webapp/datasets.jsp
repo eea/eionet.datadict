@@ -128,8 +128,20 @@
     String _isSearchForWorkingCopies = request.getParameter("wrk_copies");
     boolean isSearchForWorkingCopies = (_isSearchForWorkingCopies!=null && _isSearchForWorkingCopies.equals("true")) ? true : false;
     boolean isIncludeHistoricVersions = request.getParameter("incl_histver")!=null && request.getParameter("incl_histver").equals("true");
-
+    String feedbackValue = null;
+    
     String pageMode = request.getParameter("sort_column")!=null ? "sort" : "search";
+    
+ 	// Feedback messages
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("checkout")) {
+        feedbackValue = "Working copy successfully created!";
+    }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("checkin")) {
+        feedbackValue = "Check-in successful!";
+    }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("undo_checkout")) {
+        feedbackValue = "Working copy successfully discarded!";
+    }
 
     try { // start the whole page try block
 
@@ -355,6 +367,14 @@
                 </ul>
                 </div>
             <%
+	            	if (feedbackValue != null) {
+	    			%>
+	    				<div class="system-msg">
+	    				<%= feedbackValue %>
+	    				</div>
+	    			<%  
+	    			}
+            
                     if (!restore && isSearchForWorkingCopies){ %>
                         <h1>Working copies of dataset definitions</h1><%
                     }

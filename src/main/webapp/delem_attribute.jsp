@@ -434,8 +434,9 @@ else
                 <%
                 if (user!=null && mode.equals("view") && editPrm){
                     %>
-                    <div id="operations">
-                          <ul>
+                    <div id="drop-operations">
+                    <h2>Operations:</h2>
+                        <ul>
                             <li><a href="javascript:goToEdit()">Edit</a></li>
                         </ul>
                     </div><%

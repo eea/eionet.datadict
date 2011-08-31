@@ -660,13 +660,9 @@ else if (mode.equals("add"))
     <div id="workarea">
 
         <%
+        boolean subscribe = false;
         if (mode.equals("view") && user!=null && dsTable!=null && dsTable.getIdentifier()!=null && dataset!=null && dataset.getIdentifier()!=null){
-            %>
-            <div id="operations">
-                <ul>
-                    <li><a href="Subscribe?table=<%=dataset.getIdentifier()%>%2F<%=dsTable.getIdentifier()%>">Subscribe</a></li>
-                </ul>
-            </div><%
+            subscribe = true;
         }
 
         // main table head
@@ -677,56 +673,40 @@ else if (mode.equals("add"))
         else if (mode.equals("edit"))
             pageHeadingVerb = "Edit";
         %>
-        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="dataset.jsp?ds_id=<%=dsID%>"><%=Util.replaceTags(dsName)%></a> dataset<%}%></h1>
-
         <!-- The buttons displayed in view mode -->
             <%
-            if (mode.equals("view") && editDstPrm==true){
+            if ((mode.equals("view") && editDstPrm==true) || subscribe) {
             %>
-            <div id="auth-operations">
+            <div id="drop-operations">
                 <h2>Operations:</h2>
                 <ul>
-                <li><a href="dstable.jsp?mode=edit&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit</a></li>
-                <li><a href="javascript:submitForm('delete')">Delete</a></li>
-            <%
-            // elements link
-            String elemLink = "tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
-            %>
-                <li><a href="<%=elemLink%>">Manage elements</a></li>
-                <li><a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Manage complex attributes</a></li>
+                	<% 
+                	if (mode.equals("view") && editDstPrm==true) {
+                	%>
+	                <li><a href="dstable.jsp?mode=edit&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit metadata</a></li>
+		            <%
+		            // elements link
+		            String elemLink = "tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
+		            %>
+	                <li><a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
+	                <li><a href="<%=elemLink%>">Manage elements</a></li>
+	                <li><a href="javascript:submitForm('delete')">Delete</a></li>
+	                <% 
+            		}
+                	if (subscribe) {
+                   	%>
+                   	<li><a href="Subscribe?table=<%=dataset.getIdentifier()%>%2F<%=dsTable.getIdentifier()%>">Subscribe</a></li>
+                   	<% 
+                   	}
+	                %>
                 </ul>
             </div>
             <%
             }
             %>
+        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="dataset.jsp?ds_id=<%=dsID%>"><%=Util.replaceTags(dsName)%></a> dataset<%}%></h1>
+        
         <form id="form1" method="post" action="dstable.jsp" style="clear:both">
-
-                <!-- add, save, check-in, undo check-out buttons -->
-                <%
-                if (mode.equals("add") || mode.equals("edit")){
-                    %>
-                    <div style="float:right">
-                        <%
-                        // add case
-                        if (mode.equals("add")){
-                            %>
-                            <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
-                            <input type="button" class="mediumbuttonb" value="Copy"
-                                onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
-                                title="Copies table structure and attributes from existing dataset table"/><%
-                        }
-                        // edit case
-                        else if (mode.equals("edit")){
-                            %>
-                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-                            <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
-                            <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
-                            <%
-                        }
-                        %>
-                    </div><%
-                }
-                %>
 
             <!--=======================-->
             <!-- main table inside div -->
@@ -1305,7 +1285,32 @@ else if (mode.equals("add"))
 
                                             <%isOdd = Util.isOdd(++displayed);%>
                                         </tr>
-
+										<tr>
+											<th></th>
+											<td colspan="3">
+											<!-- add, save, check-in, undo check-out buttons -->
+							                <%
+							                if (mode.equals("add") || mode.equals("edit")){
+						                        // add case
+						                        if (mode.equals("add")){
+						                            %>
+						                            <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
+						                            <input type="button" class="mediumbuttonb" value="Copy"
+						                                onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
+						                                title="Copies table structure and attributes from existing dataset table"/><%
+						                        }
+						                        // edit case
+						                        else if (mode.equals("edit")){
+						                            %>
+						                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
+						                            <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
+						                            <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
+						                            <%
+						                        }
+							                }
+							                %>
+											</td>
+										</tr>
                                     </table>
 
                                     <!-- end of attributes -->

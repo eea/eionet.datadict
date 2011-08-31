@@ -178,9 +178,24 @@
     DataElement newDataElement = null;
     Vector complexAttrs = null;
     Vector fixedValues = null;
+    String feedbackValue = null;
 
     ServletContext ctx = getServletContext();
     DDUser user = SecurityUtil.getUser(request);
+    
+ 	// Feedback messages
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("checkout")) {
+        feedbackValue = "Working copy successfully created!";
+    }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("checkin")) {
+        feedbackValue = "Check-in successful!";
+    }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("undo_checkout")) {
+        feedbackValue = "Working copy successfully discarded!";
+    }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("switch_type")) {
+        feedbackValue = "Type switch successful!";
+    }
 
     // POST request not allowed for anybody who hasn't logged in
     if (request.getMethod().equals("POST") && user == null) {
@@ -345,6 +360,7 @@
                         history.remove(history.getCurrentIndex());
                     QueryString qs = new QueryString(currentUrl);
                     qs.changeParam("mode", "view");
+                    qs.changeParam("feedback", "checkin");
                     if (handler.getCheckedInCopyID() != null)
                         qs.changeParam("delem_id",
                                 handler.getCheckedInCopyID());
@@ -354,6 +370,7 @@
                 else if (switchType != null
                         && switchType.equalsIgnoreCase("true")) {
                     QueryString qs = new QueryString(currentUrl);
+                    qs.changeParam("feedback", "switch_type");
                     redirUrl = qs.getValue();
                 }
                 // if this was just a save, send back to edit page
@@ -366,10 +383,10 @@
                         .getParameter("checkedout_copy_id");
                 if (checkedoutCopyID != null
                         && checkedoutCopyID.length() > 0)
-                    redirUrl = "data_element.jsp?delem_id="
+                    redirUrl = "data_element.jsp?feedback=undo_checkout&delem_id="
                             + checkedoutCopyID;
                 else
-                    redirUrl = "index.jsp";
+                    redirUrl = "search.jsp?feedback=undo_checkout";
                 if (!elmCommon) {
                     if (tableID != null && tableID.length() > 0)
                         redirUrl = "dstable.jsp?table_id=" + tableID;
@@ -668,6 +685,7 @@
                         StringBuffer buf = new StringBuffer(
                                 "data_element.jsp?delem_id=");
                         buf.append(copyID);
+                        buf.append("&feedback=checkout");
                         response.sendRedirect(buf.toString());
                     }
                 } else if (mode.equals("view")) {
@@ -1321,84 +1339,96 @@
         <div id="workarea">
 <%
     } // end if popup
-%>
 
-            <div id="operations">
+			if (feedbackValue != null) {
+			%>
+				<div class="system-msg">
+				<%= feedbackValue %>
+				</div>
+			<%  
+			}
 
-                <ul>
-                    <%
-                        if (popup) {
-                    %>
-                        <li><a href="javascript:window.close();">Close</a></li>
-                        <li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li><%
-                            }
-                        %>
-                    <%
-                        if (mode.equals("view") && user != null && dataElement != null
-                                    && elmCommon && dataElement.getIdentifier() != null) {
-                    %>
-                        <li><a href="Subscribe?common_element=<%=Util.replaceTags(dataElement.getIdentifier())%>">Subscribe</a></li>
-                        <%
-                            }
-                                if (elmCommon && canNewVersion) {
-                        %>
-                        <li><a href="data_element.jsp?action=newversion&amp;delem_id=<%=delem_id%>">New version</a></li><%
-                            }
-                                if (mode.equals("view") && elmCommon
-                                        && !dataElement.isWorkingCopy()) {
-                                    if (user != null || (user == null && !isLatestRequested)) {
-                                        if (latestID != null
-                                                && !latestID.equals(dataElement.getID())) {
-                        %>
-                                <li><a href="data_element.jsp?delem_id=<%=latestID%>">Go to newest</a></li><%
-                                    }
-                                            }
-                                        }
-                                %>
-                </ul>
-            </div>
-
-            <%
                 String verb = "View";
                     if (mode.equals("add"))
                         verb = "Add";
                     else if (mode.equals("edit"))
                         verb = "Edit";
                     String strCommon = elmCommon ? "common" : "";
-            %>
-            <h1><%=verb%> <%=strCommon%> element definition</h1>
-
-<!-- The buttons displayed in view mode -->
-
-                        <%
-                            if (mode.equals("view")) {
-                        %>
-                        <div id="auth-operations">
+            
+            
+            		if (popup || mode.equals("view")) {
+            		%>
+                        <div id="drop-operations">
                         <h2>Operations:</h2>
                             <ul>
-
-                                <%
+                            <%
+	                        if (popup) {
+		                    %>
+			                        <li><a href="javascript:window.close();">Close</a></li>
+			                        <li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li><%
+		                    }
+		                    if (elmCommon && canNewVersion) {
+		                    %>
+		                        	<li><a href="data_element.jsp?action=newversion&amp;delem_id=<%=delem_id%>">New version</a></li><%
+		                    }
+	                        if (mode.equals("view") && elmCommon
+	                                && !dataElement.isWorkingCopy()) {
+	                            if (user != null || (user == null && !isLatestRequested)) {
+	                                if (latestID != null
+	                                        && !latestID.equals(dataElement.getID())) {
+		                    %>
+		                        	<li><a href="data_element.jsp?delem_id=<%=latestID%>">Go to newest</a></li><%
+	                                }
+	                            }
+	                        }
+                            if (mode.equals("view")) {
+                                //The buttons displayed in view mode
                                     if (!elmCommon && editDstPrm) {
                                 %>
                                     <li><a href="data_element.jsp?mode=edit&amp;delem_id=<%=delem_id%>">Edit</a></li>
                                     <li><a href="javascript:switchType()">Switch type</a></li>
-<%
-    }
-            if (elmCommon && canCheckout) {
-%>
+								<%
+								    }
+								    if (elmCommon && canCheckout) {
+								%>
                                     <li><a href="data_element.jsp?action=checkout&amp;delem_id=<%=delem_id%>">Check out</a></li>
-<%
-    }
-            if ((elmCommon && canCheckout)
-                    || (!elmCommon && editDstPrm)) {
-%>
+								<%
+								    }
+								    if ((elmCommon && canCheckout)
+								                    || (!elmCommon && editDstPrm)) {
+								%>
                                     <li><a href="javascript:submitForm('delete')">Delete</a></li>
-<%
-    }
-%>
-                        </div><%
-                            }
-                        %>
+								<%
+								    }
+                           	}
+                            if (mode.equals("view") && isMyWorkingCopy) {
+                             	// view case
+			                    %>
+			                    	<%-- 
+				                    <input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/>
+				                    &nbsp;<input type="button" class="mediumbuttonb" value="Switch type" onclick="switchType()"/>
+				                    &nbsp;<input type="button" class="mediumbuttonb" value="Check in" onclick="checkIn()" />
+				                    &nbsp;<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>
+				                    --%>
+				                    <li><a href="data_element.jsp?mode=edit&amp;delem_id=<%=delem_id%>">Edit</a></li>
+				                    <li><a href="javascript:switchType()">Switch type</a></li>
+				                    <li><a href="javascript:checkIn()">Check in</a></li>
+				                    <li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
+			                    <%
+                          	}
+                            if (mode.equals("view") && user != null && dataElement != null
+                                    && elmCommon && dataElement.getIdentifier() != null) {
+		                    %>
+		                        	<li><a href="Subscribe?common_element=<%=Util.replaceTags(dataElement.getIdentifier())%>">Subscribe</a></li>
+		                    <%
+		                    }
+                        	%>
+                        	</ul>
+                        </div>
+                    <% 
+            		}
+                    %>
+                        <h1><%=verb%> <%=strCommon%> element definition</h1>
             <%
                 if (mode.equals("add")) {
             %>
@@ -1426,39 +1456,6 @@
                         %>
                 </div>
 
-
-                        <!-- add, save, check-in, undo check-out buttons -->
-
-                        <div style="float:right;clear:left">
-                            <%
-                                // add case
-                                    if (mode.equals("add")) {
-                            %>
-                                <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
-                                <input type="button" class="mediumbuttonb" value="Copy"
-                                    onclick="copyElem()"
-                                    title="Opens an element search window, and from the search results you can select an element to copy."/>
-                                <%
-                                    }
-                                        // view case
-                                        else if (mode.equals("view") && isMyWorkingCopy) {
-                                %>
-                                <input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/>
-                                &nbsp;<input type="button" class="mediumbuttonb" value="Switch type" onclick="switchType()"/>
-                                &nbsp;<input type="button" class="mediumbuttonb" value="Check in" onclick="checkIn()" />
-                                &nbsp;<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>
-                                <%
-                                                                    }
-                                                                        // edit case
-                                                                        else if (mode.equals("edit")) {
-                                                                %>
-                                <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-                                <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
-                                <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
-                                <%
-                                    }
-                                %>
-                        </div>
                         <!-- main table body -->
 
 
@@ -2357,7 +2354,32 @@
                                                     isOdd = Util.isOdd(++displayed);
                                                 %>
                                             </tr>
-
+											<tr>
+												<th></th>
+												<td colspan="3">
+												
+												 <!-- add, save, check-in, undo check-out buttons -->
+							                    	<%
+							                        // add case
+							                        if (mode.equals("add")) {
+							                    	%>
+								                        <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
+								                        <input type="button" class="mediumbuttonb" value="Copy"
+								                            onclick="copyElem()"
+								                            title="Opens an element search window, and from the search results you can select an element to copy."/>
+							                        <%
+							                        }// edit case
+							                        else if (mode.equals("edit")) {
+							                        %>
+								                        <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
+								                        <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
+								                        <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=delem_id%>')"/>
+							                        <%
+							                        }
+							                        %>
+												
+												</td>
+											</tr>
                                         </table>
 
                                         <!-- end of attributes -->

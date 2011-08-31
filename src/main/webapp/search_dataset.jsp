@@ -164,7 +164,8 @@ private String setDefaultAttrs(String name){
 		<%
 		if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")){
 			%>
-			<div id="operations">
+			<div id="drop-operations">
+            <h2>Operations:</h2>
 				<ul>
 					<li><a title="Create a new dataset" href="dataset.jsp?mode=add">Add dataset</a></li>
 				</ul>

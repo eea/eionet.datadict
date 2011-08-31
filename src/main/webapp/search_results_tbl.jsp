@@ -158,7 +158,8 @@
             
                 <!-- search buttons -->
                 
-                <div id="operations">
+                <div id="drop-operations">
+                <h2>Operations:</h2>
                     <ul>
                         <li><a href="search_table.jsp">Search</a></li>
                     </ul>

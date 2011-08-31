@@ -79,7 +79,8 @@ if (dstName == null || dstName.length()==0)
 			<input type="hidden" name="dst_name" value="<%=dstName%>"/>
 		</div>	
 	</form>
-	<div id="operations">
+	<div id="drop-operations">
+		<h2>Operations:</h2>
 		<ul>
 			<li><a href="javascript:document.forms['reload'].submit();">Reload</a></li>
 		</ul>

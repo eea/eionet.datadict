@@ -12,7 +12,6 @@ private Vector namespaces = null;
 ServletContext ctx = null;
 private String sel_attr = null;
 private Hashtable inputAttributes=null;
-
 			    
 private String getAttributeIdByName(String name){
 	
@@ -123,6 +122,13 @@ private String setDefaultAttrs(String name){
 	}
 
 	boolean isPopup = contextParam!=null && contextParam.equals(POPUP);
+	
+	String feedbackValue = null;
+
+	//Feedback messages
+	if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("undo_checkout")) {
+	    feedbackValue = "Working copy successfully discarded!";
+	}
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -255,7 +261,8 @@ if (isDisplayOperations==false)
 	isDisplayOperations = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i");
 if (isDisplayOperations){
 	%>
-	<div id="operations">
+	<div id="drop-operations">
+	<h2>Operations:</h2>
 		<ul>
 			<%
 			if (isPopup){ %>
@@ -273,6 +280,11 @@ if (isDisplayOperations){
 %>
 				
 				<h1>Search data elements</h1>
+				
+				<div class="system-msg">
+					<%= feedbackValue %>
+				</div>
+				
 				<br/>
 				<form id="form1" action="search_results.jsp" method="get">
 					<%

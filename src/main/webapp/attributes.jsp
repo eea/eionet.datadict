@@ -123,7 +123,7 @@
 				boolean addPrm = SecurityUtil.hasPerm(user.getUserName(), "/attributes", "i");
 				if (addPrm){
 					%>
-					<div id="auth-operations">
+					<div id="drop-operations">
 					<h2>Operations:</h2>
 						<ul>
 							<li><a href="delem_attribute.jsp?mode=add">Add attribute</a></li>

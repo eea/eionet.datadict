@@ -58,9 +58,21 @@
     Vector complexAttrs=null;
     Vector tables=null;
     Vector otherVersions = null;
+    String feedbackValue = null;
 
     ServletContext ctx = getServletContext();
     DDUser user = SecurityUtil.getUser(request);
+    
+    // Feedback messages
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("checkout")) {
+        feedbackValue = "Working copy successfully created!";
+    }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("checkin")) {
+        feedbackValue = "Check-in successful!";
+    }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("undo_checkout")) {
+        feedbackValue = "Working copy successfully discarded!";
+    }
 
     // POST request not allowed for anybody who hasn't logged in
     if (request.getMethod().equals("POST") && user==null){
@@ -172,6 +184,7 @@
                         history.remove(history.getCurrentIndex());
                     QueryString qs = new QueryString(currentUrl);
                     qs.changeParam("mode", "view");
+                    qs.changeParam("feedback", "checkin");
                     if (handler.getCheckedInCopyID()!=null)
                         qs.changeParam("ds_id", handler.getCheckedInCopyID());
                     redirUrl =qs.getValue();
@@ -183,9 +196,16 @@
             }
         }
         else if (mode.equals("delete")){
-            if (history!=null)
+            if (history!=null) {
                 history.remove(history.getCurrentIndex());
-            redirUrl = "datasets.jsp";
+            }
+            String checkedoutCopyID = request.getParameter("checkedout_copy_id");
+            if (checkedoutCopyID != null && checkedoutCopyID.length() > 0) {
+                redirUrl = "dataset.jsp?feedback=undo_checkout&ds_id=" + checkedoutCopyID;
+            } else {
+                redirUrl = "datasets.jsp?feedback=undo_checkout";
+            }
+            
         }
 
         response.sendRedirect(redirUrl);
@@ -356,8 +376,9 @@
             if (!ds_id.equals(copyID)){
                 // send to copy if created successfully, remove previous url (edit original) from history
                 history.remove(history.getCurrentIndex());
-                StringBuffer buf = new StringBuffer("dataset.jsp?ds_id=");
+                StringBuffer buf = new StringBuffer("dataset.jsp?&ds_id=");
                 buf.append(copyID);
+                buf.append("&feedback=checkout");
                 response.sendRedirect(buf.toString());
             }
         }
@@ -553,6 +574,7 @@
                 <%
             }
             %>
+            
             document.forms["form1"].elements["check_in"].value = "true";
             document.forms["form1"].elements["mode"].value = "edit";
             document.forms["form1"].submit();
@@ -718,15 +740,11 @@ else if (mode.equals("add"))
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
             <%
+            	boolean goToNewest = false;
                 if (mode.equals("view") && !dataset.isWorkingCopy()){
                     if (user!=null || (user==null && !isLatestRequested)){
-                        if (latestID!=null && !latestID.equals(dataset.getID())){ %>
-                <div id="operations">
-                    <ul>
-                            <li><a href="dataset.jsp?ds_id=<%=latestID%>">Go to newest</a></li>
-                    </ul>
-                </div>
-            <%
+                        if (latestID!=null && !latestID.equals(dataset.getID())) { 
+                            goToNewest = true;
                         }
                     }
                 }
@@ -736,59 +754,74 @@ else if (mode.equals("add"))
             else if (mode.equals("edit"))
                 verb = "Edit";
 
-            %>
-            <h1><%=Util.replaceTags(verb)%> dataset definition</h1>
-            <%
             boolean isDisplayOperations = mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null;
             if (isDisplayOperations==false)
                 isDisplayOperations = (mode.equals("view") && !dataset.isWorkingCopy()) && user!=null && (latestID!=null && !latestID.equals(dataset.getID()));
 
-            if (isDisplayOperations){
+            if (isDisplayOperations || goToNewest) {
                 %>
-                <div id="auth-operations">
+                <div id="drop-operations">
                 <h2>Operations:</h2>
                     <ul>
                         <%
-                        if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null){%>
-                            <li><a href="Subscribe?dataset=<%=Util.replaceTags(dataset.getIdentifier())%>">Subscribe</a></li><%
-                        }
-                        // the link
-                        if (mode.equals("view") && dataset!=null && dataset.isWorkingCopy()){
-                            if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
-                        %>
-                            <li><a href="dataset.jsp?mode=edit&amp;ds_id=<%=ds_id%>">Edit metadata</a></li>
-                            <li><a href="dsvisual.jsp?ds_id=<%=ds_id%>">Manage model</a></li>
-                            <%
-                            String dstrodLink = "dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
+                        if (goToNewest) {
                             %>
-                            <li><a href="<%=dstrodLink%>">Manage links to ROD</a></li>
-                            <li><a href="javascript:checkIn()">Check in</a></li>
-                            <li><a href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true">Edit complex attributes</a></li>
-                            <li><a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.replaceTags(ds_name)%>">Manage tables</a></li>
-                            <li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
-                        <%
-                            }
+                            	<li><a href="dataset.jsp?ds_id=<%=latestID%>">Go to newest</a></li>
+                            <%
                         }
-                        if (mode.equals("view")){
-                            if (canNewVersion){
-                        %>
-                            <li><a href="dataset.jsp?action=newversion&amp;ds_id=<%=ds_id%>">New version</a></li>
-                        <%
-                            }
-                            if (canCheckout){
-                        %>
-                            <li><a href="dataset.jsp?action=checkout&amp;ds_id=<%=ds_id%>">Check out</a></li>
-                            <li><a href="javascript:submitForm('delete')">Delete</a></li>
-                        <%
-                            }
+                        if (isDisplayOperations) {
+	                        // the link
+	                        if (mode.equals("view") && dataset!=null && dataset.isWorkingCopy()){
+	                            if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
+	                        %>
+	                        	<%
+	                            String dstrodLink = "dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
+	                            %>
+	                            <li><a href="dataset.jsp?mode=edit&amp;ds_id=<%=ds_id%>">Edit metadata</a></li>
+	                            <li><a href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.replaceTags(ds_name)%>&amp;ds=true">Edit complex attributes</a></li>
+	                            <li><a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.replaceTags(ds_name)%>">Manage tables</a></li>
+	                            <li><a href="dsvisual.jsp?ds_id=<%=ds_id%>">Manage model</a></li>
+	                            <li><a href="<%=dstrodLink%>">Manage links to ROD</a></li>
+	                            <li><a href="javascript:checkIn()">Check in</a></li>
+	                            <li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
+	                        <%
+	                            }
+	                        }
+	                        if (mode.equals("view")){
+	                            if (canNewVersion){
+	                        %>
+	                            <li><a href="dataset.jsp?action=newversion&amp;ds_id=<%=ds_id%>">New version</a></li>
+	                        <%
+	                            }
+	                            if (canCheckout){
+	                        %>
+	                            <li><a href="dataset.jsp?action=checkout&amp;ds_id=<%=ds_id%>">Check out</a></li>
+	                            <li><a href="javascript:submitForm('delete')">Delete</a></li>
+	                        <%
+	                            }
+	                        }
+	                        if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null){%>
+	                            <li><a href="Subscribe?dataset=<%=Util.replaceTags(dataset.getIdentifier())%>">Subscribe</a></li><%
+	                        }
                         }
                         %>
                     </ul>
-                  </div><%
+                  </div>
+                  <%
               }
-              %>
+            
+			if (feedbackValue != null) {
+			%>
+				<div class="system-msg">
+				<%= feedbackValue %>
+				</div>
+			<%  
+			}
+			
+			%>
 
-
+			<h1><%=Util.replaceTags(verb)%> dataset definition</h1>
+			
             <form id="form1" method="post" action="dataset.jsp" style="clear:both">
                 <div style="display:none">
                 <%
@@ -1487,6 +1520,29 @@ else if (mode.equals("add"))
 
                                                 <%isOdd = Util.isOdd(++displayed);%>
                                             </tr>
+                                            <tr>
+                                            	<th></th>
+                                            	<td colspan="3">
+                                            	 <!-- add, save, check-in, undo check-out buttons -->
+				                                   <%
+				                                   // add case
+				                                   if (mode.equals("add")){ %>
+				                                       <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
+				                                       <%
+				                                   }
+				                                   // edit case
+				                                   else if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy()){
+				                                       if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
+				                                           %>
+				                                           <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
+				                                           <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
+				                                           <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=ds_id%>')"/>
+				                                           <%
+				                                       }
+				                                   }
+				                                   %>
+                                            	</td>
+                                            </tr>
 
                                         </table>
 
@@ -1821,27 +1877,6 @@ else if (mode.equals("add"))
                     }
                     %>
                 </div>
-                                <!-- add, save, check-in, undo check-out buttons -->
-
-                                <div style="text-align:right;clear:left">
-                                    <%
-                                    // add case
-                                    if (mode.equals("add")){ %>
-                                        <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>
-                                        <%
-                                    }
-                                    // edit case
-                                    else if (mode.equals("edit") && dataset!=null && dataset.isWorkingCopy()){
-                                        if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
-                                            %>
-                                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-                                            <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
-                                            <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=ds_id%>')"/>
-                                            <%
-                                        }
-                                    }
-                                    %>
-                                </div>
             </form>
 
             </div> <!-- workarea -->

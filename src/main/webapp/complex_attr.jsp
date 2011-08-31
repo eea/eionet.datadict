@@ -302,20 +302,27 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 <form id="form1" method="post" action="complex_attr.jsp">
 
 	<%
-	if (!mode.equals("view") || (user != null && isWorkingCopy && mode.equals("view"))){
+	if (user != null && isWorkingCopy && mode.equals("view")){
 		%>
-		<div id="operations">
+		<div id="drop-operations">
+		<h2>Operations:</h2>
 			<ul>
 				<%
-				if (!mode.equals("view")){ %>
-					<li><a href="javascript:window.location.replace('<%=backURLEscaped%>')">&lt; back to attributes</a></li><%
-				}
 				if (user != null && isWorkingCopy && mode.equals("view")){ %>
 					<li><a href="<%=Util.replaceTags(redirUrl, true, true)%>">Edit</a></li> <%
 				}
 				%>
 			</ul>
 		</div><%
+	}
+	if (!mode.equals("view")) {
+	    %>
+		<div id="operations">
+		<ul>
+			<li><a href="javascript:window.location.replace('<%=backURLEscaped%>')">&lt; back to attributes</a></li>
+		</ul>
+		</div>
+		<%
 	}
 
 StringBuffer parentLink = new StringBuffer();
