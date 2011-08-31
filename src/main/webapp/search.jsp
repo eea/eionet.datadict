@@ -281,10 +281,16 @@ if (isDisplayOperations){
 				
 				<h1>Search data elements</h1>
 				
+				<%
+				if (feedbackValue != null) {
+				%>
 				<div class="system-msg">
 					<%= feedbackValue %>
 				</div>
-				
+				<%  
+				}
+				%>
+
 				<br/>
 				<form id="form1" action="search_results.jsp" method="get">
 					<%
