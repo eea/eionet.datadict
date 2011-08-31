@@ -6,14 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 
-import eionet.meta.notif.Subscribe;
+import eionet.meta.notif.Subscriber;
 import eionet.meta.notif.UNSEventSender;
 import eionet.meta.savers.CopyHandler;
 import eionet.meta.savers.DataElementHandler;
@@ -656,16 +658,16 @@ public class VersionManager {
                     checkedoutCopyUser = rs.getString(1);
                 }
             }
-            Vector mustBeSubscribed = getMustBeSubscribedUsers(elm, checkedoutCopyID, stmt);
-            if (mustBeSubscribed != null && mustBeSubscribed.size() > 0) {
-                Subscribe.subscribeToCommonElement(mustBeSubscribed, elm.getIdentifier());
+            List<String> usersToSubscribe = getMustBeSubscribedUsers(elm, checkedoutCopyID, stmt);
+            if (usersToSubscribe != null && usersToSubscribe.size() > 0) {
+                Subscriber.subscribeToElement(usersToSubscribe, elm.getIdentifier());
             }
         } catch (Throwable t) {
             t.printStackTrace(System.out);
         }
         String eventType =
-            checkedoutCopyID != null && checkedoutCopyID.length() > 0 ? Subscribe.COMMON_ELEMENT_CHANGED_EVENT
-                    : Subscribe.NEW_COMMON_ELEMENT_EVENT;
+            checkedoutCopyID != null && checkedoutCopyID.length() > 0 ? Subscriber.COMMON_ELEMENT_CHANGED_EVENT
+                    : Subscriber.NEW_COMMON_ELEMENT_EVENT;
             UNSEventSender.definitionChanged(elm, eventType, user == null ? null : user.getUserName());
 
             stmt.close();
@@ -781,8 +783,8 @@ public class VersionManager {
 
         // send UNS notification
         String eventType =
-            checkedoutCopyID != null && checkedoutCopyID.length() > 0 ? Subscribe.DATASET_CHANGED_EVENT
-                    : Subscribe.NEW_DATASET_EVENT;
+            checkedoutCopyID != null && checkedoutCopyID.length() > 0 ? Subscriber.DATASET_CHANGED_EVENT
+                    : Subscriber.NEW_DATASET_EVENT;
             UNSEventSender.definitionChanged(dst, eventType, user == null ? null : user.getUserName());
 
             return true;
@@ -946,7 +948,7 @@ public class VersionManager {
 
         String tblIdf = tbl.getIdentifier();
         String parentNs = tbl.getParentNs();
-        if (Util.isEmpty(tblIdf) || Util.isEmpty(parentNs)){
+        if (Util.isEmpty(tblIdf) || Util.isEmpty(parentNs)) {
             return null;
         }
 
@@ -1142,8 +1144,9 @@ public class VersionManager {
      * @return
      * @throws SQLException
      */
-    private Vector getMustBeSubscribedUsers(DataElement elm, String checkedoutCopyID, Statement stmt) throws SQLException {
-        Vector result = new Vector();
+    private List<String> getMustBeSubscribedUsers(DataElement elm, String checkedoutCopyID, Statement stmt) throws SQLException {
+
+        ArrayList<String> result = new ArrayList<String>();
 
         // add owner of this element
         String owner = searchEngine.getElmOwner(elm.getIdentifier());

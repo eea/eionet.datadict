@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package eionet.meta.notif;
+package eionet.meta.notif.util;
 
 import java.util.Vector;
 

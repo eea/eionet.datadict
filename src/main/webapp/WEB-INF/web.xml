@@ -161,7 +161,7 @@
 	</servlet>
 	<servlet>
 		<servlet-name>Subscribe</servlet-name>
-		<servlet-class>eionet.meta.notif.Subscribe</servlet-class>
+		<servlet-class>eionet.meta.notif.Subscriber</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>OdsServlet</servlet-name>

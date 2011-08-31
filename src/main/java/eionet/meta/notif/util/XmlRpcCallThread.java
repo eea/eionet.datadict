@@ -1,4 +1,4 @@
-package eionet.meta.notif;
+package eionet.meta.notif.util;
 
 import java.io.IOException;
 import java.util.Vector;
@@ -11,7 +11,7 @@ import org.apache.xmlrpc.XmlRpcException;
  * @author <a href="mailto:jaanus.heinlaid@tietoenator.com">Jaanus Heinlaid</a>
  *
  */
-public class XmlRpcCallThread extends Thread{
+public class XmlRpcCallThread extends Thread {
 
     /** */
     private XmlRpcClient client;
@@ -33,17 +33,16 @@ public class XmlRpcCallThread extends Thread{
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Thread#run()
      */
     public void run() {
 
         try {
             client.execute(methodName, params);
-        }
-        catch (XmlRpcException e) {
+        } catch (XmlRpcException e) {
             e.printStackTrace(System.out);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace(System.out);
         }
     }

@@ -1,3 +1,4 @@
+<%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
@@ -104,6 +105,7 @@
     Vector elems = null;
     String mode = null;
     String dsIdf = null;
+    String feedbackValue = null;
 
     // make sure page is not cached
     response.setHeader("Pragma", "No-cache");
@@ -131,13 +133,14 @@
     String dsID = request.getParameter("ds_id");
     String dsName = request.getParameter("ds_name");
     String parentNs = request.getParameter("pns");
+    String action = request.getParameter("action");
 
     mode = request.getParameter("mode");
 
     if (mode == null || mode.trim().length()==0){
         mode = "view";
     }
-    
+
     if (mode.equals("add")){
         if (Util.isEmpty(dsID)){
             request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id");
@@ -266,7 +269,7 @@
         if (!mode.equals("add")){
 
             if (isLatestRequested){
-                
+
                 Vector v = new Vector();
                 if (user==null){
                     v.add("Recorded");
@@ -311,6 +314,7 @@
             request.getRequestDispatcher("error.jsp").forward(request, response);
             return;
         }
+
         // anonymous users should not be allowed to see tables of a dataset working copy
         if (mode.equals("view") && user==null && dataset.isWorkingCopy()){
             request.setAttribute("DD_ERR_MSG", "Anonymous users are not allowed to view tables from a dataset working copy!");
@@ -322,6 +326,11 @@
             request.setAttribute("DD_ERR_MSG", "Tables from datasets NOT in Recorded or Released status are inaccessible for anonymous users.");
             request.getRequestDispatcher("error.jsp").forward(request, response);
             return;
+        }
+
+        if (mode.equals("view") && action!=null && action.equals("subscribe") && dsTable!=null && dataset!=null){
+            Subscriber.subscribeToTable(Collections.singleton(user.getUserName()), dataset.getIdentifier(), dsTable.getIdentifier());
+            feedbackValue = "Subscription successful!";
         }
 
         // set some helper variables
@@ -661,7 +670,8 @@ else if (mode.equals("add"))
 
         <%
         boolean subscribe = false;
-        if (mode.equals("view") && user!=null && dsTable!=null && dsTable.getIdentifier()!=null && dataset!=null && dataset.getIdentifier()!=null){
+        if (mode.equals("view") && user!=null && dsTable!=null &&
+                dsTable.getIdentifier()!=null && dataset!=null && dataset.getIdentifier()!=null && !dataset.isWorkingCopy()){
             subscribe = true;
         }
 
@@ -680,32 +690,37 @@ else if (mode.equals("add"))
             <div id="drop-operations">
                 <h2>Operations:</h2>
                 <ul>
-                	<% 
-                	if (mode.equals("view") && editDstPrm==true) {
-                	%>
-	                <li><a href="dstable.jsp?mode=edit&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit metadata</a></li>
-		            <%
-		            // elements link
-		            String elemLink = "tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
-		            %>
-	                <li><a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
-	                <li><a href="<%=elemLink%>">Manage elements</a></li>
-	                <li><a href="javascript:submitForm('delete')">Delete</a></li>
-	                <% 
-            		}
-                	if (subscribe) {
-                   	%>
-                   	<li><a href="Subscribe?table=<%=dataset.getIdentifier()%>%2F<%=dsTable.getIdentifier()%>">Subscribe</a></li>
-                   	<% 
-                   	}
-	                %>
+                    <%
+                    if (mode.equals("view") && editDstPrm==true) {
+                    %>
+                    <li><a href="dstable.jsp?mode=edit&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit metadata</a></li>
+                    <%
+                    // elements link
+                    String elemLink = "tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
+                    %>
+                    <li><a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
+                    <li><a href="<%=elemLink%>">Manage elements</a></li>
+                    <li><a href="javascript:submitForm('delete')">Delete</a></li>
+                    <%
+                    }
+                    if (subscribe) {%>
+                           <li><a href="dstable.jsp?action=subscribe&amp;table_id=<%=tableID%>">Subscribe</a></li><%
+                       }
+                    %>
                 </ul>
             </div>
             <%
             }
             %>
+
+            <%
+            if (feedbackValue != null) {%>
+                <div class="system-msg"><%= feedbackValue %></div><%
+            }
+            %>
+
         <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="dataset.jsp?ds_id=<%=dsID%>"><%=Util.replaceTags(dsName)%></a> dataset<%}%></h1>
-        
+
         <form id="form1" method="post" action="dstable.jsp" style="clear:both">
 
             <!--=======================-->
@@ -1089,7 +1104,7 @@ else if (mode.equals("add"))
 
                                                     // handle image attribute first
                                                     if (dispType.equals("image")){
-                                                        
+
                                                         if (!imagesQuicklinkSet){ %>
                                                             <a id="images"></a><%
                                                             imagesQuicklinkSet = true;
@@ -1108,7 +1123,7 @@ else if (mode.equals("add"))
                                                                 </div>
                                                             </div><%
                                                         }
-                                                        
+
                                                         // link to image edit page
                                                         if (mode.equals("edit") && user!=null){
                                                             String actionText = Util.isEmpty(attrValue) ? "add image" : "manage this image";
@@ -1285,32 +1300,32 @@ else if (mode.equals("add"))
 
                                             <%isOdd = Util.isOdd(++displayed);%>
                                         </tr>
-										<tr>
-											<th></th>
-											<td colspan="3">
-											<!-- add, save, check-in, undo check-out buttons -->
-							                <%
-							                if (mode.equals("add") || mode.equals("edit")){
-						                        // add case
-						                        if (mode.equals("add")){
-						                            %>
-						                            <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
-						                            <input type="button" class="mediumbuttonb" value="Copy"
-						                                onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
-						                                title="Copies table structure and attributes from existing dataset table"/><%
-						                        }
-						                        // edit case
-						                        else if (mode.equals("edit")){
-						                            %>
-						                            <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
-						                            <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
-						                            <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
-						                            <%
-						                        }
-							                }
-							                %>
-											</td>
-										</tr>
+                                        <tr>
+                                            <th></th>
+                                            <td colspan="3">
+                                            <!-- add, save, check-in, undo check-out buttons -->
+                                            <%
+                                            if (mode.equals("add") || mode.equals("edit")){
+                                                // add case
+                                                if (mode.equals("add")){
+                                                    %>
+                                                    <input type="button" class="mediumbuttonb" value="Add" onclick="submitForm('add')"/>&nbsp;
+                                                    <input type="button" class="mediumbuttonb" value="Copy"
+                                                        onclick="alert('This feature is currently disabled! Please contact helpdesk@eionet.europa.eu for more information.');"
+                                                        title="Copies table structure and attributes from existing dataset table"/><%
+                                                }
+                                                // edit case
+                                                else if (mode.equals("edit")){
+                                                    %>
+                                                    <input type="button" class="mediumbuttonb" value="Save" onclick="submitForm('edit')"/>&nbsp;
+                                                    <input type="button" class="mediumbuttonb" value="Save &amp; close" onclick="submitForm('editclose')"/>&nbsp;
+                                                    <input type="button" class="mediumbuttonb" value="Cancel" onclick="goTo('view', '<%=tableID%>')"/>
+                                                    <%
+                                                }
+                                            }
+                                            %>
+                                            </td>
+                                        </tr>
                                     </table>
 
                                     <!-- end of attributes -->
@@ -1425,7 +1440,7 @@ else if (mode.equals("add"))
                                                                     // see if the element is part of any foreign key relations
                                                                     Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
                                                                     boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
-                                                                    
+
                                                                     // flag indicating if element can have multiple values
                                                                     boolean isMulitvalElem = elem.getValueDelimiter()!=null;
                                                                     %>
@@ -1485,7 +1500,7 @@ else if (mode.equals("add"))
                                                                             else{ %>
                                                                                 <%=Util.replaceTags(elemType)%><%
                                                                             }
-                                                                            
+
                                                                             if (isMulitvalElem){ %>
                                                                                 <sup style="color:#858585;font-weight:bold;">+</sup><%
                                                                                 hasMultivalElms = true;
