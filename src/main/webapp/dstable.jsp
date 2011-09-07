@@ -492,63 +492,6 @@
             if (window.focus) {wElems.focus()}
         }
 
-
-        function rmvValue(id){
-
-            var optns;
-            var optnsLength;
-
-            if (document.all){
-                optns = document.all('attr_mult_' + id).options;
-                optnsLength = optns.length;
-            }
-            else{
-                optns = document.forms["form1"].elements["attr_mult_" + id].options;
-                optnsLength = document.forms["form1"].elements["attr_mult_" + id].length;
-            }
-
-            var selected = new Array();
-            var count=0;
-            var i;
-
-            for (i=0; i<optnsLength; i++){
-                if (optns[i].selected){
-                    selected[count]=i;
-                    count++;
-                }
-            }
-
-            count=0;
-            for (i=0; i<selected.length; i++){
-                if (document.all){
-                    document.all('attr_mult_' + id).options.remove(selected[i]-count);
-                }
-                else{
-                    document.forms["form1"].elements["attr_mult_" + id].options[selected[i]-count] = null;
-                }
-
-                count++;
-            }
-             form_changed('form1');
-         }
-
-        function addValue(id, val){
-
-            if (val.length > 0){
-                if (hasValue(id,val)){
-                    alert("There can not be dublicate values!");
-                    return
-                }
-                var selectName = "attr_mult_" + id;
-                var oOption = new Option(val, val, false, false);
-                var slct = document.forms["form1"].elements[selectName];
-                if (slct.length==1 && slct.options[0].value=="" && slct.options[0].text=="")
-                    slct.remove(0);
-                slct.options[slct.length] = oOption;
-                slct.size=oOption.length;
-            }
-             form_changed('form1');
-        }
         function slctAllValues(){
 
             var elems = document.forms["form1"].elements;
@@ -570,26 +513,6 @@
                     }
                 }
             }
-        }
-        function hasValue(id, val){
-
-            var elemName = "attr_mult_" + id;
-            if (document.all){
-                var optns=document.all(elemName).options;
-                for (var i=0; i<optns.length; i++){
-                    var optn = optns.item(i);
-                    if (optn.value == val)
-                        return true;
-                }
-            }
-            else{
-                var slct = document.forms["form1"].elements[elemName];
-                for (var i=0; i<slct.length; i++){
-                    if (slct.options[i].value == val)
-                        return true;
-                }
-            }
-            return false;
         }
 
         function startsWith(str, pattern){
