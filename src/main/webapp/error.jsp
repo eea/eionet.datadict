@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.DDUser,eionet.util.Util"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.DDUser,eionet.util.Util,org.apache.commons.lang.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
@@ -74,8 +74,8 @@ else{
 			%>
 			
     		<h1>Error:</h1>
-			<p><strong><%=msg%></strong></p>
-			<input name="trc" type="hidden" value="<%=trc%>"/>
+			<p><strong><%=StringEscapeUtils.escapeXml(msg)%></strong></p>
+			<input name="trc" type="hidden" value="<%=StringEscapeUtils.escapeXml(trc)%>"/>
 		</form>
 </div> <!-- workarea -->
 <%
