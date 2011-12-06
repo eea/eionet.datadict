@@ -187,8 +187,8 @@
                     String sortedImg  = getSortedImg(3, oSortCol, oSortOrder);
                     String sortedLink = getSortedLink(3, oSortCol, oSortOrder);
                     %>
-                    <a title="Sort on Table" href="<%=Util.replaceTags(sortedLink, true)%>">
-                          Full name&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
+                    <a title="Sort on Table" href="<%=Util.processForDisplay(sortedLink, true)%>">
+                          Full name&nbsp;<img src="<%=Util.processForDisplay(sortedImg, true)%>" width="12" height="12" alt=""/>
                     </a>
                 </th>
                 <th>
@@ -196,8 +196,8 @@
                     sortedImg  = getSortedImg(1, oSortCol, oSortOrder);
                     sortedLink = getSortedLink(1, oSortCol, oSortOrder);
                     %>
-                    <a title="Sort on Short name" href="<%=Util.replaceTags(sortedLink, true)%>">
-                          Short name&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
+                    <a title="Sort on Short name" href="<%=Util.processForDisplay(sortedLink, true)%>">
+                          Short name&nbsp;<img src="<%=Util.processForDisplay(sortedImg, true)%>" width="12" height="12" alt=""/>
                     </a>
                 </th>
                 <th>
@@ -205,8 +205,8 @@
                     sortedImg  = getSortedImg(2, oSortCol, oSortOrder);
                     sortedLink = getSortedLink(2, oSortCol, oSortOrder);
                     %>
-                    <a title="Sort on Dataset" href="<%=Util.replaceTags(sortedLink, true)%>">
-                          Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg, true)%>" width="12" height="12" alt=""/>
+                    <a title="Sort on Dataset" href="<%=Util.processForDisplay(sortedLink, true)%>">
+                          Dataset&nbsp;<img src="<%=Util.processForDisplay(sortedImg, true)%>" width="12" height="12" alt=""/>
                     </a>
                 </th>
                 <th>
@@ -214,8 +214,8 @@
                     sortedImg  = getSortedImg(4, oSortCol, oSortOrder);
                     sortedLink = getSortedLink(4, oSortCol, oSortOrder);
                     %>
-                    <a title="Sort on Dataset status" href="<%=Util.replaceTags(sortedLink,true)%>">
-                          Dataset status&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt=""/>
+                    <a title="Sort on Dataset status" href="<%=Util.processForDisplay(sortedLink,true)%>">
+                          Dataset status&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt=""/>
                     </a>
                 </th>
             </tr>
@@ -280,11 +280,11 @@
                                 // see if this is a search or just listing all the tables
                                 if (Util.isEmpty(request.getParameter("search_precision"))){ // listing all the tables
                                     %>
-                                    <b>No table definitions were found<%=Util.replaceTags(msgTrailer)%>!</b><%
+                                    <b>No table definitions were found<%=Util.processForDisplay(msgTrailer)%>!</b><%
                                 }
                                 else{ // a search
                                     %>
-                                    <b>No table definitions matching the search criteria were found<%=Util.replaceTags(msgTrailer)%>!</b><%
+                                    <b>No table definitions matching the search criteria were found<%=Util.processForDisplay(msgTrailer)%>!</b><%
                                 }
                                 %>
                             </td>
@@ -339,11 +339,11 @@
                                 <%
                                 if (clickable){%>
                                     <a href="<%=tableLink%>">
-                                        <%=Util.replaceTags(tblFullName)%>
+                                        <%=Util.processForDisplay(tblFullName)%>
                                     </a><%
                                 }
                                 else{%>
-                                    <%=Util.replaceTags(tblFullName)%><%
+                                    <%=Util.processForDisplay(tblFullName)%><%
                                 }
                                 %>
                             </td>
@@ -351,13 +351,13 @@
                             // 2nd column, table short name
                             %>
                             <td>
-                                <%=Util.replaceTags(table_name)%>
+                                <%=Util.processForDisplay(table_name)%>
                             </td>
                             <%
                             // 3rd column, dataset short name
                             %>
                             <td>
-                                <%=Util.replaceTags(ds_name)%>
+                                <%=Util.processForDisplay(ds_name)%>
                                 <%
                                 // mark checked-out datasets
                                 if (user!=null && workingUser!=null){ %>
@@ -371,7 +371,7 @@
                             <td>
                                 <%
                                 if (clickable){ %>
-                                    <img style="border:0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
+                                    <img style="border:0" src="<%=Util.processForDisplay(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
                                 }
                                 else{ %>
                                     <span style="color:gray;text-decoration:none;font-size:8pt" title="<%=regStatus%>">
@@ -423,11 +423,11 @@
                                 <%
                                 if (oEntry.clickable){%>
                                     <a href="<%=tableLink%>">
-                                        <%=Util.replaceTags(oEntry.oName)%>
+                                        <%=Util.processForDisplay(oEntry.oName)%>
                                     </a><%
                                 }
                                 else{%>
-                                    <%=Util.replaceTags(oEntry.oName)%><%
+                                    <%=Util.processForDisplay(oEntry.oName)%><%
                                 }
                                 %>
                             </td>
@@ -435,13 +435,13 @@
                             // 2nd column, table short name
                             %>
                             <td>
-                                <%=Util.replaceTags(oEntry.oShortName)%>                                
+                                <%=Util.processForDisplay(oEntry.oShortName)%>                                
                             </td>
                             <%
                             // 3rd column, dataset short name
                             %>
                             <td>
-                                <%=Util.replaceTags(oEntry.oDsName)%>
+                                <%=Util.processForDisplay(oEntry.oDsName)%>
                                 <%
                                 // mark checked-out datasets
                                 if (user!=null && oEntry.workingUser!=null){ %>
@@ -455,7 +455,7 @@
                             <td>
                                 <%
                                 if (oEntry.clickable){ %>
-                                    <img style="border:0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.regStatus%>" alt="<%=oEntry.regStatus%>"/><%
+                                    <img style="border:0" src="<%=Util.processForDisplay(statusImg)%>" width="56" height="12" title="<%=oEntry.regStatus%>" alt="<%=oEntry.regStatus%>"/><%
                                 }
                                 else{ %>
                                     <span style="color:gray;text-decoration:none;font-size:8pt" title="<%=oEntry.regStatus%>">

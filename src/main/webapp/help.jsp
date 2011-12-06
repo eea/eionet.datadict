@@ -16,64 +16,64 @@ String attrid = request.getParameter("attrid");
 String attrshn = request.getParameter("attrshn");
 
 if (attrid==null && attrshn==null){
-	if (screen==null || area==null){ %>
-		<b>Missing screen or area!</b> <%
-		return;
-	}
-	
-	String _helpText = Helps.get(screen, area);
-	if (_helpText!=null)
-		helpText = _helpText;		
+    if (screen==null || area==null){ %>
+        <b>Missing screen or area!</b> <%
+        return;
+    }
+    
+    String _helpText = Helps.get(screen, area);
+    if (_helpText!=null)
+        helpText = _helpText;        
 }
 else{
-	
-	String attrtype = request.getParameter("attrtype");
-	if (attrtype==null){ %>
-		<b>Missing attribute type!</b><%
-		return;
-	}
-	
-	Connection conn = null;
-	try {
-		conn = ConnectionUtil.getConnection();
-		DDSearchEngine searchEngine = new DDSearchEngine(conn, "", getServletContext());
-		if (attrid==null || attrid.length()==0)
-			helpText = searchEngine.getAttrHelpByShortName(attrshn, attrtype);
-		else
-			helpText = searchEngine.getAttrHelp(attrid, attrtype);
-		
-		helpText = helpText==null ? "" : helpText;
-	}
-	catch (Exception e){ %>
-		<b><%=e.toString()%></b><%
-		return;
-	}
-	finally{
-		try { if (conn!=null) conn.close(); } catch (SQLException e) {}
-	}
+    
+    String attrtype = request.getParameter("attrtype");
+    if (attrtype==null){ %>
+        <b>Missing attribute type!</b><%
+        return;
+    }
+    
+    Connection conn = null;
+    try {
+        conn = ConnectionUtil.getConnection();
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "", getServletContext());
+        if (attrid==null || attrid.length()==0)
+            helpText = searchEngine.getAttrHelpByShortName(attrshn, attrtype);
+        else
+            helpText = searchEngine.getAttrHelp(attrid, attrtype);
+        
+        helpText = helpText==null ? "" : helpText;
+    }
+    catch (Exception e){ %>
+        <b><%=e.toString()%></b><%
+        return;
+    }
+    finally{
+        try { if (conn!=null) conn.close(); } catch (SQLException e) {}
+    }
 }
 
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-		<%@ include file="headerinfo.txt" %>
+        <%@ include file="headerinfo.txt" %>
     <title>Data Dictionary</title>
 </head>
 <body class="popup">
-	<div id="pagehead">
-	    <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
-	    <div id="networktitle">Eionet</div>
-	    <div id="sitetitle">Data Dictionary (DD)</div>
-	    <div id="sitetagline">This service is part of Reportnet</div>    
-	</div> <!-- pagehead -->
-	<div id="operations" style="margin-top:10px">
-		<ul>
-			<li><a href="javascript:window.close();">Close</a></li>
-		</ul>
-	</div>
-	<div id="workarea" style="clear:right">
-		<%=helpText%>
-	</div>
+    <div id="pagehead">
+        <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
+        <div id="networktitle">Eionet</div>
+        <div id="sitetitle">Data Dictionary (DD)</div>
+        <div id="sitetagline">This service is part of Reportnet</div>    
+    </div> <!-- pagehead -->
+    <div id="operations" style="margin-top:10px">
+        <ul>
+            <li><a href="javascript:window.close();">Close</a></li>
+        </ul>
+    </div>
+    <div id="workarea" style="clear:right">
+        <%=helpText%>
+    </div>
 </body>
 </html>

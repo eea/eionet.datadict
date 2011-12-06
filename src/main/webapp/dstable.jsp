@@ -621,7 +621,7 @@ else if (mode.equals("add"))
                     // elements link
                     String elemLink = "tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
                     %>
-                    <li><a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
+                    <li><a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
                     <li><a href="<%=elemLink%>">Manage elements</a></li>
                     <li><a href="javascript:submitForm('delete')">Delete</a></li>
                     <%
@@ -642,7 +642,7 @@ else if (mode.equals("add"))
             }
             %>
 
-        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="dataset.jsp?ds_id=<%=dsID%>"><%=Util.replaceTags(dsName)%></a> dataset<%}%></h1>
+        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="dataset.jsp?ds_id=<%=dsID%>"><%=Util.processForDisplay(dsName)%></a> dataset<%}%></h1>
 
         <form id="form1" method="post" action="dstable.jsp" style="clear:both">
 
@@ -867,14 +867,14 @@ else if (mode.equals("add"))
                                             <td class="short_name_value">
                                                 <%
                                                 if (mode.equals("view")){ %>
-                                                    <%=Util.replaceTags(dsTable.getShortName())%>
-                                                    <input type="hidden" name="short_name" value="<%=Util.replaceTags(dsTable.getShortName(),true)%>"/><%
+                                                    <%=Util.processForDisplay(dsTable.getShortName())%>
+                                                    <input type="hidden" name="short_name" value="<%=Util.processForDisplay(dsTable.getShortName(),true)%>"/><%
                                                 }
                                                 else if (mode.equals("add")){%>
                                                     <input class="smalltext" type="text" size="30" name="short_name"/><%
                                                 }
                                                 else{ %>
-                                                    <input class="smalltext" type="text" size="30" name="short_name" value="<%=Util.replaceTags(dsTable.getShortName())%>"/><%
+                                                    <input class="smalltext" type="text" size="30" name="short_name" value="<%=Util.processForDisplay(dsTable.getShortName())%>"/><%
                                                 }
                                                 %>
                                             </td>
@@ -902,7 +902,7 @@ else if (mode.equals("add"))
                                             %>
                                             <td class="simple_attr_value">
                                                 <a href="dataset.jsp?ds_id=<%=dsID%>">
-                                                    <b><%=Util.replaceTags(dsName)%></b>
+                                                    <b><%=Util.processForDisplay(dsName)%></b>
                                                 </a>
                                                 <%
                                                 if (mode.equals("view") && dataset.isWorkingCopy()){ %>
@@ -1006,7 +1006,7 @@ else if (mode.equals("add"))
 
                                             <tr class="zebra<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">
-                                                    <%=Util.replaceTags(attribute.getShortName())%>
+                                                    <%=Util.processForDisplay(attribute.getShortName())%>
                                                 </th>
                                                 <td class="simple_attr_help">
                                                     <a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
@@ -1016,7 +1016,7 @@ else if (mode.equals("add"))
                                                 <%
                                                 if (colspan==4){%>
                                                     <td class="simple_attr_help">
-                                                        <img style="border:0" src="images/<%=Util.replaceTags(obligImg)%>" width="16" height="16" alt=""/>
+                                                        <img style="border:0" src="images/<%=Util.processForDisplay(obligImg)%>" width="16" height="16" alt=""/>
                                                     </td><%
                                                 }
                                                 %>
@@ -1039,8 +1039,8 @@ else if (mode.equals("add"))
                                                             <div class="figure-plus-container">
                                                                 <div class="figure-plus">
                                                                     <div class="figure-image">
-                                                                        <a href="visuals/<%=Util.replaceTags(attrValue)%>">
-                                                                            <img src="visuals/<%=Util.replaceTags(attrValue)%>" alt="Image file could not be found on the server" class="scaled poponmouseclick"/>
+                                                                        <a href="visuals/<%=Util.processForDisplay(attrValue)%>">
+                                                                            <img src="visuals/<%=Util.processForDisplay(attrValue)%>" alt="Image file could not be found on the server" class="scaled poponmouseclick"/>
                                                                         </a>
                                                                     </div>
                                                                 </div>
@@ -1052,13 +1052,13 @@ else if (mode.equals("add"))
                                                             String actionText = Util.isEmpty(attrValue) ? "add image" : "manage this image";
                                                             %>
                                                             <span class="barfont">
-                                                                <a href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>">Click to <%=Util.replaceTags(actionText)%></a>]
+                                                                <a href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;attr_name=<%=Util.processForDisplay(attribute.getShortName())%>">Click to <%=Util.processForDisplay(actionText)%></a>]
                                                             </span><%
                                                         }
                                                     }
                                                     // if view mode, display simple text
                                                     else if (mode.equals("view")){ %>
-                                                        <%=Util.replaceTags(attrValue)%><%
+                                                        <%=Util.processForDisplay(attrValue)%><%
                                                     }
                                                     // if non-view mode, display input
                                                     else{
@@ -1073,7 +1073,7 @@ else if (mode.equals("add"))
                                                                                 "Inherited from parent level: ";
 
                                                             if (sInhText.startsWith("Inherited")){ %>
-                                                                <%=sInhText%><%=Util.replaceTags(inheritedValue)%><br/><%
+                                                                <%=sInhText%><%=Util.processForDisplay(inheritedValue)%><br/><%
                                                             }
                                                         }
 
@@ -1139,7 +1139,7 @@ else if (mode.equals("add"))
                                                             else if (dispType.equals("textarea")){
                                                                 if (attrValue!=null){
                                                                     %>
-                                                                    <textarea class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"><%=Util.replaceTags(attrValue, true, true)%></textarea>
+                                                                    <textarea class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"><%=Util.processForDisplay(attrValue, true, true)%></textarea>
                                                                     <%
                                                                 }
                                                                 else{
@@ -1165,12 +1165,12 @@ else if (mode.equals("add"))
                                                                                 selectedByValue = true;
                                                                             }
                                                                             %>
-                                                                            <option <%=isSelected%> value="<%=Util.replaceTags(fxValue.getValue())%>"><%=Util.replaceTags(fxValue.getValue())%></option> <%
+                                                                            <option <%=isSelected%> value="<%=Util.processForDisplay(fxValue.getValue())%>"><%=Util.processForDisplay(fxValue.getValue())%></option> <%
                                                                         }
                                                                     }
                                                                     %>
                                                                 </select>
-                                                                <a onclick="pop(this.href);return false;" href="fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute.getShortName())%>&amp;parent_type=attr">
+                                                                <a onclick="pop(this.href);return false;" href="fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.processForDisplay(attribute.getShortName())%>&amp;parent_type=attr">
                                                                     <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
                                                                 </a>
                                                                 <%
@@ -1182,7 +1182,7 @@ else if (mode.equals("add"))
 
                                                     } // end display input
                                                     %>
-                                                    <input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation(),true)%>"/>
+                                                    <input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.processForDisplay(attribute.getObligation(),true)%>"/>
                                                 </td>
                                                 <!-- end dynamic attribute value display -->
 
@@ -1212,7 +1212,7 @@ else if (mode.equals("add"))
                                             <td class="simple_attr_value">
                                                 <%
                                                 if(!mode.equals("add")){ %>
-                                                    <b><%=Util.replaceTags(dsTable.getIdentifier())%></b>
+                                                    <b><%=Util.processForDisplay(dsTable.getIdentifier())%></b>
                                                     <input type="hidden" name="idfier" value="<%=dsTable.getIdentifier()%>"/><%
                                                 }
                                                 else{ %>
@@ -1297,7 +1297,7 @@ else if (mode.equals("add"))
                                             boolean hasMandatoryElms = false;
                                             %>
 
-                                                <h2><%=Util.replaceTags(title)%></h2>
+                                                <h2><%=Util.processForDisplay(title)%></h2>
                                                 <p>
                                                     <%
                                                     if (j<=1){%>
@@ -1378,8 +1378,8 @@ else if (mode.equals("add"))
                                                                                 hasMandatoryElms = true;
                                                                             }
                                                                             %>
-                                                                            <a href="<%=elemLink%>" title="<%=Util.replaceTags(linkTitle, true, true)%>">
-                                                                                <%=Util.replaceTags(elem.getShortName())%>
+                                                                            <a href="<%=elemLink%>" title="<%=Util.processForDisplay(linkTitle, true, true)%>">
+                                                                                <%=Util.processForDisplay(elem.getShortName())%>
                                                                             </a>
 
                                                                             <%
@@ -1391,7 +1391,7 @@ else if (mode.equals("add"))
                                                                             // FK indicator
                                                                             if (fks){ %>
                                                                                 &nbsp;
-                                                                                <a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>">
+                                                                                <a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.processForDisplay(elem.getShortName())%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>">
                                                                                     <span style="font: bold italic">(FK)</span>
                                                                                 </a><%
                                                                                 hasForeignKeys = true;
@@ -1410,18 +1410,18 @@ else if (mode.equals("add"))
                                                                         %>
                                                                         <!-- datatype -->
                                                                         <td>
-                                                                            <%=Util.replaceTags(datatype)%>
+                                                                            <%=Util.processForDisplay(datatype)%>
                                                                         </td>
                                                                         <!-- element type -->
                                                                         <td>
                                                                             <%
                                                                             if (elem.getType().equals("CH1")){ %>
-                                                                                <a href="fixed_values.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.replaceTags(elem.getShortName())%>">
-                                                                                    <%=Util.replaceTags(elemType)%>
+                                                                                <a href="fixed_values.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.processForDisplay(elem.getShortName())%>">
+                                                                                    <%=Util.processForDisplay(elemType)%>
                                                                                 </a> <%
                                                                             }
                                                                             else{ %>
-                                                                                <%=Util.replaceTags(elemType)%><%
+                                                                                <%=Util.processForDisplay(elemType)%><%
                                                                             }
 
                                                                             if (isMulitvalElem){ %>
@@ -1507,8 +1507,8 @@ else if (mode.equals("add"))
 
                                                                 <tr class="zebra<%=isOdd%>">
                                                                     <td>
-                                                                        <a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.replaceTags(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
-                                                                            <%=Util.replaceTags(attrName)%>
+                                                                        <a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+                                                                            <%=Util.processForDisplay(attrName)%>
                                                                         </a>
                                                                     </td>
                                                                     <td>
@@ -1537,9 +1537,9 @@ else if (mode.equals("add"))
                                                                                 if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
                                                                                     rowValue.append(", ");
 
-                                                                                rowValue.append(Util.replaceTags(fieldValue));
+                                                                                rowValue.append(Util.processForDisplay(fieldValue));
                                                                                 %>
-                                                                                <%=Util.replaceTags(fieldValue)%><br/><%
+                                                                                <%=Util.processForDisplay(fieldValue)%><br/><%
                                                                             }
                                                                         }
                                                                         %>
@@ -1574,7 +1574,7 @@ else if (mode.equals("add"))
 
                 // dataset name
                 if (dsName!=null && dsName.length()>0){ %>
-                    <input type="hidden" name="ds_name" value="<%=Util.replaceTags(dsName,true)%>"/> <%
+                    <input type="hidden" name="ds_name" value="<%=Util.processForDisplay(dsName,true)%>"/> <%
                 }
                 else{ %>
                     <input type="hidden" name="ds_name"/><%
@@ -1595,7 +1595,7 @@ else if (mode.equals("add"))
                 // submitter url, might be used by POST handler who might want to send back to POST submitter
                 String submitterUrl = Util.getServletPathWithQueryString(request);
                 if (submitterUrl!=null){
-                    submitterUrl = Util.replaceTags(submitterUrl);
+                    submitterUrl = Util.processForDisplay(submitterUrl);
                     %>
                     <input type="hidden" name="submitter_url" value="<%=submitterUrl%>"/><%
                 }

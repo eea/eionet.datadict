@@ -362,8 +362,8 @@
         }
         
         function openFxValues(){
-            //var url = "fixed_values.jsp?delem_id=<%=attr_id%>&amp;delem_name=<%=Util.replaceTags(attr_shortname)%>&amp;parent_type=attr";
-            var url = "fixed_values.jsp?mode=edit&delem_id=<%=attr_id%>&delem_name=<%=Util.replaceTags(attr_shortname)%>&parent_type=attr";
+            //var url = "fixed_values.jsp?delem_id=<%=attr_id%>&amp;delem_name=<%=Util.processForDisplay(attr_shortname)%>&amp;parent_type=attr";
+            var url = "fixed_values.jsp?mode=edit&delem_id=<%=attr_id%>&delem_name=<%=Util.processForDisplay(attr_shortname)%>&parent_type=attr";
             wCh1Values = window.open(url,"AllowableValues","height=600,width=800,status=yes,toolbar=no,scrollbars=yes,resizable=no,menubar=no,location=no");
             if (window.focus) {wCh1Values.focus()}
         }
@@ -519,8 +519,8 @@ else
                         %>
                 <td>
                     <% if(!mode.equals("add")){ %>
-                        <em><%=Util.replaceTags(attr_shortname)%></em>
-                        <input type="hidden" name="short_name" value="<%=Util.replaceTags(attr_shortname,true)%>" />
+                        <em><%=Util.processForDisplay(attr_shortname)%></em>
+                        <input type="hidden" name="short_name" value="<%=Util.processForDisplay(attr_shortname,true)%>" />
                     <% } else{ %>
                         <input type="text" class="smalltext" size="30" name="short_name" />
                     <% } %>
@@ -541,11 +541,11 @@ else
                         %>
                 <td>
                     <% if(mode.equals("edit")){ %>                        
-                        <input <%=disabled%> type="text" class="smalltext" size="30" name="name" value="<%=Util.replaceTags(attr_name)%>" />
+                        <input <%=disabled%> type="text" class="smalltext" size="30" name="name" value="<%=Util.processForDisplay(attr_name)%>" />
                     <% } else if (mode.equals("add")){ %>
                         <input <%=disabled%> type="text" class="smalltext" size="30" name="name" />
                     <% } else { %>
-                        <%=Util.replaceTags(attr_name)%>
+                        <%=Util.processForDisplay(attr_name)%>
                     <% } %>
                 </td>
             </tr>
@@ -594,7 +594,7 @@ else
                             if (nsName == null) nsName = "";
                             
                             %>
-                            <%=Util.replaceTags(nsName)%> <%
+                            <%=Util.processForDisplay(nsName)%> <%
                         }
                         else{
                             %>
@@ -625,7 +625,7 @@ else
                                         ifSelected = "selected=\"selected\"";
                                         
                                     %>
-                                    <option <%=ifSelected%> value="<%=ns.getID()%>"><%=Util.replaceTags(nsName)%></option>
+                                    <option <%=ifSelected%> value="<%=ns.getID()%>"><%=Util.processForDisplay(nsName)%></option>
                                     <%
                                 }
                                 %>
@@ -654,12 +654,12 @@ else
                         String definition = (attribute.getDefinition() == null) ? "" : attribute.getDefinition();
                         if (mode.equals("edit")){
                             %>
-                            <textarea <%=disabled%> class="small" rows="5" cols="52" name="definition"><%=Util.replaceTags(definition, true, true)%></textarea>
+                            <textarea <%=disabled%> class="small" rows="5" cols="52" name="definition"><%=Util.processForDisplay(definition, true, true)%></textarea>
                             <%
                         }
                         else{
                             %>
-                            <%=Util.replaceTags(definition)%>
+                            <%=Util.processForDisplay(definition)%>
                             <%
                         }
                     }
@@ -751,7 +751,7 @@ else
                             <%
                             if (mode.equals("edit") && dispType!=null && dispType.equals("select")){
                                 %>
-                                &nbsp;<span class="smallfont"><a href="fixed_values.jsp?mode=edit&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=Util.replaceTags(attr_shortname)%>&amp;parent_type=attr">
+                                &nbsp;<span class="smallfont"><a href="fixed_values.jsp?mode=edit&amp;delem_id=<%=attr_id%>&amp;delem_name=<%=Util.processForDisplay(attr_shortname)%>&amp;parent_type=attr">
                                 <b>FIXED VALUES</b></a></span>
                                 <%
                             }
@@ -764,7 +764,7 @@ else
                 %>
                     <tr <% if (mode.equals("view") && displayed % 2 != 0) %> class="zebradark" <%;%>>
                         <th scope="row" class="scope-row">
-                                <a href="fixed_values.jsp?delem_id=<%=attr_id%>&amp;delem_name=<%=Util.replaceTags(attr_shortname)%>&amp;parent_type=attr">
+                                <a href="fixed_values.jsp?delem_id=<%=attr_id%>&amp;delem_name=<%=Util.processForDisplay(attr_shortname)%>&amp;parent_type=attr">
                                     Fixed values
                                 </a>
                         </th>
@@ -776,7 +776,7 @@ else
                                 for (int g=0; g<fxValues.size(); g++){
                                     FixedValue fxValue = (FixedValue)fxValues.get(g);
                                     %>
-                                    <%=Util.replaceTags(fxValue.getValue())%><br/>
+                                    <%=Util.processForDisplay(fxValue.getValue())%><br/>
                                     <%
                                 }
                             }
@@ -809,7 +809,7 @@ else
                             }
                             else{
                                 %>
-                                <%=Util.replaceTags(checked_text)%>
+                                <%=Util.processForDisplay(checked_text)%>
                                 <%
                             }
                         }
@@ -880,12 +880,12 @@ else
                         String dispOrder = (i==999) ? "" : String.valueOf(i);
                         if (mode.equals("edit")){
                             %>
-                            <input <%=disabled%> type="text" class="smalltext" size="5" name="dispOrder" value="<%=Util.replaceTags(dispOrder)%>" />
+                            <input <%=disabled%> type="text" class="smalltext" size="5" name="dispOrder" value="<%=Util.processForDisplay(dispOrder)%>" />
                             <%
                         }
                         else{
                             %>
-                            <%=Util.replaceTags(dispOrder)%>
+                            <%=Util.processForDisplay(dispOrder)%>
                             <%
                         }
                     }
@@ -1138,8 +1138,8 @@ else
             
                             %>
                             <tr <% if (i % 2 != 0) %> class="zebradark" <%;%>>
-                                <td align="center"><a href="<%=fieldLink%>"><%=Util.replaceTags(name)%></a></td>
-                                <td align="center" onmouseover=""><%=Util.replaceTags(definition)%></td>
+                                <td align="center"><a href="<%=fieldLink%>"><%=Util.processForDisplay(name)%></a></td>
+                                <td align="center" onmouseover=""><%=Util.processForDisplay(definition)%></td>
                             </tr>
                             <%
                         }
@@ -1157,7 +1157,7 @@ else
                 <td></td>
                 <% } %>
                 <td>
-                    <b>*</b> <span class="smallfont"><a href="m_attr_fields.jsp?attr_id=<%=attr_id%>&amp;attr_name=<%=Util.replaceTags(attr_shortname)%>">
+                    <b>*</b> <span class="smallfont"><a href="m_attr_fields.jsp?attr_id=<%=attr_id%>&amp;attr_name=<%=Util.processForDisplay(attr_shortname)%>">
                         <b>FIELDS</b></a></span>&nbsp;&nbsp;
                     <span class="smallfont" style="font-weight: normal">
                         &lt;&nbsp;click here to add/remove fields of this complex attribute

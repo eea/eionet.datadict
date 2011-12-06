@@ -1549,14 +1549,14 @@
                                                     <%
                                                         if (mode.equals("view")) {
                                                     %>
-                                                        <%=Util.replaceTags(dataElement.getShortName())%>
-                                                        <input type="hidden" name="delem_name" value="<%=Util.replaceTags(dataElement.getShortName(), true)%>"/><%
+                                                        <%=Util.processForDisplay(dataElement.getShortName())%>
+                                                        <input type="hidden" name="delem_name" value="<%=Util.processForDisplay(dataElement.getShortName(), true)%>"/><%
                                                             } else if (mode.equals("add")) {
                                                         %>
                                                         <input class="smalltext" type="text" size="30" name="delem_name"/><%
                                                             } else {
                                                         %>
-                                                        <input class="smalltext" type="text" size="30" name="delem_name" value="<%=Util.replaceTags(dataElement.getShortName())%>"/><%
+                                                        <input class="smalltext" type="text" size="30" name="delem_name" value="<%=Util.processForDisplay(dataElement.getShortName())%>"/><%
                                                             }
                                                         %>
                                                 </td>
@@ -1593,7 +1593,7 @@
                                                     <td class="simple_attr_value">
                                                         <em>
                                                             <a href="dataset.jsp?ds_id=<%=dsID%>">
-                                                                <b><%=Util.replaceTags(dataset.getShortName())%></b>
+                                                                <b><%=Util.processForDisplay(dataset.getShortName())%></b>
                                                             </a>
                                                         </em>
                                                         <%
@@ -1632,7 +1632,7 @@
                                                     <td class="simple_attr_value">
                                                         <em>
                                                             <a href="dstable.jsp?table_id=<%=dsTable.getID()%>">
-                                                                <%=Util.replaceTags(dsTable.getShortName())%>
+                                                                <%=Util.processForDisplay(dsTable.getShortName())%>
                                                             </a>
                                                         </em>
                                                         <input type="hidden" name="table_id" value="<%=dsTable.getID()%>"/>
@@ -1669,7 +1669,7 @@
                                                     <td class="simple_attr_value">
                                                         <%
                                                         if (mode.equals("view")){ %>
-                                                            <%=Util.replaceTags(elmRegStatus)%>
+                                                            <%=Util.processForDisplay(elmRegStatus)%>
                                                             <%
                                                             long timestamp = dataElement.getDate()==null ? 0 : Long.parseLong(dataElement.getDate());
                                                             String dateString = timestamp==0 ? "" : eionet.util.Util.releasedDate(timestamp);
@@ -1703,7 +1703,7 @@
                      String selected = stat.equals(elmRegStatus) ? "selected=\"selected\""
                              : "";
  %>
-                                                                    <option <%=selected%> value="<%=Util.replaceTags(stat)%>"><%=Util.replaceTags(stat)%></option><%
+                                                                    <option <%=selected%> value="<%=Util.processForDisplay(stat)%>"><%=Util.processForDisplay(stat)%></option><%
                                                                         }
                                                                     %>
                                                             </select><%
@@ -1747,7 +1747,7 @@
                                                                         gisType = (gisType == null || gisType.length() == 0) ? "&nbsp;"
                                                                                 : gisType;
                                                         %>
-                                                            <%=Util.replaceTags(gisType)%><%
+                                                            <%=Util.processForDisplay(gisType)%><%
                                                                 } else {
                                                                             String selected = gisType == null ? "selected=\"selected\""
                                                                                     : "";
@@ -1761,7 +1761,7 @@
                                                                                             : "";
                                                                                     String gisDisp = gist.equals("") ? "[ ]" : gist;
                                                                 %>
-                                                                    <option <%=selected%> value="<%=Util.replaceTags(gist)%>"><%=Util.replaceTags(gisDisp)%></option><%
+                                                                    <option <%=selected%> value="<%=Util.processForDisplay(gist)%>"><%=Util.processForDisplay(gisDisp)%></option><%
                                                                         }
                                                                     %>
                                                             </select><%
@@ -1933,7 +1933,7 @@
                                             %>
                                                 <tr class="zebra<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
-                                                        <%=Util.replaceTags(attribute.getShortName())%>
+                                                        <%=Util.processForDisplay(attribute.getShortName())%>
                                                     </th>
                                                     <td class="simple_attr_help">
                                                         <a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
@@ -1944,7 +1944,7 @@
                                                         if (colspan == 4) {
                                                     %>
                                                         <td class="simple_attr_help">
-                                                            <img style="border:0" src="images/<%=Util.replaceTags(obligImg)%>" width="16" height="16" alt=""/>
+                                                            <img style="border:0" src="images/<%=Util.processForDisplay(obligImg)%>" width="16" height="16" alt=""/>
                                                         </td><%
                                                             }
                                                         %>
@@ -1967,8 +1967,8 @@
                                                                 <div class="figure-plus-container">
                                                                     <div class="figure-plus">
                                                                         <div class="figure-image">
-                                                                            <a href="visuals/<%=Util.replaceTags(attrValue)%>">
-                                                                                <img src="visuals/<%=Util.replaceTags(attrValue)%>" alt="Image file could not be found on the server" class="scaled2 poponmouseclick"/>
+                                                                            <a href="visuals/<%=Util.processForDisplay(attrValue)%>">
+                                                                                <img src="visuals/<%=Util.processForDisplay(attrValue)%>" alt="Image file could not be found on the server" class="scaled2 poponmouseclick"/>
                                                                             </a>
                                                                         </div>
                                                                     </div>
@@ -1981,15 +1981,15 @@
                                                                                             : "manage this image";
                                                                 %>
                                                                 <div>
-                                                                    <a href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.replaceTags(dataElement
-                                    .getShortName())%>&amp;attr_name=<%=Util.replaceTags(attribute.getShortName())%>">[Click to <%=Util.replaceTags(actionText)%>]</a>
+                                                                    <a href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.processForDisplay(dataElement
+                                    .getShortName())%>&amp;attr_name=<%=Util.processForDisplay(attribute.getShortName())%>">[Click to <%=Util.processForDisplay(actionText)%>]</a>
                                                                 </div><%
                                                                     }
                                                                             }
                                                                             // if view mode or Datatype in edit mode, display simple text
                                                                             else if (mode.equals("view")) {
                                                                 %>
-                                                            <%=Util.replaceTags(attrValue)%><%
+                                                            <%=Util.processForDisplay(attrValue)%><%
                                                                 }
                                                                         // if non-view mode, display input
                                                                         else {
@@ -2002,7 +2002,7 @@
 
                                                                                 if (sInhText.startsWith("Inherited")) {
                                                             %>
-                                                                        <%=Util.replaceTags(sInhText)%><%=Util.replaceTags(inheritedValue)%><br/><%
+                                                                        <%=Util.processForDisplay(sInhText)%><%=Util.processForDisplay(inheritedValue)%><br/><%
                                                                             }
                                                                                         }
 
@@ -2062,7 +2062,7 @@
                                                                                     if (dispType.equals("text")) {
                                                                                         if (attrValue != null) {
                                                                 %>
-                                                                        <input <%=disabled%> class="smalltext" type="text" size="<%=width%>" name="attr_<%if (dispMultiple)%> mult_<%;%><%=attrID%>" value="<%=Util.replaceTags(attrValue)%>" onchange="form_changed('form1')"/>
+                                                                        <input <%=disabled%> class="smalltext" type="text" size="<%=width%>" name="attr_<%if (dispMultiple)%> mult_<%;%><%=attrID%>" value="<%=Util.processForDisplay(attrValue)%>" onchange="form_changed('form1')"/>
                                                                         <%
                                                                             } else {
                                                                         %>
@@ -2072,7 +2072,7 @@
                                                                                             } else if (dispType.equals("textarea")) {
                                                                                                 if (attrValue != null) {
                                                                         %>
-                                                                        <textarea <%=disabled%> class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"><%=Util.replaceTags(attrValue, true,
+                                                                        <textarea <%=disabled%> class="small" rows="<%=height%>" cols="<%=width%>" name="attr_<%=attrID%>" onchange="form_changed('form1')"><%=Util.processForDisplay(attrValue, true,
                                             true)%></textarea>
                                                                         <%
                                                                             } else {
@@ -2123,14 +2123,14 @@
                                      selectedByValue = true;
                                  }
  %>
-                                                                                <option <%=isSelected%> value="<%=Util.replaceTags(fxValue
-                                                .getValue())%>"><%=Util.replaceTags(fxValue
+                                                                                <option <%=isSelected%> value="<%=Util.processForDisplay(fxValue
+                                                .getValue())%>"><%=Util.processForDisplay(fxValue
                                                 .getValue())%></option> <%
      }
                          }
  %>
                                                                     </select>
-                                                                    <a onclick="pop(this.href);return false;" href="fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.replaceTags(attribute
+                                                                    <a onclick="pop(this.href);return false;" href="fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.processForDisplay(attribute
                                         .getShortName())%>&amp;parent_type=attr">
                                                                         <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
                                                                     </a>
@@ -2142,7 +2142,7 @@
                                                                                     }
                                                                                 } // end display input
                                                                     %>
-                                                <input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.replaceTags(attribute.getObligation(), true)%>"/>
+                                                <input type="hidden" name="oblig_<%=attrID%>" value="<%=Util.processForDisplay(attribute.getObligation(), true)%>"/>
                                                     </td>
                                                     <!-- end dynamic attribute value display -->
 
@@ -2264,8 +2264,8 @@
                                                     <%
                                                         if (!mode.equals("add")) {
                                                     %>
-                                                        <b><%=Util.replaceTags(idfier)%></b>
-                                                        <input type="hidden" name="idfier" value="<%=Util.replaceTags(delemIdf, true)%>"/><%
+                                                        <b><%=Util.processForDisplay(idfier)%></b>
+                                                        <input type="hidden" name="idfier" value="<%=Util.processForDisplay(delemIdf, true)%>"/><%
                                                             } else {
                                                         %>
                                                         <input class="smalltext" type="text" size="30" name="idfier" onchange="form_changed('form1')" value="<%=idfier%>"/><%
@@ -2334,7 +2334,7 @@
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a href="help.jsp?screen=element&amp;area=<%=Util.replaceTags(helpAreaName)%>" onclick="pop(this.href);return false;">
+                                                            <a href="help.jsp?screen=element&amp;area=<%=Util.processForDisplay(helpAreaName)%>" onclick="pop(this.href);return false;">
                                                                 <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                             </a>
                                                         </span>
@@ -2350,7 +2350,7 @@
                                                                     if (mode.equals("edit") && user != null) {
                                                         %>
                                                         <span class="barfont_bordered">
-                                                            <a href="<%=valuesLink%>">[Click to manage <%=Util.replaceTags(title.toLowerCase())%> of this element]</a>
+                                                            <a href="<%=valuesLink%>">[Click to manage <%=Util.processForDisplay(title.toLowerCase())%> of this element]</a>
                                                         </span><%
                                                             }
                                                         %>
@@ -2419,14 +2419,14 @@
                                                                     <tr>
                                                                         <td>
                                                                             <a href="<%=valueLink%>">
-                                                                                <%=Util.replaceTags(value)%>
+                                                                                <%=Util.processForDisplay(value)%>
                                                                             </a>
                                                                         </td>
-                                                                        <td title="<%=Util.replaceTags(defin, true)%>">
-                                                                            <%=Util.replaceTags(dispDefin)%>
+                                                                        <td title="<%=Util.processForDisplay(defin, true)%>">
+                                                                            <%=Util.processForDisplay(dispDefin)%>
                                                                         </td>
-                                                                        <td title="<%=Util.replaceTags(shortDesc, true)%>">
-                                                                            <%=Util.replaceTags(dispShortDesc)%>
+                                                                        <td title="<%=Util.processForDisplay(shortDesc, true)%>">
+                                                                            <%=Util.processForDisplay(dispShortDesc)%>
                                                                         </td>
                                                                     </tr><%
                                                                         }
@@ -2464,7 +2464,7 @@
                                                                     if (mode.equals("edit")) {
                                                         %>
                                                         <span class="barfont_bordered">
-                                                            <a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=Util.replaceTags(delem_name)%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>">[Click to manage foreign keys of this element]</a>
+                                                            <a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=Util.processForDisplay(delem_name)%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>">[Click to manage foreign keys of this element]</a>
                                                         </span><%
                                                             }
                                                         %>
@@ -2496,11 +2496,11 @@
                                                                     <tr>
                                                                         <td style="width:50%">
                                                                             <a href="data_element.jsp?delem_id=<%=fkElmID%>">
-                                                                                <%=Util.replaceTags(fkElmName)%>
+                                                                                <%=Util.processForDisplay(fkElmName)%>
                                                                             </a>
                                                                         </td>
                                                                         <td style="width:50%">
-                                                                            <%=Util.replaceTags(fkTblName)%>
+                                                                            <%=Util.processForDisplay(fkTblName)%>
                                                                         </td>
                                                                     </tr><%
                                                                         }
@@ -2557,16 +2557,16 @@
                                                                 <tr>
                                                                     <td>
                                                                         <a href="<%=tblLink%>">
-                                                                            <%=Util.replaceTags(tbl.getShortName())%>
+                                                                            <%=Util.processForDisplay(tbl.getShortName())%>
                                                                         </a>
                                                                     </td>
                                                                     <td>
                                                                         <a href="<%=dstLink%>">
-                                                                            <%=Util.replaceTags(tbl.getDatasetName())%>
+                                                                            <%=Util.processForDisplay(tbl.getDatasetName())%>
                                                                         </a>
                                                                     </td>
                                                                     <td>
-                                                                        <%=Util.replaceTags(owner)%>
+                                                                        <%=Util.processForDisplay(owner)%>
                                                                     </td>
                                                                 </tr><%
                                                                     }
@@ -2608,7 +2608,7 @@
                                                                     if (mode.equals("edit") && user != null) {
                                                         %>
                                                         <span class="barfont_bordered">
-                                                            <a href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>">[Click to manage complex attributes of this element]</a>
+                                                            <a href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.processForDisplay(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>">[Click to manage complex attributes of this element]</a>
                                                         </span><%
                                                             }
                                                         %>
@@ -2638,8 +2638,8 @@
 
                                                                     <tr class="zebra<%=isOdd%>">
                                                                         <td>
-                                                                            <a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.replaceTags(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
-                                                                                <%=Util.replaceTags(attrName)%>
+                                                                            <a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.processForDisplay(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+                                                                                <%=Util.processForDisplay(attrName)%>
                                                                             </a>
                                                                         </td>
                                                                         <td>
@@ -2678,7 +2678,7 @@
                                                                                                         rowValue.append(Util
                                                                                                                 .replaceTags(fieldValue));
                                                                             %>
-                                                                                    <%=Util.replaceTags(fieldValue)%><br/><%
+                                                                                    <%=Util.processForDisplay(fieldValue)%><br/><%
                                                                                         }
                                                                                                         }
                                                                                     %>
@@ -2824,7 +2824,7 @@
                                     String submitterUrl = Util
                                             .getServletPathWithQueryString(request);
                                     if (submitterUrl != null) {
-                                        submitterUrl = Util.replaceTags(submitterUrl);
+                                        submitterUrl = Util.processForDisplay(submitterUrl);
                             %>
                         <input type="hidden" name="submitter_url" value="<%=submitterUrl%>"/><%
                             }

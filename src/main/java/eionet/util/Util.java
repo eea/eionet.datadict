@@ -53,6 +53,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+
 import eionet.meta.DDRuntimeException;
 
 //import eionet.meta.Log;
@@ -80,7 +83,8 @@ public class Util {
     /**
      * Returns true if the given string is null or its length is 0.
      *
-     * @param str The given string.
+     * @param str
+     *            The given string.
      * @return
      */
     public static boolean isEmpty(String str) {
@@ -423,7 +427,7 @@ public class Util {
      * @param str
      * @return
      */
-    public static String md5(String str){
+    public static String md5(String str) {
 
         try {
             return digestHexDec(str, "MD5");
@@ -433,116 +437,63 @@ public class Util {
     }
 
     /**
-     * Calls replaceTags(in, false, false). See the documentation of that method.
+     * Returns the result of {@link #processForDisplay(String, boolean, boolean)} with the given input String, setting both booleans
+     * to false.
      *
      * @param in
      * @return
      */
-    public static String replaceTags(String in) {
-        return replaceTags(in, false, false);
+    public static String processForDisplay(String in) {
+        return processForDisplay(in, false, false);
     }
 
     /**
-     * Calls replaceTags(in, dontCreateHTMLAnchors, false). See the documentation of that method.
+     * Returns the result of {@link #processForDisplay(String, boolean, boolean)} with the given input String and first boolean,
+     * setting the last boolean to false.
      *
      * @param in
      * @param dontCreateHTMLAnchors
      * @return
      */
-    public static String replaceTags(String in, boolean dontCreateHTMLAnchors) {
-        return replaceTags(in, dontCreateHTMLAnchors, false);
+    public static String processForDisplay(String in, boolean dontCreateHTMLAnchors) {
+        return processForDisplay(in, dontCreateHTMLAnchors, false);
     }
 
     /**
-     * Replaces the following characters with their XML escape codes: ', ", <, >, \, &. If an ampersand is found and it is the start
-     * of an escape sequence, the ampersand is not escaped.
-     *
-     * By default, this method creates HTML anchors (<a href"...">...</a>) for URLs it finds in the string. This can be switched off
-     * by setting dontCreateHTMLAnchors to true. Also by default, this method converts discovered line breaks into HTML line breaks
-     * (<br>
-     * ). This can be switched off by setting dontCreateHTMLLineBreaks to true.
+     * First replaces the given input string with {@link StringEscapeUtils#escapeXml(String)}. Then, if the 1st boolean input is
+     * false, replaces all occurrences of URLs in the string with HTML links (i.e. anchors) like (<a href"...">...</a>). Finally, if
+     * the 2nd boolean input is false, replaces all occurrences of Java string line breaks ('\n' and '\r\n') with HTML line breaks
+     * like <br/>
+     * .
      *
      * @param in
      * @param inTextarea
      * @return
      */
-    public static String replaceTags(String in, boolean dontCreateHTMLAnchors, boolean dontCreateHTMLLineBreaks) {
+    public static String processForDisplay(String in, boolean dontCreateHTMLAnchors, boolean dontCreateHTMLLineBreaks) {
 
-        in = (in != null ? in : "");
-
-        StringBuffer ret = new StringBuffer();
-        for (int i = 0; i < in.length(); i++) {
-            char c = in.charAt(i);
-            if (c == '<') {
-                ret.append("&lt;");
-            } else if (c == '>') {
-                ret.append("&gt;");
-            } else if (c == '"') {
-                ret.append("&quot;");
-            } else if (c == '\'') {
-                ret.append("&#039;");
-            } else if (c == '\\') {
-                ret.append("&#092;");
-            } else if (c == '&') { // ampersand
-                boolean startsEscapeSequence = false;
-                int j = in.indexOf(';', i);
-                if (j > 0) {
-                    String s = in.substring(i, j + 1);
-                    UnicodeEscapes unicodeEscapes = new UnicodeEscapes();
-                    if (unicodeEscapes.isXHTMLEntity(s) || unicodeEscapes.isNumericHTMLEscapeCode(s)) {
-                        startsEscapeSequence = true;
-                    }
-                }
-
-                if (startsEscapeSequence) {
-                    ret.append(c);
-                } else {
-                    ret.append("&amp;");
-                }
-            } else {
-                ret.append(c);
-            }
+        if (StringUtils.isBlank(in)) {
+            return in;
         }
 
-        String retString = ret.toString();
+        // first, escape for XML
+        String result = StringEscapeUtils.escapeXml(in);
+
+        // special case: &apos; is commonly used, but not actually legal, so replacing this with &#039;
+        result = StringUtils.replace(result, "&apos;", "&#039;");
+
+        // if URLs must be replaced with HTML links (i.e. anchors) then do so
         if (dontCreateHTMLAnchors == false) {
-            retString = setAnchors(retString, true, 50);
+            result = setAnchors(result, true, 50);
         }
 
-        ret = new StringBuffer();
-        for (int i = 0; i < retString.length(); i++) {
-            char c = retString.charAt(i);
-            if (c == '\n' && dontCreateHTMLLineBreaks == false) {
-                ret.append("<br/>");
-            } else if (c == '\r' && i != (retString.length() - 1) && retString.charAt(i + 1) == '\n'
-                && dontCreateHTMLLineBreaks == false) {
-                ret.append("<br/>");
-                i = i + 1;
-            } else {
-                ret.append(c);
-            }
+        // if requested so, replace all occurrences of '\n' and '\r\n' with HTML line breaks like <br/>
+        if (dontCreateHTMLLineBreaks == false) {
+            result = StringUtils.replace(result, "\r\n", "<br/>");
+            result = StringUtils.replace(result, "\n", "<br/>");
         }
 
-        return ret.toString();
-    }
-
-    /**
-     * A method for replacing substrings in string
-     */
-    public static String Replace(String str, String oldStr, String replace) {
-        str = (str != null ? str : "");
-
-        StringBuffer buf = new StringBuffer();
-        int found = 0;
-        int last = 0;
-
-        while ((found = str.indexOf(oldStr, last)) >= 0) {
-            buf.append(str.substring(last, found));
-            buf.append(replace);
-            last = found + oldStr.length();
-        }
-        buf.append(str.substring(last));
-        return buf.toString();
+        return result;
     }
 
     /**
@@ -892,8 +843,8 @@ public class Util {
          * literal.substring(i+1, j); if (unicodeEscapes == null) unicodeEscapes = new UnicodeEscapes(); decimal =
          * unicodeEscapes.getDecimal(ent); }
          *
-         * if (decimal >= 0) { // if decimal was found, use the corresponding char. otherwise stick to c. c = (char)decimal; i = j; }
-         * } }
+         * if (decimal >= 0) { // if decimal was found, use the corresponding char. otherwise stick to c. c = (char)decimal; i = j;
+         * } } }
          *
          * buf.append(c); }
          *
@@ -1239,9 +1190,9 @@ public class Util {
      * @param collection
      * @return
      */
-    public static boolean isEmpty(Collection<?> collection){
+    public static boolean isEmpty(Collection<?> collection) {
 
-        return collection==null || collection.isEmpty();
+        return collection == null || collection.isEmpty();
     }
 
     /**
@@ -1249,8 +1200,8 @@ public class Util {
      * @param map
      * @return
      */
-    public static boolean isEmpty(Map<?, ?> map){
+    public static boolean isEmpty(Map<?, ?> map) {
 
-        return map==null || map.isEmpty();
+        return map == null || map.isEmpty();
     }
 }

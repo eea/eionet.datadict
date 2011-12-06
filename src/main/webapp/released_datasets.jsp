@@ -36,7 +36,7 @@ if (releasedDatasets!=null){
             <tr>                
                 <td style="vertical-align:top">
                     <a href="dataset.jsp?ds_id=<%=dst.getID()%>">
-                        <%=Util.replaceTags(name)%>
+                        <%=Util.processForDisplay(name)%>
                     </a>
                 </td>
                 <td style="vertical-align:top" title="<%=dateHint%>">

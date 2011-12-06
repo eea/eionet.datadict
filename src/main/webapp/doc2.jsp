@@ -4,32 +4,32 @@
 <%@ include file="history.jsp" %>
 
 <%
-	response.setHeader("Pragma", "No-cache");
-	response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
-	response.setHeader("Expires", Util.getExpiresDateString());
+    response.setHeader("Pragma", "No-cache");
+    response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
+    response.setHeader("Expires", Util.getExpiresDateString());
 
-	request.setCharacterEncoding("UTF-8");
+    request.setCharacterEncoding("UTF-8");
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<%@ include file="headerinfo.txt" %>
-	<title>Documentation</title>
+    <%@ include file="headerinfo.txt" %>
+    <title>Documentation</title>
 </head>
 <body>
 <div id="container">
-	<jsp:include page="nlocation.jsp" flush="true">
-		<jsp:param name="name" value="Documentation"/>
-	</jsp:include>
-	<%@ include file="nmenu.jsp" %>
-	<div id="workarea">
-		<div id="outerframe">
-			<div id="innerframe">
-					<%=Helps.get("doc2", "text")%>
-			</div>				
-		</div>				
-	</div> <!-- workarea -->
+    <jsp:include page="nlocation.jsp" flush="true">
+        <jsp:param name="name" value="Documentation"/>
+    </jsp:include>
+    <%@ include file="nmenu.jsp" %>
+    <div id="workarea">
+        <div id="outerframe">
+            <div id="innerframe">
+                    <%=Helps.get("doc2", "text")%>
+            </div>                
+        </div>                
+    </div> <!-- workarea -->
 </div> <!-- container -->
-<%@ include file="footer.txt" %>								
+<%@ include file="footer.txt" %>                                
 </body>
 </html>

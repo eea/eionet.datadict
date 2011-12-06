@@ -132,7 +132,7 @@
     
     String pageMode = request.getParameter("sort_column")!=null ? "sort" : "search";
     
- 	// Feedback messages
+     // Feedback messages
     if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("checkout")) {
         feedbackValue = "Working copy successfully created!";
     }
@@ -367,13 +367,13 @@
                 </ul>
                 </div>
             <%
-	            	if (feedbackValue != null) {
-	    			%>
-	    				<div class="system-msg">
-	    				<%= feedbackValue %>
-	    				</div>
-	    			<%  
-	    			}
+                    if (feedbackValue != null) {
+                    %>
+                        <div class="system-msg">
+                        <%= feedbackValue %>
+                        </div>
+                    <%  
+                    }
             
                     if (!restore && isSearchForWorkingCopies){ %>
                         <h1>Working copies of dataset definitions</h1><%
@@ -460,8 +460,8 @@
                 String sortedAlt  = getSortedAlt(sortedImg);
                 %>
                 <th>
-                    <a title="Sort on Dataset" href="<%=Util.replaceTags(sortedLink,true)%>">
-                        Dataset&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
+                    <a title="Sort on Dataset" href="<%=Util.processForDisplay(sortedLink,true)%>">
+                        Dataset&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt="<%=Util.processForDisplay(sortedAlt,true)%>"/>
                     </a>
                 </th>
                 <%
@@ -471,8 +471,8 @@
                     sortedAlt  = getSortedAlt(sortedImg);
                     %>
                     <th>
-                        <a title="Sort on Version" href="<%=Util.replaceTags(sortedLink,true)%>">
-                          Version&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
+                        <a title="Sort on Version" href="<%=Util.processForDisplay(sortedLink,true)%>">
+                          Version&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt="<%=Util.processForDisplay(sortedAlt,true)%>"/>
                         </a>
                     </th><%
                 }
@@ -483,8 +483,8 @@
                     sortedLink = getSortedLink(2, oSortCol, oSortOrder);
                     sortedAlt  = getSortedAlt(sortedImg);
                     %>
-                    <a title="Sort on Status" href="<%=Util.replaceTags(sortedLink,true)%>">
-                          Status&nbsp;<img src="<%=Util.replaceTags(sortedImg,true)%>" width="12" height="12" alt="<%=Util.replaceTags(sortedAlt,true)%>"/>
+                    <a title="Sort on Status" href="<%=Util.processForDisplay(sortedLink,true)%>">
+                          Status&nbsp;<img src="<%=Util.processForDisplay(sortedImg,true)%>" width="12" height="12" alt="<%=Util.processForDisplay(sortedAlt,true)%>"/>
                     </a>
                 </th>
                 <th>
@@ -514,7 +514,7 @@
                     boolean clickable = searchEngine.skipByRegStatus(regStatus) ? false : true;
                     String linkDisabled = clickable ? "" : "class=\"disabled\"";
                     String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
-                    String ds_name = Util.replaceTags(dataset.getShortName());
+                    String ds_name = Util.processForDisplay(dataset.getShortName());
                     String dsLink = clickable ? "dataset.jsp?ds_id=" + ds_id : "#";
                     String dsFullName=dataset.getName();
                     if (dsFullName!=null && dsFullName.length()>60)
@@ -565,7 +565,7 @@
                                     countCheckboxes++;
                                 }
                                 else if (workingUser!=null){ %>
-                                    <div title="<%=Util.replaceTags(workingUser,true)%>" class="checkedout">*</div><%
+                                    <div title="<%=Util.processForDisplay(workingUser,true)%>" class="checkedout">*</div><%
                                 }
                                 else{ %>
                                     &nbsp;<%
@@ -576,14 +576,14 @@
 
                         // the 2nd column: full name link
                         if (clickable==false){%>
-                            <td title="<%=Util.replaceTags(dsFullName,true)%>" class="disabled">
-                                <%=Util.replaceTags(dsFullName, true)%>
+                            <td title="<%=Util.processForDisplay(dsFullName,true)%>" class="disabled">
+                                <%=Util.processForDisplay(dsFullName, true)%>
                             </td><%
                         }
                         else{ %>
-                            <td title="<%=Util.replaceTags(dsFullName,true)%>">
-                                <a href="<%=Util.replaceTags(dsLink,true)%>">
-                                    <%=Util.replaceTags(dsFullName, true)%>
+                            <td title="<%=Util.processForDisplay(dsFullName,true)%>">
+                                <a href="<%=Util.processForDisplay(dsLink,true)%>">
+                                    <%=Util.processForDisplay(dsFullName, true)%>
                                 </a>
                             </td><%
                         }
@@ -602,7 +602,7 @@
                         <td>
                             <%
                             if (clickable){ %>
-                                <img style="border:0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
+                                <img style="border:0" src="<%=Util.processForDisplay(statusImg)%>" width="56" height="12" title="<%=regStatus%>" alt="<%=regStatus%>"/><%
                             }
                             else{ %>
                                 <span style="color:gray;text-decoration:none;font-size:8pt" title="<%=regStatus%>">
@@ -624,16 +624,16 @@
 
                                 // it is probably less confusing if there are no links for tables of working copies
                                 if (isSearchForWorkingCopies){ %>
-                                    <%=Util.replaceTags(table.getShortName())%><%
+                                    <%=Util.processForDisplay(table.getShortName())%><%
                                 }
                                 else{
                                     if (clickable){ %>
                                         <a href="<%=tableLink%>">
-                                            <%=Util.replaceTags(table.getShortName())%>
+                                            <%=Util.processForDisplay(table.getShortName())%>
                                         </a><%
                                     }
                                     else{ %>
-                                        <span class="disabled"><%=Util.replaceTags(table.getShortName())%></span><%
+                                        <span class="disabled"><%=Util.processForDisplay(table.getShortName())%></span><%
                                     }
                                 }
                                 %>
@@ -681,12 +681,12 @@
                                     <%
                                     if (oEntry.canDelete){%>
                                         <input type="checkbox" style="height:13;width:13" name="ds_id" value="<%=oEntry.oID%>" <%=alertReleased%>/>
-                                        <input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.replaceTags(oEntry.oIdentifier,true)%>"/>
+                                        <input type="hidden" name="ds_idf_<%=oEntry.oID%>" value="<%=Util.processForDisplay(oEntry.oIdentifier,true)%>"/>
                                         <%
                                         countCheckboxes++;
                                     }
                                     else if (oEntry.workingUser!=null){%>
-                                        <div title="<%=Util.replaceTags(oEntry.workingUser,true)%>" class="checkedout">*</div><%
+                                        <div title="<%=Util.processForDisplay(oEntry.workingUser,true)%>" class="checkedout">*</div><%
                                     }
                                     else{ %>
                                         &nbsp;<%
@@ -697,14 +697,14 @@
 
                             // 2nd column: full name link
                             if (oEntry.clickable==false){%>
-                                <td title="<%=Util.replaceTags(oEntry.oFullName,true)%>" class="disabled">
-                                    <%=Util.replaceTags(oEntry.oFullName, true)%>
+                                <td title="<%=Util.processForDisplay(oEntry.oFullName,true)%>" class="disabled">
+                                    <%=Util.processForDisplay(oEntry.oFullName, true)%>
                                 </td><%
                             }
                             else{%>
-                                <td title="<%=Util.replaceTags(oEntry.oFullName,true)%>">
-                                    <a href="<%=Util.replaceTags(dsLink,true)%>">
-                                        <%=Util.replaceTags(oEntry.oFullName, true)%>
+                                <td title="<%=Util.processForDisplay(oEntry.oFullName,true)%>">
+                                    <a href="<%=Util.processForDisplay(dsLink,true)%>">
+                                        <%=Util.processForDisplay(oEntry.oFullName, true)%>
                                     </a>
                                 </td><%
                             }
@@ -721,7 +721,7 @@
                             <td>
                                 <%
                                 if (oEntry.clickable){ %>
-                                    <img style="border:0" src="<%=Util.replaceTags(statusImg)%>" width="56" height="12" title="<%=oEntry.getRegStatus()%>" alt="<%=oEntry.getRegStatus()%>"/><%
+                                    <img style="border:0" src="<%=Util.processForDisplay(statusImg)%>" width="56" height="12" title="<%=oEntry.getRegStatus()%>" alt="<%=oEntry.getRegStatus()%>"/><%
                                 }
                                 else{ %>
                                     <span style="color:gray;text-decoration:none;font-size:8pt" title="<%=oEntry.getRegStatus()%>">
@@ -745,16 +745,16 @@
 
                                     // it is probbaly less confusing if there are no links for tables of working copies
                                     if (isSearchForWorkingCopies){ %>
-                                        <%=Util.replaceTags(table.getShortName())%><%
+                                        <%=Util.processForDisplay(table.getShortName())%><%
                                     }
                                     else{
                                         if (oEntry.clickable){%>
                                             <a href="<%=tableLink%>">
-                                                <%=Util.replaceTags(table.getShortName())%>
+                                                <%=Util.processForDisplay(table.getShortName())%>
                                             </a><%
                                         }
                                         else{%>
-                                            <span class="disabled"><%=Util.replaceTags(table.getShortName())%></span><%
+                                            <span class="disabled"><%=Util.processForDisplay(table.getShortName())%></span><%
                                         }
                                     }
                                     %>
