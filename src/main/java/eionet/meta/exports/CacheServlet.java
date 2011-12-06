@@ -36,39 +36,50 @@ import eionet.util.sql.SQL;
  */
 public class CacheServlet extends HttpServlet {
 
+    /** */
     public static final String KEY_ARTICLE = "article";
     public static final String KEY_FILENAME = "filename";
     public static final String KEY_CREATED = "created";
 
+    /** */
     private Hashtable objTypes = null;
     private String cachePath = null;
 
+    /*
+     * (non-Javadoc)
+     * @see javax.servlet.GenericServlet#init()
+     */
     public void init() throws ServletException {
         cachePath = Props.getProperty(PropsIF.DOC_PATH);
         if (!Util.isEmpty(cachePath)) {
             cachePath.trim();
-            if (!cachePath.endsWith(File.separator))
+            if (!cachePath.endsWith(File.separator)) {
                 cachePath = cachePath + File.separator;
+            }
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         req.setCharacterEncoding("UTF-8");
 
-        if (objTypes == null)
+        if (objTypes == null) {
             setObjectTypes();
-        if (Util.isEmpty(cachePath))
+        }
+        if (Util.isEmpty(cachePath)) {
             throw new ServletException("Missing the path to cache directory!");
+        }
 
         try {
-            if (req.getMethod().equalsIgnoreCase("GET"))
+            if (req.getMethod().equalsIgnoreCase("GET")) {
                 get(req);
-            else {
+            } else {
                 post(req);
-                // loadEntries(req);
             }
-
             dispatch(req, res);
         } catch (Exception e) {
             e.printStackTrace(System.out);
@@ -78,11 +89,21 @@ public class CacheServlet extends HttpServlet {
         }
     }
 
+    /**
+     *
+     * @param req
+     * @throws Exception
+     */
     private void get(HttpServletRequest req) throws Exception {
         loadEntries(req);
         setTitleParts(req);
     }
 
+    /**
+     *
+     * @param req
+     * @throws Exception
+     */
     private void post(HttpServletRequest req) throws Exception {
 
         String objID = req.getParameter("obj_id");
@@ -124,15 +145,17 @@ public class CacheServlet extends HttpServlet {
             } else if (article.equals("xls") && objType.equals("tbl")) {
                 cachable = new TblXls(getConnection(req));
                 cachable.setCachePath(cachePath);
-            } else
+            } else {
                 throw new Exception("Article <" + article + "> for object <" + objType + "> is not handled right now!");
+            }
 
-            if (action.equals("update"))
+            if (action.equals("update")) {
                 cachable.updateCache(objID);
-            else if (action.equals("clear"))
+            } else if (action.equals("clear")) {
                 cachable.clearCache(objID);
-            else
+            } else {
                 throw new Exception("Unknown action: " + action);
+            }
 
         }
     }
@@ -145,17 +168,20 @@ public class CacheServlet extends HttpServlet {
     private void loadEntries(HttpServletRequest req) throws Exception {
 
         String objID = req.getParameter("obj_id");
-        if (Util.isEmpty(objID))
+        if (Util.isEmpty(objID)) {
             throw new Exception("Missing object ID!");
+        }
         String objType = req.getParameter("obj_type");
-        if (objType == null || !objTypes.containsKey(objType))
+        if (objType == null || !objTypes.containsKey(objType)) {
             throw new Exception("Object type is missing or is illegal!");
+        }
 
         req.removeAttribute("entries");
 
         Vector objArticles = getArticlesForObjType(req, objType);
-        if (objArticles == null || objArticles.size() == 0)
+        if (objArticles == null || objArticles.size() == 0) {
             return;
+        }
 
         DDSearchEngine searchEngine = new DDSearchEngine(getConnection(req), "", getServletContext());
         Hashtable cache = searchEngine.getCache(objID, objType);
@@ -173,8 +199,9 @@ public class CacheServlet extends HttpServlet {
                 if (!file.exists() || created == null || created.longValue() == 0) {
                     deleteCacheEntry(objID, objType, article, getConnection(req));
                     continue;
-                } else
+                } else {
                     supportedArticles.put("created", created);
+                }
             }
         }
 
@@ -203,8 +230,9 @@ public class CacheServlet extends HttpServlet {
             SQL.preparedStatement(buf.toString(), inParams, conn).executeUpdate();
         } finally {
             try {
-                if (stmt != null)
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -218,8 +246,9 @@ public class CacheServlet extends HttpServlet {
     private Hashtable getArticles(HttpServletRequest req) {
 
         Hashtable articles = (Hashtable) req.getAttribute("articles");
-        if (articles == null)
+        if (articles == null) {
             articles = new Hashtable();
+        }
 
         // set articles for dst
         Vector v = new Vector();
@@ -250,12 +279,20 @@ public class CacheServlet extends HttpServlet {
         return articles;
     }
 
+    /**
+     * @param req
+     * @param objType
+     * @return
+     */
     private Vector getArticlesForObjType(HttpServletRequest req, String objType) {
 
         Hashtable articles = getArticles(req);
         return (Vector) articles.get(objType);
     }
 
+    /**
+     *
+     */
     private void setObjectTypes() {
         objTypes = new Hashtable();
         objTypes.put("dst", "dataset");
@@ -280,6 +317,9 @@ public class CacheServlet extends HttpServlet {
         return conn;
     }
 
+    /**
+     * @param req
+     */
     private void closeConnection(HttpServletRequest req) {
 
         Connection conn = (Connection) req.getAttribute("connection");
@@ -291,6 +331,12 @@ public class CacheServlet extends HttpServlet {
         }
     }
 
+    /**
+     * @param req
+     * @param res
+     * @throws ServletException
+     * @throws IOException
+     */
     private void dispatch(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         if (req.getMethod().equalsIgnoreCase("POST")) {
@@ -298,18 +344,20 @@ public class CacheServlet extends HttpServlet {
                 new StringBuffer("GetCache?obj_id=").append(req.getParameter("obj_id")).append("&obj_type=")
                 .append(req.getParameter("obj_type")).append("&idf=").append(req.getParameter("idf"));
             res.sendRedirect(buf.toString());
-        } else
+        } else {
             req.getRequestDispatcher("cache.jsp").forward(req, res);
+        }
     }
 
+    /**
+     * @param req
+     * @throws Exception
+     */
     private void setTitleParts(HttpServletRequest req) throws Exception {
 
         req.setAttribute("object_type", objTypes.get(req.getParameter("obj_type")));
         String idf = req.getParameter("idf");
         idf = idf == null || idf.length() == 0 ? "?" : idf;
         req.setAttribute("identifier", idf);
-    }
-
-    private void guard(HttpServletRequest req) throws Exception {
     }
 }

@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 
 import eionet.meta.DDSearchEngine;
@@ -35,9 +36,9 @@ public class CopyHandler extends OldCopyHandler {
     private DDUser user = null;
 
     /** */
-    private HashMap<String,String> oldNewElements = new HashMap<String, String>();
-    private HashMap<String,String> oldNewTables = new HashMap<String, String>();
-    private HashMap<String,String> oldNewDatasets = new HashMap<String, String>();
+    private HashMap<String, String> oldNewElements = new HashMap<String, String>();
+    private HashMap<String, String> oldNewTables = new HashMap<String, String>();
+    private HashMap<String, String> oldNewDatasets = new HashMap<String, String>();
 
     /**
      *
@@ -87,14 +88,15 @@ public class CopyHandler extends OldCopyHandler {
 
         // Create new dataset
         String newDstId = createNewDataset(dstId, makeItWorkingCopy, resetVersionAndStatus);
+        LOGGER.debug("Created new dataset row with ID = " + newDstId);
 
         // Create new tables
-        for (Entry<String, String> entry : oldNewTables.entrySet()){
+        for (Entry<String, String> entry : oldNewTables.entrySet()) {
             entry.setValue(createNewTable(entry.getKey()));
         }
 
         // Create new elements
-        for (Entry<String, String> entry : oldNewElements.entrySet()){
+        for (Entry<String, String> entry : oldNewElements.entrySet()) {
             entry.setValue(createNewElement(entry.getKey(), false, false, false));
         }
 
@@ -123,7 +125,8 @@ public class CopyHandler extends OldCopyHandler {
      * @return
      * @throws Exception
      */
-    public String copyElm(String elmId, boolean makeItWorkingCopy, boolean isCopyTbl2ElmRelations, boolean resetVersionAndStatus) throws Exception {
+    public String copyElm(String elmId, boolean makeItWorkingCopy, boolean isCopyTbl2ElmRelations, boolean resetVersionAndStatus)
+    throws Exception {
 
         // If no element id provided, return without further actions
         if (Util.isEmpty(elmId)) {
@@ -134,7 +137,7 @@ public class CopyHandler extends OldCopyHandler {
         String newId = createNewElement(elmId, makeItWorkingCopy, isCopyTbl2ElmRelations, resetVersionAndStatus);
 
         // If new element successfully created and its ID available, copy attributes, fixed values, etc.
-        if (newId!=null){
+        if (newId != null) {
 
             copySimpleAttributes();
             copyComplexAttributes();
@@ -142,7 +145,7 @@ public class CopyHandler extends OldCopyHandler {
             copyFkRelations();
 
             // Element-to-table relations will also be copied if required by the method input.
-            if (isCopyTbl2ElmRelations){
+            if (isCopyTbl2ElmRelations) {
                 copyElmToTblRelations();
             }
         }
@@ -171,8 +174,9 @@ public class CopyHandler extends OldCopyHandler {
      * @return
      * @throws SQLException
      */
-    protected int copyAutoIncRow(String tableName, String whereClause,
-            String autoIncColumn, final Map<String, Object> newValuesMap) throws SQLException {
+    protected int
+    copyAutoIncRow(String tableName, String whereClause, String autoIncColumn, final Map<String, Object> newValuesMap)
+    throws SQLException {
 
         if (Util.isEmpty(tableName) || Util.isEmpty(autoIncColumn)) {
             throw new IllegalArgumentException("Table name and auto-increment column name must be given!");
@@ -302,11 +306,11 @@ public class CopyHandler extends OldCopyHandler {
      * @param dstId
      * @throws SQLException
      */
-    private void findDatasetTablesAndElementsToCopy(String dstId) throws SQLException{
+    private void findDatasetTablesAndElementsToCopy(String dstId) throws SQLException {
 
         ResultSet rs = null;
         PreparedStatement pstmt = null;
-        try{
+        try {
             // Find all tables in this dataset.
 
             LOGGER.debug("Getting ids of tables to copy ...");
@@ -316,7 +320,7 @@ public class CopyHandler extends OldCopyHandler {
             pstmt.setInt(1, Integer.parseInt(dstId));
 
             rs = pstmt.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 oldNewTables.put(rs.getString(1), null);
             }
             SQL.close(rs);
@@ -325,22 +329,22 @@ public class CopyHandler extends OldCopyHandler {
 
             // If any tables found in this dataset, proceed to find all their elements too.
 
-            if (!oldNewTables.isEmpty()){
+            if (!oldNewTables.isEmpty()) {
 
                 LOGGER.debug("Getting ids of elements to copy ...");
 
                 // Only non-common elements will be copied, hence the "DATAELEM.PARENT_NS is not null" filter
-                sql = "select distinct TBL2ELEM.DATAELEM_ID from TBL2ELEM,DATAELEM "
+                sql =
+                    "select distinct TBL2ELEM.DATAELEM_ID from TBL2ELEM,DATAELEM "
                     + "where TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID and DATAELEM.PARENT_NS is not null and TABLE_ID in ("
                     + Util.toCSV(oldNewTables.keySet()) + ")";
                 rs = pstmt.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     oldNewElements.put(rs.getString(1), null);
                 }
                 LOGGER.debug(oldNewElements.size() + " elements found");
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(pstmt);
         }
@@ -353,7 +357,7 @@ public class CopyHandler extends OldCopyHandler {
      * @param resetVersionAndStatus
      * @throws SQLException
      */
-    private String createNewDataset(String dstId, boolean makeItWorkingCopy, boolean resetVersionAndStatus) throws SQLException{
+    private String createNewDataset(String dstId, boolean makeItWorkingCopy, boolean resetVersionAndStatus) throws SQLException {
 
         LOGGER.debug("Copying dataset row ...");
 
@@ -375,7 +379,7 @@ public class CopyHandler extends OldCopyHandler {
         String newId = String.valueOf(copyAutoIncRow("DATASET", "DATASET_ID=" + dstId, "DATASET_ID", newValues));
 
         // If dataset row successfully copied and the new auto-generated id available, place it into old-new mappings
-        if (newId!=null){
+        if (newId != null) {
             oldNewDatasets.put(dstId, newId);
         }
 
@@ -387,7 +391,7 @@ public class CopyHandler extends OldCopyHandler {
      * @param tblId
      * @throws SQLException
      */
-    private String createNewTable(String tblId) throws SQLException{
+    private String createNewTable(String tblId) throws SQLException {
 
         LOGGER.debug("Copying table row ...");
 
@@ -400,7 +404,7 @@ public class CopyHandler extends OldCopyHandler {
         String newId = String.valueOf(copyAutoIncRow("DS_TABLE", "TABLE_ID=" + tblId, "TABLE_ID", newValues));
 
         // If table row successfully copied and the new auto-generated id available, place it into old-new mappings
-        if (newId!=null){
+        if (newId != null) {
             oldNewTables.put(tblId, newId);
         }
 
@@ -415,7 +419,8 @@ public class CopyHandler extends OldCopyHandler {
      * @param resetVersionAndStatus
      * @throws SQLException
      */
-    private String createNewElement(String elmId, boolean makeItWorkingCopy, boolean isCopyTbl2ElmRelations, boolean resetVersionAndStatus) throws SQLException{
+    private String createNewElement(String elmId, boolean makeItWorkingCopy, boolean isCopyTbl2ElmRelations,
+            boolean resetVersionAndStatus) throws SQLException {
 
         LOGGER.debug("Copying element row ...");
 
@@ -437,7 +442,7 @@ public class CopyHandler extends OldCopyHandler {
         String newId = String.valueOf(copyAutoIncRow("DATAELEM", "DATAELEM_ID=" + elmId, "DATAELEM_ID", newValues));
 
         // If element row successfully copied and the new auto-generated id available, place it into old-new mappings.
-        if (newId!=null){
+        if (newId != null) {
             oldNewElements.put(elmId, newId);
         }
 
@@ -448,26 +453,28 @@ public class CopyHandler extends OldCopyHandler {
      *
      * @throws SQLException
      */
-    private void copySimpleAttributes() throws SQLException{
+    private void copySimpleAttributes() throws SQLException {
 
         LOGGER.debug("Copying all simple attributes ...");
 
-        if (oldNewDatasets.isEmpty() && oldNewTables.isEmpty() && oldNewElements.isEmpty()){
+        if (oldNewDatasets.isEmpty() && oldNewTables.isEmpty() && oldNewElements.isEmpty()) {
             return;
         }
 
         String possibleOR = "";
         String selectSQL = "select * from ATTRIBUTE where";
-        if (!oldNewDatasets.isEmpty()){
+        if (!oldNewDatasets.isEmpty()) {
             selectSQL = selectSQL + " (PARENT_TYPE='DS' and DATAELEM_ID in (" + Util.toCSV(oldNewDatasets.keySet()) + "))";
             possibleOR = " or";
         }
-        if (!oldNewTables.isEmpty()){
-            selectSQL = selectSQL + possibleOR + " (PARENT_TYPE='T' and DATAELEM_ID in (" + Util.toCSV(oldNewTables.keySet()) + "))";
+        if (!oldNewTables.isEmpty()) {
+            selectSQL =
+                selectSQL + possibleOR + " (PARENT_TYPE='T' and DATAELEM_ID in (" + Util.toCSV(oldNewTables.keySet()) + "))";
             possibleOR = " or";
         }
-        if (!oldNewElements.isEmpty()){
-            selectSQL = selectSQL + possibleOR + " (PARENT_TYPE='E' and DATAELEM_ID in (" + Util.toCSV(oldNewElements.keySet()) + "))";
+        if (!oldNewElements.isEmpty()) {
+            selectSQL =
+                selectSQL + possibleOR + " (PARENT_TYPE='E' and DATAELEM_ID in (" + Util.toCSV(oldNewElements.keySet()) + "))";
         }
 
         String insertSQL = "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) values ";
@@ -475,44 +482,43 @@ public class CopyHandler extends OldCopyHandler {
 
         ResultSet rs = null;
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(selectSQL);
-            while (rs.next()){
+            while (rs.next()) {
 
                 String oldId = rs.getString("DATAELEM_ID");
                 String parentType = rs.getString("PARENT_TYPE");
                 String newId = null;
-                if (parentType!=null){
-                    if (parentType.equals("DS")){
+                if (parentType != null) {
+                    if (parentType.equals("DS")) {
                         newId = oldNewDatasets.get(oldId);
-                    }
-                    else if (parentType.equals("T")){
+                    } else if (parentType.equals("T")) {
                         newId = oldNewTables.get(oldId);
-                    }
-                    else if (parentType.equals("E")){
+                    } else if (parentType.equals("E")) {
                         newId = oldNewElements.get(oldId);
                     }
 
                 }
 
-                if (newId!=null){
+                if (newId != null) {
 
                     String mAttrId = rs.getString("M_ATTRIBUTE_ID");
                     String value = rs.getString("VALUE");
-                    if (insertSQL.length() > insertSQLLengthBefore){
+                    if (insertSQL.length() > insertSQLLengthBefore) {
                         insertSQL = insertSQL + ",";
                     }
-                    insertSQL = insertSQL + "(" + newId + "," + SQL.toLiteral(parentType) + "," + mAttrId + "," + SQL.toLiteral(value) + ")";
+                    insertSQL =
+                        insertSQL + "(" + newId + "," + SQL.toLiteral(parentType) + "," + mAttrId + "," + SQL.toLiteral(value)
+                        + ")";
                 }
             }
             SQL.close(rs);
 
-            if (insertSQL.length() > insertSQLLengthBefore){
+            if (insertSQL.length() > insertSQLLengthBefore) {
                 stmt.executeUpdate(insertSQL);
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -522,28 +528,30 @@ public class CopyHandler extends OldCopyHandler {
      *
      * @throws SQLException
      */
-    private void copyComplexAttributes() throws SQLException{
+    private void copyComplexAttributes() throws SQLException {
 
         LOGGER.debug("Copying all complex attributes ...");
 
-        if (oldNewDatasets.isEmpty() && oldNewTables.isEmpty() && oldNewElements.isEmpty()){
+        if (oldNewDatasets.isEmpty() && oldNewTables.isEmpty() && oldNewElements.isEmpty()) {
             return;
         }
 
         String possibleOR = "";
-        String selectSQL = "select COMPLEX_ATTR_ROW.*,COMPLEX_ATTR_FIELD.M_COMPLEX_ATTR_FIELD_ID,VALUE"
+        String selectSQL =
+            "select COMPLEX_ATTR_ROW.*,COMPLEX_ATTR_FIELD.M_COMPLEX_ATTR_FIELD_ID,VALUE"
             + " from COMPLEX_ATTR_ROW inner join COMPLEX_ATTR_FIELD on COMPLEX_ATTR_ROW.ROW_ID=COMPLEX_ATTR_FIELD.ROW_ID where";
 
-        if (!oldNewDatasets.isEmpty()){
+        if (!oldNewDatasets.isEmpty()) {
             selectSQL = selectSQL + " (PARENT_TYPE='DS' and PARENT_ID in (" + Util.toCSV(oldNewDatasets.keySet()) + "))";
             possibleOR = " or";
         }
-        if (!oldNewTables.isEmpty()){
+        if (!oldNewTables.isEmpty()) {
             selectSQL = selectSQL + possibleOR + " (PARENT_TYPE='T' and PARENT_ID in (" + Util.toCSV(oldNewTables.keySet()) + "))";
             possibleOR = " or";
         }
-        if (!oldNewElements.isEmpty()){
-            selectSQL = selectSQL + possibleOR + " (PARENT_TYPE='E' and PARENT_ID in (" + Util.toCSV(oldNewElements.keySet()) + "))";
+        if (!oldNewElements.isEmpty()) {
+            selectSQL =
+                selectSQL + possibleOR + " (PARENT_TYPE='E' and PARENT_ID in (" + Util.toCSV(oldNewElements.keySet()) + "))";
         }
         selectSQL = selectSQL + " order by COMPLEX_ATTR_ROW.ROW_ID";
 
@@ -555,71 +563,75 @@ public class CopyHandler extends OldCopyHandler {
 
         ResultSet rs = null;
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(selectSQL);
 
             String newRowId = null;
             String currentRowId = null;
             String previousRowId = "";
-            for (; rs.next(); previousRowId=currentRowId){
+            for (; rs.next(); previousRowId = currentRowId) {
 
                 String oldId = rs.getString("PARENT_ID");
                 String parentType = rs.getString("PARENT_TYPE");
                 String newId = null;
-                if (parentType!=null){
-                    if (parentType.equals("DS")){
+                if (parentType != null) {
+                    if (parentType.equals("DS")) {
                         newId = oldNewDatasets.get(oldId);
-                    }
-                    else if (parentType.equals("T")){
+                    } else if (parentType.equals("T")) {
                         newId = oldNewTables.get(oldId);
-                    }
-                    else if (parentType.equals("E")){
+                    } else if (parentType.equals("E")) {
                         newId = oldNewElements.get(oldId);
                     }
 
                 }
 
-                if (newId!=null){
+                if (newId != null) {
 
                     String mAttrId = rs.getString("M_COMPLEX_ATTR_ID");
                     String position = rs.getString("POSITION");
                     String harvAttrId = rs.getString("HARV_ATTR_ID");
                     currentRowId = rs.getString("ROW_ID");
 
-                    if (!currentRowId.equals(previousRowId)){
+                    if (!currentRowId.equals(previousRowId)) {
 
-                        newRowId = Util.md5(newId + parentType + mAttrId + position);
-                        String preparedHarvAttrId = harvAttrId==null ? "NULL" : SQL.toLiteral(harvAttrId);
-                        if (insertRowSQL.length() > insertRowSQLLengthBefore){
+                        String md5Input = newId + parentType + mAttrId + position;
+                        newRowId = DigestUtils.md5Hex(md5Input);
+                        if (LOGGER.isTraceEnabled()) {
+                            LOGGER.trace("Created MD5 hash for '" + md5Input + "': " + newRowId);
+                        }
+
+                        String preparedHarvAttrId = harvAttrId == null ? "NULL" : SQL.toLiteral(harvAttrId);
+                        if (insertRowSQL.length() > insertRowSQLLengthBefore) {
                             insertRowSQL = insertRowSQL + ",";
                         }
-                        insertRowSQL = insertRowSQL + "(" + newId + "," + SQL.toLiteral(parentType)
-                        + "," + mAttrId + "," + position + "," + SQL.toLiteral(newRowId) + "," + preparedHarvAttrId + ")";
+                        insertRowSQL =
+                            insertRowSQL + "(" + newId + "," + SQL.toLiteral(parentType) + "," + mAttrId + "," + position
+                            + "," + SQL.toLiteral(newRowId) + "," + preparedHarvAttrId + ")";
                     }
 
-                    if (newRowId!=null){
+                    if (newRowId != null) {
 
                         String mFieldId = rs.getString("M_COMPLEX_ATTR_FIELD_ID");
                         String value = rs.getString("VALUE");
 
-                        if (insertFldSQL.length() > insertFldSQLLengthBefore){
+                        if (insertFldSQL.length() > insertFldSQLLengthBefore) {
                             insertFldSQL = insertFldSQL + ",";
                         }
-                        insertFldSQL = insertFldSQL + "(" + mFieldId + "," + SQL.toLiteral(value) + "," + SQL.toLiteral(newRowId) + ")";
+                        insertFldSQL =
+                            insertFldSQL + "(" + mFieldId + "," + SQL.toLiteral(value) + "," + SQL.toLiteral(newRowId) + ")";
                     }
                 }
             }
             SQL.close(rs);
 
-            if (insertRowSQL.length() > insertRowSQLLengthBefore){
+            if (insertRowSQL.length() > insertRowSQLLengthBefore) {
                 stmt.executeUpdate(insertRowSQL);
             }
-            if (insertFldSQL.length() > insertFldSQLLengthBefore){
+            if (insertFldSQL.length() > insertFldSQLLengthBefore) {
                 stmt.executeUpdate(insertFldSQL);
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -629,21 +641,21 @@ public class CopyHandler extends OldCopyHandler {
      *
      * @throws SQLException
      */
-    private void copyDocuments() throws SQLException{
+    private void copyDocuments() throws SQLException {
 
         LOGGER.debug("Copying all document references ...");
 
-        if (oldNewDatasets.isEmpty() && oldNewTables.isEmpty()){
+        if (oldNewDatasets.isEmpty() && oldNewTables.isEmpty()) {
             return;
         }
 
         String possibleOR = "";
         String selectSQL = "select * from DOC where";
-        if (!oldNewDatasets.isEmpty()){
+        if (!oldNewDatasets.isEmpty()) {
             selectSQL = selectSQL + " (OWNER_TYPE='dst' and OWNER_ID in (" + Util.toCSV(oldNewDatasets.keySet()) + "))";
             possibleOR = " or";
         }
-        if (!oldNewTables.isEmpty()){
+        if (!oldNewTables.isEmpty()) {
             selectSQL = selectSQL + possibleOR + " (OWNER_TYPE='tbl' and OWNER_ID in (" + Util.toCSV(oldNewTables.keySet()) + "))";
             possibleOR = " or";
         }
@@ -653,44 +665,43 @@ public class CopyHandler extends OldCopyHandler {
 
         ResultSet rs = null;
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(selectSQL);
-            while (rs.next()){
+            while (rs.next()) {
 
                 String oldId = rs.getString("OWNER_ID");
                 String ownerType = rs.getString("OWNER_TYPE");
                 String newId = null;
-                if (ownerType!=null){
-                    if (ownerType.equals("dst")){
+                if (ownerType != null) {
+                    if (ownerType.equals("dst")) {
                         newId = oldNewDatasets.get(oldId);
-                    }
-                    else if (ownerType.equals("tbl")){
+                    } else if (ownerType.equals("tbl")) {
                         newId = oldNewTables.get(oldId);
                     }
                 }
 
-                if (newId!=null){
+                if (newId != null) {
 
                     String md5Path = rs.getString("MD5_PATH");
                     String absPath = rs.getString("ABS_PATH");
                     String title = rs.getString("TITLE");
 
-                    if (insertSQL.length() > insertSQLLengthBefore){
+                    if (insertSQL.length() > insertSQLLengthBefore) {
                         insertSQL = insertSQL + ",";
                     }
-                    insertSQL = insertSQL + "(" + newId + "," + SQL.toLiteral(ownerType) + ","
-                    + SQL.toLiteral(md5Path) + "," + SQL.toLiteral(absPath) + "," + SQL.toLiteral(title) + ")";
+                    insertSQL =
+                        insertSQL + "(" + newId + "," + SQL.toLiteral(ownerType) + "," + SQL.toLiteral(md5Path) + ","
+                        + SQL.toLiteral(absPath) + "," + SQL.toLiteral(title) + ")";
                 }
 
             }
             SQL.close(rs);
 
-            if (insertSQL.length() > insertSQLLengthBefore){
+            if (insertSQL.length() > insertSQLLengthBefore) {
                 stmt.executeUpdate(insertSQL);
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -700,11 +711,11 @@ public class CopyHandler extends OldCopyHandler {
      *
      * @throws SQLException
      */
-    private void copyDstToRodRelations() throws SQLException{
+    private void copyDstToRodRelations() throws SQLException {
 
         LOGGER.debug("Copying all dataset-to-ROD relations ...");
 
-        if (oldNewDatasets.isEmpty()){
+        if (oldNewDatasets.isEmpty()) {
             return;
         }
 
@@ -714,18 +725,18 @@ public class CopyHandler extends OldCopyHandler {
 
         ResultSet rs = null;
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(selectSQL);
-            while (rs.next()){
+            while (rs.next()) {
 
                 String oldDstId = rs.getString("DATASET_ID");
                 String activityId = rs.getString("ACTIVITY_ID");
 
                 String newDstId = oldNewDatasets.get(oldDstId);
-                if (!Util.isEmpty(newDstId)){
+                if (!Util.isEmpty(newDstId)) {
 
-                    if (insertSQL.length() > insertSQLLengthBefore){
+                    if (insertSQL.length() > insertSQLLengthBefore) {
                         insertSQL = insertSQL + ",";
                     }
                     insertSQL = insertSQL + "(" + newDstId + "," + activityId + ")";
@@ -733,11 +744,10 @@ public class CopyHandler extends OldCopyHandler {
             }
             SQL.close(rs);
 
-            if (insertSQL.length() > insertSQLLengthBefore){
+            if (insertSQL.length() > insertSQLLengthBefore) {
                 stmt.executeUpdate(insertSQL);
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -747,11 +757,11 @@ public class CopyHandler extends OldCopyHandler {
      *
      * @throws SQLException
      */
-    private void copyDstToTblRelations() throws SQLException{
+    private void copyDstToTblRelations() throws SQLException {
 
         LOGGER.debug("Copying all dataset-to-table relations ...");
 
-        if (oldNewDatasets.isEmpty()){
+        if (oldNewDatasets.isEmpty()) {
             return;
         }
 
@@ -761,22 +771,22 @@ public class CopyHandler extends OldCopyHandler {
 
         ResultSet rs = null;
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(selectSQL);
-            while (rs.next()){
+            while (rs.next()) {
 
                 String oldDstId = rs.getString("DATASET_ID");
                 String oldTblId = rs.getString("TABLE_ID");
                 String position = rs.getString("POSITION");
 
                 String newDstId = oldNewDatasets.get(oldDstId);
-                if (!Util.isEmpty(newDstId)){
+                if (!Util.isEmpty(newDstId)) {
 
                     String newTblId = oldNewTables.get(oldTblId);
-                    if (!Util.isEmpty(newTblId)){
+                    if (!Util.isEmpty(newTblId)) {
 
-                        if (insertSQL.length() > insertSQLLengthBefore){
+                        if (insertSQL.length() > insertSQLLengthBefore) {
                             insertSQL = insertSQL + ",";
                         }
                         insertSQL = insertSQL + "(" + newDstId + "," + newTblId + "," + position + ")";
@@ -785,11 +795,10 @@ public class CopyHandler extends OldCopyHandler {
             }
             SQL.close(rs);
 
-            if (insertSQL.length() > insertSQLLengthBefore){
+            if (insertSQL.length() > insertSQLLengthBefore) {
                 stmt.executeUpdate(insertSQL);
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -799,11 +808,11 @@ public class CopyHandler extends OldCopyHandler {
      * @throws SQLException
      *
      */
-    private void copyTblToElmRelations() throws SQLException{
+    private void copyTblToElmRelations() throws SQLException {
 
         LOGGER.debug("Copying all table-to-element relations ...");
 
-        if (oldNewTables.isEmpty()){
+        if (oldNewTables.isEmpty()) {
             return;
         }
 
@@ -813,11 +822,11 @@ public class CopyHandler extends OldCopyHandler {
 
         ResultSet rs = null;
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(selectSQL);
 
-            while (rs.next()){
+            while (rs.next()) {
 
                 String oldTblId = rs.getString("TABLE_ID");
                 String oldElmId = rs.getString("DATAELEM_ID");
@@ -826,29 +835,30 @@ public class CopyHandler extends OldCopyHandler {
                 String mandatory = rs.getString("MANDATORY");
 
                 String newTblId = oldNewTables.get(oldTblId);
-                if (!Util.isEmpty(newTblId)){
+                if (!Util.isEmpty(newTblId)) {
 
                     String newElmId = oldNewElements.get(oldElmId);
-                    if (Util.isEmpty(newElmId)){
+                    if (Util.isEmpty(newElmId)) {
                         // if no new element if for the old one found, assume the old one is a common elements,
                         // in which case we copy the relation with the old id, because common elements were not copied
                         newElmId = oldElmId;
                     }
 
-                    String nullSafeMultiValueDelim = multiValueDelim==null ? "NULL" : SQL.toLiteral(multiValueDelim);
-                    if (insertSQL.length() > insertSQLLengthBefore){
+                    String nullSafeMultiValueDelim = multiValueDelim == null ? "NULL" : SQL.toLiteral(multiValueDelim);
+                    if (insertSQL.length() > insertSQLLengthBefore) {
                         insertSQL = insertSQL + ",";
                     }
-                    insertSQL = insertSQL + "(" + newTblId + "," + newElmId + "," + position + "," + nullSafeMultiValueDelim + "," + mandatory + ")";
+                    insertSQL =
+                        insertSQL + "(" + newTblId + "," + newElmId + "," + position + "," + nullSafeMultiValueDelim + ","
+                        + mandatory + ")";
                 }
             }
             SQL.close(rs);
 
-            if (insertSQL.length() > insertSQLLengthBefore){
+            if (insertSQL.length() > insertSQLLengthBefore) {
                 stmt.executeUpdate(insertSQL);
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -859,11 +869,11 @@ public class CopyHandler extends OldCopyHandler {
      *
      * @throws SQLException
      */
-    private void copyElmToTblRelations() throws SQLException{
+    private void copyElmToTblRelations() throws SQLException {
 
         LOGGER.debug("Copying element-to-table relations ...");
 
-        if (oldNewElements.isEmpty()){
+        if (oldNewElements.isEmpty()) {
             return;
         }
 
@@ -873,34 +883,35 @@ public class CopyHandler extends OldCopyHandler {
 
         ResultSet rs = null;
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(selectSQL);
 
-            while (rs.next()){
+            while (rs.next()) {
 
                 String oldElmId = rs.getString("DATAELEM_ID");
                 String newElmId = oldNewElements.get(oldElmId);
-                if (newElmId!=null){
+                if (newElmId != null) {
 
                     String tblId = rs.getString("TABLE_ID");
                     String position = rs.getString("POSITION");
                     String multiValueDelim = nullSafeLiteral(rs.getString("MULTIVAL_DELIM"));
                     String mandatory = rs.getString("MANDATORY");
 
-                    if (insertSQL.length() > insertSQLLengthBefore){
+                    if (insertSQL.length() > insertSQLLengthBefore) {
                         insertSQL = insertSQL + ",";
                     }
-                    insertSQL = insertSQL + "(" + tblId + "," + newElmId + "," + position + "," + multiValueDelim + "," + mandatory + ")";
+                    insertSQL =
+                        insertSQL + "(" + tblId + "," + newElmId + "," + position + "," + multiValueDelim + "," + mandatory
+                        + ")";
                 }
             }
             SQL.close(rs);
 
-            if (insertSQL.length() > insertSQLLengthBefore){
+            if (insertSQL.length() > insertSQLLengthBefore) {
                 stmt.executeUpdate(insertSQL);
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -911,48 +922,49 @@ public class CopyHandler extends OldCopyHandler {
      *
      * @throws SQLException
      */
-    private void copyFixedValues() throws SQLException{
+    private void copyFixedValues() throws SQLException {
 
         LOGGER.debug("Copying all fixed values ...");
 
-        if (oldNewElements.isEmpty()){
+        if (oldNewElements.isEmpty()) {
             return;
         }
 
-        String selectSQL = "select * from FXV where OWNER_TYPE='elem' and OWNER_ID in (" + Util.toCSV(oldNewElements.keySet()) + ")";
+        String selectSQL =
+            "select * from FXV where OWNER_TYPE='elem' and OWNER_ID in (" + Util.toCSV(oldNewElements.keySet()) + ")";
         String insertSQL = "insert into FXV (OWNER_ID,OWNER_TYPE,VALUE,IS_DEFAULT,DEFINITION,SHORT_DESC) values ";
         int insertSQLLengthBefore = insertSQL.length();
 
         ResultSet rs = null;
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(selectSQL);
-            while (rs.next()){
+            while (rs.next()) {
 
                 String oldElmId = rs.getString("OWNER_ID");
                 String newElmId = oldNewElements.get(oldElmId);
-                if (!Util.isEmpty(newElmId)){
+                if (!Util.isEmpty(newElmId)) {
 
                     String value = nullSafeLiteral(rs.getString("VALUE"));
                     String isDefault = nullSafeLiteral(rs.getString("IS_DEFAULT"));
                     String definition = nullSafeLiteral(rs.getString("DEFINITION"));
                     String shortDesc = nullSafeLiteral(rs.getString("SHORT_DESC"));
 
-                    if (insertSQL.length() > insertSQLLengthBefore){
+                    if (insertSQL.length() > insertSQLLengthBefore) {
                         insertSQL = insertSQL + ",";
                     }
-                    insertSQL = insertSQL + "(" + newElmId + ",'elem',"
-                    + value + "," + isDefault + "," + definition + "," + shortDesc + ")";
+                    insertSQL =
+                        insertSQL + "(" + newElmId + ",'elem'," + value + "," + isDefault + "," + definition + "," + shortDesc
+                        + ")";
                 }
             }
             SQL.close(rs);
 
-            if (insertSQL.length() > insertSQLLengthBefore){
+            if (insertSQL.length() > insertSQLLengthBefore) {
                 stmt.executeUpdate(insertSQL);
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -962,11 +974,11 @@ public class CopyHandler extends OldCopyHandler {
      *
      * @throws SQLException
      */
-    private void copyFkRelations() throws SQLException{
+    private void copyFkRelations() throws SQLException {
 
         LOGGER.debug("Copying all foreign-key relations ...");
 
-        if (oldNewElements.isEmpty()){
+        if (oldNewElements.isEmpty()) {
             return;
         }
 
@@ -977,19 +989,19 @@ public class CopyHandler extends OldCopyHandler {
 
         ResultSet rs = null;
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(selectSQL);
-            while (rs.next()){
+            while (rs.next()) {
 
                 String oldAId = rs.getString("A_ID");
                 String newAId = oldNewElements.get(oldAId);
-                if (newAId==null){
+                if (newAId == null) {
                     newAId = oldAId;
                 }
                 String oldBId = rs.getString("B_ID");
                 String newBId = oldNewElements.get(oldBId);
-                if (newBId==null){
+                if (newBId == null) {
                     newBId = oldBId;
                 }
 
@@ -997,19 +1009,18 @@ public class CopyHandler extends OldCopyHandler {
                 String bCardinality = nullSafeLiteral(rs.getString("B_CARDIN"));
                 String definition = nullSafeLiteral(rs.getString("DEFINITION"));
 
-                if (insertSQL.length() > insertSQLLengthBefore){
+                if (insertSQL.length() > insertSQLLengthBefore) {
                     insertSQL = insertSQL + ",";
                 }
-                insertSQL = insertSQL + "(" + newAId + "," + newBId
-                + "," + aCardinality + "," + bCardinality + "," + definition + ")";
+                insertSQL =
+                    insertSQL + "(" + newAId + "," + newBId + "," + aCardinality + "," + bCardinality + "," + definition + ")";
             }
             SQL.close(rs);
 
-            if (insertSQL.length() > insertSQLLengthBefore){
+            if (insertSQL.length() > insertSQLLengthBefore) {
                 stmt.executeUpdate(insertSQL);
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }
@@ -1058,7 +1069,7 @@ public class CopyHandler extends OldCopyHandler {
      * @param s
      * @return
      */
-    private String nullSafeLiteral(String s){
-        return s==null ? "NULL" : SQL.toLiteral(s);
+    private String nullSafeLiteral(String s) {
+        return s == null ? "NULL" : SQL.toLiteral(s);
     }
 }

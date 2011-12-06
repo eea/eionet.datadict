@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 
 /**
@@ -44,8 +43,12 @@ public class RdfServlet extends HttpServlet{
         }
         finally {
             try {
-                if (writer != null) writer.close();
-                if (conn != null) conn.close();
+                if (writer != null) {
+                    writer.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             }
             catch (Exception ee) {}
         }

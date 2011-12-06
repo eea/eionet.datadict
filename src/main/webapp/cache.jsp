@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*, eionet.util.Util"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*, eionet.util.Util, org.apache.commons.lang.StringEscapeUtils"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
@@ -9,8 +9,6 @@ response.setHeader("Expires", Util.getExpiresDateString());
 
 request.setCharacterEncoding("UTF-8");
 
-String objID = request.getParameter("obj_id");
-String objType = request.getParameter("obj_type");
 String idf = (String)request.getAttribute("identifier");
 Vector entries = (Vector)request.getAttribute("entries");
 
@@ -37,7 +35,7 @@ Vector entries = (Vector)request.getAttribute("entries");
 	</jsp:include>
 <%@ include file="nmenu.jsp" %>
 <div id="workarea">
-<h1>Cached articles for <%=request.getAttribute("object_type")%>: <em><%=idf%></em></h1>
+<h1>Cached articles for <%=StringEscapeUtils.escapeXml(request.getAttribute("object_type").toString())%>: <em><%=StringEscapeUtils.escapeXml(idf)%></em></h1>
 <br/>
 <form id="form1" action="GetCache" method="post">
 	<div>
@@ -53,7 +51,7 @@ Vector entries = (Vector)request.getAttribute("entries");
 		</tr>
 		</thead>
 		<tbody>
-			
+
 		<%
 		for (int i=0; i<entries.size(); i++){
 			Hashtable hash = (Hashtable)entries.get(i);
@@ -70,7 +68,7 @@ Vector entries = (Vector)request.getAttribute("entries");
 					<%=Util.replaceTags(text)%>
 				</td>
 				<td>
-					<%=date%>
+					<%=StringEscapeUtils.escapeXml(date)%>
 				</td>
 			</tr>
 			<%
@@ -80,9 +78,7 @@ Vector entries = (Vector)request.getAttribute("entries");
 	</table>
 	<div style="display:none">
 		<input type="hidden" name="action" value="update"/>
-		<input type="hidden" name="obj_id" value="<%=objID%>"/>
-		<input type="hidden" name="obj_type" value="<%=objType%>"/>
-		<input type="hidden" name="idf" value="<%=idf%>"/>
+		<input type="hidden" name="idf" value="<%=StringEscapeUtils.escapeXml(idf)%>"/>
 	</div>
 </form>
 

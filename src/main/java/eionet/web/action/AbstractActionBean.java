@@ -28,7 +28,6 @@ import net.sourceforge.stripes.action.SimpleMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import eionet.util.SecurityUtil;
 import eionet.web.DDActionBeanContext;
 
 /**

@@ -240,9 +240,6 @@ public class Util {
     public static long timeDiff(int hour, int date, int month, int wday, String zone) {
 
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone(zone));
-        if (cal == null) {
-            cal = new GregorianCalendar(TimeZone.getDefault());
-        }
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
@@ -1255,27 +1252,5 @@ public class Util {
     public static boolean isEmpty(Map<?, ?> map){
 
         return map==null || map.isEmpty();
-    }
-
-    public static void main(String[] args){
-
-        StringBuilder str = new StringBuilder();
-        str.append((String)null);
-        System.out.println(str);
-        System.out.println(Util.md5("111DS141"));
-        System.out.println(Util.md5("111DS151"));
-        System.out.println(Util.md5("222T141"));
-        System.out.println(Util.md5("222T151"));
-        System.out.println(Util.md5("333T141"));
-        System.out.println(Util.md5("333T151"));
-        System.out.println(Util.md5("444E141"));
-        System.out.println(Util.md5("444E151"));
-        System.out.println(Util.md5("555E141"));
-        System.out.println(Util.md5("555E151"));
-        System.out.println();
-        System.out.println(Util.md5("666E141"));
-        System.out.println(Util.md5("666E151"));
-        System.out.println(Util.md5("777E141"));
-        System.out.println(Util.md5("777E151"));
     }
 }
