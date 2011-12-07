@@ -2675,8 +2675,7 @@
                                                                                                                 && rowValue.toString().length() > 0)
                                                                                                             rowValue.append(", ");
 
-                                                                                                        rowValue.append(Util
-                                                                                                                .replaceTags(fieldValue));
+                                                                                                        rowValue.append(Util.processForDisplay(fieldValue));
                                                                             %>
                                                                                     <%=Util.processForDisplay(fieldValue)%><br/><%
                                                                                         }
