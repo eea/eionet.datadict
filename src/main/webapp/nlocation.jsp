@@ -12,7 +12,7 @@ String appName = ctx.getInitParameter("application-name");
         DDUser _user = SecurityUtil.getUser(request);
         if (_user!=null){
             %>
-            <a id="logoutlink" href="logout.jsp" title="Logout">Logout (<%=_user.getUserName()%>)</a><%
+            <a id="logoutlink" href="<%=request.getContextPath()%>/logout.jsp" title="Logout">Logout (<%=_user.getUserName()%>)</a><%
         }
         else{
             %>
@@ -22,7 +22,7 @@ String appName = ctx.getInitParameter("application-name");
         String helpScreen = request.getParameter("helpscreen");
         if (helpScreen!=null){
             %>
-            <a id="pagehelplink" title="Get help on this page" href="help.jsp?screen=<%=helpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;"><span>Page help</span></a><%
+            <a id="pagehelplink" title="Get help on this page" href="<%=request.getContextPath()%>/help.jsp?screen=<%=helpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;"><span>Page help</span></a><%
         }
         %>
         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
@@ -39,7 +39,7 @@ String appName = ctx.getInitParameter("application-name");
 </div> <!-- toolribbon -->
 
 <div id="pagehead">
-    <%@ include file="pagehead.txt" %>
+    <%@ include file="pagehead.jsp" %>
 </div> <!-- pagehead -->
 
 

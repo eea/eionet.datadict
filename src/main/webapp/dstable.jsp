@@ -375,7 +375,7 @@
 %>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <%@ include file="headerinfo.txt" %>
+    <%@ include file="headerinfo.jsp" %>
     <title><%=pageTitle.toString()%></title>
     <script type="text/javascript" src="modal_dialog.js"></script>
     <script type="text/javascript">

@@ -13,7 +13,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <%@ include file="headerinfo.txt" %>
+    <%@ include file="headerinfo.jsp" %>
     <title>Documentation</title>
 </head>
 <body>
