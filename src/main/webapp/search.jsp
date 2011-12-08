@@ -745,7 +745,7 @@ if (isDisplayOperations){
     if (!isPopup){
         %>
         </div> <!-- container -->
-        <%@ include file="footer.txt" %><%
+        <%@ include file="footer.jsp" %><%
     }
     %>
 </body>

@@ -1809,7 +1809,7 @@ else if (mode.equals("add"))
 
             </div> <!-- workarea -->
             </div> <!-- container -->
-            <%@ include file="footer.txt" %>
+            <%@ include file="footer.jsp" %>
 <script type="text/javascript" src="popbox.js"></script>
 <script type="text/javascript">
 // <![CDATA[

@@ -236,7 +236,7 @@
     </form>
     </div>
     </div>
-    <%@ include file="footer.txt" %>
+    <%@ include file="footer.jsp" %>
 </body>
 </html>
 

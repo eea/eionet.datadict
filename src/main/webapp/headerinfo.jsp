@@ -7,7 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/eionet2007.css" media="screen"/>
 		<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/print.css" media="print" />
 
-		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+		<link rel="shortcut icon" href="<%=request.getContextPath()%>/favicon.ico" type="image/x-icon"/>
 		<script type="text/javascript" src="<%=request.getContextPath()%>/script.js"></script>
 		<script type="text/javascript" src="<%=request.getContextPath()%>/pageops.js"></script>
 		<script type="text/javascript" src="<%=request.getContextPath()%>/mark_special_links.js"></script>

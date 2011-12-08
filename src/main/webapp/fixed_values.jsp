@@ -445,7 +445,7 @@ hlpScreen = mode.equals("view") ? hlpScreen + "_view" : hlpScreen + "_edit";
         </form>
     </div> <!-- workarea -->
     </div> <!-- container -->
-    <%@ include file="footer.txt" %>
+    <%@ include file="footer.jsp" %>
 </body>
 </html>
 

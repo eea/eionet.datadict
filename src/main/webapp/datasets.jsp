@@ -409,7 +409,7 @@
                         }
                         %>
 
-                        </div></div><%@ include file="footer.txt" %></body></html>
+                        </div></div><%@ include file="footer.jsp" %></body></html>
                         <%
                         return;
                     }
@@ -809,7 +809,7 @@
 
 </div> <!-- workarea -->
 </div> <!-- container -->
-<%@ include file="footer.txt" %>
+<%@ include file="footer.jsp" %>
 </body>
 </html>
 

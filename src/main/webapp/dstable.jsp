@@ -377,7 +377,7 @@
 <head>
     <%@ include file="headerinfo.jsp" %>
     <title><%=pageTitle.toString()%></title>
-    <script type="text/javascript" src="modal_dialog.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/modal_dialog.js"></script>
     <script type="text/javascript">
 // <![CDATA[
 
@@ -616,18 +616,18 @@ else if (mode.equals("add"))
                     <%
                     if (mode.equals("view") && editDstPrm==true) {
                     %>
-                    <li><a href="dstable.jsp?mode=edit&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit metadata</a></li>
+                    <li><a href="<%=request.getContextPath()%>/dstable.jsp?mode=edit&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit metadata</a></li>
                     <%
                     // elements link
-                    String elemLink = "tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
+                    String elemLink = request.getContextPath() + "/tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
                     %>
-                    <li><a href="complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
+                    <li><a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
                     <li><a href="<%=elemLink%>">Manage elements</a></li>
                     <li><a href="javascript:submitForm('delete')">Delete</a></li>
                     <%
                     }
                     if (subscribe) {%>
-                           <li><a href="dstable.jsp?action=subscribe&amp;table_id=<%=tableID%>">Subscribe</a></li><%
+                           <li><a href="<%=request.getContextPath()%>/dstable.jsp?action=subscribe&amp;table_id=<%=tableID%>">Subscribe</a></li><%
                        }
                     %>
                 </ul>
@@ -642,9 +642,9 @@ else if (mode.equals("add"))
             }
             %>
 
-        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="dataset.jsp?ds_id=<%=dsID%>"><%=Util.processForDisplay(dsName)%></a> dataset<%}%></h1>
+        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="<%=request.getContextPath()%>/dataset.jsp?ds_id=<%=dsID%>"><%=Util.processForDisplay(dsName)%></a> dataset<%}%></h1>
 
-        <form id="form1" method="post" action="dstable.jsp" style="clear:both">
+        <form id="form1" method="post" action="<%=request.getContextPath()%>/dstable.jsp" style="clear:both">
 
             <!--=======================-->
             <!-- main table inside div -->
@@ -702,8 +702,8 @@ else if (mode.equals("add"))
                                                             Create an XML Schema for this table
                                                         </td>
                                                         <td>
-                                                            <a rel="nofollow" href="GetSchema?id=TBL<%=tableID%>">
-                                                                <img style="border:0" src="images/xsd.png" width="16" height="16" alt=""/>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=TBL<%=tableID%>">
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xsd.png" width="16" height="16" alt=""/>
                                                             </a>
                                                         </td>
                                                     </tr><%
@@ -716,8 +716,8 @@ else if (mode.equals("add"))
                                                             Create an instance XML for this table
                                                         </td>
                                                         <td>
-                                                            <a rel="nofollow" href="GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
-                                                                <img style="border:0" src="images/xml.png" width="16" height="16" alt=""/>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXmlInstance?id=<%=tableID%>&amp;type=tbl">
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
                                                             </a>
                                                         </td>
                                                     </tr><%
@@ -730,8 +730,8 @@ else if (mode.equals("add"))
                                                             Create an XForm for this table
                                                         </td>
                                                         <td>
-                                                            <a rel="nofollow" href="GetXForm?id=<%=tableID%>">
-                                                                <img style="border:0" src="images/xml.png" width="16" height="16" alt=""/>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXForm?id=<%=tableID%>">
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
                                                             </a>
                                                         </td>
                                                     </tr><%
@@ -741,10 +741,10 @@ else if (mode.equals("add"))
                                                 if (dispAll || dispXLS){ %>
                                                     <tr>
                                                         <td>
-                                                            Create an MS Excel template for this table&nbsp;<a onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=excel"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" /></a>
+                                                            Create an MS Excel template for this table&nbsp;<a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
                                                         </td>
                                                         <td>
-                                                            <a rel="nofollow" href="GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img style="border:0" src="images/xls.png" width="16" height="16" alt=""/></a>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt=""/></a>
                                                         </td>
                                                     </tr><%
                                                 }
@@ -753,10 +753,10 @@ else if (mode.equals("add"))
                                                 if (dispAll || dispODS){ %>
                                                     <tr>
                                                         <td>
-                                                            Create an OpenDocument spreadsheet template for this table&nbsp;<a onclick="pop(this.href);return false;" href="help.jsp?screen=table&amp;area=ods"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" /></a>
+                                                            Create an OpenDocument spreadsheet template for this table&nbsp;<a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=ods"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" /></a>
                                                         </td>
                                                         <td>
-                                                            <a rel="nofollow" href="GetOds?type=tbl&amp;id=<%=tableID%>"><img style="border:0" src="images/ods.png" width="16" height="16" alt=""/></a>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=tbl&amp;id=<%=tableID%>"><img style="border:0" src="<%=request.getContextPath()%>/images/ods.png" width="16" height="16" alt=""/></a>
                                                         </td>
                                                     </tr><%
                                                 }
@@ -768,8 +768,8 @@ else if (mode.equals("add"))
                                                             Get the comma-separated codelists of this table
                                                         </td>
                                                         <td>
-                                                            <a rel="nofollow" href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL">
-                                                                <img style="border:0" src="images/txt.png" width="16" height="16" alt=""/>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL">
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
                                                             </a>
                                                         </td>
                                                     </tr>
@@ -778,8 +778,8 @@ else if (mode.equals("add"))
                                                             Get the codelists of this table in XML format
                                                         </td>
                                                         <td>
-                                                            <a rel="nofollow" href="CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL&amp;format=xml">
-                                                                <img style="border:0" src="images/xml.png" width="16" height="16" alt=""/>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dsTable.getID()%>&amp;type=TBL&amp;format=xml">
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
                                                             </a>
                                                         </td>
                                                     </tr><%
@@ -793,8 +793,8 @@ else if (mode.equals("add"))
                                                         <tr>
                                                             <td>Create dBaseII</td>
                                                             <td>
-                                                                <a rel="nofollow" href="GetDbf/<%=dsTable.getID()%>">
-                                                                    <img style="border:0" src="images/txt.png" width="16" height="16" alt=""/>
+                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetDbf/<%=dsTable.getID()%>">
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
                                                                 </a>
                                                             </td>
                                                         </tr>
@@ -809,7 +809,7 @@ else if (mode.equals("add"))
                                                     <tr style="height:20px;">
                                                         <td colspan="2">
                                                             <span class="barfont">
-                                                                [ <a rel="nofollow" onclick="pop(this.href);return false;" href="GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
+                                                                [ <a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=tableID%>&amp;obj_type=tbl&amp;idf=<%=dsTable.getIdentifier()%>">Open cache ...</a> ]
                                                             </span>
                                                         </td>
                                                     </tr>
@@ -852,15 +852,15 @@ else if (mode.equals("add"))
                                         <tr id="short_name_row">
                                             <th scope="row" class="scope-row short_name">Short name</th>
                                             <td class="short_name simple_attr_help">
-                                                <a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-                                                    <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
+                                                <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                 </a>
                                             </td>
                                             <%
                                             if (colspan==4){
                                                 %>
                                                 <td class="short_name simple_attr_help">
-                                                    <img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                                                 </td><%
                                             }
                                             %>
@@ -889,19 +889,19 @@ else if (mode.equals("add"))
                                                 Dataset
                                             </th>
                                             <td class="simple_attr_help">
-                                                <a href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
-                                                    <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
+                                                <a href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
+                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                 </a>
                                             </td>
                                             <%
                                             if (colspan==4){%>
                                                 <td class="simple_attr_help">
-                                                    <img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                                                 </td><%
                                             }
                                             %>
                                             <td class="simple_attr_value">
-                                                <a href="dataset.jsp?ds_id=<%=dsID%>">
+                                                <a href="<%=request.getContextPath()%>/dataset.jsp?ds_id=<%=dsID%>">
                                                     <b><%=Util.processForDisplay(dsName)%></b>
                                                 </a>
                                                 <%
@@ -925,8 +925,8 @@ else if (mode.equals("add"))
                                                     Reference URL
                                                 </th>
                                                 <td class="simple_attr_help">
-                                                    <a href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
-                                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
+                                                    <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                     </a>
                                                 </td>
                                                 <td class="simple_attr_value">
@@ -1009,14 +1009,14 @@ else if (mode.equals("add"))
                                                     <%=Util.processForDisplay(attribute.getShortName())%>
                                                 </th>
                                                 <td class="simple_attr_help">
-                                                    <a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-                                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
+                                                    <a href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                     </a>
                                                 </td>
                                                 <%
                                                 if (colspan==4){%>
                                                     <td class="simple_attr_help">
-                                                        <img style="border:0" src="images/<%=Util.processForDisplay(obligImg)%>" width="16" height="16" alt=""/>
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(obligImg)%>" width="16" height="16" alt=""/>
                                                     </td><%
                                                 }
                                                 %>
@@ -1039,8 +1039,8 @@ else if (mode.equals("add"))
                                                             <div class="figure-plus-container">
                                                                 <div class="figure-plus">
                                                                     <div class="figure-image">
-                                                                        <a href="visuals/<%=Util.processForDisplay(attrValue)%>">
-                                                                            <img src="visuals/<%=Util.processForDisplay(attrValue)%>" alt="Image file could not be found on the server" class="scaled poponmouseclick"/>
+                                                                        <a href="<%=request.getContextPath()%>/visuals/<%=Util.processForDisplay(attrValue)%>">
+                                                                            <img src="<%=request.getContextPath()%>/visuals/<%=Util.processForDisplay(attrValue)%>" alt="Image file could not be found on the server" class="scaled poponmouseclick"/>
                                                                         </a>
                                                                     </div>
                                                                 </div>
@@ -1052,7 +1052,7 @@ else if (mode.equals("add"))
                                                             String actionText = Util.isEmpty(attrValue) ? "add image" : "manage this image";
                                                             %>
                                                             <span class="barfont">
-                                                                <a href="imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;attr_name=<%=Util.processForDisplay(attribute.getShortName())%>">Click to <%=Util.processForDisplay(actionText)%></a>]
+                                                                <a href="<%=request.getContextPath()%>/imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;attr_name=<%=Util.processForDisplay(attribute.getShortName())%>">Click to <%=Util.processForDisplay(actionText)%></a>]
                                                             </span><%
                                                         }
                                                     }
@@ -1170,8 +1170,8 @@ else if (mode.equals("add"))
                                                                     }
                                                                     %>
                                                                 </select>
-                                                                <a onclick="pop(this.href);return false;" href="fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.processForDisplay(attribute.getShortName())%>&amp;parent_type=attr">
-                                                                    <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
+                                                                <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.processForDisplay(attribute.getShortName())%>&amp;parent_type=attr">
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                                 </a>
                                                                 <%
                                                             }
@@ -1198,14 +1198,14 @@ else if (mode.equals("add"))
                                                 Identifier
                                             </th>
                                             <td class="simple_attr_help">
-                                                <a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-                                                    <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help" />
+                                                <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help" />
                                                 </a>
                                             </td>
                                             <%
                                             if (colspan==4){%>
                                                 <td class="simple_attr_help">
-                                                    <img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                                                 </td><%
                                             }
                                             %>
@@ -1351,7 +1351,7 @@ else if (mode.equals("add"))
                                                                         continue;
 
                                                                     boolean elmCommon = elem.getNamespace()==null || elem.getNamespace().getID()==null;
-                                                                    String elemLink = "data_element.jsp?delem_id=" + elem.getID();
+                                                                    String elemLink = request.getContextPath() + "/data_element.jsp?delem_id=" + elem.getID();
                                                                     String elemDefinition = elem.getAttributeValueByShortName("Definition");
                                                                     String linkTitle = elemDefinition==null ? "" : elemDefinition;
                                                                     String elemType = (String)types.get(elem.getType());
@@ -1391,7 +1391,7 @@ else if (mode.equals("add"))
                                                                             // FK indicator
                                                                             if (fks){ %>
                                                                                 &nbsp;
-                                                                                <a href="foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.processForDisplay(elem.getShortName())%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>">
+                                                                                <a href="<%=request.getContextPath()%>/foreign_keys.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.processForDisplay(elem.getShortName())%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>">
                                                                                     <span style="font: bold italic">(FK)</span>
                                                                                 </a><%
                                                                                 hasForeignKeys = true;
@@ -1416,7 +1416,7 @@ else if (mode.equals("add"))
                                                                         <td>
                                                                             <%
                                                                             if (elem.getType().equals("CH1")){ %>
-                                                                                <a href="fixed_values.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.processForDisplay(elem.getShortName())%>">
+                                                                                <a href="<%=request.getContextPath()%>/fixed_values.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.processForDisplay(elem.getShortName())%>">
                                                                                     <%=Util.processForDisplay(elemType)%>
                                                                                 </a> <%
                                                                             }
@@ -1507,13 +1507,13 @@ else if (mode.equals("add"))
 
                                                                 <tr class="zebra<%=isOdd%>">
                                                                     <td>
-                                                                        <a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+                                                                        <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
                                                                             <%=Util.processForDisplay(attrName)%>
                                                                         </a>
                                                                     </td>
                                                                     <td>
-                                                                        <a onclick="pop(this.href);return false;" href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
-                                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                                        <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX">
+                                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                                         </a>
                                                                     </td>
                                                                     <td>
@@ -1610,7 +1610,7 @@ else if (mode.equals("add"))
         </form>
     </div> <!-- end workarea -->
     </div> <!-- container -->
-    <%@ include file="footer.txt" %>
+    <%@ include file="footer.jsp" %>
 </body>
 </html>
 

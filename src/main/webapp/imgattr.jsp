@@ -8,17 +8,17 @@
 
     request.setCharacterEncoding("UTF-8");
     session.setAttribute("imgattr_qrystr", request.getQueryString());
-    
+
     ServletContext ctx = getServletContext();
     DDUser user = SecurityUtil.getUser(request);
-    
-    // POST request not allowed for anybody who hasn't logged in            
+
+    // POST request not allowed for anybody who hasn't logged in
     if (request.getMethod().equals("POST") && user==null){
         request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
         request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
         return;
     }
-    
+
     // get vital request parameters
     String objID = request.getParameter("obj_id");
     if (objID == null || objID.length()==0){
@@ -40,16 +40,16 @@
     }
     String objName = request.getParameter("obj_name");
     String attrName = request.getParameter("attr_name");
-    
+
     String titleLink = "";
     String titleType = "";
     if (objType.equals("E")){
         titleType = " element";
-        titleLink = "data_element.jsp?mode=edit&amp;delem_id=" + objID;
+        titleLink = "data_element.jsp?mode=edit&delem_id=" + objID;
     }
     else if (objType.equals("T")){
         titleType = " table";
-        titleLink = "dstable.jsp?mode=edit&amp;table_id=" + objID;
+        titleLink = "dstable.jsp?mode=edit&table_id=" + objID;
     }
     else if (objType.equals("DS")){
         request.setAttribute("DD_ERR_MSG", "Images not allowed for datasets. Use data model instead.");
@@ -74,7 +74,7 @@
     // <![CDATA[
 
     function submitForm(mode){
-        
+
         if (mode == 'remove'){
             document.forms["Upload"].elements["mode"].value = "remove";
             document.forms["Upload"].encoding = "application/x-www-form-urlencoded";
@@ -94,7 +94,7 @@
                 }
             }
         }
-        
+
         var url = document.forms["Upload"].elements["url_input"].value;
         var file = document.forms["Upload"].elements["file_input"].value;
         var ok = true;
@@ -115,20 +115,20 @@
         if (ok == true){
             var trailer = "?fileORurl=" + radio + "&url_input=" + url + "&file_input=" + file;
             trailer = trailer + "&obj_id=" + document.forms["Upload"].elements["obj_id"].value;
-            
+
             var oType = document.forms["Upload"].elements["obj_type"];
             if (oType != null)
                 trailer = trailer + "&obj_type=" + oType.value;
-                
+
             var oAttrID = document.forms["Upload"].elements["attr_id"];
             if (oAttrID != null)
                 trailer = trailer + "&attr_id=" + oAttrID.value;
-                
+
             document.forms["Upload"].action = document.forms["Upload"].action + trailer;
             document.forms["Upload"].submit();
         }
     }
-    
+
     // ]]>
     </script>
 </head>
@@ -152,7 +152,7 @@
     <h1>
         <%=Util.processForDisplay(attrName)%> of <a href="<%=Util.processForDisplay(titleLink, true)%>"><%=Util.processForDisplay(objName, true)%></a> <%=Util.processForDisplay(titleType)%>
     </h1>
-        
+
     <table cellspacing="0" style="width:auto;margin-top:10px">
         <tr>
             <td align="left" style="padding-right:5">
@@ -179,15 +179,15 @@
         </tr>
         <tr><td colspan="2">&nbsp;</td></tr>
     </table>
-    
+
     <table width="auto" cellspacing="0">
-        
-        <%                            
+
+        <%
         boolean found = false;
         int displayed = 0;
-        for (int i=0; attrs!=null && i<attrs.size(); i++){    
+        for (int i=0; attrs!=null && i<attrs.size(); i++){
             DElemAttribute attr = (DElemAttribute)attrs.get(i);
-            if (attr.getID().equals(attrID)){                                    
+            if (attr.getID().equals(attrID)){
                 Vector values = attr.getValues();
                 for (int j=0; values!=null && j<values.size(); j++){
                     found = true;
@@ -209,7 +209,7 @@
                 }
             }
         }
-        
+
         if (!found){%>
             <tr>
                 <td align="left" colspan="2">
@@ -220,24 +220,24 @@
                 </td>
             </tr><%
         }
-        
+
         %>
-        
+
     </table>
-    
+
     <div style="display:none">
         <input type="hidden" name="obj_id" value="<%=objID%>"/>
         <input type="hidden" name="obj_type" value="<%=objType%>"/>
         <input type="hidden" name="attr_id" value="<%=attrID%>"/>
-        
+
         <input type="hidden" name="mode" value="add"/>
-        
+
         <input type="hidden" name="redir_url" value="imgattr.jsp?<%=Util.processForDisplay(request.getQueryString(), true)%>"/>
-    </div>    
+    </div>
 </form>
 </div> <!-- workarea -->
 </div> <!-- container -->
-<%@ include file="footer.txt" %>
+<%@ include file="footer.jsp" %>
 
 </body>
 </html>
@@ -250,7 +250,7 @@ catch (Exception e){
         e.printStackTrace(System.out);
     else{
         String msg = e.getMessage();
-        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();                            
+        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
         e.printStackTrace(new PrintStream(bytesOut));
         String trace = bytesOut.toString(response.getCharacterEncoding());
         request.setAttribute("DD_ERR_MSG", msg);

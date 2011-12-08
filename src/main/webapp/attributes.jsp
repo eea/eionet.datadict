@@ -109,7 +109,7 @@
                 %>
                 <div class="error-msg">No attributes were found!</div>
             </div></div>
-              <%@ include file="footer.txt" %>
+              <%@ include file="footer.jsp" %>
             </body></html>
                 <%
                 return;
@@ -246,7 +246,7 @@
         </form>
             </div> <!-- workarea -->
             </div> <!-- container -->
-      <%@ include file="footer.txt" %>
+      <%@ include file="footer.jsp" %>
 </body>
 </html>
 

@@ -32,7 +32,7 @@ String appName = ctx.getInitParameter("application-name");
             <div id="freesrchform"><label for="freesrchfld">Search</label>
                 <input type="text" id="freesrchfld" name="query"/>
 
-                <input id="freesrchbtn" type="image" src="images/button_go.gif" alt="Go"/>
+                <input id="freesrchbtn" type="image" src="<%=request.getContextPath()%>/images/button_go.gif" alt="Go"/>
             </div>
         </form>
     </div>

@@ -553,7 +553,7 @@ if (parentLink.length()>0)
 </form>
 </div>
 </div> <!-- container -->
-<%@ include file="footer.txt" %>
+<%@ include file="footer.jsp" %>
 </body>
 </html>
 

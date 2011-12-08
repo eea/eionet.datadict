@@ -570,7 +570,7 @@ else{ %>
     if (!popup){
         %>
         </div> <!-- container -->
-        <%@ include file="footer.txt" %><%
+        <%@ include file="footer.jsp" %><%
     }
     %>
 </body>

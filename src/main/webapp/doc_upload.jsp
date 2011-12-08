@@ -83,7 +83,7 @@ unknown. But whatever the type of the file you upload, it can later be downloade
 </form>    
 </div> <!-- workarea -->
 </div> <!-- container -->
-<%@ include file="footer.txt" %>
+<%@ include file="footer.jsp" %>
 
 </body>
 </html>

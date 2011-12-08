@@ -160,6 +160,6 @@
             </form>    
 </div> <!-- workarea -->
 </div> <!-- container -->
-<%@ include file="footer.txt" %>
+<%@ include file="footer.jsp" %>
 </body>
 </html>

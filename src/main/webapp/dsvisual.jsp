@@ -263,7 +263,7 @@ if (dsVisual!=null && dsVisual.length()!=0){
                 %>
 </div> <!-- workarea -->
 </div> <!-- container -->
-<%@ include file="footer.txt" %>
+<%@ include file="footer.jsp" %>
 </body>
 </html>
 
