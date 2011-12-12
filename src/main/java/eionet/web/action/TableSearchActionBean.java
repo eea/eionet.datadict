@@ -116,10 +116,12 @@ public class TableSearchActionBean extends AbstractActionBean {
             // searchEngine.setUser(user);
 
             String oper = "=";
-            if (srchType != null && srchType.equals(EXACT_SEARCH))
+            if (srchType != null && srchType.equals(EXACT_SEARCH)) {
                 oper = " match ";
-            if (srchType != null && srchType.equals(SUBSTRING_SEARCH))
+            }
+            if (srchType != null && srchType.equals(SUBSTRING_SEARCH)) {
                 oper = " like ";
+            }
 
             Vector params = new Vector();
             /*
@@ -137,18 +139,21 @@ public class TableSearchActionBean extends AbstractActionBean {
                 String parName = key;
                 String parValue = parameters.get(key);
                 LOGGER.info(parName + ":" + parValue);
-                if (parValue == null || parValue.length() == 0)
+                if (parValue == null || parValue.length() == 0) {
                     continue;
+                }
 
                 String attrPrefix = "attr_";
-                if (!parName.startsWith(attrPrefix))
+                if (!parName.startsWith(attrPrefix)) {
                     continue;
+                }
 
                 DDSearchParameter param = new DDSearchParameter(parName.substring(attrPrefix.length()), null, oper, "=");
-                if (oper != null && oper.trim().equalsIgnoreCase("like"))
+                if (oper != null && oper.trim().equalsIgnoreCase("like")) {
                     param.addValue("'%" + parValue + "%'");
-                else
+                } else {
                     param.addValue("'" + parValue + "'");
+                }
                 params.add(param);
             }
 
@@ -180,8 +185,6 @@ public class TableSearchActionBean extends AbstractActionBean {
                 String workingUser = table.getDstWorkingUser();
 
                 /*
-                 * tableLink = "dstable.jsp?table_id=" + table_id + "&amp;ds_id=" + ds_id + "&amp;ds_name=" + ds_name;
-                 *
                  * String zebraClass = i % 2 != 0 ? "zebraeven" : "zebraodd"; String regStatus = table.getDstStatus(); boolean
                  * clickable = regStatus!=null ? !searchEngine.skipByRegStatus(regStatus) : true; String strDisabled = clickable ?
                  * "" : " class=\"disabled\""; String statusImg = "images/" + Util.getStatusImage(regStatus); String statusTxt =

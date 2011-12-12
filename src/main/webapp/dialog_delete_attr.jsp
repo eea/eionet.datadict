@@ -13,9 +13,9 @@ ServletContext ctx = null;
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     DDUser user = SecurityUtil.getUser(request);
-    
+
     String attr_id = request.getParameter("attr_id");
     String type = request.getParameter("type");
     String short_name = request.getParameter("short_name");
@@ -27,7 +27,7 @@ ServletContext ctx = null;
           }
         Connection userConn = null;
         String redirUrl = "";
-                
+
         try{
             userConn = user.getConnection();
 
@@ -42,7 +42,7 @@ ServletContext ctx = null;
             try { if (userConn!=null) userConn.close();
             } catch (SQLException e) {}
         }
-                
+
         response.sendRedirect(redirUrl);
         return;
     }
@@ -51,17 +51,17 @@ ServletContext ctx = null;
         %><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body><h1>Error</h1><b>Attribute type or attribute id is not specified!</b></body></html><%
         return;
     }
-    
+
     ctx = getServletContext();
-    
+
     Connection conn = null;
     int attrUseCount = 0;
     try { // start the whole page try block
-    
+
         conn = ConnectionUtil.getConnection();
 
         DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-        
+
         objects = null;//searchEngine.getAttributeObjects(attr_id, type);
         attrUseCount = searchEngine.getAttributeUseCount(attr_id, type);
         if (attrUseCount<=0)
@@ -74,10 +74,10 @@ ServletContext ctx = null;
     <title>Data Dictionary</title>
     <script type="text/javascript">
     // <![CDATA[
-        function deleteAttr(){                
+        function deleteAttr(){
             document.forms["form1"].submit();
         }
-        
+
         function cancel(){
             window.history.back();
         }
@@ -97,20 +97,20 @@ ServletContext ctx = null;
     <h1>Deleting attribute</h1>
     <div class="attention" style="padding-top:20px">Are you sure you want to delete attribute "<%=Util.processForDisplay(short_name)%>"?<br/>It is used in <%=attrUseCount%> definitions.</div>
                 <table width="500">
-                    <% 
+                    <%
                     // DATASETS
                     int d=0;
                     if (objects!=null){
                         %>
                         <%
                         for (int i=0; i<objects.size(); i++){
-                
+
                             Hashtable object = (Hashtable)objects.get(i);
-                    
+
                             String parent_type =(String)object.get("parent_type");
                             String parent_id =(String)object.get("parent_id");
                             String parent_name =(String)object.get("parent_name");
-                            
+
                             String type_name="";
                             String link="";
                             String version="";
@@ -120,7 +120,7 @@ ServletContext ctx = null;
                             }
                             else if (parent_type.equals("T")){
                                 type_name="Table";
-                                link="dstable.jsp?table_id=" + parent_id;
+                                link = request.getContextPath() + "/tables/" + parent_id;
                             }
                             else if (parent_type.equals("CSI")){
                                 type_name="Allowable value";
@@ -137,8 +137,8 @@ ServletContext ctx = null;
                             }
                             d++;
                             %>
-                
-                            <tr valign="top">                    
+
+                            <tr valign="top">
                                 <td align="left" style="padding-left:5;padding-right:10" <% if (d % 2 != 0) %> bgcolor="#D3D3D3" <%;%> colspan="2">
                                     <%=type_name%>:&nbsp;
                                     <a href="<%=link%>">
@@ -149,18 +149,18 @@ ServletContext ctx = null;
                         }
                     }
                     %>
-                    
+
                     <tr><td align="left">&nbsp;</td></tr>
                     <tr style="height:30px;"><td align="left">
                         <input type="button" onclick="cancel()" value="Cancel" class="mediumbuttonb"/>
                         <input type="button" onclick="deleteAttr()" value="Delete" class="mediumbuttonb"/>
                     </td></tr>
                 </table>
-                
+
                     <div style="display:none">
                         <input type="hidden" name="mode" value="delete"/>
                         <input type="hidden" name="type" value="<%=type%>"/>
-                        <%            
+                        <%
                         if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE)){
                             %>
                             <input type="hidden" name="simple_attr_id" value="<%=attr_id%>"/>
@@ -169,9 +169,9 @@ ServletContext ctx = null;
                         else{
                             %>
                             <input type="hidden" name="complex_attr_id" value="<%=attr_id%>"/>
-                            <%                            
+                            <%
                         }
-                        %>                
+                        %>
                         <input type="hidden" name="attr_id" value="<%=attr_id%>"/>
                     </div>
                 </form>

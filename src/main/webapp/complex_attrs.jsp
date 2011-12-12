@@ -5,10 +5,10 @@
 
 <%!
 private String legalizeAlert(String in){
-        
+
     in = (in != null ? in : "");
-    StringBuffer ret = new StringBuffer(); 
-  
+    StringBuffer ret = new StringBuffer();
+
     for (int i = 0; i < in.length(); i++) {
         char c = in.charAt(i);
         if (c == '\'')
@@ -29,11 +29,11 @@ private String legalizeAlert(String in){
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     ServletContext ctx = getServletContext();
-    DDUser user = SecurityUtil.getUser(request);    
-    
-    // POST request not allowed for anybody who hasn't logged in            
+    DDUser user = SecurityUtil.getUser(request);
+
+    // POST request not allowed for anybody who hasn't logged in
     if (request.getMethod().equals("POST") && user==null){
         request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
         request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -47,7 +47,7 @@ private String legalizeAlert(String in){
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
-    
+
     String parent_type = request.getParameter("parent_type");
     if (parent_type == null || parent_type.length()==0){
         request.setAttribute("DD_ERR_MSG", "Missing request parameter: parent_type");
@@ -57,27 +57,27 @@ private String legalizeAlert(String in){
     String parent_name = request.getParameter("parent_name");
     String parent_ns = request.getParameter("parent_ns");
     String ds = request.getParameter("ds");
-    
+
     // for getting inherited attributes
     String dataset_id = request.getParameter("dataset_id");
     if (dataset_id == null) dataset_id = "";
     String table_id = request.getParameter("table_id");
     if (table_id == null) table_id = "";
-    
+
     // handle POST request
     if (request.getMethod().equals("POST")){
-        Connection userConn = null;                
+        Connection userConn = null;
         try{
             userConn = user.getConnection();
-            AttrFieldsHandler handler = new AttrFieldsHandler(userConn, request, ctx);            
+            AttrFieldsHandler handler = new AttrFieldsHandler(userConn, request, ctx);
             try{
                 handler.execute();
             }
             catch (Exception e){
-                String msg = e.getMessage();                    
+                String msg = e.getMessage();
                 ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
                 e.printStackTrace(new PrintStream(bytesOut));
-                String trace = bytesOut.toString(response.getCharacterEncoding());                    
+                String trace = bytesOut.toString(response.getCharacterEncoding());
                 request.setAttribute("DD_ERR_MSG", msg);
                 request.setAttribute("DD_ERR_TRC", trace);
                 request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -99,21 +99,21 @@ private String legalizeAlert(String in){
         return;
     }
     //// end of handle the POST request, all following code deals with GET //////////////////////
-    
+
     Connection conn = null;
-    
+
     // the whole page's try block
-    try {    
+    try {
         conn = ConnectionUtil.getConnection();
         DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
         Vector mComplexAttrs = searchEngine.getDElemAttributes(DElemAttribute.TYPE_COMPLEX);
         if (mComplexAttrs == null)
             mComplexAttrs = new Vector();
-        
+
         complexAttrs = searchEngine.getComplexAttributes(parent_id, parent_type, null, table_id, dataset_id);
         if (complexAttrs == null)
             complexAttrs = new Vector();
-        
+
         for (int i=0; mComplexAttrs.size()!=0 && i<complexAttrs.size(); i++){
             DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
             String attrID = attr.getID();
@@ -125,7 +125,7 @@ private String legalizeAlert(String in){
                     j--;
                 }
             }
-        }        
+        }
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -135,23 +135,23 @@ private String legalizeAlert(String in){
     <script type="text/javascript">
     // <![CDATA[
             function submitForm(mode){
-                
+
                 if (mode == "delete"){
                     var b = confirm("This will delete all the attributes you have selected. Click OK, if you want to continue. Otherwise click Cancel.");
-                    if (b==false) return;    
+                    if (b==false) return;
                 }
-                
+
                 document.forms["form1"].elements["mode"].value = mode;
                 document.forms["form1"].submit();
             }
-            
+
             <% String redirUrl = ""; %>
-            
+
             function addNew(){
                 var id = document.forms["form1"].elements["new_attr_id"].value;
-                var url = "<%=redirUrl%>" + "complex_attr.jsp?mode=add&attr_id=" + id + 
+                var url = "<%=redirUrl%>" + "complex_attr.jsp?mode=add&attr_id=" + id +
                             "&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>&table_id=<%=table_id%>&dataset_id=<%=dataset_id%>";
-                
+
                 <%
                 if (ds!=null && ds.equals("true")){
                     %>
@@ -159,12 +159,12 @@ private String legalizeAlert(String in){
                     <%
                 }
                 %>
-                
+
                 window.location.replace(url);
             }
-            
+
             function edit(id){
-                var url = "<%=redirUrl%>" + "complex_attr.jsp?mode=edit&attr_id=" + id + 
+                var url = "<%=redirUrl%>" + "complex_attr.jsp?mode=edit&attr_id=" + id +
                             "&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>&table_id=<%=table_id%>&dataset_id=<%=dataset_id%>";
                 <%
                 if (ds!=null && ds.equals("true")){
@@ -173,10 +173,10 @@ private String legalizeAlert(String in){
                     <%
                 }
                 %>
-                
+
                 window.location.replace(url);
             }
-            
+
     // ]]>
     </script>
 </head>
@@ -202,9 +202,9 @@ else if (dispParentType.equals("DS")){
 }
 else if (dispParentType.equals("T")){
     dispParentType = "table";
-    parentLink.append("dstable.jsp?table_id=");
+    parentLink.append(request.getContextPath() + "/tables/");
 }
-else if (dispParentType.equals("E")){            
+else if (dispParentType.equals("E")){
     dispParentType = "element";
     parentLink.append("data_element.jsp?delem_id=");
 }
@@ -215,7 +215,7 @@ if (dispParentName==null)
 
 if (parentLink.length()>0)
     parentLink.append(request.getParameter("parent_id"));
-        
+
 %>
 
 <h1>Complex attributes of <a href="<%=parentLink%>"><%=dispParentName%></a> <%=dispParentType%></h1>
@@ -238,7 +238,7 @@ if (complexAttrs==null || complexAttrs.size() == 0){
                     DElemAttribute attr = (DElemAttribute)mComplexAttrs.get(i);
                     String attrID = attr.getID();
                     String attrName = attr.getShortName();
-                    
+
                     String attrOblig = attr.getObligation();
                     String obligStr  = "(O)";
                     if (attrOblig.equalsIgnoreCase("M"))
@@ -259,23 +259,23 @@ if (complexAttrs==null || complexAttrs.size() == 0){
 
 <%
 for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
-        
+
         DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
         String attrID = attr.getID();
         String attrName = attr.getShortName();
         boolean inherit = attr.getInheritable().equals("1") ? true:false;
-        
+
         Vector attrFields = searchEngine.getAttrFields(attrID);
-        
+
         String attrOblig = attr.getObligation();
         String obligStr  = "optional";
         if (attrOblig.equalsIgnoreCase("M"))
             obligStr = "mandatory";
         else if (attrOblig.equalsIgnoreCase("C"))
             obligStr = "conditional";
-        
+
         String obligImg = obligStr + ".gif";
-        
+
         String inherited = null;
         Vector rows = attr.getRows();
         for (int j=0; rows!=null && j<rows.size(); j++){
@@ -328,11 +328,11 @@ for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
                         &nbsp;<%
                     }
                     %>
-                </td>                
+                </td>
                 <td style="padding-left:3;padding-top:3">
                     <table cellspacing="0">
                         <tr>
-                        <%                        
+                        <%
                         for (int t=0; attrFields!=null && t<attrFields.size(); t++){
                             Hashtable hash = (Hashtable)attrFields.get(t);
                             String name = (String)hash.get("name");
@@ -343,26 +343,26 @@ for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
                         }
                         %>
                         </tr>
-                        
+
                         <%
                         for (int j=0; rows!=null && j<rows.size(); j++){
                             Hashtable rowHash = (Hashtable)rows.get(j);
                             %>
                             <tr>
                             <%
-                            
+
                             for (int t=0; t<attrFields.size(); t++){
                                 Hashtable hash = (Hashtable)attrFields.get(t);
                                 String fieldID = (String)hash.get("id");
                                 String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
                                 if (fieldValue == null) fieldValue = " ";
-                                fieldValue = Util.processForDisplay(fieldValue);                            
+                                fieldValue = Util.processForDisplay(fieldValue);
                                 %>
                                 <td class="small" style="padding-right:10;background-color:#D3D3D3;" <% if (j % 2 != 0) %> <%;%>><%=fieldValue%></td>
                                 <%
                             }
                             %>
-                            </tr>                
+                            </tr>
                             <%
                         }
                         %>

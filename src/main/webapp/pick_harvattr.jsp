@@ -7,40 +7,40 @@
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     DDUser user = SecurityUtil.getUser(request);
-    
-    ServletContext ctx = getServletContext();            
-    
+
+    ServletContext ctx = getServletContext();
+
     String attr_id = request.getParameter("attr_id");
     if (attr_id == null || attr_id.length()==0) { %>
         <b>Attribute id paramater is missing!</b> <%
         return;
     }
-    
+
     String parent_id = request.getParameter("parent_id");
     if (parent_id == null || parent_id.length()==0){ %>
         <b>Parent ID is missing!</b> <%
         return;
     }
-    
+
     String parent_type = request.getParameter("parent_type");
     if (parent_type == null || parent_type.length()==0){ %>
         <b>Parent type is missing!</b> <%
         return;
     }
-    
+
     String parentName = request.getParameter("parent_name");
     String attrName = request.getParameter("attrName");
-    
+
     String position = request.getParameter("position");
     if (position == null || position.length()==0)
         position = "0";
-    
+
     String requesterRedirUrl = request.getParameter("requester_redir_url");
     String requesterQrystr = request.getParameter("requester_qrystr");
     if (request.getMethod().equals("POST") && requesterQrystr==null){
-        
+
         if (user==null || !user.isAuthentic()){
             %>
                   <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -51,13 +51,13 @@
               <%
               return;
         }
-        
-        Connection userConn = null;                
+
+        Connection userConn = null;
         try{
             userConn = user.getConnection();
-            
+
             AttrFieldsHandler handler = new AttrFieldsHandler(userConn, request, ctx);
-            
+
             try{
                 handler.execute();
             }
@@ -72,7 +72,7 @@
             try { if (userConn!=null) userConn.close();
             } catch (SQLException e) {}
         }
-        
+
         if (requesterRedirUrl!=null)
             response.sendRedirect(requesterRedirUrl);
     }
@@ -80,15 +80,15 @@
     Connection conn = null;
 
     try { // start the whole page try block
-        
+
     conn = ConnectionUtil.getConnection();
     DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-    
+
     Vector harvAttrs = searchEngine.getHarvestedAttrs(attr_id);
     Vector harvFields = (harvAttrs!=null && harvAttrs.size()>0) ?
                         searchEngine.getHarvesterFieldsByAttr(attr_id) :
                         null;
-    
+
     String colsp = (harvFields==null || harvFields.size()==0) ? "1" : String.valueOf(harvFields.size());
     HashSet added = searchEngine.getHarvestedAttrIDs(attr_id, parent_id, parent_type);
 %>
@@ -103,9 +103,9 @@
             function closeme(){
                 window.close();
             }
-            
+
             function selected(id){
-                
+
                     var elems = document.forms["form1"].elements;
                     var i;
                     for (i=0; i<elems.length; i++){
@@ -116,7 +116,7 @@
                             }
                         }
                     }
-                    
+
                     document.forms["form1"].elements["harv_attr_id"].value = id;
                     document.forms["form1"].submit();
             }
@@ -132,14 +132,14 @@
         <jsp:param name="name" value="Pick attribute value"/>
     </jsp:include>
     <%@ include file="nmenu.jsp" %>
-        
+
     <div id="workarea" style="clear:right">
     <%
     if (harvAttrs==null || harvAttrs.size()==0){ %>
         <h5>Nothing harvested for this attribute!</h5><%
     }
     else if (parent_type!=null && parentName!=null && attrName!=null){
-        
+
         StringBuffer parentLink = new StringBuffer();
         String dispParentType = parent_type;
         if (dispParentType==null)
@@ -150,20 +150,25 @@
         }
         else if (dispParentType.equals("T")){
             dispParentType = "table";
-            parentLink.append("dstable.jsp?table_id=");
+            parentLink.append(request.getContextPath() + "/tables/");
         }
-        else if (dispParentType.equals("E")){            
+        else if (dispParentType.equals("E")){
             dispParentType = "element";
             parentLink.append("data_element.jsp?delem_id=");
         }
-        
+
         String dispParentName = parentName;
-        if (dispParentName==null)
+        if (dispParentName==null){
             dispParentName = "";
-        
-        if (parentLink.length()>0)
-            parentLink.append(parent_id).append("&amp;mode=edit");
-        
+        }
+
+        if (parentLink.length()>0){
+            parentLink.append(parent_id);
+            if (!dispParentType.equals("table")){
+                parentLink.append("&amp;mode=edit");
+            }
+        }
+
         %>
         <h2>You are selecting a harvested value for <a href="complex_attr.jsp?<%=Util.processForDisplay(requesterQrystr, true, true)%>"><%=attrName%></a> of <a href="<%=parentLink%>"><%=dispParentName%></a> <%=dispParentType%></h2><%
     }
@@ -172,7 +177,7 @@
     <form id="form1" action="pick_harvattr.jsp" method="post">
     <div style="overflow-y:auto">
     <table class="datatable">
-        <%                
+        <%
         if (harvFields!=null && harvFields.size()>0){
             %>
             <tr>
@@ -184,7 +189,7 @@
                 %>
             </tr><%
         }
-        
+
         int displayed = 0;
         for (int i=0; harvAttrs!=null && i<harvAttrs.size(); i++){
             Hashtable attrHash = (Hashtable)harvAttrs.get(i);
@@ -210,10 +215,10 @@
                 }
                 %>
             </tr><%
-            
+
             displayed++;
         }
-        %>        
+        %>
     </table>
     </div>
     <%
@@ -221,18 +226,18 @@
         <p>(all have been already selected)</p><%
     }
     %>
-    
+
     <div style="display:none">
         <input type="hidden" name="parent_id" value="<%=parent_id%>"/>
         <input type="hidden" name="parent_type" value="<%=parent_type%>"/>
         <input type="hidden" name="position" value="<%=position%>"/>
-        
+
         <input type="hidden" name="attr_id" value="<%=attr_id%>"/>
         <input type="hidden" name="harv_attr_id" value=""/>
-        
+
         <input type="hidden" name="mode" value="add"/>
         <input type="hidden" name="requester_redir_url" value="<%=Util.processForDisplay(requesterRedirUrl, true, true)%>"/>
-    </div>    
+    </div>
     </form>
     </div>
     </div>

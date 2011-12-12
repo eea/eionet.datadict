@@ -11,14 +11,14 @@
      *
      */
     private String getAttributeIdByName(String name, Vector mAttributes){
-    
-    
+
+
             for (int i=0; i<mAttributes.size(); i++){
             DElemAttribute attr = (DElemAttribute)mAttributes.get(i);
             if (attr.getShortName().equalsIgnoreCase(name))
                 return attr.getID();
         }
-            
+
         return null;
     }
 
@@ -26,30 +26,30 @@
      *
      */
     private String getAttributeValue(DataElement elem, String name, Vector mAttributes){
-    
+
         String id = getAttributeIdByName(name, mAttributes);
         if (elem == null) return null;
         DElemAttribute attr = elem.getAttributeById(id);
         if (attr == null) return null;
         return attr.getValue();
     }
-    
+
     /**
      *
      */
     private boolean isIn(Vector elems, String id){
-        
+
         for (int i=0; id!=null && i<elems.size(); i++){
-            
+
             Object o = elems.get(i);
             Class oClass = o.getClass();
             if (oClass.getName().endsWith("Hashtable")) continue;
-            
+
             DataElement elem = (DataElement)o;
             if (elem.getID().equalsIgnoreCase(id))
                 return true;
         }
-            
+
         return false;
     }
 %>
@@ -57,22 +57,22 @@
 <%
     // implementation of the servlet's service method
     //////////////////////////////////////////////////
-    
+
     response.setHeader("Pragma", "No-cache");
     response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
     response.setHeader("Expires", Util.getExpiresDateString());
-    
+
     request.setCharacterEncoding("UTF-8");
     ServletContext ctx = getServletContext();
     DDUser user = SecurityUtil.getUser(request);
-    
-    // POST request not allowed for anybody who hasn't logged in            
+
+    // POST request not allowed for anybody who hasn't logged in
     if (request.getMethod().equals("POST") && user==null){
         request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
-    
+
     // get values of several request parameters:
     // - table's id number
     // - dataset's id number
@@ -81,19 +81,19 @@
         request.setAttribute("DD_ERR_MSG", "Missing request parameter: table_id");
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
-    }    
+    }
     String dsID = request.getParameter("ds_id");
     if (dsID == null || dsID.length()==0){
         request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id");
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
-    }    
+    }
     String dsName = request.getParameter("ds_name");
-    
+
     //// handle the POST request //////////////////////
     //////////////////////////////////////////////////
     if (request.getMethod().equals("POST")){
-        
+
         Connection userConn = null;
         DsTableHandler tblHandler = null;
         DataElementHandler elmHandler = null;
@@ -116,9 +116,9 @@
             catch (Exception e){
                 if (elmHandler!=null)
                     elmHandler.cleanup();
-                    
+
                 String msg = e.getMessage();
-                ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();                            
+                ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
                 e.printStackTrace(new PrintStream(bytesOut));
                 String trace = bytesOut.toString(response.getCharacterEncoding());
                 String backLink = history.getBackUrl();
@@ -137,7 +137,7 @@
         // disptach the POST request
         if ((link_elm==null || link_elm.length()==0) && (rplc_elm==null || rplc_elm.length()==0)){
             String redirUrl = "";
-            String mode = request.getParameter("mode");    
+            String mode = request.getParameter("mode");
             if (mode.equals("add") || mode.equals("copy"))
                 redirUrl = "data_element.jsp?delem_id=" + elmHandler.getLastInsertID();
             else{
@@ -145,24 +145,24 @@
                 if (dsName!=null && dsName.length()>0)
                     redirUrl = redirUrl + "&ds_name=" + dsName;
             }
-            
+
             response.sendRedirect(redirUrl);
             return;
         }
     }
     //// end of handle the POST request //////////////////////
-    
+
     Connection conn = null;
-    
+
     Vector elems = null;
     Vector mAttributes = null;
-    
+
     // the whole page's try block
     try {
         conn = ConnectionUtil.getConnection();
         DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
         searchEngine.setUser(user);
-        
+
         // get the table object
         DsTable dsTable = searchEngine.getDatasetTable(tableID);
         if (dsTable == null){
@@ -171,7 +171,7 @@
             return;
         }
         String tableName = dsTable.getShortName();
-        
+
         // overwrite dataset id parameter with the one from table object
         dsID = dsTable.getDatasetID();
         if (dsID==null || dsID.length()==0){
@@ -195,7 +195,7 @@
         // get the table's elements and metadata of attributes
         elems = searchEngine.getDataElements(null, null, null, null, tableID);
         mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
-        
+
         // analyze elements for GIS
         boolean hasGIS = false;
         for (int i=0; elems!=null && i<elems.size(); i++){
@@ -204,7 +204,7 @@
                 hasGIS = true;
                 break;
             }
-        }        
+        }
         int colCount = hasGIS ? 5 : 4;
 %>
 
@@ -222,49 +222,49 @@
 <script type="text/javascript">
 // <![CDATA[
         function submitForm(mode){
-            
+
             if (mode=="delete"){
                 var b = confirm("This will remove the selected elements from this table. Click OK, if you want to continue. Otherwise click Cancel.");
                 if (b==false)
                     return;
             }
-            
+
             if (mode=="add"  && document.forms["form1"].elements["idfier"].value==""){
                 alert("Identifier cannot be empty!");
                 return;
             }
-            
+
             if (mode=="add" && hasWhiteSpace("idfier")){
                 alert("Identifier cannot contain any white space!");
                 return;
             }
-            
+
             if (mode=="add" && !validForXMLTag(document.forms["form1"].elements["idfier"].value)){
                 alert("Identifier not valid for usage as an XML tag! " +
                           "In the first character only underscore or latin characters are allowed! " +
                           "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
                 return;
             }
-                
+
             document.forms["form1"].elements["mode"].value = mode;
             document.forms["form1"].submit();
         }
-        
+
         function delDialogReturn(){
             var v = dialogWin.returnValue;
             if (v==null || v=="" || v=="cancel") return;
-            
+
             document.forms["form1"].elements["upd_version"].value = v;
             deleteReady();
         }
-        
+
         function deleteReady(){
             document.forms["form1"].elements["mode"].value = "delete";
             document.forms["form1"].submit();
         }
-        
+
         function hasWhiteSpace(input_name){
-            
+
             var elems = document.forms["form1"].elements;
             if (elems == null) return false;
             for (var i=0; i<elems.length; i++){
@@ -274,11 +274,11 @@
                     if (val.indexOf(" ") != -1) return true;
                 }
             }
-            
+
             return false;
         }
 
-        
+
         function saveChanges(){
             tbl_obj.insertNumbers("pos_");
             submitForm("edit_tblelems");
@@ -320,17 +320,17 @@
         function getChanged(){
             return document.forms["form1"].elements["changed"].value;
         }
-        
-        var pickMode = "";        
+
+        var pickMode = "";
         function copyElem(){
-            
+
             if (!validForXMLTag(document.forms["form1"].elements["idfier"].value)){
                 alert("Identifier not valid for usage as an XML tag! " +
                           "In the first character only underscore or latin characters are allowed! " +
                           "In the rest of characters only underscore or hyphen or dot or 0-9 or latin characters are allowed!");
                 return;
             }
-            
+
             if (hasWhiteSpace("idfier")){
                 alert("Identifier cannot contain any white space!");
                 return;
@@ -343,7 +343,7 @@
                 wAdd.focus();
             }
         }
-        
+
         function linkElem(){
             pickMode = "link";
             var url="search.jsp?ctx=popup&common=&link=&exclude=" + document.forms["form1"].str_elem_ids.value;
@@ -354,7 +354,7 @@
         }
 
         var rplcId = "";
-        var rplcPos = ""; 
+        var rplcPos = "";
         function getNewerReleases(elmId, elmIdf, position){
             pickMode = "rplc";
             rplcId = elmId;
@@ -365,7 +365,7 @@
                 wLink.focus();
             }
         }
-        
+
         function pickElem(id){
             if (pickMode=="copy"){
                 document.forms["form1"].copy_elem_id.value=id;
@@ -387,25 +387,25 @@
 
             return true;
         }
-        
+
         function goToAddForm(){
             var url = "data_element.jsp?mode=add&table_id=<%=tableID%>&ds_id=<%=dsID%>";
             document.location.assign(url);
         }
-        
+
         function validForXMLTag(str){
-            
+
             // if empty string not allowed for XML tag
             if (str==null || str.length==0){
                 return false;
             }
-            
+
             // check the first character (only underscore or A-Z or a-z allowed)
             var ch = str.charCodeAt(0);
             if (!(ch==95 || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))){
                 return false;
             }
-            
+
             // check the rets of characters ((only underscore or hyphen or dot or 0-9 or A-Z or a-z allowed))
             if (str.length==1) return true;
             for (var i=1; i<str.length; i++){
@@ -414,14 +414,14 @@
                     return false;
                 }
             }
-            
+
             return true;
         }
-        
+
 // ]]>
 </script>
 </head>
-    
+
 <body onload="start()">
 <div id="container">
     <jsp:include page="nlocation.jsp" flush="true">
@@ -438,14 +438,14 @@ if (messages.trim().length()>0){
     <div class="system-msg"><%=messages%></div><%
 }
 %>
-        
+
 <form id="form1" method="post" action="tblelems.jsp">
 
     <!-- page title & the add new part -->
     <h1>
         Elements in
         <em>
-            <a href="dstable.jsp?table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=Util.processForDisplay(dsName)%>">
+            <a href="<%=request.getContextPath()%>/tables/<%=tableID%>">
                 <%=Util.processForDisplay(tableName)%>
             </a>
         </em>
@@ -467,23 +467,23 @@ if (messages.trim().length()>0){
         </p><%
     }
     %>
-        
+
     <!-- following is a table consisting of two columns -->
     <!-- the first column contains the table of elements,      -->
     <!-- the second one contains the ordering buttons          -->
-    
+
     <table width="100%" cellspacing="0"  style="border:0">
         <tr>
-        
+
             <!-- table of elements -->
-            
+
             <td style="width:90%">
                 <table width="100%" cellspacing="0" id="tbl" class="datatable">
-                
+
                     <thead>
-                
+
                     <!-- Delete & Save buttons -->
-                
+
                     <%
                     if (editDstPrm && elems!=null && elems.size()>0){ %>
                         <tr>
@@ -494,14 +494,14 @@ if (messages.trim().length()>0){
                         </tr><%
                     }
                     %>
-                    
+
                     <!-- column headers -->
 
                     <tr>
                         <th align="right" style="padding-right:10px">&nbsp;</th> <!-- checkboxes column -->
-                        
+
                         <th scope="col" class="scope-col">Short name</th>
-                        
+
                         <%
                         if (hasGIS){ %>
                             <th scope="col" class="scope-col">
@@ -512,11 +512,11 @@ if (messages.trim().length()>0){
                             </th><%
                         }
                         %>
-                        
+
                         <th scope="col" class="scope-col">Datatype</th>
                         <th scope="col" class="scope-col">Element type</th>
                         <th scope="col" class="scope-col">Mandatory</th>
-                        
+
                         <%
                         boolean hasFixedValueElements = false;
                         for (int i=0; elems!=null && i<elems.size(); i++){
@@ -535,28 +535,28 @@ if (messages.trim().length()>0){
                     </thead>
 
                     <tbody id="tbl_body">
-                    
+
                     <%
-                    
+
                     Hashtable types = new Hashtable();
                     types.put("CH1", "Fixed values");
                     types.put("CH2", "Quantitative");
-                    
+
                     int maxPos = 0;
-                    
+
                     // the elements display loop
                     boolean hasMarkedElems = false;
                     boolean hasForeignKeys = false;
                     boolean hasCommonElms = false;
                     StringBuffer strElemIDs = new StringBuffer();
                     for (int i=0; elems!=null && i<elems.size(); i++){
-                        
+
                         DataElement elem = (DataElement)elems.get(i);
-                        
+
                         if (strElemIDs.length()>0)
                             strElemIDs.append(",");
                         strElemIDs.append(elem.getID());
-                        
+
                         String gis = elem.getGIS()!=null ?  gis = elem.getGIS() : "no GIS";
                         String delem_name=elem.getShortName();
                         String elemType = (String)types.get(elem.getType());
@@ -567,13 +567,13 @@ if (messages.trim().length()>0){
                         int posInTable = Integer.parseInt(elem.getPositionInTable());
                         if (posInTable > maxPos) maxPos = posInTable;
                         boolean elmCommon = elem.getNamespace()==null || elem.getNamespace().getID()==null;
-                        
+
                         String elemLink = null;
                         if (!elmCommon)
                             elemLink = "data_element.jsp?delem_id=" + elem.getID() + "&amp;ds_id=" + dsID + "&amp;table_id=" + tableID;
                         else
                             elemLink = "data_element.jsp?delem_id=" + elem.getID();
-                        
+
                         // see if the element is part of any foreign key relations
                         Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());
                         boolean fks = (_fks!=null && _fks.size()>0) ? true : false;
@@ -588,22 +588,22 @@ if (messages.trim().length()>0){
                         if (elmCommon){
                             hasCommonElms = true;
                         }
-                        
+
                         String valueDelimiter = elem.getValueDelimiter();
                         if (valueDelimiter==null){
                             valueDelimiter = "";
                         }
-                        
+
                         String mandatoryFlag = elem.isMandatoryFlag() ? "T" : "F";
                         String mandatoryFlagChecked = elem.isMandatoryFlag() ? "checked=\"checked\"" : "";
-                        
+
                         String trStyle = (i%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
                     %>
-                        
+
                         <!-- element row -->
-                        
+
                         <tr id="tr<%=elem.getID()%>" onclick="tbl_obj.selectRow(this);">
-        
+
                             <td style="text-align: right; padding-right:10px">
                                 <%
                                 if (editDstPrm){
@@ -616,7 +616,7 @@ if (messages.trim().length()>0){
                                 }
                                 %>
                             </td>
-                    
+
                             <td style="text-align:left; padding-left:5px; padding-right:10px">
                                 <%
                                 // red asterisk
@@ -626,7 +626,7 @@ if (messages.trim().length()>0){
                                     <span title="<%=Util.processForDisplay(elemWorkingUser, true)%>" style="color:red">* </span><%
                                     hasMarkedElems = true;
                                 }
-                                    
+
                                 // short name
                                 if (elemDefinition!=null){ %>
                                     <a title="<%=Util.processForDisplay(elemDefinition, true)%>" href="<%=elemLink%>"><%=Util.processForDisplay(elem.getShortName())%></a><%
@@ -634,7 +634,7 @@ if (messages.trim().length()>0){
                                 else { %>
                                     <a href="<%=elemLink%>"><%=Util.processForDisplay(delem_name)%></a><%
                                 }
-                                
+
                                 // common elm indicator
                                 if (elmCommon){ %>
                                     <sup class="commonelm">C</sup>
@@ -645,7 +645,7 @@ if (messages.trim().length()>0){
                                         </a><%
                                     }
                                 }
-                                
+
                                 // FK indicator
                                 if (fks){ %>
                                     &nbsp;
@@ -657,7 +657,7 @@ if (messages.trim().length()>0){
                                 }
                                 %>
                             </td>
-                            
+
                             <%
                             if (hasGIS){ %>
                                 <td style="text-align: left; padding-right:10px">
@@ -665,11 +665,11 @@ if (messages.trim().length()>0){
                                 </td><%
                             }
                             %>
-                            
+
                             <td style="text-align: left; padding-right:10px">
                                 <%=Util.processForDisplay(datatype)%>
                             </td>
-                            
+
                             <td style="text-align: left; padding-right:10px">
                                 <% if (elem.getType().equals("CH1")){ %>
                                     <a href="javascript:clickLink('fixed_values.jsp?delem_id=<%=elem.getID()%>&amp;delem_name=<%=Util.processForDisplay(elem.getShortName())%>')"><%=Util.processForDisplay(elemType)%></a>
@@ -679,12 +679,12 @@ if (messages.trim().length()>0){
                                 <input type="hidden" name="oldpos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>"/>
                                 <input type="hidden" name="pos_<%=elem.getID()%>" value="<%=elem.getPositionInTable()%>"/>
                             </td>
-                            
+
                             <td style="text-align: left; padding-right:10px">
                                 <input type="hidden" name="oldmndtry_<%=elem.getID()%>" value="<%=mandatoryFlag%>"/>
                                 <input type="checkbox" name="mndtry_<%=elem.getID()%>"  value="T" onclick="tbl_obj.clickOtherObject();" <%=mandatoryFlagChecked%>/>
                             </td>
-                            
+
                             <%
                             if (hasFixedValueElements){
                                 if (elem.getType()!=null && elem.getType().equals("CH1")){
@@ -698,7 +698,7 @@ if (messages.trim().length()>0){
                                                 %>
                                                 <option value="<%=entry.getKey()%>" <%=selected%>><%=entry.getValue()%></option><%
                                             }
-                                            %>                                
+                                            %>
                                         </select>
                                         <input type="hidden" name="olddelim_<%=elem.getID()%>" value="<%=valueDelimiter%>"/>
                                     </td><%
@@ -708,16 +708,16 @@ if (messages.trim().length()>0){
                                 }
                             }
                             %>
-                        
+
                         </tr>
                         <%
                     } // end elements display loop
                     %>
-                    
+
                     <tr style="height:10px;">
                         <td style="width:100%" colspan="<%=String.valueOf(colCount)%>"></td>
                     </tr>
-                    
+
                     <%
                     // explanations about red asterisks, fks and c-signs
                     if (false){%>
@@ -742,13 +742,13 @@ if (messages.trim().length()>0){
                         </tr><%
                     }
                     %>
-                    
+
                     </tbody>
                 </table>
             </td>
-            
+
             <!-- ordering buttons -->
-            
+
             <%
             if (elems.size()>1 && editDstPrm){ %>
                 <td style="text-align:left;padding-right:10px;vertical-align:middle;height:10px;width:10%">
@@ -770,22 +770,22 @@ if (messages.trim().length()>0){
                         </tr>
                         <tr>
                             <td>
-                                <a href="javascript:moveRowDown()"><img alt="" src="images/move_down.gif" style="border:0" title="move selected row down"/></a>            
+                                <a href="javascript:moveRowDown()"><img alt="" src="images/move_down.gif" style="border:0" title="move selected row down"/></a>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <a href="javascript:moveLast()"><img alt="" src="images/move_last.gif" style="border:0" title="move selected row last"/></a>            
+                                <a href="javascript:moveLast()"><img alt="" src="images/move_last.gif" style="border:0" title="move selected row last"/></a>
                             </td>
                         </tr>
-                    </table>                    
+                    </table>
                 </td><%
             }
             %>
         </tr>
-        
+
     </table>
-    
+
     <%
     if (hasGIS){ %>
         <p>
@@ -795,8 +795,8 @@ if (messages.trim().length()>0){
         </p><%
     }
     %>
-    
-    <div style="display:none">    
+
+    <div style="display:none">
         <input type="hidden" name="mode" value="delete"/>
         <input type="hidden" name="ds_id" value="<%=dsID%>"/>
         <input type="hidden" name="ds_name" value="<%=Util.processForDisplay(dsName, true)%>"/>
@@ -805,7 +805,7 @@ if (messages.trim().length()>0){
         <input type="hidden" name="copy_elem_id" value=""/>
         <input type="hidden" name="upd_version" value="false"/>
         <input type="hidden" name="str_elem_ids" value="<%=strElemIDs%>"/>
-    </div>    
+    </div>
 </form>
 
 <form id="common_elm_link_form" method="post" action="tblelems.jsp">

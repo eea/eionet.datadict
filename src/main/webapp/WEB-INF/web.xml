@@ -84,6 +84,11 @@
 
     </filter>
 
+    <filter>
+        <filter-name>DsTableJspFilter</filter-name>
+        <filter-class>eionet.meta.filters.DsTableJspFilter</filter-class>
+    </filter>
+
     <!-- Filter Mappings -->
 
     <filter-mapping>
@@ -126,6 +131,11 @@
     <filter-mapping>
         <filter-name>CAS Filter</filter-name>
         <url-pattern>/clean.jsp</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>DsTableJspFilter</filter-name>
+        <url-pattern>/dstable.jsp</url-pattern>
     </filter-mapping>
 
     <!-- servlets -->
@@ -259,7 +269,10 @@
         <servlet-name>TablesServlet</servlet-name>
         <servlet-class>eionet.meta.TablesServlet</servlet-class>
     </servlet>
-
+    <servlet>
+        <servlet-name>DatasetsServlet</servlet-name>
+        <servlet-class>eionet.meta.DatasetsServlet</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>DownloadServlet</servlet-name>
         <servlet-class>eionet.meta.DownloadServlet</servlet-class>
@@ -386,6 +399,10 @@
     <servlet-mapping>
         <servlet-name>TablesServlet</servlet-name>
         <url-pattern>/tables/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DatasetsServlet</servlet-name>
+        <url-pattern>/datasets/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DownloadServlet</servlet-name>

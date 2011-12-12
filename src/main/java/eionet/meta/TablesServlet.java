@@ -1,16 +1,17 @@
 package eionet.meta;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import eionet.util.DDServletRequestWrapper;
-import eionet.util.QueryString;
 
 /**
  *
@@ -19,64 +20,94 @@ import eionet.util.QueryString;
  */
 public class TablesServlet extends HttpServlet{
 
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(TablesServlet.class);
+
     /*
      * (non-Javadoc)
-     * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String pathInfo = request.getPathInfo();
-        if (pathInfo==null || pathInfo.length()==0 || pathInfo.equals("/")) {
-            request.getRequestDispatcher("/search_results_tbl.jsp").forward(request, response);
+        if (LOGGER.isTraceEnabled()){
+            LOGGER.trace("Entered request: " + request.getRequestURL());
         }
 
-        String[] pathInfoParts = splitPathInfo(pathInfo);
-        if (pathInfoParts.length==1 && pathInfoParts[0].equals("rdf")) {
-
-            DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
-            wrappedRequest.getRequestDispatcher("/GetRdf").forward(wrappedRequest, response);
+        // If path info is blank or equals to "/", just forward to the list of all tables
+        String pathInfo = request.getPathInfo();
+        if (StringUtils.isBlank(pathInfo) || pathInfo.trim().equals("/")) {
+            request.getRequestDispatcher("/search_results_tbl.jsp").forward(request, response);
             return;
         }
 
-        // at this point we can assume the array length >= 1
-        String tableId = pathInfoParts[0];
-        String mode = "view";
+        String[] pathInfoSegments = StringUtils.split(pathInfo, "/");
 
-        if (pathInfoParts.length>=2) {
-            mode = pathInfoParts[1];
+        // If the path has only one segment and its "rdf" or "add",
+        // then forward to the manifest-RDF of all tables or to add-table-to-dataset page respectively.
+        if (pathInfoSegments.length==1) {
+
+            RequestDispatcher requestDispatcher = null;
+            DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
+            if (pathInfoSegments[0].equals("rdf")){
+                requestDispatcher = wrappedRequest.getRequestDispatcher("/GetRdf");
+            }
+            else if (pathInfoSegments[0].equals("add")){
+                wrappedRequest.addParameterValue("mode", "add");
+                requestDispatcher = wrappedRequest.getRequestDispatcher("/dstable.jsp");
+            }
+
+            if (requestDispatcher!=null){
+                requestDispatcher.forward(wrappedRequest, response);
+                return;
+            }
         }
 
-        if (mode.equals("rdf")) {
+        // At this point we know the array is not empty, and its first segment identifies a table.
+        String tableId = pathInfoSegments[0];
+
+        // The default event is "view", overridden by the path's 2nd segment if such exists.
+        String event = "view";
+        if (pathInfoSegments.length>1) {
+            event = pathInfoSegments[1];
+        }
+
+        // If event is "rdf", forward to the RDF-generating servlet
+        if (event.equals("rdf")) {
 
             DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
             wrappedRequest.addParameterValue("id", tableId);
             wrappedRequest.getRequestDispatcher("/GetRdf").forward(wrappedRequest, response);
         }
-        else if (mode.equals("view") || mode.equals("edit")) {
+        else {
+            // Make sure that the event and table id detected from the path info
+            // will be added as query parameters to the wrapped request.
+            // If the event is "subscribe", add "action=subscribe" query parameter
+            // and set event to "view".
 
-            QueryString qs = new QueryString(request.getContextPath() + "/dstable.jsp");
-            qs.changeParam("table_id", tableId);
-            qs.changeParam("mode", mode);
-            response.sendRedirect(qs.getValue());
+            DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
+            wrappedRequest.addParameterValue("table_id", tableId);
+
+            if (event.equals("subscribe")){
+                wrappedRequest.addParameterValue("mode", "view");
+                wrappedRequest.addParameterValue("action", "subscribe");
+            }
+            else{
+                wrappedRequest.addParameterValue("mode", event);
+            }
+
+            RequestDispatcher requestDispatcher = wrappedRequest.getRequestDispatcher("/dstable.jsp");
+            requestDispatcher.forward(wrappedRequest, response);
         }
     }
 
-    /**
-     *
-     * @param pathInfo
-     * @return
+    /*
+     * (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    protected String[] splitPathInfo(String pathInfo) {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        ArrayList list = new ArrayList();
-        StringTokenizer st = new StringTokenizer(pathInfo, "/");
-        while (st.hasMoreTokens()) {
-            String token = st.nextToken().trim();
-            if (token.length()>0) {
-                list.add(token);
-            }
-        }
-
-        return (String[])list.toArray(new String[list.size()]);
+        DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
+        RequestDispatcher requestDispatcher = wrappedRequest.getRequestDispatcher("/dstable.jsp");
+        requestDispatcher.forward(wrappedRequest, response);
     }
 }

@@ -21,21 +21,21 @@
 
     private String oCompStr=null;
     private int iO=0;
-    
+
     public c_SearchResultEntry(String _oID,String _oDsID,String _oShortName,String _oName,String _oDsName) {
-        
+
             oID        = _oID==null ? "" : _oID;
             oDsID  = _oDsID==null ? "" : _oDsID;
             oShortName    = _oShortName==null ? "" : _oShortName;
             oName= _oName==null ? "" : _oName;
             oDsName    = _oDsName==null ? "" : _oDsName;
-            
+
             oFullName = oName;
 
             if (oName.length() > 60)
                 oName = oName.substring(0,60) + " ...";
     };
-    
+
     public void setComp(int i,int o) {
         switch(i) {
             case 2: oCompStr=oDsName; break;
@@ -45,7 +45,7 @@
             }
         iO=o;
         }
-    
+
     public String toString() {
         return oCompStr;
     }
@@ -53,7 +53,7 @@
     public int compareTo(Object oC1) {
         return iO*oCompStr.compareToIgnoreCase(oC1.toString());
     }
-    
+
 }%>
 
 <%!class c_SearchResultSet {
@@ -66,7 +66,7 @@
     public boolean SortByColumn(Integer oCol,Integer oOrder) {
         if ((iSortColumn!=oCol.intValue()) || (iSortOrder!=oOrder.intValue())) {
             for(int i=0; i<oElements.size(); i++) {
-                c_SearchResultEntry oEntry=(c_SearchResultEntry)oElements.elementAt(i); 
+                c_SearchResultEntry oEntry=(c_SearchResultEntry)oElements.elementAt(i);
                 oEntry.setComp(oCol.intValue(),oOrder.intValue());
             }
             Collections.sort(oElements);
@@ -82,9 +82,9 @@
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     ServletContext ctx = getServletContext();
-    
+
     DDUser user = SecurityUtil.getUser(request);
 
     String short_name = request.getParameter("short_name");
@@ -102,15 +102,15 @@
         oSortCol=null;
         oSortOrder=null;
     }
-    
+
     // if this is no sorting request, then remember the query string in session in order to come back if needed
     if (oSortCol==null){
         String query = request.getQueryString() == null ? "" : request.getQueryString();
         String searchUrl =  request.getRequestURI() + "?" + query;
-        
+
            session.setAttribute(oSearchUrlAttrName, searchUrl);
        }
-       
+
        // The following if block tries to identify if a login has happened in which
     // case it will redirect the response to the query string in session. This
     // happens regardless of weather it's a sorting request or search request.
@@ -118,11 +118,11 @@
     if (rs!=null){
         if (rs.isAuth && user==null || !rs.isAuth && user!=null){
             session.removeAttribute(oSearchCacheAttrName);
-            
+
             response.sendRedirect((String)session.getAttribute(oSearchUrlAttrName));
         }
     }
-       
+
     String pageMode = request.getParameter("sort_column")!=null ? "sort" : "search";
     String tableLink="";
 %>
@@ -154,27 +154,27 @@
     <%@ include file="nmenu.jsp" %>
 
 <div id="workarea">
-            
-            
+
+
                 <!-- search buttons -->
-                
+
                 <div id="drop-operations">
                 <h2>Operations:</h2>
                     <ul>
                         <li><a href="search_table.jsp">Search</a></li>
                     </ul>
                 </div>
-            
+
             <h1>Tables from latest versions of datasets in any status</h1>
             <%
             if (user==null){%>
-                <p class="advise-msg">    
+                <p class="advise-msg">
                     Note: Tables from datasets NOT in <em>Recorded</em> or <em>Released</em> status are inaccessible for anonymous users.
                 </p><%
             }
             %>
-        
-        <!-- the result table -->        
+
+        <!-- the result table -->
         <table width="100%" class="sortable" style="clear:both">
          <col style="width:34%"/>
          <col style="width:22%"/>
@@ -221,24 +221,24 @@
             </tr>
             </thead>
             <tbody>
-            
+
             <%
-            
+
             Connection conn = null;
-            
+
             try { // start the whole page try block
-            
+
             if (pageMode.equals("search")){
-                
+
                 session.removeAttribute(oSearchCacheAttrName);
-                            
+
                 try {
-                    
+
                     // we establish a database connection and create a search engine
                     conn = ConnectionUtil.getConnection();
                     DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
                     searchEngine.setUser(user);
-    
+
                     String srchType = request.getParameter("search_precision");
                     String oper="=";
                     if (srchType != null && srchType.equals("free"))
@@ -246,29 +246,29 @@
                     if (srchType != null && srchType.equals("substr"))
                         oper=" like ";
 
-                    Vector params = new Vector();    
+                    Vector params = new Vector();
                     Enumeration parNames = request.getParameterNames();
                     while (parNames.hasMoreElements()){
                         String parName = (String)parNames.nextElement();
                         if (!parName.startsWith(ATTR_PREFIX))
                             continue;
-                    
+
                         String parValue = request.getParameter(parName);
                         if (parValue.length()==0)
                             continue;
-                        
+
                         DDSearchParameter param =
                             new DDSearchParameter(parName.substring(ATTR_PREFIX.length()), null, oper, "=");
-        
+
                         if (oper!= null && oper.trim().equalsIgnoreCase("like"))
                             param.addValue("'%" + parValue + "%'");
                         else
                             param.addValue("'" + parValue + "'");
                         params.add(param);
                     }
-                    
+
                     Vector dsTables = searchEngine.getDatasetTables(params, short_name, idfier, full_name, definition, oper);
-                    
+
                     // see if any result were found
                     if (dsTables == null || dsTables.size()==0){ %>
                         <tr>
@@ -276,7 +276,7 @@
                                 <%
                                 // prepare message trailer for un-authenticated users
                                 String msgTrailer = user==null ? " for un-authenticated users" : "";
-                                
+
                                 // see if this is a search or just listing all the tables
                                 if (Util.isEmpty(request.getParameter("search_precision"))){ // listing all the tables
                                     %>
@@ -294,12 +294,12 @@
                     }
 
                     DElemAttribute attr = null;
-                    
+
                     c_SearchResultSet oResultSet=new c_SearchResultSet();
                     oResultSet.isAuth = user!=null;
-                    oResultSet.oElements=new Vector(); 
+                    oResultSet.oElements=new Vector();
                     session.setAttribute(oSearchCacheAttrName,oResultSet);
-                    
+
                     for (int i=0; i<dsTables.size(); i++){
                         DsTable table = (DsTable)dsTables.get(i);
                         String table_id = table.getID();
@@ -311,8 +311,8 @@
                         tblName = tblName.length()>60 && tblName != null ? tblName.substring(0,60) + " ..." : tblName;
                         String tblFullName = tblName;
                         String workingUser = table.getDstWorkingUser();
-                        
-                        tableLink = "dstable.jsp?table_id=" + table_id + "&amp;ds_id=" + ds_id + "&amp;ds_name=" + ds_name;
+
+                        tableLink = request.getContextPath() + "/tables/" + table_id;
 
                         String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
                         String regStatus = table.getDstStatus();
@@ -401,19 +401,19 @@
                 else {
                     if ((oSortCol!=null) && (oSortOrder!=null))
                         oResultSet.SortByColumn(oSortCol,oSortOrder);
-                    
+
                     c_SearchResultEntry oEntry;
-                    
+
                     // loop over search result set
                     for (int i=0;i<oResultSet.oElements.size();i++){
-                        
+
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                         String strDisabled = oEntry.clickable ? "" : " class=\"disabled\"";
                         String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
-                        tableLink = "dstable.jsp?table_id=" + oEntry.oID + "&amp;ds_id=" + oEntry.oDsID + "&amp;ds_name=" + oEntry.oDsName;
+                        tableLink = request.getContextPath() + "/tables/" + oEntry.oID;
                         String statusImg   = "images/" + Util.getStatusImage(oEntry.regStatus);
                         String statusTxt   = Util.getStatusRadics(oEntry.regStatus);
-                        
+
                         %>
                         <tr class="<%=zebraClass%>">
                             <%
@@ -435,7 +435,7 @@
                             // 2nd column, table short name
                             %>
                             <td>
-                                <%=Util.processForDisplay(oEntry.oShortName)%>                                
+                                <%=Util.processForDisplay(oEntry.oShortName)%>
                             </td>
                             <%
                             // 3rd column, dataset short name
@@ -474,14 +474,14 @@
                }
         }
         %>
-        
+
         <form id="sort_form" action="search_results_tbl.jsp" method="get">
             <div style="display:none">
                 <input name='sort_column' type='hidden' value='<%=(oSortCol==null)? "":oSortCol.toString()%>'/>
                 <input name='sort_order' type='hidden' value='<%=(oSortOrder==null)? "":oSortOrder.toString()%>'/>
             </div>
         </form>
-        
+
             </div> <!-- workarea -->
             </div> <!-- container -->
       <%@ include file="footer.jsp" %>

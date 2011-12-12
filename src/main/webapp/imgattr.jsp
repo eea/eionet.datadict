@@ -49,7 +49,7 @@
     }
     else if (objType.equals("T")){
         titleType = " table";
-        titleLink = "dstable.jsp?mode=edit&table_id=" + objID;
+        titleLink = request.getContextPath() + "/tables/" + objID;
     }
     else if (objType.equals("DS")){
         request.setAttribute("DD_ERR_MSG", "Images not allowed for datasets. Use data model instead.");

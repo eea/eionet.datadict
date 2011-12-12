@@ -34,7 +34,7 @@ public class DefinitionUrls extends HashMap<Class,String>{
         }
 
         put(Dataset.class, urlPrefix + "dataset.jsp?ds_id=");
-        put(DsTable.class, urlPrefix + "dstable.jsp?table_id=");
+        put(DsTable.class, urlPrefix + "/tables/");
         put(DataElement.class, urlPrefix + "data_element.jsp?delem_id=");
     }
 

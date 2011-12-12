@@ -124,12 +124,13 @@ public class DsTable implements Comparable {
     }
 
     public boolean isWorkingCopy() {
-        if (workingCopy==null)
+        if (workingCopy==null) {
             return false;
-        else if (workingCopy.equals("Y"))
+        } else if (workingCopy.equals("Y")) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     public void setWorkingCopy(String workingCopy) {
@@ -178,14 +179,16 @@ public class DsTable implements Comparable {
 
 
     public Vector getVersioningAttributes() {
-        if (simpleAttrs==null)
+        if (simpleAttrs==null) {
             return null;
+        }
 
         Vector set = new Vector();
         for (int i=0; i<simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
-            if (attr.effectsVersion())
+            if (attr.effectsVersion()) {
                 set.add(attr);
+            }
         }
 
         return set;
@@ -196,8 +199,9 @@ public class DsTable implements Comparable {
         DElemAttribute attr = null;
         for (int i=0; i<simpleAttrs.size(); i++) {
             attr = (DElemAttribute)simpleAttrs.get(i);
-            if (attr.getShortName().equalsIgnoreCase(name))
+            if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr.getValue();
+            }
         }
 
         return null;
@@ -208,15 +212,17 @@ public class DsTable implements Comparable {
         // look from simple attributes
         for (int i=0; i<simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
-            if (attr.getShortName().equalsIgnoreCase(name))
+            if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
+            }
         }
 
         // if it wasn't in the simple attributes, look from complex ones
         for (int i=0; i<complexAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
-            if (attr.getShortName().equalsIgnoreCase(name))
+            if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
+            }
         }
 
         return null;
@@ -256,16 +262,19 @@ public class DsTable implements Comparable {
 
     public int compareTo(Object o) {
 
-        if (!o.getClass().getName().endsWith("DsTable")) return 1;
+        if (!o.getClass().getName().endsWith("DsTable")) {
+            return 1;
+        }
 
         DsTable oTbl = (DsTable)o;
         String oCompStr = oTbl.getCompStr();
-        if (oCompStr==null && compStr==null)
+        if (oCompStr==null && compStr==null) {
             return 0;
-        else if (oCompStr==null)
+        } else if (oCompStr==null) {
             return 1;
-        else if (compStr==null)
+        } else if (compStr==null) {
             return -1;
+        }
 
         return compStr.compareToIgnoreCase(oCompStr);
     }
@@ -273,25 +282,27 @@ public class DsTable implements Comparable {
     public String getRelativeTargetNs() {
 
         if (Util.isEmpty(dstIdentifier)) {
-            if (Util.isEmpty(parentNS))
+            if (Util.isEmpty(parentNS)) {
                 return "";
-            else
+            } else {
                 return "/namespaces/" + parentNS;
-        }
-        else
+            }
+        } else {
             return "/datasets/" + dstIdentifier;
+        }
     }
 
     public String getRelativeCorrespNs() {
 
         if (Util.isEmpty(dstIdentifier)) {
-            if (Util.isEmpty(nsID))
+            if (Util.isEmpty(nsID)) {
                 return "";
-            else
+            } else {
                 return "/namespaces/" + nsID;
-        }
-        else
+            }
+        } else {
             return "/datasets/" + dstIdentifier + "/tables/" + identifier;
+        }
     }
 
     /*
@@ -299,22 +310,18 @@ public class DsTable implements Comparable {
      */
     public String getReferenceURL() {
 
-        if (getIdentifier()==null)
+        if (getIdentifier()==null) {
             return null;
+        }
 
         StringBuffer buf = new StringBuffer();
 
         String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-        if (jspUrlPrefix!=null)
+        if (jspUrlPrefix!=null) {
             buf.append(jspUrlPrefix);
-
-        buf.append("dstable.jsp?table_idf=");
-        buf.append(getIdentifier());
-
-        if (getParentNs()!=null) {
-            buf.append("&pns=");
-            buf.append(getParentNs());
         }
+
+        buf.append("/datasets/latest/").append(getDstIdentifier()).append("/tables/").append(getIdentifier());
 
         return buf.toString();
     }

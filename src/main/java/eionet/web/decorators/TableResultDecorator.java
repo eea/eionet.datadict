@@ -27,6 +27,8 @@ import org.displaytag.decorator.TableDecorator;
 
 import eionet.dao.domain.DataSetTable;
 import eionet.meta.DDUser;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 
 /**
@@ -44,15 +46,18 @@ public class TableResultDecorator extends TableDecorator {
         if (status != null) {
             DDUser user = SecurityUtil.getUser((HttpServletRequest) getPageContext().getRequest());
             if (user != null && user.isAuthentic()) {
-                if (status.equals("Incomplete") || status.equals("Candidate") || status.equals("Qualified"))
+                if (status.equals("Incomplete") || status.equals("Candidate") || status.equals("Qualified")) {
                     clickable = true;
+                }
             }
         }
 
         if (clickable) {
-            String url =
-                    "dstable.jsp?table_id=" + table.getId() + "&amp;ds_id=" + table.getDataSetId() + "&amp;ds_name="
-                            + table.getDataSetName();
+
+            String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+            jspUrlPrefix = jspUrlPrefix==null ? "" : jspUrlPrefix;
+
+            String url = jspUrlPrefix + "/tables/" + table.getId();
             return "<a href=\"" + url + "\">" + table.getName() + "</a>";
         }
 

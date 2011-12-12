@@ -132,7 +132,7 @@
     String copy_tbl_id = request.getParameter("copy_tbl_id");
     String dsID = request.getParameter("ds_id");
     String dsName = request.getParameter("ds_name");
-    String parentNs = request.getParameter("pns");
+    String datasetIdf = request.getParameter("dataset_idf");
     String action = request.getParameter("action");
 
     mode = request.getParameter("mode");
@@ -149,8 +149,8 @@
         }
     }
     else if (mode.equals("view")){
-        if (Util.isEmpty(tableID) && (Util.isEmpty(tableIdf) || Util.isEmpty(parentNs))){
-            request.setAttribute("DD_ERR_MSG", "Missing request parameter: table_id or (table_idf and pns)");
+        if (Util.isEmpty(tableID) && (Util.isEmpty(tableIdf) || Util.isEmpty(datasetIdf))){
+            request.setAttribute("DD_ERR_MSG", "Missing request parameter: table_id or (table_idf and dataset_idf)");
             request.getRequestDispatcher("error.jsp").forward(request, response);
             return;
         }
@@ -172,7 +172,7 @@
 
     // if requested by alphanumeric identifier and not by auto-generated id,
     // then it means the table's latest version is requested
-    boolean isLatestRequested = mode.equals("view") && !Util.isEmpty(tableIdf) && !Util.isEmpty(parentNs) && Util.isEmpty(tableID);
+    boolean isLatestRequested = mode.equals("view") && !Util.isEmpty(tableIdf) && !Util.isEmpty(datasetIdf) && Util.isEmpty(tableID);
 
     //// handle the POST request//////////////////////
     //////////////////////////////////////////////////
@@ -211,29 +211,38 @@
 
         // disptach the POST request
         ////////////////////////////
-        String redirUrl = "";
+        String redirUrl = null;
         if (mode.equals("add")){
             // if this was add, send to the added copy
             String id = handler.getLastInsertID();
-            if (id!=null && id.length()>0)
-                redirUrl = redirUrl + "dstable.jsp?table_id=" + id;
-            if (dsName!=null)
-                redirUrl = redirUrl + "&ds_name=" + dsName;
-            if (dsID!=null)
-                redirUrl = redirUrl + "&ds_id=" + dsID;
+            if (id!=null && id.length()>0){
+                redirUrl = request.getContextPath() + "/tables/" + id;
+            }
 
-            if (history!=null)
+            if (dsName!=null || dsID!=null){
+                String queryStr = "/?";
+                if (dsName!=null){
+                    queryStr = queryStr + "ds_name=" + dsName;
+                }
+                if (dsID!=null){
+                    if (!queryStr.endsWith("?")){
+                        queryStr = queryStr + "&";
+                    }
+                    queryStr = queryStr + "ds_id=" + dsID;
+                }
+            }
+
+            if (history!=null){
                 history.remove(history.getCurrentIndex());
+            }
         }
         else if (mode.equals("edit")){
             // if this was a "saveclose", send to view mode, otherwise stay in edit mode
-            QueryString qs = new QueryString(currentUrl);
+            redirUrl = request.getContextPath() + "/tables/" + tableID;
             String strSaveclose = request.getParameter("saveclose");
-            if (strSaveclose!=null && strSaveclose.equals("true"))
-                qs.changeParam("mode", "view");
-            else
-                qs.changeParam("mode", "edit");
-            redirUrl =qs.getValue();
+            if (strSaveclose==null || strSaveclose.equals("false")){
+                redirUrl = redirUrl + "/edit";
+            }
         }
         else if (mode.equals("delete")){
             // if dataset id number given, send to view mode of the dataset working copy, otherwise to home page
@@ -244,10 +253,12 @@
         }
         else if (mode.equals("copy")){
             String id = handler.getLastInsertID();
-            if (id!=null && id.length()>0)
-                redirUrl = redirUrl + "dstable.jsp?mode=edit&table_id=" + id;
-            if (history!=null)
+            if (id!=null && id.length()>0){
+                redirUrl = request.getContextPath() + "/tables/" + id + "/edit";
+            }
+            if (history!=null){
                 history.remove(history.getCurrentIndex());
+            }
         }
 
         response.sendRedirect(redirUrl);
@@ -275,7 +286,7 @@
                     v.add("Recorded");
                     v.add("Released");
                 }
-                dsTable = searchEngine.getLatestTbl(tableIdf, parentNs, v);
+                dsTable = searchEngine.getLatestTbl(tableIdf, datasetIdf, v);
                 if (dsTable!=null){
                     tableID = dsTable.getID();
                 }
@@ -483,7 +494,7 @@
         }
 
         function goTo(mode, id){
-            document.location.assign("dstable.jsp?mode=" + mode + "&table_id=" + id + "&ds_id=<%=dsID%>&ds_name=<%=dsName%>");
+            document.location.assign("<%=request.getContextPath()%>/tables/" + id + "/" + mode + "/?&ds_id=<%=dsID%>&ds_name=<%=dsName%>");
         }
 
         function openElements(uri){
@@ -616,7 +627,7 @@ else if (mode.equals("add"))
                     <%
                     if (mode.equals("view") && editDstPrm==true) {
                     %>
-                    <li><a href="<%=request.getContextPath()%>/dstable.jsp?mode=edit&amp;table_id=<%=tableID%>&amp;ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit metadata</a></li>
+                    <li><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/edit/?ds_id=<%=dsID%>&amp;ds_name=<%=dsName%>">Edit metadata</a></li>
                     <%
                     // elements link
                     String elemLink = request.getContextPath() + "/tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
@@ -627,7 +638,7 @@ else if (mode.equals("add"))
                     <%
                     }
                     if (subscribe) {%>
-                           <li><a href="<%=request.getContextPath()%>/dstable.jsp?action=subscribe&amp;table_id=<%=tableID%>">Subscribe</a></li><%
+                           <li><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/subscribe">Subscribe</a></li><%
                        }
                     %>
                 </ul>
@@ -644,7 +655,7 @@ else if (mode.equals("add"))
 
         <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="<%=request.getContextPath()%>/dataset.jsp?ds_id=<%=dsID%>"><%=Util.processForDisplay(dsName)%></a> dataset<%}%></h1>
 
-        <form id="form1" method="post" action="<%=request.getContextPath()%>/dstable.jsp" style="clear:both">
+        <form id="form1" method="post" action="<%=request.getContextPath()%>/tables" style="clear:both">
 
             <!--=======================-->
             <!-- main table inside div -->
@@ -917,8 +928,8 @@ else if (mode.equals("add"))
                                         <%
                                         String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
                                         if (mode.equals("view") && jspUrlPrefix!=null){
-                                            String refUrl = jspUrlPrefix + "dstable.jsp?table_idf=" +
-                                                            dsTable.getIdentifier() + "&amp;pns=" + dsTable.getParentNs();
+
+                                            String refUrl = jspUrlPrefix + "/datasets/latest/" + dsTable.getDstIdentifier() + "/tables/" + dsTable.getIdentifier();
                                             %>
                                             <tr class="zebra<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">

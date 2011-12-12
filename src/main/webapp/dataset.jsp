@@ -621,7 +621,7 @@
                 }
             }
         }
-         
+
         function validForXMLTag(str){
 
             // if empty string not allowed for XML tag
@@ -1542,10 +1542,12 @@ else if (mode.equals("add"))
 
                                                         DsTable table = (DsTable)tables.get(i);
                                                         String tableLink = "";
-                                                        if (isLatestRequested)
-                                                            tableLink = "dstable.jsp?table_idf=" + table.getIdentifier() + "&amp;pns=" + dataset.getNamespaceID();
-                                                        else
-                                                            tableLink = "dstable.jsp?table_id=" + table.getID();
+                                                        if (isLatestRequested){
+                                                            tableLink = request.getContextPath() + "/datasets/latest/" + dataset.getIdentifier() + "/tables/" + table.getIdentifier();
+                                                        }
+                                                        else{
+                                                            tableLink = request.getContextPath() + "/tables/" + table.getID();
+                                                        }
 
                                                         String tblFullName = "";
                                                         attributes = searchEngine.getAttributes(table.getID(), "T", DElemAttribute.TYPE_SIMPLE);

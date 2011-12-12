@@ -335,7 +335,7 @@ else if (dispParentType.equals("DS")){
 }
 else if (dispParentType.equals("T")){
     dispParentType = "table";
-    parentLink.append("dstable.jsp?table_id=");
+    parentLink.append(request.getContextPath() + "/tables/");
 }
 else if (dispParentType.equals("E")){
     dispParentType = "element";

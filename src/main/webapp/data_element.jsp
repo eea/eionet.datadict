@@ -389,8 +389,9 @@
                 else
                     redirUrl = "search.jsp?feedback=undo_checkout";
                 if (!elmCommon) {
-                    if (tableID != null && tableID.length() > 0)
-                        redirUrl = "dstable.jsp?table_id=" + tableID;
+                    if (tableID != null && tableID.length() > 0){
+                        redirUrl = request.getContextPath() + "/tables/" + tableID;
+                    }
                 }
             }
 
@@ -1631,7 +1632,7 @@
                                                         %>
                                                     <td class="simple_attr_value">
                                                         <em>
-                                                            <a href="dstable.jsp?table_id=<%=dsTable.getID()%>">
+                                                            <a href="<%=request.getContextPath()%>/tables/<%=dsTable.getID()%>">
                                                                 <%=Util.processForDisplay(dsTable.getShortName())%>
                                                             </a>
                                                         </em>
@@ -2541,13 +2542,10 @@
                                                                             String tblLink = "";
                                                                             String dstLink = "";
                                                                             if (isLatestRequested) {
-                                                                                tblLink = "dstable.jsp?table_idf="
-                                                                                        + tbl.getIdentifier() + "&amp;pns="
-                                                                                        + tbl.getParentNs();
-                                                                                dstLink = "dataset.jsp?ds_idf="
-                                                                                        + tbl.getDstIdentifier();
+                                                                                tblLink = request.getContextPath() + "/datasets/latest/" + tbl.getDstIdentifier() + "/tables/" + tbl.getIdentifier();
+                                                                                dstLink = "dataset.jsp?ds_idf=" + tbl.getDstIdentifier();
                                                                             } else {
-                                                                                tblLink = "dstable.jsp?table_id=" + tbl.getID();
+                                                                                tblLink = request.getContextPath() + "/tables/" + tbl.getID();
                                                                                 dstLink = "dataset.jsp?ds_id=" + tbl.getDatasetID();
                                                                             }
 

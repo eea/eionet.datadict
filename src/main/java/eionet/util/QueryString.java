@@ -20,7 +20,14 @@
  */
 package eionet.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
+
+import eionet.meta.DDRuntimeException;
 
 
 /**
@@ -64,10 +71,11 @@ public class QueryString{
      */
     public String changeParam(String param, String value) {
 
-        if (hasParam(param))
+        if (hasParam(param)) {
             change(param, value);
-        else
+        } else {
             append(param, value);
+        }
 
         return queryString;
     }
@@ -98,8 +106,9 @@ public class QueryString{
      */
     private boolean hasParam(String param) {
 
-        if (queryString.indexOf(param + "=")>0)
+        if (queryString.indexOf(param + "=")>0) {
             return true;
+        }
         return false;
     }
 
@@ -123,14 +132,17 @@ public class QueryString{
     private void remove(String param) {
 
         int i=queryString.indexOf(param);
-        if (i<1) return;
+        if (i<1) {
+            return;
+        }
 
         int and=queryString.indexOf("&", i);
 
-        if (and>0)
+        if (and>0) {
             queryString = queryString.substring(0,i-1) + queryString.substring(and);
-        else
+        } else {
             queryString = queryString.substring(0,i-1);
+        }
     }
 
     /**
@@ -141,7 +153,9 @@ public class QueryString{
     private void change(String param, String value) {
 
         int i=queryString.indexOf(param);
-        if (i<1) return;
+        if (i<1) {
+            return;
+        }
         String begin=queryString.substring(0, i);
         String str=queryString.substring(i);
         int j = str.indexOf("&");
@@ -157,13 +171,19 @@ public class QueryString{
      */
     public boolean equals(String s) {
 
-        if (queryString.equals(s)) return true;
+        if (queryString.equals(s)) {
+            return true;
+        }
 
         int sep = queryString.indexOf("?");
         int sep2 = s.indexOf("?");
         if (sep>0) {
-            if (sep!=sep2) return false;
-            if (!queryString.substring(0,sep).equalsIgnoreCase(s.substring(0,sep))) return false;
+            if (sep!=sep2) {
+                return false;
+            }
+            if (!queryString.substring(0,sep).equalsIgnoreCase(s.substring(0,sep))) {
+                return false;
+            }
 
             String query = queryString.substring(sep+1);
             StringTokenizer tokens = new StringTokenizer(query, "&");
@@ -171,13 +191,20 @@ public class QueryString{
             StringTokenizer tokens2 = new StringTokenizer(query2, "&");
 
 
-            if (tokens.countTokens()!=tokens2.countTokens()) return false;
+            if (tokens.countTokens()!=tokens2.countTokens()) {
+                return false;
+            }
             boolean ok = false;
             while (tokens.hasMoreTokens()) {
                 String t=tokens.nextToken();
-                while (tokens2.hasMoreTokens())
-                    if (t.equals(tokens2.nextToken())) ok = true;
-                if (ok==false) return false;
+                while (tokens2.hasMoreTokens()) {
+                    if (t.equals(tokens2.nextToken())) {
+                        ok = true;
+                    }
+                }
+                if (ok==false) {
+                    return false;
+                }
                 ok=false;
                 tokens2 = new StringTokenizer(query2, "&");
             }
@@ -189,5 +216,56 @@ public class QueryString{
         return true;
     }
 
+    /**
+     *
+     * @param parameterMap
+     * @param encoding
+     * @return
+     */
+    public static String toQueryString(Map parameterMap, String encoding){
+
+        if (parameterMap==null || parameterMap.isEmpty()){
+            return "";
+        }
+
+        StringBuilder result = new StringBuilder();
+        Set entrySet = parameterMap.entrySet();
+
+        try {
+            for (Iterator entryIter = entrySet.iterator(); entryIter.hasNext();){
+
+                Map.Entry entry = (Map.Entry)entryIter.next();
+                String key = entry.getKey().toString();
+
+                Object value = entry.getValue();
+                if (value!=null){
+                    if (value instanceof String[]){
+                        String[] values = (String[]) value;
+                        for (int i = 0; i < values.length; i++) {
+                            if (result.length()>0){
+                                result.append("&");
+                            }
+                            result.append(URLEncoder.encode(key, encoding)).append("=");
+                            result.append(URLEncoder.encode(values[i], encoding));
+                        }
+                    }
+                    else if (value instanceof Iterable){
+                        Iterable values = (Iterable) value;
+                        for (Iterator iter = values.iterator(); iter.hasNext();){
+                            if (result.length()>0){
+                                result.append("&");
+                            }
+                            result.append(URLEncoder.encode(key, encoding)).append("=");
+                            result.append(URLEncoder.encode(iter.next().toString(), encoding));
+                        }
+                    }
+                }
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new DDRuntimeException(e);
+        }
+
+        return result.length()==0 ? "" : "?" + result;
+    }
 }
 

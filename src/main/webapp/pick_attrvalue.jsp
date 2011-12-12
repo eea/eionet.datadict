@@ -7,9 +7,9 @@
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
-    ServletContext ctx = getServletContext();            
-    
+
+    ServletContext ctx = getServletContext();
+
     String type = request.getParameter("type");
     String attr_id = request.getParameter("attr_id");
     if (type == null) type = "?";
@@ -18,16 +18,16 @@
         <b>Attribute id paramater is missing!</b>
         <%
         return;
-        
+
     }
 
     Connection conn = null;
 
     try { // start the whole page try block
-        
+
     conn = ConnectionUtil.getConnection();
     DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-    
+
     Vector attrValues=null;
 
     Vector v = searchEngine.getDElemAttributes(attr_id,type);
@@ -37,15 +37,15 @@
     Vector attrFields = searchEngine.getAttrFields(attr_id);
 
     if (type.equals(DElemAttribute.TYPE_COMPLEX))
-         attrValues = searchEngine.getComplexAttributeValues(attr_id);    
+         attrValues = searchEngine.getComplexAttributeValues(attr_id);
     else
-         attrValues = searchEngine.getSimpleAttributeValues(attr_id);    
-         
+         attrValues = searchEngine.getSimpleAttributeValues(attr_id);
+
     String requesterQrystr = request.getParameter("requester_qrystr");
     if (requesterQrystr==null){
         %>
         <b>Missing request parameter: requester_qrystr</b><%
-        return;        
+        return;
     }
 %>
 
@@ -57,19 +57,19 @@
         // <![CDATA[
 
             function selectComplex(idx){
-                
+
                 var url = "complex_attr.jsp?<%=requesterQrystr%>";
                 var field_ids = document.forms["form1"].elements["field_ids"];
                 if (field_ids.length>0){
-                    for (var i=0; i<field_ids.length;i++){                        
+                    for (var i=0; i<field_ids.length;i++){
                         field_id = document.forms["form1"].elements["field_ids"][i].value;
                         url = url + "&<%=AttrFieldsHandler.FLD_PREFIX%>" + field_id + "=" + escape(document.forms["form1"].elements["field_"+field_id][idx+1].value);
                     }
                 }
-                
+
                 document.location.assign(url);
             }
-            
+
         // ]]>
         </script>
     </head>
@@ -83,7 +83,7 @@
     <%@ include file="nmenu.jsp" %>
 
     <div id="workarea">
-    
+
         <%
         StringBuffer parentLink = new StringBuffer();
         String dispParentType = request.getParameter("parent_type");
@@ -95,28 +95,33 @@
         }
         else if (dispParentType.equals("T")){
             dispParentType = "table";
-            parentLink.append("dstable.jsp?table_id=");
+            parentLink.append(request.getContextPath() + "/tables/");
         }
-        else if (dispParentType.equals("E")){            
+        else if (dispParentType.equals("E")){
             dispParentType = "element";
             parentLink.append("data_element.jsp?delem_id=");
         }
-        
+
         String dispParentName = request.getParameter("parent_name");
-        if (dispParentName==null)
+        if (dispParentName==null){
             dispParentName = "";
-        
-        if (parentLink.length()>0)
-            parentLink.append(request.getParameter("parent_id")).append("&amp;mode=edit");
-        
+        }
+
+        if (parentLink.length()>0){
+            parentLink.append(request.getParameter("parent_id"));
+            if (!dispParentType.equals("table")){
+                parentLink.append("&amp;mode=edit");
+            }
+        }
+
         %>
         <h2>You are selecting a value for <a href="complex_attr.jsp?<%=Util.processForDisplay(requesterQrystr, true, true)%>"><%=attrName%></a> of <a href="<%=parentLink%>"><%=dispParentName%></a> <%=dispParentType%></h2>
-        
-        <div style="font-size:0.7em;clear:right;margin-bottom:10px;margin-top:10px">            
+
+        <div style="font-size:0.7em;clear:right;margin-bottom:10px;margin-top:10px">
             Click the link in the first column of the value-row you want to select.<br/>
             Links in other columns are outside links.
         </div>
-                
+
         <form id="form1" action="">
             <div style="overflow:auto">
             <table class="datatable" style="width:100%" cellspacing="0" cellpadding="0">
@@ -134,19 +139,19 @@
                     }
                     %>
                 </tr>
-                
+
                 <%
                 if (attrValues!=null && attrValues.size()>0){
-                    
+
                     for (int j=0; attrValues!=null && j<attrValues.size();j++){
-                        
+
                         String trStyle = (j%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
                         Hashtable rowHash = (Hashtable)attrValues.get(j);
                         %>
                         <tr <%=trStyle%>>
                             <%
                             for (int t=0; t<attrFields.size(); t++){
-                                
+
                                 Hashtable hash = (Hashtable)attrFields.get(t);
                                 String fieldID = (String)hash.get("id");
                                 String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
@@ -165,12 +170,12 @@
                                     %>
                                     <input type="hidden" name="field_<%=fieldID%>" value="<%=Util.processForDisplay(fieldValue, true)%>"/>
                                 </td><%
-                            }                    
+                            }
                             %>
                         </tr><%
                     }
                 }
-                %>    
+                %>
                 <tr><td>&nbsp;</td></tr>
             </table>
             </div>

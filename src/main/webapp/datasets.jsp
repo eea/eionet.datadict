@@ -129,9 +129,9 @@
     boolean isSearchForWorkingCopies = (_isSearchForWorkingCopies!=null && _isSearchForWorkingCopies.equals("true")) ? true : false;
     boolean isIncludeHistoricVersions = request.getParameter("incl_histver")!=null && request.getParameter("incl_histver").equals("true");
     String feedbackValue = null;
-    
+
     String pageMode = request.getParameter("sort_column")!=null ? "sort" : "search";
-    
+
      // Feedback messages
     if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("checkout")) {
         feedbackValue = "Working copy successfully created!";
@@ -372,9 +372,9 @@
                         <div class="system-msg">
                         <%= feedbackValue %>
                         </div>
-                    <%  
+                    <%
                     }
-            
+
                     if (!restore && isSearchForWorkingCopies){ %>
                         <h1>Working copies of dataset definitions</h1><%
                     }
@@ -619,8 +619,8 @@
                             for (int c=0; tables!=null && c<tables.size(); c++){
 
                                 DsTable table = (DsTable)tables.get(c);
-                                StringBuffer tableLink = new StringBuffer("dstable.jsp?table_id=");
-                                tableLink.append(table.getID()).append("&amp;ds_id=").append(ds_id).append("&amp;ds_name=").append(ds_name);
+                                StringBuffer tableLink = new StringBuffer(request.getContextPath());
+                                tableLink.append("/tables/").append(table.getID());
 
                                 // it is probably less confusing if there are no links for tables of working copies
                                 if (isSearchForWorkingCopies){ %>
@@ -739,9 +739,8 @@
                                 for (int c=0; tables!=null && c<tables.size(); c++){
 
                                     DsTable table = (DsTable)tables.get(c);
-                                    StringBuffer tableLink = new StringBuffer("dstable.jsp?table_id=");
-                                    tableLink.append(table.getID()).append("&amp;ds_id=").
-                                    append(oEntry.oID).append("&amp;ds_name=").append(oEntry.oShortName);
+                                    StringBuffer tableLink = new StringBuffer(request.getContextPath());
+                                    tableLink.append("/tables/").append(table.getID());
 
                                     // it is probbaly less confusing if there are no links for tables of working copies
                                     if (isSearchForWorkingCopies){ %>

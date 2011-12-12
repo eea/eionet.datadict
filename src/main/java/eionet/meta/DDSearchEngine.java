@@ -58,16 +58,19 @@ public class DDSearchEngine {
         this.conn = conn;
 
         String s = Props.getProperty(PropsIF.OUTSERV_ROD_OBLIG_URL);
-        if (s != null && s.length() > 0)
+        if (s != null && s.length() > 0) {
             rodObligUrl = s;
+        }
 
         s = Props.getProperty(PropsIF.OUTSERV_PRED_IDENTIFIER);
-        if (s != null && s.length() > 0)
+        if (s != null && s.length() > 0) {
             predIdentifier = s;
+        }
 
         s = Props.getProperty(PropsIF.OUTSERV_PRED_TITLE);
-        if (s != null && s.length() > 0)
+        if (s != null && s.length() > 0) {
             predTitle = s;
+        }
     }
 
     public DDSearchEngine(Connection conn, String sessionID) {
@@ -142,14 +145,16 @@ public class DDSearchEngine {
                 counter++;
 
                 String elmIdf = elemsRs.getString("DATAELEM.IDENTIFIER");
-                if (elmIdf == null)
+                if (elmIdf == null) {
                     continue;
+                }
 
                 // the following if block skips non-latest ELEMENTS
-                if (curElmIdf != null && elmIdf.equals(curElmIdf))
+                if (curElmIdf != null && elmIdf.equals(curElmIdf)) {
                     continue;
-                else
+                } else {
                     curElmIdf = elmIdf;
+                }
 
                 // construct the element
                 int elmID = elemsRs.getInt("DATAELEM.DATAELEM_ID");
@@ -188,8 +193,9 @@ public class DDSearchEngine {
                                 attrsRs.getString("ATTRIBUTE.VALUE"), attrsRs.getString("M_ATTRIBUTE.DEFINITION"),
                                 attrsRs.getString("M_ATTRIBUTE.OBLIGATION"), attrsRs.getString("M_ATTRIBUTE.DISP_MULTIPLE"));
                         elm.addAttribute(attr);
-                    } else
+                    } else {
                         attr.addValue(attrsRs.getString("ATTRIBUTE.VALUE"));
+                    }
                 }
 
                 // add the element to the result Vector
@@ -197,14 +203,18 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (elemsRs != null)
+                if (elemsRs != null) {
                     elemsRs.close();
-                if (attrsRs != null)
+                }
+                if (attrsRs != null) {
                     attrsRs.close();
-                if (elemsStmt != null)
+                }
+                if (elemsStmt != null) {
                     elemsStmt.close();
-                if (attrsStmt != null)
+                }
+                if (attrsStmt != null) {
                     attrsStmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -233,8 +243,9 @@ public class DDSearchEngine {
     throws SQLException {
 
         // make sure we have the tableID
-        if (Util.isEmpty(tableID))
+        if (Util.isEmpty(tableID)) {
             throw new SQLException("getDataElements(): tableID is missing!");
+        }
 
         // build the monster query.
         INParameters inPrms = new INParameters();
@@ -281,14 +292,16 @@ public class DDSearchEngine {
                 counter++;
 
                 String elmIdf = elemsRs.getString("DATAELEM.IDENTIFIER");
-                if (elmIdf == null)
+                if (elmIdf == null) {
                     continue;
+                }
 
                 // the following if block skips non-latest ELEMENTS
-                if (curElmIdf != null && elmIdf.equals(curElmIdf))
+                if (curElmIdf != null && elmIdf.equals(curElmIdf)) {
                     continue;
-                else
+                } else {
                     curElmIdf = elmIdf;
+                }
 
                 // construct the element
                 int elmID = elemsRs.getInt("DATAELEM.DATAELEM_ID");
@@ -327,8 +340,9 @@ public class DDSearchEngine {
                                 attrsRs.getString("ATTRIBUTE.VALUE"), attrsRs.getString("M_ATTRIBUTE.DEFINITION"),
                                 attrsRs.getString("M_ATTRIBUTE.OBLIGATION"), attrsRs.getString("M_ATTRIBUTE.DISP_MULTIPLE"));
                         elm.addAttribute(attr);
-                    } else
+                    } else {
                         attr.addValue(attrsRs.getString("ATTRIBUTE.VALUE"));
+                    }
                 }
 
                 // add the element to the result Vector
@@ -336,14 +350,18 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (elemsRs != null)
+                if (elemsRs != null) {
                     elemsRs.close();
-                if (attrsRs != null)
+                }
+                if (attrsRs != null) {
                     attrsRs.close();
-                if (elemsStmt != null)
+                }
+                if (elemsStmt != null) {
                     elemsStmt.close();
-                if (attrsStmt != null)
+                }
+                if (attrsStmt != null) {
                     attrsStmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -396,8 +414,9 @@ public class DDSearchEngine {
         INParameters inPrms = new INParameters();
 
         // oper defines the search precision. If it's missing, set it to substring search
-        if (oper == null)
+        if (oper == null) {
             oper = " like ";
+        }
 
         // build the "from" part of the SQL query
         StringBuffer tables = new StringBuffer("DATAELEM, TBL2ELEM, DS_TABLE, DST2TBL, DATASET");
@@ -413,72 +432,84 @@ public class DDSearchEngine {
         constraints.append("DATASET.DELETED is null");
         // if not looking in a concrete dataset copy, take into account the working copies parameter
         if (datasetID == null) {
-            if (wrkCopies)
+            if (wrkCopies) {
                 constraints.append(" and DATASET.WORKING_COPY='Y'");
-            else
+            } else {
                 constraints.append(" and DATASET.WORKING_COPY='N'");
+            }
         }
         // we look only for non-common elements here, so DATAELEM.PARENT_NS must NOT be null
         constraints.append(" and DATAELEM.PARENT_NS is not null");
 
         // set the element type (CH1 or CH2)
         if (type != null && type.length() != 0) {
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("DATAELEM.TYPE=").append(inPrms.add(type));
         }
 
         // set the element short name
         if (short_name != null && short_name.length() != 0) {
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("DATAELEM.SHORT_NAME");
             // short name is not fulltext-indexed, so force "match" to "like"
-            if (oper.trim().equalsIgnoreCase("match"))
+            if (oper.trim().equalsIgnoreCase("match")) {
                 oper = " like ";
+            }
             constraints.append(oper);
-            if (oper.trim().equalsIgnoreCase("like"))
+            if (oper.trim().equalsIgnoreCase("like")) {
                 constraints.append(inPrms.add("%" + short_name + "%"));
-            else
+            } else {
                 constraints.append(inPrms.add(short_name));
+            }
         }
 
         // set the element identifier
         if (idfier != null && idfier.length() != 0) {
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("DATAELEM.IDENTIFIER");
             // identifier is not fulltext-indexed, so force "match" to "like"
-            if (oper.trim().equalsIgnoreCase("match"))
+            if (oper.trim().equalsIgnoreCase("match")) {
                 oper = " like ";
+            }
             constraints.append(oper);
-            if (oper.trim().equalsIgnoreCase("like"))
+            if (oper.trim().equalsIgnoreCase("like")) {
                 constraints.append(inPrms.add("%" + idfier + "%"));
-            else
+            } else {
                 constraints.append(inPrms.add(idfier));
+            }
         }
 
         // see if looking for elements of a concrete table
         if (tableID != null && tableID.length() != 0) {
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("TBL2ELEM.TABLE_ID=").append(inPrms.add(tableID, Types.INTEGER));
         }
 
         // see if looking for elements of a concrete dataset copy
         if (datasetID != null && datasetID.length() != 0) {
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
-            if (datasetID.equals("-1"))
+            }
+            if (datasetID.equals("-1")) {
                 constraints.append("DATASET.DATASET_ID IS NULL");
-            else
+            } else {
                 constraints.append("DATASET.DATASET_ID=").append(inPrms.add(datasetID, Types.INTEGER));
+            }
         }
 
         // see if looking for elements of datasets with a concrete identifier
         if (datasetIdf != null && datasetIdf.length() != 0) {
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("DATASET.IDENTIFIER=").append(inPrms.add(datasetIdf));
         }
 
@@ -496,8 +527,9 @@ public class DDSearchEngine {
             tables.append(", ATTRIBUTE as ATTR" + index);
 
             // deal with the where part
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("ATTR").append(index).append(".M_ATTRIBUTE_ID").append(idOper)
             .append(inPrms.add(attrID, Types.INTEGER)).append(" and ");
 
@@ -505,14 +537,16 @@ public class DDSearchEngine {
             if (attrValues != null && attrValues.size() != 0) {
                 constraints.append("(");
                 for (int j = 0; j < attrValues.size(); j++) {
-                    if (j > 0)
+                    if (j > 0) {
                         constraints.append(" or ");
+                    }
                     if (valueOper != null && valueOper.trim().equalsIgnoreCase("MATCH")) {
                         constraints.append("match(ATTR").append(index).append(".VALUE) against(")
                         .append(inPrms.add(attrValues.get(j), Types.VARCHAR)).append(")");
-                    } else
+                    } else {
                         constraints.append("ATTR").append(index).append(".VALUE").append(valueOper)
                         .append(inPrms.add(attrValues.get(j), Types.VARCHAR));
+                    }
                 }
                 constraints.append(")");
             }
@@ -527,14 +561,16 @@ public class DDSearchEngine {
         .append("DS_TABLE.TABLE_ID, DS_TABLE.IDENTIFIER, ").append("DS_TABLE.SHORT_NAME, DS_TABLE.VERSION, ")
         .append("DATASET.DATASET_ID, DATASET.IDENTIFIER, DATASET.SHORT_NAME, DATASET.WORKING_USER, ")
         .append("DATASET.VERSION, DATASET.REG_STATUS from ").append(tables.toString());
-        if (constraints.length() != 0)
+        if (constraints.length() != 0) {
             monsterQry.append(" where ").append(constraints.toString());
-        if (tableID != null && tableID.length() != 0)
+        }
+        if (tableID != null && tableID.length() != 0) {
             monsterQry.append(" order by TBL2ELEM.POSITION");
-        else
+        } else {
             monsterQry.append(" order by ").append("DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc, ")
             .append("DS_TABLE.IDENTIFIER asc, DS_TABLE.TABLE_ID desc, ")
             .append("DATAELEM.IDENTIFIER asc, DATAELEM.DATAELEM_ID desc");
+        }
 
         LOGGER.debug(monsterQry.toString());
 
@@ -569,29 +605,33 @@ public class DDSearchEngine {
 
                 String dstID = elemsRs.getString("DATASET.DATASET_ID");
                 String dstIdf = elemsRs.getString("DATASET.IDENTIFIER");
-                if (dstID == null || dstIdf == null)
+                if (dstID == null || dstIdf == null) {
                     continue;
+                }
 
                 // the following if block skips elements from non-latest DATASETS
                 if (curDstIdf == null || !curDstIdf.equals(dstIdf)) {
                     curDstID = dstID;
                     curDstIdf = dstIdf;
                 } else if (!isIncludeHistoricVersions) {
-                    if (!curDstID.equals(dstID))
+                    if (!curDstID.equals(dstID)) {
                         continue;
+                    }
                 }
 
                 String tblID = elemsRs.getString("DS_TABLE.TABLE_ID");
                 String tblIdf = elemsRs.getString("DS_TABLE.IDENTIFIER");
                 // skip non-existing tables, ie trash from some erroneous situation
-                if (tblID == null || tblIdf == null)
+                if (tblID == null || tblIdf == null) {
                     continue;
+                }
 
                 int elmID = elemsRs.getInt("DATAELEM.DATAELEM_ID");
                 String elmIdf = elemsRs.getString("DATAELEM.IDENTIFIER");
                 // skip non-existing elements, ie trash from some erroneous situation
-                if (elmIdf == null)
+                if (elmIdf == null) {
                     continue;
+                }
 
                 // construct the element object
                 DataElement elm = new DataElement(String.valueOf(elmID), elemsRs.getString("DATAELEM.SHORT_NAME"),
@@ -629,8 +669,9 @@ public class DDSearchEngine {
                                     attrsRs.getString("ATTRIBUTE.VALUE"), attrsRs.getString("M_ATTRIBUTE.DEFINITION"),
                                     attrsRs.getString("M_ATTRIBUTE.OBLIGATION"), attrsRs.getString("M_ATTRIBUTE.DISP_MULTIPLE"));
                             elm.addAttribute(attr);
-                        } else
+                        } else {
                             attr.addValue(attrsRs.getString("ATTRIBUTE.VALUE"));
+                        }
                     }
                 }
 
@@ -639,14 +680,18 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (elemsRs != null)
+                if (elemsRs != null) {
                     elemsRs.close();
-                if (attrsRs != null)
+                }
+                if (attrsRs != null) {
                     attrsRs.close();
-                if (elemsStmt != null)
+                }
+                if (elemsStmt != null) {
                     elemsStmt.close();
-                if (attrsStmt != null)
+                }
+                if (attrsStmt != null) {
                     attrsStmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -710,8 +755,9 @@ public class DDSearchEngine {
         INParameters inParams = new INParameters();
 
         // oper defines the search precision. If it's missing, set it to substring search
-        if (oper == null)
+        if (oper == null) {
             oper = " like ";
+        }
 
         // set up the "from" part of the SQL query
         StringBuffer tables = new StringBuffer("DATAELEM");
@@ -724,52 +770,60 @@ public class DDSearchEngine {
 
         // set the registration status
         if (regStatus != null && regStatus.trim().length() > 0) {
-            if (constraints.length() > 0)
+            if (constraints.length() > 0) {
                 constraints.append(" and ");
+            }
             constraints.append("DATAELEM.REG_STATUS=").append(inParams.add(regStatus));
         }
 
         // set the element type (CH1 or CH2)
         if (type != null && type.length() != 0) {
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("DATAELEM.TYPE=").append(inParams.add(type));
         }
 
         // set the element short name
         if (short_name != null && short_name.length() != 0) {
 
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("DATAELEM.SHORT_NAME");
 
             // SHORT_NAME is not fulltext indexed, so force "match" to "like"
-            if (oper.trim().equalsIgnoreCase("match"))
+            if (oper.trim().equalsIgnoreCase("match")) {
                 oper = " like ";
+            }
             constraints.append(oper);
 
-            if (oper.trim().equalsIgnoreCase("like"))
+            if (oper.trim().equalsIgnoreCase("like")) {
                 constraints.append(inParams.add("%" + short_name + "%"));
-            else
+            } else {
                 constraints.append(inParams.add(short_name));
+            }
         }
 
         // set the element identifier
         if (idfier != null && idfier.length() != 0) {
 
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("DATAELEM.IDENTIFIER");
 
             // IDENTIFIER is not fulltext indexed, so force "match" to "like"
-            if (oper.trim().equalsIgnoreCase("match"))
+            if (oper.trim().equalsIgnoreCase("match")) {
                 oper = " like ";
+            }
             constraints.append(oper);
 
-            if (oper.trim().equalsIgnoreCase("like"))
+            if (oper.trim().equalsIgnoreCase("like")) {
                 constraints.append(inParams.add("%" + idfier + "%"));
-            else
+            } else {
                 constraints.append(inParams.add(idfier));
+            }
         }
 
         // the loop for processing dynamic search parameters
@@ -788,8 +842,9 @@ public class DDSearchEngine {
             tables.append(", ATTRIBUTE as ATTR" + index);
 
             // deal with the where part
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
 
             constraints.append("ATTR").append(index).append(".M_ATTRIBUTE_ID").append(idOper)
             .append(inParams.add(attrID, Types.INTEGER)).append(" and ");
@@ -798,14 +853,16 @@ public class DDSearchEngine {
             if (attrValues != null && attrValues.size() != 0) {
                 constraints.append("(");
                 for (int j = 0; j < attrValues.size(); j++) {
-                    if (j > 0)
+                    if (j > 0) {
                         constraints.append(" or ");
+                    }
                     if (valueOper != null && valueOper.trim().equalsIgnoreCase("MATCH")) {
                         constraints.append("match(ATTR").append(index).append(".VALUE) against(")
                         .append(inParams.add(attrValues.get(j))).append(")");
-                    } else
+                    } else {
                         constraints.append("ATTR").append(index).append(".VALUE").append(valueOper)
                         .append(inParams.add(attrValues.get(j)));
+                    }
                 }
                 constraints.append(")");
             }
@@ -817,22 +874,26 @@ public class DDSearchEngine {
         // end of dynamic parameters loop
 
         // if the user is missing, override the wrkCopies argument
-        if (user == null)
+        if (user == null) {
             wrkCopies = false;
-        if (constraints.length() != 0)
+        }
+        if (constraints.length() != 0) {
             constraints.append(" and ");
+        }
         if (wrkCopies) {
             constraints.append("DATAELEM.WORKING_COPY='Y' and DATAELEM.WORKING_USER=").append(inParams.add(user.getUserName()));
-        } else
+        } else {
             constraints.append("DATAELEM.WORKING_COPY='N'");
+        }
 
         // now build the monster query.
         // first the "select from" part
         StringBuffer monsterQry = new StringBuffer().append("select distinct DATAELEM.* from ").append(tables.toString());
 
         // then the "where part"
-        if (constraints.length() != 0)
+        if (constraints.length() != 0) {
             monsterQry.append(" where ").append(constraints.toString());
+        }
 
         // finally the "order by"
         monsterQry.append(" order by DATAELEM.IDENTIFIER asc, DATAELEM.DATAELEM_ID desc");
@@ -861,15 +922,18 @@ public class DDSearchEngine {
             while (elemsRs.next()) {
 
                 String elmIdf = elemsRs.getString("DATAELEM.IDENTIFIER");
-                if (elmIdf == null)
+                if (elmIdf == null) {
                     continue;
+                }
 
                 // the following if block skips non-latest
                 if (curElmIdf != null && elmIdf.equals(curElmIdf)) {
-                    if (!isIncludeHistoricVersions)
+                    if (!isIncludeHistoricVersions) {
                         continue;
-                } else
+                    }
+                } else {
                     curElmIdf = elmIdf;
+                }
 
                 // construct the element
                 int elmID = elemsRs.getInt("DATAELEM.DATAELEM_ID");
@@ -898,8 +962,9 @@ public class DDSearchEngine {
                                 attrsRs.getString("ATTRIBUTE.VALUE"), attrsRs.getString("M_ATTRIBUTE.DEFINITION"),
                                 attrsRs.getString("M_ATTRIBUTE.OBLIGATION"), attrsRs.getString("M_ATTRIBUTE.DISP_MULTIPLE"));
                         elm.addAttribute(attr);
-                    } else
+                    } else {
                         attr.addValue(attrsRs.getString("ATTRIBUTE.VALUE"));
+                    }
                 }
 
                 // add the element to the result Vector
@@ -907,14 +972,18 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (elemsRs != null)
+                if (elemsRs != null) {
                     elemsRs.close();
-                if (attrsRs != null)
+                }
+                if (attrsRs != null) {
                     attrsRs.close();
-                if (elemsStmt != null)
+                }
+                if (elemsStmt != null) {
                     elemsStmt.close();
-                if (attrsStmt != null)
+                }
+                if (attrsStmt != null) {
                     attrsStmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -1007,28 +1076,28 @@ public class DDSearchEngine {
     /**
      *
      * @param identifier
-     * @param parentNamespace
+     * @param datasetIdentifier
      * @param statuses
      * @return
      * @throws SQLException
      */
-    public DsTable getLatestTbl(String identifier, String parentNamespace, List statuses) throws SQLException {
+    public DsTable getLatestTbl(String identifier, String datasetIdentifier, List statuses) throws SQLException {
 
-        String latestID = getLatestTblID(identifier, parentNamespace, statuses);
+        String latestID = getLatestTblID(identifier, datasetIdentifier, statuses);
         return latestID == null ? null : getDatasetTable(latestID);
     }
 
     /**
      *
      * @param identifier
-     * @param parentNamespace
+     * @param datasetIdentifier
      * @param statuses
      * @return
      * @throws SQLException
      */
-    public String getLatestTblID(String identifier, String parentNamespace, List statuses) throws SQLException {
+    public String getLatestTblID(String identifier, String datasetIdentifier, List statuses) throws SQLException {
 
-        if (Util.isEmpty(identifier) || Util.isEmpty(parentNamespace)) {
+        if (Util.isEmpty(identifier) || Util.isEmpty(datasetIdentifier)) {
             return null;
         }
 
@@ -1038,8 +1107,8 @@ public class DDSearchEngine {
         buf.append("select DST2TBL.TABLE_ID from DS_TABLE")
         .append(" left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID")
         .append(" left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID").append(" where DS_TABLE.IDENTIFIER=")
-        .append(inParams.add(identifier, Types.VARCHAR)).append(" and DATASET.CORRESP_NS=")
-        .append(inParams.add(parentNamespace, Types.INTEGER))
+        .append(inParams.add(identifier, Types.VARCHAR)).append(" and DATASET.IDENTIFIER=")
+        .append(inParams.add(datasetIdentifier, Types.VARCHAR))
         .append(" and DATASET.WORKING_COPY='N' and DATASET.CHECKEDOUT_COPY_ID is null")
         .append(" and DATASET.WORKING_USER is null and DATASET.DELETED is null");
 
@@ -1086,8 +1155,9 @@ public class DDSearchEngine {
         if (statuses != null && statuses.size() > 0) {
             buf.append(" and (");
             for (int i = 0; i < statuses.size(); i++) {
-                if (i > 0)
+                if (i > 0) {
                     buf.append(" or ");
+                }
                 buf.append("REG_STATUS=").append(inParams.add(statuses.get(i)));
             }
             buf.append(")");
@@ -1100,14 +1170,17 @@ public class DDSearchEngine {
         try {
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next())
+            if (rs.next()) {
                 return rs.getString(1);
+            }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     rs.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -1172,8 +1245,9 @@ public class DDSearchEngine {
             qry = new StringBuffer("select * from DATAELEM where DATAELEM_ID=").append(inParams.add(elmID, Types.INTEGER));
             stmt = SQL.preparedStatement(qry.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (!rs.next())
+            if (!rs.next()) {
                 return null;
+            }
             boolean elmCommon = Util.isEmpty(rs.getString("PARENT_NS"));
 
             // Build the query which takes into account the tblID.
@@ -1194,12 +1268,14 @@ public class DDSearchEngine {
                 .append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID");
             }
             qry.append(" where DATAELEM.DATAELEM_ID=").append(inParams.add(elmID, Types.INTEGER));
-            if (!elmCommon && !Util.isEmpty(tblID))
+            if (!elmCommon && !Util.isEmpty(tblID)) {
                 qry.append(" and DS_TABLE.TABLE_ID=").append(inParams.add(tblID, Types.INTEGER));
+            }
 
             qry.append(" order by ").append("DATAELEM.DATAELEM_ID desc");
-            if (!elmCommon)
+            if (!elmCommon) {
                 qry.append(", DS_TABLE.TABLE_ID desc, DATASET.DATASET_ID desc");
+            }
 
             LOGGER.debug(qry.toString());
 
@@ -1238,14 +1314,17 @@ public class DDSearchEngine {
                         elm.getDatasetID()) : getSimpleAttributes(elmID, "E");
 
                 elm.setAttributes(attributes);
-            } else
+            } else {
                 return null;
+            }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -1271,33 +1350,40 @@ public class DDSearchEngine {
 
     public Vector getDElemAttributes(String attr_id, String type, String orderBy, String inheritable) throws SQLException {
 
-        if (type == null)
+        if (type == null) {
             type = DElemAttribute.TYPE_SIMPLE;
+        }
 
         INParameters inParams = new INParameters();
         StringBuffer qry = new StringBuffer();
         if (type.equals(DElemAttribute.TYPE_SIMPLE)) {
             qry.append("select distinct M_ATTRIBUTE_ID as ID, M_ATTRIBUTE.* from M_ATTRIBUTE");
-            if (attr_id != null)
+            if (attr_id != null) {
                 qry.append(" where M_ATTRIBUTE_ID=");
+            }
         } else {
             qry.append("select distinct M_COMPLEX_ATTR_ID as ID, M_COMPLEX_ATTR.* from M_COMPLEX_ATTR");
-            if (attr_id != null)
+            if (attr_id != null) {
                 qry.append(" where M_COMPLEX_ATTR_ID=");
+            }
         }
-        if (attr_id != null)
+        if (attr_id != null) {
             qry.append(inParams.add(attr_id, Types.INTEGER));
+        }
 
         if (inheritable != null) {
-            if (attr_id != null)
+            if (attr_id != null) {
                 qry.append(" AND ");
-            if (attr_id == null)
+            }
+            if (attr_id == null) {
                 qry.append(" WHERE ");
+            }
             qry.append("INHERIT=").append(inParams.add(inheritable));
         }
 
-        if (orderBy == null)
+        if (orderBy == null) {
             orderBy = ORDER_BY_M_ATTR_NAME;
+        }
         qry.append(" order by ");
         qry.append(orderBy);
 
@@ -1314,8 +1400,9 @@ public class DDSearchEngine {
                         type, null, rs.getString("DEFINITION"), rs.getString("OBLIGATION"));
 
                 Namespace ns = getNamespace(rs.getString("NAMESPACE_ID"));
-                if (ns != null)
+                if (ns != null) {
                     attr.setNamespace(ns);
+                }
 
                 if (type.equals(DElemAttribute.TYPE_SIMPLE)) {
                     attr.setDisplayProps(rs.getString("DISP_TYPE"), rs.getInt("DISP_ORDER"), rs.getInt("DISP_WHEN"),
@@ -1331,10 +1418,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -1373,8 +1462,9 @@ public class DDSearchEngine {
                 FixedValue fxv = new FixedValue(rs.getString("FXV_ID"), rs.getString("OWNER_ID"), rs.getString("VALUE"));
 
                 String isDefault = rs.getString("IS_DEFAULT");
-                if (isDefault != null && isDefault.equalsIgnoreCase("Y"))
+                if (isDefault != null && isDefault.equalsIgnoreCase("Y")) {
                     fxv.setDefault();
+                }
 
                 fxv.setDefinition(rs.getString("DEFINITION"));
                 fxv.setShortDesc(rs.getString("SHORT_DESC"));
@@ -1383,10 +1473,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -1419,8 +1511,9 @@ public class DDSearchEngine {
         buf.append("select * from M_COMPLEX_ATTR_FIELD ");
         buf.append("where M_COMPLEX_ATTR_ID=");
         buf.append(inParams.add(attr_id, Types.INTEGER));
-        if (priority != null)
+        if (priority != null) {
             buf.append(" and PRIORITY=").append(inParams.add(priority));
+        }
         buf.append(" order by POSITION");
 
         PreparedStatement stmt = null;
@@ -1440,17 +1533,20 @@ public class DDSearchEngine {
                 hash.put("priority", rs.getString("PRIORITY"));
 
                 String harvAttrFldName = rs.getString("HARV_ATTR_FLD_NAME");
-                if (harvAttrFldName != null)
+                if (harvAttrFldName != null) {
                     hash.put("harv_fld", harvAttrFldName);
+                }
 
                 v.add(hash);
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -1489,15 +1585,18 @@ public class DDSearchEngine {
                 hash.put("priority", rs.getString("PRIORITY"));
 
                 String harvAttrFldName = rs.getString("HARV_ATTR_FLD_NAME");
-                if (harvAttrFldName != null)
+                if (harvAttrFldName != null) {
                     hash.put("harv_fld", harvAttrFldName);
+                }
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -1637,9 +1736,9 @@ public class DDSearchEngine {
                 String attrID = rs.getString("ATTR_ID");
                 String parentType = rs.getString("COMPLEX_ATTR_ROW.PARENT_TYPE");
                 String inherited = parentType.equals(parent_type) ? null : parentType;
-                if (attrs.containsKey(attrID))
+                if (attrs.containsKey(attrID)) {
                     attr = (DElemAttribute) attrs.get(attrID);
-                else {
+                } else {
                     if (attr != null) { // this is true, when there are multiple attr_ids and we have found one already
 
                         addRowHash(attr, rowHash);
@@ -1663,14 +1762,16 @@ public class DDSearchEngine {
 
                 int row = rs.getInt("ROW_POS");
                 if (row != prvRow || !parentType.equals(prvType)) {
-                    if (prvRow != -1 && !prvType.equals(""))
+                    if (prvRow != -1 && !prvType.equals("")) {
                         addRowHash(attr, rowHash);
+                    }
 
                     rowHash = new Hashtable();
                     rowHash.put("rowid", rs.getString("ROW_ID"));
                     rowHash.put("position", rs.getString("ROW_POS"));
-                    if (inherited != null)
+                    if (inherited != null) {
                         rowHash.put("inherited", inherited);
+                    }
                 }
 
                 String fldID = rs.getString("FIELD_ID");
@@ -1689,23 +1790,27 @@ public class DDSearchEngine {
                         }
 
                         fldID = (String) harvFieldsHash.get(harvAttrFldName);
-                        if (fldID != null)
+                        if (fldID != null) {
                             fldValue = rs.getString("FLD_VALUE");
+                        }
                     }
                 }
 
-                if (fldID != null && fldValue != null)
+                if (fldID != null && fldValue != null) {
                     rowHash.put(fldID, fldValue);
+                }
 
                 prvRow = row;
                 prvType = parentType;
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -1725,8 +1830,9 @@ public class DDSearchEngine {
      */
     private void addRowHash(DElemAttribute attr, Hashtable rowHash) {
         String inherited = null;
-        if (rowHash.containsKey("inherited"))
+        if (rowHash.containsKey("inherited")) {
             inherited = (String) rowHash.get("inherited");
+        }
 
         if (inherited != null) {
             if (attr.getInheritable().equals("1")) { // inheritance type 1 - show all values from upper levels
@@ -1739,7 +1845,9 @@ public class DDSearchEngine {
                     attr.setInheritedLevel(inherited);
                 } else {
                     if (attr.getInheritedLevel().equals("DS") && inherited.equals("T"))
+                    {
                         attr.clearInherited(); // element should inherit table values if exists and then dataset values
+                    }
                     if (attr.getInheritedLevel().equals(inherited) || inherited.equals("T")) {
                         attr.addInheritedValue(rowHash);
                         attr.setInheritedLevel(inherited);
@@ -1761,8 +1869,9 @@ public class DDSearchEngine {
      */
     public Vector getComplexAttributeValues(String attr_id) throws SQLException {
 
-        if (attr_id == null)
+        if (attr_id == null) {
             return null;
+        }
 
         INParameters inParams = new INParameters();
 
@@ -1807,8 +1916,9 @@ public class DDSearchEngine {
             String prvRow = "-1";
             while (ok) {
                 ok = rs.next();
-                if (ok)
+                if (ok) {
                     row = rs.getString("ROW_ID");
+                }
 
                 if (!row.equals(prvRow) || !ok) {
                     if (!prvRow.equals("-1")) {
@@ -1819,13 +1929,15 @@ public class DDSearchEngine {
                                 break;
                             }
                         }
-                        if (!hasVal)
+                        if (!hasVal) {
                             v.add(rowHash);
+                        }
                         hasVal = false;
                     }
 
-                    if (!ok)
+                    if (!ok) {
                         break;
+                    }
                     rowHash = new Hashtable();
                 }
                 rowHash.put(rs.getString("FIELD_ID"), rs.getString("FIELD_VALUE"));
@@ -1833,10 +1945,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -1852,8 +1966,9 @@ public class DDSearchEngine {
      */
     public Vector getSimpleAttributeValues(String attr_id) throws SQLException {
 
-        if (attr_id == null)
+        if (attr_id == null) {
             return null;
+        }
 
         INParameters inParams = new INParameters();
 
@@ -1874,18 +1989,21 @@ public class DDSearchEngine {
             while (rs.next()) {
 
                 String value = rs.getString("value");
-                if (value == null)
+                if (value == null) {
                     continue;
+                }
                 if (!value.equals("")) {
                     v.add(value);
                 }
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -1910,8 +2028,9 @@ public class DDSearchEngine {
      */
     public Namespace getNamespace(String id) throws SQLException {
         Vector v = getNamespaces(id);
-        if (v != null && v.size() != 0)
+        if (v != null && v.size() != 0) {
             return (Namespace) v.get(0);
+        }
         return null;
     }
 
@@ -1923,8 +2042,9 @@ public class DDSearchEngine {
      */
     public Vector getNamespaces(String id) throws SQLException {
 
-        if (id != null)
+        if (id != null) {
             id = id.trim();
+        }
 
         // this is for the case where id is given in the format "number url" (happens when someone clicks the schemaLocation given
         // in generated XML Schemas)
@@ -1933,8 +2053,9 @@ public class DDSearchEngine {
             if (ss.length == 2) {
                 try {
                     Integer.parseInt(ss[0]);
-                    if (ss[1].startsWith("http://") && ss[1].indexOf("GetSchema") > 6)
+                    if (ss[1].startsWith("http://") && ss[1].indexOf("GetSchema") > 6) {
                         id = ss[0];
+                    }
                 } catch (NumberFormatException e) {
                 }
             }
@@ -1943,8 +2064,9 @@ public class DDSearchEngine {
         INParameters inParams = new INParameters();
 
         StringBuffer buf = new StringBuffer("select * from NAMESPACE");
-        if (id != null && id.length() != 0)
+        if (id != null && id.length() != 0) {
             buf.append(" where NAMESPACE_ID=").append(inParams.add(id, Types.INTEGER));
+        }
         buf.append(" order by SHORT_NAME");
 
         PreparedStatement stmt = null;
@@ -1961,10 +2083,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -1980,10 +2104,11 @@ public class DDSearchEngine {
      */
     public Dataset getDeletedDataset(String datasetID) throws SQLException {
         Vector v = getDatasets(datasetID, false, true);
-        if (v == null || v.size() == 0)
+        if (v == null || v.size() == 0) {
             return null;
-        else
+        } else {
             return (Dataset) v.get(0);
+        }
     }
 
     /**
@@ -1995,10 +2120,11 @@ public class DDSearchEngine {
     public Dataset getDataset(String datasetID) throws SQLException {
 
         Vector v = getDatasets(datasetID, false, false);
-        if (v == null || v.size() == 0)
+        if (v == null || v.size() == 0) {
             return null;
-        else
+        } else {
             return (Dataset) v.get(0);
+        }
     }
 
     /**
@@ -2026,8 +2152,9 @@ public class DDSearchEngine {
      * @throws SQLException
      */
     public Vector getDeletedDatasets() throws SQLException {
-        if (user == null || !user.isAuthentic())
+        if (user == null || !user.isAuthentic()) {
             throw new SQLException("User not authorized");
+        }
         return getDatasets(null, false, true);
     }
 
@@ -2047,31 +2174,36 @@ public class DDSearchEngine {
         buf.append("select distinct DATASET.* ");
         buf.append("from DATASET ");
         buf.append("where CORRESP_NS is not null");
-        if (datasetID != null && datasetID.length() != 0)
+        if (datasetID != null && datasetID.length() != 0) {
             buf.append(" and DATASET.DATASET_ID=").append(inParams.add(datasetID, Types.INTEGER));
+        }
 
         // JH141003
         // if datasetID specified, ignore the DELETED flag, otherwise follow it
-        if (!Util.isEmpty(datasetID))
+        if (!Util.isEmpty(datasetID)) {
             buf.append(" ");
-        else if (deleted && user != null)
+        } else if (deleted && user != null) {
             buf.append(" and DATASET.DELETED=").append(inParams.add(user.getUserName())).append(" ");
-        else
+        } else {
             buf.append(" and DATASET.DELETED is null ");
+        }
 
         // prune out the working copies
         // (the business logic at edit view will lead the user eventually
         // to the working copy anyway)
         // But only in case if the ID is not exolicitly specified
         if (Util.isEmpty(datasetID)) {
-            if (wrkCopies && (user == null || !user.isAuthentic()))
+            if (wrkCopies && (user == null || !user.isAuthentic())) {
                 wrkCopies = false;
-            if (buf.length() != 0)
+            }
+            if (buf.length() != 0) {
                 buf.append(" and ");
-            if (!wrkCopies)
+            }
+            if (!wrkCopies) {
                 buf.append("DATASET.WORKING_COPY='N'");
-            else
+            } else {
                 buf.append("DATASET.WORKING_COPY='Y' and DATASET.WORKING_USER=").append(inParams.add(user.getUserName()));
+            }
         }
         buf.append(" order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc");
 
@@ -2092,8 +2224,9 @@ public class DDSearchEngine {
 
                 // make sure we get the latest version of the dataset
                 // JH101003 - unless were in 'restore' mode
-                if (!deleted && ds != null && idf.equals(ds.getIdentifier()))
+                if (!deleted && ds != null && idf.equals(ds.getIdentifier())) {
                     continue;
+                }
 
                 ds = new Dataset(rs.getString("DATASET_ID"), rs.getString("SHORT_NAME"), rs.getString("VERSION"));
 
@@ -2113,10 +2246,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -2196,8 +2331,9 @@ public class DDSearchEngine {
         INParameters inParams = new INParameters();
 
         // prepare different parts of the query for getting datasets
-        if (oper == null)
+        if (oper == null) {
             oper = " like ";
+        }
 
         StringBuffer tables = new StringBuffer("DATASET");
         StringBuffer constraints = new StringBuffer("DATASET.DELETED is null");
@@ -2206,13 +2342,15 @@ public class DDSearchEngine {
         if (short_name != null && short_name.length() != 0) {
             constraints.append(" and DATASET.SHORT_NAME");
             // overwrite 'match' operator with 'like', because short name is not fulltext-indexed
-            if (oper.trim().equalsIgnoreCase("match"))
+            if (oper.trim().equalsIgnoreCase("match")) {
                 oper = " like ";
+            }
             constraints.append(oper);
-            if (oper.trim().equalsIgnoreCase("like"))
+            if (oper.trim().equalsIgnoreCase("like")) {
                 constraints.append(inParams.add("%" + short_name + "%"));
-            else
+            } else {
                 constraints.append(inParams.add(short_name));
+            }
         }
 
         // identifier into constraints
@@ -2220,29 +2358,35 @@ public class DDSearchEngine {
             constraints.append(" and DATASET.IDENTIFIER");
             // overwrite 'match' operator with 'like', because identifier is not fulltext-indexed
             if (oper.trim().equalsIgnoreCase("match"))
+            {
                 oper = " like "; //
+            }
             constraints.append(oper);
-            if (oper.trim().equalsIgnoreCase("like"))
+            if (oper.trim().equalsIgnoreCase("like")) {
                 constraints.append(inParams.add("%" + idfier + "%"));
-            else
+            } else {
                 constraints.append(inParams.add(idfier));
+            }
         }
 
         // version into constraints
         if (version != null && version.length() != 0) {
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("DATASET.VERSION=").append(inParams.add(version, Types.INTEGER));
         }
 
         // statuses into constraints
         if (statuses != null && statuses.size() > 0) {
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and (");
+            }
             int i = 0;
             for (Iterator iter = statuses.iterator(); iter.hasNext(); i++) {
-                if (i > 0)
+                if (i > 0) {
                     constraints.append(" or ");
+                }
                 constraints.append("REG_STATUS=");
                 constraints.append(inParams.add(iter.next()));
             }
@@ -2260,20 +2404,23 @@ public class DDSearchEngine {
 
             tables.append(", ATTRIBUTE as ATTR" + index);
 
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("ATTR" + index + ".M_ATTRIBUTE_ID" + idOper + inParams.add(attrID, Types.INTEGER));
             constraints.append(" and ");
 
             if (attrValues != null && attrValues.size() != 0) {
                 constraints.append("(");
                 for (int j = 0; j < attrValues.size(); j++) {
-                    if (j > 0)
+                    if (j > 0) {
                         constraints.append(" or ");
-                    if (valueOper != null && valueOper.trim().equalsIgnoreCase("MATCH"))
+                    }
+                    if (valueOper != null && valueOper.trim().equalsIgnoreCase("MATCH")) {
                         constraints.append("match(ATTR" + index + ".VALUE) against(" + inParams.add(attrValues.get(j)) + ")");
-                    else
+                    } else {
                         constraints.append("ATTR" + index + ".VALUE" + valueOper + inParams.add(attrValues.get(j)));
+                    }
                 }
                 constraints.append(")");
             }
@@ -2285,14 +2432,17 @@ public class DDSearchEngine {
 
         // unless requested otherwise, prune out the working copies (the business logic in
         // UI will lead the user eventually to the working copy anyway)
-        if (wrkCopies && (user == null || !user.isAuthentic()))
+        if (wrkCopies && (user == null || !user.isAuthentic())) {
             wrkCopies = false;
-        if (constraints.length() != 0)
+        }
+        if (constraints.length() != 0) {
             constraints.append(" and ");
-        if (!wrkCopies)
+        }
+        if (!wrkCopies) {
             constraints.append("DATASET.WORKING_COPY='N'");
-        else
+        } else {
             constraints.append("DATASET.WORKING_COPY='Y' and DATASET.WORKING_USER=" + inParams.add(user.getUserName()));
+        }
 
         // compile the query from the above-prepared parts
         StringBuffer buf = new StringBuffer("select DATASET.* from ");
@@ -2329,8 +2479,9 @@ public class DDSearchEngine {
 
                 // if history not wanted, make sure we get the latest version of the dataset
                 if (isIncludeHistoricVersions == false) {
-                    if (ds != null && idf.equals(ds.getIdentifier()))
+                    if (ds != null && idf.equals(ds.getIdentifier())) {
                         continue;
+                    }
                 }
 
                 ds = new Dataset(rs.getString("DATASET_ID"), rs.getString("SHORT_NAME"), rs.getString("VERSION"));
@@ -2346,8 +2497,9 @@ public class DDSearchEngine {
                 if (nameID != null) {
                     ps.setInt(1, rs.getInt("DATASET.DATASET_ID"));
                     rs2 = ps.executeQuery();
-                    if (rs2.next())
+                    if (rs2.next()) {
                         ds.setName(rs2.getString(1));
+                    }
                 }
 
                 ds.setStatus(regStatus);
@@ -2359,14 +2511,18 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (rs2 != null)
+                }
+                if (rs2 != null) {
                     rs2.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
-                if (stmt1 != null)
+                }
+                if (stmt1 != null) {
                     stmt1.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -2384,8 +2540,9 @@ public class DDSearchEngine {
 
         if (regStatus != null) {
             if (user == null || !user.isAuthentic()) {
-                if (regStatus.equals("Incomplete") || regStatus.equals("Candidate") || regStatus.equals("Qualified"))
+                if (regStatus.equals("Incomplete") || regStatus.equals("Candidate") || regStatus.equals("Qualified")) {
                     return true;
+                }
             }
         }
 
@@ -2433,8 +2590,9 @@ public class DDSearchEngine {
                 // make sure you get the latest version
                 String idf = rs.getString("DS_TABLE.IDENTIFIER");
                 if (dsTable != null) {
-                    if (idf.equals(dsTable.getIdentifier()))
+                    if (idf.equals(dsTable.getIdentifier())) {
                         continue;
+                    }
                 }
 
                 dsTable = new DsTable(rs.getString("DS_TABLE.TABLE_ID"), dstID, rs.getString("DS_TABLE.SHORT_NAME"));
@@ -2451,10 +2609,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -2534,8 +2694,9 @@ public class DDSearchEngine {
         stmt1.close();
 
         // prepare different parts of the query for tables
-        if (oper == null)
+        if (oper == null) {
             oper = " like ";
+        }
 
         StringBuffer tables = new StringBuffer("DS_TABLE, DST2TBL, DATASET");
         StringBuffer constraints = new StringBuffer().append(
@@ -2544,13 +2705,15 @@ public class DDSearchEngine {
 
         // dataset statuses into constraints
         if (dstStatuses != null && dstStatuses.size() > 0) {
-            if (constraints.length() > 0)
+            if (constraints.length() > 0) {
                 constraints.append(" and ");
+            }
             constraints.append("(");
             int i = 0;
             for (Iterator iter = dstStatuses.iterator(); iter.hasNext(); i++) {
-                if (i > 0)
+                if (i > 0) {
                     constraints.append(" or ");
+                }
                 constraints.append("DATASET.REG_STATUS=").append(inParams.add(iter.next()));
             }
             constraints.append(")");
@@ -2560,38 +2723,44 @@ public class DDSearchEngine {
         if (short_name != null && short_name.length() != 0) {
             constraints.append(" and DS_TABLE.SHORT_NAME");
             // overwrite 'match' operator with 'like', because short name is not fulltext-indexed
-            if (oper.trim().equalsIgnoreCase("match"))
+            if (oper.trim().equalsIgnoreCase("match")) {
                 oper = " like ";
+            }
             constraints.append(oper);
-            if (oper.trim().equalsIgnoreCase("like"))
+            if (oper.trim().equalsIgnoreCase("like")) {
                 constraints.append(inParams.add("%" + short_name + "%"));
-            else
+            } else {
                 constraints.append(inParams.add(short_name));
+            }
         }
 
         // identifier into constraints
         if (idfier != null && idfier.length() != 0) {
             constraints.append(" and DS_TABLE.IDENTIFIER");
             // overwrite 'match' operator with 'like', because identifier is not fulltext-indexed
-            if (oper.trim().equalsIgnoreCase("match"))
+            if (oper.trim().equalsIgnoreCase("match")) {
                 oper = " like ";
+            }
             constraints.append(oper);
-            if (oper.trim().equalsIgnoreCase("like"))
+            if (oper.trim().equalsIgnoreCase("like")) {
                 constraints.append(inParams.add("%" + idfier + "%"));
-            else
+            } else {
                 constraints.append(inParams.add(idfier));
+            }
         }
 
         // full name into constraints
         if (full_name != null && full_name.length() != 0) {
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("DS_TABLE.NAME like ").append(inParams.add("%" + full_name + "%"));
         }
         // definition into constraints
         if (definition != null && definition.length() != 0) {
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("DS_TABLE.DEFINITION like ").append(inParams.add("%" + definition + "%"));
         }
 
@@ -2608,20 +2777,23 @@ public class DDSearchEngine {
 
             tables.append(", ATTRIBUTE as ATTR" + index);
 
-            if (constraints.length() != 0)
+            if (constraints.length() != 0) {
                 constraints.append(" and ");
+            }
             constraints.append("ATTR" + index + ".M_ATTRIBUTE_ID" + idOper + inParams.add(attrID, Types.INTEGER));
             constraints.append(" and ");
 
             if (attrValues != null && attrValues.size() != 0) {
                 constraints.append("(");
                 for (int j = 0; j < attrValues.size(); j++) {
-                    if (j > 0)
+                    if (j > 0) {
                         constraints.append(" or ");
-                    if (valueOper != null && valueOper.trim().equalsIgnoreCase("MATCH"))
+                    }
+                    if (valueOper != null && valueOper.trim().equalsIgnoreCase("MATCH")) {
                         constraints.append("match(ATTR" + index + ".VALUE) against(" + inParams.add(attrValues.get(j)) + ")");
-                    else
+                    } else {
                         constraints.append("ATTR" + index + ".VALUE" + valueOper + inParams.add(attrValues.get(j)));
+                    }
                 }
                 constraints.append(")");
             }
@@ -2664,22 +2836,25 @@ public class DDSearchEngine {
 
                 String dstID = rs.getString("DATASET.DATASET_ID");
                 String dstIdf = rs.getString("DATASET.IDENTIFIER");
-                if (dstID == null && dstIdf == null)
+                if (dstID == null && dstIdf == null) {
                     continue;
+                }
 
                 if (latestOnly) {
                     // the following if-else block skips tables in non-latest DATASETS
                     if (curDstIdf == null || !curDstIdf.equals(dstIdf)) {
                         curDstIdf = dstIdf;
                         curDstID = dstID;
-                    } else if (!dstID.equals(curDstID))
+                    } else if (!dstID.equals(curDstID)) {
                         continue;
+                    }
                 }
 
                 // skip tables that do not actually exist (ie trash from some erroneous situation)
                 String tblIdf = rs.getString("DS_TABLE.IDENTIFIER");
-                if (tblIdf == null)
+                if (tblIdf == null) {
                     continue;
+                }
 
                 // skip this dataset if this.user should not see a dataset in given status
                 String dstStatus = rs.getString("DATASET.REG_STATUS");
@@ -2700,8 +2875,9 @@ public class DDSearchEngine {
                 if (nameID != null) {
                     attrsPstmt.setInt(1, rs.getInt("DS_TABLE.TABLE_ID"));
                     rs2 = attrsPstmt.executeQuery();
-                    if (rs2.next())
+                    if (rs2.next()) {
                         tbl.setName(rs2.getString(1));
+                    }
                 }
                 // set comparation string
                 tbl.setCompStr(tbl.getName());
@@ -2710,14 +2886,18 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs2 != null)
+                if (rs2 != null) {
                     rs2.close();
-                if (rs != null)
+                }
+                if (rs != null) {
                     rs.close();
-                if (stmt1 != null)
+                }
+                if (stmt1 != null) {
                     stmt1.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -2758,10 +2938,11 @@ public class DDSearchEngine {
         buf.append("where DS_TABLE.CORRESP_NS is not null and DS_TABLE.TABLE_ID=");
         buf.append(inParams.add(tableID, Types.INTEGER));
 
-        if (Util.isEmpty(dstID))
+        if (Util.isEmpty(dstID)) {
             buf.append(" and DATASET.DELETED is null");
-        else
+        } else {
             buf.append(" and DATASET.DATASET_ID=").append(inParams.add(dstID, Types.INTEGER));
+        }
 
         buf.append(" order by DATASET.DATASET_ID desc");
 
@@ -2792,10 +2973,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -2827,10 +3010,11 @@ public class DDSearchEngine {
      */
     public Vector getAttributes(String parentID, String parentType, String attrType, String inheritTblID, String inheritDsID)
     throws SQLException {
-        if (attrType.equals(DElemAttribute.TYPE_SIMPLE))
+        if (attrType.equals(DElemAttribute.TYPE_SIMPLE)) {
             return getSimpleAttributes(parentID, parentType, inheritTblID, inheritDsID);
-        else
+        } else {
             return getComplexAttributes(parentID, parentType, null, inheritTblID, inheritDsID);
+        }
     }
 
     /**
@@ -2936,10 +3120,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -2959,8 +3145,9 @@ public class DDSearchEngine {
         if (fxv_id == null || fxv_id.length() == 0) {
             FixedValue fxv = new FixedValue();
             Vector attributes = getDElemAttributes();
-            for (int i = 0; i < attributes.size(); i++)
+            for (int i = 0; i < attributes.size(); i++) {
                 fxv.addAttribute(attributes.get(i));
+            }
             return fxv;
         }
 
@@ -2978,19 +3165,23 @@ public class DDSearchEngine {
                 fxv = new FixedValue(rs.getString("FXV_ID"), rs.getString("OWNER_ID"), rs.getString("VALUE"));
 
                 String isDefault = rs.getString("IS_DEFAULT");
-                if (isDefault != null && isDefault.equalsIgnoreCase("Y"))
+                if (isDefault != null && isDefault.equalsIgnoreCase("Y")) {
                     fxv.setDefault();
+                }
 
                 fxv.setDefinition(rs.getString("DEFINITION"));
                 fxv.setShortDesc(rs.getString("SHORT_DESC"));
-            } else
+            } else {
                 return null;
+            }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -3006,15 +3197,18 @@ public class DDSearchEngine {
      */
     private DElemAttribute getAttributeById(Vector v, String id) {
 
-        if (v == null)
+        if (v == null) {
             return null;
-        if (id == null || id.length() == 0)
+        }
+        if (id == null || id.length() == 0) {
             return null;
+        }
 
         for (int i = 0; i < v.size(); i++) {
             DElemAttribute attribute = (DElemAttribute) v.get(i);
-            if (attribute.getID().equalsIgnoreCase(id))
+            if (attribute.getID().equalsIgnoreCase(id)) {
                 return attribute;
+            }
         }
 
         return null;
@@ -3034,8 +3228,9 @@ public class DDSearchEngine {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
         rs.clearWarnings();
-        if (rs.next())
+        if (rs.next()) {
             id = rs.getString(1);
+        }
 
         stmt.close();
         return id;
@@ -3086,18 +3281,20 @@ public class DDSearchEngine {
      */
     public boolean isWorkingCopy(String id, String type) throws Exception {
 
-        if (type == null)
+        if (type == null) {
             throw new Exception("Type not specified!");
+        }
 
         String tblName = "";
-        if (type.equals("elm"))
+        if (type.equals("elm")) {
             tblName = "DATAELEM";
-        else if (type.equals("tbl"))
+        } else if (type.equals("tbl")) {
             tblName = "DS_TABLE";
-        else if (type.equals("dst"))
+        } else if (type.equals("dst")) {
             tblName = "DATASET";
-        else
+        } else {
             throw new Exception("Unknown type!");
+        }
 
         String idField = type.equals("tbl") ? "TABLE_ID" : tblName + "_ID";
 
@@ -3110,15 +3307,18 @@ public class DDSearchEngine {
             stmt = SQL.preparedStatement(q, inParams, conn);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                if (rs.getString(1).equals("Y"))
+                if (rs.getString(1).equals("Y")) {
                     return true;
+                }
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -3132,8 +3332,9 @@ public class DDSearchEngine {
      */
     public boolean hasUserWorkingCopies() {
 
-        if (user == null || !user.isAuthentic())
+        if (user == null || !user.isAuthentic()) {
             return false;
+        }
 
         INParameters inParams = new INParameters();
         StringBuffer constraints = new StringBuffer();
@@ -3144,24 +3345,28 @@ public class DDSearchEngine {
         try {
             stmt = SQL.preparedStatement("SELECT * FROM DATAELEM " + constraints.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next())
+            if (rs.next()) {
                 return true;
+            }
 
             rs.close();
             stmt.close();
 
             stmt = SQL.preparedStatement("SELECT * FROM DATASET " + constraints.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next())
+            if (rs.next()) {
                 return true;
+            }
         } catch (SQLException sqle) {
             LOGGER.fatal(sqle.toString(), sqle);
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -3181,26 +3386,30 @@ public class DDSearchEngine {
         INParameters inParams = new INParameters();
 
         StringBuffer sql = new StringBuffer();
-        if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
+        if (attrType.equals(DElemAttribute.TYPE_COMPLEX)) {
             sql.append("select count(distinct PARENT_TYPE, PARENT_ID) from COMPLEX_ATTR_ROW where M_COMPLEX_ATTR_ID=").append(
                     inParams.add(attrID, Types.INTEGER));
-        else
+        } else {
             sql.append("select count(distinct PARENT_TYPE, DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID=").append(
                     inParams.add(attrID, Types.INTEGER));
+        }
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             stmt = SQL.preparedStatement(sql.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next())
+            if (rs.next()) {
                 return rs.getInt(1);
+            }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -3219,8 +3428,9 @@ public class DDSearchEngine {
      */
     public boolean hasNewerReleases(DataElement elm) throws SQLException {
 
-        if (elm == null)
+        if (elm == null) {
             return false;
+        }
 
         INParameters inParams = new INParameters();
         String sql = "select DATAELEM_ID from DATAELEM where PARENT_NS is null and " + "IDENTIFIER="
@@ -3236,10 +3446,12 @@ public class DDSearchEngine {
             return rs != null && rs.next();
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -3261,8 +3473,9 @@ public class DDSearchEngine {
                 for (int i = 0; i < v.size(); i++) {
                     DataElement elm = (DataElement) v.get(i);
                     String id = elm.getID();
-                    if (!id.equals(elmId))
+                    if (!id.equals(elmId)) {
                         result.add(elm);
+                    }
                 }
             }
         }
@@ -3279,8 +3492,9 @@ public class DDSearchEngine {
      */
     public Hashtable getFKRelation(String relID) throws SQLException {
 
-        if (Util.isEmpty(relID))
+        if (Util.isEmpty(relID)) {
             return null;
+        }
 
         INParameters inParams = new INParameters();
 
@@ -3318,10 +3532,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -3382,10 +3598,12 @@ public class DDSearchEngine {
 
                 // close rs and stmt if they were opened in the loop's previous step
                 try {
-                    if (rs != null)
+                    if (rs != null) {
                         rs.close();
-                    if (stmt != null)
+                    }
+                    if (stmt != null) {
                         stmt.close();
+                    }
                 } catch (SQLException e) {
                 }
 
@@ -3396,18 +3614,21 @@ public class DDSearchEngine {
 
                     if (dstID != null) {
                         String ds = rs.getString("DST2TBL.DATASET_ID");
-                        if (!dstID.equals(ds))
+                        if (!dstID.equals(ds)) {
                             continue;
+                        }
                     }
 
                     Hashtable hash = new Hashtable();
                     String id = rs.getString("DATAELEM.DATAELEM_ID");
-                    if (id == null)
+                    if (id == null) {
                         continue;
-                    if (added.contains(id))
+                    }
+                    if (added.contains(id)) {
                         continue;
-                    else
+                    } else {
                         added.add(id);
+                    }
                     hash.put("elm_id", id);
                     hash.put("elm_name", rs.getString("DATAELEM.SHORT_NAME"));
                     hash.put("tbl_name", rs.getString("DS_TABLE.SHORT_NAME"));
@@ -3423,10 +3644,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -3454,10 +3677,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -3520,15 +3745,18 @@ public class DDSearchEngine {
                 + "and M_COMPLEX_ATTR_ID=" + inParams.add(attrID, Types.INTEGER);
                 stmt = SQL.preparedStatement(q, inParams, conn);
                 rs = stmt.executeQuery();
-                while (rs.next())
+                while (rs.next()) {
                     taken.add(rs.getString(1));
+                }
             }
 
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
 
@@ -3549,11 +3777,12 @@ public class DDSearchEngine {
                         // ordering logic
                         String uc = new String(fldName);
                         int pos = order.indexOf(uc.toUpperCase());
-                        if (pos == -1)
+                        if (pos == -1) {
                             v.add(fldName);
-                        else {
-                            if (pos > v.size() - 1)
+                        } else {
+                            if (pos > v.size() - 1) {
                                 v.setSize(pos + 1);
+                            }
                             v.add(pos, fldName);
                         }
                     }
@@ -3561,18 +3790,22 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
 
         // ordering might have left some null objects in there
-        for (int i = 0; i < v.size(); i++)
-            if (v.get(i) == null)
+        for (int i = 0; i < v.size(); i++) {
+            if (v.get(i) == null) {
                 v.remove(i--);
+            }
+        }
 
         return v;
     }
@@ -3600,15 +3833,18 @@ public class DDSearchEngine {
             rs = stmt.executeQuery();
             while (rs.next()) {
                 String id = rs.getString(1);
-                if (id != null)
+                if (id != null) {
                     hashSet.add(id);
+                }
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -3634,11 +3870,13 @@ public class DDSearchEngine {
         try {
             stmt = SQL.preparedStatement(q, inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next())
+            if (rs.next()) {
                 lastHarvested = rs.getString(1);
+            }
 
-            if (Util.isEmpty(lastHarvested))
+            if (Util.isEmpty(lastHarvested)) {
                 return vv;
+            }
 
             inParams = new INParameters();
             q = "select distinct MD5KEY, LOGICAL_ID " + "from " + "M_COMPLEX_ATTR " + "left outer join HARV_ATTR on "
@@ -3647,27 +3885,32 @@ public class DDSearchEngine {
             + inParams.add(lastHarvested, Types.BIGINT);
 
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
 
             Hashtable harvAttrs = new Hashtable();
             stmt = SQL.preparedStatement(q, inParams, conn);
             rs = stmt.executeQuery();
-            while (rs.next())
+            while (rs.next()) {
                 harvAttrs.put(rs.getString("MD5KEY"), rs.getString("LOGICAL_ID"));
+            }
 
             inParams = new INParameters();
             q = "select distinct FLD_NAME, FLD_VALUE from HARV_ATTR_FIELD " + "where HARV_ATTR_MD5=?";
 
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
 
@@ -3690,10 +3933,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -3702,13 +3947,15 @@ public class DDSearchEngine {
         for (int i = 1; i < vv.size(); i++) {
             Hashtable ih = (Hashtable) vv.get(i);
             String iname = (String) ih.get("NAME");
-            if (iname == null)
+            if (iname == null) {
                 continue;
+            }
             for (int j = 0; j < i; j++) {
                 Hashtable jh = (Hashtable) vv.get(j);
                 String jname = (String) jh.get("NAME");
-                if (jname == null)
+                if (jname == null) {
                     continue;
+                }
                 if (iname.compareToIgnoreCase(jname) < 0) {
                     vv.remove(i);
                     vv.add(j, ih);
@@ -3732,8 +3979,9 @@ public class DDSearchEngine {
         for (int i = 0; v != null && i < v.size(); i++) {
             Hashtable fld = (Hashtable) v.get(i);
             String harvAttrFldName = (String) fld.get("harv_fld");
-            if (harvAttrFldName != null)
+            if (harvAttrFldName != null) {
                 hash.put(harvAttrFldName, fld.get("id"));
+            }
         }
 
         return hash;
@@ -3747,8 +3995,9 @@ public class DDSearchEngine {
      */
     public boolean hasGIS(String tblID) throws SQLException {
 
-        if (tblID == null)
+        if (tblID == null) {
             return false;
+        }
 
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("select count(*) ").append("from DATAELEM left outer join TBL2ELEM on ")
@@ -3760,16 +4009,19 @@ public class DDSearchEngine {
         try {
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next() && rs.getInt(1) > 0)
+            if (rs.next() && rs.getInt(1) > 0) {
                 return true;
-            else
+            } else {
                 return false;
+            }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -3817,10 +4069,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -3835,16 +4089,18 @@ public class DDSearchEngine {
      * @return
      */
     public String getAttrHelpByShortName(String shortName, String attrType) {
-        if (shortName == null)
+        if (shortName == null) {
             return "";
-        if (attrType == null)
+        }
+        if (attrType == null) {
             return getSimpleAttrHelpByShortName(shortName);
-        else if (attrType.equals(DElemAttribute.TYPE_SIMPLE))
+        } else if (attrType.equals(DElemAttribute.TYPE_SIMPLE)) {
             return getSimpleAttrHelpByShortName(shortName);
-        else if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
+        } else if (attrType.equals(DElemAttribute.TYPE_COMPLEX)) {
             return getComplexAttrHelpByShortName(shortName);
-        else
+        } else {
             return getSimpleAttrHelpByShortName(shortName);
+        }
     }
 
     /**
@@ -3854,16 +4110,18 @@ public class DDSearchEngine {
      * @return
      */
     public String getAttrHelp(String attrID, String attrType) {
-        if (attrID == null)
+        if (attrID == null) {
             return "";
-        if (attrType == null)
+        }
+        if (attrType == null) {
             return getSimpleAttrHelp(attrID);
-        else if (attrType.equals(DElemAttribute.TYPE_SIMPLE))
+        } else if (attrType.equals(DElemAttribute.TYPE_SIMPLE)) {
             return getSimpleAttrHelp(attrID);
-        else if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
+        } else if (attrType.equals(DElemAttribute.TYPE_COMPLEX)) {
             return getComplexAttrHelp(attrID);
-        else
+        } else {
             return getSimpleAttrHelp(attrID);
+        }
     }
 
     /**
@@ -3912,10 +4170,12 @@ public class DDSearchEngine {
             } catch (SQLException e) {
             } finally {
                 try {
-                    if (rs != null)
+                    if (rs != null) {
                         rs.close();
-                    if (stmt != null)
+                    }
+                    if (stmt != null) {
                         stmt.close();
+                    }
                 } catch (SQLException e) {
                 }
             }
@@ -3969,10 +4229,12 @@ public class DDSearchEngine {
             } catch (SQLException e) {
             } finally {
                 try {
-                    if (rs != null)
+                    if (rs != null) {
                         rs.close();
-                    if (stmt != null)
+                    }
+                    if (stmt != null) {
                         stmt.close();
+                    }
                 } catch (SQLException e) {
                 }
             }
@@ -3991,8 +4253,9 @@ public class DDSearchEngine {
      */
     public String getCacheFileName(String objID, String objType, String article) throws SQLException {
 
-        if (objID == null || objType == null || article == null)
+        if (objID == null || objType == null || article == null) {
             throw new SQLException("getCacheFileName(): objID or objType or article is null");
+        }
 
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("select FILENAME from CACHE where ").append("OBJ_ID=")
@@ -4008,10 +4271,12 @@ public class DDSearchEngine {
             fileName = rs.next() ? rs.getString(1) : null;
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -4028,8 +4293,9 @@ public class DDSearchEngine {
      */
     public Hashtable getCache(String objID, String objType) throws SQLException {
 
-        if (objID == null || objType == null)
+        if (objID == null || objType == null) {
             throw new SQLException("getCache(): objID or objType or article is null");
+        }
 
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("select * from CACHE where ").append("OBJ_ID=")
@@ -4045,8 +4311,9 @@ public class DDSearchEngine {
                 String filename = rs.getString("FILENAME");
                 String article = rs.getString("ARTICLE");
                 Long created = new Long(rs.getLong("CREATED"));
-                if (Util.isEmpty(filename))
+                if (Util.isEmpty(filename)) {
                     continue;
+                }
 
                 Hashtable hash = new Hashtable();
                 hash.put("filename", filename);
@@ -4056,10 +4323,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -4075,8 +4344,9 @@ public class DDSearchEngine {
      */
     public Vector getRodLinks(String dstID) throws Exception {
 
-        if (Util.isEmpty(dstID))
+        if (Util.isEmpty(dstID)) {
             throw new Exception("getRodLinks(): dstID missing!");
+        }
 
         Vector v = new Vector();
 
@@ -4100,8 +4370,9 @@ public class DDSearchEngine {
 
                 String raURL = Props.getProperty(PropsIF.INSERV_ROD_RA_URLPATTERN);
                 int i = raURL.indexOf(PropsIF.INSERV_ROD_RA_IDPATTERN);
-                if (i == -1)
+                if (i == -1) {
                     throw new Exception("Invalid property " + PropsIF.INSERV_ROD_RA_URLPATTERN);
+                }
                 raURL = new StringBuffer(raURL).replace(i, i + PropsIF.INSERV_ROD_RA_IDPATTERN.length(), raID).toString();
 
                 hash.put("ra-url", raURL);
@@ -4110,10 +4381,12 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException sqle) {
             }
         }
@@ -4164,8 +4437,9 @@ public class DDSearchEngine {
             String curDstIdf = null;
             while (rsOfDatasets.next()) {
                 String dstIdf = rsOfDatasets.getString("DATASET.IDENTIFIER");
-                if (curDstIdf != null && curDstIdf.equals(dstIdf))
+                if (curDstIdf != null && curDstIdf.equals(dstIdf)) {
                     continue;
+                }
                 curDstIdf = dstIdf;
 
                 String dstName = rsOfDatasets.getString("DATASET.SHORT_NAME");
@@ -4181,8 +4455,9 @@ public class DDSearchEngine {
                     String elmID = rsOfParams.getString("DATAELEM.DATAELEM_ID");
                     String elmUrl = Props.getProperty(PropsIF.OUTSERV_ELM_URLPATTERN);
                     int i = elmUrl.indexOf(PropsIF.OUTSERV_ELM_IDPATTERN);
-                    if (i == -1)
+                    if (i == -1) {
                         throw new Exception("Invalid property " + PropsIF.OUTSERV_ELM_URLPATTERN);
+                    }
                     elmUrl = new StringBuffer(elmUrl).replace(i, i + PropsIF.OUTSERV_ELM_IDPATTERN.length(), elmID).toString();
 
                     hash.put("elm-url", elmUrl);
@@ -4192,14 +4467,18 @@ public class DDSearchEngine {
             }
         } finally {
             try {
-                if (stmtOfDatasets != null)
+                if (stmtOfDatasets != null) {
                     stmtOfDatasets.close();
-                if (stmtOfParams != null)
+                }
+                if (stmtOfParams != null) {
                     stmtOfParams.close();
-                if (rsOfParams != null)
+                }
+                if (rsOfParams != null) {
                     rsOfParams.close();
-                if (rsOfDatasets != null)
+                }
+                if (rsOfDatasets != null) {
                     rsOfDatasets.close();
+                }
 
             } catch (SQLException sqle) {
             }
@@ -4223,8 +4502,9 @@ public class DDSearchEngine {
         for (int i = 0; datasets != null && i < datasets.size(); i++) {
             Dataset dst = (Dataset) datasets.get(i);
             String status = dst.getStatus();
-            if (status == null || !status.equals("Released"))
+            if (status == null || !status.equals("Released")) {
                 continue;
+            }
 
             // see from ROD links
             Vector rodLinks = getRodLinks(dst.getID());
@@ -4232,8 +4512,9 @@ public class DDSearchEngine {
                 Hashtable rodLink = (Hashtable) rodLinks.get(j);
                 String obligID = (String) rodLink.get("ra-id");
                 String obligTitle = (String) rodLink.get("ra-title");
-                if (obligTitle == null)
+                if (obligTitle == null) {
                     obligTitle = "";
+                }
                 if (obligID != null && obligID.length() > 0) {
 
                     obligID = rodObligUrl + obligID;
@@ -4242,8 +4523,9 @@ public class DDSearchEngine {
                     hash.put(predIdentifier, obligID.trim());
                     hash.put(predTitle, obligTitle.trim());
 
-                    if (!obligations.contains(hash))
+                    if (!obligations.contains(hash)) {
                         obligations.add(hash);
+                    }
                 }
             }
 
@@ -4255,12 +4537,14 @@ public class DDSearchEngine {
 
                     String obligID = null;
                     String obligUrl = (String) valueRowHash.get("url");
-                    if (obligUrl != null && obligUrl.length() > 0)
+                    if (obligUrl != null && obligUrl.length() > 0) {
                         obligID = eionet.util.Util.getObligationID(obligUrl);
+                    }
 
                     String obligTitle = (String) valueRowHash.get("name");
-                    if (obligTitle == null)
+                    if (obligTitle == null) {
                         obligTitle = "";
+                    }
                     if (obligID != null && obligID.length() > 0) {
 
                         obligID = rodObligUrl + obligID;
@@ -4269,8 +4553,9 @@ public class DDSearchEngine {
                         hash.put(predIdentifier, obligID.trim());
                         hash.put(predTitle, obligTitle.trim());
 
-                        if (!obligations.contains(hash))
+                        if (!obligations.contains(hash)) {
                             obligations.add(hash);
+                        }
                     }
                 }
             }
@@ -4296,8 +4581,9 @@ public class DDSearchEngine {
             DElemAttribute attr = (DElemAttribute) complexAttrs.get(i);
             String attrID = attr.getID();
             String sname = attr.getShortName();
-            if (sname == null || !sname.equalsIgnoreCase(attrShortName))
+            if (sname == null || !sname.equalsIgnoreCase(attrShortName)) {
                 continue;
+            }
 
             Vector attrFields = getAttrFields(attrID);
             Vector rows = attr.getRows();
@@ -4309,20 +4595,24 @@ public class DDSearchEngine {
                     Hashtable fieldHash = (Hashtable) attrFields.get(t);
                     String fieldID = (String) fieldHash.get("id");
                     String fieldValue = null;
-                    if (fieldID != null)
+                    if (fieldID != null) {
                         fieldValue = (String) rowHash.get(fieldID);
+                    }
                     String fieldName = (String) fieldHash.get("name");
 
-                    if (fieldName == null || fieldName.length() == 0)
+                    if (fieldName == null || fieldName.length() == 0) {
                         continue;
-                    if (fieldValue == null || fieldValue.trim().length() == 0)
+                    }
+                    if (fieldValue == null || fieldValue.trim().length() == 0) {
                         continue;
+                    }
 
                     resultHash.put(fieldName, fieldValue);
                 }
 
-                if (resultHash.size() > 0)
+                if (resultHash.size() > 0) {
                     result.add(resultHash);
+                }
             }
         }
 
@@ -4349,15 +4639,18 @@ public class DDSearchEngine {
             while (rs.next()) {
                 String idf = rs.getString("ACL_NAME");
                 String own = rs.getString("OWNER");
-                if (idf != null && own != null)
+                if (idf != null && own != null) {
                     owners.put(idf, own);
+                }
             }
         } finally {
             try {
-                if (stmt1 != null)
+                if (stmt1 != null) {
                     stmt1.close();
-                if (rs != null)
+                }
+                if (rs != null) {
                     rs.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -4388,30 +4681,35 @@ public class DDSearchEngine {
 
                 String dstID = rs.getString("DATASET.DATASET_ID");
                 String dstIdf = rs.getString("DATASET.IDENTIFIER");
-                if (dstID == null && dstIdf == null)
+                if (dstID == null && dstIdf == null) {
                     continue;
+                }
 
                 // the following if block skips tables in non-latest DATASETS
                 if (curDstIdf == null || !curDstIdf.equals(dstIdf)) {
                     curDstIdf = dstIdf;
                     curDstID = dstID;
-                } else if (!dstID.equals(curDstID))
+                } else if (!dstID.equals(curDstID)) {
                     continue;
+                }
 
                 String tblIdf = rs.getString("DS_TABLE.IDENTIFIER");
-                if (tblIdf == null)
+                if (tblIdf == null) {
                     continue;
+                }
 
                 // the following if block skips non-latest TABLES
-                if (curTblIdf != null && tblIdf.equals(curTblIdf))
+                if (curTblIdf != null && tblIdf.equals(curTblIdf)) {
                     continue;
-                else
+                } else {
                     curTblIdf = tblIdf;
+                }
 
                 // see if the table should be skipped by DATASET.REG_STATUS
                 String dstStatus = rs.getString("DATASET.REG_STATUS");
-                if (skipByRegStatus(dstStatus))
+                if (skipByRegStatus(dstStatus)) {
                     continue;
+                }
 
                 // start constructing the table
                 DsTable tbl = new DsTable(rs.getString("DS_TABLE.TABLE_ID"), rs.getString("DATASET.DATASET_ID"),
@@ -4423,20 +4721,24 @@ public class DDSearchEngine {
 
                 tbl.setDatasetName(rs.getString("DATASET.SHORT_NAME"));
                 tbl.setDstIdentifier(dstIdf);
-                if (dstIdf != null)
+                if (dstIdf != null) {
                     tbl.setOwner((String) owners.get(dstIdf));
+                }
 
                 tbl.setCompStr(tbl.getShortName());
                 result.add(tbl);
             }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
-                if (stmt1 != null)
+                }
+                if (stmt1 != null) {
                     stmt1.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -4462,16 +4764,19 @@ public class DDSearchEngine {
         try {
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (rs != null && rs.next())
+            if (rs != null && rs.next()) {
                 return rs.getString(1);
-            else
+            } else {
                 return null;
+            }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -4493,16 +4798,19 @@ public class DDSearchEngine {
         try {
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (rs != null && rs.next())
+            if (rs != null && rs.next()) {
                 return rs.getString(1);
-            else
+            } else {
                 return null;
+            }
         } finally {
             try {
-                if (rs != null)
+                if (rs != null) {
                     rs.close();
-                if (stmt != null)
+                }
+                if (stmt != null) {
                     stmt.close();
+                }
             } catch (SQLException e) {
             }
         }
@@ -4539,10 +4847,11 @@ public class DDSearchEngine {
          */
         public int compare(Object o1, Object o2) {
 
-            if (compField == DataElementComparator.ID)
+            if (compField == DataElementComparator.ID) {
                 return (sortOrder * (((DataElement) o1).getID()).compareTo(((DataElement) o2).getID()));
-            else
+            } else {
                 throw new DDRuntimeException("Unknown comparator field: " + compField);
+            }
         }
     }
 }

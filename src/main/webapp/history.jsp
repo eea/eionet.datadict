@@ -21,14 +21,14 @@ if (request.getMethod().equals("POST")){
 }
 else if (request.getMethod().equals("GET")){
     bLog=true;
-}            
-if (bLog){    
+}
+if (bLog){
     String url =  requestURI + "?" + queryString;
     history.loadPage(url);
     session.setAttribute("DDhistory", history);
 }
 
-if ((requestURI.indexOf("data_element.jsp")>-1 || requestURI.indexOf("dataset.jsp")>-1 || requestURI.indexOf("dstable.jsp")>-1)
+if ((requestURI.indexOf("data_element.jsp")>-1 || requestURI.indexOf("dataset.jsp")>-1)
             && queryString.indexOf("mode=edit")>-1 && request.getMethod().equals("GET")){
         backUrl=history.getLastMatching("mode=view");
 }
