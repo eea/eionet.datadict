@@ -929,7 +929,7 @@ else if (mode.equals("add"))
                                         String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
                                         if (mode.equals("view") && jspUrlPrefix!=null){
 
-                                            String refUrl = jspUrlPrefix + "/datasets/latest/" + dsTable.getDstIdentifier() + "/tables/" + dsTable.getIdentifier();
+                                            String refUrl = dsTable.getReferenceURL();
                                             %>
                                             <tr class="zebra<%=isOdd%>">
                                                 <th scope="row" class="scope-row simple_attr_title">

@@ -321,7 +321,7 @@ public class DsTable implements Comparable {
             buf.append(jspUrlPrefix);
         }
 
-        buf.append("/datasets/latest/").append(getDstIdentifier()).append("/tables/").append(getIdentifier());
+        buf.append("datasets/latest/").append(getDstIdentifier()).append("/tables/").append(getIdentifier());
 
         return buf.toString();
     }
