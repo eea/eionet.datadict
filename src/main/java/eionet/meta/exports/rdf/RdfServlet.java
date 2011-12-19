@@ -19,6 +19,9 @@ import eionet.util.sql.ConnectionUtil;
  */
 public class RdfServlet extends HttpServlet{
 
+    /** */
+    public static final String URL_MAPPING = "/GetRdf";
+
     /*
      * (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)

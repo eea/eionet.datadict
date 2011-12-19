@@ -119,8 +119,9 @@ public class Dataset implements Comparable {
 
         for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
-            if (attr.getShortName().equalsIgnoreCase(name))
+            if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr.getValue();
+            }
         }
 
         return null;
@@ -131,41 +132,46 @@ public class Dataset implements Comparable {
         // look from simple attributes
         for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
-            if (attr.getShortName().equalsIgnoreCase(name))
+            if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
+            }
         }
 
         // if it wasn't in the simple attributes, look from complex ones
         for (int i = 0; i < complexAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute) complexAttrs.get(i);
-            if (attr.getShortName().equalsIgnoreCase(name))
+            if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
+            }
         }
 
         return null;
     }
 
     public Vector getVersioningAttributes() {
-        if (simpleAttrs == null)
+        if (simpleAttrs == null) {
             return null;
+        }
 
         Vector set = new Vector();
         for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
-            if (attr.effectsVersion())
+            if (attr.effectsVersion()) {
                 set.add(attr);
+            }
         }
 
         return set;
     }
 
     public boolean isWorkingCopy() {
-        if (workingCopy == null)
+        if (workingCopy == null) {
             return false;
-        else if (workingCopy.equals("Y"))
+        } else if (workingCopy.equals("Y")) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     public void setWorkingCopy(String workingCopy) {
@@ -208,8 +214,9 @@ public class Dataset implements Comparable {
 
         Hashtable hash = new Hashtable();
 
-        if (shn == null)
+        if (shn == null) {
             return hash;
+        }
 
         DElemAttribute attr = null;
         for (int i = 0; complexAttrs != null && i < complexAttrs.size(); i++) {
@@ -222,8 +229,9 @@ public class Dataset implements Comparable {
 
         Vector rows = attr == null ? null : attr.getRows();
         Hashtable row = new Hashtable();
-        if (rows != null && rows.size() > 0)
+        if (rows != null && rows.size() > 0) {
             row = (Hashtable) rows.get(0);
+        }
 
         Vector flds = attr == null ? null : attr.getFields();
         for (int i = 0; flds != null && i < flds.size(); i++) {
@@ -233,14 +241,16 @@ public class Dataset implements Comparable {
                 String value = (String) row.get(fldID);
                 if (value != null) {
                     String fldName = (String) fld.get("name");
-                    if (fldName != null)
+                    if (fldName != null) {
                         hash.put(fldName, value);
+                    }
                 }
             }
         }
 
-        if (flds != null)
+        if (flds != null) {
             hash.put("fields", flds);
+        }
 
         return hash;
     }
@@ -259,21 +269,24 @@ public class Dataset implements Comparable {
     public boolean displayCreateLink(String linkID) {
 
         // if not a single create link should be displayed then obviously return false
-        if (displayCreateLinks == 0)
+        if (displayCreateLinks == 0) {
             return false;
+        }
 
         Hashtable weights = Dataset.getCreateLinkWeights();
         Integer weight = (Integer) weights.get(linkID);
-        if (weight == null)
+        if (weight == null) {
             return false;
+        }
 
         // if the integer division displayCreateLinks/weight is not a multiplicand of 2,
         // then the given link should not be displayed
         int div = displayCreateLinks / weight.intValue();
-        if (div % 2 != 0)
+        if (div % 2 != 0) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     public static Hashtable getCreateLinkWeights() {
@@ -325,18 +338,18 @@ public class Dataset implements Comparable {
      */
     public String getReferenceURL() {
 
-        if (getIdentifier() == null)
+        if (getIdentifier() == null) {
             return null;
+        }
 
         StringBuffer buf = new StringBuffer();
 
         String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-        if (jspUrlPrefix != null)
+        if (jspUrlPrefix != null){
             buf.append(jspUrlPrefix);
+        }
 
-        buf.append("dataset.jsp?ds_idf=");
-        buf.append(getIdentifier());
-
+        buf.append("datasets/latest/").append(getIdentifier());
         return buf.toString();
     }
 

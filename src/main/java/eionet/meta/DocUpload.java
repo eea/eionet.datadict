@@ -68,7 +68,7 @@ public class DocUpload extends HttpServlet{
             String del = req.getParameter(REQPAR_DELETE);
             if (!Util.isEmpty(del)) {
                 delete(dstID, del);
-                res.sendRedirect("dataset.jsp?ds_id=" + dstID);
+                res.sendRedirect(req.getContextPath() + "/datasets/" + dstID);
                 return;
             }
 
@@ -80,7 +80,7 @@ public class DocUpload extends HttpServlet{
             File file = new File(getAbsFilePath(req.getParameter(REQPAR_FILE)));
             HttpUploader.upload(req, file);
             save(dstID, file, req.getParameter(REQPAR_TITLE));
-            res.sendRedirect("dataset.jsp?ds_id=" + dstID);
+            res.sendRedirect(req.getContextPath() + "/datasets/" + dstID);
         }
         catch (Exception e) {
             if (e instanceof SQLException) {

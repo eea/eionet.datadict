@@ -33,7 +33,7 @@ public class DefinitionUrls extends HashMap<Class,String>{
             urlPrefix = urlPrefix + "/";
         }
 
-        put(Dataset.class, urlPrefix + "dataset.jsp?ds_id=");
+        put(Dataset.class, urlPrefix + "/datasets/");
         put(DsTable.class, urlPrefix + "/tables/");
         put(DataElement.class, urlPrefix + "data_element.jsp?delem_id=");
     }
