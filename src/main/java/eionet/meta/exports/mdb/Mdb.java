@@ -286,7 +286,7 @@ public class Mdb implements CachableIF {
             throw new MdbException("Dataset ID not given");
 
         StringBuffer result = new StringBuffer();
-        String dstIdf = searchEgnine.getDatasetIdentifier(dstID);
+        String dstIdf = searchEgnine.getDatasetIdentifierById(dstID);
         if (dstIdf == null || dstIdf.length() == 0)
             result.append(dstID);
         else

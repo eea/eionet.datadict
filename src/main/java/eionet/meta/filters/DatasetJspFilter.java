@@ -20,7 +20,7 @@ import eionet.util.QueryString;
 /**
  * 
  * @author Jaanus Heinlaid
- *
+ * 
  */
 public class DatasetJspFilter implements Filter {
 
@@ -46,7 +46,7 @@ public class DatasetJspFilter implements Filter {
     }
 
     /**
-     *
+     * 
      * @param request
      * @param response
      * @param chain
@@ -62,30 +62,37 @@ public class DatasetJspFilter implements Filter {
             event = action;
         }
 
-        if (StringUtils.isBlank(event)) {
-            event = "view";
-        }
-
         String datasetId = request.getParameter("ds_id");
+        String datasetIdentifier = request.getParameter("ds_idf");
+        boolean isLatestRequested = datasetIdentifier != null;
 
         StringBuilder buf = new StringBuilder(request.getContextPath());
         buf.append("/datasets");
-        if (!StringUtils.isBlank(datasetId)){
-            buf.append("/").append(datasetId);
-        }
-        buf.append("/").append(event);
 
-        Map parameterMap = request.getParameterMap()==null ? null : new HashMap(request.getParameterMap());
-        if (parameterMap!=null && !parameterMap.isEmpty()){
+        if (isLatestRequested){
+            buf.append("/latest/").append(datasetIdentifier);
+        }
+        else{
+            if (!StringUtils.isBlank(datasetId)) {
+                buf.append("/").append(datasetId);
+            }
+            if (!StringUtils.isBlank(event)) {
+                buf.append("/").append(event);
+            }
+        }
+
+        Map parameterMap = request.getParameterMap() == null ? null : new HashMap(request.getParameterMap());
+        if (parameterMap != null && !parameterMap.isEmpty()) {
 
             parameterMap.remove("ds_id");
+            parameterMap.remove("ds_idf");
             parameterMap.remove("mode");
             parameterMap.remove("action");
 
             String queryString = QueryString.toQueryString(parameterMap, "UTF-8");
-            if (!StringUtils.isBlank(queryString)){
+            if (!StringUtils.isBlank(queryString)) {
                 buf.append("/");
-                if (!queryString.startsWith("?")){
+                if (!queryString.startsWith("?")) {
                     buf.append("?");
                 }
                 buf.append(queryString);

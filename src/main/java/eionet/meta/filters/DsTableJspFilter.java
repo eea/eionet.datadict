@@ -1,6 +1,8 @@
 package eionet.meta.filters;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,12 +17,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
+import eionet.meta.DDSearchEngine;
 import eionet.util.QueryString;
+import eionet.util.sql.ConnectionUtil;
+import eionet.util.sql.SQL;
 
 /**
- *
+ * 
  * @author Jaanus Heinlaid
- *
+ * 
  */
 public class DsTableJspFilter implements Filter {
 
@@ -46,7 +51,7 @@ public class DsTableJspFilter implements Filter {
     }
 
     /**
-     *
+     * 
      * @param request
      * @param response
      * @param chain
@@ -62,29 +67,40 @@ public class DsTableJspFilter implements Filter {
             event = action;
         }
 
-        if (StringUtils.isBlank(event)) {
-            event = "view";
-        }
-
         String tableId = request.getParameter("table_id");
+        String tableIdentifier = request.getParameter("table_idf");
+        String parentNamespaceIdentifier = request.getParameter("pns");
+        boolean isLatestRequested = tableIdentifier != null && parentNamespaceIdentifier != null;
 
         StringBuilder buf = new StringBuilder(request.getContextPath());
-        buf.append("/tables");
-        if (!StringUtils.isBlank(tableId)){
-            buf.append("/").append(tableId);
-        }
-        buf.append("/").append(event);
 
-        Map parameterMap = request.getParameterMap()==null ? null : new HashMap(request.getParameterMap());
-        if (parameterMap!=null && !parameterMap.isEmpty()){
+        if (isLatestRequested) {
+            String datasetIdentifier = getDatasetIdentifierByNamespace(parentNamespaceIdentifier);
+            buf.append("/datasets/latest/").append(datasetIdentifier).append("/tables/").append(tableIdentifier);
+        } else {
+            buf.append("/tables");
+            if (!StringUtils.isBlank(tableId)) {
+                buf.append("/").append(tableId);
+            }
+            if (!StringUtils.isBlank(event)) {
+                buf.append("/").append(event);
+            }
+        }
+
+        Map parameterMap = request.getParameterMap() == null ? null : new HashMap(request.getParameterMap());
+        if (parameterMap != null && !parameterMap.isEmpty()) {
 
             parameterMap.remove("table_id");
             parameterMap.remove("mode");
+            if (isLatestRequested){
+                parameterMap.remove("table_idf");
+                parameterMap.remove("pns");
+            }
 
             String queryString = QueryString.toQueryString(parameterMap, "UTF-8");
-            if (!StringUtils.isBlank(queryString)){
+            if (!StringUtils.isBlank(queryString)) {
                 buf.append("/");
-                if (!queryString.startsWith("?")){
+                if (!queryString.startsWith("?")) {
                     buf.append("?");
                 }
                 buf.append(queryString);
@@ -101,5 +117,24 @@ public class DsTableJspFilter implements Filter {
     @Override
     public void destroy() {
         // Auto-generated method stub
+    }
+
+    /**
+     * 
+     * @param namespaceId
+     * @return
+     * @throws IOException
+     */
+    private String getDatasetIdentifierByNamespace(String namespaceId) throws IOException {
+
+        Connection conn = null;
+        try {
+            conn = ConnectionUtil.getConnection();
+            return new DDSearchEngine(conn).getDatasetIdentifierByNamespace(namespaceId);
+        } catch (SQLException e) {
+            throw new IOException(e);
+        } finally {
+            SQL.close(conn);
+        }
     }
 }

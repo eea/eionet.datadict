@@ -4753,7 +4753,7 @@ public class DDSearchEngine {
      * @return
      * @throws SQLException
      */
-    public String getDatasetIdentifier(String dstID) throws SQLException {
+    public String getDatasetIdentifierById(String dstID) throws SQLException {
 
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("select IDENTIFIER from DATASET where DATASET_ID=");
@@ -4779,6 +4779,30 @@ public class DDSearchEngine {
                 }
             } catch (SQLException e) {
             }
+        }
+    }
+
+    /**
+     * 
+     * @param namespaceId
+     * @return
+     * @throws SQLException
+     */
+    public String getDatasetIdentifierByNamespace(String namespaceId) throws SQLException {
+
+        INParameters inParams = new INParameters();
+        StringBuffer buf = new StringBuffer("select IDENTIFIER from DATASET where CORRESP_NS=");
+        buf.append(inParams.add(namespaceId, Types.INTEGER));
+
+        ResultSet rs = null;
+        PreparedStatement stmt = null;
+        try {
+            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+            rs = stmt.executeQuery();
+            return rs!=null && rs.next() ? rs.getString(1) : null;
+        } finally {
+            SQL.close(rs);
+            SQL.close(stmt);
         }
     }
 
