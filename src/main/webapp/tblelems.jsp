@@ -451,7 +451,7 @@ if (messages.trim().length()>0){
         </em>
         table,
         <em>
-            <a href="dataset.jsp?ds_id=<%=dsID%>">
+            <a href="<%=request.getContextPath()%>/datasets/<%=dsID%>">
                 <%=Util.processForDisplay(dsName)%>
             </a>
         </em>

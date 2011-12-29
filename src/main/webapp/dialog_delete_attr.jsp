@@ -115,11 +115,11 @@ ServletContext ctx = null;
                             String link="";
                             String version="";
                             if (parent_type.equals("DS")){
-                                type_name="Dataset";
-                                link="dataset.jsp?ds_id=" + parent_id;
+                                type_name = "Dataset";
+                                link = request.getContextPath() + "/datasets/" + parent_id;
                             }
                             else if (parent_type.equals("T")){
-                                type_name="Table";
+                                type_name = "Table";
                                 link = request.getContextPath() + "/tables/" + parent_id;
                             }
                             else if (parent_type.equals("CSI")){

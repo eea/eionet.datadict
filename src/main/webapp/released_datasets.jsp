@@ -35,7 +35,7 @@ if (releasedDatasets!=null){
             %>
             <tr>                
                 <td style="vertical-align:top">
-                    <a href="dataset.jsp?ds_id=<%=dst.getID()%>">
+                    <a href="<%=request.getContextPath()%>/datasets/<%=dst.getID()%>">
                         <%=Util.processForDisplay(name)%>
                     </a>
                 </td>

@@ -1593,7 +1593,7 @@
                                                         %>
                                                     <td class="simple_attr_value">
                                                         <em>
-                                                            <a href="dataset.jsp?ds_id=<%=dsID%>">
+                                                            <a href="<%=request.getContextPath()%>/datasets/<%=dsID%>">
                                                                 <b><%=Util.processForDisplay(dataset.getShortName())%></b>
                                                             </a>
                                                         </em>
@@ -2542,11 +2542,11 @@
                                                                             String tblLink = "";
                                                                             String dstLink = "";
                                                                             if (isLatestRequested) {
-                                                                                tblLink = request.getContextPath() + "/datasets/latest/" + tbl.getDstIdentifier() + "/tables/" + tbl.getIdentifier();
-                                                                                dstLink = "dataset.jsp?ds_idf=" + tbl.getDstIdentifier();
+                                                                                dstLink = request.getContextPath() + "/datasets/latest/" + tbl.getDstIdentifier();
+                                                                                tblLink = dstLink + "/tables/" + tbl.getIdentifier();
                                                                             } else {
                                                                                 tblLink = request.getContextPath() + "/tables/" + tbl.getID();
-                                                                                dstLink = "dataset.jsp?ds_id=" + tbl.getDatasetID();
+                                                                                dstLink = request.getContextPath() + "/datasets/" + tbl.getDatasetID();
                                                                             }
 
                                                                             String owner = tbl.getOwner();

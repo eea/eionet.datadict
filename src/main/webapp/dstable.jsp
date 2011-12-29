@@ -246,10 +246,12 @@
         }
         else if (mode.equals("delete")){
             // if dataset id number given, send to view mode of the dataset working copy, otherwise to home page
-            if (dsID!=null && dsID.length()>0)
-                redirUrl = "dataset.jsp?ds_id=" + dsID;
-            else
-                redirUrl = "index.jsp";
+            if (dsID!=null && !dsID.isEmpty()){
+                redirUrl = request.getContextPath() + "/datasets/" + dsID;
+            }
+            else{
+                redirUrl = request.getContextPath() + "/index.jsp";
+            }
         }
         else if (mode.equals("copy")){
             String id = handler.getLastInsertID();
@@ -653,7 +655,7 @@ else if (mode.equals("add"))
             }
             %>
 
-        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="<%=request.getContextPath()%>/dataset.jsp?ds_id=<%=dsID%>"><%=Util.processForDisplay(dsName)%></a> dataset<%}%></h1>
+        <h1><%=pageHeadingVerb%> table <%if (mode.equals("add")){ %>to <a href="<%=request.getContextPath()%>/datasets/<%=dsID%>"><%=Util.processForDisplay(dsName)%></a> dataset<%}%></h1>
 
         <form id="form1" method="post" action="<%=request.getContextPath()%>/tables" style="clear:both">
 
@@ -912,7 +914,7 @@ else if (mode.equals("add"))
                                             }
                                             %>
                                             <td class="simple_attr_value">
-                                                <a href="<%=request.getContextPath()%>/dataset.jsp?ds_id=<%=dsID%>">
+                                                <a href="<%=request.getContextPath()%>/datasets/<%=dsID%>">
                                                     <b><%=Util.processForDisplay(dsName)%></b>
                                                 </a>
                                                 <%

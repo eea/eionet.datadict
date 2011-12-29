@@ -244,7 +244,7 @@
         
         function goTo(mode){
             if (mode == "add"){
-                document.location.assign('dataset.jsp?mode=add');
+                document.location.assign('<%=request.getContextPath()%>/datasets/add');
             }
         }
         function showSortedList(clmn,ordr) {

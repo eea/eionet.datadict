@@ -93,7 +93,7 @@ if (dstName == null || dstName.length()==0)
     else{
         if (dstID!=null && dstName!=null){
             %>
-            <h1>You are linking ROD obligations with <a href="dataset.jsp?mode=edit&amp;ds_id=<%=dstID%>"><%=dstName%></a> dataset</h1><%
+            <h1>You are linking ROD obligations with <a href="<%=request.getContextPath()%>/datasets/<%=dstID%>"><%=dstName%></a> dataset</h1><%
         }
         else{
             %>        

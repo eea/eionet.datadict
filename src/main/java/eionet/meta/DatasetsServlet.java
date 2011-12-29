@@ -71,6 +71,17 @@ public class DatasetsServlet extends HttpServlet{
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
+        RequestDispatcher requestDispatcher = wrappedRequest.getRequestDispatcher(DATASET_JSP);
+        requestDispatcher.forward(wrappedRequest, response);
+    }
+
     /**
      *
      * @param request
@@ -117,15 +128,6 @@ public class DatasetsServlet extends HttpServlet{
             event = pathInfoSegments[1];
         }
 
-        // the dataset's RDF is requested
-        if (event.equals("rdf")) {
-
-            DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
-            wrappedRequest.addParameterValue("id", datasetId);
-            wrappedRequest.getRequestDispatcher(RdfServlet.URL_MAPPING).forward(wrappedRequest, response);
-            return;
-        }
-
         // Make sure that the event and dataset id detected from the path info
         // will be added as query parameters to the wrapped request.
         // If the event is "subscribe", add "action=subscribe" query parameter
@@ -134,9 +136,9 @@ public class DatasetsServlet extends HttpServlet{
         DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
         wrappedRequest.addParameterValue("ds_id", datasetId);
 
-        if (event.equals("subscribe")){
+        if (event.equals("subscribe") || event.equals("checkout") || event.equals("newversion")){
             wrappedRequest.addParameterValue("mode", "view");
-            wrappedRequest.addParameterValue("action", "subscribe");
+            wrappedRequest.addParameterValue("action", event);
         }
         else{
             wrappedRequest.addParameterValue("mode", event);
@@ -169,14 +171,16 @@ public class DatasetsServlet extends HttpServlet{
             }
         }
 
-        if (tableIdentifier!=null){
+        if (tableIdentifier==null){
+            DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
+            wrappedRequest.addParameterValue("dataset_idf", datasetIdentifier);
+            wrappedRequest.getRequestDispatcher(DATASET_JSP).forward(wrappedRequest, response);
+        }
+        else{
             DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
             wrappedRequest.addParameterValue("table_idf", tableIdentifier);
             wrappedRequest.addParameterValue("dataset_idf", datasetIdentifier);
             wrappedRequest.getRequestDispatcher("/dstable.jsp").forward(wrappedRequest, response);
-        }
-        else{
-            throw new DDRuntimeException("Request not supported: " + request.getRequestURL());
         }
     }
 }

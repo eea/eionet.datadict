@@ -203,6 +203,7 @@ public class DDServletRequestWrapper extends HttpServletRequestWrapper{
 
         String result[] = null;
         if (!values.isEmpty()){
+            result = new String[values.size()];
             values.toArray(result);
         }
         return result;

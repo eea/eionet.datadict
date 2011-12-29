@@ -91,7 +91,7 @@
             dispParentType = "";
         else if (dispParentType.equals("DS")){
             dispParentType = "dataset";
-            parentLink.append("dataset.jsp?ds_id=");
+            parentLink.append(request.getContextPath() + "/datasets/");
         }
         else if (dispParentType.equals("T")){
             dispParentType = "table";

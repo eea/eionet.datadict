@@ -74,6 +74,12 @@
     if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("undo_checkout")) {
         feedbackValue = "Working copy successfully discarded!";
     }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("delete")) {
+        feedbackValue = "Deletion successful!";
+    }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("subscribe")) {
+        feedbackValue = "Subscription successful!";
+    }
 
     // POST request not allowed for anybody who hasn't logged in
     if (request.getMethod().equals("POST") && user==null){
@@ -86,7 +92,7 @@
     // - id number
     // - alphanumeric identifier
     // - mode
-    String dstIdf = request.getParameter("ds_idf");
+    String dstIdf = request.getParameter("dataset_idf");
     String ds_id = request.getParameter("ds_id");
     mode = request.getParameter("mode");
     if (mode == null || mode.trim().length()==0){
@@ -103,7 +109,7 @@
 
     if (mode.equals("view")){
         if (Util.isEmpty(dstIdf) && Util.isEmpty(ds_id)){
-            request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id or ds_idf");
+            request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id or dataset_idf");
             request.getRequestDispatcher("error.jsp").forward(request, response);
             return;
         }
@@ -161,50 +167,32 @@
 
         // disptach the POST request
         ////////////////////////////
-        String redirUrl = "";
+        String redirUrl = null;
         if (mode.equals("add")){
             String id = handler.getLastInsertID();
-            if (id!=null && id.length()>0)
-                redirUrl = redirUrl + "dataset.jsp?ds_id=" + id;
-            if (history!=null)
-                history.remove(history.getCurrentIndex());
+            if (id!=null && id.length()>0){
+                redirUrl = request.getContextPath() + "/datasets/" + id;
+            }
         }
         else if (mode.equals("edit")){
-            // if this was a "saveclose" of a working copy in edit, send to view mode of that same working copy
-            String strSaveclose = request.getParameter("saveclose");
-            if (strSaveclose!=null && strSaveclose.equals("true")){
-                QueryString qs = new QueryString(currentUrl);
-                qs.changeParam("mode", "view");
-                redirUrl = qs.getValue();
+            
+            if (request.getParameter("check_in")!=null && request.getParameter("check_in").equalsIgnoreCase("true")){
+                // if this was a check-in, redirect to the view of the checked-in copy
+                redirUrl = request.getContextPath() + "/datasets/" + handler.getCheckedInCopyID() + "/?feedback=checkin";
             }
             else{
-                // if this was check in, go to the view of checked in copy
-                String checkIn = request.getParameter("check_in");
-                if (checkIn!=null && checkIn.equalsIgnoreCase("true")){
-                    if (history!=null)
-                        history.remove(history.getCurrentIndex());
-                    QueryString qs = new QueryString(currentUrl);
-                    qs.changeParam("mode", "view");
-                    qs.changeParam("feedback", "checkin");
-                    if (handler.getCheckedInCopyID()!=null)
-                        qs.changeParam("ds_id", handler.getCheckedInCopyID());
-                    redirUrl =qs.getValue();
-                }
-                else{
-                    QueryString qs = new QueryString(currentUrl);
-                    redirUrl =qs.getValue();
+                redirUrl = request.getContextPath() + "/datasets/" + ds_id;
+                if (request.getParameter("saveclose")==null || request.getParameter("saveclose").equals("false")){
+                    redirUrl = redirUrl + "/edit";
                 }
             }
         }
         else if (mode.equals("delete")){
-            if (history!=null) {
-                history.remove(history.getCurrentIndex());
-            }
             String checkedoutCopyID = request.getParameter("checkedout_copy_id");
-            if (checkedoutCopyID != null && checkedoutCopyID.length() > 0) {
-                redirUrl = "dataset.jsp?feedback=undo_checkout&ds_id=" + checkedoutCopyID;
+            if (checkedoutCopyID != null && !checkedoutCopyID.isEmpty()) {
+                redirUrl = request.getContextPath() + "/datasets/" + checkedoutCopyID + "/?feedback=undo_checkout";
             } else {
-                redirUrl = "datasets.jsp?feedback=undo_checkout";
+                redirUrl = request.getContextPath() + "/datasets.jsp?feedback=delete";
             }
 
         }
@@ -354,7 +342,7 @@
         }
         else if (mode.equals("view") && dataset!=null && action!=null && (action.equals("subscribe"))){
             Subscriber.subscribeToDataset(Collections.singleton(user.getUserName()), dataset.getIdentifier());
-            feedbackValue = "Subscription successful!";
+            response.sendRedirect(request.getContextPath() + "/datasets/" + dataset.getID() + "/?feedback=subscribe");
         }
         else if (mode.equals("view") && action!=null && (action.equals("checkout") || action.equals("newversion"))){
 
@@ -381,10 +369,7 @@
             if (!ds_id.equals(copyID)){
                 // send to copy if created successfully, remove previous url (edit original) from history
                 history.remove(history.getCurrentIndex());
-                StringBuffer buf = new StringBuffer("dataset.jsp?&ds_id=");
-                buf.append(copyID);
-                buf.append("&feedback=checkout");
-                response.sendRedirect(buf.toString());
+                response.sendRedirect(request.getContextPath() + "/datasets/" + copyID + "/?feedback=checkout");
             }
         }
         else if (mode.equals("view") && dataset!=null){
@@ -403,9 +388,7 @@
             // redircet user to his working copy of this dataset (if such exists)
             String workingCopyID = verMan.getWorkingCopyID(dataset);
             if (workingCopyID!=null && workingCopyID.length()>0){
-                StringBuffer buf = new StringBuffer("dataset.jsp?ds_id=");
-                buf.append(workingCopyID);
-                response.sendRedirect(buf.toString());
+                response.sendRedirect(request.getContextPath() + "/datasets/" + workingCopyID);
             }
         }
 
@@ -426,7 +409,7 @@
 <head>
         <%@ include file="headerinfo.jsp" %>
     <title><%=pageTitle.toString()%></title>
-    <script type="text/javascript" src="modal_dialog.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/modal_dialog.js"></script>
     <script type="text/javascript">
     // <![CDATA[
 
@@ -587,16 +570,16 @@
 
         function goTo(mode, id){
             if (mode == "edit"){
-                document.location.assign("dataset.jsp?mode=edit&ds_id=" + id);
+                document.location.assign("<%=request.getContextPath()%>/datasets/" + id + "/edit");
             }
             else if (mode=="checkout"){
-                document.location.assign("dataset.jsp?action=checkout&ds_id=" + id);
+            	document.location.assign("<%=request.getContextPath()%>/datasets/" + id + "/checkout");
             }
             else if (mode=="newversion"){
-                document.location.assign("dataset.jsp?action=newversion&ds_id=" + id);
+                document.location.assign("<%=request.getContextPath()%>/datasets/" + id + "/newversion");
             }
             else if (mode=="view"){
-                document.location.assign("dataset.jsp?ds_id=" + id);
+                document.location.assign("<%=request.getContextPath()%>/datasets/" + id);
             }
         }
         function slctAllValues(){
@@ -694,7 +677,7 @@ else if (mode.equals("add"))
                         <%
                         if (goToNewest) {
                             %>
-                                <li><a href="dataset.jsp?ds_id=<%=latestID%>">Go to newest</a></li>
+                                <li><a href="<%=request.getContextPath()%>/datasets/<%=latestID%>">Go to newest</a></li>
                             <%
                         }
                         if (isDisplayOperations) {
@@ -703,12 +686,12 @@ else if (mode.equals("add"))
                                 if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())){
                             %>
                                 <%
-                                String dstrodLink = "dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
+                                String dstrodLink = request.getContextPath() + "/dstrod_links.jsp?dst_idf=" + dataset.getIdentifier() + "&amp;dst_id=" + dataset.getID() + "&amp;dst_name=" + dataset.getShortName();
                                 %>
-                                <li><a href="dataset.jsp?mode=edit&amp;ds_id=<%=ds_id%>">Edit metadata</a></li>
-                                <li><a href="complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.processForDisplay(ds_name)%>&amp;ds=true">Edit complex attributes</a></li>
-                                <li><a href="dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.processForDisplay(ds_name)%>">Manage tables</a></li>
-                                <li><a href="dsvisual.jsp?ds_id=<%=ds_id%>">Manage model</a></li>
+                                <li><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/edit">Edit metadata</a></li>
+                                <li><a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.processForDisplay(ds_name)%>&amp;ds=true">Edit complex attributes</a></li>
+                                <li><a href="<%=request.getContextPath()%>/dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.processForDisplay(ds_name)%>">Manage tables</a></li>
+                                <li><a href="<%=request.getContextPath()%>/dsvisual.jsp?ds_id=<%=ds_id%>">Manage model</a></li>
                                 <li><a href="<%=dstrodLink%>">Manage links to ROD</a></li>
                                 <li><a href="javascript:checkIn()">Check in</a></li>
                                 <li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
@@ -718,18 +701,18 @@ else if (mode.equals("add"))
                             if (mode.equals("view")){
                                 if (canNewVersion){
                             %>
-                                <li><a href="dataset.jsp?action=newversion&amp;ds_id=<%=ds_id%>">New version</a></li>
+                                <li><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/newversion">New version</a></li>
                             <%
                                 }
                                 if (canCheckout){
                             %>
-                                <li><a href="dataset.jsp?action=checkout&amp;ds_id=<%=ds_id%>">Check out</a></li>
+                                <li><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/checkout">Check out</a></li>
                                 <li><a href="javascript:submitForm('delete')">Delete</a></li>
                             <%
                                 }
                             }
                             if (mode.equals("view") && user!=null && dataset!=null && dataset.getIdentifier()!=null && !dataset.isWorkingCopy()){%>
-                                <li><a href="dataset.jsp?action=subscribe&amp;ds_id=<%=ds_id%>">Subscribe</a><%
+                                <li><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/subscribe">Subscribe</a><%
                             }
                         }
                         %>
@@ -750,7 +733,7 @@ else if (mode.equals("add"))
 
             <h1><%=Util.processForDisplay(verb)%> dataset definition</h1>
 
-            <form id="form1" method="post" action="dataset.jsp" style="clear:both">
+            <form id="form1" method="post" action="<%=request.getContextPath()%>/datasets" style="clear:both">
                 <div style="display:none">
                 <%
                 if (!mode.equals("add")){ %>
@@ -820,8 +803,8 @@ else if (mode.equals("add"))
                                                                 Create technical specification for this dataset
                                                             </td>
                                                             <td>
-                                                                <a rel="nofollow" href="GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN">
-                                                                    <img style="border:0" src="images/pdf.png" width="16" height="16" alt="PDF" />
+                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN">
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/pdf.png" width="16" height="16" alt="PDF" />
                                                                 </a>
                                                             </td>
                                                         </tr><%
@@ -834,8 +817,8 @@ else if (mode.equals("add"))
                                                                 Create an XML Schema for this dataset
                                                             </td>
                                                             <td>
-                                                                <a rel="nofollow" href="GetSchema?id=DST<%=ds_id%>">
-                                                                    <img style="border:0" src="images/xsd.png" width="16" height="16" alt="XML icon"/>
+                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=DST<%=ds_id%>">
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xsd.png" width="16" height="16" alt="XML icon"/>
                                                                 </a>
                                                             </td>
                                                         </tr><%
@@ -848,8 +831,8 @@ else if (mode.equals("add"))
                                                                 Create an instance XML for this dataset
                                                             </td>
                                                             <td>
-                                                                <a rel="nofollow" href="GetXmlInstance?id=<%=dataset.getID()%>&amp;type=dst">
-                                                                    <img style="border:0" src="images/xml.png" width="16" height="16" alt="XML icon"/>
+                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetXmlInstance?id=<%=dataset.getID()%>&amp;type=dst">
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt="XML icon"/>
                                                                 </a>
                                                             </td>
                                                         </tr><%
@@ -859,10 +842,10 @@ else if (mode.equals("add"))
                                                     if (dispAll || dispXLS){ %>
                                                         <tr>
                                                             <td>
-                                                                Create an MS Excel template for this dataset&nbsp;<a href="help.jsp?screen=dataset&amp;area=excel" onclick="pop(this.href);return false;"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
+                                                                Create an MS Excel template for this dataset&nbsp;<a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel" onclick="pop(this.href);return false;"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/></a>
                                                             </td>
                                                             <td>
-                                                                <a rel="nofollow" href="GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img style="border:0" src="images/xls.png" width="16" height="16" alt="XLS icon"/></a>
+                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>"><img style="border:0" src="<%=request.getContextPath()%>/images/xls.png" width="16" height="16" alt="XLS icon"/></a>
                                                             </td>
                                                         </tr><%
                                                     }
@@ -871,10 +854,10 @@ else if (mode.equals("add"))
                                                     if (dispAll || dispODS){ %>
                                                         <tr>
                                                             <td>
-                                                                Create an OpenDocument spreadsheet template for this dataset&nbsp;<a href="help.jsp?screen=dataset&amp;area=ods" onclick="pop(this.href);return false;"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
+                                                                Create an OpenDocument spreadsheet template for this dataset&nbsp;<a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=ods" onclick="pop(this.href);return false;"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/></a>
                                                             </td>
                                                             <td>
-                                                                <a rel="nofollow" href="GetOds?type=dst&amp;id=<%=ds_id%>"><img style="border:0" src="images/ods.png" width="16" height="16" alt="ODS icon"/></a>
+                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=dst&amp;id=<%=ds_id%>"><img style="border:0" src="<%=request.getContextPath()%>/images/ods.png" width="16" height="16" alt="ODS icon"/></a>
                                                             </td>
                                                         </tr><%
                                                     }
@@ -883,10 +866,10 @@ else if (mode.equals("add"))
                                                     if (dispAll || dispMDB){ %>
                                                         <tr>
                                                             <td>
-                                                                Create validation metadata for MS Access template&nbsp;<a  href="help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href);return false;"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
+                                                                Create validation metadata for MS Access template&nbsp;<a  href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=access" onclick="pop(this.href);return false;"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/></a>
                                                             </td>
                                                             <td>
-                                                                <a rel="nofollow" href="GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true"><img style="border:0" src="images/mdb.png" width="16" height="16" alt="MDB icon"/></a>
+                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true"><img style="border:0" src="<%=request.getContextPath()%>/images/mdb.png" width="16" height="16" alt="MDB icon"/></a>
                                                             </td>
                                                         </tr><%
                                                     }
@@ -897,10 +880,10 @@ else if (mode.equals("add"))
                                                         %>
                                                         <tr>
                                                             <td>
-                                                                Create advanced MS Access template&nbsp;<a  href="help.jsp?screen=dataset&amp;area=advancedMSAccess" onclick="pop(this.href);return false;"><img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/></a>
+                                                                Create advanced MS Access template&nbsp;<a  href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=advancedMSAccess" onclick="pop(this.href);return false;"><img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/></a>
                                                             </td>
                                                             <td>
-                                                                <a rel="nofollow" href="GetMSAccess?dstID=<%=ds_id%>"><img style="border:0" src="images/mdb.png" width="16" height="16" alt="MDB icon"/></a>
+                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>"><img style="border:0" src="<%=request.getContextPath()%>/images/mdb.png" width="16" height="16" alt="MDB icon"/></a>
                                                             </td>
                                                         </tr><%
                                                     }
@@ -912,8 +895,8 @@ else if (mode.equals("add"))
                                                                 Get the comma-separated codelists of this dataset
                                                             </td>
                                                             <td>
-                                                                <a rel="nofollow" href="CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST">
-                                                                    <img style="border:0" src="images/txt.png" width="16" height="16" alt=""/>
+                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST">
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
                                                                 </a>
                                                             </td>
                                                         </tr>
@@ -922,8 +905,8 @@ else if (mode.equals("add"))
                                                                 Get the codelists of this dataset in XML format
                                                             </td>
                                                             <td>
-                                                                <a rel="nofollow" href="CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST&amp;format=xml">
-                                                                    <img style="border:0" src="images/xml.png" width="16" height="16" alt=""/>
+                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dataset.getID()%>&amp;type=DST&amp;format=xml">
+                                                                    <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
                                                                 </a>
                                                             </td>
                                                         </tr><%
@@ -940,10 +923,10 @@ else if (mode.equals("add"))
                                                         <tr>
                                                             <td><%=Util.processForDisplay(title)%></td>
                                                             <td>
-                                                                <a rel="nofollow" href="DocDownload?file=<%=Util.processForDisplay(md5)%>"><img style="border:0" src="images/<%=Util.processForDisplay(icon)%>" width="16" height="16" alt="icon"/></a>
+                                                                <a rel="nofollow" href="<%=request.getContextPath()%>/DocDownload?file=<%=Util.processForDisplay(md5)%>"><img style="border:0" src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(icon)%>" width="16" height="16" alt="icon"/></a>
                                                                 <%
                                                                 if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u")){
-                                                                    %>&nbsp;<a  href="DocUpload?ds_id=<%=ds_id%>&amp;delete=<%=Util.processForDisplay(md5)%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>"><img style="border:0" src="images/delete.gif" width="14" height="14"/></a><%
+                                                                    %>&nbsp;<a  href="<%=request.getContextPath()%>/DocUpload?ds_id=<%=ds_id%>&amp;delete=<%=Util.processForDisplay(md5)%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>"><img style="border:0" src="<%=request.getContextPath()%>/images/delete.gif" width="14" height="14"/></a><%
                                                                 }
                                                                 %>
                                                             </td>
@@ -957,10 +940,10 @@ else if (mode.equals("add"))
                                                         <tr style="height:20px;">
                                                             <td colspan="2">
                                                                 <small>
-                                                                    [ <a rel="nofollow" href="doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Upload a document ...</a> ]
+                                                                    [ <a rel="nofollow" href="<%=request.getContextPath()%>/doc_upload.jsp?ds_id=<%=ds_id%>&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Upload a document ...</a> ]
                                                                 </small>
                                                                 <small>
-                                                                    [ <a rel="nofollow" href="GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Open cache ...</a> ]
+                                                                    [ <a rel="nofollow" href="<%=request.getContextPath()%>/GetCache?obj_id=<%=ds_id%>&amp;obj_type=dst&amp;idf=<%=Util.processForDisplay(dataset.getIdentifier())%>">Open cache ...</a> ]
                                                                 </small>
                                                             </td>
                                                         </tr>
@@ -1004,15 +987,15 @@ else if (mode.equals("add"))
                                             <tr id="short_name_row">
                                                 <th class="scope-row short_name">Short name</th>
                                                 <td class="short_name simple_attr_help">
-                                                    <a  href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-                                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                    <a  href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                     </a>
                                                 </td>
                                                 <%
                                                 if (colspan==4){
                                                     %>
                                                     <td class="short_name simple_attr_help">
-                                                        <img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
+                                                        <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
                                                     </td><%
                                                 }
                                                 %>
@@ -1041,14 +1024,14 @@ else if (mode.equals("add"))
                                                     RegistrationStatus
                                                 </th>
                                                 <td class="simple_attr_help">
-                                                    <a  href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
-                                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                    <a  href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                     </a>
                                                 </td>
                                                 <%
                                                 if (colspan==4){%>
                                                     <td class="simple_attr_help">
-                                                        <img src="images/mandatory.gif" alt="Mandatory"  title="Mandatory"/>
+                                                        <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory"  title="Mandatory"/>
                                                     </td><%
                                                 }
                                                 %>
@@ -1098,17 +1081,16 @@ else if (mode.equals("add"))
 
                                             <!-- Reference URL -->
                                             <%
-                                            String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-                                            if (mode.equals("view") && jspUrlPrefix!=null){
-                                                String refUrl = jspUrlPrefix + "dataset.jsp?ds_idf=" + dataset.getIdentifier();
+                                            if (mode.equals("view")){
+                                                String refUrl = dataset.getReferenceURL();
                                                 %>
                                               <tr class="zebra<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Reference URL
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a  href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                        <a  href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                         </a>
                                                     </td>
                                                     <td class="simple_attr_value">
@@ -1170,14 +1152,14 @@ else if (mode.equals("add"))
                                                         <%=Util.processForDisplay(attribute.getShortName())%>
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a  href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                        <a  href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                         </a>
                                                     </td>
                                                     <%
                                                     if (colspan==4){%>
                                                         <td class="simple_attr_help">
-                                                            <img src="images/<%=Util.processForDisplay(obligImg)%>" alt="<%=Util.processForDisplay(obligTxt)%>" title="<%=Util.processForDisplay(obligTxt)%>"/>
+                                                            <img src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(obligImg)%>" alt="<%=Util.processForDisplay(obligTxt)%>" title="<%=Util.processForDisplay(obligTxt)%>"/>
                                                         </td><%
                                                     }
                                                     %>
@@ -1296,8 +1278,8 @@ else if (mode.equals("add"))
                                                                         }
                                                                         %>
                                                                     </select>
-                                                                    <a  href="fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.processForDisplay(attribute.getShortName())%>&amp;parent_type=attr" onclick="pop(this.href);return false;">
-                                                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                                    <a  href="<%=request.getContextPath()%>/fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.processForDisplay(attribute.getShortName())%>&amp;parent_type=attr" onclick="pop(this.href);return false;">
+                                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                                     </a>
                                                                     <%
                                                                 }
@@ -1339,14 +1321,14 @@ else if (mode.equals("add"))
                                                         Public outputs
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a  href="help.jsp?screen=dataset&amp;area=public_outputs" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                        <a  href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=public_outputs" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                         </a>
                                                     </td>
                                                     <%
                                                     if (colspan==4){%>
                                                         <td class="simple_attr_help">
-                                                            <img style="border:0" src="images/optional.gif" width="16" height="16" alt="optional"/>
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt="optional"/>
                                                         </td><%
                                                     }
                                                     %>
@@ -1397,14 +1379,14 @@ else if (mode.equals("add"))
                                                         Dataset number
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a  href="help.jsp?screen=dataset&amp;area=dataset_number" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                        <a  href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=dataset_number" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                         </a>
                                                     </td>
                                                     <%
                                                     if (colspan==4){%>
                                                         <td class="simple_attr_help">
-                                                            <img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
+                                                            <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
                                                         </td><%
                                                     }
                                                     %>
@@ -1423,14 +1405,14 @@ else if (mode.equals("add"))
                                                     Identifier
                                                 </th>
                                                 <td class="simple_attr_help">
-                                                    <a  href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-                                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                    <a  href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                     </a>
                                                 </td>
                                                 <%
                                                 if (colspan==4){%>
                                                     <td class="simple_attr_help">
-                                                        <img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
+                                                        <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory" title="Mandatory"/>
                                                     </td><%
                                                 }
                                                 %>
@@ -1495,7 +1477,7 @@ else if (mode.equals("add"))
 <div class="figure-plus-container">
   <div class="figure-plus">
     <div class="figure-image">
-      <a href="visuals/<%=Util.processForDisplay(dsVisual)%>"><img src="visuals/<%=Util.processForDisplay(dsVisual)%>"
+      <a href="<%=request.getContextPath()%>/visuals/<%=Util.processForDisplay(dsVisual)%>"><img src="<%=request.getContextPath()%>/visuals/<%=Util.processForDisplay(dsVisual)%>"
          alt="thumbnail" class="scaled poponmouseclick"/></a>
     </div>
     <div class="figure-note">
@@ -1662,13 +1644,13 @@ else if (mode.equals("add"))
 
                                                                     <tr class="zebra<%=isOdd%>">
                                                                         <td>
-                                                                            <a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.processForDisplay(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
+                                                                            <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.processForDisplay(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
                                                                                 <%=Util.processForDisplay(attrName)%>
                                                                             </a>
                                                                         </td>
                                                                         <td>
-                                                                            <a  href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href);return false;">
-                                                                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                                            <a  href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href);return false;">
+                                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                                             </a>
                                                                         </td>
                                                                         <td>
@@ -1761,7 +1743,7 @@ else if (mode.equals("add"))
                                                                     &nbsp;<%
                                                                 }
                                                                 else{ %>
-                                                                    [<a href="dataset.jsp?ds_id=<%=otherVer.getID()%>">view</a>]<%
+                                                                    [<a href="<%=request.getContextPath()%>/datasets/<%=otherVer.getID()%>">view</a>]<%
                                                                 }
                                                                 %>
                                                             </td>
@@ -1812,7 +1794,7 @@ else if (mode.equals("add"))
             </div> <!-- workarea -->
             </div> <!-- container -->
             <%@ include file="footer.jsp" %>
-<script type="text/javascript" src="popbox.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/popbox.js"></script>
 <script type="text/javascript">
 // <![CDATA[
         var popclickpop = {

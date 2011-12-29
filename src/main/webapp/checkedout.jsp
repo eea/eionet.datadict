@@ -88,7 +88,7 @@ Vector commonElements=null;
                     <tr>                    
                         <td> 
                             Dataset:
-                            <a href="dataset.jsp?ds_id=<%=ds_id%>">
+                            <a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>">
                                 <%=Util.processForDisplay(dsFullName)%>
                             </a>
                         </td>

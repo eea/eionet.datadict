@@ -167,7 +167,7 @@ private String setDefaultAttrs(String name){
             <div id="drop-operations">
             <h2>Operations:</h2>
                 <ul>
-                    <li><a title="Create a new dataset" href="dataset.jsp?mode=add">Add dataset</a></li>
+                    <li><a title="Create a new dataset" href="<%=request.getContextPath()%>/datasets/add">Add dataset</a></li>
                 </ul>
             </div><%
         }

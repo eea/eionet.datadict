@@ -28,9 +28,13 @@ if (bLog){
     session.setAttribute("DDhistory", history);
 }
 
-if ((requestURI.indexOf("data_element.jsp")>-1 || requestURI.indexOf("dataset.jsp")>-1)
-            && queryString.indexOf("mode=edit")>-1 && request.getMethod().equals("GET")){
+if ((requestURI.indexOf("data_element.jsp")!=-1 || requestURI.indexOf("dataset.jsp")!=-1)
+            && queryString.indexOf("mode=edit")!=-1 && request.getMethod().equals("GET")){
         backUrl=history.getLastMatching("mode=view");
+}
+
+if (requestURI.indexOf("datasets/")!=-1 && queryString.indexOf("/edit")!=-1 && request.getMethod().equalsIgnoreCase("get")){
+    backUrl=history.getLastMatching("mode=view");
 }
 
 if (backUrl.length()==0){

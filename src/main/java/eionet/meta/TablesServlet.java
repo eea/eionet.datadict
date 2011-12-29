@@ -89,7 +89,7 @@ public class TablesServlet extends HttpServlet{
 
             if (event.equals("subscribe")){
                 wrappedRequest.addParameterValue("mode", "view");
-                wrappedRequest.addParameterValue("action", "subscribe");
+                wrappedRequest.addParameterValue("action", event);
             }
             else{
                 wrappedRequest.addParameterValue("mode", event);

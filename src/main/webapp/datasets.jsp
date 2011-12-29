@@ -142,6 +142,9 @@
     if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("undo_checkout")) {
         feedbackValue = "Working copy successfully discarded!";
     }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("delete")) {
+        feedbackValue = "Deletion successful!";
+    }
 
     try { // start the whole page try block
 
@@ -267,7 +270,7 @@
 
         function goTo(mode){
             if (mode == "add"){
-                document.location.assign("dataset.jsp?mode=add");
+                document.location.assign("<%=request.getContextPath()%>/datasets/add");
             }
         }
 
@@ -350,7 +353,7 @@
                     // update buttons
                     if (!isSearchForWorkingCopies && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")) {
                     %>
-                    <li><a href="dataset.jsp?mode=add">Add</a></li>
+                    <li><a href="<%=request.getContextPath()%>/datasets/add">Add</a></li>
                     <%
                     }
                     if (!isSearchForWorkingCopies) {
@@ -515,7 +518,7 @@
                     String linkDisabled = clickable ? "" : "class=\"disabled\"";
                     String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
                     String ds_name = Util.processForDisplay(dataset.getShortName());
-                    String dsLink = clickable ? "dataset.jsp?ds_id=" + ds_id : "#";
+                    String dsLink = clickable ? request.getContextPath() + "/datasets/" + ds_id : "#";
                     String dsFullName=dataset.getName();
                     if (dsFullName!=null && dsFullName.length()>60)
                         dsFullName = dsFullName.substring(0,60) + " ...";
@@ -666,7 +669,7 @@
 
                         oEntry=(c_SearchResultEntry)oResultSet.oElements.elementAt(i);
                         String linkDisabled = oEntry.clickable ? "" : "class=\"disabled\"";
-                        String dsLink = oEntry.clickable ? "dataset.jsp?ds_id=" + oEntry.oID : "#";
+                        String dsLink = oEntry.clickable ? request.getContextPath() + "/datasets/" + oEntry.oID : "#";
                         String statusImg = "images/" + Util.getStatusImage(oEntry.getRegStatus());
                         String statusTxt   = Util.getStatusRadics(oEntry.getRegStatus());
                                   String zebraClass  = i % 2 != 0 ? "zebraeven" : "zebraodd";
