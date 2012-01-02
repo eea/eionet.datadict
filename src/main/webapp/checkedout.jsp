@@ -124,7 +124,7 @@ Vector commonElements=null;
                     <tr>
                         <td colspan="2">
                             Common element:&nbsp;
-                            <a href="data_element.jsp?delem_id=<%=delem_id%>&amp;type=<%=delem_type%>">
+                            <a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>">
                                 <%=Util.processForDisplay(delem_name)%>
                             </a>
                         (<%=displayType%>)

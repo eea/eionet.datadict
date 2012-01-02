@@ -131,7 +131,7 @@
 <form accept-charset="UTF-8" id="form1" method="post" action="foreign_keys.jsp">
 
     <h1>Foreign keys associated with
-    <em><a href="data_element.jsp?mode=edit&amp;delem_id=<%=delemID%>"><%=Util.processForDisplay(delemName)%></a></em>.
+    <em><a href="<%=request.getContextPath()%>/dataelements/<%=delemID%>/edit"><%=Util.processForDisplay(delemName)%></a></em>.
 </h1>
 
     <table cellspacing="0" cellpadding="0" style="width:auto;clear:right;margin-top:20px" class="datatable">
@@ -187,7 +187,7 @@
                     <input type="checkbox" name="rel_id" value="<%=fkRelID%>"/>
                 </td>
                 <td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
-                    <a href="data_element.jsp?delem_id=<%=fkElmID%>"><%=fkElmName%></a>
+                    <a href="<%=request.getContextPath()%>/dataelements/<%=fkElmID%>"><%=fkElmName%></a>
                 </td>
                 <td align="left" style="padding-left:5;padding-right:10" <% if (i % 2 != 0) %> bgcolor="#D3D3D3" <%;%>>
                     <%=fkTblName%>
@@ -211,6 +211,7 @@
         
         <input type="hidden" name="a_id" value="<%=delemID%>"/>
         <input type="hidden" name="b_id" value=""/>
+        <input type="hidden" name="definition" value=""/>
         
         <input type="hidden" name="collect_elems" value="<%=collect_elems.toString()%>"/>
         

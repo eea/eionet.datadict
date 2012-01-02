@@ -120,7 +120,7 @@
             <p>
                     <span class="attention">
                         You have chosen to import fixed values (i.e. codes)<br/> for the
-                        <a href="data_element.jsp?delem_id=<%=delem_id%>"><%=Util.processForDisplay(elmName)%></a> element!
+                        <a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>"><%=Util.processForDisplay(elmName)%></a> element!
                     </span>
             </p><%
         }

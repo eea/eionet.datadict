@@ -225,7 +225,7 @@
         }
         function goTo(mode){
             if (mode == "add")
-                document.location.assign("data_element.jsp?mode=add");
+                document.location.assign("<%=request.getContextPath()%>/dataelements/add");
             else if (mode=="search"){
                 alert("");
                 document.location.assign("search.jsp");
@@ -468,11 +468,10 @@ else{ %>
                     String statusImg   = "images/" + Util.getStatusImage(dstRegStatus);
                     String statusTxt   = Util.getStatusRadics(dstRegStatus);
 
-                    StringBuffer href = new StringBuffer();
-                    if (!popup)
-                        href.append("data_element.jsp?delem_id=").append(delem_id);
-                    else
-                        href.append("javascript:pickElem(").append(delem_id).append(",").append(displayed+1).append(")");
+                    String href = request.getContextPath() + "/dataelements/" + delem_id;
+                    if (popup){
+                        href = "javascript:pickElem(" + delem_id + "," + (displayed+1) + ")";
+                    }
                         
                     c_SearchResultEntry oEntry = new c_SearchResultEntry(delem_id,
                                                                             displayType,

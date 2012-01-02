@@ -56,6 +56,15 @@ private String setDefaultAttrs(String name){
     DDUser user = SecurityUtil.getUser(request);
     
     ctx = getServletContext();
+
+    //Feedback messages
+    String feedbackValue = null;
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("delete")) {
+        feedbackValue = "Deletion successful!";
+    }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("undo_checkout")) {
+        feedbackValue = "Working copy successfully discarded!";
+    }
     
     Connection conn = null;
     
@@ -122,13 +131,6 @@ private String setDefaultAttrs(String name){
     }
 
     boolean isPopup = contextParam!=null && contextParam.equals(POPUP);
-    
-    String feedbackValue = null;
-
-    //Feedback messages
-    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("undo_checkout")) {
-        feedbackValue = "Working copy successfully discarded!";
-    }
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -271,7 +273,7 @@ if (isDisplayOperations){
             }
             else if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/elements", "i")){
                 %>
-                <li><a title="Add a definition of a new common element" href="javascript:window.location.assign('data_element.jsp?mode=add&amp;common=true')">New common element</a></li><%
+                <li><a title="Add a definition of a new common element" href="<%=request.getContextPath()%>/dataelements/add/?common=true">New common element</a></li><%
             }
             %>
         </ul>

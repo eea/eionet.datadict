@@ -189,9 +189,14 @@
         }
         else if (mode.equals("delete")){
             String checkedoutCopyID = request.getParameter("checkedout_copy_id");
+            String wasWorkingCopy = request.getParameter("is_working_copy");
             if (checkedoutCopyID != null && !checkedoutCopyID.isEmpty()) {
                 redirUrl = request.getContextPath() + "/datasets/" + checkedoutCopyID + "/?feedback=undo_checkout";
-            } else {
+            }
+            else if (wasWorkingCopy != null && wasWorkingCopy.equals("true")){
+                redirUrl = request.getContextPath() + "/datasets.jsp?feedback=undo_checkout";
+            }
+            else {
                 redirUrl = request.getContextPath() + "/datasets.jsp?feedback=delete";
             }
 
@@ -1774,6 +1779,11 @@ else if (mode.equals("add"))
                         <input type="hidden" name="checkedout_copy_id" value="<%=checkedoutCopyID%>"/><%
                     }
                     if (dataset!=null){
+                        
+                        if (dataset.isWorkingCopy()){
+                            %>
+                            <input type="hidden" name="is_working_copy" value="true"/><%
+                        }
                         String checkInNo = dataset.getVersion();
                         if (checkInNo.equals("1")){
                             %>
@@ -1794,6 +1804,10 @@ else if (mode.equals("add"))
             </div> <!-- workarea -->
             </div> <!-- container -->
             <%@ include file="footer.jsp" %>
+
+<script type="text/javascript">
+    var contextPath = "<%=request.getContextPath()%>";
+</script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/popbox.js"></script>
 <script type="text/javascript">
 // <![CDATA[

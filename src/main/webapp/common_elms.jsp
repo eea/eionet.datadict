@@ -372,10 +372,11 @@ else{ %>
                     String status = dataElement.getStatus();
                     String checkInNo = dataElement.getVersion();
                     
-                    StringBuffer viewLink = new StringBuffer("data_element.jsp?delem_id=");
-                    viewLink.append(delem_id);
-                    if (popup)
-                        viewLink.append("&amp;popup=");
+                    StringBuffer viewLink = new StringBuffer();
+                    viewLink.append(request.getContextPath()).append("/dataelements/").append(delem_id);
+                    if (popup){
+                        viewLink.append("/?popup=");
+                    }
                     
                     StringBuffer selectLink = new StringBuffer("javascript:pickElem(");
                     selectLink.append(delem_id).append(",").append(displayed+1).append(")");

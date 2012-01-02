@@ -1364,7 +1364,7 @@ else if (mode.equals("add"))
                                                                         continue;
 
                                                                     boolean elmCommon = elem.getNamespace()==null || elem.getNamespace().getID()==null;
-                                                                    String elemLink = request.getContextPath() + "/data_element.jsp?delem_id=" + elem.getID();
+                                                                    String elemLink = request.getContextPath() + "/dataelements/" + elem.getID();
                                                                     String elemDefinition = elem.getAttributeValueByShortName("Definition");
                                                                     String linkTitle = elemDefinition==null ? "" : elemDefinition;
                                                                     String elemType = (String)types.get(elem.getType());

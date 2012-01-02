@@ -45,7 +45,7 @@
     String titleType = "";
     if (objType.equals("E")){
         titleType = " element";
-        titleLink = "data_element.jsp?mode=edit&delem_id=" + objID;
+        titleLink = request.getContextPath() + "/dataelements/" + objID + "/edit";
     }
     else if (objType.equals("T")){
         titleType = " table";

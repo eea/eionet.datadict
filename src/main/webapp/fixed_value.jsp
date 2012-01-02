@@ -192,21 +192,10 @@
             }
         }
             
-        //find parent url from history
+        // build parent url
         String parentUrl="";
         if (parent_type.equals("elem")){
-            parentUrl="data_element.jsp?delem_id="+delem_id;
-            if (history!=null){
-                String elemUrl = history.getLastMatching("data_element.jsp");
-            
-                if (elemUrl.indexOf("delem_id=" + delem_id)>-1)
-                    parentUrl = elemUrl;
-                if (delem_name.equals("?")){
-                    DataElement elem = searchEngine.getDataElement(delem_id);
-                    if (elem!=null)    delem_name=elem.getShortName();
-                    if (delem_name == null) delem_name = "?";
-                }
-            }
+            parentUrl = request.getContextPath() + "/dataelements/"+delem_id;
         }
         else{
             parentUrl="delem_attribute.jsp?attr_id=" + delem_id + "&amp;type=SIMPLE&amp;mode=" + mode;

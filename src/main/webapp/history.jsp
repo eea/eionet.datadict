@@ -37,6 +37,10 @@ if (requestURI.indexOf("datasets/")!=-1 && queryString.indexOf("/edit")!=-1 && r
     backUrl=history.getLastMatching("mode=view");
 }
 
+if (requestURI.indexOf("dataelements/")!=-1 && queryString.indexOf("/edit")!=-1 && request.getMethod().equalsIgnoreCase("get")){
+    backUrl=history.getLastMatching("mode=view");
+}
+
 if (backUrl.length()==0){
     if (bBackIsCurrent)
         backUrl=history.getCurrentUrl();

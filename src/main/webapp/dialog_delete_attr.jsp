@@ -130,7 +130,7 @@ ServletContext ctx = null;
                             }
                             else if (parent_type.equals("E")){
                                 type_name="Data element";
-                                link="data_element.jsp?delem_id=" + parent_id;
+                                link = request.getContextPath() + "/dataelements/" + parent_id;
                             }
                             if (!parent_type.equals("CSI")){
                                 version = "version: " + (String)object.get("version");

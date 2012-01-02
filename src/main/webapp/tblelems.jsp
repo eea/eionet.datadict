@@ -135,11 +135,12 @@
         }
 
         // disptach the POST request
-        if ((link_elm==null || link_elm.length()==0) && (rplc_elm==null || rplc_elm.length()==0)){
+        if (Util.isEmpty(link_elm) && Util.isEmpty(rplc_elm)){
+            
             String redirUrl = "";
             String mode = request.getParameter("mode");
             if (mode.equals("add") || mode.equals("copy"))
-                redirUrl = "data_element.jsp?delem_id=" + elmHandler.getLastInsertID();
+                redirUrl = request.getContextPath() + "/dataelements/" + elmHandler.getLastInsertID();
             else{
                 redirUrl = "tblelems.jsp?table_id=" + tableID + "&ds_id=" + dsID;
                 if (dsName!=null && dsName.length()>0)
@@ -389,7 +390,7 @@
         }
 
         function goToAddForm(){
-            var url = "data_element.jsp?mode=add&table_id=<%=tableID%>&ds_id=<%=dsID%>";
+            var url = "<%=request.getContextPath()%>/dataelements/add/?table_id=<%=tableID%>&ds_id=<%=dsID%>";
             document.location.assign(url);
         }
 
@@ -568,11 +569,7 @@ if (messages.trim().length()>0){
                         if (posInTable > maxPos) maxPos = posInTable;
                         boolean elmCommon = elem.getNamespace()==null || elem.getNamespace().getID()==null;
 
-                        String elemLink = null;
-                        if (!elmCommon)
-                            elemLink = "data_element.jsp?delem_id=" + elem.getID() + "&amp;ds_id=" + dsID + "&amp;table_id=" + tableID;
-                        else
-                            elemLink = "data_element.jsp?delem_id=" + elem.getID();
+                        String elemLink = request.getContextPath() + "/dataelements/" + elem.getID();
 
                         // see if the element is part of any foreign key relations
                         Vector _fks = searchEngine.getFKRelationsElm(elem.getID(), dataset.getID());

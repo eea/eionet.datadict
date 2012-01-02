@@ -99,7 +99,7 @@
         }
         else if (dispParentType.equals("E")){
             dispParentType = "element";
-            parentLink.append("data_element.jsp?delem_id=");
+            parentLink.append(request.getContextPath() + "/dataelements/");
         }
 
         String dispParentName = request.getParameter("parent_name");

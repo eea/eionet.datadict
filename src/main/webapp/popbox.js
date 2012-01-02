@@ -1177,13 +1177,13 @@ function CalculateImageDimensions(newWidth, newHeight, fullWidth, fullHeight, wi
 var popBoxAutoClose = true;
 var popBoxMouseMoveRevert = true;
 var popBoxWaitImage = new Image();
-popBoxWaitImage.src = "images/spinner40.gif";
+popBoxWaitImage.src = contextPath + "/images/spinner40.gif";
 
 var popBoxShowRevertBar = true;
 var popBoxShowRevertText = true;
 var popBoxShowRevertImage = true;
 var popBoxRevertText = "Click the image to shrink it.";
-var popBoxRevertImage = "images/magminus.gif";
+var popBoxRevertImage = contextPath + "/images/magminus.gif";
 var popBoxRevertBarAbove = false;
 
 // there is no popBoxShowPopBar global, but instead the pbShowPopBar attribute must be
@@ -1191,7 +1191,7 @@ var popBoxRevertBarAbove = false;
 var popBoxShowPopText = true;
 var popBoxShowPopImage = true;
 var popBoxPopText = "Click to expand.";
-var popBoxPopImage = "images/magplus.gif";
+var popBoxPopImage = contextPath + "/images/magplus.gif";
 var popBoxPopBarAbove = false;
 
 var popBoxShowCaption = true;

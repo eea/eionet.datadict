@@ -197,6 +197,12 @@
     if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("switch_type")) {
         feedbackValue = "Type switch successful!";
     }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("delete")) {
+        feedbackValue = "Deletion successful!";
+    }
+    if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("subscribe")) {
+        feedbackValue = "Subscription successful!";
+    }
 
     // POST request not allowed for anybody who hasn't logged in
     if (request.getMethod().equals("POST") && user == null) {
@@ -215,7 +221,7 @@
         // get values of several request parameters:
         // - mode
         // - delem_id
-        // - delem_idf
+        // - element_idf
         // - copy_elem_id
         // - ds_id
         // - table_id
@@ -231,9 +237,9 @@
             type = null;
         }
 
-        // for historic reasons reference URL uses "delem_idf" while as internally DD pages are used to "idfier"
+        // for historic reasons reference URL uses "element_idf" while as internally DD pages are used to "idfier"
         String idfier = "";
-        String delemIdf = request.getParameter("delem_idf");
+        String delemIdf = request.getParameter("element_idf");
         if (delemIdf != null && delemIdf.length() > 0)
             idfier = delemIdf;
         else if (request.getParameter("idfier") != null)
@@ -268,7 +274,7 @@
         } else if (mode.equals("view")) {
             if (Util.isEmpty(delem_id) && Util.isEmpty(delemIdf)) {
                 request.setAttribute("DD_ERR_MSG",
-                        "Missing request parameter: delem_id or delem_idf");
+                        "Missing request parameter: delem_id or element_idf");
                 request.getRequestDispatcher("error.jsp").forward(request,
                         response);
                 return;
@@ -335,63 +341,49 @@
 
             // disptach the POST request
             ////////////////////////////
-            String redirUrl = "";
+            String redirUrl = null;
             if (mode.equals("add") || mode.equals("copy")) {
+                
                 String id = handler.getLastInsertID();
-                if (id != null && id.length() > 0)
-                    redirUrl = redirUrl + "data_element.jsp?delem_id=" + id;
-                if (history != null)
-                    history.remove(history.getCurrentIndex());
-            } else if (mode.equals("edit")) {
+                if (id != null && id.length() > 0){
+                    redirUrl = request.getContextPath() + "/dataelements/" + id;
+                }
+            }
+            else if (mode.equals("edit")) {
 
-                String strSaveclose = request.getParameter("saveclose");
-                String checkIn = request.getParameter("check_in");
-                String switchType = request.getParameter("switch_type");
-
-                // if this was a "saveclose", send to view mode
-                if (strSaveclose != null && strSaveclose.equals("true")) {
-                    QueryString qs = new QueryString(currentUrl);
-                    qs.changeParam("mode", "view");
-                    redirUrl = qs.getValue();
+                boolean isSaveClose = request.getParameter("saveclose")!=null && request.getParameter("saveclose").equalsIgnoreCase("true");
+                boolean isCheckIn = request.getParameter("check_in")!=null && request.getParameter("check_in").equalsIgnoreCase("true");
+                boolean isSwitchType = request.getParameter("switch_type")!=null && request.getParameter("switch_type").equalsIgnoreCase("true");
+                
+                String id = isCheckIn ? handler.getCheckedInCopyID() : delem_id;
+                redirUrl = request.getContextPath() + "/dataelements/" + id;
+                if (!isSaveClose && !isCheckIn && !isSwitchType){
+                    redirUrl = redirUrl + "/edit";
                 }
-                // if this was check in, go to the view of checked in copy
-                else if (checkIn != null
-                        && checkIn.equalsIgnoreCase("true")) {
-                    if (history != null)
-                        history.remove(history.getCurrentIndex());
-                    QueryString qs = new QueryString(currentUrl);
-                    qs.changeParam("mode", "view");
-                    qs.changeParam("feedback", "checkin");
-                    if (handler.getCheckedInCopyID() != null)
-                        qs.changeParam("delem_id",
-                                handler.getCheckedInCopyID());
-                    redirUrl = qs.getValue();
+                if (isCheckIn){
+                    redirUrl = redirUrl + "/?feedback=checkin";
                 }
-                // if this was a switch type
-                else if (switchType != null
-                        && switchType.equalsIgnoreCase("true")) {
-                    QueryString qs = new QueryString(currentUrl);
-                    qs.changeParam("feedback", "switch_type");
-                    redirUrl = qs.getValue();
+                else if (isSwitchType){
+                    redirUrl = redirUrl + "/?feedback=switch_type";
                 }
-                // if this was just a save, send back to edit page
-                else {
-                    QueryString qs = new QueryString(currentUrl);
-                    redirUrl = qs.getValue();
-                }
+                
             } else if (mode.equals("delete")) {
-                String checkedoutCopyID = request
-                        .getParameter("checkedout_copy_id");
-                if (checkedoutCopyID != null
-                        && checkedoutCopyID.length() > 0)
-                    redirUrl = "data_element.jsp?feedback=undo_checkout&delem_id="
-                            + checkedoutCopyID;
-                else
-                    redirUrl = "search.jsp?feedback=undo_checkout";
-                if (!elmCommon) {
-                    if (tableID != null && tableID.length() > 0){
-                        redirUrl = request.getContextPath() + "/tables/" + tableID;
-                    }
+                
+                if (elmCommon){
+	                String checkedoutCopyID = request.getParameter("checkedout_copy_id");
+	                String wasWorkingCopy = request.getParameter("is_working_copy");
+	                if (checkedoutCopyID != null && !checkedoutCopyID.isEmpty()) {
+	                    redirUrl = request.getContextPath() + "/dataelements/" + checkedoutCopyID + "/?feedback=undo_checkout";
+	                }
+	                else if (wasWorkingCopy != null && wasWorkingCopy.equals("true")){
+	                    redirUrl = request.getContextPath() + "/search.jsp?feedback=undo_checkout";
+	                }
+	                else {
+	                    redirUrl = request.getContextPath() + "/search.jsp?feedback=delete";
+	                }
+                }
+                else if (tableID!=null && !tableID.isEmpty()){
+                    redirUrl = request.getContextPath() + "/tables/" + tableID;
                 }
             }
 
@@ -651,20 +643,20 @@
                 }
                 else if (mode.equals("view") && action!=null && action.equals("subscribe") && dataElement!=null && elmCommon){
                     Subscriber.subscribeToElement(Collections.singleton(user.getUserName()), dataElement.getIdentifier());
-                    feedbackValue = "Subscription successful!";
+                    response.sendRedirect(request.getContextPath() + "/dataelements/" + dataElement.getID() + "/?feedback=subscribe");
                 }
                 else if (mode.equals("view") && action != null && (action.equals("checkout") || action.equals("newversion"))) {
 
                     if (action.equals("checkout") && !canCheckout) {
                         request.setAttribute("DD_ERR_MSG",
-                                "You have no permission to check out this dataset!");
+                                "You have no permission to check out this common element!");
                         request.getRequestDispatcher("error.jsp").forward(
                                 request, response);
                         return;
                     }
                     if (action.equals("newversion") && !canNewVersion) {
                         request.setAttribute("DD_ERR_MSG",
-                                "You have no permission to create new version of this dataset!");
+                                "You have no permission to create new version of this common element!");
                         request.getRequestDispatcher("error.jsp").forward(
                                 request, response);
                         return;
@@ -673,8 +665,7 @@
                     // if creating new version, let VersionManager know about this
                     if (action.equals("newversion")) {
                         eionet.meta.savers.Parameters pars = new eionet.meta.savers.Parameters();
-                        pars.addParameterValue("resetVersionAndStatus",
-                                "resetVersionAndStatus");
+                        pars.addParameterValue("resetVersionAndStatus", "resetVersionAndStatus");
                         verMan.setServlRequestParams(pars);
                     }
 
@@ -683,11 +674,7 @@
                     if (!delem_id.equals(copyID)) {
                         // send to copy if created successfully, remove previous url (edit original) from history
                         history.remove(history.getCurrentIndex());
-                        StringBuffer buf = new StringBuffer(
-                                "data_element.jsp?delem_id=");
-                        buf.append(copyID);
-                        buf.append("&feedback=checkout");
-                        response.sendRedirect(buf.toString());
+                        response.sendRedirect(request.getContextPath() + "/dataelements/" + copyID + "/?feedback=checkout");
                     }
                 } else if (mode.equals("view")) {
                     // anonymous users should not be allowed to see anybody's working copy
@@ -710,13 +697,9 @@
                         return;
                     }
                     // redircet user to his working copy of this element (if such exists)
-                    String workingCopyID = verMan
-                            .getWorkingCopyID(dataElement);
-                    if (workingCopyID != null && workingCopyID.length() > 0) {
-                        StringBuffer buf = new StringBuffer(
-                                "data_element.jsp?delem_id=");
-                        buf.append(workingCopyID);
-                        response.sendRedirect(buf.toString());
+                    String workingCopyID = verMan.getWorkingCopyID(dataElement);
+                    if (workingCopyID!=null && workingCopyID.length()>0){
+                        response.sendRedirect(request.getContextPath() + "/dataelements/" + workingCopyID);
                     }
                 }
             }
@@ -751,8 +734,8 @@
 <head>
     <%@ include file="headerinfo.jsp" %>
     <title><%=pageTitle.toString()%></title>
-    <script type="text/javascript" src="querystring.js"></script>
-    <script type="text/javascript" src="modal_dialog.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/querystring.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/modal_dialog.js"></script>
     <script type="text/javascript">
         // <![CDATA[
 
@@ -768,10 +751,6 @@
                     }
                 }
             }
-        }
-
-        function openSchema(){
-            window.open("station.xsd",null, "height=400,width=600,status=no,toolbar=no,menubar=no,location=no,scrollbars=yes,top=100,left=100");
         }
 
         function checkIn(){
@@ -797,16 +776,16 @@
 
         function goTo(mode, id){
             if (mode == "edit"){
-                document.location.assign("data_element.jsp?mode=edit&delem_id=" + id);
+                document.location.assign("<%=request.getContextPath()%>/dataelements/" + id + "/edit");
             }
             else if (mode=="checkout"){
-                document.location.assign("data_element.jsp?action=checkout&delem_id=" + id);
+            	document.location.assign("<%=request.getContextPath()%>/dataelements/" + id + "/checkout");
             }
             else if (mode=="newversion"){
-                document.location.assign("data_element.jsp?action=newversion&delem_id=" + id);
+            	document.location.assign("<%=request.getContextPath()%>/dataelements/" + id + "/newversion");
             }
             else if (mode=="view"){
-                document.location.assign("data_element.jsp?delem_id=" + id);
+            	document.location.assign("<%=request.getContextPath()%>/dataelements/" + id);
             }
         }
 
@@ -975,55 +954,12 @@
                 return false;
         }
 
-        function edit(){
-            <%// check if this is a common element in Released status
-                if (elmRegStatus != null && elmRegStatus.equals("Released")) {%>
-                var a = confirm("Please be aware that this is a definition in Released status. Unless " +
-                                  "you change the status back to something lower, your edits will become " +
-                                  "instantly visible for the public visitors after you check in the definition! " +
-                                  "Click OK, if you want to continue. Otherwise click Cancel.");
-                if (a == false) return;<%}
-
-                // check if this is a non-common element in a Released dataset
-                if (dataset != null && dataset.getStatus().equals("Released")) {%>
-                var b = confirm("Please be aware that you are about to edit an element definition in a dataset definition " +
-                                  "in Released status. Unless you change the dataset definition's status back to something lower, " +
-                                  "your edits will become instantly visible for the public visitors after you check in this " +
-                                  "element definition! Click OK, if you want to continue. Otherwise click Cancel.");
-                if (b == false) return;<%}
-
-                String qryStr = request.getQueryString();
-                // if no query string or it does not contain "delem_id=" and it's not "add" mode,
-                // then it means it must be a refernce URL, and so in that case
-                // construct new location url from scratch,
-                // else construct on the basis of query string
-                if (!mode.equals("add")
-                        && (qryStr == null || qryStr.indexOf("delem_id=") < 0)) {%>
-                document.location.assign("data_element.jsp?mode=edit&delem_id=" + <%=dataElement.getID()%>);
-                <%} else {
-                    String modeString = new String("mode=view&");
-                    int modeStart = qryStr.indexOf(modeString);
-                    if (modeStart == -1) {
-                        modeString = new String("mode=view");
-                        modeStart = qryStr.indexOf(modeString);
-                    }
-
-                    if (modeStart != -1) {
-                        StringBuffer buf = new StringBuffer(qryStr.substring(0,
-                                modeStart));
-                        buf.append("mode=edit&");
-                        buf.append(qryStr.substring(modeStart
-                                + modeString.length()));%>
-                    document.location.assign("data_element.jsp?<%=buf.toString()%>");
-                    <%}
-                }%>
-        }
-
         function fixType(){
 
             var strType = document.forms["form1"].elements["typeSelect"].value;
-            if (strType == null || strType.length==0)
+            if (strType == null || strType.length==0){
                 return;
+            }
 
             var requestQS = new Querystring();
             var arr = new Array();
@@ -1041,13 +977,15 @@
             // of "&reg_status" substring to "®_status". So we will add reg_status explicitly
             // right to the start of the query string, so that in the final URL it appears right after the question mark.
             requestQS.remove("reg_status");
+            requestQS.remove("mode");
             inputsQS.remove("reg_status");
+            inputsQS.remove("mode");
 
-            var newLocation = "data_element.jsp?";
-            if (document.forms["form1"].reg_status)
+            var newLocation = "<%=request.getContextPath()%>/dataelements/add/?";
+            if (document.forms["form1"].reg_status){
                 newLocation = newLocation + "reg_status=" + escape(document.forms["form1"].reg_status.value) + "&";
+            }
             newLocation = newLocation + requestQS.toString() + "&" + inputsQS.toString();
-
             window.location.assign(newLocation);
         }
 
@@ -1056,8 +994,9 @@
             var formName = "form1";
             var inputName;
             var popValues;
-            <%Hashtable qryStrHash1 = HttpUtils.parseQueryString(request
-                        .getQueryString());
+            <%
+            if (request.getQueryString()!=null && !request.getQueryString().isEmpty()){
+                Hashtable qryStrHash1 = HttpUtils.parseQueryString(request.getQueryString());
                 if (qryStrHash1 != null && qryStrHash1.size() > 0) {
                     Enumeration keys = qryStrHash1.keys();
                     while (keys != null && keys.hasMoreElements()) {
@@ -1084,7 +1023,8 @@
                         populateInput(formName, inputName, popValues);
                         <%}
                     }
-                }%>
+                }
+            }%>
         }
 
         function changeDatatype(){
@@ -1116,13 +1056,15 @@
                 // of "&reg_status" substring to "®_status". So we will add reg_status explicitly
                 // right to the start of the query string, so that in the final URL it appears right after the question mark.
                 requestQS.remove("reg_status");
+                requestQS.remove("mode");
                 inputsQS.remove("reg_status");
+                inputsQS.remove("mode");
 
-                var newLocation = "data_element.jsp?";
-                if (document.forms["form1"].reg_status)
+                var newLocation = "<%=request.getContextPath()%>/dataelements/<%=Util.isEmpty(delem_id) ? mode : delem_id%>/<%=Util.isEmpty(delem_id) ? "" : mode%>?";
+                if (document.forms["form1"].reg_status){
                     newLocation = newLocation + "reg_status=" + escape(document.forms["form1"].reg_status.value) + "&";
+                }
                 newLocation = newLocation + requestQS.toString() + "&" + inputsQS.toString();
-
                 window.location.assign(newLocation);
                 <%}%>
         }
@@ -1177,7 +1119,7 @@
                     return;
                 }<%}%>
 
-            var url="search.jsp?ctx=popup";
+            var url="<%=request.getContextPath()%>/search.jsp?ctx=popup";
             wAdd = window.open(url,"Search","height=500,width=700,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
             if (window.focus){
                 wAdd.focus();
@@ -1245,7 +1187,7 @@
 %>
     <body class="popup" onload="onBodyLoad()">
     <div id="pagehead">
-        <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
+        <a href="/"><img src="<%=request.getContextPath()%>/images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
         <div id="sitetitle">Data Dictionary (DD)</div>
         <div id="sitetagline">This service is part of Reportnet</div>
@@ -1289,11 +1231,11 @@
                             if (popup) {
                             %>
                                     <li><a href="javascript:window.close();">Close</a></li>
-                                    <li class="help"><a href="help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li><%
+                                    <li class="help"><a href="<%=request.getContextPath()%>/help.jsp?screen=<%=hlpScreen%>&amp;area=pagehelp" onclick="pop(this.href);return false;">Page help</a></li><%
                             }
                             if (elmCommon && canNewVersion) {
                             %>
-                                    <li><a href="data_element.jsp?action=newversion&amp;delem_id=<%=delem_id%>">New version</a></li><%
+                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/newversion">New version</a></li><%
                             }
                             if (mode.equals("view") && elmCommon
                                     && !dataElement.isWorkingCopy()) {
@@ -1301,7 +1243,7 @@
                                     if (latestID != null
                                             && !latestID.equals(dataElement.getID())) {
                             %>
-                                    <li><a href="data_element.jsp?delem_id=<%=latestID%>">Go to newest</a></li><%
+                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=latestID%>">Go to newest</a></li><%
                                     }
                                 }
                             }
@@ -1309,13 +1251,13 @@
                                 //The buttons displayed in view mode
                                     if (!elmCommon && editDstPrm) {
                                 %>
-                                    <li><a href="data_element.jsp?mode=edit&amp;delem_id=<%=delem_id%>">Edit</a></li>
+                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
                                     <li><a href="javascript:switchType()">Switch type</a></li>
                                 <%
                                     }
                                     if (elmCommon && canCheckout) {
                                 %>
-                                    <li><a href="data_element.jsp?action=checkout&amp;delem_id=<%=delem_id%>">Check out</a></li>
+                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/checkout">Check out</a></li>
                                 <%
                                     }
                                     if ((elmCommon && canCheckout)
@@ -1328,13 +1270,7 @@
                             if (mode.equals("view") && isMyWorkingCopy) {
                                  // view case
                                 %>
-                                    <%--
-                                    <input type="button" class="mediumbuttonb" value="Edit" onclick="goTo('edit', '<%=delem_id%>')"/>
-                                    &nbsp;<input type="button" class="mediumbuttonb" value="Switch type" onclick="switchType()"/>
-                                    &nbsp;<input type="button" class="mediumbuttonb" value="Check in" onclick="checkIn()" />
-                                    &nbsp;<input type="button" class="mediumbuttonb" value="Undo checkout" onclick="submitForm('delete')"/>
-                                    --%>
-                                    <li><a href="data_element.jsp?mode=edit&amp;delem_id=<%=delem_id%>">Edit</a></li>
+                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/edit">Edit</a></li>
                                     <li><a href="javascript:switchType()">Switch type</a></li>
                                     <li><a href="javascript:checkIn()">Check in</a></li>
                                     <li><a href="javascript:submitForm('delete')">Undo checkout</a></li>
@@ -1343,7 +1279,7 @@
                             if (mode.equals("view") && user != null && dataElement != null
                                     && elmCommon && dataElement.getIdentifier() != null && !dataElement.isWorkingCopy()) {
                             %>
-                                    <li><a href="data_element.jsp?action=subscribe&amp;delem_id=<%=delem_id%>">Subscribe</a></li>
+                                    <li><a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>/subscribe">Subscribe</a></li>
                             <%
                             }
                             %>
@@ -1367,7 +1303,7 @@
                     }
                 %>
 
-            <form id="form1" method="post" action="data_element.jsp" style="clear:right;margin-top:20px">
+            <form id="form1" method="post" action="<%=request.getContextPath()%>/dataelements" style="clear:right;margin-top:20px">
                 <div style="display:none">
                     <%
                         if (!mode.equals("add")) {
@@ -1434,8 +1370,8 @@
                                                         Create an XML Schema for this element
                                                     </td>
                                                     <td style="width:27%">
-                                                        <a rel="nofollow" href="GetSchema?id=ELM<%=delem_id%>">
-                                                            <img style="border:0" src="images/xsd.png" width="16" height="16" alt=""/>
+                                                        <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=ELM<%=delem_id%>">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/xsd.png" width="16" height="16" alt=""/>
                                                         </a>
                                                     </td>
                                                 </tr>
@@ -1447,8 +1383,8 @@
                                                             Get the comma-separated codelist of this element
                                                         </td>
                                                         <td style="width:27%">
-                                                            <a rel="nofollow" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
-                                                                <img style="border:0" src="images/txt.png" width="16" height="16" alt=""/>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM">
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/txt.png" width="16" height="16" alt=""/>
                                                             </a>
                                                         </td>
                                                     </tr>
@@ -1457,8 +1393,8 @@
                                                             Get the codelist of this element in XML format
                                                         </td>
                                                         <td style="width:27%">
-                                                            <a rel="nofollow" href="CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM&amp;format=xml">
-                                                                <img style="border:0" src="images/xml.png" width="16" height="16" alt=""/>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/CodelistServlet?id=<%=dataElement.getID()%>&amp;type=ELM&amp;format=xml">
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/xml.png" width="16" height="16" alt=""/>
                                                             </a>
                                                         </td>
                                                     </tr><%
@@ -1497,8 +1433,8 @@
      }
          }
  %>
-                                            <a href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
-                                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                            <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
+                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                             </a>
                                 </div>
 
@@ -1534,15 +1470,15 @@
                                             <tr id="short_name_row">
                                                 <th scope="row" class="scope-row short_name">Short name</th>
                                                 <td class="short_name simple_attr_help">
-                                                    <a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
-                                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                    <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                     </a>
                                                 </td>
                                                 <%
                                                     if (colspan == 4) {
                                                 %>
                                                     <td class="short_name simple_attr_help">
-                                                        <img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                                                     </td><%
                                                         }
                                                     %>
@@ -1579,15 +1515,15 @@
                                                         Dataset
                                                         </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=dataset" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
                                                     %>
                                                         <td class="simple_attr_help">
-                                                            <img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                                                         </td><%
                                                             }
                                                         %>
@@ -1618,15 +1554,15 @@
                                                         Table
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="help.jsp?screen=element&amp;area=table" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=table" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
                                                     %>
                                                         <td class="simple_attr_help">
-                                                            <img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                                                         </td><%
                                                             }
                                                         %>
@@ -1655,15 +1591,15 @@
                                                         RegistrationStatus
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
                                                     %>
                                                         <td class="simple_attr_help">
-                                                            <img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                                                         </td><%
                                                             }
                                                         %>
@@ -1730,15 +1666,15 @@
                                                         GIS type
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=GIS" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
                                                     %>
                                                         <td class="simple_attr_help">
-                                                            <img style="border:0" src="images/optional.gif" width="16" height="16" alt=""/>
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt=""/>
                                                         </td><%
                                                             }
                                                         %>
@@ -1779,23 +1715,17 @@
 
                                             <!-- Reference URL -->
                                             <%
-                                                String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-                                                    if (mode.equals("view") && jspUrlPrefix != null) {
-                                                        String refUrl = jspUrlPrefix
-                                                                + "data_element.jsp?delem_idf="
-                                                                + dataElement.getIdentifier();
-                                                        if (dataElement.getNamespace() != null
-                                                                && dataElement.getNamespace().getID() != null)
-                                                            refUrl = refUrl + "&amp;pns="
-                                                                    + dataElement.getNamespace().getID();
-                                            %>
+                                            String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
+                                            if (mode.equals("view") && jspUrlPrefix != null) {
+                                                String refUrl = dataElement.getReferenceURL();
+                                                %>
                                                 <tr class="zebra<%=isOdd%>">
                                                     <th scope="row" class="scope-row simple_attr_title">
                                                         Reference URL
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=refurl" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
                                                     <td class="simple_attr_value">
@@ -1937,15 +1867,15 @@
                                                         <%=Util.processForDisplay(attribute.getShortName())%>
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                        <a href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
                                                     %>
                                                         <td class="simple_attr_help">
-                                                            <img style="border:0" src="images/<%=Util.processForDisplay(obligImg)%>" width="16" height="16" alt=""/>
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/<%=Util.processForDisplay(obligImg)%>" width="16" height="16" alt=""/>
                                                         </td><%
                                                             }
                                                         %>
@@ -1968,8 +1898,8 @@
                                                                 <div class="figure-plus-container">
                                                                     <div class="figure-plus">
                                                                         <div class="figure-image">
-                                                                            <a href="visuals/<%=Util.processForDisplay(attrValue)%>">
-                                                                                <img src="visuals/<%=Util.processForDisplay(attrValue)%>" alt="Image file could not be found on the server" class="scaled2 poponmouseclick"/>
+                                                                            <a href="<%=request.getContextPath()%>/visuals/<%=Util.processForDisplay(attrValue)%>">
+                                                                                <img src="<%=request.getContextPath()%>/visuals/<%=Util.processForDisplay(attrValue)%>" alt="Image file could not be found on the server" class="scaled2 poponmouseclick"/>
                                                                             </a>
                                                                         </div>
                                                                     </div>
@@ -1982,7 +1912,7 @@
                                                                                             : "manage this image";
                                                                 %>
                                                                 <div>
-                                                                    <a href="imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.processForDisplay(dataElement
+                                                                    <a href="<%=request.getContextPath()%>/imgattr.jsp?obj_id=<%=delem_id%>&amp;obj_type=E&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.processForDisplay(dataElement
                                     .getShortName())%>&amp;attr_name=<%=Util.processForDisplay(attribute.getShortName())%>">[Click to <%=Util.processForDisplay(actionText)%>]</a>
                                                                 </div><%
                                                                     }
@@ -2131,9 +2061,9 @@
                          }
  %>
                                                                     </select>
-                                                                    <a onclick="pop(this.href);return false;" href="fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.processForDisplay(attribute
+                                                                    <a onclick="pop(this.href);return false;" href="<%=request.getContextPath()%>/fixed_values.jsp?delem_id=<%=attrID%>&amp;delem_name=<%=Util.processForDisplay(attribute
                                         .getShortName())%>&amp;parent_type=attr">
-                                                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                                     </a>
                                                                     <%
                                                                         } else {
@@ -2166,15 +2096,15 @@
                                                     Is ROD parameter
                                                 </th>
                                                 <td class="simple_attr_help">
-                                                    <a href="help.jsp?screen=element&amp;area=is_rod_param" onclick="pop(this.href);return false;">
-                                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                    <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=is_rod_param" onclick="pop(this.href);return false;">
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                     </a>
                                                 </td>
                                                 <%
                                                     if (colspan == 4) {
                                                 %>
                                                     <td class="simple_attr_help">
-                                                        <img style="border:0" src="images/optional.gif" width="16" height="16" alt=""/>
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt=""/>
                                                     </td><%
                                                         }
                                                     %>
@@ -2218,15 +2148,15 @@
                                                         CheckInNo
                                                     </th>
                                                     <td class="simple_attr_help">
-                                                        <a href="help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href);return false;">
-                                                            <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=check_in_no" onclick="pop(this.href);return false;">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                         </a>
                                                     </td>
                                                     <%
                                                         if (colspan == 4) {
                                                     %>
                                                         <td class="simple_attr_help">
-                                                            <img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                                                         </td><%
                                                             }
                                                         %>
@@ -2249,15 +2179,15 @@
                                                     Identifier
                                                 </th>
                                                 <td class="simple_attr_help">
-                                                    <a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-                                                        <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                    <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                     </a>
                                                 </td>
                                                 <%
                                                     if (colspan == 4) {
                                                 %>
                                                     <td class="simple_attr_help">
-                                                        <img style="border:0" src="images/mandatory.gif" width="16" height="16" alt=""/>
+                                                        <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                                                     </td><%
                                                         }
                                                     %>
@@ -2335,17 +2265,17 @@
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a href="help.jsp?screen=element&amp;area=<%=Util.processForDisplay(helpAreaName)%>" onclick="pop(this.href);return false;">
-                                                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                            <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=<%=Util.processForDisplay(helpAreaName)%>" onclick="pop(this.href);return false;">
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                             </a>
                                                         </span>
                                                         <span class="simple_attr_help">
-                                                            <img style="border:0" src="images/optional.gif" width="16" height="16" alt="optional"/>
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt="optional"/>
                                                         </span><%
                                                             }
 
                                                                     // the link
-                                                                    String valuesLink = "fixed_values.jsp?delem_id=" + delem_id
+                                                                    String valuesLink = request.getContextPath() + "/fixed_values.jsp?delem_id=" + delem_id
                                                                             + "&amp;delem_name=" + delem_name
                                                                             + "&amp;parent_type=" + type;
                                                                     if (mode.equals("edit") && user != null) {
@@ -2395,7 +2325,7 @@
                                                                                         fxvID = fxv.getID();
                                                                                         defin = fxv.getDefinition();
                                                                                         shortDesc = fxv.getShortDesc();
-                                                                                        valueLink = "fixed_value.jsp?fxv_id=" + fxvID
+                                                                                        valueLink = request.getContextPath() + "/fixed_value.jsp?fxv_id=" + fxvID
                                                                                                 + "&amp;mode=" + mode
                                                                                                 + "&amp;delem_id=" + delem_id
                                                                                                 + "&amp;delem_name=" + delem_name
@@ -2453,19 +2383,19 @@
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a href="help.jsp?screen=element&amp;area=fks_link" onclick="pop(this.href);return false;">
-                                                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                            <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=fks_link" onclick="pop(this.href);return false;">
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                             </a>
                                                         </span>
                                                         <span class="simple_attr_help">
-                                                            <img style="border:0" src="images/optional.gif" width="16" height="16" alt="optional"/>
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt="optional"/>
                                                         </span><%
                                                             }
                                                                     // the link
                                                                     if (mode.equals("edit")) {
                                                         %>
                                                         <span class="barfont_bordered">
-                                                            <a href="foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=Util.processForDisplay(delem_name)%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>">[Click to manage foreign keys of this element]</a>
+                                                            <a href="<%=request.getContextPath()%>/foreign_keys.jsp?delem_id=<%=delem_id%>&amp;delem_name=<%=Util.processForDisplay(delem_name)%>&amp;ds_id=<%=dsID%>&amp;table_id=<%=tableID%>">[Click to manage foreign keys of this element]</a>
                                                         </span><%
                                                             }
                                                         %>
@@ -2496,7 +2426,7 @@
                                                                 %>
                                                                     <tr>
                                                                         <td style="width:50%">
-                                                                            <a href="data_element.jsp?delem_id=<%=fkElmID%>">
+                                                                            <a href="<%=request.getContextPath()%>/dataelements/<%=fkElmID%>">
                                                                                 <%=Util.processForDisplay(fkElmName)%>
                                                                             </a>
                                                                         </td>
@@ -2593,12 +2523,12 @@
                                                         if (!mode.equals("view")) {
                                                     %>
                                                         <span class="simple_attr_help">
-                                                            <a href="help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
-                                                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                                            <a href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link" onclick="pop(this.href);return false;">
+                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                                             </a>
                                                         </span>
                                                         <span class="simple_attr_help">
-                                                            <img style="border:0" src="images/mandatory.gif" width="16" height="16" alt="mandatory"/>
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt="mandatory"/>
                                                         </span><%
                                                             }
 
@@ -2606,7 +2536,7 @@
                                                                     if (mode.equals("edit") && user != null) {
                                                         %>
                                                         <span class="barfont_bordered">
-                                                            <a href="complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.processForDisplay(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>">[Click to manage complex attributes of this element]</a>
+                                                            <a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.processForDisplay(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>">[Click to manage complex attributes of this element]</a>
                                                         </span><%
                                                             }
                                                         %>
@@ -2636,13 +2566,13 @@
 
                                                                     <tr class="zebra<%=isOdd%>">
                                                                         <td>
-                                                                            <a href="complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.processForDisplay(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
+                                                                            <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.processForDisplay(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
                                                                                 <%=Util.processForDisplay(attrName)%>
                                                                             </a>
                                                                         </td>
                                                                         <td>
-                                                                            <a href="help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href);return false;">
-                                                                                <img style="border:0" src="images/info_icon.gif" width="16" height="16" alt="help"/>
+                                                                            <a href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX" onclick="pop(this.href);return false;">
+                                                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                                                                             </a>
                                                                         </td>
                                                                         <td>
@@ -2751,7 +2681,7 @@
                                                                 &nbsp;<%
                                                                     } else {
                                                                 %>
-                                                                [<a href="data_element.jsp?delem_id=<%=otherVer.getID()%>">view</a>]<%
+                                                                [<a href="<%=request.getContextPath()%>/dataelements/<%=otherVer.getID()%>">view</a>]<%
                                                                     }
                                                                 %>
                                                         </td>
@@ -2795,6 +2725,10 @@
                         %>
                             <input type="hidden" name="checkedout_copy_id" value="<%=checkedoutCopyID%>"/><%
                                 }
+                                    if (dataElement != null && dataElement.isWorkingCopy()){
+                                        %>
+                                        <input type="hidden" name="is_working_copy" value="true"/><%
+                                    }
                                         if (dataElement != null) {
                                             String checkInNo = dataElement.getVersion();
                                             if (checkInNo.equals("1")) {
@@ -2837,7 +2771,10 @@
                 <%
                     }
                 %>
-<script type="text/javascript" src="popbox.js"></script>
+<script type="text/javascript">
+    var contextPath = "<%=request.getContextPath()%>";
+</script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/popbox.js"></script>
 <script type="text/javascript">
 // <![CDATA[
         var popclickpop = {
