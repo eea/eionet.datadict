@@ -232,7 +232,9 @@
         String copy_elem_id = request.getParameter("copy_elem_id");
         String dsID = request.getParameter("ds_id");
         String tableID = request.getParameter("table_id");
-        String type = request.getParameter("type"); // indicates whether element is fixed values or quantitative
+        
+        // indicates whether element is fixed values or quantitative
+        String type = request.getParameter("type");
         if (type != null && type.length() == 0) {
             type = null;
         }
@@ -240,10 +242,15 @@
         // for historic reasons reference URL uses "element_idf" while as internally DD pages are used to "idfier"
         String idfier = "";
         String delemIdf = request.getParameter("element_idf");
-        if (delemIdf != null && delemIdf.length() > 0)
+        if (delemIdf != null && delemIdf.length() > 0){
             idfier = delemIdf;
-        else if (request.getParameter("idfier") != null)
+        }
+        else if (request.getParameter("idfier") != null){
             idfier = request.getParameter("idfier");
+        }
+        
+        String tableIdf = request.getParameter("table_idf");
+        String datasetIdf = request.getParameter("dataset_idf");
 
         // check missing request parameters
         if (mode == null || mode.trim().length() == 0) {
@@ -444,8 +451,7 @@
                         v.add("Recorded");
                         v.add("Released");
                     }
-                    dataElement = searchEngine.getLatestElm(delemIdf,
-                            request.getParameter("pns"), v);
+                    dataElement = searchEngine.getLatestElm(delemIdf, tableIdf, datasetIdf, v);
                 } else {
                     dataElement = searchEngine.getDataElement(delem_id);
                 }
@@ -503,8 +509,7 @@
                         v.add("Recorded");
                         v.add("Released");
                     }
-                    latestID = searchEngine.getLatestElmID(delemIdf,
-                            request.getParameter("pns"), v);
+                    latestID = searchEngine.getLatestElmID(delemIdf, tableIdf, datasetIdf, v);
                     isLatestElm = latestID != null
                             && delem_id.equals(latestID);
 
@@ -1221,8 +1226,7 @@
                         verb = "Edit";
                     String strCommon = elmCommon ? "common" : "";
 
-
-                    if (popup || mode.equals("view")) {
+                    if (mode.equals("view") && user!=null) {
                     %>
                         <div id="drop-operations">
                         <h2>Operations:</h2>

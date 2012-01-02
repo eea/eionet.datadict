@@ -171,16 +171,31 @@ public class DatasetsServlet extends HttpServlet{
             }
         }
 
-        if (tableIdentifier==null){
-            DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
-            wrappedRequest.addParameterValue("dataset_idf", datasetIdentifier);
-            wrappedRequest.getRequestDispatcher(DATASET_JSP).forward(wrappedRequest, response);
+        String elementIdentifier = null;
+        if (pathInfoSegments.length>4 && pathInfoSegments[4].equals("elements")){
+            elementIdentifier = pathInfoSegments.length>5 ? pathInfoSegments[5] : null;
+            if (elementIdentifier==null){
+                throw new DDRuntimeException("Missing element identifier in path info!");
+            }
         }
-        else{
+
+        if (elementIdentifier!=null && tableIdentifier!=null){
+            DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
+            wrappedRequest.addParameterValue("element_idf", elementIdentifier);
+            wrappedRequest.addParameterValue("table_idf", tableIdentifier);
+            wrappedRequest.addParameterValue("dataset_idf", datasetIdentifier);
+            wrappedRequest.getRequestDispatcher("/data_element.jsp").forward(wrappedRequest, response);
+        }
+        else if (tableIdentifier!=null){
             DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
             wrappedRequest.addParameterValue("table_idf", tableIdentifier);
             wrappedRequest.addParameterValue("dataset_idf", datasetIdentifier);
             wrappedRequest.getRequestDispatcher("/dstable.jsp").forward(wrappedRequest, response);
+        }
+        else{
+            DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
+            wrappedRequest.addParameterValue("dataset_idf", datasetIdentifier);
+            wrappedRequest.getRequestDispatcher(DATASET_JSP).forward(wrappedRequest, response);
         }
     }
 }
