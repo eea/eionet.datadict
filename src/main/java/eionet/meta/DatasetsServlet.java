@@ -130,8 +130,8 @@ public class DatasetsServlet extends HttpServlet{
 
         // Make sure that the event and dataset id detected from the path info
         // will be added as query parameters to the wrapped request.
-        // If the event is "subscribe", add "action=subscribe" query parameter
-        // and set event to "view".
+        // If the event is one of "subscribe", "checkout" or "newversion", set
+        // it as "action" parameter instead.
 
         DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
         wrappedRequest.addParameterValue("ds_id", datasetId);

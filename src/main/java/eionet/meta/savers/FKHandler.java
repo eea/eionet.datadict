@@ -83,9 +83,10 @@ public class FKHandler extends BaseHandler{
             map.put("B_CARDIN", inParams.add(bCardin));
         }
         String definition = req.getParameter("definition");
-        if (!Util.isEmpty(definition)) {
-            map.put("DEFINITION", inParams.add(definition));
+        if (definition==null){
+            definition = "";
         }
+        map.put("DEFINITION", inParams.add(definition));
 
         SQL.executeUpdate(SQL.insertStatement("FK_RELATION", map), inParams, conn);
         setLastInsertID();
@@ -161,8 +162,9 @@ public class FKHandler extends BaseHandler{
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(qry);
         rs.clearWarnings();
-        if (rs.next())
+        if (rs.next()) {
             lastInsertID = rs.getString(1);
+        }
         stmt.close();
     }
 

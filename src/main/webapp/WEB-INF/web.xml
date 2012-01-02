@@ -274,12 +274,16 @@
         <servlet-class>eionet.meta.exports.rdf.RdfServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DatasetsServlet</servlet-name>
+        <servlet-class>eionet.meta.DatasetsServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>TablesServlet</servlet-name>
         <servlet-class>eionet.meta.TablesServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DatasetsServlet</servlet-name>
-        <servlet-class>eionet.meta.DatasetsServlet</servlet-class>
+        <servlet-name>ElementsServlet</servlet-name>
+        <servlet-class>eionet.meta.ElementsServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DownloadServlet</servlet-name>
@@ -405,12 +409,16 @@
         <url-pattern>/GetRdf/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>DatasetsServlet</servlet-name>
+        <url-pattern>/datasets/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>TablesServlet</servlet-name>
         <url-pattern>/tables/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DatasetsServlet</servlet-name>
-        <url-pattern>/datasets/*</url-pattern>
+        <servlet-name>ElementsServlet</servlet-name>
+        <url-pattern>/dataelements/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DownloadServlet</servlet-name>

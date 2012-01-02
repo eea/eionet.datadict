@@ -46,18 +46,18 @@ public class ElementsServlet extends HttpServlet{
         String[] pathInfoSegments = StringUtils.split(pathInfo, "/");
         if (pathInfoSegments[0].equals("latest")){
 
-            // a latest dataset definition is requested (i.e. by its alfa-numeric identifier)
+            // a latest common element definition is requested (i.e. by its alfa-numeric identifier)
             handleRequestForLatest(request, response, pathInfoSegments);
             return;
         }
         else if (pathInfoSegments[0].equals("add")){
 
-            // a request for adding a new dataset
+            // a request for adding a new element
             handleRequestForAdd(request, response, pathInfoSegments);
         }
         else if (NumberUtils.toInt(pathInfoSegments[0]) > 0){
 
-            // a request specific to a particular dataset (i.e. by its auto-generated identifier)
+            // a request specific to a particular element (i.e. by its auto-generated identifier)
             handleRequestForParticular(request, response, pathInfoSegments);
         }
         else{
@@ -82,10 +82,14 @@ public class ElementsServlet extends HttpServlet{
      * @param request
      * @param response
      * @param pathInfoSegments
+     * @throws IOException
+     * @throws ServletException
      */
-    private void handleRequestForAdd(HttpServletRequest request, HttpServletResponse response, String[] pathInfoSegments) {
-        // TODO Auto-generated method stub
+    private void handleRequestForAdd(HttpServletRequest request, HttpServletResponse response, String[] pathInfoSegments) throws ServletException, IOException {
 
+        DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
+        wrappedRequest.addParameterValue("mode", "add");
+        wrappedRequest.getRequestDispatcher(DATA_ELEMENT_JSP).forward(wrappedRequest, response);
     }
 
 
@@ -115,9 +119,34 @@ public class ElementsServlet extends HttpServlet{
      * @param request
      * @param response
      * @param pathInfoSegments
+     * @throws IOException
+     * @throws ServletException
      */
-    private void handleRequestForParticular(HttpServletRequest request, HttpServletResponse response, String[] pathInfoSegments) {
-        // TODO Auto-generated method stub
+    private void handleRequestForParticular(HttpServletRequest request, HttpServletResponse response, String[] pathInfoSegments) throws ServletException, IOException {
 
+        String elementId = pathInfoSegments[0];
+        String event = "view";
+        if (pathInfoSegments.length>1) {
+            event = pathInfoSegments[1];
+        }
+
+        // Make sure that the event and element id detected from the path info
+        // will be added as query parameters to the wrapped request.
+        // If the event is one of "subscribe", "checkout" or "newversion", set
+        // it as "action" parameter instead.
+
+        DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
+        wrappedRequest.addParameterValue("delem_id", elementId);
+
+        if (event.equals("subscribe") || event.equals("checkout") || event.equals("newversion")){
+            wrappedRequest.addParameterValue("mode", "view");
+            wrappedRequest.addParameterValue("action", event);
+        }
+        else{
+            wrappedRequest.addParameterValue("mode", event);
+        }
+
+        RequestDispatcher requestDispatcher = wrappedRequest.getRequestDispatcher(DATA_ELEMENT_JSP);
+        requestDispatcher.forward(wrappedRequest, response);
     }
 }

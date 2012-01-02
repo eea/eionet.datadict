@@ -58,11 +58,11 @@ public class Import extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
-                    throws ServletException, java.io.IOException {
+    throws ServletException, java.io.IOException {
 
         req.setCharacterEncoding("UTF-8");
 
-       req.getRequestDispatcher("import_results.jsp").forward(req, res);
+        req.getRequestDispatcher("import_results.jsp").forward(req, res);
     }
 
     /*
@@ -70,7 +70,7 @@ public class Import extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
-                    throws ServletException, java.io.IOException {
+    throws ServletException, java.io.IOException {
 
         req.setCharacterEncoding("UTF-8");
 
@@ -98,8 +98,8 @@ public class Import extends HttpServlet {
         // get content type, check that it's valid
         String contentType = req.getContentType();
         if (contentType == null ||
-            !(contentType.toLowerCase().startsWith("multipart/form-data") ||
-            contentType.toLowerCase().startsWith("text/xml"))) {
+                !(contentType.toLowerCase().startsWith("multipart/form-data") ||
+                        contentType.toLowerCase().startsWith("text/xml"))) {
             responseText.append("<h1>Posted content type is unknown!</h1>");
             bException = true;
         }
@@ -123,8 +123,9 @@ public class Import extends HttpServlet {
             type = req.getParameter("type");
             delem_id = req.getParameter("delem_id");
 
-            if (fileORurl != null && fileORurl.equalsIgnoreCase("url"))
+            if (fileORurl != null && fileORurl.equalsIgnoreCase("url")) {
                 sUrl = req.getParameter("url_input");
+            }
 
             // extract the multipart request's boundary string
             boundary = extractBoundary(contentType);
@@ -136,7 +137,7 @@ public class Import extends HttpServlet {
             bException = true;
         }
         else {
-           // check that the element id is valid, when type is FXV
+            // check that the element id is valid, when type is FXV
             if (type.equals("FXV") && delem_id == null) {
                 responseText.append("<h1>Failed to get data element id!</h1><br/>");
                 bException = true;
@@ -147,11 +148,13 @@ public class Import extends HttpServlet {
         // (regardless of whether we have a file upload or
         // URL stream, we initialize the file
         String tmpFilePath = Props.getProperty(PropsIF.TEMP_FILE_PATH);
-        if (tmpFilePath == null)
+        if (tmpFilePath == null) {
             tmpFilePath = System.getProperty("user.dir");
+        }
 
-        if (!tmpFilePath.endsWith(File.separator))
+        if (!tmpFilePath.endsWith(File.separator)) {
             tmpFilePath = tmpFilePath + File.separator;
+        }
 
         StringBuffer tmpFileName = new StringBuffer(tmpFilePath + TMP_FILE_PREFIX);
         tmpFileName.append("_");
@@ -215,35 +218,39 @@ public class Import extends HttpServlet {
 
                 StringBuffer msg = new StringBuffer();
                 int lineNumber = handler.getLine();
-                if (lineNumber>0)
+                if (lineNumber>0) {
                     msg.append(" Line ").append(String.valueOf(lineNumber)).
                     append("\n");
+                }
 
                 msg.append(Util.getStack(e));
                 responseText.append("<h1>Data Dictionary importer encountered").
-                    append(" an exception:</h1><br/>").append(msg.toString()).
-                    append("<br/><br/>");
+                append(" an exception:</h1><br/>").append(msg.toString()).
+                append("<br/><br/>");
             }
             catch (OutOfMemoryError oome) {
 
                 StringBuffer msg = new StringBuffer(oome.toString());
                 int lineNumber = handler.getLine();
-                if (lineNumber>0)
+                if (lineNumber>0) {
                     msg.append(" Line " + String.valueOf(lineNumber));
+                }
 
                 responseText.append("<h1>Data Dictionary importer encountered an exception:" +
-                                    "</h1><br/>" + msg.toString() + "<br/><br/>");
+                        "</h1><br/>" + msg.toString() + "<br/><br/>");
             }
             finally {
                 try {
-                    if (userConn!=null) userConn.close();
+                    if (userConn!=null) {
+                        userConn.close();
+                    }
                 }
                 catch (SQLException e) {}
             }
 
             // if was fixed values import explicitly, add a link back to the element
             if (type.equals("FXV")) {
-                responseText.append("<br><br><a href='data_element.jsp?delem_id=" + delem_id + "'>Back to data element</a>");
+                responseText.append("<br><br><a href='" + req.getContextPath() + "/dataelements/" + delem_id + "'>Back to data element</a>");
             }
         }
 
@@ -257,8 +264,8 @@ public class Import extends HttpServlet {
     }
 
     /**
-    * Write to file, if import goes through URL
-    */
+     * Write to file, if import goes through URL
+     */
     private void writeToFile(RandomAccessFile raFile, InputStream in) throws Exception {
 
         byte[] buf = new byte[BUF_SIZE];
@@ -272,8 +279,8 @@ public class Import extends HttpServlet {
     }
 
     /**
-    * Write to file, if import goes through a file upload
-    */
+     * Write to file, if import goes through a file upload
+     */
     private void writeToFile(RandomAccessFile raFile, ServletInputStream in, String boundary) throws Exception {
 
         byte[] buf = new byte[BUF_SIZE];
@@ -284,23 +291,27 @@ public class Import extends HttpServlet {
         boolean pastContentType = false;
         do{
             int b = in.read();
-            if (b == -1) break; // if end of stream, break
+            if (b == -1)
+            {
+                break; // if end of stream, break
+            }
 
             bout.write(b);
 
             if (!pastContentType) { // if Content-Type not passed, no check of LNF
                 String s = bout.toString();
-                if (s.indexOf("Content-Type") != -1)
+                if (s.indexOf("Content-Type") != -1) {
                     pastContentType = true;
+                }
             }
             else {
                 // Content-Type is passed, after next double LNF is file start
                 byte[] bs = bout.toByteArray();
                 if (bs != null && bs.length >= 4) {
                     if (bs[bs.length-1]==10 &&
-                        bs[bs.length-2]==13 &&
-                        bs[bs.length-3]==10 &&
-                        bs[bs.length-4]==13) {
+                            bs[bs.length-2]==13 &&
+                            bs[bs.length-3]==10 &&
+                            bs[bs.length-4]==13) {
 
                         fileStart = true;
                     }
@@ -311,8 +322,9 @@ public class Import extends HttpServlet {
 
         while ((i=in.readLine(buf, 0, buf.length)) != -1) {
             String line = new String(buf, 0, i);
-            if (boundary != null && line.startsWith(boundary))
+            if (boundary != null && line.startsWith(boundary)) {
                 break;
+            }
             raFile.write(buf, 0, i);
         }
 
@@ -321,11 +333,13 @@ public class Import extends HttpServlet {
     }
 
     /**
-    * Extract the boundary string in multipart request
-    */
+     * Extract the boundary string in multipart request
+     */
     private String extractBoundary(String contentType) {
         int i = contentType.indexOf("boundary=");
-        if (i == -1) return null;
+        if (i == -1) {
+            return null;
+        }
         String boundary = contentType.substring(i + 9); // 9 for "boundary="
         return "--" + boundary; // the real boundary is always preceded by an extra "--"
     }

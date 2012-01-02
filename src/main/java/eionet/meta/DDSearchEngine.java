@@ -3636,7 +3636,7 @@ public class DDSearchEngine {
 
                     hash.put("a_cardin", rs.getString("A_CARDIN"));
                     hash.put("b_cardin", rs.getString("B_CARDIN"));
-                    hash.put("definition", rs.getString("DEFINITION"));
+                    hash.put("definition", rs.getString("DEFINITION")==null ? "" : rs.getString("DEFINITION"));
                     hash.put("cardin", rs.getString("A_CARDIN") + " to " + rs.getString("B_CARDIN"));
 
                     v.add(hash);
