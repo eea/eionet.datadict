@@ -1,3 +1,6 @@
+<%@page import="eionet.doc.dto.DocumentationDTO"%>
+<%@page import="eionet.doc.dto.DocPageDTO"%>
+<%@page import="eionet.doc.DocumentationService"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,java.io.*,eionet.meta.*,eionet.util.sql.ConnectionUtil,com.tee.uit.help.Helps,eionet.util.Util"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
@@ -93,29 +96,18 @@ finally{
                             <div>
                                 <h2>Documentation</h2>
                                 <%
-                                List docsList = DocumentationServlet.listDocs();
-                                if (docsList.size()>0){
+                                DocPageDTO docs = DocumentationService.getInstance().view(null, null);
+                                if (docs != null && docs.getDocs() != null && docs.getDocs().size() > 0) {
                                     %>
                                     <ul>
-                                        <%
-                                        for (int i=0; i<docsList.size() && i<MAX_DOCUMENTATION_ITEMS; i++){
-                                            Properties props = (Properties)docsList.get(i);
-                                            String id = props.getProperty("id");
-                                            String heading = props.getProperty("heading");
-                                            %>
-                                            <li>
-                                                <a href="documentation/<%=id%>"><%=Util.processForDisplay(heading, true, true)%></a>
-                                            </li><%
-                                        }
-                                        %>
+                                    <%
+                                    for (DocumentationDTO doc : docs.getDocs()) {
+                                        %><li><a href="documentation/<%=doc.getPageId()%>"><%=Util.processForDisplay(doc.getTitle(), true, true)%></a></li><%
+                                    }
+                                    %>
                                     </ul>
                                     <%
-                                    if (docsList.size()>MAX_DOCUMENTATION_ITEMS){
-                                        %>
-                                        <p style="text-align:right">[<a href="documentation">More...</a>]</p><%
-                                    }
-                                }
-                                else{
+                                } else{
                                     %><p>No documentation currently available in the database.</p><%
                                 }
                                 %>

@@ -27,14 +27,19 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.tee.uit.security.AccessControlListIF;
 import com.tee.uit.security.AccessController;
+import com.tee.uit.security.AclNotFoundException;
 import com.tee.uit.security.AuthMechanism;
 import com.tee.uit.security.SignOnException;
 
 import eionet.directory.DirectoryService;
+import eionet.util.SecurityUtil;
 import eionet.util.sql.ConnectionUtil;
 
 /**
@@ -205,5 +210,79 @@ public class DDUser{
             acls = AccessController.getAcls();
 
         return (AccessControlListIF)acls.get(name);
+    }
+
+    /**
+     * Returns the value of {@link #hasPermission(String, String, String)}, using the given ACL path, the given permission, and the
+     * name of the user found in the given session. If no user found in session, the method will be called with user name set to
+     * null.
+     *
+     * @param session
+     * @param aclPath
+     * @param permission
+     * @return
+     */
+    public static boolean hasPermission(HttpSession session, String aclPath, String permission) {
+
+        // if no session given, simply return false
+        if (session == null) {
+            return false;
+        }
+
+        // get user object from session
+        DDUser ddUser = (DDUser) session.getAttribute(SecurityUtil.REMOTEUSER);
+
+        // get user name from user object, or set to null if user object null
+        String userName = ddUser == null ? null : ddUser.getUserName();
+
+        // check if user with this name has this permission in this ACL
+        return DDUser.hasPermission(userName, aclPath, permission);
+    }
+
+    /**
+     * Looks up an ACL with the given path, and checks if the given user has the given permission in it. If no such ACL is found,
+     * the method returns false. If the ACL is found, and it has the given permission for the given user, the method returns true,
+     * otherwise false.
+     *
+     * Situation where user name is null, is handled by the ACL library (it is treated as anonymous user).
+     *
+     * If the ACL library throws an exception, it is not thrown onwards, but still logged at error level.
+     *
+     * @param userName
+     * @param aclPath
+     * @param permission
+     * @return
+     */
+    public static boolean hasPermission(String userName, String aclPath, String permission) {
+
+        // consider missing ACL path or permission to be a programming error
+        if (StringUtils.isBlank(aclPath) || StringUtils.isBlank(permission)) {
+            throw new IllegalArgumentException("ACL path and permission must not be blank!");
+        }
+
+        boolean result = false;
+        try {
+            // get the ACL by the supplied path
+            AccessControlListIF acl = AccessController.getAcl(aclPath);
+
+            // if ACL found, check its permissions
+            if (acl != null) {
+
+                result = acl.checkPermission(userName, permission);
+                if (!result) {
+                    LOGGER.debug("User " + userName + " does not have permission " + permission + " in ACL \"" + aclPath + "\"");
+                }
+            } else {
+                LOGGER.warn("ACL \"" + aclPath + "\" not found!");
+            }
+        } catch (SignOnException soe) {
+            if (soe instanceof AclNotFoundException) {
+                LOGGER.warn("ACL \"" + aclPath + "\" not found!");
+            } else {
+                LOGGER.error(soe.toString(), soe);
+            }
+        }
+
+        return result;
     }
 }

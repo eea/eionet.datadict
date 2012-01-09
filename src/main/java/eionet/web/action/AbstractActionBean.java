@@ -28,6 +28,8 @@ import net.sourceforge.stripes.action.SimpleMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import eionet.meta.DDUser;
+import eionet.util.SecurityUtil;
 import eionet.web.DDActionBeanContext;
 
 /**
@@ -93,5 +95,49 @@ public abstract class AbstractActionBean implements ActionBean {
      */
     protected void addWarningMessage(final String message) {
         getContext().getMessages(WARNING_MESSAGES).add(new SimpleMessage(message));
+    }
+
+    /**
+     * Method returns {@link DDUser} from session.
+     *
+     * @return {@link DDUser} from session or null if user is not logged in.
+     */
+    public DDUser getDdUser() {
+        return SecurityUtil.getUser(getContext().getRequest());
+    }
+
+    /**
+     * Method returns login url.
+     *
+     * @return String.
+     */
+    public String getLoginUrl() {
+        return SecurityUtil.getLoginURL(getContext().getRequest());
+    }
+
+    /**
+     * Method returns logout url.
+     *
+     * @return String.
+     */
+    public String getLogoutUrl() {
+        return SecurityUtil.getLogoutURL(getContext().getRequest());
+    }
+
+    /**
+     * Method checks whether user is logged in or not.
+     *
+     * @return true if user is logged in.
+     */
+    public final boolean isUserLoggedIn() {
+        return getDdUser() != null;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isPostRequest() {
+        return getContext().getRequest().getMethod().equalsIgnoreCase("POST");
     }
 }

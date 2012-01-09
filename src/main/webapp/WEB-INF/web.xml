@@ -162,7 +162,15 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/dispatcher</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>*.action</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/documentation/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -264,14 +272,6 @@
     <servlet>
         <servlet-name>OdsServlet</servlet-name>
         <servlet-class>eionet.meta.exports.ods.OdsServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DocumentationServlet</servlet-name>
-        <servlet-class>eionet.meta.DocumentationServlet</servlet-class>
-        <init-param>
-            <param-name>forward-jsp</param-name>
-            <param-value>documentation.jsp</param-value>
-        </init-param>
     </servlet>
     <servlet>
         <servlet-name>DbfServlet</servlet-name>
@@ -403,10 +403,6 @@
     <servlet-mapping>
         <servlet-name>OdsServlet</servlet-name>
         <url-pattern>/GetOds</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DocumentationServlet</servlet-name>
-        <url-pattern>/documentation/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DbfServlet</servlet-name>

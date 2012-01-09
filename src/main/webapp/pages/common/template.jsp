@@ -41,16 +41,15 @@
                         <a id="ewlink" href="http://www.ewindows.eu.org/">EnviroWindows</a>
                     </div>
                     <div id="righttools">
-                        <%--
+
                         <c:choose>
-                            <c:when test="${empty crUser}">
-                                <stripes:link id="loginlink" title="Login" href="/login.action" event="login">Login</stripes:link>
+                            <c:when test="${empty actionBean.ddUser}">
+                                <stripes:link id="loginlink" href="${actionBean.loginUrl}" title="Login">Login</stripes:link>
                             </c:when>
                             <c:otherwise>
-                                <stripes:link id="logoutlink" title="Logout" href="/login.action" event="logout">Logout ${crUser.userName}</stripes:link>
+                                <stripes:link id="logoutlink" href="${actionBean.logoutUrl}" title="Logout">Logout ${actionBean.ddUser.userName}</stripes:link>
                             </c:otherwise>
                         </c:choose>
-                        --%>
 
                         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
                         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>

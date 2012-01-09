@@ -3,4 +3,4 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld" %>
 <%@ taglib prefix="display" uri="http://displaytag.sf.net" %>
-<%-- <%@ taglib prefix="crfn" uri="http://cr.eionet.europa.eu/jstl/functions" %> --%>
+<%@ taglib prefix="ddfn" uri="http://dd.eionet.europa.eu/jstl/functions" %>

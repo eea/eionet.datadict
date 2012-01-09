@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+
+	<description>DataDict local JSTL functions library.</description>
+	<display-name>DataDict JSTL static functions.</display-name>
+	<tlib-version>1.0</tlib-version>
+	<short-name>ddfn</short-name>
+	<uri>http://dd.eionet.europa.eu/jstl/functions</uri>
+
+	<function>
+		<description>
+			Checks if the authenticated user or anonymous user has the given permission in the given acl.
+			The 1st parameter is user attribute in HTTP session, the 2nd is the acl name and the 3rd is the permission identifier.
+			If any of the three is null or zero length, returns false.
+		</description>
+		<name>userHasPermission</name>
+		<function-class>eionet.web.util.JstlFunctions</function-class>
+		<function-signature>boolean userHasPermission(java.lang.String, java.lang.String, java.lang.String)</function-signature>
+		<example>
+			${hasPermission("mrx", "/", "u")}
+		</example>
+	</function>
+
+</taglib>
