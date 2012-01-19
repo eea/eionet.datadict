@@ -377,17 +377,17 @@
             } else if (mode.equals("delete")) {
                 
                 if (elmCommon){
-	                String checkedoutCopyID = request.getParameter("checkedout_copy_id");
-	                String wasWorkingCopy = request.getParameter("is_working_copy");
-	                if (checkedoutCopyID != null && !checkedoutCopyID.isEmpty()) {
-	                    redirUrl = request.getContextPath() + "/dataelements/" + checkedoutCopyID + "/?feedback=undo_checkout";
-	                }
-	                else if (wasWorkingCopy != null && wasWorkingCopy.equals("true")){
-	                    redirUrl = request.getContextPath() + "/search.jsp?feedback=undo_checkout";
-	                }
-	                else {
-	                    redirUrl = request.getContextPath() + "/search.jsp?feedback=delete";
-	                }
+                    String checkedoutCopyID = request.getParameter("checkedout_copy_id");
+                    String wasWorkingCopy = request.getParameter("is_working_copy");
+                    if (checkedoutCopyID != null && !checkedoutCopyID.isEmpty()) {
+                        redirUrl = request.getContextPath() + "/dataelements/" + checkedoutCopyID + "/?feedback=undo_checkout";
+                    }
+                    else if (wasWorkingCopy != null && wasWorkingCopy.equals("true")){
+                        redirUrl = request.getContextPath() + "/search.jsp?feedback=undo_checkout";
+                    }
+                    else {
+                        redirUrl = request.getContextPath() + "/search.jsp?feedback=delete";
+                    }
                 }
                 else if (tableID!=null && !tableID.isEmpty()){
                     redirUrl = request.getContextPath() + "/tables/" + tableID;
@@ -784,25 +784,34 @@
                 document.location.assign("<%=request.getContextPath()%>/dataelements/" + id + "/edit");
             }
             else if (mode=="checkout"){
-            	document.location.assign("<%=request.getContextPath()%>/dataelements/" + id + "/checkout");
+                document.location.assign("<%=request.getContextPath()%>/dataelements/" + id + "/checkout");
             }
             else if (mode=="newversion"){
-            	document.location.assign("<%=request.getContextPath()%>/dataelements/" + id + "/newversion");
+                document.location.assign("<%=request.getContextPath()%>/dataelements/" + id + "/newversion");
             }
             else if (mode=="view"){
-            	document.location.assign("<%=request.getContextPath()%>/dataelements/" + id);
+                document.location.assign("<%=request.getContextPath()%>/dataelements/" + id);
             }
         }
 
         function submitForm(mode){
 
-            // if element type select is present, make sure a value is selected
-            if (document.forms["form1"].elements["typeSelect"]!=undefined){
-                var elmTypeSelectedValue = document.forms["form1"].elements["typeSelect"].value;
-                if (elmTypeSelectedValue==null || elmTypeSelectedValue==""){
-                    alert('Element type not specified!');
-                    return false;
+            // detect element type, make sure it has been selected
+            var elmTypeSelectedValue = "";
+            var typeRadioButtons = document.forms["form1"].elements["type"];
+            if (typeRadioButtons.length==undefined){
+                elmTypeSelectedValue = typeRadioButtons.value;
+            }
+            else{
+                for (var i=0; i<typeRadioButtons.length; i++){
+                    if (typeRadioButtons[i].checked){
+                        elmTypeSelectedValue = typeRadioButtons[i].value;
+                    }
                 }
+            }
+            if (elmTypeSelectedValue==null || elmTypeSelectedValue==""){
+                alert('Element type not specified!');
+                return false;
             }
 
             if (mode == "delete"){
@@ -959,9 +968,13 @@
                 return false;
         }
 
-        function fixType(){
+        function fixType(radioButton){
 
-            var strType = document.forms["form1"].elements["typeSelect"].value;
+            if (!radioButton){
+                return;
+            }
+
+            var strType = radioButton.value;
             if (strType == null || strType.length==0){
                 return;
             }
@@ -1270,6 +1283,9 @@
                                     <li><a href="javascript:submitForm('delete')">Delete</a></li>
                                 <%
                                     }
+                                    if (!elmCommon && editDstPrm){
+                                        %><li><a href="<%=request.getContextPath()%>/dataelements/add/?table_id=<%=tableID%>&ds_id=<%=dsID%>">Add new element to table</a></li><%
+                                    }
                                }
                             if (mode.equals("view") && isMyWorkingCopy) {
                                  // view case
@@ -1413,33 +1429,35 @@
 
                                 <!-- type -->
                                 <div style="margin: 3px">
-                                        <b>Type:</b>
-                                            <%
-                                                if (mode.equals("add") && (type == null || type.length() == 0)) {
+                                    <b>Type:</b>
+                                    <%
+                                    if (mode.equals("add") && (type == null || type.length() == 0)) {
+                                        %>
+                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
+                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
+                                        </a>
+                                        <br/><input type="radio" name="type" value="CH2" onclick="javascript:fixType(this)" checked="checked">Data element with quantitative values (e.g. measurements)</input>
+                                        <br/><input type="radio" name="type" value="CH1" onclick="javascript:fixType(this)">Data element with fixed values (codes)</input><%
+                                    }
+                                    else {
+                                        if (type.equals("CH1")) {
                                             %>
-                                                <select class="small" name="typeSelect" onchange="fixType()">
-                                                    <option value="">-- Select element type --</option>
-                                                    <option value="CH1">Data element with fixed values (codes)</option>
-                                                    <option value="CH2">Data element with quantitative values (e.g. measurements)</option>
-                                                </select> <%
-     } else {
-             if (type.equals("CH1")) {
- %>
-                                                    <b>DATA ELEMENT WITH FIXED VALUES</b>
-                                                <%
-                                                    } else if (type.equals("CH2")) {
-                                                %>
-                                                    <b>DATA ELEMENT WITH QUANTITATIVE VALUES</b>
-                                                <%
-                                                    } else {
-                                                %>
-                                                    <b>DATA ELEMENT WITH QUANTITATIVE VALUES</b> <%
-     }
-         }
- %>
-                                            <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
-                                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
-                                            </a>
+                                            <b>DATA ELEMENT WITH FIXED VALUES</b><%
+                                        }
+                                        else if (type.equals("CH2")) {
+                                            %>
+                                            <b>DATA ELEMENT WITH QUANTITATIVE VALUES</b><%
+                                        }
+                                        else {
+                                            %>
+                                            <b>DATA ELEMENT WITH QUANTITATIVE VALUES</b><%
+                                        }
+                                        %>
+                                        <a href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
+                                            <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
+                                        </a><%
+                                    }
+                                    %>
                                 </div>
 
 
