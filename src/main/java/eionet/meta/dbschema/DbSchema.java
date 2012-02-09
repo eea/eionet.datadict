@@ -56,17 +56,20 @@ public class DbSchema{
         ResultSet rs = null;
         Statement stmt = null;
         Connection conn = null;
+        ArrayList<String> tableNamesCaseSensitive = new ArrayList<String>();
         try{
             conn = ConnectionUtil.getConnection();
             stmt = conn.createStatement();
             rs = stmt.executeQuery("show tables");
 
             while (rs.next()){
-                tablesColumns.put(rs.getString(1).toUpperCase(), null);
+                String name = rs.getString(1);
+                tableNamesCaseSensitive.add(name);
+                tablesColumns.put(name.toUpperCase(), null);
             }
             SQL.close(rs);
 
-            for (String tableName : tablesColumns.keySet()){
+            for (String tableName : tableNamesCaseSensitive){
 
                 ArrayList<String> columns = new ArrayList<String>();
 
