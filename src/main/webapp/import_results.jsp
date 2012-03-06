@@ -32,7 +32,7 @@
         </p>
         <form id="form1" action="GetImportResults" method="post">
             <%
-            String text=Util.Replace(resptext, "<br/>", "\n");
+            String text=resptext.replace("<br/>", "\n");
             %>
             <div style="display:none">
                 <input type="hidden" name="text" value="<%=Util.processForDisplay(text, true)%>"/>
