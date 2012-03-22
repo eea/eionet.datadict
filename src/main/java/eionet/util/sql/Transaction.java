@@ -24,31 +24,37 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
+import org.apache.log4j.Logger;
+
 import eionet.meta.DDRuntimeException;
 
 /**
- *
+ * 
  * @author Jaanus Heinlaid
- *
+ * 
  */
-public class Transaction{
+public class Transaction {
 
     /** */
-    private boolean anotherTransactionRunning = false;
+    private static final Logger LOGGER = Logger.getLogger(Transaction.class);
+
+    /** */
+    private boolean isRunningInAnotherTransaction = false;
 
     /** */
     private Connection conn = null;
 
     /** */
-    private Savepoint startSavepoint = null;
+    private Savepoint savepoint = null;
 
     /**
-     *
+     * 
      * @param conn
      */
     private Transaction(Connection conn) {
-        if (conn==null)
-            throw new DDRuntimeException("The given connection is null");
+        if (conn == null) {
+            throw new IllegalArgumentException("The given connection must not be null!");
+        }
         this.conn = conn;
     }
 
@@ -56,43 +62,45 @@ public class Transaction{
      *
      *
      */
-    private void start_() {
+    private void start() {
 
         try {
-            if (conn.getAutoCommit()==false)
-                anotherTransactionRunning = true;
-            else
+            if (conn.getAutoCommit() == false) {
+                isRunningInAnotherTransaction = true;
+            } else{
                 conn.setAutoCommit(false);
-            startSavepoint = conn.setSavepoint();
-        }
-        catch (SQLException e) {
+            }
+            savepoint = conn.setSavepoint();
+        } catch (SQLException e) {
             throw new DDRuntimeException(e.toString(), e);
         }
     }
 
     /**
-     *
+     * 
      * @param conn
      * @return
      */
     public static Transaction start(Connection conn) {
         Transaction tx = new Transaction(conn);
-        tx.start_();
+        tx.start();
         return tx;
     }
 
     /**
      * @throws SQLException
-     *
-     *
+     * 
+     * 
      */
     public void commit() throws SQLException {
 
-        if (startSavepoint==null)
-            throw new DDRuntimeException("Transaction not yet started");
+        if (savepoint == null){
+            throw new IllegalStateException("Transaction not yet started!");
+        }
 
-        if (!anotherTransactionRunning)
+        if (!isRunningInAnotherTransaction){
             conn.commit();
+        }
     }
 
     /**
@@ -101,10 +109,9 @@ public class Transaction{
      */
     public void rollback() {
         try {
-            conn.rollback(startSavepoint);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
+            conn.rollback(savepoint);
+        } catch (SQLException e) {
+            LOGGER.error("Failure when trying connection rollback:", e);
         }
     }
 
@@ -114,20 +121,13 @@ public class Transaction{
      */
     public void end() {
         try {
-            conn.releaseSavepoint(startSavepoint);
-            startSavepoint = null;
-            if (!anotherTransactionRunning)
+            conn.releaseSavepoint(savepoint);
+            savepoint = null;
+            if (!isRunningInAnotherTransaction) {
                 conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Failure trying savepoint release and transaction end:", e);
         }
-        catch (SQLException e) {
-        }
-    }
-
-    /**
-     *
-     * @return
-     */
-    public boolean isAnotherTransactionRunning() {
-        return anotherTransactionRunning;
     }
 }

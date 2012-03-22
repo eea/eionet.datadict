@@ -1,12 +1,12 @@
 package eionet.meta.dao.mysql;
 
-import eionet.meta.dao.BaseDAO;
+import eionet.meta.dao.SQLBaseDAO;
 
 /**
  * 
  * @author Jaanus Heinlaid
  *
  */
-public class MySQLBaseDAO extends BaseDAO{
+public class MySQLBaseDAO extends SQLBaseDAO{
 
 }

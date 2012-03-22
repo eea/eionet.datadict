@@ -5,6 +5,6 @@ package eionet.meta.dao;
  * @author Jaanus Heinlaid
  *
  */
-public abstract class BaseDAO implements DAO{
+public class SQLBaseDAO extends BaseDAO{
 
 }
