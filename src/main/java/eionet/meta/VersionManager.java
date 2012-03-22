@@ -321,7 +321,7 @@ public class VersionManager {
      */
     public String checkOutElm(String elmID) throws Exception {
 
-        Transaction tx = Transaction.start(conn);
+        Transaction tx = Transaction.begin(conn);
         try {
             String result = checkOutElm_(elmID);
             tx.commit();
@@ -389,7 +389,7 @@ public class VersionManager {
      */
     private String checkOutDst(String dstID) throws Exception {
 
-        Transaction tx = Transaction.start(conn);
+        Transaction tx = Transaction.begin(conn);
         try {
             String result = checkOutDst_(dstID);
             tx.commit();
@@ -579,7 +579,7 @@ public class VersionManager {
      */
     public boolean checkInElm(String elmID, String status) throws Exception {
 
-        Transaction tx = Transaction.start(conn);
+        Transaction tx = Transaction.begin(conn);
         try {
             boolean result = checkInElm_(elmID, status);
             tx.commit();
@@ -683,7 +683,7 @@ public class VersionManager {
      */
     private boolean checkInDst(String dstID, String status) throws Exception {
 
-        Transaction tx = Transaction.start(conn);
+        Transaction tx = Transaction.begin(conn);
         try {
             boolean result = checkInDst_(dstID, status);
             tx.commit();

@@ -80,7 +80,7 @@ public class CleanupServlet extends HttpServlet{
                 res.setContentType("text/plain");
                 dataManipulations = new DataManipulations(conn, writer);
 
-                tx = Transaction.start(conn);
+                tx = Transaction.begin(conn);
 
                 dataManipulations.cleanup();
 
@@ -92,7 +92,7 @@ public class CleanupServlet extends HttpServlet{
             else if (action.equals(ACTION_DELETE_ELM) || action.equals(ACTION_DELETE_TBL) || action.equals(ACTION_DELETE_DST)) {
                 if (objIDs!=null && objIDs.trim().length()>0) {
 
-                    tx = Transaction.start(conn);
+                    tx = Transaction.begin(conn);
                     StringTokenizer st = new StringTokenizer(objIDs);
                     while (st.hasMoreTokens()) {
 

@@ -62,7 +62,7 @@ public class Transaction {
      *
      *
      */
-    private void start() {
+    private void begin() {
 
         try {
             if (conn.getAutoCommit() == false) {
@@ -81,9 +81,9 @@ public class Transaction {
      * @param conn
      * @return
      */
-    public static Transaction start(Connection conn) {
+    public static Transaction begin(Connection conn) {
         Transaction tx = new Transaction(conn);
-        tx.start();
+        tx.begin();
         return tx;
     }
 

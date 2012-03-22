@@ -36,7 +36,7 @@ public abstract class BaseHandler {
      */
     public void execute() throws Exception {
 
-        Transaction tx = Transaction.start(conn);
+        Transaction tx = Transaction.begin(conn);
         try {
             execute_();
             tx.commit();
