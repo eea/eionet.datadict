@@ -2,10 +2,9 @@
 create table SCHEMA_SET (
 	SCHEMA_SET_ID int(10) unsigned not null auto_increment,
 	IDENTIFIER varchar(255) not null,
-	PARENT_ID int(10) unsigned default null,
 	CONTINUITY_ID varchar(36) not null,
 	REG_STATUS enum('Draft','Released') not null default 'Draft',
-	WORKING_COPY enum('Y','N') NOT NULL default 'N',
+	WORKING_COPY bool not null default false,
 	WORKING_USER varchar(50) default null,
 	DATE timestamp not null default now(),
 	USER varchar(50) default null,
@@ -15,7 +14,6 @@ create table SCHEMA_SET (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 alter table SCHEMA_SET add index (IDENTIFIER);
-alter table SCHEMA_SET add index (PARENT_ID);
 alter table SCHEMA_SET add index (CONTINUITY_ID);
 
 create table `SCHEMA` (
@@ -24,7 +22,7 @@ create table `SCHEMA` (
 	SCHEMA_SET_ID int(10) unsigned default null,
 	CONTINUITY_ID varchar(36) not null,
 	REG_STATUS enum('Draft','Released') not null default 'Draft',
-	WORKING_COPY enum('Y','N') NOT NULL default 'N',
+	WORKING_COPY bool not null default false,
 	WORKING_USER varchar(50) default null,
 	DATE timestamp not null default now(),
 	USER varchar(50) default null,

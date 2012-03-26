@@ -12,12 +12,12 @@ public class SchemaSet {
     /** */
     private int id;
     private String identifier;
-    private int parentId;
     private int continuityId;
     private RegStatus regStatus;
     private boolean isWorkingCopy;
     private String workingUser;
     private Date date;
+    private String user;
     private String comment;
     private int checkedOutCopyId;
 
@@ -50,20 +50,6 @@ public class SchemaSet {
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
-    }
-
-    /**
-     * @return the parentId
-     */
-    public int getParentId() {
-        return parentId;
-    }
-
-    /**
-     * @param parentId the parentId to set
-     */
-    public void setParentId(int parentId) {
-        this.parentId = parentId;
     }
 
     /**
@@ -171,8 +157,14 @@ public class SchemaSet {
      */
     public enum RegStatus {
 
+        // TODO: Maybe this enum could be in a better place, since
+        // it is not necessarily specific to SchemaSets, but should
+        // also be used for Schemas.
+
         /** */
         DRAFT("Draft"),RELEASED("Released");
+
+        /** */
         String s;
 
         /**
@@ -204,6 +196,14 @@ public class SchemaSet {
             }
             return null;
         }
+
+        /**
+         * 
+         * @return
+         */
+        public static RegStatus getDefault(){
+            return RegStatus.DRAFT;
+        }
     }
 
     private void test(){
@@ -211,5 +211,19 @@ public class SchemaSet {
     }
     public static void main(String[] args) {
         SchemaSet schema = new SchemaSet();
+    }
+
+    /**
+     * @return the user
+     */
+    public String getUser() {
+        return user;
+    }
+
+    /**
+     * @param user the user to set
+     */
+    public void setUser(String user) {
+        this.user = user;
     }
 }

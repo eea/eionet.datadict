@@ -24,7 +24,7 @@ public abstract class DAOFactory {
      * 
      * @return
      */
-    public static DAOFactory get() {
+    public static DAOFactory getInstance() {
 
         if (instance == null) {
             instance = createDAOFactory(DEFAULT_FACTORY_TYPE);
@@ -52,5 +52,5 @@ public abstract class DAOFactory {
      * @param implementedInterface
      * @return
      */
-    public abstract <T extends DAO> T getDao(Class<T> implementedInterface);
+    public abstract <T extends DAO> T createDao(Class<T> implementedInterface);
 }

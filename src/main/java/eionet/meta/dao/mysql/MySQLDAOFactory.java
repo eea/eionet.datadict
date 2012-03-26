@@ -27,10 +27,10 @@ public class MySQLDAOFactory extends DAOFactory{
     }
 
     /**
-     * @see eionet.meta.dao.DAOFactory#getDao(java.lang.Class)
+     * @see eionet.meta.dao.DAOFactory#createDao(java.lang.Class)
      */
     @Override
-    public <T extends DAO> T getDao(Class<T> implementedInterface) {
+    public <T extends DAO> T createDao(Class<T> implementedInterface) {
 
         try {
             Class<? extends MySQLBaseDAO> implClass = daoImplementations.get(implementedInterface);

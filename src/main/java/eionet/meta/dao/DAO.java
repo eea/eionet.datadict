@@ -1,5 +1,7 @@
 package eionet.meta.dao;
 
+import java.sql.Connection;
+
 /**
  * 
  * @author Jaanus Heinlaid
@@ -7,6 +9,9 @@ package eionet.meta.dao;
  */
 public interface DAO {
 
-    // Just an empty interface that "real" DAO classes can extend to decalre
-    // that they are "daos".
+    /**
+     * 
+     * @param conn
+     */
+    void setConnection(Connection conn);
 }

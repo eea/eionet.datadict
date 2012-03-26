@@ -22,11 +22,12 @@ import eionet.meta.savers.DataElementHandler;
 import eionet.meta.savers.DatasetHandler;
 import eionet.meta.savers.DsTableHandler;
 import eionet.meta.savers.Parameters;
+import eionet.util.TransactionUtil;
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
-import eionet.util.sql.Transaction;
+import eionet.util.sql.SQLTransaction;
 
 /**
  *
@@ -321,16 +322,17 @@ public class VersionManager {
      */
     public String checkOutElm(String elmID) throws Exception {
 
-        Transaction tx = Transaction.begin(conn);
+        SQLTransaction tx = null;
         try {
+            tx = new SQLTransaction(conn);
             String result = checkOutElm_(elmID);
             tx.commit();
             return result;
         } catch (Exception e) {
-            tx.rollback();
+            TransactionUtil.rollback(tx);
             throw e;
         } finally {
-            tx.end();
+            TransactionUtil.close(tx);
         }
     }
 
@@ -389,16 +391,17 @@ public class VersionManager {
      */
     private String checkOutDst(String dstID) throws Exception {
 
-        Transaction tx = Transaction.begin(conn);
+        SQLTransaction tx = null;
         try {
+            tx = new SQLTransaction(conn);
             String result = checkOutDst_(dstID);
             tx.commit();
             return result;
         } catch (Exception e) {
-            tx.rollback();
+            TransactionUtil.rollback(tx);
             throw e;
         } finally {
-            tx.end();
+            TransactionUtil.close(tx);
         }
     }
 
@@ -579,16 +582,17 @@ public class VersionManager {
      */
     public boolean checkInElm(String elmID, String status) throws Exception {
 
-        Transaction tx = Transaction.begin(conn);
+        SQLTransaction tx = null;
         try {
+            tx = new SQLTransaction(conn);
             boolean result = checkInElm_(elmID, status);
             tx.commit();
             return result;
         } catch (Exception e) {
-            tx.rollback();
+            TransactionUtil.rollback(tx);
             throw e;
         } finally {
-            tx.end();
+            TransactionUtil.close(tx);
         }
     }
 
@@ -683,16 +687,17 @@ public class VersionManager {
      */
     private boolean checkInDst(String dstID, String status) throws Exception {
 
-        Transaction tx = Transaction.begin(conn);
+        SQLTransaction tx = null;
         try {
+            tx = new SQLTransaction(conn);
             boolean result = checkInDst_(dstID, status);
             tx.commit();
             return result;
         } catch (Exception e) {
-            tx.rollback();
+            TransactionUtil.rollback(tx);
             throw e;
         } finally {
-            tx.end();
+            TransactionUtil.close(tx);
         }
     }
 

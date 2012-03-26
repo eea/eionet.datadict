@@ -16,8 +16,9 @@ import org.apache.log4j.Logger;
 import eionet.util.DataManipulations;
 import eionet.util.LogServiceIF;
 import eionet.util.SecurityUtil;
+import eionet.util.TransactionUtil;
 import eionet.util.sql.ConnectionUtil;
-import eionet.util.sql.Transaction;
+import eionet.util.sql.SQLTransaction;
 
 /**
  *
@@ -64,15 +65,16 @@ public class CleanupServlet extends HttpServlet{
         Connection conn = null;
         PrintWriter writer = null;
         DataManipulations dataManipulations = null;
-        Transaction tx = null;
+        SQLTransaction tx = null;
         try {
             writer = res.getWriter();
             guard(req);
             res.setContentType("text/plain");
 
             action = req.getParameter(PAR_ACTION);
-            if (action==null)
+            if (action==null) {
                 throw new Exception("Missing request parameter: " + PAR_ACTION);
+            }
             String objIDs = req.getParameter(PAR_OBJ_IDS);
 
             conn = ConnectionUtil.getConnection();
@@ -80,7 +82,7 @@ public class CleanupServlet extends HttpServlet{
                 res.setContentType("text/plain");
                 dataManipulations = new DataManipulations(conn, writer);
 
-                tx = Transaction.begin(conn);
+                tx = new SQLTransaction(conn);
 
                 dataManipulations.cleanup();
 
@@ -92,20 +94,22 @@ public class CleanupServlet extends HttpServlet{
             else if (action.equals(ACTION_DELETE_ELM) || action.equals(ACTION_DELETE_TBL) || action.equals(ACTION_DELETE_DST)) {
                 if (objIDs!=null && objIDs.trim().length()>0) {
 
-                    tx = Transaction.begin(conn);
+                    tx = new SQLTransaction(conn);
                     StringTokenizer st = new StringTokenizer(objIDs);
                     while (st.hasMoreTokens()) {
 
-                        if (dataManipulations==null)
+                        if (dataManipulations==null) {
                             dataManipulations = new DataManipulations(conn, null);
+                        }
 
                         String objID = st.nextToken();
-                        if (action.equals(ACTION_DELETE_ELM))
+                        if (action.equals(ACTION_DELETE_ELM)) {
                             dataManipulations.deleteElm(objID);
-                        else if (action.equals(ACTION_DELETE_TBL))
+                        } else if (action.equals(ACTION_DELETE_TBL)) {
                             dataManipulations.deleteTblWithElements(objID);
-                        else if (action.equals(ACTION_DELETE_DST))
-                            dataManipulations.deleteDstWithTablesAndElements(objID);;
+                        } else if (action.equals(ACTION_DELETE_DST)) {
+                            dataManipulations.deleteDstWithTablesAndElements(objID);
+                        };
                     }
 
                     tx.commit();
@@ -113,16 +117,13 @@ public class CleanupServlet extends HttpServlet{
                     req.setAttribute(ATTR_DELETE_SUCCESS, "");
                     req.getRequestDispatcher("clean.jsp").forward(req,res);
                 }
-            }
-            else
+            } else {
                 throw new Exception("Unkown parameter value: " + action);
+            }
         }
         catch (Exception e) {
 
-            if (tx!=null){
-                tx.rollback();
-            }
-
+            TransactionUtil.rollback(tx);
             LOGGER.error(e);
 
             if (writer!=null) {
@@ -133,14 +134,15 @@ public class CleanupServlet extends HttpServlet{
         }
         finally {
 
-            if (tx!=null)
-                tx.end();
+            TransactionUtil.close(tx);
 
-            if (writer!=null)
+            if (writer!=null) {
                 writer.close();
+            }
             try {
-                if (conn!=null)
+                if (conn!=null) {
                     conn.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -153,7 +155,8 @@ public class CleanupServlet extends HttpServlet{
      */
     private void guard(HttpServletRequest req) throws Exception {
         DDUser user = SecurityUtil.getUser(req);
-        if (user == null)
+        if (user == null) {
             throw new Exception("Not authenticated!");
+        }
     }
 }

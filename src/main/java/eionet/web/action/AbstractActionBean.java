@@ -140,4 +140,13 @@ public abstract class AbstractActionBean implements ActionBean {
     public boolean isPostRequest() {
         return getContext().getRequest().getMethod().equalsIgnoreCase("POST");
     }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isGetOrHeadRequest(){
+        String method = getContext().getRequest().getMethod().toUpperCase();
+        return method.equals("GET") || method.equals("HEAD");
+    }
 }
