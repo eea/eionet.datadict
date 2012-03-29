@@ -5,6 +5,14 @@ request.setCharacterEncoding("UTF-8");
 Vector releasedDatasets = (Vector)request.getAttribute("rlsd_datasets");
 if (releasedDatasets!=null){
     Collections.sort(releasedDatasets, new DatasetDateComparator());
+    // returning top 10
+    if (releasedDatasets.size() > 10) {
+        Vector topDatasets = new Vector();
+        for (int i = 0; i < 10; i++) {
+            topDatasets.add(releasedDatasets.get(i));
+        }
+        releasedDatasets = topDatasets;
+    }
 }
 %>
 
@@ -16,11 +24,11 @@ if (releasedDatasets!=null){
         <%
         for (int i=0; releasedDatasets!=null && i<releasedDatasets.size(); i++){
             Dataset dst = (Dataset)releasedDatasets.get(i);
-            
+
             String name = dst.getName();
             if (name==null) name = dst.getShortName();
             if (name==null) name = dst.getIdentifier();
-            
+
             String date = dst.getDate();
             String dateHint = null;
             if (date!=null){
@@ -33,7 +41,7 @@ if (releasedDatasets!=null){
                 dateHint = "";
             }
             %>
-            <tr>                
+            <tr>
                 <td style="vertical-align:top">
                     <a href="<%=request.getContextPath()%>/datasets/<%=dst.getID()%>">
                         <%=Util.processForDisplay(name)%>
@@ -50,7 +58,7 @@ if (releasedDatasets!=null){
             </tr>
             <%
         }
-        
+
         if (releasedDatasets.size()==0){
             %>
             <tr>
@@ -70,5 +78,5 @@ if (releasedDatasets!=null){
             <%
         }
         %>
-        
+
 </table>
