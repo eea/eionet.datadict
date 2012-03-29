@@ -54,6 +54,19 @@
                         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
                         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
                         <a id="acronymlink" href="about.action" title="About ${initParam.appDispName}"><span>About</span></a>
+                        <form action="http://google.com/search" method="get">
+                          <div id="freesrchform">
+                            <label for="freesrchfld">Search</label>
+                            <input type="text" id="freesrchfld" name="q"
+                             onfocus="if(this.value=='Search the site')this.value='';"
+                             onblur="if(this.value=='')this.value='Search the site';"
+                             value="Search the site"/>
+                             <%-- TODO: hidden value must be PropsIF.DD_URL --%>
+                             <input type="hidden" name="sitesearch" value="dd.eionet.europa.eu" />
+                            <input id="freesrchbtn" type="image" src="<c:url value="/images/button_go.gif"/>" alt="Go"/>
+                          </div>
+                        </form>
+                        <%--
                         <form action="http://search.eionet.europa.eu/search.jsp" method="get">
                             <div id="freesrchform"><label for="freesrchfld">Search</label>
                                 <input type="text" id="freesrchfld" name="query"/>
@@ -61,6 +74,7 @@
                                 <input id="freesrchbtn" type="image" src="<c:url value="/images/button_go.gif"/>" alt="Go"/>
                             </div>
                         </form>
+                        --%>
                     </div>
                 </div> <!-- toolribbon -->
 

@@ -74,6 +74,7 @@ public interface PropsIF {
     public static final String OUTSERV_PRED_TITLE = "outserv.pred-title";
 
     public static final String JSP_URL_PREFIX = "jsp.url-prefix";
+    public static final String DD_URL = "dd.url";
 
     public static final String DD_RDF_SCHEMA_URL = "dd.rdf-schema.url";
     public static final String PREDICATE_RDF_TYPE = "predicate.rdf-type";

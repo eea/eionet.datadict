@@ -1,4 +1,4 @@
-<%@page import="java.util.*,eionet.util.SecurityUtil,eionet.meta.DDUser,eionet.meta.LoginServlet"%>
+<%@page import="java.util.*,eionet.util.SecurityUtil,eionet.util.Props,eionet.util.PropsIF,eionet.meta.DDUser,eionet.meta.LoginServlet"%>
 <%
 ServletContext ctx = getServletContext();
 String appName = ctx.getInitParameter("application-name");
@@ -28,12 +28,16 @@ String appName = ctx.getInitParameter("application-name");
         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
         <a id="acronymlink" href="http://www.eionet.europa.eu/acronyms" title="Look up acronyms"><span>Acronyms</span></a>
-        <form action="http://search.eionet.europa.eu/search.jsp" method="get">
-            <div id="freesrchform"><label for="freesrchfld">Search</label>
-                <input type="text" id="freesrchfld" name="query"/>
-
-                <input id="freesrchbtn" type="image" src="<%=request.getContextPath()%>/images/button_go.gif" alt="Go"/>
-            </div>
+        <form action="http://google.com/search" method="get">
+          <div id="freesrchform">
+            <label for="freesrchfld">Search</label>
+            <input type="text" id="freesrchfld" name="q"
+             onfocus="if(this.value=='Search the site')this.value='';"
+             onblur="if(this.value=='')this.value='Search the site';"
+             value="Search the site"/>
+             <input type="hidden" name="sitesearch" value="<%=Props.getProperty(PropsIF.JSP_URL_PREFIX)%>" />
+            <input id="freesrchbtn" type="image" src="<%=request.getContextPath()%>/images/button_go.gif" alt="Go"/>
+          </div>
         </form>
     </div>
 </div> <!-- toolribbon -->
