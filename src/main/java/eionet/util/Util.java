@@ -48,6 +48,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +58,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.DDRuntimeException;
+import eionet.meta.dao.domain.SchemaSet;
 
 //import eionet.meta.Log;
 
@@ -1229,5 +1231,19 @@ public class Util {
         } else {
             return 1;
         }
+    }
+
+    /**
+     * 
+     * @param schemaSet
+     * @return
+     */
+    public static String generateContinuityId(SchemaSet schemaSet){
+
+        if (schemaSet==null || isEmpty(schemaSet.getIdentifier())){
+            return null;
+        }
+        String name = schemaSet.getIdentifier() + Thread.currentThread().getId() + System.currentTimeMillis();
+        return UUID.nameUUIDFromBytes(name.getBytes()).toString();
     }
 }

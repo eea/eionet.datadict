@@ -43,11 +43,11 @@
                     <div id="righttools">
 
                         <c:choose>
-                            <c:when test="${empty actionBean.ddUser}">
+                            <c:when test="${empty actionBean.user}">
                                 <stripes:link id="loginlink" href="${actionBean.loginUrl}" title="Login">Login</stripes:link>
                             </c:when>
                             <c:otherwise>
-                                <stripes:link id="logoutlink" href="${actionBean.logoutUrl}" title="Logout">Logout ${actionBean.ddUser.userName}</stripes:link>
+                                <stripes:link id="logoutlink" href="${actionBean.logoutUrl}" title="Logout">Logout ${actionBean.user.userName}</stripes:link>
                             </c:otherwise>
                         </c:choose>
 

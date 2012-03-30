@@ -12,7 +12,7 @@ public class SchemaSet {
     /** */
     private int id;
     private String identifier;
-    private int continuityId;
+    private String continuityId;
     private RegStatus regStatus = RegStatus.DRAFT;
     private boolean isWorkingCopy;
     private String workingUser;
@@ -55,14 +55,14 @@ public class SchemaSet {
     /**
      * @return the continuityId
      */
-    public int getContinuityId() {
+    public String getContinuityId() {
         return continuityId;
     }
 
     /**
      * @param continuityId the continuityId to set
      */
-    public void setContinuityId(int continuityId) {
+    public void setContinuityId(String continuityId) {
         this.continuityId = continuityId;
     }
 

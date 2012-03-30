@@ -3,9 +3,12 @@ package eionet.meta.dao.mysql;
 import java.sql.Connection;
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringUtils;
+
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.SchemaSetDAO;
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.util.Util;
 import eionet.util.sql.SQL;
 
 /**
@@ -33,10 +36,14 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
         try {
             conn = getConnection();
 
+            String continuityId = schemaSet.getContinuityId();
+            if (StringUtils.isBlank(continuityId)){
+                continuityId = Util.generateContinuityId(schemaSet);
+            }
             ArrayList<Object> params = new ArrayList<Object>();
             params.add(schemaSet.getIdentifier());
-            params.add(schemaSet.getContinuityId());
-            params.add(schemaSet.getRegStatus());
+            params.add(continuityId);
+            params.add(schemaSet.getRegStatus().toString());
             params.add(schemaSet.isWorkingCopy());
             params.add(schemaSet.getWorkingUser());
             params.add(schemaSet.getUser());

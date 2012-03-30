@@ -102,8 +102,17 @@ public abstract class AbstractActionBean implements ActionBean {
      *
      * @return {@link DDUser} from session or null if user is not logged in.
      */
-    public DDUser getDdUser() {
+    public DDUser getUser() {
         return SecurityUtil.getUser(getContext().getRequest());
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getUserName() {
+        DDUser user = getUser();
+        return user==null ? null : user.getUserName();
     }
 
     /**
@@ -130,7 +139,7 @@ public abstract class AbstractActionBean implements ActionBean {
      * @return true if user is logged in.
      */
     public final boolean isUserLoggedIn() {
-        return getDdUser() != null;
+        return getUser() != null;
     }
 
     /**

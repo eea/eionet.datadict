@@ -43,7 +43,7 @@
                     </tr>
                 </table>
                 <fieldset style="display:none">
-                    <stripes:hidden name="schemaSet.identifier"/>
+                    <stripes:hidden name="schemaSet.workingCopy" value="true"/>
                 </fieldset>
             </div>
         </stripes:form>

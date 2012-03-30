@@ -4,7 +4,7 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Documentation">
     <stripes:layout-component name="contents">
 
-            <c:if test='${ddfn:userHasPermission(actionBean.ddUser.userName, "/documentation", "u")}'>
+            <c:if test='${ddfn:userHasPermission(actionBean.user.userName, "/documentation", "u")}'>
     			<div id="tabbedmenu">
 	                <ul>
 	                	<c:choose>
@@ -39,7 +39,7 @@
 				<br style="clear:left" />
             </c:if>
 			<c:choose>
-           		<c:when test='${actionBean.event == "edit" && ddfn:userHasPermission(actionBean.ddUser.userName, "/documentation", "u")}'>
+           		<c:when test='${actionBean.event == "edit" && ddfn:userHasPermission(actionBean.user.userName, "/documentation", "u")}'>
 		            <stripes:form action="/documentation" method="post">
 		                <table cellpadding="3" style="width:100%">
 				    <col style="width:10em"/>
@@ -83,7 +83,7 @@
 		                </table>
 		            </stripes:form>
            		</c:when>
-           		<c:when test='${actionBean.event == "add" && ddfn:userHasPermission(actionBean.ddUser.userName, "/documentation", "u")}'>
+           		<c:when test='${actionBean.event == "add" && ddfn:userHasPermission(actionBean.user.userName, "/documentation", "u")}'>
 		            <stripes:form action="/documentation" method="post">
 		                <table cellpadding="3">
 		                    <tr>
@@ -123,7 +123,7 @@
 		                </table>
 		            </stripes:form>
            		</c:when>
-           		<c:when test='${actionBean.pageId == "contents" && ddfn:userHasPermission(actionBean.ddUser.userName, "/documentation", "u")}'>
+           		<c:when test='${actionBean.pageId == "contents" && ddfn:userHasPermission(actionBean.user.userName, "/documentation", "u")}'>
            			<div id="operations">
 	                    <ul>
 	                        <li>
