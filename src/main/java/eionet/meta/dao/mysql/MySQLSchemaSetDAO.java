@@ -3,9 +3,9 @@ package eionet.meta.dao.mysql;
 import java.sql.Connection;
 import java.util.ArrayList;
 
-import eionet.meta.SchemaSet;
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.SchemaSetDAO;
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.util.sql.SQL;
 
 /**
@@ -20,7 +20,7 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
         + "WORKING_COPY, WORKING_USER, DATE, USER, COMMENT, CHECKEDOUT_COPY_ID) " + "values (?,?,?,?,?,now(),?,?,?)";
 
     /**
-     * @see eionet.meta.dao.SchemaSetDAO#add(eionet.meta.SchemaSet)
+     * @see eionet.meta.dao.SchemaSetDAO#add(eionet.meta.dao.domain.SchemaSet)
      */
     @Override
     public int add(SchemaSet schemaSet) throws DAOException {

@@ -33,11 +33,11 @@ import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
-import eionet.dao.domain.DataSetTable;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDSearchParameter;
 import eionet.meta.DElemAttribute;
 import eionet.meta.DsTable;
+import eionet.meta.dao.domain.DataSetTable;
 import eionet.util.sql.ConnectionUtil;
 
 /**

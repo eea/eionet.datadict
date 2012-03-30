@@ -1,6 +1,6 @@
 package eionet.meta.dao;
 
-import eionet.meta.SchemaSet;
+import eionet.meta.dao.domain.SchemaSet;
 
 /**
  * 

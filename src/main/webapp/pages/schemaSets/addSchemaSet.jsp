@@ -25,11 +25,11 @@
                         </th>
                         <td class="simple_attr_help">
                             <a href="/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
-                                <img style="border:0" src="/images/info_icon.gif" width="16" height="16" alt="help"/>
+                                <img style="border:0" src="<%=request.getContextPath()%>/images/info_icon.gif" width="16" height="16" alt="help"/>
                             </a>
                         </td>
                         <td class="simple_attr_help">
-                            <img style="border:0" src="/images/mandatory.gif" width="16" height="16" alt=""/>
+                            <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                         </td>
                         <td class="simple_attr_value">
                             <stripes:text class="smalltext" size="30" name="schemaSet.identifier"/>
@@ -42,6 +42,9 @@
                         </td>
                     </tr>
                 </table>
+                <fieldset style="display:none">
+                    <stripes:hidden name="schemaSet.identifier"/>
+                </fieldset>
             </div>
         </stripes:form>
     </div>

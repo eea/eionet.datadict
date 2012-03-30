@@ -5,10 +5,10 @@ import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
-import eionet.meta.SchemaSet;
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.DAOFactory;
 import eionet.meta.dao.SchemaSetDAO;
+import eionet.meta.dao.domain.SchemaSet;
 
 /**
  * 
@@ -19,8 +19,8 @@ import eionet.meta.dao.SchemaSetDAO;
 public class SchemaSetActionBean extends AbstractActionBean{
 
     /** */
-    private static final String ADD_SCHEMA_SET_JSP = "/pages/addSchemaSet.jsp";
-    private static final String SCHEMA_SET_JSP = "/pages/schemaSet.jsp";
+    private static final String ADD_SCHEMA_SET_JSP = "/pages/schemaSets/addSchemaSet.jsp";
+    private static final String VIEW_SCHEMA_SET_JSP = "/pages/schemaSets/viewSchemaSet.jsp";
 
     /** */
     private SchemaSet schemaSet;
@@ -31,7 +31,7 @@ public class SchemaSetActionBean extends AbstractActionBean{
      */
     @DefaultHandler
     public Resolution view(){
-        return new ForwardResolution(SCHEMA_SET_JSP);
+        return new ForwardResolution(VIEW_SCHEMA_SET_JSP);
     }
 
     /**

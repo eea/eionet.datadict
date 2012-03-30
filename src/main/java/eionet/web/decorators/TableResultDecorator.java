@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.displaytag.decorator.TableDecorator;
 
-import eionet.dao.domain.DataSetTable;
 import eionet.meta.DDUser;
+import eionet.meta.dao.domain.DataSetTable;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
