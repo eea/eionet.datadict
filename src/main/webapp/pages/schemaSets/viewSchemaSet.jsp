@@ -32,7 +32,7 @@
                             <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt=""/>
                         </td>
                         <td class="simple_attr_value">
-                            <c:out value="${schemaSet.identifier}"/>
+                            <c:out value="${actionBean.schemaSet.identifier}"/>
                         </td>
                     </tr>
                     <tr>

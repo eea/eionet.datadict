@@ -1,7 +1,9 @@
 package eionet.meta.dao;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
@@ -112,6 +114,22 @@ public class SQLBaseDAO extends BaseDAO {
         if (conn != null && conn != this.conn) {
             SQL.close(conn);
         }
+    }
+
+    /**
+     * 
+     * @param stmt
+     */
+    protected void close(Statement stmt) {
+        SQL.close(stmt);
+    }
+
+    /**
+     * 
+     * @param rs
+     */
+    protected void close(ResultSet rs) {
+        SQL.close(rs);
     }
 
     /**

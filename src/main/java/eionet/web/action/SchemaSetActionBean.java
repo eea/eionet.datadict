@@ -13,10 +13,10 @@ import eionet.meta.dao.domain.SchemaSet;
 /**
  * 
  * @author Jaanus Heinlaid
- *
+ * 
  */
 @UrlBinding("/schemaSet.action")
-public class SchemaSetActionBean extends AbstractActionBean{
+public class SchemaSetActionBean extends AbstractActionBean {
 
     /** */
     private static final String ADD_SCHEMA_SET_JSP = "/pages/schemaSets/addSchemaSet.jsp";
@@ -28,9 +28,16 @@ public class SchemaSetActionBean extends AbstractActionBean{
     /**
      * 
      * @return
+     * @throws DAOException
      */
     @DefaultHandler
-    public Resolution view(){
+    public Resolution view() throws DAOException {
+
+        SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
+        this.schemaSet = dao.getById(schemaSet.getId());
+        if (schemaSet == null) {
+            addSystemMessage("No schema set found with the given id: " + schemaSet.getId());
+        }
         return new ForwardResolution(VIEW_SCHEMA_SET_JSP);
     }
 
@@ -39,11 +46,12 @@ public class SchemaSetActionBean extends AbstractActionBean{
      * @return
      * @throws DAOException
      */
-    public Resolution add() throws DAOException{
+    public Resolution add() throws DAOException {
 
         Resolution resolution = new ForwardResolution(ADD_SCHEMA_SET_JSP);
-        if (!isGetOrHeadRequest()){
+        if (!isGetOrHeadRequest()) {
             schemaSet.setWorkingUser(getUserName());
+            schemaSet.setUser(getUserName());
             SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
             int schemaSetId = dao.add(schemaSet);
             resolution = new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSetId);
@@ -59,7 +67,8 @@ public class SchemaSetActionBean extends AbstractActionBean{
     }
 
     /**
-     * @param schemaSet the schemaSet to set
+     * @param schemaSet
+     *            the schemaSet to set
      */
     public void setSchemaSet(SchemaSet schemaSet) {
         this.schemaSet = schemaSet;

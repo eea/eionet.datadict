@@ -16,4 +16,20 @@ public interface SchemaSetDAO extends DAO{
      * @throws DAOException
      */
     int add(SchemaSet schemaSet) throws DAOException;
+
+    /**
+     * 
+     * @param identifier
+     * @return
+     * @throws DAOException
+     */
+    SchemaSet getByIdentifier(String identifier) throws DAOException;
+
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws DAOException
+     */
+    SchemaSet getById(int id) throws DAOException;
 }
