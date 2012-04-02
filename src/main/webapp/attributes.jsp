@@ -148,12 +148,6 @@
         </p>
 
         <table class="datatable">
-            <col style="width:30%"/>
-            <col style="width:14%"/>
-            <col style="width:14%"/>
-            <col style="width:14%"/>
-            <col style="width:14%"/>
-            <col style="width:14%"/>
             <tr>
                 <th scope="col" class="scope-col">
                                 Short name
@@ -168,10 +162,16 @@
                                 Tables
                 </th>
                 <th scope="col" class="scope-col">
-                                Data elements with fixed values
+                                Data elements<br/>with fixed values
                 </th>
                 <th scope="col" class="scope-col">
-                                Data elements with quantitative values
+                                Data elements<br/>with quantitative values
+                </th>
+                <th scope="col" class="scope-col">
+                                Schemas
+                </th>
+                <th scope="col" class="scope-col">
+                                Schema sets
                 </th>
             </tr>
 
@@ -231,6 +231,12 @@
                     </td>
                     <td class="center">
                         <% if (attribute.displayFor("CH2")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                    </td>
+                    <td class="center">
+                        <% if (attribute.displayFor("SCH")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                    </td>
+                    <td class="center">
+                        <% if (attribute.displayFor("SCS")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
                     </td>
                 </tr>
 

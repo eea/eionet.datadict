@@ -919,6 +919,8 @@ else
                         String dstChecked = (!mode.equals("add") && attribute.displayFor("DST")) ? "checked=\"checked\"" : "";
                         String tblChecked = (!mode.equals("add") && attribute.displayFor("TBL")) ? "checked=\"checked\"" : "";
                         String fxvChecked = (!mode.equals("add") && attribute.displayFor("FXV")) ? "checked=\"checked\"" : "";
+                        String schChecked = (!mode.equals("add") && attribute.displayFor("SCH")) ? "checked=\"checked\"" : "";
+                        String scsChecked = (!mode.equals("add") && attribute.displayFor("SCS")) ? "checked=\"checked\"" : "";
                         
                         if (mode.equals("view")){
                             boolean hasOne = false;
@@ -937,6 +939,12 @@ else
                             if (fxvChecked.equals("checked=\"checked\"")) { hasOne = true; %>
                                 <br/>Fixed values <%
                             }
+                            if (schChecked.equals("checked=\"checked\"")) { hasOne = true; %>
+                                <br/>Schemas <%
+                            }
+                            if (scsChecked.equals("checked=\"checked\"")) { hasOne = true; %>
+                                <br/>Schema sets <%
+                            }
                             if (!hasOne){ %>
                                 Not specified<%
                             }
@@ -947,6 +955,8 @@ else
                             <input <%=disabled%> type="checkbox" <%=ch2Checked%> name="dispWhen" id="dispCH2" value="CH2"/><label for="dispCH2">Data elements with quanitative values</label><br/>
                             <input <%=disabled%> type="checkbox" <%=dstChecked%> name="dispWhen" id="dispDST" value="DST"/><label for="dispDST">Datasets</label><br/>
                             <input <%=disabled%> type="checkbox" <%=tblChecked%> name="dispWhen" id="dispTBL" value="TBL"/><label for="dispTBL">Dataset tables</label><br/>
+                            <input <%=disabled%> type="checkbox" <%=schChecked%> name="dispWhen" id="dispSCH" value="SCH"/><label for="dispSCH">Schemas</label><br/>
+                            <input <%=disabled%> type="checkbox" <%=scsChecked%> name="dispWhen" id="dispSCS" value="SCS"/><label for="dispSCS">Schema sets</label><br/>
                             <%
                         }
                         %>

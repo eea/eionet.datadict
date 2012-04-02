@@ -52,6 +52,8 @@ public class AttributeHandler extends BaseHandler {
         this.obligation = req.getParameter("obligation");
         this.ns_id = req.getParameter("ns");
 
+        typeWeights.put("SCS", new Integer(256)); // schema set
+        typeWeights.put("SCH", new Integer(128)); // schema
         typeWeights.put("TBL", new Integer(64));
         typeWeights.put("FXV", new Integer(32));
         typeWeights.put("DCL", new Integer(16));
@@ -69,21 +71,23 @@ public class AttributeHandler extends BaseHandler {
     public void execute_() throws Exception {
 
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
-                          !mode.equalsIgnoreCase("edit") &&
-                          !mode.equalsIgnoreCase("delete")))
+                !mode.equalsIgnoreCase("edit") &&
+                !mode.equalsIgnoreCase("delete"))) {
             throw new Exception("AttributeHandler mode unspecified!");
+        }
 
         if (mode.equalsIgnoreCase("add")) {
             if (type==null || (!type.equalsIgnoreCase(DElemAttribute.TYPE_SIMPLE) &&
-                            !type.equalsIgnoreCase(DElemAttribute.TYPE_COMPLEX)))
+                    !type.equalsIgnoreCase(DElemAttribute.TYPE_COMPLEX))) {
                 throw new Exception("AttributeHandler type unspecified!");
+            }
         }
 
-        if (mode.equalsIgnoreCase("add"))
+        if (mode.equalsIgnoreCase("add")) {
             insert();
-        else if (mode.equalsIgnoreCase("edit"))
+        } else if (mode.equalsIgnoreCase("edit")) {
             update();
-        else {
+        } else {
             delete();
             cleanVisuals();
         }
@@ -101,18 +105,22 @@ public class AttributeHandler extends BaseHandler {
         map.put("SHORT_NAME", inParams.add(shortName));
         map.put("NAME", inParams.add(name));
 
-        if (definition!=null)
+        if (definition!=null) {
             map.put("DEFINITION", inParams.add(definition));
-        if (ns_id!=null)
+        }
+        if (ns_id!=null) {
             map.put("NAMESPACE_ID", inParams.add(ns_id, Types.INTEGER));
+        }
 
         String dispOrder = req.getParameter("dispOrder");
-        if (dispOrder!=null && dispOrder.length()>0)
+        if (dispOrder!=null && dispOrder.length()>0) {
             map.put("DISP_ORDER", inParams.add(dispOrder, Types.INTEGER));
+        }
 
         String inherit = req.getParameter("inheritable");
-        if (inherit!=null && inherit.length()>0)
+        if (inherit!=null && inherit.length()>0) {
             map.put("INHERIT", inParams.add(inherit));
+        }
 
         // simple attribute specific fields
         if (type==null || type.equals(DElemAttribute.TYPE_SIMPLE)) {
@@ -124,23 +132,27 @@ public class AttributeHandler extends BaseHandler {
             map.put("DISP_TYPE", inParams.add(dispType==null || dispType.length()==0 ? null : dispType));
 
             String dispWidth = req.getParameter("dispWidth");
-            if (dispWidth!=null && dispWidth.length()>0)
+            if (dispWidth!=null && dispWidth.length()>0) {
                 map.put("DISP_WIDTH", inParams.add(dispWidth, Types.INTEGER));
+            }
 
             String dispHeight = req.getParameter("dispHeight");
-            if (dispHeight!=null && dispHeight.length()>0)
+            if (dispHeight!=null && dispHeight.length()>0) {
                 map.put("DISP_HEIGHT", inParams.add(dispHeight));
+            }
 
             String dispMultiple = req.getParameter("dispMultiple");
-            if (dispMultiple!=null && dispMultiple.length()>0)
+            if (dispMultiple!=null && dispMultiple.length()>0) {
                 map.put("DISP_MULTIPLE", inParams.add(dispMultiple));
+            }
         }
 
         // complex attribute specific fields
         if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)) {
             String harvesterID = req.getParameter("harv_id");
-            if (harvesterID!=null && !harvesterID.equals("null"))
+            if (harvesterID!=null && !harvesterID.equals("null")) {
                 map.put("HARVESTER_ID", inParams.add(harvesterID));
+            }
         }
 
         PreparedStatement stmt = null;
@@ -158,10 +170,11 @@ public class AttributeHandler extends BaseHandler {
         if (user!=null) {
 
             String idPrefix = "";
-            if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
+            if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)) {
                 idPrefix = "c";
-            else if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE))
+            } else if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE)) {
                 idPrefix = "s";
+            }
 
 
             String aclPath = "/attributes/" + idPrefix + getLastInsertID();
@@ -184,10 +197,12 @@ public class AttributeHandler extends BaseHandler {
         map.put("SHORT_NAME", inParams.add(shortName));
         map.put("NAME", inParams.add(name));
 
-        if (definition!=null)
+        if (definition!=null) {
             map.put("DEFINITION", inParams.add(definition));
-        if (ns_id!=null)
+        }
+        if (ns_id!=null) {
             map.put("NAMESPACE_ID", inParams.add(ns_id, Types.INTEGER));
+        }
 
         String dispOrder = req.getParameter("dispOrder");
         map.put("DISP_ORDER", inParams.add((dispOrder==null || dispOrder.length()==0) ? "999" : dispOrder, Types.INTEGER));
@@ -267,7 +282,9 @@ public class AttributeHandler extends BaseHandler {
 
                 StringBuffer buf = new StringBuffer("delete from M_ATTRIBUTE where ");
                 for (int i=0; i<simpleAttrs.length; i++) {
-                    if (i>0) buf.append(" or ");
+                    if (i>0) {
+                        buf.append(" or ");
+                    }
                     buf.append("M_ATTRIBUTE_ID=");
                     buf.append(inParams.add(simpleAttrs[i], Types.INTEGER));
                 }
@@ -284,7 +301,9 @@ public class AttributeHandler extends BaseHandler {
                 inParams = new INParameters();
                 StringBuffer buf = new StringBuffer("delete from M_COMPLEX_ATTR where ");
                 for (int i=0; i<complexAttrs.length; i++) {
-                    if (i>0) buf.append(" or ");
+                    if (i>0) {
+                        buf.append(" or ");
+                    }
                     buf.append("M_COMPLEX_ATTR_ID=");
                     buf.append(inParams.add(complexAttrs[i], Types.INTEGER));
                 }
@@ -322,16 +341,18 @@ public class AttributeHandler extends BaseHandler {
      */
     private void deleteSimpleAttributeValues(String[] attr_ids) throws SQLException {
 
-        if (attr_ids==null || attr_ids.length==0)
+        if (attr_ids==null || attr_ids.length==0) {
             return;
+        }
 
         PreparedStatement stmt = null;
         INParameters inParams = new INParameters();
         try {
             StringBuffer buf = new StringBuffer("delete from ATTRIBUTE where ");
             for (int i=0; i<attr_ids.length; i++) {
-                if (i>0)
+                if (i>0) {
                     buf.append(" or ");
+                }
                 buf.append("M_ATTRIBUTE_ID=");
                 buf.append(inParams.add(attr_ids[i], Types.INTEGER));
             }
@@ -354,7 +375,9 @@ public class AttributeHandler extends BaseHandler {
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("select distinct ROW_ID from COMPLEX_ATTR_ROW where ");
         for (int i=0; i<attr_ids.length; i++) {
-            if (i>0) buf.append(" or ");
+            if (i>0) {
+                buf.append(" or ");
+            }
             buf.append("M_COMPLEX_ATTR_ID=");
             buf.append(inParams.add(attr_ids[i], Types.INTEGER));
         }
@@ -369,11 +392,13 @@ public class AttributeHandler extends BaseHandler {
             inParams = new INParameters();
             for (int i=0; rs.next(); i++) {
 
-                if (buf.length()==0)
+                if (buf.length()==0) {
                     buf.append("delete from COMPLEX_ATTR_FIELD where ");
+                }
 
-                if (i>0)
+                if (i>0) {
                     buf.append(" or ");
+                }
                 buf.append("ROW_ID=").append(inParams.add(rs.getString("ROW_ID")));
             }
             rs.close();
@@ -387,7 +412,9 @@ public class AttributeHandler extends BaseHandler {
             inParams = new INParameters();
             buf = new StringBuffer("delete from COMPLEX_ATTR_ROW where ");
             for (int i=0; i<attr_ids.length; i++) {
-                if (i>0) buf.append(" or ");
+                if (i>0) {
+                    buf.append(" or ");
+                }
                 buf.append("M_COMPLEX_ATTR_ID=");
                 buf.append(inParams.add(attr_ids[i], Types.INTEGER));
             }
@@ -408,14 +435,17 @@ public class AttributeHandler extends BaseHandler {
      */
     private void deleteFixedValues(String[] attr_ids) throws Exception {
 
-        if (attr_ids==null || attr_ids.length==0)
+        if (attr_ids==null || attr_ids.length==0) {
             return;
+        }
 
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer();
         buf.append("select distinct FXV_ID from FXV where OWNER_TYPE='attr' and (");
         for (int i=0; i<attr_ids.length; i++) {
-            if (i>0) buf.append(" or ");
+            if (i>0) {
+                buf.append(" or ");
+            }
             buf.append("OWNER_ID=");
             buf.append(inParams.add(attr_ids[i], Types.INTEGER));
         }
@@ -487,17 +517,21 @@ public class AttributeHandler extends BaseHandler {
         // display it for all then
 
         String[] dispWhen = req.getParameterValues("dispWhen");
-        if (dispWhen == null || dispWhen.length == 0)
+        if (dispWhen == null || dispWhen.length == 0) {
             return String.valueOf(Math.pow(2, typeWeights.size()) - 1);
+        }
 
         int k = 0;
         for (int i=0; i<dispWhen.length; i++) {
             Integer weight = (Integer)typeWeights.get(dispWhen[i]);
-            if (weight != null)
+            if (weight != null) {
                 k = k + weight.intValue();
+            }
         }
 
-        if (k == 0) k = (int)Math.pow(2, typeWeights.size()) - 1;
+        if (k == 0) {
+            k = (int)Math.pow(2, typeWeights.size()) - 1;
+        }
 
         return String.valueOf(k);
     }

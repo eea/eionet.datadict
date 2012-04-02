@@ -325,6 +325,7 @@ public class VersionManager {
         SQLTransaction tx = null;
         try {
             tx = new SQLTransaction(conn);
+            tx.begin();
             String result = checkOutElm_(elmID);
             tx.commit();
             return result;
@@ -394,6 +395,7 @@ public class VersionManager {
         SQLTransaction tx = null;
         try {
             tx = new SQLTransaction(conn);
+            tx.begin();
             String result = checkOutDst_(dstID);
             tx.commit();
             return result;
@@ -585,6 +587,7 @@ public class VersionManager {
         SQLTransaction tx = null;
         try {
             tx = new SQLTransaction(conn);
+            tx.begin();
             boolean result = checkInElm_(elmID, status);
             tx.commit();
             return result;
@@ -690,6 +693,7 @@ public class VersionManager {
         SQLTransaction tx = null;
         try {
             tx = new SQLTransaction(conn);
+            tx.begin();
             boolean result = checkInDst_(dstID, status);
             tx.commit();
             return result;

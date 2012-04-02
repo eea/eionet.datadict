@@ -40,6 +40,7 @@ public abstract class BaseHandler {
         SQLTransaction tx = null;
         try {
             tx = new SQLTransaction(conn);
+            tx.begin();
             execute_();
             tx.commit();
         }

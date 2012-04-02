@@ -133,7 +133,7 @@ public class SQLTransaction implements Transaction{
     @Override
     public void rollback() {
         try {
-            if (conn!=null){
+            if (conn!=null && savepoint!=null){
                 conn.rollback(savepoint);
             }
         } catch (SQLException e) {

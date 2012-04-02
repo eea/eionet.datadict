@@ -83,6 +83,7 @@ public class CleanupServlet extends HttpServlet{
                 dataManipulations = new DataManipulations(conn, writer);
 
                 tx = new SQLTransaction(conn);
+                tx.begin();
 
                 dataManipulations.cleanup();
 
