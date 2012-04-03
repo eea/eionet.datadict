@@ -19,9 +19,11 @@ import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 
+import eionet.meta.dao.DAOException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
+import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
@@ -4924,6 +4926,28 @@ public class DDSearchEngine {
                 }
             } catch (SQLException e) {
             }
+        }
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public static DDSearchEngine create() throws DAOException{
+        try {
+            return new DDSearchEngine(ConnectionUtil.getConnection());
+        } catch (SQLException e) {
+            throw new DAOException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 
+     */
+    public void close(){
+        if (this.conn!=null){
+            SQL.close(conn);
         }
     }
 
