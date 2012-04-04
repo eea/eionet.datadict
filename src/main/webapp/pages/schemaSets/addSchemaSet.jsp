@@ -2,8 +2,6 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<%@page import="net.sourceforge.stripes.action.ActionBean"%>
-
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Search tables">
 
     <stripes:layout-component name="contents">

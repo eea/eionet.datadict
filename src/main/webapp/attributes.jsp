@@ -233,10 +233,10 @@
                         <% if (attribute.displayFor("CH2")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
                     </td>
                     <td class="center">
-                        <% if (attribute.displayFor("SCH")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                        <% if (attribute.displayFor(DElemAttribute.ParentType.SCHEMA.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
                     </td>
                     <td class="center">
-                        <% if (attribute.displayFor("SCS")){ %><img src="images/ok.gif" alt="Yes"/><%}%>
+                        <% if (attribute.displayFor(DElemAttribute.ParentType.SCHEMA_SET.toString())){ %><img src="images/ok.gif" alt="Yes"/><%}%>
                     </td>
                 </tr>
 

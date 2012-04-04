@@ -66,8 +66,8 @@ public class DElemAttribute{
         this.type = type;
         this.value = value;
 
-        typeWeights.put("SCS", new Integer(256)); // schema set
-        typeWeights.put("SCH", new Integer(128)); // schema
+        typeWeights.put(ParentType.SCHEMA_SET.toString(), new Integer(256)); // schema set
+        typeWeights.put(ParentType.SCHEMA.toString(), new Integer(128)); // schema
         typeWeights.put("TBL", new Integer(64));
         typeWeights.put("FXV", new Integer(32));
         typeWeights.put("DCL", new Integer(16));
@@ -555,17 +555,54 @@ public class DElemAttribute{
     }
 
     /**
+     * 
+     * @author Jaanus Heinlaid
      *
      */
-    public void main(String[] args) {
+    public enum ParentType {
 
-        Object o = null;
-        boolean g = o instanceof DElemAttribute;
-        //public DElemAttribute(
-        //String id, String name, String shortName, String type, String value) {
-        DElemAttribute attr1 = new DElemAttribute(null, null, "name2", null, "kala");
-        DElemAttribute attr2 = new DElemAttribute(null, null, "name2", null, "lkala");
+        /** */
+        ELEMENT("E"),TABLE("T"),DATASET("DS"),SCHEMA("SCH"),SCHEMA_SET("SCS");
 
-        System.out.println(attr1.equals(attr2));
+        /** */
+        String s;
+
+        /**
+         * 
+         * @param s
+         */
+        ParentType(String s){
+            this.s = s;
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see java.lang.Enum#toString()
+         */
+        public String toString(){
+            return s;
+        }
+
+        /**
+         * 
+         * @param s
+         * @return
+         */
+        public static ParentType fromString(String s){
+            for (ParentType parentType : ParentType.values()){
+                if (parentType.toString().equals(s)){
+                    return parentType;
+                }
+            }
+            return null;
+        }
+
+        /**
+         * 
+         * @return
+         */
+        public static ParentType getDefault(){
+            return ParentType.ELEMENT;
+        }
     }
 }

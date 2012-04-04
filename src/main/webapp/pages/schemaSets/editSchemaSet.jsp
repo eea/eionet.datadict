@@ -2,21 +2,11 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
+<%@page import="eionet.meta.dao.domain.SchemaSet"%>
+
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Search tables">
 
     <stripes:layout-component name="contents">
-    
-    <c:if test="${not empty actionBean.dropdownOperations}">
-        <div id="drop-operations">
-            <h2>Operations:</h2>
-            <ul>
-                <c:forEach items="${actionBean.dropdownOperations}" var="dropdownOperation">
-                    <li><a href="${dropdownOperation.href}"><c:out value="${dropdownOperation.title}"/></a></li>
-                </c:forEach>
-	        </ul>
-	    </div>
-    </c:if>
-    
     <h1>Schema set</h1>
 
     <div class="form">
@@ -25,6 +15,7 @@
                 <table class="datatable">
                     <colgroup>
                         <col style="width:26%"/>
+                        <col style="width:4%"/>
                         <col style="width:4%"/>
                         <col style="width:62%"/>
                     </colgroup>
@@ -37,8 +28,11 @@
                                 <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
                             </a>
                         </td>
+                        <td class="simple_attr_help">
+                            <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
+                        </td>
                         <td class="simple_attr_value">
-                            <c:out value="${actionBean.schemaSet.identifier}"/>
+                            <stripes:text name="schemaSet.identifier" size="30" class="smalltext"/>
                         </td>
                     </tr>
                     <tr>
@@ -50,14 +44,16 @@
                                 <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
                             </a>
                         </td>
+                        <td class="simple_attr_help">
+                            <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
+                        </td>
                         <td class="simple_attr_value">
-                            <c:out value="${actionBean.schemaSet.regStatus}"/>
-                            <c:if test="${actionBean.userWorkingCopy}">
-                                <span class="caution" title="Checked out on ${actionBean.schemaSet.date}">(Working copy)</span>
-                            </c:if>
-                            <c:if test="${not empty actionBean.userName && actionBean.userName!=actionBean.schemaSet.workingUser}">
-                                <span class="caution">(checked out by <em>${actionBean.schemaSet.workingUser}</em>)</span>
-                            </c:if>
+                            <c:set var="regStatuses" value="<%=SchemaSet.RegStatus.values()%>"/>
+                            <stripes:select name="schemaSet.regStatus" value="${actionBean.schemaSet.regStatus}">
+                                <c:forEach items="${regStatuses}" var="aRegStatus">
+                                    <stripes:option value="${aRegStatus}" label="${aRegStatus}"/>
+                                </c:forEach>
+                            </stripes:select>
                         </td>
                     </tr>
                     <c:forEach items="${actionBean.attributes}" var="attribute">
@@ -70,11 +66,30 @@
                                     <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
                                 </a>
                             </td>
+                            <td class="simple_attr_help">
+                                <c:if test="${attribute.obligation=='M'}">
+                                    <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
+                                </c:if>
+                                <c:if test="${attribute.obligation=='O'}">
+                                    <img style="border:0" src="${pageContext.request.contextPath}/images/optional.gif" width="16" height="16" alt=""/>
+                                </c:if>
+                                <c:if test="${attribute.obligation=='C'}">
+                                    <img style="border:0" src="${pageContext.request.contextPath}/images/conditional.gif" width="16" height="16" alt=""/>
+                                </c:if>
+                            </td>
                             <td style="word-wrap:break-word;wrap-option:emergency" class="simple_attr_value">
-                                <c:out value="${attribute.value}"/>
+                                <input type="text" name="attr_${attribute.ID}" value="${fn:escapeXml(attribute.value)}"/>
                             </td>
                         </tr>
                     </c:forEach>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <td colspan="3">
+                            <stripes:submit name="save" value="Save" class="mediumbuttonb"/>
+                            <stripes:submit name="saveAndClose" value="Save & close" class="mediumbuttonb"/>
+                            <stripes:submit name="cancel" value="Cancel" class="mediumbuttonb"/>
+                        </td>
+                    </tr>
                 </table>
             </div>
         </stripes:form>

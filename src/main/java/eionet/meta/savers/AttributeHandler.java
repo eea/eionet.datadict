@@ -52,8 +52,8 @@ public class AttributeHandler extends BaseHandler {
         this.obligation = req.getParameter("obligation");
         this.ns_id = req.getParameter("ns");
 
-        typeWeights.put("SCS", new Integer(256)); // schema set
-        typeWeights.put("SCH", new Integer(128)); // schema
+        typeWeights.put(DElemAttribute.ParentType.SCHEMA_SET.toString(), new Integer(256)); // schema set
+        typeWeights.put(DElemAttribute.ParentType.SCHEMA.toString(), new Integer(128)); // schema
         typeWeights.put("TBL", new Integer(64));
         typeWeights.put("FXV", new Integer(32));
         typeWeights.put("DCL", new Integer(16));

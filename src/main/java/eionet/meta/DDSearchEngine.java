@@ -6,12 +6,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -1032,10 +1034,8 @@ public class DDSearchEngine {
 
             // non-common element
 
-            buf.append(", TBL2ELEM, DST2TBL, DS_TABLE, DATASET where ")
-            .append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID and ")
-            .append("TBL2ELEM.TABLE_ID=DST2TBL.TABLE_ID and ")
-            .append("DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID and ")
+            buf.append(", TBL2ELEM, DST2TBL, DS_TABLE, DATASET where ").append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID and ")
+            .append("TBL2ELEM.TABLE_ID=DST2TBL.TABLE_ID and ").append("DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID and ")
             .append("DST2TBL.DATASET_ID=DATASET.DATASET_ID and ")
             .append("DATASET.WORKING_COPY='N' and DATASET.DELETED is null and ");
 
@@ -1052,8 +1052,8 @@ public class DDSearchEngine {
                 buf.append(") and ");
             }
 
-            buf.append("DATAELEM.IDENTIFIER=? and DS_TABLE.IDENTIFIER=? and DATASET.IDENTIFIER=?")
-            .append("order by DATASET.DATASET_ID desc limit 1");
+            buf.append("DATAELEM.IDENTIFIER=? and DS_TABLE.IDENTIFIER=? and DATASET.IDENTIFIER=?").append(
+            "order by DATASET.DATASET_ID desc limit 1");
 
             inParams.add(elmIdf);
             inParams.add(tblIdf);
@@ -4934,7 +4934,7 @@ public class DDSearchEngine {
      * @return
      * @throws DAOException
      */
-    public static DDSearchEngine create() throws DAOException{
+    public static DDSearchEngine create() throws DAOException {
         try {
             return new DDSearchEngine(ConnectionUtil.getConnection());
         } catch (SQLException e) {
@@ -4945,10 +4945,51 @@ public class DDSearchEngine {
     /**
      * 
      */
-    public void close(){
-        if (this.conn!=null){
+    public void close() {
+        if (this.conn != null) {
             SQL.close(conn);
         }
+    }
+
+    /**
+     * 
+     * @param objectId
+     * @param objectType
+     * @param attributeType
+     * @return
+     * @throws DAOException
+     */
+    public Collection<DElemAttribute> getObjectAttributes(int objectId, DElemAttribute.ParentType objectType, String attributeType)
+    throws DAOException {
+
+        LinkedHashMap<String,DElemAttribute> attributeMap = new LinkedHashMap<String,DElemAttribute>();
+
+        try {
+
+            // First get the metadata of all possible attributes for this object type
+            List<DElemAttribute> attributes =
+                getDElemAttributes(null, attributeType, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+            if (attributes != null && !attributes.isEmpty()) {
+
+                for (DElemAttribute attribute : attributes) {
+                    if (attribute.displayFor(objectType.toString())){
+                        attributeMap.put(attribute.getID(), attribute);
+                    }
+                }
+
+                // Now get the values of attributes of this particular object, place them into the above-constructed map
+                attributes = getAttributes(String.valueOf(objectId), objectType.toString(), attributeType);
+                if (attributes != null && !attributes.isEmpty()) {
+                    for (DElemAttribute attribute : attributes) {
+                        attributeMap.put(attribute.getID(), attribute);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DAOException(e.getMessage(), e);
+        }
+
+        return attributeMap.values();
     }
 
     /**

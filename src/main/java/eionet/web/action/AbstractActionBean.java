@@ -24,6 +24,7 @@ package eionet.web.action;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.SimpleMessage;
+import net.sourceforge.stripes.controller.AnnotatedClassActionResolver;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,6 +49,12 @@ public abstract class AbstractActionBean implements ActionBean {
 
     /** DD ActionBeanContext extension. */
     private DDActionBeanContext context;
+
+    /** */
+    private String urlBinding;
+
+    /** */
+    private String contextPath;
 
     /**
      * {@inheritDoc}
@@ -157,5 +164,30 @@ public abstract class AbstractActionBean implements ActionBean {
     public boolean isGetOrHeadRequest(){
         String method = getContext().getRequest().getMethod().toUpperCase();
         return method.equals("GET") || method.equals("HEAD");
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getUrlBinding(){
+        if (urlBinding == null){
+            urlBinding = new AnnotatedClassActionResolver().getUrlBinding(this.getClass());
+            if (urlBinding == null){
+                urlBinding = "";
+            }
+        }
+        return urlBinding;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getContextPath(){
+        if (contextPath == null){
+            contextPath = getContext().getRequest().getContextPath();
+        }
+        return contextPath;
     }
 }
