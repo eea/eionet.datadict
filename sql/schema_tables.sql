@@ -36,4 +36,4 @@ alter table `SCHEMA` add index (SCHEMA_SET_ID);
 alter table `SCHEMA` add index (CONTINUITY_ID);
 
 delete from ATTRIBUTE where PARENT_TYPE='C' or PARENT_TYPE='CSI';
-alter table ATTRIBUTE change column PARENT_TYPE PARENT_TYPE enum('E', 'T', 'DS', 'SC', 'SCS') not null default 'E';
+alter table ATTRIBUTE change column PARENT_TYPE PARENT_TYPE enum('E', 'T', 'DS', 'SCH', 'SCS') not null default 'E';
