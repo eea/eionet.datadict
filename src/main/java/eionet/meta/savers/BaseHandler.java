@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 
 import eionet.meta.DDUser;
 import eionet.meta.MrProper;
-import eionet.util.TransactionUtil;
 import eionet.util.Util;
 import eionet.util.sql.SQLTransaction;
 
@@ -39,17 +38,16 @@ public abstract class BaseHandler {
 
         SQLTransaction tx = null;
         try {
-            tx = new SQLTransaction(conn);
-            tx.begin();
+            tx = SQLTransaction.begin(conn);
             execute_();
             tx.commit();
         }
         catch (Exception e) {
-            TransactionUtil.rollback(tx);
+            SQLTransaction.rollback(tx);
             throw e;
         }
         finally {
-            TransactionUtil.close(tx);
+            SQLTransaction.end(tx);
         }
     }
 

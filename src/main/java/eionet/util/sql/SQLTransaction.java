@@ -35,7 +35,7 @@ import eionet.meta.dao.Transaction;
  * @author Jaanus Heinlaid
  * 
  */
-public class SQLTransaction implements Transaction{
+public class SQLTransaction implements Transaction {
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(SQLTransaction.class);
@@ -54,16 +54,9 @@ public class SQLTransaction implements Transaction{
 
     /**
      * 
-     */
-    public SQLTransaction(){
-        // default constructor
-    }
-
-    /**
-     * 
      * @param conn
      */
-    public SQLTransaction(Connection conn) {
+    private SQLTransaction(Connection conn) {
         if (conn == null) {
             throw new IllegalArgumentException("The given connection must not be null!");
         }
@@ -75,15 +68,15 @@ public class SQLTransaction implements Transaction{
      * @see eionet.meta.dao.Transaction#begin()
      */
     @Override
-    public void begin() throws DAOException{
+    public void begin() throws DAOException {
 
         try {
-            if (conn==null){
+            if (conn == null) {
                 conn = ConnectionUtil.getConnection();
             }
             if (conn.getAutoCommit() == false) {
                 isRunningInAnotherTransaction = true;
-            } else{
+            } else {
                 conn.setAutoCommit(false);
             }
             savepoint = conn.setSavepoint();
@@ -92,35 +85,31 @@ public class SQLTransaction implements Transaction{
         }
     }
 
-    //    /**
-    //     *
-    //     * @param conn
-    //     * @return
-    //     */
-    //    public static SQLTransaction begin(Connection conn) throws DAOException{
-    //        SQLTransaction tx = new SQLTransaction(conn);
-    //        tx.begin();
-    //        return tx;
-    //    }
+    /**
+     *
+     * @param conn
+     * @return
+     */
+    public static SQLTransaction begin(Connection conn) throws DAOException{
+        SQLTransaction tx = new SQLTransaction(conn);
+        tx.begin();
+        return tx;
+    }
 
     /**
+     * @throws DAOException
      * @see eionet.meta.dao.Transaction#commit()
      */
     @Override
     public void commit() throws DAOException {
 
-        if (savepoint == null){
+        if (savepoint == null) {
             throw new IllegalStateException("Transaction not yet started!");
         }
 
-        if (!isRunningInAnotherTransaction){
+        if (!isRunningInAnotherTransaction) {
             try {
                 conn.commit();
-                conn.releaseSavepoint(savepoint);
-                savepoint = null;
-                if (!isRunningInAnotherTransaction) {
-                    conn.setAutoCommit(true);
-                }
             } catch (SQLException e) {
                 throw new DAOException(e.toString(), e);
             }
@@ -133,7 +122,7 @@ public class SQLTransaction implements Transaction{
     @Override
     public void rollback() {
         try {
-            if (conn!=null && savepoint!=null){
+            if (conn != null && savepoint != null) {
                 conn.rollback(savepoint);
             }
         } catch (SQLException e) {
@@ -146,12 +135,30 @@ public class SQLTransaction implements Transaction{
      */
     @Override
     public void close() {
-        if (conn!=null){
+
+        if (conn != null) {
             try {
                 conn.close();
-            } catch (SQLException e) {
-                LOGGER.error("Failure trying to close the connection:", e);
+            } catch (Exception e) {
+                LOGGER.error("Failure trying to close the transaction:", e);
             }
+        }
+    }
+
+    /**
+     * 
+     */
+    public void end() {
+        try {
+            if (conn!=null && savepoint!=null){
+                conn.releaseSavepoint(savepoint);
+                savepoint = null;
+                if (!isRunningInAnotherTransaction) {
+                    conn.setAutoCommit(true);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Failure trying savepoint release and transaction end:", e);
         }
     }
 
@@ -160,16 +167,36 @@ public class SQLTransaction implements Transaction{
      * @return
      * @throws SQLException
      */
-    public Connection getConnection() throws SQLException{
+    public Connection getConnection() throws SQLException {
 
-        if (savepoint == null){
+        if (savepoint == null) {
             throw new IllegalStateException("Transaction not yet started!");
-        }
-        else{
+        } else {
             return conn;
         }
     }
 
+    /**
+     * 
+     * @param transaction
+     */
+    public static void rollback(SQLTransaction transaction){
+
+        if (transaction!=null){
+            transaction.rollback();
+        }
+    }
+
+    /**
+     * 
+     * @param transaction
+     */
+    public static void end(SQLTransaction transaction){
+
+        if (transaction!=null){
+            transaction.end();
+        }
+    }
     /**
      */
     public static void main(String[] args) throws ClassNotFoundException {
@@ -177,7 +204,8 @@ public class SQLTransaction implements Transaction{
         Connection conn = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            String url = "jdbc:mysql://localhost/DataDict?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&emptyStringsConvertToZero=false&jdbcCompliantTruncation=false";
+            String url =
+                "jdbc:mysql://localhost/DataDict?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&emptyStringsConvertToZero=false&jdbcCompliantTruncation=false";
             conn = DriverManager.getConnection(url, "dduser", "xxx");
             conn.setAutoCommit(false);
             System.out.println("Current auto-commit = " + conn.getAutoCommit());
@@ -186,7 +214,7 @@ public class SQLTransaction implements Transaction{
             conn.commit();
             System.out.println("Now auto-commit = " + conn.getAutoCommit());
         } catch (SQLException e) {
-            if (conn!=null){
+            if (conn != null) {
                 try {
                     conn.rollback();
                 } catch (SQLException e1) {
@@ -194,7 +222,7 @@ public class SQLTransaction implements Transaction{
                 }
             }
         } finally {
-            if (conn!=null){
+            if (conn != null) {
                 try {
                     conn.close();
                 } catch (SQLException e) {

@@ -22,7 +22,6 @@ import eionet.meta.savers.DataElementHandler;
 import eionet.meta.savers.DatasetHandler;
 import eionet.meta.savers.DsTableHandler;
 import eionet.meta.savers.Parameters;
-import eionet.util.TransactionUtil;
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
@@ -324,16 +323,16 @@ public class VersionManager {
 
         SQLTransaction tx = null;
         try {
-            tx = new SQLTransaction(conn);
+            tx = SQLTransaction.begin(conn);
             tx.begin();
             String result = checkOutElm_(elmID);
             tx.commit();
             return result;
         } catch (Exception e) {
-            TransactionUtil.rollback(tx);
+            SQLTransaction.rollback(tx);
             throw e;
         } finally {
-            TransactionUtil.close(tx);
+            SQLTransaction.end(tx);
         }
     }
 
@@ -394,16 +393,15 @@ public class VersionManager {
 
         SQLTransaction tx = null;
         try {
-            tx = new SQLTransaction(conn);
-            tx.begin();
+            tx = SQLTransaction.begin(conn);
             String result = checkOutDst_(dstID);
             tx.commit();
             return result;
         } catch (Exception e) {
-            TransactionUtil.rollback(tx);
+            SQLTransaction.rollback(tx);
             throw e;
         } finally {
-            TransactionUtil.close(tx);
+            SQLTransaction.end(tx);
         }
     }
 
@@ -586,16 +584,15 @@ public class VersionManager {
 
         SQLTransaction tx = null;
         try {
-            tx = new SQLTransaction(conn);
-            tx.begin();
+            tx = SQLTransaction.begin(conn);
             boolean result = checkInElm_(elmID, status);
             tx.commit();
             return result;
         } catch (Exception e) {
-            TransactionUtil.rollback(tx);
+            SQLTransaction.rollback(tx);
             throw e;
         } finally {
-            TransactionUtil.close(tx);
+            SQLTransaction.end(tx);
         }
     }
 
@@ -692,16 +689,15 @@ public class VersionManager {
 
         SQLTransaction tx = null;
         try {
-            tx = new SQLTransaction(conn);
-            tx.begin();
+            tx = SQLTransaction.begin(conn);
             boolean result = checkInDst_(dstID, status);
             tx.commit();
             return result;
         } catch (Exception e) {
-            TransactionUtil.rollback(tx);
+            SQLTransaction.rollback(tx);
             throw e;
         } finally {
-            TransactionUtil.close(tx);
+            SQLTransaction.end(tx);
         }
     }
 

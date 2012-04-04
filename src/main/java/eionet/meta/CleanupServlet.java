@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 import eionet.util.DataManipulations;
 import eionet.util.LogServiceIF;
 import eionet.util.SecurityUtil;
-import eionet.util.TransactionUtil;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.SQLTransaction;
 
@@ -82,8 +81,7 @@ public class CleanupServlet extends HttpServlet{
                 res.setContentType("text/plain");
                 dataManipulations = new DataManipulations(conn, writer);
 
-                tx = new SQLTransaction(conn);
-                tx.begin();
+                tx = SQLTransaction.begin(conn);
 
                 dataManipulations.cleanup();
 
@@ -95,7 +93,7 @@ public class CleanupServlet extends HttpServlet{
             else if (action.equals(ACTION_DELETE_ELM) || action.equals(ACTION_DELETE_TBL) || action.equals(ACTION_DELETE_DST)) {
                 if (objIDs!=null && objIDs.trim().length()>0) {
 
-                    tx = new SQLTransaction(conn);
+                    tx = SQLTransaction.begin(conn);
                     StringTokenizer st = new StringTokenizer(objIDs);
                     while (st.hasMoreTokens()) {
 
@@ -124,7 +122,7 @@ public class CleanupServlet extends HttpServlet{
         }
         catch (Exception e) {
 
-            TransactionUtil.rollback(tx);
+            SQLTransaction.rollback(tx);
             LOGGER.error(e);
 
             if (writer!=null) {
@@ -135,7 +133,7 @@ public class CleanupServlet extends HttpServlet{
         }
         finally {
 
-            TransactionUtil.close(tx);
+            SQLTransaction.end(tx);
 
             if (writer!=null) {
                 writer.close();
