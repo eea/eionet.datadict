@@ -556,6 +556,14 @@ public class DElemAttribute{
 
     /**
      * 
+     * @return
+     */
+    public boolean isMultipleValuesAllowed(){
+        return displayMultiple!=null && displayMultiple.equals("1");
+    }
+
+    /**
+     * 
      * @author Jaanus Heinlaid
      *
      */

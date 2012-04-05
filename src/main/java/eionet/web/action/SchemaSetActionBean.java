@@ -3,6 +3,11 @@ package eionet.web.action;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -40,6 +45,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     private SchemaSet schemaSet;
     private Collection<DElemAttribute> attributes;
     private Collection<DropdownOperation> dropdownOperations;
+    private Map<String,Set<String>> possibleAttributeValues;
 
     /**
      * 
@@ -187,5 +193,40 @@ public class SchemaSetActionBean extends AbstractActionBean {
             }
         }
         return dropdownOperations;
+    }
+
+    /**
+     * @return the possibleAttributeValues
+     * @throws DAOException
+     */
+    public Map<String,Set<String>> getPossibleAttributeValues() throws DAOException {
+
+        if (possibleAttributeValues==null){
+            possibleAttributeValues = new HashMap<String, Set<String>>();
+            Collection<DElemAttribute> attributes = getAttributes();
+            DDSearchEngine searchEngine = null;
+            try {
+                searchEngine = DDSearchEngine.create();
+                for (DElemAttribute attribute : attributes){
+
+                    if (attribute.isMultipleValuesAllowed()){
+
+                        Vector existingValues = attribute.getValues();
+                        Vector possibleValues = searchEngine.getSimpleAttributeValues(attribute.getID());
+
+                        LinkedHashSet<String> values = new LinkedHashSet<String>();
+                        values.addAll(existingValues);
+                        values.addAll(possibleValues);
+                        possibleAttributeValues.put(attribute.getID(), values);
+                    }
+                }
+            } catch (SQLException e) {
+                throw new DAOException(e.getMessage(), e);
+            }
+            finally {
+                searchEngine.close();
+            }
+        }
+        return possibleAttributeValues;
     }
 }

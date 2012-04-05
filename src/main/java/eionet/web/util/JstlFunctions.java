@@ -21,7 +21,11 @@
 package eionet.web.util;
 
 
+import java.util.Collection;
+
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringUtils;
 
 import eionet.util.SecurityUtil;
 
@@ -31,6 +35,9 @@ import eionet.util.SecurityUtil;
  *
  */
 public class JstlFunctions {
+
+    /** */
+    private static final String INPUT_CHECKED_STRING = "checked=\"checked\"";
 
     /**
      * Returns the value of {@link CRUser#hasPermission(HttpSession, String, String)}, using the given inputs.
@@ -42,5 +49,73 @@ public class JstlFunctions {
      */
     public static boolean userHasPermission(java.lang.String usr, java.lang.String aclPath, java.lang.String prm) throws Exception{
         return SecurityUtil.hasPerm(usr, aclPath, prm);
+    }
+
+    /**
+     * 
+     * @param o
+     * @param seperator
+     * @return
+     */
+    public static String join(Object o, String separator){
+
+        if (o==null){
+            return "";
+        }
+        else if (o instanceof String) {
+            return (String) o;
+        }
+        else if (o instanceof Object[]){
+            return StringUtils.join((Object[]) o, separator);
+        }
+        else if (o instanceof Collection){
+            return StringUtils.join((Collection) o, separator);
+        }
+        else{
+            throw new ClassCastException("Couldn't cast from this class: " + o.getClass().getName());
+        }
+    }
+
+    /**
+     * 
+     * @param arrayOrCollection
+     * @param object
+     * @return
+     */
+    public static boolean contains(Object arrayOrCollection, Object object){
+
+        if (arrayOrCollection!=null){
+
+            if (arrayOrCollection instanceof Object[]){
+                for (Object o : ((Object[]) arrayOrCollection)){
+                    if (o.equals(object)){
+                        return true;
+                    }
+                }
+            }
+            else if (arrayOrCollection instanceof Collection){
+                for (Object o : ((Collection) arrayOrCollection)){
+                    if (o.equals(object)){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @param condition
+     * @return
+     */
+    public static String inputCheckedString(boolean condition){
+        if (condition == true){
+            return INPUT_CHECKED_STRING;
+        }
+        else{
+            return "";
+        }
     }
 }

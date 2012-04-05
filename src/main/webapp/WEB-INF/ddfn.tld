@@ -24,5 +24,42 @@
 			${hasPermission("mrx", "/", "u")}
 		</example>
 	</function>
+	
+	<function>
+        <description>
+            Delegates the call to org.apache.commons.lang.StringUtils.join(Object[], String) or
+            org.apache.commons.lang.StringUtils.join(Collection, String) if the first input parameter
+            is an instance of Object[] or Collection respectively. If the first input parameter is null,
+            returns an empty string. If it is a String, returns that string.
+        </description>
+        <name>join</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>String join(java.lang.Object, java.lang.String)</function-signature>
+        <example>
+        </example>
+    </function>
+    
+    <function>
+        <description>
+            Returns true if the given array or collection (i.e. the first input parameter)
+            contains the given object (i.e. the second input parameter).
+        </description>
+        <name>contains</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>boolean contains(java.lang.Object, java.lang.Object)</function-signature>
+        <example>
+        </example>
+    </function>
+    
+    <function>
+        <description>
+            Returns checked="checked" if the given condition is true, otherwise returns an empty string.
+        </description>
+        <name>inputCheckedString</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>java.lang.String inputCheckedString(boolean)</function-signature>
+        <example>
+        </example>
+    </function>
 
 </taglib>
