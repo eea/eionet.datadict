@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-         version="2.4">
+    version="2.4">
 
     <display-name>Data Dictionary</display-name>
 
     <!-- context params -->
-
     <context-param>
         <param-name>application-name</param-name>
         <param-value>${app.displayName}</param-value>
@@ -24,8 +22,17 @@
         <param-value>error.html</param-value>
     </context-param>
 
-    <!-- filters -->
+    <!-- Spring configuration -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
 
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:spring-context.xml</param-value>
+    </context-param>
+
+    <!-- filters -->
     <filter>
         <filter-name>CAS Filter</filter-name>
         <filter-class>eionet.meta.filters.EionetCASFilter</filter-class>
@@ -57,22 +64,11 @@
             <param-name>ActionBeanContext.Class</param-name>
             <param-value>eionet.web.DDActionBeanContext</param-value>
         </init-param>
-        <!--
-        <init-param>
-            <param-name>Interceptor.Classes</param-name>
-            <param-value>
-                eionet.cr.web.interceptor.ActionEventInterceptor
-            </param-value>
-        </init-param>
-        <init-param>
-            <param-name>ExceptionHandler.Class</param-name>
-            <param-value>eionet.cr.web.util.StripesExceptionHandler</param-value>
-        </init-param>
-        <init-param>
-            <param-name>LocalePicker.Class</param-name>
-            <param-value>eionet.cr.web.util.LocalePicker</param-value>
-        </init-param>
-         -->
+        <!-- <init-param> <param-name>Interceptor.Classes</param-name> <param-value>
+            eionet.cr.web.interceptor.ActionEventInterceptor </param-value> </init-param>
+            <init-param> <param-name>ExceptionHandler.Class</param-name> <param-value>eionet.cr.web.util.StripesExceptionHandler</param-value>
+            </init-param> <init-param> <param-name>LocalePicker.Class</param-name> <param-value>eionet.cr.web.util.LocalePicker</param-value>
+            </init-param> -->
         <init-param>
             <param-name>trimSpaces</param-name>
             <param-value>true</param-value>
@@ -81,7 +77,10 @@
             <param-name>FileUpload.MaximumPostSize</param-name>
             <param-value>35000000</param-value>
         </init-param>
-
+        <init-param>
+            <param-name>Interceptor.Classes</param-name>
+            <param-value>net.sourceforge.stripes.integration.spring.SpringInterceptor</param-value>
+        </init-param>
     </filter>
 
     <filter>
