@@ -1065,7 +1065,7 @@ else if (mode.equals("add"))
                                                             String actionText = Util.isEmpty(attrValue) ? "add image" : "manage this image";
                                                             %>
                                                             <span class="barfont">
-                                                                <a href="<%=request.getContextPath()%>/imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;attr_name=<%=Util.processForDisplay(attribute.getShortName())%>">Click to <%=Util.processForDisplay(actionText)%></a>]
+                                                                <a href="<%=request.getContextPath()%>/imgattr.jsp?obj_id=<%=tableID%>&amp;obj_type=T&amp;attr_id=<%=attribute.getID()%>&amp;obj_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;attr_name=<%=Util.processForDisplay(attribute.getShortName())%>">Click to <%=Util.processForDisplay(actionText)%></a>
                                                             </span><%
                                                         }
                                                     }

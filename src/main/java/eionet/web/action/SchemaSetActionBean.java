@@ -3,11 +3,14 @@ package eionet.web.action;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -22,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
 import eionet.meta.DElemAttribute;
+import eionet.meta.FixedValue;
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.DAOFactory;
 import eionet.meta.dao.SchemaSetDAO;
@@ -44,8 +48,14 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /** */
     private SchemaSet schemaSet;
     private Collection<DElemAttribute> attributes;
+
+    /** */
     private Collection<DropdownOperation> dropdownOperations;
-    private Map<String,Set<String>> possibleAttributeValues;
+
+    /** */
+    private Map<String, Set<String>> multiValuedAttributeValues;
+    private Map<String, Set<String>> fixedValuedAttributeValues;
+    private Map<Integer, Set<String>> saveAttributeValues;
 
     /**
      * 
@@ -102,6 +112,49 @@ public class SchemaSetActionBean extends AbstractActionBean {
             resolution = new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSetId);
         }
         return resolution;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public Resolution save() throws DAOException {
+
+        doSave();
+        return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public Resolution saveAndClose() throws DAOException {
+        doSave();
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public Resolution cancel() throws DAOException {
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
+    }
+
+    /**
+     * @throws DAOException
+     * 
+     */
+    private void doSave() throws DAOException {
+
+        dumpRequestParameters();
+
+        schemaSet.setUser(getUserName());
+        SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
+        dao.save(schemaSet, getSaveAttributeValues());
     }
 
     /**
@@ -181,8 +234,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                             "Undo checkout"));
                         }
                     } else {
-                        UrlBuilder urlBuilder =
-                            new UrlBuilder(getContext().getLocale(), getContextPath() + getUrlBinding(), true);
+                        UrlBuilder urlBuilder = new UrlBuilder(getContext().getLocale(), getContextPath() + getUrlBinding(), true);
                         urlBuilder.addParameter("schemaSet.id", schemaSet.getId());
 
                         dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("edit").toString(), "New version"));
@@ -199,34 +251,115 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @return the possibleAttributeValues
      * @throws DAOException
      */
-    public Map<String,Set<String>> getPossibleAttributeValues() throws DAOException {
+    public Map<String, Set<String>> getMultiValuedAttributeValues() throws DAOException {
 
-        if (possibleAttributeValues==null){
-            possibleAttributeValues = new HashMap<String, Set<String>>();
+        if (multiValuedAttributeValues == null) {
+            multiValuedAttributeValues = new HashMap<String, Set<String>>();
             Collection<DElemAttribute> attributes = getAttributes();
             DDSearchEngine searchEngine = null;
             try {
                 searchEngine = DDSearchEngine.create();
-                for (DElemAttribute attribute : attributes){
+                for (DElemAttribute attribute : attributes) {
 
-                    if (attribute.isMultipleValuesAllowed()){
+                    if (attribute.isMultipleValuesAllowed()) {
 
                         Vector existingValues = attribute.getValues();
-                        Vector possibleValues = searchEngine.getSimpleAttributeValues(attribute.getID());
+                        Collection possibleValues = null;
+                        if (StringUtils.equals(attribute.getDisplayType(), "select")) {
+                            possibleValues = getFixedValuedAttributeValues().get(attribute.getID());
+                        } else {
+                            possibleValues = searchEngine.getSimpleAttributeValues(attribute.getID());
+                        }
 
                         LinkedHashSet<String> values = new LinkedHashSet<String>();
-                        values.addAll(existingValues);
-                        values.addAll(possibleValues);
-                        possibleAttributeValues.put(attribute.getID(), values);
+                        if (existingValues != null) {
+                            values.addAll(existingValues);
+                        }
+                        if (possibleValues != null) {
+                            values.addAll(possibleValues);
+                        }
+                        multiValuedAttributeValues.put(attribute.getID(), values);
                     }
                 }
             } catch (SQLException e) {
                 throw new DAOException(e.getMessage(), e);
-            }
-            finally {
+            } finally {
                 searchEngine.close();
             }
         }
-        return possibleAttributeValues;
+        return multiValuedAttributeValues;
+    }
+
+    /**
+     * @return the fixedValuedAttributeValues
+     * @throws DAOException
+     */
+    public Map<String, Set<String>> getFixedValuedAttributeValues() throws DAOException {
+
+        if (fixedValuedAttributeValues == null) {
+            fixedValuedAttributeValues = new HashMap<String, Set<String>>();
+            DDSearchEngine searchEngine = null;
+            try {
+                searchEngine = DDSearchEngine.create();
+                for (DElemAttribute attribute : attributes) {
+
+                    if (StringUtils.equals(attribute.getDisplayType(), "select")) {
+
+                        LinkedHashSet<String> values = new LinkedHashSet<String>();
+                        Collection<FixedValue> fixedValues = searchEngine.getFixedValues(attribute.getID(), "attr");
+                        for (FixedValue fxv : fixedValues) {
+                            String value = fxv.getValue();
+                            if (value != null) {
+                                values.add(value);
+                            }
+                        }
+                        fixedValuedAttributeValues.put(attribute.getID(), values);
+                    }
+                }
+            } catch (SQLException e) {
+                throw new DAOException(e.getMessage(), e);
+            } finally {
+                searchEngine.close();
+            }
+        }
+        return fixedValuedAttributeValues;
+    }
+
+    /**
+     * @return the saveAttributeValues
+     */
+    public Map<Integer, Set<String>> getSaveAttributeValues() {
+
+        if (saveAttributeValues == null) {
+
+            saveAttributeValues = new HashMap<Integer, Set<String>>();
+
+            HttpServletRequest request = getContext().getRequest();
+            Enumeration paramNames = request.getParameterNames();
+            if (paramNames != null && paramNames.hasMoreElements()) {
+                do {
+                    String paramName = paramNames.nextElement().toString();
+                    Integer attributeId = null;
+                    if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
+                        attributeId =
+                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                    } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
+                        attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
+                    }
+
+                    if (attributeId != null) {
+                        String[] paramValues = request.getParameterValues(paramName);
+                        LinkedHashSet<String> valueSet = new LinkedHashSet<String>();
+                        for (int i = 0; i < paramValues.length; i++) {
+                            valueSet.add(paramValues[i]);
+                        }
+                        if (!valueSet.isEmpty()) {
+                            saveAttributeValues.put(attributeId, valueSet);
+                        }
+                    }
+                } while (paramNames.hasMoreElements());
+            }
+        }
+        return saveAttributeValues;
     }
 }

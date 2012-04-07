@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,java.util.*,java.io.*,eionet.util.sql.ConnectionUtil,eionet.util.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,java.util.*,java.io.*,eionet.util.sql.ConnectionUtil,eionet.util.*,eionet.web.action.*,net.sourceforge.stripes.action.UrlBinding"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
@@ -55,6 +55,10 @@
         request.setAttribute("DD_ERR_MSG", "Images not allowed for datasets. Use data model instead.");
         request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
         return;
+    }
+    else if (objType.equals(DElemAttribute.ParentType.SCHEMA_SET.toString())){
+        titleType = " schema set";
+        titleLink = request.getContextPath() + SchemaSetActionBean.class.getAnnotation(UrlBinding.class).value() + "?edit=&schemaSet.id=" + objID;
     }
 
     Connection conn = null;

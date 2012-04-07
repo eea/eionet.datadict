@@ -38,6 +38,7 @@ public class JstlFunctions {
 
     /** */
     private static final String INPUT_CHECKED_STRING = "checked=\"checked\"";
+    private static final String INPUT_SELECTED_STRING = "selected=\"selected\"";
 
     /**
      * Returns the value of {@link CRUser#hasPermission(HttpSession, String, String)}, using the given inputs.
@@ -113,6 +114,20 @@ public class JstlFunctions {
     public static String inputCheckedString(boolean condition){
         if (condition == true){
             return INPUT_CHECKED_STRING;
+        }
+        else{
+            return "";
+        }
+    }
+
+    /**
+     * 
+     * @param condition
+     * @return
+     */
+    public static String inputSelectedString(boolean condition){
+        if (condition == true){
+            return INPUT_SELECTED_STRING;
         }
         else{
             return "";

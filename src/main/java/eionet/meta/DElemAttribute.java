@@ -13,16 +13,19 @@ import eionet.util.Util;
  */
 public class DElemAttribute{
 
-    public static String TYPE_SIMPLE = "SIMPLE";
-    public static String TYPE_COMPLEX = "COMPLEX";
+    public static final String TYPE_SIMPLE = "SIMPLE";
+    public static final String TYPE_COMPLEX = "COMPLEX";
 
-    public static String FIELD_ID   = "fld-id";
-    public static String FIELD_NAME = "fld-name";
-    public static String FIELD_DEFN = "fld-defn";
-    public static String FIELD_VALUE = "fld-value";
+    public static final String FIELD_ID   = "fld-id";
+    public static final String FIELD_NAME = "fld-name";
+    public static final String FIELD_DEFN = "fld-defn";
+    public static final String FIELD_VALUE = "fld-value";
 
-    public static String FIELD_PRIORITY_HIGH = "0";
-    public static String FIELD_PRIORITY_LOW = "1";
+    public static final String FIELD_PRIORITY_HIGH = "0";
+    public static final String FIELD_PRIORITY_LOW = "1";
+
+    public static final String REQUEST_PARAM_PREFIX = "attr_";
+    public static final String REQUEST_PARAM_MULTI_PREFIX = "attr_mult_";
 
     private Hashtable typeWeights = new Hashtable();
 

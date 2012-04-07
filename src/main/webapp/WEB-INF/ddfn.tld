@@ -61,5 +61,16 @@
         <example>
         </example>
     </function>
+    
+    <function>
+        <description>
+            Returns selected="selected" if the given condition is true, otherwise returns an empty string.
+        </description>
+        <name>inputSelectedString</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>java.lang.String inputSelectedString(boolean)</function-signature>
+        <example>
+        </example>
+    </function>
 
 </taglib>

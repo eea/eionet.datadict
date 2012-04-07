@@ -5,9 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import eionet.meta.DElemAttribute;
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.SchemaSetDAO;
 import eionet.meta.dao.domain.SchemaSet;
@@ -149,5 +152,66 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
         schemaSet.setComment(rs.getString("COMMENT"));
         schemaSet.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
         return schemaSet;
+    }
+
+    /** */
+    private static final String UPDATE_SQL =
+        "update SCHEMA_SET set IDENTIFIER=?, REG_STATUS=?, DATE=now(), USER=?, COMMENT=ifnull(?,COMMENT) where SCHEMA_SET_ID=?";
+    private static final String DELETE_ATTRIBUTE_SQL =
+        "delete from ATTRIBUTE where M_ATTRIBUTE_ID=? and DATAELEM_ID=? and PARENT_TYPE=?";
+    private static final String INSERT_ATTRIBUTE_SQL =
+        "insert into ATTRIBUTE (M_ATTRIBUTE_ID, DATAELEM_ID, PARENT_TYPE, VALUE) values (?,?,?,?)";
+
+    /**
+     * @see eionet.meta.dao.SchemaSetDAO#save(eionet.meta.dao.domain.SchemaSet, Map)
+     */
+    @Override
+    public void save(SchemaSet schemaSet, Map<Integer, Set<String>> attributes) throws DAOException {
+
+        if (schemaSet == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            ArrayList<Object> params = new ArrayList<Object>();
+            params.add(schemaSet.getIdentifier());
+            params.add(schemaSet.getRegStatus().toString());
+            params.add(schemaSet.getUser());
+            params.add(schemaSet.getComment());
+            params.add(schemaSet.getId());
+
+            beginTransaction(conn);
+            SQL.executeUpdate(UPDATE_SQL, params, conn);
+
+            if (attributes != null) {
+                for (Map.Entry<Integer, Set<String>> entry : attributes.entrySet()) {
+                    Integer attrId = entry.getKey();
+                    Set<String> attrValues = entry.getValue();
+                    if (attrValues != null && !attrValues.isEmpty()) {
+
+                        params = new ArrayList<Object>();
+                        params.add(attrId);
+                        params.add(schemaSet.getId());
+                        params.add(DElemAttribute.ParentType.SCHEMA_SET.toString());
+                        SQL.executeUpdate(DELETE_ATTRIBUTE_SQL, params, conn);
+
+                        params.add("");
+                        for (String attrValue : attrValues){
+                            params.set(3, attrValue);
+                            SQL.executeUpdate(INSERT_ATTRIBUTE_SQL, params, conn);
+                        }
+                    }
+                }
+            }
+            commit(conn);
+        } catch (Exception e) {
+            rollback(conn);
+            throw new DAOException(e.getMessage(), e);
+        } finally {
+            close(conn);
+        }
     }
 }

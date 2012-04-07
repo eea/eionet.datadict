@@ -1,5 +1,8 @@
 package eionet.meta.dao;
 
+import java.util.Map;
+import java.util.Set;
+
 import eionet.meta.dao.domain.SchemaSet;
 
 /**
@@ -32,4 +35,12 @@ public interface SchemaSetDAO extends DAO{
      * @throws DAOException
      */
     SchemaSet getById(int id) throws DAOException;
+
+    /**
+     * 
+     * @param schemaSet
+     * @param attributes
+     * @throws DAOException
+     */
+    void save(SchemaSet schemaSet, Map<Integer, Set<String>> attributes) throws DAOException;
 }
