@@ -30,6 +30,8 @@ import org.displaytag.properties.SortOrderEnum;
  */
 public class PagedRequest {
 
+    public static int DEFAULT_PAGE_SIZE = 20;
+
     private int pageSize;
 
     private int pageNumber;

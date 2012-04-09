@@ -3,7 +3,7 @@ package eionet.meta.dao.domain;
 import java.util.Date;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid
  *
  */
@@ -21,7 +21,10 @@ public class SchemaSet {
     private String comment;
     private int checkedOutCopyId;
 
-    public SchemaSet(){
+    /** True, if the schema set is selected other actions. */
+    private boolean selected;
+
+    public SchemaSet() {
     }
 
     /**
@@ -32,7 +35,8 @@ public class SchemaSet {
     }
 
     /**
-     * @param id the id to set
+     * @param id
+     *            the id to set
      */
     public void setId(int id) {
         this.id = id;
@@ -46,7 +50,8 @@ public class SchemaSet {
     }
 
     /**
-     * @param identifier the identifier to set
+     * @param identifier
+     *            the identifier to set
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -60,7 +65,8 @@ public class SchemaSet {
     }
 
     /**
-     * @param continuityId the continuityId to set
+     * @param continuityId
+     *            the continuityId to set
      */
     public void setContinuityId(String continuityId) {
         this.continuityId = continuityId;
@@ -74,7 +80,8 @@ public class SchemaSet {
     }
 
     /**
-     * @param regStatus the regStatus to set
+     * @param regStatus
+     *            the regStatus to set
      */
     public void setRegStatus(RegStatus regStatus) {
         this.regStatus = regStatus;
@@ -88,7 +95,8 @@ public class SchemaSet {
     }
 
     /**
-     * @param isWorkingCopy the isWorkingCopy to set
+     * @param isWorkingCopy
+     *            the isWorkingCopy to set
      */
     public void setWorkingCopy(boolean isWorkingCopy) {
         this.isWorkingCopy = isWorkingCopy;
@@ -102,7 +110,8 @@ public class SchemaSet {
     }
 
     /**
-     * @param workingUser the workingUser to set
+     * @param workingUser
+     *            the workingUser to set
      */
     public void setWorkingUser(String workingUser) {
         this.workingUser = workingUser;
@@ -116,7 +125,8 @@ public class SchemaSet {
     }
 
     /**
-     * @param date the date to set
+     * @param date
+     *            the date to set
      */
     public void setDate(Date date) {
         this.date = date;
@@ -130,7 +140,8 @@ public class SchemaSet {
     }
 
     /**
-     * @param comment the comment to set
+     * @param comment
+     *            the comment to set
      */
     public void setComment(String comment) {
         this.comment = comment;
@@ -144,14 +155,15 @@ public class SchemaSet {
     }
 
     /**
-     * @param checkedOutCopyId the checkedOutCopyId to set
+     * @param checkedOutCopyId
+     *            the checkedOutCopyId to set
      */
     public void setCheckedOutCopyId(int checkedOutCopyId) {
         this.checkedOutCopyId = checkedOutCopyId;
     }
 
     /**
-     * 
+     *
      * @author Jaanus Heinlaid
      *
      */
@@ -162,35 +174,36 @@ public class SchemaSet {
         // also be used for Schemas.
 
         /** */
-        DRAFT("Draft"),RELEASED("Released");
+        DRAFT("Draft"), RELEASED("Released");
 
         /** */
         String s;
 
         /**
-         * 
+         *
          * @param s
          */
-        RegStatus(String s){
+        RegStatus(String s) {
             this.s = s;
         }
 
         /*
          * (non-Javadoc)
+         *
          * @see java.lang.Enum#toString()
          */
-        public String toString(){
+        public String toString() {
             return s;
         }
 
         /**
-         * 
+         *
          * @param s
          * @return
          */
-        public static RegStatus fromString(String s){
-            for (RegStatus regStatus : RegStatus.values()){
-                if (regStatus.toString().equals(s)){
+        public static RegStatus fromString(String s) {
+            for (RegStatus regStatus : RegStatus.values()) {
+                if (regStatus.toString().equals(s)) {
                     return regStatus;
                 }
             }
@@ -198,17 +211,18 @@ public class SchemaSet {
         }
 
         /**
-         * 
+         *
          * @return
          */
-        public static RegStatus getDefault(){
+        public static RegStatus getDefault() {
             return RegStatus.DRAFT;
         }
     }
 
-    private void test(){
+    private void test() {
 
     }
+
     public static void main(String[] args) {
         SchemaSet schema = new SchemaSet();
     }
@@ -221,9 +235,26 @@ public class SchemaSet {
     }
 
     /**
-     * @param user the user to set
+     * @param user
+     *            the user to set
      */
     public void setUser(String user) {
         this.user = user;
     }
+
+    /**
+     * @return the selected
+     */
+    public boolean isSelected() {
+        return selected;
+    }
+
+    /**
+     * @param selected
+     *            the selected to set
+     */
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
 }

@@ -25,7 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcDaoSupport;
 
 import eionet.meta.dao.IGeneralDao;
 
@@ -34,7 +34,7 @@ import eionet.meta.dao.IGeneralDao;
  *
  * @author Juhan Voolaid
  */
-public abstract class GeneralDAOImpl implements IGeneralDao {
+public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implements IGeneralDao {
 
     /**
      * Data source.
@@ -42,13 +42,10 @@ public abstract class GeneralDAOImpl implements IGeneralDao {
     @Autowired
     private DataSource dataSource;
 
-    // protected NamedParameterJdbcTemplate jdbcTemplate;
-    protected JdbcTemplate jdbcTemplate;
-
     /** Initializes the needed objects after bean creation */
     @SuppressWarnings({"unused"})
     @PostConstruct
     private void init() {
-        jdbcTemplate = new JdbcTemplate(dataSource);
+        super.setDataSource(dataSource);
     }
 }

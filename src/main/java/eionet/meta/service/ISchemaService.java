@@ -21,6 +21,8 @@
 
 package eionet.meta.service;
 
+import java.util.List;
+
 import eionet.meta.service.data.PagedRequest;
 import eionet.meta.service.data.SchemaSetsResult;
 
@@ -38,4 +40,12 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     SchemaSetsResult getSchemaSets(PagedRequest pagedRequest) throws ServiceException;
+
+    /**
+     * Deletes SchemaSets that have property "selected=true".
+     *
+     * @param schemaSets
+     * @throws ServiceException
+     */
+    void deleteSchemaSets(List<Integer> ids) throws ServiceException;
 }

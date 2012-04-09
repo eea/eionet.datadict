@@ -23,7 +23,9 @@ package eionet.meta.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -52,7 +54,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     public SchemaSetsResult getSchemaSets(PagedRequest pagedRequest) {
 
         String totalSql = "SELECT COUNT(*) FROM SCHEMA_SET";
-        int totalItems = jdbcTemplate.queryForInt(totalSql);
+        int totalItems = getJdbcTemplate().queryForInt(totalSql);
 
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ");
@@ -68,7 +70,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         }
         sql.append("LIMIT ").append(pagedRequest.getOffset()).append(",").append(pagedRequest.getPageSize());
 
-        List<SchemaSet> items = jdbcTemplate.query(sql.toString(), new RowMapper<SchemaSet>() {
+        List<SchemaSet> items = getJdbcTemplate().query(sql.toString(), new RowMapper<SchemaSet>() {
             public SchemaSet mapRow(ResultSet rs, int rowNum) throws SQLException {
                 SchemaSet ss = new SchemaSet();
                 ss.setId(rs.getInt("SCHEMA_SET_ID"));
@@ -89,6 +91,15 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
         SchemaSetsResult result = new SchemaSetsResult(items, totalItems, pagedRequest);
         return result;
+    }
+
+    @Override
+    public void deleteSchemaSets(List<Integer> ids) {
+        String sql = "DELETE FROM SCHEMA_SET WHERE SCHEMA_SET_ID IN (:ids)";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ids", ids);
+
+        getNamedParameterJdbcTemplate().update(sql, parameters);
     }
 
 }

@@ -21,6 +21,8 @@
 
 package eionet.meta.dao;
 
+import java.util.List;
+
 import eionet.meta.service.data.PagedRequest;
 import eionet.meta.service.data.SchemaSetsResult;
 
@@ -31,5 +33,19 @@ import eionet.meta.service.data.SchemaSetsResult;
  */
 public interface ISchemaSetDAO {
 
-    SchemaSetsResult getSchemaSets(PagedRequest pagedRequest) throws DAOException;
+    /**
+     * Returns paged schema sets result object.
+     *
+     * @param pagedRequest
+     * @return
+     * @throws DAOException
+     */
+    SchemaSetsResult getSchemaSets(PagedRequest pagedRequest);
+
+    /**
+     * Deletes schema set rows with given ids.
+     *
+     * @param ids
+     */
+    void deleteSchemaSets(List<Integer> ids);
 }

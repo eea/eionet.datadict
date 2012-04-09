@@ -21,6 +21,8 @@
 
 package eionet.meta.service;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,9 +56,23 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaSetDAO.getSchemaSets(pagedRequest);
         } catch (Exception e) {
-            LOGGER.error("Failed to get schemas sets", e);
             throw new ServiceException("Failed to get schema sets", e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws ServiceException
+     */
+    @Override
+    public void deleteSchemaSets(List<Integer> ids) throws ServiceException {
+        try {
+            schemaSetDAO.deleteSchemaSets(ids);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to delete schema sets", e);
+        }
+
     }
 
     /**

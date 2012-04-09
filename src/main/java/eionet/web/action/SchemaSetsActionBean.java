@@ -21,8 +21,11 @@
 
 package eionet.web.action;
 
+import java.util.List;
+
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
@@ -50,6 +53,9 @@ public class SchemaSetsActionBean extends AbstractActionBean {
     /** Schemasets result. */
     private SchemaSetsResult schemaSetsResult;
 
+    /** Selected ids. */
+    private List<Integer> selected;
+
     /** Table page number. */
     private int page = 1;
 
@@ -61,10 +67,10 @@ public class SchemaSetsActionBean extends AbstractActionBean {
 
     @DefaultHandler
     public Resolution viewList() throws ServiceException {
-        PagedRequest pagedRequest = new PagedRequest(page, 2);
+        PagedRequest pagedRequest = new PagedRequest(page, PagedRequest.DEFAULT_PAGE_SIZE);
         pagedRequest.setSortProperty(sort);
         if (StringUtils.isNotEmpty(sort)) {
-            if (sort.equals("asc")) {
+            if (dir.equals("asc")) {
                 pagedRequest.setSortOrder(SortOrderEnum.ASCENDING);
             } else {
                 pagedRequest.setSortOrder(SortOrderEnum.DESCENDING);
@@ -73,6 +79,17 @@ public class SchemaSetsActionBean extends AbstractActionBean {
 
         schemaSetsResult = schemaService.getSchemaSets(pagedRequest);
         return new ForwardResolution("/pages/schemaSets/viewSchemaSets.jsp");
+    }
+
+    /**
+     * Deletes schema sets.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution delete() throws ServiceException {
+        schemaService.deleteSchemaSets(selected);
+        return new RedirectResolution(SchemaSetsActionBean.class);
     }
 
     /**
@@ -133,6 +150,21 @@ public class SchemaSetsActionBean extends AbstractActionBean {
      */
     public void setDir(String dir) {
         this.dir = dir;
+    }
+
+    /**
+     * @return the selected
+     */
+    public List<Integer> getSelected() {
+        return selected;
+    }
+
+    /**
+     * @param selected
+     *            the selected to set
+     */
+    public void setSelected(List<Integer> selected) {
+        this.selected = selected;
     }
 
 }
