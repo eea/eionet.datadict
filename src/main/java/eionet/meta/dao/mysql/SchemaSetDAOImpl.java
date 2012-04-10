@@ -79,8 +79,8 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
                 ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                 ss.setWorkingUser(rs.getString("WORKING_USER"));
-                ss.setDate(rs.getDate("DATE_MODIFIED"));
-                ss.setUser(rs.getString("USER_MODIFIED"));
+                ss.setDateModified(rs.getDate("DATE_MODIFIED"));
+                ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
                 return ss;

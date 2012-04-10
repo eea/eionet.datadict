@@ -3,9 +3,9 @@ package eionet.meta.dao.domain;
 import java.util.Date;
 
 /**
- *
+ * 
  * @author Jaanus Heinlaid
- *
+ * 
  */
 public class SchemaSet {
 
@@ -16,8 +16,8 @@ public class SchemaSet {
     private RegStatus regStatus = RegStatus.DRAFT;
     private boolean isWorkingCopy;
     private String workingUser;
-    private Date date;
-    private String user;
+    private Date dateModified;
+    private String userModified;
     private String comment;
     private int checkedOutCopyId;
 
@@ -95,8 +95,7 @@ public class SchemaSet {
     }
 
     /**
-     * @param isWorkingCopy
-     *            the isWorkingCopy to set
+     * @param isWorkingCopy the isWorkingCopy to set
      */
     public void setWorkingCopy(boolean isWorkingCopy) {
         this.isWorkingCopy = isWorkingCopy;
@@ -110,8 +109,7 @@ public class SchemaSet {
     }
 
     /**
-     * @param workingUser
-     *            the workingUser to set
+     * @param workingUser the workingUser to set
      */
     public void setWorkingUser(String workingUser) {
         this.workingUser = workingUser;
@@ -120,16 +118,16 @@ public class SchemaSet {
     /**
      * @return the date
      */
-    public Date getDate() {
-        return date;
+    public Date getDateModified() {
+        return dateModified;
     }
 
     /**
-     * @param date
+     * @param dateModified
      *            the date to set
      */
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
     }
 
     /**
@@ -163,9 +161,9 @@ public class SchemaSet {
     }
 
     /**
-     *
+     * 
      * @author Jaanus Heinlaid
-     *
+     * 
      */
     public enum RegStatus {
 
@@ -180,7 +178,7 @@ public class SchemaSet {
         String s;
 
         /**
-         *
+         * 
          * @param s
          */
         RegStatus(String s) {
@@ -189,7 +187,7 @@ public class SchemaSet {
 
         /*
          * (non-Javadoc)
-         *
+         * 
          * @see java.lang.Enum#toString()
          */
         public String toString() {
@@ -197,7 +195,7 @@ public class SchemaSet {
         }
 
         /**
-         *
+         * 
          * @param s
          * @return
          */
@@ -211,7 +209,7 @@ public class SchemaSet {
         }
 
         /**
-         *
+         * 
          * @return
          */
         public static RegStatus getDefault() {
@@ -230,16 +228,16 @@ public class SchemaSet {
     /**
      * @return the user
      */
-    public String getUser() {
-        return user;
+    public String getUserModified() {
+        return userModified;
     }
 
     /**
-     * @param user
+     * @param userModified
      *            the user to set
      */
-    public void setUser(String user) {
-        this.user = user;
+    public void setUserModified(String userModified) {
+        this.userModified = userModified;
     }
 
     /**

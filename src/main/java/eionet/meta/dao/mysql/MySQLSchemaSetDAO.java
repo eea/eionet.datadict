@@ -27,8 +27,8 @@ import eionet.util.sql.SQL;
 public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
 
     /** */
-    private static final String INSERT_SQL = "insert into SCHEMA_SET (IDENTIFIER, CONTINUITY_ID, REG_STATUS, "
-        + "WORKING_COPY, WORKING_USER, DATE, USER, COMMENT, CHECKEDOUT_COPY_ID) " + "values (?,?,?,?,?,now(),?,?,?)";
+    private static final String INSERT_SQL = "insert into T_SCHEMA_SET (IDENTIFIER, CONTINUITY_ID, REG_STATUS, "
+        + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID) " + "values (?,?,?,?,?,now(),?,?,?)";
 
     /**
      * @see eionet.meta.dao.SchemaSetDAO#add(eionet.meta.dao.domain.SchemaSet)
@@ -54,7 +54,7 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
             params.add(schemaSet.getRegStatus().toString());
             params.add(schemaSet.isWorkingCopy());
             params.add(schemaSet.getWorkingUser());
-            params.add(schemaSet.getUser());
+            params.add(schemaSet.getUserModified());
             params.add(schemaSet.getComment());
             params.add(schemaSet.getCheckedOutCopyId());
 
@@ -69,7 +69,7 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
     }
 
     /** */
-    private static final String GET_BY_IDENTIFIER_SQL = "select * from SCHEMA_SET where IDENTIFIER=?";
+    private static final String GET_BY_IDENTIFIER_SQL = "select * from T_SCHEMA_SET where IDENTIFIER=?";
 
     /**
      * @see eionet.meta.dao.SchemaSetDAO#getByIdentifier(java.lang.String)
@@ -84,7 +84,7 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
     }
 
     /** */
-    private static final String GET_BY_ID_SQL = "select * from SCHEMA_SET where SCHEMA_SET_ID=?";
+    private static final String GET_BY_ID_SQL = "select * from T_SCHEMA_SET where SCHEMA_SET_ID=?";
 
     /**
      * @see eionet.meta.dao.SchemaSetDAO#getById(int)
@@ -142,8 +142,8 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
         schemaSet.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
         schemaSet.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
         schemaSet.setWorkingUser(rs.getString("WORKING_USER"));
-        schemaSet.setDate(rs.getDate("DATE"));
-        schemaSet.setUser(rs.getString("USER"));
+        schemaSet.setDateModified(rs.getDate("DATE_MODIFIED"));
+        schemaSet.setUserModified(rs.getString("USER_MODIFIED"));
         schemaSet.setComment(rs.getString("COMMENT"));
         schemaSet.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
         return schemaSet;
@@ -151,7 +151,7 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
 
     /** */
     private static final String UPDATE_SQL =
-        "update SCHEMA_SET set IDENTIFIER=?, REG_STATUS=?, DATE=now(), USER=?, COMMENT=ifnull(?,COMMENT) where SCHEMA_SET_ID=?";
+        "update T_SCHEMA_SET set IDENTIFIER=?, REG_STATUS=?, DATE_MODIFIED=now(), USER_MODIFIED=?, COMMENT=ifnull(?,COMMENT) where SCHEMA_SET_ID=?";
     private static final String DELETE_ATTRIBUTE_SQL =
         "delete from ATTRIBUTE where M_ATTRIBUTE_ID=? and DATAELEM_ID=? and PARENT_TYPE=?";
     private static final String INSERT_ATTRIBUTE_SQL =
@@ -174,7 +174,7 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
             ArrayList<Object> params = new ArrayList<Object>();
             params.add(schemaSet.getIdentifier());
             params.add(schemaSet.getRegStatus().toString());
-            params.add(schemaSet.getUser());
+            params.add(schemaSet.getUserModified());
             params.add(schemaSet.getComment());
             params.add(schemaSet.getId());
 
@@ -211,9 +211,9 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
     }
 
     /** */
-    private static final String UNLOCK_CHECKED_OUT_COPY_SQL = "update SCHEMA_SET set WORKING_USER=NULL where SCHEMA_SET_ID=?";
+    private static final String UNLOCK_CHECKED_OUT_COPY_SQL = "update T_SCHEMA_SET set WORKING_USER=NULL where SCHEMA_SET_ID=?";
     private static final String UNLOCK_WORKING_COPY_SQL =
-        "update SCHEMA_SET set WORKING_USER=NULL, WORKING_COPY=0, DATE=now(), USER=?, COMMENT=? where SCHEMA_SET_ID=?";
+        "update T_SCHEMA_SET set WORKING_USER=NULL, WORKING_COPY=0, DATE_MODIFIED=now(), USER_MODIFIED=?, COMMENT=? where SCHEMA_SET_ID=?";
 
     /**
      * @see eionet.meta.dao.SchemaSetDAO#checkIn(int, String, String)

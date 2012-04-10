@@ -97,7 +97,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         Resolution resolution = new ForwardResolution(ADD_SCHEMA_SET_JSP);
         if (!isGetOrHeadRequest()) {
             schemaSet.setWorkingUser(getUserName());
-            schemaSet.setUser(getUserName());
+            schemaSet.setUserModified(getUserName());
             SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
             int schemaSetId = dao.add(schemaSet);
             resolution = new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSetId);
@@ -185,7 +185,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         dumpRequestParameters();
 
-        schemaSet.setUser(getUserName());
+        schemaSet.setUserModified(getUserName());
         SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
         dao.save(schemaSet, getSaveAttributeValues());
     }
