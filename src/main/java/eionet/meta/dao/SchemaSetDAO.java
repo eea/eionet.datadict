@@ -43,4 +43,13 @@ public interface SchemaSetDAO extends DAO{
      * @throws DAOException
      */
     void save(SchemaSet schemaSet, Map<Integer, Set<String>> attributes) throws DAOException;
+
+    /**
+     * 
+     * @param id
+     * @param userName TODO
+     * @param comment TODO
+     * @throws DAOException
+     */
+    void checkIn(int id, String userName, String comment) throws DAOException;
 }

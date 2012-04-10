@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -76,29 +77,10 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
     @Override
     public SchemaSet getByIdentifier(String identifier) throws DAOException {
 
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        try {
-            conn = getConnection();
+        ArrayList<Object> params = new ArrayList<Object>();
+        params.add(identifier);
 
-            ArrayList<Object> params = new ArrayList<Object>();
-            params.add(identifier);
-
-            pstmt = SQL.preparedStatement(GET_BY_IDENTIFIER_SQL, params, conn);
-            rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return readSchemaSet(rs);
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            throw new DAOException(e.getMessage(), e);
-        } finally {
-            close(rs);
-            close(pstmt);
-            close(conn);
-        }
+        return loadSchemaSet(GET_BY_IDENTIFIER_SQL, params);
     }
 
     /** */
@@ -109,16 +91,29 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
      */
     @Override
     public SchemaSet getById(int id) throws DAOException {
+
+        ArrayList<Object> params = new ArrayList<Object>();
+        params.add(id);
+
+        return loadSchemaSet(GET_BY_ID_SQL, params);
+    }
+
+    /**
+     * 
+     * @param parameterizedSQL
+     * @param params
+     * @return
+     * @throws DAOException
+     */
+    private SchemaSet loadSchemaSet(String parameterizedSQL, Collection<?> params) throws DAOException {
+
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
             conn = getConnection();
 
-            ArrayList<Object> params = new ArrayList<Object>();
-            params.add(id);
-
-            pstmt = SQL.preparedStatement(GET_BY_ID_SQL, params, conn);
+            pstmt = SQL.preparedStatement(parameterizedSQL, params, conn);
             rs = pstmt.executeQuery();
             if (rs.next()) {
                 return readSchemaSet(rs);
@@ -199,7 +194,7 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
                         SQL.executeUpdate(DELETE_ATTRIBUTE_SQL, params, conn);
 
                         params.add("");
-                        for (String attrValue : attrValues){
+                        for (String attrValue : attrValues) {
                             params.set(3, attrValue);
                             SQL.executeUpdate(INSERT_ATTRIBUTE_SQL, params, conn);
                         }
@@ -207,6 +202,65 @@ public class MySQLSchemaSetDAO extends MySQLBaseDAO implements SchemaSetDAO {
                 }
             }
             commit(conn);
+        } catch (Exception e) {
+            rollback(conn);
+            throw new DAOException(e.getMessage(), e);
+        } finally {
+            close(conn);
+        }
+    }
+
+    /** */
+    private static final String UNLOCK_CHECKED_OUT_COPY_SQL = "update SCHEMA_SET set WORKING_USER=NULL where SCHEMA_SET_ID=?";
+    private static final String UNLOCK_WORKING_COPY_SQL =
+        "update SCHEMA_SET set WORKING_USER=NULL, WORKING_COPY=0, DATE=now(), USER=?, COMMENT=? where SCHEMA_SET_ID=?";
+
+    /**
+     * @see eionet.meta.dao.SchemaSetDAO#checkIn(int, String, String)
+     */
+    @Override
+    public void checkIn(int id, String userName, String comment) throws DAOException {
+
+        if (StringUtils.isBlank(userName)){
+            throw new IllegalArgumentException("User name must not be blank!");
+        }
+
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            ArrayList<Object> params = new ArrayList<Object>();
+            params.add(id);
+
+            beginTransaction(conn);
+            SchemaSet schemaSet = loadSchemaSet(GET_BY_ID_SQL, params);
+            if (schemaSet == null) {
+                throw new DAOException("Could not find a schema set by this id: " + id);
+            }
+            else if (!schemaSet.isWorkingCopy()){
+                throw new DAOException("Not a working copy, cannot execute check-in!");
+            }
+            else if (!StringUtils.equals(userName, schemaSet.getWorkingUser())){
+                throw new DAOException("Check-in user is not the current working user!");
+            }
+
+            int checkedOutCopyId = schemaSet.getCheckedOutCopyId();
+            if (checkedOutCopyId > 0) {
+                params = new ArrayList<Object>();
+                params.add(checkedOutCopyId);
+                SQL.executeUpdate(UNLOCK_CHECKED_OUT_COPY_SQL, params, conn);
+            }
+
+            params = new ArrayList<Object>();
+            params.add(userName);
+            params.add(comment);
+            params.add(id);
+            SQL.executeUpdate(UNLOCK_WORKING_COPY_SQL, params, conn);
+
+            commit(conn);
+        } catch (DAOException e) {
+            rollback(conn);
+            throw e;
         } catch (Exception e) {
             rollback(conn);
             throw new DAOException(e.getMessage(), e);

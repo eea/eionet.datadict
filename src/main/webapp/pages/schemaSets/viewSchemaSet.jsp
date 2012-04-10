@@ -54,7 +54,7 @@
                         <c:if test="${actionBean.userWorkingCopy}">
                             <span class="caution" title="Checked out on ${actionBean.schemaSet.date}">(Working copy)</span>
                         </c:if>
-                        <c:if test="${not empty actionBean.userName && actionBean.userName!=actionBean.schemaSet.workingUser}">
+                        <c:if test="${not empty actionBean.userName && not empty actionBean.schemaSet.workingUser}">
                             <span class="caution">(checked out by <em>${actionBean.schemaSet.workingUser}</em>)</span>
                         </c:if>
                     </td>

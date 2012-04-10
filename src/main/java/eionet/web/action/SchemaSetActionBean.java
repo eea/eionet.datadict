@@ -18,7 +18,6 @@ import net.sourceforge.stripes.action.HandlesEvent;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.util.UrlBuilder;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -30,6 +29,7 @@ import eionet.meta.dao.DAOException;
 import eionet.meta.dao.DAOFactory;
 import eionet.meta.dao.SchemaSetDAO;
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.util.UrlBuilderExt;
 import eionet.web.util.DropdownOperation;
 
 /**
@@ -57,6 +57,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     private Map<String, Set<String>> fixedValuedAttributeValues;
     private Map<Integer, Set<String>> saveAttributeValues;
 
+    /** Check-in comment. */
+    private String comment;
+
     /**
      * 
      * @return
@@ -82,18 +85,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         loadSchemaSet();
         return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
-    }
-
-    /**
-     * 
-     * @throws DAOException
-     */
-    private void loadSchemaSet() throws DAOException {
-        SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
-        this.schemaSet = dao.getById(schemaSet.getId());
-        if (schemaSet == null) {
-            addSystemMessage("No schema set found with the given id: " + schemaSet.getId());
-        }
     }
 
     /**
@@ -142,6 +133,48 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution cancel() throws DAOException {
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public Resolution checkIn() throws DAOException {
+
+        SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
+        dao.checkIn(schemaSet.getId(), getUserName(), comment);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public Resolution checkOut() throws DAOException {
+        throw new UnsupportedOperationException("Action not impemented yet!");
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public Resolution delete() throws DAOException {
+        throw new UnsupportedOperationException("Action not impemented yet!");
+    }
+
+    /**
+     * 
+     * @throws DAOException
+     */
+    private void loadSchemaSet() throws DAOException {
+        SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
+        this.schemaSet = dao.getById(schemaSet.getId());
+        if (schemaSet == null) {
+            addSystemMessage("No schema set found with the given id: " + schemaSet.getId());
+        }
     }
 
     /**
@@ -224,22 +257,21 @@ public class SchemaSetActionBean extends AbstractActionBean {
                         // Is my working copy
                         if (StringUtils.equals(user.getUserName(), schemaSet.getWorkingUser())) {
 
-                            UrlBuilder urlBuilder =
-                                new UrlBuilder(getContext().getLocale(), getContextPath() + getUrlBinding(), true);
+                            UrlBuilderExt urlBuilder = new UrlBuilderExt(getContext(), getContextPath() + getUrlBinding(), true);
                             urlBuilder.addParameter("schemaSet.id", schemaSet.getId());
 
                             dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("edit").toString(), "Edit metadata"));
-                            dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkin").toString(), "Check in"));
-                            dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkout").toString(),
+                            dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkIn").toString(), "Check in"));
+                            dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkOut").toString(),
                             "Undo checkout"));
                         }
                     } else {
-                        UrlBuilder urlBuilder = new UrlBuilder(getContext().getLocale(), getContextPath() + getUrlBinding(), true);
+                        UrlBuilderExt urlBuilder = new UrlBuilderExt(getContext(), getContextPath() + getUrlBinding(), true);
                         urlBuilder.addParameter("schemaSet.id", schemaSet.getId());
 
                         dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("edit").toString(), "New version"));
-                        dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkin").toString(), "Check out"));
-                        dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkout").toString(), "Delete"));
+                        dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkOut").toString(), "Check out"));
+                        dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("delete").toString(), "Delete"));
                     }
                 }
             }
