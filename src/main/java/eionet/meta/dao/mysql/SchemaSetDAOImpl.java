@@ -53,13 +53,13 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     @Override
     public SchemaSetsResult getSchemaSets(PagedRequest pagedRequest) {
 
-        String totalSql = "SELECT COUNT(*) FROM SCHEMA_SET";
+        String totalSql = "SELECT COUNT(*) FROM T_SCHEMA_SET";
         int totalItems = getJdbcTemplate().queryForInt(totalSql);
 
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ");
-        sql.append("WORKING_USER, DATE, USER, COMMENT, CHECKEDOUT_COPY_ID ");
-        sql.append("FROM SCHEMA_SET ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID ");
+        sql.append("FROM T_SCHEMA_SET ");
         if (StringUtils.isNotEmpty(pagedRequest.getSortProperty())) {
             sql.append("ORDER BY ").append(pagedRequest.getSortProperty());
             if (SortOrderEnum.ASCENDING.equals(pagedRequest.getSortOrder())) {
@@ -79,8 +79,8 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
                 ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                 ss.setWorkingUser(rs.getString("WORKING_USER"));
-                ss.setDate(rs.getDate("DATE"));
-                ss.setUser(rs.getString("USER"));
+                ss.setDate(rs.getDate("DATE_MODIFIED"));
+                ss.setUser(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
                 return ss;
@@ -95,7 +95,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
     @Override
     public void deleteSchemaSets(List<Integer> ids) {
-        String sql = "DELETE FROM SCHEMA_SET WHERE SCHEMA_SET_ID IN (:ids)";
+        String sql = "DELETE FROM T_SCHEMA_SET WHERE SCHEMA_SET_ID IN (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
 

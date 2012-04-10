@@ -37,6 +37,7 @@ import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.PagedRequest;
 import eionet.meta.service.data.SchemaSetsResult;
+import eionet.util.SecurityUtil;
 
 /**
  * Schema sets action bean.
@@ -88,8 +89,23 @@ public class SchemaSetsActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution delete() throws ServiceException {
-        schemaService.deleteSchemaSets(selected);
+        if (isDeletePermission()) {
+            schemaService.deleteSchemaSets(selected);
+        } else {
+            addSystemMessage("Cannot delete. No permission.");
+        }
         return new RedirectResolution(SchemaSetsActionBean.class);
+    }
+
+    public boolean isDeletePermission() {
+        if (getUser() != null) {
+            try {
+                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "u");
+            } catch (Exception e) {
+                LOGGER.error("Failed to read user permission", e);
+            }
+        }
+        return false;
     }
 
     /**

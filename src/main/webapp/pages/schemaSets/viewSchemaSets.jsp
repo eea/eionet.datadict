@@ -13,9 +13,13 @@
 
         <stripes:form action="/schemaSets.action" method="post">
             <display:table name="actionBean.schemaSetsResult" class="sortable" id="item" requestURI="/schemaSets.action">
+
+                <c:if test="${actionBean.deletePermission}">
                 <display:column title="" sortable="true" sortName="sortName" sortProperty="identifier">
                     <stripes:checkbox name="selected" value="${item.id}" />
                 </display:column>
+                </c:if>
+
                 <display:column title="Identifier" sortable="true" sortName="sortName" sortProperty="identifier">
                     <stripes:link href="/schemaSet.action">
                         <stripes:param name="schemaSet.id" value="${item.id}" />
@@ -26,7 +30,11 @@
                     <c:out value="${item.regStatus}" />
                 </display:column>
             </display:table>
-            <stripes:submit name="delete" value="Delete" />
+
+            <c:if test="${actionBean.deletePermission && not empty actionBean.schemaSetsResult.list}">
+                <stripes:submit name="delete" value="Delete" />
+            </c:if>
+
         </stripes:form>
 
     </stripes:layout-component>
