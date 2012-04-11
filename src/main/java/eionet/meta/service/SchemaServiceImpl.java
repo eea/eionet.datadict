@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import eionet.meta.dao.ISchemaSetDAO;
 import eionet.meta.service.data.PagedRequest;
@@ -66,8 +67,10 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ServiceException
      */
     @Override
+    @Transactional(rollbackFor = ServiceException.class)
     public void deleteSchemaSets(List<Integer> ids) throws ServiceException {
         try {
+            schemaSetDAO.deleteAttributes(ids);
             schemaSetDAO.deleteSchemaSets(ids);
         } catch (Exception e) {
             throw new ServiceException("Failed to delete schema sets", e);

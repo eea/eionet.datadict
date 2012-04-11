@@ -48,4 +48,11 @@ public interface ISchemaSetDAO {
      * @param ids
      */
     void deleteSchemaSets(List<Integer> ids);
+
+    /**
+     * Deletes the attributes of the schema sets with given ids.
+     *
+     * @param ids
+     */
+    void deleteAttributes(List<Integer> ids);
 }

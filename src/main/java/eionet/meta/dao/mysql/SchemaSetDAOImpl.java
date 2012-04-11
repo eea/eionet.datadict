@@ -102,4 +102,14 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         getNamedParameterJdbcTemplate().update(sql, parameters);
     }
 
+    @Override
+    public void deleteAttributes(List<Integer> ids) {
+        String sql = "DELETE FROM ATTRIBUTE WHERE DATAELEM_ID IN (:ids) AND PARENT_TYPE = :parentType";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ids", ids);
+        parameters.put("parentType", "scs");
+
+        getNamedParameterJdbcTemplate().update(sql, parameters);
+    }
+
 }
