@@ -21,6 +21,9 @@
             }
             %>
             <li><a href="<%=request.getContextPath()%>/subscribe.jsp">Subscribe</a></li><%
+            if (SecurityUtil.hasPerm(_user.getUserName(), "/schemasets", "v")){ %>
+	            <li><a href="<%=request.getContextPath()%>/schemaSets.action">Schema sets</a></li> <%
+	        } 
         }
         %>
     </ul>

@@ -5,7 +5,7 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Search tables">
 
     <stripes:layout-component name="contents">
-    <h1>Schema set</h1>
+    <h1>Create schema set</h1>
 
     <stripes:form method="post" beanclass="eionet.web.action.SchemaSetActionBean">
         <div id="outerframe">

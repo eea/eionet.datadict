@@ -25,6 +25,7 @@ package eionet.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -42,9 +43,8 @@ import eionet.meta.DDUser;
 import eionet.meta.filters.CASFilterConfig;
 
 /**
- * This is a class containing several utility methods for keeping
- * security.
- *
+ * This is a class containing several utility methods for keeping security.
+ * 
  * @author Jaanus Heinlaid
  */
 public class SecurityUtil {
@@ -57,106 +57,104 @@ public class SecurityUtil {
     private static String casServerName;
 
     /**
-    * Returns current user, or null, if the current session
-    * does not have user attached to it.
-    */
+     * Returns current user, or null, if the current session does not have user attached to it.
+     */
     public static final DDUser getUser(HttpServletRequest request) {
 
         HttpSession session = request.getSession();
-        DDUser user = session==null ? null : (DDUser)session.getAttribute(REMOTEUSER);
+        DDUser user = session == null ? null : (DDUser) session.getAttribute(REMOTEUSER);
 
-        if (user==null) {
-            String casUserName = session==null ? null : (String)session.getAttribute(CASFilter.CAS_FILTER_USER);
-            if (casUserName!=null) {
+        if (user == null) {
+            String casUserName = session == null ? null : (String) session.getAttribute(CASFilter.CAS_FILTER_USER);
+            if (casUserName != null) {
                 user = DDCASUser.create(casUserName);
                 session.setAttribute(REMOTEUSER, user);
             }
-        }
-        else if (user instanceof DDCASUser) {
-            String casUserName = (String)session.getAttribute(CASFilter.CAS_FILTER_USER);
-            if (casUserName==null) {
+        } else if (user instanceof DDCASUser) {
+            String casUserName = (String) session.getAttribute(CASFilter.CAS_FILTER_USER);
+            if (casUserName == null) {
                 user.invalidate();
                 user = null;
                 session.removeAttribute(REMOTEUSER);
-            }
-            else if (!casUserName.equals(user.getUserName())) {
+            } else if (!casUserName.equals(user.getUserName())) {
                 user.invalidate();
                 user = DDCASUser.create(casUserName);
                 session.setAttribute(REMOTEUSER, user);
             }
         }
 
-        if (user != null)
+        if (user != null) {
             return user.isAuthentic() ? user : null;
-        else
+        } else {
             return null;
+        }
     }
 
     /**
-     *
+     * 
      * @param usr
      * @param aclPath
      * @param prm
      * @return
      * @throws Exception
      */
-    public static boolean hasPerm(String usr, String aclPath, String prm)
-                                                            throws Exception {
-        if (!aclPath.startsWith("/")) return false;
+    public static boolean hasPerm(String usr, String aclPath, String prm) throws Exception {
+        if (!aclPath.startsWith("/")) {
+            return false;
+        }
 
         boolean has = false;
         AccessControlListIF acl = null;
-        int i =
-        aclPath.length()<=1 ? -1 : aclPath.indexOf("/", 1); // not forgetting root path ("/")
-        while (i!=-1 && !has) {
-            String subPath = aclPath.substring(0,i);
+        int i = aclPath.length() <= 1 ? -1 : aclPath.indexOf("/", 1); // not forgetting root path ("/")
+        while (i != -1 && !has) {
+            String subPath = aclPath.substring(0, i);
             try {
                 acl = AccessController.getAcl(subPath);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 acl = null;
             }
 
-            if (acl!=null)
+            if (acl != null) {
                 has = acl.checkPermission(usr, prm);
+            }
 
-            i = aclPath.indexOf("/", i+1);
+            i = aclPath.indexOf("/", i + 1);
         }
 
         if (!has) {
             try {
                 acl = AccessController.getAcl(aclPath);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 acl = null;
             }
 
-            if (acl!=null)
+            if (acl != null) {
                 has = acl.checkPermission(usr, prm);
+            }
         }
 
         return has;
     }
 
     /**
-     *
+     * 
      * @param usr
      * @param aclPath
      * @param prm
      * @return
      * @throws Exception
      */
-    public static boolean hasChildPerm(String usr, String aclPath, String prm)
-                                                            throws Exception {
+    public static boolean hasChildPerm(String usr, String aclPath, String prm) throws Exception {
         HashMap acls = AccessController.getAcls();
         Iterator aclNames = acls.keySet().iterator();
         AccessControlListIF acl;
         while (aclNames.hasNext()) {
-            String aclName = (String)aclNames.next();
+            String aclName = (String) aclNames.next();
             if (aclName.startsWith(aclPath)) {
-                acl = (AccessControlListIF)acls.get(aclName);
-                if (acl.checkPermission(usr, prm))
+                acl = (AccessControlListIF) acls.get(aclName);
+                if (acl.checkPermission(usr, prm)) {
                     return true;
+                }
             }
         }
 
@@ -164,7 +162,7 @@ public class SecurityUtil {
     }
 
     /**
-     *
+     * 
      * @param request
      * @return
      */
@@ -173,29 +171,31 @@ public class SecurityUtil {
         String result = "javascript:login()";
 
         CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
-        if (casFilterConfig!=null) {
+        if (casFilterConfig != null) {
 
             String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
-            if (casLoginUrl!=null) {
+            if (casLoginUrl != null) {
 
                 String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
-                if (casServerName==null) {
+                if (casServerName == null) {
                     throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
                             + " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
                 }
 
                 // set the after-login-url
                 String requestURL = request.getRequestURL().toString();
-                if (requestURL!=null && !AfterCASLoginServlet.isSkipUrl(requestURL)) {
+                if (requestURL != null && !AfterCASLoginServlet.isSkipUrl(requestURL)) {
 
                     request.getSession().setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, buildAfterLoginURL(request));
                 }
 
                 try {
-                    result = casLoginUrl + "?service=" + URLEncoder.encode(
-                            request.getScheme() + "://" + casServerName + request.getContextPath() + "/login", "UTF-8");
-                }
-                catch (UnsupportedEncodingException e) {
+                    result =
+                        casLoginUrl
+                        + "?service="
+                        + URLEncoder.encode(request.getScheme() + "://" + casServerName + request.getContextPath()
+                                + "/login", "UTF-8");
+                } catch (UnsupportedEncodingException e) {
                     throw new DDRuntimeException(e.toString(), e);
                 }
             }
@@ -205,7 +205,7 @@ public class SecurityUtil {
     }
 
     /**
-     *
+     * 
      * @param request
      * @return
      */
@@ -214,21 +214,24 @@ public class SecurityUtil {
         String result = "index.jsp";
 
         CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
-        if (casFilterConfig!=null) {
+        if (casFilterConfig != null) {
 
             String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
-            if (casLoginUrl!=null) {
+            if (casLoginUrl != null) {
 
                 String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
-                if (casServerName==null)
+                if (casServerName == null) {
                     throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
                             + " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
+                }
 
                 try {
-                    result = casLoginUrl.replaceFirst("/login", "/logout") + "?url=" + URLEncoder.encode(
-                            request.getScheme() + "://" + casServerName + request.getContextPath(), "UTF-8");
-                }
-                catch (UnsupportedEncodingException e) {
+                    result =
+                        casLoginUrl.replaceFirst("/login", "/logout")
+                        + "?url="
+                        + URLEncoder.encode(request.getScheme() + "://" + casServerName + request.getContextPath(),
+                        "UTF-8");
+                } catch (UnsupportedEncodingException e) {
                     throw new DDRuntimeException(e.toString(), e);
                 }
             }
@@ -238,15 +241,16 @@ public class SecurityUtil {
     }
 
     /**
-     *
+     * 
      * @return
      */
     private static String getUrlWithContextPath(HttpServletRequest request) {
 
         StringBuffer url = new StringBuffer(request.getScheme());
         url.append("://").append(request.getServerName());
-        if (request.getServerPort()>0)
+        if (request.getServerPort() > 0) {
             url.append(":").append(request.getServerPort());
+        }
         url.append(request.getContextPath());
         return url.toString();
     }
@@ -259,17 +263,31 @@ public class SecurityUtil {
     }
 
     /**
-     *
+     * 
      * @param request
      * @return
      */
     public static String buildAfterLoginURL(HttpServletRequest request) {
 
-        StringBuffer result = new StringBuffer(request.getRequestURL());
-        if (request.getQueryString()!=null) {
-            result.append("?").append(request.getQueryString());
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>");
+        Enumeration attributeNames = request.getAttributeNames();
+        while (attributeNames!=null && attributeNames.hasMoreElements()){
+            String attrName = attributeNames.nextElement().toString();
+            Object attrValue = request.getAttribute(attrName);
+            System.out.println(attrName + " " + attrValue);
+        }
+        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<");
+
+        String requestUri = (String) request.getAttribute("javax.servlet.forward.request_uri");
+        if (requestUri==null){
+            requestUri = request.getRequestURL().toString();
         }
 
-        return result.toString();
+        String queryString = (String) request.getAttribute("javax.servlet.forward.query_string");
+        if (queryString==null){
+            queryString = request.getQueryString();
+        }
+
+        return queryString==null ? requestUri : requestUri + "?" + queryString;
     }
 }

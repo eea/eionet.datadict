@@ -1,1 +1,1 @@
-localgroup:dd_admin:i,u,d,w
+localgroup:dd_admin:v,i,u,d,w

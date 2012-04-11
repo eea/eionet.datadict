@@ -2,9 +2,9 @@
 
 <div id="leftcolumn" class="localnav">
     <ul>
-    	<li><a href="<%=request.getContextPath()%>/documentation">Help and documentation</a></li>
+        <li><a href="<%=request.getContextPath()%>/documentation">Help and documentation</a></li>
         <li><a href="<%=request.getContextPath()%>/datasets.jsp">Datasets</a></li>
-        <li><a href="<%=request.getContextPath()%>/tableSearch.action">Tables</a></li>
+        <li><a href="<%=request.getContextPath()%>/search_results_tbl.jsp">Tables</a></li>
         <li><a href="<%=request.getContextPath()%>/search.jsp">Data elements</a></li>
         <%
         DDUser _user = SecurityUtil.getUser(request);
@@ -21,6 +21,9 @@
             }
             %>
             <li><a href="<%=request.getContextPath()%>/subscribe.jsp">Subscribe</a></li><%
+            if (SecurityUtil.hasPerm(_user.getUserName(), "/schemasets", "v")){ %>
+                <li><a href="<%=request.getContextPath()%>/schemaSets.action">Schema sets</a></li> <%
+            } 
         }
         %>
     </ul>

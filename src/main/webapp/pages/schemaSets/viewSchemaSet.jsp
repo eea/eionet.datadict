@@ -17,7 +17,7 @@
         </div>
     </c:if>
     
-    <h1>Schema set</h1>
+    <h1>View schema set</h1>
 
     <stripes:form method="post" beanclass="eionet.web.action.SchemaSetActionBean">
         <div id="outerframe">

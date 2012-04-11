@@ -8,7 +8,7 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Search tables">
 
     <stripes:layout-component name="contents">
-    <h1>Schema set</h1>
+    <h1>Edit schema set</h1>
 
     <stripes:form id="form1" method="post" beanclass="eionet.web.action.SchemaSetActionBean">
         <div id="outerframe">

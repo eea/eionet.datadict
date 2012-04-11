@@ -10,6 +10,13 @@
     <stripes:layout-component name="contents">
 
         <h1>Schema sets</h1>
+        
+        <div id="drop-operations">
+            <h2>Operations:</h2>
+            <ul>
+                <li><a href="${pageContext.request.contextPath}/schemaSet.action?add=">Add schema set</a></li>
+            </ul>
+        </div>
 
         <stripes:form action="/schemaSets.action" method="post">
             <display:table name="actionBean.schemaSetsResult" class="sortable" id="item" requestURI="/schemaSets.action">
