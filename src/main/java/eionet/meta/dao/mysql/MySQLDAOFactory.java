@@ -5,6 +5,7 @@ import java.util.Map;
 
 import eionet.meta.dao.DAO;
 import eionet.meta.dao.DAOFactory;
+import eionet.meta.dao.SchemaDAO;
 import eionet.meta.dao.SchemaSetDAO;
 
 /**
@@ -24,6 +25,7 @@ public class MySQLDAOFactory extends DAOFactory{
 
         daoImplementations = new HashMap<Class<? extends DAO>, Class<? extends MySQLBaseDAO>>();
         daoImplementations.put(SchemaSetDAO.class, MySQLSchemaSetDAO.class);
+        daoImplementations.put(SchemaDAO.class, MySQLSchemaDAO.class);
     }
 
     /**

@@ -58,6 +58,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.DDRuntimeException;
+import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 
 //import eionet.meta.Log;
@@ -1244,6 +1245,20 @@ public class Util {
             return null;
         }
         String name = schemaSet.getIdentifier() + Thread.currentThread().getId() + System.currentTimeMillis();
+        return UUID.nameUUIDFromBytes(name.getBytes()).toString();
+    }
+
+    /**
+     * 
+     * @param schema
+     * @return
+     */
+    public static String generateContinuityId(Schema schema){
+
+        if (schema==null || isEmpty(schema.getFileName())){
+            return null;
+        }
+        String name = schema.getFileName() + Thread.currentThread().getId() + System.currentTimeMillis();
         return UUID.nameUUIDFromBytes(name.getBytes()).toString();
     }
 }

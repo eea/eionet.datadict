@@ -80,8 +80,9 @@ public class DDUser{
         try {
 
             if (userPwd!=null && userPwd.equals("mi6")) {
-                if (userName==null)
+                if (userName==null) {
                     throw new SignOnException("username not given");
+                }
                 fullName = userName;
             }
             else {
@@ -170,8 +171,9 @@ public class DDUser{
 
                 Vector v = DirectoryService.getRoles(username);
                 String[] roles = new String[v.size()];
-                for ( int i=0; i< v.size(); i++)
+                for ( int i=0; i< v.size(); i++) {
                     _roles[i] = (String)v.elementAt(i);
+                }
 
             } catch ( Exception e ) {
                 _roles = new String[]{};
@@ -206,8 +208,9 @@ public class DDUser{
      */
     private AccessControlListIF getAcl(String name) throws SignOnException {
 
-        if (acls == null)
+        if (acls == null) {
             acls = AccessController.getAcls();
+        }
 
         return (AccessControlListIF)acls.get(name);
     }

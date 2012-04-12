@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Search tables">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="View schema set">
 
     <stripes:layout-component name="contents">
     
@@ -18,9 +18,18 @@
     </c:if>
     
     <h1>View schema set</h1>
+    
+    <div id="tabbedmenu">
+        <ul>
+            <c:forEach items="${actionBean.tabs}" var="tab">
+                <li <c:if test="${tab.selected}">id="currenttab"</c:if>>
+                    <stripes:link href="${tab.href}" title="${tab.hint}"><c:out value="${tab.title}"/></stripes:link>
+                </li>
+            </c:forEach>
+        </ul>
+    </div>
 
-    <stripes:form method="post" beanclass="eionet.web.action.SchemaSetActionBean">
-        <div id="outerframe">
+        <div id="outerframe" style="padding-top:20px">
             <table class="datatable">
                 <colgroup>
                     <col style="width:26%"/>
@@ -61,29 +70,28 @@
                 </tr>
                 <c:forEach items="${actionBean.attributes}" var="attribute">
                     <c:if test="${not empty attribute.value}">
-	                    <tr>
-	                        <th scope="row" class="scope-row simple_attr_title">
-	                            <c:out value="${attribute.shortName}"/>
-	                        </th>
-	                        <td class="simple_attr_help">
-	                            <a href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
-	                                <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
-	                            </a>
-	                        </td>
-	                        <td style="word-wrap:break-word;wrap-option:emergency" class="simple_attr_value">
-	                            <c:if test="${not attribute.displayMultiple}">
-	                                <c:out value="${attribute.value}"/>
-	                            </c:if>
-	                            <c:if test="${attribute.displayMultiple}">
-	                                <c:out value="${ddfn:join(attribute.values, ', ')}"/>
-	                            </c:if>
-	                        </td>
+                        <tr>
+                            <th scope="row" class="scope-row simple_attr_title">
+                                <c:out value="${attribute.shortName}"/>
+                            </th>
+                            <td class="simple_attr_help">
+                                <a href="${pageContext.request.contextPath}/help.jsp?attrid=${attribute.ID}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
+                                    <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="Help"/>
+                                </a>
+                            </td>
+                            <td style="word-wrap:break-word;wrap-option:emergency" class="simple_attr_value">
+                                <c:if test="${not attribute.displayMultiple}">
+                                    <c:out value="${attribute.value}"/>
+                                </c:if>
+                                <c:if test="${attribute.displayMultiple}">
+                                    <c:out value="${ddfn:join(attribute.values, ', ')}"/>
+                                </c:if>
+                            </td>
                         </tr>
                     </c:if>                            
                 </c:forEach>
             </table>
         </div>
-    </stripes:form>
     </stripes:layout-component>
 
 </stripes:layout-render>

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
@@ -98,5 +99,21 @@ public interface ISchemaService {
      * @param comment
      * @throws ServiceException
      */
-    void checkIn(int schemaSetId, String username, String comment) throws ServiceException;
+    void checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException;
+
+    /**
+     * 
+     * @param schema
+     * @return
+     * @throws ServiceException
+     */
+    int addSchema(Schema schema) throws ServiceException;
+
+    /**
+     * 
+     * @param schemaSetId
+     * @return
+     * @throws ServiceException
+     */
+    List<Schema> listSchemaSetSchemas(int schemaSetId) throws ServiceException;
 }

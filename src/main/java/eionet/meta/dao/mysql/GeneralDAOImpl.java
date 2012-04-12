@@ -43,7 +43,6 @@ public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implem
     private DataSource dataSource;
 
     /** Initializes the needed objects after bean creation */
-    @SuppressWarnings({"unused"})
     @PostConstruct
     private void init() {
         super.setDataSource(dataSource);

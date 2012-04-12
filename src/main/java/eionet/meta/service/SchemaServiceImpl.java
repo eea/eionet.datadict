@@ -30,7 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eionet.meta.dao.ISchemaDAO;
 import eionet.meta.dao.ISchemaSetDAO;
+import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
@@ -42,6 +44,10 @@ import eionet.meta.service.data.SchemaSetsResult;
  */
 @Service
 public class SchemaServiceImpl implements ISchemaService {
+
+    /** The DAO for operations with schemas */
+    @Autowired
+    private ISchemaDAO schemaDAO;
 
     /** SchemaSet DAO. */
     @Autowired
@@ -130,7 +136,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username)
-            throws ServiceException {
+    throws ServiceException {
         try {
             schemaSetDAO.updateSchemaSet(schemaSet);
             schemaSetDAO.updateSchemaSetAttributes(schemaSet.getId(), attributes);
@@ -146,7 +152,7 @@ public class SchemaServiceImpl implements ISchemaService {
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public void checkIn(int schemaSetId, String username, String comment) throws ServiceException {
+    public void checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException {
         if (StringUtils.isBlank(username)) {
             throw new ServiceException("Chack in failed. User name must not be blank.");
         }
@@ -172,4 +178,30 @@ public class SchemaServiceImpl implements ISchemaService {
         this.schemaSetDAO = schemaSetDAO;
     }
 
+    /**
+     * @see eionet.meta.service.ISchemaService#addSchema(eionet.meta.dao.domain.Schema)
+     */
+    @Override
+    @Transactional
+    public int addSchema(Schema schema) throws ServiceException {
+
+        try {
+            return schemaDAO.createSchema(schema);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to add schema", e);
+        }
+    }
+
+    /**
+     * @see eionet.meta.service.ISchemaService#listSchemaSetSchemas(int)
+     */
+    @Override
+    public List<Schema> listSchemaSetSchemas(int schemaSetId) throws ServiceException {
+
+        try {
+            return schemaDAO.listForSchemaSet(schemaSetId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to list schemas of the given schema set", e);
+        }
+    }
 }

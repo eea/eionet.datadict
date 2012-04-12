@@ -51,8 +51,9 @@ public class Props implements PropsIF{
      * @return
      */
     private static Props getInstance() {
-        if (Props.instance==null)
+        if (Props.instance==null) {
             Props.instance = new Props();
+        }
 
         return Props.instance;
     }
@@ -141,9 +142,9 @@ public class Props implements PropsIF{
             if (deflt!=null) {
                 LOGGER.warn("Invalid property value for key " + name + ". Using default.");
                 return Integer.parseInt(deflt);
-            }
-            else
+            } else {
                 throw new Exception("Invalid property value for key " + name);
+            }
         }
     }
 

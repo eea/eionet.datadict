@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Search tables">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Add schema set">
 
     <stripes:layout-component name="contents">
     <h1>Create schema set</h1>

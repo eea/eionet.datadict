@@ -102,4 +102,7 @@ public interface PropsIF {
 
     /** Full path to the root directory of DD's file store. */
     public static final String FILESTORE_PATH = "filestore.path";
+
+    /** */
+    public static final String SCHEMA_REPO_LOCATION = "schemaRepo.location";
 }
