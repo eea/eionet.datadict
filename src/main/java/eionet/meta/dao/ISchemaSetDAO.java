@@ -22,7 +22,10 @@
 package eionet.meta.dao;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.data.PagedRequest;
 import eionet.meta.service.data.SchemaSetsResult;
 
@@ -41,6 +44,44 @@ public interface ISchemaSetDAO {
      * @throws DAOException
      */
     SchemaSetsResult getSchemaSets(PagedRequest pagedRequest);
+
+    /**
+     * Returns schema set with given id.
+     *
+     * @param id
+     * @return
+     */
+    SchemaSet getSchemaSet(int id);
+
+    /**
+     * Inserts new schema set.
+     *
+     * @param schemaSet
+     * @return
+     */
+    int createSchemaSet(SchemaSet schemaSet);
+
+    /**
+     * Updates existing schema set.
+     *
+     * @param schemaSet
+     */
+    void updateSchemaSet(SchemaSet schemaSet);
+
+    /**
+     * Modifies schema set's check in data.
+     *
+     * @param schemaSet
+     */
+    void checkInSchemaSet(SchemaSet schemaSet, String username, String comment);
+
+    /**
+     * Updates schema set dynamic attributes.
+     *
+     * @param schemaSetId
+     * @param attributes
+     */
+    void updateSchemaSetAttributes(int schemaSetId, Map<Integer, Set<String>> attributes);
 
     /**
      * Deletes schema set rows with given ids.

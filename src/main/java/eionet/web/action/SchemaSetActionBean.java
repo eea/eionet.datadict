@@ -18,6 +18,7 @@ import net.sourceforge.stripes.action.HandlesEvent;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.integration.spring.SpringBean;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -26,16 +27,16 @@ import eionet.meta.DDUser;
 import eionet.meta.DElemAttribute;
 import eionet.meta.FixedValue;
 import eionet.meta.dao.DAOException;
-import eionet.meta.dao.DAOFactory;
-import eionet.meta.dao.SchemaSetDAO;
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.service.ISchemaService;
+import eionet.meta.service.ServiceException;
 import eionet.util.UrlBuilderExt;
 import eionet.web.util.DropdownOperation;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid
- * 
+ *
  */
 @UrlBinding("/schemaSet.action")
 public class SchemaSetActionBean extends AbstractActionBean {
@@ -44,6 +45,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
     private static final String ADD_SCHEMA_SET_JSP = "/pages/schemaSets/addSchemaSet.jsp";
     private static final String VIEW_SCHEMA_SET_JSP = "/pages/schemaSets/viewSchemaSet.jsp";
     private static final String EDIT_SCHEMA_SET_JSP = "/pages/schemaSets/editSchemaSet.jsp";
+
+    /** Schema service. */
+    @SpringBean
+    private ISchemaService schemaService;
 
     /** */
     private SchemaSet schemaSet;
@@ -61,73 +66,73 @@ public class SchemaSetActionBean extends AbstractActionBean {
     private String comment;
 
     /**
-     * 
+     * View action.
+     *
      * @return
-     * @throws DAOException
-     * @throws SQLException
+     * @throws ServiceException
      */
     @DefaultHandler
     @HandlesEvent(value = "view")
-    public Resolution view() throws DAOException, SQLException {
+    public Resolution view() throws ServiceException {
 
         loadSchemaSet();
         return new ForwardResolution(VIEW_SCHEMA_SET_JSP);
     }
 
     /**
-     * 
+     * Edit action.
+     *
      * @return
-     * @throws DAOException
-     * @throws SQLException
+     * @throws ServiceException
      */
     @HandlesEvent(value = "edit")
-    public Resolution edit() throws DAOException, SQLException {
+    public Resolution edit() throws ServiceException {
 
         loadSchemaSet();
         return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
     }
 
     /**
-     * 
+     * Add action.
+     *
      * @return
-     * @throws DAOException
+     * @throws ServiceException
      */
-    public Resolution add() throws DAOException {
+    public Resolution add() throws ServiceException {
 
         Resolution resolution = new ForwardResolution(ADD_SCHEMA_SET_JSP);
         if (!isGetOrHeadRequest()) {
-            schemaSet.setWorkingUser(getUserName());
-            schemaSet.setUserModified(getUserName());
-            SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
-            int schemaSetId = dao.add(schemaSet);
+            int schemaSetId = schemaService.addSchemaSet(schemaSet, getUserName());
             resolution = new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSetId);
         }
         return resolution;
     }
 
     /**
-     * 
+     * Save action.
+     *
      * @return
-     * @throws DAOException
+     * @throws ServiceException
      */
-    public Resolution save() throws DAOException {
-
-        doSave();
+    public Resolution save() throws ServiceException {
+        schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
         return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
     }
 
     /**
-     * 
+     * Save and close action.
+     *
      * @return
-     * @throws DAOException
+     * @throws ServiceException
      */
-    public Resolution saveAndClose() throws DAOException {
-        doSave();
+    public Resolution saveAndClose() throws ServiceException {
+        schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
     }
 
     /**
-     * 
+     * Cancel action.
+     *
      * @return
      * @throws DAOException
      */
@@ -136,58 +141,47 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     * Check in action.
+     *
      * @return
-     * @throws DAOException
+     * @throws ServiceException
      */
-    public Resolution checkIn() throws DAOException {
-
-        SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
-        dao.checkIn(schemaSet.getId(), getUserName(), comment);
+    public Resolution checkIn() throws ServiceException {
+        schemaService.checkIn(schemaSet.getId(), getUserName(), comment);
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
     }
 
     /**
-     * 
+     *
      * @return
-     * @throws DAOException
      */
-    public Resolution checkOut() throws DAOException {
+    public Resolution checkOut() {
         throw new UnsupportedOperationException("Action not impemented yet!");
     }
 
     /**
-     * 
+     *
      * @return
-     * @throws DAOException
      */
-    public Resolution delete() throws DAOException {
+    public Resolution delete() {
         throw new UnsupportedOperationException("Action not impemented yet!");
     }
 
     /**
-     * 
-     * @throws DAOException
+     * Loads schema set.
+     *
+     * @throws ServiceException
      */
-    private void loadSchemaSet() throws DAOException {
-        SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
-        this.schemaSet = dao.getById(schemaSet.getId());
-        if (schemaSet == null) {
-            addSystemMessage("No schema set found with the given id: " + schemaSet.getId());
-        }
+    private void loadSchemaSet() throws ServiceException {
+        schemaSet = schemaService.getSchemaSet(schemaSet.getId());
     }
 
     /**
-     * @throws DAOException
-     * 
+     * @param schemaService
+     *            the schemaService to set
      */
-    private void doSave() throws DAOException {
-
-        dumpRequestParameters();
-
-        schemaSet.setUserModified(getUserName());
-        SchemaSetDAO dao = DAOFactory.getInstance().createDao(SchemaSetDAO.class);
-        dao.save(schemaSet, getSaveAttributeValues());
+    public void setSchemaService(ISchemaService schemaService) {
+        this.schemaService = schemaService;
     }
 
     /**
@@ -206,7 +200,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isUserWorkingCopy() {
@@ -234,8 +228,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 attributes =
-                    searchEngine.getObjectAttributes(schemaSet.getId(), DElemAttribute.ParentType.SCHEMA_SET,
-                            DElemAttribute.TYPE_SIMPLE);
+                        searchEngine.getObjectAttributes(schemaSet.getId(), DElemAttribute.ParentType.SCHEMA_SET,
+                                DElemAttribute.TYPE_SIMPLE);
             } finally {
                 searchEngine.close();
             }
@@ -263,7 +257,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                             dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("edit").toString(), "Edit metadata"));
                             dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkIn").toString(), "Check in"));
                             dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkOut").toString(),
-                            "Undo checkout"));
+                                    "Undo checkout"));
                         }
                     } else {
                         UrlBuilderExt urlBuilder = new UrlBuilderExt(getContext(), getContextPath() + getUrlBinding(), true);
@@ -374,7 +368,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }

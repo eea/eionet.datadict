@@ -22,7 +22,10 @@
 package eionet.meta.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.data.PagedRequest;
 import eionet.meta.service.data.SchemaSetsResult;
 
@@ -42,10 +45,49 @@ public interface ISchemaService {
     SchemaSetsResult getSchemaSets(PagedRequest pagedRequest) throws ServiceException;
 
     /**
+     * Return schema set.
+     *
+     * @param id
+     * @return
+     * @throws ServiceException
+     */
+    SchemaSet getSchemaSet(int id) throws ServiceException;
+
+    /**
+     * Creates new schema set.
+     *
+     * @param schemaSet
+     * @param username
+     * @return id of new schema set
+     * @throws ServiceException
+     */
+    int addSchemaSet(SchemaSet schemaSet, String username) throws ServiceException;
+
+    /**
+     * Updates existing schema set.
+     *
+     * @param schemaSet
+     * @param attributes
+     * @param username
+     * @throws ServiceException
+     */
+    void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username) throws ServiceException;
+
+    /**
      * Deletes SchemaSets that have property "selected=true".
      *
      * @param schemaSets
      * @throws ServiceException
      */
     void deleteSchemaSets(List<Integer> ids) throws ServiceException;
+
+    /**
+     * Checks in schema set with given id.
+     *
+     * @param schemaSetId
+     * @param username
+     * @param comment
+     * @throws ServiceException
+     */
+    void checkIn(int schemaSetId, String username, String comment) throws ServiceException;
 }
