@@ -44,14 +44,14 @@ import eionet.util.SecurityUtil;
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/schemaSets.action")
-public class SchemaSetsActionBean extends AbstractActionBean {
+@UrlBinding("/searchSchemaSets.action")
+public class SearchSchemaSetsActionBean extends AbstractActionBean {
 
     /** Schema service. */
     @SpringBean
     private ISchemaService schemaService;
 
-    /** Schemasets result. */
+    /** Schemasets search result. */
     private SchemaSetsResult schemaSetsResult;
 
     /** Selected ids. */
@@ -67,7 +67,7 @@ public class SchemaSetsActionBean extends AbstractActionBean {
     private String dir;
 
     @DefaultHandler
-    public Resolution viewList() throws ServiceException {
+    public Resolution search() throws ServiceException {
         PagedRequest pagedRequest = new PagedRequest(page, PagedRequest.DEFAULT_PAGE_SIZE);
         pagedRequest.setSortProperty(sort);
         if (StringUtils.isNotEmpty(sort)) {
@@ -78,8 +78,8 @@ public class SchemaSetsActionBean extends AbstractActionBean {
             }
         }
 
-        schemaSetsResult = schemaService.getSchemaSets(pagedRequest);
-        return new ForwardResolution("/pages/schemaSets/viewSchemaSets.jsp");
+        schemaSetsResult = schemaService.searchSchemaSets(pagedRequest);
+        return new ForwardResolution("/pages/schemaSets/searchSchemaSets.jsp");
     }
 
     /**
@@ -94,7 +94,7 @@ public class SchemaSetsActionBean extends AbstractActionBean {
         } else {
             addSystemMessage("Cannot delete. No permission.");
         }
-        return new RedirectResolution(SchemaSetsActionBean.class);
+        return new RedirectResolution(SearchSchemaSetsActionBean.class);
     }
 
     public boolean isDeletePermission() {

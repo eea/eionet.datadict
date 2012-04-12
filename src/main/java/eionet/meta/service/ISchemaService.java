@@ -42,7 +42,16 @@ public interface ISchemaService {
      * @return
      * @throws ServiceException
      */
-    SchemaSetsResult getSchemaSets(PagedRequest pagedRequest) throws ServiceException;
+    SchemaSetsResult searchSchemaSets(PagedRequest pagedRequest) throws ServiceException;
+
+    /**
+     * Returns schema sets.
+     *
+     * @param limited
+     * @return
+     * @throws ServiceException
+     */
+    List<SchemaSet> getSchemaSets(boolean limited) throws ServiceException;
 
     /**
      * Return schema set.

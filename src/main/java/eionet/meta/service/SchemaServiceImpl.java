@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,9 +43,6 @@ import eionet.meta.service.data.SchemaSetsResult;
 @Service
 public class SchemaServiceImpl implements ISchemaService {
 
-    /** Logger. */
-    private static final Logger LOGGER = Logger.getLogger(SchemaServiceImpl.class);
-
     /** SchemaSet DAO. */
     @Autowired
     private ISchemaSetDAO schemaSetDAO;
@@ -57,9 +53,23 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ServiceException
      */
     @Override
-    public SchemaSetsResult getSchemaSets(PagedRequest pagedRequest) throws ServiceException {
+    public SchemaSetsResult searchSchemaSets(PagedRequest pagedRequest) throws ServiceException {
         try {
-            return schemaSetDAO.getSchemaSets(pagedRequest);
+            return schemaSetDAO.searchSchemaSets(pagedRequest);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get schema sets", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws ServiceException
+     */
+    @Override
+    public List<SchemaSet> getSchemaSets(boolean limited) throws ServiceException {
+        try {
+            return schemaSetDAO.getSchemaSets(limited);
         } catch (Exception e) {
             throw new ServiceException("Failed to get schema sets", e);
         }

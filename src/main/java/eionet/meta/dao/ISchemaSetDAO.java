@@ -43,7 +43,15 @@ public interface ISchemaSetDAO {
      * @return
      * @throws DAOException
      */
-    SchemaSetsResult getSchemaSets(PagedRequest pagedRequest);
+    SchemaSetsResult searchSchemaSets(PagedRequest pagedRequest);
+
+    /**
+     * Returns schema sets.
+     *
+     * @param limited
+     * @return
+     */
+    List<SchemaSet> getSchemaSets(boolean limited);
 
     /**
      * Returns schema set with given id.

@@ -54,7 +54,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     private static final Logger LOGGER = Logger.getLogger(SchemaSetDAOImpl.class);
 
     @Override
-    public SchemaSetsResult getSchemaSets(PagedRequest pagedRequest) {
+    public SchemaSetsResult searchSchemaSets(PagedRequest pagedRequest) {
 
         String totalSql = "SELECT COUNT(*) FROM T_SCHEMA_SET";
         int totalItems = getJdbcTemplate().queryForInt(totalSql);
@@ -92,6 +92,42 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
         SchemaSetsResult result = new SchemaSetsResult(items, totalItems, pagedRequest);
         return result;
+    }
+
+    @Override
+    public List<SchemaSet> getSchemaSets(boolean limited) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID ");
+        sql.append("FROM T_SCHEMA_SET ");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+
+        if (limited) {
+            parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
+            sql.append("WHERE REG_STATUS = :regStatus ");
+        }
+
+        sql.append("ORDER BY IDENTIFIER");
+
+        List<SchemaSet> items = getNamedParameterJdbcTemplate().query(sql.toString(), parameters, new RowMapper<SchemaSet>() {
+            public SchemaSet mapRow(ResultSet rs, int rowNum) throws SQLException {
+                SchemaSet ss = new SchemaSet();
+                ss.setId(rs.getInt("SCHEMA_SET_ID"));
+                ss.setIdentifier(rs.getString("IDENTIFIER"));
+                ss.setContinuityId(rs.getString("CONTINUITY_ID"));
+                ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                ss.setWorkingUser(rs.getString("WORKING_USER"));
+                ss.setDateModified(rs.getDate("DATE_MODIFIED"));
+                ss.setUserModified(rs.getString("USER_MODIFIED"));
+                ss.setComment(rs.getString("COMMENT"));
+                ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                return ss;
+            }
+        });
+
+        return items;
     }
 
     @Override
