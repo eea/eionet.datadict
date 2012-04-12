@@ -9,8 +9,6 @@
 
     <stripes:layout-component name="contents">
 
-        <h1>Schema sets</h1>
-
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
@@ -18,14 +16,17 @@
                 <li><a href="${pageContext.request.contextPath}/searchSchemaSets.action">Search schema sets</a></li>
             </ul>
         </div>
+        
+        <h1>Schema sets</h1>
 
         <c:if test="${empty actionBean.schemaSets}">
-            <div>
-                No schema sets found. Note that unauthenticated users can only see schema sets with released status.
+            <div style="margin-top:1em">
+                No schema sets found!<br/>
+                Please note that unauthenticated users can only see schema sets in released status.
             </div>
         </c:if>
 
-        <stripes:form action="/schemaSets.action" method="post">
+        <stripes:form id="schemaSetsForm" action="/schemaSets.action" method="post" style="margin-top:1em">
             <ul class="menu">
                 <c:forEach var="item" items="${actionBean.schemaSets}">
                     <li>
@@ -42,6 +43,7 @@
             <br />
             <c:if test="${actionBean.deletePermission && not empty actionBean.schemaSets}">
                 <stripes:submit name="delete" value="Delete" />
+                <input type="button" onclick="toggleSelectAll('schemaSetsForm');return false" value="Select all" name="selectAll">
             </c:if>
 
         </stripes:form>

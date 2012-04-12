@@ -9,8 +9,6 @@
 
     <stripes:layout-component name="contents">
 
-        <h1>Search schema sets</h1>
-
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
@@ -18,19 +16,19 @@
             </ul>
         </div>
 
-        <stripes:form action="/searchSchemaSets.action" method="get">
-            <div>
-                <fieldset style="border: 0px;">
-                    <label style="width: 120px; float: left;" for="identifier">Identifier:</label>
-                    <stripes:text id="identifier" name="searchFilter.identifier" />
-                </fieldset>
-                <fieldset style="border: 0px;">
-                    <label style="width: 120px; float: left;" for="regStatus">Reg. status:</label>
-                    <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
-                        <stripes:options-collection collection="${actionBean.regStatuses}" />
-                    </stripes:select>
-                </fieldset>
-                <stripes:submit name="search" value="Search" />
+        <h1>Search schema sets</h1>
+
+        <stripes:form id="searchResultsForm" action="/searchSchemaSets.action" method="get">
+            <div style="margin-top:1em">
+                <label class="question" style="width:16%;float:left;padding-top:0.2em" for="identifier">Identifier:</label>
+                <stripes:text id="identifier" name="searchFilter.identifier" />
+                <br/>
+                <label class="question" style="width:16%;float:left;padding-top:0.2em" for="regStatus">Registration status:</label>
+                <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
+                    <stripes:options-collection collection="${actionBean.regStatuses}" />
+                </stripes:select>
+                <br/>
+                <stripes:submit name="search" value="Search"/>
             </div>
 
             <br />
@@ -56,6 +54,7 @@
 
             <c:if test="${actionBean.deletePermission && not empty actionBean.schemaSetsResult.list}">
                 <stripes:submit name="delete" value="Delete" />
+                <input type="button" onclick="toggleSelectAll('searchResultsForm');return false" value="Select all" name="selectAll">
             </c:if>
 
         </stripes:form>
