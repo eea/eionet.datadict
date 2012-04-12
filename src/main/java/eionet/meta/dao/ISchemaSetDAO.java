@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import eionet.meta.dao.domain.SchemaSet;
-import eionet.meta.service.data.PagedRequest;
+import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 
 /**
@@ -43,7 +43,7 @@ public interface ISchemaSetDAO {
      * @return
      * @throws DAOException
      */
-    SchemaSetsResult searchSchemaSets(PagedRequest pagedRequest);
+    SchemaSetsResult searchSchemaSets(SchemaSetFilter searchFilter);
 
     /**
      * Returns schema sets.

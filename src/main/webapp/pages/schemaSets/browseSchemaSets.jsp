@@ -15,8 +15,15 @@
             <h2>Operations:</h2>
             <ul>
                 <li><a href="${pageContext.request.contextPath}/schemaSet.action?add=">Add schema set</a></li>
+                <li><a href="${pageContext.request.contextPath}/searchSchemaSets.action">Search schema sets</a></li>
             </ul>
         </div>
+
+        <c:if test="${empty actionBean.schemaSets}">
+            <div>
+                No schema sets found. Note that unauthenticated users can only see schema sets with released status.
+            </div>
+        </c:if>
 
         <stripes:form action="/schemaSets.action" method="post">
             <ul class="menu">

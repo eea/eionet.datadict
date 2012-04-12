@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import eionet.meta.dao.ISchemaSetDAO;
 import eionet.meta.dao.domain.SchemaSet;
-import eionet.meta.service.data.PagedRequest;
+import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 
 /**
@@ -53,11 +53,11 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ServiceException
      */
     @Override
-    public SchemaSetsResult searchSchemaSets(PagedRequest pagedRequest) throws ServiceException {
+    public SchemaSetsResult searchSchemaSets(SchemaSetFilter searchFilter) throws ServiceException {
         try {
-            return schemaSetDAO.searchSchemaSets(pagedRequest);
+            return schemaSetDAO.searchSchemaSets(searchFilter);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schema sets", e);
+            throw new ServiceException("Failed to search schema sets", e);
         }
     }
 

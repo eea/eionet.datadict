@@ -21,6 +21,7 @@
 
 package eionet.web.action;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -33,9 +34,10 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
 
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.PagedRequest;
+import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 import eionet.util.SecurityUtil;
 
@@ -54,6 +56,9 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
     /** Schemasets search result. */
     private SchemaSetsResult schemaSetsResult;
 
+    /** Schema search filter. */
+    private SchemaSetFilter searchFilter;
+
     /** Selected ids. */
     private List<Integer> selected;
 
@@ -68,17 +73,25 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
 
     @DefaultHandler
     public Resolution search() throws ServiceException {
-        PagedRequest pagedRequest = new PagedRequest(page, PagedRequest.DEFAULT_PAGE_SIZE);
-        pagedRequest.setSortProperty(sort);
+        if (searchFilter == null) {
+            searchFilter = new SchemaSetFilter();
+        }
+        searchFilter.setPageNumber(page);
+
+        if (!isAuthenticated()) {
+            searchFilter.setRegStatus(SchemaSet.RegStatus.RELEASED.toString());
+        }
+
         if (StringUtils.isNotEmpty(sort)) {
+            searchFilter.setSortProperty(sort);
             if (dir.equals("asc")) {
-                pagedRequest.setSortOrder(SortOrderEnum.ASCENDING);
+                searchFilter.setSortOrder(SortOrderEnum.ASCENDING);
             } else {
-                pagedRequest.setSortOrder(SortOrderEnum.DESCENDING);
+                searchFilter.setSortOrder(SortOrderEnum.DESCENDING);
             }
         }
 
-        schemaSetsResult = schemaService.searchSchemaSets(pagedRequest);
+        schemaSetsResult = schemaService.searchSchemaSets(searchFilter);
         return new ForwardResolution("/pages/schemaSets/searchSchemaSets.jsp");
     }
 
@@ -108,12 +121,26 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
         return false;
     }
 
+    public boolean isAuthenticated() {
+        return getUser() != null;
+    }
+
     /**
      * @param schemaService
      *            the schemaService to set
      */
     public void setSchemaService(ISchemaService schemaService) {
         this.schemaService = schemaService;
+    }
+
+    public List<String> getRegStatuses() {
+        List<String> result = new ArrayList<String>();
+        result.add("");
+        for (SchemaSet.RegStatus rs : SchemaSet.RegStatus.values()) {
+            result.add(rs.toString());
+        }
+
+        return result;
     }
 
     /**
@@ -181,6 +208,21 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
      */
     public void setSelected(List<Integer> selected) {
         this.selected = selected;
+    }
+
+    /**
+     * @return the searchFilter
+     */
+    public SchemaSetFilter getSearchFilter() {
+        return searchFilter;
+    }
+
+    /**
+     * @param searchFilter
+     *            the searchFilter to set
+     */
+    public void setSearchFilter(SchemaSetFilter searchFilter) {
+        this.searchFilter = searchFilter;
     }
 
 }

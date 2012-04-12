@@ -32,24 +32,13 @@ public class PagedRequest {
 
     public static int DEFAULT_PAGE_SIZE = 20;
 
-    private int pageSize;
+    private int pageSize = DEFAULT_PAGE_SIZE;
 
-    private int pageNumber;
+    private int pageNumber = 1;
 
     private String sortProperty;
 
     private SortOrderEnum sortOrder;
-
-    /**
-     * Class constructor.
-     *
-     * @param pageSize
-     * @param pageNumber
-     */
-    public PagedRequest(int pageNumber, int pageSize) {
-        this.pageSize = pageSize;
-        this.pageNumber = pageNumber;
-    }
 
     /**
      * Returns the offset of the first row for the search result to return.
@@ -66,10 +55,26 @@ public class PagedRequest {
     }
 
     /**
+     * @param pageSize
+     *            the pageSize to set
+     */
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    /**
      * @return the pageNumber
      */
     public int getPageNumber() {
         return pageNumber;
+    }
+
+    /**
+     * @param pageNumber
+     *            the pageNumber to set
+     */
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
     }
 
     /**

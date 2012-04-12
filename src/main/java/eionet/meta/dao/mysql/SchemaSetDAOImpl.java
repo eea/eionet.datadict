@@ -38,7 +38,7 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.dao.ISchemaSetDAO;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.dao.domain.SchemaSet.RegStatus;
-import eionet.meta.service.data.PagedRequest;
+import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 import eionet.util.Util;
 
@@ -54,26 +54,48 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     private static final Logger LOGGER = Logger.getLogger(SchemaSetDAOImpl.class);
 
     @Override
-    public SchemaSetsResult searchSchemaSets(PagedRequest pagedRequest) {
-
-        String totalSql = "SELECT COUNT(*) FROM T_SCHEMA_SET";
-        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+    public SchemaSetsResult searchSchemaSets(SchemaSetFilter searchFilter) {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ");
+        sql.append("SELECT SQL_CALC_FOUND_ROWS SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID ");
         sql.append("FROM T_SCHEMA_SET ");
-        if (StringUtils.isNotEmpty(pagedRequest.getSortProperty())) {
-            sql.append("ORDER BY ").append(pagedRequest.getSortProperty());
-            if (SortOrderEnum.ASCENDING.equals(pagedRequest.getSortOrder())) {
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        // Where clause
+        if (searchFilter.isValued()) {
+            boolean andOperator = false;
+            sql.append("WHERE ");
+            if (StringUtils.isNotEmpty(searchFilter.getIdentifier())) {
+                sql.append("IDENTIFIER like :identifier ");
+                String identifier = "%" + searchFilter.getIdentifier() + "%";
+                parameters.put("identifier", identifier);
+                andOperator = true;
+            }
+            if (StringUtils.isNotEmpty(searchFilter.getRegStatus())) {
+                if (andOperator) {
+                    sql.append("AND ");
+                }
+                sql.append("REG_STATUS = :regStatus ");
+                parameters.put("regStatus", searchFilter.getRegStatus());
+                andOperator = true;
+            }
+        }
+
+        // Sorting
+        if (StringUtils.isNotEmpty(searchFilter.getSortProperty())) {
+            sql.append("ORDER BY ").append(searchFilter.getSortProperty());
+            if (SortOrderEnum.ASCENDING.equals(searchFilter.getSortOrder())) {
                 sql.append(" ASC ");
             } else {
                 sql.append(" DESC ");
             }
         }
-        sql.append("LIMIT ").append(pagedRequest.getOffset()).append(",").append(pagedRequest.getPageSize());
+        sql.append("LIMIT ").append(searchFilter.getOffset()).append(",").append(searchFilter.getPageSize());
 
-        List<SchemaSet> items = getJdbcTemplate().query(sql.toString(), new RowMapper<SchemaSet>() {
+        // LOGGER.debug("SQL: " + sql.toString());
+
+        List<SchemaSet> items = getNamedParameterJdbcTemplate().query(sql.toString(), parameters, new RowMapper<SchemaSet>() {
             public SchemaSet mapRow(ResultSet rs, int rowNum) throws SQLException {
                 SchemaSet ss = new SchemaSet();
                 ss.setId(rs.getInt("SCHEMA_SET_ID"));
@@ -90,7 +112,10 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
             }
         });
 
-        SchemaSetsResult result = new SchemaSetsResult(items, totalItems, pagedRequest);
+        String totalSql = "SELECT FOUND_ROWS()";
+        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+
+        SchemaSetsResult result = new SchemaSetsResult(items, totalItems, searchFilter);
         return result;
     }
 
