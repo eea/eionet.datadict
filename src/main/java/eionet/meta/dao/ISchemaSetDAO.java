@@ -104,4 +104,13 @@ public interface ISchemaSetDAO {
      * @param ids
      */
     void deleteAttributes(List<Integer> ids);
+
+    /**
+     * 
+     * @param schemaSetId
+     * @param userName
+     * @param newIdentifier
+     * @return
+     */
+    int checkOutSchemaSet(int schemaSetId, String userName, String newIdentifier);
 }

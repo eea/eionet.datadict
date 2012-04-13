@@ -30,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eionet.meta.DElemAttribute;
+import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.ISchemaDAO;
 import eionet.meta.dao.ISchemaSetDAO;
 import eionet.meta.dao.domain.Schema;
@@ -44,6 +46,10 @@ import eionet.meta.service.data.SchemaSetsResult;
  */
 @Service
 public class SchemaServiceImpl implements ISchemaService {
+
+    /** The DAO for operations with attributes */
+    @Autowired
+    private IAttributeDAO attributeDAO;
 
     /** The DAO for operations with schemas */
     @Autowired
@@ -117,7 +123,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ServiceException
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = ServiceException.class)
     public int addSchemaSet(SchemaSet schemaSet, String userName) throws ServiceException {
         schemaSet.setWorkingUser(userName);
         schemaSet.setUserModified(userName);
@@ -153,21 +159,34 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException {
+
         if (StringUtils.isBlank(username)) {
-            throw new ServiceException("Chack in failed. User name must not be blank.");
+            throw new IllegalArgumentException("User name must not be blank.");
         }
 
+        // Load schema set to check in.
         SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
 
+        // Ensure that the schema set is a working copy.
         if (!schemaSet.isWorkingCopy()) {
-            throw new ServiceException("Chack in failed. Schema set is not a working copy.");
+            throw new ServiceException("Schema set is not a working copy.");
         }
 
+        // Ensure that the check-in user the working user.
         if (!StringUtils.equals(username, schemaSet.getWorkingUser())) {
-            throw new ServiceException("Chack in failed. Check-in user is not the current working user.");
+            throw new ServiceException("Check-in user is not the current working user.");
         }
 
+        // Call check-in DAO operation.
         schemaSetDAO.checkInSchemaSet(schemaSet, username, comment);
+
+        if (schemaSet.getCheckedOutCopyId() > 0){
+            SchemaSet checkedOutCopy = schemaSetDAO.getSchemaSet(schemaSet.getCheckedOutCopyId());
+            if (checkedOutCopy!=null && StringUtils.equals(schemaSet.getIdentifier(), checkedOutCopy.getIdentifier())){
+                // TODO if this is an overwrite of checked-out copy, delete the latter and ensure its ID
+                // is assigned to the new copy and all its realtions.
+            }
+        }
     }
 
     /**
@@ -182,7 +201,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @see eionet.meta.service.ISchemaService#addSchema(eionet.meta.dao.domain.Schema)
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = ServiceException.class)
     public int addSchema(Schema schema) throws ServiceException {
 
         try {
@@ -204,4 +223,56 @@ public class SchemaServiceImpl implements ISchemaService {
             throw new ServiceException("Failed to list schemas of the given schema set", e);
         }
     }
+
+    /**
+     * @see eionet.meta.service.ISchemaService#checkOutSchemaSet(int, java.lang.String, String)
+     */
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public int checkOutSchemaSet(int schemaSetId, String username, String newIdentifier) throws ServiceException {
+
+        if (StringUtils.isBlank(username)){
+            throw new IllegalArgumentException("User name must not be blank!");
+        }
+
+        int newSchemaSetId;
+        try {
+            // Do schema set check-out, get the new schema set's ID.
+            newSchemaSetId = schemaSetDAO.checkOutSchemaSet(schemaSetId, username, newIdentifier);
+
+            // Copy the schema set's simple attributes.
+            attributeDAO.copySimpleAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET.toString(), newSchemaSetId);
+
+            // Get the schema set's schemas and copy them and their simple attributes too.
+            List<Schema> schemas = schemaDAO.listForSchemaSet(schemaSetId);
+            for (Schema schema : schemas){
+                int newSchemaId = schemaDAO.copyToSchemaSet(schema.getId(), newSchemaSetId, schema.getFileName(), username);
+                attributeDAO.copySimpleAttributes(schema.getId(), DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Failed to check out schema set", e);
+        }
+
+        return newSchemaSetId;
+    }
+
+    //    @Override
+    //    @Transactional(rollbackFor = ServiceException.class)
+    //    public void checkOutSchemaSet(int schemaSetId, String username, String comment) throws ServiceException {
+    //        if (StringUtils.isBlank(username)) {
+    //            throw new ServiceException("Chack in failed. User name must not be blank.");
+    //        }
+    //
+    //        SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
+    //
+    //        if (!schemaSet.isWorkingCopy()) {
+    //            throw new ServiceException("Chack in failed. Schema set is not a working copy.");
+    //        }
+    //
+    //        if (!StringUtils.equals(username, schemaSet.getWorkingUser())) {
+    //            throw new ServiceException("Chack in failed. Check-in user is not the current working user.");
+    //        }
+    //
+    //        schemaSetDAO.checkInSchemaSet(schemaSet, username, comment);
+    //    }
 }

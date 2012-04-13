@@ -190,9 +190,11 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * 
      * @return
+     * @throws ServiceException
      */
-    public Resolution checkOut() {
-        throw new UnsupportedOperationException("Action not impemented yet!");
+    public Resolution checkOut() throws ServiceException {
+        int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName(), null);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
     }
 
     /**

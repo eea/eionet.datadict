@@ -116,4 +116,14 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     List<Schema> listSchemaSetSchemas(int schemaSetId) throws ServiceException;
+
+    /**
+     * 
+     * @param schemaSetId
+     * @param username
+     * @param newIdentifier
+     * @return
+     * @throws ServiceException
+     */
+    int checkOutSchemaSet(int schemaSetId, String username, String newIdentifier) throws ServiceException;
 }

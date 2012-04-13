@@ -47,4 +47,12 @@ public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implem
     private void init() {
         super.setDataSource(dataSource);
     }
+
+    /**
+     * @return
+     */
+    protected int getLastInsertId() {
+        return getJdbcTemplate().queryForInt("select last_insert_id()");
+    }
+
 }

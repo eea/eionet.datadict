@@ -61,23 +61,25 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     public int createSchema(Schema schema) {
 
         String continuityId = schema.getContinuityId();
-        if (StringUtils.isBlank(continuityId)) {
+        // If continuity id not set, but the schema is a root-level schema, we need to generate and set it.
+        if (StringUtils.isBlank(continuityId) && schema.getSchemaSetId() <= 0) {
             continuityId = Util.generateContinuityId(schema);
         }
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("filename", schema.getFileName());
-        params.put("schemaSetId", schema.getSchemaSetId()<=0 ? null : schema.getSchemaSetId());
+        params.put("schemaSetId", schema.getSchemaSetId() <= 0 ? null : schema.getSchemaSetId());
         params.put("continuityId", continuityId);
         params.put("regStatus", schema.getRegStatus().toString());
         params.put("workingCopy", schema.isWorkingCopy());
         params.put("workingUser", schema.getWorkingUser());
         params.put("userModified", schema.getUserModified());
         params.put("comment", schema.getComment());
-        params.put("checkedOutCopyId", schema.getCheckedOutCopyId());
+        params.put("checkedOutCopyId", schema.getCheckedOutCopyId() <= 0 ? null : schema.getCheckedOutCopyId());
 
         getNamedParameterJdbcTemplate().update(INSERT_SQL, params);
 
-        return getJdbcTemplate().queryForInt("select last_insert_id()");
+        return getLastInsertId();
     }
 
     /** */
@@ -110,5 +112,26 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         });
 
         return resultList;
+    }
+
+    /** */
+    private static final String COPY_TO_SCHEMA_SET_SQL =
+        "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, DATE_MODIFIED, USER_MODIFIED) "
+        + "select ifnull(:newFileName,FILENAME), ifnull(:schemaSetId,SCHEMA_SET_ID), now(), :userName from T_SCHEMA where SCHEMA_ID=:schemaId";
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#copyToSchemaSet(int, int, String, String)
+     */
+    @Override
+    public int copyToSchemaSet(int schemaId, int schemaSetId, String fileName, String userName) {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("newFileName", fileName);
+        params.put("schemaSetId", schemaSetId <= 0 ? null : schemaSetId);
+        params.put("userName", userName);
+        params.put("schemaId", schemaId);
+
+        getNamedParameterJdbcTemplate().update(COPY_TO_SCHEMA_SET_SQL, params);
+        return getLastInsertId();
     }
 }

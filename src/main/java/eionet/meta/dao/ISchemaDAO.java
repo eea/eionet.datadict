@@ -24,4 +24,14 @@ public interface ISchemaDAO{
      * @return
      */
     List<Schema> listForSchemaSet(int schemaSetId);
+
+    /**
+     * 
+     * @param schemaId
+     * @param schemaSetId
+     * @param fileName
+     * @param userName
+     * @return
+     */
+    int copyToSchemaSet(int schemaId, int schemaSetId, String fileName, String userName);
 }

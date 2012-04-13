@@ -44,7 +44,7 @@ import eionet.util.Util;
 
 /**
  * SchemaSet DAO implementation.
- *
+ * 
  * @author Juhan Voolaid
  */
 @Repository
@@ -225,14 +225,10 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         parameters.put("workingUser", schemaSet.getWorkingUser());
         parameters.put("userModified", schemaSet.getUserModified());
         parameters.put("comment", schemaSet.getComment());
-        parameters.put("checkedOutCopyId", schemaSet.getCheckedOutCopyId());
+        parameters.put("checkedOutCopyId", schemaSet.getCheckedOutCopyId()<=0 ? null : schemaSet.getCheckedOutCopyId());
 
         getNamedParameterJdbcTemplate().update(insertSql, parameters);
-
-        String idSql = "select last_insert_id()";
-        int id = getJdbcTemplate().queryForInt(idSql);
-
-        return id;
+        return getLastInsertId();
     }
 
     @Override
@@ -293,13 +289,44 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         // Unlocks working copy
         String sql =
             "update T_SCHEMA_SET set WORKING_USER = NULL, WORKING_COPY = 0, DATE_MODIFIED = now(), USER_MODIFIED = :username, "
-            + "COMMENT = :comment where SCHEMA_SET_ID = :id";
+            + "COMMENT = :comment, CHECKEDOUT_COPY_ID=NULL where SCHEMA_SET_ID = :id";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", schemaSet.getId());
         parameters.put("username", username);
         parameters.put("comment", comment);
 
         getNamedParameterJdbcTemplate().update(sql, parameters);
+    }
+
+    /** */
+    private static final String CHECK_OUT_SCHEMA_SET = "insert into T_SCHEMA_SET "
+        + "(IDENTIFIER, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID) select "
+        + "ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, SCHEMA_SET_ID from T_SCHEMA_SET "
+        + "where SCHEMA_SET_ID=:schemaSetId";
+
+    /** */
+    private static final String SET_WORKING_USER_SQL =
+        "update T_SCHEMA_SET set WORKING_USER=:userName where SCHEMA_SET_ID=:schemaSetId";
+
+    /**
+     * @see eionet.meta.dao.ISchemaSetDAO#checkOutSchemaSet(int, java.lang.String, String)
+     */
+    @Override
+    public int checkOutSchemaSet(int schemaSetId, String userName, String newIdentifier) {
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("schemaSetId", schemaSetId);
+        parameters.put("userName", userName);
+
+        getNamedParameterJdbcTemplate().update(SET_WORKING_USER_SQL, parameters);
+
+        parameters = new HashMap<String, Object>();
+        parameters.put("schemaSetId", schemaSetId);
+        parameters.put("userName", userName);
+        parameters.put("identifier", newIdentifier);
+
+        getNamedParameterJdbcTemplate().update(CHECK_OUT_SCHEMA_SET, parameters);
+        return getLastInsertId();
     }
 
 }

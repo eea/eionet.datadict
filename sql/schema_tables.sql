@@ -20,7 +20,7 @@ create table T_SCHEMA (
     SCHEMA_ID int(10) unsigned not null auto_increment,
     FILENAME varchar(255) not null,
     SCHEMA_SET_ID int(10) unsigned default null,
-    CONTINUITY_ID varchar(36) not null,
+    CONTINUITY_ID varchar(36) default null,
     REG_STATUS enum('Draft','Released') not null default 'Draft',
     WORKING_COPY bool not null default false,
     WORKING_USER varchar(50) default null,
