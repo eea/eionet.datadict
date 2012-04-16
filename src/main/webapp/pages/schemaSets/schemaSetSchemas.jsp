@@ -69,7 +69,10 @@
                         <stripes:checkbox name="schemaIds" value="${schema.id}" />
                     </display:column>
                     <display:column title="File name">
-                        <stripes:link href="#" title="Open schema details"><c:out value="${schema.fileName}"/></stripes:link>
+                        <stripes:link href="schema.action" title="Open schema details">
+                            <stripes:param name="schema.id" value="${schema.id}"/>
+                            <c:out value="${schema.fileName}"/>
+                        </stripes:link>
                     </display:column>
                 </display:table>
                 

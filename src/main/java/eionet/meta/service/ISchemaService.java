@@ -97,9 +97,10 @@ public interface ISchemaService {
      * @param schemaSetId
      * @param username
      * @param comment
+     * @return TODO
      * @throws ServiceException
      */
-    void checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException;
+    int checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException;
 
     /**
      * 

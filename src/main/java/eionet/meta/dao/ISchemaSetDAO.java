@@ -79,9 +79,9 @@ public interface ISchemaSetDAO {
     /**
      * Modifies schema set's check in data.
      *
-     * @param schemaSet
+     * @param schemaSetId
      */
-    void checkInSchemaSet(SchemaSet schemaSet, String username, String comment);
+    void checkIn(int schemaSetId, String username, String comment);
 
     /**
      * Updates schema set dynamic attributes.
@@ -113,4 +113,25 @@ public interface ISchemaSetDAO {
      * @return
      */
     int checkOutSchemaSet(int schemaSetId, String userName, String newIdentifier);
+
+    /**
+     * 
+     * @param schemaSetId1
+     * @param schemaSetId2
+     * @return
+     */
+    Map<Integer,Integer> getSchemaMappings(int schemaSetId1, int schemaSetId2);
+
+    /**
+     * 
+     * @param schemaSetId
+     */
+    void unlock(int schemaSetId);
+
+    /**
+     * 
+     * @param replacedId
+     * @param substituteId
+     */
+    void replaceId(int replacedId, int substituteId);
 }

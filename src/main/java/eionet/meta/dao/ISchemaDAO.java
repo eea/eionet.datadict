@@ -34,4 +34,12 @@ public interface ISchemaDAO{
      * @return
      */
     int copyToSchemaSet(int schemaId, int schemaSetId, String fileName, String userName);
+
+    /**
+     * 
+     * @param replacedId
+     * @param substituteId
+     * @throws DAOException
+     */
+    void replaceId(int replacedId, int substituteId);
 }

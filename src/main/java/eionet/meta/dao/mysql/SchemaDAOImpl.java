@@ -49,10 +49,21 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     private static final Logger LOGGER = Logger.getLogger(SchemaDAOImpl.class);
 
     /** */
+    private static final String REPLACE_ID_SQL = "update T_SCHEMA set SCHEMA_ID=:substituteId where SCHEMA_ID=:replacedId";
+
+    /** */
     private static final String INSERT_SQL =
         "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, CONTINUITY_ID, REG_STATUS, "
         + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID) "
         + "values (:filename,:schemaSetId,:continuityId,:regStatus,:workingCopy,:workingUser,now(),:userModified,:comment,:checkedOutCopyId)";
+
+    /** */
+    private static final String LIST_FOR_SCHEMA_SET = "select * from T_SCHEMA where SCHEMA_SET_ID=:schemaSetId";
+
+    /** */
+    private static final String COPY_TO_SCHEMA_SET_SQL =
+        "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, DATE_MODIFIED, USER_MODIFIED) "
+        + "select ifnull(:newFileName,FILENAME), ifnull(:schemaSetId,SCHEMA_SET_ID), now(), :userName from T_SCHEMA where SCHEMA_ID=:schemaId";
 
     /**
      * @see eionet.meta.dao.ISchemaDAO#createSchema(eionet.meta.dao.domain.Schema)
@@ -82,9 +93,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return getLastInsertId();
     }
 
-    /** */
-    private static final String LIST_FOR_SCHEMA_SET = "select * from T_SCHEMA where SCHEMA_SET_ID=:schemaSetId";
-
     /**
      * @see eionet.meta.dao.ISchemaDAO#listForSchemaSet(int)
      */
@@ -97,7 +105,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         List<Schema> resultList = getNamedParameterJdbcTemplate().query(LIST_FOR_SCHEMA_SET, params, new RowMapper<Schema>() {
             public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Schema schema = new Schema();
-                schema.setId(rs.getInt("SCHEMA_SET_ID"));
+                schema.setId(rs.getInt("SCHEMA_ID"));
                 schema.setFileName(rs.getString("FILENAME"));
                 schema.setContinuityId(rs.getString("CONTINUITY_ID"));
                 schema.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
@@ -114,11 +122,6 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return resultList;
     }
 
-    /** */
-    private static final String COPY_TO_SCHEMA_SET_SQL =
-        "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, DATE_MODIFIED, USER_MODIFIED) "
-        + "select ifnull(:newFileName,FILENAME), ifnull(:schemaSetId,SCHEMA_SET_ID), now(), :userName from T_SCHEMA where SCHEMA_ID=:schemaId";
-
     /**
      * @see eionet.meta.dao.ISchemaDAO#copyToSchemaSet(int, int, String, String)
      */
@@ -133,5 +136,18 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
 
         getNamedParameterJdbcTemplate().update(COPY_TO_SCHEMA_SET_SQL, params);
         return getLastInsertId();
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#replaceId(int, int)
+     */
+    @Override
+    public void replaceId(int replacedId, int substituteId) {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("replacedId", replacedId);
+        params.put("substituteId", substituteId);
+
+        getNamedParameterJdbcTemplate().update(REPLACE_ID_SQL, params);
     }
 }

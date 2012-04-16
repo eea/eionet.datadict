@@ -21,6 +21,7 @@
 
 package eionet.meta.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -152,41 +153,83 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @throws ServiceException
+     * @see eionet.meta.service.ISchemaService#checkInSchemaSet(int, java.lang.String, java.lang.String)
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public void checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException {
+    public int checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException {
 
         if (StringUtils.isBlank(username)) {
             throw new IllegalArgumentException("User name must not be blank.");
         }
 
-        // Load schema set to check in.
-        SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
+        try {
+            // Load schema set to check in.
+            SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
 
-        // Ensure that the schema set is a working copy.
-        if (!schemaSet.isWorkingCopy()) {
-            throw new ServiceException("Schema set is not a working copy.");
-        }
-
-        // Ensure that the check-in user the working user.
-        if (!StringUtils.equals(username, schemaSet.getWorkingUser())) {
-            throw new ServiceException("Check-in user is not the current working user.");
-        }
-
-        // Call check-in DAO operation.
-        schemaSetDAO.checkInSchemaSet(schemaSet, username, comment);
-
-        if (schemaSet.getCheckedOutCopyId() > 0){
-            SchemaSet checkedOutCopy = schemaSetDAO.getSchemaSet(schemaSet.getCheckedOutCopyId());
-            if (checkedOutCopy!=null && StringUtils.equals(schemaSet.getIdentifier(), checkedOutCopy.getIdentifier())){
-                // TODO if this is an overwrite of checked-out copy, delete the latter and ensure its ID
-                // is assigned to the new copy and all its realtions.
+            // Ensure that the schema set is a working copy.
+            if (!schemaSet.isWorkingCopy()) {
+                throw new ServiceException("Schema set is not a working copy.");
             }
+
+            // Ensure that the check-in user is the working user.
+            if (!StringUtils.equals(username, schemaSet.getWorkingUser())) {
+                throw new ServiceException("Check-in user is not the current working user.");
+            }
+
+            // Get checked-out copy id, see if we're overwriting it.
+            int checkedOutCopyId = schemaSet.getCheckedOutCopyId();
+            SchemaSet checkedOutCopy = schemaSetDAO.getSchemaSet(checkedOutCopyId);
+            boolean isOverwrite = checkedOutCopy!=null && checkedOutCopy.getIdentifier().equals(schemaSet.getIdentifier());
+            if (isOverwrite){
+                // Remember id-mappings between the schemas of the two schema sets.
+                Map<Integer,Integer> schemaMappings = schemaSetDAO.getSchemaMappings(checkedOutCopyId, schemaSetId);
+
+                // Delete the checked-out copy.
+                deleteSchemaSets(Collections.singletonList(checkedOutCopyId));
+
+                // Schemas of the new schema set must get the ids of the schemas that were in the checked-out copy.
+                for (Map.Entry<Integer,Integer> entry : schemaMappings.entrySet()){
+                    Integer substituteSchemaId = entry.getKey();
+                    Integer replacedSchemaId = entry.getValue();
+                    replaceSchemaId(replacedSchemaId, substituteSchemaId);
+                }
+
+                // Checked-in schema set must get the ID of the checked-out copy.
+                replaceSchemaSetId(schemaSetId, checkedOutCopyId);
+            }
+            else{
+                // Unlock checked-out copy.
+                schemaSetDAO.unlock(checkedOutCopyId);
+            }
+
+            // Update the checked-in schema set.
+            int finalId = isOverwrite ? checkedOutCopyId : schemaSetId;
+            schemaSetDAO.checkIn(finalId, username, comment);
+            return finalId;
+        } catch (Exception e) {
+            throw new ServiceException("Schema set check-in failed.", e);
         }
+    }
+
+    /**
+     * 
+     * @param replacedId
+     * @param substituteId
+     */
+    private void replaceSchemaSetId(int replacedId, int substituteId){
+        attributeDAO.replaceParentId(replacedId, substituteId, DElemAttribute.ParentType.SCHEMA_SET);
+        schemaSetDAO.replaceId(replacedId, substituteId);
+    }
+
+    /**
+     * 
+     * @param oldId
+     * @param substituteId
+     */
+    private void replaceSchemaId(int replacedId, int substituteId){
+        attributeDAO.replaceParentId(replacedId, substituteId, DElemAttribute.ParentType.SCHEMA);
+        schemaDAO.replaceId(replacedId, substituteId);
     }
 
     /**

@@ -183,8 +183,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution checkIn() throws ServiceException {
-        schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), comment);
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
+        int id = schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), comment);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", id);
     }
 
     /**
@@ -195,6 +195,15 @@ public class SchemaSetActionBean extends AbstractActionBean {
     public Resolution checkOut() throws ServiceException {
         int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName(), null);
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
+    }
+
+    /**
+     * 
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution newVersion() throws ServiceException {
+        throw new UnsupportedOperationException("Action not impemented yet!");
     }
 
     /**
@@ -354,7 +363,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                         UrlBuilderExt urlBuilder = new UrlBuilderExt(getContext(), getContextPath() + getUrlBinding(), true);
                         urlBuilder.addParameter("schemaSet.id", schemaSet.getId());
 
-                        dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("edit").toString(), "New version"));
+                        dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("newVersion").toString(), "New version"));
                         dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkOut").toString(), "Check out"));
                         dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("delete").toString(), "Delete"));
                     }

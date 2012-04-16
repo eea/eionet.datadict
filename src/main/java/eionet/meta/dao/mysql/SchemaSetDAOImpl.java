@@ -31,6 +31,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.displaytag.properties.SortOrderEnum;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -52,6 +53,12 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
     /** Logger. */
     private static final Logger LOGGER = Logger.getLogger(SchemaSetDAOImpl.class);
+
+    /** */
+    private static final String GET_SCHEMA_MAPPINGS_SQL =
+        "select SCHEMA1.SCHEMA_ID as ID1, SCHEMA2.SCHEMA_ID as ID2 "
+        + "from T_SCHEMA as SCHEMA1, T_SCHEMA as SCHEMA2 "
+        + "where SCHEMA1.FILENAME=SCHEMA2.FILENAME and SCHEMA1.SCHEMA_SET_ID=:schemaSetId1 and SCHEMA2.SCHEMA_SET_ID=:schemaSetId2";
 
     /**
      * @see eionet.meta.dao.ISchemaSetDAO#getSchemaSets(eionet.meta.service.data.PagedRequest)
@@ -160,8 +167,25 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
     @Override
     public void deleteSchemaSets(List<Integer> ids) {
+
+        // Delete schema sets.
         String sql = "DELETE FROM T_SCHEMA_SET WHERE SCHEMA_SET_ID IN (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ids", ids);
+
+        getNamedParameterJdbcTemplate().update(sql, parameters);
+
+        // Delete attributes of schemas in schema sets.
+        sql = "delete from ATTRIBUTE where DATAELEM_ID in (select SCHEMA_ID from T_SCHEMA where SCHEMA_SET_ID in (:ids)) AND PARENT_TYPE = :parentType";
+        parameters = new HashMap<String, Object>();
+        parameters.put("ids", ids);
+        parameters.put("parentType", DElemAttribute.ParentType.SCHEMA.toString());
+
+        getNamedParameterJdbcTemplate().update(sql, parameters);
+
+        // Delete schemas in schema sets.
+        sql = "delete from T_SCHEMA where SCHEMA_SET_ID in (:ids)";
+        parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
 
         getNamedParameterJdbcTemplate().update(sql, parameters);
@@ -225,7 +249,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         parameters.put("workingUser", schemaSet.getWorkingUser());
         parameters.put("userModified", schemaSet.getUserModified());
         parameters.put("comment", schemaSet.getComment());
-        parameters.put("checkedOutCopyId", schemaSet.getCheckedOutCopyId()<=0 ? null : schemaSet.getCheckedOutCopyId());
+        parameters.put("checkedOutCopyId", schemaSet.getCheckedOutCopyId() <= 0 ? null : schemaSet.getCheckedOutCopyId());
 
         getNamedParameterJdbcTemplate().update(insertSql, parameters);
         return getLastInsertId();
@@ -277,21 +301,17 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         }
     }
 
+    /**
+     * @see eionet.meta.dao.ISchemaSetDAO#checkIn(int, java.lang.String, java.lang.String)
+     */
     @Override
-    public void checkInSchemaSet(SchemaSet schemaSet, String username, String comment) {
-        int checkedOutCopyId = schemaSet.getCheckedOutCopyId();
-        if (checkedOutCopyId > 0) {
-            // Unlocks checked out copy
-            String sql = "update T_SCHEMA_SET set WORKING_USER=NULL where SCHEMA_SET_ID=?";
-            getJdbcTemplate().update(sql, checkedOutCopyId);
-        }
+    public void checkIn(int schemaSetId, String username, String comment) {
 
-        // Unlocks working copy
         String sql =
             "update T_SCHEMA_SET set WORKING_USER = NULL, WORKING_COPY = 0, DATE_MODIFIED = now(), USER_MODIFIED = :username, "
             + "COMMENT = :comment, CHECKEDOUT_COPY_ID=NULL where SCHEMA_SET_ID = :id";
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("id", schemaSet.getId());
+        parameters.put("id", schemaSetId);
         parameters.put("username", username);
         parameters.put("comment", comment);
 
@@ -307,6 +327,10 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     /** */
     private static final String SET_WORKING_USER_SQL =
         "update T_SCHEMA_SET set WORKING_USER=:userName where SCHEMA_SET_ID=:schemaSetId";
+
+    /** */
+    private static final String REPLACE_ID_SQL =
+        "update T_SCHEMA_SET set SCHEMA_SET_ID=:substituteId where SCHEMA_SET_ID=:replacedId";
 
     /**
      * @see eionet.meta.dao.ISchemaSetDAO#checkOutSchemaSet(int, java.lang.String, String)
@@ -329,4 +353,49 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         return getLastInsertId();
     }
 
+    /**
+     * @see eionet.meta.dao.ISchemaSetDAO#getSchemaMappings(int, int)
+     */
+    @Override
+    public Map<Integer, Integer> getSchemaMappings(int schemaSetId1, int schemaSetId2) {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("schemaSetId1", schemaSetId1);
+        params.put("schemaSetId2", schemaSetId2);
+
+        final HashMap<Integer, Integer> result = new HashMap<Integer, Integer>();
+        getNamedParameterJdbcTemplate().query(GET_SCHEMA_MAPPINGS_SQL, params, new RowCallbackHandler() {
+            public void processRow(ResultSet rs) throws SQLException {
+                result.put(rs.getInt("ID1"), rs.getInt("ID2"));
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaSetDAO#unlock(int)
+     */
+    @Override
+    public void unlock(int schemaSetId) {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("schemaSetId", schemaSetId);
+        params.put("userName", null);
+
+        getNamedParameterJdbcTemplate().update(SET_WORKING_USER_SQL, params);
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaSetDAO#replaceId(int, int)
+     */
+    @Override
+    public void replaceId(int replacedId, int substituteId) {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("replacedId", replacedId);
+        params.put("substituteId", substituteId);
+
+        getNamedParameterJdbcTemplate().update(REPLACE_ID_SQL, params);
+    }
 }
