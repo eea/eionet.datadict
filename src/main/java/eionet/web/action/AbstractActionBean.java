@@ -35,6 +35,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import eionet.meta.DDUser;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.web.DDActionBeanContext;
 
@@ -110,11 +112,20 @@ public abstract class AbstractActionBean implements ActionBean {
     }
 
     /**
-     * 
+     *
      * @param simpleErrorMessage
      */
     protected void addGlobalValidationError(String simpleErrorMessage) {
         context.getValidationErrors().addGlobalError(new SimpleError(simpleErrorMessage));
+    }
+
+    /**
+     * Returns site URL beginning part. It is configured in the datadict.properties file.
+     *
+     * @return
+     */
+    public String getSitePrefix() {
+        return Props.getProperty(PropsIF.JSP_URL_PREFIX);
     }
 
     /**
@@ -127,12 +138,12 @@ public abstract class AbstractActionBean implements ActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getUserName() {
         DDUser user = getUser();
-        return user==null ? null : user.getUserName();
+        return user == null ? null : user.getUserName();
     }
 
     /**
@@ -171,22 +182,22 @@ public abstract class AbstractActionBean implements ActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      */
-    public boolean isGetOrHeadRequest(){
+    public boolean isGetOrHeadRequest() {
         String method = getContext().getRequest().getMethod().toUpperCase();
         return method.equals("GET") || method.equals("HEAD");
     }
 
     /**
-     * 
+     *
      * @return
      */
-    public String getUrlBinding(){
-        if (urlBinding == null){
+    public String getUrlBinding() {
+        if (urlBinding == null) {
             urlBinding = new AnnotatedClassActionResolver().getUrlBinding(this.getClass());
-            if (urlBinding == null){
+            if (urlBinding == null) {
                 urlBinding = "";
             }
         }
@@ -194,40 +205,39 @@ public abstract class AbstractActionBean implements ActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      */
-    public String getContextPath(){
-        if (contextPath == null){
+    public String getContextPath() {
+        if (contextPath == null) {
             contextPath = getContext().getRequest().getContextPath();
         }
         return contextPath;
     }
 
     /**
-     * 
+     *
      */
-    protected void dumpRequestParameters(){
+    protected void dumpRequestParameters() {
 
         HttpServletRequest request = getContext().getRequest();
         Enumeration paramNames = request.getParameterNames();
 
         System.out.println(">>>>>>>>>> start request parameters dump");
-        if (paramNames!=null && paramNames.hasMoreElements()){
+        if (paramNames != null && paramNames.hasMoreElements()) {
             do {
                 String paramName = paramNames.nextElement().toString();
                 String[] paramValues = request.getParameterValues(paramName);
                 System.out.print(paramName + " = [");
                 for (int i = 0; i < paramValues.length; i++) {
-                    if (i>0){
+                    if (i > 0) {
                         System.out.print(", ");
                     }
                     System.out.print(paramValues[i]);
                 }
                 System.out.println("]");
             } while (paramNames.hasMoreElements());
-        }
-        else{
+        } else {
             System.out.println("No request parameters found");
         }
         System.out.println("<<<<<<<<<< end request parameters dump");

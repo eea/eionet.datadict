@@ -62,20 +62,10 @@
                              onfocus="if(this.value=='Search the site')this.value='';"
                              onblur="if(this.value=='')this.value='Search the site';"
                              value="Search the site"/>
-                             <%-- TODO: hidden value must be PropsIF.DD_URL --%>
-                             <input type="hidden" name="sitesearch" value="dd.eionet.europa.eu" />
+                             <input type="hidden" name="sitesearch" value="${actionBean.sitePrefix}" />
                             <input id="freesrchbtn" type="image" src="<c:url value="/images/button_go.gif"/>" alt="Go"/>
                           </div>
                         </form>
-                        <%--
-                        <form action="http://search.eionet.europa.eu/search.jsp" method="get">
-                            <div id="freesrchform"><label for="freesrchfld">Search</label>
-                                <input type="text" id="freesrchfld" name="query"/>
-
-                                <input id="freesrchbtn" type="image" src="<c:url value="/images/button_go.gif"/>" alt="Go"/>
-                            </div>
-                        </form>
-                        --%>
                     </div>
                 </div> <!-- toolribbon -->
 
