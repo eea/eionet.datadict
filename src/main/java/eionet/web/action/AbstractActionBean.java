@@ -29,6 +29,7 @@ import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.SimpleMessage;
 import net.sourceforge.stripes.controller.AnnotatedClassActionResolver;
+import net.sourceforge.stripes.validation.SimpleError;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -106,6 +107,14 @@ public abstract class AbstractActionBean implements ActionBean {
      */
     protected void addWarningMessage(final String message) {
         getContext().getMessages(WARNING_MESSAGES).add(new SimpleMessage(message));
+    }
+
+    /**
+     * 
+     * @param simpleErrorMessage
+     */
+    protected void addGlobalValidationError(String simpleErrorMessage) {
+        context.getValidationErrors().addGlobalError(new SimpleError(simpleErrorMessage));
     }
 
     /**

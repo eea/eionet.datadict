@@ -24,11 +24,11 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.util.UrlBuilder;
+import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.DDSearchEngine;
-import eionet.meta.DDUser;
 import eionet.meta.DElemAttribute;
 import eionet.meta.FixedValue;
 import eionet.meta.dao.DAOException;
@@ -37,8 +37,6 @@ import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.schemas.SchemaRepository;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
-import eionet.util.UrlBuilderExt;
-import eionet.web.util.DropdownOperation;
 import eionet.web.util.Tab;
 
 /**
@@ -78,9 +76,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
     private FileBean uploadedFile;
 
     /** */
-    private Collection<DropdownOperation> dropdownOperations;
-
-    /** */
     private Map<String, Set<String>> multiValuedAttributeValues;
     private Map<String, Set<String>> fixedValuedAttributeValues;
     private Map<Integer, Set<String>> saveAttributeValues;
@@ -94,6 +89,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /** */
     private List<Integer> schemaIds;
+
+    /** */
+    private String newIdentifier;
 
     /**
      * View action.
@@ -207,11 +205,28 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution newVersion() throws ServiceException {
-        throw new UnsupportedOperationException("Action not impemented yet!");
+
+        int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName(), newIdentifier);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
     }
 
     /**
      *
+     * @throws DAOException
+     */
+    @ValidationMethod(on = {"newVersion"})
+    public void validateNewVersion() throws DAOException {
+
+        if (StringUtils.isBlank(newIdentifier)){
+            addGlobalValidationError("New identifier is missing!");
+            return;
+        }
+
+        getContext().setSourcePageResolution(new ForwardResolution(VIEW_SCHEMA_SET_JSP));
+    }
+
+    /**
+     * 
      * @return
      */
     public Resolution delete() {
@@ -339,49 +354,13 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 attributes =
-                        searchEngine.getObjectAttributes(schemaSet.getId(), DElemAttribute.ParentType.SCHEMA_SET,
-                                DElemAttribute.TYPE_SIMPLE);
+                    searchEngine.getObjectAttributes(schemaSet.getId(), DElemAttribute.ParentType.SCHEMA_SET,
+                            DElemAttribute.TYPE_SIMPLE);
             } finally {
                 searchEngine.close();
             }
         }
         return attributes;
-    }
-
-    /**
-     * @return the dropdownOperations
-     */
-    public Collection<DropdownOperation> getDropdownOperations() {
-
-        if (dropdownOperations == null) {
-            dropdownOperations = new ArrayList<DropdownOperation>();
-            if (schemaSet != null && getContext().getEventName().equals("view")) {
-                DDUser user = getUser();
-                if (user != null) {
-                    if (schemaSet.isWorkingCopy()) {
-                        // Is my working copy
-                        if (StringUtils.equals(user.getUserName(), schemaSet.getWorkingUser())) {
-
-                            UrlBuilderExt urlBuilder = new UrlBuilderExt(getContext(), getContextPath() + getUrlBinding(), true);
-                            urlBuilder.addParameter("schemaSet.id", schemaSet.getId());
-
-                            dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("edit").toString(), "Edit metadata"));
-                            dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkIn").toString(), "Check in"));
-                            dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkOut").toString(),
-                                    "Undo checkout"));
-                        }
-                    } else {
-                        UrlBuilderExt urlBuilder = new UrlBuilderExt(getContext(), getContextPath() + getUrlBinding(), true);
-                        urlBuilder.addParameter("schemaSet.id", schemaSet.getId());
-
-                        dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("newVersion").toString(), "New version"));
-                        dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkOut").toString(), "Check out"));
-                        dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("delete").toString(), "Delete"));
-                    }
-                }
-            }
-        }
-        return dropdownOperations;
     }
 
     /**
@@ -479,7 +458,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -565,4 +544,11 @@ public class SchemaSetActionBean extends AbstractActionBean {
         this.schemaRepository = schemaRepository;
     }
 
+
+    /**
+     * @param newIdentifier the newIdentifier to set
+     */
+    public void setNewIdentifier(String newIdentifier) {
+        this.newIdentifier = newIdentifier;
+    }
 }

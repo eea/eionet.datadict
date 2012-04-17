@@ -4,15 +4,71 @@
 
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="View schema set">
 
+    <stripes:layout-component name="head">
+        <script type="text/javascript">
+        // <![CDATA[
+            ( function($) {
+                $(document).ready(
+                    function(){
+
+                        $("#newVersionLink").click(function() {
+                            $('#newVersionDialog').dialog('open');
+                            return false;
+                        });
+
+                        $('#newVersionDialog').dialog({
+                            autoOpen: false,
+                            width: 500
+                        });
+
+                        $("#closeNewVersionDialog").click(function() {
+                            $('#newVersionDialog').dialog('close');
+                            return true;
+                        });
+                    });
+            } ) ( jQuery );
+        // ]]>
+        </script>
+    </stripes:layout-component>
+    
     <stripes:layout-component name="contents">
     
-    <c:if test="${not empty actionBean.dropdownOperations}">
+    <c:if test="${not empty actionBean.userName}">
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <c:forEach items="${actionBean.dropdownOperations}" var="dropdownOperation">
-                    <li><a href="${dropdownOperation.href}"><c:out value="${dropdownOperation.title}"/></a></li>
-                </c:forEach>
+                <c:if test="${actionBean.schemaSet.workingCopy && actionBean.userName==actionBean.schemaSet.workingUser}">               
+	                <li>
+                        <stripes:link beanclass="${actionBean.class.name}" event="edit">Edit metadata
+                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                        </stripes:link>
+	                </li>
+	                <li>
+                        <stripes:link beanclass="${actionBean.class.name}" event="checkIn">Check in
+                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                        </stripes:link>
+                    </li>
+                    <li>
+                        <stripes:link beanclass="${actionBean.class.name}" event="undoCheckout">Undo checkout
+                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                        </stripes:link>
+                    </li>
+                </c:if>
+                <c:if test="${not actionBean.schemaSet.workingCopy}">
+                    <li>
+                        <a href="#" id="newVersionLink">New version</a>
+                    </li>
+                    <li>
+                        <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
+                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                        </stripes:link>
+                    </li>
+                    <li>
+                        <stripes:link beanclass="${actionBean.class.name}" event="delete">Delete
+                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                        </stripes:link>
+                    </li>
+                </c:if>
             </ul>
         </div>
     </c:if>
@@ -92,6 +148,26 @@
                 </c:forEach>
             </table>
         </div>
+        
+        <div id="newVersionDialog" title="Create new version">
+            <stripes:form beanclass="${actionBean.class.name}" method="post">
+                
+                <div class="note-msg">
+                    <strong>Note</strong>
+                    <p>A new version requires a new identifier. Please enter it below.</p>
+                </div>
+                
+                <stripes:text name="newIdentifier" id="txtNewIdentifier" size="30"/><br/>
+                <stripes:submit name="newVersion" value="Submit"/>
+                <input type="button" id="closeNewVersionDialog" value="Cancel"/>
+                
+                <div style="display:none">
+                    <stripes:hidden name="schemaSet.id"/>
+                    <stripes:hidden name="schemaSet.identifier"/>
+                </div>
+            </stripes:form>
+        </div>
+        
     </stripes:layout-component>
 
 </stripes:layout-render>

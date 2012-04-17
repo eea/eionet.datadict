@@ -318,24 +318,4 @@ public class SchemaServiceImpl implements ISchemaService {
 
         return newSchemaSetId;
     }
-
-    // @Override
-    // @Transactional(rollbackFor = ServiceException.class)
-    // public void checkOutSchemaSet(int schemaSetId, String username, String comment) throws ServiceException {
-    // if (StringUtils.isBlank(username)) {
-    // throw new ServiceException("Chack in failed. User name must not be blank.");
-    // }
-    //
-    // SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
-    //
-    // if (!schemaSet.isWorkingCopy()) {
-    // throw new ServiceException("Chack in failed. Schema set is not a working copy.");
-    // }
-    //
-    // if (!StringUtils.equals(username, schemaSet.getWorkingUser())) {
-    // throw new ServiceException("Chack in failed. Check-in user is not the current working user.");
-    // }
-    //
-    // schemaSetDAO.checkInSchemaSet(schemaSet, username, comment);
-    // }
 }

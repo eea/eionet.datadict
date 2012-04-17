@@ -42,7 +42,8 @@
                         <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
                     </td>
                     <td class="simple_attr_value">
-                        <stripes:text name="schemaSet.identifier" size="30" class="smalltext"/>
+                        <c:out value="${actionBean.schemaSet.identifier}"/>
+                        <stripes:hidden name="schemaSet.identifier"/>
                     </td>
                 </tr>
                 <tr>

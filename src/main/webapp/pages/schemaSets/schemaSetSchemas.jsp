@@ -94,7 +94,7 @@
                     <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>
                 </fieldset>
                 <stripes:submit name="uploadSchema" value="Upload"/>
-                <button id="closeUploadSchemaDialog">Cancel</button>
+                <input type="button" id="closeUploadSchemaDialog" value="Cancel"/>
 
                 <div style="display:none">
                     <stripes:hidden name="schemaSet.id"/>
