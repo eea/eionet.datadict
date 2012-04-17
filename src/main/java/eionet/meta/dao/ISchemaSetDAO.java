@@ -41,7 +41,6 @@ public interface ISchemaSetDAO {
      *
      * @param pagedRequest
      * @return
-     * @throws DAOException
      */
     SchemaSetsResult searchSchemaSets(SchemaSetFilter searchFilter);
 

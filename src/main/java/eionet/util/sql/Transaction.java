@@ -1,4 +1,6 @@
-package eionet.meta.dao;
+package eionet.util.sql;
+
+import eionet.meta.dao.DAOException;
 
 /**
  * 

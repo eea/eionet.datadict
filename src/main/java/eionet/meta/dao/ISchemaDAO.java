@@ -47,7 +47,6 @@ public interface ISchemaDAO {
      *
      * @param replacedId
      * @param substituteId
-     * @throws DAOException
      */
     void replaceId(int replacedId, int substituteId);
 }

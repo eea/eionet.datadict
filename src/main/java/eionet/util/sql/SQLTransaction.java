@@ -28,7 +28,6 @@ import java.sql.Savepoint;
 import org.apache.log4j.Logger;
 
 import eionet.meta.dao.DAOException;
-import eionet.meta.dao.Transaction;
 
 /**
  * 
@@ -65,7 +64,7 @@ public class SQLTransaction implements Transaction {
     }
 
     /**
-     * @see eionet.meta.dao.Transaction#begin()
+     * @see eionet.util.sql.Transaction#begin()
      */
     @Override
     public void begin() throws DAOException {
@@ -98,7 +97,7 @@ public class SQLTransaction implements Transaction {
 
     /**
      * @throws DAOException
-     * @see eionet.meta.dao.Transaction#commit()
+     * @see eionet.util.sql.Transaction#commit()
      */
     @Override
     public void commit() throws DAOException {
@@ -117,7 +116,7 @@ public class SQLTransaction implements Transaction {
     }
 
     /**
-     * @see eionet.meta.dao.Transaction#rollback()
+     * @see eionet.util.sql.Transaction#rollback()
      */
     @Override
     public void rollback() {
@@ -131,7 +130,7 @@ public class SQLTransaction implements Transaction {
     }
 
     /**
-     * @see eionet.meta.dao.Transaction#close()
+     * @see eionet.util.sql.Transaction#close()
      */
     @Override
     public void close() {
