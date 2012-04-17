@@ -2,6 +2,7 @@ package eionet.meta.dao.mysql;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -12,9 +13,9 @@ import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.IAttributeDAO;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid
- * 
+ *
  */
 @Repository
 public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
@@ -38,6 +39,16 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         getNamedParameterJdbcTemplate().update(COPY_SIMPLE_ATTRIBUTES_SQL, params);
     }
 
+    @Override
+    public void deleteAttributes(List<Integer> parentIds, String parentType) {
+        String sql = "DELETE FROM ATTRIBUTE WHERE DATAELEM_ID IN (:ids) AND PARENT_TYPE = :parentType";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ids", parentIds);
+        parameters.put("parentType", parentType);
+
+        getNamedParameterJdbcTemplate().update(sql, parameters);
+    }
+
     /** */
     private static final String REPLACE_PARENT_ID_SQL = "update ATTRIBUTE set DATAELEM_ID=:substituteId "
         + "where DATAELEM_ID=:replacedId and PARENT_TYPE=:parentType";
@@ -57,7 +68,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     }
 
     /**
-     * 
+     *
      * @param replacedToSubstituteIds
      * @param parentType
      */

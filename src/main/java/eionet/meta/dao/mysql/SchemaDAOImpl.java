@@ -39,7 +39,7 @@ import eionet.util.Util;
 
 /**
  * SchemaSet DAO implementation.
- * 
+ *
  * @author Jaanus Heinlaid
  */
 @Repository
@@ -53,17 +53,17 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
 
     /** */
     private static final String INSERT_SQL =
-        "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, CONTINUITY_ID, REG_STATUS, "
-        + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID) "
-        + "values (:filename,:schemaSetId,:continuityId,:regStatus,:workingCopy,:workingUser,now(),:userModified,:comment,:checkedOutCopyId)";
+            "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, CONTINUITY_ID, REG_STATUS, "
+                    + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID) "
+                    + "values (:filename,:schemaSetId,:continuityId,:regStatus,:workingCopy,:workingUser,now(),:userModified,:comment,:checkedOutCopyId)";
 
     /** */
     private static final String LIST_FOR_SCHEMA_SET = "select * from T_SCHEMA where SCHEMA_SET_ID=:schemaSetId";
 
     /** */
     private static final String COPY_TO_SCHEMA_SET_SQL =
-        "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, DATE_MODIFIED, USER_MODIFIED) "
-        + "select ifnull(:newFileName,FILENAME), ifnull(:schemaSetId,SCHEMA_SET_ID), now(), :userName from T_SCHEMA where SCHEMA_ID=:schemaId";
+            "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, DATE_MODIFIED, USER_MODIFIED) "
+                    + "select ifnull(:newFileName,FILENAME), ifnull(:schemaSetId,SCHEMA_SET_ID), now(), :userName from T_SCHEMA where SCHEMA_ID=:schemaId";
 
     /**
      * @see eionet.meta.dao.ISchemaDAO#createSchema(eionet.meta.dao.domain.Schema)
@@ -149,5 +149,36 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         params.put("substituteId", substituteId);
 
         getNamedParameterJdbcTemplate().update(REPLACE_ID_SQL, params);
+    }
+
+    @Override
+    public List<Schema> getSchemas(List<Integer> ids) {
+
+        String sql =
+                "select s.*, ss.IDENTIFIER from t_schema as s LEFT OUTER JOIN t_schema_set as ss ON (s.schema_set_id = ss.schema_set_id) "
+                        + "where SCHEMA_ID in (:ids)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ids", ids);
+
+        List<Schema> resultList = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<Schema>() {
+            public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Schema schema = new Schema();
+                schema.setId(rs.getInt("SCHEMA_ID"));
+                schema.setFileName(rs.getString("FILENAME"));
+                schema.setContinuityId(rs.getString("CONTINUITY_ID"));
+                schema.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                schema.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                schema.setWorkingUser(rs.getString("WORKING_USER"));
+                schema.setDateModified(rs.getDate("DATE_MODIFIED"));
+                schema.setUserModified(rs.getString("USER_MODIFIED"));
+                schema.setComment(rs.getString("COMMENT"));
+                schema.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                schema.setSchemaSetIdentifier(rs.getString("IDENTIFIER"));
+                return schema;
+            }
+        });
+
+        return resultList;
     }
 }

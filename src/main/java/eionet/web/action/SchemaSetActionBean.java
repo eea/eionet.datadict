@@ -42,9 +42,9 @@ import eionet.web.util.DropdownOperation;
 import eionet.web.util.Tab;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid
- * 
+ *
  */
 @UrlBinding("/schemaSet.action")
 public class SchemaSetActionBean extends AbstractActionBean {
@@ -58,6 +58,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /** Schema service. */
     @SpringBean
     private ISchemaService schemaService;
+
+    /** Schema repository. */
+    @SpringBean
+    private SchemaRepository schemaRepository;
 
     /** */
     private static final String METADATA_TAB = "Metadata";
@@ -93,7 +97,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * View action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -112,7 +116,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Edit action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -130,7 +134,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Add action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -146,7 +150,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Save action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -157,7 +161,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Save and close action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -168,7 +172,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Cancel action.
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -178,17 +182,17 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Check in action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
     public Resolution checkIn() throws ServiceException {
-        int id = schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), comment);
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", id);
+        schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), comment);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -198,7 +202,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -207,7 +211,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public Resolution delete() {
@@ -215,23 +219,30 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
+     * @throws ServiceException
      */
-    public Resolution deleteSchemas() {
-        throw new UnsupportedOperationException("Action not impemented yet!");
+    public Resolution deleteSchemas() throws ServiceException {
+        schemaService.deleteSchemas(schemaIds);
+
+        RedirectResolution resolution = new RedirectResolution(getClass());
+        resolution.addParameter("schemaSet.id", schemaSet.getId());
+        resolution.addParameter("tab", SCHEMAS_TAB);
+
+        return resolution;
     }
 
     /**
      * Loads schema set.
-     * 
+     *
      * @throws ServiceException
      * @throws IOException
      */
     public Resolution uploadSchema() throws ServiceException, IOException {
 
         // TODO overwrite flag should not be always true, it should come from user
-        File schemaFile = new SchemaRepository().add(uploadedFile, schemaSet.getIdentifier(), true);
+        File schemaFile = schemaRepository.add(uploadedFile, schemaSet.getIdentifier(), true);
 
         try {
 
@@ -256,7 +267,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @throws ServiceException
      */
     private void loadSchemaSet() throws ServiceException {
@@ -287,7 +298,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isUserWorkingCopy() {
@@ -305,7 +316,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -328,8 +339,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 attributes =
-                    searchEngine.getObjectAttributes(schemaSet.getId(), DElemAttribute.ParentType.SCHEMA_SET,
-                            DElemAttribute.TYPE_SIMPLE);
+                        searchEngine.getObjectAttributes(schemaSet.getId(), DElemAttribute.ParentType.SCHEMA_SET,
+                                DElemAttribute.TYPE_SIMPLE);
             } finally {
                 searchEngine.close();
             }
@@ -357,7 +368,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                             dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("edit").toString(), "Edit metadata"));
                             dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkIn").toString(), "Check in"));
                             dropdownOperations.add(new DropdownOperation(urlBuilder.setEvent("checkOut").toString(),
-                            "Undo checkout"));
+                                    "Undo checkout"));
                         }
                     } else {
                         UrlBuilderExt urlBuilder = new UrlBuilderExt(getContext(), getContextPath() + getUrlBinding(), true);
@@ -468,7 +479,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -490,7 +501,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public List<Tab> getTabs() {
@@ -539,9 +550,19 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param schemaIds the schemaIds to set
+     * @param schemaIds
+     *            the schemaIds to set
      */
     public void setSchemaIds(List<Integer> schemaIds) {
         this.schemaIds = schemaIds;
     }
+
+    /**
+     * @param schemaRepository
+     *            the schemaRepository to set
+     */
+    public void setSchemaRepository(SchemaRepository schemaRepository) {
+        this.schemaRepository = schemaRepository;
+    }
+
 }

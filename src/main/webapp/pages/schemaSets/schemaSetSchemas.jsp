@@ -30,9 +30,9 @@
         // ]]>
         </script>
     </stripes:layout-component>
-    
+
     <stripes:layout-component name="contents">
-    
+
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
@@ -41,7 +41,7 @@
                 </li>
             </ul>
         </div>
-        
+
         <c:choose>
             <c:when test="${actionBean.context.eventName=='view'}">
                 <h1>View schema set</h1>
@@ -50,7 +50,7 @@
                 <h1>Edit schema set</h1>
             </c:otherwise>
         </c:choose>
-        
+
         <div id="tabbedmenu">
             <ul>
                 <c:forEach items="${actionBean.tabs}" var="tab">
@@ -60,10 +60,10 @@
                 </c:forEach>
             </ul>
         </div>
-    
+
         <c:if test="${not empty actionBean.schemas}">
             <stripes:form id="schemasForm" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
-            
+                <stripes:hidden name="schemaSet.id"/>
                 <display:table name="${actionBean.schemas}" class="datatable" id="schema" style="width:80%">
                     <display:column>
                         <stripes:checkbox name="schemaIds" value="${schema.id}" />
@@ -75,27 +75,27 @@
                         </stripes:link>
                     </display:column>
                 </display:table>
-                
+
                 <stripes:submit name="deleteSchemas" value="Delete" />
                 <input type="button" onclick="toggleSelectAll('schemasForm');return false" value="Select all" name="selectAll">
-                
+
             </stripes:form>
         </c:if>
-        
+
         <c:if test="${empty actionBean.schemas}">
             <div style="margin-top:3em">No schemas found! Use operations menu to add one.</div>
         </c:if>
-        
+
         <div id="uploadSchemaDialog" title="Upload schema">
             <stripes:form beanclass="${actionBean.class.name}" method="post">
-                
+
                 <fieldset style="border: 0px;">
                     <label for="fileToUpload" style="width: 200px; float: left;">File to upload*:</label>
-                    <stripes:file name="uploadedFile" id="fileToUpload" size="80"/>
+                    <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>
                 </fieldset>
                 <stripes:submit name="uploadSchema" value="Upload"/>
                 <button id="closeUploadSchemaDialog">Cancel</button>
-                
+
                 <div style="display:none">
                     <stripes:hidden name="schemaSet.id"/>
                     <stripes:hidden name="schemaSet.identifier"/>

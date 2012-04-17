@@ -21,6 +21,7 @@
 
 package eionet.meta.service;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import eionet.meta.dao.ISchemaDAO;
 import eionet.meta.dao.ISchemaSetDAO;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.schemas.SchemaRepository;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 
@@ -59,6 +61,10 @@ public class SchemaServiceImpl implements ISchemaService {
     /** SchemaSet DAO. */
     @Autowired
     private ISchemaSetDAO schemaSetDAO;
+
+    /** Schema repository. */
+    @Autowired
+    private SchemaRepository schemaRepository;
 
     /**
      * {@inheritDoc}
@@ -89,6 +95,7 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
+     * {@inheritDoc}
      *
      * @throws ServiceException
      */
@@ -96,12 +103,34 @@ public class SchemaServiceImpl implements ISchemaService {
     @Transactional(rollbackFor = ServiceException.class)
     public void deleteSchemaSets(List<Integer> ids) throws ServiceException {
         try {
-            schemaSetDAO.deleteAttributes(ids);
+            attributeDAO.deleteAttributes(ids, DElemAttribute.ParentType.SCHEMA_SET.toString());
             schemaSetDAO.deleteSchemaSets(ids);
         } catch (Exception e) {
             throw new ServiceException("Failed to delete schema sets", e);
         }
 
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws ServiceException
+     */
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public void deleteSchemas(List<Integer> ids) throws ServiceException {
+        try {
+            List<Schema> schemas = schemaDAO.getSchemas(ids);
+            attributeDAO.deleteAttributes(ids, DElemAttribute.ParentType.SCHEMA.toString());
+            schemaSetDAO.deleteSchemas(ids);
+            // Delete files
+            for (Schema schema : schemas) {
+                String filePath = SchemaRepository.REPO_PATH + "/" + schema.getSchemaSetIdentifier() + "/" + schema.getFileName();
+                schemaRepository.delete(new File(filePath));
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Failed to delete schemas", e);
+        }
     }
 
     /**
@@ -143,7 +172,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username)
-    throws ServiceException {
+            throws ServiceException {
         try {
             schemaSetDAO.updateSchemaSet(schemaSet);
             schemaSetDAO.updateSchemaSetAttributes(schemaSet.getId(), attributes);
@@ -180,16 +209,16 @@ public class SchemaServiceImpl implements ISchemaService {
             // Get checked-out copy id, see if we're overwriting it.
             int checkedOutCopyId = schemaSet.getCheckedOutCopyId();
             SchemaSet checkedOutCopy = schemaSetDAO.getSchemaSet(checkedOutCopyId);
-            boolean isOverwrite = checkedOutCopy!=null && checkedOutCopy.getIdentifier().equals(schemaSet.getIdentifier());
-            if (isOverwrite){
+            boolean isOverwrite = checkedOutCopy != null && checkedOutCopy.getIdentifier().equals(schemaSet.getIdentifier());
+            if (isOverwrite) {
                 // Remember id-mappings between the schemas of the two schema sets.
-                Map<Integer,Integer> schemaMappings = schemaSetDAO.getSchemaMappings(checkedOutCopyId, schemaSetId);
+                Map<Integer, Integer> schemaMappings = schemaSetDAO.getSchemaMappings(checkedOutCopyId, schemaSetId);
 
                 // Delete the checked-out copy.
                 deleteSchemaSets(Collections.singletonList(checkedOutCopyId));
 
                 // Schemas of the new schema set must get the ids of the schemas that were in the checked-out copy.
-                for (Map.Entry<Integer,Integer> entry : schemaMappings.entrySet()){
+                for (Map.Entry<Integer, Integer> entry : schemaMappings.entrySet()) {
                     Integer substituteSchemaId = entry.getKey();
                     Integer replacedSchemaId = entry.getValue();
                     replaceSchemaId(replacedSchemaId, substituteSchemaId);
@@ -197,8 +226,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
                 // Checked-in schema set must get the ID of the checked-out copy.
                 replaceSchemaSetId(schemaSetId, checkedOutCopyId);
-            }
-            else{
+            } else {
                 // Unlock checked-out copy.
                 schemaSetDAO.unlock(checkedOutCopyId);
             }
@@ -213,31 +241,23 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * 
+     *
      * @param replacedId
      * @param substituteId
      */
-    private void replaceSchemaSetId(int replacedId, int substituteId){
+    private void replaceSchemaSetId(int replacedId, int substituteId) {
         attributeDAO.replaceParentId(replacedId, substituteId, DElemAttribute.ParentType.SCHEMA_SET);
         schemaSetDAO.replaceId(replacedId, substituteId);
     }
 
     /**
-     * 
+     *
      * @param oldId
      * @param substituteId
      */
-    private void replaceSchemaId(int replacedId, int substituteId){
+    private void replaceSchemaId(int replacedId, int substituteId) {
         attributeDAO.replaceParentId(replacedId, substituteId, DElemAttribute.ParentType.SCHEMA);
         schemaDAO.replaceId(replacedId, substituteId);
-    }
-
-    /**
-     * @param schemaSetDAO
-     *            the schemaSetDAO to set
-     */
-    public void setSchemaSetDAO(ISchemaSetDAO schemaSetDAO) {
-        this.schemaSetDAO = schemaSetDAO;
     }
 
     /**
@@ -274,7 +294,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Transactional(rollbackFor = ServiceException.class)
     public int checkOutSchemaSet(int schemaSetId, String username, String newIdentifier) throws ServiceException {
 
-        if (StringUtils.isBlank(username)){
+        if (StringUtils.isBlank(username)) {
             throw new IllegalArgumentException("User name must not be blank!");
         }
 
@@ -288,7 +308,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Get the schema set's schemas and copy them and their simple attributes too.
             List<Schema> schemas = schemaDAO.listForSchemaSet(schemaSetId);
-            for (Schema schema : schemas){
+            for (Schema schema : schemas) {
                 int newSchemaId = schemaDAO.copyToSchemaSet(schema.getId(), newSchemaSetId, schema.getFileName(), username);
                 attributeDAO.copySimpleAttributes(schema.getId(), DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
             }
@@ -299,23 +319,23 @@ public class SchemaServiceImpl implements ISchemaService {
         return newSchemaSetId;
     }
 
-    //    @Override
-    //    @Transactional(rollbackFor = ServiceException.class)
-    //    public void checkOutSchemaSet(int schemaSetId, String username, String comment) throws ServiceException {
-    //        if (StringUtils.isBlank(username)) {
-    //            throw new ServiceException("Chack in failed. User name must not be blank.");
-    //        }
+    // @Override
+    // @Transactional(rollbackFor = ServiceException.class)
+    // public void checkOutSchemaSet(int schemaSetId, String username, String comment) throws ServiceException {
+    // if (StringUtils.isBlank(username)) {
+    // throw new ServiceException("Chack in failed. User name must not be blank.");
+    // }
     //
-    //        SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
+    // SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
     //
-    //        if (!schemaSet.isWorkingCopy()) {
-    //            throw new ServiceException("Chack in failed. Schema set is not a working copy.");
-    //        }
+    // if (!schemaSet.isWorkingCopy()) {
+    // throw new ServiceException("Chack in failed. Schema set is not a working copy.");
+    // }
     //
-    //        if (!StringUtils.equals(username, schemaSet.getWorkingUser())) {
-    //            throw new ServiceException("Chack in failed. Check-in user is not the current working user.");
-    //        }
+    // if (!StringUtils.equals(username, schemaSet.getWorkingUser())) {
+    // throw new ServiceException("Chack in failed. Check-in user is not the current working user.");
+    // }
     //
-    //        schemaSetDAO.checkInSchemaSet(schemaSet, username, comment);
-    //    }
+    // schemaSetDAO.checkInSchemaSet(schemaSet, username, comment);
+    // }
 }

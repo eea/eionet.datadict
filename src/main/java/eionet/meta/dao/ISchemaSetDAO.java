@@ -99,14 +99,14 @@ public interface ISchemaSetDAO {
     void deleteSchemaSets(List<Integer> ids);
 
     /**
-     * Deletes the attributes of the schema sets with given ids.
+     * Deletes schema rows with given ids.
      *
      * @param ids
      */
-    void deleteAttributes(List<Integer> ids);
+    void deleteSchemas(List<Integer> ids);
 
     /**
-     * 
+     *
      * @param schemaSetId
      * @param userName
      * @param newIdentifier

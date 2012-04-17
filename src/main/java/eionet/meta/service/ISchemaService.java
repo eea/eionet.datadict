@@ -84,12 +84,20 @@ public interface ISchemaService {
     void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username) throws ServiceException;
 
     /**
-     * Deletes SchemaSets that have property "selected=true".
+     * Deletes SchemaSets with given id.
      *
-     * @param schemaSets
+     * @param ids
      * @throws ServiceException
      */
     void deleteSchemaSets(List<Integer> ids) throws ServiceException;
+
+    /**
+     * Deletes Schemas with given id.
+     *
+     * @param ids
+     * @throws ServiceException
+     */
+    void deleteSchemas(List<Integer> ids) throws ServiceException;
 
     /**
      * Checks in schema set with given id.
@@ -103,7 +111,7 @@ public interface ISchemaService {
     int checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException;
 
     /**
-     * 
+     *
      * @param schema
      * @return
      * @throws ServiceException
@@ -111,7 +119,7 @@ public interface ISchemaService {
     int addSchema(Schema schema) throws ServiceException;
 
     /**
-     * 
+     *
      * @param schemaSetId
      * @return
      * @throws ServiceException
@@ -119,7 +127,7 @@ public interface ISchemaService {
     List<Schema> listSchemaSetSchemas(int schemaSetId) throws ServiceException;
 
     /**
-     * 
+     *
      * @param schemaSetId
      * @param username
      * @param newIdentifier

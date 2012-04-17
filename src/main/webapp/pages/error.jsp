@@ -10,15 +10,18 @@
 
        <h1>Unexpected error has occurred</h1>
 
-       <div style="color:red; font-weight:bold;">
-            <c:choose>
-                <c:when test="${not empty actionBean.message}">
-                    <c:out value="${actionBean.message}" />
-                </c:when>
-                <c:otherwise>
-                    Unknown error.
-                </c:otherwise>
-            </c:choose>
+       <div class="warning-msg">
+            <strong>Warning</strong>
+            <p>
+                <c:choose>
+                    <c:when test="${not empty actionBean.message}">
+                        <c:out value="${actionBean.message}" />
+                    </c:when>
+                    <c:otherwise>
+                        Unknown error.
+                    </c:otherwise>
+                </c:choose>
+            </p>
        </div>
        <br />
        Find more information about the error in the log files. To continue your work, go <stripes:link href="/">here</stripes:link>.

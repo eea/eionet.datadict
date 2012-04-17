@@ -45,7 +45,7 @@ import eionet.util.Util;
 
 /**
  * SchemaSet DAO implementation.
- * 
+ *
  * @author Juhan Voolaid
  */
 @Repository
@@ -56,9 +56,9 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
     /** */
     private static final String GET_SCHEMA_MAPPINGS_SQL =
-        "select SCHEMA1.SCHEMA_ID as ID1, SCHEMA2.SCHEMA_ID as ID2 "
-        + "from T_SCHEMA as SCHEMA1, T_SCHEMA as SCHEMA2 "
-        + "where SCHEMA1.FILENAME=SCHEMA2.FILENAME and SCHEMA1.SCHEMA_SET_ID=:schemaSetId1 and SCHEMA2.SCHEMA_SET_ID=:schemaSetId2";
+            "select SCHEMA1.SCHEMA_ID as ID1, SCHEMA2.SCHEMA_ID as ID2 "
+                    + "from T_SCHEMA as SCHEMA1, T_SCHEMA as SCHEMA2 "
+                    + "where SCHEMA1.FILENAME=SCHEMA2.FILENAME and SCHEMA1.SCHEMA_SET_ID=:schemaSetId1 and SCHEMA2.SCHEMA_SET_ID=:schemaSetId2";
 
     /**
      * @see eionet.meta.dao.ISchemaSetDAO#getSchemaSets(eionet.meta.service.data.PagedRequest)
@@ -167,36 +167,18 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
     @Override
     public void deleteSchemaSets(List<Integer> ids) {
-
-        // Delete schema sets.
         String sql = "DELETE FROM T_SCHEMA_SET WHERE SCHEMA_SET_ID IN (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("ids", ids);
-
-        getNamedParameterJdbcTemplate().update(sql, parameters);
-
-        // Delete attributes of schemas in schema sets.
-        sql = "delete from ATTRIBUTE where DATAELEM_ID in (select SCHEMA_ID from T_SCHEMA where SCHEMA_SET_ID in (:ids)) AND PARENT_TYPE = :parentType";
-        parameters = new HashMap<String, Object>();
-        parameters.put("ids", ids);
-        parameters.put("parentType", DElemAttribute.ParentType.SCHEMA.toString());
-
-        getNamedParameterJdbcTemplate().update(sql, parameters);
-
-        // Delete schemas in schema sets.
-        sql = "delete from T_SCHEMA where SCHEMA_SET_ID in (:ids)";
-        parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
 
         getNamedParameterJdbcTemplate().update(sql, parameters);
     }
 
     @Override
-    public void deleteAttributes(List<Integer> ids) {
-        String sql = "DELETE FROM ATTRIBUTE WHERE DATAELEM_ID IN (:ids) AND PARENT_TYPE = :parentType";
+    public void deleteSchemas(List<Integer> ids) {
+        String sql = "DELETE FROM T_SCHEMA WHERE SCHEMA_ID IN (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
-        parameters.put("parentType", "scs");
 
         getNamedParameterJdbcTemplate().update(sql, parameters);
     }
@@ -232,9 +214,9 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     @Override
     public int createSchemaSet(SchemaSet schemaSet) {
         String insertSql =
-            "insert into T_SCHEMA_SET (IDENTIFIER, CONTINUITY_ID, REG_STATUS, "
-            + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID) "
-            + "values (:identifier,  :continuityId, :regStatus, :workingCopy, :workingUser, now(), :userModified, :comment, :checkedOutCopyId)";
+                "insert into T_SCHEMA_SET (IDENTIFIER, CONTINUITY_ID, REG_STATUS, "
+                        + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID) "
+                        + "values (:identifier,  :continuityId, :regStatus, :workingCopy, :workingUser, now(), :userModified, :comment, :checkedOutCopyId)";
 
         String continuityId = schemaSet.getContinuityId();
         if (StringUtils.isBlank(continuityId)) {
@@ -258,8 +240,8 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     @Override
     public void updateSchemaSet(SchemaSet schemaSet) {
         String sql =
-            "update T_SCHEMA_SET set IDENTIFIER = :identifier, REG_STATUS = :regStatus, DATE_MODIFIED = now(), USER_MODIFIED = :userModified, "
-            + "COMMENT=ifnull(:comment, COMMENT) where SCHEMA_SET_ID = :id";
+                "update T_SCHEMA_SET set IDENTIFIER = :identifier, REG_STATUS = :regStatus, DATE_MODIFIED = now(), USER_MODIFIED = :userModified, "
+                        + "COMMENT=ifnull(:comment, COMMENT) where SCHEMA_SET_ID = :id";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", schemaSet.getId());
         parameters.put("identifier", schemaSet.getIdentifier());
@@ -277,9 +259,9 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         }
 
         String deleteSql =
-            "delete from ATTRIBUTE where M_ATTRIBUTE_ID = :attributeId and DATAELEM_ID = :elementId and PARENT_TYPE = :parentType";
+                "delete from ATTRIBUTE where M_ATTRIBUTE_ID = :attributeId and DATAELEM_ID = :elementId and PARENT_TYPE = :parentType";
         String insertSql =
-            "insert into ATTRIBUTE (M_ATTRIBUTE_ID, DATAELEM_ID, PARENT_TYPE, VALUE) values (:attributeId,:elementId,:parentType,:value)";
+                "insert into ATTRIBUTE (M_ATTRIBUTE_ID, DATAELEM_ID, PARENT_TYPE, VALUE) values (:attributeId,:elementId,:parentType,:value)";
 
         for (Map.Entry<Integer, Set<String>> entry : attributes.entrySet()) {
             Integer attrId = entry.getKey();
@@ -308,8 +290,8 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     public void checkIn(int schemaSetId, String username, String comment) {
 
         String sql =
-            "update T_SCHEMA_SET set WORKING_USER = NULL, WORKING_COPY = 0, DATE_MODIFIED = now(), USER_MODIFIED = :username, "
-            + "COMMENT = :comment, CHECKEDOUT_COPY_ID=NULL where SCHEMA_SET_ID = :id";
+                "update T_SCHEMA_SET set WORKING_USER = NULL, WORKING_COPY = 0, DATE_MODIFIED = now(), USER_MODIFIED = :username, "
+                        + "COMMENT = :comment, CHECKEDOUT_COPY_ID=NULL where SCHEMA_SET_ID = :id";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", schemaSetId);
         parameters.put("username", username);
@@ -320,17 +302,17 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
     /** */
     private static final String CHECK_OUT_SCHEMA_SET = "insert into T_SCHEMA_SET "
-        + "(IDENTIFIER, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID) select "
-        + "ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, SCHEMA_SET_ID from T_SCHEMA_SET "
-        + "where SCHEMA_SET_ID=:schemaSetId";
+            + "(IDENTIFIER, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID) select "
+            + "ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, SCHEMA_SET_ID from T_SCHEMA_SET "
+            + "where SCHEMA_SET_ID=:schemaSetId";
 
     /** */
     private static final String SET_WORKING_USER_SQL =
-        "update T_SCHEMA_SET set WORKING_USER=:userName where SCHEMA_SET_ID=:schemaSetId";
+            "update T_SCHEMA_SET set WORKING_USER=:userName where SCHEMA_SET_ID=:schemaSetId";
 
     /** */
     private static final String REPLACE_ID_SQL =
-        "update T_SCHEMA_SET set SCHEMA_SET_ID=:substituteId where SCHEMA_SET_ID=:replacedId";
+            "update T_SCHEMA_SET set SCHEMA_SET_ID=:substituteId where SCHEMA_SET_ID=:replacedId";
 
     /**
      * @see eionet.meta.dao.ISchemaSetDAO#checkOutSchemaSet(int, java.lang.String, String)
