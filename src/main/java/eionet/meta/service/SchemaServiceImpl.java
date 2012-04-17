@@ -41,6 +41,7 @@ import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.schemas.SchemaRepository;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
+import eionet.util.SecurityUtil;
 
 /**
  * Schema service implementation.
@@ -101,10 +102,40 @@ public class SchemaServiceImpl implements ISchemaService {
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public void deleteSchemaSets(List<Integer> ids) throws ServiceException {
+    public void deleteSchemaSets(List<Integer> ids, String username) throws ServiceException {
         try {
+            // Validate permissions
+            boolean deletePerm = SecurityUtil.hasPerm(username, "/schemasets", "d");
+            boolean deleteReleasedPerm = SecurityUtil.hasPerm(username, "/schemasets", "er");
+            if (!deletePerm && !deleteReleasedPerm) {
+                throw new ValidationException("No delete permission");
+            }
+            List<SchemaSet> schemaSets = schemaSetDAO.getSchemaSets(ids);
+            for (SchemaSet ss : schemaSets) {
+                if (ss.getRegStatus().equals(SchemaSet.RegStatus.RELEASED)) {
+                    if (!deleteReleasedPerm) {
+                        throw new ValidationException("No permission to delete released schema set: " + ss.getIdentifier());
+                    }
+                }
+            }
+
+            // Delete schemas
+            List<Integer> schemaIds = schemaDAO.getSchemaIds(ids);
+            doDeleteSchemas(schemaIds);
+
+            // Delete schema set folders
+            for (SchemaSet ss : schemaSets) {
+                if (StringUtils.isNotEmpty(ss.getIdentifier())) {
+                    String folder = SchemaRepository.REPO_PATH + "/" + ss.getIdentifier();
+                    schemaRepository.delete(new File(folder));
+                }
+            }
+
+            // Delete scmema sets
             attributeDAO.deleteAttributes(ids, DElemAttribute.ParentType.SCHEMA_SET.toString());
             schemaSetDAO.deleteSchemaSets(ids);
+        } catch (ServiceException e) {
+            throw e;
         } catch (Exception e) {
             throw new ServiceException("Failed to delete schema sets", e);
         }
@@ -119,10 +150,23 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void deleteSchemas(List<Integer> ids) throws ServiceException {
+        doDeleteSchemas(ids);
+    }
+
+    /**
+     * Deletes schemas with given ids.
+     *
+     * @param ids
+     * @throws ServiceException
+     */
+    private void doDeleteSchemas(List<Integer> ids) throws ServiceException {
+        if (ids == null || ids.size() == 0) {
+            return;
+        }
         try {
             List<Schema> schemas = schemaDAO.getSchemas(ids);
             attributeDAO.deleteAttributes(ids, DElemAttribute.ParentType.SCHEMA.toString());
-            schemaSetDAO.deleteSchemas(ids);
+            schemaDAO.deleteSchemas(ids);
             // Delete files
             for (Schema schema : schemas) {
                 String filePath = SchemaRepository.REPO_PATH + "/" + schema.getSchemaSetIdentifier() + "/" + schema.getFileName();
@@ -215,7 +259,7 @@ public class SchemaServiceImpl implements ISchemaService {
                 Map<Integer, Integer> schemaMappings = schemaSetDAO.getSchemaMappings(checkedOutCopyId, schemaSetId);
 
                 // Delete the checked-out copy.
-                deleteSchemaSets(Collections.singletonList(checkedOutCopyId));
+                deleteSchemaSets(Collections.singletonList(checkedOutCopyId), username);
 
                 // Schemas of the new schema set must get the ids of the schemas that were in the checked-out copy.
                 for (Map.Entry<Integer, Integer> entry : schemaMappings.entrySet()) {

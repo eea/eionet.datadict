@@ -34,6 +34,14 @@ public interface ISchemaDAO {
     List<Schema> getSchemas(List<Integer> ids);
 
     /**
+     * Returns schema ids of the given schema sets.
+     *
+     * @param schemaSetIds
+     * @return
+     */
+    List<Integer> getSchemaIds(List<Integer> schemaSetIds);
+
+    /**
      *
      * @param schemaId
      * @param schemaSetId
@@ -49,4 +57,11 @@ public interface ISchemaDAO {
      * @param substituteId
      */
     void replaceId(int replacedId, int substituteId);
+
+    /**
+     * Deletes schema rows with given ids.
+     *
+     * @param ids
+     */
+    void deleteSchemas(List<Integer> ids);
 }

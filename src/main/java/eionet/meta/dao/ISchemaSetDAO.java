@@ -53,6 +53,15 @@ public interface ISchemaSetDAO {
     List<SchemaSet> getSchemaSets(boolean limited);
 
     /**
+     * Returns schema sets by given ids.
+     *
+     * @param ids
+     * @return
+     * @throws DAOException
+     */
+    List<SchemaSet> getSchemaSets(List<Integer> ids);
+
+    /**
      * Returns schema set with given id.
      *
      * @param id
@@ -98,13 +107,6 @@ public interface ISchemaSetDAO {
     void deleteSchemaSets(List<Integer> ids);
 
     /**
-     * Deletes schema rows with given ids.
-     *
-     * @param ids
-     */
-    void deleteSchemas(List<Integer> ids);
-
-    /**
      *
      * @param schemaSetId
      * @param userName
@@ -114,21 +116,21 @@ public interface ISchemaSetDAO {
     int checkOutSchemaSet(int schemaSetId, String userName, String newIdentifier);
 
     /**
-     * 
+     *
      * @param schemaSetId1
      * @param schemaSetId2
      * @return
      */
-    Map<Integer,Integer> getSchemaMappings(int schemaSetId1, int schemaSetId2);
+    Map<Integer, Integer> getSchemaMappings(int schemaSetId1, int schemaSetId2);
 
     /**
-     * 
+     *
      * @param schemaSetId
      */
     void unlock(int schemaSetId);
 
     /**
-     * 
+     *
      * @param replacedId
      * @param substituteId
      */

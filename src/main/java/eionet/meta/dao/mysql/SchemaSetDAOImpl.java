@@ -166,17 +166,34 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     }
 
     @Override
-    public void deleteSchemaSets(List<Integer> ids) {
-        String sql = "DELETE FROM T_SCHEMA_SET WHERE SCHEMA_SET_ID IN (:ids)";
+    public List<SchemaSet> getSchemaSets(List<Integer> ids) {
+        String sql = "SELECT * FROM T_SCHEMA_SET WHERE SCHEMA_SET_ID IN (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
 
-        getNamedParameterJdbcTemplate().update(sql, parameters);
+        List<SchemaSet> items = getNamedParameterJdbcTemplate().query(sql, parameters, new RowMapper<SchemaSet>() {
+            public SchemaSet mapRow(ResultSet rs, int rowNum) throws SQLException {
+                SchemaSet ss = new SchemaSet();
+                ss.setId(rs.getInt("SCHEMA_SET_ID"));
+                ss.setIdentifier(rs.getString("IDENTIFIER"));
+                ss.setContinuityId(rs.getString("CONTINUITY_ID"));
+                ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                ss.setWorkingUser(rs.getString("WORKING_USER"));
+                ss.setDateModified(rs.getDate("DATE_MODIFIED"));
+                ss.setUserModified(rs.getString("USER_MODIFIED"));
+                ss.setComment(rs.getString("COMMENT"));
+                ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                return ss;
+            }
+        });
+
+        return items;
     }
 
     @Override
-    public void deleteSchemas(List<Integer> ids) {
-        String sql = "DELETE FROM T_SCHEMA WHERE SCHEMA_ID IN (:ids)";
+    public void deleteSchemaSets(List<Integer> ids) {
+        String sql = "DELETE FROM T_SCHEMA_SET WHERE SCHEMA_SET_ID IN (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
 
@@ -380,4 +397,5 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
         getNamedParameterJdbcTemplate().update(REPLACE_ID_SQL, params);
     }
+
 }

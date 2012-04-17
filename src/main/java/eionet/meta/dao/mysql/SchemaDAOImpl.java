@@ -181,4 +181,26 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
 
         return resultList;
     }
+
+    @Override
+    public void deleteSchemas(List<Integer> ids) {
+        String sql = "DELETE FROM T_SCHEMA WHERE SCHEMA_ID IN (:ids)";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ids", ids);
+
+        getNamedParameterJdbcTemplate().update(sql, parameters);
+    }
+
+    @Override
+    public List<Integer> getSchemaIds(List<Integer> schemaSetIds) {
+        String sql =
+                "select s.SCHEMA_ID from t_schema as s LEFT JOIN t_schema_set as ss ON (s.schema_set_id = ss.schema_set_id) "
+                        + "where ss.schema_set_id in (:schemaSetIds)";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("schemaSetIds", schemaSetIds);
+
+        List<Integer> result = getNamedParameterJdbcTemplate().queryForList(sql, params, Integer.class);
+
+        return result;
+    }
 }

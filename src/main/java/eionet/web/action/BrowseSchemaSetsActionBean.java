@@ -32,6 +32,7 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.ValidationException;
 import eionet.util.SecurityUtil;
 
 /**
@@ -67,9 +68,14 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
      */
     public Resolution delete() throws ServiceException {
         if (isDeletePermission()) {
-            schemaService.deleteSchemaSets(selected);
+            try {
+                schemaService.deleteSchemaSets(selected, getUserName());
+            } catch (ValidationException e) {
+                LOGGER.info(e.getMessage());
+                addGlobalValidationError(e.getMessage());
+            }
         } else {
-            addSystemMessage("Cannot delete. No permission.");
+            addGlobalValidationError("Cannot delete. No permission.");
         }
         return new RedirectResolution(BrowseSchemaSetsActionBean.class);
     }
@@ -77,7 +83,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     public boolean isDeletePermission() {
         if (getUser() != null) {
             try {
-                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "u");
+                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d") || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
             } catch (Exception e) {
                 LOGGER.error("Failed to read user permission", e);
             }

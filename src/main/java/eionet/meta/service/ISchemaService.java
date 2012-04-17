@@ -87,9 +87,10 @@ public interface ISchemaService {
      * Deletes SchemaSets with given id.
      *
      * @param ids
+     * @param username
      * @throws ServiceException
      */
-    void deleteSchemaSets(List<Integer> ids) throws ServiceException;
+    void deleteSchemaSets(List<Integer> ids, String username) throws ServiceException;
 
     /**
      * Deletes Schemas with given id.

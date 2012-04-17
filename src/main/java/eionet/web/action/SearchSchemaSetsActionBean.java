@@ -37,6 +37,7 @@ import org.displaytag.properties.SortOrderEnum;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.ValidationException;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 import eionet.util.SecurityUtil;
@@ -103,9 +104,14 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
      */
     public Resolution delete() throws ServiceException {
         if (isDeletePermission()) {
-            schemaService.deleteSchemaSets(selected);
+            try {
+                schemaService.deleteSchemaSets(selected, getUserName());
+            } catch (ValidationException e) {
+                LOGGER.info(e.getMessage());
+                addGlobalValidationError(e.getMessage());
+            }
         } else {
-            addSystemMessage("Cannot delete. No permission.");
+            addGlobalValidationError("Cannot delete. No permission.");
         }
         return new RedirectResolution(SearchSchemaSetsActionBean.class);
     }
@@ -113,7 +119,8 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
     public boolean isDeletePermission() {
         if (getUser() != null) {
             try {
-                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "u");
+                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d")
+                        || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
             } catch (Exception e) {
                 LOGGER.error("Failed to read user permission", e);
             }
