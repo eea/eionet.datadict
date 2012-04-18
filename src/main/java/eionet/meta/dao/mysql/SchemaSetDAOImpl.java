@@ -56,12 +56,12 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
     /** */
     private static final String GET_SCHEMA_MAPPINGS_SQL =
-            "select SCHEMA1.SCHEMA_ID as ID1, SCHEMA2.SCHEMA_ID as ID2 "
-                    + "from T_SCHEMA as SCHEMA1, T_SCHEMA as SCHEMA2 "
-                    + "where SCHEMA1.FILENAME=SCHEMA2.FILENAME and SCHEMA1.SCHEMA_SET_ID=:schemaSetId1 and SCHEMA2.SCHEMA_SET_ID=:schemaSetId2";
+        "select SCHEMA1.SCHEMA_ID as ID1, SCHEMA2.SCHEMA_ID as ID2 "
+        + "from T_SCHEMA as SCHEMA1, T_SCHEMA as SCHEMA2 "
+        + "where SCHEMA1.FILENAME=SCHEMA2.FILENAME and SCHEMA1.SCHEMA_SET_ID=:schemaSetId1 and SCHEMA2.SCHEMA_SET_ID=:schemaSetId2";
 
     /**
-     * @see eionet.meta.dao.ISchemaSetDAO#getSchemaSets(eionet.meta.service.data.PagedRequest)
+     * @see eionet.meta.dao.ISchemaSetDAO#searchSchemaSets(eionet.meta.service.data.SchemaSetFilter)
      */
     @Override
     public SchemaSetsResult searchSchemaSets(SchemaSetFilter searchFilter) {
@@ -69,13 +69,13 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT SQL_CALC_FOUND_ROWS SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID ");
-        sql.append("FROM T_SCHEMA_SET ");
+        sql.append("FROM T_SCHEMA_SET WHERE WORKING_COPY=FALSE ");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         // Where clause
         if (searchFilter.isValued()) {
             boolean andOperator = false;
-            sql.append("WHERE ");
+            sql.append("AND ");
             if (StringUtils.isNotEmpty(searchFilter.getIdentifier())) {
                 sql.append("IDENTIFIER like :identifier ");
                 String identifier = "%" + searchFilter.getIdentifier() + "%";
@@ -129,18 +129,22 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         return result;
     }
 
+    /**
+     * @see eionet.meta.dao.ISchemaSetDAO#getSchemaSets(boolean, boolean)
+     */
     @Override
-    public List<SchemaSet> getSchemaSets(boolean limited) {
+    public List<SchemaSet> getSchemaSets(boolean releasedOnly, boolean workingCopy) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID ");
-        sql.append("FROM T_SCHEMA_SET ");
+        sql.append("FROM T_SCHEMA_SET WHERE WORKING_COPY=:workingCopy ");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("workingCopy", workingCopy);
 
-        if (limited) {
+        if (releasedOnly) {
             parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
-            sql.append("WHERE REG_STATUS = :regStatus ");
+            sql.append("and REG_STATUS = :regStatus ");
         }
 
         sql.append("ORDER BY IDENTIFIER");
@@ -231,9 +235,9 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     @Override
     public int createSchemaSet(SchemaSet schemaSet) {
         String insertSql =
-                "insert into T_SCHEMA_SET (IDENTIFIER, CONTINUITY_ID, REG_STATUS, "
-                        + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID) "
-                        + "values (:identifier,  :continuityId, :regStatus, :workingCopy, :workingUser, now(), :userModified, :comment, :checkedOutCopyId)";
+            "insert into T_SCHEMA_SET (IDENTIFIER, CONTINUITY_ID, REG_STATUS, "
+            + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID) "
+            + "values (:identifier,  :continuityId, :regStatus, :workingCopy, :workingUser, now(), :userModified, :comment, :checkedOutCopyId)";
 
         String continuityId = schemaSet.getContinuityId();
         if (StringUtils.isBlank(continuityId)) {
@@ -257,8 +261,8 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     @Override
     public void updateSchemaSet(SchemaSet schemaSet) {
         String sql =
-                "update T_SCHEMA_SET set IDENTIFIER = :identifier, REG_STATUS = :regStatus, DATE_MODIFIED = now(), USER_MODIFIED = :userModified, "
-                        + "COMMENT=ifnull(:comment, COMMENT) where SCHEMA_SET_ID = :id";
+            "update T_SCHEMA_SET set IDENTIFIER = :identifier, REG_STATUS = :regStatus, DATE_MODIFIED = now(), USER_MODIFIED = :userModified, "
+            + "COMMENT=ifnull(:comment, COMMENT) where SCHEMA_SET_ID = :id";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", schemaSet.getId());
         parameters.put("identifier", schemaSet.getIdentifier());
@@ -276,9 +280,9 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         }
 
         String deleteSql =
-                "delete from ATTRIBUTE where M_ATTRIBUTE_ID = :attributeId and DATAELEM_ID = :elementId and PARENT_TYPE = :parentType";
+            "delete from ATTRIBUTE where M_ATTRIBUTE_ID = :attributeId and DATAELEM_ID = :elementId and PARENT_TYPE = :parentType";
         String insertSql =
-                "insert into ATTRIBUTE (M_ATTRIBUTE_ID, DATAELEM_ID, PARENT_TYPE, VALUE) values (:attributeId,:elementId,:parentType,:value)";
+            "insert into ATTRIBUTE (M_ATTRIBUTE_ID, DATAELEM_ID, PARENT_TYPE, VALUE) values (:attributeId,:elementId,:parentType,:value)";
 
         for (Map.Entry<Integer, Set<String>> entry : attributes.entrySet()) {
             Integer attrId = entry.getKey();
@@ -307,8 +311,8 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     public void checkIn(int schemaSetId, String username, String comment) {
 
         String sql =
-                "update T_SCHEMA_SET set WORKING_USER = NULL, WORKING_COPY = 0, DATE_MODIFIED = now(), USER_MODIFIED = :username, "
-                        + "COMMENT = :comment, CHECKEDOUT_COPY_ID=NULL where SCHEMA_SET_ID = :id";
+            "update T_SCHEMA_SET set WORKING_USER = NULL, WORKING_COPY = 0, DATE_MODIFIED = now(), USER_MODIFIED = :username, "
+            + "COMMENT = :comment, CHECKEDOUT_COPY_ID=NULL where SCHEMA_SET_ID = :id";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", schemaSetId);
         parameters.put("username", username);
@@ -319,17 +323,17 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
     /** */
     private static final String CHECK_OUT_SCHEMA_SET = "insert into T_SCHEMA_SET "
-            + "(IDENTIFIER, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID) select "
-            + "ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, SCHEMA_SET_ID from T_SCHEMA_SET "
-            + "where SCHEMA_SET_ID=:schemaSetId";
+        + "(IDENTIFIER, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID) select "
+        + "ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, SCHEMA_SET_ID from T_SCHEMA_SET "
+        + "where SCHEMA_SET_ID=:schemaSetId";
 
     /** */
     private static final String SET_WORKING_USER_SQL =
-            "update T_SCHEMA_SET set WORKING_USER=:userName where SCHEMA_SET_ID=:schemaSetId";
+        "update T_SCHEMA_SET set WORKING_USER=:userName where SCHEMA_SET_ID=:schemaSetId";
 
     /** */
     private static final String REPLACE_ID_SQL =
-            "update T_SCHEMA_SET set SCHEMA_SET_ID=:substituteId where SCHEMA_SET_ID=:replacedId";
+        "update T_SCHEMA_SET set SCHEMA_SET_ID=:substituteId where SCHEMA_SET_ID=:replacedId";
 
     /**
      * @see eionet.meta.dao.ISchemaSetDAO#checkOutSchemaSet(int, java.lang.String, String)

@@ -47,10 +47,11 @@ public interface ISchemaSetDAO {
     /**
      * Returns schema sets.
      *
-     * @param limited
+     * @param releasedOnly
+     * @param workingCopy
      * @return
      */
-    List<SchemaSet> getSchemaSets(boolean limited);
+    List<SchemaSet> getSchemaSets(boolean releasedOnly, boolean workingCopy);
 
     /**
      * Returns schema sets by given ids.

@@ -22,7 +22,9 @@
 package eionet.web.action;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -50,6 +52,8 @@ import eionet.util.SecurityUtil;
 @UrlBinding("/searchSchemaSets.action")
 public class SearchSchemaSetsActionBean extends AbstractActionBean {
 
+    private static final String SEARCH_SCHEMA_SETS_JSP = "/pages/schemaSets/searchSchemaSets.jsp";
+
     /** Schema service. */
     @SpringBean
     private ISchemaService schemaService;
@@ -72,6 +76,9 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
     /** Sorting direction. */
     private String dir;
 
+    /** Ids of search result schema sets that the current user is allowed to delete. */
+    private Set<Integer> deletable;
+
     @DefaultHandler
     public Resolution search() throws ServiceException {
         if (searchFilter == null) {
@@ -93,7 +100,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
         }
 
         schemaSetsResult = schemaService.searchSchemaSets(searchFilter);
-        return new ForwardResolution("/pages/schemaSets/searchSchemaSets.jsp");
+        return new ForwardResolution(SEARCH_SCHEMA_SETS_JSP);
     }
 
     /**
@@ -120,7 +127,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
         if (getUser() != null) {
             try {
                 return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d")
-                        || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
             } catch (Exception e) {
                 LOGGER.error("Failed to read user permission", e);
             }
@@ -230,6 +237,31 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
      */
     public void setSearchFilter(SchemaSetFilter searchFilter) {
         this.searchFilter = searchFilter;
+    }
+
+    /**
+     * @return the deletable
+     * @throws Exception
+     */
+    public Set<Integer> getDeletable() throws Exception {
+
+        if (deletable==null){
+            deletable = new HashSet<Integer>();
+            String userName = getUserName();
+            if (!StringUtils.isBlank(userName)){
+                List<SchemaSet> schemaSets = schemaSetsResult.getList();
+                for (SchemaSet schemaSet : schemaSets) {
+                    // Must not be a working copy, nor must it be checked out
+                    if (!schemaSet.isWorkingCopy() && StringUtils.isBlank(schemaSet.getWorkingUser())){
+                        String permission = schemaSet.getRegStatus().equals(SchemaSet.RegStatus.RELEASED) ? "er" : "d";
+                        if (SecurityUtil.hasPerm(userName, "/schemasets", permission)){
+                            deletable.add(schemaSet.getId());
+                        }
+                    }
+                }
+            }
+        }
+        return deletable;
     }
 
 }

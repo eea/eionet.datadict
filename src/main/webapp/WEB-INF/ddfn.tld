@@ -72,5 +72,16 @@
         <example>
         </example>
     </function>
+    
+    <function>
+        <description>
+            Returns disabled="disabled" if the given condition is true, otherwise returns an empty string.
+        </description>
+        <name>inputDisabledString</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>java.lang.String inputDisabledString(boolean)</function-signature>
+        <example>
+        </example>
+    </function>
 
 </taglib>

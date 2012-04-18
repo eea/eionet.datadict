@@ -48,11 +48,12 @@ public interface ISchemaService {
     /**
      * Returns schema sets.
      *
-     * @param limited
+     * @param releasedOnly
+     * @param workingCopy TODO
      * @return
      * @throws ServiceException
      */
-    List<SchemaSet> getSchemaSets(boolean limited) throws ServiceException;
+    List<SchemaSet> getSchemaSets(boolean releasedOnly, boolean workingCopy) throws ServiceException;
 
     /**
      * Return schema set.

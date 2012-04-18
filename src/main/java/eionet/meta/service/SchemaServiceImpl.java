@@ -87,9 +87,9 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ServiceException
      */
     @Override
-    public List<SchemaSet> getSchemaSets(boolean limited) throws ServiceException {
+    public List<SchemaSet> getSchemaSets(boolean releasedOnly, boolean workingCopy) throws ServiceException {
         try {
-            return schemaSetDAO.getSchemaSets(limited);
+            return schemaSetDAO.getSchemaSets(releasedOnly, workingCopy);
         } catch (Exception e) {
             throw new ServiceException("Failed to get schema sets", e);
         }
@@ -216,7 +216,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username)
-            throws ServiceException {
+    throws ServiceException {
         try {
             schemaSetDAO.updateSchemaSet(schemaSet);
             schemaSetDAO.updateSchemaSetAttributes(schemaSet.getId(), attributes);

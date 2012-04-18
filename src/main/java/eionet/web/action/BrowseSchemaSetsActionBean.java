@@ -21,7 +21,9 @@
 
 package eionet.web.action;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -29,6 +31,9 @@ import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+
+import org.apache.commons.lang.StringUtils;
+
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
@@ -43,6 +48,8 @@ import eionet.util.SecurityUtil;
 @UrlBinding("/schemaSets.action")
 public class BrowseSchemaSetsActionBean extends AbstractActionBean {
 
+    private static final String BROWSE_SCHEMA_SETS_JSP = "/pages/schemaSets/browseSchemaSets.jsp";
+
     /** Schema service. */
     @SpringBean
     private ISchemaService schemaService;
@@ -53,11 +60,17 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     /** Selected ids. */
     private List<Integer> selected;
 
+    /** Ids of schema sets that the current user is allowed to delete. */
+    private Set<Integer> deletable;
+
+    /** If true, only working copies must be listed. If false, only non-working copies must be listed.*/
+    private boolean workingCopy;
+
     @DefaultHandler
     public Resolution viewList() throws ServiceException {
-        boolean limited = getUser() == null;
-        schemaSets = schemaService.getSchemaSets(limited);
-        return new ForwardResolution("/pages/schemaSets/browseSchemaSets.jsp");
+        boolean listReleasedOnly = getUser() == null;
+        schemaSets = schemaService.getSchemaSets(listReleasedOnly, workingCopy);
+        return new ForwardResolution(BROWSE_SCHEMA_SETS_JSP);
     }
 
     /**
@@ -73,13 +86,20 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
             } catch (ValidationException e) {
                 LOGGER.info(e.getMessage());
                 addGlobalValidationError(e.getMessage());
+                return viewList();
             }
         } else {
             addGlobalValidationError("Cannot delete. No permission.");
+            return viewList();
         }
+
         return new RedirectResolution(BrowseSchemaSetsActionBean.class);
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean isDeletePermission() {
         if (getUser() != null) {
             try {
@@ -119,6 +139,37 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
      */
     public void setSchemaService(ISchemaService schemaService) {
         this.schemaService = schemaService;
+    }
+
+    /**
+     * @return the deletable
+     * @throws Exception
+     */
+    public Set<Integer> getDeletable() throws Exception {
+
+        if (deletable==null){
+            deletable = new HashSet<Integer>();
+            String userName = getUserName();
+            if (!StringUtils.isBlank(userName)){
+                for (SchemaSet schemaSet : schemaSets) {
+                    // Must not be a working copy, nor must it be checked out
+                    if (!schemaSet.isWorkingCopy() && StringUtils.isBlank(schemaSet.getWorkingUser())){
+                        String permission = schemaSet.getRegStatus().equals(SchemaSet.RegStatus.RELEASED) ? "er" : "d";
+                        if (SecurityUtil.hasPerm(userName, "/schemasets", permission)){
+                            deletable.add(schemaSet.getId());
+                        }
+                    }
+                }
+            }
+        }
+        return deletable;
+    }
+
+    /**
+     * @param workingCopy the workingCopy to set
+     */
+    public void setWorkingCopy(boolean workingCopy) {
+        this.workingCopy = workingCopy;
     }
 
 }

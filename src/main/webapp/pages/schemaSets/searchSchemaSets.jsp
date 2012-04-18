@@ -35,26 +35,44 @@
 
             <display:table name="actionBean.schemaSetsResult" class="sortable" id="item" requestURI="/searchSchemaSets.action">
 
-                <c:if test="${actionBean.deletePermission}">
-                <display:column title="" sortable="true" sortName="sortName" sortProperty="identifier">
-                    <stripes:checkbox name="selected" value="${item.id}" />
-                </display:column>
+                <c:if test="${not empty actionBean.user}">
+                    <display:column title="" sortable="true" sortName="sortName" sortProperty="identifier">
+	                    <c:choose>
+	                        <c:when test="${ddfn:contains(actionBean.deletable,item.id)}">
+	                            <stripes:checkbox name="selected" value="${item.id}" />
+	                        </c:when>
+	                        <c:otherwise>
+	                            <input type="checkbox" disabled="disabled" title="Schema set in registered status or currently checked out"/>
+	                        </c:otherwise>
+                    </c:choose>
+                    </display:column>
                 </c:if>
-
+                        
                 <display:column title="Identifier" sortable="true" sortName="sortName" sortProperty="identifier">
                     <stripes:link href="/schemaSet.action">
                         <stripes:param name="schemaSet.id" value="${item.id}" />
                         <c:out value="${item.identifier}" />
                     </stripes:link>
+                    <c:if test="${not empty item.workingUser}">
+                        <span title="Checked out by ${item.workingUser}" class="checkedout"><strong>*</strong></span>
+                    </c:if>
                 </display:column>
                 <display:column title="Reg. status" sortable="true" sortProperty="reg_status">
                     <c:out value="${item.regStatus}" />
                 </display:column>
             </display:table>
 
-            <c:if test="${actionBean.deletePermission && not empty actionBean.schemaSetsResult.list}">
-                <stripes:submit name="delete" value="Delete" />
-                <input type="button" onclick="toggleSelectAll('searchResultsForm');return false" value="Select all" name="selectAll">
+            <c:if test="${not empty actionBean.user && not empty actionBean.schemaSetsResult.list}">
+                <c:choose>
+                    <c:when test="${not empty actionBean.deletable}">
+                        <stripes:submit name="delete" value="Delete"/>
+                        <input type="button" onclick="toggleSelectAll('schemaSetsForm');return false" value="Select all" name="selectAll" />
+                    </c:when>
+                    <c:otherwise>
+                        <stripes:submit disabled="disabled" name="delete" value="Delete"/>
+                        <input disabled="disabled" type="button" onclick="toggleSelectAll('schemaSetsForm');return false" value="Select all" name="selectAll" />
+                    </c:otherwise>
+                </c:choose>
             </c:if>
 
         </stripes:form>
