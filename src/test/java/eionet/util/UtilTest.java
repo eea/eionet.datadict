@@ -28,7 +28,7 @@ public class UtilTest extends TestCase {
         "http://cdr.eionet.europa.eu/search?y=1&amp;z=7");
 
         // Test Unicode char
-        assertEquals(Util.processForDisplay("€"), "€");
+        assertEquals(Util.processForDisplay("€"), "&#8364;");
 
         // Test HTML tags
         assertEquals(Util.processForDisplay("<div class='Apostrophs'>"), "&lt;div class=&#039;Apostrophs&#039;&gt;");
@@ -44,4 +44,17 @@ public class UtilTest extends TestCase {
         assertTrue(Util.isURI("ftp://ftp.eionet.europa.eu/"));
         assertTrue(Util.isURI("XXX"));
     }
+
+    public void test_setAnchorsInParenthesis() {
+        assertEquals(
+                "Some text (<a href=\"http://en.wikipedia.org/wiki/Fahrvergnügen\">http://en.wikipedia.org/wiki/Fahrvergnügen</a>).",
+                Util.processForLink("Some text (http://en.wikipedia.org/wiki/Fahrvergnügen).", false, 100));
+        assertEquals(
+                "Some text (<a href=\"http://en.wikipedia.org/wiki/Fahrvergnügen\">http://en.wikipedia.org/wiki/Fahrvergnügen</a> ).",
+                Util.processForLink("Some text (http://en.wikipedia.org/wiki/Fahrvergnügen ).", false, 100));
+        assertEquals(
+                "Some text ( <a href=\"http://en.wikipedia.org/wiki/Fahrvergnügen\">http://en.wikipedia.org/wiki/Fahrvergnügen</a>).",
+                Util.processForLink("Some text ( http://en.wikipedia.org/wiki/Fahrvergnügen).", false, 100));
+    }
+
 }
