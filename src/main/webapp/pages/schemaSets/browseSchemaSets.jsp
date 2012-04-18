@@ -23,7 +23,7 @@
             </ul>
         </div>
         
-        <h1>Schema sets</h1>
+        <h1>Browse schema sets and schemas</h1>
 
         <c:if test="${empty actionBean.schemaSets}">
             <div style="margin-top:1em">

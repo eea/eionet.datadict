@@ -95,7 +95,8 @@ public class SchemaSet {
     }
 
     /**
-     * @param isWorkingCopy the isWorkingCopy to set
+     * @param isWorkingCopy
+     *            the isWorkingCopy to set
      */
     public void setWorkingCopy(boolean isWorkingCopy) {
         this.isWorkingCopy = isWorkingCopy;
@@ -109,7 +110,8 @@ public class SchemaSet {
     }
 
     /**
-     * @param workingUser the workingUser to set
+     * @param workingUser
+     *            the workingUser to set
      */
     public void setWorkingUser(String workingUser) {
         this.workingUser = workingUser;
@@ -255,4 +257,29 @@ public class SchemaSet {
         this.selected = selected;
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean isCheckedOut() {
+        return isWorkingCopy == false && (workingUser != null && !workingUser.isEmpty());
+    }
+
+    /**
+     * 
+     * @param userName
+     * @return
+     */
+    public boolean isWorkingCopyOf(String userName) {
+        return isWorkingCopy && workingUser != null && workingUser.equals(userName);
+    }
+
+    /**
+     * 
+     * @param userName
+     * @return
+     */
+    public boolean isCheckedOutBy(String userName) {
+        return isWorkingCopy == false && workingUser != null && workingUser.equals(userName);
+    }
 }

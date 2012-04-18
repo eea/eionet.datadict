@@ -45,7 +45,7 @@ import eionet.util.SecurityUtil;
 
 /**
  * Schema service implementation.
- *
+ * 
  * @author Juhan Voolaid
  */
 @Service
@@ -69,7 +69,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @throws ServiceException
      */
     @Override
@@ -83,7 +83,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @throws ServiceException
      */
     @Override
@@ -97,27 +97,30 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @throws ServiceException
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void deleteSchemaSets(List<Integer> ids, String username) throws ServiceException {
+        doDeleteSchemaSets(ids, username);
+    }
+
+    /**
+     * @param ids
+     * @param username
+     * @throws ServiceException
+     */
+    private void doDeleteSchemaSets(List<Integer> ids, String username) throws ServiceException {
         try {
             // Validate permissions
-            boolean deletePerm = SecurityUtil.hasPerm(username, "/schemasets", "d");
-            boolean deleteReleasedPerm = SecurityUtil.hasPerm(username, "/schemasets", "er");
+            boolean deletePerm = username != null && SecurityUtil.hasPerm(username, "/schemasets", "d");
+            boolean deleteReleasedPerm = username != null && SecurityUtil.hasPerm(username, "/schemasets", "er");
             if (!deletePerm && !deleteReleasedPerm) {
                 throw new ValidationException("No delete permission");
             }
             List<SchemaSet> schemaSets = schemaSetDAO.getSchemaSets(ids);
-            for (SchemaSet ss : schemaSets) {
-                if (ss.getRegStatus().equals(SchemaSet.RegStatus.RELEASED)) {
-                    if (!deleteReleasedPerm) {
-                        throw new ValidationException("No permission to delete released schema set: " + ss.getIdentifier());
-                    }
-                }
-            }
+            ensureDeleteAllowed(username, deleteReleasedPerm, schemaSets);
 
             // Delete schemas
             List<Integer> schemaIds = schemaDAO.getSchemaIds(ids);
@@ -139,12 +142,32 @@ public class SchemaServiceImpl implements ISchemaService {
         } catch (Exception e) {
             throw new ServiceException("Failed to delete schema sets", e);
         }
+    }
 
+    /**
+     * @param username
+     * @param deleteReleasedPerm
+     * @param schemaSets
+     * @throws ValidationException
+     */
+    private void ensureDeleteAllowed(String username, boolean deleteReleasedPerm, List<SchemaSet> schemaSets)
+    throws ValidationException {
+        for (SchemaSet schemaSet : schemaSets) {
+            if (schemaSet.isCheckedOut()) {
+                throw new ValidationException("Cannot delete a checked-out schema set: " + schemaSet.getIdentifier());
+            } else if (schemaSet.isWorkingCopy() && !StringUtils.equals(username, schemaSet.getWorkingUser())) {
+                throw new ValidationException("Cannot delete another user's working copy: " + schemaSet.getIdentifier());
+            } else if (schemaSet.getRegStatus().equals(SchemaSet.RegStatus.RELEASED)) {
+                if (!deleteReleasedPerm) {
+                    throw new ValidationException("No permission to delete released schema set: " + schemaSet.getIdentifier());
+                }
+            }
+        }
     }
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @throws ServiceException
      */
     @Override
@@ -155,7 +178,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * Deletes schemas with given ids.
-     *
+     * 
      * @param ids
      * @throws ServiceException
      */
@@ -179,7 +202,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @throws ServiceException
      */
     @Override
@@ -193,7 +216,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @throws ServiceException
      */
     @Override
@@ -210,7 +233,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @throws ServiceException
      */
     @Override
@@ -285,7 +308,7 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     *
+     * 
      * @param replacedId
      * @param substituteId
      */
@@ -295,7 +318,7 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     *
+     * 
      * @param oldId
      * @param substituteId
      */
@@ -361,5 +384,40 @@ public class SchemaServiceImpl implements ISchemaService {
         }
 
         return newSchemaSetId;
+    }
+
+    /**
+     * @see eionet.meta.service.ISchemaService#undoCheckOutSchemaSet(int, java.lang.String)
+     */
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public int undoCheckOutSchemaSet(int schemaSetId, String username) throws ServiceException {
+
+        try {
+            int result = 0;
+            SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
+            if (schemaSet != null) {
+                doDeleteSchemaSets(Collections.singletonList(schemaSetId), username);
+                schemaSetDAO.unlock(schemaSet.getCheckedOutCopyId());
+                result = schemaSet.getCheckedOutCopyId();
+            }
+
+            return result;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to undo check-out of schema set", e);
+        }
+    }
+
+    /**
+     * @see eionet.meta.service.ISchemaService#getWorkingCopyOfSchemaSet(int)
+     */
+    @Override
+    public SchemaSet getWorkingCopyOfSchemaSet(int checkedOutCopyId) throws ServiceException {
+
+        try {
+            return schemaSetDAO.getWorkingCopyOfSchemaSet(checkedOutCopyId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get working copy of schema set " + checkedOutCopyId, e);
+        }
     }
 }

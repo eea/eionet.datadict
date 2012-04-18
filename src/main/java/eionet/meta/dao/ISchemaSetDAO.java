@@ -136,4 +136,11 @@ public interface ISchemaSetDAO {
      * @param substituteId
      */
     void replaceId(int replacedId, int substituteId);
+
+    /**
+     * 
+     * @param checkedOutCopyId
+     * @return
+     */
+    SchemaSet getWorkingCopyOfSchemaSet(int checkedOutCopyId);
 }

@@ -137,4 +137,21 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     int checkOutSchemaSet(int schemaSetId, String username, String newIdentifier) throws ServiceException;
+
+    /**
+     * 
+     * @param checkedOutCopyId
+     * @return
+     * @throws ServiceException
+     */
+    SchemaSet getWorkingCopyOfSchemaSet(int checkedOutCopyId) throws ServiceException;
+
+    /**
+     * 
+     * @param schemaSetId
+     * @param username
+     * @return TODO
+     * @throws ServiceException
+     */
+    int undoCheckOutSchemaSet(int schemaSetId, String username) throws ServiceException;
 }

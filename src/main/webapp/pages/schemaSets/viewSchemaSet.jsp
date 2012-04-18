@@ -34,43 +34,46 @@
     <stripes:layout-component name="contents">
     
     <c:if test="${not empty actionBean.userName}">
-        <div id="drop-operations">
-            <h2>Operations:</h2>
-            <ul>
-                <c:if test="${actionBean.schemaSet.workingCopy && actionBean.userName==actionBean.schemaSet.workingUser}">               
-	                <li>
-                        <stripes:link beanclass="${actionBean.class.name}" event="edit">Edit metadata
-                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-                        </stripes:link>
-	                </li>
-	                <li>
-                        <stripes:link beanclass="${actionBean.class.name}" event="checkIn">Check in
-                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-                        </stripes:link>
-                    </li>
-                    <li>
-                        <stripes:link beanclass="${actionBean.class.name}" event="undoCheckout">Undo checkout
-                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-                        </stripes:link>
-                    </li>
-                </c:if>
-                <c:if test="${not actionBean.schemaSet.workingCopy}">
-                    <li>
-                        <a href="#" id="newVersionLink">New version</a>
-                    </li>
-                    <li>
-                        <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
-                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-                        </stripes:link>
-                    </li>
-                    <li>
-                        <stripes:link beanclass="${actionBean.class.name}" event="delete">Delete
-                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-                        </stripes:link>
-                    </li>
-                </c:if>
-            </ul>
-        </div>
+        <c:set var="isMyWorkingCopy" value="${actionBean.schemaSet.workingCopy && actionBean.userName==actionBean.schemaSet.workingUser}"/>
+        <c:if test="${empty actionBean.schemaSet.workingUser || isMyWorkingCopy}">
+	        <div id="drop-operations">
+	            <h2>Operations:</h2>
+	            <ul>
+	                <c:if test="${isMyWorkingCopy}">               
+		                <li>
+	                        <stripes:link beanclass="${actionBean.class.name}" event="edit">Edit metadata
+	                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+	                        </stripes:link>
+		                </li>
+		                <li>
+	                        <stripes:link beanclass="${actionBean.class.name}" event="checkIn">Check in
+	                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+	                        </stripes:link>
+	                    </li>
+	                    <li>
+	                        <stripes:link beanclass="${actionBean.class.name}" event="undoCheckout">Undo checkout
+	                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+	                        </stripes:link>
+	                    </li>
+	                </c:if>
+	                <c:if test="${empty actionBean.schemaSet.workingUser}">
+	                    <li>
+	                        <a href="#" id="newVersionLink">New version</a>
+	                    </li>
+	                    <li>
+	                        <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
+	                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+	                        </stripes:link>
+	                    </li>
+	                    <li>
+	                        <stripes:link beanclass="${actionBean.class.name}" event="delete">Delete
+	                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+	                        </stripes:link>
+	                    </li>
+	                </c:if>
+	            </ul>
+	        </div>
+        </c:if>
     </c:if>
     
     <h1>View schema set</h1>

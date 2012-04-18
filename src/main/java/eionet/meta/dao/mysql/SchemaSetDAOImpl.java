@@ -45,7 +45,7 @@ import eionet.util.Util;
 
 /**
  * SchemaSet DAO implementation.
- *
+ * 
  * @author Juhan Voolaid
  */
 @Repository
@@ -59,6 +59,24 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         "select SCHEMA1.SCHEMA_ID as ID1, SCHEMA2.SCHEMA_ID as ID2 "
         + "from T_SCHEMA as SCHEMA1, T_SCHEMA as SCHEMA2 "
         + "where SCHEMA1.FILENAME=SCHEMA2.FILENAME and SCHEMA1.SCHEMA_SET_ID=:schemaSetId1 and SCHEMA2.SCHEMA_SET_ID=:schemaSetId2";
+
+    /** */
+    private static final String CHECK_OUT_SCHEMA_SET = "insert into T_SCHEMA_SET "
+        + "(IDENTIFIER, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID) select "
+        + "ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, SCHEMA_SET_ID from T_SCHEMA_SET "
+        + "where SCHEMA_SET_ID=:schemaSetId";
+
+    /** */
+    private static final String SET_WORKING_USER_SQL =
+        "update T_SCHEMA_SET set WORKING_USER=:userName where SCHEMA_SET_ID=:schemaSetId";
+
+    /** */
+    private static final String REPLACE_ID_SQL =
+        "update T_SCHEMA_SET set SCHEMA_SET_ID=:substituteId where SCHEMA_SET_ID=:replacedId";
+
+    /** */
+    private static final String GET_WORKING_COPY_OF_SQL =
+        "select * from T_SCHEMA_SET where WORKING_COPY=true and CHECKEDOUT_COPY_ID = :checkedOutCopyId";
 
     /**
      * @see eionet.meta.dao.ISchemaSetDAO#searchSchemaSets(eionet.meta.service.data.SchemaSetFilter)
@@ -321,20 +339,6 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         getNamedParameterJdbcTemplate().update(sql, parameters);
     }
 
-    /** */
-    private static final String CHECK_OUT_SCHEMA_SET = "insert into T_SCHEMA_SET "
-        + "(IDENTIFIER, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID) select "
-        + "ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, SCHEMA_SET_ID from T_SCHEMA_SET "
-        + "where SCHEMA_SET_ID=:schemaSetId";
-
-    /** */
-    private static final String SET_WORKING_USER_SQL =
-        "update T_SCHEMA_SET set WORKING_USER=:userName where SCHEMA_SET_ID=:schemaSetId";
-
-    /** */
-    private static final String REPLACE_ID_SQL =
-        "update T_SCHEMA_SET set SCHEMA_SET_ID=:substituteId where SCHEMA_SET_ID=:replacedId";
-
     /**
      * @see eionet.meta.dao.ISchemaSetDAO#checkOutSchemaSet(int, java.lang.String, String)
      */
@@ -402,4 +406,32 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         getNamedParameterJdbcTemplate().update(REPLACE_ID_SQL, params);
     }
 
+    /**
+     * @see eionet.meta.dao.ISchemaSetDAO#getWorkingCopyOfSchemaSet(int)
+     */
+    @Override
+    public SchemaSet getWorkingCopyOfSchemaSet(int checkedOutCopyId) {
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("checkedOutCopyId", checkedOutCopyId);
+
+        SchemaSet result =
+            getNamedParameterJdbcTemplate().queryForObject(GET_WORKING_COPY_OF_SQL, parameters, new RowMapper<SchemaSet>() {
+                public SchemaSet mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    SchemaSet ss = new SchemaSet();
+                    ss.setId(rs.getInt("SCHEMA_SET_ID"));
+                    ss.setIdentifier(rs.getString("IDENTIFIER"));
+                    ss.setContinuityId(rs.getString("CONTINUITY_ID"));
+                    ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                    ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                    ss.setWorkingUser(rs.getString("WORKING_USER"));
+                    ss.setDateModified(rs.getDate("DATE_MODIFIED"));
+                    ss.setUserModified(rs.getString("USER_MODIFIED"));
+                    ss.setComment(rs.getString("COMMENT"));
+                    ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                    return ss;
+                }
+            });
+        return result;
+    }
 }

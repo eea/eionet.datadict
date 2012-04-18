@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -40,9 +41,9 @@ import eionet.meta.service.ServiceException;
 import eionet.web.util.Tab;
 
 /**
- *
+ * 
  * @author Jaanus Heinlaid
- *
+ * 
  */
 @UrlBinding("/schemaSet.action")
 public class SchemaSetActionBean extends AbstractActionBean {
@@ -95,7 +96,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * View action.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -105,16 +106,28 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         loadSchemaSet();
 
+        // If checked out by me, redirect to my working copy
+        if (isUserLoggedIn() && schemaSet.isCheckedOutBy(getUserName())){
+            SchemaSet workingCopy = schemaService.getWorkingCopyOfSchemaSet(schemaSet.getId());
+            if (workingCopy==null){
+                throw new ServiceException("Failed to find working copy of schema set " + schemaSet.getId());
+            }
+            else{
+                return new RedirectResolution(getClass()).addParameter("schemaSet.id", workingCopy.getId());
+            }
+        }
+
         Resolution resolution = new ForwardResolution(VIEW_SCHEMA_SET_JSP);
         if (tab != null && tab.equals(SCHEMAS_TAB)) {
             resolution = new ForwardResolution(SCHEMA_SET_SCHEMAS_JSP);
         }
         return resolution;
+
     }
 
     /**
      * Edit action.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -132,7 +145,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Add action.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -148,7 +161,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Save action.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -159,7 +172,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Save and close action.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -170,7 +183,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Cancel action.
-     *
+     * 
      * @return
      * @throws DAOException
      */
@@ -180,7 +193,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Check in action.
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -190,7 +203,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -200,7 +213,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -211,13 +224,13 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     *
+     * 
      * @throws DAOException
      */
     @ValidationMethod(on = {"newVersion"})
     public void validateNewVersion() throws DAOException {
 
-        if (StringUtils.isBlank(newIdentifier)){
+        if (StringUtils.isBlank(newIdentifier)) {
             addGlobalValidationError("New identifier is missing!");
             return;
         }
@@ -228,13 +241,26 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * 
      * @return
+     * @throws ServiceException
      */
-    public Resolution delete() {
-        throw new UnsupportedOperationException("Action not impemented yet!");
+    public Resolution delete() throws ServiceException {
+        schemaService.deleteSchemaSets(Collections.singletonList(schemaSet.getId()), getUserName());
+        // TODO add notification message
+        return new RedirectResolution(BrowseSchemaSetsActionBean.class);
     }
 
     /**
-     *
+     * 
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution undoCheckout() throws ServiceException {
+        int checkedOutCopyId = schemaService.undoCheckOutSchemaSet(schemaSet.getId(), getUserName());
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", checkedOutCopyId);
+    }
+
+    /**
+     * 
      * @return
      * @throws ServiceException
      */
@@ -250,7 +276,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Loads schema set.
-     *
+     * 
      * @throws ServiceException
      * @throws IOException
      */
@@ -282,7 +308,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     *
+     * 
      * @throws ServiceException
      */
     private void loadSchemaSet() throws ServiceException {
@@ -313,7 +339,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     *
+     * 
      * @return
      */
     public boolean isUserWorkingCopy() {
@@ -331,7 +357,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     *
+     * 
      * @return
      * @throws ServiceException
      */
@@ -480,7 +506,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     *
+     * 
      * @return
      */
     public List<Tab> getTabs() {
@@ -544,9 +570,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
         this.schemaRepository = schemaRepository;
     }
 
-
     /**
-     * @param newIdentifier the newIdentifier to set
+     * @param newIdentifier
+     *            the newIdentifier to set
      */
     public void setNewIdentifier(String newIdentifier) {
         this.newIdentifier = newIdentifier;
