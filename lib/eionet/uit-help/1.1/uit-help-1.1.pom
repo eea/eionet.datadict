@@ -1,0 +1,17 @@
+<?xml version="1.0"?><project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>eionet.uit-help</groupId>
+  <artifactId>uit-help</artifactId>
+  <name>Help service</name>
+  <version>1.1</version>
+  <dependencies>
+    <dependency>
+      <groupId>eionet</groupId>
+      <artifactId>uit-security</artifactId>
+      <version>1.1c</version>
+    </dependency>
+  </dependencies>
+  <distributionManagement>
+    <status>deployed</status>
+  </distributionManagement>
+</project>
