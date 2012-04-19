@@ -273,27 +273,30 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Get checked-out copy id, see if we're overwriting it.
             int checkedOutCopyId = schemaSet.getCheckedOutCopyId();
-            SchemaSet checkedOutCopy = schemaSetDAO.getSchemaSet(checkedOutCopyId);
-            boolean isOverwrite = checkedOutCopy != null && checkedOutCopy.getIdentifier().equals(schemaSet.getIdentifier());
-            if (isOverwrite) {
-                // Remember id-mappings between the schemas of the two schema sets.
-                Map<Integer, Integer> schemaMappings = schemaSetDAO.getSchemaMappings(checkedOutCopyId, schemaSetId);
+            boolean isOverwrite = false;
+            if (checkedOutCopyId > 0) {
+                SchemaSet checkedOutCopy = schemaSetDAO.getSchemaSet(checkedOutCopyId);
+                isOverwrite = checkedOutCopy != null && checkedOutCopy.getIdentifier().equals(schemaSet.getIdentifier());
+                if (isOverwrite) {
+                    // Remember id-mappings between the schemas of the two schema sets.
+                    Map<Integer, Integer> schemaMappings = schemaSetDAO.getSchemaMappings(checkedOutCopyId, schemaSetId);
 
-                // Delete the checked-out copy.
-                deleteSchemaSets(Collections.singletonList(checkedOutCopyId), username);
+                    // Delete the checked-out copy.
+                    deleteSchemaSets(Collections.singletonList(checkedOutCopyId), username);
 
-                // Schemas of the new schema set must get the ids of the schemas that were in the checked-out copy.
-                for (Map.Entry<Integer, Integer> entry : schemaMappings.entrySet()) {
-                    Integer substituteSchemaId = entry.getKey();
-                    Integer replacedSchemaId = entry.getValue();
-                    replaceSchemaId(replacedSchemaId, substituteSchemaId);
+                    // Schemas of the new schema set must get the ids of the schemas that were in the checked-out copy.
+                    for (Map.Entry<Integer, Integer> entry : schemaMappings.entrySet()) {
+                        Integer substituteSchemaId = entry.getKey();
+                        Integer replacedSchemaId = entry.getValue();
+                        replaceSchemaId(replacedSchemaId, substituteSchemaId);
+                    }
+
+                    // Checked-in schema set must get the ID of the checked-out copy.
+                    replaceSchemaSetId(schemaSetId, checkedOutCopyId);
+                } else {
+                    // Unlock checked-out copy.
+                    schemaSetDAO.unlock(checkedOutCopyId);
                 }
-
-                // Checked-in schema set must get the ID of the checked-out copy.
-                replaceSchemaSetId(schemaSetId, checkedOutCopyId);
-            } else {
-                // Unlock checked-out copy.
-                schemaSetDAO.unlock(checkedOutCopyId);
             }
 
             // Update the checked-in schema set.
@@ -396,8 +399,11 @@ public class SchemaServiceImpl implements ISchemaService {
             SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
             if (schemaSet != null) {
                 doDeleteSchemaSets(Collections.singletonList(schemaSetId), username);
-                schemaSetDAO.unlock(schemaSet.getCheckedOutCopyId());
-                result = schemaSet.getCheckedOutCopyId();
+                int checkedOutCopyId = schemaSet.getCheckedOutCopyId();
+                if (checkedOutCopyId > 0) {
+                    schemaSetDAO.unlock(checkedOutCopyId);
+                    result = checkedOutCopyId;
+                }
             }
 
             return result;

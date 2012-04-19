@@ -41,9 +41,9 @@ import eionet.meta.service.ServiceException;
 import eionet.web.util.Tab;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid
- * 
+ *
  */
 @UrlBinding("/schemaSet.action")
 public class SchemaSetActionBean extends AbstractActionBean {
@@ -96,7 +96,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * View action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -127,7 +127,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Edit action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -145,7 +145,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Add action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -161,7 +161,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Save action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -172,7 +172,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Save and close action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -183,7 +183,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Cancel action.
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -193,7 +193,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Check in action.
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -203,7 +203,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -213,7 +213,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -224,7 +224,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @throws DAOException
      */
     @ValidationMethod(on = {"newVersion"})
@@ -239,7 +239,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -250,17 +250,22 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
     public Resolution undoCheckout() throws ServiceException {
         int checkedOutCopyId = schemaService.undoCheckOutSchemaSet(schemaSet.getId(), getUserName());
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", checkedOutCopyId);
+        if (checkedOutCopyId > 0){
+            return new RedirectResolution(getClass()).addParameter("schemaSet.id", checkedOutCopyId);
+        }
+        else{
+            return new RedirectResolution(BrowseSchemaSetsActionBean.class);
+        }
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -276,7 +281,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * Loads schema set.
-     * 
+     *
      * @throws ServiceException
      * @throws IOException
      */
@@ -308,7 +313,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @throws ServiceException
      */
     private void loadSchemaSet() throws ServiceException {
@@ -339,7 +344,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isUserWorkingCopy() {
@@ -357,7 +362,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ServiceException
      */
@@ -506,7 +511,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public List<Tab> getTabs() {

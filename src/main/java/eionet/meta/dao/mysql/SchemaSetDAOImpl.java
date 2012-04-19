@@ -159,12 +159,12 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID ");
-        sql.append("FROM T_SCHEMA_SET ");
+        sql.append("FROM T_SCHEMA_SET WHERE WORKING_COPY=FALSE ");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         if (releasedOnly) {
             parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
-            sql.append("WHERE and REG_STATUS = :regStatus ");
+            sql.append("and REG_STATUS = :regStatus ");
         }
 
         sql.append("ORDER BY IDENTIFIER");
