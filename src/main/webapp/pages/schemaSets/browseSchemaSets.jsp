@@ -16,13 +16,13 @@
                 <li><a href="${pageContext.request.contextPath}/schemaSet.action?add=">Add schema set</a></li>
                 <li><a href="${pageContext.request.contextPath}/searchSchemaSets.action">Search schema sets</a></li>
                 <c:if test="${not empty actionBean.user}">
-                    <stripes:link beanclass="${actionBean.class.name}">List my working copies
-                        <stripes:param name="workingCopy" value="true"/>
+                    <stripes:link beanclass="${actionBean.class.name}" event="workingCopies">
+                        List my working copies
                     </stripes:link>
                 </c:if>
             </ul>
         </div>
-        
+
         <h1>Browse schema sets and schemas</h1>
 
         <c:if test="${empty actionBean.schemaSets}">
@@ -60,7 +60,7 @@
                 </c:forEach>
             </ul>
             <br/>
-            
+
             <c:if test="${not empty actionBean.user && not empty actionBean.schemaSets}">
 	            <c:choose>
 	                <c:when test="${not empty actionBean.deletable}">
@@ -73,7 +73,7 @@
 	                </c:otherwise>
 	            </c:choose>
             </c:if>
-            
+
         </stripes:form>
 
     </stripes:layout-component>

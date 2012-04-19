@@ -45,7 +45,7 @@ import eionet.util.Util;
 
 /**
  * SchemaSet DAO implementation.
- * 
+ *
  * @author Juhan Voolaid
  */
 @Repository
@@ -77,6 +77,10 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     /** */
     private static final String GET_WORKING_COPY_OF_SQL =
         "select * from T_SCHEMA_SET where WORKING_COPY=true and CHECKEDOUT_COPY_ID = :checkedOutCopyId";
+
+    /** */
+    private static final String GET_WORKING_COPIES_SQL =
+        "select * from T_SCHEMA_SET where WORKING_COPY=true and WORKING_USER=:userName order by IDENTIFIER asc";
 
     /**
      * @see eionet.meta.dao.ISchemaSetDAO#searchSchemaSets(eionet.meta.service.data.SchemaSetFilter)
@@ -148,21 +152,19 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     }
 
     /**
-     * @see eionet.meta.dao.ISchemaSetDAO#getSchemaSets(boolean, boolean)
+     * @see eionet.meta.dao.ISchemaSetDAO#getSchemaSets(boolean)
      */
     @Override
-    public List<SchemaSet> getSchemaSets(boolean releasedOnly, boolean workingCopy) {
+    public List<SchemaSet> getSchemaSets(boolean releasedOnly) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID ");
-        sql.append("FROM T_SCHEMA_SET WHERE WORKING_COPY=:workingCopy ");
+        sql.append("FROM T_SCHEMA_SET ");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("workingCopy", workingCopy);
-
         if (releasedOnly) {
             parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
-            sql.append("and REG_STATUS = :regStatus ");
+            sql.append("WHERE and REG_STATUS = :regStatus ");
         }
 
         sql.append("ORDER BY IDENTIFIER");
@@ -433,5 +435,35 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 }
             });
         return result;
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaSetDAO#getWorkingCopiesOf(java.lang.String)
+     */
+    @Override
+    public List<SchemaSet> getWorkingCopiesOf(String userName) {
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("userName", userName);
+
+        List<SchemaSet> resultList =
+            getNamedParameterJdbcTemplate().query(GET_WORKING_COPIES_SQL, parameters, new RowMapper<SchemaSet>() {
+                public SchemaSet mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    SchemaSet ss = new SchemaSet();
+                    ss.setId(rs.getInt("SCHEMA_SET_ID"));
+                    ss.setIdentifier(rs.getString("IDENTIFIER"));
+                    ss.setContinuityId(rs.getString("CONTINUITY_ID"));
+                    ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                    ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                    ss.setWorkingUser(rs.getString("WORKING_USER"));
+                    ss.setDateModified(rs.getDate("DATE_MODIFIED"));
+                    ss.setUserModified(rs.getString("USER_MODIFIED"));
+                    ss.setComment(rs.getString("COMMENT"));
+                    ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                    return ss;
+                }
+            });
+
+        return resultList;
     }
 }

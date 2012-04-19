@@ -48,10 +48,9 @@ public interface ISchemaSetDAO {
      * Returns schema sets.
      *
      * @param releasedOnly
-     * @param workingCopy
      * @return
      */
-    List<SchemaSet> getSchemaSets(boolean releasedOnly, boolean workingCopy);
+    List<SchemaSet> getSchemaSets(boolean releasedOnly);
 
     /**
      * Returns schema sets by given ids.
@@ -138,9 +137,16 @@ public interface ISchemaSetDAO {
     void replaceId(int replacedId, int substituteId);
 
     /**
-     * 
+     *
      * @param checkedOutCopyId
      * @return
      */
     SchemaSet getWorkingCopyOfSchemaSet(int checkedOutCopyId);
+
+    /**
+     *
+     * @param userName
+     * @return
+     */
+    List<SchemaSet> getWorkingCopiesOf(String userName);
 }

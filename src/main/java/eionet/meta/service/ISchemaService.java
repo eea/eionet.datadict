@@ -49,11 +49,10 @@ public interface ISchemaService {
      * Returns schema sets.
      *
      * @param releasedOnly
-     * @param workingCopy TODO
      * @return
      * @throws ServiceException
      */
-    List<SchemaSet> getSchemaSets(boolean releasedOnly, boolean workingCopy) throws ServiceException;
+    List<SchemaSet> getSchemaSets(boolean releasedOnly) throws ServiceException;
 
     /**
      * Return schema set.
@@ -139,7 +138,7 @@ public interface ISchemaService {
     int checkOutSchemaSet(int schemaSetId, String username, String newIdentifier) throws ServiceException;
 
     /**
-     * 
+     *
      * @param checkedOutCopyId
      * @return
      * @throws ServiceException
@@ -147,11 +146,19 @@ public interface ISchemaService {
     SchemaSet getWorkingCopyOfSchemaSet(int checkedOutCopyId) throws ServiceException;
 
     /**
-     * 
+     *
      * @param schemaSetId
      * @param username
-     * @return TODO
+     * @return
      * @throws ServiceException
      */
     int undoCheckOutSchemaSet(int schemaSetId, String username) throws ServiceException;
+
+    /**
+     *
+     * @param userName
+     * @return
+     * @throws ServiceException
+     */
+    List<SchemaSet> getSchemaSetWorkingCopiesOf(String userName) throws ServiceException;
 }

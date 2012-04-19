@@ -63,13 +63,30 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     /** Ids of schema sets that the current user is allowed to delete. */
     private Set<Integer> deletable;
 
-    /** If true, only working copies must be listed. If false, only non-working copies must be listed.*/
-    private boolean workingCopy;
-
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
     @DefaultHandler
     public Resolution viewList() throws ServiceException {
         boolean listReleasedOnly = getUser() == null;
-        schemaSets = schemaService.getSchemaSets(listReleasedOnly, workingCopy);
+        schemaSets = schemaService.getSchemaSets(listReleasedOnly);
+        return new ForwardResolution(BROWSE_SCHEMA_SETS_JSP);
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution workingCopies() throws ServiceException{
+        if (isUserLoggedIn()){
+            schemaSets = schemaService.getSchemaSetWorkingCopiesOf(getUserName());
+        }
+        else{
+            addGlobalValidationError("Un-authenticated user cannot have working copies!");
+        }
         return new ForwardResolution(BROWSE_SCHEMA_SETS_JSP);
     }
 
@@ -97,7 +114,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isDeletePermission() {
@@ -164,12 +181,4 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
         }
         return deletable;
     }
-
-    /**
-     * @param workingCopy the workingCopy to set
-     */
-    public void setWorkingCopy(boolean workingCopy) {
-        this.workingCopy = workingCopy;
-    }
-
 }

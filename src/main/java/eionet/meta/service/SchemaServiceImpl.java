@@ -45,7 +45,7 @@ import eionet.util.SecurityUtil;
 
 /**
  * Schema service implementation.
- * 
+ *
  * @author Juhan Voolaid
  */
 @Service
@@ -69,7 +69,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ServiceException
      */
     @Override
@@ -82,14 +82,12 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * {@inheritDoc}
-     * 
-     * @throws ServiceException
+     * @see eionet.meta.service.ISchemaService#getSchemaSets(boolean)
      */
     @Override
-    public List<SchemaSet> getSchemaSets(boolean releasedOnly, boolean workingCopy) throws ServiceException {
+    public List<SchemaSet> getSchemaSets(boolean releasedOnly) throws ServiceException {
         try {
-            return schemaSetDAO.getSchemaSets(releasedOnly, workingCopy);
+            return schemaSetDAO.getSchemaSets(releasedOnly);
         } catch (Exception e) {
             throw new ServiceException("Failed to get schema sets", e);
         }
@@ -97,7 +95,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ServiceException
      */
     @Override
@@ -167,7 +165,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ServiceException
      */
     @Override
@@ -178,7 +176,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * Deletes schemas with given ids.
-     * 
+     *
      * @param ids
      * @throws ServiceException
      */
@@ -202,7 +200,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ServiceException
      */
     @Override
@@ -216,7 +214,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ServiceException
      */
     @Override
@@ -233,7 +231,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ServiceException
      */
     @Override
@@ -308,7 +306,7 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * 
+     *
      * @param replacedId
      * @param substituteId
      */
@@ -318,7 +316,7 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * 
+     *
      * @param oldId
      * @param substituteId
      */
@@ -418,6 +416,24 @@ public class SchemaServiceImpl implements ISchemaService {
             return schemaSetDAO.getWorkingCopyOfSchemaSet(checkedOutCopyId);
         } catch (Exception e) {
             throw new ServiceException("Failed to get working copy of schema set " + checkedOutCopyId, e);
+        }
+    }
+
+    /**
+     * @throws ServiceException
+     * @see eionet.meta.service.ISchemaService#getSchemaSetWorkingCopiesOf(java.lang.String)
+     */
+    @Override
+    public List<SchemaSet> getSchemaSetWorkingCopiesOf(String userName) throws ServiceException {
+
+        if (StringUtils.isBlank(userName)){
+            throw new ValidationException("User name must not be blank!");
+        }
+
+        try {
+            return schemaSetDAO.getWorkingCopiesOf(userName);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get working copies of user " + userName, e);
         }
     }
 }
