@@ -107,12 +107,11 @@ public class SchemaSetActionBean extends AbstractActionBean {
         loadSchemaSet();
 
         // If checked out by me, redirect to my working copy
-        if (isUserLoggedIn() && schemaSet.isCheckedOutBy(getUserName())){
+        if (isUserLoggedIn() && schemaSet.isCheckedOutBy(getUserName())) {
             SchemaSet workingCopy = schemaService.getWorkingCopyOfSchemaSet(schemaSet.getId());
-            if (workingCopy==null){
+            if (workingCopy == null) {
                 throw new ServiceException("Failed to find working copy of schema set " + schemaSet.getId());
-            }
-            else{
+            } else {
                 return new RedirectResolution(getClass()).addParameter("schemaSet.id", workingCopy.getId());
             }
         }
@@ -239,13 +238,14 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
+     * Action for deleting the schema set.
      *
      * @return
      * @throws ServiceException
      */
     public Resolution delete() throws ServiceException {
         schemaService.deleteSchemaSets(Collections.singletonList(schemaSet.getId()), getUserName());
-        // TODO add notification message
+        addSystemMessage("Schema set succesfully deleted.");
         return new RedirectResolution(BrowseSchemaSetsActionBean.class);
     }
 
@@ -256,10 +256,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution undoCheckout() throws ServiceException {
         int checkedOutCopyId = schemaService.undoCheckOutSchemaSet(schemaSet.getId(), getUserName());
-        if (checkedOutCopyId > 0){
+        if (checkedOutCopyId > 0) {
             return new RedirectResolution(getClass()).addParameter("schemaSet.id", checkedOutCopyId);
-        }
-        else{
+        } else {
             return new RedirectResolution(BrowseSchemaSetsActionBean.class);
         }
     }
@@ -271,6 +270,12 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution deleteSchemas() throws ServiceException {
         schemaService.deleteSchemas(schemaIds);
+
+        if (schemaIds.size() == 1) {
+            addSystemMessage("Schema succesfully deleted.");
+        } else if (schemaIds.size() > 1) {
+            addSystemMessage("Schemas succesfully deleted.");
+        }
 
         RedirectResolution resolution = new RedirectResolution(getClass());
         resolution.addParameter("schemaSet.id", schemaSet.getId());
@@ -385,8 +390,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 attributes =
-                    searchEngine.getObjectAttributes(schemaSet.getId(), DElemAttribute.ParentType.SCHEMA_SET,
-                            DElemAttribute.TYPE_SIMPLE);
+                        searchEngine.getObjectAttributes(schemaSet.getId(), DElemAttribute.ParentType.SCHEMA_SET,
+                                DElemAttribute.TYPE_SIMPLE);
             } finally {
                 searchEngine.close();
             }
@@ -489,7 +494,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }

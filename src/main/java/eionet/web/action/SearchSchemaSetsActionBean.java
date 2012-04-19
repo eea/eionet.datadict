@@ -116,9 +116,17 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
             } catch (ValidationException e) {
                 LOGGER.info(e.getMessage());
                 addGlobalValidationError(e.getMessage());
+                return search();
             }
         } else {
             addGlobalValidationError("Cannot delete. No permission.");
+            return search();
+        }
+
+        if (selected.size() == 1) {
+            addSystemMessage("Schema set succesfully deleted.");
+        } else if (selected.size() > 1) {
+            addSystemMessage("Schema sets succesfully deleted.");
         }
         return new RedirectResolution(SearchSchemaSetsActionBean.class);
     }
@@ -127,7 +135,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
         if (getUser() != null) {
             try {
                 return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d")
-                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+                        || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
             } catch (Exception e) {
                 LOGGER.error("Failed to read user permission", e);
             }
@@ -245,16 +253,16 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
      */
     public Set<Integer> getDeletable() throws Exception {
 
-        if (deletable==null){
+        if (deletable == null) {
             deletable = new HashSet<Integer>();
             String userName = getUserName();
-            if (!StringUtils.isBlank(userName)){
+            if (!StringUtils.isBlank(userName)) {
                 List<SchemaSet> schemaSets = schemaSetsResult.getList();
                 for (SchemaSet schemaSet : schemaSets) {
                     // Must not be a working copy, nor must it be checked out
-                    if (!schemaSet.isWorkingCopy() && StringUtils.isBlank(schemaSet.getWorkingUser())){
+                    if (!schemaSet.isWorkingCopy() && StringUtils.isBlank(schemaSet.getWorkingUser())) {
                         String permission = schemaSet.getRegStatus().equals(SchemaSet.RegStatus.RELEASED) ? "er" : "d";
-                        if (SecurityUtil.hasPerm(userName, "/schemasets", permission)){
+                        if (SecurityUtil.hasPerm(userName, "/schemasets", permission)) {
                             deletable.add(schemaSet.getId());
                         }
                     }
