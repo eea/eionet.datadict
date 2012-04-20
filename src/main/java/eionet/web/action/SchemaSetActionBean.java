@@ -197,8 +197,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution checkIn() throws ServiceException {
-        schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), comment);
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
+        int finalId = schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), comment);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", finalId);
     }
 
     /**

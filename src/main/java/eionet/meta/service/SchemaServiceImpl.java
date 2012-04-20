@@ -282,6 +282,7 @@ public class SchemaServiceImpl implements ISchemaService {
                     Map<Integer, Integer> schemaMappings = schemaSetDAO.getSchemaMappings(checkedOutCopyId, schemaSetId);
 
                     // Delete the checked-out copy.
+                    schemaSetDAO.unlock(checkedOutCopyId);
                     deleteSchemaSets(Collections.singletonList(checkedOutCopyId), username);
 
                     // Schemas of the new schema set must get the ids of the schemas that were in the checked-out copy.
