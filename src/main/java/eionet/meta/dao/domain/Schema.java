@@ -25,7 +25,7 @@ public class Schema {
     private int checkedOutCopyId;
 
     /** Relational properties. */
-    private String SchemaSetIdentifier;
+    private String schemaSetIdentifier;
 
     /**
      * @return the id
@@ -196,7 +196,7 @@ public class Schema {
      * @return the schemaSetIdentifier
      */
     public String getSchemaSetIdentifier() {
-        return SchemaSetIdentifier;
+        return schemaSetIdentifier;
     }
 
     /**
@@ -204,7 +204,7 @@ public class Schema {
      *            the schemaSetIdentifier to set
      */
     public void setSchemaSetIdentifier(String schemaSetIdentifier) {
-        SchemaSetIdentifier = schemaSetIdentifier;
+        this.schemaSetIdentifier = schemaSetIdentifier;
     }
 
 }

@@ -35,6 +35,8 @@ import org.springframework.stereotype.Repository;
 import eionet.meta.dao.ISchemaDAO;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet.RegStatus;
+import eionet.meta.service.data.SchemaFilter;
+import eionet.meta.service.data.SchemasResult;
 import eionet.util.Util;
 
 /**
@@ -201,6 +203,38 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
 
         List<Integer> result = getNamedParameterJdbcTemplate().queryForList(sql, params, Integer.class);
 
+        return result;
+    }
+
+    @Override
+    public SchemasResult searchSchemas(SchemaFilter searchFilter) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from t_schema as s LEFT JOIN t_schema_set as ss ON (s.schema_set_id = ss.schema_set_id) ");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        List<Schema> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Schema>() {
+            public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Schema schema = new Schema();
+                schema.setId(rs.getInt("SCHEMA_ID"));
+                schema.setFileName(rs.getString("FILENAME"));
+                schema.setContinuityId(rs.getString("CONTINUITY_ID"));
+                schema.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                schema.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                schema.setWorkingUser(rs.getString("WORKING_USER"));
+                schema.setDateModified(rs.getDate("DATE_MODIFIED"));
+                schema.setUserModified(rs.getString("USER_MODIFIED"));
+                schema.setComment(rs.getString("COMMENT"));
+                schema.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                schema.setSchemaSetIdentifier(rs.getString("IDENTIFIER"));
+                return schema;
+            }
+        });
+
+        String totalSql = "SELECT FOUND_ROWS()";
+        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+
+        SchemasResult result = new SchemasResult(resultList, totalItems, searchFilter);
         return result;
     }
 }

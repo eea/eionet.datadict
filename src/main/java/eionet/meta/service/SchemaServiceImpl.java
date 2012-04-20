@@ -39,8 +39,10 @@ import eionet.meta.dao.ISchemaSetDAO;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.schemas.SchemaRepository;
+import eionet.meta.service.data.SchemaFilter;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
+import eionet.meta.service.data.SchemasResult;
 import eionet.util.SecurityUtil;
 
 /**
@@ -78,6 +80,20 @@ public class SchemaServiceImpl implements ISchemaService {
             return schemaSetDAO.searchSchemaSets(searchFilter);
         } catch (Exception e) {
             throw new ServiceException("Failed to search schema sets", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws ServiceException
+     */
+    @Override
+    public SchemasResult searchSchemas(SchemaFilter searchFilter) throws ServiceException {
+        try {
+            return schemaDAO.searchSchemas(searchFilter);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to search schemas", e);
         }
     }
 
@@ -149,7 +165,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ValidationException
      */
     private void ensureDeleteAllowed(String username, boolean deleteReleasedPerm, List<SchemaSet> schemaSets)
-    throws ValidationException {
+            throws ValidationException {
         for (SchemaSet schemaSet : schemaSets) {
             if (schemaSet.isCheckedOut()) {
                 throw new ValidationException("Cannot delete a checked-out schema set: " + schemaSet.getIdentifier());
@@ -237,7 +253,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username)
-    throws ServiceException {
+            throws ServiceException {
         try {
             schemaSetDAO.updateSchemaSet(schemaSet);
             schemaSetDAO.updateSchemaSetAttributes(schemaSet.getId(), attributes);
@@ -443,4 +459,5 @@ public class SchemaServiceImpl implements ISchemaService {
             throw new ServiceException("Failed to get working copies of user " + userName, e);
         }
     }
+
 }

@@ -3,6 +3,8 @@ package eionet.meta.dao;
 import java.util.List;
 
 import eionet.meta.dao.domain.Schema;
+import eionet.meta.service.data.SchemaFilter;
+import eionet.meta.service.data.SchemasResult;
 
 /**
  *
@@ -64,4 +66,12 @@ public interface ISchemaDAO {
      * @param ids
      */
     void deleteSchemas(List<Integer> ids);
+
+    /**
+     * Finds schemas.
+     *
+     * @param searchFilter
+     * @return
+     */
+    SchemasResult searchSchemas(SchemaFilter searchFilter);
 }

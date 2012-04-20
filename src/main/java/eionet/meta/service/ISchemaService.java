@@ -27,8 +27,10 @@ import java.util.Set;
 
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.service.data.SchemaFilter;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
+import eionet.meta.service.data.SchemasResult;
 
 /**
  * Schema service.
@@ -44,6 +46,15 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     SchemaSetsResult searchSchemaSets(SchemaSetFilter searchFilter) throws ServiceException;
+
+    /**
+     * Finds schemas based on filter.
+     *
+     * @param searchFilter
+     * @return
+     * @throws ServiceException
+     */
+    SchemasResult searchSchemas(SchemaFilter searchFilter) throws ServiceException;
 
     /**
      * Returns schema sets.

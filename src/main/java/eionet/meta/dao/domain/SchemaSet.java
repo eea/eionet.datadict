@@ -3,9 +3,9 @@ package eionet.meta.dao.domain;
 import java.util.Date;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid
- * 
+ *
  */
 public class SchemaSet {
 
@@ -20,9 +20,6 @@ public class SchemaSet {
     private String userModified;
     private String comment;
     private int checkedOutCopyId;
-
-    /** True, if the schema set is selected other actions. */
-    private boolean selected;
 
     public SchemaSet() {
     }
@@ -163,9 +160,9 @@ public class SchemaSet {
     }
 
     /**
-     * 
+     *
      * @author Jaanus Heinlaid
-     * 
+     *
      */
     public enum RegStatus {
 
@@ -180,7 +177,7 @@ public class SchemaSet {
         String s;
 
         /**
-         * 
+         *
          * @param s
          */
         RegStatus(String s) {
@@ -189,7 +186,7 @@ public class SchemaSet {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Enum#toString()
          */
         public String toString() {
@@ -197,7 +194,7 @@ public class SchemaSet {
         }
 
         /**
-         * 
+         *
          * @param s
          * @return
          */
@@ -211,7 +208,7 @@ public class SchemaSet {
         }
 
         /**
-         * 
+         *
          * @return
          */
         public static RegStatus getDefault() {
@@ -243,22 +240,7 @@ public class SchemaSet {
     }
 
     /**
-     * @return the selected
-     */
-    public boolean isSelected() {
-        return selected;
-    }
-
-    /**
-     * @param selected
-     *            the selected to set
-     */
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    /**
-     * 
+     *
      * @return
      */
     public boolean isCheckedOut() {
@@ -266,7 +248,7 @@ public class SchemaSet {
     }
 
     /**
-     * 
+     *
      * @param userName
      * @return
      */
@@ -275,7 +257,7 @@ public class SchemaSet {
     }
 
     /**
-     * 
+     *
      * @param userName
      * @return
      */
