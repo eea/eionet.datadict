@@ -64,11 +64,10 @@
             <param-name>ActionBeanContext.Class</param-name>
             <param-value>eionet.web.DDActionBeanContext</param-value>
         </init-param>
-        <!-- <init-param> <param-name>Interceptor.Classes</param-name> <param-value>
-            eionet.cr.web.interceptor.ActionEventInterceptor </param-value> </init-param>
-            <init-param> <param-name>ExceptionHandler.Class</param-name> <param-value>eionet.cr.web.util.StripesExceptionHandler</param-value>
-            </init-param> <init-param> <param-name>LocalePicker.Class</param-name> <param-value>eionet.cr.web.util.LocalePicker</param-value>
-            </init-param> -->
+        <init-param>
+            <param-name>LocalePicker.Class</param-name>
+            <param-value>eionet.web.extension.LocalePicker</param-value>
+        </init-param>
         <init-param>
             <param-name>Extension.Packages</param-name>
             <param-value>eionet.web.extension</param-value>
