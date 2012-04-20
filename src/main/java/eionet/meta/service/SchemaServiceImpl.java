@@ -433,7 +433,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     public List<SchemaSet> getSchemaSetWorkingCopiesOf(String userName) throws ServiceException {
 
-        if (StringUtils.isBlank(userName)){
+        if (StringUtils.isBlank(userName)) {
             throw new ValidationException("User name must not be blank!");
         }
 

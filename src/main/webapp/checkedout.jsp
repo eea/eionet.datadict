@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,eionet.util.sql.ConnectionUtil,eionet.meta.dao.domain.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!
@@ -6,6 +6,7 @@ ServletContext ctx = null;
 boolean userHasWorkingCopies = false;
 Vector datasets=null;
 Vector commonElements=null;
+List<SchemaSet> schemaSets=null;
 %>
 
 <%@ include file="history.jsp" %>
@@ -16,30 +17,31 @@ Vector commonElements=null;
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     DDUser user = SecurityUtil.getUser(request);
-    
+
     if (user==null){
         response.sendRedirect("index.jsp");
         return;
     }
-    
+
     ctx = getServletContext();
-    
+
     Connection conn = null;
-    
+
     // try-catch block of the whole page
     try {
-    
+
         conn = ConnectionUtil.getConnection();
 
         DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-        searchEngine.setUser(user);        
+        searchEngine.setUser(user);
         userHasWorkingCopies = searchEngine.hasUserWorkingCopies();
 
         if (userHasWorkingCopies){
             datasets = searchEngine.getDatasets(null, null, null, null, true);
             commonElements = searchEngine.getCommonElements(null, null, null, null, true, "=");
+            schemaSets = searchEngine.getSchemaSetWorkingCopies();
         }
 
 %>
@@ -56,7 +58,7 @@ Vector commonElements=null;
 <%@ include file="nmenu.jsp" %>
 
 <div id="workarea">
-    <h1>Your checkouts</h1>    
+    <h1>Your checkouts</h1>
 
 <%
         if (userHasWorkingCopies){
@@ -64,19 +66,19 @@ Vector commonElements=null;
     <p class="advise-msg">You have checked out the following objects:</p>
     <table class="datatable">
         <tbody>
-            <%             
+            <%
             int d=0;
             // DATASETS
             if (datasets!=null && datasets.size()>0){
                 for (int i=0; i<datasets.size(); i++){
-        
+
                     Dataset dataset = (Dataset)datasets.get(i);
-            
+
                     String ds_id = dataset.getID();
                     String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
                     String ds_name = Util.processForDisplay(dataset.getShortName());
                     if (ds_name == null) ds_name = "unknown";
-                    if (ds_name.length() == 0) ds_name = "empty";                                    
+                    if (ds_name.length() == 0) ds_name = "empty";
                     String dsFullName=dataset.getName();
                     if (dsFullName == null) dsFullName = ds_name;
                     if (dsFullName.length() == 0) dsFullName = ds_name;
@@ -84,9 +86,9 @@ Vector commonElements=null;
                         dsFullName = dsFullName.substring(0,60) + " ...";
                         d++;
                     %>
-        
-                    <tr>                    
-                        <td> 
+
+                    <tr>
+                        <td>
                             Dataset:
                             <a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>">
                                 <%=Util.processForDisplay(dsFullName)%>
@@ -110,7 +112,7 @@ Vector commonElements=null;
                     if (delem_name.length() == 0) delem_name = "empty";
                     String delem_type = dataElement.getType();
                     if (delem_type == null) delem_type = "unknown";
-            
+
                     String displayType = "unknown";
                     if (delem_type.equals("CH1")){
                         displayType = "Fixed values";
@@ -118,7 +120,7 @@ Vector commonElements=null;
                     else if (delem_type.equals("CH2")){
                         displayType = "Quantitative";
                     }
-        
+
                     d++;
                     %>
                     <tr>
@@ -137,6 +139,28 @@ Vector commonElements=null;
                     <tr><td>You have no common elements checked out</td></tr>
                 <%
             }
+
+            // SCHEMA SETS
+            if (schemaSets!=null && !schemaSets.isEmpty()){
+                for (int i=0; i<schemaSets.size(); i++){
+
+                    SchemaSet schemaSet = schemaSets.get(i);
+                    %>
+                    <tr>
+                        <td>
+                            Schema set:
+                            <a href="<%=request.getContextPath()%>/schemaSet.action?schemaSet.id=<%=schemaSet.getId()%>">
+                                <%=Util.processForDisplay(schemaSet.getIdentifier())%>
+                            </a>
+                        </td>
+                    </tr>
+                <%
+                }
+            } else {
+                %>
+                    <tr><td>You have no schema sets checked out!</td></tr>
+                <%
+            }
             %>
         </tbody>
     </table>
@@ -145,7 +169,7 @@ Vector commonElements=null;
             %>
     <p class="advise-msg">You have <em>no objects</em> checked out</p>
             <%
-        } 
+        }
             %>
 </div> <!-- workarea -->
 </div> <!-- container -->

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,13 +16,20 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeansException;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import eionet.meta.dao.DAOException;
+import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.service.ISchemaService;
+import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
@@ -30,9 +38,9 @@ import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid
- * 
+ *
  */
 public class DDSearchEngine {
 
@@ -55,7 +63,7 @@ public class DDSearchEngine {
     private DDUser user = null;
 
     /**
-     * 
+     *
      * @param conn
      */
     public DDSearchEngine(Connection conn) {
@@ -85,6 +93,14 @@ public class DDSearchEngine {
     public DDSearchEngine(Connection conn, String sessionID, ServletContext ctx) {
         this(conn, sessionID);
         this.ctx = ctx;
+
+        WebApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ctx);
+        try {
+            Map<String, ISchemaService> beansOfType = springContext.getBeansOfType(ISchemaService.class);
+            System.out.println(springContext);
+        } catch (BeansException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setUser(DDUser user) {
@@ -96,7 +112,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param datasetID
      * @return
      * @throws SQLException
@@ -721,7 +737,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param type
      * @param short_name
@@ -737,7 +753,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param type
      * @param short_name
@@ -755,7 +771,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param type
      * @param short_name
@@ -1017,7 +1033,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmIdf
      * @param tblIdf
      * @param dstIdf
@@ -1092,7 +1108,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmIdf
      * @param tblIdf
      * @param dstIdf
@@ -1107,7 +1123,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param identifier
      * @param datasetIdentifier
      * @param statuses
@@ -1121,7 +1137,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param identifier
      * @param datasetIdentifier
      * @param statuses
@@ -1172,7 +1188,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param idf
      * @param statuses
      * @return
@@ -1222,7 +1238,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param idf
      * @param statuses
      * @return
@@ -1234,7 +1250,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param idf
      * @return
      * @throws SQLException
@@ -1258,7 +1274,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @param tblID
      * @param inheritAttrs
@@ -1472,7 +1488,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param delem_id
      * @param parent_type
      * @return
@@ -1523,7 +1539,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attr_id
      * @return
      * @throws SQLException
@@ -1533,7 +1549,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attr_id
      * @param priority
      * @return
@@ -1591,7 +1607,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param field_id
      * @return
      * @throws SQLException
@@ -1641,7 +1657,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attr_id
      * @param parent_id
      * @param parent_type
@@ -1653,7 +1669,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parent_id
      * @param parent_type
      * @return
@@ -1664,7 +1680,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parent_id
      * @param parent_type
      * @param attr_id
@@ -1676,7 +1692,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parent_id
      * @param parent_type
      * @param attr_id
@@ -1861,7 +1877,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attr
      * @param rowHash
      */
@@ -1898,7 +1914,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attr_id
      * @return
      * @throws SQLException
@@ -1995,7 +2011,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attr_id
      * @return
      * @throws SQLException
@@ -2048,7 +2064,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws SQLException
      */
@@ -2057,7 +2073,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param id
      * @return
      * @throws SQLException
@@ -2071,7 +2087,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param id
      * @return
      * @throws SQLException
@@ -2134,7 +2150,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param datasetID
      * @return
      * @throws SQLException
@@ -2149,7 +2165,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param datasetID
      * @return
      * @throws SQLException
@@ -2165,7 +2181,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws SQLException
      */
@@ -2174,7 +2190,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param wrkCopies
      * @return
      * @throws SQLException
@@ -2184,7 +2200,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws SQLException
      */
@@ -2196,7 +2212,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param datasetID
      * @param wrkCopies
      * @param deleted
@@ -2297,7 +2313,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param short_name
      * @param version
@@ -2309,7 +2325,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param short_name
      * @param version
@@ -2322,7 +2338,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param short_name
      * @param version
@@ -2569,7 +2585,7 @@ public class DDSearchEngine {
 
     /**
      * Returns true if this.user should not see definition in the given status
-     * 
+     *
      * @param regStatus
      * @return
      */
@@ -2587,7 +2603,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param dstID
      * @param isOrderByPositions
      * @return
@@ -2660,7 +2676,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param short_name
      * @param full_name
@@ -2673,7 +2689,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param short_name
      * @param full_name
@@ -2689,7 +2705,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param short_name
      * @param idfier
@@ -2706,7 +2722,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param params
      * @param short_name
      * @param idfier
@@ -2946,7 +2962,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param tableID
      * @return
      * @throws SQLException
@@ -2956,7 +2972,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param tableID
      * @param dstID
      * @return
@@ -3026,7 +3042,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parentID
      * @param parentType
      * @param attrType
@@ -3038,7 +3054,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parentID
      * @param parentType
      * @param attrType
@@ -3057,7 +3073,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parentID
      * @param parentType
      * @return
@@ -3068,7 +3084,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param parentID
      * @param parentType
      * @param inheritTblID
@@ -3176,7 +3192,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param fxv_id
      * @return
      * @throws SQLException
@@ -3231,7 +3247,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param v
      * @param id
      * @return
@@ -3257,7 +3273,7 @@ public class DDSearchEngine {
 
     /**
      * Get the last insert ID from database.
-     * 
+     *
      * @return
      * @throws SQLException
      */
@@ -3278,7 +3294,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws SQLException
      */
@@ -3295,7 +3311,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param idfier
      * @param ofID
      * @return
@@ -3314,7 +3330,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param id
      * @param type
      * @return
@@ -3368,7 +3384,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean hasUserWorkingCopies() {
@@ -3384,20 +3400,34 @@ public class DDSearchEngine {
         ResultSet rs = null;
         PreparedStatement stmt = null;
         try {
-            stmt = SQL.preparedStatement("SELECT * FROM DATAELEM " + constraints.toString(), inParams, conn);
+            stmt = SQL.preparedStatement("SELECT count(*) FROM DATAELEM " + constraints.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next()) {
+            if (rs.next() && rs.getInt(1)>0) {
                 return true;
             }
 
             rs.close();
             stmt.close();
 
-            stmt = SQL.preparedStatement("SELECT * FROM DATASET " + constraints.toString(), inParams, conn);
+            stmt = SQL.preparedStatement("SELECT count(*) FROM DATASET " + constraints.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next()) {
+            if (rs.next() && rs.getInt(1)>0) {
                 return true;
             }
+
+            String sql = "select count(*) from T_SCHEMA_SET where WORKING_COPY=true and WORKING_USER=?";
+            stmt = SQL.preparedStatement(sql, inParams, conn);
+            rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1)>0) {
+                return true;
+            }
+
+            //            sql = "select count(*) from T_SCHEMA where WORKING_COPY=true and WORKING_USER=?";
+            //            stmt = SQL.preparedStatement(sql, inParams, conn);
+            //            rs = stmt.executeQuery();
+            //            if (rs.next() && rs.getInt(1)>0) {
+            //                return true;
+            //            }
         } catch (SQLException sqle) {
             LOGGER.fatal(sqle.toString(), sqle);
         } finally {
@@ -3416,7 +3446,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      * @param attrType
      * @return
@@ -3460,9 +3490,9 @@ public class DDSearchEngine {
 
     /**
      * Return true if the given common element has newer Released version. Otherwise returns false.
-     * 
+     *
      * Note that this method does not check whether the given element is really a common one, so it's on caller's responsibility!
-     * 
+     *
      * @param elm
      * @return
      * @throws SQLException
@@ -3500,7 +3530,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmIdentifier
      * @param elmId
      * @return
@@ -3527,7 +3557,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param relID
      * @return
      * @throws SQLException
@@ -3590,7 +3620,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @return
      * @throws SQLException
@@ -3600,7 +3630,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @return
      * @throws SQLException
@@ -3702,7 +3732,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws SQLException
      */
@@ -3735,7 +3765,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      * @return
      * @throws SQLException
@@ -3745,7 +3775,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      * @param all
      * @return
@@ -3756,7 +3786,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      * @param all
      * @param includeFields
@@ -3857,7 +3887,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      * @param parentID
      * @param unUsed
@@ -4018,7 +4048,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      * @return
      * @throws SQLException
@@ -4038,7 +4068,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param tblID
      * @return
      * @throws SQLException
@@ -4080,7 +4110,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param ownerID
      * @return
      * @throws SQLException
@@ -4090,7 +4120,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param ownerID
      * @param ownerType
      * @return
@@ -4135,7 +4165,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param shortName
      * @param attrType
      * @return
@@ -4156,7 +4186,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      * @param attrType
      * @return
@@ -4177,7 +4207,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      * @return
      */
@@ -4186,7 +4216,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param shortName
      * @return
      */
@@ -4195,7 +4225,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param field
      * @param value
      * @return
@@ -4237,7 +4267,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrID
      * @return
      */
@@ -4246,7 +4276,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param shortName
      * @return
      */
@@ -4255,7 +4285,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param field
      * @param value
      * @return
@@ -4296,7 +4326,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param objID
      * @param objType
      * @param article
@@ -4338,7 +4368,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param objID
      * @param objType
      * @return
@@ -4391,7 +4421,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param dstID
      * @return
      * @throws Exception
@@ -4450,7 +4480,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param raID
      * @return
      * @throws Exception
@@ -4544,7 +4574,7 @@ public class DDSearchEngine {
 
     /**
      * This one returns the IDs and titles of all ogligations that have a released dataset definition present in DD.
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -4620,7 +4650,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param attrShortName
      * @param parentID
      * @param parentType
@@ -4675,7 +4705,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @return
      * @throws SQLException
@@ -4806,7 +4836,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param dstID
      * @return
      * @throws SQLException
@@ -4841,7 +4871,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param namespaceId
      * @return
      * @throws SQLException
@@ -4896,7 +4926,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param elmID
      * @return
      */
@@ -4930,7 +4960,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -4943,7 +4973,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      */
     public void close() {
         if (this.conn != null) {
@@ -4952,27 +4982,26 @@ public class DDSearchEngine {
     }
 
     /**
-     * 
+     *
      * @param objectId
      * @param objectType
      * @param attributeType
      * @return
      * @throws DAOException
      */
-    public Collection<DElemAttribute> getObjectAttributes(int objectId, DElemAttribute.ParentType objectType, String attributeType)
-    throws DAOException {
+    public Collection<DElemAttribute>
+    getObjectAttributes(int objectId, DElemAttribute.ParentType objectType, String attributeType) throws DAOException {
 
-        LinkedHashMap<String,DElemAttribute> attributeMap = new LinkedHashMap<String,DElemAttribute>();
+        LinkedHashMap<String, DElemAttribute> attributeMap = new LinkedHashMap<String, DElemAttribute>();
 
         try {
 
             // First get the metadata of all possible attributes for this object type
-            List<DElemAttribute> attributes =
-                getDElemAttributes(null, attributeType, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+            List<DElemAttribute> attributes = getDElemAttributes(null, attributeType, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
             if (attributes != null && !attributes.isEmpty()) {
 
                 for (DElemAttribute attribute : attributes) {
-                    if (attribute.displayFor(objectType.toString())){
+                    if (attribute.displayFor(objectType.toString())) {
                         attributeMap.put(attribute.getID(), attribute);
                     }
                 }
@@ -4990,6 +5019,49 @@ public class DDSearchEngine {
         }
 
         return attributeMap.values();
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public List<SchemaSet> getSchemaSetWorkingCopies() throws ServiceException{
+
+        if (user == null || !user.isAuthentic()) {
+            return new ArrayList<SchemaSet>();
+        }
+
+        ISchemaService schemaService = getSpringBean(ISchemaService.class);
+        return schemaService.getSchemaSetWorkingCopiesOf(user.getUserName());
+    }
+
+    /**
+     *
+     * @param <T>
+     * @param beanClass
+     * @return
+     */
+    public <T> T getSpringBean(Class<T> beanClass) {
+
+        if (ctx==null){
+            throw new IllegalStateException("Missing servlet context!");
+        }
+
+        T result = null;
+        WebApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ctx);
+        if (springContext!=null){
+            try {
+                Map<String, T> beans = springContext.getBeansOfType(beanClass);
+                if (beans != null && !beans.isEmpty()){
+                    result = beans.values().iterator().next();
+                }
+            } catch (BeansException e) {
+                // ignore deliberately
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -5018,7 +5090,7 @@ public class DDSearchEngine {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
         public int compare(Object o1, Object o2) {
