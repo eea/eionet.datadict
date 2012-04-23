@@ -558,7 +558,7 @@ public class DElemAttribute{
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isMultipleValuesAllowed(){
@@ -566,7 +566,15 @@ public class DElemAttribute{
     }
 
     /**
-     * 
+     *
+     * @return
+     */
+    public boolean isMandatory(){
+        return obligation!=null && obligation.equals("M");
+    }
+
+    /**
+     *
      * @author Jaanus Heinlaid
      *
      */
@@ -579,7 +587,7 @@ public class DElemAttribute{
         String s;
 
         /**
-         * 
+         *
          * @param s
          */
         ParentType(String s){
@@ -595,7 +603,7 @@ public class DElemAttribute{
         }
 
         /**
-         * 
+         *
          * @param s
          * @return
          */
@@ -609,7 +617,7 @@ public class DElemAttribute{
         }
 
         /**
-         * 
+         *
          * @return
          */
         public static ParentType getDefault(){

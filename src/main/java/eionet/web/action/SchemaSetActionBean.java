@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /** */
     private SchemaSet schemaSet;
-    private Collection<DElemAttribute> attributes;
+    private LinkedHashMap<Integer, DElemAttribute> attributes;
 
     /** */
     private List<Schema> schemas;
@@ -69,9 +70,13 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /** */
     private FileBean uploadedFile;
 
-    /** */
+    /** Values of this schema set's attributes that can have multiple values. */
     private Map<String, Set<String>> multiValuedAttributeValues;
+
+    /** Values of this schema set's attributes that can have only fixed values. */
     private Map<String, Set<String>> fixedValuedAttributeValues;
+
+    /** This schema set's attribute values as submitted from the save form. */
     private Map<Integer, Set<String>> saveAttributeValues;
 
     /** Check-in comment. */
@@ -144,8 +149,39 @@ public class SchemaSetActionBean extends AbstractActionBean {
         if (!isGetOrHeadRequest()) {
             int schemaSetId = schemaService.addSchemaSet(schemaSet, getUserName());
             resolution = new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSetId);
+            addSystemMessage("Working copy successfully created!");
         }
         return resolution;
+    }
+
+    /**
+     *
+     * @throws DAOException
+     */
+    @ValidationMethod(on = {"add", "save", "saveAndClose"})
+    public void validateAdd() throws DAOException {
+
+        if (isGetOrHeadRequest()) {
+            return;
+        }
+
+        if (StringUtils.equals(getContext().getEventName(), "add")) {
+            if (schemaSet == null || StringUtils.isBlank(schemaSet.getIdentifier())) {
+                addGlobalValidationError("Identifier is missing!");
+            }
+        }
+
+        LinkedHashMap<Integer, DElemAttribute> attributesMap = getAttributes();
+        for (DElemAttribute attribute : attributesMap.values()) {
+
+            if (attribute.isMandatory()) {
+                Integer attrId = Integer.valueOf(attribute.getID());
+                Set<String> attrValues = getSaveAttributeValues().get(attrId);
+                if (attrValues == null || attrValues.isEmpty() || StringUtils.isBlank(attrValues.iterator().next())) {
+                    addGlobalValidationError(attribute.getShortName() + " is missing!");
+                }
+            }
+        }
     }
 
     /**
@@ -365,14 +401,15 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @return the attributes
      * @throws DAOException
      */
-    public Collection<DElemAttribute> getAttributes() throws DAOException {
+    public LinkedHashMap<Integer, DElemAttribute> getAttributes() throws DAOException {
 
         if (attributes == null) {
             DDSearchEngine searchEngine = null;
             try {
                 searchEngine = DDSearchEngine.create();
+                int schemaSetId = schemaSet == null ? 0 : schemaSet.getId();
                 attributes =
-                    searchEngine.getObjectAttributes(schemaSet.getId(), DElemAttribute.ParentType.SCHEMA_SET,
+                    searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
                             DElemAttribute.TYPE_SIMPLE);
             } finally {
                 searchEngine.close();
@@ -389,20 +426,23 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         if (multiValuedAttributeValues == null) {
             multiValuedAttributeValues = new HashMap<String, Set<String>>();
-            Collection<DElemAttribute> attributes = getAttributes();
+            LinkedHashMap<Integer, DElemAttribute> attributeMap = getAttributes();
             DDSearchEngine searchEngine = null;
             try {
                 searchEngine = DDSearchEngine.create();
-                for (DElemAttribute attribute : attributes) {
+                for (Map.Entry<Integer, DElemAttribute> entry : attributeMap.entrySet()) {
+
+                    int attributeId = entry.getKey();
+                    DElemAttribute attribute = entry.getValue();
 
                     if (attribute.isMultipleValuesAllowed()) {
 
                         Vector existingValues = attribute.getValues();
                         Collection possibleValues = null;
                         if (StringUtils.equals(attribute.getDisplayType(), "select")) {
-                            possibleValues = getFixedValuedAttributeValues().get(attribute.getID());
+                            possibleValues = getFixedValuedAttributeValues().get(attributeId);
                         } else {
-                            possibleValues = searchEngine.getSimpleAttributeValues(attribute.getID());
+                            possibleValues = searchEngine.getSimpleAttributeValues(String.valueOf(attributeId));
                         }
 
                         LinkedHashSet<String> values = new LinkedHashSet<String>();
@@ -412,7 +452,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                         if (possibleValues != null) {
                             values.addAll(possibleValues);
                         }
-                        multiValuedAttributeValues.put(attribute.getID(), values);
+                        multiValuedAttributeValues.put(String.valueOf(attributeId), values);
                     }
                 }
             } catch (SQLException e) {
@@ -435,7 +475,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
             DDSearchEngine searchEngine = null;
             try {
                 searchEngine = DDSearchEngine.create();
-                for (DElemAttribute attribute : attributes) {
+                for (Map.Entry<Integer, DElemAttribute> entry : getAttributes().entrySet()) {
+
+                    int attributeId = entry.getKey();
+                    DElemAttribute attribute = entry.getValue();
 
                     if (StringUtils.equals(attribute.getDisplayType(), "select")) {
 
@@ -447,7 +490,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                                 values.add(value);
                             }
                         }
-                        fixedValuedAttributeValues.put(attribute.getID(), values);
+                        fixedValuedAttributeValues.put(String.valueOf(attributeId), values);
                     }
                 }
             } catch (SQLException e) {
@@ -462,7 +505,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      * @return the saveAttributeValues
      */
-    public Map<Integer, Set<String>> getSaveAttributeValues() {
+    private Map<Integer, Set<String>> getSaveAttributeValues() {
 
         if (saveAttributeValues == null) {
 

@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -3402,7 +3401,7 @@ public class DDSearchEngine {
         try {
             stmt = SQL.preparedStatement("SELECT count(*) FROM DATAELEM " + constraints.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next() && rs.getInt(1)>0) {
+            if (rs.next() && rs.getInt(1) > 0) {
                 return true;
             }
 
@@ -3411,23 +3410,23 @@ public class DDSearchEngine {
 
             stmt = SQL.preparedStatement("SELECT count(*) FROM DATASET " + constraints.toString(), inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next() && rs.getInt(1)>0) {
+            if (rs.next() && rs.getInt(1) > 0) {
                 return true;
             }
 
             String sql = "select count(*) from T_SCHEMA_SET where WORKING_COPY=true and WORKING_USER=?";
             stmt = SQL.preparedStatement(sql, inParams, conn);
             rs = stmt.executeQuery();
-            if (rs.next() && rs.getInt(1)>0) {
+            if (rs.next() && rs.getInt(1) > 0) {
                 return true;
             }
 
-            //            sql = "select count(*) from T_SCHEMA where WORKING_COPY=true and WORKING_USER=?";
-            //            stmt = SQL.preparedStatement(sql, inParams, conn);
-            //            rs = stmt.executeQuery();
-            //            if (rs.next() && rs.getInt(1)>0) {
-            //                return true;
-            //            }
+            // sql = "select count(*) from T_SCHEMA where WORKING_COPY=true and WORKING_USER=?";
+            // stmt = SQL.preparedStatement(sql, inParams, conn);
+            // rs = stmt.executeQuery();
+            // if (rs.next() && rs.getInt(1)>0) {
+            // return true;
+            // }
         } catch (SQLException sqle) {
             LOGGER.fatal(sqle.toString(), sqle);
         } finally {
@@ -4989,10 +4988,10 @@ public class DDSearchEngine {
      * @return
      * @throws DAOException
      */
-    public Collection<DElemAttribute>
-    getObjectAttributes(int objectId, DElemAttribute.ParentType objectType, String attributeType) throws DAOException {
+    public LinkedHashMap<Integer, DElemAttribute> getObjectAttributes(int objectId, DElemAttribute.ParentType objectType,
+            String attributeType) throws DAOException {
 
-        LinkedHashMap<String, DElemAttribute> attributeMap = new LinkedHashMap<String, DElemAttribute>();
+        LinkedHashMap<Integer, DElemAttribute> resultMap = new LinkedHashMap<Integer, DElemAttribute>();
 
         try {
 
@@ -5002,15 +5001,18 @@ public class DDSearchEngine {
 
                 for (DElemAttribute attribute : attributes) {
                     if (attribute.displayFor(objectType.toString())) {
-                        attributeMap.put(attribute.getID(), attribute);
+                        resultMap.put(Integer.valueOf(attribute.getID()), attribute);
                     }
                 }
 
-                // Now get the values of attributes of this particular object, place them into the above-constructed map
-                attributes = getAttributes(String.valueOf(objectId), objectType.toString(), attributeType);
-                if (attributes != null && !attributes.isEmpty()) {
-                    for (DElemAttribute attribute : attributes) {
-                        attributeMap.put(attribute.getID(), attribute);
+                // Now, if the object id is given, get the values of attributes of this particular object,
+                // place them into the above-constructed map
+                if (objectId > 0) {
+                    attributes = getAttributes(String.valueOf(objectId), objectType.toString(), attributeType);
+                    if (attributes != null && !attributes.isEmpty()) {
+                        for (DElemAttribute attribute : attributes) {
+                            resultMap.put(Integer.valueOf(attribute.getID()), attribute);
+                        }
                     }
                 }
             }
@@ -5018,7 +5020,7 @@ public class DDSearchEngine {
             throw new DAOException(e.getMessage(), e);
         }
 
-        return attributeMap.values();
+        return resultMap;
     }
 
     /**
@@ -5026,7 +5028,7 @@ public class DDSearchEngine {
      * @return
      * @throws ServiceException
      */
-    public List<SchemaSet> getSchemaSetWorkingCopies() throws ServiceException{
+    public List<SchemaSet> getSchemaSetWorkingCopies() throws ServiceException {
 
         if (user == null || !user.isAuthentic()) {
             return new ArrayList<SchemaSet>();
@@ -5044,16 +5046,16 @@ public class DDSearchEngine {
      */
     public <T> T getSpringBean(Class<T> beanClass) {
 
-        if (ctx==null){
+        if (ctx == null) {
             throw new IllegalStateException("Missing servlet context!");
         }
 
         T result = null;
         WebApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ctx);
-        if (springContext!=null){
+        if (springContext != null) {
             try {
                 Map<String, T> beans = springContext.getBeansOfType(beanClass);
-                if (beans != null && !beans.isEmpty()){
+                if (beans != null && !beans.isEmpty()) {
                     result = beans.values().iterator().next();
                 }
             } catch (BeansException e) {
