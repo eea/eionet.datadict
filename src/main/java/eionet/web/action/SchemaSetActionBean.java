@@ -3,7 +3,6 @@ package eionet.web.action;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -24,7 +23,6 @@ import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.util.UrlBuilder;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,7 +36,6 @@ import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.schemas.SchemaRepository;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
-import eionet.web.util.Tab;
 
 /**
  *
@@ -63,10 +60,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
     private SchemaRepository schemaRepository;
 
     /** */
-    private static final String METADATA_TAB = "Metadata";
-    private static final String SCHEMAS_TAB = "Schemas";
-
-    /** */
     private SchemaSet schemaSet;
     private Collection<DElemAttribute> attributes;
 
@@ -83,10 +76,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /** Check-in comment. */
     private String comment;
-
-    /** */
-    private String tab = METADATA_TAB;
-    private List<Tab> tabs;
 
     /** */
     private List<Integer> schemaIds;
@@ -116,12 +105,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             }
         }
 
-        Resolution resolution = new ForwardResolution(VIEW_SCHEMA_SET_JSP);
-        if (tab != null && tab.equals(SCHEMAS_TAB)) {
-            resolution = new ForwardResolution(SCHEMA_SET_SCHEMAS_JSP);
-        }
-        return resolution;
-
+        return new ForwardResolution(VIEW_SCHEMA_SET_JSP);
     }
 
     /**
@@ -134,12 +118,18 @@ public class SchemaSetActionBean extends AbstractActionBean {
     public Resolution edit() throws ServiceException {
 
         loadSchemaSet();
+        return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
+    }
 
-        Resolution resolution = new ForwardResolution(EDIT_SCHEMA_SET_JSP);
-        if (tab != null && tab.equals(SCHEMAS_TAB)) {
-            resolution = new ForwardResolution(SCHEMA_SET_SCHEMAS_JSP);
-        }
-        return resolution;
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution editSchemas() throws ServiceException {
+
+        loadSchemaSet();
+        return new ForwardResolution(SCHEMA_SET_SCHEMAS_JSP);
     }
 
     /**
@@ -277,11 +267,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             addSystemMessage("Schemas succesfully deleted.");
         }
 
-        RedirectResolution resolution = new RedirectResolution(getClass());
-        resolution.addParameter("schemaSet.id", schemaSet.getId());
-        resolution.addParameter("tab", SCHEMAS_TAB);
-
-        return resolution;
+        return editSchemas();
     }
 
     /**
@@ -310,11 +296,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             throw e;
         }
 
-        RedirectResolution resolution = new RedirectResolution(getClass());
-        resolution.addParameter("schemaSet.id", schemaSet.getId());
-        resolution.addParameter("tab", SCHEMAS_TAB);
-
-        return resolution;
+        return editSchemas();
     }
 
     /**
@@ -390,8 +372,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 attributes =
-                        searchEngine.getObjectAttributes(schemaSet.getId(), DElemAttribute.ParentType.SCHEMA_SET,
-                                DElemAttribute.TYPE_SIMPLE);
+                    searchEngine.getObjectAttributes(schemaSet.getId(), DElemAttribute.ParentType.SCHEMA_SET,
+                            DElemAttribute.TYPE_SIMPLE);
             } finally {
                 searchEngine.close();
             }
@@ -494,7 +476,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -513,40 +495,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
             }
         }
         return saveAttributeValues;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public List<Tab> getTabs() {
-
-        if (tabs == null) {
-            tabs = new ArrayList<Tab>();
-
-            UrlBuilder urlBuilder = new UrlBuilder(getContext().getLocale(), getClass(), false);
-            urlBuilder.addParameter("schemaSet.id", schemaSet.getId());
-            boolean selected = tab == null || tab.equals(METADATA_TAB);
-
-            tabs.add(new Tab(METADATA_TAB, urlBuilder.toString(), "Metadata attributes of this schema set", selected));
-
-            urlBuilder = new UrlBuilder(getContext().getLocale(), getClass(), false);
-            urlBuilder.addParameter("schemaSet.id", schemaSet.getId());
-            urlBuilder.addParameter("tab", SCHEMAS_TAB);
-            selected = tab != null && tab.equals(SCHEMAS_TAB);
-
-            tabs.add(new Tab(SCHEMAS_TAB, urlBuilder.toString(), "Schemas in this schema set", selected));
-        }
-
-        return tabs;
-    }
-
-    /**
-     * @param tab
-     *            the tab to set
-     */
-    public void setTab(String tab) {
-        this.tab = tab;
     }
 
     /**

@@ -39,27 +39,19 @@
                 <li>
                     <a href="#" id="uploadSchemaLink">Upload schema</a>
                 </li>
+                <li>
+                    <stripes:link beanclass="${actionBean.class.name}">Back to schema set
+                        <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                    </stripes:link>
+                </li>
             </ul>
         </div>
 
-        <c:choose>
-            <c:when test="${actionBean.context.eventName=='view'}">
-                <h1>View schema set</h1>
-            </c:when>
-            <c:otherwise>
-                <h1>Edit schema set</h1>
-            </c:otherwise>
-        </c:choose>
+        <stripes:url var="schemaSetUrl" beanclass="${actionBean.class.name}">
+            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+        </stripes:url>
 
-        <div id="tabbedmenu">
-            <ul>
-                <c:forEach items="${actionBean.tabs}" var="tab">
-                    <li <c:if test="${tab.selected}">id="currenttab"</c:if>>
-                        <stripes:link href="${tab.href}" title="${tab.hint}"><c:out value="${tab.title}"/></stripes:link>
-                    </li>
-                </c:forEach>
-            </ul>
-        </div>
+        <h1>Edit schemas of schema set <a href="${fn:escapeXml(schemaSetUrl)}">${actionBean.schemaSet.identifier}</a></h1>
 
         <c:if test="${not empty actionBean.schemas}">
             <stripes:form id="schemasForm" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
@@ -74,6 +66,7 @@
                             <c:out value="${schema.fileName}"/>
                         </stripes:link>
                     </display:column>
+                    <display:column title="Short description">&nbsp;</display:column>
                 </display:table>
 
                 <stripes:submit name="deleteSchemas" value="Delete" />
@@ -83,7 +76,7 @@
         </c:if>
 
         <c:if test="${empty actionBean.schemas}">
-            <div style="margin-top:3em">No schemas found! Use operations menu to add one.</div>
+            <div style="margin-top:3em">No schemas defined for this schema set yet! Use operations menu to add one.</div>
         </c:if>
 
         <div id="uploadSchemaDialog" title="Upload schema">

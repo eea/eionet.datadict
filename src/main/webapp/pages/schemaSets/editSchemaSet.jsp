@@ -8,17 +8,8 @@
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit schema set">
 
     <stripes:layout-component name="contents">
+
     <h1>Edit schema set</h1>
-    
-    <div id="tabbedmenu">
-        <ul>
-            <c:forEach items="${actionBean.tabs}" var="tab">
-                <li <c:if test="${tab.selected}">id="currenttab"</c:if>>
-                    <stripes:link href="${tab.href}" title="${tab.hint}"><c:out value="${tab.title}"/></stripes:link>
-                </li>
-            </c:forEach>
-        </ul>
-    </div>
 
     <stripes:form id="form1" method="post" beanclass="eionet.web.action.SchemaSetActionBean" style="padding-top:20px">
         <div id="outerframe">
