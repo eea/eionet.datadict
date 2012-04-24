@@ -240,7 +240,7 @@ public class SchemaServiceImpl implements ISchemaService {
         schemaSet.setUserModified(userName);
         try {
             int schemaSetId = schemaSetDAO.createSchemaSet(schemaSet);
-            if (attributes != null && attributes.isEmpty()) {
+            if (attributes != null && !attributes.isEmpty()) {
                 schemaSetDAO.updateSchemaSetAttributes(schemaSetId, attributes);
             }
             return schemaSetId;
