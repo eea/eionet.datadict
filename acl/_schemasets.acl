@@ -1,1 +1,16 @@
-localgroup:dd_admin:v,i,u,d,w
+<?xml version="1.0" encoding="UTF-8"?>
+<acl description="/schemasets">
+<entries>
+<entry type="object">
+<principal id="dd_admin" type="localgroup"/>
+<permissions>
+<permission id="v"/>
+<permission id="i"/>
+<permission id="u"/>
+<permission id="d"/>
+<permission id="c"/>
+<permission id="w"/>
+</permissions>
+</entry>
+</entries>
+</acl>

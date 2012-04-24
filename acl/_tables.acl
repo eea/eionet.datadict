@@ -1,3 +1,33 @@
-localgroup:dd_admin:i,u,d,w
-user:owner:u,d,w,c:doc
-localgroup:dd_admin:u,d,w,c:doc
+<?xml version="1.0" encoding="UTF-8"?>
+<acl description="/tables">
+<entries>
+<entry type="object">
+<principal id="dd_admin" type="localgroup"/>
+<permissions>
+<permission id="i"/>
+<permission id="u"/>
+<permission id="d"/>
+<permission id="w"/>
+<permission id="c"/>
+</permissions>
+</entry>
+<entry type="doc">
+<principal id="dd_admin" type="localgroup"/>
+<permissions>
+<permission id="u"/>
+<permission id="d"/>
+<permission id="w"/>
+<permission id="c"/>
+</permissions>
+</entry>
+<entry type="doc">
+<principal id="owner" type="user"/>
+<permissions>
+<permission id="u"/>
+<permission id="d"/>
+<permission id="w"/>
+<permission id="c"/>
+</permissions>
+</entry>
+</entries>
+</acl>
