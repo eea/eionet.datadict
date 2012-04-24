@@ -78,11 +78,12 @@ public interface ISchemaService {
      * Creates new schema set.
      *
      * @param schemaSet
+     * @param attributes
      * @param username
      * @return id of new schema set
      * @throws ServiceException
      */
-    int addSchemaSet(SchemaSet schemaSet, String username) throws ServiceException;
+    int addSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username) throws ServiceException;
 
     /**
      * Updates existing schema set.

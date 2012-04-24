@@ -105,4 +105,7 @@ public interface PropsIF {
 
     /** */
     public static final String SCHEMA_REPO_LOCATION = "schemaRepo.location";
+
+    /** */
+    public static final String CHECK_IN_COMMENTS_REQUIRED = "checkInCommentsRequired";
 }

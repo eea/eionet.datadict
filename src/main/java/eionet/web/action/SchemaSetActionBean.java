@@ -37,6 +37,8 @@ import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.schemas.SchemaRepository;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
 /**
  *
@@ -78,9 +80,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /** This schema set's attribute values as submitted from the save form. */
     private Map<Integer, Set<String>> saveAttributeValues;
-
-    /** Check-in comment. */
-    private String comment;
 
     /** */
     private List<Integer> schemaIds;
@@ -147,7 +146,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         Resolution resolution = new ForwardResolution(ADD_SCHEMA_SET_JSP);
         if (!isGetOrHeadRequest()) {
-            int schemaSetId = schemaService.addSchemaSet(schemaSet, getUserName());
+            int schemaSetId = schemaService.addSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
             resolution = new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSetId);
             addSystemMessage("Working copy successfully created!");
         }
@@ -223,8 +222,31 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution checkIn() throws ServiceException {
-        int finalId = schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), comment);
+
+        int finalId = schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), schemaSet.getComment());
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", finalId);
+    }
+
+    /**
+     *
+     */
+    @ValidationMethod(on = {"checkIn"})
+    public void validateCheckIn() {
+
+        if (isCheckInCommentsRequired()) {
+            if (schemaSet == null || StringUtils.isBlank(schemaSet.getComment())) {
+                addGlobalValidationError("Check-in comment is mandatory!");
+            }
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isCheckInCommentsRequired() {
+        String checkInCommentsRequired = Props.getProperty(PropsIF.CHECK_IN_COMMENTS_REQUIRED);
+        return checkInCommentsRequired != null && checkInCommentsRequired.trim().equalsIgnoreCase("true");
     }
 
     /**
@@ -408,6 +430,14 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 int schemaSetId = schemaSet == null ? 0 : schemaSet.getId();
+
+                //                if (!isGetOrHeadRequest()){
+                //                    String eventName = getContext().getEventName();
+                //                    if (eventName.equals("add") || eventName.equals("save") || eventName.equals("saveAndClose")){
+                //                        schemaSetId = 0;
+                //                    }
+                //                }
+
                 attributes =
                     searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
                             DElemAttribute.TYPE_SIMPLE);

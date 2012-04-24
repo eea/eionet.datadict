@@ -165,7 +165,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ValidationException
      */
     private void ensureDeleteAllowed(String username, boolean deleteReleasedPerm, List<SchemaSet> schemaSets)
-            throws ValidationException {
+    throws ValidationException {
         for (SchemaSet schemaSet : schemaSets) {
             if (schemaSet.isCheckedOut()) {
                 throw new ValidationException("Cannot delete a checked-out schema set: " + schemaSet.getIdentifier());
@@ -235,11 +235,15 @@ public class SchemaServiceImpl implements ISchemaService {
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int addSchemaSet(SchemaSet schemaSet, String userName) throws ServiceException {
+    public int addSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String userName) throws ServiceException {
         schemaSet.setWorkingUser(userName);
         schemaSet.setUserModified(userName);
         try {
-            return schemaSetDAO.createSchemaSet(schemaSet);
+            int schemaSetId = schemaSetDAO.createSchemaSet(schemaSet);
+            if (attributes != null && attributes.isEmpty()) {
+                schemaSetDAO.updateSchemaSetAttributes(schemaSetId, attributes);
+            }
+            return schemaSetId;
         } catch (Exception e) {
             throw new ServiceException("Failed to add schema set", e);
         }
@@ -253,10 +257,12 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username)
-            throws ServiceException {
+    throws ServiceException {
         try {
             schemaSetDAO.updateSchemaSet(schemaSet);
-            schemaSetDAO.updateSchemaSetAttributes(schemaSet.getId(), attributes);
+            if (attributes != null && attributes.isEmpty()) {
+                schemaSetDAO.updateSchemaSetAttributes(schemaSet.getId(), attributes);
+            }
         } catch (Exception e) {
             throw new ServiceException("Failed to update schema set", e);
         }
