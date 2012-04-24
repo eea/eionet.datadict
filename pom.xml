@@ -158,12 +158,19 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>*.*</include>
+                    <include>*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>*.xml</include>
                 </includes>
             </resource>
         </resources>
 
-        <!-- resources for the main code -->
+        <!-- resources for the test code -->
 
         <testResources>
             <testResource>
