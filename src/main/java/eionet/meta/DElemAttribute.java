@@ -152,6 +152,16 @@ public class DElemAttribute{
         }
         this.value = value;
     }
+
+    /**
+     *
+     */
+    public void nullifyValues(){
+
+        this.value = null;
+        values = null;
+    }
+
     public Vector getValues() {
         if (values==null && inheritedValues!=null) {
             values=inheritedValues;

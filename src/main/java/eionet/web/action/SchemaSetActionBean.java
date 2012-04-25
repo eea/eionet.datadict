@@ -191,7 +191,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution save() throws ServiceException {
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
-        return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
+        return new RedirectResolution(getClass(), "edit").addParameter("schemaSet.id", schemaSet.getId());
     }
 
     /**
@@ -431,16 +431,23 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 searchEngine = DDSearchEngine.create();
                 int schemaSetId = schemaSet == null ? 0 : schemaSet.getId();
 
-                //                if (!isGetOrHeadRequest()){
-                //                    String eventName = getContext().getEventName();
-                //                    if (eventName.equals("add") || eventName.equals("save") || eventName.equals("saveAndClose")){
-                //                        schemaSetId = 0;
-                //                    }
-                //                }
-
                 attributes =
                     searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
                             DElemAttribute.TYPE_SIMPLE);
+
+                //                if (!isGetOrHeadRequest()){
+                //                    String eventName = getContext().getEventName();
+                //                    if (eventName.equals("add") || eventName.equals("save") || eventName.equals("saveAndClose")){
+                //                        for (DElemAttribute attribute : attributes.values()){
+                //                            Integer attrId = Integer.valueOf(attribute.getID());
+                //                            Set<String> values = getSaveAttributeValues().get(attrId);
+                //                            if (CollectionUtils.isEmpty(values) || StringUtils.isBlank(values.iterator().next())){
+                //                                attribute.nullifyValues();
+                //                            }
+                //                        }
+                //                    }
+                //                }
+
             } finally {
                 searchEngine.close();
             }

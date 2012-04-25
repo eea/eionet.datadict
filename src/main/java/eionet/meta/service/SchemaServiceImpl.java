@@ -260,7 +260,7 @@ public class SchemaServiceImpl implements ISchemaService {
     throws ServiceException {
         try {
             schemaSetDAO.updateSchemaSet(schemaSet);
-            if (attributes != null && attributes.isEmpty()) {
+            if (attributes != null && !attributes.isEmpty()) {
                 schemaSetDAO.updateSchemaSetAttributes(schemaSet.getId(), attributes);
             }
         } catch (Exception e) {
