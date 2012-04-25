@@ -28,6 +28,16 @@
                     <label class="question" style="width:16%;float:left;padding-top:0.2em" for="schemaSetIdentifier">Schema set identifer:</label>
                     <stripes:text id="schemaSetIdentifier" name="searchFilter.schemaSetIdentifier" />
                 </fieldset>
+                <c:forEach var="attr" items="${actionBean.searchFilter.attributes}" varStatus="row">
+                    <fieldset style="border: none">
+                        <label class="question" style="width:16%;float:left;padding-top:0.2em" for="attr${row.index}">
+                            <c:out value="${attr.name}" />:
+                        </label>
+                        <stripes:text id="attr${row.index}" name="searchFilter.attributes[${row.index}].value" />
+                        <stripes:hidden name="searchFilter.attributes[${row.index}].id" />
+                        <stripes:hidden name="searchFilter.attributes[${row.index}].name" />
+                    </fieldset>
+                </c:forEach>
                 <stripes:submit name="search" value="Search"/>
             </div>
 

@@ -166,7 +166,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ValidationException
      */
     private void ensureDeleteAllowed(String username, boolean deleteReleasedPerm, List<SchemaSet> schemaSets)
-    throws ValidationException {
+            throws ValidationException {
         for (SchemaSet schemaSet : schemaSets) {
             if (schemaSet.isCheckedOut()) {
                 throw new ValidationException("Cannot delete a checked-out schema set: " + schemaSet.getIdentifier());
@@ -258,7 +258,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username)
-    throws ServiceException {
+            throws ServiceException {
         try {
             schemaSetDAO.updateSchemaSet(schemaSet);
             if (attributes != null && !attributes.isEmpty()) {
@@ -473,6 +473,15 @@ public class SchemaServiceImpl implements ISchemaService {
             return attributeDAO.getAttributes(DElemAttribute.ParentType.SCHEMA_SET, DElemAttribute.TYPE_SIMPLE);
         } catch (Exception e) {
             throw new ServiceException("Failed to get schema set attributes.", e);
+        }
+    }
+
+    @Override
+    public List<Attribute> getSchemaAttributes() throws ServiceException {
+        try {
+            return attributeDAO.getAttributes(DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get schema attributes.", e);
         }
     }
 

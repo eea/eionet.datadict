@@ -116,12 +116,13 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                         sql.append("AND ");
                         sql.append("ss.SCHEMA_SET_ID IN ( ");
                         sql.append("SELECT a.DATAELEM_ID FROM ATTRIBUTE a WHERE ");
-                        sql.append("a.M_ATTRIBUTE_ID = :" + idKey + " AND a.VALUE like :" + valueKey);
+                        sql.append("a.M_ATTRIBUTE_ID = :" + idKey + " AND a.VALUE like :" + valueKey + " AND a.PARENT_TYPE = :parentType ");
                         sql.append(") ");
                     }
                     parameters.put(idKey, a.getId());
                     String value = "%" + a.getValue() + "%";
                     parameters.put(valueKey, value);
+                    parameters.put("parentType", DElemAttribute.ParentType.SCHEMA_SET.toString());
                 }
             }
         }

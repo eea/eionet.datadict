@@ -33,7 +33,9 @@ import org.displaytag.properties.SortOrderEnum;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import eionet.meta.DElemAttribute;
 import eionet.meta.dao.ISchemaDAO;
+import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet.RegStatus;
 import eionet.meta.service.data.SchemaFilter;
@@ -232,6 +234,27 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 params.put("identifier", identifier);
                 andOperator = true;
             }
+            if (searchFilter.isAttributesValued()) {
+                for (int i = 0; i < searchFilter.getAttributes().size(); i++) {
+                    Attribute a = searchFilter.getAttributes().get(i);
+                    String idKey = "attrId" + i;
+                    String valueKey = "attrValue" + i;
+                    if (StringUtils.isNotEmpty(a.getValue())) {
+                        if (andOperator) {
+                            sql.append("AND ");
+                        }
+                        sql.append("s.schema_id IN ( ");
+                        sql.append("SELECT a.DATAELEM_ID FROM ATTRIBUTE a WHERE ");
+                        sql.append("a.M_ATTRIBUTE_ID = :" + idKey + " AND a.VALUE like :" + valueKey + " AND a.PARENT_TYPE = :parentType ");
+                        sql.append(") ");
+                        andOperator = true;
+                    }
+                    params.put(idKey, a.getId());
+                    String value = "%" + a.getValue() + "%";
+                    params.put(valueKey, value);
+                    params.put("parentType", DElemAttribute.ParentType.SCHEMA.toString());
+                }
+            }
         }
 
         // Sorting
@@ -244,6 +267,8 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
             }
         }
         sql.append("LIMIT ").append(searchFilter.getOffset()).append(",").append(searchFilter.getPageSize());
+
+        // LOGGER.debug("SQL: " + sql.toString());
 
         List<Schema> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Schema>() {
             public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {

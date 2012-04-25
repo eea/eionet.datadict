@@ -182,4 +182,12 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     List<Attribute> getSchemaSetAttributes() throws ServiceException;
+
+    /**
+     * Returns all attributes that are binded to schemas.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    List<Attribute> getSchemaAttributes() throws ServiceException;
 }

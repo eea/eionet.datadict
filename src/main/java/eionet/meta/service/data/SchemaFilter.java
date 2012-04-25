@@ -21,7 +21,11 @@
 
 package eionet.meta.service.data;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
+
+import eionet.meta.dao.domain.Attribute;
 
 /**
  * Schema search filter.
@@ -34,6 +38,9 @@ public class SchemaFilter extends PagedRequest {
 
     private String schemaSetIdentifier;
 
+    /** Dynamic search attributes. */
+    private List<Attribute> attributes;
+
     public boolean isValued() {
         if (StringUtils.isNotEmpty(fileName)) {
             return true;
@@ -41,6 +48,21 @@ public class SchemaFilter extends PagedRequest {
         if (StringUtils.isNotEmpty(schemaSetIdentifier)) {
             return true;
         }
+        if (isAttributesValued()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isAttributesValued() {
+        if (attributes != null && attributes.size() > 0) {
+            for (Attribute a : attributes) {
+                if (StringUtils.isNotEmpty(a.getValue())) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
@@ -72,6 +94,21 @@ public class SchemaFilter extends PagedRequest {
      */
     public void setSchemaSetIdentifier(String schemaSetIdentifier) {
         this.schemaSetIdentifier = schemaSetIdentifier;
+    }
+
+    /**
+     * @return the attributes
+     */
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * @param attributes
+     *            the attributes to set
+     */
+    public void setAttributes(List<Attribute> attributes) {
+        this.attributes = attributes;
     }
 
 }

@@ -73,6 +73,7 @@ public class SearchSchemaActionBean extends AbstractActionBean {
     public Resolution search() throws ServiceException {
         if (searchFilter == null) {
             searchFilter = new SchemaFilter();
+            searchFilter.setAttributes(schemaService.getSchemaAttributes());
         }
         searchFilter.setPageNumber(page);
 
