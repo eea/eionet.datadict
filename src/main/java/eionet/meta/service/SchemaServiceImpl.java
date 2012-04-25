@@ -392,6 +392,15 @@ public class SchemaServiceImpl implements ISchemaService {
 
         int newSchemaSetId;
         try {
+            SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
+            if (schemaSet.isWorkingCopy()){
+                throw new ServiceException("Cannot check out a working copy!");
+            }
+
+            if (StringUtils.isNotBlank(schemaSet.getWorkingUser())){
+                throw new ServiceException("Cannot check out an already checked-out schema set!");
+            }
+
             // Do schema set check-out, get the new schema set's ID.
             newSchemaSetId = schemaSetDAO.checkOutSchemaSet(schemaSetId, username, newIdentifier);
 
@@ -422,6 +431,10 @@ public class SchemaServiceImpl implements ISchemaService {
             int result = 0;
             SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
             if (schemaSet != null) {
+
+                if (!schemaSet.isWorkingCopyOf(username)){
+                    throw new ServiceException("Undo checkout can only be performed on your working copy!");
+                }
                 doDeleteSchemaSets(Collections.singletonList(schemaSetId), username);
                 int checkedOutCopyId = schemaSet.getCheckedOutCopyId();
                 if (checkedOutCopyId > 0) {

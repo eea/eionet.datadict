@@ -2,6 +2,7 @@ package eionet.web.action;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +16,8 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.FileBean;
@@ -26,7 +29,10 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
@@ -47,6 +53,9 @@ import eionet.util.PropsIF;
  */
 @UrlBinding("/schemaSet.action")
 public class SchemaSetActionBean extends AbstractActionBean {
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(SchemaSetActionBean.class);
 
     /** */
     private static final String ADD_SCHEMA_SET_JSP = "/pages/schemaSets/addSchemaSet.jsp";
@@ -158,21 +167,21 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws DAOException
      */
     @ValidationMethod(on = {"add", "save", "saveAndClose"})
-    public void validateAdd() throws DAOException {
-
+    public void validateAddSave() throws DAOException {
+    
         if (isGetOrHeadRequest()) {
             return;
         }
-
+    
         if (StringUtils.equals(getContext().getEventName(), "add")) {
             if (schemaSet == null || StringUtils.isBlank(schemaSet.getIdentifier())) {
                 addGlobalValidationError("Identifier is missing!");
             }
         }
-
+    
         LinkedHashMap<Integer, DElemAttribute> attributesMap = getAttributes();
         for (DElemAttribute attribute : attributesMap.values()) {
-
+    
             if (attribute.isMandatory()) {
                 Integer attrId = Integer.valueOf(attribute.getID());
                 Set<String> attrValues = getSaveAttributeValues().get(attrId);
@@ -191,7 +200,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution save() throws ServiceException {
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
-        return new RedirectResolution(getClass(), "edit").addParameter("schemaSet.id", schemaSet.getId());
+        return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
     }
 
     /**
@@ -228,14 +237,17 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
+     * @throws ServiceException
      *
      */
     @ValidationMethod(on = {"checkIn"})
-    public void validateCheckIn() {
+    public void validateCheckIn() throws ServiceException {
 
         if (isCheckInCommentsRequired()) {
             if (schemaSet == null || StringUtils.isBlank(schemaSet.getComment())) {
                 addGlobalValidationError("Check-in comment is mandatory!");
+                loadSchemaSet();
+                getContext().setSourcePageResolution(new ForwardResolution(VIEW_SCHEMA_SET_JSP));
             }
         }
     }
@@ -334,12 +346,11 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      * @throws IOException
      */
-    public Resolution uploadSchema() throws ServiceException, IOException {
+    public Resolution uploadSchema() throws ServiceException, IOException{
 
-        // TODO overwrite flag should not be always true, it should come from user
-        File schemaFile = schemaRepository.add(uploadedFile, schemaSet.getIdentifier(), true);
-
+        File schemaFile = null;
         try {
+            schemaFile = schemaRepository.add(uploadedFile, schemaSet.getIdentifier(), false);
 
             Schema schema = new Schema();
             schema.setFileName(uploadedFile.getFileName());
@@ -355,6 +366,56 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         return editSchemas();
+    }
+
+    /**
+     * @throws IOException
+     * @throws ServiceException
+     *
+     */
+    @ValidationMethod(on = {"uploadSchema"})
+    public void validateFileUpload() throws IOException, ServiceException{
+
+        if (uploadedFile==null){
+            addGlobalValidationError("No file uploaded!");
+        }
+
+        if (!isValidationErrors()){
+            if (schemaSet==null || StringUtils.isBlank(schemaSet.getIdentifier())){
+                addGlobalValidationError("Schema set identifier missing!");
+            }
+        }
+
+        if (!isValidationErrors()){
+            if (schemaRepository.exists(uploadedFile, schemaSet.getIdentifier())){
+                addGlobalValidationError("A schema with such a file name already exists!");
+            }
+        }
+
+        if (!isValidationErrors()){
+
+            InputStream inputStream = null;
+            try {
+                SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+                inputStream = uploadedFile.getInputStream();
+                factory.newSchema(new StreamSource(inputStream));
+            } catch (SAXException saxe) {
+                addGlobalValidationError("Not a valid XML Schema file!");
+                try {
+                    uploadedFile.delete();
+                } catch (Exception e) {
+                    LOGGER.error("Failed to delete uploaded file " + uploadedFile.getFileName(), e);
+                }
+            }
+            finally {
+                IOUtils.closeQuietly(inputStream);
+            }
+        }
+
+        if (isValidationErrors()){
+            loadSchemaSet();
+            getContext().setSourcePageResolution(new ForwardResolution(SCHEMA_SET_SCHEMAS_JSP));
+        }
     }
 
     /**
@@ -435,19 +496,26 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
                             DElemAttribute.TYPE_SIMPLE);
 
-                //                if (!isGetOrHeadRequest()){
-                //                    String eventName = getContext().getEventName();
-                //                    if (eventName.equals("add") || eventName.equals("save") || eventName.equals("saveAndClose")){
-                //                        for (DElemAttribute attribute : attributes.values()){
-                //                            Integer attrId = Integer.valueOf(attribute.getID());
-                //                            Set<String> values = getSaveAttributeValues().get(attrId);
-                //                            if (CollectionUtils.isEmpty(values) || StringUtils.isBlank(values.iterator().next())){
-                //                                attribute.nullifyValues();
-                //                            }
-                //                        }
-                //                    }
-                //                }
+                // If this is a POST request of "add", "save" or "saveAndClose",
+                // then substitute the values we got from database with the values
+                // we got from the request.
+                if (!isGetOrHeadRequest()){
+                    String eventName = getContext().getEventName();
+                    if (eventName.equals("add") || eventName.equals("save") || eventName.equals("saveAndClose")){
 
+                        for (Map.Entry<Integer, Set<String>> savedAttrEntry : getSaveAttributeValues().entrySet()){
+                            int attrId = savedAttrEntry.getKey();
+                            DElemAttribute attributeObj = attributes.get(attrId);
+                            if (attributeObj!=null){
+                                attributeObj.nullifyValues();
+                                Set<String> savedValues = savedAttrEntry.getValue();
+                                for (String savedValue : savedValues){
+                                    attributeObj.setValue(savedValue);
+                                }
+                            }
+                        }
+                    }
+                }
             } finally {
                 searchEngine.close();
             }
@@ -567,9 +635,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                         for (int i = 0; i < paramValues.length; i++) {
                             valueSet.add(paramValues[i]);
                         }
-                        if (!valueSet.isEmpty()) {
-                            saveAttributeValues.put(attributeId, valueSet);
-                        }
+                        saveAttributeValues.put(attributeId, valueSet);
                     }
                 } while (paramNames.hasMoreElements());
             }

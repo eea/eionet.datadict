@@ -31,6 +31,7 @@ import net.sourceforge.stripes.action.SimpleMessage;
 import net.sourceforge.stripes.controller.AnnotatedClassActionResolver;
 import net.sourceforge.stripes.validation.SimpleError;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -213,6 +214,14 @@ public abstract class AbstractActionBean implements ActionBean {
             contextPath = getContext().getRequest().getContextPath();
         }
         return contextPath;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isValidationErrors(){
+        return MapUtils.isNotEmpty(getContext().getValidationErrors());
     }
 
     /**

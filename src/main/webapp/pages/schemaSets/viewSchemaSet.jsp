@@ -25,6 +25,23 @@
                             $('#newVersionDialog').dialog('close');
                             return true;
                         });
+
+                        ////////////////////
+
+                        $("#checkInLink").click(function() {
+                            $('#checkInDialog').dialog('open');
+                            return false;
+                        });
+
+                        $('#checkInDialog').dialog({
+                            autoOpen: false,
+                            width: 500
+                        });
+
+                        $("#closeCheckInDialog").click(function() {
+                            $('#checkInDialog').dialog('close');
+                            return true;
+                        });
                     });
             } ) ( jQuery );
         // ]]>
@@ -38,48 +55,57 @@
     <c:if test="${not empty actionBean.userName}">
         <c:set var="isMyWorkingCopy" value="${actionBean.schemaSet.workingCopy && actionBean.userName==actionBean.schemaSet.workingUser}"/>
         <c:if test="${empty actionBean.schemaSet.workingUser || isMyWorkingCopy}">
-	        <div id="drop-operations">
-	            <h2>Operations:</h2>
-	            <ul>
-	                <c:if test="${isMyWorkingCopy}">
-		                <li>
-	                        <stripes:link beanclass="${actionBean.class.name}" event="edit">Edit metadata
-	                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-	                        </stripes:link>
-		                </li>
-		                <li>
+            <div id="drop-operations">
+                <h2>Operations:</h2>
+                <ul>
+                    <c:if test="${isMyWorkingCopy}">
+                        <li>
+                            <stripes:link beanclass="${actionBean.class.name}" event="edit">Edit metadata
+                                <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                            </stripes:link>
+                        </li>
+                        <li>
                             <stripes:link beanclass="${actionBean.class.name}" event="editSchemas">Edit schemas
                                 <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                             </stripes:link>
                         </li>
-		                <li>
-	                        <stripes:link beanclass="${actionBean.class.name}" event="checkIn">Check in
-	                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-	                        </stripes:link>
-	                    </li>
-	                    <li>
-	                        <stripes:link beanclass="${actionBean.class.name}" event="undoCheckout">Undo checkout
-	                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-	                        </stripes:link>
-	                    </li>
-	                </c:if>
-	                <c:if test="${empty actionBean.schemaSet.workingUser}">
-	                    <li>
-	                        <a href="#" id="newVersionLink">New version</a>
-	                    </li>
-	                    <li>
-	                        <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
-	                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-	                        </stripes:link>
-	                    </li>
-	                    <li>
-	                        <stripes:link beanclass="${actionBean.class.name}" event="delete">Delete
-	                            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-	                        </stripes:link>
-	                    </li>
-	                </c:if>
-	            </ul>
-	        </div>
+                        <c:choose>
+                            <c:when test="${actionBean.checkInCommentsRequired}">
+                                <li>
+		                            <a href="#" id="checkInLink">Check in</a>
+		                        </li>
+                            </c:when>
+                            <c:otherwise>
+                                <li>
+                                   <stripes:link beanclass="${actionBean.class.name}" event="checkIn">Check in
+                                       <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                                   </stripes:link>
+                               </li>
+                            </c:otherwise>
+                        </c:choose>
+                        <li>
+                            <stripes:link beanclass="${actionBean.class.name}" event="undoCheckout">Undo checkout
+                                <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                            </stripes:link>
+                        </li>
+                    </c:if>
+                    <c:if test="${empty actionBean.schemaSet.workingUser}">
+                        <li>
+                            <a href="#" id="newVersionLink">New version</a>
+                        </li>
+                        <li>
+                            <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
+                                <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                            </stripes:link>
+                        </li>
+                        <li>
+                            <stripes:link beanclass="${actionBean.class.name}" event="delete">Delete
+                                <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                            </stripes:link>
+                        </li>
+                    </c:if>
+                </ul>
+            </div>
         </c:if>
     </c:if>
 
@@ -175,7 +201,7 @@
     </c:if>
 
     <div id="newVersionDialog" title="Create new version">
-        <stripes:form beanclass="${actionBean.class.name}" method="post">
+        <stripes:form beanclass="${actionBean.class.name}" method="get">
 
             <div class="note-msg">
                 <strong>Note</strong>
@@ -189,6 +215,24 @@
             <div style="display:none">
                 <stripes:hidden name="schemaSet.id"/>
                 <stripes:hidden name="schemaSet.identifier"/>
+            </div>
+        </stripes:form>
+    </div>
+
+    <div id="checkInDialog" title="Check in">
+        <stripes:form beanclass="${actionBean.class.name}" method="get">
+
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>A check-in comment is required. Please enter it below.</p>
+            </div>
+
+            <input type="text" name="schemaSet.comment" size="30"/><br/>
+            <stripes:submit name="checkIn" value="Submit"/>
+            <input type="button" id="closecheckInDialog" value="Cancel"/>
+
+            <div style="display:none">
+                <stripes:hidden name="schemaSet.id"/>
             </div>
         </stripes:form>
     </div>

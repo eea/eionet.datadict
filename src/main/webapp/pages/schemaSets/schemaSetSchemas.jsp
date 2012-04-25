@@ -82,10 +82,9 @@
         <div id="uploadSchemaDialog" title="Upload schema">
             <stripes:form beanclass="${actionBean.class.name}" method="post">
 
-                <fieldset style="border: 0px;">
-                    <label for="fileToUpload" style="width: 200px; float: left;">File to upload*:</label>
-                    <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>
-                </fieldset>
+                <label for="fileToUpload">File to upload*:</label>
+                <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>
+                <br/><br/>
                 <stripes:submit name="uploadSchema" value="Upload"/>
                 <input type="button" id="closeUploadSchemaDialog" value="Cancel"/>
 
