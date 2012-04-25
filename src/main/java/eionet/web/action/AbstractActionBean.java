@@ -223,23 +223,23 @@ public abstract class AbstractActionBean implements ActionBean {
         HttpServletRequest request = getContext().getRequest();
         Enumeration paramNames = request.getParameterNames();
 
-        System.out.println(">>>>>>>>>> start request parameters dump");
-        if (paramNames != null && paramNames.hasMoreElements()) {
-            do {
-                String paramName = paramNames.nextElement().toString();
-                String[] paramValues = request.getParameterValues(paramName);
-                System.out.print(paramName + " = [");
-                for (int i = 0; i < paramValues.length; i++) {
-                    if (i > 0) {
-                        System.out.print(", ");
-                    }
-                    System.out.print(paramValues[i]);
-                }
-                System.out.println("]");
-            } while (paramNames.hasMoreElements());
-        } else {
-            System.out.println("No request parameters found");
-        }
-        System.out.println("<<<<<<<<<< end request parameters dump");
+        // System.out.println(">>>>>>>>>> start request parameters dump");
+        // if (paramNames != null && paramNames.hasMoreElements()) {
+        // do {
+        // String paramName = paramNames.nextElement().toString();
+        // String[] paramValues = request.getParameterValues(paramName);
+        // System.out.print(paramName + " = [");
+        // for (int i = 0; i < paramValues.length; i++) {
+        // if (i > 0) {
+        // System.out.print(", ");
+        // }
+        // System.out.print(paramValues[i]);
+        // }
+        // System.out.println("]");
+        // } while (paramNames.hasMoreElements());
+        // } else {
+        // System.out.println("No request parameters found");
+        // }
+        // System.out.println("<<<<<<<<<< end request parameters dump");
     }
 }

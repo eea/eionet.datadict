@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.displaytag.properties.SortOrderEnum;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -212,11 +213,43 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         sql.append("select * from t_schema as s LEFT JOIN t_schema_set as ss ON (s.schema_set_id = ss.schema_set_id) ");
 
         Map<String, Object> params = new HashMap<String, Object>();
+        // Where clause
+        if (searchFilter.isValued()) {
+            boolean andOperator = false;
+            sql.append("WHERE ");
+            if (StringUtils.isNotEmpty(searchFilter.getFileName())) {
+                sql.append("s.FILENAME like :fileName ");
+                String fileName = "%" + searchFilter.getFileName() + "%";
+                params.put("fileName", fileName);
+                andOperator = true;
+            }
+            if (StringUtils.isNotEmpty(searchFilter.getSchemaSetIdentifier())) {
+                if (andOperator) {
+                    sql.append("AND ");
+                }
+                sql.append("ss.IDENTIFIER = :identifier ");
+                String identifier = "%" + searchFilter.getSchemaSetIdentifier() + "%";
+                params.put("identifier", identifier);
+                andOperator = true;
+            }
+        }
+
+        // Sorting
+        if (StringUtils.isNotEmpty(searchFilter.getSortProperty())) {
+            sql.append("ORDER BY ").append(searchFilter.getSortProperty());
+            if (SortOrderEnum.ASCENDING.equals(searchFilter.getSortOrder())) {
+                sql.append(" ASC ");
+            } else {
+                sql.append(" DESC ");
+            }
+        }
+        sql.append("LIMIT ").append(searchFilter.getOffset()).append(",").append(searchFilter.getPageSize());
 
         List<Schema> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Schema>() {
             public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Schema schema = new Schema();
                 schema.setId(rs.getInt("SCHEMA_ID"));
+                schema.setSchemaSetId(rs.getInt("SCHEMA_SET_ID"));
                 schema.setFileName(rs.getString("FILENAME"));
                 schema.setContinuityId(rs.getString("CONTINUITY_ID"));
                 schema.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));

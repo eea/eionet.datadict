@@ -4,8 +4,7 @@
 
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
-<stripes:layout-render name="/pages/common/template.jsp"
-    pageTitle="Schema sets">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Schema sets">
 
     <stripes:layout-component name="contents">
 
@@ -20,14 +19,26 @@
 
         <stripes:form id="searchResultsForm" action="/searchSchemaSets.action" method="get">
             <div style="margin-top:1em">
-                <label class="question" style="width:16%;float:left;padding-top:0.2em" for="identifier">Identifier:</label>
-                <stripes:text id="identifier" name="searchFilter.identifier" />
-                <br/>
-                <label class="question" style="width:16%;float:left;padding-top:0.2em" for="regStatus">Registration status:</label>
-                <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
-                    <stripes:options-collection collection="${actionBean.regStatuses}" />
-                </stripes:select>
-                <br/>
+                <fieldset style="border: none">
+                    <label class="question" style="width:16%;float:left;padding-top:0.2em" for="identifier">Identifier:</label>
+                    <stripes:text id="identifier" name="searchFilter.identifier" />
+                </fieldset>
+                <fieldset style="border: none">
+                    <label class="question" style="width:16%;float:left;padding-top:0.2em" for="regStatus">Registration status:</label>
+                    <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
+                        <stripes:options-collection collection="${actionBean.regStatuses}" />
+                    </stripes:select>
+                </fieldset>
+                <c:forEach var="attr" items="${actionBean.searchFilter.attributes}" varStatus="row">
+                    <fieldset style="border: none">
+                        <label class="question" style="width:16%;float:left;padding-top:0.2em" for="attr${row.index}">
+                            <c:out value="${attr.name}" />:
+                        </label>
+                        <stripes:text id="attr${row.index}" name="searchFilter.attributes[${row.index}].value" />
+                        <stripes:hidden name="searchFilter.attributes[${row.index}].id" />
+                        <stripes:hidden name="searchFilter.attributes[${row.index}].name" />
+                    </fieldset>
+                </c:forEach>
                 <stripes:submit name="search" value="Search"/>
             </div>
 
@@ -37,17 +48,17 @@
 
                 <c:if test="${not empty actionBean.user}">
                     <display:column title="" sortable="true" sortName="sortName" sortProperty="identifier">
-	                    <c:choose>
-	                        <c:when test="${ddfn:contains(actionBean.deletable,item.id)}">
-	                            <stripes:checkbox name="selected" value="${item.id}" />
-	                        </c:when>
-	                        <c:otherwise>
-	                            <input type="checkbox" disabled="disabled" title="Schema set in registered status or currently checked out"/>
-	                        </c:otherwise>
+                        <c:choose>
+                            <c:when test="${ddfn:contains(actionBean.deletable,item.id)}">
+                                <stripes:checkbox name="selected" value="${item.id}" />
+                            </c:when>
+                            <c:otherwise>
+                                <input type="checkbox" disabled="disabled" title="Schema set in registered status or currently checked out"/>
+                            </c:otherwise>
                     </c:choose>
                     </display:column>
                 </c:if>
-                        
+
                 <display:column title="Identifier" sortable="true" sortName="sortName" sortProperty="identifier">
                     <stripes:link href="/schemaSet.action">
                         <stripes:param name="schemaSet.id" value="${item.id}" />

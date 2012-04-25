@@ -25,7 +25,6 @@ package eionet.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -44,7 +43,7 @@ import eionet.meta.filters.CASFilterConfig;
 
 /**
  * This is a class containing several utility methods for keeping security.
- * 
+ *
  * @author Jaanus Heinlaid
  */
 public class SecurityUtil {
@@ -91,7 +90,7 @@ public class SecurityUtil {
     }
 
     /**
-     * 
+     *
      * @param usr
      * @param aclPath
      * @param prm
@@ -137,7 +136,7 @@ public class SecurityUtil {
     }
 
     /**
-     * 
+     *
      * @param usr
      * @param aclPath
      * @param prm
@@ -162,7 +161,7 @@ public class SecurityUtil {
     }
 
     /**
-     * 
+     *
      * @param request
      * @return
      */
@@ -205,7 +204,7 @@ public class SecurityUtil {
     }
 
     /**
-     * 
+     *
      * @param request
      * @return
      */
@@ -241,7 +240,7 @@ public class SecurityUtil {
     }
 
     /**
-     * 
+     *
      * @return
      */
     private static String getUrlWithContextPath(HttpServletRequest request) {
@@ -263,20 +262,20 @@ public class SecurityUtil {
     }
 
     /**
-     * 
+     *
      * @param request
      * @return
      */
     public static String buildAfterLoginURL(HttpServletRequest request) {
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>");
-        Enumeration attributeNames = request.getAttributeNames();
-        while (attributeNames!=null && attributeNames.hasMoreElements()){
-            String attrName = attributeNames.nextElement().toString();
-            Object attrValue = request.getAttribute(attrName);
-            System.out.println(attrName + " " + attrValue);
-        }
-        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<");
+        // System.out.println(">>>>>>>>>>>>>>>>>>>>>");
+        // Enumeration attributeNames = request.getAttributeNames();
+        // while (attributeNames!=null && attributeNames.hasMoreElements()){
+        // String attrName = attributeNames.nextElement().toString();
+        // Object attrValue = request.getAttribute(attrName);
+        // System.out.println(attrName + " " + attrValue);
+        // }
+        // System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<");
 
         String requestUri = (String) request.getAttribute("javax.servlet.forward.request_uri");
         if (requestUri==null){

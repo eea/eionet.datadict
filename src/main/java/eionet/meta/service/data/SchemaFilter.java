@@ -21,6 +21,8 @@
 
 package eionet.meta.service.data;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Schema search filter.
  *
@@ -31,6 +33,16 @@ public class SchemaFilter extends PagedRequest {
     private String fileName;
 
     private String schemaSetIdentifier;
+
+    public boolean isValued() {
+        if (StringUtils.isNotEmpty(fileName)) {
+            return true;
+        }
+        if (StringUtils.isNotEmpty(schemaSetIdentifier)) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * @return the fileName

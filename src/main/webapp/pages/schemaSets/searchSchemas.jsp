@@ -20,12 +20,14 @@
 
         <stripes:form id="searchResultsForm" action="/searchSchemas.action" method="get">
             <div style="margin-top:1em">
-                <label class="question" style="width:16%;float:left;padding-top:0.2em" for="name">Schema file name:</label>
-                <stripes:text id="name" name="searchFilter.fileName" />
-                <br/>
-                <label class="question" style="width:16%;float:left;padding-top:0.2em" for="schemaSetIdentifier">Schema set identifer:</label>
-                <stripes:text id="schemaSetIdentifier" name="searchFilter.schemaSetIdentifier" />
-                <br/>
+                <fieldset style="border: none">
+                    <label class="question" style="width:16%;float:left;padding-top:0.2em" for="name">Schema file name:</label>
+                    <stripes:text id="name" name="searchFilter.fileName" />
+                </fieldset>
+                <fieldset style="border: none">
+                    <label class="question" style="width:16%;float:left;padding-top:0.2em" for="schemaSetIdentifier">Schema set identifer:</label>
+                    <stripes:text id="schemaSetIdentifier" name="searchFilter.schemaSetIdentifier" />
+                </fieldset>
                 <stripes:submit name="search" value="Search"/>
             </div>
 
@@ -39,14 +41,17 @@
                     </display:column>
                 </c:if>
 
-                <display:column title="fileName" sortable="true" sortName="sortName" sortProperty="fileName">
+                <display:column title="File name" sortable="true" sortName="sortName" sortProperty="fileName">
                     <stripes:link href="#">
                         <stripes:param name="schema.id" value="${item.id}" />
                         <c:out value="${item.fileName}" />
                     </stripes:link>
                 </display:column>
                 <display:column title="Schema set identifier" sortable="true" sortProperty="schemaSetIdentifier">
-                    <c:out value="${item.schemaSetIdentifier}" />
+                    <stripes:link href="/schemaSet.action">
+                        <stripes:param name="schemaSet.id" value="${item.schemaSetId}" />
+                        <c:out value="${item.schemaSetIdentifier}" />
+                    </stripes:link>
                 </display:column>
             </display:table>
 

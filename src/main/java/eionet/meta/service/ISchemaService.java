@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.data.SchemaFilter;
@@ -173,4 +174,12 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     List<SchemaSet> getSchemaSetWorkingCopiesOf(String userName) throws ServiceException;
+
+    /**
+     * Returns all attributes that are binded to schema sets.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    List<Attribute> getSchemaSetAttributes() throws ServiceException;
 }

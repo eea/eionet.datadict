@@ -2,6 +2,7 @@ package eionet.meta.dao.mysql;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,8 +10,12 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DElemAttribute;
 import eionet.meta.DElemAttribute.ParentType;
+import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
+import eionet.meta.dao.domain.Attribute;
 
 /**
  *
@@ -22,8 +27,8 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
     /** */
     private static final String COPY_SIMPLE_ATTRIBUTES_SQL =
-        "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) "
-        + "select :newParentId, PARENT_TYPE, M_ATTRIBUTE_ID, VALUE from ATTRIBUTE where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType";
+            "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) "
+                    + "select :newParentId, PARENT_TYPE, M_ATTRIBUTE_ID, VALUE from ATTRIBUTE where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType";
 
     /**
      * @see eionet.meta.dao.IAttributeDAO#copySimpleAttributes(int, java.lang.String, int)
@@ -51,7 +56,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
     /** */
     private static final String REPLACE_PARENT_ID_SQL = "update ATTRIBUTE set DATAELEM_ID=:substituteId "
-        + "where DATAELEM_ID=:replacedId and PARENT_TYPE=:parentType";
+            + "where DATAELEM_ID=:replacedId and PARENT_TYPE=:parentType";
 
     /**
      * @see eionet.meta.dao.IAttributeDAO#replaceParentId(int, int, eionet.meta.DElemAttribute.ParentType)
@@ -90,5 +95,22 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
         SqlParameterSource[] batchArgs = SqlParameterSourceUtils.createBatch(valueMaps.toArray(new Map[valueMaps.size()]));
         getNamedParameterJdbcTemplate().batchUpdate(REPLACE_PARENT_ID_SQL, batchArgs);
+    }
+
+    @Override
+    public List<Attribute> getAttributes(DElemAttribute.ParentType parentType, String elementType) throws DAOException {
+        List<Attribute> result = new ArrayList<Attribute>();
+        DDSearchEngine searchEngine = new DDSearchEngine(getConnection());
+
+        LinkedHashMap<Integer, DElemAttribute> attributes = searchEngine.getObjectAttributes(0, parentType, elementType);
+
+        for (DElemAttribute dea : attributes.values()) {
+            Attribute a = new Attribute();
+            a.setId(Integer.parseInt(dea.getID()));
+            a.setName(dea.getName());
+            result.add(a);
+        }
+
+        return result;
     }
 }

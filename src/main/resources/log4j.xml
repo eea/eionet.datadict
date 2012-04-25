@@ -23,6 +23,10 @@
         <level value="debug" />
     </logger>
 
+    <logger name="eionet.meta.DDSearchEngine">
+        <level value="info" />
+    </logger>
+
     <logger name="org.apache">
         <level value="info" />
     </logger>

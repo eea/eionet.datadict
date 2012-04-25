@@ -36,6 +36,7 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.ISchemaDAO;
 import eionet.meta.dao.ISchemaSetDAO;
+import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.schemas.SchemaRepository;
@@ -463,6 +464,15 @@ public class SchemaServiceImpl implements ISchemaService {
             return schemaSetDAO.getWorkingCopiesOf(userName);
         } catch (Exception e) {
             throw new ServiceException("Failed to get working copies of user " + userName, e);
+        }
+    }
+
+    @Override
+    public List<Attribute> getSchemaSetAttributes() throws ServiceException {
+        try {
+            return attributeDAO.getAttributes(DElemAttribute.ParentType.SCHEMA_SET, DElemAttribute.TYPE_SIMPLE);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get schema set attributes.", e);
         }
     }
 
