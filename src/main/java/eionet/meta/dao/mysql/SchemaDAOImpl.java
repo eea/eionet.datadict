@@ -213,31 +213,25 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     public SchemasResult searchSchemas(SchemaFilter searchFilter) {
         StringBuilder sql = new StringBuilder();
         sql.append("select * from t_schema as s LEFT OUTER JOIN t_schema_set as ss ON (s.schema_set_id = ss.schema_set_id) ");
+        sql.append("WHERE ss.WORKING_COPY=FALSE AND (s.WORKING_COPY=FALSE OR s.WORKING_COPY IS NULL) ");
 
         Map<String, Object> params = new HashMap<String, Object>();
         // Where clause
         if (searchFilter.isValued()) {
-            boolean andOperator = false;
-            sql.append("WHERE ");
             if (StringUtils.isNotEmpty(searchFilter.getFileName())) {
+                sql.append("AND ");
                 sql.append("s.FILENAME like :fileName ");
                 String fileName = "%" + searchFilter.getFileName() + "%";
                 params.put("fileName", fileName);
-                andOperator = true;
             }
             if (StringUtils.isNotEmpty(searchFilter.getSchemaSetIdentifier())) {
-                if (andOperator) {
-                    sql.append("AND ");
-                }
+                sql.append("AND ");
                 sql.append("ss.IDENTIFIER = :identifier ");
                 String identifier = "%" + searchFilter.getSchemaSetIdentifier() + "%";
                 params.put("identifier", identifier);
-                andOperator = true;
             }
             if (StringUtils.isNotEmpty(searchFilter.getRegStatus())) {
-                if (andOperator) {
-                    sql.append("AND ");
-                }
+                sql.append("AND ");
                 sql.append("(s.REG_STATUS = :regStatus OR s.REG_STATUS IS NULL) ");
                 sql.append("AND ");
                 sql.append("ss.REG_STATUS = :regStatus ");
@@ -249,14 +243,11 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                     String idKey = "attrId" + i;
                     String valueKey = "attrValue" + i;
                     if (StringUtils.isNotEmpty(a.getValue())) {
-                        if (andOperator) {
-                            sql.append("AND ");
-                        }
+                        sql.append("AND ");
                         sql.append("s.schema_id IN ( ");
                         sql.append("SELECT a.DATAELEM_ID FROM ATTRIBUTE a WHERE ");
                         sql.append("a.M_ATTRIBUTE_ID = :" + idKey + " AND a.VALUE like :" + valueKey + " AND a.PARENT_TYPE = :parentType ");
                         sql.append(") ");
-                        andOperator = true;
                     }
                     params.put(idKey, a.getId());
                     String value = "%" + a.getValue() + "%";
