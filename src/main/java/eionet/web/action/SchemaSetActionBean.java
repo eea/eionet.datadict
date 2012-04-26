@@ -168,20 +168,20 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     @ValidationMethod(on = {"add", "save", "saveAndClose"})
     public void validateAddSave() throws DAOException {
-    
+
         if (isGetOrHeadRequest()) {
             return;
         }
-    
+
         if (StringUtils.equals(getContext().getEventName(), "add")) {
             if (schemaSet == null || StringUtils.isBlank(schemaSet.getIdentifier())) {
                 addGlobalValidationError("Identifier is missing!");
             }
         }
-    
+
         LinkedHashMap<Integer, DElemAttribute> attributesMap = getAttributes();
         for (DElemAttribute attribute : attributesMap.values()) {
-    
+
             if (attribute.isMandatory()) {
                 Integer attrId = Integer.valueOf(attribute.getID());
                 Set<String> attrValues = getSaveAttributeValues().get(attrId);
@@ -200,6 +200,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution save() throws ServiceException {
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
+        addSystemMessage("Schema set successfully updated!");
         return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
     }
 
@@ -211,6 +212,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution saveAndClose() throws ServiceException {
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
+        addSystemMessage("Schema set successfully updated!");
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
     }
 
@@ -233,6 +235,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     public Resolution checkIn() throws ServiceException {
 
         int finalId = schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), schemaSet.getComment());
+        addSystemMessage("Schema set successfully checked in!");
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", finalId);
     }
 
@@ -268,6 +271,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution checkOut() throws ServiceException {
         int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName(), null);
+        addSystemMessage("Schema set successfully checked out!");
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
     }
 
@@ -277,8 +281,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution newVersion() throws ServiceException {
-
         int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName(), newIdentifier);
+        addSystemMessage("New version of the schema set successfully created!");
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
     }
 
@@ -316,6 +320,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution undoCheckout() throws ServiceException {
         int checkedOutCopyId = schemaService.undoCheckOutSchemaSet(schemaSet.getId(), getUserName());
+        addSystemMessage("Working copy successfully deleted!");
         if (checkedOutCopyId > 0) {
             return new RedirectResolution(getClass()).addParameter("schemaSet.id", checkedOutCopyId);
         } else {
@@ -365,6 +370,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             throw e;
         }
 
+        addSystemMessage("Schema successfully uploaded!");
         return editSchemas();
     }
 
