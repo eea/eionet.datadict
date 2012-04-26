@@ -28,6 +28,12 @@
                     <label class="question" style="width:16%;float:left;padding-top:0.2em" for="schemaSetIdentifier">Schema set identifer:</label>
                     <stripes:text id="schemaSetIdentifier" name="searchFilter.schemaSetIdentifier" />
                 </fieldset>
+                <fieldset style="border: none">
+                    <label class="question" style="width:16%;float:left;padding-top:0.2em" for="regStatus">Registration status:</label>
+                    <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
+                        <stripes:options-collection collection="${actionBean.regStatuses}" />
+                    </stripes:select>
+                </fieldset>
                 <c:forEach var="attr" items="${actionBean.searchFilter.attributes}" varStatus="row">
                     <fieldset style="border: none">
                         <label class="question" style="width:16%;float:left;padding-top:0.2em" for="attr${row.index}">
@@ -45,12 +51,6 @@
 
             <display:table name="actionBean.schemasResult" class="sortable" id="item" requestURI="/searchSchemas.action">
 
-                <c:if test="${not empty actionBean.user}">
-                    <display:column title="" sortable="false">
-                        <stripes:checkbox name="selected" value="${item.id}" />
-                    </display:column>
-                </c:if>
-
                 <display:column title="File name" sortable="true" sortName="sortName" sortProperty="fileName">
                     <stripes:link href="#">
                         <stripes:param name="schema.id" value="${item.id}" />
@@ -64,11 +64,6 @@
                     </stripes:link>
                 </display:column>
             </display:table>
-
-            <c:if test="${not empty actionBean.user && not empty actionBean.schemasResult.list}">
-                <stripes:submit name="delete" value="Delete"/>
-                <input type="button" onclick="toggleSelectAll('searchResultsForm');return false" value="Select all" name="selectAll" />
-            </c:if>
 
         </stripes:form>
 

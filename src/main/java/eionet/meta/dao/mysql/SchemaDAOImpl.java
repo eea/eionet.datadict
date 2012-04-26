@@ -212,7 +212,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     @Override
     public SchemasResult searchSchemas(SchemaFilter searchFilter) {
         StringBuilder sql = new StringBuilder();
-        sql.append("select * from t_schema as s LEFT JOIN t_schema_set as ss ON (s.schema_set_id = ss.schema_set_id) ");
+        sql.append("select * from t_schema as s LEFT OUTER JOIN t_schema_set as ss ON (s.schema_set_id = ss.schema_set_id) ");
 
         Map<String, Object> params = new HashMap<String, Object>();
         // Where clause
@@ -233,6 +233,15 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 String identifier = "%" + searchFilter.getSchemaSetIdentifier() + "%";
                 params.put("identifier", identifier);
                 andOperator = true;
+            }
+            if (StringUtils.isNotEmpty(searchFilter.getRegStatus())) {
+                if (andOperator) {
+                    sql.append("AND ");
+                }
+                sql.append("(s.REG_STATUS = :regStatus OR s.REG_STATUS IS NULL) ");
+                sql.append("AND ");
+                sql.append("ss.REG_STATUS = :regStatus ");
+                params.put("regStatus", searchFilter.getRegStatus());
             }
             if (searchFilter.isAttributesValued()) {
                 for (int i = 0; i < searchFilter.getAttributes().size(); i++) {

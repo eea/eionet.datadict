@@ -21,6 +21,7 @@
 
 package eionet.web.action;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -32,6 +33,7 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
 
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SchemaFilter;
@@ -57,9 +59,6 @@ public class SearchSchemaActionBean extends AbstractActionBean {
     /** Schema search result. */
     private SchemasResult schemasResult;
 
-    /** Selected ids. */
-    private List<Integer> selected;
-
     /** Table page number. */
     private int page = 1;
 
@@ -77,9 +76,9 @@ public class SearchSchemaActionBean extends AbstractActionBean {
         }
         searchFilter.setPageNumber(page);
 
-        // if (!isAuthenticated()) {
-        // searchFilter.setRegStatus(SchemaSet.RegStatus.RELEASED.toString());
-        // }
+        if (!isAuthenticated()) {
+            searchFilter.setRegStatus(SchemaSet.RegStatus.RELEASED.toString());
+        }
 
         if (StringUtils.isNotEmpty(sort)) {
             searchFilter.setSortProperty(sort);
@@ -94,15 +93,18 @@ public class SearchSchemaActionBean extends AbstractActionBean {
         return new ForwardResolution(SEARCH_SCHEMAS_JSP);
     }
 
-    /**
-     * Deletes schema sets.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution delete() throws ServiceException {
+    public List<String> getRegStatuses() {
+        List<String> result = new ArrayList<String>();
+        result.add("");
+        for (SchemaSet.RegStatus rs : SchemaSet.RegStatus.values()) {
+            result.add(rs.toString());
+        }
 
-        return null;
+        return result;
+    }
+
+    public boolean isAuthenticated() {
+        return getUser() != null;
     }
 
     /**
@@ -186,21 +188,6 @@ public class SearchSchemaActionBean extends AbstractActionBean {
      */
     public void setSchemaService(ISchemaService schemaService) {
         this.schemaService = schemaService;
-    }
-
-    /**
-     * @return the selected
-     */
-    public List<Integer> getSelected() {
-        return selected;
-    }
-
-    /**
-     * @param selected
-     *            the selected to set
-     */
-    public void setSelected(List<Integer> selected) {
-        this.selected = selected;
     }
 
 }

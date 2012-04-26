@@ -45,7 +45,7 @@
             <br />
 
             <display:table name="actionBean.schemaSetsResult" class="sortable" id="item" requestURI="/searchSchemaSets.action">
-
+                <%--
                 <c:if test="${not empty actionBean.user}">
                     <display:column title="" sortable="true" sortName="sortName" sortProperty="identifier">
                         <c:choose>
@@ -58,7 +58,7 @@
                     </c:choose>
                     </display:column>
                 </c:if>
-
+                --%>
                 <display:column title="Identifier" sortable="true" sortName="sortName" sortProperty="identifier">
                     <stripes:link href="/schemaSet.action">
                         <stripes:param name="schemaSet.id" value="${item.id}" />
@@ -72,7 +72,7 @@
                     <c:out value="${item.regStatus}" />
                 </display:column>
             </display:table>
-
+            <%--
             <c:if test="${not empty actionBean.user && not empty actionBean.schemaSetsResult.list}">
                 <c:choose>
                     <c:when test="${not empty actionBean.deletable}">
@@ -85,7 +85,7 @@
                     </c:otherwise>
                 </c:choose>
             </c:if>
-
+            --%>
         </stripes:form>
 
     </stripes:layout-component>

@@ -65,6 +65,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
     private SchemaSetFilter searchFilter;
 
     /** Selected ids. */
+    @Deprecated
     private List<Integer> selected;
 
     /** Table page number. */
@@ -77,6 +78,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
     private String dir;
 
     /** Ids of search result schema sets that the current user is allowed to delete. */
+    @Deprecated
     private Set<Integer> deletable;
 
     @DefaultHandler
@@ -110,6 +112,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
      * @return
      * @throws ServiceException
      */
+    @Deprecated
     public Resolution delete() throws ServiceException {
         if (isDeletePermission()) {
             try {
@@ -132,6 +135,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
         return new RedirectResolution(SearchSchemaSetsActionBean.class);
     }
 
+    @Deprecated
     public boolean isDeletePermission() {
         if (getUser() != null) {
             try {
@@ -252,6 +256,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
      * @return the deletable
      * @throws Exception
      */
+    @Deprecated
     public Set<Integer> getDeletable() throws Exception {
 
         if (deletable == null) {

@@ -38,6 +38,8 @@ public class SchemaFilter extends PagedRequest {
 
     private String schemaSetIdentifier;
 
+    private String regStatus;
+
     /** Dynamic search attributes. */
     private List<Attribute> attributes;
 
@@ -46,6 +48,9 @@ public class SchemaFilter extends PagedRequest {
             return true;
         }
         if (StringUtils.isNotEmpty(schemaSetIdentifier)) {
+            return true;
+        }
+        if (StringUtils.isNotEmpty(regStatus)) {
             return true;
         }
         if (isAttributesValued()) {
@@ -109,6 +114,21 @@ public class SchemaFilter extends PagedRequest {
      */
     public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
+    }
+
+    /**
+     * @return the regStatus
+     */
+    public String getRegStatus() {
+        return regStatus;
+    }
+
+    /**
+     * @param regStatus
+     *            the regStatus to set
+     */
+    public void setRegStatus(String regStatus) {
+        this.regStatus = regStatus;
     }
 
 }
