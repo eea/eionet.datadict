@@ -47,6 +47,7 @@ import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.SecurityUtil;
 
 /**
  *
@@ -138,6 +139,15 @@ public class SchemaSetActionBean extends AbstractActionBean {
     public Resolution edit() throws ServiceException {
 
         loadSchemaSet();
+
+        if (!isEditPermission()) {
+            throw new ServiceException("No permission to edit schema sets.");
+        }
+
+        if (isUserLoggedIn() && schemaSet.isCheckedOutBy(getUserName())) {
+            throw new ServiceException("Only owner of the cheked out schema set can edit the schema set.");
+        }
+
         return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
     }
 
@@ -149,6 +159,15 @@ public class SchemaSetActionBean extends AbstractActionBean {
     public Resolution editSchemas() throws ServiceException {
 
         loadSchemaSet();
+
+        if (!isEditPermission()) {
+            throw new ServiceException("No permission to edit schema sets.");
+        }
+
+        if (isUserLoggedIn() && schemaSet.isCheckedOutBy(getUserName())) {
+            throw new ServiceException("Only owner of the cheked out schema set can edit the schema set.");
+        }
+
         return new ForwardResolution(SCHEMA_SET_SCHEMAS_JSP);
     }
 
@@ -159,6 +178,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution add() throws ServiceException {
+
+        if (!isCreatePermission()) {
+            throw new ServiceException("No permission to create new schema sets.");
+        }
 
         Resolution resolution = new ForwardResolution(ADD_SCHEMA_SET_JSP);
         if (!isGetOrHeadRequest()) {
@@ -277,6 +300,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution checkOut() throws ServiceException {
+        if (!isEditPermission()) {
+            throw new ServiceException("No permission to edit schema sets.");
+        }
         int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName(), null);
         addSystemMessage("Schema set successfully checked out!");
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
@@ -288,6 +314,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution newVersion() throws ServiceException {
+        if (!isEditPermission()) {
+            throw new ServiceException("No permission to edit schema sets.");
+        }
         int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName(), newIdentifier);
         addSystemMessage("New version of the schema set successfully created!");
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
@@ -315,6 +344,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution delete() throws ServiceException {
+        if (!isDeletePermission()) {
+            throw new ServiceException("No permission to delete schema sets.");
+        }
         schemaService.deleteSchemaSets(Collections.singletonList(schemaSet.getId()), getUserName());
         addSystemMessage("Schema set succesfully deleted.");
         return new RedirectResolution(BrowseSchemaSetsActionBean.class);
@@ -343,6 +375,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
     public Resolution deleteSchemas() throws ServiceException {
         schemaService.deleteSchemas(schemaIds);
 
+        if (!isEditPermission()) {
+            throw new ServiceException("No permission to edit schema sets.");
+        }
+
         if (schemaIds.size() == 1) {
             addSystemMessage("Schema succesfully deleted.");
         } else if (schemaIds.size() > 1) {
@@ -359,6 +395,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws IOException
      */
     public Resolution uploadSchema() throws ServiceException, IOException {
+
+        if (!isEditPermission()) {
+            throw new ServiceException("No permission to edit schema sets.");
+        }
 
         File schemaFile = null;
         try {
@@ -426,10 +466,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-            for (DElemAttribute mandatoryAttr : getMandatorySchemaAttributes()){
+            for (DElemAttribute mandatoryAttr : getMandatorySchemaAttributes()) {
                 Integer attrId = Integer.valueOf(mandatoryAttr.getID());
                 Set<String> values = getSaveAttributeValues().get(attrId);
-                if (CollectionUtils.isEmpty(values) || StringUtils.isBlank(values.iterator().next())){
+                if (CollectionUtils.isEmpty(values) || StringUtils.isBlank(values.iterator().next())) {
                     addGlobalValidationError(mandatoryAttr.getShortName() + " is missing!");
                     break;
                 }
@@ -492,6 +532,56 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
+     * True, if user has permission to edit schema sets.
+     *
+     * @return
+     */
+    public boolean isEditPermission() {
+        if (getUser() != null) {
+            try {
+                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "u")
+                        || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+            } catch (Exception e) {
+                LOGGER.error("Failed to read user permission", e);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * True, if user has permission to delete schema sets.
+     *
+     * @return
+     */
+    public boolean isDeletePermission() {
+        if (getUser() != null) {
+            try {
+                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d")
+                        || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+            } catch (Exception e) {
+                LOGGER.error("Failed to read user permission", e);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * True, if user has permission to create schema sets.
+     *
+     * @return
+     */
+    public boolean isCreatePermission() {
+        if (getUser() != null) {
+            try {
+                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "i");
+            } catch (Exception e) {
+                LOGGER.error("Failed to read user permission", e);
+            }
+        }
+        return false;
+    }
+
+    /**
      *
      * @return
      * @throws ServiceException
@@ -517,8 +607,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 int schemaSetId = schemaSet == null ? 0 : schemaSet.getId();
 
                 attributes =
-                    searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
-                            DElemAttribute.TYPE_SIMPLE);
+                        searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
+                                DElemAttribute.TYPE_SIMPLE);
 
                 // If this is a POST request of "add", "save" or "saveAndClose",
                 // then substitute the values we got from database with the values
@@ -648,7 +738,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -719,10 +809,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 LinkedHashMap<Integer, DElemAttribute> attrsMap =
-                    searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
-                if (attrsMap != null){
-                    for (DElemAttribute attribute : attrsMap.values()){
-                        if (attribute.isMandatory()){
+                        searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+                if (attrsMap != null) {
+                    for (DElemAttribute attribute : attrsMap.values()) {
+                        if (attribute.isMandatory()) {
                             mandatorySchemaAttributes.add(attribute);
                         }
                     }
