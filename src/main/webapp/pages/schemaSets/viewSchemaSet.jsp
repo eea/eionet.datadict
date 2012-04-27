@@ -72,8 +72,8 @@
                         <c:choose>
                             <c:when test="${actionBean.checkInCommentsRequired}">
                                 <li>
-		                            <a href="#" id="checkInLink">Check in</a>
-		                        </li>
+                                    <a href="#" id="checkInLink">Check in</a>
+                                </li>
                             </c:when>
                             <c:otherwise>
                                 <li>
@@ -90,19 +90,23 @@
                         </li>
                     </c:if>
                     <c:if test="${empty actionBean.schemaSet.workingUser}">
-                        <li>
-                            <a href="#" id="newVersionLink">New version</a>
-                        </li>
-                        <li>
-                            <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
-                                <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-                            </stripes:link>
-                        </li>
-                        <li>
-                            <stripes:link beanclass="${actionBean.class.name}" event="delete">Delete
-                                <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
-                            </stripes:link>
-                        </li>
+                        <c:if test="${actionBean.editPermission}">
+                            <li>
+                                <a href="#" id="newVersionLink">New version</a>
+                            </li>
+                            <li>
+                                <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
+                                    <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                                </stripes:link>
+                            </li>
+                        </c:if>
+                        <c:if test="${actionBean.deletePermission}">
+                            <li>
+                                <stripes:link beanclass="${actionBean.class.name}" event="delete">Delete
+                                    <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                                </stripes:link>
+                            </li>
+                        </c:if>
                     </c:if>
                 </ul>
             </div>
