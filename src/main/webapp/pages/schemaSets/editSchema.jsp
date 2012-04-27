@@ -9,7 +9,7 @@
 
     <stripes:layout-component name="contents">
 
-    <h1>Edit schema set</h1>
+    <h1>Edit schema</h1>
 
     <stripes:form id="form1" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
         <div id="outerframe">
@@ -22,7 +22,7 @@
                 </colgroup>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
-                        Identifier
+                        File name
                     </th>
                     <td class="simple_attr_help">
                         <a href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
@@ -33,16 +33,16 @@
                         <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
                     </td>
                     <td class="simple_attr_value">
-                        <c:out value="${actionBean.schemaSet.identifier}"/>
-                        <stripes:hidden name="schemaSet.identifier"/>
+                        <c:out value="${actionBean.schema.fileName}"/>
+                        <stripes:hidden name="schema.fileName"/>
                     </td>
                 </tr>
-                <tr>
+                <c:if test="${!actionBean.rootLevelSchema}">
                     <th scope="row" class="scope-row simple_attr_title">
-                        Registration status
+                        Schema set
                     </th>
                     <td class="simple_attr_help">
-                        <a href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
+                        <a href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
                             <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
                         </a>
                     </td>
@@ -50,14 +50,35 @@
                         <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
                     </td>
                     <td class="simple_attr_value">
-                        <c:set var="regStatuses" value="<%=SchemaSet.RegStatus.values()%>"/>
-                        <stripes:select name="schemaSet.regStatus" value="${actionBean.schemaSet.regStatus}">
-                            <c:forEach items="${regStatuses}" var="aRegStatus">
-                                <stripes:option value="${aRegStatus}" label="${aRegStatus}"/>
-                            </c:forEach>
-                        </stripes:select>
+                        <stripes:link href="schemaSet.action" title="Open schema set details">
+                            <stripes:param name="schemaSet.id" value="${actionBean.schema.schemaSetId}"/>
+                            <c:out value="${actionBean.schemaSet.identifier}"/>
+                        </stripes:link>
                     </td>
-                </tr>
+                </c:if>
+                <c:if test="${actionBean.rootLevelSchema}">
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title">
+                            Registration status
+                        </th>
+                        <td class="simple_attr_help">
+                            <a href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=regstatus" onclick="pop(this.href);return false;">
+                                <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
+                            </a>
+                        </td>
+                        <td class="simple_attr_help">
+                            <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
+                        </td>
+                        <td class="simple_attr_value">
+                            <c:set var="regStatuses" value="<%=SchemaSet.RegStatus.values()%>"/>
+                            <stripes:select name="schema.regStatus" value="${actionBean.schema.regStatus}">
+                                <c:forEach items="${regStatuses}" var="aRegStatus">
+                                    <stripes:option value="${aRegStatus}" label="${aRegStatus}"/>
+                                </c:forEach>
+                            </stripes:select>
+                        </td>
+                    </tr>
+                </c:if>
                 <c:forEach items="${actionBean.attributes}" var="attributesEntry">
                     <c:set var="attribute" value="${attributesEntry.value}"/>
                     <tr>
@@ -98,7 +119,7 @@
                                 </c:if>
                                 <c:if test="${attribute.displayType=='image'}">
                                     <span class="barfont">
-                                        <a href="${actionBean.contextPath}/imgattr.jsp?obj_id=${actionBean.schemaSet.id}&amp;obj_type=<%=DElemAttribute.ParentType.SCHEMA_SET%>&amp;attr_id=${attribute.ID}&amp;obj_name=${actionBean.schemaSet.identifier}&amp;attr_name=${attribute.shortName}">
+                                        <a href="${actionBean.contextPath}/imgattr.jsp?obj_id=${actionBean.schema.id}&amp;obj_type=<%=DElemAttribute.ParentType.SCHEMA%>&amp;attr_id=${attribute.ID}&amp;obj_name=${actionBean.schema.identifier}&amp;attr_name=${attribute.shortName}">
                                             <c:if test="${empty attribute.value}">Click to add image</c:if>
                                             <c:if test="${not empty attribute.value}">Click to manage this image</c:if>
                                         </a>

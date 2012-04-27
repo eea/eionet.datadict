@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -29,6 +30,7 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -95,6 +97,11 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /** */
     private String newIdentifier;
+
+    /**
+     * Attributes that are mandatory for schemas (!), not schema sets. Used when validating upload of a new schema.
+     */
+    private Collection<DElemAttribute> mandatorySchemaAttributes;
 
     /**
      * View action.
@@ -342,7 +349,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             addSystemMessage("Schemas succesfully deleted.");
         }
 
-        return editSchemas();
+        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.id", schemaSet.getId());
     }
 
     /**
@@ -351,7 +358,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      * @throws IOException
      */
-    public Resolution uploadSchema() throws ServiceException, IOException{
+    public Resolution uploadSchema() throws ServiceException, IOException {
 
         File schemaFile = null;
         try {
@@ -371,34 +378,35 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         addSystemMessage("Schema successfully uploaded!");
-        return editSchemas();
+        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.id", schemaSet.getId());
     }
 
     /**
      * @throws IOException
      * @throws ServiceException
+     * @throws DAOException
      *
      */
     @ValidationMethod(on = {"uploadSchema"})
-    public void validateFileUpload() throws IOException, ServiceException{
+    public void validateFileUpload() throws IOException, ServiceException, DAOException {
 
-        if (uploadedFile==null){
+        if (uploadedFile == null) {
             addGlobalValidationError("No file uploaded!");
         }
 
-        if (!isValidationErrors()){
-            if (schemaSet==null || StringUtils.isBlank(schemaSet.getIdentifier())){
+        if (!isValidationErrors()) {
+            if (schemaSet == null || StringUtils.isBlank(schemaSet.getIdentifier())) {
                 addGlobalValidationError("Schema set identifier missing!");
             }
         }
 
-        if (!isValidationErrors()){
-            if (schemaRepository.exists(uploadedFile, schemaSet.getIdentifier())){
+        if (!isValidationErrors()) {
+            if (schemaRepository.exists(uploadedFile, schemaSet.getIdentifier())) {
                 addGlobalValidationError("A schema with such a file name already exists!");
             }
         }
 
-        if (!isValidationErrors()){
+        if (!isValidationErrors()) {
 
             InputStream inputStream = null;
             try {
@@ -412,13 +420,23 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 } catch (Exception e) {
                     LOGGER.error("Failed to delete uploaded file " + uploadedFile.getFileName(), e);
                 }
-            }
-            finally {
+            } finally {
                 IOUtils.closeQuietly(inputStream);
             }
         }
 
-        if (isValidationErrors()){
+        if (!isValidationErrors()) {
+            for (DElemAttribute mandatoryAttr : getMandatorySchemaAttributes()){
+                Integer attrId = Integer.valueOf(mandatoryAttr.getID());
+                Set<String> values = getSaveAttributeValues().get(attrId);
+                if (CollectionUtils.isEmpty(values) || StringUtils.isBlank(values.iterator().next())){
+                    addGlobalValidationError(mandatoryAttr.getShortName() + " is missing!");
+                    break;
+                }
+            }
+        }
+
+        if (isValidationErrors()) {
             loadSchemaSet();
             getContext().setSourcePageResolution(new ForwardResolution(SCHEMA_SET_SCHEMAS_JSP));
         }
@@ -505,17 +523,17 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 // If this is a POST request of "add", "save" or "saveAndClose",
                 // then substitute the values we got from database with the values
                 // we got from the request.
-                if (!isGetOrHeadRequest()){
+                if (!isGetOrHeadRequest()) {
                     String eventName = getContext().getEventName();
-                    if (eventName.equals("add") || eventName.equals("save") || eventName.equals("saveAndClose")){
+                    if (eventName.equals("add") || eventName.equals("save") || eventName.equals("saveAndClose")) {
 
-                        for (Map.Entry<Integer, Set<String>> savedAttrEntry : getSaveAttributeValues().entrySet()){
+                        for (Map.Entry<Integer, Set<String>> savedAttrEntry : getSaveAttributeValues().entrySet()) {
                             int attrId = savedAttrEntry.getKey();
                             DElemAttribute attributeObj = attributes.get(attrId);
-                            if (attributeObj!=null){
+                            if (attributeObj != null) {
                                 attributeObj.nullifyValues();
                                 Set<String> savedValues = savedAttrEntry.getValue();
-                                for (String savedValue : savedValues){
+                                for (String savedValue : savedValues) {
                                     attributeObj.setValue(savedValue);
                                 }
                             }
@@ -523,7 +541,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     }
                 }
             } finally {
-                searchEngine.close();
+                DDSearchEngine.close(searchEngine);
             }
         }
         return attributes;
@@ -569,7 +587,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             } catch (SQLException e) {
                 throw new DAOException(e.getMessage(), e);
             } finally {
-                searchEngine.close();
+                DDSearchEngine.close(searchEngine);
             }
         }
         return multiValuedAttributeValues;
@@ -607,7 +625,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             } catch (SQLException e) {
                 throw new DAOException(e.getMessage(), e);
             } finally {
-                searchEngine.close();
+                DDSearchEngine.close(searchEngine);
             }
         }
         return fixedValuedAttributeValues;
@@ -686,5 +704,33 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public void setNewIdentifier(String newIdentifier) {
         this.newIdentifier = newIdentifier;
+    }
+
+    /**
+     *
+     * @return
+     * @throws DAOException
+     */
+    public Collection<DElemAttribute> getMandatorySchemaAttributes() throws DAOException {
+
+        if (mandatorySchemaAttributes == null) {
+            mandatorySchemaAttributes = new ArrayList<DElemAttribute>();
+            DDSearchEngine searchEngine = null;
+            try {
+                searchEngine = DDSearchEngine.create();
+                LinkedHashMap<Integer, DElemAttribute> attrsMap =
+                    searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+                if (attrsMap != null){
+                    for (DElemAttribute attribute : attrsMap.values()){
+                        if (attribute.isMandatory()){
+                            mandatorySchemaAttributes.add(attribute);
+                        }
+                    }
+                }
+            } finally {
+                DDSearchEngine.close(searchEngine);
+            }
+        }
+        return mandatorySchemaAttributes;
     }
 }

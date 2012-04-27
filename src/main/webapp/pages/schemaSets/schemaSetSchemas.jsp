@@ -84,6 +84,13 @@
 
                 <label for="fileToUpload">File to upload*:</label>
                 <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>
+                <c:if test="${not empty actionBean.mandatorySchemaAttributes}">
+                    <c:forEach items="${actionBean.mandatorySchemaAttributes}" var="mandatoryAttr">
+                        <br/>
+                        <label for="attr_${mandatoryAttr.ID}_text"><c:out value="${mandatoryAttr.shortName}"/>*:</label>
+                        <input type="text" name="attr_${mandatoryAttr.ID}" id="attr_${mandatoryAttr.ID}_text" size="${mandatoryAttr.displayWidth}" class="smalltext"/>
+                    </c:forEach>
+                </c:if>
                 <br/><br/>
                 <stripes:submit name="uploadSchema" value="Upload"/>
                 <input type="button" id="closeUploadSchemaDialog" value="Cancel"/>

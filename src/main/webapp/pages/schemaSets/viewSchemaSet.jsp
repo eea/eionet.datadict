@@ -229,7 +229,7 @@
 
             <input type="text" name="schemaSet.comment" size="30"/><br/>
             <stripes:submit name="checkIn" value="Submit"/>
-            <input type="button" id="closecheckInDialog" value="Cancel"/>
+            <input type="button" id="closeCheckInDialog" value="Cancel"/>
 
             <div style="display:none">
                 <stripes:hidden name="schemaSet.id"/>

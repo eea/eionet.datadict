@@ -166,7 +166,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ValidationException
      */
     private void ensureDeleteAllowed(String username, boolean deleteReleasedPerm, List<SchemaSet> schemaSets)
-            throws ValidationException {
+    throws ValidationException {
         for (SchemaSet schemaSet : schemaSets) {
             if (schemaSet.isCheckedOut()) {
                 throw new ValidationException("Cannot delete a checked-out schema set: " + schemaSet.getIdentifier());
@@ -258,7 +258,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username)
-            throws ServiceException {
+    throws ServiceException {
         try {
             schemaSetDAO.updateSchemaSet(schemaSet);
             if (attributes != null && !attributes.isEmpty()) {
@@ -498,4 +498,16 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
+    /**
+     * @see eionet.meta.service.ISchemaService#getSchema(int)
+     */
+    @Override
+    public Schema getSchema(int id) throws ServiceException {
+        try {
+            List<Schema> schemas = schemaDAO.getSchemas(Collections.singletonList(id));
+            return schemas!=null && !schemas.isEmpty() ? schemas.get(0) : null;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get a schema by this id: " + id, e);
+        }
+    }
 }

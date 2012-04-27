@@ -4982,6 +4982,16 @@ public class DDSearchEngine {
 
     /**
      *
+     * @param searchEngine
+     */
+    public static void close(DDSearchEngine searchEngine) {
+        if (searchEngine!=null){
+            searchEngine.close();
+        }
+    }
+
+    /**
+     *
      * @param objectId
      * @param objectType
      * @param attributeType

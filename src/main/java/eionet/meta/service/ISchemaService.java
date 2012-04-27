@@ -190,4 +190,12 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     List<Attribute> getSchemaAttributes() throws ServiceException;
+
+    /**
+     *
+     * @param id
+     * @return
+     * @throws ServiceException
+     */
+    Schema getSchema(int id) throws ServiceException;
 }
