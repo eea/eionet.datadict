@@ -132,7 +132,18 @@
                     </a>
                 </td>
                 <td class="simple_attr_value">
-                    <c:out value="${actionBean.schema.fileName}"/>
+                    <c:choose>
+                        <c:when test="${not empty actionBean.schemaSet}">
+                            <a href="${pageContext.request.contextPath}/schemas/${fn:escapeXml(actionBean.schemaSet.identifier)}/${fn:escapeXml(actionBean.schema.fileName)}">
+                                <c:out value="${actionBean.schema.fileName}"/>
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <a href="${pageContext.request.contextPath}/schemas/${fn:escapeXml(actionBean.schema.fileName)}">
+                                <c:out value="${actionBean.schema.fileName}"/>
+                            </a>
+                        </c:otherwise>
+                    </c:choose>
                 </td>
             </tr>
             <c:if test="${!actionBean.rootLevelSchema}">

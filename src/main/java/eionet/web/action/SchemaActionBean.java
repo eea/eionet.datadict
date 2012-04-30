@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
@@ -104,6 +105,35 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     private void loadSchema() throws ServiceException {
         schema = schemaService.getSchema(schema.getId());
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution save() throws ServiceException {
+        addCautionMessage("Operation not supported yet!");
+        return edit();
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution saveAndClose() throws ServiceException {
+        addCautionMessage("Operation not supported yet!");
+        return edit();
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution cancel() throws ServiceException {
+        return new RedirectResolution(getClass()).addParameter("schema.id", schema.getId());
     }
 
     /**
@@ -272,7 +302,7 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws DAOException
      */
     public Map<String, Set<String>> getMultiValuedAttributeValues() throws DAOException {
-    
+
         if (multiValuedAttributeValues == null) {
             multiValuedAttributeValues = new HashMap<String, Set<String>>();
             LinkedHashMap<Integer, DElemAttribute> attributeMap = getAttributes();
@@ -280,12 +310,12 @@ public class SchemaActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 for (Map.Entry<Integer, DElemAttribute> entry : attributeMap.entrySet()) {
-    
+
                     int attributeId = entry.getKey();
                     DElemAttribute attribute = entry.getValue();
-    
+
                     if (attribute.isMultipleValuesAllowed()) {
-    
+
                         Vector existingValues = attribute.getValues();
                         Collection possibleValues = null;
                         if (StringUtils.equals(attribute.getDisplayType(), "select")) {
@@ -293,7 +323,7 @@ public class SchemaActionBean extends AbstractActionBean {
                         } else {
                             possibleValues = searchEngine.getSimpleAttributeValues(String.valueOf(attributeId));
                         }
-    
+
                         LinkedHashSet<String> values = new LinkedHashSet<String>();
                         if (existingValues != null) {
                             values.addAll(existingValues);
@@ -318,19 +348,19 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws DAOException
      */
     public Map<String, Set<String>> getFixedValuedAttributeValues() throws DAOException {
-    
+
         if (fixedValuedAttributeValues == null) {
             fixedValuedAttributeValues = new HashMap<String, Set<String>>();
             DDSearchEngine searchEngine = null;
             try {
                 searchEngine = DDSearchEngine.create();
                 for (Map.Entry<Integer, DElemAttribute> entry : getAttributes().entrySet()) {
-    
+
                     int attributeId = entry.getKey();
                     DElemAttribute attribute = entry.getValue();
-    
+
                     if (StringUtils.equals(attribute.getDisplayType(), "select")) {
-    
+
                         LinkedHashSet<String> values = new LinkedHashSet<String>();
                         Collection<FixedValue> fixedValues = searchEngine.getFixedValues(attribute.getID(), "attr");
                         for (FixedValue fxv : fixedValues) {

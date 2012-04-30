@@ -430,6 +430,10 @@
         <servlet-name>DownloadServlet</servlet-name>
         <url-pattern>/visuals/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DownloadServlet</servlet-name>
+        <url-pattern>/schemas/*</url-pattern>
+    </servlet-mapping>
 
     <!-- the application server might allow directory listing. The welcome-files
         are used to overcome workings of such feature -->

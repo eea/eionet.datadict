@@ -98,7 +98,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     public Resolution delete() throws ServiceException {
         if (isDeletePermission()) {
             try {
-                schemaService.deleteSchemaSets(selected, getUserName());
+                schemaService.deleteSchemaSets(selected, getUserName(), true);
             } catch (ValidationException e) {
                 LOGGER.info(e.getMessage());
                 addGlobalValidationError(e.getMessage());
@@ -126,7 +126,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
         if (getUser() != null) {
             try {
                 return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d")
-                        || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
             } catch (Exception e) {
                 LOGGER.error("Failed to read user permission", e);
             }

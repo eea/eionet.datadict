@@ -347,7 +347,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         if (!isDeletePermission()) {
             throw new ServiceException("No permission to delete schema sets.");
         }
-        schemaService.deleteSchemaSets(Collections.singletonList(schemaSet.getId()), getUserName());
+        schemaService.deleteSchemaSets(Collections.singletonList(schemaSet.getId()), getUserName(), true);
         addSystemMessage("Schema set succesfully deleted.");
         return new RedirectResolution(BrowseSchemaSetsActionBean.class);
     }
@@ -373,7 +373,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution deleteSchemas() throws ServiceException {
-        schemaService.deleteSchemas(schemaIds);
+        schemaService.deleteSchemas(schemaIds, false);
 
         if (!isEditPermission()) {
             throw new ServiceException("No permission to edit schema sets.");
@@ -402,7 +402,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         File schemaFile = null;
         try {
-            schemaFile = schemaRepository.add(uploadedFile, schemaSet.getIdentifier(), false);
+            schemaFile = schemaRepository.addSchema(uploadedFile, schemaSet.getIdentifier(), false);
 
             Schema schema = new Schema();
             schema.setFileName(uploadedFile.getFileName());
@@ -441,7 +441,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-            if (schemaRepository.exists(uploadedFile, schemaSet.getIdentifier())) {
+            if (schemaRepository.existsSchema(uploadedFile, schemaSet.getIdentifier())) {
                 addGlobalValidationError("A schema with such a file name already exists!");
             }
         }
@@ -540,7 +540,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         if (getUser() != null) {
             try {
                 return SecurityUtil.hasPerm(getUserName(), "/schemasets", "u")
-                        || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
             } catch (Exception e) {
                 LOGGER.error("Failed to read user permission", e);
             }
@@ -557,7 +557,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         if (getUser() != null) {
             try {
                 return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d")
-                        || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
             } catch (Exception e) {
                 LOGGER.error("Failed to read user permission", e);
             }
@@ -607,8 +607,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 int schemaSetId = schemaSet == null ? 0 : schemaSet.getId();
 
                 attributes =
-                        searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
-                                DElemAttribute.TYPE_SIMPLE);
+                    searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
+                            DElemAttribute.TYPE_SIMPLE);
 
                 // If this is a POST request of "add", "save" or "saveAndClose",
                 // then substitute the values we got from database with the values
@@ -738,7 +738,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -809,7 +809,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 LinkedHashMap<Integer, DElemAttribute> attrsMap =
-                        searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+                    searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
                 if (attrsMap != null) {
                     for (DElemAttribute attribute : attrsMap.values()) {
                         if (attribute.isMandatory()) {

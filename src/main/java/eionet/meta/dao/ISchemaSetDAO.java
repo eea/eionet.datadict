@@ -149,4 +149,11 @@ public interface ISchemaSetDAO {
      * @return
      */
     List<SchemaSet> getWorkingCopiesOf(String userName);
+
+    /**
+     *
+     * @param schemaSetIdentifier
+     * @return
+     */
+    List<String> getSchemaFileNames(String schemaSetIdentifier);
 }

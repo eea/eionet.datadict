@@ -154,7 +154,7 @@
             </table>
         </div>
         <div style="display:none">
-            <stripes:hidden name="schemaSet.id"/>
+            <stripes:hidden name="schema.id"/>
         </div>
     </stripes:form>
 

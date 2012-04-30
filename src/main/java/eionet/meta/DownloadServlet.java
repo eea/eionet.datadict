@@ -17,9 +17,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eionet.meta.filestore.FileStore;
+import eionet.meta.schemas.SchemaRepository;
 
 /**
  * This servlet provides download services for file stored in DD's file store. The service is provided through
@@ -97,8 +99,18 @@ public class DownloadServlet extends HttpServlet {
             filePath = URLDecoder.decode(filePath, "UTF-8");
         }
 
-        // Get the file object from the file store
-        File file = FileStore.getInstance().get(filePath);
+        File file = null;
+
+        // Get the file object, depending on the file path.
+        if (filePath.startsWith("/schemas")){
+            String relativePath = StringUtils.substringAfter(filePath, "/schemas");
+            if (StringUtils.isNotBlank(relativePath)){
+                file = new SchemaRepository().getSchemaFile(relativePath);
+            }
+        }
+        else{
+            file = FileStore.getInstance().get(filePath);
+        }
 
         // If file was not found, send 404.
         if (file == null) {

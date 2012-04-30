@@ -101,17 +101,19 @@ public interface ISchemaService {
      *
      * @param ids
      * @param username
+     * @param includingContents
      * @throws ServiceException
      */
-    void deleteSchemaSets(List<Integer> ids, String username) throws ServiceException;
+    void deleteSchemaSets(List<Integer> ids, String username, boolean includingContents) throws ServiceException;
 
     /**
      * Deletes Schemas with given id.
      *
      * @param ids
+     * @param includingContents
      * @throws ServiceException
      */
-    void deleteSchemas(List<Integer> ids) throws ServiceException;
+    void deleteSchemas(List<Integer> ids, boolean includingContents) throws ServiceException;
 
     /**
      * Checks in schema set with given id.
@@ -119,7 +121,7 @@ public interface ISchemaService {
      * @param schemaSetId
      * @param username
      * @param comment
-     * @return TODO
+     * @return
      * @throws ServiceException
      */
     int checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException;
