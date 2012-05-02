@@ -33,35 +33,70 @@ public class SchemaRepository {
      */
     public File addSchema(FileBean fileBean, String schemaSetIdentifier, boolean overwrite) throws IOException {
 
-        if (fileBean == null || StringUtils.isBlank(schemaSetIdentifier)) {
-            throw new IllegalArgumentException("File bean and schema set identifier must not be null or blank!");
+        if (fileBean == null) {
+            throw new IllegalArgumentException("File bean must not be null!");
         }
 
-        File repoLocation = new File(REPO_PATH);
-        if (!repoLocation.exists() || !repoLocation.isDirectory()) {
-            repoLocation.mkdir();
+        File repoDirectory = new File(REPO_PATH);
+        if (!repoDirectory.exists() || !repoDirectory.isDirectory()) {
+            repoDirectory.mkdir();
         }
 
-        File schemaSetLocation = new File(REPO_PATH, schemaSetIdentifier);
-        if (!schemaSetLocation.exists() || !schemaSetLocation.isDirectory()) {
-            schemaSetLocation.mkdir();
+        // If schema set identifier is blank, consider it a root-level schema.
+        File fileDirectory = StringUtils.isBlank(schemaSetIdentifier) ? repoDirectory : new File(REPO_PATH, schemaSetIdentifier);
+        if (!fileDirectory.exists() || !fileDirectory.isDirectory()) {
+            fileDirectory.mkdir();
         }
 
-        File schemaLocation = new File(schemaSetLocation, fileBean.getFileName());
-        if (schemaLocation.exists() && schemaLocation.isFile()) {
+        File schemaFile = new File(fileDirectory, fileBean.getFileName());
+        if (schemaFile.exists() && schemaFile.isFile()) {
             if (overwrite == false) {
                 throw new DDRuntimeException("File already exists, but overwrite not requested!");
             } else {
-                schemaLocation.delete();
+                schemaFile.delete();
             }
         }
 
-        fileBean.save(schemaLocation);
-        if (schemaLocation.exists() && schemaLocation.isFile()) {
-            return schemaLocation;
+        fileBean.save(schemaFile);
+        if (schemaFile.exists() && schemaFile.isFile()) {
+            return schemaFile;
         } else {
             throw new DDRuntimeException("Schema file creation threw no exceptions, yet the file does not exist!");
         }
+    }
+
+    /**
+     *
+     * @param fileName
+     * @param schemaSetIdentifier
+     * @param fileBean
+     * @return
+     * @throws IOException
+     */
+    public File reuploadSchema(String fileName, String schemaSetIdentifier, FileBean fileBean) throws IOException {
+
+        if (fileBean == null) {
+            throw new IllegalArgumentException("File bean must not be null!");
+        }
+
+        File repoDirectory = new File(REPO_PATH);
+        if (!repoDirectory.exists() || !repoDirectory.isDirectory()) {
+            repoDirectory.mkdir();
+        }
+
+        // If schema set identifier is blank, consider it a root-level schema.
+        File fileDirectory = StringUtils.isBlank(schemaSetIdentifier) ? repoDirectory : new File(REPO_PATH, schemaSetIdentifier);
+        if (!fileDirectory.exists() || !fileDirectory.isDirectory()) {
+            fileDirectory.mkdir();
+        }
+
+        File schemaFile = new File(fileDirectory, fileName);
+        if (schemaFile.exists() && schemaFile.isFile()) {
+            schemaFile.delete();
+        }
+
+        fileBean.save(schemaFile);
+        return schemaFile;
     }
 
     /**

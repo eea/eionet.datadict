@@ -42,6 +42,23 @@
                             $('#checkInDialog').dialog('close');
                             return true;
                         });
+
+                        ////////////////////
+
+                        $("#uploadSchemaLink").click(function() {
+                            $('#uploadSchemaDialog').dialog('open');
+                            return false;
+                        });
+
+                        $('#uploadSchemaDialog').dialog({
+                            autoOpen: false,
+                            width: 500
+                        });
+
+                        $("#closeUploadSchemaDialog").click(function() {
+                            $('#uploadSchemaDialog').dialog("close");
+                            return true;
+                        });
                     });
             } ) ( jQuery );
         // ]]>
@@ -67,6 +84,9 @@
                             <stripes:link beanclass="${actionBean.class.name}" event="edit">Edit metadata
                                 <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
                             </stripes:link>
+                        </li>
+                        <li>
+                            <a href="#" id="uploadSchemaLink">Re-upload file</a>
                         </li>
                     </c:if>
                     <c:if test="${actionBean.rootLevelSchema}">
@@ -216,6 +236,27 @@
             <input type="text" name="schema.comment" size="30"/><br/>
             <stripes:submit name="checkIn" value="Submit"/>
             <input type="button" id="closeCheckInDialog" value="Cancel"/>
+
+            <div style="display:none">
+                <stripes:hidden name="schema.id"/>
+            </div>
+        </stripes:form>
+    </div>
+
+    <div id="uploadSchemaDialog" title="Re-upload schema">
+        <stripes:form beanclass="${actionBean.class.name}" method="post">
+
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>
+                    The schema's file name will not be changed, regardless of the name of the file you upload.
+                    Only the file contents will be overwritten!
+                </p>
+            </div>
+
+            <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>
+            <stripes:submit name="reupload" value="Upload"/>
+            <input type="button" id="closeUploadSchemaDialog" value="Cancel"/>
 
             <div style="display:none">
                 <stripes:hidden name="schema.id"/>

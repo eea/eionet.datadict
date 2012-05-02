@@ -3,6 +3,9 @@
  */
 package eionet.web.action;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -14,8 +17,11 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
 
 import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
@@ -23,7 +29,9 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.xml.sax.SAXException;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
@@ -56,6 +64,7 @@ public class SchemaActionBean extends AbstractActionBean {
     /** */
     private Schema schema;
     private SchemaSet schemaSet;
+    private FileBean uploadedFile;
 
     /** */
     private LinkedHashMap<Integer, DElemAttribute> attributes;
@@ -162,6 +171,75 @@ public class SchemaActionBean extends AbstractActionBean {
                     addGlobalValidationError(attribute.getShortName() + " is missing!");
                 }
             }
+        }
+    }
+
+    /**
+     *
+     * @return
+     * @throws IOException
+     * @throws ServiceException
+     */
+    public Resolution reupload() throws IOException, ServiceException{
+
+        loadSchema();
+        String schemaSetIdentifier = getSchemaSet() == null ? null : getSchemaSet().getIdentifier();
+        File schemaFile = schemaRepository.reuploadSchema(schema.getFileName(), schemaSetIdentifier, uploadedFile);
+
+        addSystemMessage("Schema file successfully uploaded!");
+        return new ForwardResolution(VIEW_SCHEMA_JSP);
+    }
+
+    /**
+     *
+     * @throws IOException
+     * @throws ServiceException
+     * @throws DAOException
+     */
+    @ValidationMethod(on = {"reupload"})
+    public void validateReupload() throws IOException, ServiceException, DAOException {
+
+        if (uploadedFile == null) {
+            addGlobalValidationError("No file uploaded!");
+        }
+        else if (uploadedFile.getSize() <= 0){
+            addGlobalValidationError("Uploaded file must not be empty!");
+        }
+
+        if (!isValidationErrors()) {
+            if (schema == null || schema.getId() <= 0) {
+                addGlobalValidationError("Schema id missing!");
+            }
+        }
+
+        if (!isValidationErrors()) {
+            validateXmlSchema();
+        }
+
+        if (isValidationErrors()) {
+            loadSchema();
+            getContext().setSourcePageResolution(new ForwardResolution(VIEW_SCHEMA_JSP));
+        }
+    }
+
+    /**
+     * @throws IOException
+     */
+    private void validateXmlSchema() throws IOException {
+        InputStream inputStream = null;
+        try {
+            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+            inputStream = uploadedFile.getInputStream();
+            factory.newSchema(new StreamSource(inputStream));
+        } catch (SAXException saxe) {
+            addGlobalValidationError("Not a valid XML Schema file!");
+            try {
+                uploadedFile.delete();
+            } catch (Exception e) {
+                LOGGER.error("Failed to delete uploaded file " + uploadedFile.getFileName(), e);
+            }
+        } finally {
+            IOUtils.closeQuietly(inputStream);
         }
     }
 
@@ -434,5 +512,12 @@ public class SchemaActionBean extends AbstractActionBean {
         sb.append(schema.getFileName());
 
         return sb.toString();
+    }
+
+    /**
+     * @param uploadedFile the uploadedFile to set
+     */
+    public void setUploadedFile(FileBean uploadedFile) {
+        this.uploadedFile = uploadedFile;
     }
 }

@@ -433,6 +433,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
         if (uploadedFile == null) {
             addGlobalValidationError("No file uploaded!");
         }
+        else if (uploadedFile.getSize() <= 0){
+            addGlobalValidationError("Uploaded file must not be empty!");
+        }
 
         if (!isValidationErrors()) {
             if (schemaSet == null || StringUtils.isBlank(schemaSet.getIdentifier())) {
@@ -447,22 +450,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-
-            InputStream inputStream = null;
-            try {
-                SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-                inputStream = uploadedFile.getInputStream();
-                factory.newSchema(new StreamSource(inputStream));
-            } catch (SAXException saxe) {
-                addGlobalValidationError("Not a valid XML Schema file!");
-                try {
-                    uploadedFile.delete();
-                } catch (Exception e) {
-                    LOGGER.error("Failed to delete uploaded file " + uploadedFile.getFileName(), e);
-                }
-            } finally {
-                IOUtils.closeQuietly(inputStream);
-            }
+            validateXmlSchema();
         }
 
         if (!isValidationErrors()) {
@@ -479,6 +467,27 @@ public class SchemaSetActionBean extends AbstractActionBean {
         if (isValidationErrors()) {
             loadSchemaSet();
             getContext().setSourcePageResolution(new ForwardResolution(SCHEMA_SET_SCHEMAS_JSP));
+        }
+    }
+
+    /**
+     * @throws IOException
+     */
+    private void validateXmlSchema() throws IOException {
+        InputStream inputStream = null;
+        try {
+            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+            inputStream = uploadedFile.getInputStream();
+            factory.newSchema(new StreamSource(inputStream));
+        } catch (SAXException saxe) {
+            addGlobalValidationError("Not a valid XML Schema file!");
+            try {
+                uploadedFile.delete();
+            } catch (Exception e) {
+                LOGGER.error("Failed to delete uploaded file " + uploadedFile.getFileName(), e);
+            }
+        } finally {
+            IOUtils.closeQuietly(inputStream);
         }
     }
 
