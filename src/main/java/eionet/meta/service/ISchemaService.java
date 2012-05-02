@@ -200,4 +200,13 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     Schema getSchema(int id) throws ServiceException;
+
+    /**
+     *
+     * @param schema
+     * @param attributes
+     * @param username
+     * @throws ServiceException
+     */
+    void updateSchema(Schema schema, Map<Integer, Set<String>> attributes, String username) throws ServiceException;
 }

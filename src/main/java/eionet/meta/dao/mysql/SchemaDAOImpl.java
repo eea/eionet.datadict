@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -295,5 +296,58 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
 
         SchemasResult result = new SchemasResult(resultList, totalItems, searchFilter);
         return result;
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#updateSchema(eionet.meta.dao.domain.Schema)
+     */
+    @Override
+    public void updateSchema(Schema schema) {
+
+        String sql =
+            "update T_SCHEMA set REG_STATUS=ifnull(:regStatus, REG_STATUS), DATE_MODIFIED = now(), USER_MODIFIED = :userModified, "
+            + "COMMENT=ifnull(:comment, COMMENT) where SCHEMA_ID = :id";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("id", schema.getId());
+        parameters.put("regStatus", schema.getRegStatus().toString());
+        parameters.put("userModified", schema.getUserModified());
+        parameters.put("comment", schema.getComment());
+
+        getNamedParameterJdbcTemplate().update(sql, parameters);
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#updateSchemaAttributes(int, java.util.Map)
+     */
+    @Override
+    public void updateSchemaAttributes(int schemaId, Map<Integer, Set<String>> attributes) {
+
+        if (attributes==null || attributes.isEmpty()){
+            return;
+        }
+
+        String deleteSql =
+            "delete from ATTRIBUTE where M_ATTRIBUTE_ID = :attributeId and DATAELEM_ID = :elementId and PARENT_TYPE = :parentType";
+        String insertSql =
+            "insert into ATTRIBUTE (M_ATTRIBUTE_ID, DATAELEM_ID, PARENT_TYPE, VALUE) values (:attributeId,:elementId,:parentType,:value)";
+
+        for (Map.Entry<Integer, Set<String>> entry : attributes.entrySet()) {
+            Integer attrId = entry.getKey();
+            Set<String> attrValues = entry.getValue();
+            if (attrValues != null && !attrValues.isEmpty()) {
+
+                Map<String, Object> parameters = new HashMap<String, Object>();
+                parameters.put("attributeId", attrId);
+                parameters.put("elementId", schemaId);
+                parameters.put("parentType", DElemAttribute.ParentType.SCHEMA.toString());
+
+                getNamedParameterJdbcTemplate().update(deleteSql, parameters);
+
+                for (String attrValue : attrValues) {
+                    parameters.put("value", attrValue);
+                    getNamedParameterJdbcTemplate().update(insertSql, parameters);
+                }
+            }
+        }
     }
 }

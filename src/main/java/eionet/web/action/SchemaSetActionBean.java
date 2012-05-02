@@ -141,11 +141,11 @@ public class SchemaSetActionBean extends AbstractActionBean {
         loadSchemaSet();
 
         if (!isEditPermission()) {
-            throw new ServiceException("No permission to edit schema sets.");
+            throw new ServiceException("No permission to edit schema sets!");
         }
 
         if (isUserLoggedIn() && schemaSet.isCheckedOutBy(getUserName())) {
-            throw new ServiceException("Only owner of the cheked out schema set can edit the schema set.");
+            throw new ServiceException("A checked-out schema set can only be edited by its owner!");
         }
 
         return new ForwardResolution(EDIT_SCHEMA_SET_JSP);

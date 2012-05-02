@@ -21,6 +21,7 @@ import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -113,8 +114,10 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution save() throws ServiceException {
-        addCautionMessage("Operation not supported yet!");
-        return edit();
+
+        schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
+        addSystemMessage("Schema successfully updated!");
+        return new ForwardResolution(EDIT_SCHEMA_JSP);
     }
 
     /**
@@ -123,8 +126,10 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution saveAndClose() throws ServiceException {
-        addCautionMessage("Operation not supported yet!");
-        return edit();
+
+        schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
+        addSystemMessage("Schema successfully updated!");
+        return new RedirectResolution(getClass()).addParameter("schema.id", schema.getId());
     }
 
     /**
@@ -134,6 +139,30 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public Resolution cancel() throws ServiceException {
         return new RedirectResolution(getClass()).addParameter("schema.id", schema.getId());
+    }
+
+    /**
+     *
+     * @throws DAOException
+     */
+    @ValidationMethod(on = {"save", "saveAndClose"})
+    public void validateSave() throws DAOException {
+
+        if (isGetOrHeadRequest()) {
+            return;
+        }
+
+        LinkedHashMap<Integer, DElemAttribute> attributesMap = getAttributes();
+        for (DElemAttribute attribute : attributesMap.values()) {
+
+            if (attribute.isMandatory()) {
+                Integer attrId = Integer.valueOf(attribute.getID());
+                Set<String> attrValues = getSaveAttributeValues().get(attrId);
+                if (attrValues == null || attrValues.isEmpty() || StringUtils.isBlank(attrValues.iterator().next())) {
+                    addGlobalValidationError(attribute.getShortName() + " is missing!");
+                }
+            }
+        }
     }
 
     /**
@@ -379,5 +408,31 @@ public class SchemaActionBean extends AbstractActionBean {
             }
         }
         return fixedValuedAttributeValues;
+    }
+
+    /**
+     * Returns the download link for the given schema file.
+     * If the schema is part of a schema set, the link's format is contextPath/schemas/schemaSetIdentifier/schemaFileName.
+     * If the schema is a root-level schema, the link's format is contextPath/schemas/schemaFileName.
+     * In both cases, schemaSetIdentifier and schemaFileName are escaped for XML, i.e. the link is meant
+     * as "href" value in an HTML link.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public String getSchemaDownloadLink() throws ServiceException{
+
+        if (schema == null){
+            throw new IllegalStateException("Schema object must be initialized!");
+        }
+
+        StringBuilder sb = new StringBuilder(getContextPath()).append("/schemas/");
+        SchemaSet schemaSet = getSchemaSet();
+        if (schemaSet!=null){
+            sb.append(schemaSet.getIdentifier()).append("/");
+        }
+        sb.append(schema.getFileName());
+
+        return sb.toString();
     }
 }

@@ -33,7 +33,9 @@
                         <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
                     </td>
                     <td class="simple_attr_value">
-                        <c:out value="${actionBean.schema.fileName}"/>
+                        <a href="${actionBean.schemaDownloadLink}">
+	                        <c:out value="${actionBean.schema.fileName}"/>
+	                    </a>
                         <stripes:hidden name="schema.fileName"/>
                     </td>
                 </tr>

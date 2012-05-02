@@ -435,6 +435,12 @@
         <url-pattern>/schemas/*</url-pattern>
     </servlet-mapping>
 
+    <!-- Mime mappings. -->
+    <mime-mapping>
+        <extension>xsd</extension>
+        <mime-type>text/xml</mime-type>
+    </mime-mapping>
+
     <!-- the application server might allow directory listing. The welcome-files
         are used to overcome workings of such feature -->
 

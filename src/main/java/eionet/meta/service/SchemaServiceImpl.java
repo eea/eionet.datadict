@@ -517,4 +517,20 @@ public class SchemaServiceImpl implements ISchemaService {
             throw new ServiceException("Failed to get a schema by this id: " + id, e);
         }
     }
+
+    /**
+     * @see eionet.meta.service.ISchemaService#updateSchema(eionet.meta.dao.domain.Schema, java.util.Map, java.lang.String)
+     */
+    @Override
+    public void updateSchema(Schema schema, Map<Integer, Set<String>> attributes, String username) throws ServiceException {
+
+        try {
+            schemaDAO.updateSchema(schema);
+            if (attributes != null && !attributes.isEmpty()) {
+                schemaDAO.updateSchemaAttributes(schema.getId(), attributes);
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Failed to update schema", e);
+        }
+    }
 }

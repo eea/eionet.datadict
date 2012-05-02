@@ -1,6 +1,8 @@
 package eionet.meta.dao;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.service.data.SchemaFilter;
@@ -74,4 +76,17 @@ public interface ISchemaDAO {
      * @return
      */
     SchemasResult searchSchemas(SchemaFilter searchFilter);
+
+    /**
+     *
+     * @param schema
+     */
+    void updateSchema(Schema schema);
+
+    /**
+     *
+     * @param schemaId
+     * @param attributes
+     */
+    void updateSchemaAttributes(int schemaId, Map<Integer, Set<String>> attributes);
 }
