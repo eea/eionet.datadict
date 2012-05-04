@@ -209,7 +209,7 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws IOException
      * @throws ServiceException
      */
-    public Resolution reupload() throws IOException, ServiceException{
+    public Resolution reupload() throws IOException, ServiceException {
 
         loadSchema();
         String schemaSetIdentifier = getSchemaSet() == null ? null : getSchemaSet().getIdentifier();
@@ -227,26 +227,31 @@ public class SchemaActionBean extends AbstractActionBean {
     @ValidationMethod(on = {"add"})
     public void validateAdd() throws ServiceException, IOException, DAOException {
 
-        if (!isUserLoggedIn() || !getUser().hasPermission("/schemasets", "i")){
+        if (!isUserLoggedIn() || !getUser().hasPermission("/schemasets", "i")) {
             throw new ServiceException("No permission to create root-level schemas!");
         }
 
-        if (isGetOrHeadRequest()){
+        if (isGetOrHeadRequest()) {
             return;
         }
 
         if (uploadedFile == null) {
             addGlobalValidationError("No file uploaded!");
-        }
-        else if (uploadedFile.getSize() <= 0){
+        } else if (uploadedFile.getSize() <= 0) {
             addGlobalValidationError("Uploaded file must not be empty!");
+        }
+
+        if (!isValidationErrors()) {
+            if (schemaService.schemaExists(uploadedFile.getFileName())) {
+                addGlobalValidationError("A root-level schema or a root-level schema working copy by this filename already exists!");
+            }
         }
 
         if (!isValidationErrors()) {
             validateXmlSchema();
         }
 
-        if (!isValidationErrors()){
+        if (!isValidationErrors()) {
             LinkedHashMap<Integer, DElemAttribute> attributesMap = getAttributes();
             for (DElemAttribute attribute : attributesMap.values()) {
 
@@ -271,31 +276,31 @@ public class SchemaActionBean extends AbstractActionBean {
      *
      */
     @ValidationMethod(on = {"view", "edit", "save", "saveAndClose", "reupload"}, priority = 1)
-    public void validateViewEditSave() throws ServiceException{
+    public void validateViewEditSave() throws ServiceException {
 
         LOGGER.trace("Method entered");
 
-        if (schema==null || schema.getId()<=0){
+        if (schema == null || schema.getId() <= 0) {
             throw new ServiceException("Schema id missing!");
         }
 
         loadSchema();
 
-        if (!isUserLoggedIn()){
+        if (!isUserLoggedIn()) {
             RegStatus regStatus = getSchemaSet() == null ? schema.getRegStatus() : getSchemaSet().getRegStatus();
-            if (!regStatus.equals(SchemaSet.RegStatus.RELEASED)){
+            if (!regStatus.equals(SchemaSet.RegStatus.RELEASED)) {
                 throw new ServiceException("Un-authenticated users can only see definitions in Released status!");
             }
         }
 
         boolean isAllowed = true;
-        if (schema.isWorkingCopy()){
+        if (schema.isWorkingCopy()) {
             isAllowed = isUserLoggedIn() && (schema.isWorkingCopyOf(getUserName()));
         }
 
-        if (isAllowed){
+        if (isAllowed) {
             SchemaSet schemaSet = getSchemaSet();
-            if (schemaSet!=null && schemaSet.isWorkingCopy()){
+            if (schemaSet != null && schemaSet.isWorkingCopy()) {
                 isAllowed = isUserLoggedIn() && (schemaSet.isWorkingCopyOf(getUserName()));
             }
         }
@@ -344,8 +349,7 @@ public class SchemaActionBean extends AbstractActionBean {
 
         if (uploadedFile == null) {
             addGlobalValidationError("No file uploaded!");
-        }
-        else if (uploadedFile.getSize() <= 0){
+        } else if (uploadedFile.getSize() <= 0) {
             addGlobalValidationError("Uploaded file must not be empty!");
         }
 
@@ -446,8 +450,7 @@ public class SchemaActionBean extends AbstractActionBean {
                 int schemaId = schema == null ? 0 : schema.getId();
 
                 attributes =
-                    searchEngine.getObjectAttributes(schemaId, DElemAttribute.ParentType.SCHEMA,
-                            DElemAttribute.TYPE_SIMPLE);
+                    searchEngine.getObjectAttributes(schemaId, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
 
                 // If this is a POST request where new attribute values are submitted (e.g. "save", "add", etc)
                 // then substitute the values we got from database with the values
@@ -508,7 +511,7 @@ public class SchemaActionBean extends AbstractActionBean {
 
         boolean result = false;
         SchemaSet schemaSet = getSchemaSet();
-        if (schemaSet != null && schemaSet.isWorkingCopy() && StringUtils.equals(schemaSet.getWorkingUser(), getUserName())){
+        if (schemaSet != null && schemaSet.isWorkingCopy() && StringUtils.equals(schemaSet.getWorkingUser(), getUserName())) {
             result = true;
         }
 
@@ -546,8 +549,8 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public SchemaSet getSchemaSet() throws ServiceException {
 
-        if (schema!=null && !isRootLevelSchema()){
-            if (schemaSet==null) {
+        if (schema != null && !isRootLevelSchema()) {
+            if (schemaSet == null) {
                 schemaSet = schemaService.getSchemaSet(schema.getSchemaSetId());
             }
         }
@@ -640,24 +643,23 @@ public class SchemaActionBean extends AbstractActionBean {
     }
 
     /**
-     * Returns the download link for the given schema file.
-     * If the schema is part of a schema set, the link's format is contextPath/schemas/schemaSetIdentifier/schemaFileName.
-     * If the schema is a root-level schema, the link's format is contextPath/schemas/schemaFileName.
-     * In both cases, schemaSetIdentifier and schemaFileName are escaped for XML, i.e. the link is meant
-     * as "href" value in an HTML link.
+     * Returns the download link for the given schema file. If the schema is part of a schema set, the link's format is
+     * contextPath/schemas/schemaSetIdentifier/schemaFileName. If the schema is a root-level schema, the link's format is
+     * contextPath/schemas/schemaFileName. In both cases, schemaSetIdentifier and schemaFileName are escaped for XML, i.e. the link
+     * is meant as "href" value in an HTML link.
      *
      * @return
      * @throws ServiceException
      */
-    public String getSchemaDownloadLink() throws ServiceException{
+    public String getSchemaDownloadLink() throws ServiceException {
 
-        if (schema == null){
+        if (schema == null) {
             throw new IllegalStateException("Schema object must be initialized!");
         }
 
         StringBuilder sb = new StringBuilder(getContextPath()).append("/schemas/");
         SchemaSet schemaSet = getSchemaSet();
-        if (schemaSet!=null){
+        if (schemaSet != null) {
             sb.append(schemaSet.getIdentifier()).append("/");
         }
         sb.append(schema.getFileName());
@@ -666,7 +668,8 @@ public class SchemaActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param uploadedFile the uploadedFile to set
+     * @param uploadedFile
+     *            the uploadedFile to set
      */
     public void setUploadedFile(FileBean uploadedFile) {
         this.uploadedFile = uploadedFile;

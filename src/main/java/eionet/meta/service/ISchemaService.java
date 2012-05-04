@@ -218,4 +218,33 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     List<Schema> getSchemaWorkingCopiesOf(String userName) throws ServiceException;
+
+    /**
+     *
+     * @param schemaId
+     * @param username
+     * @param comment
+     * @return
+     * @throws ServiceException
+     */
+    int checkSchema(int schemaId, String username, String comment) throws ServiceException;
+
+    /**
+     * Returns true if a schema set by this identifier already exists. Otherwise return false.
+     *
+     * @param schemaSetIdentifier The schema set identifier to check.
+     * @return
+     * @throws ServiceException
+     */
+    boolean schemaSetExists(String schemaSetIdentifier) throws ServiceException;
+
+    /**
+     * Returns true if a schema by the given filename already exists, regardless of whether it
+     * is a working copy or not. Otherwise return false.
+     *
+     * @param schemaFilename The filename to check.
+     * @return The boolean in question.
+     * @throws ServiceException
+     */
+    boolean schemaExists(String schemaFilename) throws ServiceException;
 }

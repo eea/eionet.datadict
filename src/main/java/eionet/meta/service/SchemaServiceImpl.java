@@ -336,6 +336,64 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public int checkSchema(int schemaId, String username, String comment) throws ServiceException {
+
+        if (StringUtils.isBlank(username)) {
+            throw new IllegalArgumentException("User name must not be blank.");
+        }
+
+        try {
+            // Load the schema that is being checked in.
+            Schema schema = schemaDAO.getSchema(schemaId);
+
+            // Ensure that the schema is a working copy.
+            if (!schema.isWorkingCopy()) {
+                throw new ServiceException("This schema is not a working copy.");
+            }
+
+            // Ensure that the check-in user is the working user.
+            if (!StringUtils.equals(username, schema.getWorkingUser())) {
+                throw new ServiceException("Check-in user is not the current working user.");
+            }
+
+            // Get checked-out copy id, see if we're overwriting it.
+            int checkedOutCopyId = schema.getCheckedOutCopyId();
+            boolean isOverwrite = false;
+            if (checkedOutCopyId > 0) {
+                Schema checkedOutCopy = schemaDAO.getSchema(checkedOutCopyId);
+                isOverwrite = checkedOutCopy != null && checkedOutCopy.getFileName().equals(schema.getFileName());
+                if (isOverwrite) {
+
+                    // Delete the checked-out copy.
+                    schemaDAO.unlock(checkedOutCopyId);
+                    // TODO user name must be supplied + check if includingContents must really be false
+                    deleteSchemas(Collections.singletonList(checkedOutCopyId), false);
+
+                    // Checked-in schema must get the ID of the checked-out copy.
+                    attributeDAO.replaceParentId(schemaId, checkedOutCopyId, DElemAttribute.ParentType.SCHEMA);
+                    schemaDAO.replaceId(schemaId, checkedOutCopyId);
+                } else {
+                    // Unlock checked-out copy.
+                    schemaDAO.unlock(checkedOutCopyId);
+                }
+            }
+
+            // Update the checked-in schema.
+            int finalId = isOverwrite ? checkedOutCopyId : schemaId;
+            schemaDAO.checkIn(finalId, username, comment);
+
+            // Finally, clean up the schema repository
+            //            List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schema.getIdentifier());
+            //            schemaRepository.cleanupCheckInSchemaSet(schema.getIdentifier(), schemasInDatabase);
+
+            return finalId;
+        } catch (Exception e) {
+            throw new ServiceException("Schema set check-in failed.", e);
+        }
+    }
+
     /**
      *
      * @param replacedId
@@ -553,6 +611,33 @@ public class SchemaServiceImpl implements ISchemaService {
             }
         } catch (Exception e) {
             throw new ServiceException("Failed to update schema", e);
+        }
+    }
+
+    /**
+     * @throws ServiceException
+     * @see eionet.meta.service.ISchemaService#schemaSetExists(java.lang.String)
+     */
+    @Override
+    public boolean schemaSetExists(String schemaSetIdentifier) throws ServiceException{
+
+        try {
+            return schemaSetDAO.exists(schemaSetIdentifier);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to check if a schema set by this identifier already exists!", e);
+        }
+    }
+
+    /**
+     * @see eionet.meta.service.ISchemaService#schemaExists(java.lang.String)
+     */
+    @Override
+    public boolean schemaExists(String schemaFilename) throws ServiceException{
+
+        try {
+            return schemaDAO.exists(schemaFilename);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to check if a schema by this filename already exists!", e);
         }
     }
 }

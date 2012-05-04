@@ -156,4 +156,12 @@ public interface ISchemaSetDAO {
      * @return
      */
     List<String> getSchemaFileNames(String schemaSetIdentifier);
+
+    /**
+     * Returns true if a schema set by this identifier already exists. Otherwise return false.
+     *
+     * @param schemaSetIdentifier The schema set identifier to check.
+     * @return
+     */
+    boolean exists(String schemaSetIdentifier);
 }

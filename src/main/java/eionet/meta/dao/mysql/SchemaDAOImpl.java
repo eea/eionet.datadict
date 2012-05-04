@@ -23,6 +23,7 @@ package eionet.meta.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,10 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     /** */
     private static final String GET_WORKING_COPIES_SQL =
         "select * from T_SCHEMA where WORKING_COPY=true and WORKING_USER=:userName order by FILENAME asc";
+
+    /** */
+    private static final String SET_WORKING_USER_SQL =
+        "update T_SCHEMA set WORKING_USER=:userName where SCHEMA_ID=:schemaId";
 
     /**
      * @see eionet.meta.dao.ISchemaDAO#createSchema(eionet.meta.dao.domain.Schema)
@@ -384,5 +389,59 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
             });
 
         return resultList;
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#getSchema(int)
+     */
+    @Override
+    public Schema getSchema(int schemaId) {
+
+        List<Schema> schemas = getSchemas(Collections.singletonList(schemaId));
+        return schemas != null && !schemas.isEmpty() ? schemas.iterator().next() : null;
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#unlock(int)
+     */
+    @Override
+    public void unlock(int checkedOutCopyId) {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("schemaId", checkedOutCopyId);
+        params.put("userName", null);
+
+        getNamedParameterJdbcTemplate().update(SET_WORKING_USER_SQL, params);
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#checkIn(int, java.lang.String, java.lang.String)
+     */
+    @Override
+    public void checkIn(int schemaId, String username, String comment) {
+
+        String sql =
+            "update T_SCHEMA set WORKING_USER = NULL, WORKING_COPY = 0, DATE_MODIFIED = now(), USER_MODIFIED = :username, "
+            + "COMMENT = :comment, CHECKEDOUT_COPY_ID=NULL where SCHEMA_ID = :id";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("id", schemaId);
+        parameters.put("username", username);
+        parameters.put("comment", comment);
+
+        getNamedParameterJdbcTemplate().update(sql, parameters);
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#exists(java.lang.String)
+     */
+    @Override
+    public boolean exists(String filename) {
+
+        String sql = "select count(*) from T_SCHEMA where FILENAME = :filename";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("filename", filename);
+
+        int count = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+        return count > 0;
     }
 }

@@ -38,6 +38,13 @@ public interface ISchemaDAO {
     List<Schema> getSchemas(List<Integer> ids);
 
     /**
+     *
+     * @param schemaId
+     * @return
+     */
+    Schema getSchema(int schemaId);
+
+    /**
      * Returns schema ids of the given schema sets.
      *
      * @param schemaSetIds
@@ -96,4 +103,27 @@ public interface ISchemaDAO {
      * @return
      */
     List<Schema> getWorkingCopiesOf(String userName);
+
+    /**
+     *
+     * @param checkedOutCopyId
+     */
+    void unlock(int checkedOutCopyId);
+
+    /**
+     *
+     * @param schemaId
+     * @param username
+     * @param comment
+     */
+    void checkIn(int schemaId, String username, String comment);
+
+    /**
+     * Returns true if a schema by the given filename already exists, regardless of whether it
+     * is a working copy or not. Otherwise return false.
+     *
+     * @param filename The filename to check.
+     * @return The boolean in question.
+     */
+    boolean exists(String filename);
 }

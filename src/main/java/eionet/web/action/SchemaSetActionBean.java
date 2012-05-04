@@ -195,9 +195,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      *
      * @throws DAOException
+     * @throws ServiceException
      */
     @ValidationMethod(on = {"add", "save", "saveAndClose"})
-    public void validateAddSave() throws DAOException {
+    public void validateAddSave() throws DAOException, ServiceException {
 
         if (isGetOrHeadRequest()) {
             return;
@@ -206,6 +207,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
         if (StringUtils.equals(getContext().getEventName(), "add")) {
             if (schemaSet == null || StringUtils.isBlank(schemaSet.getIdentifier())) {
                 addGlobalValidationError("Identifier is missing!");
+            }
+
+            if (schemaService.schemaSetExists(schemaSet.getIdentifier())){
+                addGlobalValidationError("A schema set or a schema set working copy by this identifier already exists!");
             }
         }
 
