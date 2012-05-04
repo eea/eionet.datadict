@@ -22,6 +22,7 @@ import eionet.util.PropsIF;
 @Component
 public class SchemaRepository {
 
+    /** */
     private static final String WORKING_COPY_SUFFIX = ".workingCopy";
     /** */
     public static final String REPO_PATH = Props.getRequiredProperty(PropsIF.SCHEMA_REPO_LOCATION);
@@ -91,11 +92,22 @@ public class SchemaRepository {
         }
 
         File schemaFile = new File(fileDirectory, fileName);
-        if (schemaFile.exists() && schemaFile.isFile()) {
-            schemaFile.delete();
+        File schemaFileWC = new File(fileDirectory, fileName + WORKING_COPY_SUFFIX);
+
+        // If there is already a working copy of this file, simply replace it.
+        // If there is already a file by this name, make a working copy of it.
+        // In all other cases simple save the file by its given name.
+        if (schemaFileWC.exists() && schemaFileWC.isFile()) {
+            schemaFileWC.delete();
+            fileBean.save(schemaFileWC);
+        }
+        else if (schemaFile.exists() && schemaFile.isFile()) {
+            fileBean.save(schemaFileWC);
+        }
+        else{
+            fileBean.save(schemaFile);
         }
 
-        fileBean.save(schemaFile);
         return schemaFile;
     }
 
