@@ -288,4 +288,14 @@ public class DDUser{
 
         return result;
     }
+
+    /**
+     *
+     * @param aclPath
+     * @param permission
+     * @return
+     */
+    public boolean hasPermission(String aclPath, String permission) {
+        return DDUser.hasPermission(username, aclPath, permission);
+    }
 }

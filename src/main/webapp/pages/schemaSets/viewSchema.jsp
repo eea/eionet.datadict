@@ -147,7 +147,7 @@
                     File name
                 </th>
                 <td class="simple_attr_help">
-                    <a href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+                    <a href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=filename" onclick="pop(this.href);return false;">
                         <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
                     </a>
                 </td>
@@ -163,7 +163,7 @@
                         Schema set
                     </th>
                     <td class="simple_attr_help">
-                        <a href="${pageContext.request.contextPath}/help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
+                        <a href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=schemaSet" onclick="pop(this.href);return false;">
                             <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
                         </a>
                     </td>

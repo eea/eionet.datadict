@@ -13,7 +13,10 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <li><a href="${pageContext.request.contextPath}/schemaSet.action?add=">Add schema set</a></li>
+                <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
+                    <li><a href="${pageContext.request.contextPath}/schemaSet.action?add=">Add schema set</a></li>
+                    <li><a href="${pageContext.request.contextPath}/schema.action?add=">Add root-level schema</a></li>
+                </c:if>
                 <li><a href="${pageContext.request.contextPath}/searchSchemaSets.action">Search schema sets</a></li>
                 <li><a href="${pageContext.request.contextPath}/searchSchemas.action">Search schemas</a></li>
                 <c:if test="${not empty actionBean.user}">
@@ -38,12 +41,12 @@
 
         <stripes:form id="schemaSetsForm" action="/schemaSets.action" method="post" style="margin-top:1em">
             <ul class="menu">
-                <c:forEach var="item" items="${actionBean.schemaSets}">
+                <c:forEach var="schemaSet" items="${actionBean.schemaSets}">
                     <li>
                         <c:if test="${not empty actionBean.user}">
                             <c:choose>
-                                <c:when test="${ddfn:contains(actionBean.deletable,item.id)}">
-                                    <stripes:checkbox name="selected" value="${item.id}" />
+                                <c:when test="${ddfn:contains(actionBean.deletableSchemaSets,schemaSet.id)}">
+                                    <stripes:checkbox name="selectedSchemaSets" value="${schemaSet.id}" />
                                 </c:when>
                                 <c:otherwise>
                                     <input type="checkbox" disabled="disabled" title="Schema set in registered status or currently checked out"/>
@@ -51,20 +54,41 @@
                             </c:choose>
                         </c:if>
                         <stripes:link href="/schemaSet.action" class="link-folder">
-                            <stripes:param name="schemaSet.id" value="${item.id}" />
-                            <c:out value="${item.identifier}"/>
+                            <stripes:param name="schemaSet.id" value="${schemaSet.id}" />
+                            <c:out value="${schemaSet.identifier}"/>
                         </stripes:link>
-                        <c:if test="${not empty item.workingUser}">
-                            <span title="Checked out by ${item.workingUser}" class="checkedout"><strong>*</strong></span>
+                        <c:if test="${not empty actionBean.user && not empty schemaSet.workingUser}">
+                            <span title="Checked out by ${schemaSet.workingUser}" class="checkedout"><strong>*</strong></span>
+                        </c:if>
+                    </li>
+                </c:forEach>
+                <c:forEach var="schema" items="${actionBean.schemas}">
+                    <li>
+                        <c:if test="${not empty actionBean.user}">
+                            <c:choose>
+                                <c:when test="${ddfn:contains(actionBean.deletableSchemas,schema.id)}">
+                                    <stripes:checkbox name="selectedSchemas" value="${schema.id}" />
+                                </c:when>
+                                <c:otherwise>
+                                    <input type="checkbox" disabled="disabled" title="Schema in registered status or currently checked out"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:if>
+                        <stripes:link href="/schema.action">
+                            <stripes:param name="schema.id" value="${schema.id}" />
+                            <c:out value="${schema.fileName}"/>
+                        </stripes:link>
+                        <c:if test="${not empty actionBean.user && not empty schema.workingUser}">
+                            <span title="Checked out by ${schema.workingUser}" class="checkedout"><strong>*</strong></span>
                         </c:if>
                     </li>
                 </c:forEach>
             </ul>
             <br/>
 
-            <c:if test="${not empty actionBean.user && not empty actionBean.schemaSets}">
+            <c:if test="${not empty actionBean.user && (not empty actionBean.schemaSets || not empty actionBean.schemas)}">
                 <c:choose>
-                    <c:when test="${not empty actionBean.deletable}">
+                    <c:when test="${not empty actionBean.deletableSchemaSets || not empty actionBean.deletableSchemas}">
                         <stripes:submit name="delete" value="Delete"/>
                         <input type="button" onclick="toggleSelectAll('schemaSetsForm');return false" value="Select all" name="selectAll" />
                     </c:when>

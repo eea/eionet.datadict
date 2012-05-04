@@ -71,6 +71,10 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, DATE_MODIFIED, USER_MODIFIED) "
         + "select ifnull(:newFileName,FILENAME), ifnull(:schemaSetId,SCHEMA_SET_ID), now(), :userName from T_SCHEMA where SCHEMA_ID=:schemaId";
 
+    /** */
+    private static final String GET_WORKING_COPIES_SQL =
+        "select * from T_SCHEMA where WORKING_COPY=true and WORKING_USER=:userName order by FILENAME asc";
+
     /**
      * @see eionet.meta.dao.ISchemaDAO#createSchema(eionet.meta.dao.domain.Schema)
      */
@@ -248,7 +252,8 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                         sql.append("AND ");
                         sql.append("s.schema_id IN ( ");
                         sql.append("SELECT a.DATAELEM_ID FROM ATTRIBUTE a WHERE ");
-                        sql.append("a.M_ATTRIBUTE_ID = :" + idKey + " AND a.VALUE like :" + valueKey + " AND a.PARENT_TYPE = :parentType ");
+                        sql.append("a.M_ATTRIBUTE_ID = :" + idKey + " AND a.VALUE like :" + valueKey
+                                + " AND a.PARENT_TYPE = :parentType ");
                         sql.append(") ");
                     }
                     params.put(idKey, a.getId());
@@ -322,7 +327,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     @Override
     public void updateSchemaAttributes(int schemaId, Map<Integer, Set<String>> attributes) {
 
-        if (attributes==null || attributes.isEmpty()){
+        if (attributes == null || attributes.isEmpty()) {
             return;
         }
 
@@ -349,5 +354,35 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 }
             }
         }
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#getWorkingCopiesOf(java.lang.String)
+     */
+    @Override
+    public List<Schema> getWorkingCopiesOf(String userName) {
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("userName", userName);
+
+        List<Schema> resultList =
+            getNamedParameterJdbcTemplate().query(GET_WORKING_COPIES_SQL, parameters, new RowMapper<Schema>() {
+                public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Schema schema = new Schema();
+                    schema.setId(rs.getInt("SCHEMA_ID"));
+                    schema.setFileName(rs.getString("FILENAME"));
+                    schema.setContinuityId(rs.getString("CONTINUITY_ID"));
+                    schema.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                    schema.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                    schema.setWorkingUser(rs.getString("WORKING_USER"));
+                    schema.setDateModified(rs.getDate("DATE_MODIFIED"));
+                    schema.setUserModified(rs.getString("USER_MODIFIED"));
+                    schema.setComment(rs.getString("COMMENT"));
+                    schema.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                    return schema;
+                }
+            });
+
+        return resultList;
     }
 }

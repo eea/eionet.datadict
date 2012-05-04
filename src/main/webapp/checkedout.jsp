@@ -7,6 +7,7 @@ boolean userHasWorkingCopies = false;
 Vector datasets=null;
 Vector commonElements=null;
 List<SchemaSet> schemaSets=null;
+List<Schema> schemas=null;
 %>
 
 <%@ include file="history.jsp" %>
@@ -42,6 +43,7 @@ List<SchemaSet> schemaSets=null;
             datasets = searchEngine.getDatasets(null, null, null, null, true);
             commonElements = searchEngine.getCommonElements(null, null, null, null, true, "=");
             schemaSets = searchEngine.getSchemaSetWorkingCopies();
+            schemas = searchEngine.getSchemaWorkingCopies();
         }
 
 %>
@@ -159,6 +161,28 @@ List<SchemaSet> schemaSets=null;
             } else {
                 %>
                     <tr><td>You have no schema sets checked out!</td></tr>
+                <%
+            }
+
+            // SCHEMAS
+            if (schemas!=null && !schemas.isEmpty()){
+                for (int i=0; i<schemas.size(); i++){
+
+                    Schema schema = schemas.get(i);
+                    %>
+                    <tr>
+                        <td>
+                            Schema:
+                            <a href="<%=request.getContextPath()%>/schema.action?schema.id=<%=schema.getId()%>">
+                                <%=Util.processForDisplay(schema.getFileName())%>
+                            </a>
+                        </td>
+                    </tr>
+                <%
+                }
+            } else {
+                %>
+                    <tr><td>You have no schemas checked out!</td></tr>
                 <%
             }
             %>

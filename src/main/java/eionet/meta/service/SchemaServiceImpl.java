@@ -124,14 +124,15 @@ public class SchemaServiceImpl implements ISchemaService {
      * @param includingContents
      * @throws ServiceException
      */
-    private void doDeleteSchemaSets(List<Integer> schemaSetIds, String username, boolean includingContents) throws ServiceException {
+    private void doDeleteSchemaSets(List<Integer> schemaSetIds, String username, boolean includingContents)
+    throws ServiceException {
         try {
             // Validate permissions
             boolean deletePerm = username != null && SecurityUtil.hasPerm(username, "/schemasets", "d");
-            boolean deleteReleasedPerm = username != null && SecurityUtil.hasPerm(username, "/schemasets", "er");
-            if (!deletePerm && !deleteReleasedPerm) {
-                throw new ValidationException("No delete permission");
+            if (!deletePerm) {
+                throw new ValidationException("No delete permission!");
             }
+            boolean deleteReleasedPerm = username != null && SecurityUtil.hasPerm(username, "/schemasets", "er");
             List<SchemaSet> schemaSets = schemaSetDAO.getSchemaSets(schemaSetIds);
             ensureDeleteAllowed(username, deleteReleasedPerm, schemaSets);
 
@@ -140,7 +141,7 @@ public class SchemaServiceImpl implements ISchemaService {
             doDeleteSchemas(schemaIds, includingContents);
 
             // Delete schema set folders, if requested so.
-            if (includingContents){
+            if (includingContents) {
                 for (SchemaSet schemaSet : schemaSets) {
                     schemaRepository.deleteSchemaSet(schemaSet.getIdentifier());
                 }
@@ -203,7 +204,7 @@ public class SchemaServiceImpl implements ISchemaService {
             schemaDAO.deleteSchemas(ids);
 
             // Delete files if requested so.
-            if (includingContents){
+            if (includingContents) {
                 for (Schema schema : schemas) {
                     schemaRepository.deleteSchema(schema.getFileName(), schema.getSchemaSetIdentifier());
                 }
@@ -356,14 +357,18 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * @see eionet.meta.service.ISchemaService#addSchema(eionet.meta.dao.domain.Schema)
+     * @see eionet.meta.service.ISchemaService#addSchema(eionet.meta.dao.domain.Schema, Map)
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int addSchema(Schema schema) throws ServiceException {
+    public int addSchema(Schema schema, Map<Integer, Set<String>> attributes) throws ServiceException {
 
         try {
-            return schemaDAO.createSchema(schema);
+            int schemaId = schemaDAO.createSchema(schema);
+            if (attributes != null && !attributes.isEmpty()) {
+                schemaDAO.updateSchemaAttributes(schemaId, attributes);
+            }
+            return schemaId;
         } catch (Exception e) {
             throw new ServiceException("Failed to add schema", e);
         }
@@ -396,11 +401,11 @@ public class SchemaServiceImpl implements ISchemaService {
         int newSchemaSetId;
         try {
             SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
-            if (schemaSet.isWorkingCopy()){
+            if (schemaSet.isWorkingCopy()) {
                 throw new ServiceException("Cannot check out a working copy!");
             }
 
-            if (StringUtils.isNotBlank(schemaSet.getWorkingUser())){
+            if (StringUtils.isNotBlank(schemaSet.getWorkingUser())) {
                 throw new ServiceException("Cannot check out an already checked-out schema set!");
             }
 
@@ -435,7 +440,7 @@ public class SchemaServiceImpl implements ISchemaService {
             SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
             if (schemaSet != null) {
 
-                if (!schemaSet.isWorkingCopyOf(username)){
+                if (!schemaSet.isWorkingCopyOf(username)) {
                     throw new ServiceException("Undo checkout can only be performed on your working copy!");
                 }
                 doDeleteSchemaSets(Collections.singletonList(schemaSetId), username, false);
@@ -483,7 +488,24 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaSetDAO.getWorkingCopiesOf(userName);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get working copies of user " + userName, e);
+            throw new ServiceException("Failed to get schema set working copies of user " + userName, e);
+        }
+    }
+
+    /**
+     * @see eionet.meta.service.ISchemaService#getSchemaWorkingCopiesOf(java.lang.String)
+     */
+    @Override
+    public List<Schema> getSchemaWorkingCopiesOf(String userName) throws ServiceException {
+
+        if (StringUtils.isBlank(userName)) {
+            throw new ValidationException("User name must not be blank!");
+        }
+
+        try {
+            return schemaDAO.getWorkingCopiesOf(userName);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get schema working copies of user " + userName, e);
         }
     }
 
@@ -512,7 +534,7 @@ public class SchemaServiceImpl implements ISchemaService {
     public Schema getSchema(int id) throws ServiceException {
         try {
             List<Schema> schemas = schemaDAO.getSchemas(Collections.singletonList(id));
-            return schemas!=null && !schemas.isEmpty() ? schemas.get(0) : null;
+            return schemas != null && !schemas.isEmpty() ? schemas.get(0) : null;
         } catch (Exception e) {
             throw new ServiceException("Failed to get a schema by this id: " + id, e);
         }

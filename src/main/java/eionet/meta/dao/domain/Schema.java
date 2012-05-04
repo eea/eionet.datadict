@@ -207,4 +207,12 @@ public class Schema {
         this.schemaSetIdentifier = schemaSetIdentifier;
     }
 
+    /**
+     *
+     * @param userName
+     * @return
+     */
+    public boolean isWorkingCopyOf(String userName) {
+        return isWorkingCopy && workingUser != null && workingUser.equals(userName);
+    }
 }

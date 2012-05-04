@@ -408,7 +408,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             schema.setFileName(uploadedFile.getFileName());
             schema.setUserModified(getUserName());
             schema.setSchemaSetId(schemaSet.getId());
-            schemaService.addSchema(schema);
+            schemaService.addSchema(schema, getSaveAttributeValues());
         } catch (ServiceException e) {
             SchemaRepository.deleteQuietly(schemaFile);
             throw e;

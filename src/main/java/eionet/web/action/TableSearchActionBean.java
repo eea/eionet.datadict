@@ -33,6 +33,9 @@ import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
+
+import org.apache.log4j.Logger;
+
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDSearchParameter;
 import eionet.meta.DElemAttribute;
@@ -47,6 +50,9 @@ import eionet.util.sql.ConnectionUtil;
  */
 @UrlBinding("/tableSearch.action")
 public class TableSearchActionBean extends AbstractActionBean {
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(TableSearchActionBean.class);
 
     /** Search type option in web form. */
     private static String SUBSTRING_SEARCH = "SUBSTRING_SEARCH";

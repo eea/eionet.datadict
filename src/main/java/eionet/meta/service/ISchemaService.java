@@ -129,10 +129,11 @@ public interface ISchemaService {
     /**
      *
      * @param schema
+     * @param attributes
      * @return
      * @throws ServiceException
      */
-    int addSchema(Schema schema) throws ServiceException;
+    int addSchema(Schema schema, Map<Integer, Set<String>> attributes) throws ServiceException;
 
     /**
      *
@@ -209,4 +210,12 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     void updateSchema(Schema schema, Map<Integer, Set<String>> attributes, String username) throws ServiceException;
+
+    /**
+     *
+     * @param userName
+     * @return
+     * @throws ServiceException
+     */
+    List<Schema> getSchemaWorkingCopiesOf(String userName) throws ServiceException;
 }

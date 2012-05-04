@@ -32,8 +32,7 @@ import net.sourceforge.stripes.controller.AnnotatedClassActionResolver;
 import net.sourceforge.stripes.validation.SimpleError;
 
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import eionet.meta.DDUser;
 import eionet.util.Props;
@@ -49,7 +48,7 @@ import eionet.web.DDActionBeanContext;
 public abstract class AbstractActionBean implements ActionBean {
 
     /** Logger. */
-    protected static Log LOGGER = LogFactory.getLog(AbstractActionBean.class);
+    private static final Logger LOGGER = Logger.getLogger(AbstractActionBean.class);
 
     private static final String SYSTEM_MESSAGES = "systemMessages";
     private static final String CAUTION_MESSAGES = "cautionMessages";

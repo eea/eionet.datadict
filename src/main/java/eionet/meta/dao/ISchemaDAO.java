@@ -89,4 +89,11 @@ public interface ISchemaDAO {
      * @param attributes
      */
     void updateSchemaAttributes(int schemaId, Map<Integer, Set<String>> attributes);
+
+    /**
+     *
+     * @param userName
+     * @return
+     */
+    List<Schema> getWorkingCopiesOf(String userName);
 }

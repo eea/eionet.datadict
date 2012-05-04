@@ -33,7 +33,9 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
+import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
@@ -48,20 +50,33 @@ import eionet.util.SecurityUtil;
 @UrlBinding("/schemaSets.action")
 public class BrowseSchemaSetsActionBean extends AbstractActionBean {
 
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(BrowseSchemaSetsActionBean.class);
+
+    /** */
     private static final String BROWSE_SCHEMA_SETS_JSP = "/pages/schemaSets/browseSchemaSets.jsp";
 
     /** Schema service. */
     @SpringBean
     private ISchemaService schemaService;
 
-    /** All schema sets for viewing. */
+    /** Listed schema sets that are valid for viewing. */
     private List<SchemaSet> schemaSets;
 
-    /** Selected ids. */
-    private List<Integer> selected;
+    /** Listed root-level schemas that are valid for viewing. */
+    private List<Schema> schemas;
+
+    /** Ids of selected schema sets. */
+    private List<Integer> selectedSchemaSets;
+
+    /** Ids of selected schemas. */
+    private List<Integer> selectedSchemas;
 
     /** Ids of schema sets that the current user is allowed to delete. */
-    private Set<Integer> deletable;
+    private Set<Integer> deletableSchemaSets;
+
+    /** Ids of root-level schemas that the current user is allowed to delete. */
+    private Set<Integer> deletableSchemas;
 
     /**
      *
@@ -81,10 +96,12 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution workingCopies() throws ServiceException {
+
         if (isUserLoggedIn()) {
             schemaSets = schemaService.getSchemaSetWorkingCopiesOf(getUserName());
+            schemas = schemaService.getSchemaWorkingCopiesOf(getUserName());
         } else {
-            addGlobalValidationError("Un-authenticated user cannot have working copies!");
+            addGlobalValidationError("Un-authenticated users cannot have working copies!");
         }
         return new ForwardResolution(BROWSE_SCHEMA_SETS_JSP);
     }
@@ -98,7 +115,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     public Resolution delete() throws ServiceException {
         if (isDeletePermission()) {
             try {
-                schemaService.deleteSchemaSets(selected, getUserName(), true);
+                schemaService.deleteSchemaSets(selectedSchemaSets, getUserName(), true);
             } catch (ValidationException e) {
                 LOGGER.info(e.getMessage());
                 addGlobalValidationError(e.getMessage());
@@ -109,9 +126,9 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
             return viewList();
         }
 
-        if (selected.size() == 1) {
+        if (selectedSchemaSets.size() == 1) {
             addSystemMessage("Schema set succesfully deleted.");
-        } else if (selected.size() > 1) {
+        } else if (selectedSchemaSets.size() > 1) {
             addSystemMessage("Schema sets succesfully deleted.");
         }
 
@@ -135,18 +152,12 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     }
 
     /**
-     * @return the selected
+     * Sets the ids of selected schema sets.
+     *
+     * @param The list of ids in question.
      */
-    public List<Integer> getSelected() {
-        return selected;
-    }
-
-    /**
-     * @param selected
-     *            the selected to set
-     */
-    public void setSelected(List<Integer> selected) {
-        this.selected = selected;
+    public void setSelectedSchemaSets(List<Integer> selectedSchemaSets) {
+        this.selectedSchemaSets = selectedSchemaSets;
     }
 
     /**
@@ -165,13 +176,15 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     }
 
     /**
-     * @return the deletable
+     * Returns the set of ids of schema sets that the current user can delete.
+     *
+     * @return The set of ids.
      * @throws Exception
      */
-    public Set<Integer> getDeletable() throws Exception {
+    public Set<Integer> getDeletableSchemaSets() throws Exception {
 
-        if (deletable == null) {
-            deletable = new HashSet<Integer>();
+        if (deletableSchemaSets == null) {
+            deletableSchemaSets = new HashSet<Integer>();
             String userName = getUserName();
             if (!StringUtils.isBlank(userName)) {
                 for (SchemaSet schemaSet : schemaSets) {
@@ -179,13 +192,38 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
                     if (!schemaSet.isWorkingCopy() && StringUtils.isBlank(schemaSet.getWorkingUser())) {
                         String permission = schemaSet.getRegStatus().equals(SchemaSet.RegStatus.RELEASED) ? "er" : "d";
                         if (SecurityUtil.hasPerm(userName, "/schemasets", permission)) {
-                            deletable.add(schemaSet.getId());
+                            deletableSchemaSets.add(schemaSet.getId());
                         }
                     }
                 }
             }
         }
-        return deletable;
+        return deletableSchemaSets;
     }
 
+    /**
+     * @return the deletableSchemas
+     */
+    public Set<Integer> getDeletableSchemas() {
+
+        if (deletableSchemas == null) {
+            deletableSchemas = new HashSet<Integer>();
+        }
+        return deletableSchemas;
+    }
+
+    /**
+     * @return the schemas
+     */
+    public List<Schema> getSchemas() {
+        return schemas;
+    }
+
+    /**
+     * Sets the ids of selected schemas.
+     * @param selectedSchemas The list of ids in question.
+     */
+    public void setSelectedSchemas(List<Integer> selectedSchemas) {
+        this.selectedSchemas = selectedSchemas;
+    }
 }

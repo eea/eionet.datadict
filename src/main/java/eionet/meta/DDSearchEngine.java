@@ -26,6 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import eionet.meta.dao.DAOException;
+import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
@@ -5046,6 +5047,21 @@ public class DDSearchEngine {
 
         ISchemaService schemaService = getSpringBean(ISchemaService.class);
         return schemaService.getSchemaSetWorkingCopiesOf(user.getUserName());
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public List<Schema> getSchemaWorkingCopies() throws ServiceException {
+
+        if (user == null || !user.isAuthentic()) {
+            return new ArrayList<Schema>();
+        }
+
+        ISchemaService schemaService = getSpringBean(ISchemaService.class);
+        return schemaService.getSchemaWorkingCopiesOf(user.getUserName());
     }
 
     /**
