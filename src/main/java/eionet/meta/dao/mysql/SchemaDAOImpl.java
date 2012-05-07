@@ -39,6 +39,7 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.dao.ISchemaDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.Schema;
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.dao.domain.SchemaSet.RegStatus;
 import eionet.meta.service.data.SchemaFilter;
 import eionet.meta.service.data.SchemasResult;
@@ -77,8 +78,18 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         "select * from T_SCHEMA where WORKING_COPY=true and WORKING_USER=:userName order by FILENAME asc";
 
     /** */
-    private static final String SET_WORKING_USER_SQL =
-        "update T_SCHEMA set WORKING_USER=:userName where SCHEMA_ID=:schemaId";
+    private static final String SET_WORKING_USER_SQL = "update T_SCHEMA set WORKING_USER=:userName where SCHEMA_ID=:schemaId";
+
+    /** */
+    private static final String CHECK_OUT_SCHEMA = "insert into T_SCHEMA "
+        + "(FILENAME, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID)"
+        + " select FILENAME, CONTINUITY_ID, true, :userName, :userName, SCHEMA_ID"
+        + " from T_SCHEMA where SCHEMA_ID=:schemaId";
+
+    /** */
+    private static final String GET_WORKING_COPY_OF_SQL =
+        "select * from T_SCHEMA where (SCHEMA_SET_ID is null or SCHEMA_SET_ID<=0)"
+        + " and WORKING_COPY=true and CHECKEDOUT_COPY_ID = :checkedOutCopyId";
 
     /**
      * @see eionet.meta.dao.ISchemaDAO#createSchema(eionet.meta.dao.domain.Schema)
@@ -443,5 +454,87 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
 
         int count = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
         return count > 0;
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#checkOutSchema(int, java.lang.String)
+     */
+    @Override
+    public int checkOutSchema(int schemaId, String userName) {
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("schemaId", schemaId);
+        parameters.put("userName", userName);
+
+        getNamedParameterJdbcTemplate().update(SET_WORKING_USER_SQL, parameters);
+
+        parameters = new HashMap<String, Object>();
+        parameters.put("schemaId", schemaId);
+        parameters.put("userName", userName);
+
+        getNamedParameterJdbcTemplate().update(CHECK_OUT_SCHEMA, parameters);
+        return getLastInsertId();
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#getRootLevelSchemas(boolean)
+     */
+    @Override
+    public List<Schema> getRootLevelSchemas(boolean listReleasedOnly) {
+
+        String sql =
+            "select * from T_SCHEMA where (SCHEMA_SET_ID is null or SCHEMA_SET_ID<=0)"
+            + " and REG_STATUS=ifnull(:regStatus, REG_STATUS) and WORKING_COPY=false";
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("regStatus", listReleasedOnly ? SchemaSet.RegStatus.RELEASED.toString() : null);
+
+        List<Schema> schema = getNamedParameterJdbcTemplate().query(sql, parameters, new RowMapper<Schema>() {
+            public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Schema schema = new Schema();
+                schema.setId(rs.getInt("SCHEMA_ID"));
+                schema.setFileName(rs.getString("FILENAME"));
+                schema.setContinuityId(rs.getString("CONTINUITY_ID"));
+                schema.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                schema.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                schema.setWorkingUser(rs.getString("WORKING_USER"));
+                schema.setDateModified(rs.getDate("DATE_MODIFIED"));
+                schema.setUserModified(rs.getString("USER_MODIFIED"));
+                schema.setComment(rs.getString("COMMENT"));
+                schema.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                return schema;
+            }
+        });
+
+        return schema;
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#getWorkingCopyOfSchema(int)
+     */
+    @Override
+    public Schema getWorkingCopyOfSchema(int schemaId) {
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("checkedOutCopyId", schemaId);
+
+        Schema result =
+            getNamedParameterJdbcTemplate().queryForObject(GET_WORKING_COPY_OF_SQL, parameters, new RowMapper<Schema>() {
+                public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Schema schema = new Schema();
+                    schema.setId(rs.getInt("SCHEMA_ID"));
+                    schema.setFileName(rs.getString("FILENAME"));
+                    schema.setContinuityId(rs.getString("CONTINUITY_ID"));
+                    schema.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                    schema.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                    schema.setWorkingUser(rs.getString("WORKING_USER"));
+                    schema.setDateModified(rs.getDate("DATE_MODIFIED"));
+                    schema.setUserModified(rs.getString("USER_MODIFIED"));
+                    schema.setComment(rs.getString("COMMENT"));
+                    schema.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                    return schema;
+                }
+            });
+        return result;
     }
 }

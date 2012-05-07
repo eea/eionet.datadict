@@ -126,4 +126,31 @@ public interface ISchemaDAO {
      * @return The boolean in question.
      */
     boolean exists(String filename);
+
+    /**
+     *
+     * @param schemaId
+     * @param userName
+     * @return
+     */
+    int checkOutSchema(int schemaId, String userName);
+
+    /**
+     * Returns a list of all root-level schemas. If the given boolean is true,
+     * only schemas in Released status are returned. Otherwise the status is ignored.
+     * Note that the returned list does not contain any working copies!
+     *
+     * @param listReleasedOnly
+     * @return
+     */
+    List<Schema> getRootLevelSchemas(boolean listReleasedOnly);
+
+    /**
+     * Returns working copy of the schema identified by the given id.
+     * This means the given id must denote a schema that has been checked out by somebody.
+     *
+     * @param schemaId
+     * @return
+     */
+    Schema getWorkingCopyOfSchema(int schemaId);
 }

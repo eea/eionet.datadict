@@ -227,7 +227,7 @@ public interface ISchemaService {
      * @return
      * @throws ServiceException
      */
-    int checkSchema(int schemaId, String username, String comment) throws ServiceException;
+    int checkInSchema(int schemaId, String username, String comment) throws ServiceException;
 
     /**
      * Returns true if a schema set by this identifier already exists. Otherwise return false.
@@ -247,4 +247,35 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     boolean schemaExists(String schemaFilename) throws ServiceException;
+
+    /**
+     *
+     * @param schemaId
+     * @param userName
+     * @param object
+     * @return
+     * @throws ServiceException
+     */
+    int checkOutSchema(int schemaId, String userName, Object object) throws ServiceException;
+
+    /**
+     * Returns a list of all root-level schemas. If the given boolean is true,
+     * only schemas in Released status are returned. Otherwise the status is ignored.
+     * Note that the returned list does not contain any working copies!
+     *
+     * @param listReleasedOnly
+     * @return
+     * @throws ServiceException
+     */
+    List<Schema> getRootLevelSchemas(boolean listReleasedOnly) throws ServiceException;
+
+    /**
+     * Returns working copy of the schema identified by the given id.
+     * This means the given id must denote a schema that has been checked out by somebody.
+     *
+     * @param schemaId
+     * @return
+     * @throws ServiceException
+     */
+    Schema getWorkingCopyOfSchema(int schemaId) throws ServiceException;
 }

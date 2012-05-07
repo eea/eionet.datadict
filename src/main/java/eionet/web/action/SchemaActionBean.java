@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
+import net.sourceforge.stripes.action.Before;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -100,6 +101,17 @@ public class SchemaActionBean extends AbstractActionBean {
     public Resolution view() throws ServiceException {
 
         loadSchema();
+
+        // If checked out by me, redirect to my working copy
+        if (isUserLoggedIn() && schema.isCheckedOutBy(getUserName())) {
+            Schema workingCopy = schemaService.getWorkingCopyOfSchema(schema.getId());
+            if (workingCopy == null) {
+                throw new ServiceException("Failed to find working copy of root-level schema " + schema.getId());
+            } else {
+                return new RedirectResolution(getClass()).addParameter("schema.id", workingCopy.getId());
+            }
+        }
+
         return new ForwardResolution(VIEW_SCHEMA_JSP);
     }
 
@@ -124,6 +136,11 @@ public class SchemaActionBean extends AbstractActionBean {
         schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema successfully updated!");
         return new ForwardResolution(EDIT_SCHEMA_JSP);
+    }
+
+    @Before(on = {"save", "saveAndClose"})
+    public void beforeSave(){
+        System.out.println(schema == null ? "schema is null" : "regStatus = " + schema.getRegStatus());
     }
 
     /**
@@ -186,9 +203,21 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public Resolution checkIn() throws ServiceException {
 
-        loadSchema();
-        addCautionMessage("Operation not supported yet!");
-        return new ForwardResolution(VIEW_SCHEMA_JSP);
+        int finalId = schemaService.checkInSchema(schema.getId(), getUserName(), schema.getComment());
+        addSystemMessage("Schema successfully checked in!");
+        return new RedirectResolution(getClass()).addParameter("schema.id", finalId);
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution checkOut() throws ServiceException {
+
+        int newSchemaSetId = schemaService.checkOutSchema(schema.getId(), getUserName(), null);
+        addSystemMessage("Schema successfully checked out!");
+        return new RedirectResolution(getClass()).addParameter("schema.id", newSchemaSetId);
     }
 
     /**
@@ -266,7 +295,6 @@ public class SchemaActionBean extends AbstractActionBean {
         }
 
         if (isValidationErrors()) {
-            loadSchema();
             getContext().setSourcePageResolution(new ForwardResolution(ADD_ROOT_LEVEL_SCHEMA_JSP));
         }
     }
@@ -284,24 +312,25 @@ public class SchemaActionBean extends AbstractActionBean {
             throw new ServiceException("Schema id missing!");
         }
 
-        loadSchema();
+        Schema currSchema = schemaService.getSchema(schema.getId());
+        int schemaSetId = currSchema.getSchemaSetId();
+        SchemaSet currSchemaSet = schemaSetId <= 0 ? null : schemaService.getSchemaSet(schemaSetId);
 
         if (!isUserLoggedIn()) {
-            RegStatus regStatus = getSchemaSet() == null ? schema.getRegStatus() : getSchemaSet().getRegStatus();
+            RegStatus regStatus = currSchemaSet == null ? currSchema.getRegStatus() : currSchemaSet.getRegStatus();
             if (!regStatus.equals(SchemaSet.RegStatus.RELEASED)) {
                 throw new ServiceException("Un-authenticated users can only see definitions in Released status!");
             }
         }
 
         boolean isAllowed = true;
-        if (schema.isWorkingCopy()) {
-            isAllowed = isUserLoggedIn() && (schema.isWorkingCopyOf(getUserName()));
+        if (currSchema.isWorkingCopy()) {
+            isAllowed = isUserLoggedIn() && (currSchema.isWorkingCopyOf(getUserName()));
         }
 
         if (isAllowed) {
-            SchemaSet schemaSet = getSchemaSet();
-            if (schemaSet != null && schemaSet.isWorkingCopy()) {
-                isAllowed = isUserLoggedIn() && (schemaSet.isWorkingCopyOf(getUserName()));
+            if (currSchemaSet != null && currSchemaSet.isWorkingCopy()) {
+                isAllowed = isUserLoggedIn() && (currSchemaSet.isWorkingCopyOf(getUserName()));
             }
         }
 

@@ -215,4 +215,13 @@ public class Schema {
     public boolean isWorkingCopyOf(String userName) {
         return isWorkingCopy && workingUser != null && workingUser.equals(userName);
     }
+
+    /**
+     *
+     * @param userName
+     * @return
+     */
+    public boolean isCheckedOutBy(String userName) {
+        return isWorkingCopy == false && workingUser != null && workingUser.equals(userName);
+    }
 }

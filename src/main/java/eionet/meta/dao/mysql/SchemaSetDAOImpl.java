@@ -487,18 +487,28 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     @Override
     public List<String> getSchemaFileNames(String schemaSetIdentifier) {
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("schemaSetIdentifier", schemaSetIdentifier);
+        List<String> resultList = null;
+        boolean isRootLevelSchema = StringUtils.isBlank(schemaSetIdentifier);
 
-        List<String> resultList =
-            getNamedParameterJdbcTemplate()
-            .query("select distinct FILENAME from T_SCHEMA, T_SCHEMA_SET "
-                    + "where T_SCHEMA.SCHEMA_SET_ID = T_SCHEMA_SET.SCHEMA_SET_ID and T_SCHEMA_SET.IDENTIFIER = :schemaSetIdentifier",
-                    parameters, new RowMapper<String>() {
-                        public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                            return rs.getString(1);
-                        }
-                    });
+        RowMapper<String> rowMapper = new RowMapper<String>() {
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString(1);
+            }
+        };
+
+        if (isRootLevelSchema) {
+            resultList =
+                getJdbcTemplate().query(
+                        "select distinct FILENAME from T_SCHEMA where SCHEMA_SET_ID is null or SCHEMA_SET_ID <= 0", rowMapper);
+        } else {
+            String sql =
+                "select distinct FILENAME from T_SCHEMA, T_SCHEMA_SET "
+                + "where T_SCHEMA.SCHEMA_SET_ID = T_SCHEMA_SET.SCHEMA_SET_ID and T_SCHEMA_SET.IDENTIFIER = :schemaSetIdentifier";
+
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("schemaSetIdentifier", schemaSetIdentifier);
+            resultList = getNamedParameterJdbcTemplate().query(sql, parameters, rowMapper);
+        }
 
         return resultList;
     }

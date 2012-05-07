@@ -87,6 +87,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     public Resolution viewList() throws ServiceException {
         boolean listReleasedOnly = getUser() == null;
         schemaSets = schemaService.getSchemaSets(listReleasedOnly);
+        schemas = schemaService.getRootLevelSchemas(listReleasedOnly);
         return new ForwardResolution(BROWSE_SCHEMA_SETS_JSP);
     }
 

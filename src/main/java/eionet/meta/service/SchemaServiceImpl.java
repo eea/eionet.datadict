@@ -328,7 +328,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Finally, clean up the schema repository
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schemaSet.getIdentifier());
-            schemaRepository.cleanupCheckInSchemaSet(schemaSet.getIdentifier(), schemasInDatabase);
+            schemaRepository.cleanupCheckIn(schemaSet.getIdentifier(), schemasInDatabase);
 
             return finalId;
         } catch (Exception e) {
@@ -338,7 +338,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int checkSchema(int schemaId, String username, String comment) throws ServiceException {
+    public int checkInSchema(int schemaId, String username, String comment) throws ServiceException {
 
         if (StringUtils.isBlank(username)) {
             throw new IllegalArgumentException("User name must not be blank.");
@@ -368,7 +368,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
                     // Delete the checked-out copy.
                     schemaDAO.unlock(checkedOutCopyId);
-                    // TODO user name must be supplied + check if includingContents must really be false
+                    // TODO Supply username for access validations + check if includingContents must really be false
                     deleteSchemas(Collections.singletonList(checkedOutCopyId), false);
 
                     // Checked-in schema must get the ID of the checked-out copy.
@@ -385,12 +385,12 @@ public class SchemaServiceImpl implements ISchemaService {
             schemaDAO.checkIn(finalId, username, comment);
 
             // Finally, clean up the schema repository
-            //            List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schema.getIdentifier());
-            //            schemaRepository.cleanupCheckInSchemaSet(schema.getIdentifier(), schemasInDatabase);
+            List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(null);
+            schemaRepository.cleanupCheckIn(null, schemasInDatabase);
 
             return finalId;
         } catch (Exception e) {
-            throw new ServiceException("Schema set check-in failed.", e);
+            throw new ServiceException("Schema check-in failed.", e);
         }
     }
 
@@ -511,7 +511,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Finally, clean up the schema repository
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schemaSet.getIdentifier());
-            schemaRepository.cleanupCheckInSchemaSet(schemaSet.getIdentifier(), schemasInDatabase);
+            schemaRepository.cleanupCheckIn(schemaSet.getIdentifier(), schemasInDatabase);
 
             return result;
         } catch (Exception e) {
@@ -638,6 +638,69 @@ public class SchemaServiceImpl implements ISchemaService {
             return schemaDAO.exists(schemaFilename);
         } catch (Exception e) {
             throw new ServiceException("Failed to check if a schema by this filename already exists!", e);
+        }
+    }
+
+    /**
+     * @throws ServiceException
+     * @see eionet.meta.service.ISchemaService#checkOutSchema(int, java.lang.String, java.lang.Object)
+     */
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public int checkOutSchema(int schemaId, String userName, Object object) throws ServiceException {
+
+        if (StringUtils.isBlank(userName)) {
+            throw new IllegalArgumentException("User name must not be blank!");
+        }
+
+        int newSchemaId;
+        try {
+            Schema schema = schemaDAO.getSchema(schemaId);
+            if (schema.isWorkingCopy()) {
+                throw new ServiceException("Cannot check out a working copy!");
+            }
+
+            if (StringUtils.isNotBlank(schema.getWorkingUser())) {
+                throw new ServiceException("Cannot check out an already checked-out schema set!");
+            }
+
+            // Do schema check-out, get the new schema's ID.
+            newSchemaId = schemaDAO.checkOutSchema(schemaId, userName);
+
+            // Copy the schema's simple attributes.
+            attributeDAO.copySimpleAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to perform check-out on this schema: " + schemaId, e);
+        }
+
+        return newSchemaId;
+    }
+
+    /**
+     * @throws ServiceException
+     * @see eionet.meta.service.ISchemaService#getRootLevelSchemas(boolean)
+     */
+    @Override
+    public List<Schema> getRootLevelSchemas(boolean listReleasedOnly) throws ServiceException {
+
+        try {
+            return schemaDAO.getRootLevelSchemas(listReleasedOnly);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get schemas", e);
+        }
+    }
+
+    /**
+     * @throws ServiceException
+     * @see eionet.meta.service.ISchemaService#getWorkingCopyOfSchema(int)
+     */
+    @Override
+    public Schema getWorkingCopyOfSchema(int schemaId) throws ServiceException {
+
+        try {
+            return schemaDAO.getWorkingCopyOfSchema(schemaId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get working copy of schema " + schemaId, e);
         }
     }
 }
