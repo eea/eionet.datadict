@@ -38,14 +38,14 @@ function toggleSelectAll(formId) {
 
     if (isAllSelected == null || isAllSelected == false) {
         for (i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].type == 'checkbox') {
+            if (checkboxes[i].type == 'checkbox' && !checkboxes[i].disabled) {
                 checkboxes[i].checked = true ;
             }
         }
         formobj.selectAll.value = "Deselect all";
     } else {
         for (i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].type == 'checkbox') {
+            if (checkboxes[i].type == 'checkbox' && !checkboxes[i].disabled) {
                 checkboxes[i].checked = false ;
             }
         }
@@ -69,14 +69,14 @@ function toggleSelectAllForField(formId, fieldName) {
 
     if (isAllSelected == null || isAllSelected == false) {
         for (i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].type == 'checkbox' && checkboxes[i].name == fieldName) {
+            if (checkboxes[i].type == 'checkbox' && checkboxes[i].name == fieldName && !checkboxes[i].disabled) {
                 checkboxes[i].checked = true ;
             }
         }
         formobj.selectAll.value = "Deselect all";
     } else {
         for (i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].type == 'checkbox' && checkboxes[i].name == fieldName) {
+            if (checkboxes[i].type == 'checkbox' && checkboxes[i].name == fieldName && !checkboxes[i].disabled) {
                 checkboxes[i].checked = false ;
             }
         }

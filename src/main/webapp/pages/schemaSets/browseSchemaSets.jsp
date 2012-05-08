@@ -39,6 +39,13 @@
             </div>
         </c:if>
 
+        <c:if test="${not empty actionBean.user}">
+	        <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
+	            Hint: this page does not list working copies. Use Operations menu or "Your checkouts" page
+	            to list your working copies.
+	        </div>
+        </c:if>
+
         <stripes:form id="schemaSetsForm" action="/schemaSets.action" method="post" style="margin-top:1em">
             <ul class="menu">
                 <c:forEach var="schemaSet" items="${actionBean.schemaSets}">
