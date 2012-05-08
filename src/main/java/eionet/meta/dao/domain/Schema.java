@@ -1,6 +1,8 @@
 package eionet.meta.dao.domain;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import eionet.meta.dao.domain.SchemaSet.RegStatus;
 
@@ -26,6 +28,9 @@ public class Schema {
 
     /** Relational properties. */
     private String schemaSetIdentifier;
+
+    /** */
+    private Map<String, List<String>> attributeValues;
 
     /**
      * @return the id
@@ -223,5 +228,20 @@ public class Schema {
      */
     public boolean isCheckedOutBy(String userName) {
         return isWorkingCopy == false && workingUser != null && workingUser.equals(userName);
+    }
+
+    /**
+     * @return the attributeValues
+     */
+    public Map<String, List<String>> getAttributeValues() {
+        return attributeValues;
+    }
+
+    /**
+     * @param attributeValues
+     *            the attributeValues to set
+     */
+    public void setAttributeValues(Map<String, List<String>> attributeValues) {
+        this.attributeValues = attributeValues;
     }
 }

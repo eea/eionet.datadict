@@ -1,6 +1,7 @@
 package eionet.meta.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.domain.Attribute;
@@ -40,9 +41,22 @@ public interface IAttributeDAO {
      * Wraps the DDSearchEngine functionality for getting attributes meta data.
      *
      * @param parentType
-     * @param elementType
+     * @param attributeType
      * @return
      * @throws DAOException
      */
-    List<Attribute> getAttributes(DElemAttribute.ParentType parentType, String elementType) throws DAOException;
+    List<Attribute> getAttributes(DElemAttribute.ParentType parentType, String attributeType) throws DAOException;
+
+    /**
+     * Returns the values of simple attributes of a parent identified by the given parent id and parent type.
+     * The type of returned attributes is given in the method inputs.
+     *
+     * The method returns a map where the keys are the attributes' short names, and the values are the
+     * attributes's values. The type of values is List<String>, as an attribute could have many values.
+     *
+     * @param parentId
+     * @param parentType
+     * @return
+     */
+    public Map<String, List<String>> getAttributeValues(int parentId, DElemAttribute.ParentType parentType);
 }

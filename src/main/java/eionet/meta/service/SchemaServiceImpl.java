@@ -443,9 +443,13 @@ public class SchemaServiceImpl implements ISchemaService {
     public List<Schema> listSchemaSetSchemas(int schemaSetId) throws ServiceException {
 
         try {
-            return schemaDAO.listForSchemaSet(schemaSetId);
+            List<Schema> schemas = schemaDAO.listForSchemaSet(schemaSetId);
+            for (Schema schema : schemas){
+                schema.setAttributeValues(attributeDAO.getAttributeValues(schema.getId(), DElemAttribute.ParentType.SCHEMA));
+            }
+            return schemas;
         } catch (Exception e) {
-            throw new ServiceException("Failed to list schemas of the given schema set", e);
+            throw new ServiceException("Failed to list schemas of the given schema set " + schemaSetId, e);
         }
     }
 

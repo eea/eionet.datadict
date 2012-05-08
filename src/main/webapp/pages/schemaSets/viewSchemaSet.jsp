@@ -200,7 +200,7 @@
                     <c:out value="${schema.fileName}"/>
                 </stripes:link>
             </display:column>
-            <display:column title="Short description">&nbsp;</display:column>
+            <display:column title="Short description"><c:out value="${ddfn:join(schema.attributeValues['ShortDescription'],',')}"/></display:column>
         </display:table>
     </c:if>
 
