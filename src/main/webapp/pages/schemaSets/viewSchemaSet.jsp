@@ -102,7 +102,8 @@
                         </c:if>
                         <c:if test="${actionBean.deletePermission}">
                             <li>
-                                <stripes:link beanclass="${actionBean.class.name}" event="delete">Delete
+                                <stripes:link beanclass="${actionBean.class.name}" event="delete" onclick="return confirm('Are you sure you want to delete this schema set?');">
+                                    Delete
                                     <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                                 </stripes:link>
                             </li>

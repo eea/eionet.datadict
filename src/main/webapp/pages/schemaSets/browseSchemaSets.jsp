@@ -96,11 +96,11 @@
             <c:if test="${not empty actionBean.user && (not empty actionBean.schemaSets || not empty actionBean.schemas)}">
                 <c:choose>
                     <c:when test="${not empty actionBean.deletableSchemaSets || not empty actionBean.deletableSchemas}">
-                        <stripes:submit name="delete" value="Delete"/>
+                        <stripes:submit name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete the selected schema sets and/or schemas?');"/>
                         <input type="button" onclick="toggleSelectAll('schemaSetsForm');return false" value="Select all" name="selectAll" />
                     </c:when>
                     <c:otherwise>
-                        <stripes:submit disabled="disabled" name="delete" value="Delete"/>
+                        <stripes:submit disabled="disabled" name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete the selected schema sets and/or schemas?');"/>
                         <input disabled="disabled" type="button" onclick="toggleSelectAll('schemaSetsForm');return false" value="Select all" name="selectAll" />
                     </c:otherwise>
                 </c:choose>
