@@ -29,12 +29,19 @@
 
         <h1>Browse schema sets and schemas</h1>
 
-        <c:if test="${empty actionBean.schemaSets}">
+        <c:if test="${empty actionBean.schemaSets && empty actionBean.schemas}">
             <div style="margin-top:1em">
-                No schema sets found!
+                <c:choose>
+                    <c:when test="${actionBean.context.eventName=='workingCopies' && not empty actionBean.user}">
+                        No working copies found!
+                    </c:when>
+                    <c:otherwise>
+                        No schemas or schema sets found!
+                    </c:otherwise>
+                </c:choose>
                 <c:if test="${empty actionBean.user}">
                     <br/>
-                    Please note that unauthenticated users can only see schema sets in released status.
+                    Please note that unauthenticated users can only see schemas and schema sets in Released status.
                 </c:if>
             </div>
         </c:if>
