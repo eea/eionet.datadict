@@ -114,7 +114,13 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution delete() throws ServiceException {
-        if (isDeletePermission()) {
+
+        if (!isDeletePermission()) {
+            addGlobalValidationError("Cannot delete. No permission.");
+            return viewList();
+        }
+
+        if (selectedSchemaSets!=null && !selectedSchemaSets.isEmpty()){
             try {
                 schemaService.deleteSchemaSets(selectedSchemaSets, getUserName(), true);
             } catch (ValidationException e) {
@@ -122,17 +128,19 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
                 addGlobalValidationError(e.getMessage());
                 return viewList();
             }
-        } else {
-            addGlobalValidationError("Cannot delete. No permission.");
-            return viewList();
         }
 
-        if (selectedSchemaSets.size() == 1) {
-            addSystemMessage("Schema set succesfully deleted.");
-        } else if (selectedSchemaSets.size() > 1) {
-            addSystemMessage("Schema sets succesfully deleted.");
+        if (selectedSchemas!=null && !selectedSchemas.isEmpty()){
+            try {
+                schemaService.deleteSchemas(selectedSchemas, getUserName(), true);
+            } catch (ValidationException e) {
+                LOGGER.info(e.getMessage());
+                addGlobalValidationError(e.getMessage());
+                return viewList();
+            }
         }
 
+        addSystemMessage("Deletion successful!");
         return new RedirectResolution(BrowseSchemaSetsActionBean.class);
     }
 
@@ -204,11 +212,24 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
 
     /**
      * @return the deletableSchemas
+     * @throws Exception
      */
-    public Set<Integer> getDeletableSchemas() {
+    public Set<Integer> getDeletableSchemas() throws Exception {
 
         if (deletableSchemas == null) {
             deletableSchemas = new HashSet<Integer>();
+            String userName = getUserName();
+            if (!StringUtils.isBlank(userName)) {
+                for (Schema schema : schemas) {
+                    // Must not be a working copy, nor must it be checked out
+                    if (!schema.isWorkingCopy() && StringUtils.isBlank(schema.getWorkingUser())) {
+                        String permission = schema.getRegStatus().equals(SchemaSet.RegStatus.RELEASED) ? "er" : "d";
+                        if (SecurityUtil.hasPerm(userName, "/schemasets", permission)) {
+                            deletableSchemas.add(schema.getId());
+                        }
+                    }
+                }
+            }
         }
         return deletableSchemas;
     }

@@ -378,11 +378,12 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution deleteSchemas() throws ServiceException {
-        schemaService.deleteSchemas(schemaIds, false);
 
         if (!isEditPermission()) {
             throw new ServiceException("No permission to edit schema sets.");
         }
+
+        schemaService.deleteSchemas(schemaIds, getUserName(), false);
 
         if (schemaIds.size() == 1) {
             addSystemMessage("Schema succesfully deleted.");

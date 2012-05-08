@@ -100,20 +100,21 @@ public interface ISchemaService {
      * Deletes SchemaSets with given id.
      *
      * @param ids
-     * @param username
+     * @param userName
      * @param includingContents
      * @throws ServiceException
      */
-    void deleteSchemaSets(List<Integer> ids, String username, boolean includingContents) throws ServiceException;
+    void deleteSchemaSets(List<Integer> ids, String userName, boolean includingContents) throws ServiceException;
 
     /**
-     * Deletes Schemas with given id.
+     * Deletes Schemas with given id..
      *
      * @param ids
+     * @param userName
      * @param includingContents
      * @throws ServiceException
      */
-    void deleteSchemas(List<Integer> ids, boolean includingContents) throws ServiceException;
+    void deleteSchemas(List<Integer> ids, String userName, boolean includingContents) throws ServiceException;
 
     /**
      * Checks in schema set with given id.
@@ -222,12 +223,12 @@ public interface ISchemaService {
     /**
      *
      * @param schemaId
-     * @param username
+     * @param userName
      * @param comment
      * @return
      * @throws ServiceException
      */
-    int checkInSchema(int schemaId, String username, String comment) throws ServiceException;
+    int checkInSchema(int schemaId, String userName, String comment) throws ServiceException;
 
     /**
      * Returns true if a schema set by this identifier already exists. Otherwise return false.
@@ -278,4 +279,13 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     Schema getWorkingCopyOfSchema(int schemaId) throws ServiceException;
+
+    /**
+     *
+     * @param schemaId
+     * @param userName
+     * @return
+     * @throws ServiceException
+     */
+    int undoCheckOutSchema(int schemaId, String userName) throws ServiceException;
 }

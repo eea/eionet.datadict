@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -201,6 +202,18 @@ public class SchemaActionBean extends AbstractActionBean {
      * @return
      * @throws ServiceException
      */
+    public Resolution delete() throws ServiceException {
+
+        schemaService.deleteSchemas(Collections.singletonList(schema.getId()), getUserName(), true);
+        addSystemMessage("Schema succesfully deleted!");
+        return new RedirectResolution(BrowseSchemaSetsActionBean.class);
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
     public Resolution checkIn() throws ServiceException {
 
         int finalId = schemaService.checkInSchema(schema.getId(), getUserName(), schema.getComment());
@@ -227,9 +240,13 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public Resolution undoCheckout() throws ServiceException {
 
-        loadSchema();
-        addCautionMessage("Operation not supported yet!");
-        return new ForwardResolution(VIEW_SCHEMA_JSP);
+        int checkedOutCopyId = schemaService.undoCheckOutSchema(schema.getId(), getUserName());
+        addSystemMessage("Working copy successfully deleted!");
+        if (checkedOutCopyId > 0) {
+            return new RedirectResolution(getClass()).addParameter("schema.id", checkedOutCopyId);
+        } else {
+            return new RedirectResolution(BrowseSchemaSetsActionBean.class);
+        }
     }
 
     /**

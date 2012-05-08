@@ -114,8 +114,8 @@ public class SchemaServiceImpl implements ISchemaService {
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public void deleteSchemaSets(List<Integer> ids, String username, boolean includingContents) throws ServiceException {
-        doDeleteSchemaSets(ids, username, includingContents);
+    public void deleteSchemaSets(List<Integer> ids, String userName, boolean includingContents) throws ServiceException {
+        doDeleteSchemaSets(ids, userName, includingContents);
     }
 
     /**
@@ -138,7 +138,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Delete schemas
             List<Integer> schemaIds = schemaDAO.getSchemaIds(schemaSetIds);
-            doDeleteSchemas(schemaIds, includingContents);
+            doDeleteSchemas(schemaIds, null, includingContents);
 
             // Delete schema set folders, if requested so.
             if (includingContents) {
@@ -179,22 +179,24 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * @see eionet.meta.service.ISchemaService#deleteSchemas(java.util.List)
+     * @see eionet.meta.service.ISchemaService#deleteSchemas(java.util.List, java.lang.String, boolean)
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public void deleteSchemas(List<Integer> ids, boolean includingContents) throws ServiceException {
-        doDeleteSchemas(ids, includingContents);
+    public void deleteSchemas(List<Integer> ids, String userName, boolean includingContents) throws ServiceException {
+        doDeleteSchemas(ids, userName, includingContents);
     }
 
     /**
      * Deletes schemas with given ids.
      *
      * @param ids
+     * @param userName
      * @param includingContents
      * @throws ServiceException
      */
-    private void doDeleteSchemas(List<Integer> ids, boolean includingContents) throws ServiceException {
+    private void doDeleteSchemas(List<Integer> ids, String userName, boolean includingContents) throws ServiceException {
+
         if (ids == null || ids.size() == 0) {
             return;
         }
@@ -336,11 +338,14 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
+    /**
+     * @see eionet.meta.service.ISchemaService#checkInSchema(int, java.lang.String, java.lang.String)
+     */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int checkInSchema(int schemaId, String username, String comment) throws ServiceException {
+    public int checkInSchema(int schemaId, String userName, String comment) throws ServiceException {
 
-        if (StringUtils.isBlank(username)) {
+        if (StringUtils.isBlank(userName)) {
             throw new IllegalArgumentException("User name must not be blank.");
         }
 
@@ -354,7 +359,7 @@ public class SchemaServiceImpl implements ISchemaService {
             }
 
             // Ensure that the check-in user is the working user.
-            if (!StringUtils.equals(username, schema.getWorkingUser())) {
+            if (!StringUtils.equals(userName, schema.getWorkingUser())) {
                 throw new ServiceException("Check-in user is not the current working user.");
             }
 
@@ -368,8 +373,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
                     // Delete the checked-out copy.
                     schemaDAO.unlock(checkedOutCopyId);
-                    // TODO Supply username for access validations + check if includingContents must really be false
-                    deleteSchemas(Collections.singletonList(checkedOutCopyId), false);
+                    deleteSchemas(Collections.singletonList(checkedOutCopyId), userName, false);
 
                     // Checked-in schema must get the ID of the checked-out copy.
                     attributeDAO.replaceParentId(schemaId, checkedOutCopyId, DElemAttribute.ParentType.SCHEMA);
@@ -382,7 +386,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Update the checked-in schema.
             int finalId = isOverwrite ? checkedOutCopyId : schemaId;
-            schemaDAO.checkIn(finalId, username, comment);
+            schemaDAO.checkIn(finalId, userName, comment);
 
             // Finally, clean up the schema repository
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(null);
@@ -511,7 +515,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Finally, clean up the schema repository
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schemaSet.getIdentifier());
-            schemaRepository.cleanupCheckIn(schemaSet.getIdentifier(), schemasInDatabase);
+            schemaRepository.cleanupUndoCheckout(schemaSet.getIdentifier(), schemasInDatabase);
 
             return result;
         } catch (Exception e) {
@@ -701,6 +705,42 @@ public class SchemaServiceImpl implements ISchemaService {
             return schemaDAO.getWorkingCopyOfSchema(schemaId);
         } catch (Exception e) {
             throw new ServiceException("Failed to get working copy of schema " + schemaId, e);
+        }
+    }
+
+    /**
+     * @throws ServiceException
+     * @see eionet.meta.service.ISchemaService#undoCheckOutSchema(int, java.lang.String)
+     */
+    @Override
+    public int undoCheckOutSchema(int schemaId, String userName) throws ServiceException {
+
+        try {
+            int result = 0;
+            Schema schema = schemaDAO.getSchema(schemaId);
+            if (schema != null) {
+
+                if (!schema.isWorkingCopyOf(userName)) {
+                    throw new ServiceException("Undo checkout can only be performed on your working copy!");
+                }
+
+                // TODO should supply username too? should delete contents too?
+                doDeleteSchemas(Collections.singletonList(schemaId), null, false);
+
+                int checkedOutCopyId = schema.getCheckedOutCopyId();
+                if (checkedOutCopyId > 0) {
+                    schemaDAO.unlock(checkedOutCopyId);
+                    result = checkedOutCopyId;
+                }
+            }
+
+            // Finally, clean up the schema repository
+            List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(null);
+            schemaRepository.cleanupUndoCheckout(null, schemasInDatabase);
+
+            return result;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to undo check-out of schema " + schemaId, e);
         }
     }
 }

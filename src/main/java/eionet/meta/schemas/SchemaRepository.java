@@ -3,12 +3,12 @@ package eionet.meta.schemas;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 import net.sourceforge.stripes.action.FileBean;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eionet.meta.DDRuntimeException;
@@ -21,6 +21,9 @@ import eionet.util.PropsIF;
  */
 @Component
 public class SchemaRepository {
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(SchemaRepository.class);
 
     /** */
     private static final String WORKING_COPY_SUFFIX = ".workingCopy";
@@ -159,10 +162,16 @@ public class SchemaRepository {
      */
     public void deleteSchema(String fileName, String schemaSetIdentifier) {
 
-        File schemaSetLocation = new File(REPO_PATH, schemaSetIdentifier);
-        File schemaLocation = new File(schemaSetLocation, fileName);
-        if (schemaLocation.exists() && schemaLocation.isFile()) {
-            schemaLocation.delete();
+        boolean isRootLevel = StringUtils.isBlank(schemaSetIdentifier);
+        File fileDirectory = isRootLevel ? new File(REPO_PATH) : new File(REPO_PATH, schemaSetIdentifier);
+        if (!fileDirectory.exists() || !fileDirectory.isDirectory()) {
+            return;
+        }
+
+        File schemaFile = new File(fileDirectory, fileName);
+        if (schemaFile.exists() && schemaFile.isFile()) {
+            LOGGER.debug("Deleting " + schemaFile);
+            schemaFile.delete();
         }
     }
 
@@ -175,9 +184,10 @@ public class SchemaRepository {
      */
     public void deleteSchemaSet(String schemaSetIdentifier) throws IOException {
 
-        File schemaSetLocation = new File(REPO_PATH, schemaSetIdentifier);
-        if (schemaSetLocation.exists() && schemaSetLocation.isDirectory()) {
-            FileUtils.deleteDirectory(schemaSetLocation);
+        File schemaSetDirectory = new File(REPO_PATH, schemaSetIdentifier);
+        if (schemaSetDirectory.exists() && schemaSetDirectory.isDirectory()) {
+            LOGGER.debug("Deleting " + schemaSetDirectory);
+            FileUtils.deleteDirectory(schemaSetDirectory);
         }
     }
 
@@ -189,9 +199,9 @@ public class SchemaRepository {
      */
     public void cleanupCheckIn(String schemaSetIdentifier, List<String> schemasInDatabase) throws IOException {
 
-        boolean isRootLevelSchema = StringUtils.isBlank(schemaSetIdentifier);
-        File fileDirectory = isRootLevelSchema ? new File(REPO_PATH) : new File(REPO_PATH, schemaSetIdentifier);
-        if (fileDirectory == null || !fileDirectory.isDirectory()) {
+        boolean isRootLevel = StringUtils.isBlank(schemaSetIdentifier);
+        File fileDirectory = isRootLevel ? new File(REPO_PATH) : new File(REPO_PATH, schemaSetIdentifier);
+        if (!fileDirectory.exists() || !fileDirectory.isDirectory()) {
             return;
         }
 
@@ -203,6 +213,9 @@ public class SchemaRepository {
                 if (StringUtils.isNotBlank(originalFileName)) {
                     File originalFile = new File(fileDirectory, originalFileName);
                     if (originalFile.exists() && originalFile.isFile()) {
+
+                        LOGGER.debug("Renaming " + schemaFile + " to " + originalFile);
+
                         originalFile.delete();
                         schemaFile.renameTo(originalFile);
                     }
@@ -213,6 +226,8 @@ public class SchemaRepository {
         // Delete files not present in the database.
         for (File schemaFile : schemaFiles) {
             if (schemaFile.isFile() && !schemasInDatabase.contains(schemaFile.getName())) {
+
+                LOGGER.debug("Deleting " + schemaFile);
                 schemaFile.delete();
             }
         }
@@ -220,22 +235,24 @@ public class SchemaRepository {
 
     /**
      *
-     * @param identifier
+     * @param schemaSetIdentifier
      * @param schemasInDatabase
      * @throws IOException
      */
-    public void cleanupUndoCheckoutSchemaSet(String identifier, Set<String> schemasInDatabase) throws IOException {
+    public void cleanupUndoCheckout(String schemaSetIdentifier, List<String> schemasInDatabase) throws IOException {
 
-        File schemaSetLocation = new File(REPO_PATH, identifier);
-        if (schemaSetLocation == null || !schemaSetLocation.isDirectory()) {
+        boolean isRootLevel = StringUtils.isBlank(schemaSetIdentifier);
+        File fileDirectory = isRootLevel ? new File(REPO_PATH) : new File(REPO_PATH, schemaSetIdentifier);
+        if (!fileDirectory.exists() || !fileDirectory.isDirectory()) {
             return;
         }
 
         // Rename schema working copies to their original file names
-        File[] schemaFiles = schemaSetLocation.listFiles();
+        File[] schemaFiles = fileDirectory.listFiles();
         for (File schemaFile : schemaFiles) {
 
             if (schemaFile.isFile() && schemaFile.getName().endsWith(WORKING_COPY_SUFFIX)) {
+                LOGGER.debug("Deleting " + schemaFile);
                 schemaFile.delete();
             }
         }
@@ -243,6 +260,7 @@ public class SchemaRepository {
         // Delete files not present in the database.
         for (File schemaFile : schemaFiles) {
             if (schemaFile.isFile() && !schemasInDatabase.contains(schemaFile.getName())) {
+                LOGGER.debug("Deleting " + schemaFile);
                 schemaFile.delete();
             }
         }
