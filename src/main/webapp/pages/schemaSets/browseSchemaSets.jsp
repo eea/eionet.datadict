@@ -46,7 +46,7 @@
             </div>
         </c:if>
 
-        <c:if test="${not empty actionBean.user}">
+        <c:if test="${not empty actionBean.user && actionBean.context.eventName!='workingCopies'}">
 	        <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
 	            Hint: this page does not list working copies. Use Operations menu or "Your checkouts" page
 	            to list your working copies.
