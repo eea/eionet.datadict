@@ -26,8 +26,7 @@ public class SchemaRepository {
     private static final Logger LOGGER = Logger.getLogger(SchemaRepository.class);
 
     /** */
-    public static final String WORKING_COPY_SUFFIX = ".workingCopy";
-    public static final String WORKING_COPY_DIR = "workingCopies";
+    public static final String WORKING_COPY_DIR = ".workingCopies";
 
     /** */
     public static final String REPO_PATH = Props.getRequiredProperty(PropsIF.SCHEMA_REPO_LOCATION);
