@@ -324,7 +324,6 @@ public class VersionManager {
         SQLTransaction tx = null;
         try {
             tx = SQLTransaction.begin(conn);
-            tx.begin();
             String result = checkOutElm_(elmID);
             tx.commit();
             return result;
