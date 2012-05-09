@@ -119,13 +119,13 @@ public interface ISchemaDAO {
     void checkIn(int schemaId, String username, String comment);
 
     /**
-     * Returns true if a schema by the given filename already exists, regardless of whether it
+     * Returns true if a root-level schema by the given filename already exists, regardless of whether it
      * is a working copy or not. Otherwise return false.
      *
      * @param filename The filename to check.
      * @return The boolean in question.
      */
-    boolean exists(String filename);
+    boolean existsRootLevelSchema(String filename);
 
     /**
      *

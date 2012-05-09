@@ -143,6 +143,23 @@
                 <col style="width:4%"/>
                 <col style="width:62%"/>
             </colgroup>
+            <c:if test="${!actionBean.schema.workingCopy && !(actionBean.schemaSet!=null && actionBean.schemaSet.workingCopy)}">
+	            <tr>
+	                <th scope="row" class="scope-row simple_attr_title">
+	                    Schema URL
+	                </th>
+	                <td class="simple_attr_help">
+	                    <a href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=url" onclick="pop(this.href);return false;">
+	                        <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
+	                    </a>
+	                </td>
+	                <td class="simple_attr_value">
+	                    <a href="${actionBean.schemaUrl}">
+	                        <c:out value="${actionBean.schemaUrl}"/>
+	                    </a>
+	                </td>
+            </tr>
+            </c:if>
             <tr>
                 <th scope="row" class="scope-row simple_attr_title">
                     File name

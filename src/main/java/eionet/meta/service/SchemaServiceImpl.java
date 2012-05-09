@@ -330,7 +330,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Finally, clean up the schema repository
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schemaSet.getIdentifier());
-            schemaRepository.cleanupCheckIn(schemaSet.getIdentifier(), schemasInDatabase);
+            schemaRepository.cleanupCheckIn(null, schemaSet.getIdentifier(), schemasInDatabase);
 
             return finalId;
         } catch (Exception e) {
@@ -390,7 +390,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Finally, clean up the schema repository
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(null);
-            schemaRepository.cleanupCheckIn(null, schemasInDatabase);
+            schemaRepository.cleanupCheckIn(schema.getFileName(), null, schemasInDatabase);
 
             return finalId;
         } catch (Exception e) {
@@ -519,7 +519,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Finally, clean up the schema repository
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schemaSet.getIdentifier());
-            schemaRepository.cleanupUndoCheckout(schemaSet.getIdentifier(), schemasInDatabase);
+            schemaRepository.cleanupUndoCheckout(null, schemaSet.getIdentifier(), schemasInDatabase);
 
             return result;
         } catch (Exception e) {
@@ -637,13 +637,13 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * @see eionet.meta.service.ISchemaService#schemaExists(java.lang.String)
+     * @see eionet.meta.service.ISchemaService#existsRootLevelSchema(java.lang.String)
      */
     @Override
-    public boolean schemaExists(String schemaFilename) throws ServiceException{
+    public boolean existsRootLevelSchema(String schemaFilename) throws ServiceException{
 
         try {
-            return schemaDAO.exists(schemaFilename);
+            return schemaDAO.existsRootLevelSchema(schemaFilename);
         } catch (Exception e) {
             throw new ServiceException("Failed to check if a schema by this filename already exists!", e);
         }
@@ -740,7 +740,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Finally, clean up the schema repository
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(null);
-            schemaRepository.cleanupUndoCheckout(null, schemasInDatabase);
+            schemaRepository.cleanupUndoCheckout(schema.getFileName(), null, schemasInDatabase);
 
             return result;
         } catch (Exception e) {

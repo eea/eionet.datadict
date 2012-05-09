@@ -288,7 +288,7 @@ public class SchemaActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-            if (schemaService.schemaExists(uploadedFile.getFileName())) {
+            if (schemaService.existsRootLevelSchema(uploadedFile.getFileName())) {
                 addGlobalValidationError("A root-level schema or a root-level schema working copy by this filename already exists!");
             }
         }
@@ -696,17 +696,30 @@ public class SchemaActionBean extends AbstractActionBean {
      *
      * @return
      * @throws ServiceException
+     * @throws IOException
      */
-    public String getSchemaDownloadLink() throws ServiceException {
+    public String getSchemaDownloadLink() throws ServiceException, IOException {
 
         if (schema == null) {
             throw new IllegalStateException("Schema object must be initialized!");
         }
 
         StringBuilder sb = new StringBuilder(getContextPath()).append("/schemas/");
+
+        boolean isMyWorkingCopy = getUserName()!=null && schema.isWorkingCopyOf(getUserName());
+
+        String schemaSetIdentifier = null;
         SchemaSet schemaSet = getSchemaSet();
         if (schemaSet != null) {
+            schemaSetIdentifier = schemaSet.getIdentifier();
             sb.append(schemaSet.getIdentifier()).append("/");
+            isMyWorkingCopy = getUserName()!=null && schemaSet.isWorkingCopyOf(getUserName());
+        }
+
+        if (isMyWorkingCopy){
+            if (schemaRepository.existsSchema(SchemaRepository.WORKING_COPY_DIR + "/" + schema.getFileName(), schemaSetIdentifier)){
+                sb.append(SchemaRepository.WORKING_COPY_DIR + "/");
+            }
         }
         sb.append(schema.getFileName());
 
@@ -719,5 +732,32 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public void setUploadedFile(FileBean uploadedFile) {
         this.uploadedFile = uploadedFile;
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     * @throws IOException
+     */
+    public String getSchemaUrl() throws ServiceException, IOException{
+
+        if (schema == null) {
+            throw new IllegalStateException("Schema object must be initialized!");
+        }
+
+        StringBuilder sb = new StringBuilder(Props.getRequiredProperty(PropsIF.DD_URL));
+        if (!sb.toString().endsWith("/")){
+            sb.append("/");
+        }
+        sb.append("schemas/");
+
+        SchemaSet schemaSet = getSchemaSet();
+        if (schemaSet != null) {
+            sb.append(schemaSet.getIdentifier()).append("/");
+        }
+        sb.append(schema.getFileName());
+
+        return sb.toString();
     }
 }

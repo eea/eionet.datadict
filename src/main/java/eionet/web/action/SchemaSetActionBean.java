@@ -450,7 +450,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-            if (schemaRepository.existsSchema(uploadedFile, schemaSet.getIdentifier())) {
+            if (schemaRepository.existsSchema(uploadedFile.getFileName(), schemaSet.getIdentifier())) {
                 addGlobalValidationError("A schema with such a file name already exists!");
             }
         }

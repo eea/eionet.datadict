@@ -102,13 +102,12 @@ public class DownloadServlet extends HttpServlet {
         File file = null;
 
         // Get the file object, depending on the file path.
-        if (filePath.startsWith("/schemas")){
+        if (filePath.startsWith("/schemas")) {
             String relativePath = StringUtils.substringAfter(filePath, "/schemas");
-            if (StringUtils.isNotBlank(relativePath)){
+            if (StringUtils.isNotBlank(relativePath)) {
                 file = new SchemaRepository().getSchemaFile(relativePath);
             }
-        }
-        else{
+        } else {
             file = FileStore.getInstance().get(filePath);
         }
 

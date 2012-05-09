@@ -240,14 +240,14 @@ public interface ISchemaService {
     boolean schemaSetExists(String schemaSetIdentifier) throws ServiceException;
 
     /**
-     * Returns true if a schema by the given filename already exists, regardless of whether it
+     * Returns true if a root-level schema by the given filename already exists, regardless of whether it
      * is a working copy or not. Otherwise return false.
      *
      * @param schemaFilename The filename to check.
      * @return The boolean in question.
      * @throws ServiceException
      */
-    boolean schemaExists(String schemaFilename) throws ServiceException;
+    boolean existsRootLevelSchema(String schemaFilename) throws ServiceException;
 
     /**
      *

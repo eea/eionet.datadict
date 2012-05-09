@@ -26,7 +26,9 @@ public class SchemaRepository {
     private static final Logger LOGGER = Logger.getLogger(SchemaRepository.class);
 
     /** */
-    private static final String WORKING_COPY_SUFFIX = ".workingCopy";
+    public static final String WORKING_COPY_SUFFIX = ".workingCopy";
+    public static final String WORKING_COPY_DIR = "workingCopies";
+
     /** */
     public static final String REPO_PATH = Props.getRequiredProperty(PropsIF.SCHEMA_REPO_LOCATION);
 
@@ -52,7 +54,12 @@ public class SchemaRepository {
             fileDirectory.mkdir();
         }
 
-        File schemaFile = new File(fileDirectory, fileBean.getFileName());
+        File workingCopyDirectory = new File(fileDirectory, WORKING_COPY_DIR);
+        if (!workingCopyDirectory.exists() || !workingCopyDirectory.isDirectory()) {
+            workingCopyDirectory.mkdir();
+        }
+
+        File schemaFile = new File(workingCopyDirectory, fileBean.getFileName());
         if (schemaFile.exists() && schemaFile.isFile()) {
             if (overwrite == false) {
                 throw new DDRuntimeException("File already exists, but overwrite not requested!");
@@ -94,20 +101,16 @@ public class SchemaRepository {
             fileDirectory.mkdir();
         }
 
-        File schemaFile = new File(fileDirectory, fileName);
-        File schemaFileWC = new File(fileDirectory, fileName + WORKING_COPY_SUFFIX);
-
-        // If there is already a working copy of this file, simply replace it.
-        // If there is already a file by this name, make a working copy of it.
-        // In all other cases simple save the file by its given name.
-        if (schemaFileWC.exists() && schemaFileWC.isFile()) {
-            schemaFileWC.delete();
-            fileBean.save(schemaFileWC);
-        } else if (schemaFile.exists() && schemaFile.isFile()) {
-            fileBean.save(schemaFileWC);
-        } else {
-            fileBean.save(schemaFile);
+        File workingCopyDirectory = new File(fileDirectory, WORKING_COPY_DIR);
+        if (!workingCopyDirectory.exists() || !workingCopyDirectory.isDirectory()) {
+            workingCopyDirectory.mkdir();
         }
+
+        File schemaFile = new File(workingCopyDirectory, fileName);
+        if (schemaFile.exists() && schemaFile.isFile()) {
+            schemaFile.delete();
+        }
+        fileBean.save(schemaFile);
 
         return schemaFile;
     }
@@ -129,29 +132,25 @@ public class SchemaRepository {
 
     /**
      *
-     * @param fileBean
+     * @param fileName
      * @param schemaSetIdentifier
      * @return
      * @throws IOException
      */
-    public boolean existsSchema(FileBean fileBean, String schemaSetIdentifier) throws IOException {
+    public boolean existsSchema(String fileName, String schemaSetIdentifier) throws IOException {
 
-        if (fileBean == null || StringUtils.isBlank(schemaSetIdentifier)) {
-            throw new IllegalArgumentException("File bean and schema set identifier must not be null or blank!");
+        if (StringUtils.isBlank(fileName)) {
+            throw new IllegalArgumentException("File name must not be blank!");
         }
 
-        File repoLocation = new File(REPO_PATH);
-        if (!repoLocation.exists() || !repoLocation.isDirectory()) {
+        boolean isRootLevel = StringUtils.isBlank(schemaSetIdentifier);
+        File fileDirectory = isRootLevel ? new File(REPO_PATH) : new File(REPO_PATH, schemaSetIdentifier);
+        if (!fileDirectory.exists() || !fileDirectory.isDirectory()) {
             return false;
         }
 
-        File schemaSetLocation = new File(REPO_PATH, schemaSetIdentifier);
-        if (!schemaSetLocation.exists() || !schemaSetLocation.isDirectory()) {
-            return false;
-        }
-
-        File schemaLocation = new File(schemaSetLocation, fileBean.getFileName());
-        return schemaLocation.exists() && schemaLocation.isFile();
+        File schemaFile = new File(fileDirectory, fileName);
+        return schemaFile.exists() && schemaFile.isFile();
     }
 
     /**
@@ -193,11 +192,13 @@ public class SchemaRepository {
 
     /**
      *
+     * @param schemaFileName
      * @param schemaSetIdentifier
      * @param schemasInDatabase
      * @throws IOException
      */
-    public void cleanupCheckIn(String schemaSetIdentifier, List<String> schemasInDatabase) throws IOException {
+    public void cleanupCheckIn(String schemaFileName, String schemaSetIdentifier, List<String> schemasInDatabase)
+    throws IOException {
 
         boolean isRootLevel = StringUtils.isBlank(schemaSetIdentifier);
         File fileDirectory = isRootLevel ? new File(REPO_PATH) : new File(REPO_PATH, schemaSetIdentifier);
@@ -205,28 +206,34 @@ public class SchemaRepository {
             return;
         }
 
-        // Rename schema working copies to their original file names
-        File[] schemaFiles = fileDirectory.listFiles();
-        for (File schemaFile : schemaFiles) {
-            if (schemaFile.isFile() && schemaFile.getName().endsWith(WORKING_COPY_SUFFIX)) {
-                String originalFileName = StringUtils.substringBefore(schemaFile.getName(), WORKING_COPY_SUFFIX);
-                if (StringUtils.isNotBlank(originalFileName)) {
-                    File originalFile = new File(fileDirectory, originalFileName);
-                    if (originalFile.exists() && originalFile.isFile()) {
+        File workingCopyDirectory = new File(fileDirectory, WORKING_COPY_DIR);
+        if (!workingCopyDirectory.exists() || !workingCopyDirectory.isDirectory()) {
+            workingCopyDirectory.mkdir();
+        }
 
-                        LOGGER.debug("Renaming " + schemaFile + " to " + originalFile);
+        File[] workingCopyFiles = workingCopyDirectory.listFiles();
+        for (File workingCopyFile : workingCopyFiles) {
 
-                        originalFile.delete();
-                        schemaFile.renameTo(originalFile);
-                    }
+            if (StringUtils.isBlank(schemaFileName) || workingCopyFile.getName().equals(schemaFileName)){
+                File originalFile = new File(fileDirectory, workingCopyFile.getName());
+                if (originalFile.exists() && originalFile.isFile()){
+                    LOGGER.debug("Deleting " + originalFile);
+                    originalFile.delete();
                 }
+                LOGGER.debug("Moving " + workingCopyFile + " to " + originalFile);
+                FileUtils.moveFile(workingCopyFile, originalFile);
             }
         }
 
+        // If check-in of a schema set, delete whole working directory
+        if (StringUtils.isBlank(schemaFileName)){
+            FileUtils.deleteDirectory(workingCopyDirectory);
+        }
+
         // Delete files not present in the database.
+        File[] schemaFiles = fileDirectory.listFiles();
         for (File schemaFile : schemaFiles) {
             if (schemaFile.isFile() && !schemasInDatabase.contains(schemaFile.getName())) {
-
                 LOGGER.debug("Deleting " + schemaFile);
                 schemaFile.delete();
             }
@@ -235,11 +242,12 @@ public class SchemaRepository {
 
     /**
      *
+     * @param schemaFileName
      * @param schemaSetIdentifier
      * @param schemasInDatabase
      * @throws IOException
      */
-    public void cleanupUndoCheckout(String schemaSetIdentifier, List<String> schemasInDatabase) throws IOException {
+    public void cleanupUndoCheckout(String schemaFileName, String schemaSetIdentifier, List<String> schemasInDatabase) throws IOException {
 
         boolean isRootLevel = StringUtils.isBlank(schemaSetIdentifier);
         File fileDirectory = isRootLevel ? new File(REPO_PATH) : new File(REPO_PATH, schemaSetIdentifier);
@@ -247,17 +255,28 @@ public class SchemaRepository {
             return;
         }
 
-        // Rename schema working copies to their original file names
-        File[] schemaFiles = fileDirectory.listFiles();
-        for (File schemaFile : schemaFiles) {
+        File workingCopyDirectory = new File(fileDirectory, WORKING_COPY_DIR);
+        if (workingCopyDirectory.exists() && workingCopyDirectory.isDirectory()) {
 
-            if (schemaFile.isFile() && schemaFile.getName().endsWith(WORKING_COPY_SUFFIX)) {
-                LOGGER.debug("Deleting " + schemaFile);
-                schemaFile.delete();
+            // If undo-checkout of a schema set, delete whole working directory
+            if (StringUtils.isBlank(schemaFileName)){
+                LOGGER.debug("Deleting " + workingCopyDirectory);
+                FileUtils.deleteDirectory(workingCopyDirectory);
             }
+            else{
+                File[] workingCopyFiles = workingCopyDirectory.listFiles();
+                for (File workingCopyFile : workingCopyFiles) {
+                    if (workingCopyFile.getName().equals(schemaFileName)){
+                        LOGGER.debug("Deleting " + workingCopyFile);
+                        workingCopyFile.delete();
+                    }
+                }
+            }
+
         }
 
         // Delete files not present in the database.
+        File[] schemaFiles = fileDirectory.listFiles();
         for (File schemaFile : schemaFiles) {
             if (schemaFile.isFile() && !schemasInDatabase.contains(schemaFile.getName())) {
                 LOGGER.debug("Deleting " + schemaFile);

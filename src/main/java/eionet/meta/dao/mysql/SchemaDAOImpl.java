@@ -443,12 +443,12 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     }
 
     /**
-     * @see eionet.meta.dao.ISchemaDAO#exists(java.lang.String)
+     * @see eionet.meta.dao.ISchemaDAO#existsRootLevelSchema(java.lang.String)
      */
     @Override
-    public boolean exists(String filename) {
+    public boolean existsRootLevelSchema(String filename) {
 
-        String sql = "select count(*) from T_SCHEMA where FILENAME = :filename";
+        String sql = "select count(*) from T_SCHEMA where FILENAME = :filename and (SCHEMA_SET_ID is null or SCHEMA_SET_ID<=0)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("filename", filename);
 
