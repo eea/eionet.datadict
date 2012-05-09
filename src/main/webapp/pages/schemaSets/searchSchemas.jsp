@@ -12,39 +12,37 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <li><a href="${pageContext.request.contextPath}/schemaSet.action?add=">Add schema set</a></li>
+                <li><a href="${pageContext.request.contextPath}/schema.action?add=">Add root-level schema</a></li>
             </ul>
         </div>
 
-        <h1>Search schema sets</h1>
+        <h1>Search schemas</h1>
 
         <stripes:form id="searchResultsForm" action="/searchSchemas.action" method="get">
             <div style="margin-top:1em">
-                <fieldset style="border: none">
-                    <label class="question" style="width:16%;float:left;padding-top:0.2em" for="name">Schema file name:</label>
-                    <stripes:text id="name" name="searchFilter.fileName" />
-                </fieldset>
-                <fieldset style="border: none">
-                    <label class="question" style="width:16%;float:left;padding-top:0.2em" for="schemaSetIdentifier">Schema set identifer:</label>
-                    <stripes:text id="schemaSetIdentifier" name="searchFilter.schemaSetIdentifier" />
-                </fieldset>
-                <fieldset style="border: none">
-                    <label class="question" style="width:16%;float:left;padding-top:0.2em" for="regStatus">Registration status:</label>
-                    <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
-                        <stripes:options-collection collection="${actionBean.regStatuses}" />
-                    </stripes:select>
-                </fieldset>
+                <label class="question" style="width:18%;float:left;padding-top:0.2em" for="name">Schema file name:</label>
+                <stripes:text id="name" name="searchFilter.fileName" />
+                <br/>
+                <label class="question" style="width:18%;float:left;padding-top:0.2em" for="schemaSetIdentifier">Schema set identifer:</label>
+                <stripes:text id="schemaSetIdentifier" name="searchFilter.schemaSetIdentifier" />
+                <span style="font-size:0.7em"><sup>(Leave empty for root-level schemas!)</sup></span>
+                <br/>
+                <label class="question" style="width:18%;float:left;padding-top:0.2em" for="regStatus">Registration status:</label>
+                <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
+                    <stripes:options-collection collection="${actionBean.regStatuses}" />
+                </stripes:select>
+                <span style="font-size:0.7em"><sup>(Specify only for root-level schemas!)</sup></span>
                 <c:forEach var="attr" items="${actionBean.searchFilter.attributes}" varStatus="row">
-                    <fieldset style="border: none">
-                        <label class="question" style="width:16%;float:left;padding-top:0.2em" for="attr${row.index}">
-                            <c:out value="${attr.name}" />:
-                        </label>
-                        <stripes:text id="attr${row.index}" name="searchFilter.attributes[${row.index}].value" />
-                        <stripes:hidden name="searchFilter.attributes[${row.index}].id" />
-                        <stripes:hidden name="searchFilter.attributes[${row.index}].name" />
-                    </fieldset>
+                    <br/>
+                    <label class="question" style="width:18%;float:left;padding-top:0.2em" for="attr${row.index}">
+                        <c:out value="${attr.shortName}" />:
+                    </label>
+                    <stripes:text id="attr${row.index}" name="searchFilter.attributes[${row.index}].value" />
+                    <stripes:hidden name="searchFilter.attributes[${row.index}].id" />
+                    <stripes:hidden name="searchFilter.attributes[${row.index}].name" />
                 </c:forEach>
-                <stripes:submit name="search" value="Search"/>
+                <br/>
+                <span style="width:18%;float:left;padding-top:0.2em">&nbsp;</span><stripes:submit name="search" value="Search"/>
             </div>
 
             <br />

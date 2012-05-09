@@ -114,6 +114,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
             Attribute a = new Attribute();
             a.setId(Integer.parseInt(dea.getID()));
             a.setName(dea.getName());
+            a.setShortName(dea.getShortName());
             result.add(a);
         }
 
