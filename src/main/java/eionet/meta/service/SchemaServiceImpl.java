@@ -305,8 +305,8 @@ public class SchemaServiceImpl implements ISchemaService {
                     // Remember id-mappings between the schemas of the two schema sets.
                     Map<Integer, Integer> schemaMappings = schemaSetDAO.getSchemaMappings(checkedOutCopyId, schemaSetId);
 
-                    // Delete the checked-out copy.
-                    schemaSetDAO.unlock(checkedOutCopyId);
+                    // Delete the checked-out copy, unlock it first.
+                    schemaSetDAO.setWorkingUser(checkedOutCopyId, null);
                     deleteSchemaSets(Collections.singletonList(checkedOutCopyId), username, false);
 
                     // Schemas of the new schema set must get the ids of the schemas that were in the checked-out copy.
@@ -320,7 +320,7 @@ public class SchemaServiceImpl implements ISchemaService {
                     replaceSchemaSetId(schemaSetId, checkedOutCopyId);
                 } else {
                     // Unlock checked-out copy.
-                    schemaSetDAO.unlock(checkedOutCopyId);
+                    schemaSetDAO.setWorkingUser(checkedOutCopyId, null);
                 }
             }
 
@@ -458,9 +458,9 @@ public class SchemaServiceImpl implements ISchemaService {
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int checkOutSchemaSet(int schemaSetId, String username, String newIdentifier) throws ServiceException {
+    public int checkOutSchemaSet(int schemaSetId, String userName, String newIdentifier) throws ServiceException {
 
-        if (StringUtils.isBlank(username)) {
+        if (StringUtils.isBlank(userName)) {
             throw new IllegalArgumentException("User name must not be blank!");
         }
 
@@ -476,7 +476,8 @@ public class SchemaServiceImpl implements ISchemaService {
             }
 
             // Do schema set check-out, get the new schema set's ID.
-            newSchemaSetId = schemaSetDAO.checkOutSchemaSet(schemaSetId, username, newIdentifier);
+            schemaSetDAO.setWorkingUser(schemaSetId, userName);
+            newSchemaSetId = schemaSetDAO.copySchemaSetRow(schemaSetId, userName, newIdentifier);
 
             // Copy the schema set's simple attributes.
             attributeDAO.copySimpleAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET.toString(), newSchemaSetId);
@@ -484,7 +485,7 @@ public class SchemaServiceImpl implements ISchemaService {
             // Get the schema set's schemas and copy them and their simple attributes too.
             List<Schema> schemas = schemaDAO.listForSchemaSet(schemaSetId);
             for (Schema schema : schemas) {
-                int newSchemaId = schemaDAO.copyToSchemaSet(schema.getId(), newSchemaSetId, schema.getFileName(), username);
+                int newSchemaId = schemaDAO.copyToSchemaSet(schema.getId(), newSchemaSetId, schema.getFileName(), userName);
                 attributeDAO.copySimpleAttributes(schema.getId(), DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
             }
         } catch (Exception e) {
@@ -512,7 +513,7 @@ public class SchemaServiceImpl implements ISchemaService {
                 doDeleteSchemaSets(Collections.singletonList(schemaSetId), username, false);
                 int checkedOutCopyId = schemaSet.getCheckedOutCopyId();
                 if (checkedOutCopyId > 0) {
-                    schemaSetDAO.unlock(checkedOutCopyId);
+                    schemaSetDAO.setWorkingUser(checkedOutCopyId, null);
                     result = checkedOutCopyId;
                 }
             }

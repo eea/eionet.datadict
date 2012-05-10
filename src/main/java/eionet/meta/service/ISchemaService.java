@@ -147,12 +147,12 @@ public interface ISchemaService {
     /**
      *
      * @param schemaSetId
-     * @param username
+     * @param userName
      * @param newIdentifier
      * @return
      * @throws ServiceException
      */
-    int checkOutSchemaSet(int schemaSetId, String username, String newIdentifier) throws ServiceException;
+    int checkOutSchemaSet(int schemaSetId, String userName, String newIdentifier) throws ServiceException;
 
     /**
      *

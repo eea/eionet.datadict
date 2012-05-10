@@ -108,26 +108,11 @@ public interface ISchemaSetDAO {
 
     /**
      *
-     * @param schemaSetId
-     * @param userName
-     * @param newIdentifier
-     * @return
-     */
-    int checkOutSchemaSet(int schemaSetId, String userName, String newIdentifier);
-
-    /**
-     *
      * @param schemaSetId1
      * @param schemaSetId2
      * @return
      */
     Map<Integer, Integer> getSchemaMappings(int schemaSetId1, int schemaSetId2);
-
-    /**
-     *
-     * @param schemaSetId
-     */
-    void unlock(int schemaSetId);
 
     /**
      *
@@ -164,4 +149,28 @@ public interface ISchemaSetDAO {
      * @return
      */
     boolean exists(String schemaSetIdentifier);
+
+    /**
+     * Sets the given schema set's WORKING_USER to the given user name.
+     * The latter may be null, in which case WORKING_USER will also be set to null.
+     *
+     * @param schemaSetId
+     * @param userName
+     */
+    void setWorkingUser(int schemaSetId, String userName);
+
+    /**
+     * Copies the T_SCHEMA_SET row identified by the given schema set id.
+     * The new copy's WORKING_USER and USER_MODIFIED will be set to the given user name.
+     * The new copy's IDENTIFIER will be set the given new identifier, unless the latter
+     * is null, in which case the new copy's IDENTIFIER shall remain the same
+     * as original's.
+     *
+     * The method returns the new copy's auto-generated id.
+     *
+     * @param schemaSetId
+     * @param userName
+     * @param newIdentifier
+     */
+    int copySchemaSetRow(int schemaSetId, String userName, String newIdentifier);
 }

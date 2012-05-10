@@ -62,7 +62,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         + "where SCHEMA1.FILENAME=SCHEMA2.FILENAME and SCHEMA1.SCHEMA_SET_ID=:schemaSetId1 and SCHEMA2.SCHEMA_SET_ID=:schemaSetId2";
 
     /** */
-    private static final String CHECK_OUT_SCHEMA_SET = "insert into T_SCHEMA_SET "
+    private static final String COPY_SCHEMA_SET_ROW = "insert into T_SCHEMA_SET "
         + "(IDENTIFIER, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID) select "
         + "ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, SCHEMA_SET_ID from T_SCHEMA_SET "
         + "where SCHEMA_SET_ID=:schemaSetId";
@@ -356,27 +356,6 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     }
 
     /**
-     * @see eionet.meta.dao.ISchemaSetDAO#checkOutSchemaSet(int, java.lang.String, String)
-     */
-    @Override
-    public int checkOutSchemaSet(int schemaSetId, String userName, String newIdentifier) {
-
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("schemaSetId", schemaSetId);
-        parameters.put("userName", userName);
-
-        getNamedParameterJdbcTemplate().update(SET_WORKING_USER_SQL, parameters);
-
-        parameters = new HashMap<String, Object>();
-        parameters.put("schemaSetId", schemaSetId);
-        parameters.put("userName", userName);
-        parameters.put("identifier", newIdentifier);
-
-        getNamedParameterJdbcTemplate().update(CHECK_OUT_SCHEMA_SET, parameters);
-        return getLastInsertId();
-    }
-
-    /**
      * @see eionet.meta.dao.ISchemaSetDAO#getSchemaMappings(int, int)
      */
     @Override
@@ -394,19 +373,6 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         });
 
         return result;
-    }
-
-    /**
-     * @see eionet.meta.dao.ISchemaSetDAO#unlock(int)
-     */
-    @Override
-    public void unlock(int schemaSetId) {
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("schemaSetId", schemaSetId);
-        params.put("userName", null);
-
-        getNamedParameterJdbcTemplate().update(SET_WORKING_USER_SQL, params);
     }
 
     /**
@@ -525,5 +491,34 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
         int count = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
         return count > 0;
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaSetDAO#setWorkingUser(int, java.lang.String)
+     */
+    @Override
+    public void setWorkingUser(int schemaSetId, String userName) {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("schemaSetId", schemaSetId);
+        params.put("userName", userName);
+
+        getNamedParameterJdbcTemplate().update(SET_WORKING_USER_SQL, params);
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaSetDAO#copySchemaSetRow(int, java.lang.String, java.lang.String)
+     */
+    @Override
+    public int copySchemaSetRow(int schemaSetId, String userName, String newIdentifier) {
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters = new HashMap<String, Object>();
+        parameters.put("schemaSetId", schemaSetId);
+        parameters.put("userName", userName);
+        parameters.put("identifier", newIdentifier);
+
+        getNamedParameterJdbcTemplate().update(COPY_SCHEMA_SET_ROW, parameters);
+        return getLastInsertId();
     }
 }
