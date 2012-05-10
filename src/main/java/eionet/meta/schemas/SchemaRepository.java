@@ -26,7 +26,7 @@ public class SchemaRepository {
     private static final Logger LOGGER = Logger.getLogger(SchemaRepository.class);
 
     /** */
-    public static final String WORKING_COPY_DIR = ".workingCopies";
+    public static final String WORKING_COPY_DIR = ".workingCopy";
 
     /** */
     public static final String REPO_PATH = Props.getRequiredProperty(PropsIF.SCHEMA_REPO_LOCATION);
@@ -42,23 +42,25 @@ public class SchemaRepository {
             throw new IllegalArgumentException("File bean must not be null!");
         }
 
-        File repoDirectory = new File(REPO_PATH);
-        if (!repoDirectory.exists() || !repoDirectory.isDirectory()) {
-            repoDirectory.mkdir();
+        File repoDir = new File(REPO_PATH);
+        if (!repoDir.exists() || !repoDir.isDirectory()) {
+            repoDir.mkdir();
         }
 
-        // If schema set identifier is blank, consider it a root-level schema.
-        File fileDirectory = StringUtils.isBlank(schemaSetIdentifier) ? repoDirectory : new File(REPO_PATH, schemaSetIdentifier);
-        if (!fileDirectory.exists() || !fileDirectory.isDirectory()) {
-            fileDirectory.mkdir();
+        File workingCopyDir = null;
+        boolean isRootLevelSchema = StringUtils.isBlank(schemaSetIdentifier);
+        if (isRootLevelSchema){
+            workingCopyDir = new File(repoDir, WORKING_COPY_DIR);
+        }
+        else{
+            workingCopyDir = new File(repoDir, schemaSetIdentifier + WORKING_COPY_DIR);
         }
 
-        File workingCopyDirectory = new File(fileDirectory, WORKING_COPY_DIR);
-        if (!workingCopyDirectory.exists() || !workingCopyDirectory.isDirectory()) {
-            workingCopyDirectory.mkdir();
+        if (workingCopyDir.exists() || !workingCopyDir.isDirectory()){
+            workingCopyDir.mkdir();
         }
 
-        File schemaFile = new File(workingCopyDirectory, fileBean.getFileName());
+        File schemaFile = new File(workingCopyDir, fileBean.getFileName());
         if (schemaFile.exists() && schemaFile.isFile()) {
             if (overwrite == false) {
                 throw new DDRuntimeException("File already exists, but overwrite not requested!");
@@ -94,15 +96,16 @@ public class SchemaRepository {
             repoDirectory.mkdir();
         }
 
-        // If schema set identifier is blank, consider it a root-level schema.
-        File fileDirectory = StringUtils.isBlank(schemaSetIdentifier) ? repoDirectory : new File(REPO_PATH, schemaSetIdentifier);
-        if (!fileDirectory.exists() || !fileDirectory.isDirectory()) {
-            fileDirectory.mkdir();
+        boolean isRootLevelSchema = StringUtils.isBlank(schemaSetIdentifier);
+        File workingCopyDirectory = null;
+        if (isRootLevelSchema){
+            workingCopyDirectory = new File(REPO_PATH, WORKING_COPY_DIR);
         }
-
-        File workingCopyDirectory = new File(fileDirectory, WORKING_COPY_DIR);
+        else{
+            workingCopyDirectory = new File(REPO_PATH, schemaSetIdentifier + WORKING_COPY_DIR);
+        }
         if (!workingCopyDirectory.exists() || !workingCopyDirectory.isDirectory()) {
-            workingCopyDirectory.mkdir();
+            throw new SchemaRepositoryException("Working copy directory not found!");
         }
 
         File schemaFile = new File(workingCopyDirectory, fileName);
@@ -186,6 +189,160 @@ public class SchemaRepository {
         if (schemaSetDirectory.exists() && schemaSetDirectory.isDirectory()) {
             LOGGER.debug("Deleting " + schemaSetDirectory);
             FileUtils.deleteDirectory(schemaSetDirectory);
+        }
+    }
+
+    /**
+     *
+     * @param schemaFileName
+     * @param schemasInDatabase
+     * @throws IOException
+     */
+    public void checkInSchema(String schemaFileName, List<String> schemasInDatabase) throws IOException{
+
+        if (StringUtils.isBlank(schemaFileName)){
+            throw new IllegalArgumentException("Schema file name must not be blank!");
+        }
+
+        // If repository not created yet, throw exception.
+        File repoDir = new File(REPO_PATH);
+        if (!repoDir.exists() || !repoDir.isDirectory()) {
+            throw new SchemaRepositoryException("Repository not created yet!");
+        }
+
+        // Ensure we have a working copy directory.
+        File workingCopyDir = new File(REPO_PATH, WORKING_COPY_DIR);
+        if (!workingCopyDir.exists() || !workingCopyDir.isDirectory()){
+            throw new SchemaRepositoryException("Working copy directory of root-level schemas not found!");
+        }
+
+        // Ensure we have a working copy file.
+        File workingFile = new File(workingCopyDir, schemaFileName);
+        if (!workingFile.exists() || !workingFile.isFile()){
+            throw new SchemaRepositoryException("Working copy file not found!");
+        }
+
+        // Replace original file with the working copy.
+        File originalFile = new File(REPO_PATH, schemaFileName);
+        if (originalFile.exists() && originalFile.isFile()){
+            LOGGER.debug("Deleting " + originalFile);
+            originalFile.delete();
+        }
+        FileUtils.moveFile(workingFile, originalFile);
+    }
+
+    /**
+     *
+     * @param schemaFileName
+     * @param schemasInDatabase
+     * @throws IOException
+     */
+    public void undoCheckOutSchema(String schemaFileName, List<String> schemasInDatabase) throws IOException{
+
+        if (StringUtils.isBlank(schemaFileName)){
+            throw new IllegalArgumentException("Schema file name must not be blank!");
+        }
+
+        // If repository not created yet, throw exception.
+        File repoDir = new File(REPO_PATH);
+        if (!repoDir.exists() || !repoDir.isDirectory()) {
+            throw new SchemaRepositoryException("Repository not created yet!");
+        }
+
+        // If we don't have a working copy directory anyway, exit silently.
+        File workingCopyDir = new File(REPO_PATH, WORKING_COPY_DIR);
+        if (!workingCopyDir.exists() || !workingCopyDir.isDirectory()){
+            return;
+        }
+
+        // Delete working file if it exists.
+        File workingFile = new File(workingCopyDir, schemaFileName);
+        if (workingFile.exists() && workingFile.isFile()){
+            workingFile.delete();
+        }
+    }
+
+    /**
+     *
+     * @param schemaSetIdentifier
+     * @param schemasInDatabase
+     * @throws IOException
+     */
+    public void checkInSchemaSet(String schemaSetIdentifier, List<String> schemasInDatabase) throws IOException{
+
+        // If repository not created yet, throw exception.
+        File repoDir = new File(REPO_PATH);
+        if (!repoDir.exists() || !repoDir.isDirectory()) {
+            throw new SchemaRepositoryException("Repository not created yet!");
+        }
+
+        // If we don't have a working directory, assume the schema set is checked in without any schemas in it,
+        // so exit silently.
+        File workingCopyDir = new File(REPO_PATH, schemaSetIdentifier + WORKING_COPY_DIR);
+        if (!workingCopyDir.exists() || !workingCopyDir.isDirectory()){
+            return;
+        }
+
+        // If we don't have the original directory, assume it's brand new schema set,
+        // so simply rename the working copy directory to the original one, and exit.
+        File schemaSetDir = new File(REPO_PATH, schemaSetIdentifier);
+        if (!schemaSetDir.exists() || !schemaSetDir.isDirectory()){
+            FileUtils.moveDirectory(workingCopyDir, schemaSetDir);
+            return;
+        }
+
+        // Copy files from working copy directory to the original directory, doing overwrite if needed.
+        File[] workingFiles = workingCopyDir.listFiles();
+        for (File workingFile : workingFiles) {
+
+            File originalFile = new File(schemaSetDir, workingFile.getName());
+            if (originalFile.exists() && originalFile.isFile()){
+                LOGGER.debug("Deleting " + originalFile);
+                originalFile.delete();
+            }
+            LOGGER.debug("Moving " + workingFile + " to " + originalFile);
+            FileUtils.moveFile(workingFile, originalFile);
+        }
+
+        // Delete working copy directory
+        FileUtils.deleteDirectory(workingCopyDir);
+
+        // Delete original files that are not present in the database any more (i.e. were removed from the working copy).
+        File[] schemaFiles = schemaSetDir.listFiles();
+        for (File schemaFile : schemaFiles) {
+            if (schemaFile.isFile() && !schemasInDatabase.contains(schemaFile.getName())) {
+                LOGGER.debug("Deleting " + schemaFile);
+                schemaFile.delete();
+            }
+        }
+    }
+
+    /**
+     *
+     * @param schemaSetIdentifier
+     * @param schemasInDatabase
+     * @throws IOException
+     */
+    public void undoCheckOutSchemaSet(String schemaSetIdentifier, List<String> schemasInDatabase) throws IOException{
+
+        if (StringUtils.isBlank(schemaSetIdentifier)){
+            throw new IllegalArgumentException("Schema set identifier must not be blank!");
+        }
+
+        // If repository not created yet, throw exception.
+        File repoDir = new File(REPO_PATH);
+        if (!repoDir.exists() || !repoDir.isDirectory()) {
+            throw new SchemaRepositoryException("Repository not created yet!");
+        }
+
+        // If we don't have a working copy directory anyway, exit silently.
+        // But if we do, delete it.
+        File workingCopyDir = new File(REPO_PATH, schemaSetIdentifier + WORKING_COPY_DIR);
+        if (!workingCopyDir.exists() || !workingCopyDir.isDirectory()){
+            return;
+        }
+        else{
+            FileUtils.deleteDirectory(workingCopyDir);
         }
     }
 
@@ -286,6 +443,7 @@ public class SchemaRepository {
 
     /**
      * Copies the given source schema set directory to the given destination schema set directory.
+     * The latter will be appended with {@link #WORKING_COPY_DIR}.
      * Given directory names must not be blank. Throws a {@link SchemaRepositoryException} if the source directory does
      * not exist, or if a destination directory by the given name already exists.
      *
@@ -312,12 +470,115 @@ public class SchemaRepository {
         }
 
         // If destination directory exists already, throw exception.
-        File dstDir = new File(REPO_PATH, dstIdentifier);
+        File dstDir = new File(REPO_PATH, dstIdentifier + WORKING_COPY_DIR);
         if (dstDir.exists()){
             throw new SchemaRepositoryException("Destination directory already existing!");
         }
 
         FileUtils.copyDirectory(srcDir, dstDir);
+    }
+
+    /**
+     * Calls {@link #copySchemaSet(String, String)} with both of the inputs set
+     * to the given schema set identifier. The latter must not be null or blank.
+     *
+     * @param schemaSetIdentifier
+     * @throws IOException
+     */
+    public void checkOutSchemaSet(String schemaSetIdentifier) throws IOException{
+
+        if (StringUtils.isBlank(schemaSetIdentifier)){
+            throw new IllegalArgumentException("Schema set identifier must not be blank!");
+        }
+
+        copySchemaSet(schemaSetIdentifier, schemaSetIdentifier);
+    }
+
+    /**
+     *
+     * @param srcIdentifier
+     * @param dstIdentifier
+     * @throws IOException
+     */
+    public void newVersionSchemaSet(String srcIdentifier, String dstIdentifier) throws IOException{
+
+        copySchemaSet(srcIdentifier, dstIdentifier + WORKING_COPY_DIR);
+    }
+
+    /**
+     * Makes a copy of the given root-level schema (given by file name)
+     * into the {@link #WORKING_COPY_DIR} directory in repository root.
+     *
+     * @param schemaFileName
+     * @throws IOException
+     */
+    public void checkOutSchema(String schemaFileName) throws IOException{
+
+        if (StringUtils.isBlank(schemaFileName)){
+            throw new IllegalArgumentException("Schema file name must not be blank!");
+        }
+
+        // If repository not created yet, throw exception.
+        File repoDir = new File(REPO_PATH);
+        if (!repoDir.exists() || !repoDir.isDirectory()) {
+            throw new SchemaRepositoryException("Repository not created yet!");
+        }
+
+        // Make sure the schema file that is being checked out, exists actually.
+        File schemaFile = new File(repoDir, schemaFileName);
+        if (!schemaFile.exists() || !schemaFile.isFile()){
+            throw new SchemaRepositoryException("Schema file not existing: " + schemaFile);
+        }
+
+        // Ensure the directory of working copies of root-level schemas exists.
+        File workingCopyDir = new File(repoDir, WORKING_COPY_DIR);
+        if (!workingCopyDir.exists() || !workingCopyDir.isDirectory()){
+            workingCopyDir.mkdir();
+        }
+
+        // Make sure there is no working copy of this file yet.
+        File workingFile = new File(workingCopyDir, schemaFileName);
+        if (workingFile.exists() && workingFile.isFile()){
+            throw new SchemaRepositoryException("A working copy of this schema file already exists!");
+        }
+
+        FileUtils.copyFile(schemaFile, workingFile);
+    }
+
+    /**
+     *
+     * @param schemaFileName
+     * @param schemaSetIdentifier
+     * @param isWorkingCopy
+     * @return
+     */
+    public String getSchemaRelativePath(String schemaFileName, String schemaSetIdentifier, boolean isWorkingCopy){
+
+        if (StringUtils.isBlank(schemaFileName)){
+            throw new IllegalArgumentException("Schema file name must not be blank!");
+        }
+
+        File absPath = null;
+        boolean isRootLevelSchema = StringUtils.isBlank(schemaSetIdentifier);
+        if (isRootLevelSchema){
+            absPath = new File(REPO_PATH);
+            if (isWorkingCopy){
+                absPath = new File(absPath, WORKING_COPY_DIR);
+            }
+            absPath = new File(absPath, schemaFileName);
+        }
+        else{
+            if (isWorkingCopy){
+                absPath = new File(REPO_PATH, schemaSetIdentifier + WORKING_COPY_DIR);
+            }
+            else{
+                absPath = new File(REPO_PATH, schemaSetIdentifier);
+            }
+            absPath = new File(absPath, schemaFileName);
+        }
+
+        File repoDir = new File(REPO_PATH);
+        return StringUtils.substringAfter(absPath.getAbsolutePath(), repoDir.getAbsolutePath());
     }
 
     /**

@@ -34,6 +34,7 @@
                     <stripes:text id="attr${row.index}" name="searchFilter.attributes[${row.index}].value" />
                     <stripes:hidden name="searchFilter.attributes[${row.index}].id" />
                     <stripes:hidden name="searchFilter.attributes[${row.index}].name" />
+                    <stripes:hidden name="searchFilter.attributes[${row.index}].shortName" />
                 </c:forEach>
                 <br/>
                 <span style="width:16%;float:left;padding-top:0.2em">&nbsp;</span><stripes:submit name="search" value="Search"/>

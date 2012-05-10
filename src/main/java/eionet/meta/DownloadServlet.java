@@ -38,6 +38,7 @@ public class DownloadServlet extends HttpServlet {
 
     // Constants ----------------------------------------------------------------------------------
 
+    public static final String SCHEMAS_PATH = "/schemas";
     private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
@@ -102,8 +103,8 @@ public class DownloadServlet extends HttpServlet {
         File file = null;
 
         // Get the file object, depending on the file path.
-        if (filePath.startsWith("/schemas")) {
-            String relativePath = StringUtils.substringAfter(filePath, "/schemas");
+        if (filePath.startsWith(SCHEMAS_PATH)) {
+            String relativePath = StringUtils.substringAfter(filePath, SCHEMAS_PATH);
             if (StringUtils.isNotBlank(relativePath)) {
                 file = new SchemaRepository().getSchemaFile(relativePath);
             }

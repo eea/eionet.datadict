@@ -330,13 +330,20 @@ public class SchemaSetActionBean extends AbstractActionBean {
     /**
      *
      * @throws DAOException
+     * @throws ServiceException
      */
     @ValidationMethod(on = {"newVersion"})
-    public void validateNewVersion() throws DAOException {
+    public void validateNewVersion() throws DAOException, ServiceException {
 
         if (StringUtils.isBlank(newIdentifier)) {
             addGlobalValidationError("New identifier is missing!");
             return;
+        }
+
+        if (!isValidationErrors()) {
+            if (schemaService.schemaSetExists(newIdentifier)){
+                addGlobalValidationError("A schema set or a schema set working copy by this identifier already exists!");
+            }
         }
 
         getContext().setSourcePageResolution(new ForwardResolution(VIEW_SCHEMA_SET_JSP));

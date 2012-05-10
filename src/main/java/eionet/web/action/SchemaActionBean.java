@@ -38,6 +38,7 @@ import org.xml.sax.SAXException;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
+import eionet.meta.DownloadServlet;
 import eionet.meta.FixedValue;
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.domain.Schema;
@@ -689,10 +690,14 @@ public class SchemaActionBean extends AbstractActionBean {
     }
 
     /**
-     * Returns the download link for the given schema file. If the schema is part of a schema set, the link's format is
-     * contextPath/schemas/schemaSetIdentifier/schemaFileName. If the schema is a root-level schema, the link's format is
-     * contextPath/schemas/schemaFileName. In both cases, schemaSetIdentifier and schemaFileName are escaped for XML, i.e. the link
-     * is meant as "href" value in an HTML link.
+     * @param uploadedFile
+     *            the uploadedFile to set
+     */
+    public void setUploadedFile(FileBean uploadedFile) {
+        this.uploadedFile = uploadedFile;
+    }
+
+    /**
      *
      * @return
      * @throws ServiceException
@@ -704,34 +709,17 @@ public class SchemaActionBean extends AbstractActionBean {
             throw new IllegalStateException("Schema object must be initialized!");
         }
 
-        StringBuilder sb = new StringBuilder(getContextPath()).append("/schemas/");
-
         boolean isMyWorkingCopy = getUserName()!=null && schema.isWorkingCopyOf(getUserName());
 
         String schemaSetIdentifier = null;
         SchemaSet schemaSet = getSchemaSet();
         if (schemaSet != null) {
             schemaSetIdentifier = schemaSet.getIdentifier();
-            sb.append(schemaSet.getIdentifier()).append("/");
             isMyWorkingCopy = getUserName()!=null && schemaSet.isWorkingCopyOf(getUserName());
         }
 
-        if (isMyWorkingCopy){
-            if (schemaRepository.existsSchema(SchemaRepository.WORKING_COPY_DIR + "/" + schema.getFileName(), schemaSetIdentifier)){
-                sb.append(SchemaRepository.WORKING_COPY_DIR + "/");
-            }
-        }
-        sb.append(schema.getFileName());
-
-        return sb.toString();
-    }
-
-    /**
-     * @param uploadedFile
-     *            the uploadedFile to set
-     */
-    public void setUploadedFile(FileBean uploadedFile) {
-        this.uploadedFile = uploadedFile;
+        String relPath = schemaRepository.getSchemaRelativePath(schema.getFileName(), schemaSetIdentifier, isMyWorkingCopy);
+        return getContextPath() + DownloadServlet.SCHEMAS_PATH + relPath;
     }
 
     /**
@@ -746,18 +734,18 @@ public class SchemaActionBean extends AbstractActionBean {
             throw new IllegalStateException("Schema object must be initialized!");
         }
 
-        StringBuilder sb = new StringBuilder(Props.getRequiredProperty(PropsIF.DD_URL));
-        if (!sb.toString().endsWith("/")){
-            sb.append("/");
+        if (schema.isWorkingCopy()){
+            throw new UnsupportedOperationException("Method not supported for working copies!");
         }
-        sb.append("schemas/");
 
-        SchemaSet schemaSet = getSchemaSet();
-        if (schemaSet != null) {
-            sb.append(schemaSet.getIdentifier()).append("/");
+        String webAppUrl = Props.getRequiredProperty(PropsIF.DD_URL);
+        if (webAppUrl.endsWith("/")){
+            StringUtils.substringBeforeLast(webAppUrl, "/");
         }
-        sb.append(schema.getFileName());
 
-        return sb.toString();
+        String schemaSetIdentifier = getSchemaSet() != null ? getSchemaSet().getIdentifier() : null;
+        String relPath = schemaRepository.getSchemaRelativePath(schema.getFileName(), schemaSetIdentifier, false);
+
+        return webAppUrl + DownloadServlet.SCHEMAS_PATH + relPath;
     }
 }
