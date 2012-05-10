@@ -389,8 +389,7 @@ public class SchemaServiceImpl implements ISchemaService {
             schemaDAO.checkIn(finalId, userName, comment);
 
             // Finally, do necessary check-in actions in the repository too.
-            List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(null);
-            schemaRepository.checkInSchema(schema.getFileName(), schemasInDatabase);
+            schemaRepository.checkInSchema(schema.getFileName());
 
             return finalId;
         } catch (Exception e) {

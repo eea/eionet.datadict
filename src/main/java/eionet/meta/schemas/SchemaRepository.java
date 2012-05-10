@@ -195,10 +195,9 @@ public class SchemaRepository {
     /**
      *
      * @param schemaFileName
-     * @param schemasInDatabase
      * @throws IOException
      */
-    public void checkInSchema(String schemaFileName, List<String> schemasInDatabase) throws IOException{
+    public void checkInSchema(String schemaFileName) throws IOException{
 
         if (StringUtils.isBlank(schemaFileName)){
             throw new IllegalArgumentException("Schema file name must not be blank!");
@@ -343,101 +342,6 @@ public class SchemaRepository {
         }
         else{
             FileUtils.deleteDirectory(workingCopyDir);
-        }
-    }
-
-    /**
-     *
-     * @param schemaFileName
-     * @param schemaSetIdentifier
-     * @param schemasInDatabase
-     * @throws IOException
-     */
-    public void cleanupCheckIn(String schemaFileName, String schemaSetIdentifier, List<String> schemasInDatabase)
-    throws IOException {
-
-        boolean isRootLevel = StringUtils.isBlank(schemaSetIdentifier);
-        File fileDirectory = isRootLevel ? new File(REPO_PATH) : new File(REPO_PATH, schemaSetIdentifier);
-        if (!fileDirectory.exists() || !fileDirectory.isDirectory()) {
-            return;
-        }
-
-        File workingCopyDirectory = new File(fileDirectory, WORKING_COPY_DIR);
-        if (!workingCopyDirectory.exists() || !workingCopyDirectory.isDirectory()) {
-            workingCopyDirectory.mkdir();
-        }
-
-        File[] workingCopyFiles = workingCopyDirectory.listFiles();
-        for (File workingCopyFile : workingCopyFiles) {
-
-            if (StringUtils.isBlank(schemaFileName) || workingCopyFile.getName().equals(schemaFileName)){
-                File originalFile = new File(fileDirectory, workingCopyFile.getName());
-                if (originalFile.exists() && originalFile.isFile()){
-                    LOGGER.debug("Deleting " + originalFile);
-                    originalFile.delete();
-                }
-                LOGGER.debug("Moving " + workingCopyFile + " to " + originalFile);
-                FileUtils.moveFile(workingCopyFile, originalFile);
-            }
-        }
-
-        // If check-in of a schema set, delete whole working directory
-        if (StringUtils.isBlank(schemaFileName)){
-            FileUtils.deleteDirectory(workingCopyDirectory);
-        }
-
-        // Delete files not present in the database.
-        File[] schemaFiles = fileDirectory.listFiles();
-        for (File schemaFile : schemaFiles) {
-            if (schemaFile.isFile() && !schemasInDatabase.contains(schemaFile.getName())) {
-                LOGGER.debug("Deleting " + schemaFile);
-                schemaFile.delete();
-            }
-        }
-    }
-
-    /**
-     *
-     * @param schemaFileName
-     * @param schemaSetIdentifier
-     * @param schemasInDatabase
-     * @throws IOException
-     */
-    public void cleanupUndoCheckout(String schemaFileName, String schemaSetIdentifier, List<String> schemasInDatabase) throws IOException {
-
-        boolean isRootLevel = StringUtils.isBlank(schemaSetIdentifier);
-        File fileDirectory = isRootLevel ? new File(REPO_PATH) : new File(REPO_PATH, schemaSetIdentifier);
-        if (!fileDirectory.exists() || !fileDirectory.isDirectory()) {
-            return;
-        }
-
-        File workingCopyDirectory = new File(fileDirectory, WORKING_COPY_DIR);
-        if (workingCopyDirectory.exists() && workingCopyDirectory.isDirectory()) {
-
-            // If undo-checkout of a schema set, delete whole working directory
-            if (StringUtils.isBlank(schemaFileName)){
-                LOGGER.debug("Deleting " + workingCopyDirectory);
-                FileUtils.deleteDirectory(workingCopyDirectory);
-            }
-            else{
-                File[] workingCopyFiles = workingCopyDirectory.listFiles();
-                for (File workingCopyFile : workingCopyFiles) {
-                    if (workingCopyFile.getName().equals(schemaFileName)){
-                        LOGGER.debug("Deleting " + workingCopyFile);
-                        workingCopyFile.delete();
-                    }
-                }
-            }
-
-        }
-
-        // Delete files not present in the database.
-        File[] schemaFiles = fileDirectory.listFiles();
-        for (File schemaFile : schemaFiles) {
-            if (schemaFile.isFile() && !schemasInDatabase.contains(schemaFile.getName())) {
-                LOGGER.debug("Deleting " + schemaFile);
-                schemaFile.delete();
-            }
         }
     }
 
