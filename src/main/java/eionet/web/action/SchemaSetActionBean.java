@@ -322,7 +322,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         if (!isEditPermission()) {
             throw new ServiceException("No permission to edit schema sets.");
         }
-        int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName(), newIdentifier);
+        int newSchemaSetId = schemaService.copySchemaSet(schemaSet.getId(), getUserName(), newIdentifier);
         addSystemMessage("New version of the schema set successfully created!");
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
     }

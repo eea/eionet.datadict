@@ -64,7 +64,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     /** */
     private static final String COPY_SCHEMA_SET_ROW = "insert into T_SCHEMA_SET "
         + "(IDENTIFIER, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID) select "
-        + "ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, SCHEMA_SET_ID from T_SCHEMA_SET "
+        + "ifnull(:identifier,IDENTIFIER), CONTINUITY_ID, true, :userName, :userName, :checkedOutCopyId from T_SCHEMA_SET "
         + "where SCHEMA_SET_ID=:schemaSetId";
 
     /** */
@@ -517,6 +517,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         parameters.put("schemaSetId", schemaSetId);
         parameters.put("userName", userName);
         parameters.put("identifier", newIdentifier);
+        parameters.put("checkedOutCopyId", newIdentifier == null ? schemaSetId : null);
 
         getNamedParameterJdbcTemplate().update(COPY_SCHEMA_SET_ROW, parameters);
         return getLastInsertId();

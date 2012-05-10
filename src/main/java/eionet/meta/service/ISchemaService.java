@@ -288,4 +288,21 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     int undoCheckOutSchema(int schemaId, String userName) throws ServiceException;
+
+    /**
+     * Creates a full copy of this schema set, including its schemas and the contents of the
+     * schemas. The copy will automatically be set to working copy and the working user will
+     * be set to the given user name. The new copy's identifier will be set to the given
+     * identifier. The latter must not be null or blank, and if it's set to an already
+     * existing schema set identifier, the method will throw a {@link ServiceException}.
+     *
+     * The method returns the new copy's auto-generated id.
+     *
+     * @param schemaSetId
+     * @param userName
+     * @param identifier
+     * @return
+     * @throws ServiceException
+     */
+    int copySchemaSet(int schemaSetId, String userName, String identifier) throws ServiceException;
 }

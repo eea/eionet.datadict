@@ -748,4 +748,44 @@ public class SchemaServiceImpl implements ISchemaService {
             throw new ServiceException("Failed to undo check-out of schema " + schemaId, e);
         }
     }
+
+    /**
+     * @see eionet.meta.service.ISchemaService#copySchemaSet(int, java.lang.String, java.lang.String)
+     */
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public int copySchemaSet(int schemaSetId, String userName, String identifier) throws ServiceException {
+
+        if (schemaSetId <= 0) {
+            throw new IllegalArgumentException("Invalid schema set id: " + schemaSetId);
+        }
+
+        if (StringUtils.isBlank(userName) || StringUtils.isBlank(identifier)) {
+            throw new IllegalArgumentException("User name and identifier must not be blank!");
+        }
+
+        try {
+            SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
+
+            // Do schema set check-out, get the new schema set's ID.
+            int newSchemaSetId = schemaSetDAO.copySchemaSetRow(schemaSetId, userName, identifier);
+
+            // Copy the schema set's simple attributes.
+            attributeDAO.copySimpleAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET.toString(), newSchemaSetId);
+
+            // Get the schema set's schemas and copy them and their simple attributes too.
+            List<Schema> schemas = schemaDAO.listForSchemaSet(schemaSetId);
+            for (Schema schema : schemas) {
+                int newSchemaId = schemaDAO.copyToSchemaSet(schema.getId(), newSchemaSetId, schema.getFileName(), userName);
+                attributeDAO.copySimpleAttributes(schema.getId(), DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
+            }
+
+            // Copy the schema set in repository too.
+            schemaRepository.copySchemaSet(schemaSet.getIdentifier(), identifier);
+
+            return newSchemaSetId;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to check out schema set", e);
+        }
+    }
 }

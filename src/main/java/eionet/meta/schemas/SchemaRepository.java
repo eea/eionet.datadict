@@ -285,6 +285,42 @@ public class SchemaRepository {
     }
 
     /**
+     * Copies the given source schema set directory to the given destination schema set directory.
+     * Given directory names must not be blank. Throws a {@link SchemaRepositoryException} if the source directory does
+     * not exist, or if a destination directory by the given name already exists.
+     *
+     * @param srcIdentifier
+     * @param dstIdentifier
+     * @throws IOException
+     */
+    public void copySchemaSet(String srcIdentifier, String dstIdentifier) throws IOException{
+
+        if (StringUtils.isBlank(srcIdentifier) || StringUtils.isBlank(dstIdentifier)){
+            throw new IllegalArgumentException("Source identifier and destination identifier must not be blank!");
+        }
+
+        // If repository not created yet, throw exception.
+        File repoDir = new File(REPO_PATH);
+        if (!repoDir.exists() || !repoDir.isDirectory()) {
+            throw new SchemaRepositoryException("Repository not created yet!");
+        }
+
+        // If source directory not existing, throw exception.
+        File srcDir = new File(REPO_PATH, srcIdentifier);
+        if (!srcDir.exists() || !srcDir.isDirectory()){
+            throw new SchemaRepositoryException("Source directory not existing!");
+        }
+
+        // If destination directory exists already, throw exception.
+        File dstDir = new File(REPO_PATH, dstIdentifier);
+        if (dstDir.exists()){
+            throw new SchemaRepositoryException("Destination directory already existing!");
+        }
+
+        FileUtils.copyDirectory(srcDir, dstDir);
+    }
+
+    /**
      *
      * @param file
      */
