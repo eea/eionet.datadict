@@ -128,14 +128,6 @@ public interface ISchemaDAO {
     boolean existsRootLevelSchema(String filename);
 
     /**
-     *
-     * @param schemaId
-     * @param userName
-     * @return
-     */
-    int checkOutSchema(int schemaId, String userName);
-
-    /**
      * Returns a list of all root-level schemas. If the given boolean is true,
      * only schemas in Released status are returned. Otherwise the status is ignored.
      * Note that the returned list does not contain any working copies!
@@ -153,4 +145,33 @@ public interface ISchemaDAO {
      * @return
      */
     Schema getWorkingCopyOfSchema(int schemaId);
+
+    /**
+     * Sets the given root-level schema's WORKING_USER to the given user name.
+     * The latter may be null, in which case WORKING_USER will also be set to null.
+     *
+     * @param schemaId
+     * @param userName
+     */
+    void setWorkingUser(int schemaId, String userName);
+
+    /**
+     * Copies the T_SCHEMA row identified by the given schema id. This must be a root-level schema.
+     * The new copy's WORKING_USER and USER_MODIFIED will be set to the given user name.
+     * The new copy's FILENAME will be set to the given new file name, unless the latter
+     * is null, in which case the new copy's FILENAME shall remain the same
+     * as original's.
+     *
+     * If the given file name (i.e. the new file name) is null, the new copy's
+     * CHECKEDOUT_COPY_ID is set to the original's id, otherwise it is set to null.
+     * This is basically an assumption that if there will be a new file name, it
+     * is not a check-out operation, therefore CHECKEDOUT_COPY_ID is irrelevant.
+     *
+     * The method returns the new copy's auto-generated id.
+     *
+     * @param schemaSetId
+     * @param userName
+     * @param newIdentifier
+     */
+    int copySchemaRow(int schemaId, String userName, String newFileName);
 }

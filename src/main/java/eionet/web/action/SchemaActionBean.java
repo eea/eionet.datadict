@@ -228,7 +228,7 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public Resolution checkOut() throws ServiceException {
 
-        int newSchemaSetId = schemaService.checkOutSchema(schema.getId(), getUserName(), null);
+        int newSchemaSetId = schemaService.checkOutSchema(schema.getId(), getUserName());
         addSystemMessage("Schema successfully checked out!");
         return new RedirectResolution(getClass()).addParameter("schema.id", newSchemaSetId);
     }

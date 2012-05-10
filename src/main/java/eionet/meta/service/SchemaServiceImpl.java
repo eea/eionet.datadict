@@ -454,11 +454,11 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * @see eionet.meta.service.ISchemaService#checkOutSchemaSet(int, java.lang.String, String)
+     * @see eionet.meta.service.ISchemaService#checkOutSchemaSet(int, java.lang.String)
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int checkOutSchemaSet(int schemaSetId, String userName, String newIdentifier) throws ServiceException {
+    public int checkOutSchemaSet(int schemaSetId, String userName) throws ServiceException {
 
         if (StringUtils.isBlank(userName)) {
             throw new IllegalArgumentException("User name must not be blank!");
@@ -477,7 +477,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Do schema set check-out, get the new schema set's ID.
             schemaSetDAO.setWorkingUser(schemaSetId, userName);
-            newSchemaSetId = schemaSetDAO.copySchemaSetRow(schemaSetId, userName, newIdentifier);
+            newSchemaSetId = schemaSetDAO.copySchemaSetRow(schemaSetId, userName, null);
 
             // Copy the schema set's simple attributes.
             attributeDAO.copySimpleAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET.toString(), newSchemaSetId);
@@ -652,11 +652,11 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * @throws ServiceException
-     * @see eionet.meta.service.ISchemaService#checkOutSchema(int, java.lang.String, java.lang.Object)
+     * @see eionet.meta.service.ISchemaService#checkOutSchema(int, java.lang.String)
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int checkOutSchema(int schemaId, String userName, Object object) throws ServiceException {
+    public int checkOutSchema(int schemaId, String userName) throws ServiceException {
 
         if (StringUtils.isBlank(userName)) {
             throw new IllegalArgumentException("User name must not be blank!");
@@ -674,7 +674,8 @@ public class SchemaServiceImpl implements ISchemaService {
             }
 
             // Do schema check-out, get the new schema's ID.
-            newSchemaId = schemaDAO.checkOutSchema(schemaId, userName);
+            schemaSetDAO.setWorkingUser(schemaId, userName);
+            newSchemaId = schemaDAO.copySchemaRow(schemaId, userName, null);
 
             // Copy the schema's simple attributes.
             attributeDAO.copySimpleAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);

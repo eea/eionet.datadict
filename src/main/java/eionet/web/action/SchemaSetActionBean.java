@@ -308,7 +308,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         if (!isEditPermission()) {
             throw new ServiceException("No permission to edit schema sets.");
         }
-        int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName(), null);
+        int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName());
         addSystemMessage("Schema set successfully checked out!");
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
     }

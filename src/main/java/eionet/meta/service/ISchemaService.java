@@ -148,11 +148,10 @@ public interface ISchemaService {
      *
      * @param schemaSetId
      * @param userName
-     * @param newIdentifier
      * @return
      * @throws ServiceException
      */
-    int checkOutSchemaSet(int schemaSetId, String userName, String newIdentifier) throws ServiceException;
+    int checkOutSchemaSet(int schemaSetId, String userName) throws ServiceException;
 
     /**
      *
@@ -253,11 +252,10 @@ public interface ISchemaService {
      *
      * @param schemaId
      * @param userName
-     * @param object
      * @return
      * @throws ServiceException
      */
-    int checkOutSchema(int schemaId, String userName, Object object) throws ServiceException;
+    int checkOutSchema(int schemaId, String userName) throws ServiceException;
 
     /**
      * Returns a list of all root-level schemas. If the given boolean is true,
