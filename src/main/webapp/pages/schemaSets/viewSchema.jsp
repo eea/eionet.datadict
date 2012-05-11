@@ -186,7 +186,7 @@
                         </a>
                     </td>
                     <td class="simple_attr_value">
-                        <stripes:link href="schemaSet.action" title="Open schema set details">
+                        <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" title="Open schema set details">
 		                    <stripes:param name="schemaSet.id" value="${actionBean.schema.schemaSetId}"/>
 		                    <c:out value="${actionBean.schemaSet.identifier}"/>
 		                </stripes:link>

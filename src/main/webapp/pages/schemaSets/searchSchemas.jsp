@@ -57,7 +57,7 @@
                     </stripes:link>
                 </display:column>
                 <display:column title="Schema set identifier" sortable="true" sortProperty="schemaSetIdentifier">
-                    <stripes:link href="/schemaSet.action">
+                    <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
                         <stripes:param name="schemaSet.id" value="${item.schemaSetId}" />
                         <c:out value="${item.schemaSetIdentifier}" />
                     </stripes:link>

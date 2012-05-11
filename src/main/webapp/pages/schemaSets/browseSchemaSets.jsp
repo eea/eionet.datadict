@@ -14,8 +14,12 @@
             <h2>Operations:</h2>
             <ul>
                 <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
-                    <li><a href="${pageContext.request.contextPath}/schemaSet.action?add=">Add schema set</a></li>
-                    <li><a href="${pageContext.request.contextPath}/schema.action?add=">Add root-level schema</a></li>
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
+                    </li>
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link>
+                    </li>
                 </c:if>
                 <li><a href="${pageContext.request.contextPath}/searchSchemaSets.action">Search schema sets</a></li>
                 <li><a href="${pageContext.request.contextPath}/searchSchemas.action">Search schemas</a></li>
@@ -67,7 +71,7 @@
                                 </c:otherwise>
                             </c:choose>
                         </c:if>
-                        <stripes:link href="/schemaSet.action" class="link-folder">
+                        <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" class="link-folder">
                             <stripes:param name="schemaSet.id" value="${schemaSet.id}" />
                             <c:out value="${schemaSet.identifier}"/>
                         </stripes:link>

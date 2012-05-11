@@ -11,7 +11,9 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <li><a href="${pageContext.request.contextPath}/schemaSet.action?add=">Add schema set</a></li>
+                <li>
+                    <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
+                </li>
             </ul>
         </div>
 
@@ -58,7 +60,7 @@
                 </c:if>
                 --%>
                 <display:column title="Identifier" sortable="true" sortName="sortName" sortProperty="identifier">
-                    <stripes:link href="/schemaSet.action">
+                    <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
                         <stripes:param name="schemaSet.id" value="${item.id}" />
                         <c:out value="${item.identifier}" />
                     </stripes:link>
