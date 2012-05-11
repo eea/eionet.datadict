@@ -20,7 +20,6 @@
  */
 package eionet.web.util;
 
-
 import java.util.Collection;
 
 import javax.servlet.http.HttpSession;
@@ -49,55 +48,50 @@ public class JstlFunctions {
      * @param permission
      * @return
      */
-    public static boolean userHasPermission(java.lang.String usr, java.lang.String aclPath, java.lang.String prm) throws Exception{
+    public static boolean userHasPermission(java.lang.String usr, java.lang.String aclPath, java.lang.String prm) throws Exception {
         return SecurityUtil.hasPerm(usr, aclPath, prm);
     }
 
     /**
-     * 
+     *
      * @param o
      * @param seperator
      * @return
      */
-    public static String join(Object o, String separator){
+    public static String join(Object o, String separator) {
 
-        if (o==null){
+        if (o == null) {
             return "";
-        }
-        else if (o instanceof String) {
+        } else if (o instanceof String) {
             return (String) o;
-        }
-        else if (o instanceof Object[]){
+        } else if (o instanceof Object[]) {
             return StringUtils.join((Object[]) o, separator);
-        }
-        else if (o instanceof Collection){
+        } else if (o instanceof Collection) {
             return StringUtils.join((Collection) o, separator);
-        }
-        else{
+        } else {
             throw new ClassCastException("Couldn't cast from this class: " + o.getClass().getName());
         }
     }
 
     /**
-     * 
+     *
      * @param arrayOrCollection
      * @param object
      * @return
      */
-    public static boolean contains(Object arrayOrCollection, Object object){
+    public static boolean contains(Object arrayOrCollection, Object object) {
 
-        if (arrayOrCollection!=null){
+        if (arrayOrCollection != null) {
 
-            if (arrayOrCollection instanceof Object[]){
-                for (Object o : ((Object[]) arrayOrCollection)){
-                    if (o.equals(object)){
+            if (arrayOrCollection instanceof Object[]) {
+                for (Object o : ((Object[]) arrayOrCollection)) {
+                    if (o.equals(object)) {
                         return true;
                     }
                 }
-            }
-            else if (arrayOrCollection instanceof Collection){
-                for (Object o : ((Collection) arrayOrCollection)){
-                    if (o.equals(object)){
+            } else if (arrayOrCollection instanceof Collection) {
+                for (Object o : ((Collection) arrayOrCollection)) {
+                    if (o.equals(object)) {
                         return true;
                     }
                 }
@@ -108,43 +102,40 @@ public class JstlFunctions {
     }
 
     /**
-     * 
+     *
      * @param condition
      * @return
      */
-    public static String inputCheckedString(boolean condition){
-        if (condition == true){
+    public static String inputCheckedString(boolean condition) {
+        if (condition == true) {
             return INPUT_CHECKED_STRING;
-        }
-        else{
+        } else {
             return "";
         }
     }
 
     /**
-     * 
+     *
      * @param condition
      * @return
      */
-    public static String inputSelectedString(boolean condition){
-        if (condition == true){
+    public static String inputSelectedString(boolean condition) {
+        if (condition == true) {
             return INPUT_SELECTED_STRING;
-        }
-        else{
+        } else {
             return "";
         }
     }
 
     /**
-     * 
+     *
      * @param condition
      * @return
      */
-    public static String inputDisabledString(boolean condition){
-        if (condition == true){
+    public static String inputDisabledString(boolean condition) {
+        if (condition == true) {
             return INPUT_DISABLED_STRING;
-        }
-        else{
+        } else {
             return "";
         }
     }

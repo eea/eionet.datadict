@@ -54,6 +54,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sourceforge.stripes.action.ActionBean;
+import net.sourceforge.stripes.action.UrlBinding;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -65,7 +68,7 @@ import eionet.meta.dao.domain.SchemaSet;
 
 /**
  * This is a class containing several useful utility methods.
- * 
+ *
  * @author Jaanus Heinlaid
  */
 public class Util {
@@ -85,7 +88,7 @@ public class Util {
 
     /**
      * Returns true if the given string is null or its length is 0.
-     * 
+     *
      * @param str
      *            The given string.
      * @return
@@ -152,7 +155,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param timestamp
      * @return
      */
@@ -198,7 +201,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param timestamp
      * @return
      */
@@ -229,7 +232,7 @@ public class Util {
      * date-time.<BR>
      * <BR>
      * This should be useful for calculating sleep time for code that has a certain schedule for execution.
-     * 
+     *
      * @param hour
      *            An integer from 0 to 23. If less than 0 or more than 23, then the closest next hour to current hour is taken.
      * @param date
@@ -265,7 +268,7 @@ public class Util {
         // here we assume that every full hour is accepted
         /*
          * if (hour < 0 || hour > 23) {
-         * 
+         *
          * hour = cur_hour>=23 ? 0 : cur_hour + 1; }
          */
 
@@ -366,7 +369,7 @@ public class Util {
 
     /**
      * A method for creating a unique digest of a String message.
-     * 
+     *
      * @param src
      *            String to be digested.
      * @param algosrithm
@@ -394,7 +397,7 @@ public class Util {
 
     /**
      * A method for creating a unique Hexa-Decimal digest of a String message.
-     * 
+     *
      * @param src
      *            String to be digested.
      * @param algosrithm
@@ -426,7 +429,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param str
      * @return
      */
@@ -442,7 +445,7 @@ public class Util {
     /**
      * Returns the result of {@link #processForDisplay(String, boolean, boolean)} with the given input String, setting both booleans
      * to false.
-     * 
+     *
      * @param in
      * @return
      */
@@ -453,7 +456,7 @@ public class Util {
     /**
      * Returns the result of {@link #processForDisplay(String, boolean, boolean)} with the given input String and first boolean,
      * setting the last boolean to false.
-     * 
+     *
      * @param in
      * @param dontCreateHTMLAnchors
      * @return
@@ -468,7 +471,7 @@ public class Util {
      * the 2nd boolean input is false, replaces all occurrences of Java string line breaks ('\n' and '\r\n') with HTML line breaks
      * like <br/>
      * .
-     * 
+     *
      * @param in
      * @param inTextarea
      * @return
@@ -535,7 +538,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param s
      * @return
      */
@@ -832,25 +835,25 @@ public class Util {
 
         /*
          * if (literal == null) return null;
-         * 
+         *
          * UnicodeEscapes unicodeEscapes = null;
-         * 
+         *
          * StringBuffer buf = new StringBuffer(); for (int i=0; i<literal.length(); i++) {
-         * 
+         *
          * char c = literal.charAt(i);
-         * 
+         *
          * if (c=='&') { int j = literal.indexOf(";", i); if (j > i){ char cc = literal.charAt(i+1); int decimal = -1; if (cc=='#'){
          * // handle Unicode decimal escape String sDecimal = literal.substring(i+2, j);
-         * 
+         *
          * try { decimal = Integer.parseInt(sDecimal); } catch (Exception e) {} } else { // handle entity String ent =
          * literal.substring(i+1, j); if (unicodeEscapes == null) unicodeEscapes = new UnicodeEscapes(); decimal =
          * unicodeEscapes.getDecimal(ent); }
-         * 
+         *
          * if (decimal >= 0) { // if decimal was found, use the corresponding char. otherwise stick to c. c = (char)decimal; i = j;
          * } } }
-         * 
+         *
          * buf.append(c); }
-         * 
+         *
          * return buf.toString();
          */
     }
@@ -1030,7 +1033,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param str
      * @param token
      * @return
@@ -1052,7 +1055,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param request
      * @return
      */
@@ -1080,7 +1083,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param from
      * @param to
      * @return
@@ -1102,7 +1105,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public static synchronized String getExpiresDateString() {
@@ -1117,7 +1120,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param url
      * @return
      * @throws MalformedURLException
@@ -1134,7 +1137,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param s
      * @return
      */
@@ -1149,7 +1152,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param coll
      * @return
      */
@@ -1169,7 +1172,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param coll
      * @return
      */
@@ -1189,7 +1192,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param collection
      * @return
      */
@@ -1199,7 +1202,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param map
      * @return
      */
@@ -1209,7 +1212,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param i
      * @return
      */
@@ -1222,7 +1225,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param b
      * @return
      */
@@ -1235,7 +1238,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param schemaSet
      * @return
      */
@@ -1249,7 +1252,7 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * @param schema
      * @return
      */
@@ -1260,5 +1263,53 @@ public class Util {
         }
         String name = schema.getFileName() + Thread.currentThread().getId() + System.currentTimeMillis();
         return UUID.nameUUIDFromBytes(name.getBytes()).toString();
+    }
+
+    /**
+     * Returns the URL binding of the given Stripes action bean class. Be aware that a Stripes URL binding may be parameterized
+     * (e.g. "/foo/{bar}/{baz}"). If you want to get the URL binding with parameters replaced by real values, use
+     * {@link #getUrlBinding(Class, Pair...)}.
+     *
+     * @param actionBeanClass
+     * @return
+     */
+    public static String getUrlBinding(Class<? extends ActionBean> actionBeanClass) {
+
+        if (actionBeanClass == null) {
+            return null;
+        } else {
+            return actionBeanClass.getAnnotation(UrlBinding.class).value();
+        }
+    }
+
+    /**
+     * Returns the URL binding of the given Stripes action bean class. If the URL binding is parameterized, replaces the reserved
+     * "$event" parameter with the given event (but only if the latter is supplied), and replaces all other parameters with values
+     * found from the given array of key-value pairs.
+     *
+     * @param actionBeanClass
+     * @return
+     */
+    public static String getUrlBinding(Class<? extends ActionBean> actionBeanClass, String event,
+            Pair<String, Object>... parameters) {
+
+        String urlBinding = null;
+        if (actionBeanClass != null) {
+
+            urlBinding = actionBeanClass.getAnnotation(UrlBinding.class).value();
+            if (StringUtils.isNotBlank(event)) {
+                urlBinding = StringUtils.replace(urlBinding, "{$event}", event);
+            }
+
+            if (parameters != null && parameters.length > 0) {
+                for (int i = 0; i < parameters.length; i++) {
+                    String paramPlaceHolder = "{" + parameters[i].getLeft() + "}";
+                    String paramValue = parameters[i].getRight().toString();
+                    urlBinding = StringUtils.replace(urlBinding, paramPlaceHolder, paramValue);
+                }
+            }
+        }
+
+        return urlBinding;
     }
 }

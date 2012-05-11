@@ -10,6 +10,7 @@ List<SchemaSet> schemaSets=null;
 List<Schema> schemas=null;
 %>
 
+<%@ include file="/pages/common/taglibs.jsp"%>
 <%@ include file="history.jsp" %>
 
 <%
@@ -151,9 +152,9 @@ List<Schema> schemas=null;
                     <tr>
                         <td>
                             Schema set:
-                            <a href="<%=request.getContextPath()%>/schemaSet.action?schemaSet.id=<%=schemaSet.getId()%>">
-                                <%=Util.processForDisplay(schemaSet.getIdentifier())%>
-                            </a>
+                            <stripes:link beanclass="eionet.web.action.SchemaSetActionBean"><c:out value="<%=schemaSet.getIdentifier()%>"/>
+                                <stripes:param name="schemaSet.id" value="<%=schemaSet.getId()%>"/>
+                            </stripes:link>
                         </td>
                     </tr>
                 <%
@@ -173,9 +174,9 @@ List<Schema> schemas=null;
                     <tr>
                         <td>
                             Schema:
-                            <a href="<%=request.getContextPath()%>/schema.action?schema.id=<%=schema.getId()%>">
-                                <%=Util.processForDisplay(schema.getFileName())%>
-                            </a>
+                            <stripes:link beanclass="eionet.web.action.SchemaActionBean"><c:out value="<%=schema.getFileName()%>"/>
+                                <stripes:param name="schema.id" value="<%=schema.getId()%>"/>
+                            </stripes:link>
                         </td>
                     </tr>
                 <%
