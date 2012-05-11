@@ -674,7 +674,7 @@ public class SchemaServiceImpl implements ISchemaService {
             }
 
             // Do schema check-out, get the new schema's ID.
-            schemaSetDAO.setWorkingUser(schemaId, userName);
+            schemaDAO.setWorkingUser(schemaId, userName);
             int newSchemaId = schemaDAO.copySchemaRow(schemaId, userName, null);
 
             // Copy the schema's simple attributes.

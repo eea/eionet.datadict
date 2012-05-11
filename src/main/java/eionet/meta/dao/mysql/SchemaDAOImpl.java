@@ -525,7 +525,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     public void setWorkingUser(int schemaId, String userName) {
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("schemaSetId", schemaId);
+        params.put("schemaId", schemaId);
         params.put("userName", userName);
 
         getNamedParameterJdbcTemplate().update(SET_WORKING_USER_SQL, params);

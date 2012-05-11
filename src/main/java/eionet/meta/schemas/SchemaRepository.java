@@ -367,10 +367,11 @@ public class SchemaRepository {
             throw new SchemaRepositoryException("Repository not created yet!");
         }
 
-        // If source directory not existing, throw exception.
+        // If source directory not existing, assume this is a schema set without any schemas in it yet.
+        // In this case simply exit silently.
         File srcDir = new File(REPO_PATH, srcIdentifier);
         if (!srcDir.exists() || !srcDir.isDirectory()){
-            throw new SchemaRepositoryException("Source directory not existing!");
+            return;
         }
 
         // If destination directory exists already, throw exception.
