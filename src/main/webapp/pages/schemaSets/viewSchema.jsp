@@ -117,12 +117,6 @@
                                     <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
                                 </stripes:link>
                             </li>
-                            <li>
-                                <stripes:link beanclass="${actionBean.class.name}" event="delete" onclick="return confirm('Are you sure you want to delete this schema?');">
-                                    Delete
-                                    <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
-                                </stripes:link>
-                            </li>
                         </c:if>
                     </c:if>
                 </ul>
