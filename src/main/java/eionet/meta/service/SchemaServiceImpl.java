@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sourceforge.stripes.action.FileBean;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -771,7 +773,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
 
-            // Do schema set check-out, get the new schema set's ID.
+            // Copy schema set row, get the new row's ID.
             int newSchemaSetId = schemaSetDAO.copySchemaSetRow(schemaSetId, userName, identifier);
 
             // Copy the schema set's simple attributes.
@@ -789,7 +791,65 @@ public class SchemaServiceImpl implements ISchemaService {
 
             return newSchemaSetId;
         } catch (Exception e) {
-            throw new ServiceException("Failed to check out schema set", e);
+            throw new ServiceException("Failed to copy schema set", e);
+        }
+    }
+
+    /**
+     * @see eionet.meta.service.ISchemaService#getSchemaSetVersions(java.lang.String, int...)
+     */
+    @Override
+    public List<SchemaSet> getSchemaSetVersions(String continuityId, int... excludeIds) throws ServiceException {
+
+        try {
+            return schemaSetDAO.getSchemaSetVersions(continuityId, excludeIds);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get schema set versions for continuity id " + continuityId, e);
+        }
+    }
+
+    /**
+     * @throws ServiceException
+     * @see eionet.meta.service.ISchemaService#getSchemaVersions(java.lang.String, int...)
+     */
+    @Override
+    public List<Schema> getSchemaVersions(String continuityId, int... excludeIds) throws ServiceException {
+        try {
+            return schemaDAO.getSchemaVersions(continuityId, excludeIds);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get root-level schema versions for continuity id " + continuityId, e);
+        }
+    }
+
+    /**
+     * @see eionet.meta.service.ISchemaService#copySchema(int, java.lang.String, FileBean)
+     */
+    @Override
+    public int copySchema(int schemaId, String userName, FileBean newFile) throws ServiceException {
+
+        if (schemaId <= 0) {
+            throw new IllegalArgumentException("Invalid schema id: " + schemaId);
+        }
+
+        if (StringUtils.isBlank(userName) || newFile == null) {
+            throw new IllegalArgumentException("User name and the new file must not be null or empty!");
+        }
+
+        try {
+            Schema schema = schemaDAO.getSchema(schemaId);
+
+            // Copy schema row, get the new row's ID.
+            int newSchemaId = schemaDAO.copySchemaRow(schemaId, userName, newFile.getFileName());
+
+            // Copy the schema set's simple attributes.
+            attributeDAO.copySimpleAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
+
+            // Save the new file in schema repository.
+            schemaRepository.addSchema(newFile, null, false);
+
+            return newSchemaId;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to copy schema row", e);
         }
     }
 }

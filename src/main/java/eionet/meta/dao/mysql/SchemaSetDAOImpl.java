@@ -23,11 +23,13 @@ package eionet.meta.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.displaytag.properties.SortOrderEnum;
@@ -150,7 +152,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
                 ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                 ss.setWorkingUser(rs.getString("WORKING_USER"));
-                ss.setDateModified(rs.getDate("DATE_MODIFIED"));
+                ss.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
                 ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
@@ -192,7 +194,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
                 ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                 ss.setWorkingUser(rs.getString("WORKING_USER"));
-                ss.setDateModified(rs.getDate("DATE_MODIFIED"));
+                ss.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
                 ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
@@ -218,7 +220,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
                 ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                 ss.setWorkingUser(rs.getString("WORKING_USER"));
-                ss.setDateModified(rs.getDate("DATE_MODIFIED"));
+                ss.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
                 ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
@@ -253,7 +255,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
                 ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                 ss.setWorkingUser(rs.getString("WORKING_USER"));
-                ss.setDateModified(rs.getDate("DATE_MODIFIED"));
+                ss.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
                 ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
@@ -407,7 +409,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                     ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
                     ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                     ss.setWorkingUser(rs.getString("WORKING_USER"));
-                    ss.setDateModified(rs.getDate("DATE_MODIFIED"));
+                    ss.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
                     ss.setUserModified(rs.getString("USER_MODIFIED"));
                     ss.setComment(rs.getString("COMMENT"));
                     ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
@@ -436,7 +438,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                     ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
                     ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                     ss.setWorkingUser(rs.getString("WORKING_USER"));
-                    ss.setDateModified(rs.getDate("DATE_MODIFIED"));
+                    ss.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
                     ss.setUserModified(rs.getString("USER_MODIFIED"));
                     ss.setComment(rs.getString("COMMENT"));
                     ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
@@ -521,5 +523,45 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
         getNamedParameterJdbcTemplate().update(COPY_SCHEMA_SET_ROW, parameters);
         return getLastInsertId();
+    }
+
+    /**
+     * @see eionet.meta.dao.ISchemaSetDAO#getSchemaSetVersions(java.lang.String, int...)
+     */
+    @Override
+    public List<SchemaSet> getSchemaSetVersions(String continuityId, int... excludeIds) {
+
+        if (StringUtils.isBlank(continuityId)){
+            throw new IllegalArgumentException("Continuity id must not be blank!");
+        }
+
+        String sql = "select * from T_SCHEMA_SET where WORKING_COPY=false and CONTINUITY_ID=:continuityId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("continuityId", continuityId);
+
+        if (excludeIds != null && excludeIds.length > 0){
+            sql += " and SCHEMA_SET_ID not in (:excludeIds)";
+            params.put("excludeIds", Arrays.asList(ArrayUtils.toObject(excludeIds)));
+        }
+        sql += " order by SCHEMA_SET_ID desc";
+
+        List<SchemaSet> resultList = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<SchemaSet>() {
+            public SchemaSet mapRow(ResultSet rs, int rowNum) throws SQLException {
+                SchemaSet ss = new SchemaSet();
+                ss.setId(rs.getInt("SCHEMA_SET_ID"));
+                ss.setIdentifier(rs.getString("IDENTIFIER"));
+                ss.setContinuityId(rs.getString("CONTINUITY_ID"));
+                ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                ss.setWorkingUser(rs.getString("WORKING_USER"));
+                ss.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
+                ss.setUserModified(rs.getString("USER_MODIFIED"));
+                ss.setComment(rs.getString("COMMENT"));
+                ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                return ss;
+            }
+        });
+
+        return resultList;
     }
 }

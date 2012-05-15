@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import eionet.meta.dao.domain.Schema;
+import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SchemaFilter;
 import eionet.meta.service.data.SchemasResult;
 
@@ -119,18 +120,18 @@ public interface ISchemaDAO {
     void checkIn(int schemaId, String username, String comment);
 
     /**
-     * Returns true if a root-level schema by the given filename already exists, regardless of whether it
-     * is a working copy or not. Otherwise return false.
+     * Returns true if a root-level schema by the given filename already exists, regardless of whether it is a working copy or not.
+     * Otherwise return false.
      *
-     * @param filename The filename to check.
+     * @param filename
+     *            The filename to check.
      * @return The boolean in question.
      */
     boolean existsRootLevelSchema(String filename);
 
     /**
-     * Returns a list of all root-level schemas. If the given boolean is true,
-     * only schemas in Released status are returned. Otherwise the status is ignored.
-     * Note that the returned list does not contain any working copies!
+     * Returns a list of all root-level schemas. If the given boolean is true, only schemas in Released status are returned.
+     * Otherwise the status is ignored. Note that the returned list does not contain any working copies!
      *
      * @param listReleasedOnly
      * @return
@@ -138,8 +139,8 @@ public interface ISchemaDAO {
     List<Schema> getRootLevelSchemas(boolean listReleasedOnly);
 
     /**
-     * Returns working copy of the schema identified by the given id.
-     * This means the given id must denote a schema that has been checked out by somebody.
+     * Returns working copy of the schema identified by the given id. This means the given id must denote a schema that has been
+     * checked out by somebody.
      *
      * @param schemaId
      * @return
@@ -147,8 +148,8 @@ public interface ISchemaDAO {
     Schema getWorkingCopyOfSchema(int schemaId);
 
     /**
-     * Sets the given root-level schema's WORKING_USER to the given user name.
-     * The latter may be null, in which case WORKING_USER will also be set to null.
+     * Sets the given root-level schema's WORKING_USER to the given user name. The latter may be null, in which case WORKING_USER
+     * will also be set to null.
      *
      * @param schemaId
      * @param userName
@@ -156,16 +157,13 @@ public interface ISchemaDAO {
     void setWorkingUser(int schemaId, String userName);
 
     /**
-     * Copies the T_SCHEMA row identified by the given schema id. This must be a root-level schema.
-     * The new copy's WORKING_USER and USER_MODIFIED will be set to the given user name.
-     * The new copy's FILENAME will be set to the given new file name, unless the latter
-     * is null, in which case the new copy's FILENAME shall remain the same
-     * as original's.
+     * Copies the T_SCHEMA row identified by the given schema id. This must be a root-level schema. The new copy's WORKING_USER and
+     * USER_MODIFIED will be set to the given user name. The new copy's FILENAME will be set to the given new file name, unless the
+     * latter is null, in which case the new copy's FILENAME shall remain the same as original's.
      *
-     * If the given file name (i.e. the new file name) is null, the new copy's
-     * CHECKEDOUT_COPY_ID is set to the original's id, otherwise it is set to null.
-     * This is basically an assumption that if there will be a new file name, it
-     * is not a check-out operation, therefore CHECKEDOUT_COPY_ID is irrelevant.
+     * If the given file name (i.e. the new file name) is null, the new copy's CHECKEDOUT_COPY_ID is set to the original's id,
+     * otherwise it is set to null. This is basically an assumption that if there will be a new file name, it is not a check-out
+     * operation, therefore CHECKEDOUT_COPY_ID is irrelevant.
      *
      * The method returns the new copy's auto-generated id.
      *
@@ -174,4 +172,15 @@ public interface ISchemaDAO {
      * @param newIdentifier
      */
     int copySchemaRow(int schemaId, String userName, String newFileName);
+
+    /**
+     * Returns the list of root-level schemas matching the given continuity id, excluding the ones that are working copies and the
+     * one that match the given integer inputs.
+     *
+     * @param continuityId
+     * @param excludeIds
+     * @return
+     * @throws ServiceException
+     */
+    List<Schema> getSchemaVersions(String continuityId, int... excludeIds);
 }

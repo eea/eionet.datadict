@@ -197,6 +197,32 @@
         </display:table>
     </c:if>
 
+    <%-- The section that displays versions of this schema set. --%>
+
+    <c:if test="${not empty actionBean.otherVersions}">
+        <h2>Other versions of this schema set</h2>
+        <display:table name="${actionBean.otherVersions}" class="datatable" id="otherVersion" style="width:80%">
+            <display:column title="Identifier">
+                <stripes:link beanclass="${actionBean.class.name}" title="Open schema set details">
+                    <stripes:param name="schemaSet.id" value="${otherVersion.id}"/>
+                    <c:out value="${otherVersion.identifier}"/>
+                </stripes:link>
+                <c:if test="${actionBean.userWorkingCopy && actionBean.schemaSet.checkedOutCopyId==otherVersion.id}">
+                    <span style="font-size:0.8em"><sup>(the checked-out version)</sup></span>
+                </c:if>
+            </display:column>
+            <display:column title="Status"><c:out value="${otherVersion.regStatus}"/></display:column>
+            <display:column title="Last modified">
+                <fmt:formatDate value="${otherVersion.dateModified}" pattern="dd.MM.yy HH:mm:ss"/>
+            </display:column>
+            <c:if test="${actionBean.checkInCommentsRequired}">
+                <display:column title="Comment" maxLength="30"><c:out value="${otherVersion.comment}"/></display:column>
+            </c:if>
+        </display:table>
+    </c:if>
+
+    <%-- The dialog for creating a new version (a div that is hidden unless activated) --%>
+
     <div id="newVersionDialog" title="Create new version">
         <stripes:form beanclass="${actionBean.class.name}" method="get">
 
@@ -215,6 +241,8 @@
             </div>
         </stripes:form>
     </div>
+
+    <%-- The dialog for doing the check-in (a div that is hidden unless activated) --%>
 
     <div id="checkInDialog" title="Check in">
         <stripes:form beanclass="${actionBean.class.name}" method="get">

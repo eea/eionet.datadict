@@ -113,6 +113,9 @@
                         </c:if>
                         <c:if test="${isNonCheckedOutSchema}">
                             <li>
+                                <a href="#" id="newVersionLink">New version</a>
+                            </li>
+                            <li>
                                 <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
                                     <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
                                 </stripes:link>
@@ -237,6 +240,32 @@
         </table>
     </div>
 
+    <%-- If root-level schema, display its versions if any. --%>
+
+    <c:if test="${actionBean.rootLevelSchema && not empty actionBean.otherVersions}">
+        <h2>Other versions of this schema</h2>
+        <display:table name="${actionBean.otherVersions}" class="datatable" id="otherVersion" style="width:80%">
+            <display:column title="File name">
+                <stripes:link beanclass="${actionBean.class.name}" title="Open schema details">
+                    <stripes:param name="schema.id" value="${otherVersion.id}"/>
+                    <c:out value="${otherVersion.fileName}"/>
+                </stripes:link>
+                <c:if test="${actionBean.userWorkingCopy && actionBean.schema.checkedOutCopyId==otherVersion.id}">
+                    <span style="font-size:0.8em"><sup>(the checked-out version)</sup></span>
+                </c:if>
+            </display:column>
+            <display:column title="Status"><c:out value="${otherVersion.regStatus}"/></display:column>
+            <display:column title="Last modified">
+                <fmt:formatDate value="${otherVersion.dateModified}" pattern="dd.MM.yy HH:mm:ss"/>
+            </display:column>
+            <c:if test="${actionBean.checkInCommentsRequired}">
+                <display:column title="Comment" maxLength="30"><c:out value="${otherVersion.comment}"/></display:column>
+            </c:if>
+        </display:table>
+    </c:if>
+
+    <%-- The check-in dialog for root-level schemas. Hidden unless activated. --%>
+
     <div id="checkInDialog" title="Check in">
         <stripes:form beanclass="${actionBean.class.name}" method="get">
 
@@ -255,6 +284,8 @@
         </stripes:form>
     </div>
 
+    <%-- The upload dialog. Hidden unless activated. --%>
+
     <div id="uploadSchemaDialog" title="Re-upload schema">
         <stripes:form beanclass="${actionBean.class.name}" method="post">
 
@@ -272,6 +303,27 @@
 
             <div style="display:none">
                 <stripes:hidden name="schema.id"/>
+            </div>
+        </stripes:form>
+    </div>
+
+    <%-- The dialog for creating a new version (relevant for root-level schemas only, hidden unless activated) --%>
+
+    <div id="newVersionDialog" title="Create new version">
+        <stripes:form beanclass="${actionBean.class.name}" method="get">
+
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>A new version requires a new file with a new name:</p>
+            </div>
+
+            <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>
+            <stripes:submit name="newVersion" value="Upload"/>
+            <input type="button" id="closeNewVersionDialog" value="Cancel"/>
+
+            <div style="display:none">
+                <stripes:hidden name="schema.id"/>
+                <stripes:hidden name="schema.fileName"/>
             </div>
         </stripes:form>
     </div>

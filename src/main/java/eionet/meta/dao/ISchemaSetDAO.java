@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 
@@ -178,4 +179,15 @@ public interface ISchemaSetDAO {
      * @param newIdentifier
      */
     int copySchemaSetRow(int schemaSetId, String userName, String newIdentifier);
+
+    /**
+     * Returns the list of schema sets matching the given continuity id, excluding the ones that are working copies and the ones
+     * that match the given integer inputs.
+     *
+     * @param continuityId
+     * @param excludeIds
+     * @return
+     * @throws ServiceException
+     */
+    List<SchemaSet> getSchemaSetVersions(String continuityId, int... excludeIds);
 }

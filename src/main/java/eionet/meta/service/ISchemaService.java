@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sourceforge.stripes.action.FileBean;
+
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
@@ -303,4 +305,36 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     int copySchemaSet(int schemaSetId, String userName, String identifier) throws ServiceException;
+
+    /**
+     *
+     * @param schemaId
+     * @param userName
+     * @param newFile
+     * @return
+     * @throws ServiceException
+     */
+    int copySchema(int schemaId, String userName, FileBean newFile) throws ServiceException;
+
+    /**
+     * Returns the list of schema sets matching the given continuity id, excluding the ones that are working copies and the ones
+     * that match the given integer inputs.
+     *
+     * @param continuityId
+     * @param excludeIds
+     * @return
+     * @throws ServiceException
+     */
+    List<SchemaSet> getSchemaSetVersions(String continuityId, int... excludeIds) throws ServiceException;
+
+    /**
+     * Returns the list of root-level schemas matching the given continuity id, excluding the ones that are working copies and the
+     * ones that match the given integer inputs.
+     *
+     * @param continuityId
+     * @param excludeIds
+     * @return
+     * @throws ServiceException
+     */
+    List<Schema> getSchemaVersions(String continuityId, int... excludeIds) throws ServiceException;
 }

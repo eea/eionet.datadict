@@ -82,6 +82,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     private List<Schema> schemas;
 
     /** */
+    private List<SchemaSet> otherVersions;
+
+    /** */
     private FileBean uploadedFile;
 
     /** Values of this schema set's attributes that can have multiple values. */
@@ -209,7 +212,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 addGlobalValidationError("Identifier is missing!");
             }
 
-            if (schemaService.schemaSetExists(schemaSet.getIdentifier())){
+            if (schemaService.schemaSetExists(schemaSet.getIdentifier())) {
                 addGlobalValidationError("A schema set or a schema set working copy by this identifier already exists!");
             }
         }
@@ -323,7 +326,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             throw new ServiceException("No permission to edit schema sets.");
         }
         int newSchemaSetId = schemaService.copySchemaSet(schemaSet.getId(), getUserName(), newIdentifier);
-        addSystemMessage("New version of the schema set successfully created!");
+        addSystemMessage("The new version's working copy successfully created!");
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
     }
 
@@ -341,7 +344,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-            if (schemaService.schemaSetExists(newIdentifier)){
+            if (schemaService.schemaSetExists(newIdentifier)) {
                 addGlobalValidationError("A schema set or a schema set working copy by this identifier already exists!");
             }
         }
@@ -445,8 +448,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         if (uploadedFile == null) {
             addGlobalValidationError("No file uploaded!");
-        }
-        else if (uploadedFile.getSize() <= 0){
+        } else if (uploadedFile.getSize() <= 0) {
             addGlobalValidationError("Uploaded file must not be empty!");
         }
 
@@ -844,5 +846,23 @@ public class SchemaSetActionBean extends AbstractActionBean {
             }
         }
         return mandatorySchemaAttributes;
+    }
+
+    /**
+     * @return the otherVersions
+     * @throws ServiceException
+     */
+    public List<SchemaSet> getOtherVersions() throws ServiceException {
+
+        if (otherVersions == null) {
+
+            if (schemaSet == null) {
+                throw new IllegalStateException("Schema set must be loaded for this operation!");
+            }
+
+            otherVersions =
+                schemaService.getSchemaSetVersions(schemaSet.getContinuityId(), schemaSet.getId());
+        }
+        return otherVersions;
     }
 }

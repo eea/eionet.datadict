@@ -13,6 +13,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -86,6 +87,9 @@ public class SchemaActionBean extends AbstractActionBean {
     /** Values of this schema set's attributes that can have only fixed values. */
     private Map<String, Set<String>> fixedValuedAttributeValues;
 
+    /** The list of this schema's versions. Relevant for root-level schemas only. */
+    private List<Schema> otherVersions;
+
     /** Schema service. */
     @SpringBean
     private ISchemaService schemaService;
@@ -141,7 +145,7 @@ public class SchemaActionBean extends AbstractActionBean {
     }
 
     @Before(on = {"save", "saveAndClose"})
-    public void beforeSave(){
+    public void beforeSave() {
         System.out.println(schema == null ? "schema is null" : "regStatus = " + schema.getRegStatus());
     }
 
@@ -232,6 +236,19 @@ public class SchemaActionBean extends AbstractActionBean {
         int newSchemaSetId = schemaService.checkOutSchema(schema.getId(), getUserName());
         addSystemMessage("Schema successfully checked out!");
         return new RedirectResolution(getClass()).addParameter("schema.id", newSchemaSetId);
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     * @throws IOException
+     */
+    public Resolution newVersion() throws ServiceException, IOException {
+
+        int newSchemaId = schemaService.copySchema(schema.getId(), getUserName(), uploadedFile);
+        addSystemMessage("The new version's working copy successfully created!");
+        return new RedirectResolution(getClass()).addParameter("schema.id", newSchemaId);
     }
 
     /**
@@ -709,13 +726,13 @@ public class SchemaActionBean extends AbstractActionBean {
             throw new IllegalStateException("Schema object must be initialized!");
         }
 
-        boolean isMyWorkingCopy = getUserName()!=null && schema.isWorkingCopyOf(getUserName());
+        boolean isMyWorkingCopy = getUserName() != null && schema.isWorkingCopyOf(getUserName());
 
         String schemaSetIdentifier = null;
         SchemaSet schemaSet = getSchemaSet();
         if (schemaSet != null) {
             schemaSetIdentifier = schemaSet.getIdentifier();
-            isMyWorkingCopy = getUserName()!=null && schemaSet.isWorkingCopyOf(getUserName());
+            isMyWorkingCopy = getUserName() != null && schemaSet.isWorkingCopyOf(getUserName());
         }
 
         String relPath = schemaRepository.getSchemaRelativePath(schema.getFileName(), schemaSetIdentifier, isMyWorkingCopy);
@@ -728,18 +745,18 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      * @throws IOException
      */
-    public String getSchemaUrl() throws ServiceException, IOException{
+    public String getSchemaUrl() throws ServiceException, IOException {
 
         if (schema == null) {
             throw new IllegalStateException("Schema object must be initialized!");
         }
 
-        if (schema.isWorkingCopy()){
+        if (schema.isWorkingCopy()) {
             throw new UnsupportedOperationException("Method not supported for working copies!");
         }
 
         String webAppUrl = Props.getRequiredProperty(PropsIF.DD_URL);
-        if (webAppUrl.endsWith("/")){
+        if (webAppUrl.endsWith("/")) {
             StringUtils.substringBeforeLast(webAppUrl, "/");
         }
 
@@ -747,5 +764,27 @@ public class SchemaActionBean extends AbstractActionBean {
         String relPath = schemaRepository.getSchemaRelativePath(schema.getFileName(), schemaSetIdentifier, false);
 
         return webAppUrl + DownloadServlet.SCHEMAS_PATH + relPath;
+    }
+
+    /**
+     * @return the otherVersions
+     * @throws ServiceException
+     */
+    public List<Schema> getOtherVersions() throws ServiceException {
+
+        if (!isRootLevelSchema()) {
+            throw new UnsupportedOperationException("Operation relevant for root-level schemas only!");
+        }
+
+        if (otherVersions == null) {
+
+            if (schema == null) {
+                throw new IllegalStateException("The schema must be loaded for this operation!");
+            }
+
+            otherVersions =
+                schemaService.getSchemaVersions(schema.getContinuityId(), schema.getId());
+        }
+        return otherVersions;
     }
 }
