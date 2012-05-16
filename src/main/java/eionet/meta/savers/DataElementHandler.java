@@ -72,6 +72,8 @@ public class DataElementHandler extends BaseHandler {
     public static String OLDDELIM_PREFIX = "olddelim_";
     public static String MANDATORYFLAG_PREFIX = "mndtry_";
     public static String OLDMANDATORYFLAG_PREFIX = "oldmndtry_";
+    public static String PRIMKEY_PREFIX = "primkey_";
+    public static String OLDPRIMKEY_PREFIX = "oldprimkey_";
 
     private String mode = null;
     private String elmValuesType = null;
@@ -159,14 +161,16 @@ public class DataElementHandler extends BaseHandler {
         this.dstNamespaceID = req.getParameter("dst_namespace_id");
         this.tblNamespaceID = req.getParameter("tbl_namespace_id");
         // some code might still supply parent namespace id with "ns"
-        if (this.tblNamespaceID==null || this.tblNamespaceID.length()==0)
+        if (this.tblNamespaceID==null || this.tblNamespaceID.length()==0) {
             this.tblNamespaceID = req.getParameter("ns");
+        }
 
 
         if (ctx!=null) {
             String _versioning = ctx.getInitParameter("versioning");
-            if (_versioning!=null && _versioning.equalsIgnoreCase("false"))
+            if (_versioning!=null && _versioning.equalsIgnoreCase("false")) {
                 setVersioning(false);
+            }
         }
 
         // loop over all possible attributes, set certain business rules
@@ -227,7 +231,9 @@ public class DataElementHandler extends BaseHandler {
      */
     public void cleanup() throws Exception {
 
-        if (!doCleanup) return;
+        if (!doCleanup) {
+            return;
+        }
 
         INParameters inParams = new INParameters();
 
@@ -276,24 +282,26 @@ public class DataElementHandler extends BaseHandler {
                 !mode.equalsIgnoreCase("edit") &&
                 !mode.equalsIgnoreCase("delete") &&
                 !mode.equalsIgnoreCase("copy") &&
-                !mode.equalsIgnoreCase("edit_tblelems")))
+                !mode.equalsIgnoreCase("edit_tblelems"))) {
             throw new Exception("DataElementHandler mode unspecified!");
+        }
 
         if (mode.equalsIgnoreCase("add")) {
             if (elmValuesType==null || (!elmValuesType.equalsIgnoreCase("CH1") &&
-                    !elmValuesType.equalsIgnoreCase("CH2")))
+                    !elmValuesType.equalsIgnoreCase("CH2"))) {
                 throw new Exception("Element type not specified!");
+            }
         }
 
         if (mode.equalsIgnoreCase("add") || mode.equalsIgnoreCase("copy")) {
             insert();
             delem_id = getLastInsertID();
         }
-        else if (mode.equalsIgnoreCase("edit"))
+        else if (mode.equalsIgnoreCase("edit")) {
             update();
-        else if (mode.equalsIgnoreCase("edit_tblelems"))
+        } else if (mode.equalsIgnoreCase("edit_tblelems")) {
             processTableElems();
-        else {
+        } else {
             delete();
             cleanVisuals();
         }
@@ -493,9 +501,9 @@ public class DataElementHandler extends BaseHandler {
             if (updVer!=null && updVer.equalsIgnoreCase("true")) {
                 verMan.setVersionUpdate(true);
                 setCheckedInCopyID(delem_id);
-            }
-            else
+            } else {
                 setCheckedInCopyID(req.getParameter("checkedout_copy_id"));
+            }
 
             verMan.checkIn(delem_id, "elm", req.getParameter("reg_status"));
             return;
@@ -515,8 +523,9 @@ public class DataElementHandler extends BaseHandler {
                 buf.append(delem_id).append(" and M_ATTRIBUTE_ID in (");
                 int i=0;
                 for (Iterator iter = ch1ProhibitedAttrs.iterator(); iter.hasNext();i++) {
-                    if (i>0)
+                    if (i>0) {
                         buf.append(",");
+                    }
                     buf.append(iter.next());
                 }
                 buf.append(")");
@@ -536,8 +545,9 @@ public class DataElementHandler extends BaseHandler {
         // if common element, set regisration status
         if (elmCommon) {
             String elmRegStatus = req.getParameter("reg_status");
-            if (!Util.isEmpty(elmRegStatus))
+            if (!Util.isEmpty(elmRegStatus)) {
                 gen.setField("REG_STATUS", elmRegStatus);
+            }
         }
 
         // set IS_ROD_PARAM
@@ -638,8 +648,9 @@ public class DataElementHandler extends BaseHandler {
             autoCreateBooleanFixedValues(stmt, delem_id);
         }
 
-        if (stmt!=null)
+        if (stmt!=null) {
             stmt.close();
+        }
     }
 
     /**
@@ -658,7 +669,9 @@ public class DataElementHandler extends BaseHandler {
         }
         finally {
             try {
-                if (stmt!=null) stmt.close();
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -698,8 +711,9 @@ public class DataElementHandler extends BaseHandler {
         }
 
         // if no deletion of elements requested, return
-        if (delem_ids==null || delem_ids.length==0)
+        if (delem_ids==null || delem_ids.length==0) {
             return;
+        }
 
         // go through the given elements in database, make sure they can be deleted
         // and gather information we need when starting the deletion
@@ -724,43 +738,48 @@ public class DataElementHandler extends BaseHandler {
         while (rs.next()) {
             // skip non-common elements, as this loop is relevant for common elements only
             String parentNS = rs.getString("PARENT_NS");
-            if (parentNS!=null)
+            if (parentNS!=null) {
                 continue;
+            }
 
             String identifier = rs.getString("IDENTIFIER");
             String workingCopy = rs.getString("WORKING_COPY");
             String workingUser = rs.getString("WORKING_USER");
             String regStatus = rs.getString("REG_STATUS");
-            if (workingCopy==null || regStatus==null || identifier==null)
+            if (workingCopy==null || regStatus==null || identifier==null) {
                 throw new NullPointerException();
+            }
 
             identifiers.add(identifier);
             if (workingCopy.equals("Y")) {
-                if (workingUser==null && useForce==false)
+                if (workingUser==null && useForce==false) {
                     throw new Exception("Working copy without a working user");
-                else if (!workingUser.equals(user.getUserName()) && useForce==false)
+                } else if (!workingUser.equals(user.getUserName()) && useForce==false) {
                     throw new Exception("Cannot delete working copy of another user");
-                else {
+                } else {
                     try {
                         String checkedOutCopyID = rs.getString("CHECKEDOUT_COPY_ID");
-                        if (checkedOutCopyID!=null && checkedOutCopyID.length()>0)
+                        if (checkedOutCopyID!=null && checkedOutCopyID.length()>0) {
                             unlockCheckedoutCopies.add(rs.getString("CHECKEDOUT_COPY_ID"));
+                        }
                     }
                     catch (NullPointerException npe) {}
                 }
             }
-            else if (workingUser!=null && useForce==false)
+            else if (workingUser!=null && useForce==false) {
                 throw new Exception("Element checked out by another user: " + workingUser);
-            else if (useForce==false) {
+            } else if (useForce==false) {
                 boolean canDelete = false;
-                if (regStatus.equals("Released") || regStatus.equals("Recorded"))
+                if (regStatus.equals("Released") || regStatus.equals("Recorded")) {
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "er");
-                else
+                } else {
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "u") ||
                     SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "er");
-                if (!canDelete)
+                }
+                if (!canDelete) {
                     throw new Exception("You have no permission to delete this element: " +
                             rs.getString("DATAELEM_ID"));
+                }
             }
         }
 
@@ -795,7 +814,9 @@ public class DataElementHandler extends BaseHandler {
             int i=0;
             StringBuffer buf = new StringBuffer("update DATAELEM set WORKING_USER=NULL where ");
             for (Iterator iter=unlockCheckedoutCopies.iterator(); iter.hasNext(); i++) {
-                if (i>0) buf.append(" or ");
+                if (i>0) {
+                    buf.append(" or ");
+                }
                 buf.append("DATAELEM_ID=").append(iter.next());
             }
             stmt.executeUpdate(buf.toString());
@@ -1106,6 +1127,51 @@ public class DataElementHandler extends BaseHandler {
 
             String parName = (String)parNames.nextElement();
 
+            if (parName.startsWith(OLDPRIMKEY_PREFIX)) {
+
+                Integer id = Integer.valueOf(parName.substring(OLDPRIMKEY_PREFIX.length()));
+                String oldFlag = req.getParameter(parName);
+                String newFlag = req.getParameter(PRIMKEY_PREFIX + id);
+
+                if (!oldFlag.equals(newFlag)) {
+                    flags.put(id, newFlag==null ? "" : newFlag);
+                }
+            }
+        }
+
+        if (!flags.isEmpty()) {
+
+            PreparedStatement stmt = null;
+            try {
+                stmt = conn.prepareStatement("update TBL2ELEM set PRIM_KEY=? where DATAELEM_ID=? and TABLE_ID=?");
+                for (Iterator iter = flags.entrySet().iterator(); iter.hasNext();) {
+
+                    Map.Entry entry = (Map.Entry)iter.next();
+                    stmt.setBoolean(1, Boolean.valueOf(entry.getValue().equals("T")));
+                    stmt.setInt(2, ((Integer)entry.getKey()).intValue());
+                    stmt.setInt(3, Integer.parseInt(tableID));
+                    stmt.addBatch();
+                }
+                stmt.executeBatch();
+            }
+            finally {
+                SQL.close(stmt);
+            }
+        }
+    }
+
+    /**
+     *
+     * @throws SQLException
+     */
+    private void processPrimaryKeys() throws SQLException {
+
+        HashMap flags = new HashMap();
+        Enumeration parNames = req.getParameterNames();
+        while (parNames.hasMoreElements()) {
+
+            String parName = (String)parNames.nextElement();
+
             if (parName.startsWith(OLDMANDATORYFLAG_PREFIX)) {
 
                 Integer id = Integer.valueOf(parName.substring(OLDMANDATORYFLAG_PREFIX.length()));
@@ -1358,22 +1424,26 @@ public class DataElementHandler extends BaseHandler {
     private void insertAttribute(String attrId, String value) throws Exception {
 
         // for CH1 certain attributes are not allowed
-        if (elmValuesType!=null && elmValuesType.equals("CH1") && ch1ProhibitedAttrs.contains(attrId))
+        if (elmValuesType!=null && elmValuesType.equals("CH1") && ch1ProhibitedAttrs.contains(attrId)) {
             return;
+        }
 
         // 'Datatype' attribute needs special handling
         if (mDatatypeID!=null && attrId.equals(mDatatypeID)) {
 
             // a CH2 cannot be of 'boolean' datatype
-            if (elmValuesType!=null && elmValuesType.equals("CH2"))
-                if (value.equalsIgnoreCase("boolean"))
+            if (elmValuesType!=null && elmValuesType.equals("CH2")) {
+                if (value.equalsIgnoreCase("boolean")) {
                     throw new Exception("An element of CH2 type cannot be a boolean!");
+                }
+            }
 
             // make sure that the value matches fixed values for 'Datatype'
             // we can do this in insertAttribute() only, because the problem
             // comes from Import tool only.
-            if (searchEngine==null)
+            if (searchEngine==null) {
                 searchEngine = new DDSearchEngine(conn, "", ctx);
+            }
             Vector v = searchEngine.getFixedValues(attrId, "attr");
             boolean hasMatch = false;
             for (int i=0; v!=null && i<v.size(); i++) {
@@ -1384,8 +1454,9 @@ public class DataElementHandler extends BaseHandler {
                 }
             }
 
-            if (!hasMatch)
+            if (!hasMatch) {
                 throw new Exception("Unknown datatype for element " + elmIdfier);
+            }
 
             datatypeValue = value;
         }
@@ -1452,8 +1523,9 @@ public class DataElementHandler extends BaseHandler {
     private void copyIntoNonCommon(String copyElmID) throws Exception {
 
         // return if copyElemID is null
-        if (copyElmID==null)
+        if (copyElmID==null) {
             return;
+        }
 
         // copy row in DATAELEM table
         SQLGenerator gen = new SQLGenerator();
@@ -1506,8 +1578,9 @@ public class DataElementHandler extends BaseHandler {
             copyHandler.copyFxv(lastInsertID, copyElmID, "elem");
 
             // create table-to-element relation
-            if (tableID==null || tableID.length()==0)
+            if (tableID==null || tableID.length()==0) {
                 throw new Exception("Missing tableID");
+            }
             sqlBuf = new StringBuffer("insert into TBL2ELEM (TABLE_ID, DATAELEM_ID, POSITION) select ");
             sqlBuf.append(tableID).append(", ").append(lastInsertID);
             sqlBuf.append(", max(POSITION)+1 from TBL2ELEM where TABLE_ID=").append(tableID);
@@ -1767,7 +1840,9 @@ public class DataElementHandler extends BaseHandler {
         }
         finally {
             try {
-                if (stmt!=null) stmt.close();
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -1843,8 +1918,12 @@ public class DataElementHandler extends BaseHandler {
             catch (Exception e) {
                 e.printStackTrace();
                 try {
-                    if (stmt!=null) stmt.close();
-                    if (rs!=null) rs.close();
+                    if (stmt!=null) {
+                        stmt.close();
+                    }
+                    if (rs!=null) {
+                        rs.close();
+                    }
                 }
                 catch (SQLException sqle) {}
             }
@@ -1878,8 +1957,12 @@ public class DataElementHandler extends BaseHandler {
             catch (Exception e) {
                 e.printStackTrace();
                 try {
-                    if (stmt!=null) stmt.close();
-                    if (rs!=null) rs.close();
+                    if (stmt!=null) {
+                        stmt.close();
+                    }
+                    if (rs!=null) {
+                        rs.close();
+                    }
                 }
                 catch (SQLException sqle) {}
             }

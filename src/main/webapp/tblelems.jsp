@@ -136,7 +136,7 @@
 
         // disptach the POST request
         if (Util.isEmpty(link_elm) && Util.isEmpty(rplc_elm)){
-            
+
             String redirUrl = "";
             String mode = request.getParameter("mode");
             if (mode.equals("add") || mode.equals("copy"))
@@ -515,22 +515,29 @@ if (messages.trim().length()>0){
                         %>
 
                         <th scope="col" class="scope-col">Datatype</th>
-                        <th scope="col" class="scope-col">Element type</th>
+                        <th scope="col" class="scope-col">Elem. type</th>
                         <th scope="col" class="scope-col">Mandatory</th>
 
                         <%
+                        boolean hasQuantitativeElements = false;
                         boolean hasFixedValueElements = false;
                         for (int i=0; elems!=null && i<elems.size(); i++){
                             String type = ((DataElement)elems.get(i)).getType();
                             if (type!=null && type.equals("CH1")){
                                 hasFixedValueElements = true;
-                                break;
+                            }
+                            else if (type!=null && type.equals("CH2")){
+                                hasQuantitativeElements = true;
                             }
                         }
                         if (hasFixedValueElements){
                             %>
                             <th scope="col" class="scope-col">Value delimiter</th><%
-                            }
+                        }
+                        if (hasQuantitativeElements){
+                            %>
+                            <th scope="col" class="scope-col">Prim. key</th><%
+                        }
                         %>
                     </tr>
                     </thead>
@@ -593,6 +600,9 @@ if (messages.trim().length()>0){
 
                         String mandatoryFlag = elem.isMandatoryFlag() ? "T" : "F";
                         String mandatoryFlagChecked = elem.isMandatoryFlag() ? "checked=\"checked\"" : "";
+
+                        String primaryKeyFlag = elem.isPrimaryKey() ? "T" : "F";
+                        String primaryKeyFlagChecked = elem.isPrimaryKey() ? "checked=\"checked\"" : "";
 
                         String trStyle = (i%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
                     %>
@@ -698,6 +708,19 @@ if (messages.trim().length()>0){
                                             %>
                                         </select>
                                         <input type="hidden" name="olddelim_<%=elem.getID()%>" value="<%=valueDelimiter%>"/>
+                                    </td><%
+                                }
+                                else{
+                                    %><td style="text-align: left; padding-right:10px">&nbsp;</td><%
+                                }
+                            }
+
+                            if (hasQuantitativeElements){
+                                if (elem.getType()!=null && elem.getType().equals("CH2")){
+                                    %>
+                                    <td style="text-align: left; padding-right:10px">
+                                        <input type="hidden" name="oldprimkey_<%=elem.getID()%>" value="<%=primaryKeyFlag%>"/>
+                                        <input type="checkbox" name="primkey_<%=elem.getID()%>"  value="T" onclick="tbl_obj.clickOtherObject();" <%=primaryKeyFlagChecked%>/>
                                     </td><%
                                 }
                                 else{

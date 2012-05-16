@@ -53,6 +53,7 @@ public class DataElement implements Comparable{
     private String valueDelimiter;
 
     private boolean mandatoryFlag;
+    private boolean primaryKey;
 
     /*
      *
@@ -527,5 +528,19 @@ public class DataElement implements Comparable{
      */
     public void setMandatoryFlag(boolean mandatoryFlag) {
         this.mandatoryFlag = mandatoryFlag;
+    }
+
+    /**
+     * @return the primaryKey
+     */
+    public boolean isPrimaryKey() {
+        return primaryKey;
+    }
+
+    /**
+     * @param primaryKey the primaryKey to set
+     */
+    public void setPrimaryKey(boolean primaryKey) {
+        this.primaryKey = primaryKey;
     }
 }
