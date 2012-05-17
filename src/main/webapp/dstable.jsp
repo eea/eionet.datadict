@@ -1308,6 +1308,7 @@ else if (mode.equals("add"))
                                             boolean hasMultivalElms = false;
                                             boolean hasCommonElms = false;
                                             boolean hasMandatoryElms = false;
+                                            boolean hasPrimaryKeys = false;
                                             %>
 
                                                 <h2><%=Util.processForDisplay(title)%></h2>
@@ -1409,6 +1410,11 @@ else if (mode.equals("add"))
                                                                                 </a><%
                                                                                 hasForeignKeys = true;
                                                                             }
+
+                                                                            if (elem.isPrimaryKey()){ %>
+                                                                                &nbsp;<span style="font: bold italic" title="Element participates in primary key">(PK)</span><%
+                                                                                hasPrimaryKeys = true;
+                                                                            }
                                                                             %>
                                                                         </td>
                                                                         <!-- gis type -->
@@ -1463,6 +1469,11 @@ else if (mode.equals("add"))
                                                     if (user!=null && elems!=null && elems.size()>0 && hasForeignKeys){%>
                                                         <div>
                                                                 (the <em style="font-weight:bold;text-decoration:underline">(FK)</em> link indicates the element participating in a foreign key relation)
+                                                        </div><%
+                                                    }
+                                                    if (user!=null && hasPrimaryKeys){%>
+                                                        <div>
+                                                                (<em style="font-weight:bold;text-decoration:underline">(PK)</em> marks elements participating in the table's primary key)
                                                         </div><%
                                                     }
                                                     if (elems!=null && elems.size()>0 && hasCommonElms){%>
