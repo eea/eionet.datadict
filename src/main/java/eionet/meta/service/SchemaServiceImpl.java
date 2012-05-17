@@ -53,6 +53,7 @@ import eionet.util.SecurityUtil;
  * @author Juhan Voolaid
  */
 @Service
+@Transactional
 public class SchemaServiceImpl implements ISchemaService {
 
     /** The DAO for operations with attributes */
