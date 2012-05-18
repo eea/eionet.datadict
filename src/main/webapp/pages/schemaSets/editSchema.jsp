@@ -150,7 +150,7 @@
                     <td>
                         <stripes:submit name="save" value="Save" class="mediumbuttonb"/>
                         <stripes:submit name="saveAndClose" value="Save & close" class="mediumbuttonb"/>
-                        <stripes:submit name="cancel" value="Cancel" class="mediumbuttonb"/>
+                        <stripes:submit name="cancelEdit" value="Cancel" class="mediumbuttonb"/>
                     </td>
                 </tr>
             </table>

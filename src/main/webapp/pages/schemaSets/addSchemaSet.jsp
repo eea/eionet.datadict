@@ -103,6 +103,7 @@
                     <th>&nbsp;</th>
                     <td colspan="3">
                         <stripes:submit name="add" value="Add" class="mediumbuttonb"/>
+                        <stripes:submit name="cancelAdd" value="Cancel" class="mediumbuttonb"/>
                     </td>
                 </tr>
             </table>

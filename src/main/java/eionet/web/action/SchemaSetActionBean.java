@@ -260,8 +260,18 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @return
      * @throws DAOException
      */
-    public Resolution cancel() throws DAOException {
+    public Resolution cancelEdit() throws DAOException {
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
+    }
+
+
+    /**
+     *
+     * @return
+     * @throws DAOException
+     */
+    public Resolution cancelAdd() throws DAOException {
+        return new RedirectResolution(BrowseSchemaSetsActionBean.class);
     }
 
     /**

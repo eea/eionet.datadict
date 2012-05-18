@@ -198,8 +198,17 @@ public class SchemaActionBean extends AbstractActionBean {
      * @return
      * @throws ServiceException
      */
-    public Resolution cancel() throws ServiceException {
+    public Resolution cancelEdit() throws ServiceException {
         return new RedirectResolution(getClass()).addParameter("schema.id", schema.getId());
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution cancelAdd() throws ServiceException {
+        return new RedirectResolution(BrowseSchemaSetsActionBean.class);
     }
 
     /**
