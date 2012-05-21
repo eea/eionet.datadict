@@ -21,8 +21,8 @@
                         <stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link>
                     </li>
                 </c:if>
-                <li><a href="${pageContext.request.contextPath}/searchSchemaSets.action">Search schema sets</a></li>
-                <li><a href="${pageContext.request.contextPath}/searchSchemas.action">Search schemas</a></li>
+                <li><a href="${pageContext.request.contextPath}/schemasets/search/">Search schema sets</a></li>
+                <li><a href="${pageContext.request.contextPath}/schema/search/">Search schemas</a></li>
                 <c:if test="${not empty actionBean.user}">
                     <stripes:link beanclass="${actionBean.class.name}" event="workingCopies">
                         List my working copies
@@ -51,13 +51,13 @@
         </c:if>
 
         <c:if test="${not empty actionBean.user && actionBean.context.eventName!='workingCopies'}">
-	        <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
-	            Hint: this page does not list working copies. Use Operations menu or "Your checkouts" page
-	            to list your working copies.
-	        </div>
+            <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
+                Hint: this page does not list working copies. Use Operations menu or "Your checkouts" page
+                to list your working copies.
+            </div>
         </c:if>
 
-        <stripes:form id="schemaSetsForm" action="/schemaSets.action" method="post" style="margin-top:1em">
+        <stripes:form id="schemaSetsForm" action="/schemasets/browse/" method="post" style="margin-top:1em">
             <ul class="menu">
                 <c:forEach var="schemaSet" items="${actionBean.schemaSets}">
                     <li>
@@ -92,7 +92,7 @@
                                 </c:otherwise>
                             </c:choose>
                         </c:if>
-                        <stripes:link href="/schema.action">
+                        <stripes:link beanclass="eionet.web.action.SchemaActionBean">
                             <stripes:param name="schema.id" value="${schema.id}" />
                             <c:out value="${schema.fileName}"/>
                         </stripes:link>

@@ -237,7 +237,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     public SchemasResult searchSchemas(SchemaFilter searchFilter) {
         StringBuilder sql = new StringBuilder();
         sql.append("select * from T_SCHEMA as s LEFT OUTER JOIN T_SCHEMA_SET as ss ON (s.schema_set_id = ss.schema_set_id) ");
-        sql.append("WHERE ss.WORKING_COPY=FALSE AND (s.WORKING_COPY=FALSE OR s.WORKING_COPY IS NULL) ");
+        sql.append("WHERE (ss.WORKING_COPY=FALSE OR ss.WORKING_COPY IS NULL) AND (s.WORKING_COPY=FALSE OR s.WORKING_COPY IS NULL) ");
 
         Map<String, Object> params = new HashMap<String, Object>();
         // Where clause
@@ -250,15 +250,15 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
             }
             if (StringUtils.isNotEmpty(searchFilter.getSchemaSetIdentifier())) {
                 sql.append("AND ");
-                sql.append("ss.IDENTIFIER = :identifier ");
+                sql.append("ss.IDENTIFIER like :identifier ");
                 String identifier = "%" + searchFilter.getSchemaSetIdentifier() + "%";
                 params.put("identifier", identifier);
             }
             if (StringUtils.isNotEmpty(searchFilter.getRegStatus())) {
                 sql.append("AND ");
-                sql.append("(s.REG_STATUS = :regStatus OR s.REG_STATUS IS NULL) ");
-                sql.append("AND ");
-                sql.append("ss.REG_STATUS = :regStatus ");
+                sql.append("((s.REG_STATUS = :regStatus OR s.REG_STATUS IS NULL) ");
+                sql.append("OR ");
+                sql.append("(ss.REG_STATUS = :regStatus OR ss.REG_STATUS IS NULL)) ");
                 params.put("regStatus", searchFilter.getRegStatus());
             }
             if (searchFilter.isAttributesValued()) {
@@ -293,7 +293,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         }
         sql.append("LIMIT ").append(searchFilter.getOffset()).append(",").append(searchFilter.getPageSize());
 
-        // LOGGER.debug("SQL: " + sql.toString());
+        LOGGER.debug("SQL: " + sql.toString());
 
         List<Schema> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Schema>() {
             public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {

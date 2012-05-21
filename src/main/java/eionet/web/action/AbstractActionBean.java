@@ -48,7 +48,7 @@ import eionet.web.DDActionBeanContext;
 public abstract class AbstractActionBean implements ActionBean {
 
     /** Logger. */
-    private static final Logger LOGGER = Logger.getLogger(AbstractActionBean.class);
+    protected static final Logger LOGGER = Logger.getLogger(AbstractActionBean.class);
 
     private static final String SYSTEM_MESSAGES = "systemMessages";
     private static final String CAUTION_MESSAGES = "cautionMessages";

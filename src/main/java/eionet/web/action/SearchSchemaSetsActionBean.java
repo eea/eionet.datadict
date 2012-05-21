@@ -50,7 +50,7 @@ import eionet.util.SecurityUtil;
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/searchSchemaSets.action")
+@UrlBinding("/schemasets/search/{$event}")
 public class SearchSchemaSetsActionBean extends AbstractActionBean {
 
     /** */

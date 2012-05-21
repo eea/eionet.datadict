@@ -10,17 +10,17 @@
     <stripes:layout-component name="contents">
 
         <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
-	        <div id="drop-operations">
-	            <h2>Operations:</h2>
-	            <ul>
-	                <li><a href="${pageContext.request.contextPath}/schema.action?add=">Add root-level schema</a></li>
-	            </ul>
-	        </div>
+            <div id="drop-operations">
+                <h2>Operations:</h2>
+                <ul>
+                <li><stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link></li>
+            </ul>
+            </div>
         </c:if>
 
         <h1>Search schemas</h1>
 
-        <stripes:form id="searchResultsForm" action="/searchSchemas.action" method="get">
+        <stripes:form id="searchResultsForm" action="/schema/search/" method="get">
             <div style="margin-top:1em">
                 <label class="question" style="width:18%;float:left;padding-top:0.2em" for="name">Schema file name:</label>
                 <stripes:text id="name" name="searchFilter.fileName" />
@@ -33,7 +33,6 @@
                 <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
                     <stripes:options-collection collection="${actionBean.regStatuses}" />
                 </stripes:select>
-                <span style="font-size:0.8em"><sup>(Specify only for root-level schemas!)</sup></span>
                 <c:forEach var="attr" items="${actionBean.searchFilter.attributes}" varStatus="row">
                     <br/>
                     <label class="question" style="width:18%;float:left;padding-top:0.2em" for="attr${row.index}">
@@ -50,7 +49,7 @@
 
             <br />
 
-            <display:table name="actionBean.schemasResult" class="sortable" id="item" requestURI="/searchSchemas.action">
+            <display:table name="actionBean.schemasResult" class="sortable" id="item" requestURI="/schema/search/">
 
                 <display:column title="File name" sortable="true" sortName="sortName" sortProperty="fileName">
                     <stripes:link href="#">
@@ -58,11 +57,13 @@
                         <c:out value="${item.fileName}" />
                     </stripes:link>
                 </display:column>
-                <display:column title="Schema set identifier" sortable="true" sortProperty="schemaSetIdentifier">
-                    <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
-                        <stripes:param name="schemaSet.id" value="${item.schemaSetId}" />
-                        <c:out value="${item.schemaSetIdentifier}" />
-                    </stripes:link>
+                <display:column title="Schema set identifier" sortable="true" sortProperty="identifier">
+                    <c:if test="${item.schemaSetId != 0 }">
+                        <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
+                            <stripes:param name="schemaSet.id" value="${item.schemaSetId}" />
+                            <c:out value="${item.schemaSetIdentifier}" />
+                        </stripes:link>
+                    </c:if>
                 </display:column>
             </display:table>
 

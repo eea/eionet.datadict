@@ -44,7 +44,7 @@ import eionet.meta.service.data.SchemasResult;
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/searchSchemas.action")
+@UrlBinding("/schema/search/{$event}")
 public class SearchSchemaActionBean extends AbstractActionBean {
 
     private static final String SEARCH_SCHEMAS_JSP = "/pages/schemaSets/searchSchemas.jsp";
@@ -70,6 +70,7 @@ public class SearchSchemaActionBean extends AbstractActionBean {
 
     @DefaultHandler
     public Resolution search() throws ServiceException {
+        LOGGER.debug("Search schemas");
         if (searchFilter == null) {
             searchFilter = new SchemaFilter();
             searchFilter.setAttributes(schemaService.getSchemaAttributes());

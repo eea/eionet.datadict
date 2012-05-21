@@ -47,7 +47,8 @@ import eionet.util.SecurityUtil;
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/schemaSets.action")
+//@UrlBinding("/schemaSets.action")
+@UrlBinding("/schemasets/browse/{$event}")
 public class BrowseSchemaSetsActionBean extends AbstractActionBean {
 
     /** */

@@ -188,7 +188,7 @@
     <c:if test="${not empty actionBean.schemas}">
         <display:table name="${actionBean.schemas}" class="datatable" id="schema" style="width:80%">
             <display:column title="File name">
-                <stripes:link href="schema.action" title="Open schema details">
+                <stripes:link beanclass="eionet.web.action.SchemaActionBean" title="Open schema details">
                     <stripes:param name="schema.id" value="${schema.id}"/>
                     <c:out value="${schema.fileName}"/>
                 </stripes:link>

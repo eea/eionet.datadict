@@ -174,6 +174,24 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/documentation/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/schemaset/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/schemasets/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/schema/*</url-pattern>
+    </servlet-mapping>
+    <!--
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/schemas/*</url-pattern>
+    </servlet-mapping>
+     -->
 
     <servlet>
         <servlet-name>env</servlet-name>

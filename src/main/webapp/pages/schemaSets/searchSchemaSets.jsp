@@ -21,7 +21,7 @@
 
         <h1>Search schema sets</h1>
 
-        <stripes:form id="searchResultsForm" action="/searchSchemaSets.action" method="get">
+        <stripes:form id="searchResultsForm" action="/schemasets/search/" method="get">
             <div style="margin-top:1em">
                 <label class="question" style="width:16%;float:left;padding-top:0.2em" for="identifier">Identifier:</label>
                 <stripes:text id="identifier" name="searchFilter.identifier" />
@@ -46,7 +46,7 @@
 
             <br />
 
-            <display:table name="actionBean.schemaSetsResult" class="sortable" id="item" requestURI="/searchSchemaSets.action">
+            <display:table name="actionBean.schemaSetsResult" class="sortable" id="item" requestURI="/schemasets/search/">
                 <%--
                 <c:if test="${not empty actionBean.user}">
                     <display:column title="" sortable="true" sortName="sortName" sortProperty="identifier">
