@@ -264,4 +264,12 @@ public class SchemaSet {
     public boolean isCheckedOutBy(String userName) {
         return isWorkingCopy == false && workingUser != null && workingUser.equals(userName);
     }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isReleased(){
+        return regStatus != null && regStatus.equals(RegStatus.RELEASED);
+    }
 }

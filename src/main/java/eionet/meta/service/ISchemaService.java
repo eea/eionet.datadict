@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sourceforge.stripes.action.FileBean;
-
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
@@ -318,23 +317,29 @@ public interface ISchemaService {
 
     /**
      * Returns the list of schema sets matching the given continuity id, excluding the ones that are working copies and the ones
-     * that match the given integer inputs.
+     * that match the given integer inputs. The method may choose to hide certain versions based on the permissions of the given
+     * user.
      *
+     * @param userName
      * @param continuityId
      * @param excludeIds
+     *
      * @return
      * @throws ServiceException
      */
-    List<SchemaSet> getSchemaSetVersions(String continuityId, int... excludeIds) throws ServiceException;
+    List<SchemaSet> getSchemaSetVersions(String userName, String continuityId, int... excludeIds) throws ServiceException;
 
     /**
      * Returns the list of root-level schemas matching the given continuity id, excluding the ones that are working copies and the
-     * ones that match the given integer inputs.
+     * ones that match the given integer inputs. The method may choose to hide certain versions based on the permissions of the
+     * given user.
      *
+     * @param userName
      * @param continuityId
      * @param excludeIds
+     *
      * @return
      * @throws ServiceException
      */
-    List<Schema> getSchemaVersions(String continuityId, int... excludeIds) throws ServiceException;
+    List<Schema> getSchemaVersions(String userName, String continuityId, int... excludeIds) throws ServiceException;
 }

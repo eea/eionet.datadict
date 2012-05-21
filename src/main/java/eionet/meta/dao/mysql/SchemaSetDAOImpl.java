@@ -526,10 +526,10 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     }
 
     /**
-     * @see eionet.meta.dao.ISchemaSetDAO#getSchemaSetVersions(java.lang.String, int...)
+     * @see eionet.meta.dao.ISchemaSetDAO#getSchemaSetVersions(String, java.lang.String, int...)
      */
     @Override
-    public List<SchemaSet> getSchemaSetVersions(String continuityId, int... excludeIds) {
+    public List<SchemaSet> getSchemaSetVersions(String userName, String continuityId, int... excludeIds) {
 
         if (StringUtils.isBlank(continuityId)){
             throw new IllegalArgumentException("Continuity id must not be blank!");
@@ -538,6 +538,11 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         String sql = "select * from T_SCHEMA_SET where WORKING_COPY=false and CONTINUITY_ID=:continuityId";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("continuityId", continuityId);
+
+        if (StringUtils.isBlank(userName)){
+            sql += " and REG_STATUS=:regStatus";
+            params.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
+        }
 
         if (excludeIds != null && excludeIds.length > 0){
             sql += " and SCHEMA_SET_ID not in (:excludeIds)";

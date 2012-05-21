@@ -183,7 +183,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     public List<Schema> getSchemas(List<Integer> ids) {
 
         String sql =
-            "select s.*, ss.IDENTIFIER from t_schema as s LEFT OUTER JOIN t_schema_set as ss ON (s.schema_set_id = ss.schema_set_id) "
+            "select s.*, ss.IDENTIFIER from T_SCHEMA as s LEFT OUTER JOIN T_SCHEMA_SET as ss ON (s.schema_set_id = ss.schema_set_id) "
             + "where SCHEMA_ID in (:ids)";
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -223,7 +223,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     @Override
     public List<Integer> getSchemaIds(List<Integer> schemaSetIds) {
         String sql =
-            "select s.SCHEMA_ID from t_schema as s LEFT JOIN t_schema_set as ss ON (s.schema_set_id = ss.schema_set_id) "
+            "select s.SCHEMA_ID from T_SCHEMA as s LEFT JOIN T_SCHEMA_SET as ss ON (s.schema_set_id = ss.schema_set_id) "
             + "where ss.schema_set_id in (:schemaSetIds)";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("schemaSetIds", schemaSetIds);
@@ -236,7 +236,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     @Override
     public SchemasResult searchSchemas(SchemaFilter searchFilter) {
         StringBuilder sql = new StringBuilder();
-        sql.append("select * from t_schema as s LEFT OUTER JOIN t_schema_set as ss ON (s.schema_set_id = ss.schema_set_id) ");
+        sql.append("select * from T_SCHEMA as s LEFT OUTER JOIN T_SCHEMA_SET as ss ON (s.schema_set_id = ss.schema_set_id) ");
         sql.append("WHERE ss.WORKING_COPY=FALSE AND (s.WORKING_COPY=FALSE OR s.WORKING_COPY IS NULL) ");
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -551,10 +551,10 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     }
 
     /**
-     * @see eionet.meta.dao.ISchemaDAO#getSchemaVersions(java.lang.String, int...)
+     * @see eionet.meta.dao.ISchemaDAO#getSchemaVersions(String, java.lang.String, int...)
      */
     @Override
-    public List<Schema> getSchemaVersions(String continuityId, int... excludeIds) {
+    public List<Schema> getSchemaVersions(String userName, String continuityId, int... excludeIds) {
 
         if (StringUtils.isBlank(continuityId)){
             throw new IllegalArgumentException("Continuity id must not be blank!");
@@ -565,6 +565,11 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
             + " and CONTINUITY_ID=:continuityId";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("continuityId", continuityId);
+
+        if (StringUtils.isBlank(userName)){
+            sql += " and REG_STATUS=:regStatus";
+            params.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
+        }
 
         if (excludeIds != null && excludeIds.length > 0){
             sql += " and SCHEMA_ID not in (:excludeIds)";

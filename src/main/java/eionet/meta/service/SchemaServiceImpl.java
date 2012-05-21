@@ -797,13 +797,13 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * @see eionet.meta.service.ISchemaService#getSchemaSetVersions(java.lang.String, int...)
+     * @see eionet.meta.service.ISchemaService#getSchemaSetVersions(String, java.lang.String, int...)
      */
     @Override
-    public List<SchemaSet> getSchemaSetVersions(String continuityId, int... excludeIds) throws ServiceException {
+    public List<SchemaSet> getSchemaSetVersions(String userName, String continuityId, int... excludeIds) throws ServiceException {
 
         try {
-            return schemaSetDAO.getSchemaSetVersions(continuityId, excludeIds);
+            return schemaSetDAO.getSchemaSetVersions(userName, continuityId, excludeIds);
         } catch (Exception e) {
             throw new ServiceException("Failed to get schema set versions for continuity id " + continuityId, e);
         }
@@ -811,12 +811,12 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * @throws ServiceException
-     * @see eionet.meta.service.ISchemaService#getSchemaVersions(java.lang.String, int...)
+     * @see eionet.meta.service.ISchemaService#getSchemaVersions(String, java.lang.String, int...)
      */
     @Override
-    public List<Schema> getSchemaVersions(String continuityId, int... excludeIds) throws ServiceException {
+    public List<Schema> getSchemaVersions(String userName, String continuityId, int... excludeIds) throws ServiceException {
         try {
-            return schemaDAO.getSchemaVersions(continuityId, excludeIds);
+            return schemaDAO.getSchemaVersions(userName, continuityId, excludeIds);
         } catch (Exception e) {
             throw new ServiceException("Failed to get root-level schema versions for continuity id " + continuityId, e);
         }

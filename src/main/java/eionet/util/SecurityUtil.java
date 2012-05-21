@@ -91,6 +91,20 @@ public class SecurityUtil {
 
     /**
      *
+     * @param request
+     * @param aclPath
+     * @param prm
+     * @return
+     * @throws Exception
+     */
+    public static boolean userHasPerm(HttpServletRequest request, String aclPath, String prm) throws Exception {
+
+        DDUser user = SecurityUtil.getUser(request);
+        return SecurityUtil.hasPerm(user == null ? null : user.getUserName(), aclPath, prm);
+    }
+
+    /**
+     *
      * @param usr
      * @param aclPath
      * @param prm

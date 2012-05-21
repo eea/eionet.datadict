@@ -50,6 +50,7 @@ import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.SecurityUtil;
 
 /**
  * @author Jaanus Heinlaid
@@ -792,8 +793,25 @@ public class SchemaActionBean extends AbstractActionBean {
             }
 
             otherVersions =
-                schemaService.getSchemaVersions(schema.getContinuityId(), schema.getId());
+                schemaService.getSchemaVersions(getUserName(), schema.getContinuityId(), schema.getId());
         }
         return otherVersions;
+    }
+
+    /**
+     * True, if user has permission to edit schema sets.
+     *
+     * @return
+     */
+    public boolean isEditPermission() {
+        if (getUser() != null) {
+            try {
+                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "u")
+                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+            } catch (Exception e) {
+                LOGGER.error("Failed to read user permission", e);
+            }
+        }
+        return false;
     }
 }

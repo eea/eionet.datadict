@@ -111,7 +111,7 @@
                                 </stripes:link>
                             </li>
                         </c:if>
-                        <c:if test="${isNonCheckedOutSchema}">
+                        <c:if test="${isNonCheckedOutSchema && actionBean.editPermission}">
                             <li>
                                 <a href="#" id="newVersionLink">New version</a>
                             </li>

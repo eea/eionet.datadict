@@ -11,19 +11,20 @@
         if (_user!=null){
             %>
             <li><a href="<%=request.getContextPath()%>/checkedout.jsp">Your checkouts</a></li>
-            <li><a href="<%=request.getContextPath()%>/attributes.jsp">Attributes</a></li>
-            <%
-            if (SecurityUtil.hasPerm(_user.getUserName(), "/import", "x")){ %>
-                <li><a href="<%=request.getContextPath()%>/import.jsp">Import datasets</a></li><%
-            }
-            if (SecurityUtil.hasPerm(_user.getUserName(), "/cleanup", "x")){ %>
-                <li><a href="<%=request.getContextPath()%>/clean.jsp">Cleanup</a></li> <%
-            }
-            %>
+            <li><a href="<%=request.getContextPath()%>/attributes.jsp">Attributes</a></li><%
+        }
+
+        if (SecurityUtil.userHasPerm(request, "/import", "x")){ %>
+            <li><a href="<%=request.getContextPath()%>/import.jsp">Import datasets</a></li><%
+        }
+        if (SecurityUtil.userHasPerm(request, "/cleanup", "x")){ %>
+            <li><a href="<%=request.getContextPath()%>/clean.jsp">Cleanup</a></li> <%
+        }
+        if (_user!=null){ %>
             <li><a href="<%=request.getContextPath()%>/subscribe.jsp">Subscribe</a></li><%
-            if (SecurityUtil.hasPerm(_user.getUserName(), "/schemasets", "v")){ %>
-                <li><a href="<%=request.getContextPath()%>/schemaSets.action">Schemas</a></li> <%
-            } 
+        }
+        if (SecurityUtil.userHasPerm(request, "/schemasets", "v")){ %>
+          <li><a href="<%=request.getContextPath()%>/schemaSets.action">Schemas</a></li> <%
         }
         %>
     </ul>

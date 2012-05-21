@@ -175,12 +175,15 @@ public interface ISchemaDAO {
 
     /**
      * Returns the list of root-level schemas matching the given continuity id, excluding the ones that are working copies and the
-     * one that match the given integer inputs.
+     * one that match the given integer inputs. The method may choose to hide certain versions based on the permissions of the
+     * given user.
      *
+     * @param userName
      * @param continuityId
      * @param excludeIds
+     *
      * @return
      * @throws ServiceException
      */
-    List<Schema> getSchemaVersions(String continuityId, int... excludeIds);
+    List<Schema> getSchemaVersions(String userName, String continuityId, int... excludeIds);
 }

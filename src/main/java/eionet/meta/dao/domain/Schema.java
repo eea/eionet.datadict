@@ -244,4 +244,12 @@ public class Schema {
     public void setAttributeValues(Map<String, List<String>> attributeValues) {
         this.attributeValues = attributeValues;
     }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isReleased(){
+        return regStatus != null && regStatus.equals(RegStatus.RELEASED);
+    }
 }

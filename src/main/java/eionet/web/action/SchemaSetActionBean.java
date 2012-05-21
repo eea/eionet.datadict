@@ -583,6 +583,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
+     * Returns true if the current session's user is allowed to check out the
      * True, if user has permission to delete schema sets.
      *
      * @return
@@ -871,7 +872,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             }
 
             otherVersions =
-                schemaService.getSchemaSetVersions(schemaSet.getContinuityId(), schemaSet.getId());
+                schemaService.getSchemaSetVersions(getUserName(), schemaSet.getContinuityId(), schemaSet.getId());
         }
         return otherVersions;
     }

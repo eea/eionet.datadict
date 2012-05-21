@@ -9,12 +9,14 @@
 
     <stripes:layout-component name="contents">
 
-        <div id="drop-operations">
-            <h2>Operations:</h2>
-            <ul>
-                <li><a href="${pageContext.request.contextPath}/schema.action?add=">Add root-level schema</a></li>
-            </ul>
-        </div>
+        <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
+	        <div id="drop-operations">
+	            <h2>Operations:</h2>
+	            <ul>
+	                <li><a href="${pageContext.request.contextPath}/schema.action?add=">Add root-level schema</a></li>
+	            </ul>
+	        </div>
+        </c:if>
 
         <h1>Search schemas</h1>
 
