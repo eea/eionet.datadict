@@ -52,7 +52,7 @@
             <display:table name="actionBean.schemasResult" class="sortable" id="item" requestURI="/schema/search/">
 
                 <display:column title="File name" sortable="true" sortName="sortName" sortProperty="fileName">
-                    <stripes:link href="#">
+                    <stripes:link beanclass="eionet.web.action.SchemaActionBean">
                         <stripes:param name="schema.id" value="${item.id}" />
                         <c:out value="${item.fileName}" />
                     </stripes:link>
