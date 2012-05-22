@@ -19,8 +19,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import net.sourceforge.stripes.action.Before;
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -51,6 +50,7 @@ import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+import eionet.util.XmlValidator;
 
 /**
  * @author Jaanus Heinlaid
@@ -297,9 +297,11 @@ public class SchemaActionBean extends AbstractActionBean {
      *
      * @throws IOException
      * @throws DAOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
      */
     @ValidationMethod(on = {"add"})
-    public void validateAdd() throws ServiceException, IOException, DAOException {
+    public void validateAdd() throws ServiceException, IOException, DAOException, ParserConfigurationException, SAXException {
 
         if (!isUserLoggedIn() || !getUser().hasPermission("/schemasets", "i")) {
             throw new ServiceException("No permission to create root-level schemas!");
@@ -322,7 +324,7 @@ public class SchemaActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-            validateXmlSchema();
+            validateUploadedFile();
         }
 
         if (!isValidationErrors()) {
@@ -415,9 +417,11 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws IOException
      * @throws ServiceException
      * @throws DAOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
      */
     @ValidationMethod(on = {"reupload"}, priority = 2)
-    public void validateReupload() throws IOException, ServiceException, DAOException {
+    public void validateReupload() throws IOException, ServiceException, DAOException, ParserConfigurationException, SAXException {
 
         LOGGER.trace("Method entered");
 
@@ -434,7 +438,7 @@ public class SchemaActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-            validateXmlSchema();
+            validateUploadedFile();
         }
 
         if (isValidationErrors()) {
@@ -452,20 +456,30 @@ public class SchemaActionBean extends AbstractActionBean {
     }
 
     /**
+     *
      * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
      */
-    private void validateXmlSchema() throws IOException {
+    private void validateUploadedFile() throws IOException, ParserConfigurationException, SAXException {
+
         InputStream inputStream = null;
         try {
-            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
             inputStream = uploadedFile.getInputStream();
-            factory.newSchema(new StreamSource(inputStream));
-        } catch (SAXException saxe) {
-            addGlobalValidationError("Not a valid XML Schema file!");
-            try {
-                uploadedFile.delete();
-            } catch (Exception e) {
-                LOGGER.error("Failed to delete uploaded file " + uploadedFile.getFileName(), e);
+            XmlValidator xmlValidator = new XmlValidator();
+            if (!xmlValidator.isWellFormedXml(inputStream)) {
+                addGlobalValidationError("Not a well-formed XML: " + xmlValidator.getValidationError().getMessage());
+                LOGGER.error("Not a well-formed XML!", xmlValidator.getValidationError());
+                // Exit right away, because an ill-formed XML is not worth further parsing.
+                return;
+            }
+
+            IOUtils.closeQuietly(inputStream);
+            inputStream = uploadedFile.getInputStream();
+            if (!xmlValidator.isValidXmlSchema(inputStream)) {
+                addCautionMessage("The uploaded file was not found to be a valid XML Schema! Reason: "
+                        + xmlValidator.getValidationError().getMessage());
+                LOGGER.error("Not a valid XML Schema file!", xmlValidator.getValidationError());
             }
         } finally {
             IOUtils.closeQuietly(inputStream);

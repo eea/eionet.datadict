@@ -17,8 +17,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.FileBean;
@@ -48,6 +47,7 @@ import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+import eionet.util.XmlValidator;
 
 /**
  *
@@ -264,7 +264,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
         return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
     }
 
-
     /**
      *
      * @return
@@ -451,10 +450,12 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws IOException
      * @throws ServiceException
      * @throws DAOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
      *
      */
     @ValidationMethod(on = {"uploadSchema"})
-    public void validateFileUpload() throws IOException, ServiceException, DAOException {
+    public void validateFileUpload() throws IOException, ServiceException, DAOException, ParserConfigurationException, SAXException {
 
         if (uploadedFile == null) {
             addGlobalValidationError("No file uploaded!");
@@ -475,7 +476,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-            validateXmlSchema();
+            validateUploadedFile();
         }
 
         if (!isValidationErrors()) {
@@ -497,19 +498,29 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /**
      * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     *
      */
-    private void validateXmlSchema() throws IOException {
+    private void validateUploadedFile() throws IOException, ParserConfigurationException, SAXException {
+
         InputStream inputStream = null;
         try {
-            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
             inputStream = uploadedFile.getInputStream();
-            factory.newSchema(new StreamSource(inputStream));
-        } catch (SAXException saxe) {
-            addGlobalValidationError("Not a valid XML Schema file!");
-            try {
-                uploadedFile.delete();
-            } catch (Exception e) {
-                LOGGER.error("Failed to delete uploaded file " + uploadedFile.getFileName(), e);
+            XmlValidator xmlValidator = new XmlValidator();
+            if (!xmlValidator.isWellFormedXml(inputStream)) {
+                addGlobalValidationError("Not a well-formed XML: " + xmlValidator.getValidationError().getMessage());
+                LOGGER.error("Not a well-formed XML!", xmlValidator.getValidationError());
+                // Exit right away, because an ill-formed XML is not worth further parsing.
+                return;
+            }
+
+            IOUtils.closeQuietly(inputStream);
+            inputStream = uploadedFile.getInputStream();
+            if (!xmlValidator.isValidXmlSchema(inputStream)) {
+                addCautionMessage("The uploaded file was not found to be a valid XML Schema! Reason: "
+                        + xmlValidator.getValidationError().getMessage());
+                LOGGER.error("Not a valid XML Schema file!", xmlValidator.getValidationError());
             }
         } finally {
             IOUtils.closeQuietly(inputStream);
@@ -583,8 +594,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * Returns true if the current session's user is allowed to check out the
-     * True, if user has permission to delete schema sets.
+     * Returns true if the current session's user is allowed to check out the True, if user has permission to delete schema sets.
      *
      * @return
      */
@@ -871,8 +881,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 throw new IllegalStateException("Schema set must be loaded for this operation!");
             }
 
-            otherVersions =
-                schemaService.getSchemaSetVersions(getUserName(), schemaSet.getContinuityId(), schemaSet.getId());
+            otherVersions = schemaService.getSchemaSetVersions(getUserName(), schemaSet.getContinuityId(), schemaSet.getId());
         }
         return otherVersions;
     }
