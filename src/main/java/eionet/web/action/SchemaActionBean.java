@@ -170,6 +170,10 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public Resolution add() throws ServiceException, IOException {
 
+        if (!isCreateAllowed()) {
+            throw new ServiceException("You are not authorised for this operation!");
+        }
+
         Resolution resolution = new ForwardResolution(ADD_ROOT_LEVEL_SCHEMA_JSP);
         if (!isGetOrHeadRequest()) {
 
@@ -243,6 +247,11 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public Resolution checkOut() throws ServiceException {
 
+        loadSchema();
+        if (!isCheckoutAllowed()){
+            throw new ServiceException("You are not authorised for this operation!");
+        }
+
         int newSchemaSetId = schemaService.checkOutSchema(schema.getId(), getUserName());
         addSystemMessage("Schema successfully checked out!");
         return new RedirectResolution(getClass()).addParameter("schema.id", newSchemaSetId);
@@ -255,6 +264,10 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws IOException
      */
     public Resolution newVersion() throws ServiceException, IOException {
+
+        if (!isCreateAllowed()) {
+            throw new ServiceException("You are not authorised for this operation!");
+        }
 
         int newSchemaId = schemaService.copySchema(schema.getId(), getUserName(), uploadedFile);
         addSystemMessage("The new version's working copy successfully created!");
@@ -813,17 +826,40 @@ public class SchemaActionBean extends AbstractActionBean {
     }
 
     /**
-     * True, if user has permission to edit schema sets.
+     * Returns true if this is a root-level schema, and the user is allowed to do its check-out. Otherwise returns false.
      *
      * @return
      */
-    public boolean isEditPermission() {
+    public boolean isCheckoutAllowed() {
+
+        if (!isRootLevelSchema()){
+            return false;
+        }
+
+        try {
+            if (SecurityUtil.hasPerm(getUserName(), "/schemasets", "er")) {
+                return true;
+            } else {
+                return !schema.isReleased() && SecurityUtil.hasPerm(getUserName(), "/schemasets", "u");
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return false;
+        }
+    }
+
+    /**
+     * Returns true if the current user is allowed to create new root-level schemas. Otherwise returns false.
+     *
+     * @return
+     */
+    public boolean isCreateAllowed() {
+
         if (getUser() != null) {
             try {
-                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "u")
-                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "i");
             } catch (Exception e) {
-                LOGGER.error("Failed to read user permission", e);
+                LOGGER.error(e.getMessage(), e);
             }
         }
         return false;

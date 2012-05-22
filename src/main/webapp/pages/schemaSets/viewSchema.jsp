@@ -111,15 +111,19 @@
                                 </stripes:link>
                             </li>
                         </c:if>
-                        <c:if test="${isNonCheckedOutSchema && actionBean.editPermission}">
-                            <li>
-                                <a href="#" id="newVersionLink">New version</a>
-                            </li>
-                            <li>
-                                <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
-                                    <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
-                                </stripes:link>
-                            </li>
+                        <c:if test="${isNonCheckedOutSchema && (actionBean.createAllowed || actionBean.checkoutAllowed)}">
+                            <c:if test="${actionBean.createAllowed}">
+	                            <li>
+	                                <a href="#" id="newVersionLink">New version</a>
+	                            </li>
+                            </c:if>
+                            <c:if test="${actionBean.checkoutAllowed}">
+	                            <li>
+	                                <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
+	                                    <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
+	                                </stripes:link>
+	                            </li>
+	                        </c:if>
                         </c:if>
                     </c:if>
                 </ul>

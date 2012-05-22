@@ -53,7 +53,7 @@ public class DDExceptionHandler extends DefaultExceptionHandler {
      */
     public Resolution handleGenericException(Exception exc, HttpServletRequest request, HttpServletResponse response) {
         LOGGER.error("Exception caught", exc);
-        return new RedirectResolution(ErrorActionBean.class).addParameter("message", "Unknown system error");
+        return new RedirectResolution(ErrorActionBean.class).addParameter("message", exc.getMessage());
     }
 
     /**

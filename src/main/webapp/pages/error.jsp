@@ -1,30 +1,25 @@
 <%@page contentType="text/html;charset=UTF-8"%>
-
 <%@ include file="/pages/common/taglibs.jsp"%>
-
-<%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Error page">
 
     <stripes:layout-component name="contents">
 
-       <h1>Unexpected error has occurred</h1>
-
-       <div class="warning-msg">
-            <strong>Warning</strong>
-            <p>
-                <c:choose>
-                    <c:when test="${not empty actionBean.message}">
-                        <c:out value="${actionBean.message}" />
-                    </c:when>
-                    <c:otherwise>
-                        Unknown error.
-                    </c:otherwise>
-                </c:choose>
-            </p>
-       </div>
-       <br />
-       Find more information about the error in the log files. To continue your work, go <stripes:link href="/">here</stripes:link>.
+        <h1>An unexpected system error has occurred:</h1>
+        <div class="error-msg">
+            <c:choose>
+                <c:when test="${not empty actionBean.message}">
+                    <c:out value="${actionBean.message}" />
+                </c:when>
+                <c:otherwise>
+                    Error message not specified ...
+                </c:otherwise>
+            </c:choose>
+        </div>
+        <div style="padding-top:1em">
+            Please contact <a href="mailto:helpdesk@eionet.europa.eu?subject=System error in ${fn:escapeXml(initParam.appDispName)}">Eionet helpdesk</a>
+            or ${fn:escapeXml(initParam.appDispName)} administrators for more information about this error.
+        </div>
 
     </stripes:layout-component>
 

@@ -143,8 +143,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         loadSchemaSet();
 
-        if (!isEditPermission()) {
-            throw new ServiceException("No permission to edit schema sets!");
+        if (!isUserWorkingCopy()){
+            throw new ServiceException("Operation allowed on your working copy only!");
         }
 
         if (isUserLoggedIn() && schemaSet.isCheckedOutBy(getUserName())) {
@@ -163,8 +163,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         loadSchemaSet();
 
-        if (!isEditPermission()) {
-            throw new ServiceException("No permission to edit schema sets.");
+        if (!isUserWorkingCopy()){
+            throw new ServiceException("Operation allowed on your working copy only!");
         }
 
         if (isUserLoggedIn() && schemaSet.isCheckedOutBy(getUserName())) {
@@ -182,8 +182,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution add() throws ServiceException {
 
-        if (!isCreatePermission()) {
-            throw new ServiceException("No permission to create new schema sets.");
+        if (!isCreateAllowed()) {
+            throw new ServiceException("You are not authorised for this operation!");
         }
 
         Resolution resolution = new ForwardResolution(ADD_SCHEMA_SET_JSP);
@@ -193,6 +193,208 @@ public class SchemaSetActionBean extends AbstractActionBean {
             addSystemMessage("Working copy successfully created!");
         }
         return resolution;
+    }
+
+    /**
+     * Save action.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution save() throws ServiceException {
+
+        loadSchemaSet();
+        if (!isUserWorkingCopy()){
+            throw new ServiceException("Operation allowed on your working copy only!");
+        }
+
+        schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
+        addSystemMessage("Schema set successfully updated!");
+        return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
+    }
+
+    /**
+     * Save and close action.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution saveAndClose() throws ServiceException {
+
+        loadSchemaSet();
+        if (!isUserWorkingCopy()){
+            throw new ServiceException("Operation allowed on your working copy only!");
+        }
+
+        schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
+        addSystemMessage("Schema set successfully updated!");
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
+    }
+
+    /**
+     * Cancel action.
+     *
+     * @return
+     * @throws DAOException
+     */
+    public Resolution cancelEdit() throws DAOException {
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
+    }
+
+    /**
+     *
+     * @return
+     * @throws DAOException
+     */
+    public Resolution cancelAdd() throws DAOException {
+        return new RedirectResolution(BrowseSchemaSetsActionBean.class);
+    }
+
+    /**
+     * Check in action.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution checkIn() throws ServiceException {
+
+        loadSchemaSet();
+        if (!isUserWorkingCopy()){
+            throw new ServiceException("Operation allowed on your working copy only!");
+        }
+
+        int finalId = schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), schemaSet.getComment());
+        addSystemMessage("Schema set successfully checked in!");
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", finalId);
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution checkOut() throws ServiceException {
+
+        loadSchemaSet();
+        if (!isCheckoutAllowed()) {
+            throw new ServiceException("You are not authorised for this operation!");
+        }
+
+        int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName());
+        addSystemMessage("Schema set successfully checked out!");
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution newVersion() throws ServiceException {
+
+        if (!isCreateAllowed()) {
+            throw new ServiceException("You are not authorised for this operation!");
+        }
+
+        int newSchemaSetId = schemaService.copySchemaSet(schemaSet.getId(), getUserName(), newIdentifier);
+        addSystemMessage("The new version's working copy successfully created!");
+        return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
+    }
+
+    /**
+     * Action for deleting the schema set.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution delete() throws ServiceException {
+
+        loadSchemaSet();
+        if (!isDeleteAllowed()) {
+            throw new ServiceException("You are not authorized for this operation!");
+        }
+
+        schemaService.deleteSchemaSets(Collections.singletonList(schemaSet.getId()), getUserName(), true);
+        addSystemMessage("Schema set succesfully deleted.");
+        return new RedirectResolution(BrowseSchemaSetsActionBean.class);
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution undoCheckout() throws ServiceException {
+
+        loadSchemaSet();
+        if (!isUserWorkingCopy()){
+            throw new ServiceException("Operation allowed on your working copy only!");
+        }
+
+        int checkedOutCopyId = schemaService.undoCheckOutSchemaSet(schemaSet.getId(), getUserName());
+        addSystemMessage("Working copy successfully deleted!");
+        if (checkedOutCopyId > 0) {
+            return new RedirectResolution(getClass()).addParameter("schemaSet.id", checkedOutCopyId);
+        } else {
+            return new RedirectResolution(BrowseSchemaSetsActionBean.class);
+        }
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution deleteSchemas() throws ServiceException {
+
+        loadSchemaSet();
+        if (!isUserWorkingCopy()){
+            throw new ServiceException("Operation allowed on your working copy only!");
+        }
+
+        schemaService.deleteSchemas(schemaIds, getUserName(), false);
+
+        if (schemaIds.size() == 1) {
+            addSystemMessage("Schema succesfully deleted.");
+        } else if (schemaIds.size() > 1) {
+            addSystemMessage("Schemas succesfully deleted.");
+        }
+
+        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.id", schemaSet.getId());
+    }
+
+    /**
+     * Loads schema set.
+     *
+     * @throws ServiceException
+     * @throws IOException
+     */
+    public Resolution uploadSchema() throws ServiceException, IOException {
+
+        loadSchemaSet();
+        if (!isUserWorkingCopy()){
+            throw new ServiceException("Operation allowed on your working copy only!");
+        }
+
+        File schemaFile = null;
+        try {
+            schemaFile = schemaRepository.addSchema(uploadedFile, schemaSet.getIdentifier(), false);
+
+            Schema schema = new Schema();
+            schema.setFileName(uploadedFile.getFileName());
+            schema.setUserModified(getUserName());
+            schema.setSchemaSetId(schemaSet.getId());
+            schemaService.addSchema(schema, getSaveAttributeValues());
+        } catch (ServiceException e) {
+            SchemaRepository.deleteQuietly(schemaFile);
+            throw e;
+        } catch (RuntimeException e) {
+            SchemaRepository.deleteQuietly(schemaFile);
+            throw e;
+        }
+
+        addSystemMessage("Schema successfully uploaded!");
+        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.id", schemaSet.getId());
     }
 
     /**
@@ -231,62 +433,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * Save action.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution save() throws ServiceException {
-        schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
-        addSystemMessage("Schema set successfully updated!");
-        return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
-    }
-
-    /**
-     * Save and close action.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution saveAndClose() throws ServiceException {
-        schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
-        addSystemMessage("Schema set successfully updated!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
-    }
-
-    /**
-     * Cancel action.
-     *
-     * @return
-     * @throws DAOException
-     */
-    public Resolution cancelEdit() throws DAOException {
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
-    }
-
-    /**
-     *
-     * @return
-     * @throws DAOException
-     */
-    public Resolution cancelAdd() throws DAOException {
-        return new RedirectResolution(BrowseSchemaSetsActionBean.class);
-    }
-
-    /**
-     * Check in action.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution checkIn() throws ServiceException {
-
-        int finalId = schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), schemaSet.getComment());
-        addSystemMessage("Schema set successfully checked in!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", finalId);
-    }
-
-    /**
      * @throws ServiceException
      *
      */
@@ -300,43 +446,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 getContext().setSourcePageResolution(new ForwardResolution(VIEW_SCHEMA_SET_JSP));
             }
         }
-    }
-
-    /**
-     *
-     * @return
-     */
-    public boolean isCheckInCommentsRequired() {
-        String checkInCommentsRequired = Props.getProperty(PropsIF.CHECK_IN_COMMENTS_REQUIRED);
-        return checkInCommentsRequired != null && checkInCommentsRequired.trim().equalsIgnoreCase("true");
-    }
-
-    /**
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution checkOut() throws ServiceException {
-        if (!isEditPermission()) {
-            throw new ServiceException("No permission to edit schema sets.");
-        }
-        int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName());
-        addSystemMessage("Schema set successfully checked out!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
-    }
-
-    /**
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution newVersion() throws ServiceException {
-        if (!isEditPermission()) {
-            throw new ServiceException("No permission to edit schema sets.");
-        }
-        int newSchemaSetId = schemaService.copySchemaSet(schemaSet.getId(), getUserName(), newIdentifier);
-        addSystemMessage("The new version's working copy successfully created!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
     }
 
     /**
@@ -362,91 +471,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * Action for deleting the schema set.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution delete() throws ServiceException {
-        if (!isDeletePermission()) {
-            throw new ServiceException("No permission to delete schema sets.");
-        }
-        schemaService.deleteSchemaSets(Collections.singletonList(schemaSet.getId()), getUserName(), true);
-        addSystemMessage("Schema set succesfully deleted.");
-        return new RedirectResolution(BrowseSchemaSetsActionBean.class);
-    }
-
-    /**
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution undoCheckout() throws ServiceException {
-        int checkedOutCopyId = schemaService.undoCheckOutSchemaSet(schemaSet.getId(), getUserName());
-        addSystemMessage("Working copy successfully deleted!");
-        if (checkedOutCopyId > 0) {
-            return new RedirectResolution(getClass()).addParameter("schemaSet.id", checkedOutCopyId);
-        } else {
-            return new RedirectResolution(BrowseSchemaSetsActionBean.class);
-        }
-    }
-
-    /**
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution deleteSchemas() throws ServiceException {
-
-        if (!isEditPermission()) {
-            throw new ServiceException("No permission to edit schema sets.");
-        }
-
-        schemaService.deleteSchemas(schemaIds, getUserName(), false);
-
-        if (schemaIds.size() == 1) {
-            addSystemMessage("Schema succesfully deleted.");
-        } else if (schemaIds.size() > 1) {
-            addSystemMessage("Schemas succesfully deleted.");
-        }
-
-        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.id", schemaSet.getId());
-    }
-
-    /**
-     * Loads schema set.
-     *
-     * @throws ServiceException
-     * @throws IOException
-     */
-    public Resolution uploadSchema() throws ServiceException, IOException {
-
-        if (!isEditPermission()) {
-            throw new ServiceException("No permission to edit schema sets.");
-        }
-
-        File schemaFile = null;
-        try {
-            schemaFile = schemaRepository.addSchema(uploadedFile, schemaSet.getIdentifier(), false);
-
-            Schema schema = new Schema();
-            schema.setFileName(uploadedFile.getFileName());
-            schema.setUserModified(getUserName());
-            schema.setSchemaSetId(schemaSet.getId());
-            schemaService.addSchema(schema, getSaveAttributeValues());
-        } catch (ServiceException e) {
-            SchemaRepository.deleteQuietly(schemaFile);
-            throw e;
-        } catch (RuntimeException e) {
-            SchemaRepository.deleteQuietly(schemaFile);
-            throw e;
-        }
-
-        addSystemMessage("Schema successfully uploaded!");
-        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.id", schemaSet.getId());
-    }
-
-    /**
      * @throws IOException
      * @throws ServiceException
      * @throws DAOException
@@ -455,7 +479,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *
      */
     @ValidationMethod(on = {"uploadSchema"})
-    public void validateFileUpload() throws IOException, ServiceException, DAOException, ParserConfigurationException, SAXException {
+    public void validateFileUpload() throws IOException, ServiceException, DAOException, ParserConfigurationException,
+    SAXException {
 
         if (uploadedFile == null) {
             addGlobalValidationError("No file uploaded!");
@@ -562,6 +587,15 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *
      * @return
      */
+    public boolean isCheckInCommentsRequired() {
+        String checkInCommentsRequired = Props.getProperty(PropsIF.CHECK_IN_COMMENTS_REQUIRED);
+        return checkInCommentsRequired != null && checkInCommentsRequired.trim().equalsIgnoreCase("true");
+    }
+
+    /**
+     *
+     * @return
+     */
     public boolean isUserWorkingCopy() {
 
         boolean result = false;
@@ -577,50 +611,55 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * True, if user has permission to edit schema sets.
+     * Returns true if the current user is allowed to do check-out on this schema set. Otherwise returns false.
      *
      * @return
      */
-    public boolean isEditPermission() {
-        if (getUser() != null) {
-            try {
-                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "u")
-                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
-            } catch (Exception e) {
-                LOGGER.error("Failed to read user permission", e);
+    public boolean isCheckoutAllowed() {
+        try {
+            if (SecurityUtil.hasPerm(getUserName(), "/schemasets", "er")) {
+                return true;
+            } else {
+                return !schemaSet.isReleased() && SecurityUtil.hasPerm(getUserName(), "/schemasets", "u");
             }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return false;
         }
-        return false;
     }
 
     /**
-     * Returns true if the current session's user is allowed to check out the True, if user has permission to delete schema sets.
+     * Returns true if the current user is allowed to delete this schema set. Otherwise returns false.
      *
      * @return
      */
-    public boolean isDeletePermission() {
-        if (getUser() != null) {
-            try {
-                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d")
-                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
-            } catch (Exception e) {
-                LOGGER.error("Failed to read user permission", e);
+    public boolean isDeleteAllowed() {
+
+        try {
+            if (SecurityUtil.hasPerm(getUserName(), "/schemasets", "er")){
+                return true;
             }
+            else{
+                return !schemaSet.isReleased() && SecurityUtil.hasPerm(getUserName(), "/schemasets", "d");
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return false;
         }
-        return false;
     }
 
     /**
-     * True, if user has permission to create schema sets.
+     * Returns true if the current user is allowed to create new schema sets. Otherwise returns false.
      *
      * @return
      */
-    public boolean isCreatePermission() {
+    public boolean isCreateAllowed() {
+
         if (getUser() != null) {
             try {
                 return SecurityUtil.hasPerm(getUserName(), "/schemasets", "i");
             } catch (Exception e) {
-                LOGGER.error("Failed to read user permission", e);
+                LOGGER.error(e.getMessage(), e);
             }
         }
         return false;

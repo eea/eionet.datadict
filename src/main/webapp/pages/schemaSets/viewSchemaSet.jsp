@@ -89,11 +89,13 @@
                             </stripes:link>
                         </li>
                     </c:if>
-                    <c:if test="${empty actionBean.schemaSet.workingUser}">
-                        <c:if test="${actionBean.editPermission}">
+                    <c:if test="${empty actionBean.schemaSet.workingUser && (actionBean.createAllowed || actionBean.checkoutAllowed)}">
+                        <c:if test="${actionBean.createAllowed}">
                             <li>
                                 <a href="#" id="newVersionLink">New version</a>
                             </li>
+                        </c:if>
+                        <c:if test="${actionBean.checkoutAllowed}">
                             <li>
                                 <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
                                     <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
