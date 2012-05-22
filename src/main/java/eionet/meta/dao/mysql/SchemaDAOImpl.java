@@ -109,7 +109,11 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         params.put("filename", schema.getFileName());
         params.put("schemaSetId", schema.getSchemaSetId() <= 0 ? null : schema.getSchemaSetId());
         params.put("continuityId", continuityId);
-        params.put("regStatus", schema.getRegStatus().toString());
+        if (schema.getRegStatus() != null) {
+            params.put("regStatus", schema.getRegStatus().toString());
+        } else {
+            params.put("regStatus", null);
+        }
         params.put("workingCopy", schema.isWorkingCopy());
         params.put("workingUser", schema.getWorkingUser());
         params.put("userModified", schema.getUserModified());
@@ -256,9 +260,9 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
             }
             if (StringUtils.isNotEmpty(searchFilter.getRegStatus())) {
                 sql.append("AND ");
-                sql.append("((s.REG_STATUS = :regStatus OR s.REG_STATUS IS NULL) ");
+                sql.append("((s.REG_STATUS = :regStatus AND s.SCHEMA_SET_ID IS NULL) ");
                 sql.append("OR ");
-                sql.append("(ss.REG_STATUS = :regStatus OR ss.REG_STATUS IS NULL)) ");
+                sql.append("(ss.REG_STATUS = :regStatus AND s.SCHEMA_SET_ID IS NOT NULL)) ");
                 params.put("regStatus", searchFilter.getRegStatus());
             }
             if (searchFilter.isAttributesValued()) {
@@ -293,7 +297,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         }
         sql.append("LIMIT ").append(searchFilter.getOffset()).append(",").append(searchFilter.getPageSize());
 
-        LOGGER.debug("SQL: " + sql.toString());
+        // LOGGER.debug("SQL: " + sql.toString());
 
         List<Schema> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Schema>() {
             public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -328,11 +332,15 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     public void updateSchema(Schema schema) {
 
         String sql =
-            "update T_SCHEMA set REG_STATUS=ifnull(:regStatus, REG_STATUS), DATE_MODIFIED = now(), USER_MODIFIED = :userModified, "
+            "update T_SCHEMA set REG_STATUS = :regStatus, DATE_MODIFIED = now(), USER_MODIFIED = :userModified, "
             + "COMMENT=ifnull(:comment, COMMENT) where SCHEMA_ID = :id";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", schema.getId());
-        parameters.put("regStatus", schema.getRegStatus().toString());
+        if (schema.getRegStatus() != null) {
+            parameters.put("regStatus", schema.getRegStatus().toString());
+        } else {
+            parameters.put("regStatus", schema.getRegStatus());
+        }
         parameters.put("userModified", schema.getUserModified());
         parameters.put("comment", schema.getComment());
 

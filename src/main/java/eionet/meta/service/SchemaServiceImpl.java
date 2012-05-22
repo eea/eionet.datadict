@@ -426,6 +426,9 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public int addSchema(Schema schema, Map<Integer, Set<String>> attributes) throws ServiceException {
+        if (schema.getSchemaSetId() == 0) {
+            schema.setRegStatus(SchemaSet.RegStatus.DRAFT);
+        }
 
         try {
             int schemaId = schemaDAO.createSchema(schema);

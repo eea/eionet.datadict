@@ -16,6 +16,7 @@
                 <permission id="d"/>
                 <permission id="c"/>
                 <permission id="w"/>
+	      <permission id="er"/>
             </permissions>
         </entry>
     </entries>

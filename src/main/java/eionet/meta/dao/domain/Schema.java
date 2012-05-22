@@ -18,7 +18,7 @@ public class Schema {
     private String fileName;
     private int schemaSetId;
     private String continuityId;
-    private RegStatus regStatus = RegStatus.DRAFT;
+    private RegStatus regStatus;
     private boolean isWorkingCopy;
     private String workingUser;
     private Date dateModified;
