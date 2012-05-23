@@ -681,7 +681,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Do schema check-out, get the new schema's ID.
             schemaDAO.setWorkingUser(schemaId, userName);
-            int newSchemaId = schemaDAO.copySchemaRow(schemaId, userName, null);
+            int newSchemaId = schemaDAO.copySchemaRow(schemaId, userName, null, schema.getRegStatus());
 
             // Copy the schema's simple attributes.
             attributeDAO.copySimpleAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
@@ -843,7 +843,7 @@ public class SchemaServiceImpl implements ISchemaService {
             Schema schema = schemaDAO.getSchema(schemaId);
 
             // Copy schema row, get the new row's ID.
-            int newSchemaId = schemaDAO.copySchemaRow(schemaId, userName, newFile.getFileName());
+            int newSchemaId = schemaDAO.copySchemaRow(schemaId, userName, newFile.getFileName(), schema.getRegStatus());
 
             // Copy the schema set's simple attributes.
             attributeDAO.copySimpleAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);

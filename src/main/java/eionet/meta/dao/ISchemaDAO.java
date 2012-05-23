@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import eionet.meta.dao.domain.Schema;
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SchemaFilter;
 import eionet.meta.service.data.SchemasResult;
@@ -170,8 +171,9 @@ public interface ISchemaDAO {
      * @param schemaSetId
      * @param userName
      * @param newIdentifier
+     * @param regStatus
      */
-    int copySchemaRow(int schemaId, String userName, String newFileName);
+    int copySchemaRow(int schemaId, String userName, String newFileName, SchemaSet.RegStatus regStatus);
 
     /**
      * Returns the list of root-level schemas matching the given continuity id, excluding the ones that are working copies and the

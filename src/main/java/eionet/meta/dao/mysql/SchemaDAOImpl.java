@@ -84,8 +84,8 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
 
     /** */
     private static final String COPY_SCHEMA_ROW = "insert into T_SCHEMA "
-        + "(FILENAME, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID)"
-        + " select ifnull(:fileName,FILENAME), CONTINUITY_ID, true, :userName, :userName, :checkedOutCopyId"
+        + "(FILENAME, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID, REG_STATUS)"
+        + " select ifnull(:fileName,FILENAME), CONTINUITY_ID, true, :userName, :userName, :checkedOutCopyId, :regStatus"
         + " from T_SCHEMA where SCHEMA_ID=:schemaId";
 
     /** */
@@ -545,7 +545,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
      * @see eionet.meta.dao.ISchemaDAO#copySchemaRow(int, java.lang.String, java.lang.String)
      */
     @Override
-    public int copySchemaRow(int schemaId, String userName, String newFileName) {
+    public int copySchemaRow(int schemaId, String userName, String newFileName, SchemaSet.RegStatus regStatus) {
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters = new HashMap<String, Object>();
@@ -553,6 +553,11 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         parameters.put("userName", userName);
         parameters.put("fileName", newFileName);
         parameters.put("checkedOutCopyId", newFileName == null ? schemaId : null);
+        if (regStatus != null) {
+            parameters.put("regStatus", regStatus.toString());
+        } else {
+            parameters.put("regStatus", null);
+        }
 
         getNamedParameterJdbcTemplate().update(COPY_SCHEMA_ROW, parameters);
         return getLastInsertId();
