@@ -168,22 +168,28 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     }
 
     /**
-     * @see eionet.meta.dao.ISchemaSetDAO#getSchemaSets(boolean)
+     * @see eionet.meta.dao.ISchemaSetDAO#getSchemaSets(String)
      */
     @Override
-    public List<SchemaSet> getSchemaSets(boolean releasedOnly) {
+    public List<SchemaSet> getSchemaSets(String userName) {
+
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID ");
-        sql.append("FROM T_SCHEMA_SET WHERE WORKING_COPY=FALSE ");
+        sql.append("FROM T_SCHEMA_SET WHERE ");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
-        if (releasedOnly) {
+        if (StringUtils.isBlank(userName)) {
+            sql.append("WORKING_COPY=FALSE and REG_STATUS = :regStatus ");
             parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
-            sql.append("and REG_STATUS = :regStatus ");
+        } else {
+            sql.append("(WORKING_COPY=FALSE or (WORKING_COPY=TRUE and WORKING_USER=:workingUser)) ");
+            parameters.put("workingUser", userName);
         }
 
-        sql.append("ORDER BY IDENTIFIER");
+        // Working copy is added to "order by" so that a working copy always comes after the original when the result list is
+        // displeyd to the user.
+        sql.append("ORDER BY IDENTIFIER, WORKING_COPY");
 
         List<SchemaSet> items = getNamedParameterJdbcTemplate().query(sql.toString(), parameters, new RowMapper<SchemaSet>() {
             public SchemaSet mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -531,7 +537,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     @Override
     public List<SchemaSet> getSchemaSetVersions(String userName, String continuityId, int... excludeIds) {
 
-        if (StringUtils.isBlank(continuityId)){
+        if (StringUtils.isBlank(continuityId)) {
             throw new IllegalArgumentException("Continuity id must not be blank!");
         }
 
@@ -539,12 +545,12 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("continuityId", continuityId);
 
-        if (StringUtils.isBlank(userName)){
+        if (StringUtils.isBlank(userName)) {
             sql += " and REG_STATUS=:regStatus";
             params.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
         }
 
-        if (excludeIds != null && excludeIds.length > 0){
+        if (excludeIds != null && excludeIds.length > 0) {
             sql += " and SCHEMA_SET_ID not in (:excludeIds)";
             params.put("excludeIds", Arrays.asList(ArrayUtils.toObject(excludeIds)));
         }

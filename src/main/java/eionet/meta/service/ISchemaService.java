@@ -60,12 +60,12 @@ public interface ISchemaService {
 
     /**
      * Returns schema sets.
+     * @param userName
      *
-     * @param releasedOnly
      * @return
      * @throws ServiceException
      */
-    List<SchemaSet> getSchemaSets(boolean releasedOnly) throws ServiceException;
+    List<SchemaSet> getSchemaSets(String userName) throws ServiceException;
 
     /**
      * Return schema set.
@@ -259,15 +259,16 @@ public interface ISchemaService {
     int checkOutSchema(int schemaId, String userName) throws ServiceException;
 
     /**
-     * Returns a list of all root-level schemas. If the given boolean is true,
-     * only schemas in Released status are returned. Otherwise the status is ignored.
-     * Note that the returned list does not contain any working copies!
+     * Returns a list of all root-level schemas. If the given user name is blank, the returned list contains only schemas that are
+     * not working copies and have their registration status set to Released. Otherwise the returned list contains schemas that are
+     * either not working copies or are precisely the working copies of the given user.
      *
-     * @param listReleasedOnly
+     * @param userName
+     *
      * @return
      * @throws ServiceException
      */
-    List<Schema> getRootLevelSchemas(boolean listReleasedOnly) throws ServiceException;
+    List<Schema> getRootLevelSchemas(String userName) throws ServiceException;
 
     /**
      * Returns working copy of the schema identified by the given id.

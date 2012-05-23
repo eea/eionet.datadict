@@ -101,12 +101,12 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * @see eionet.meta.service.ISchemaService#getSchemaSets(boolean)
+     * @see eionet.meta.service.ISchemaService#getSchemaSets(String)
      */
     @Override
-    public List<SchemaSet> getSchemaSets(boolean releasedOnly) throws ServiceException {
+    public List<SchemaSet> getSchemaSets(String userName) throws ServiceException {
         try {
-            return schemaSetDAO.getSchemaSets(releasedOnly);
+            return schemaSetDAO.getSchemaSets(userName);
         } catch (Exception e) {
             throw new ServiceException("Failed to get schema sets", e);
         }
@@ -697,13 +697,13 @@ public class SchemaServiceImpl implements ISchemaService {
 
     /**
      * @throws ServiceException
-     * @see eionet.meta.service.ISchemaService#getRootLevelSchemas(boolean)
+     * @see eionet.meta.service.ISchemaService#getRootLevelSchemas(String)
      */
     @Override
-    public List<Schema> getRootLevelSchemas(boolean listReleasedOnly) throws ServiceException {
+    public List<Schema> getRootLevelSchemas(String userName) throws ServiceException {
 
         try {
-            return schemaDAO.getRootLevelSchemas(listReleasedOnly);
+            return schemaDAO.getRootLevelSchemas(userName);
         } catch (Exception e) {
             throw new ServiceException("Failed to get schemas", e);
         }

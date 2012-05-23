@@ -52,8 +52,7 @@
 
         <c:if test="${not empty actionBean.user && actionBean.context.eventName!='workingCopies'}">
             <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
-                Hint: this page does not list working copies. Use Operations menu or "Your checkouts" page
-                to list your working copies.
+                Hint: red asterisk marks you working copies, if you have any.
             </div>
         </c:if>
 
@@ -75,8 +74,8 @@
                             <stripes:param name="schemaSet.id" value="${schemaSet.id}" />
                             <c:out value="${schemaSet.identifier}"/>
                         </stripes:link>
-                        <c:if test="${not empty actionBean.user && not empty schemaSet.workingUser}">
-                            <span title="Checked out by ${schemaSet.workingUser}" class="checkedout"><strong>*</strong></span>
+                        <c:if test="${not empty actionBean.user && schemaSet.workingCopy && not empty schemaSet.workingUser && schemaSet.workingUser==actionBean.user}">
+                            <span title="Your working copy" class="checkedout"><strong>*</strong></span>
                         </c:if>
                     </li>
                 </c:forEach>
@@ -96,8 +95,8 @@
                             <stripes:param name="schema.id" value="${schema.id}" />
                             <c:out value="${schema.fileName}"/>
                         </stripes:link>
-                        <c:if test="${not empty actionBean.user && not empty schema.workingUser}">
-                            <span title="Checked out by ${schema.workingUser}" class="checkedout"><strong>*</strong></span>
+                        <c:if test="${not empty actionBean.user && schema.workingCopy && not empty schema.workingUser && schema.workingUser==actionBean.user}">
+                            <span title="Your working copy" class="checkedout"><strong>*</strong></span>
                         </c:if>
                     </li>
                 </c:forEach>

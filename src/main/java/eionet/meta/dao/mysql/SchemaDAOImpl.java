@@ -467,17 +467,24 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     }
 
     /**
-     * @see eionet.meta.dao.ISchemaDAO#getRootLevelSchemas(boolean)
+     * @see eionet.meta.dao.ISchemaDAO#getRootLevelSchemas(String)
      */
     @Override
-    public List<Schema> getRootLevelSchemas(boolean listReleasedOnly) {
+    public List<Schema> getRootLevelSchemas(String userName) {
 
-        String sql =
-            "select * from T_SCHEMA where (SCHEMA_SET_ID is null or SCHEMA_SET_ID<=0)"
-            + " and REG_STATUS=ifnull(:regStatus, REG_STATUS) and WORKING_COPY=false";
+        String sql = "select * from T_SCHEMA where (SCHEMA_SET_ID is null or SCHEMA_SET_ID<=0) ";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("regStatus", listReleasedOnly ? SchemaSet.RegStatus.RELEASED.toString() : null);
+        if (StringUtils.isBlank(userName)){
+            sql += "and REG_STATUS=:regStatus and WORKING_COPY=false ";
+            parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
+        }
+        else{
+            sql += "and (WORKING_COPY=false or (WORKING_COPY=true and WORKING_USER=:workingUser)) ";
+            parameters.put("workingUser", userName);
+        }
+
+        sql += "ORDER BY FILENAME, SCHEMA_ID";
 
         List<Schema> schema = getNamedParameterJdbcTemplate().query(sql, parameters, new RowMapper<Schema>() {
             public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {

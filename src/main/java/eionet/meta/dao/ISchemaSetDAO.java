@@ -47,11 +47,11 @@ public interface ISchemaSetDAO {
 
     /**
      * Returns schema sets.
+     * @param userName
      *
-     * @param releasedOnly
      * @return
      */
-    List<SchemaSet> getSchemaSets(boolean releasedOnly);
+    List<SchemaSet> getSchemaSets(String userName);
 
     /**
      * Returns schema sets by given ids.

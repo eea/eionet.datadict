@@ -131,13 +131,15 @@ public interface ISchemaDAO {
     boolean existsRootLevelSchema(String filename);
 
     /**
-     * Returns a list of all root-level schemas. If the given boolean is true, only schemas in Released status are returned.
-     * Otherwise the status is ignored. Note that the returned list does not contain any working copies!
+     * Returns a list of all root-level schemas. If the given user name is blank, the returned list contains only schemas that are
+     * not working copies and have their registration status set to Released. Otherwise the returned list contains schemas that are
+     * either not working copies or are precisely the working copies of the given user.
      *
-     * @param listReleasedOnly
+     * @param userName
+     *
      * @return
      */
-    List<Schema> getRootLevelSchemas(boolean listReleasedOnly);
+    List<Schema> getRootLevelSchemas(String userName);
 
     /**
      * Returns working copy of the schema identified by the given id. This means the given id must denote a schema that has been

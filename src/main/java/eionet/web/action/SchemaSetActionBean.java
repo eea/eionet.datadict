@@ -203,11 +203,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution save() throws ServiceException {
 
-        loadSchemaSet();
-        if (!isUserWorkingCopy()){
-            throw new ServiceException("Operation allowed on your working copy only!");
-        }
-
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema set successfully updated!");
         return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
@@ -220,11 +215,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution saveAndClose() throws ServiceException {
-
-        loadSchemaSet();
-        if (!isUserWorkingCopy()){
-            throw new ServiceException("Operation allowed on your working copy only!");
-        }
 
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema set successfully updated!");
@@ -370,11 +360,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws IOException
      */
     public Resolution uploadSchema() throws ServiceException, IOException {
-
-        loadSchemaSet();
-        if (!isUserWorkingCopy()){
-            throw new ServiceException("Operation allowed on your working copy only!");
-        }
 
         File schemaFile = null;
         try {

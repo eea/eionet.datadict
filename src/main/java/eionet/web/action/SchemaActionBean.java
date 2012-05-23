@@ -21,7 +21,6 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sourceforge.stripes.action.Before;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -143,11 +142,6 @@ public class SchemaActionBean extends AbstractActionBean {
         schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema successfully updated!");
         return new ForwardResolution(EDIT_SCHEMA_JSP);
-    }
-
-    @Before(on = {"save", "saveAndClose"})
-    public void beforeSave() {
-        System.out.println(schema == null ? "schema is null" : "regStatus = " + schema.getRegStatus());
     }
 
     /**
