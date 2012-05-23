@@ -48,7 +48,7 @@
                                 <stripes:link id="loginlink" href="${actionBean.loginUrl}" title="Login">Login</stripes:link>
                             </c:when>
                             <c:otherwise>
-                                <stripes:link id="logoutlink" href="${actionBean.logoutUrl}" title="Logout">Logout ${actionBean.user.userName}</stripes:link>
+                                <a id="logoutlink" href="${pageContext.request.contextPath}/logout.jsp" title="Logout">Logout ${actionBean.user.userName}</a>
                             </c:otherwise>
                         </c:choose>
 
