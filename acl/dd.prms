@@ -1,11 +1,14 @@
-v:View
-i:Insert
-u:Update
-d:Delete
-w:Link to this
-x:Execute
-c:Control ACL
-hc: Help Admin
-xmli: Get XML Instance
-xfrm: Get XForm
-er: Edit released
+<?xml version="1.0" encoding="UTF-8"?>
+<permissions>
+        <permission id="v" description="View"/>
+        <permission id="i" description="Insert"/>
+        <permission id="u" description="Update"/>
+        <permission id="d" description="Delete"/>
+        <permission id="w" description="Link to this"/> <!-- What is the "w" permission for ? -->
+        <permission id="x" description="Execute"/>
+        <permission id="c" description="Control ACL"/>
+        <permission id="hc" description="Help Admin"/>
+        <permission id="xmli" description="Get XML Instance"/>
+        <permission id="xfrm" description="Get XForm"/>
+        <permission id="er" description="Edit released"/>
+</permissions>
