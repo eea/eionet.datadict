@@ -93,9 +93,19 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT SQL_CALC_FOUND_ROWS ss.* ");
-        sql.append("FROM T_SCHEMA_SET ss WHERE ss.WORKING_COPY=FALSE ");
+        sql.append("FROM T_SCHEMA_SET ss WHERE ");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
+        String searchingUser = searchFilter.getSearchingUser();
+        if (StringUtils.isBlank(searchingUser)){
+            sql.append("(ss.WORKING_COPY=false and ss.REG_STATUS=:regStatus) ");
+            parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
+        }
+        else{
+            sql.append("(ss.WORKING_COPY=false or ss.WORKING_USER=:workingUser) ");
+            parameters.put("workingUser", searchingUser);
+        }
+
         // Where clause
         if (searchFilter.isValued()) {
             if (StringUtils.isNotEmpty(searchFilter.getIdentifier())) {
@@ -180,16 +190,16 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         if (StringUtils.isBlank(userName)) {
-            sql.append("WORKING_COPY=FALSE and REG_STATUS = :regStatus ");
+            sql.append("(WORKING_COPY=FALSE and REG_STATUS = :regStatus) ");
             parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
         } else {
-            sql.append("(WORKING_COPY=FALSE or (WORKING_COPY=TRUE and WORKING_USER=:workingUser)) ");
+            sql.append("(WORKING_COPY=FALSE or WORKING_USER=:workingUser) ");
             parameters.put("workingUser", userName);
         }
 
         // Working copy is added to "order by" so that a working copy always comes after the original when the result list is
         // displeyd to the user.
-        sql.append("ORDER BY IDENTIFIER, WORKING_COPY");
+        sql.append("ORDER BY IDENTIFIER, SCHEMA_SET_ID");
 
         List<SchemaSet> items = getNamedParameterJdbcTemplate().query(sql.toString(), parameters, new RowMapper<SchemaSet>() {
             public SchemaSet mapRow(ResultSet rs, int rowNum) throws SQLException {

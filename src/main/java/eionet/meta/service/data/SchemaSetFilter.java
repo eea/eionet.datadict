@@ -34,13 +34,22 @@ import eionet.meta.dao.domain.Attribute;
  */
 public class SchemaSetFilter extends PagedRequest {
 
+    /** */
     private String identifier;
 
+    /** */
     private String regStatus;
+
+    /** */
+    private String searchingUser;
 
     /** Dynamic search attributes. */
     private List<Attribute> attributes;
 
+    /**
+     *
+     * @return
+     */
     public boolean isValued() {
         if (StringUtils.isNotEmpty(identifier)) {
             return true;
@@ -54,6 +63,10 @@ public class SchemaSetFilter extends PagedRequest {
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isAttributesValued() {
         if (attributes != null && attributes.size() > 0) {
             for (Attribute a : attributes) {
@@ -109,6 +122,20 @@ public class SchemaSetFilter extends PagedRequest {
      */
     public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
+    }
+
+    /**
+     * @return the searchingUser
+     */
+    public String getSearchingUser() {
+        return searchingUser;
+    }
+
+    /**
+     * @param searchingUser the searchingUser to set
+     */
+    public void setSearchingUser(String searchingUser) {
+        this.searchingUser = searchingUser;
     }
 
 }

@@ -74,7 +74,7 @@
                             <stripes:param name="schemaSet.id" value="${schemaSet.id}" />
                             <c:out value="${schemaSet.identifier}"/>
                         </stripes:link>
-                        <c:if test="${not empty actionBean.user && schemaSet.workingCopy && not empty schemaSet.workingUser && schemaSet.workingUser==actionBean.user}">
+                        <c:if test="${not empty actionBean.userName && schemaSet.workingCopy && actionBean.userName==schemaSet.workingUser}">
                             <span title="Your working copy" class="checkedout"><strong>*</strong></span>
                         </c:if>
                     </li>
@@ -95,7 +95,7 @@
                             <stripes:param name="schema.id" value="${schema.id}" />
                             <c:out value="${schema.fileName}"/>
                         </stripes:link>
-                        <c:if test="${not empty actionBean.user && schema.workingCopy && not empty schema.workingUser && schema.workingUser==actionBean.user}">
+                        <c:if test="${not empty actionBean.userName && schema.workingCopy && actionBean.userName==schema.workingUser}">
                             <span title="Your working copy" class="checkedout"><strong>*</strong></span>
                         </c:if>
                     </li>

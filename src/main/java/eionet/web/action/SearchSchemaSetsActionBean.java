@@ -107,6 +107,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
             }
         }
 
+        searchFilter.setSearchingUser(getUserName());
         schemaSetsResult = schemaService.searchSchemaSets(searchFilter);
         return new ForwardResolution(SEARCH_SCHEMA_SETS_JSP);
     }
