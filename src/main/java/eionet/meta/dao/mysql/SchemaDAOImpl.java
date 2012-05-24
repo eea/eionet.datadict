@@ -237,33 +237,34 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         return result;
     }
 
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#searchSchemas(eionet.meta.service.data.SchemaFilter)
+     */
     @Override
     public SchemasResult searchSchemas(SchemaFilter searchFilter) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("select * from T_SCHEMA as s LEFT OUTER JOIN T_SCHEMA_SET as ss ON (s.schema_set_id = ss.schema_set_id) ");
-        sql.append("WHERE (ss.WORKING_COPY=FALSE OR ss.WORKING_COPY IS NULL) AND (s.WORKING_COPY=FALSE OR s.WORKING_COPY IS NULL) ");
 
+        StringBuilder sql = new StringBuilder()
+        .append("select ")
+        .append("S.*, SS.*, ")
+        .append("if(SS.SCHEMA_SET_ID is null, S.WORKING_COPY, SS.WORKING_COPY) as WCOPY, ")
+        .append("if(SS.SCHEMA_SET_ID is null, S.WORKING_USER, SS.WORKING_USER) as WUSER, ")
+        .append("if(SS.SCHEMA_SET_ID is null, S.REG_STATUS, SS.REG_STATUS) as REGSTAT ")
+        .append("from ")
+        .append("T_SCHEMA as S left outer join T_SCHEMA_SET as SS on (S.SCHEMA_SET_ID=SS.SCHEMA_SET_ID) ")
+        .append("where 1=1 ");
+
+        String searchingUser = searchFilter.getSearchingUser();
         Map<String, Object> params = new HashMap<String, Object>();
+
         // Where clause
         if (searchFilter.isValued()) {
             if (StringUtils.isNotEmpty(searchFilter.getFileName())) {
-                sql.append("AND ");
-                sql.append("s.FILENAME like :fileName ");
-                String fileName = "%" + searchFilter.getFileName() + "%";
-                params.put("fileName", fileName);
+                sql.append("and S.FILENAME like :fileName ");
+                params.put("fileName", "%" + searchFilter.getFileName() + "%");
             }
             if (StringUtils.isNotEmpty(searchFilter.getSchemaSetIdentifier())) {
-                sql.append("AND ");
-                sql.append("ss.IDENTIFIER like :identifier ");
-                String identifier = "%" + searchFilter.getSchemaSetIdentifier() + "%";
-                params.put("identifier", identifier);
-            }
-            if (StringUtils.isNotEmpty(searchFilter.getRegStatus())) {
-                sql.append("AND ");
-                sql.append("((s.REG_STATUS = :regStatus AND s.SCHEMA_SET_ID IS NULL) ");
-                sql.append("OR ");
-                sql.append("(ss.REG_STATUS = :regStatus AND s.SCHEMA_SET_ID IS NOT NULL)) ");
-                params.put("regStatus", searchFilter.getRegStatus());
+                sql.append("and SS.IDENTIFIER like :schemaSetIdentifier ");
+                params.put("schemaSetIdentifier", "%" + searchFilter.getSchemaSetIdentifier() + "%");
             }
             if (searchFilter.isAttributesValued()) {
                 for (int i = 0; i < searchFilter.getAttributes().size(); i++) {
@@ -271,11 +272,11 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                     String idKey = "attrId" + i;
                     String valueKey = "attrValue" + i;
                     if (StringUtils.isNotEmpty(a.getValue())) {
-                        sql.append("AND ");
-                        sql.append("s.schema_id IN ( ");
-                        sql.append("SELECT a.DATAELEM_ID FROM ATTRIBUTE a WHERE ");
-                        sql.append("a.M_ATTRIBUTE_ID = :" + idKey + " AND a.VALUE like :" + valueKey
-                                + " AND a.PARENT_TYPE = :parentType ");
+                        sql.append("and ");
+                        sql.append("S.SCHEMA_ID IN ( ");
+                        sql.append("select A.DATAELEM_ID from ATTRIBUTE A where ");
+                        sql.append("A.M_ATTRIBUTE_ID = :" + idKey + " and A.VALUE like :" + valueKey
+                                + " and A.PARENT_TYPE = :parentType ");
                         sql.append(") ");
                     }
                     params.put(idKey, a.getId());
@@ -286,34 +287,51 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
             }
         }
 
+        // Having.
+        if (StringUtils.isBlank(searchingUser)){
+            sql.append("having (WCOPY=false and REGSTAT=:regStatus) ");
+            params.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
+        }
+        else{
+            sql.append("having ((WCOPY=false or WUSER=:workingUser)");
+            params.put("workingUser", searchingUser);
+            if (StringUtils.isNotEmpty(searchFilter.getRegStatus())){
+                sql.append(" and REGSTAT=:regStatus");
+                params.put("regStatus", searchFilter.getRegStatus().toString());
+            }
+            sql.append(") ");
+        }
+
         // Sorting
         if (StringUtils.isNotEmpty(searchFilter.getSortProperty())) {
-            sql.append("ORDER BY ").append(searchFilter.getSortProperty());
+            sql.append("order by ").append(searchFilter.getSortProperty());
             if (SortOrderEnum.ASCENDING.equals(searchFilter.getSortOrder())) {
-                sql.append(" ASC ");
+                sql.append(" asc ");
             } else {
-                sql.append(" DESC ");
+                sql.append(" desc ");
             }
         }
-        sql.append("LIMIT ").append(searchFilter.getOffset()).append(",").append(searchFilter.getPageSize());
+        sql.append("limit ").append(searchFilter.getOffset()).append(",").append(searchFilter.getPageSize());
 
-        // LOGGER.debug("SQL: " + sql.toString());
+        LOGGER.debug("SQL: " + sql.toString());
 
         List<Schema> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Schema>() {
             public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Schema schema = new Schema();
-                schema.setId(rs.getInt("SCHEMA_ID"));
-                schema.setSchemaSetId(rs.getInt("SCHEMA_SET_ID"));
-                schema.setFileName(rs.getString("FILENAME"));
-                schema.setContinuityId(rs.getString("CONTINUITY_ID"));
-                schema.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
-                schema.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
-                schema.setWorkingUser(rs.getString("WORKING_USER"));
-                schema.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
-                schema.setUserModified(rs.getString("USER_MODIFIED"));
-                schema.setComment(rs.getString("COMMENT"));
-                schema.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
-                schema.setSchemaSetIdentifier(rs.getString("IDENTIFIER"));
+                schema.setId(rs.getInt("S.SCHEMA_ID"));
+                schema.setSchemaSetId(rs.getInt("SS.SCHEMA_SET_ID"));
+                schema.setFileName(rs.getString("S.FILENAME"));
+                schema.setContinuityId(rs.getString("S.CONTINUITY_ID"));
+                schema.setRegStatus(RegStatus.fromString(rs.getString("S.REG_STATUS")));
+                schema.setWorkingCopy(rs.getBoolean("S.WORKING_COPY"));
+                schema.setWorkingUser(rs.getString("S.WORKING_USER"));
+                schema.setDateModified(rs.getTimestamp("S.DATE_MODIFIED"));
+                schema.setUserModified(rs.getString("S.USER_MODIFIED"));
+                schema.setComment(rs.getString("S.COMMENT"));
+                schema.setCheckedOutCopyId(rs.getInt("S.CHECKEDOUT_COPY_ID"));
+                schema.setSchemaSetIdentifier(rs.getString("SS.IDENTIFIER"));
+                schema.setSchemaSetWorkingCopy(rs.getBoolean("SS.WORKING_COPY"));
+                schema.setSchemaSetWorkingUser(rs.getString("SS.WORKING_USER"));
                 return schema;
             }
         });
@@ -476,11 +494,11 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         if (StringUtils.isBlank(userName)){
-            sql += "and REG_STATUS=:regStatus and WORKING_COPY=false ";
+            sql += "and (WORKING_COPY=false and REG_STATUS=:regStatus) ";
             parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
         }
         else{
-            sql += "and (WORKING_COPY=false or (WORKING_COPY=true and WORKING_USER=:workingUser)) ";
+            sql += "and (WORKING_COPY=false or WORKING_USER=:workingUser) ";
             parameters.put("workingUser", userName);
         }
 

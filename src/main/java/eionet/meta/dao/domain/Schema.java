@@ -28,6 +28,8 @@ public class Schema {
 
     /** Relational properties. */
     private String schemaSetIdentifier;
+    private boolean schemaSetWorkingCopy;
+    private String schemaSetWorkingUser;
 
     /** */
     private Map<String, List<String>> attributeValues;
@@ -251,5 +253,33 @@ public class Schema {
      */
     public boolean isReleased(){
         return regStatus != null && regStatus.equals(RegStatus.RELEASED);
+    }
+
+    /**
+     * @return the schemaSetWorkingCopy
+     */
+    public boolean isSchemaSetWorkingCopy() {
+        return schemaSetWorkingCopy;
+    }
+
+    /**
+     * @param schemaSetWorkingCopy the schemaSetWorkingCopy to set
+     */
+    public void setSchemaSetWorkingCopy(boolean schemaSetWorkingCopy) {
+        this.schemaSetWorkingCopy = schemaSetWorkingCopy;
+    }
+
+    /**
+     * @return the schemaSetWorkingUser
+     */
+    public String getSchemaSetWorkingUser() {
+        return schemaSetWorkingUser;
+    }
+
+    /**
+     * @param schemaSetWorkingUser the schemaSetWorkingUser to set
+     */
+    public void setSchemaSetWorkingUser(String schemaSetWorkingUser) {
+        this.schemaSetWorkingUser = schemaSetWorkingUser;
     }
 }

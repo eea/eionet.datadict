@@ -90,6 +90,7 @@ public class SearchSchemaActionBean extends AbstractActionBean {
             }
         }
 
+        searchFilter.setSearchingUser(getUserName());
         schemasResult = schemaService.searchSchemas(searchFilter);
         return new ForwardResolution(SEARCH_SCHEMAS_JSP);
     }

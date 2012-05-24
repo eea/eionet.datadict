@@ -27,23 +27,24 @@
                 <br/>
                 <label class="question" style="width:18%;float:left;padding-top:0.2em" for="schemaSetIdentifier">Schema set identifer:</label>
                 <stripes:text id="schemaSetIdentifier" name="searchFilter.schemaSetIdentifier" />
-                <span style="font-size:0.8em"><sup>(Leave empty for root-level schemas!)</sup></span>
+                <span style="font-size:0.8em"><sup>(Not relevant for root-level schemas!)</sup></span>
                 <br/>
-                <label class="question" style="width:18%;float:left;padding-top:0.2em" for="regStatus">Registration status:</label>
-                <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
-                    <stripes:options-collection collection="${actionBean.regStatuses}" />
-                </stripes:select>
+                <c:if test="${not empty actionBean.userName}">
+                    <label class="question" style="width:18%;float:left;padding-top:0.2em" for="regStatus">Registration status:</label>
+                    <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
+                        <stripes:options-collection collection="${actionBean.regStatuses}" />
+                    </stripes:select><br/>
+                </c:if>
                 <c:forEach var="attr" items="${actionBean.searchFilter.attributes}" varStatus="row">
-                    <br/>
                     <label class="question" style="width:18%;float:left;padding-top:0.2em" for="attr${row.index}">
                         <c:out value="${attr.shortName}" />:
                     </label>
                     <stripes:text id="attr${row.index}" name="searchFilter.attributes[${row.index}].value" />
+                    <br/>
                     <stripes:hidden name="searchFilter.attributes[${row.index}].id" />
                     <stripes:hidden name="searchFilter.attributes[${row.index}].name" />
                     <stripes:hidden name="searchFilter.attributes[${row.index}].shortName" />
                 </c:forEach>
-                <br/>
                 <span style="width:18%;float:left;padding-top:0.2em">&nbsp;</span><stripes:submit name="search" value="Search"/>
             </div>
 
@@ -56,13 +57,19 @@
                         <stripes:param name="schema.id" value="${item.id}" />
                         <c:out value="${item.fileName}" />
                     </stripes:link>
+                    <c:if test="${not empty actionBean.userName && item.workingCopy && actionBean.userName==item.workingUser}">
+                        <span title="Your working copy" class="checkedout"><strong>*</strong></span>
+                    </c:if>
                 </display:column>
                 <display:column title="Schema set identifier" sortable="true" sortProperty="identifier">
-                    <c:if test="${item.schemaSetId != 0 }">
+                    <c:if test="${item.schemaSetId > 0 }">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
                             <stripes:param name="schemaSet.id" value="${item.schemaSetId}" />
                             <c:out value="${item.schemaSetIdentifier}" />
                         </stripes:link>
+                        <c:if test="${not empty actionBean.userName && item.schemaSetWorkingCopy && actionBean.userName==item.schemaSetWorkingUser}">
+                            <span title="Your working copy" class="checkedout"><strong>*</strong></span>
+                        </c:if>
                     </c:if>
                 </display:column>
             </display:table>
