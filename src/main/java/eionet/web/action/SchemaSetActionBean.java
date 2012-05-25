@@ -118,17 +118,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
     public Resolution view() throws ServiceException {
 
         loadSchemaSet();
-
-        // If checked out by me, redirect to my working copy
-        if (isUserLoggedIn() && schemaSet.isCheckedOutBy(getUserName())) {
-            SchemaSet workingCopy = schemaService.getWorkingCopyOfSchemaSet(schemaSet.getId());
-            if (workingCopy == null) {
-                throw new ServiceException("Failed to find working copy of schema set " + schemaSet.getId());
-            } else {
-                return new RedirectResolution(getClass()).addParameter("schemaSet.id", workingCopy.getId());
-            }
-        }
-
         return new ForwardResolution(VIEW_SCHEMA_SET_JSP);
     }
 
@@ -908,5 +897,23 @@ public class SchemaSetActionBean extends AbstractActionBean {
             otherVersions = schemaService.getSchemaSetVersions(getUserName(), schemaSet.getContinuityId(), schemaSet.getId());
         }
         return otherVersions;
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public SchemaSet getSchemaSetWorkingCopy() throws ServiceException{
+
+        if (schemaSet == null){
+            throw new IllegalStateException("The schema set object must be initialized for this operation!");
+        }
+        else if (!isUserLoggedIn() || !schemaSet.isCheckedOutBy(getUserName())){
+            return null;
+        }
+        else{
+            return schemaService.getWorkingCopyOfSchemaSet(schemaSet.getId());
+        }
     }
 }

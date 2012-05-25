@@ -135,6 +135,14 @@
 
     <h1>View schema</h1>
 
+	<c:set var="schemaWorkingCopy" value="${actionBean.schemaWorkingCopy}"/>
+    <c:if test="${not empty schemaWorkingCopy}">
+    	<div class="note-msg">
+			<strong>Note</strong>
+			<p>You have a <stripes:link beanclass="${actionBean.class.name}"><stripes:param name="schema.id" value="${schemaWorkingCopy.id}"/>working copy</stripes:link> of this schema!</p>
+		</div>
+	</c:if>
+
     <%-- Attributes div --%>
 
     <div id="outerframe" style="padding-top:20px">

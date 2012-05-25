@@ -9,14 +9,14 @@
     <stripes:layout-component name="contents">
 
         <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
-	        <div id="drop-operations">
-	            <h2>Operations:</h2>
-	            <ul>
-	                <li>
-	                    <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
-	                </li>
-	            </ul>
-	        </div>
+            <div id="drop-operations">
+                <h2>Operations:</h2>
+                <ul>
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
+                    </li>
+                </ul>
+            </div>
         </c:if>
 
         <h1>Search schema sets</h1>
@@ -26,21 +26,23 @@
                 <label class="question" style="width:16%;float:left;padding-top:0.2em" for="identifier">Identifier:</label>
                 <stripes:text id="identifier" name="searchFilter.identifier" />
                 <br/>
-                <label class="question" style="width:16%;float:left;padding-top:0.2em" for="regStatus">Registration status:</label>
-                <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
-                    <stripes:options-collection collection="${actionBean.regStatuses}" />
-                </stripes:select>
-                <c:forEach var="attr" items="${actionBean.searchFilter.attributes}" varStatus="row">
+                <c:if test="${not empty actionBean.userName}">
+                    <label class="question" style="width:16%;float:left;padding-top:0.2em" for="regStatus">Registration status:</label>
+                    <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
+                        <stripes:options-collection collection="${actionBean.regStatuses}" />
+                    </stripes:select>
                     <br/>
+                </c:if>
+                <c:forEach var="attr" items="${actionBean.searchFilter.attributes}" varStatus="row">
                     <label class="question" style="width:16%;float:left;padding-top:0.2em" for="attr${row.index}">
                         <c:out value="${attr.shortName}" />:
                     </label>
                     <stripes:text id="attr${row.index}" name="searchFilter.attributes[${row.index}].value" />
+                    <br/>
                     <stripes:hidden name="searchFilter.attributes[${row.index}].id" />
                     <stripes:hidden name="searchFilter.attributes[${row.index}].name" />
                     <stripes:hidden name="searchFilter.attributes[${row.index}].shortName" />
                 </c:forEach>
-                <br/>
                 <span style="width:16%;float:left;padding-top:0.2em">&nbsp;</span><stripes:submit name="search" value="Search"/>
             </div>
 

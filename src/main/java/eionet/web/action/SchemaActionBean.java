@@ -108,16 +108,6 @@ public class SchemaActionBean extends AbstractActionBean {
 
         loadSchema();
 
-        // If checked out by me, redirect to my working copy
-        if (isUserLoggedIn() && schema.isCheckedOutBy(getUserName())) {
-            Schema workingCopy = schemaService.getWorkingCopyOfSchema(schema.getId());
-            if (workingCopy == null) {
-                throw new ServiceException("Failed to find working copy of root-level schema " + schema.getId());
-            } else {
-                return new RedirectResolution(getClass()).addParameter("schema.id", workingCopy.getId());
-            }
-        }
-
         return new ForwardResolution(VIEW_SCHEMA_JSP);
     }
 
@@ -857,5 +847,23 @@ public class SchemaActionBean extends AbstractActionBean {
             }
         }
         return false;
+    }
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Schema getSchemaWorkingCopy() throws ServiceException{
+
+        if (schema == null){
+            throw new IllegalStateException("The schema object must be initialized for this operation!");
+        }
+        else if (!isUserLoggedIn() || !schema.isCheckedOutBy(getUserName())){
+            return null;
+        }
+        else{
+            return schemaService.getWorkingCopyOfSchema(schema.getId());
+        }
     }
 }
