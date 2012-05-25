@@ -24,6 +24,7 @@ package eionet.meta.dao.mysql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,11 +98,10 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         String searchingUser = searchFilter.getSearchingUser();
-        if (StringUtils.isBlank(searchingUser)){
+        if (StringUtils.isBlank(searchingUser)) {
             sql.append("(ss.WORKING_COPY=false and ss.REG_STATUS=:regStatus) ");
             parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
-        }
-        else{
+        } else {
             sql.append("(ss.WORKING_COPY=false or ss.WORKING_USER=:workingUser) ");
             parameters.put("workingUser", searchingUser);
         }
@@ -183,25 +183,49 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     @Override
     public List<SchemaSet> getSchemaSets(String userName) {
 
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ");
-        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID ");
-        sql.append("FROM T_SCHEMA_SET WHERE ");
+        // Get the ID of 'Name' attribute beforehand.
+        int nameAttrId = getJdbcTemplate().queryForInt("select M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME='Name'");
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        // Now build the main sql, joining to ATTRIBUTE table via above-found  ID of 'Name'.
+
+        StringBuilder sql = new StringBuilder()
+        .append("select SCHEMA_SET_ID, IDENTIFIER, CONTINUITY_ID, REG_STATUS, WORKING_COPY, ")
+        .append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID ");
+
+        if (nameAttrId > 0){
+            sql.append(",ATTRIBUTE.VALUE as NAME ");
+        }
+
+        sql.append("from T_SCHEMA_SET ");
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        if (nameAttrId > 0){
+
+            sql.append("left outer join ATTRIBUTE on ")
+            .append("(T_SCHEMA_SET.SCHEMA_SET_ID=ATTRIBUTE.DATAELEM_ID and ATTRIBUTE.PARENT_TYPE=:attrParentType ")
+            .append("and ATTRIBUTE.M_ATTRIBUTE_ID=:nameAttrId) ");
+
+            params.put("attrParentType", DElemAttribute.ParentType.SCHEMA_SET.toString());
+            params.put("nameAttrId", nameAttrId);
+        }
+
+        sql.append("where ");
+
         if (StringUtils.isBlank(userName)) {
             sql.append("(WORKING_COPY=FALSE and REG_STATUS = :regStatus) ");
-            parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
+            params.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
         } else {
             sql.append("(WORKING_COPY=FALSE or WORKING_USER=:workingUser) ");
-            parameters.put("workingUser", userName);
+            params.put("workingUser", userName);
         }
 
         // Working copy is added to "order by" so that a working copy always comes after the original when the result list is
         // displeyd to the user.
-        sql.append("ORDER BY IDENTIFIER, SCHEMA_SET_ID");
+        sql.append("order by ifnull(NAME,IDENTIFIER), SCHEMA_SET_ID");
 
-        List<SchemaSet> items = getNamedParameterJdbcTemplate().query(sql.toString(), parameters, new RowMapper<SchemaSet>() {
+        // Execute the main SQL, build result list.
+
+        List<SchemaSet> items = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<SchemaSet>() {
             public SchemaSet mapRow(ResultSet rs, int rowNum) throws SQLException {
                 SchemaSet ss = new SchemaSet();
                 ss.setId(rs.getInt("SCHEMA_SET_ID"));
@@ -214,6 +238,10 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                String name = rs.getString("NAME");
+                if (StringUtils.isNotBlank(name)){
+                    ss.setAttributeValues(Collections.singletonMap("Name", Collections.singletonList(name)));
+                }
                 return ss;
             }
         });

@@ -1,6 +1,8 @@
 package eionet.meta.dao.domain;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -21,6 +23,26 @@ public class SchemaSet {
     private String comment;
     private int checkedOutCopyId;
 
+    /** Relational properties. */
+    private Map<String, List<String>> attributeValues;
+
+    /**
+     * @return the attributeValues
+     */
+    public Map<String, List<String>> getAttributeValues() {
+        return attributeValues;
+    }
+
+    /**
+     * @param attributeValues the attributeValues to set
+     */
+    public void setAttributeValues(Map<String, List<String>> attributeValues) {
+        this.attributeValues = attributeValues;
+    }
+
+    /**
+     *
+     */
     public SchemaSet() {
     }
 

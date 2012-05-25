@@ -243,15 +243,13 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     @Override
     public SchemasResult searchSchemas(SchemaFilter searchFilter) {
 
-        StringBuilder sql = new StringBuilder()
-        .append("select ")
-        .append("S.*, SS.*, ")
-        .append("if(SS.SCHEMA_SET_ID is null, S.WORKING_COPY, SS.WORKING_COPY) as WCOPY, ")
-        .append("if(SS.SCHEMA_SET_ID is null, S.WORKING_USER, SS.WORKING_USER) as WUSER, ")
-        .append("if(SS.SCHEMA_SET_ID is null, S.REG_STATUS, SS.REG_STATUS) as REGSTAT ")
-        .append("from ")
-        .append("T_SCHEMA as S left outer join T_SCHEMA_SET as SS on (S.SCHEMA_SET_ID=SS.SCHEMA_SET_ID) ")
-        .append("where 1=1 ");
+        StringBuilder sql =
+            new StringBuilder().append("select ").append("S.*, SS.*, ")
+            .append("if(SS.SCHEMA_SET_ID is null, S.WORKING_COPY, SS.WORKING_COPY) as WCOPY, ")
+            .append("if(SS.SCHEMA_SET_ID is null, S.WORKING_USER, SS.WORKING_USER) as WUSER, ")
+            .append("if(SS.SCHEMA_SET_ID is null, S.REG_STATUS, SS.REG_STATUS) as REGSTAT ").append("from ")
+            .append("T_SCHEMA as S left outer join T_SCHEMA_SET as SS on (S.SCHEMA_SET_ID=SS.SCHEMA_SET_ID) ")
+            .append("where 1=1 ");
 
         String searchingUser = searchFilter.getSearchingUser();
         Map<String, Object> params = new HashMap<String, Object>();
@@ -288,14 +286,13 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         }
 
         // Having.
-        if (StringUtils.isBlank(searchingUser)){
+        if (StringUtils.isBlank(searchingUser)) {
             sql.append("having (WCOPY=false and REGSTAT=:regStatus) ");
             params.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
-        }
-        else{
+        } else {
             sql.append("having ((WCOPY=false or WUSER=:workingUser)");
             params.put("workingUser", searchingUser);
-            if (StringUtils.isNotEmpty(searchFilter.getRegStatus())){
+            if (StringUtils.isNotEmpty(searchFilter.getRegStatus())) {
                 sql.append(" and REGSTAT=:regStatus");
                 params.put("regStatus", searchFilter.getRegStatus().toString());
             }
@@ -313,7 +310,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         }
         sql.append("limit ").append(searchFilter.getOffset()).append(",").append(searchFilter.getPageSize());
 
-        LOGGER.debug("SQL: " + sql.toString());
+        // LOGGER.debug("SQL: " + sql.toString());
 
         List<Schema> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Schema>() {
             public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -490,21 +487,41 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     @Override
     public List<Schema> getRootLevelSchemas(String userName) {
 
-        String sql = "select * from T_SCHEMA where (SCHEMA_SET_ID is null or SCHEMA_SET_ID<=0) ";
+        // Get the ID of 'Name' attribute beforehand.
+        int nameAttrId = getJdbcTemplate().queryForInt("select M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME='Name'");
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        if (StringUtils.isBlank(userName)){
+        // Now build the main sql, joining to ATTRIBUTE table via above-found ID of 'Name'.
+
+        String sql = "select * ";
+        if (nameAttrId > 0){
+            sql += ",ATTRIBUTE.VALUE as NAME ";
+        }
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        sql += "from T_SCHEMA ";
+
+        if (nameAttrId > 0){
+            sql += "left outer join ATTRIBUTE on ";
+            sql += "(T_SCHEMA.SCHEMA_ID=ATTRIBUTE.DATAELEM_ID and ATTRIBUTE.PARENT_TYPE=:attrParentType ";
+            sql += "and ATTRIBUTE.M_ATTRIBUTE_ID=:nameAttrId) ";
+
+            params.put("attrParentType", DElemAttribute.ParentType.SCHEMA.toString());
+            params.put("nameAttrId", nameAttrId);
+        }
+
+        sql += "where (SCHEMA_SET_ID is null or SCHEMA_SET_ID<=0) ";
+
+        if (StringUtils.isBlank(userName)) {
             sql += "and (WORKING_COPY=false and REG_STATUS=:regStatus) ";
-            parameters.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
-        }
-        else{
+            params.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
+        } else {
             sql += "and (WORKING_COPY=false or WORKING_USER=:workingUser) ";
-            parameters.put("workingUser", userName);
+            params.put("workingUser", userName);
         }
 
-        sql += "ORDER BY FILENAME, SCHEMA_ID";
+        sql += "order by ifnull(NAME,FILENAME), SCHEMA_ID";
 
-        List<Schema> schema = getNamedParameterJdbcTemplate().query(sql, parameters, new RowMapper<Schema>() {
+        List<Schema> schema = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<Schema>() {
             public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Schema schema = new Schema();
                 schema.setId(rs.getInt("SCHEMA_ID"));
@@ -517,6 +534,12 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 schema.setUserModified(rs.getString("USER_MODIFIED"));
                 schema.setComment(rs.getString("COMMENT"));
                 schema.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+
+                String name = rs.getString("NAME");
+                if (StringUtils.isNotBlank(name)){
+                    schema.setAttributeValues(Collections.singletonMap("Name", Collections.singletonList(name)));
+                }
+
                 return schema;
             }
         });
@@ -594,7 +617,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     @Override
     public List<Schema> getSchemaVersions(String userName, String continuityId, int... excludeIds) {
 
-        if (StringUtils.isBlank(continuityId)){
+        if (StringUtils.isBlank(continuityId)) {
             throw new IllegalArgumentException("Continuity id must not be blank!");
         }
 
@@ -604,12 +627,12 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("continuityId", continuityId);
 
-        if (StringUtils.isBlank(userName)){
+        if (StringUtils.isBlank(userName)) {
             sql += " and REG_STATUS=:regStatus";
             params.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
         }
 
-        if (excludeIds != null && excludeIds.length > 0){
+        if (excludeIds != null && excludeIds.length > 0) {
             sql += " and SCHEMA_ID not in (:excludeIds)";
             params.put("excludeIds", Arrays.asList(ArrayUtils.toObject(excludeIds)));
         }
