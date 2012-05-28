@@ -42,6 +42,23 @@
                             $('#checkInDialog').dialog('close');
                             return true;
                         });
+
+                        //////////////////////
+
+                        $("#uploadSchemaLink").click(function() {
+                            $('#uploadSchemaDialog').dialog('open');
+                            return false;
+                        });
+
+                        $('#uploadSchemaDialog').dialog({
+                            autoOpen: false,
+                            width: 500
+                        });
+
+                        $("#closeUploadSchemaDialog").click(function() {
+                            $('#uploadSchemaDialog').dialog("close");
+                            return true;
+                        });
                     });
             } ) ( jQuery );
         // ]]>
@@ -68,6 +85,9 @@
                             <stripes:link beanclass="${actionBean.class.name}" event="editSchemas">Edit schemas
                                 <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
                             </stripes:link>
+                        </li>
+                        <li>
+                            <a href="#" id="uploadSchemaLink">Upload schema</a>
                         </li>
                         <c:choose>
                             <c:when test="${actionBean.checkInCommentsRequired}">
@@ -268,6 +288,31 @@
 
             <div style="display:none">
                 <stripes:hidden name="schemaSet.id"/>
+            </div>
+        </stripes:form>
+    </div>
+
+    <%-- The dialog for uploading a schema (a div that is hidden unless activated) --%>
+
+    <div id="uploadSchemaDialog" title="Upload schema">
+        <stripes:form beanclass="${actionBean.class.name}" method="post">
+
+            <label for="fileToUpload">File to upload*:</label>
+            <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>
+            <c:if test="${not empty actionBean.mandatorySchemaAttributes}">
+                <c:forEach items="${actionBean.mandatorySchemaAttributes}" var="mandatoryAttr">
+                    <br/>
+                    <label for="attr_${mandatoryAttr.ID}_text"><c:out value="${mandatoryAttr.shortName}"/>*:</label>
+                    <input type="text" name="attr_${mandatoryAttr.ID}" id="attr_${mandatoryAttr.ID}_text" size="${mandatoryAttr.displayWidth}" class="smalltext"/>
+                </c:forEach>
+            </c:if>
+            <br/><br/>
+            <stripes:submit name="uploadSchema" value="Upload"/>
+            <input type="button" id="closeUploadSchemaDialog" value="Cancel"/>
+
+            <div style="display:none">
+                <stripes:hidden name="schemaSet.id"/>
+                <stripes:hidden name="schemaSet.identifier"/>
             </div>
         </stripes:form>
     </div>

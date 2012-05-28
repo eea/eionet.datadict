@@ -491,7 +491,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         if (isValidationErrors()) {
             loadSchemaSet();
-            getContext().setSourcePageResolution(new ForwardResolution(SCHEMA_SET_SCHEMAS_JSP));
         }
     }
 
