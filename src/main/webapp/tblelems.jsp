@@ -281,9 +281,36 @@
 
 
         function saveChanges(){
+        	if (ensureLegalPrimaryKeys()==false){
+        		return false;
+        	}
             tbl_obj.insertNumbers("pos_");
             submitForm("edit_tblelems");
         }
+
+        function ensureLegalPrimaryKeys(){
+
+        	var elems = document.forms["form1"].elements;
+        	if (elems == null) return false;
+            for (var i=0; i<elems.length; i++){
+                var elem = elems[i];
+                if (elem.name.length >= 6 && elem.name.substr(0,6)=="delim_"){
+                	if (elem.type=="select-one" && elem.selectedIndex>=0){
+                		if (elem.options[elem.selectedIndex].value.length > 0){
+                			var elem_id = elem.name.substr(6);
+                			var primKeyElem = document.forms["form1"].elements["primkey_" + elem_id];
+                			if (primKeyElem!=null && primKeyElem.type=="checkbox" && primKeyElem.checked){
+                				alert("Elements marked as primary keys must not have a value delimiter specified! i.e. they can not have multiple values.");
+                				return false;
+                			}
+                		}
+                	}
+                }
+            }
+
+            return true;
+        }
+
         function clickLink(sUrl){
             if (getChanged()==1){
                 if(!confirm("This link leads you to the next page, but you have changed the order of elements.\n Are you sure you want to loose the changes?"))
@@ -715,19 +742,11 @@ if (messages.trim().length()>0){
                                 }
                             }
 
-                            if (hasQuantitativeElements){
-                                if (elem.getType()!=null && elem.getType().equals("CH2")){
-                                    %>
-                                    <td style="text-align: left; padding-right:10px">
-                                        <input type="hidden" name="oldprimkey_<%=elem.getID()%>" value="<%=primaryKeyFlag%>"/>
-                                        <input type="checkbox" name="primkey_<%=elem.getID()%>"  value="T" onclick="tbl_obj.clickOtherObject();" <%=primaryKeyFlagChecked%>/>
-                                    </td><%
-                                }
-                                else{
-                                    %><td style="text-align: left; padding-right:10px">&nbsp;</td><%
-                                }
-                            }
-                            %>
+                             %>
+                             <td style="text-align: left; padding-right:10px">
+                                 <input type="hidden" name="oldprimkey_<%=elem.getID()%>" value="<%=primaryKeyFlag%>"/>
+                                 <input type="checkbox" name="primkey_<%=elem.getID()%>"  value="T" onclick="tbl_obj.clickOtherObject();" <%=primaryKeyFlagChecked%>/>
+                             </td>
 
                         </tr>
                         <%
