@@ -66,7 +66,7 @@
                             <c:out value="${schema.fileName}"/>
                         </stripes:link>
                     </display:column>
-                    <display:column title="Short description"><c:out value="${ddfn:join(schema.attributeValues['ShortDescription'],',')}"/></display:column>
+                    <display:column title="Name"><c:out value="${ddfn:join(schema.attributeValues['Name'],',')}"/></display:column>
                 </display:table>
 
                 <stripes:submit name="deleteSchemas" value="Delete" />
