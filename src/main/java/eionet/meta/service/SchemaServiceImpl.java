@@ -645,19 +645,6 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * @see eionet.meta.service.ISchemaService#existsRootLevelSchema(java.lang.String)
-     */
-    @Override
-    public boolean existsRootLevelSchema(String schemaFilename) throws ServiceException{
-
-        try {
-            return schemaDAO.existsRootLevelSchema(schemaFilename);
-        } catch (Exception e) {
-            throw new ServiceException("Failed to check if a schema by this filename already exists!", e);
-        }
-    }
-
-    /**
      * @throws ServiceException
      * @see eionet.meta.service.ISchemaService#checkOutSchema(int, java.lang.String)
      */
@@ -854,6 +841,19 @@ public class SchemaServiceImpl implements ISchemaService {
             return newSchemaId;
         } catch (Exception e) {
             throw new ServiceException("Failed to copy schema row", e);
+        }
+    }
+
+    /**
+     * @throws ServiceException
+     * @see eionet.meta.service.ISchemaService#schemaExists(java.lang.String, int)
+     */
+    @Override
+    public boolean schemaExists(String fileName, int schemaSetId) throws ServiceException {
+        try {
+            return schemaDAO.schemaExists(fileName, schemaSetId);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
         }
     }
 }

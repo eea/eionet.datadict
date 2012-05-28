@@ -240,16 +240,6 @@ public interface ISchemaService {
     boolean schemaSetExists(String schemaSetIdentifier) throws ServiceException;
 
     /**
-     * Returns true if a root-level schema by the given filename already exists, regardless of whether it
-     * is a working copy or not. Otherwise return false.
-     *
-     * @param schemaFilename The filename to check.
-     * @return The boolean in question.
-     * @throws ServiceException
-     */
-    boolean existsRootLevelSchema(String schemaFilename) throws ServiceException;
-
-    /**
      *
      * @param schemaId
      * @param userName
@@ -343,4 +333,16 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     List<Schema> getSchemaVersions(String userName, String continuityId, int... excludeIds) throws ServiceException;
+
+    /**
+     * Returns true if the given schema exists within the given schema set. Otherwise returns false.
+     * The schema is given by its file name, while the schema set is given by its auto-generated id.
+     * If the latter <=0, the schema is considered to be a root-level schema.
+     *
+     * @param fileName
+     * @param schemaSetId
+     * @return
+     * @throws ServiceException
+     */
+    boolean schemaExists(String fileName, int schemaSetId) throws ServiceException;
 }

@@ -190,4 +190,15 @@ public interface ISchemaDAO {
      * @throws ServiceException
      */
     List<Schema> getSchemaVersions(String userName, String continuityId, int... excludeIds);
+
+    /**
+     * Returns true if the given schema exists within the given schema set. Otherwise returns false.
+     * The schema is given by its file name, while the schema set is given by its auto-generated id.
+     * If the latter <=0, the schema is considered to be a root-level schema.
+     *
+     * @param fileName
+     * @param schemaSetId
+     * @return
+     */
+    boolean schemaExists(String fileName, int schemaSetId);
 }

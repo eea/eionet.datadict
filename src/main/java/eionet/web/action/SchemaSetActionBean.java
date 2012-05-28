@@ -352,7 +352,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         File schemaFile = null;
         try {
-            schemaFile = schemaRepository.addSchema(uploadedFile, schemaSet.getIdentifier(), false);
+            schemaFile = schemaRepository.addSchema(uploadedFile, schemaSet.getIdentifier(), true);
 
             Schema schema = new Schema();
             schema.setFileName(uploadedFile.getFileName());
@@ -469,7 +469,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-            if (schemaRepository.existsSchema(uploadedFile.getFileName(), schemaSet.getIdentifier())) {
+            if (schemaService.schemaExists(uploadedFile.getFileName(), schemaSet.getId())){
                 addGlobalValidationError("A schema with such a file name already exists!");
             }
         }

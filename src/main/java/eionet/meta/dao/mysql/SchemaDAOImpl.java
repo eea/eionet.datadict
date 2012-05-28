@@ -658,4 +658,25 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
 
         return resultList;
     }
+
+    /**
+     * @see eionet.meta.dao.ISchemaDAO#schemaExists(java.lang.String, int)
+     */
+    @Override
+    public boolean schemaExists(String fileName, int schemaSetId) {
+
+        String sql = "select count(*) from T_SCHEMA where FILENAME = :fileName and ";
+        if (schemaSetId <= 0){
+            sql += "(SCHEMA_SET_ID is null or SCHEMA_SET_ID<=0)";
+        }
+        else{
+            sql += "SCHEMA_SET_ID=:schemaSetId";
+        }
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("fileName", fileName);
+        parameters.put("schemaSetId", schemaSetId);
+
+        int count = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+        return count > 0;
+    }
 }

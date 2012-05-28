@@ -164,7 +164,7 @@ public class SchemaActionBean extends AbstractActionBean {
             File savedSchemaFile = null;
             int schemaId;
             try {
-                savedSchemaFile = schemaRepository.addSchema(uploadedFile, null, false);
+                savedSchemaFile = schemaRepository.addSchema(uploadedFile, null, true);
 
                 schema.setFileName(uploadedFile.getFileName());
                 schema.setUserModified(getUserName());
@@ -315,7 +315,8 @@ public class SchemaActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-            if (schemaService.existsRootLevelSchema(uploadedFile.getFileName())) {
+
+            if (schemaService.schemaExists(uploadedFile.getFileName(), 0)) {
                 addGlobalValidationError("A root-level schema or a root-level schema working copy by this filename already exists!");
             }
         }
