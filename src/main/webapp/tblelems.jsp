@@ -281,30 +281,30 @@
 
 
         function saveChanges(){
-        	if (ensureLegalPrimaryKeys()==false){
-        		return false;
-        	}
+            if (ensureLegalPrimaryKeys()==false){
+                return false;
+            }
             tbl_obj.insertNumbers("pos_");
             submitForm("edit_tblelems");
         }
 
         function ensureLegalPrimaryKeys(){
 
-        	var elems = document.forms["form1"].elements;
-        	if (elems == null) return false;
+            var elems = document.forms["form1"].elements;
+            if (elems == null) return false;
             for (var i=0; i<elems.length; i++){
                 var elem = elems[i];
                 if (elem.name.length >= 6 && elem.name.substr(0,6)=="delim_"){
-                	if (elem.type=="select-one" && elem.selectedIndex>=0){
-                		if (elem.options[elem.selectedIndex].value.length > 0){
-                			var elem_id = elem.name.substr(6);
-                			var primKeyElem = document.forms["form1"].elements["primkey_" + elem_id];
-                			if (primKeyElem!=null && primKeyElem.type=="checkbox" && primKeyElem.checked){
-                				alert("Elements marked as primary keys must not have a value delimiter specified! i.e. they can not have multiple values.");
-                				return false;
-                			}
-                		}
-                	}
+                    if (elem.type=="select-one" && elem.selectedIndex>=0){
+                        if (elem.options[elem.selectedIndex].value.length > 0){
+                            var elem_id = elem.name.substr(6);
+                            var primKeyElem = document.forms["form1"].elements["primkey_" + elem_id];
+                            if (primKeyElem!=null && primKeyElem.type=="checkbox" && primKeyElem.checked){
+                                alert("Elements marked as primary keys must not have a value delimiter specified! i.e. they can not have multiple values.");
+                                return false;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -582,6 +582,7 @@ if (messages.trim().length()>0){
                     // the elements display loop
                     boolean hasMarkedElems = false;
                     boolean hasForeignKeys = false;
+                    boolean hasPrimaryKeys = false;
                     boolean hasCommonElms = false;
                     StringBuffer strElemIDs = new StringBuffer();
                     for (int i=0; elems!=null && i<elems.size(); i++){
@@ -630,6 +631,9 @@ if (messages.trim().length()>0){
 
                         String primaryKeyFlag = elem.isPrimaryKey() ? "T" : "F";
                         String primaryKeyFlagChecked = elem.isPrimaryKey() ? "checked=\"checked\"" : "";
+                        if (elem.isPrimaryKey()){
+                            hasPrimaryKeys = true;
+                        }
 
                         String trStyle = (i%2 != 0) ? "style=\"background-color:#D3D3D3\"" : "";
                     %>
@@ -773,11 +777,18 @@ if (messages.trim().length()>0){
                             </td>
                         </tr><%
                     }
+                    if (user!=null && elems!=null && elems.size()>0 && hasPrimaryKeys){%>
+                        <tr style="height:10px;">
+                            <td style="font-size:70%;width:100%" colspan="<%=String.valueOf(colCount)%>">
+                                (the <em><strong style="text-decoration:underline">(PK)</strong></em> marks elements participating in the table's primary key)
+                            </td>
+                        </tr><%
+                    }
                     if (elems!=null && elems.size()>0 && hasCommonElms){%>
                         <tr style="height:10px;">
                             <td style="font-size:70%;width:100%" colspan="<%=String.valueOf(colCount)%>">
                                 (the <sup class="commonelm">C</sup> sign marks a common element)
-                            </td>
+                            </td> 
                         </tr><%
                     }
                     %>
