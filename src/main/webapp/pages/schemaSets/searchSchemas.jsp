@@ -54,7 +54,10 @@
 
                 <display:column title="File name" sortable="true" sortName="sortName" sortProperty="fileName">
                     <stripes:link beanclass="eionet.web.action.SchemaActionBean">
-                        <stripes:param name="schema.id" value="${item.id}" />
+                        <c:if test="${item.schemaSetId > 0}">
+                            <stripes:param name="schemaSet.identifier" value="${item.schemaSetIdentifier}" />
+                        </c:if>
+                        <stripes:param name="schema.fileName" value="${item.fileName}" />
                         <c:out value="${item.fileName}" />
                     </stripes:link>
                     <c:if test="${not empty actionBean.userName && item.workingCopy && actionBean.userName==item.workingUser}">
@@ -62,9 +65,9 @@
                     </c:if>
                 </display:column>
                 <display:column title="Schema set identifier" sortable="true" sortProperty="identifier">
-                    <c:if test="${item.schemaSetId > 0 }">
+                    <c:if test="${item.schemaSetId > 0}">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
-                            <stripes:param name="schemaSet.id" value="${item.schemaSetId}" />
+                            <stripes:param name="schemaSet.identifier" value="${item.schemaSetIdentifier}" />
                             <c:out value="${item.schemaSetIdentifier}" />
                         </stripes:link>
                         <c:if test="${not empty actionBean.userName && item.schemaSetWorkingCopy && actionBean.userName==item.schemaSetWorkingUser}">

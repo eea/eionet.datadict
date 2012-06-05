@@ -51,7 +51,7 @@
             <display:table name="actionBean.schemaSetsResult" class="sortable" id="item" requestURI="/schemasets/search/">
                 <display:column title="Identifier" sortable="true" sortName="sortName" sortProperty="identifier">
                     <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
-                        <stripes:param name="schemaSet.id" value="${item.id}" />
+                        <stripes:param name="schemaSet.identifier" value="${item.identifier}" />
                         <c:out value="${item.identifier}" />
                     </stripes:link>
                     <c:if test="${not empty actionBean.userName && item.workingCopy && actionBean.userName==item.workingUser}">
