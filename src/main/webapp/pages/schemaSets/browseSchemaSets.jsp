@@ -17,6 +17,8 @@
                     <li>
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
                     </li>
+                </c:if>
+                <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemas', 'i')}">
                     <li>
                         <stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link>
                     </li>

@@ -70,7 +70,6 @@ public class SearchSchemaActionBean extends AbstractActionBean {
 
     @DefaultHandler
     public Resolution search() throws ServiceException {
-        LOGGER.debug("Search schemas");
         if (searchFilter == null) {
             searchFilter = new SchemaFilter();
             searchFilter.setAttributes(schemaService.getSchemaAttributes());

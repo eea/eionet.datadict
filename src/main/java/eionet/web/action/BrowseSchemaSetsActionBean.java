@@ -225,8 +225,14 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
                     // Must not be a working copy, nor must it be checked out
                     if (!schema.isWorkingCopy() && StringUtils.isBlank(schema.getWorkingUser())) {
                         String permission = schema.getRegStatus().equals(SchemaSet.RegStatus.RELEASED) ? "er" : "d";
-                        if (SecurityUtil.hasPerm(userName, "/schemasets", permission)) {
-                            deletableSchemas.add(schema.getId());
+                        if (schema.getSchemaSetId() > 0) {
+                            if (SecurityUtil.hasPerm(userName, "/schemasets", permission)) {
+                                deletableSchemas.add(schema.getId());
+                            }
+                        } else {
+                            if (SecurityUtil.hasPerm(userName, "/schemas", permission)) {
+                                deletableSchemas.add(schema.getId());
+                            }
                         }
                     }
                 }

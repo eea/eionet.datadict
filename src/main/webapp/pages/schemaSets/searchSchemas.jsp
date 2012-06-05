@@ -9,7 +9,7 @@
 
     <stripes:layout-component name="contents">
 
-        <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
+        <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemas', 'i')}">
             <div id="drop-operations">
                 <h2>Operations:</h2>
                 <ul>

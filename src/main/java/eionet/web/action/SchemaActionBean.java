@@ -858,10 +858,10 @@ public class SchemaActionBean extends AbstractActionBean {
         }
 
         try {
-            if (SecurityUtil.hasPerm(getUserName(), "/schemasets", "er")) {
+            if (SecurityUtil.hasPerm(getUserName(), "/schemas", "er")) {
                 return true;
             } else {
-                return !schema.isReleased() && SecurityUtil.hasPerm(getUserName(), "/schemasets", "u");
+                return !schema.isReleased() && SecurityUtil.hasPerm(getUserName(), "/schemas", "u");
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -878,7 +878,7 @@ public class SchemaActionBean extends AbstractActionBean {
 
         if (getUser() != null) {
             try {
-                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "i");
+                return SecurityUtil.hasPerm(getUserName(), "/schemas", "i");
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }
