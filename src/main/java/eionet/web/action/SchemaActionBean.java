@@ -165,7 +165,6 @@ public class SchemaActionBean extends AbstractActionBean {
         if (!isGetOrHeadRequest()) {
 
             File savedSchemaFile = null;
-            int schemaId;
             try {
                 savedSchemaFile = schemaRepository.addSchema(uploadedFile, null, true);
 
@@ -174,12 +173,12 @@ public class SchemaActionBean extends AbstractActionBean {
                 schema.setWorkingUser(getUserName());
                 schema.setWorkingCopy(true);
 
-                schemaId = schemaService.addSchema(schema, getSaveAttributeValues());
+                schemaService.addSchema(schema, getSaveAttributeValues());
             } catch (ServiceException e) {
                 SchemaRepository.deleteQuietly(savedSchemaFile);
                 throw e;
             }
-            resolution = new RedirectResolution(getClass()).addParameter("schema.id", schemaId);
+            resolution = new RedirectResolution(getClass()).addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
             addSystemMessage("Working copy successfully created!");
         }
         return resolution;

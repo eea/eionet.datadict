@@ -73,20 +73,37 @@
                                 </c:otherwise>
                             </c:choose>
                         </c:if>
-                        <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" class="link-folder">
-                            <stripes:param name="schemaSet.identifier" value="${schemaSet.identifier}" />
-                            <c:if test="${schemaSet.workingCopy}">
-                                <stripes:param name="workingCopy" value="true" />
-                            </c:if>
-                            <c:choose>
-                                <c:when test="${not empty schemaSetName}">
-                                    <c:out value="${schemaSetName}"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:out value="${schemaSet.identifier}"/>
-                                </c:otherwise>
-                            </c:choose>
-                        </stripes:link>
+                        <c:choose>
+                            <c:when test="${schemaSet.draftStatus && empty actionBean.user}">
+                                <span class="link-folder">
+                                    <c:choose>
+                                        <c:when test="${not empty schemaSetName}">
+                                            <c:out value="${schemaSetName}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:out value="${schemaSet.identifier}"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <sup>(<c:out value="${schemaSet.regStatus}" />)</sup>
+                                </span>
+                            </c:when>
+                            <c:otherwise>
+                                <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" class="link-folder">
+                                    <stripes:param name="schemaSet.identifier" value="${schemaSet.identifier}" />
+                                    <c:if test="${schemaSet.workingCopy}">
+                                        <stripes:param name="workingCopy" value="true" />
+                                    </c:if>
+                                    <c:choose>
+                                        <c:when test="${not empty schemaSetName}">
+                                            <c:out value="${schemaSetName}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:out value="${schemaSet.identifier}"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </stripes:link>
+                            </c:otherwise>
+                        </c:choose>
                         <c:if test="${not empty actionBean.userName && schemaSet.workingCopy && actionBean.userName==schemaSet.workingUser}">
                             <span title="Your working copy" class="checkedout"><strong>*</strong></span>
                         </c:if>
@@ -105,18 +122,33 @@
                                 </c:otherwise>
                             </c:choose>
                         </c:if>
-                        <stripes:link beanclass="eionet.web.action.SchemaActionBean">
-                            <stripes:param name="schema.fileName" value="${schema.fileName}" />
-                            <c:if test="${schema.workingCopy}"><stripes:param name="workingCopy" value="true" /></c:if>
-                            <c:choose>
-                                <c:when test="${not empty schemaName}">
-                                    <c:out value="${schemaName}"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:out value="${schema.fileName}"/>
-                                </c:otherwise>
-                            </c:choose>
-                        </stripes:link>
+                        <c:choose>
+                            <c:when test="${schema.draftStatus && empty actionBean.user}">
+                                <c:choose>
+                                    <c:when test="${not empty schemaName}">
+                                        <c:out value="${schemaName}"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:out value="${schema.fileName}"/>
+                                    </c:otherwise>
+                                </c:choose>
+                                <sup>(<c:out value="${schema.regStatus}" />)</sup>
+                            </c:when>
+                            <c:otherwise>
+                                <stripes:link beanclass="eionet.web.action.SchemaActionBean">
+                                    <stripes:param name="schema.fileName" value="${schema.fileName}" />
+                                    <c:if test="${schema.workingCopy}"><stripes:param name="workingCopy" value="true" /></c:if>
+                                    <c:choose>
+                                        <c:when test="${not empty schemaName}">
+                                            <c:out value="${schemaName}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:out value="${schema.fileName}"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </stripes:link>
+                            </c:otherwise>
+                        </c:choose>
                         <c:if test="${not empty actionBean.userName && schema.workingCopy && actionBean.userName==schema.workingUser}">
                             <span title="Your working copy" class="checkedout"><strong>*</strong></span>
                         </c:if>

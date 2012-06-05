@@ -29,6 +29,15 @@ public class SchemaSet {
     private Map<String, List<String>> attributeValues;
 
     /**
+     * Helper method for checking, if SchemaSet is in "DRAFT" status.
+     *
+     * @return
+     */
+    public boolean isDraftStatus() {
+        return RegStatus.DRAFT.equals(regStatus);
+    }
+
+    /**
      * @return the attributeValues
      */
     public Map<String, List<String>> getAttributeValues() {

@@ -572,8 +572,9 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         sql += "where (SCHEMA_SET_ID is null or SCHEMA_SET_ID<=0) ";
 
         if (StringUtils.isBlank(userName)) {
-            sql += "and (WORKING_COPY=false and REG_STATUS=:regStatus) ";
-            params.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
+            sql += "and WORKING_COPY=false ";
+            // sql += "and (WORKING_COPY=false and REG_STATUS=:regStatus) ";
+            // params.put("regStatus", SchemaSet.RegStatus.RELEASED.toString());
         } else {
             sql += "and (WORKING_COPY=false or WORKING_USER=:workingUser) ";
             params.put("workingUser", userName);

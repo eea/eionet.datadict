@@ -136,7 +136,12 @@
     <c:if test="${not empty schemaSetWorkingCopy}">
         <div class="note-msg">
             <strong>Note</strong>
-            <p>You have a <stripes:link beanclass="${actionBean.class.name}"><stripes:param name="schemaSet.id" value="${schemaSetWorkingCopy.id}"/>working copy</stripes:link> of this schema set!</p>
+            <p>You have a
+                <stripes:link beanclass="${actionBean.class.name}">
+                    <stripes:param name="schemaSet.identifier" value="${schemaSetWorkingCopy.identifier}"/>
+                    <stripes:param name="workingCopy" value="true"/>
+                    working copy
+                </stripes:link> of this schema set!</p>
         </div>
     </c:if>
 

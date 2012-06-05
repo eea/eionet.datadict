@@ -23,18 +23,18 @@
 
         <stripes:form id="searchResultsForm" action="/schemasets/search/" method="get">
             <div style="margin-top:1em">
-                <label class="question" style="width:16%;float:left;padding-top:0.2em" for="identifier">Identifier:</label>
+                <label class="question" style="width:16%;float:left;" for="identifier">Identifier:</label>
                 <stripes:text id="identifier" name="searchFilter.identifier" />
                 <br/>
                 <c:if test="${not empty actionBean.userName}">
-                    <label class="question" style="width:16%;float:left;padding-top:0.2em" for="regStatus">Registration status:</label>
+                    <label class="question" style="width:16%;float:left;" for="regStatus">Registration status:</label>
                     <stripes:select id="regStatus" name="searchFilter.regStatus" disabled="${not actionBean.authenticated}">
                         <stripes:options-collection collection="${actionBean.regStatuses}" />
                     </stripes:select>
                     <br/>
                 </c:if>
                 <c:forEach var="attr" items="${actionBean.searchFilter.attributes}" varStatus="row">
-                    <label class="question" style="width:16%;float:left;padding-top:0.2em" for="attr${row.index}">
+                    <label class="question" style="width:16%;float:left;" for="attr${row.index}">
                         <c:out value="${attr.shortName}" />:
                     </label>
                     <stripes:text id="attr${row.index}" name="searchFilter.attributes[${row.index}].value" />

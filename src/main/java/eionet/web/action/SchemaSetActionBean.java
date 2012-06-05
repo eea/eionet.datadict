@@ -120,6 +120,13 @@ public class SchemaSetActionBean extends AbstractActionBean {
     public Resolution view() throws ServiceException {
 
         loadSchemaSetByIdentifier();
+
+        if (!isUserLoggedIn()) {
+            if (!SchemaSet.RegStatus.RELEASED.equals(schemaSet.getRegStatus())) {
+                throw new ServiceException("Un-authenticated users can only see definitions in Released status!");
+            }
+        }
+
         return new ForwardResolution(VIEW_SCHEMA_SET_JSP);
     }
 
