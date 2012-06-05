@@ -128,7 +128,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ServiceException
      */
     private void doDeleteSchemaSets(List<Integer> schemaSetIds, String username, boolean includingContents)
-    throws ServiceException {
+            throws ServiceException {
         try {
             // Validate permissions
             boolean deletePerm = username != null && SecurityUtil.hasPerm(username, "/schemasets", "d");
@@ -167,7 +167,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ValidationException
      */
     private void ensureDeleteAllowed(String username, boolean deleteReleasedPerm, List<SchemaSet> schemaSets)
-    throws ValidationException {
+            throws ValidationException {
         for (SchemaSet schemaSet : schemaSets) {
             if (schemaSet.isCheckedOut()) {
                 throw new ValidationException("Cannot delete a checked-out schema set: " + schemaSet.getIdentifier());
@@ -239,6 +239,20 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ServiceException
      */
     @Override
+    public SchemaSet getSchemaSet(String identifier, boolean workingCopy) throws ServiceException {
+        try {
+            return schemaSetDAO.getSchemaSet(identifier, workingCopy);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get schema set", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws ServiceException
+     */
+    @Override
     @Transactional(rollbackFor = ServiceException.class)
     public int addSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String userName) throws ServiceException {
         schemaSet.setWorkingUser(userName);
@@ -262,7 +276,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username)
-    throws ServiceException {
+            throws ServiceException {
         try {
             schemaSetDAO.updateSchemaSet(schemaSet);
             if (attributes != null && !attributes.isEmpty()) {
@@ -449,7 +463,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
         try {
             List<Schema> schemas = schemaDAO.listForSchemaSet(schemaSetId);
-            for (Schema schema : schemas){
+            for (Schema schema : schemas) {
                 schema.setAttributeValues(attributeDAO.getAttributeValues(schema.getId(), DElemAttribute.ParentType.SCHEMA));
             }
             return schemas;
@@ -614,6 +628,24 @@ public class SchemaServiceImpl implements ISchemaService {
         }
     }
 
+    @Override
+    public Schema getSchema(String schemaSetIdentifier, String schemaFileName, boolean workingCopy) throws ServiceException {
+        try {
+            return schemaDAO.getSchema(schemaSetIdentifier, schemaFileName, workingCopy);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get a schema: " + schemaFileName, e);
+        }
+    }
+
+    @Override
+    public Schema getRootLevelSchema(String schemaFileName, boolean workingCopy) throws ServiceException {
+        try {
+            return schemaDAO.getRootLevelSchema(schemaFileName, workingCopy);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get a root level schema: " + schemaFileName, e);
+        }
+    }
+
     /**
      * @see eionet.meta.service.ISchemaService#updateSchema(eionet.meta.dao.domain.Schema, java.util.Map, java.lang.String)
      */
@@ -635,7 +667,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @see eionet.meta.service.ISchemaService#schemaSetExists(java.lang.String)
      */
     @Override
-    public boolean schemaSetExists(String schemaSetIdentifier) throws ServiceException{
+    public boolean schemaSetExists(String schemaSetIdentifier) throws ServiceException {
 
         try {
             return schemaSetDAO.exists(schemaSetIdentifier);
@@ -856,4 +888,5 @@ public class SchemaServiceImpl implements ISchemaService {
             throw new ServiceException(e.getMessage(), e);
         }
     }
+
 }

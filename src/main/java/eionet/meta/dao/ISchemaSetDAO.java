@@ -47,6 +47,7 @@ public interface ISchemaSetDAO {
 
     /**
      * Returns schema sets.
+     *
      * @param userName
      *
      * @return
@@ -69,6 +70,15 @@ public interface ISchemaSetDAO {
      * @return
      */
     SchemaSet getSchemaSet(int id);
+
+    /**
+     * Returns schema set with given id.
+     *
+     * @param identifier
+     * @param workingCopy
+     * @return
+     */
+    SchemaSet getSchemaSet(String identifier, boolean workingCopy);
 
     /**
      * Inserts new schema set.
@@ -146,14 +156,15 @@ public interface ISchemaSetDAO {
     /**
      * Returns true if a schema set by this identifier already exists. Otherwise return false.
      *
-     * @param schemaSetIdentifier The schema set identifier to check.
+     * @param schemaSetIdentifier
+     *            The schema set identifier to check.
      * @return
      */
     boolean exists(String schemaSetIdentifier);
 
     /**
-     * Sets the given schema set's WORKING_USER to the given user name.
-     * The latter may be null, in which case WORKING_USER will also be set to null.
+     * Sets the given schema set's WORKING_USER to the given user name. The latter may be null, in which case WORKING_USER will also
+     * be set to null.
      *
      * @param schemaSetId
      * @param userName
@@ -161,16 +172,13 @@ public interface ISchemaSetDAO {
     void setWorkingUser(int schemaSetId, String userName);
 
     /**
-     * Copies the T_SCHEMA_SET row identified by the given schema set id.
-     * The new copy's WORKING_USER and USER_MODIFIED will be set to the given user name.
-     * The new copy's IDENTIFIER will be set to the given new identifier, unless the latter
-     * is null, in which case the new copy's IDENTIFIER shall remain the same
-     * as original's.
+     * Copies the T_SCHEMA_SET row identified by the given schema set id. The new copy's WORKING_USER and USER_MODIFIED will be set
+     * to the given user name. The new copy's IDENTIFIER will be set to the given new identifier, unless the latter is null, in
+     * which case the new copy's IDENTIFIER shall remain the same as original's.
      *
-     * If the given identifier (i.e. the new identifier) is null, the new copy's
-     * CHECKEDOUT_COPY_ID is set to the original's id, otherwise it is set to null.
-     * This is basically an assumption that if there will be a new identifier, it
-     * is not a check-out operation, therefore CHECKEDOUT_COPY_ID is irrelevant.
+     * If the given identifier (i.e. the new identifier) is null, the new copy's CHECKEDOUT_COPY_ID is set to the original's id,
+     * otherwise it is set to null. This is basically an assumption that if there will be a new identifier, it is not a check-out
+     * operation, therefore CHECKEDOUT_COPY_ID is irrelevant.
      *
      * The method returns the new copy's auto-generated id.
      *

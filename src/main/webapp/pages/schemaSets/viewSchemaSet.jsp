@@ -78,12 +78,12 @@
                     <c:if test="${isMyWorkingCopy}">
                         <li>
                             <stripes:link beanclass="${actionBean.class.name}" event="edit">Edit metadata
-                                <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                                <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             </stripes:link>
                         </li>
                         <li>
                             <stripes:link beanclass="${actionBean.class.name}" event="editSchemas">Edit schemas
-                                <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                                <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             </stripes:link>
                         </li>
                         <li>
@@ -134,11 +134,11 @@
 
     <c:set var="schemaSetWorkingCopy" value="${actionBean.schemaSetWorkingCopy}"/>
     <c:if test="${not empty schemaSetWorkingCopy}">
-    	<div class="note-msg">
-			<strong>Note</strong>
-			<p>You have a <stripes:link beanclass="${actionBean.class.name}"><stripes:param name="schemaSet.id" value="${schemaSetWorkingCopy.id}"/>working copy</stripes:link> of this schema set!</p>
-		</div>
-	</c:if>
+        <div class="note-msg">
+            <strong>Note</strong>
+            <p>You have a <stripes:link beanclass="${actionBean.class.name}"><stripes:param name="schemaSet.id" value="${schemaSetWorkingCopy.id}"/>working copy</stripes:link> of this schema set!</p>
+        </div>
+    </c:if>
 
     <%-- Attributes div --%>
 
@@ -219,7 +219,9 @@
         <display:table name="${actionBean.schemas}" class="datatable" id="schema" style="width:80%">
             <display:column title="File name">
                 <stripes:link beanclass="eionet.web.action.SchemaActionBean" title="Open schema details">
-                    <stripes:param name="schema.id" value="${schema.id}"/>
+                    <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
+                    <stripes:param name="schema.fileName" value="${schema.fileName}"/>
+                    <c:if test="${actionBean.schemaSet.workingCopy}"><stripes:param name="workingCopy" value="true"/></c:if>
                     <c:out value="${schema.fileName}"/>
                 </stripes:link>
             </display:column>
@@ -234,7 +236,8 @@
         <display:table name="${actionBean.otherVersions}" class="datatable" id="otherVersion" style="width:80%">
             <display:column title="Identifier">
                 <stripes:link beanclass="${actionBean.class.name}" title="Open schema set details">
-                    <stripes:param name="schemaSet.id" value="${otherVersion.id}"/>
+                    <stripes:param name="schemaSet.identifier" value="${otherVersion.identifier}"/>
+                    <stripes:param name="workingCopy" value="${otherVersion.workingCopy}"/>
                     <c:out value="${otherVersion.identifier}"/>
                 </stripes:link>
                 <c:if test="${actionBean.userWorkingCopy && actionBean.schemaSet.checkedOutCopyId==otherVersion.id}">
@@ -288,6 +291,7 @@
 
             <div style="display:none">
                 <stripes:hidden name="schemaSet.id"/>
+                <stripes:hidden name="schemaSet.identifier"/>
             </div>
         </stripes:form>
     </div>

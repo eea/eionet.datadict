@@ -59,7 +59,7 @@
         <stripes:form id="schemaSetsForm" action="/schemasets/browse/" method="post" style="margin-top:1em">
             <ul class="menu">
                 <c:forEach var="schemaSet" items="${actionBean.schemaSets}">
-                	<c:set var="schemaSetName" value="${schemaSet.attributeValues!=null ? ddfn:join(schemaSet.attributeValues['Name'],'') : ''}"/>
+                    <c:set var="schemaSetName" value="${schemaSet.attributeValues!=null ? ddfn:join(schemaSet.attributeValues['Name'],'') : ''}"/>
                     <li>
                         <c:if test="${not empty actionBean.user}">
                             <c:choose>
@@ -72,14 +72,17 @@
                             </c:choose>
                         </c:if>
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" class="link-folder">
-                            <stripes:param name="schemaSet.id" value="${schemaSet.id}" />
+                            <stripes:param name="schemaSet.identifier" value="${schemaSet.identifier}" />
+                            <c:if test="${schemaSet.workingCopy}">
+                                <stripes:param name="workingCopy" value="true" />
+                            </c:if>
                             <c:choose>
-                            	<c:when test="${not empty schemaSetName}">
-                            		<c:out value="${schemaSetName}"/>
-                            	</c:when>
-                            	<c:otherwise>
-                            		<c:out value="${schemaSet.identifier}"/>
-                            	</c:otherwise>
+                                <c:when test="${not empty schemaSetName}">
+                                    <c:out value="${schemaSetName}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:out value="${schemaSet.identifier}"/>
+                                </c:otherwise>
                             </c:choose>
                         </stripes:link>
                         <c:if test="${not empty actionBean.userName && schemaSet.workingCopy && actionBean.userName==schemaSet.workingUser}">
@@ -88,7 +91,7 @@
                     </li>
                 </c:forEach>
                 <c:forEach var="schema" items="${actionBean.schemas}">
-                	<c:set var="schemaName" value="${schema.attributeValues!=null ? ddfn:join(schema.attributeValues['Name'],'') : ''}"/>
+                    <c:set var="schemaName" value="${schema.attributeValues!=null ? ddfn:join(schema.attributeValues['Name'],'') : ''}"/>
                     <li>
                         <c:if test="${not empty actionBean.user}">
                             <c:choose>
@@ -101,14 +104,15 @@
                             </c:choose>
                         </c:if>
                         <stripes:link beanclass="eionet.web.action.SchemaActionBean">
-                            <stripes:param name="schema.id" value="${schema.id}" />
+                            <stripes:param name="schema.fileName" value="${schema.fileName}" />
+                            <c:if test="${schema.workingCopy}"><stripes:param name="workingCopy" value="true" /></c:if>
                             <c:choose>
-                            	<c:when test="${not empty schemaName}">
-                            		<c:out value="${schemaName}"/>
-                            	</c:when>
-                            	<c:otherwise>
-                            		<c:out value="${schema.fileName}"/>
-                            	</c:otherwise>
+                                <c:when test="${not empty schemaName}">
+                                    <c:out value="${schemaName}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:out value="${schema.fileName}"/>
+                                </c:otherwise>
                             </c:choose>
                         </stripes:link>
                         <c:if test="${not empty actionBean.userName && schema.workingCopy && actionBean.userName==schema.workingUser}">

@@ -60,6 +60,7 @@ public interface ISchemaService {
 
     /**
      * Returns schema sets.
+     *
      * @param userName
      *
      * @return
@@ -75,6 +76,16 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     SchemaSet getSchemaSet(int id) throws ServiceException;
+
+    /**
+     * Return schema set.
+     *
+     * @param identifier
+     * @param workingCopy
+     * @return
+     * @throws ServiceException
+     */
+    SchemaSet getSchemaSet(String identifier, boolean workingCopy) throws ServiceException;
 
     /**
      * Creates new schema set.
@@ -204,6 +215,27 @@ public interface ISchemaService {
     Schema getSchema(int id) throws ServiceException;
 
     /**
+     * Returns schema.
+     *
+     * @param schemaSetIdentifier
+     * @param schemaFileName
+     * @param workingCopy
+     * @return
+     * @throws ServiceException
+     */
+    Schema getSchema(String schemaSetIdentifier, String schemaFileName, boolean workingCopy) throws ServiceException;
+
+    /**
+     * Returns root level schema.
+     *
+     * @param schemaFileName
+     * @param workingCopy
+     * @return
+     * @throws ServiceException
+     */
+    Schema getRootLevelSchema(String schemaFileName, boolean workingCopy) throws ServiceException;
+
+    /**
      *
      * @param schema
      * @param attributes
@@ -233,7 +265,8 @@ public interface ISchemaService {
     /**
      * Returns true if a schema set by this identifier already exists. Otherwise return false.
      *
-     * @param schemaSetIdentifier The schema set identifier to check.
+     * @param schemaSetIdentifier
+     *            The schema set identifier to check.
      * @return
      * @throws ServiceException
      */
@@ -261,8 +294,8 @@ public interface ISchemaService {
     List<Schema> getRootLevelSchemas(String userName) throws ServiceException;
 
     /**
-     * Returns working copy of the schema identified by the given id.
-     * This means the given id must denote a schema that has been checked out by somebody.
+     * Returns working copy of the schema identified by the given id. This means the given id must denote a schema that has been
+     * checked out by somebody.
      *
      * @param schemaId
      * @return
@@ -280,11 +313,10 @@ public interface ISchemaService {
     int undoCheckOutSchema(int schemaId, String userName) throws ServiceException;
 
     /**
-     * Creates a full copy of this schema set, including its schemas and the contents of the
-     * schemas. The copy will automatically be set to working copy and the working user will
-     * be set to the given user name. The new copy's identifier will be set to the given
-     * identifier. The latter must not be null or blank, and if it's set to an already
-     * existing schema set identifier, the method will throw a {@link ServiceException}.
+     * Creates a full copy of this schema set, including its schemas and the contents of the schemas. The copy will automatically be
+     * set to working copy and the working user will be set to the given user name. The new copy's identifier will be set to the
+     * given identifier. The latter must not be null or blank, and if it's set to an already existing schema set identifier, the
+     * method will throw a {@link ServiceException}.
      *
      * The method returns the new copy's auto-generated id.
      *
@@ -335,9 +367,9 @@ public interface ISchemaService {
     List<Schema> getSchemaVersions(String userName, String continuityId, int... excludeIds) throws ServiceException;
 
     /**
-     * Returns true if the given schema exists within the given schema set. Otherwise returns false.
-     * The schema is given by its file name, while the schema set is given by its auto-generated id.
-     * If the latter <=0, the schema is considered to be a root-level schema.
+     * Returns true if the given schema exists within the given schema set. Otherwise returns false. The schema is given by its file
+     * name, while the schema set is given by its auto-generated id. If the latter <=0, the schema is considered to be a root-level
+     * schema.
      *
      * @param fileName
      * @param schemaSetId

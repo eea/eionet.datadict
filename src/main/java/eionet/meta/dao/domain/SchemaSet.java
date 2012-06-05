@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public class SchemaSet {
 
+    public static final String ROOT_IDENTIFIER = "root";
+
     /** */
     private int id;
     private String identifier;
@@ -34,7 +36,8 @@ public class SchemaSet {
     }
 
     /**
-     * @param attributeValues the attributeValues to set
+     * @param attributeValues
+     *            the attributeValues to set
      */
     public void setAttributeValues(Map<String, List<String>> attributeValues) {
         this.attributeValues = attributeValues;
@@ -291,7 +294,7 @@ public class SchemaSet {
      *
      * @return
      */
-    public boolean isReleased(){
+    public boolean isReleased() {
         return regStatus != null && regStatus.equals(RegStatus.RELEASED);
     }
 }

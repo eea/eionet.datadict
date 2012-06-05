@@ -309,6 +309,32 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         return result;
     }
 
+    @Override
+    public SchemaSet getSchemaSet(String identifier, boolean workingCopy) {
+        String sql = "select * from T_SCHEMA_SET where IDENTIFIER = :identifier and WORKING_COPY = :workingCopy";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("identifier", identifier);
+        parameters.put("workingCopy", workingCopy);
+
+        SchemaSet result = getNamedParameterJdbcTemplate().queryForObject(sql, parameters, new RowMapper<SchemaSet>() {
+            public SchemaSet mapRow(ResultSet rs, int rowNum) throws SQLException {
+                SchemaSet ss = new SchemaSet();
+                ss.setId(rs.getInt("SCHEMA_SET_ID"));
+                ss.setIdentifier(rs.getString("IDENTIFIER"));
+                ss.setContinuityId(rs.getString("CONTINUITY_ID"));
+                ss.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                ss.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                ss.setWorkingUser(rs.getString("WORKING_USER"));
+                ss.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
+                ss.setUserModified(rs.getString("USER_MODIFIED"));
+                ss.setComment(rs.getString("COMMENT"));
+                ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                return ss;
+            }
+        });
+        return result;
+    }
+
     /**
      * @see eionet.meta.dao.ISchemaSetDAO#createSchemaSet(eionet.meta.dao.domain.SchemaSet)
      */
@@ -613,4 +639,5 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
         return resultList;
     }
+
 }

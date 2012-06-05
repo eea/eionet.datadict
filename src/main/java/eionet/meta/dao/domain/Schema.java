@@ -251,7 +251,7 @@ public class Schema {
      *
      * @return
      */
-    public boolean isReleased(){
+    public boolean isReleased() {
         return regStatus != null && regStatus.equals(RegStatus.RELEASED);
     }
 
@@ -263,7 +263,8 @@ public class Schema {
     }
 
     /**
-     * @param schemaSetWorkingCopy the schemaSetWorkingCopy to set
+     * @param schemaSetWorkingCopy
+     *            the schemaSetWorkingCopy to set
      */
     public void setSchemaSetWorkingCopy(boolean schemaSetWorkingCopy) {
         this.schemaSetWorkingCopy = schemaSetWorkingCopy;
@@ -277,7 +278,8 @@ public class Schema {
     }
 
     /**
-     * @param schemaSetWorkingUser the schemaSetWorkingUser to set
+     * @param schemaSetWorkingUser
+     *            the schemaSetWorkingUser to set
      */
     public void setSchemaSetWorkingUser(String schemaSetWorkingUser) {
         this.schemaSetWorkingUser = schemaSetWorkingUser;

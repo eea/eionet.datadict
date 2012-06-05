@@ -41,14 +41,16 @@
                 </li>
                 <li>
                     <stripes:link beanclass="${actionBean.class.name}">Back to schema set
-                        <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+                        <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
+                        <stripes:param name="workingCopy" value="${actionBean.schemaSet.workingCopy}"/>
                     </stripes:link>
                 </li>
             </ul>
         </div>
 
         <stripes:url var="schemaSetUrl" beanclass="${actionBean.class.name}">
-            <stripes:param name="schemaSet.id" value="${actionBean.schemaSet.id}"/>
+            <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
+            <stripes:param name="workingCopy" value="${actionBean.schemaSet.workingCopy}"/>
         </stripes:url>
 
         <h1>Edit schemas of schema set <a href="${fn:escapeXml(schemaSetUrl)}">${actionBean.schemaSet.identifier}</a></h1>
@@ -61,8 +63,10 @@
                         <stripes:checkbox name="schemaIds" value="${schema.id}" />
                     </display:column>
                     <display:column title="File name">
-                        <stripes:link href="schema.action" title="Open schema details">
-                            <stripes:param name="schema.id" value="${schema.id}"/>
+                        <stripes:link beanclass="eionet.web.action.SchemaActionBean" title="Open schema details">
+                            <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
+                            <stripes:param name="schema.fileName" value="${schema.fileName}"/>
+                            <stripes:param name="workingCopy" value="true"/>
                             <c:out value="${schema.fileName}"/>
                         </stripes:link>
                     </display:column>

@@ -12,6 +12,12 @@
     <h1>Edit schema</h1>
 
     <stripes:form id="form1" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
+        <%-- Using url parameters because schemaAction bean has default value for one parameter --%>
+        <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}" />
+        <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}" />
+
+        <stripes:hidden name="schemaSet.identifier" />
+        <stripes:hidden name="schema.fileName" />
         <div id="outerframe">
             <table class="datatable">
                 <colgroup>
@@ -34,8 +40,8 @@
                     </td>
                     <td class="simple_attr_value">
                         <a href="${actionBean.schemaDownloadLink}">
-	                        <c:out value="${actionBean.schema.fileName}"/>
-	                    </a>
+                            <c:out value="${actionBean.schema.fileName}"/>
+                        </a>
                         <stripes:hidden name="schema.fileName"/>
                     </td>
                 </tr>

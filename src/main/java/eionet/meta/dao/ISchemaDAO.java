@@ -47,6 +47,25 @@ public interface ISchemaDAO {
     Schema getSchema(int schemaId);
 
     /**
+     * Returns schema.
+     *
+     * @param schemaSetIdentifier
+     * @param schemaFileName
+     * @param workingCopy
+     * @return
+     */
+    Schema getSchema(String schemaSetIdentifier, String schemaFileName, boolean workingCopy);
+
+    /**
+     * Returns root level schema.
+     *
+     * @param schemaFileName
+     * @param workingCopy
+     * @return
+     */
+    Schema getRootLevelSchema(String schemaFileName, boolean workingCopy);
+
+    /**
      * Returns schema ids of the given schema sets.
      *
      * @param schemaSetIds
@@ -179,8 +198,8 @@ public interface ISchemaDAO {
 
     /**
      * Returns the list of root-level schemas matching the given continuity id, excluding the ones that are working copies and the
-     * one that match the given integer inputs. The method may choose to hide certain versions based on the permissions of the
-     * given user.
+     * one that match the given integer inputs. The method may choose to hide certain versions based on the permissions of the given
+     * user.
      *
      * @param userName
      * @param continuityId
@@ -192,9 +211,9 @@ public interface ISchemaDAO {
     List<Schema> getSchemaVersions(String userName, String continuityId, int... excludeIds);
 
     /**
-     * Returns true if the given schema exists within the given schema set. Otherwise returns false.
-     * The schema is given by its file name, while the schema set is given by its auto-generated id.
-     * If the latter <=0, the schema is considered to be a root-level schema.
+     * Returns true if the given schema exists within the given schema set. Otherwise returns false. The schema is given by its file
+     * name, while the schema set is given by its auto-generated id. If the latter <=0, the schema is considered to be a root-level
+     * schema.
      *
      * @param fileName
      * @param schemaSetId

@@ -54,7 +54,7 @@ import eionet.util.XmlValidator;
  * @author Jaanus Heinlaid
  *
  */
-@UrlBinding("/schemaset/{schemaSet.id}/{$event}")
+@UrlBinding("/schemaset/{schemaSet.identifier}/{$event}")
 public class SchemaSetActionBean extends AbstractActionBean {
 
     /** */
@@ -107,6 +107,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     private Collection<DElemAttribute> mandatorySchemaAttributes;
 
+    private boolean workingCopy;
+
     /**
      * View action.
      *
@@ -117,7 +119,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     @HandlesEvent(value = "view")
     public Resolution view() throws ServiceException {
 
-        loadSchemaSet();
+        loadSchemaSetByIdentifier();
         return new ForwardResolution(VIEW_SCHEMA_SET_JSP);
     }
 
@@ -129,10 +131,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     @HandlesEvent(value = "edit")
     public Resolution edit() throws ServiceException {
+        workingCopy = true;
+        loadSchemaSetByIdentifier();
 
-        loadSchemaSet();
-
-        if (!isUserWorkingCopy()){
+        if (!isUserWorkingCopy()) {
             throw new ServiceException("Operation allowed on your working copy only!");
         }
 
@@ -149,10 +151,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution editSchemas() throws ServiceException {
+        workingCopy = true;
+        loadSchemaSetByIdentifier();
 
-        loadSchemaSet();
-
-        if (!isUserWorkingCopy()){
+        if (!isUserWorkingCopy()) {
             throw new ServiceException("Operation allowed on your working copy only!");
         }
 
@@ -177,8 +179,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         Resolution resolution = new ForwardResolution(ADD_SCHEMA_SET_JSP);
         if (!isGetOrHeadRequest()) {
-            int schemaSetId = schemaService.addSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
-            resolution = new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSetId);
+            schemaService.addSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
+            resolution = new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
             addSystemMessage("Working copy successfully created!");
         }
         return resolution;
@@ -194,6 +196,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema set successfully updated!");
+
         return new ForwardResolution(EDIT_SCHEMA_SET_JSP);
     }
 
@@ -207,7 +210,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema set successfully updated!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
+        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
     }
 
     /**
@@ -217,7 +220,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws DAOException
      */
     public Resolution cancelEdit() throws DAOException {
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", schemaSet.getId());
+        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
     }
 
     /**
@@ -237,14 +240,14 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution checkIn() throws ServiceException {
 
-        loadSchemaSet();
-        if (!isUserWorkingCopy()){
+        loadSchemaSetById();
+        if (!isUserWorkingCopy()) {
             throw new ServiceException("Operation allowed on your working copy only!");
         }
 
-        int finalId = schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), schemaSet.getComment());
+        schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), schemaSet.getComment());
         addSystemMessage("Schema set successfully checked in!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", finalId);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", false);
     }
 
     /**
@@ -254,14 +257,14 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution checkOut() throws ServiceException {
 
-        loadSchemaSet();
+        loadSchemaSetById();
         if (!isCheckoutAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
         }
 
-        int newSchemaSetId = schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName());
+        schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName());
         addSystemMessage("Schema set successfully checked out!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
     }
 
     /**
@@ -275,9 +278,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
             throw new ServiceException("You are not authorised for this operation!");
         }
 
-        int newSchemaSetId = schemaService.copySchemaSet(schemaSet.getId(), getUserName(), newIdentifier);
+        schemaService.copySchemaSet(schemaSet.getId(), getUserName(), newIdentifier);
         addSystemMessage("The new version's working copy successfully created!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.id", newSchemaSetId);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", newIdentifier).addParameter("workingCopy", true);
     }
 
     /**
@@ -288,7 +291,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution delete() throws ServiceException {
 
-        loadSchemaSet();
+        loadSchemaSetById();
         if (!isDeleteAllowed()) {
             throw new ServiceException("You are not authorized for this operation!");
         }
@@ -305,15 +308,15 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution undoCheckout() throws ServiceException {
 
-        loadSchemaSet();
-        if (!isUserWorkingCopy()){
+        loadSchemaSetById();
+        if (!isUserWorkingCopy()) {
             throw new ServiceException("Operation allowed on your working copy only!");
         }
 
         int checkedOutCopyId = schemaService.undoCheckOutSchemaSet(schemaSet.getId(), getUserName());
         addSystemMessage("Working copy successfully deleted!");
         if (checkedOutCopyId > 0) {
-            return new RedirectResolution(getClass()).addParameter("schemaSet.id", checkedOutCopyId);
+            return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", false);
         } else {
             return new RedirectResolution(BrowseSchemaSetsActionBean.class);
         }
@@ -326,8 +329,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution deleteSchemas() throws ServiceException {
 
-        loadSchemaSet();
-        if (!isUserWorkingCopy()){
+        loadSchemaSetById();
+        if (!isUserWorkingCopy()) {
             throw new ServiceException("Operation allowed on your working copy only!");
         }
 
@@ -339,7 +342,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             addSystemMessage("Schemas succesfully deleted.");
         }
 
-        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.id", schemaSet.getId());
+        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
     }
 
     /**
@@ -368,7 +371,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         addSystemMessage("Schema successfully uploaded!");
-        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.id", schemaSet.getId());
+        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
     }
 
     /**
@@ -390,6 +393,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
             if (schemaService.schemaSetExists(schemaSet.getIdentifier())) {
                 addGlobalValidationError("A schema set or a schema set working copy by this identifier already exists!");
+            }
+
+            if (SchemaSet.ROOT_IDENTIFIER.equals(schemaSet.getIdentifier())) {
+                addGlobalValidationError("Invalid identifier. \"" + SchemaSet.ROOT_IDENTIFIER + "\" is reserved identifier.");
             }
         }
 
@@ -416,7 +423,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         if (isCheckInCommentsRequired()) {
             if (schemaSet == null || StringUtils.isBlank(schemaSet.getComment())) {
                 addGlobalValidationError("Check-in comment is mandatory!");
-                loadSchemaSet();
+                loadSchemaSetById();
                 getContext().setSourcePageResolution(new ForwardResolution(VIEW_SCHEMA_SET_JSP));
             }
         }
@@ -454,7 +461,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     @ValidationMethod(on = {"uploadSchema"})
     public void validateFileUpload() throws IOException, ServiceException, DAOException, ParserConfigurationException,
-    SAXException {
+            SAXException {
 
         if (uploadedFile == null) {
             addGlobalValidationError("No file uploaded!");
@@ -469,7 +476,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         if (!isValidationErrors()) {
-            if (schemaService.schemaExists(uploadedFile.getFileName(), schemaSet.getId())){
+            if (schemaService.schemaExists(uploadedFile.getFileName(), schemaSet.getId())) {
                 addGlobalValidationError("A schema with such a file name already exists!");
             }
         }
@@ -490,7 +497,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         if (isValidationErrors()) {
-            loadSchemaSet();
+            loadSchemaSetById();
         }
     }
 
@@ -529,7 +536,15 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    private void loadSchemaSet() throws ServiceException {
+    private void loadSchemaSetByIdentifier() throws ServiceException {
+        schemaSet = schemaService.getSchemaSet(schemaSet.getIdentifier(), workingCopy);
+    }
+
+    /**
+     *
+     * @throws ServiceException
+     */
+    private void loadSchemaSetById() throws ServiceException {
         schemaSet = schemaService.getSchemaSet(schemaSet.getId());
     }
 
@@ -609,10 +624,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
     public boolean isDeleteAllowed() {
 
         try {
-            if (SecurityUtil.hasPerm(getUserName(), "/schemasets", "er")){
+            if (SecurityUtil.hasPerm(getUserName(), "/schemasets", "er")) {
                 return true;
-            }
-            else{
+            } else {
                 return !schemaSet.isReleased() && SecurityUtil.hasPerm(getUserName(), "/schemasets", "d");
             }
         } catch (Exception e) {
@@ -664,8 +678,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 int schemaSetId = schemaSet == null ? 0 : schemaSet.getId();
 
                 attributes =
-                    searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
-                            DElemAttribute.TYPE_SIMPLE);
+                        searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
+                                DElemAttribute.TYPE_SIMPLE);
 
                 // If this is a POST request of "add", "save" or "saveAndClose",
                 // then substitute the values we got from database with the values
@@ -795,7 +809,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -866,7 +880,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 LinkedHashMap<Integer, DElemAttribute> attrsMap =
-                    searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+                        searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
                 if (attrsMap != null) {
                     for (DElemAttribute attribute : attrsMap.values()) {
                         if (attribute.isMandatory()) {
@@ -903,16 +917,30 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @return
      * @throws ServiceException
      */
-    public SchemaSet getSchemaSetWorkingCopy() throws ServiceException{
+    public SchemaSet getSchemaSetWorkingCopy() throws ServiceException {
 
-        if (schemaSet == null){
+        if (schemaSet == null) {
             throw new IllegalStateException("The schema set object must be initialized for this operation!");
-        }
-        else if (!isUserLoggedIn() || !schemaSet.isCheckedOutBy(getUserName())){
+        } else if (!isUserLoggedIn() || !schemaSet.isCheckedOutBy(getUserName())) {
             return null;
-        }
-        else{
+        } else {
             return schemaService.getWorkingCopyOfSchemaSet(schemaSet.getId());
         }
     }
+
+    /**
+     * @return the workingCopy
+     */
+    public boolean isWorkingCopy() {
+        return workingCopy;
+    }
+
+    /**
+     * @param workingCopy
+     *            the workingCopy to set
+     */
+    public void setWorkingCopy(boolean workingCopy) {
+        this.workingCopy = workingCopy;
+    }
+
 }

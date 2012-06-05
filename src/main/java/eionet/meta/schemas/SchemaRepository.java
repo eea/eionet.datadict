@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import eionet.meta.DDRuntimeException;
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -95,7 +96,7 @@ public class SchemaRepository {
             repoDirectory.mkdir();
         }
 
-        boolean isRootLevelSchema = StringUtils.isBlank(schemaSetIdentifier);
+        boolean isRootLevelSchema = schemaSetIdentifier.equals(SchemaSet.ROOT_IDENTIFIER);
         File workingCopyDirectory = null;
         if (isRootLevelSchema) {
             workingCopyDirectory = new File(REPO_PATH, WORKING_COPY_DIR);

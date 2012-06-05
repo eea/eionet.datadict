@@ -82,7 +82,9 @@
                     <c:if test="${isMySchemaWorkingCopy || isMySchemaSetWorkingCopy}">
                         <li>
                             <stripes:link beanclass="${actionBean.class.name}" event="edit">Edit metadata
-                                <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
+                                <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
+                                <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
+                                <stripes:param name="workingCopy" value="true"/>
                             </stripes:link>
                         </li>
                         <li>
@@ -113,17 +115,17 @@
                         </c:if>
                         <c:if test="${isNonCheckedOutSchema && (actionBean.createAllowed || actionBean.checkoutAllowed)}">
                             <c:if test="${actionBean.createAllowed}">
-	                            <li>
-	                                <a href="#" id="newVersionLink">New version</a>
-	                            </li>
+                                <li>
+                                    <a href="#" id="newVersionLink">New version</a>
+                                </li>
                             </c:if>
                             <c:if test="${actionBean.checkoutAllowed}">
-	                            <li>
-	                                <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
-	                                    <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
-	                                </stripes:link>
-	                            </li>
-	                        </c:if>
+                                <li>
+                                    <stripes:link beanclass="${actionBean.class.name}" event="checkOut">Check out
+                                        <stripes:param name="schema.id" value="${actionBean.schema.id}"/>
+                                    </stripes:link>
+                                </li>
+                            </c:if>
                         </c:if>
                     </c:if>
                 </ul>
@@ -135,13 +137,13 @@
 
     <h1>View schema</h1>
 
-	<c:set var="schemaWorkingCopy" value="${actionBean.schemaWorkingCopy}"/>
+    <c:set var="schemaWorkingCopy" value="${actionBean.schemaWorkingCopy}"/>
     <c:if test="${not empty schemaWorkingCopy}">
-    	<div class="note-msg">
-			<strong>Note</strong>
-			<p>You have a <stripes:link beanclass="${actionBean.class.name}"><stripes:param name="schema.id" value="${schemaWorkingCopy.id}"/>working copy</stripes:link> of this schema!</p>
-		</div>
-	</c:if>
+        <div class="note-msg">
+            <strong>Note</strong>
+            <p>You have a <stripes:link beanclass="${actionBean.class.name}"><stripes:param name="schema.id" value="${schemaWorkingCopy.id}"/>working copy</stripes:link> of this schema!</p>
+        </div>
+    </c:if>
 
     <%-- Attributes div --%>
 
@@ -153,20 +155,20 @@
                 <col style="width:62%"/>
             </colgroup>
             <c:if test="${!actionBean.schema.workingCopy && !(actionBean.schemaSet!=null && actionBean.schemaSet.workingCopy)}">
-	            <tr>
-	                <th scope="row" class="scope-row simple_attr_title">
-	                    Schema URL
-	                </th>
-	                <td class="simple_attr_help">
-	                    <a href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=url" onclick="pop(this.href);return false;">
-	                        <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
-	                    </a>
-	                </td>
-	                <td class="simple_attr_value">
-	                    <a href="${actionBean.schemaUrl}">
-	                        <c:out value="${actionBean.schemaUrl}"/>
-	                    </a>
-	                </td>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Schema URL
+                    </th>
+                    <td class="simple_attr_help">
+                        <a href="${pageContext.request.contextPath}/help.jsp?screen=schema&amp;area=url" onclick="pop(this.href);return false;">
+                            <img style="border:0" src="${pageContext.request.contextPath}/images/info_icon.gif" width="16" height="16" alt="help"/>
+                        </a>
+                    </td>
+                    <td class="simple_attr_value">
+                        <a href="${actionBean.schemaUrl}">
+                            <c:out value="${actionBean.schemaUrl}"/>
+                        </a>
+                    </td>
             </tr>
             </c:if>
             <tr>
@@ -179,9 +181,9 @@
                     </a>
                 </td>
                 <td class="simple_attr_value">
-	                <a href="${actionBean.schemaDownloadLink}">
-	                    <c:out value="${actionBean.schema.fileName}"/>
-	                </a>
+                    <a href="${actionBean.schemaDownloadLink}">
+                        <c:out value="${actionBean.schema.fileName}"/>
+                    </a>
                 </td>
             </tr>
             <c:if test="${!actionBean.rootLevelSchema}">
@@ -196,10 +198,11 @@
                     </td>
                     <td class="simple_attr_value">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" title="Open schema set details">
-		                    <stripes:param name="schemaSet.id" value="${actionBean.schema.schemaSetId}"/>
-		                    <c:out value="${actionBean.schemaSet.identifier}"/>
-		                </stripes:link>
-		                <c:if test="${isMySchemaSetWorkingCopy}">
+                            <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
+                            <stripes:param name="workingCopy" value="${actionBean.workingCopy}"/>
+                            <c:out value="${actionBean.schemaSet.identifier}"/>
+                        </stripes:link>
+                        <c:if test="${isMySchemaSetWorkingCopy}">
                             <span class="caution" title="Checked out on ${actionBean.schemaSet.dateModified}">(Working copy)</span>
                         </c:if>
                     </td>

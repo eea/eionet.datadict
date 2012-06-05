@@ -55,7 +55,7 @@ import eionet.util.XmlValidator;
  * @author Jaanus Heinlaid
  *
  */
-@UrlBinding("/schema/{schema.id}/{$event}")
+@UrlBinding("/schema/{schemaSet.identifier=" + SchemaSet.ROOT_IDENTIFIER + "}/{schema.fileName}/{$event}")
 public class SchemaActionBean extends AbstractActionBean {
 
     /** */
@@ -98,6 +98,8 @@ public class SchemaActionBean extends AbstractActionBean {
     @SpringBean
     private SchemaRepository schemaRepository;
 
+    private boolean workingCopy;
+
     /**
      *
      * @return
@@ -106,8 +108,7 @@ public class SchemaActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution view() throws ServiceException {
 
-        loadSchema();
-
+        loadSchemaByName();
         return new ForwardResolution(VIEW_SCHEMA_JSP);
     }
 
@@ -118,7 +119,7 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public Resolution edit() throws ServiceException {
 
-        loadSchema();
+        loadSchemaByName();
         return new ForwardResolution(EDIT_SCHEMA_JSP);
     }
 
@@ -143,7 +144,9 @@ public class SchemaActionBean extends AbstractActionBean {
 
         schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema successfully updated!");
-        return new RedirectResolution(getClass()).addParameter("schema.id", schema.getId());
+        return new RedirectResolution(getClass())
+                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -188,7 +191,10 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution cancelEdit() throws ServiceException {
-        return new RedirectResolution(getClass()).addParameter("schema.id", schema.getId());
+
+        return new RedirectResolution(getClass())
+                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -219,9 +225,12 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public Resolution checkIn() throws ServiceException {
 
+        loadSchemaById();
         int finalId = schemaService.checkInSchema(schema.getId(), getUserName(), schema.getComment());
         addSystemMessage("Schema successfully checked in!");
-        return new RedirectResolution(getClass()).addParameter("schema.id", finalId);
+        return new RedirectResolution(getClass())
+                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
     }
 
     /**
@@ -231,14 +240,16 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public Resolution checkOut() throws ServiceException {
 
-        loadSchema();
-        if (!isCheckoutAllowed()){
+        loadSchemaById();
+        if (!isCheckoutAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
         }
 
         int newSchemaSetId = schemaService.checkOutSchema(schema.getId(), getUserName());
         addSystemMessage("Schema successfully checked out!");
-        return new RedirectResolution(getClass()).addParameter("schema.id", newSchemaSetId);
+        return new RedirectResolution(getClass())
+                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -248,14 +259,16 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws IOException
      */
     public Resolution newVersion() throws ServiceException, IOException {
-
         if (!isCreateAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
         }
-
         int newSchemaId = schemaService.copySchema(schema.getId(), getUserName(), uploadedFile);
+        schema.setId(newSchemaId);
+        loadSchemaById();
         addSystemMessage("The new version's working copy successfully created!");
-        return new RedirectResolution(getClass()).addParameter("schema.id", newSchemaId);
+        return new RedirectResolution(getClass())
+                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -264,11 +277,13 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution undoCheckout() throws ServiceException {
-
+        loadSchemaById();
         int checkedOutCopyId = schemaService.undoCheckOutSchema(schema.getId(), getUserName());
         addSystemMessage("Working copy successfully deleted!");
         if (checkedOutCopyId > 0) {
-            return new RedirectResolution(getClass()).addParameter("schema.id", checkedOutCopyId);
+            return new RedirectResolution(getClass())
+                    .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                    .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
         } else {
             return new RedirectResolution(BrowseSchemaSetsActionBean.class);
         }
@@ -282,8 +297,8 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public Resolution reupload() throws IOException, ServiceException {
 
-        loadSchema();
-        String schemaSetIdentifier = getSchemaSet() == null ? null : getSchemaSet().getIdentifier();
+        loadSchemaById();
+        String schemaSetIdentifier = schemaSet == null ? null : schemaSet.getIdentifier();
         File schemaFile = schemaRepository.reuploadSchema(schema.getFileName(), schemaSetIdentifier, uploadedFile);
 
         addSystemMessage("Schema file successfully uploaded!");
@@ -351,13 +366,19 @@ public class SchemaActionBean extends AbstractActionBean {
     @ValidationMethod(on = {"view", "edit", "save", "saveAndClose", "reupload"}, priority = 1)
     public void validateViewEditSave() throws ServiceException {
 
-        LOGGER.trace("Method entered");
-
-        if (schema == null || schema.getId() <= 0) {
+        Schema currSchema = null;
+        if (schema != null && schema.getId() > 0) {
+            currSchema = schemaService.getSchema(schema.getId());
+        } else if (schemaSet != null && schema != null && StringUtils.isNotEmpty(schema.getFileName())) {
+            if (schemaSet.getIdentifier().equals(SchemaSet.ROOT_IDENTIFIER)) {
+                currSchema = schemaService.getRootLevelSchema(schema.getFileName(), workingCopy);
+            } else {
+                currSchema = schemaService.getSchema(schemaSet.getIdentifier(), schema.getFileName(), workingCopy);
+            }
+        } else {
             throw new ServiceException("Schema id missing!");
         }
 
-        Schema currSchema = schemaService.getSchema(schema.getId());
         int schemaSetId = currSchema.getSchemaSetId();
         SchemaSet currSchemaSet = schemaSetId <= 0 ? null : schemaService.getSchemaSet(schemaSetId);
 
@@ -382,6 +403,7 @@ public class SchemaActionBean extends AbstractActionBean {
         if (!isAllowed) {
             throw new ServiceException("A working copy can only be seen and edited by its owner or system administrator!");
         }
+
     }
 
     /**
@@ -440,7 +462,7 @@ public class SchemaActionBean extends AbstractActionBean {
         }
 
         if (isValidationErrors()) {
-            loadSchema();
+            loadSchemaById();
             getContext().setSourcePageResolution(new ForwardResolution(VIEW_SCHEMA_JSP));
         }
     }
@@ -449,8 +471,22 @@ public class SchemaActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    private void loadSchema() throws ServiceException {
+    private void loadSchemaByName() throws ServiceException {
+        if (schemaSet.getIdentifier().equals(SchemaSet.ROOT_IDENTIFIER)) {
+            schema = schemaService.getRootLevelSchema(schema.getFileName(), workingCopy);
+        } else {
+            schema = schemaService.getSchema(schemaSet.getIdentifier(), schema.getFileName(), workingCopy);
+        }
+        if (schema != null && !isRootLevelSchema()) {
+            schemaSet = schemaService.getSchemaSet(schema.getSchemaSetId());
+        }
+    }
+
+    private void loadSchemaById() throws ServiceException {
         schema = schemaService.getSchema(schema.getId());
+        if (schema != null && !isRootLevelSchema()) {
+            schemaSet = schemaService.getSchemaSet(schema.getSchemaSetId());
+        }
     }
 
     /**
@@ -502,7 +538,7 @@ public class SchemaActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -536,7 +572,7 @@ public class SchemaActionBean extends AbstractActionBean {
                 int schemaId = schema == null ? 0 : schema.getId();
 
                 attributes =
-                    searchEngine.getObjectAttributes(schemaId, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+                        searchEngine.getObjectAttributes(schemaId, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
 
                 // If this is a POST request where new attribute values are submitted (e.g. "save", "add", etc)
                 // then substitute the values we got from database with the values
@@ -581,6 +617,14 @@ public class SchemaActionBean extends AbstractActionBean {
     }
 
     /**
+     * @param schemaSet
+     *            the schemaSet to set
+     */
+    public void setSchemaSet(SchemaSet schemaSet) {
+        this.schemaSet = schemaSet;
+    }
+
+    /**
      *
      * @return
      */
@@ -596,7 +640,6 @@ public class SchemaActionBean extends AbstractActionBean {
     public boolean isMySchemaSetWorkingCopy() throws ServiceException {
 
         boolean result = false;
-        SchemaSet schemaSet = getSchemaSet();
         if (schemaSet != null && schemaSet.isWorkingCopy() && StringUtils.equals(schemaSet.getWorkingUser(), getUserName())) {
             result = true;
         }
@@ -634,13 +677,6 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public SchemaSet getSchemaSet() throws ServiceException {
-
-        if (schema != null && !isRootLevelSchema()) {
-            if (schemaSet == null) {
-                schemaSet = schemaService.getSchemaSet(schema.getSchemaSetId());
-            }
-        }
-
         return schemaSet;
     }
 
@@ -748,16 +784,14 @@ public class SchemaActionBean extends AbstractActionBean {
             throw new IllegalStateException("Schema object must be initialized!");
         }
 
-        boolean isMyWorkingCopy = getUserName() != null && schema.isWorkingCopyOf(getUserName());
+        //boolean isMyWorkingCopy = getUserName() != null && schema.isWorkingCopyOf(getUserName());
 
         String schemaSetIdentifier = null;
-        SchemaSet schemaSet = getSchemaSet();
-        if (schemaSet != null) {
+        if (schemaSet != null && !schemaSet.getIdentifier().equals(SchemaSet.ROOT_IDENTIFIER)) {
             schemaSetIdentifier = schemaSet.getIdentifier();
-            isMyWorkingCopy = getUserName() != null && schemaSet.isWorkingCopyOf(getUserName());
         }
 
-        String relPath = schemaRepository.getSchemaRelativePath(schema.getFileName(), schemaSetIdentifier, isMyWorkingCopy);
+        String relPath = schemaRepository.getSchemaRelativePath(schema.getFileName(), schemaSetIdentifier, schema.isWorkingCopy());
         return getContextPath() + DownloadServlet.SCHEMAS_PATH + relPath;
     }
 
@@ -782,8 +816,11 @@ public class SchemaActionBean extends AbstractActionBean {
             StringUtils.substringBeforeLast(webAppUrl, "/");
         }
 
-        String schemaSetIdentifier = getSchemaSet() != null ? getSchemaSet().getIdentifier() : null;
-        String relPath = schemaRepository.getSchemaRelativePath(schema.getFileName(), schemaSetIdentifier, false);
+        String schemaSetIdentifier = null;
+        if (schemaSet != null && !schemaSet.getIdentifier().equals(SchemaSet.ROOT_IDENTIFIER)) {
+            schemaSetIdentifier = schemaSet.getIdentifier();
+        }
+        String relPath = schemaRepository.getSchemaRelativePath(schema.getFileName(), schemaSetIdentifier, schema.isWorkingCopy());
 
         return webAppUrl + DownloadServlet.SCHEMAS_PATH + relPath;
     }
@@ -804,8 +841,7 @@ public class SchemaActionBean extends AbstractActionBean {
                 throw new IllegalStateException("The schema must be loaded for this operation!");
             }
 
-            otherVersions =
-                schemaService.getSchemaVersions(getUserName(), schema.getContinuityId(), schema.getId());
+            otherVersions = schemaService.getSchemaVersions(getUserName(), schema.getContinuityId(), schema.getId());
         }
         return otherVersions;
     }
@@ -817,7 +853,7 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public boolean isCheckoutAllowed() {
 
-        if (!isRootLevelSchema()){
+        if (!isRootLevelSchema()) {
             return false;
         }
 
@@ -855,16 +891,30 @@ public class SchemaActionBean extends AbstractActionBean {
      * @return
      * @throws ServiceException
      */
-    public Schema getSchemaWorkingCopy() throws ServiceException{
+    public Schema getSchemaWorkingCopy() throws ServiceException {
 
-        if (schema == null){
+        if (schema == null) {
             throw new IllegalStateException("The schema object must be initialized for this operation!");
-        }
-        else if (!isUserLoggedIn() || !schema.isCheckedOutBy(getUserName())){
+        } else if (!isUserLoggedIn() || !schema.isCheckedOutBy(getUserName())) {
             return null;
-        }
-        else{
+        } else {
             return schemaService.getWorkingCopyOfSchema(schema.getId());
         }
     }
+
+    /**
+     * @return the workingCopy
+     */
+    public boolean isWorkingCopy() {
+        return workingCopy;
+    }
+
+    /**
+     * @param workingCopy
+     *            the workingCopy to set
+     */
+    public void setWorkingCopy(boolean workingCopy) {
+        this.workingCopy = workingCopy;
+    }
+
 }
