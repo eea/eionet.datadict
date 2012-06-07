@@ -62,6 +62,7 @@
             <ul class="menu">
                 <c:forEach var="schemaSet" items="${actionBean.schemaSets}">
                     <c:set var="schemaSetName" value="${schemaSet.attributeValues!=null ? ddfn:join(schemaSet.attributeValues['Name'],'') : ''}"/>
+                    <c:set var="displayName" value="${not empty schemaSetName ? schemaSetName : schemaSet.identifier}"/>
                     <li>
                         <c:if test="${not empty actionBean.user}">
                             <c:choose>
@@ -75,32 +76,15 @@
                         </c:if>
                         <c:choose>
                             <c:when test="${schemaSet.draftStatus && empty actionBean.user}">
-                                <span class="link-folder">
-                                    <c:choose>
-                                        <c:when test="${not empty schemaSetName}">
-                                            <c:out value="${schemaSetName}"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <c:out value="${schemaSet.identifier}"/>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <sup>(<c:out value="${schemaSet.regStatus}" />)</sup>
+                                <span class="link-folder" style="color:gray;">
+                                    <c:out value="${displayName}"/>&nbsp;<sup style="font-size:0.7em">(<c:out value="${schemaSet.regStatus}" />)</sup>
                                 </span>
                             </c:when>
                             <c:otherwise>
                                 <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" class="link-folder">
                                     <stripes:param name="schemaSet.identifier" value="${schemaSet.identifier}" />
-                                    <c:if test="${schemaSet.workingCopy}">
-                                        <stripes:param name="workingCopy" value="true" />
-                                    </c:if>
-                                    <c:choose>
-                                        <c:when test="${not empty schemaSetName}">
-                                            <c:out value="${schemaSetName}"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <c:out value="${schemaSet.identifier}"/>
-                                        </c:otherwise>
-                                    </c:choose>
+                                    <c:if test="${schemaSet.workingCopy}"><stripes:param name="workingCopy" value="true" /></c:if>
+                                    <c:out value="${displayName}"/>
                                 </stripes:link>
                             </c:otherwise>
                         </c:choose>
@@ -111,6 +95,7 @@
                 </c:forEach>
                 <c:forEach var="schema" items="${actionBean.schemas}">
                     <c:set var="schemaName" value="${schema.attributeValues!=null ? ddfn:join(schema.attributeValues['Name'],'') : ''}"/>
+                    <c:set var="displayName" value="${not empty schemaName ? schemaName : schema.fileName}"/>
                     <li>
                         <c:if test="${not empty actionBean.user}">
                             <c:choose>
@@ -124,28 +109,15 @@
                         </c:if>
                         <c:choose>
                             <c:when test="${schema.draftStatus && empty actionBean.user}">
-                                <c:choose>
-                                    <c:when test="${not empty schemaName}">
-                                        <c:out value="${schemaName}"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:out value="${schema.fileName}"/>
-                                    </c:otherwise>
-                                </c:choose>
-                                <sup>(<c:out value="${schema.regStatus}" />)</sup>
+                                <span style="color:gray;">
+                                    <c:out value="${displayName}"/>&nbsp;<sup style="font-size:0.7em">(<c:out value="${schema.regStatus}" />)</sup>
+                                </span>
                             </c:when>
                             <c:otherwise>
                                 <stripes:link beanclass="eionet.web.action.SchemaActionBean">
                                     <stripes:param name="schema.fileName" value="${schema.fileName}" />
                                     <c:if test="${schema.workingCopy}"><stripes:param name="workingCopy" value="true" /></c:if>
-                                    <c:choose>
-                                        <c:when test="${not empty schemaName}">
-                                            <c:out value="${schemaName}"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <c:out value="${schema.fileName}"/>
-                                        </c:otherwise>
-                                    </c:choose>
+                                    <c:out value="${displayName}"/>
                                 </stripes:link>
                             </c:otherwise>
                         </c:choose>
