@@ -52,6 +52,7 @@
                 <display:column title="Identifier" sortable="true" sortName="sortName" sortProperty="identifier">
                     <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
                         <stripes:param name="schemaSet.identifier" value="${item.identifier}" />
+                        <c:if test="${item.workingCopy}"><stripes:param name="workingCopy" value="true"/></c:if>
                         <c:out value="${item.identifier}" />
                     </stripes:link>
                     <c:if test="${not empty actionBean.userName && item.workingCopy && actionBean.userName==item.workingUser}">

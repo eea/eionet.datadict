@@ -153,7 +153,8 @@ List<Schema> schemas=null;
                         <td>
                             Schema set:
                             <stripes:link beanclass="eionet.web.action.SchemaSetActionBean"><c:out value="<%=schemaSet.getIdentifier()%>"/>
-                                <stripes:param name="schemaSet.id" value="<%=schemaSet.getId()%>"/>
+                                <stripes:param name="schemaSet.identifier" value="<%=schemaSet.getIdentifier()%>"/>
+                                <stripes:param name="workginCopy" value="true"/>
                             </stripes:link>
                         </td>
                     </tr>
@@ -175,7 +176,8 @@ List<Schema> schemas=null;
                         <td>
                             Schema:
                             <stripes:link beanclass="eionet.web.action.SchemaActionBean"><c:out value="<%=schema.getFileName()%>"/>
-                                <stripes:param name="schema.id" value="<%=schema.getId()%>"/>
+                                <stripes:param name="schema.fileName" value="<%=schema.getFileName()%>"/>
+                                <stripes:param name="workginCopy" value="true"/>
                             </stripes:link>
                         </td>
                     </tr>

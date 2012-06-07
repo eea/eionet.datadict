@@ -58,6 +58,7 @@
                             <stripes:param name="schemaSet.identifier" value="${item.schemaSetIdentifier}" />
                         </c:if>
                         <stripes:param name="schema.fileName" value="${item.fileName}" />
+                        <c:if test="${item.workingCopy || item.schemaSetWorkingCopy}"><stripes:param name="workingCopy" value="true"/></c:if>
                         <c:out value="${item.fileName}" />
                     </stripes:link>
                     <c:if test="${not empty actionBean.userName && item.workingCopy && actionBean.userName==item.workingUser}">
@@ -68,6 +69,7 @@
                     <c:if test="${item.schemaSetId > 0}">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
                             <stripes:param name="schemaSet.identifier" value="${item.schemaSetIdentifier}" />
+                            <c:if test="${item.schemaSetWorkingCopy}"><stripes:param name="workingCopy" value="true"/></c:if>
                             <c:out value="${item.schemaSetIdentifier}" />
                         </stripes:link>
                         <c:if test="${not empty actionBean.userName && item.schemaSetWorkingCopy && actionBean.userName==item.schemaSetWorkingUser}">

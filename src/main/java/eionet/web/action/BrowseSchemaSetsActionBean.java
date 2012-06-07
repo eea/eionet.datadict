@@ -47,7 +47,6 @@ import eionet.util.SecurityUtil;
  *
  * @author Juhan Voolaid
  */
-//@UrlBinding("/schemaSets.action")
 @UrlBinding("/schemasets/browse/{$event}")
 public class BrowseSchemaSetsActionBean extends AbstractActionBean {
 
@@ -121,7 +120,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
             return viewList();
         }
 
-        if (selectedSchemaSets!=null && !selectedSchemaSets.isEmpty()){
+        if (selectedSchemaSets != null && !selectedSchemaSets.isEmpty()) {
             try {
                 schemaService.deleteSchemaSets(selectedSchemaSets, getUserName(), true);
             } catch (ValidationException e) {
@@ -131,7 +130,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
             }
         }
 
-        if (selectedSchemas!=null && !selectedSchemas.isEmpty()){
+        if (selectedSchemas != null && !selectedSchemas.isEmpty()) {
             try {
                 schemaService.deleteSchemas(selectedSchemas, getUserName(), true);
             } catch (ValidationException e) {
@@ -164,7 +163,8 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     /**
      * Sets the ids of selected schema sets.
      *
-     * @param The list of ids in question.
+     * @param The
+     *            list of ids in question.
      */
     public void setSelectedSchemaSets(List<Integer> selectedSchemaSets) {
         this.selectedSchemaSets = selectedSchemaSets;
@@ -222,8 +222,8 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
             String userName = getUserName();
             if (!StringUtils.isBlank(userName)) {
                 for (Schema schema : schemas) {
-                    // Must not be a working copy, nor must it be checked out
-                    if (!schema.isWorkingCopy() && StringUtils.isBlank(schema.getWorkingUser())) {
+                    // Must be a root-level schema, and must not be a working copy nor must it be checked out
+                    if (schema.getSchemaSetId() <= 0 && !schema.isWorkingCopy() && StringUtils.isBlank(schema.getWorkingUser())) {
                         String permission = schema.getRegStatus().equals(SchemaSet.RegStatus.RELEASED) ? "er" : "d";
                         if (schema.getSchemaSetId() > 0) {
                             if (SecurityUtil.hasPerm(userName, "/schemasets", permission)) {
@@ -250,7 +250,9 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
 
     /**
      * Sets the ids of selected schemas.
-     * @param selectedSchemas The list of ids in question.
+     *
+     * @param selectedSchemas
+     *            The list of ids in question.
      */
     public void setSelectedSchemas(List<Integer> selectedSchemas) {
         this.selectedSchemas = selectedSchemas;

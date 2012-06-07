@@ -304,6 +304,9 @@
     <div id="uploadSchemaDialog" title="Re-upload schema">
         <stripes:form beanclass="${actionBean.class.name}" method="post">
 
+            <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}" />
+            <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}" />
+
             <div class="note-msg">
                 <strong>Note</strong>
                 <p>
@@ -318,6 +321,7 @@
 
             <div style="display:none">
                 <stripes:hidden name="schema.id"/>
+                <stripes:hidden name="workingCopy"/>
             </div>
         </stripes:form>
     </div>
