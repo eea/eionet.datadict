@@ -145,8 +145,8 @@ public class SchemaActionBean extends AbstractActionBean {
         schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema successfully updated!");
         return new RedirectResolution(getClass())
-                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -192,8 +192,8 @@ public class SchemaActionBean extends AbstractActionBean {
     public Resolution cancelEdit() throws ServiceException {
 
         return new RedirectResolution(getClass())
-                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -228,8 +228,8 @@ public class SchemaActionBean extends AbstractActionBean {
         int finalId = schemaService.checkInSchema(schema.getId(), getUserName(), schema.getComment());
         addSystemMessage("Schema successfully checked in!");
         return new RedirectResolution(getClass())
-                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
+        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
     }
 
     /**
@@ -247,8 +247,8 @@ public class SchemaActionBean extends AbstractActionBean {
         int newSchemaSetId = schemaService.checkOutSchema(schema.getId(), getUserName());
         addSystemMessage("Schema successfully checked out!");
         return new RedirectResolution(getClass())
-                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -266,8 +266,8 @@ public class SchemaActionBean extends AbstractActionBean {
         loadSchemaById();
         addSystemMessage("The new version's working copy successfully created!");
         return new RedirectResolution(getClass())
-                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -281,8 +281,8 @@ public class SchemaActionBean extends AbstractActionBean {
         addSystemMessage("Working copy successfully deleted!");
         if (checkedOutCopyId > 0) {
             return new RedirectResolution(getClass())
-                    .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                    .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
+            .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+            .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
         } else {
             return new RedirectResolution(BrowseSchemaSetsActionBean.class);
         }
@@ -306,15 +306,12 @@ public class SchemaActionBean extends AbstractActionBean {
 
     /**
      *
-     * @throws IOException
-     * @throws DAOException
-     * @throws SAXException
-     * @throws ParserConfigurationException
+     * @throws Exception
      */
     @ValidationMethod(on = {"add"})
-    public void validateAdd() throws ServiceException, IOException, DAOException, ParserConfigurationException, SAXException {
+    public void validateAdd() throws Exception {
 
-        if (!isUserLoggedIn() || !getUser().hasPermission("/schemasets", "i")) {
+        if (!SecurityUtil.hasPerm(getUserName(), "/schemas", "i")) {
             throw new ServiceException("No permission to create root-level schemas!");
         }
 
@@ -537,7 +534,7 @@ public class SchemaActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -571,7 +568,7 @@ public class SchemaActionBean extends AbstractActionBean {
                 int schemaId = schema == null ? 0 : schema.getId();
 
                 attributes =
-                        searchEngine.getObjectAttributes(schemaId, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+                    searchEngine.getObjectAttributes(schemaId, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
 
                 // If this is a POST request where new attribute values are submitted (e.g. "save", "add", etc)
                 // then substitute the values we got from database with the values

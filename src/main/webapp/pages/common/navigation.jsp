@@ -23,7 +23,7 @@
         if (_user!=null){ %>
             <li><a href="<%=request.getContextPath()%>/subscribe.jsp">Subscribe</a></li><%
         }
-        if (SecurityUtil.userHasPerm(request, "/schemasets", "v")){ %>
+        if (SecurityUtil.userHasPerm(request, "/schemasets", "v") || SecurityUtil.userHasPerm(request, "/schemas", "v")){ %>
           <li><a href="<%=request.getContextPath()%>/schemasets/browse/">Schemas</a></li> <%
         }
         %>
