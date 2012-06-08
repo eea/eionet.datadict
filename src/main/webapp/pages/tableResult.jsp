@@ -18,7 +18,16 @@
 
         <display:table name="${actionBean.dataSetTables}" class="sortable" id="item" sort="list"
             decorator="eionet.web.decorators.TableResultDecorator" requestURI="/tableSearch.action">
-            <display:column property="name" title="Full name" sortable="true"/>
+            <display:column title="Full name" sortable="true">
+                <c:choose>
+                    <c:when test="${item.statusReleased}">
+                        <stripes:link href="/tables/${item.id}"><c:out value="${item.name}" /></stripes:link>
+                    </c:when>
+                    <c:otherwise>
+                        <c:out value="${item.name}" />
+                    </c:otherwise>
+                </c:choose>
+            </display:column>
             <display:column property="shortName" title="Short name" sortable="true" />
             <display:column property="dataSetName" title="Dataset" sortable="true" />
             <display:column property="dataSetStatus" title="Dataset statys" sortable="true" />

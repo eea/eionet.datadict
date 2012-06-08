@@ -28,9 +28,7 @@ package eionet.meta.dao.domain;
  */
 public class DataSetTable {
 
-    private String id;
-
-    private String dataSetId;
+    private int id;
 
     private String shortName;
 
@@ -40,10 +38,14 @@ public class DataSetTable {
 
     private String dataSetStatus;
 
+    public boolean isStatusReleased() {
+        return "Released".equals(dataSetStatus);
+    }
+
     /**
      * @return the id
      */
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -51,23 +53,8 @@ public class DataSetTable {
      * @param id
      *            the id to set
      */
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
-    }
-
-    /**
-     * @return the dataSetId
-     */
-    public String getDataSetId() {
-        return dataSetId;
-    }
-
-    /**
-     * @param dataSetId
-     *            the dataSetId to set
-     */
-    public void setDataSetId(String dataSetId) {
-        this.dataSetId = dataSetId;
     }
 
     /**

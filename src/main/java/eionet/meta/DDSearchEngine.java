@@ -2868,7 +2868,7 @@ public class DDSearchEngine {
         buf.append(" order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc, "
                 + "DS_TABLE.IDENTIFIER asc, DS_TABLE.TABLE_ID desc");
 
-        LOGGER.debug(buf.toString());
+        LOGGER.info(buf.toString());
 
         // preprare the statement for getting attributes
         PreparedStatement attrsPstmt = null;

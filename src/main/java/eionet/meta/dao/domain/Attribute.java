@@ -36,6 +36,14 @@ public class Attribute {
 
     private String shortName;
 
+    public Attribute(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Attribute() {
+    }
+
     /**
      * @return the id
      */
@@ -89,7 +97,8 @@ public class Attribute {
     }
 
     /**
-     * @param shortName the shortName to set
+     * @param shortName
+     *            the shortName to set
      */
     public void setShortName(String shortName) {
         this.shortName = shortName;
