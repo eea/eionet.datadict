@@ -2902,6 +2902,7 @@ public class DDSearchEngine {
                         curDstIdf = dstIdf;
                         curDstID = dstID;
                     } else if (!dstID.equals(curDstID)) {
+                        LOGGER.info("Skipping: " + rs.getString("DS_TABLE.TABLE_ID") + "; " + rs.getString("DATASET.SHORT_NAME"));
                         continue;
                     }
                 }

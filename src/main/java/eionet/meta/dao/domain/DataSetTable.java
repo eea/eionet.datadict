@@ -21,12 +21,14 @@
 
 package eionet.meta.dao.domain;
 
+import eionet.util.Util;
+
 /**
  * DataSetTable entity.
  *
  * @author Juhan Voolaid
  */
-public class DataSetTable {
+public class DataSetTable implements Comparable<DataSetTable> {
 
     private int id;
 
@@ -40,6 +42,24 @@ public class DataSetTable {
 
     public boolean isStatusReleased() {
         return "Released".equals(dataSetStatus);
+    }
+
+    public String getStatusImage() {
+        return Util.getStatusImage(dataSetStatus);
+    }
+
+    @Override
+    public int compareTo(DataSetTable o) {
+        String otherName = o.getName();
+        if (otherName == null && name == null) {
+            return 0;
+        } else if (otherName == null) {
+            return 1;
+        } else if (name == null) {
+            return -1;
+        }
+
+        return name.compareToIgnoreCase(otherName);
     }
 
     /**
