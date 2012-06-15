@@ -77,8 +77,8 @@ public class Util {
     private static final int BUF_SIZE = 1024;
     private static Hashtable xmlEscapes = null;
     private static String[][] allowedFxvDatatypeConversions = { {"boolean", "string"}, {"date", "string"}, {"float", "string"},
-        {"double", "string"}, {"integer", "string"}, {"integer", "float"}, {"integer", "double"}, {"integer", "decimal"},
-        {"float", "double"}, {"float", "decimal"}, {"double", "decimal"}, {"decimal", "string"}};
+            {"double", "string"}, {"integer", "string"}, {"integer", "float"}, {"integer", "double"}, {"integer", "decimal"},
+            {"float", "double"}, {"float", "decimal"}, {"double", "decimal"}, {"decimal", "string"}};
 
     /** */
     private static final SimpleDateFormat hhmmssFormat = new SimpleDateFormat("HH:mm:ss");
@@ -96,6 +96,22 @@ public class Util {
     public static boolean isEmpty(String str) {
 
         return str == null || str.length() == 0;
+    }
+
+    /**
+     * Checks if given Enum value equals with one of the given values.
+     *
+     * @param value
+     * @param values
+     * @return
+     */
+    public static <T extends Enum<?>> boolean enumEquals(T value, T... values) {
+        for (T v : values) {
+            if (v.equals(value)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -995,7 +1011,7 @@ public class Util {
      *
      */
     public static void forward2errorpage(HttpServletRequest request, HttpServletResponse response, Throwable t, String backURL)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
 
         String msg = t.getMessage();
 
@@ -1242,9 +1258,9 @@ public class Util {
      * @param schemaSet
      * @return
      */
-    public static String generateContinuityId(SchemaSet schemaSet){
+    public static String generateContinuityId(SchemaSet schemaSet) {
 
-        if (schemaSet==null || isEmpty(schemaSet.getIdentifier())){
+        if (schemaSet == null || isEmpty(schemaSet.getIdentifier())) {
             return null;
         }
         String name = schemaSet.getIdentifier() + Thread.currentThread().getId() + System.currentTimeMillis();
@@ -1256,9 +1272,9 @@ public class Util {
      * @param schema
      * @return
      */
-    public static String generateContinuityId(Schema schema){
+    public static String generateContinuityId(Schema schema) {
 
-        if (schema==null || isEmpty(schema.getFileName())){
+        if (schema == null || isEmpty(schema.getFileName())) {
             return null;
         }
         String name = schema.getFileName() + Thread.currentThread().getId() + System.currentTimeMillis();

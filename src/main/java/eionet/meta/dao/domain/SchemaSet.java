@@ -205,7 +205,7 @@ public class SchemaSet {
         // also be used for Schemas.
 
         /** */
-        DRAFT("Draft"), RELEASED("Released");
+        DRAFT("Draft"), PUBLIC_DRAFT("Public draft"), RELEASED("Released");
 
         /** */
         String s;

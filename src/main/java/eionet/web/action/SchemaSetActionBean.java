@@ -47,6 +47,7 @@ import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+import eionet.util.Util;
 import eionet.util.XmlValidator;
 
 /**
@@ -122,7 +123,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         loadSchemaSetByIdentifier();
 
         if (!isUserLoggedIn()) {
-            if (!SchemaSet.RegStatus.RELEASED.equals(schemaSet.getRegStatus())) {
+            if (!Util.enumEquals(schemaSet.getRegStatus(), SchemaSet.RegStatus.RELEASED, SchemaSet.RegStatus.PUBLIC_DRAFT)) {
                 throw new ServiceException("Un-authenticated users can only see definitions in Released status!");
             }
         }
