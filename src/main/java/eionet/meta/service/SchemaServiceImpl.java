@@ -82,7 +82,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaSetDAO.searchSchemaSets(searchFilter);
         } catch (Exception e) {
-            throw new ServiceException("Failed to search schema sets", e);
+            throw new ServiceException("Failed to search schema sets: " + e.getMessage(), e);
         }
     }
 
@@ -96,7 +96,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaDAO.searchSchemas(searchFilter);
         } catch (Exception e) {
-            throw new ServiceException("Failed to search schemas", e);
+            throw new ServiceException("Failed to search schemas: " + e.getMessage(), e);
         }
     }
 
@@ -108,7 +108,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaSetDAO.getSchemaSets(userName);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schema sets", e);
+            throw new ServiceException("Failed to get schema sets: " + e.getMessage(), e);
         }
     }
 
@@ -156,7 +156,7 @@ public class SchemaServiceImpl implements ISchemaService {
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Failed to delete schema sets", e);
+            throw new ServiceException("Failed to delete schema sets: " + e.getMessage(), e);
         }
     }
 
@@ -215,7 +215,7 @@ public class SchemaServiceImpl implements ISchemaService {
                 }
             }
         } catch (Exception e) {
-            throw new ServiceException("Failed to delete schemas", e);
+            throw new ServiceException("Failed to delete schemas: " + e.getMessage(), e);
         }
     }
 
@@ -229,7 +229,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaSetDAO.getSchemaSet(id);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schema set", e);
+            throw new ServiceException("Failed to get schema set: " + e.getMessage(), e);
         }
     }
 
@@ -243,7 +243,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaSetDAO.getSchemaSet(identifier, workingCopy);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schema set", e);
+            throw new ServiceException("Failed to get schema set: " + e.getMessage(), e);
         }
     }
 
@@ -264,7 +264,7 @@ public class SchemaServiceImpl implements ISchemaService {
             }
             return schemaSetId;
         } catch (Exception e) {
-            throw new ServiceException("Failed to add schema set", e);
+            throw new ServiceException("Failed to add schema set: " + e.getMessage(), e);
         }
     }
 
@@ -283,7 +283,7 @@ public class SchemaServiceImpl implements ISchemaService {
                 schemaSetDAO.updateSchemaSetAttributes(schemaSet.getId(), attributes);
             }
         } catch (Exception e) {
-            throw new ServiceException("Failed to update schema set", e);
+            throw new ServiceException("Failed to update schema set: " + e.getMessage(), e);
         }
     }
 
@@ -351,7 +351,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             return finalId;
         } catch (Exception e) {
-            throw new ServiceException("Schema set check-in failed.", e);
+            throw new ServiceException("Schema set check-in failed: " + e.getMessage(), e);
         }
     }
 
@@ -410,7 +410,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             return finalId;
         } catch (Exception e) {
-            throw new ServiceException("Schema check-in failed.", e);
+            throw new ServiceException("Schema check-in failed: " + e.getMessage(), e);
         }
     }
 
@@ -451,7 +451,7 @@ public class SchemaServiceImpl implements ISchemaService {
             }
             return schemaId;
         } catch (Exception e) {
-            throw new ServiceException("Failed to add schema", e);
+            throw new ServiceException("Failed to add schema: " + e.getMessage(), e);
         }
     }
 
@@ -468,7 +468,7 @@ public class SchemaServiceImpl implements ISchemaService {
             }
             return schemas;
         } catch (Exception e) {
-            throw new ServiceException("Failed to list schemas of the given schema set " + schemaSetId, e);
+            throw new ServiceException("Failed to list schemas of the given schema set: " + e.getMessage(), e);
         }
     }
 
@@ -512,7 +512,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             return newSchemaSetId;
         } catch (Exception e) {
-            throw new ServiceException("Failed to check out schema set", e);
+            throw new ServiceException("Failed to check out schema set: " + e.getMessage(), e);
         }
     }
 
@@ -545,7 +545,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             return result;
         } catch (Exception e) {
-            throw new ServiceException("Failed to undo check-out of schema set", e);
+            throw new ServiceException("Failed to undo check-out of schema set: " + e.getMessage(), e);
         }
     }
 
@@ -558,7 +558,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaSetDAO.getWorkingCopyOfSchemaSet(checkedOutCopyId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get working copy of schema set " + checkedOutCopyId, e);
+            throw new ServiceException("Failed to get working copy of schema set: " + e.getMessage(), e);
         }
     }
 
@@ -576,7 +576,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaSetDAO.getWorkingCopiesOf(userName);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schema set working copies of user " + userName, e);
+            throw new ServiceException("Failed to get schema set working copies of user: " + e.getMessage(), e);
         }
     }
 
@@ -593,7 +593,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaDAO.getWorkingCopiesOf(userName);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schema working copies of user " + userName, e);
+            throw new ServiceException("Failed to get schema working copies of user: " + e.getMessage(), e);
         }
     }
 
@@ -602,7 +602,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return attributeDAO.getAttributes(DElemAttribute.ParentType.SCHEMA_SET, DElemAttribute.TYPE_SIMPLE);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schema set attributes.", e);
+            throw new ServiceException("Failed to get schema set attributes: " + e.getMessage(), e);
         }
     }
 
@@ -611,7 +611,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return attributeDAO.getAttributes(DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schema attributes.", e);
+            throw new ServiceException("Failed to get schema attributes: " + e.getMessage(), e);
         }
     }
 
@@ -624,7 +624,7 @@ public class SchemaServiceImpl implements ISchemaService {
             List<Schema> schemas = schemaDAO.getSchemas(Collections.singletonList(id));
             return schemas != null && !schemas.isEmpty() ? schemas.get(0) : null;
         } catch (Exception e) {
-            throw new ServiceException("Failed to get a schema by this id: " + id, e);
+            throw new ServiceException("Failed to get a schema by this id: " + e.getMessage(), e);
         }
     }
 
@@ -633,7 +633,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaDAO.getSchema(schemaSetIdentifier, schemaFileName, workingCopy);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get a schema: " + schemaFileName, e);
+            throw new ServiceException("Failed to get a schema: " + e.getMessage(), e);
         }
     }
 
@@ -642,7 +642,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaDAO.getRootLevelSchema(schemaFileName, workingCopy);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get a root level schema: " + schemaFileName, e);
+            throw new ServiceException("Failed to get a root level schema: " + e.getMessage(), e);
         }
     }
 
@@ -658,7 +658,7 @@ public class SchemaServiceImpl implements ISchemaService {
                 schemaDAO.updateSchemaAttributes(schema.getId(), attributes);
             }
         } catch (Exception e) {
-            throw new ServiceException("Failed to update schema", e);
+            throw new ServiceException("Failed to update schema: " + e.getMessage(), e);
         }
     }
 
@@ -672,7 +672,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaSetDAO.exists(schemaSetIdentifier);
         } catch (Exception e) {
-            throw new ServiceException("Failed to check if a schema set by this identifier already exists!", e);
+            throw new ServiceException("Failed to check if a schema set by this identifier already exists: " + e.getMessage(), e);
         }
     }
 
@@ -710,7 +710,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             return newSchemaId;
         } catch (Exception e) {
-            throw new ServiceException("Failed to perform check-out on this schema: " + schemaId, e);
+            throw new ServiceException("Failed to perform check-out on this schema: " + e.getMessage(), e);
         }
     }
 
@@ -724,7 +724,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaDAO.getRootLevelSchemas(userName);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schemas", e);
+            throw new ServiceException("Failed to get schemas: " + e.getMessage(), e);
         }
     }
 
@@ -738,7 +738,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaDAO.getWorkingCopyOfSchema(schemaId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get working copy of schema " + schemaId, e);
+            throw new ServiceException("Failed to get working copy of schema: " + e.getMessage(), e);
         }
     }
 
@@ -774,7 +774,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             return result;
         } catch (Exception e) {
-            throw new ServiceException("Failed to undo check-out of schema " + schemaId, e);
+            throw new ServiceException("Failed to undo check-out of schema: " + e.getMessage(), e);
         }
     }
 
@@ -814,7 +814,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             return newSchemaSetId;
         } catch (Exception e) {
-            throw new ServiceException("Failed to copy schema set", e);
+            throw new ServiceException("Failed to copy schema set: " + e.getMessage(), e);
         }
     }
 
@@ -827,7 +827,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaSetDAO.getSchemaSetVersions(userName, continuityId, excludeIds);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schema set versions for continuity id " + continuityId, e);
+            throw new ServiceException("Failed to get schema set versions for continuity id: " + e.getMessage(), e);
         }
     }
 
@@ -840,7 +840,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             return schemaDAO.getSchemaVersions(userName, continuityId, excludeIds);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get root-level schema versions for continuity id " + continuityId, e);
+            throw new ServiceException("Failed to get root-level schema versions for continuity id: " + e.getMessage(), e);
         }
     }
 
@@ -872,7 +872,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             return newSchemaId;
         } catch (Exception e) {
-            throw new ServiceException("Failed to copy schema row", e);
+            throw new ServiceException("Failed to copy schema row: " + e.getMessage(), e);
         }
     }
 

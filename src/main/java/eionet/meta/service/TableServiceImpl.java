@@ -51,7 +51,7 @@ public class TableServiceImpl implements ITableService {
         try {
             return tableDAO.searchTables(tableFilter);
         } catch (Exception e) {
-            throw new ServiceException("Failed to search tables", e);
+            throw new ServiceException("Failed to search tables: " + e.getMessage(), e);
         }
     }
 
