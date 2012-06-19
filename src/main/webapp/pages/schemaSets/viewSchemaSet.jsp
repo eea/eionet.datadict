@@ -179,11 +179,22 @@
                 <td class="simple_attr_value">
                     <c:out value="${actionBean.schemaSet.regStatus}"/>
                     <c:if test="${actionBean.userWorkingCopy}">
-                        <span class="caution" title="Checked out on ${actionBean.schemaSet.dateModified}">(Working copy)</span>
+                        <span class="caution">(Working copy)</span>
                     </c:if>
-                    <c:if test="${not empty actionBean.userName && not empty actionBean.schemaSet.workingUser && actionBean.userName!=actionBean.schemaSet.workingUser}">
-                        <span class="caution">(checked out by <em>${actionBean.schemaSet.workingUser}</em>)</span>
-                    </c:if>
+                    <c:choose>
+                        <c:when test="${not empty actionBean.userName && not empty actionBean.schemaSet.workingUser && actionBean.userName!=actionBean.schemaSet.workingUser}">
+                            <span class="caution">
+                                (checked out in
+                                <fmt:setLocale value="en_GB" />
+                                <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schemaSet.dateModified}" />
+                                by <em>${actionBean.schemaSet.workingUser}</em>)
+                            </span>
+                        </c:when>
+                        <c:otherwise>
+                            <fmt:setLocale value="en_GB" />
+                            <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schemaSet.dateModified}" />
+                        </c:otherwise>
+                    </c:choose>
                 </td>
             </tr>
             <c:forEach items="${actionBean.attributes}" var="attributesEntry">
