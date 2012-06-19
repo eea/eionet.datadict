@@ -5,26 +5,27 @@
 
         <loadproperties srcFile="${propertiesFile}"/>
 
-		<copy todir="${app.home}/acl" overwrite="false">
-			<fileset dir="acl"/>
-		</copy>
-		<copy todir="${app.home}/opendoc" overwrite="true">
-			<fileset dir="opendoc"/>
-		</copy>
-		<copy todir="${app.home}/msaccess" overwrite="true">
-			<fileset dir="msaccess"/>
-		</copy>
-		<copy file="makemdb.sh" todir="${app.home}" overwrite="false">
-			<filterchain>
-			<replacetokens>
-				<token key="WEBAPP.HOME" value="${webapp.home}"/>
-				<token key="APP.HOME" value="${app.home}"/>
-				<token key="MYSQL.JAR" value="${lib-mysql-connector-jar}"/>
-			</replacetokens>
-			</filterchain>
-		</copy>
-		<copy file="VERSION.txt" todir="${app.home}" overwrite="true"/>
-		<mkdir dir="${app.home}/tmp"/>
+        <copy todir="${app.home}/acl" overwrite="false">
+            <fileset dir="acl"/>
+            <mapper type="glob" from="*" to="*.dist"/>
+        </copy>
+        <copy todir="${app.home}/opendoc" overwrite="true">
+            <fileset dir="opendoc"/>
+        </copy>
+        <copy todir="${app.home}/msaccess" overwrite="true">
+            <fileset dir="msaccess"/>
+        </copy>
+        <copy file="makemdb.sh" todir="${app.home}" overwrite="false">
+            <filterchain>
+            <replacetokens>
+                <token key="WEBAPP.HOME" value="${webapp.home}"/>
+                <token key="APP.HOME" value="${app.home}"/>
+                <token key="MYSQL.JAR" value="${lib-mysql-connector-jar}"/>
+            </replacetokens>
+            </filterchain>
+        </copy>
+        <copy file="VERSION.txt" todir="${app.home}" overwrite="true"/>
+        <mkdir dir="${app.home}/tmp"/>
 
     </target>
 </project>
