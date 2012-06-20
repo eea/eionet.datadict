@@ -68,7 +68,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                     + "values (:filename,:schemaSetId,:continuityId,:regStatus,:workingCopy,:workingUser,now(),:userModified,:comment,:checkedOutCopyId)";
 
     /** */
-    private static final String LIST_FOR_SCHEMA_SET = "select * from T_SCHEMA where SCHEMA_SET_ID=:schemaSetId";
+    private static final String LIST_FOR_SCHEMA_SET = "select * from T_SCHEMA where SCHEMA_SET_ID=:schemaSetId order by FILENAME";
 
     /** */
     private static final String COPY_TO_SCHEMA_SET_SQL =
