@@ -290,6 +290,9 @@
         </display:table>
     </c:if>
 
+    <%-- Show the contents of the schema file. --%>
+    <pre><c:out value="${actionBean.schemaString}" /></pre>
+
     <%-- The check-in dialog for root-level schemas. Hidden unless activated. --%>
 
     <div id="checkInDialog" title="Check in">

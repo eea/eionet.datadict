@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import eionet.meta.DDRuntimeException;
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -128,6 +129,33 @@ public class SchemaRepository {
             return file;
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Returns the content as string from the schema file.
+     *
+     * @param relativePath
+     * @return
+     * @throws ServiceException
+     */
+    public String getSchemaString(String fileName, String schemaSetIdentifier, boolean workingCopy) throws ServiceException {
+        StringBuilder relativePath = new StringBuilder();
+        if (schemaSetIdentifier != null) {
+            relativePath.append(schemaSetIdentifier);
+        }
+        if (workingCopy) {
+            relativePath.append(WORKING_COPY_DIR);
+        }
+        if (relativePath.length() > 0) {
+            relativePath.append("/");
+        }
+        relativePath.append(fileName);
+
+        try {
+            return FileUtils.readFileToString(getSchemaFile(relativePath.toString()));
+        } catch (IOException e) {
+            throw new ServiceException("Failed to get the schema contents: " + e.getMessage(), e);
         }
     }
 
