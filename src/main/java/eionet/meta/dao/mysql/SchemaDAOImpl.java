@@ -244,15 +244,24 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     public SchemasResult searchSchemas(SchemaFilter searchFilter) {
 
         StringBuilder sql =
-                new StringBuilder().append("select ").append("S.*, SS.*, ")
+                new StringBuilder().append("select ").append("S.*, SS.*, atr1.VALUE as NAME_ATTR, atr2.VALUE as SS_NAME_ATTR, ")
                         .append("if(SS.SCHEMA_SET_ID is null, S.WORKING_COPY, SS.WORKING_COPY) as WCOPY, ")
                         .append("if(SS.SCHEMA_SET_ID is null, S.WORKING_USER, SS.WORKING_USER) as WUSER, ")
                         .append("if(SS.SCHEMA_SET_ID is null, S.REG_STATUS, SS.REG_STATUS) as REGSTAT ").append("from ")
                         .append("T_SCHEMA as S left outer join T_SCHEMA_SET as SS on (S.SCHEMA_SET_ID=SS.SCHEMA_SET_ID) ")
+                        .append("left outer join ATTRIBUTE as atr1 on ")
+                        .append("(s.SCHEMA_ID=atr1.DATAELEM_ID and atr1.PARENT_TYPE=:attrParentType1 ")
+                        .append("and atr1.M_ATTRIBUTE_ID=:nameAttrId) ")
+                        .append("left outer join ATTRIBUTE as atr2 on ")
+                        .append("(s.SCHEMA_SET_ID=atr2.DATAELEM_ID and atr2.PARENT_TYPE=:attrParentType2 ")
+                        .append("and atr2.M_ATTRIBUTE_ID=:nameAttrId) ")
                         .append("where 1=1 ");
 
         String searchingUser = searchFilter.getSearchingUser();
         Map<String, Object> params = new HashMap<String, Object>();
+        params.put("attrParentType1", DElemAttribute.ParentType.SCHEMA.toString());
+        params.put("attrParentType2", DElemAttribute.ParentType.SCHEMA_SET.toString());
+        params.put("nameAttrId", NAME_ATTR_ID);
 
         // Where clause
         if (searchFilter.isValued()) {
@@ -329,6 +338,8 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 schema.setSchemaSetIdentifier(rs.getString("SS.IDENTIFIER"));
                 schema.setSchemaSetWorkingCopy(rs.getBoolean("SS.WORKING_COPY"));
                 schema.setSchemaSetWorkingUser(rs.getString("SS.WORKING_USER"));
+                schema.setNameAttribute(rs.getString("NAME_ATTR"));
+                schema.setSchemaSetNameAttribute(rs.getString("SS_NAME_ATTR"));
                 return schema;
             }
         });

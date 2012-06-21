@@ -49,11 +49,18 @@
             <br />
 
             <display:table name="actionBean.schemaSetsResult" class="sortable" id="item" requestURI="/schemasets/search/">
-                <display:column title="Identifier" sortable="true" sortName="sortName" sortProperty="identifier">
+                <display:column title="Name" sortable="true" sortName="sortName" sortProperty="NAME_ATTR">
                     <stripes:link beanclass="eionet.web.action.SchemaSetActionBean">
                         <stripes:param name="schemaSet.identifier" value="${item.identifier}" />
                         <c:if test="${item.workingCopy}"><stripes:param name="workingCopy" value="true"/></c:if>
-                        <c:out value="${item.identifier}" />
+                        <c:choose>
+                            <c:when test="${not empty item.nameAttribute}">
+                                <c:out value="${item.nameAttribute}" />
+                            </c:when>
+                            <c:otherwise>
+                                <c:out value="${item.identifier}" />
+                            </c:otherwise>
+                        </c:choose>
                     </stripes:link>
                     <c:if test="${not empty actionBean.userName && item.workingCopy && actionBean.userName==item.workingUser}">
                         <span title="Your working copy" class="checkedout"><strong>*</strong></span>

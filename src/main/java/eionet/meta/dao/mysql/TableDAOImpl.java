@@ -51,9 +51,6 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
     /** Logger. */
     private static final Logger LOGGER = Logger.getLogger(TableDAOImpl.class);
 
-    /** Dynamic attribute id of the "name" attribute in database. */
-    private static final int NAME_ATTR_ID = 1;
-
     @Override
     public List<DataSetTable> searchTables(TableFilter tableFilter) {
         StringBuilder sql = new StringBuilder();

@@ -30,6 +30,8 @@ public class Schema {
     private String schemaSetIdentifier;
     private boolean schemaSetWorkingCopy;
     private String schemaSetWorkingUser;
+    private String nameAttribute;
+    private String schemaSetNameAttribute;
 
     /** */
     private Map<String, List<String>> attributeValues;
@@ -293,4 +295,35 @@ public class Schema {
     public void setSchemaSetWorkingUser(String schemaSetWorkingUser) {
         this.schemaSetWorkingUser = schemaSetWorkingUser;
     }
+
+    /**
+     * @return the nameAttribute
+     */
+    public String getNameAttribute() {
+        return nameAttribute;
+    }
+
+    /**
+     * @param nameAttribute
+     *            the nameAttribute to set
+     */
+    public void setNameAttribute(String nameAttribute) {
+        this.nameAttribute = nameAttribute;
+    }
+
+    /**
+     * @return the schemaSetNameAttribute
+     */
+    public String getSchemaSetNameAttribute() {
+        return schemaSetNameAttribute;
+    }
+
+    /**
+     * @param schemaSetNameAttribute
+     *            the schemaSetNameAttribute to set
+     */
+    public void setSchemaSetNameAttribute(String schemaSetNameAttribute) {
+        this.schemaSetNameAttribute = schemaSetNameAttribute;
+    }
+
 }

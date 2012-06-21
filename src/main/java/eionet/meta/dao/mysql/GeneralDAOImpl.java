@@ -36,6 +36,9 @@ import eionet.meta.dao.IGeneralDao;
  */
 public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implements IGeneralDao {
 
+    /** Dynamic attribute id of the "name" attribute in database. */
+    public static final int NAME_ATTR_ID = 1;
+
     /**
      * Data source.
      */

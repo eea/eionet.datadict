@@ -25,6 +25,9 @@ public class SchemaSet {
     private String comment;
     private int checkedOutCopyId;
 
+    /** Name attribute value. */
+    private String nameAttribute;
+
     /** Relational properties. */
     private Map<String, List<String>> attributeValues;
 
@@ -306,4 +309,20 @@ public class SchemaSet {
     public boolean isReleased() {
         return regStatus != null && regStatus.equals(RegStatus.RELEASED);
     }
+
+    /**
+     * @return the nameAttribute
+     */
+    public String getNameAttribute() {
+        return nameAttribute;
+    }
+
+    /**
+     * @param nameAttribute
+     *            the nameAttribute to set
+     */
+    public void setNameAttribute(String nameAttribute) {
+        this.nameAttribute = nameAttribute;
+    }
+
 }

@@ -92,11 +92,19 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     @Override
     public SchemaSetsResult searchSchemaSets(SchemaSetFilter searchFilter) {
 
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT SQL_CALC_FOUND_ROWS ss.* ");
-        sql.append("FROM T_SCHEMA_SET ss WHERE ");
-
         Map<String, Object> parameters = new HashMap<String, Object>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT SQL_CALC_FOUND_ROWS ss.*, ATTRIBUTE.VALUE as NAME_ATTR ");
+
+        sql.append("FROM T_SCHEMA_SET ss ");
+        sql.append("left outer join ATTRIBUTE on ");
+        sql.append("(ss.SCHEMA_SET_ID=ATTRIBUTE.DATAELEM_ID and ATTRIBUTE.PARENT_TYPE=:attrParentType ");
+        sql.append("and ATTRIBUTE.M_ATTRIBUTE_ID=:nameAttrId) ");
+
+        parameters.put("attrParentType", DElemAttribute.ParentType.SCHEMA_SET.toString());
+        parameters.put("nameAttrId", NAME_ATTR_ID);
+
+        sql.append("where ");
         String searchingUser = searchFilter.getSearchingUser();
         if (StringUtils.isBlank(searchingUser)) {
             sql.append("(ss.WORKING_COPY=false and ss.REG_STATUS=:regStatus) ");
@@ -166,6 +174,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
                 ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                ss.setNameAttribute(rs.getString("NAME_ATTR"));
                 return ss;
             }
         });
