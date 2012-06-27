@@ -125,7 +125,9 @@ public class SchemaActionBean extends AbstractActionBean {
         loadSchemaByName();
         loadSchemaString();
         // "http://dd.eionet.europa.eu/GetSchema?id=TBL4943"
-        xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
+        if (!workingCopy) {
+            xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
+        }
         return new ForwardResolution(VIEW_SCHEMA_JSP);
     }
 
@@ -322,7 +324,9 @@ public class SchemaActionBean extends AbstractActionBean {
 
         addSystemMessage("Schema file successfully uploaded!");
         loadSchemaString();
-        xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
+        if (!workingCopy) {
+            xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
+        }
         return new ForwardResolution(VIEW_SCHEMA_JSP);
     }
 
@@ -525,7 +529,9 @@ public class SchemaActionBean extends AbstractActionBean {
         if (isValidationErrors()) {
             loadSchemaById();
             loadSchemaString();
-            xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
+            if (!workingCopy) {
+                xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
+            }
             getContext().setSourcePageResolution(new ForwardResolution(VIEW_SCHEMA_JSP));
         }
     }

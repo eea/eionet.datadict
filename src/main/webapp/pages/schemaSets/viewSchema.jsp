@@ -74,9 +74,9 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-		        <c:set var="isMySchemaWorkingCopy" value="${actionBean.schema.workingCopy && actionBean.userName==actionBean.schema.workingUser}"/>
-		        <c:set var="isMySchemaSetWorkingCopy" value="${!actionBean.rootLevelSchema && actionBean.mySchemaSetWorkingCopy}"/>
-		        <c:set var="isNonCheckedOutSchema" value="${actionBean.rootLevelSchema && empty actionBean.schema.workingUser}"/>
+                <c:set var="isMySchemaWorkingCopy" value="${actionBean.schema.workingCopy && actionBean.userName==actionBean.schema.workingUser}"/>
+                <c:set var="isMySchemaSetWorkingCopy" value="${!actionBean.rootLevelSchema && actionBean.mySchemaSetWorkingCopy}"/>
+                <c:set var="isNonCheckedOutSchema" value="${actionBean.rootLevelSchema && empty actionBean.schema.workingUser}"/>
 
                 <c:if test="${isMySchemaWorkingCopy || isMySchemaSetWorkingCopy || isNonCheckedOutSchema}">
 
@@ -300,16 +300,18 @@
     </c:if>
 
     <%-- Show XML CONV data. --%>
-    <p>
-    There are ${actionBean.xmlConvData.numberOfQAScripts} QA scripts and ${actionBean.xmlConvData.numberOfConversions} conversion scripts registered.
-    <c:if test="${actionBean.xmlConvData.numberOfQAScripts > 0 || actionBean.xmlConvData.numberOfConversions > 0}">
-        <br />
-        <stripes:link href="${actionBean.xmlConvData.xmlConvUrl}">
-            <stripes:param name="schemaId" value="${actionBean.schemaUrl}" />
-            Link to the schema page on XMLCONV
-        </stripes:link>
+    <c:if test="${not actionBean.workingCopy}">
+        <p>
+        There are ${actionBean.xmlConvData.numberOfQAScripts} QA scripts and ${actionBean.xmlConvData.numberOfConversions} conversion scripts registered.
+        <c:if test="${actionBean.xmlConvData.numberOfQAScripts > 0 || actionBean.xmlConvData.numberOfConversions > 0}">
+            <br />
+            <stripes:link href="${actionBean.xmlConvData.xmlConvUrl}">
+                <stripes:param name="schemaId" value="${actionBean.schemaUrl}" />
+                Link to the schema page on XMLCONV
+            </stripes:link>
+        </c:if>
+        </p>
     </c:if>
-    </p>
 
     <%-- Show the contents of the schema file. --%>
     <pre><c:out value="${actionBean.schemaString}" /></pre>
