@@ -4,6 +4,7 @@
 package eionet.web.action;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -150,8 +151,8 @@ public class SchemaActionBean extends AbstractActionBean {
         schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema successfully updated!");
         return new RedirectResolution(getClass())
-                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -184,8 +185,8 @@ public class SchemaActionBean extends AbstractActionBean {
                 throw e;
             }
             resolution =
-                    new RedirectResolution(getClass()).addParameter("schema.fileName", schema.getFileName()).addParameter(
-                            "workingCopy", true);
+                new RedirectResolution(getClass()).addParameter("schema.fileName", schema.getFileName()).addParameter(
+                        "workingCopy", true);
             addSystemMessage("Working copy successfully created!");
         }
         return resolution;
@@ -199,8 +200,8 @@ public class SchemaActionBean extends AbstractActionBean {
     public Resolution cancelEdit() throws ServiceException {
 
         return new RedirectResolution(getClass())
-                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -235,8 +236,8 @@ public class SchemaActionBean extends AbstractActionBean {
         int finalId = schemaService.checkInSchema(schema.getId(), getUserName(), schema.getComment());
         addSystemMessage("Schema successfully checked in!");
         return new RedirectResolution(getClass())
-                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
+        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
     }
 
     /**
@@ -254,8 +255,8 @@ public class SchemaActionBean extends AbstractActionBean {
         int newSchemaSetId = schemaService.checkOutSchema(schema.getId(), getUserName());
         addSystemMessage("Schema successfully checked out!");
         return new RedirectResolution(getClass())
-                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -273,8 +274,8 @@ public class SchemaActionBean extends AbstractActionBean {
         loadSchemaById();
         addSystemMessage("The new version's working copy successfully created!");
         return new RedirectResolution(getClass())
-                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -288,8 +289,8 @@ public class SchemaActionBean extends AbstractActionBean {
         addSystemMessage("Working copy successfully deleted!");
         if (checkedOutCopyId > 0) {
             return new RedirectResolution(getClass())
-                    .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-                    .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
+            .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+            .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
         } else {
             return new RedirectResolution(BrowseSchemaSetsActionBean.class);
         }
@@ -304,12 +305,64 @@ public class SchemaActionBean extends AbstractActionBean {
     public Resolution reupload() throws IOException, ServiceException {
 
         loadSchemaById();
+        loadSchemaString();
         String schemaSetIdentifier = schemaSet == null ? null : schemaSet.getIdentifier();
         schemaRepository.reuploadSchema(schema.getFileName(), schemaSetIdentifier, uploadedFile);
 
         addSystemMessage("Schema file successfully uploaded!");
         loadSchemaString();
-        return new RedirectResolution(VIEW_SCHEMA_JSP);
+        return new ForwardResolution(VIEW_SCHEMA_JSP);
+    }
+
+    /**
+     * An event that validates the given schema's content.
+     * Expects to be invoked as a GET request, from the schema's view page.
+     * Forwards to the schema's view page, with an appropriate feedback message.
+     *
+     * @return {@link ForwardResolution} to the the schema's view page.
+     * @throws ServiceException In case something goes wrong.
+     */
+    public Resolution validate() throws ServiceException {
+
+        // Do the loadings we do for view(), because we forward to view page.
+        loadSchemaByName();
+        loadSchemaString();
+
+        boolean wc = schema.isWorkingCopy() || schema.isSchemaSetWorkingCopy();
+        File schemaFile = schemaRepository.getSchemaFile(schema.getFileName(), schema.getSchemaSetIdentifier(), wc);
+        if (schemaFile != null) {
+
+            InputStream inputStream = null;
+            try {
+                inputStream = new FileInputStream(schemaFile);
+
+                XmlValidator xmlValidator = new XmlValidator();
+                if (!xmlValidator.isWellFormedXml(inputStream)) {
+                    addWarningMessage("Not a well-formed XML: " + xmlValidator.getValidationError().getMessage());
+                    LOGGER.error("Not a well-formed XML!", xmlValidator.getValidationError());
+                } else {
+                    IOUtils.closeQuietly(inputStream);
+                    inputStream = new FileInputStream(schemaFile);
+                    if (!xmlValidator.isValidXmlSchema(inputStream)) {
+                        addWarningMessage("The uploaded file was not found to be a valid XML Schema! Reason: "
+                                + xmlValidator.getValidationError().getMessage());
+                        LOGGER.error("Not a valid XML Schema file!", xmlValidator.getValidationError());
+                    }
+                    else{
+                        addSystemMessage("The file was found to be valid XML Schema!");
+                    }
+                }
+            } catch (Exception e) {
+                throw new ServiceException(e.getMessage(), e);
+            } finally {
+                IOUtils.closeQuietly(inputStream);
+            }
+        }
+        else{
+            addGlobalValidationError("Could not find such a schema file!");
+        }
+
+        return new ForwardResolution(VIEW_SCHEMA_JSP);
     }
 
     /**
@@ -338,10 +391,6 @@ public class SchemaActionBean extends AbstractActionBean {
             if (schemaService.schemaExists(uploadedFile.getFileName(), 0)) {
                 addGlobalValidationError("A root-level schema or a root-level schema working copy by this filename already exists!");
             }
-        }
-
-        if (!isValidationErrors()) {
-            validateUploadedFile();
         }
 
         if (!isValidationErrors()) {
@@ -461,10 +510,6 @@ public class SchemaActionBean extends AbstractActionBean {
             }
         }
 
-        if (!isValidationErrors()) {
-            validateUploadedFile();
-        }
-
         if (isValidationErrors()) {
             loadSchemaById();
             loadSchemaString();
@@ -484,6 +529,13 @@ public class SchemaActionBean extends AbstractActionBean {
         }
         if (schema != null && !isRootLevelSchema()) {
             schemaSet = schemaService.getSchemaSet(schema.getSchemaSetId());
+            if (schemaSet != null){
+                schema.setSchemaSetId(schemaSet.getId());
+                schema.setSchemaSetIdentifier(schemaSet.getIdentifier());
+                schema.setSchemaSetNameAttribute(schemaSet.getNameAttribute());
+                schema.setSchemaSetWorkingCopy(schemaSet.isWorkingCopy());
+                schema.setSchemaSetWorkingUser(schemaSet.getWorkingUser());
+            }
         }
     }
 
@@ -512,37 +564,6 @@ public class SchemaActionBean extends AbstractActionBean {
 
     /**
      *
-     * @throws IOException
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     */
-    private void validateUploadedFile() throws IOException, ParserConfigurationException, SAXException {
-
-        InputStream inputStream = null;
-        try {
-            inputStream = uploadedFile.getInputStream();
-            XmlValidator xmlValidator = new XmlValidator();
-            if (!xmlValidator.isWellFormedXml(inputStream)) {
-                addGlobalValidationError("Not a well-formed XML: " + xmlValidator.getValidationError().getMessage());
-                LOGGER.error("Not a well-formed XML!", xmlValidator.getValidationError());
-                // Exit right away, because an ill-formed XML is not worth further parsing.
-                return;
-            }
-
-            IOUtils.closeQuietly(inputStream);
-            inputStream = uploadedFile.getInputStream();
-            if (!xmlValidator.isValidXmlSchema(inputStream)) {
-                addCautionMessage("The uploaded file was not found to be a valid XML Schema! Reason: "
-                        + xmlValidator.getValidationError().getMessage());
-                LOGGER.error("Not a valid XML Schema file!", xmlValidator.getValidationError());
-            }
-        } finally {
-            IOUtils.closeQuietly(inputStream);
-        }
-    }
-
-    /**
-     *
      * @return
      */
     private Map<Integer, Set<String>> getSaveAttributeValues() {
@@ -559,7 +580,7 @@ public class SchemaActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -593,7 +614,7 @@ public class SchemaActionBean extends AbstractActionBean {
                 int schemaId = schema == null ? 0 : schema.getId();
 
                 attributes =
-                        searchEngine.getObjectAttributes(schemaId, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+                    searchEngine.getObjectAttributes(schemaId, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
 
                 // If this is a POST request where new attribute values are submitted (e.g. "save", "add", etc)
                 // then substitute the values we got from database with the values
@@ -813,7 +834,7 @@ public class SchemaActionBean extends AbstractActionBean {
         }
 
         String relPath = schemaRepository.getSchemaRelativePath(schema.getFileName(), schemaSetIdentifier, workingCopy);
-        return getContextPath() + DownloadServlet.SCHEMAS_PATH + relPath;
+        return getContextPath() + DownloadServlet.SCHEMAS_PATH + "/" + relPath;
     }
 
     /**
@@ -843,7 +864,7 @@ public class SchemaActionBean extends AbstractActionBean {
         }
         String relPath = schemaRepository.getSchemaRelativePath(schema.getFileName(), schemaSetIdentifier, workingCopy);
 
-        return webAppUrl + DownloadServlet.SCHEMAS_PATH + relPath;
+        return webAppUrl + DownloadServlet.SCHEMAS_PATH + "/" + relPath;
     }
 
     /**

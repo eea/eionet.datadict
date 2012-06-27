@@ -133,6 +133,20 @@ public class SchemaRepository {
     }
 
     /**
+     *
+     * @param fileName
+     * @param schemaSetIdentifier
+     * @param workingCopy
+     * @return
+     * @throws ServiceException
+     */
+    public File getSchemaFile(String fileName, String schemaSetIdentifier, boolean workingCopy) throws ServiceException {
+
+        String relativePath = getSchemaRelativePath(fileName, schemaSetIdentifier, workingCopy);
+        return getSchemaFile(relativePath);
+    }
+
+    /**
      * Returns the content as string from the schema file.
      *
      * @param relativePath
@@ -140,22 +154,17 @@ public class SchemaRepository {
      * @throws ServiceException
      */
     public String getSchemaString(String fileName, String schemaSetIdentifier, boolean workingCopy) throws ServiceException {
-        StringBuilder relativePath = new StringBuilder();
-        if (schemaSetIdentifier != null) {
-            relativePath.append(schemaSetIdentifier);
-        }
-        if (workingCopy) {
-            relativePath.append(WORKING_COPY_DIR);
-        }
-        if (relativePath.length() > 0) {
-            relativePath.append("/");
-        }
-        relativePath.append(fileName);
 
-        try {
-            return FileUtils.readFileToString(getSchemaFile(relativePath.toString()));
-        } catch (IOException e) {
-            throw new ServiceException("Failed to get the schema contents: " + e.getMessage(), e);
+        File schemaFile = getSchemaFile(fileName, schemaSetIdentifier, workingCopy);
+        if (schemaFile != null){
+            try {
+                return FileUtils.readFileToString(schemaFile);
+            } catch (IOException e) {
+                throw new ServiceException("Failed to get the schema contents: " + e.getMessage(), e);
+            }
+        }
+        else{
+            throw new ServiceException("Failed to find such a schema file!");
         }
     }
 
@@ -476,42 +485,34 @@ public class SchemaRepository {
     }
 
     /**
+     * Returns the relative path of the given schema. It is relative the schema repository location and will have NO slash at the
+     * beginning. For example, if the schema repository location is /var/lib/schemas and there is a schema located at
+     * /var/lib/schemas/water/river.xsd, then the relative path of that schema is "water/river.xsd".
      *
-     * @param schemaFileName
-     * @param schemaSetIdentifier
-     * @param isWorkingCopy
-     * @return
+     * @param schemaFileName The filename of the schema (required).
+     * @param schemaSetIdentifier The schema set containing the schema (can be blank, meaning a root-level schema).
+     * @param isWorkingCopy Indicates if the schema or the schema set is a working copy.
+     * @return The relative path.
      */
     public String getSchemaRelativePath(String schemaFileName, String schemaSetIdentifier, boolean isWorkingCopy) {
 
         if (StringUtils.isBlank(schemaFileName)) {
-            throw new IllegalArgumentException("Schema file name must not be blank!");
+            throw new IllegalArgumentException("At least the file name must be given!");
         }
 
-        File absPath = null;
-        boolean isRootLevelSchema = StringUtils.isBlank(schemaSetIdentifier);
-        if (isRootLevelSchema) {
-            absPath = new File(REPO_PATH);
-            if (isWorkingCopy) {
-                absPath = new File(absPath, WORKING_COPY_DIR);
-            }
-            absPath = new File(absPath, schemaFileName);
-        } else {
-            if (isWorkingCopy) {
-                absPath = new File(REPO_PATH, schemaSetIdentifier + WORKING_COPY_DIR);
-            } else {
-                absPath = new File(REPO_PATH, schemaSetIdentifier);
-            }
-            absPath = new File(absPath, schemaFileName);
+        StringBuilder relativePath = new StringBuilder();
+        if (StringUtils.isNotBlank(schemaSetIdentifier)) {
+            relativePath.append(schemaSetIdentifier);
         }
+        if (isWorkingCopy) {
+            relativePath.append(WORKING_COPY_DIR);
+        }
+        if (relativePath.length() > 0) {
+            relativePath.append("/");
+        }
+        relativePath.append(schemaFileName);
 
-        File repoDir = new File(REPO_PATH);
-        String result = StringUtils.substringAfter(absPath.getAbsolutePath(), repoDir.getAbsolutePath());
-
-        // For windows machines
-        result = StringUtils.replace(result, "\\", "/");
-
-        return result;
+        return relativePath.toString();
     }
 
     /**

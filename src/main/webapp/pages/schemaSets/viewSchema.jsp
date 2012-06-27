@@ -71,14 +71,15 @@
 
     <c:if test="${not empty actionBean.userName}">
 
-        <c:set var="isMySchemaWorkingCopy" value="${actionBean.schema.workingCopy && actionBean.userName==actionBean.schema.workingUser}"/>
-        <c:set var="isMySchemaSetWorkingCopy" value="${!actionBean.rootLevelSchema && actionBean.mySchemaSetWorkingCopy}"/>
-        <c:set var="isNonCheckedOutSchema" value="${actionBean.rootLevelSchema && empty actionBean.schema.workingUser}"/>
+        <div id="drop-operations">
+            <h2>Operations:</h2>
+            <ul>
+		        <c:set var="isMySchemaWorkingCopy" value="${actionBean.schema.workingCopy && actionBean.userName==actionBean.schema.workingUser}"/>
+		        <c:set var="isMySchemaSetWorkingCopy" value="${!actionBean.rootLevelSchema && actionBean.mySchemaSetWorkingCopy}"/>
+		        <c:set var="isNonCheckedOutSchema" value="${actionBean.rootLevelSchema && empty actionBean.schema.workingUser}"/>
 
-        <c:if test="${isMySchemaWorkingCopy || isMySchemaSetWorkingCopy || isNonCheckedOutSchema}">
-            <div id="drop-operations">
-                <h2>Operations:</h2>
-                <ul>
+                <c:if test="${isMySchemaWorkingCopy || isMySchemaSetWorkingCopy || isNonCheckedOutSchema}">
+
                     <c:if test="${isMySchemaWorkingCopy || isMySchemaSetWorkingCopy}">
                         <li>
                             <stripes:link beanclass="${actionBean.class.name}" event="edit">Edit metadata
@@ -128,9 +129,17 @@
                             </c:if>
                         </c:if>
                     </c:if>
-                </ul>
-            </div>
-        </c:if>
+                </c:if>
+
+                <li>
+                    <stripes:link beanclass="${actionBean.class.name}" event="validate">Validate
+                        <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
+                            <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
+                            <stripes:param name="workingCopy" value="${actionBean.schema.workingCopy || actionBean.schema.schemaSetWorkingCopy}"/>
+                    </stripes:link>
+                </li>
+            </ul>
+        </div>
     </c:if>
 
     <%-- Page heading --%>
