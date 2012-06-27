@@ -108,4 +108,7 @@ public interface PropsIF {
 
     /** */
     public static final String CHECK_IN_COMMENTS_REQUIRED = "checkInCommentsRequired";
+
+    /** */
+    public static final String XML_CONV_URL = "xmlConv.url";
 }

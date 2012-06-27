@@ -29,7 +29,9 @@ import eionet.meta.dao.DAOException;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
+import eionet.meta.service.IXmlConvService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.SchemaConversionsData;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
@@ -5065,6 +5067,16 @@ public class DDSearchEngine {
 
         ISchemaService schemaService = getSpringBean(ISchemaService.class);
         return schemaService.getSchemaWorkingCopiesOf(user.getUserName());
+    }
+
+    /**
+     * @param schema
+     * @return
+     * @throws ServiceException
+     */
+    public SchemaConversionsData getXmlConvData(String schema) throws ServiceException {
+        IXmlConvService xmlConvService = getSpringBean(IXmlConvService.class);
+        return xmlConvService.getSchemaConversionsData(schema);
     }
 
     /**

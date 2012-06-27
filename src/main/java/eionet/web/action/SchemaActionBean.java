@@ -46,7 +46,9 @@ import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.dao.domain.SchemaSet.RegStatus;
 import eionet.meta.schemas.SchemaRepository;
 import eionet.meta.service.ISchemaService;
+import eionet.meta.service.IXmlConvService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.SchemaConversionsData;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
@@ -96,6 +98,9 @@ public class SchemaActionBean extends AbstractActionBean {
     @SpringBean
     private ISchemaService schemaService;
 
+    @SpringBean
+    private IXmlConvService xmlConvService;
+
     /** Schema repository. */
     @SpringBean
     private SchemaRepository schemaRepository;
@@ -103,18 +108,24 @@ public class SchemaActionBean extends AbstractActionBean {
     /** Schema file contents to show in web page. */
     private String schemaString;
 
+    private SchemaConversionsData xmlConvData;
+
+    /** Parameter, that shows if working copy is been viewed. */
     private boolean workingCopy;
 
     /**
      *
      * @return
      * @throws ServiceException
+     * @throws IOException
      */
     @DefaultHandler
-    public Resolution view() throws ServiceException {
+    public Resolution view() throws ServiceException, IOException {
 
         loadSchemaByName();
         loadSchemaString();
+        // "http://dd.eionet.europa.eu/GetSchema?id=TBL4943"
+        xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
         return new ForwardResolution(VIEW_SCHEMA_JSP);
     }
 
@@ -311,6 +322,7 @@ public class SchemaActionBean extends AbstractActionBean {
 
         addSystemMessage("Schema file successfully uploaded!");
         loadSchemaString();
+        xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
         return new ForwardResolution(VIEW_SCHEMA_JSP);
     }
 
@@ -513,6 +525,7 @@ public class SchemaActionBean extends AbstractActionBean {
         if (isValidationErrors()) {
             loadSchemaById();
             loadSchemaString();
+            xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
             getContext().setSourcePageResolution(new ForwardResolution(VIEW_SCHEMA_JSP));
         }
     }
@@ -551,6 +564,7 @@ public class SchemaActionBean extends AbstractActionBean {
     }
 
     /**
+     * Loads schema contents to string.
      *
      * @throws ServiceException
      */
@@ -964,6 +978,13 @@ public class SchemaActionBean extends AbstractActionBean {
      */
     public String getSchemaString() {
         return schemaString;
+    }
+
+    /**
+     * @return the xmlConvData
+     */
+    public SchemaConversionsData getXmlConvData() {
+        return xmlConvData;
     }
 
 }

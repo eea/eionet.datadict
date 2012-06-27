@@ -1,5 +1,5 @@
 <%@page import="eionet.meta.notif.Subscriber"%>
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.meta.service.data.*,eionet.util.sql.ConnectionUtil"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ include file="history.jsp" %>
@@ -834,6 +834,27 @@ else if (mode.equals("add"))
                                     </div>
                                     <%
                                 }
+                            }
+                            %>
+
+                            <!-- XML Conv data and link -->
+                            <%
+                            try {
+                                String schemaUrl = Props.getRequiredProperty(PropsIF.DD_URL) + "/GetSchema?id=TBL" + tableID;
+                                SchemaConversionsData xmlConvData = searchEngine.getXmlConvData(schemaUrl);
+                            %>
+                            <div>
+                                <p>
+                                There are <%=xmlConvData.getNumberOfQAScripts()%> QA scripts and <%=xmlConvData.getNumberOfConversions()%> conversion scripts registered.
+                                <% if (xmlConvData.getNumberOfQAScripts() > 0 || xmlConvData.getNumberOfConversions() > 0) {%>
+                                <br />
+                                <a href="<%=xmlConvData.getXmlConvUrl()%>?schemaId=<%=schemaUrl%>">Link to the schema page on XMLCONV</a>
+                                <%}%>
+                                </p>
+                            </div>
+                            <%
+                            } catch (Exception e) {
+                                // Don't show Xml Conv data
                             }
                             %>
 
