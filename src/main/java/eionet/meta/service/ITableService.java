@@ -23,6 +23,7 @@ package eionet.meta.service;
 
 import java.util.List;
 
+import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataSetTable;
 import eionet.meta.service.data.TableFilter;
 
@@ -33,6 +34,20 @@ import eionet.meta.service.data.TableFilter;
  */
 public interface ITableService {
 
-
+    /**
+     * Searches tables.
+     *
+     * @param tableFilter
+     * @return
+     * @throws ServiceException
+     */
     List<DataSetTable> searchTables(TableFilter tableFilter) throws ServiceException;
+
+    /**
+     * Lists
+     *
+     * @return
+     * @throws ServiceException
+     */
+    List<Attribute> getTableAttributes() throws ServiceException;
 }

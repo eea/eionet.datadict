@@ -27,7 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eionet.meta.DElemAttribute;
+import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.ITableDAO;
+import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataSetTable;
 import eionet.meta.service.data.TableFilter;
 
@@ -40,8 +43,13 @@ import eionet.meta.service.data.TableFilter;
 @Transactional
 public class TableServiceImpl implements ITableService {
 
+    /** Table DAO. */
     @Autowired
     private ITableDAO tableDAO;
+
+    /** The DAO for operations with attributes */
+    @Autowired
+    private IAttributeDAO attributeDAO;
 
     /**
      * {@inheritDoc}
@@ -52,6 +60,18 @@ public class TableServiceImpl implements ITableService {
             return tableDAO.searchTables(tableFilter);
         } catch (Exception e) {
             throw new ServiceException("Failed to search tables: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Attribute> getTableAttributes() throws ServiceException {
+        try {
+            return attributeDAO.getAttributes(DElemAttribute.ParentType.TABLE, DElemAttribute.TYPE_SIMPLE);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get schema set attributes: " + e.getMessage(), e);
         }
     }
 

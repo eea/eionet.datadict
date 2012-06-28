@@ -1442,6 +1442,8 @@ public class DDSearchEngine {
         qry.append(" order by ");
         qry.append(orderBy);
 
+        LOGGER.info("SQL: " + qry.toString());
+
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Vector v = new Vector();

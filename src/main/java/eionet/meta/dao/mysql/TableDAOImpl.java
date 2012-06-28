@@ -54,8 +54,10 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
     public List<DataSetTable> searchTables(TableFilter tableFilter) {
         StringBuilder sql = new StringBuilder();
 
+        int nameAttrId = getNameAttributeId();
+
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("nameAttrId", NAME_ATTR_ID);
+        params.put("nameAttrId", nameAttrId);
         params.put("parentType", "T");
 
         sql.append("select dst.TABLE_ID, dst.SHORT_NAME, ds.SHORT_NAME as datasetName, ds.REG_STATUS, dst.IDENTIFIER, ds.IDENTIFIER, ds.DATASET_ID, ");

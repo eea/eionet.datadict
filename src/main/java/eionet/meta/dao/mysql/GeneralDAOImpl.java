@@ -36,9 +36,6 @@ import eionet.meta.dao.IGeneralDao;
  */
 public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implements IGeneralDao {
 
-    /** Dynamic attribute id of the "name" attribute in database. */
-    public static final int NAME_ATTR_ID = 1;
-
     /**
      * Data source.
      */
@@ -56,6 +53,15 @@ public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implem
      */
     protected int getLastInsertId() {
         return getJdbcTemplate().queryForInt("select last_insert_id()");
+    }
+
+    /**
+     * Get the ID of 'Name' attribute
+     *
+     * @return
+     */
+    protected int getNameAttributeId() {
+        return getJdbcTemplate().queryForInt("select M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME='Name'");
     }
 
 }

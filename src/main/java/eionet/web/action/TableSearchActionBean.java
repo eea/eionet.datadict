@@ -61,9 +61,10 @@ public class TableSearchActionBean extends AbstractActionBean {
      * Handles the form page view.
      *
      * @return
+     * @throws ServiceException
      */
-    public Resolution form() {
-        tableFilter = new TableFilter();
+    public Resolution form() throws ServiceException {
+        initTableFilter();
         return new ForwardResolution("/pages/tableSearch.jsp");
     }
 
@@ -76,10 +77,20 @@ public class TableSearchActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution search() throws ServiceException {
         if (tableFilter == null) {
-            tableFilter = new TableFilter();
+            initTableFilter();
         }
         dataSetTables = tableService.searchTables(tableFilter);
         return new ForwardResolution("/pages/tableResult.jsp");
+    }
+
+    /**
+     * Initializes filter.
+     *
+     * @throws ServiceException
+     */
+    public void initTableFilter() throws ServiceException {
+        tableFilter = new TableFilter();
+        tableFilter.setAttributes(tableService.getTableAttributes());
     }
 
     /**

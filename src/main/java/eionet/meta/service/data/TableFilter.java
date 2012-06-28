@@ -21,7 +21,6 @@
 
 package eionet.meta.service.data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import eionet.meta.dao.domain.Attribute;
@@ -38,19 +37,6 @@ public class TableFilter {
     private String identifier;
 
     private List<Attribute> attributes;
-
-
-
-    public TableFilter() {
-        attributes = new ArrayList<Attribute>();
-        attributes.add(new Attribute(1, "Name"));
-        attributes.add(new Attribute(4, "Definition"));
-        attributes.add(new Attribute(5, "Keyword"));
-        attributes.add(new Attribute(15, "Short description"));
-        attributes.add(new Attribute(17, "Methodology"));
-        attributes.add(new Attribute(37, "EEA issue"));
-        attributes.add(new Attribute(40, "Descriptive image"));
-    }
 
     /**
      * @return the shortName

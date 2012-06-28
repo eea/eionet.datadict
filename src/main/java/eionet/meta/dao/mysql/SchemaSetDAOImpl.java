@@ -92,6 +92,8 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
     @Override
     public SchemaSetsResult searchSchemaSets(SchemaSetFilter searchFilter) {
 
+        int nameAttrId = getNameAttributeId();
+
         Map<String, Object> parameters = new HashMap<String, Object>();
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT SQL_CALC_FOUND_ROWS ss.*, ATTRIBUTE.VALUE as NAME_ATTR ");
@@ -102,7 +104,7 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
         sql.append("and ATTRIBUTE.M_ATTRIBUTE_ID=:nameAttrId) ");
 
         parameters.put("attrParentType", DElemAttribute.ParentType.SCHEMA_SET.toString());
-        parameters.put("nameAttrId", NAME_ATTR_ID);
+        parameters.put("nameAttrId", nameAttrId);
 
         sql.append("where ");
         String searchingUser = searchFilter.getSearchingUser();
