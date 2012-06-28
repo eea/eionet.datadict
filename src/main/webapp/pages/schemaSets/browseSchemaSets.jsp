@@ -54,7 +54,7 @@
 
         <c:if test="${not empty actionBean.user && actionBean.context.eventName!='workingCopies'}">
             <div class="advice-msg" style="margin-top:1em;font-size:0.8em">
-                Hint: red asterisk marks you working copies, if you have any.
+                Hint: red asterisk marks your working copies, if you have any.
             </div>
         </c:if>
 
