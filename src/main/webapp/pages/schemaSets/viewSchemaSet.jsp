@@ -177,24 +177,21 @@
                     </a>
                 </td>
                 <td class="simple_attr_value">
+                    <fmt:setLocale value="en_GB" />
+                    <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schemaSet.dateModified}" var="dateFormatted"/>
                     <c:out value="${actionBean.schemaSet.regStatus}"/>
-                    <c:if test="${actionBean.userWorkingCopy}">
-                        <span class="caution">(Working copy)</span>
+                    <c:if test="${not empty actionBean.userName && actionBean.userWorkingCopy}">
+                        <span class="caution" title="Checked out on ${dateFormatted}">(Working copy)</span>
                     </c:if>
-                    <c:choose>
-                        <c:when test="${not empty actionBean.userName && not empty actionBean.schemaSet.workingUser && actionBean.userName!=actionBean.schemaSet.workingUser}">
-                            <span class="caution">
-                                (checked out in
-                                <fmt:setLocale value="en_GB" />
-                                <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schemaSet.dateModified}" />
-                                by <em>${actionBean.schemaSet.workingUser}</em>)
-                            </span>
-                        </c:when>
-                        <c:otherwise>
-                            <fmt:setLocale value="en_GB" />
-                            <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schemaSet.dateModified}" />
-                        </c:otherwise>
-                    </c:choose>
+                    <c:if test="${not empty actionBean.userName && actionBean.checkedOut && !actionBean.checkedOutByUser}">
+                        <span class="caution">(checked out by <em>${actionBean.schemaSet.workingUser}</em>)</span>
+                    </c:if>
+                    <c:if test="${not empty actionBean.userName && empty actionBean.schemaSet.workingUser || actionBean.checkedOutByUser}">
+                        <span style="color:#A8A8A8;font-size:0.8em">(checked in by ${actionBean.schemaSet.userModified} on ${dateFormatted})</span>
+                    </c:if>
+                    <c:if test="${empty actionBean.userName}">
+                        <span>${dateFormatted}</span>
+                    </c:if>
                 </td>
             </tr>
             <c:forEach items="${actionBean.attributes}" var="attributesEntry">

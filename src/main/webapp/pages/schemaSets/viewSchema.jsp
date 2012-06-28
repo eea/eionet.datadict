@@ -150,7 +150,12 @@
     <c:if test="${not empty schemaWorkingCopy}">
         <div class="note-msg">
             <strong>Note</strong>
-            <p>You have a <stripes:link beanclass="${actionBean.class.name}"><stripes:param name="schema.id" value="${schemaWorkingCopy.id}"/>working copy</stripes:link> of this schema!</p>
+            <p>You have a
+                <stripes:link beanclass="${actionBean.class.name}">
+                    <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
+                    <stripes:param name="workingCopy" value="true"/>
+                    working copy
+                </stripes:link> of this schema!</p>
         </div>
     </c:if>
 
@@ -228,24 +233,21 @@
                         </a>
                     </td>
                     <td class="simple_attr_value">
+                        <fmt:setLocale value="en_GB" />
+                        <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schema.dateModified}" var="dateFormatted"/>
                         <c:out value="${actionBean.schema.regStatus}"/>
-                        <c:if test="${actionBean.userWorkingCopy}">
-                            <span class="caution">(Working copy)</span>
+                        <c:if test="${not empty actionBean.userName && actionBean.userWorkingCopy}">
+                            <span class="caution" title="Checked out on ${dateFormatted}">(Working copy)</span>
                         </c:if>
-                        <c:choose>
-                            <c:when test="${not empty actionBean.userName && not empty actionBean.schema.workingUser && actionBean.userName!=actionBean.schema.workingUser}">
-                                <span class="caution">
-                                (checked out in
-                                <fmt:setLocale value="en_GB" />
-                                <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schema.dateModified}" />
-                                by <em>${actionBean.schema.workingUser}</em>)
-                                </span>
-                            </c:when>
-                            <c:otherwise>
-                                <fmt:setLocale value="en_GB" />
-                                <fmt:formatDate pattern="dd MMM yyyy HH:mm:ss" value="${actionBean.schema.dateModified}" />
-                            </c:otherwise>
-                        </c:choose>
+                        <c:if test="${not empty actionBean.userName && actionBean.checkedOut && !actionBean.checkedOutByUser}">
+                            <span class="caution">(checked out by <em>${actionBean.schema.workingUser}</em>)</span>
+                        </c:if>
+                        <c:if test="${not empty actionBean.userName && empty actionBean.schema.workingUser || actionBean.checkedOutByUser}">
+                            <span style="color:#A8A8A8;font-size:0.8em">(checked in by ${actionBean.schema.userModified} on ${dateFormatted})</span>
+                        </c:if>
+                        <c:if test="${empty actionBean.userName}">
+                            <span>${dateFormatted}</span>
+                        </c:if>
                     </td>
                 </tr>
             </c:if>

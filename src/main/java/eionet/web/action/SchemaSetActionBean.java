@@ -469,7 +469,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     @ValidationMethod(on = {"uploadSchema"})
     public void validateFileUpload() throws IOException, ServiceException, DAOException, ParserConfigurationException,
-            SAXException {
+    SAXException {
 
         if (uploadedFile == null) {
             addGlobalValidationError("No file uploaded!");
@@ -686,8 +686,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 int schemaSetId = schemaSet == null ? 0 : schemaSet.getId();
 
                 attributes =
-                        searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
-                                DElemAttribute.TYPE_SIMPLE);
+                    searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
+                            DElemAttribute.TYPE_SIMPLE);
 
                 // If this is a POST request of "add", "save" or "saveAndClose",
                 // then substitute the values we got from database with the values
@@ -817,7 +817,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -888,7 +888,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 LinkedHashMap<Integer, DElemAttribute> attrsMap =
-                        searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+                    searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
                 if (attrsMap != null) {
                     for (DElemAttribute attribute : attrsMap.values()) {
                         if (attribute.isMandatory()) {
@@ -951,4 +951,30 @@ public class SchemaSetActionBean extends AbstractActionBean {
         this.workingCopy = workingCopy;
     }
 
+    /**
+     *
+     * @return
+     */
+    public boolean isCheckedOut() {
+
+        if (schemaSet == null) {
+            return false;
+        } else {
+            return StringUtils.isNotBlank(schemaSet.getWorkingUser()) && !schemaSet.isWorkingCopy();
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isCheckedOutByUser() {
+
+        if (schemaSet == null || getUser() == null) {
+            return false;
+        } else {
+            return StringUtils.isNotBlank(schemaSet.getWorkingUser()) && !schemaSet.isWorkingCopy()
+            && schemaSet.getWorkingUser().equals(getUserName());
+        }
+    }
 }

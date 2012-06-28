@@ -331,12 +331,12 @@ public class SchemaActionBean extends AbstractActionBean {
     }
 
     /**
-     * An event that validates the given schema's content.
-     * Expects to be invoked as a GET request, from the schema's view page.
+     * An event that validates the given schema's content. Expects to be invoked as a GET request, from the schema's view page.
      * Forwards to the schema's view page, with an appropriate feedback message.
      *
      * @return {@link ForwardResolution} to the the schema's view page.
-     * @throws ServiceException In case something goes wrong.
+     * @throws ServiceException
+     *             In case something goes wrong.
      */
     public Resolution validate() throws ServiceException {
 
@@ -363,8 +363,7 @@ public class SchemaActionBean extends AbstractActionBean {
                         addWarningMessage("The uploaded file was not found to be a valid XML Schema! Reason: "
                                 + xmlValidator.getValidationError().getMessage());
                         LOGGER.error("Not a valid XML Schema file!", xmlValidator.getValidationError());
-                    }
-                    else{
+                    } else {
                         addSystemMessage("The file was found to be valid XML Schema!");
                     }
                 }
@@ -373,8 +372,7 @@ public class SchemaActionBean extends AbstractActionBean {
             } finally {
                 IOUtils.closeQuietly(inputStream);
             }
-        }
-        else{
+        } else {
             addGlobalValidationError("Could not find such a schema file!");
         }
 
@@ -548,7 +546,7 @@ public class SchemaActionBean extends AbstractActionBean {
         }
         if (schema != null && !isRootLevelSchema()) {
             schemaSet = schemaService.getSchemaSet(schema.getSchemaSetId());
-            if (schemaSet != null){
+            if (schemaSet != null) {
                 schema.setSchemaSetId(schemaSet.getId());
                 schema.setSchemaSetIdentifier(schemaSet.getIdentifier());
                 schema.setSchemaSetNameAttribute(schemaSet.getNameAttribute());
@@ -993,4 +991,30 @@ public class SchemaActionBean extends AbstractActionBean {
         return xmlConvData;
     }
 
+    /**
+     *
+     * @return
+     */
+    public boolean isCheckedOut() {
+
+        if (schema == null) {
+            return false;
+        } else {
+            return StringUtils.isNotBlank(schema.getWorkingUser()) && !schema.isWorkingCopy();
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isCheckedOutByUser() {
+
+        if (schema == null || getUser() == null) {
+            return false;
+        } else {
+            return StringUtils.isNotBlank(schema.getWorkingUser()) && !schema.isWorkingCopy()
+            && schema.getWorkingUser().equals(getUserName());
+        }
+    }
 }
