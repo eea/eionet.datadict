@@ -326,7 +326,7 @@
                 <p>A check-in comment is required. Please enter it below.</p>
             </div>
 
-            <input type="text" name="schema.comment" size="30"/><br/>
+            <input type="text" name="schema.comment" style="width:100%"/><br/>
             <stripes:submit name="checkIn" value="Submit"/>
             <input type="button" id="closeCheckInDialog" value="Cancel"/>
 

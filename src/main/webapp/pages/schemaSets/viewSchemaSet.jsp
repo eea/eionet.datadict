@@ -280,7 +280,7 @@
                 <p>A new version requires a new identifier. Please enter it below.</p>
             </div>
 
-            <stripes:text name="newIdentifier" id="txtNewIdentifier" size="30"/><br/>
+            <stripes:text name="newIdentifier" id="txtNewIdentifier" style="width:80%"/><br/>
             <stripes:submit name="newVersion" value="Submit"/>
             <input type="button" id="closeNewVersionDialog" value="Cancel"/>
 
@@ -301,7 +301,7 @@
                 <p>A check-in comment is required. Please enter it below.</p>
             </div>
 
-            <input type="text" name="schemaSet.comment" size="30"/><br/>
+            <input type="text" name="schemaSet.comment" style="width:100%"/><br/>
             <stripes:submit name="checkIn" value="Submit"/>
             <input type="button" id="closeCheckInDialog" value="Cancel"/>
 
@@ -323,7 +323,7 @@
                 <c:forEach items="${actionBean.mandatorySchemaAttributes}" var="mandatoryAttr">
                     <br/>
                     <label for="attr_${mandatoryAttr.ID}_text"><c:out value="${mandatoryAttr.shortName}"/>*:</label>
-                    <input type="text" name="attr_${mandatoryAttr.ID}" id="attr_${mandatoryAttr.ID}_text" size="${mandatoryAttr.displayWidth}" class="smalltext"/>
+                    <input type="text" name="attr_${mandatoryAttr.ID}" id="attr_${mandatoryAttr.ID}_text" class="smalltext" style="width:100%"/>
                 </c:forEach>
             </c:if>
             <br/><br/>
