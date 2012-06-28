@@ -61,10 +61,10 @@
                             <td style="word-wrap:break-word;wrap-option:emergency" class="simple_attr_value">
                                 <c:if test="${!attribute.multipleValuesAllowed || attribute.displayType=='image'}">
                                     <c:if test="${attribute.displayType=='text'}">
-                                        <input type="text" name="attr_${attribute.ID}" value="${fn:escapeXml(attribute.value)}" size="${attribute.displayWidth}" class="smalltext"/>
+                                        <input type="text" name="attr_${attribute.ID}" value="${fn:escapeXml(attribute.value)}" style="width: 500px;" class="smalltext"/>
                                     </c:if>
                                     <c:if test="${attribute.displayType=='textarea'}">
-                                        <textarea name="attr_${attribute.ID}" rows="${attribute.displayHeight}" cols="${attribute.displayWidth}" class="small"><c:out value="${attribute.value}"/></textarea>
+                                        <textarea name="attr_${attribute.ID}" rows="${attribute.displayHeight}" style="width: 500px;" class="small"><c:out value="${attribute.value}"/></textarea>
                                     </c:if>
                                     <c:if test="${attribute.displayType=='select'}">
                                         <select name="attr_${attribute.ID}" class="small">
