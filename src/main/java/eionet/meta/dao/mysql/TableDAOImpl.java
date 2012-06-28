@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Repository;
 
-import eionet.meta.DElemAttribute;
 import eionet.meta.dao.ITableDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataSetTable;
@@ -57,7 +56,7 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("nameAttrId", NAME_ATTR_ID);
-        params.put("parentType", DElemAttribute.ParentType.TABLE.toString());
+        params.put("parentType", "T");
 
         sql.append("select dst.TABLE_ID, dst.SHORT_NAME, ds.SHORT_NAME as datasetName, ds.REG_STATUS, dst.IDENTIFIER, ds.IDENTIFIER, ds.DATASET_ID, ");
         sql.append("(select VALUE from ATTRIBUTE where M_ATTRIBUTE_ID = :nameAttrId and DATAELEM_ID = dst.TABLE_ID ");

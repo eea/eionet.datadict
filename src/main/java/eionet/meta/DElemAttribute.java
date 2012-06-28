@@ -591,7 +591,7 @@ public class DElemAttribute{
     public enum ParentType {
 
         /** */
-        ELEMENT("E"),TABLE("T"),DATASET("DS"),SCHEMA("SCH"),SCHEMA_SET("SCS");
+        ELEMENT("E"),TABLE("TBL"),DATASET("DS"),SCHEMA("SCH"),SCHEMA_SET("SCS");
 
         /** */
         String s;
