@@ -1,30 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="datadict" default="prepare_apphome" basedir=".">
 
+	<!-- The target that prepares the application's home directory (aka "app-home"). -->
+	<!-- It's the directory for the files that the application needs, but that shouldn't be kept in web-app directory. -->
     <target name="prepare_apphome" unless="antrun.skip">
 
+    	<!-- Load build properties, expected from ${propertiesFile} -->
         <loadproperties srcFile="${propertiesFile}"/>
 
-        <copy todir="${app.home}/acl" overwrite="false">
-            <fileset dir="acl"/>
-            <mapper type="glob" from="*" to="*.dist"/>
+    	<!-- Copy all files from acl directory into the same directory in app-home, unless they already exist in the latter. -->
+    	<copy todir="${app.home}/acl">
+            <fileset dir="acl">
+            	  <present present="srconly" targetdir="${app.home}/acl"/>
+            </fileset>
         </copy>
+
+    	<!-- Always overwrite the acl directory's *.prms file. -->
+    	<copy todir="${app.home}/acl" overwrite="true">
+            <fileset dir="acl" includes="*.prms"/>
+        </copy>
+
+    	<!-- Always overwrite files in the opendoc directory. -->
         <copy todir="${app.home}/opendoc" overwrite="true">
             <fileset dir="opendoc"/>
         </copy>
+
+    	<!-- Always overwrite files in the opendoc directory. -->
         <copy todir="${app.home}/msaccess" overwrite="true">
             <fileset dir="msaccess"/>
         </copy>
-        <copy file="makemdb.sh" todir="${app.home}" overwrite="false">
+
+    	<!-- Copy the root directory's makemdb.sh into app-home, unless it already exists in the latter. -->
+        <copy todir="${app.home}">
+        	<fileset dir="." includes="makemdb.sh">
+        		<present present="srconly" targetdir="${app.home}"/>
+        	</fileset>
             <filterchain>
-            <replacetokens>
-                <token key="WEBAPP.HOME" value="${webapp.home}"/>
-                <token key="APP.HOME" value="${app.home}"/>
-                <token key="MYSQL.JAR" value="${lib-mysql-connector-jar}"/>
-            </replacetokens>
+                <replacetokens>
+                    <token key="WEBAPP.HOME" value="${webapp.home}"/>
+                    <token key="APP.HOME" value="${app.home}"/>
+                    <token key="MYSQL.JAR" value="${lib-mysql-connector-jar}"/>
+                </replacetokens>
             </filterchain>
         </copy>
+
+        <!-- Always overwrite VERSION.txt. -->
         <copy file="VERSION.txt" todir="${app.home}" overwrite="true"/>
+
+        <!-- Ensure that the "tmp" directory exists in app-home. -->
         <mkdir dir="${app.home}/tmp"/>
 
     </target>
