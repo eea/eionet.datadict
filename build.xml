@@ -15,9 +15,10 @@
             </fileset>
         </copy>
 
-    	<!-- Always overwrite the acl directory's *.prms file. -->
+    	<!-- Always overwrite the acl directory's permission definition file(s). -->
     	<copy todir="${app.home}/acl" overwrite="true">
-            <fileset dir="acl" includes="*.prms"/>
+            <fileset dir="acl" includes="*.prms*"/>
+    		<fileset dir="acl" includes="*.permissions*"/>
         </copy>
 
     	<!-- Always overwrite files in the opendoc directory. -->
