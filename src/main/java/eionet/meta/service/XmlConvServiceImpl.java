@@ -29,6 +29,7 @@ import java.util.Vector;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -48,19 +49,23 @@ import eionet.util.PropsIF;
 @Service
 public class XmlConvServiceImpl implements IXmlConvService {
 
+    /**
+     * @see eionet.meta.service.IXmlConvService#getSchemaConversionsData(java.lang.String)
+     */
     @Override
-    public SchemaConversionsData getSchemaConversionsData(String schema) throws ServiceException {
+    public SchemaConversionsData getSchemaConversionsData(String schemaUrl) throws ServiceException {
         SchemaConversionsData result = new SchemaConversionsData();
 
+        InputStream inputStream = null;
         try {
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 
             // Conversions
-            String conversionsUrl = Props.getRequiredProperty(PropsIF.XML_CONV_URL) + "/api/listConversions?schema=" + schema;
+            String conversionsUrl = Props.getRequiredProperty(PropsIF.XML_CONV_URL) + "/api/listConversions?schema=" + schemaUrl;
             URL url = new URL(conversionsUrl);
-            InputStream stream = url.openStream();
-            Document doc = docBuilder.parse(stream);
+            inputStream = url.openStream();
+            Document doc = docBuilder.parse(inputStream);
             NodeList nodeList = doc.getElementsByTagName("conversion");
             result.setNumberOfConversions(nodeList.getLength());
 
@@ -69,7 +74,7 @@ public class XmlConvServiceImpl implements IXmlConvService {
             String scriptsService = "XQueryService";
             ServiceClientIF client = ServiceClients.getServiceClient(scriptsService, scriptsUrl);
             @SuppressWarnings("unchecked")
-            Vector<String> scriptsResult = (Vector<String>) client.getValue("listQAScripts", new Vector<String>(Collections.singletonList(schema)));
+            Vector<String> scriptsResult = (Vector<String>) client.getValue("listQAScripts", new Vector<String>(Collections.singletonList(schemaUrl)));
             result.setNumberOfQAScripts(scriptsResult.size());
 
             // XML Conv schema page url
@@ -77,13 +82,10 @@ public class XmlConvServiceImpl implements IXmlConvService {
 
             return result;
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schema/table data from XML converters: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get scripts and conversions info from XmlConv: " + e.getMessage(), e);
+        }
+        finally{
+            IOUtils.closeQuietly(inputStream);
         }
     }
-
-    public static void main(String[] args) throws ServiceException {
-        XmlConvServiceImpl test = new XmlConvServiceImpl();
-        test.getSchemaConversionsData("http://dd.eionet.europa.eu/GetSchema?id=TBL4943");
-    }
-
 }

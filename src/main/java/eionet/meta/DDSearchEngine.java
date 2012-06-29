@@ -2904,7 +2904,7 @@ public class DDSearchEngine {
                         curDstIdf = dstIdf;
                         curDstID = dstID;
                     } else if (!dstID.equals(curDstID)) {
-                        LOGGER.info("Skipping: " + rs.getString("DS_TABLE.TABLE_ID") + "; " + rs.getString("DATASET.SHORT_NAME"));
+                        LOGGER.debug("Skipping: " + rs.getString("DS_TABLE.TABLE_ID") + "; " + rs.getString("DATASET.SHORT_NAME"));
                         continue;
                     }
                 }
@@ -5070,13 +5070,17 @@ public class DDSearchEngine {
     }
 
     /**
-     * @param schema
+     * @param schemaUrl
      * @return
-     * @throws ServiceException
      */
-    public SchemaConversionsData getXmlConvData(String schema) throws ServiceException {
+    public SchemaConversionsData getXmlConvData(String schemaUrl) {
         IXmlConvService xmlConvService = getSpringBean(IXmlConvService.class);
-        return xmlConvService.getSchemaConversionsData(schema);
+        try {
+            return xmlConvService.getSchemaConversionsData(schemaUrl);
+        } catch (ServiceException e) {
+            LOGGER.error(e);
+            return null;
+        }
     }
 
     /**

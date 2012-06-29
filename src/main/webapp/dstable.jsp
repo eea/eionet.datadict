@@ -839,22 +839,18 @@ else if (mode.equals("add"))
 
                             <!-- XML Conv data and link -->
                             <%
-                            try {
-                                String schemaUrl = Props.getRequiredProperty(PropsIF.DD_URL) + "/GetSchema?id=TBL" + tableID;
-                                SchemaConversionsData xmlConvData = searchEngine.getXmlConvData(schemaUrl);
-                            %>
-                            <div>
-                                <p>
-                                There are <%=xmlConvData.getNumberOfQAScripts()%> QA scripts and <%=xmlConvData.getNumberOfConversions()%> conversion scripts registered.
-                                <% if (xmlConvData.getNumberOfQAScripts() > 0 || xmlConvData.getNumberOfConversions() > 0) {%>
-                                <br />
-                                <a href="<%=xmlConvData.getXmlConvUrl()%>?schemaId=<%=schemaUrl%>">Link to the schema page on XMLCONV</a>
-                                <%}%>
-                                </p>
-                            </div>
-                            <%
-                            } catch (Exception e) {
-                                // Don't show Xml Conv data
+                            String schemaUrl = Props.getRequiredProperty(PropsIF.DD_URL) + "/GetSchema?id=TBL" + tableID;
+                            SchemaConversionsData xmlConvData = searchEngine.getXmlConvData(schemaUrl);
+                            if (xmlConvData != null){ %>
+	                            <div>
+	                                <p>
+	                                There are <%=xmlConvData.getNumberOfQAScripts()%> QA scripts and <%=xmlConvData.getNumberOfConversions()%> conversion scripts registered for this table.
+	                                <% if (xmlConvData.getNumberOfQAScripts() > 0 || xmlConvData.getNumberOfConversions() > 0) {%>
+	                                <br />
+	                                <a href="<%=xmlConvData.getXmlConvUrl()%>?schemaId=<%=schemaUrl%>">Link to the schema page on XMLCONV</a>
+	                                <%}%>
+	                                </p>
+	                            </div><%
                             }
                             %>
 

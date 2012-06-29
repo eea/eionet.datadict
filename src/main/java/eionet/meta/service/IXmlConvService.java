@@ -24,11 +24,11 @@ package eionet.meta.service;
 import eionet.meta.service.data.SchemaConversionsData;
 
 /**
- * Type definition ...
+ * Interface for retrieving various information from XmlConv services.
  *
  * @author Juhan Voolaid
  */
 public interface IXmlConvService {
 
-    SchemaConversionsData getSchemaConversionsData(String schema) throws ServiceException;
+    SchemaConversionsData getSchemaConversionsData(String schemaUrl) throws ServiceException;
 }

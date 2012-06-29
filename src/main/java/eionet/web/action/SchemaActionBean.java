@@ -110,7 +110,7 @@ public class SchemaActionBean extends AbstractActionBean {
 
     private SchemaConversionsData xmlConvData;
 
-    /** Parameter, that shows if working copy is been viewed. */
+    /** Indicates that a working copy is being viewed if true. */
     private boolean workingCopy;
 
     /**
@@ -124,7 +124,6 @@ public class SchemaActionBean extends AbstractActionBean {
 
         loadSchemaByName();
         loadSchemaString();
-        // "http://dd.eionet.europa.eu/GetSchema?id=TBL4943"
         if (!workingCopy) {
             xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
         }
@@ -318,7 +317,6 @@ public class SchemaActionBean extends AbstractActionBean {
     public Resolution reupload() throws IOException, ServiceException {
 
         loadSchemaById();
-        loadSchemaString();
         String schemaSetIdentifier = schemaSet == null ? null : schemaSet.getIdentifier();
         schemaRepository.reuploadSchema(schema.getFileName(), schemaSetIdentifier, uploadedFile);
 

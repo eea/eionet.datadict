@@ -302,9 +302,9 @@
     </c:if>
 
     <%-- Show XML CONV data. --%>
-    <c:if test="${not actionBean.workingCopy}">
+    <c:if test="${not actionBean.workingCopy && not empty actionBean.xmlConvData}">
         <p>
-        There are ${actionBean.xmlConvData.numberOfQAScripts} QA scripts and ${actionBean.xmlConvData.numberOfConversions} conversion scripts registered.
+        There are ${actionBean.xmlConvData.numberOfQAScripts} QA scripts and ${actionBean.xmlConvData.numberOfConversions} conversion scripts registered for this schema.
         <c:if test="${actionBean.xmlConvData.numberOfQAScripts > 0 || actionBean.xmlConvData.numberOfConversions > 0}">
             <br />
             <stripes:link href="${actionBean.xmlConvData.xmlConvUrl}">
