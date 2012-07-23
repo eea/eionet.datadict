@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xml:base="http://dd.eionet.europa.eu/schema.rdf"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:dct="http://purl.org/dc/terms/"
+	xmlns:owl="http://www.w3.org/2002/07/owl#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+	<owl:Ontology rdf:about="">
+		<rdfs:label>Data dictionary schema</rdfs:label>
+		<owl:versionInfo>$Id$</owl:versionInfo>
+		<dct:creator rdf:resource="http://www.eionet.europa.eu/users/roug"/>
+		<dct:contributor rdf:resource="http://www.eionet.europa.eu/users/heinlja"/>
+	</owl:Ontology>
+
+	<!-- Classes -->
+
+	<rdfs:Class rdf:ID="TableSchema">
+		<rdfs:label>Table schema</rdfs:label>
+		<rdfs:comment>A table schema is an RDF document that contains the RDF schema for a table</rdfs:comment>
+		<rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:ID="DatasetSchema">
+		<rdfs:label>Dataset schema</rdfs:label>
+		<rdfs:comment>A dataset schema is an RDF document that contains the RDF schema for a dataset</rdfs:comment>
+		<rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:ID="SchemaSet">
+		<rdfs:label>Set of XML schemas</rdfs:label>
+		<rdfs:comment>A schema set is a grouping of XML schemas that depend on each other in some way.</rdfs:comment>
+	</rdfs:Class>
+
+	<!-- Properties -->
+ 
+	<rdf:Property rdf:ID="hasSchema">
+		<rdfs:label>Has schema</rdfs:label>
+		<rdfs:comment>Link from a schema set to a schema member.</rdfs:comment>
+		<rdfs:domain rdf:resource="#SchemaSet"/>
+		<rdfs:range rdf:resource="http://cr.eionet.europa.eu/ontologies/contreg.rdf#XMLSchema"/>
+	</rdf:Property>
+
+</rdf:RDF>
