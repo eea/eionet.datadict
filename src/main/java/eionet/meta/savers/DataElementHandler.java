@@ -1019,6 +1019,7 @@ public class DataElementHandler extends BaseHandler {
         processElmPositions();
         processValueDelimiters();
         processMandatoryFlags();
+        processPrimaryKeys();
     }
 
     /**
@@ -1119,7 +1120,7 @@ public class DataElementHandler extends BaseHandler {
      *
      * @throws SQLException
      */
-    private void processMandatoryFlags() throws SQLException {
+    private void processPrimaryKeys() throws SQLException {
 
         HashMap flags = new HashMap();
         Enumeration parNames = req.getParameterNames();
@@ -1164,7 +1165,7 @@ public class DataElementHandler extends BaseHandler {
      *
      * @throws SQLException
      */
-    private void processPrimaryKeys() throws SQLException {
+    private void processMandatoryFlags() throws SQLException {
 
         HashMap flags = new HashMap();
         Enumeration parNames = req.getParameterNames();
