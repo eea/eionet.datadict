@@ -817,7 +817,7 @@ public class CopyHandler extends OldCopyHandler {
         }
 
         String selectSQL = "select * from TBL2ELEM where TABLE_ID in (" + Util.toCSV(oldNewTables.keySet()) + ")";
-        String insertSQL = "insert into TBL2ELEM (TABLE_ID,DATAELEM_ID,POSITION,MULTIVAL_DELIM,MANDATORY) values ";
+        String insertSQL = "insert into TBL2ELEM (TABLE_ID,DATAELEM_ID,POSITION,MULTIVAL_DELIM,MANDATORY,PRIM_KEY) values ";
         int insertSQLLengthBefore = insertSQL.length();
 
         ResultSet rs = null;
@@ -833,6 +833,7 @@ public class CopyHandler extends OldCopyHandler {
                 String position = rs.getString("POSITION");
                 String multiValueDelim = rs.getString("MULTIVAL_DELIM");
                 String mandatory = rs.getString("MANDATORY");
+                String primKey = rs.getString("PRIM_KEY");
 
                 String newTblId = oldNewTables.get(oldTblId);
                 if (!Util.isEmpty(newTblId)) {
@@ -850,7 +851,7 @@ public class CopyHandler extends OldCopyHandler {
                     }
                     insertSQL =
                         insertSQL + "(" + newTblId + "," + newElmId + "," + position + "," + nullSafeMultiValueDelim + ","
-                        + mandatory + ")";
+                        + mandatory + "," + primKey + ")";
                 }
             }
             SQL.close(rs);
@@ -878,7 +879,7 @@ public class CopyHandler extends OldCopyHandler {
         }
 
         String selectSQL = "select * from TBL2ELEM where DATAELEM_ID in (" + Util.toCSV(oldNewElements.keySet()) + ")";
-        String insertSQL = "insert into TBL2ELEM (TABLE_ID,DATAELEM_ID,POSITION,MULTIVAL_DELIM,MANDATORY) values ";
+        String insertSQL = "insert into TBL2ELEM (TABLE_ID,DATAELEM_ID,POSITION,MULTIVAL_DELIM,MANDATORY,PRIM_KEY) values ";
         int insertSQLLengthBefore = insertSQL.length();
 
         ResultSet rs = null;
@@ -897,13 +898,14 @@ public class CopyHandler extends OldCopyHandler {
                     String position = rs.getString("POSITION");
                     String multiValueDelim = nullSafeLiteral(rs.getString("MULTIVAL_DELIM"));
                     String mandatory = rs.getString("MANDATORY");
+                    String primKey = rs.getString("PRIM_KEY");
 
                     if (insertSQL.length() > insertSQLLengthBefore) {
                         insertSQL = insertSQL + ",";
                     }
                     insertSQL =
                         insertSQL + "(" + tblId + "," + newElmId + "," + position + "," + multiValueDelim + "," + mandatory
-                        + ")";
+                        + "," + primKey + ")";
                 }
             }
             SQL.close(rs);
