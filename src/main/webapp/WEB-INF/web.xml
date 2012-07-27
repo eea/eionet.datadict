@@ -186,12 +186,10 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/schema/*</url-pattern>
     </servlet-mapping>
-    <!--
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
-        <url-pattern>/schemas/*</url-pattern>
+        <url-pattern>/dataelements2/*</url-pattern>
     </servlet-mapping>
-     -->
 
     <servlet>
         <servlet-name>env</servlet-name>

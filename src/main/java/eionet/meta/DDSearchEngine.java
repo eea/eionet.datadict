@@ -628,6 +628,8 @@ public class DDSearchEngine {
         Vector result = new Vector();
         PreparedStatement elemsStmt = null;
         ResultSet elemsRs = null;
+
+        LOGGER.info("Non common elements query: " + monsterQry.toString());
         try {
             elemsStmt = SQL.preparedStatement(monsterQry.toString(), inPrms, conn);
             elemsRs = elemsStmt.executeQuery();
@@ -954,6 +956,8 @@ public class DDSearchEngine {
         // finally execute the monster query
         PreparedStatement elemsStmt = null;
         ResultSet elemsRs = null;
+
+        LOGGER.info("Common elements query: " + monsterQry.toString());
         try {
             elemsStmt = SQL.preparedStatement(monsterQry.toString(), inParams, conn);
             elemsRs = elemsStmt.executeQuery();
@@ -2869,8 +2873,6 @@ public class DDSearchEngine {
         }
         buf.append(" order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc, "
                 + "DS_TABLE.IDENTIFIER asc, DS_TABLE.TABLE_ID desc");
-
-        LOGGER.info(buf.toString());
 
         // preprare the statement for getting attributes
         PreparedStatement attrsPstmt = null;

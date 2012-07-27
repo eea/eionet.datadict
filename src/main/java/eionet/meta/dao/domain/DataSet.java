@@ -22,59 +22,20 @@
 package eionet.meta.dao.domain;
 
 /**
- * Attribute.
+ * Data set.
  *
  * @author Juhan Voolaid
  */
-public class Attribute {
+public class DataSet {
 
+    /** Id. */
     private int id;
 
-    private String name;
+    /** Identifier. */
+    private String identifier;
 
-    private String value;
-
+    /** Short name. */
     private String shortName;
-
-    public Attribute(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Attribute() {
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + id;
-        return result;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Attribute other = (Attribute) obj;
-        if (id != other.id)
-            return false;
-        return true;
-    }
 
     /**
      * @return the id
@@ -92,33 +53,18 @@ public class Attribute {
     }
 
     /**
-     * @return the name
+     * @return the identifier
      */
-    public String getName() {
-        return name;
+    public String getIdentifier() {
+        return identifier;
     }
 
     /**
-     * @param name
-     *            the name to set
+     * @param identifier
+     *            the identifier to set
      */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the value
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * @param value
-     *            the value to set
-     */
-    public void setValue(String value) {
-        this.value = value;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     /**

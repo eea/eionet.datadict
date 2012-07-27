@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
@@ -30,8 +31,8 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
     /** */
     private static final String COPY_SIMPLE_ATTRIBUTES_SQL =
-        "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) "
-        + "select :newParentId, PARENT_TYPE, M_ATTRIBUTE_ID, VALUE from ATTRIBUTE where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType";
+            "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) "
+                    + "select :newParentId, PARENT_TYPE, M_ATTRIBUTE_ID, VALUE from ATTRIBUTE where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType";
 
     /**
      * @see eionet.meta.dao.IAttributeDAO#copySimpleAttributes(int, java.lang.String, int)
@@ -59,7 +60,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
     /** */
     private static final String REPLACE_PARENT_ID_SQL = "update ATTRIBUTE set DATAELEM_ID=:substituteId "
-        + "where DATAELEM_ID=:replacedId and PARENT_TYPE=:parentType";
+            + "where DATAELEM_ID=:replacedId and PARENT_TYPE=:parentType";
 
     /**
      * @see eionet.meta.dao.IAttributeDAO#replaceParentId(int, int, eionet.meta.DElemAttribute.ParentType)
@@ -128,9 +129,9 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     public Map<String, List<String>> getAttributeValues(int parentId, ParentType parentType) {
 
         String sql =
-            "select SHORT_NAME, VALUE from ATTRIBUTE, M_ATTRIBUTE"
-            + " where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType and ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID"
-            + " order by SHORT_NAME, VALUE";
+                "select SHORT_NAME, VALUE from ATTRIBUTE, M_ATTRIBUTE"
+                        + " where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType and ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID"
+                        + " order by SHORT_NAME, VALUE";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("parentId", parentId);
@@ -142,7 +143,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
                 String shortName = rs.getString("SHORT_NAME");
                 String value = rs.getString("VALUE");
                 List<String> values = resultMap.get(shortName);
-                if (values == null){
+                if (values == null) {
                     values = new ArrayList<String>();
                     resultMap.put(shortName, values);
                 }
@@ -151,5 +152,29 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         });
 
         return resultMap;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Attribute getAttributeByName(String shortName) {
+        String sql = "select * from M_ATTRIBUTE where SHORT_NAME=:shortName";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("shortName", shortName);
+
+        Attribute result = getNamedParameterJdbcTemplate().queryForObject(sql, params, new RowMapper<Attribute>() {
+
+            @Override
+            public Attribute mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Attribute attribute = new Attribute();
+                attribute.setId(rs.getInt("M_ATTRIBUTE_ID"));
+                attribute.setName(rs.getString("NAME"));
+                attribute.setShortName(rs.getString("SHORT_NAME"));
+                return attribute;
+            }
+
+        });
+        return result;
     }
 }
