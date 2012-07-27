@@ -1,18 +1,19 @@
-<!-- Last updated: 2011-04-19T15:08:55Z
+<!-- Last updated: 2012-07-27T08:54:24Z
      To update download http://www.eionet.europa.eu/dropdownmenus.txt -->
         <ul id="dropdowns">
          <li><a href="http://www.eionet.europa.eu/services">Services</a>
           <ul>
            <li><a href="http://www.eionet.europa.eu/helpdesk">Helpdesk</a></li>
-           <li><a href="http://eea.eionet.europa.eu/Public/irc/eionet-circle/Home/main">CIRCA</a></li>
            <li><a href="http://forum.eionet.europa.eu/">Forum</a></li>
-           <li><a href="http://eea.eionet.europa.eu/Members/irc/eionet-circle/Home/central_dir_admin?fn=roles&amp;v=&amp;rd=1&amp;ud=1&amp;od=1">Roles (Restricted)</a></li>
+           <li><a href="http://projects.eionet.europa.eu/">Projects</a></li>
+           <li><a href="http://www.eionet.europa.eu/ldap-roles">Roles</a></li>
            <li><a href="http://planner.eionet.europa.eu/">Workplan</a></li>
            <li><a href="http://uns.eionet.europa.eu/">Subscriptions</a></li>
            <li><a href="http://www.eionet.europa.eu/networknews">News</a></li>
            <li><a href="http://www.eionet.europa.eu/calendar">Calendar</a></li>
            <li><a href="http://www.eionet.europa.eu/training">Training</a></li>
            <li><a href="http://www.eionet.europa.eu/rolemails">NFP mails</a></li>
+           <li><a href="http://archives.eionet.europa.eu/">Archived IGs</a></li>
           </ul>
          </li>
          <li><a href="http://www.eionet.europa.eu/reportnet">Reportnet</a>
@@ -23,7 +24,9 @@
            <li><a href="http://etcdd.eionet.europa.eu/">ETC Data Dictionary</a></li>
            <li><a href="http://cr.eionet.europa.eu/">Content Registry</a></li>
            <li><a href="http://converters.eionet.europa.eu/">Conversion service</a></li>
+           <li><a href="http://mdr.eionet.europa.eu/">Mediterranean Data Repository</a></li>
            <li><a href="http://dampos.eionet.europa.eu/">Dam Positioning</a></li>
+           <li><a href="http://uwwtd.eionet.europa.eu/">UWWTD dataflow</a></li>
            <li><a href="http://www.eionet.europa.eu/reportnet">Reportnet Documents</a></li>
           </ul>
          </li>
