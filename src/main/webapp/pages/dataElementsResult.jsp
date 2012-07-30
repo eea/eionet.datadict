@@ -15,7 +15,7 @@
         </p>
     </c:if>
 
-    <display:table name="actionBean.result.dataElements" class="sortable" id="item" requestURI="/dataelements2/search/">
+    <display:table name="actionBean.result.dataElements" class="sortable" id="item" requestURI="/searchelements/search/">
         <display:column title="Element" sortable="true" sortProperty="shortName">
             <c:choose>
                 <c:when test="${item.released || not empty actionBean.user}"><stripes:link href="/dataelements/${item.id}">${item.shortName}</stripes:link></c:when>

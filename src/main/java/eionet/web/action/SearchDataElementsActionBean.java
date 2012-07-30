@@ -41,7 +41,7 @@ import eionet.meta.service.data.DataElementsResult;
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/dataelements2/{$event}")
+@UrlBinding("/searchelements/{$event}")
 public class SearchDataElementsActionBean extends AbstractActionBean {
 
     /** Select option values. */

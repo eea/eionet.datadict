@@ -5,7 +5,7 @@
         <li><a href="<%=request.getContextPath()%>/documentation">Help and documentation</a></li>
         <li><a href="<%=request.getContextPath()%>/datasets.jsp">Datasets</a></li>
         <li><a href="<%=request.getContextPath()%>/tableSearch.action">Tables</a></li>
-        <li><a href="<%=request.getContextPath()%>/search.jsp">Data elements</a></li>
+        <li><a href="<%=request.getContextPath()%>/searchelements">Data elements</a></li>
         <%
         DDUser _user = SecurityUtil.getUser(request);
         if (_user!=null){
