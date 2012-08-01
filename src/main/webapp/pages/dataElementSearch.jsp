@@ -27,6 +27,20 @@
     <stripes:layout-component name="contents">
     <h1>Search data elements</h1>
 
+    <c:if test="${actionBean.permissionToAdd}">
+        <div id="drop-operations">
+            <h2>Operations:</h2>
+            <ul>
+                <li>
+                    <stripes:link href="/dataelements/add/">
+                        <stripes:param name="common" value="true" />
+                        New common element
+                    </stripes:link>
+                </li>
+            </ul>
+        </div>
+    </c:if>
+
     <c:url value="/images/info_icon.gif" var="infoIcon" />
     <c:url value="/images/button_remove.gif" var="removeIcon" />
 

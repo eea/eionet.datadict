@@ -35,6 +35,7 @@ import eionet.meta.service.IDataService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
+import eionet.util.SecurityUtil;
 
 /**
  * Data elements search page controller.
@@ -214,6 +215,20 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
                     addableAttributes.remove(a);
                 }
             }
+        }
+    }
+
+    /**
+     * Returns true, when user has permission to add common element.
+     *
+     * @return
+     */
+    public boolean isPermissionToAdd() {
+        try {
+            return getUser() != null && SecurityUtil.hasPerm(getUser().getUserName(), "/elements", "i");
+        } catch (Exception e) {
+            LOGGER.error("Failed to get user permission: " + e.getMessage(), e);
+            return false;
         }
     }
 
