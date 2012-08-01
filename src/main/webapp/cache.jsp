@@ -9,6 +9,8 @@ response.setHeader("Expires", Util.getExpiresDateString());
 
 request.setCharacterEncoding("UTF-8");
 
+String objID = request.getParameter("obj_id");
+String objType = request.getParameter("obj_type");
 String idf = (String)request.getAttribute("identifier");
 Vector entries = (Vector)request.getAttribute("entries");
 
@@ -78,6 +80,8 @@ Vector entries = (Vector)request.getAttribute("entries");
     </table>
     <div style="display:none">
         <input type="hidden" name="action" value="update"/>
+        <input type="hidden" name="obj_id" value="<%=StringEscapeUtils.escapeXml(objID)%>"/>
+        <input type="hidden" name="obj_type" value="<%=StringEscapeUtils.escapeXml(objType)%>"/>
         <input type="hidden" name="idf" value="<%=StringEscapeUtils.escapeXml(idf)%>"/>
     </div>
 </form>
