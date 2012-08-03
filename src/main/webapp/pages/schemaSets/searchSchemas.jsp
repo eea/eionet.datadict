@@ -7,6 +7,28 @@
 <stripes:layout-render name="/pages/common/template.jsp"
     pageTitle="Schema sets">
 
+    <stripes:layout-component name="head">
+        <script type="text/javascript">
+        // <![CDATA[
+            ( function($) {
+                $(document).ready(
+                    function(){
+
+                        $('#newNameDialog').dialog({
+                            autoOpen: ${actionBean.askNewName},
+                            width: 500
+                        });
+
+                        $("#closeNewNameDialog").click(function() {
+                            $('#newNameDialog').dialog('close');
+                            return true;
+                        });
+                    });
+            } ) ( jQuery );
+        // ]]>
+        </script>
+    </stripes:layout-component>
+
     <stripes:layout-component name="contents">
 
         <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemas', 'i')}">
@@ -21,6 +43,7 @@
         <h1>Search schemas</h1>
 
         <stripes:form id="searchResultsForm" action="/schema/search/" method="get">
+            <stripes:hidden name="schemaSetId" />
             <div style="margin-top:1em">
                 <label class="question" style="width:18%;float:left;" for="name">Schema file name:</label>
                 <stripes:text id="name" name="searchFilter.fileName" />
@@ -51,7 +74,11 @@
             <br />
 
             <display:table name="actionBean.schemasResult" class="sortable" id="item" requestURI="/schema/search/">
-
+                <c:if test="${actionBean.schemaSetId != 0}">
+                    <display:column title="" sortable="false">
+                        <stripes:radio value="${item.id}" name="schemaId" />
+                    </display:column>
+                </c:if>
                 <display:column title="Name" sortable="true" sortName="sortName" sortProperty="NAME_ATTR">
                     <stripes:link beanclass="eionet.web.action.SchemaActionBean">
                         <c:if test="${item.schemaSetId > 0}">
@@ -93,8 +120,25 @@
                 </display:column>
             </display:table>
 
+            <c:if test="${actionBean.schemaSetId != 0}">
+                <stripes:submit name="copyToSchemaSet" value="Copy to schema set" />
+                <stripes:submit name="cancelCopy" value="Cancel" />
+            </c:if>
         </stripes:form>
 
+        <div id="newNameDialog" title="New file name">
+            In the schema set, there is already schema with such name.
+            <stripes:form beanclass="${actionBean.class.name}" method="get">
+                <stripes:hidden name="schemaSetId" />
+                <stripes:hidden name="schemaId" />
+
+                <label for="fileToUpload">New schema file name*:</label>
+                <stripes:text name="newSchemaName" />
+                <br/><br/>
+                <stripes:submit name="copyToSchemaSet" value="Copy"/>
+                <input type="button" id="closeNewNameDialog" value="Cancel"/>
+            </stripes:form>
+        </div>
     </stripes:layout-component>
 
 </stripes:layout-render>

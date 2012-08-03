@@ -877,6 +877,43 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public void copySchema(int schemaId, int schemaSetId, String userName, String newFileName) throws ServiceException {
+        try {
+            Schema schema = schemaDAO.getSchema(schemaId);
+            SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
+
+            // Copy schema to new schema set
+            int newSchemaId = schemaDAO.copyToSchemaSet(schemaId, schemaSetId, newFileName, userName);
+
+            // Copy the schema's simple attributes.
+            attributeDAO.copySimpleAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
+
+            // Copy the file in schema repository.
+            String srcSchemaSetIdentifier = schema.getSchemaSetIdentifier();
+            boolean srcWorkingCopy = false;
+            if (StringUtils.isEmpty(srcSchemaSetIdentifier)) {
+                // root level schema
+                srcWorkingCopy = schema.isWorkingCopy();
+                srcSchemaSetIdentifier = null;
+            } else {
+                // schema from schema set
+                SchemaSet srcSchemaSet = schemaSetDAO.getSchemaSet(schema.getSchemaSetId());
+                srcWorkingCopy = srcSchemaSet.isWorkingCopy();
+            }
+            schemaRepository.copySchema(schema.getFileName(), srcSchemaSetIdentifier, srcWorkingCopy, newFileName,
+                    schemaSet.getIdentifier(), schemaSet.isWorkingCopy());
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to copy schema: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * @throws ServiceException
      * @see eionet.meta.service.ISchemaService#schemaExists(java.lang.String, int)
      */

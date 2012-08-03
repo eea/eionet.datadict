@@ -79,6 +79,38 @@ public class SchemaRepository {
     }
 
     /**
+     * Copies one file to another location.
+     *
+     * @param fileName
+     * @param schemaSetIdentifier
+     *            may be null if it is root level schema
+     * @param workingCopy
+     * @param newFileName
+     * @param newSchemaSetIdentifier
+     * @param newWorkingCopy
+     * @throws ServiceException
+     */
+    public void copySchema(String fileName, String schemaSetIdentifier, boolean workingCopy, String newFileName,
+            String newSchemaSetIdentifier, boolean newWorkingCopy) throws ServiceException {
+        try {
+            File srcFile = getSchemaFile(fileName, schemaSetIdentifier, workingCopy);
+            File destFile = new File(REPO_PATH, getSchemaRelativePath(newFileName, newSchemaSetIdentifier, newWorkingCopy));
+
+            if (destFile.exists()) {
+                throw new ServiceException("Failed to copy file because it already exists: " + newSchemaSetIdentifier + "/"
+                        + newFileName);
+            }
+
+            FileUtils.copyFile(srcFile, destFile);
+
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to copy file: " + e.toString(), e);
+        }
+    }
+
+    /**
      *
      * @param fileName
      * @param schemaSetIdentifier
@@ -156,14 +188,13 @@ public class SchemaRepository {
     public String getSchemaString(String fileName, String schemaSetIdentifier, boolean workingCopy) throws ServiceException {
 
         File schemaFile = getSchemaFile(fileName, schemaSetIdentifier, workingCopy);
-        if (schemaFile != null){
+        if (schemaFile != null) {
             try {
                 return FileUtils.readFileToString(schemaFile);
             } catch (IOException e) {
                 throw new ServiceException("Failed to get the schema contents: " + e.getMessage(), e);
             }
-        }
-        else{
+        } else {
             throw new ServiceException("Failed to find such a schema file!");
         }
     }
@@ -489,9 +520,12 @@ public class SchemaRepository {
      * beginning. For example, if the schema repository location is /var/lib/schemas and there is a schema located at
      * /var/lib/schemas/water/river.xsd, then the relative path of that schema is "water/river.xsd".
      *
-     * @param schemaFileName The filename of the schema (required).
-     * @param schemaSetIdentifier The schema set containing the schema (can be blank, meaning a root-level schema).
-     * @param isWorkingCopy Indicates if the schema or the schema set is a working copy.
+     * @param schemaFileName
+     *            The filename of the schema (required).
+     * @param schemaSetIdentifier
+     *            The schema set containing the schema (can be blank, meaning a root-level schema).
+     * @param isWorkingCopy
+     *            Indicates if the schema or the schema set is a working copy.
      * @return The relative path.
      */
     public String getSchemaRelativePath(String schemaFileName, String schemaSetIdentifier, boolean isWorkingCopy) {

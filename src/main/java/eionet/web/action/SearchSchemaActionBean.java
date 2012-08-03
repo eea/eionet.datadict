@@ -26,6 +26,7 @@ import java.util.List;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
@@ -33,6 +34,7 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
 
+import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
@@ -68,6 +70,18 @@ public class SearchSchemaActionBean extends AbstractActionBean {
     /** Sorting direction. */
     private String dir;
 
+    /** If valued, marks the schema set id to copy the selected schema to. */
+    private int schemaSetId;
+
+    /** Selected schema id to copy. */
+    private int schemaId;
+
+    /** New schema name, which is asked when during copying there is name conflict. */
+    private String newSchemaName;
+
+    /** True, when during copying, new schema name must be asked from user. */
+    private boolean askNewName;
+
     @DefaultHandler
     public Resolution search() throws ServiceException {
         if (searchFilter == null) {
@@ -91,9 +105,60 @@ public class SearchSchemaActionBean extends AbstractActionBean {
 
         searchFilter.setSearchingUser(getUserName());
         schemasResult = schemaService.searchSchemas(searchFilter);
+
         return new ForwardResolution(SEARCH_SCHEMAS_JSP);
     }
 
+    /**
+     * Action that copies the selected schema to given schema set.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution copyToSchemaSet() throws ServiceException {
+        // Validate selected schema
+        if (schemaId == 0) {
+            addWarningMessage("Select schema to copy.");
+            return search();
+        }
+
+        SchemaSet schemaSet = schemaService.getSchemaSet(schemaSetId);
+        Schema schema = schemaService.getSchema(schemaId);
+        if (StringUtils.isNotEmpty(newSchemaName)) {
+            schema.setFileName(newSchemaName);
+        }
+
+        // Validate naming conflict
+        if (schemaService.schemaExists(schema.getFileName(), schemaSetId)) {
+            askNewName = true;
+            newSchemaName = schema.getFileName();
+            return search();
+        }
+
+        schemaService.copySchema(schema.getId(), schemaSet.getId(), getUserName(), schema.getFileName());
+        addSystemMessage("Schema successfully copied");
+
+        return new RedirectResolution(SchemaSetActionBean.class).addParameter("schemaSet.identifier", schemaSet.getIdentifier())
+                .addParameter("workingCopy", true);
+    }
+
+    /**
+     * Action when schema copy is cancelled.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution cancelCopy() throws ServiceException {
+        SchemaSet schemaSet = schemaService.getSchemaSet(schemaSetId);
+        return new RedirectResolution(SchemaSetActionBean.class).addParameter("schemaSet.identifier", schemaSet.getIdentifier())
+                .addParameter("workingCopy", true);
+    }
+
+    /**
+     * Returns reg. statuses to search by.
+     *
+     * @return
+     */
     public List<String> getRegStatuses() {
         List<String> result = new ArrayList<String>();
         result.add("");
@@ -104,6 +169,11 @@ public class SearchSchemaActionBean extends AbstractActionBean {
         return result;
     }
 
+    /**
+     * True, if user is authenticated.
+     *
+     * @return
+     */
     public boolean isAuthenticated() {
         return getUser() != null;
     }
@@ -189,6 +259,58 @@ public class SearchSchemaActionBean extends AbstractActionBean {
      */
     public void setSchemaService(ISchemaService schemaService) {
         this.schemaService = schemaService;
+    }
+
+    /**
+     * @return the schemaSetId
+     */
+    public int getSchemaSetId() {
+        return schemaSetId;
+    }
+
+    /**
+     * @param schemaSetId
+     *            the schemaSetId to set
+     */
+    public void setSchemaSetId(int schemaSetId) {
+        this.schemaSetId = schemaSetId;
+    }
+
+    /**
+     * @return the schemaId
+     */
+    public int getSchemaId() {
+        return schemaId;
+    }
+
+    /**
+     * @param schemaId
+     *            the schemaId to set
+     */
+    public void setSchemaId(int schemaId) {
+        this.schemaId = schemaId;
+    }
+
+    /**
+     * @return the newSchemaName
+     */
+    public String getNewSchemaName() {
+        return newSchemaName;
+    }
+
+    /**
+     * @param newSchemaName
+     *            the newSchemaName to set
+     */
+    public void setNewSchemaName(String newSchemaName) {
+        this.newSchemaName = newSchemaName;
+    }
+
+    /**
+     * @return the askNewName
+     */
+    public boolean isAskNewName() {
+        return askNewName;
     }
 
 }

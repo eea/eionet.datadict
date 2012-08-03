@@ -339,6 +339,17 @@ public interface ISchemaService {
     int copySchema(int schemaId, String userName, FileBean newFile) throws ServiceException;
 
     /**
+     * Copies the schema with given schemaId to the schema set.
+     *
+     * @param schemaId
+     * @param schemaSetId
+     * @param userName
+     * @param newFileName
+     * @throws ServiceException
+     */
+    void copySchema(int schemaId, int schemaSetId, String userName, String newFileName) throws ServiceException;
+
+    /**
      * Returns the list of schema sets matching the given continuity id, excluding the ones that are working copies and the ones
      * that match the given integer inputs. The method may choose to hide certain versions based on the permissions of the given
      * user.

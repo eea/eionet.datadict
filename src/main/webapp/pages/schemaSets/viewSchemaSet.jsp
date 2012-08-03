@@ -89,6 +89,11 @@
                         <li>
                             <a href="#" id="uploadSchemaLink">Upload schema</a>
                         </li>
+                        <li>
+                            <stripes:link beanclass="eionet.web.action.SearchSchemaActionBean" event="search">Copy existing schema
+                                <stripes:param name="schemaSetId" value="${actionBean.schemaSet.id}"/>
+                            </stripes:link>
+                        </li>
                         <c:choose>
                             <c:when test="${actionBean.checkInCommentsRequired}">
                                 <li>
