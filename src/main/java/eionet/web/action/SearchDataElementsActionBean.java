@@ -116,6 +116,9 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution search() throws ServiceException {
+        if (addedAttributes != null && addedAttributes.size() > 0) {
+            filter.getAttributes().addAll(addedAttributes);
+        }
         result = dataService.searchDataElements(filter);
         return new ForwardResolution("/pages/dataElementsResult.jsp");
     }

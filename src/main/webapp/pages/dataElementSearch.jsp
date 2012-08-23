@@ -10,6 +10,9 @@
         <script type="text/javascript">
         // <![CDATA[
 
+        /*
+        * Adds hidden parameter "delAttr" to form and submits it, so the attribute field gets removed after the submit.
+        */
         function deleteAttribute(id) {
             var input = document.createElement("input");
             input.setAttribute("type", "hidden");
@@ -20,6 +23,44 @@
             document.getElementById("searchForm").submit();
         }
 
+        ( function($) {
+            $(document).ready(function(){
+
+                /*
+                 * Checks if common/non-common element radio button is selected and disables/enambles input fields accordingly.
+                 */
+                 var toggleDisabledFields = function() {
+                     var nonCommonRadio = document.getElementById("nonCommonRadio");
+                     var commonRadio = document.getElementById("commonRadio");
+                     var regStatusSelect = document.getElementById("regStatusSelect");
+                     var datasetSelect = document.getElementById("datasetSelect");
+
+                     if (nonCommonRadio.checked) {
+                         regStatusSelect.disable();
+                         datasetSelect.enable();
+                     }
+
+                     if (commonRadio.checked) {
+                         regStatusSelect.enable();
+                         datasetSelect.disable();
+                     }
+
+                     regStatusSelect.value="";
+                     datasetSelect.value="";
+                 }
+
+                toggleDisabledFields();
+
+                $("#nonCommonRadio").click(function() {
+                    toggleDisabledFields();
+                });
+
+                $("#commonRadio").click(function() {
+                    toggleDisabledFields();
+                });
+
+            });
+        } ) ( jQuery );
         // ]]>
         </script>
     </stripes:layout-component>
@@ -48,7 +89,7 @@
         <table width="auto" cellspacing="0" style="clear:right">
             <tr valign="top">
                 <td align="right" style="padding-right:10">
-                    <strong>RegistrationStatus</strong>
+                    <strong>Registration status</strong>
                 </td>
                 <td>
                     <a href="help.jsp?screen=dataset&area=regstatus" onclick="pop(this.href);return false;">
@@ -56,7 +97,7 @@
                     </a>
                 </td>
                 <td colspan="2">
-                    <stripes:select name="filter.regStatus" class="small">
+                    <stripes:select id="regStatusSelect" name="filter.regStatus" class="small">
                         <stripes:option value="" label="All" />
                         <stripes:options-collection collection="${actionBean.regStatuses}"/>
                     </stripes:select>
@@ -72,7 +113,7 @@
                     </a>
                 </td>
                 <td colspan="2">
-                    <stripes:select name="filter.dataSet" class="small">
+                    <stripes:select id="datasetSelect" name="filter.dataSet" class="small">
                         <stripes:option value="" label="All" />
                         <stripes:options-collection collection="${actionBean.dataSets}" value="identifier" label="shortName" />
                     </stripes:select>
@@ -161,8 +202,8 @@
             <tr valign="top">
                 <td colspan="2">&nbsp;</td>
                 <td colspan="2">
-                    <stripes:radio name="filter.elementType" value="${actionBean.filter.nonCommonElementType}" checked="${actionBean.filter.nonCommonElementType}" /> Non-common elements
-                    <stripes:radio name="filter.elementType" value="${actionBean.filter.commonElementType}" /> Common elements
+                    <stripes:radio id="nonCommonRadio" name="filter.elementType" value="${actionBean.filter.nonCommonElementType}" checked="${actionBean.filter.nonCommonElementType}" /> Non-common elements
+                    <stripes:radio id="commonRadio" name="filter.elementType" value="${actionBean.filter.commonElementType}" /> Common elements
                 </td>
             </tr>
             <tr valign="top">

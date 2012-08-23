@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Repository;
 
@@ -49,6 +50,9 @@ import eionet.meta.service.data.DataElementsResult;
  */
 @Repository
 public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDAO {
+
+    /** Logger. */
+    protected static final Logger LOGGER = Logger.getLogger(DataElementDAOImpl.class);
 
     /**
      * {@inheritDoc}
@@ -161,7 +165,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         StringBuilder sql = new StringBuilder();
 
         sql.append("select de.DATAELEM_ID, de.IDENTIFIER, de.SHORT_NAME, ds.REG_STATUS, de.DATE, de.TYPE, ");
-        sql.append("t.SHORT_NAME as tableName, ds.SHORT_NAME as datasetName, ds.IDENTIFIER, ds.DATASET_ID, t.IDENTIFIER, t.TABLE_ID ");
+        sql.append("t.SHORT_NAME as tableName, ds.IDENTIFIER as datasetName, ds.IDENTIFIER, ds.DATASET_ID, t.IDENTIFIER, t.TABLE_ID ");
         sql.append("from DATAELEM de ");
         sql.append("left join TBL2ELEM t2e on (de.DATAELEM_ID = t2e.DATAELEM_ID) ");
         sql.append("left join DS_TABLE t on (t2e.TABLE_ID = t.TABLE_ID) ");
@@ -173,7 +177,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         sql.append("and ds.WORKING_COPY = 'N' ");
         // Filter parameters
         if (StringUtils.isNotEmpty(filter.getDataSet())) {
-            sql.append("and datasetName = :dataSet ");
+            sql.append("and ds.IDENTIFIER = :dataSet ");
             params.put("dataSet", filter.getDataSet());
         }
         if (StringUtils.isNotEmpty(filter.getType())) {
@@ -208,6 +212,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         }
 
         sql.append("order by ds.IDENTIFIER asc, ds.DATASET_ID desc, t.IDENTIFIER asc, t.TABLE_ID desc, de.IDENTIFIER asc, de.DATAELEM_ID desc");
+
+        LOGGER.debug("SQL: " + sql.toString());
 
         final List<DataElement> dataElements = new ArrayList<DataElement>();
 
