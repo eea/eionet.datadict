@@ -317,9 +317,8 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 sql.append(" desc ");
             }
         }
-        sql.append("limit ").append(searchFilter.getOffset()).append(",").append(searchFilter.getPageSize());
 
-        // LOGGER.debug("SQL: " + sql.toString());
+        //LOGGER.debug("SQL: " + sql.toString());
 
         List<Schema> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Schema>() {
             public Schema mapRow(ResultSet rs, int rowNum) throws SQLException {
