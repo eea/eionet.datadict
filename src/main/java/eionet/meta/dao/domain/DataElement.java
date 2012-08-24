@@ -48,6 +48,10 @@ public class DataElement {
 
     private String dataSetName;
 
+    private String workingUser;
+
+    private boolean workingCopy;
+
     public String getStatusImage() {
         return Util.getStatusImage(status);
     }
@@ -159,6 +163,36 @@ public class DataElement {
      */
     public void setDataSetName(String dataSetName) {
         this.dataSetName = dataSetName;
+    }
+
+    /**
+     * @return the workingUser
+     */
+    public String getWorkingUser() {
+        return workingUser;
+    }
+
+    /**
+     * @param workingUser
+     *            the workingUser to set
+     */
+    public void setWorkingUser(String workingUser) {
+        this.workingUser = workingUser;
+    }
+
+    /**
+     * @return the workingCopy
+     */
+    public boolean isWorkingCopy() {
+        return workingCopy;
+    }
+
+    /**
+     * @param workingCopy
+     *            the workingCopy to set
+     */
+    public void setWorkingCopy(boolean workingCopy) {
+        this.workingCopy = workingCopy;
     }
 
 }

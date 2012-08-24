@@ -18,8 +18,20 @@
     <display:table name="actionBean.result.dataElements" class="sortable" id="item" requestURI="/searchelements/search/">
         <display:column title="Element" sortable="true" sortProperty="shortName">
             <c:choose>
-                <c:when test="${item.released || not empty actionBean.user}"><stripes:link href="/dataelements/${item.id}">${item.shortName}</stripes:link></c:when>
-                <c:otherwise>${item.shortName}</c:otherwise>
+                <c:when test="${(item.released || not empty actionBean.user) && !item.workingCopy}">
+                    <stripes:link href="/dataelements/${item.id}">${item.shortName}</stripes:link>
+                </c:when>
+                <c:otherwise>
+                    <c:choose>
+                        <c:when test="${item.workingCopy && item.workingUser == actionBean.userName}">
+                            <stripes:link href="/dataelements/${item.id}">${item.shortName}</stripes:link>
+                            <span class="checkedout" title="${item.workingUser}">*</span>
+                        </c:when>
+                        <c:otherwise>
+                            ${item.shortName}
+                        </c:otherwise>
+                    </c:choose>
+                </c:otherwise>
             </c:choose>
         </display:column>
         <display:column title="Type" sortable="true">

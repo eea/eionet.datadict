@@ -53,6 +53,9 @@ public class DataElementsFilter {
 
     private boolean includeHistoricVersions;
 
+    /** For searching user's working copy common elements. */
+    private String userName;
+
     private List<Attribute> attributes = new ArrayList<Attribute>();
 
     /**
@@ -206,6 +209,21 @@ public class DataElementsFilter {
      */
     public void setIncludeHistoricVersions(boolean includeHistoricVersions) {
         this.includeHistoricVersions = includeHistoricVersions;
+    }
+
+    /**
+     * @return the userName
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * @param userName
+     *            the userName to set
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
 }
