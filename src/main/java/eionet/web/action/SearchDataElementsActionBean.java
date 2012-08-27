@@ -120,7 +120,6 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
         if (addedAttributes != null && addedAttributes.size() > 0) {
             filter.getAttributes().addAll(addedAttributes);
         }
-        filter.setUserName(getUserName());
         result = dataService.searchDataElements(filter);
         return new ForwardResolution("/pages/dataElementsResult.jsp");
     }

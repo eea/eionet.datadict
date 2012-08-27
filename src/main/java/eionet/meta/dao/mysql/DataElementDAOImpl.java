@@ -78,16 +78,12 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         Map<String, Object> params = new HashMap<String, Object>();
         StringBuilder sql = new StringBuilder();
 
-        sql.append("select de.DATAELEM_ID, de.IDENTIFIER, de.SHORT_NAME, de.REG_STATUS, de.DATE, de.TYPE, de.WORKING_USER, de.WORKING_COPY ");
+        sql.append("select de.DATAELEM_ID, de.IDENTIFIER, de.SHORT_NAME, de.REG_STATUS, de.DATE, de.TYPE, de.WORKING_USER ");
         sql.append("from DATAELEM de ");
         sql.append("where ");
         sql.append("de.PARENT_NS is null ");
-        if (StringUtils.isNotEmpty(filter.getUserName())) {
-            sql.append("and (de.WORKING_COPY='Y' and de.WORKING_USER = :userName || de.WORKING_COPY = 'N' and de.WORKING_USER != :userName) ");
-            params.put("userName", filter.getUserName());
-        } else {
-            sql.append("and de.WORKING_COPY = 'N' ");
-        }
+        sql.append("and de.WORKING_COPY = 'N' ");
+
         // Filter parameters
         if (StringUtils.isNotEmpty(filter.getRegStatus())) {
             sql.append("and de.REG_STATUS = :regStatus ");
@@ -125,6 +121,8 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
         sql.append("order by de.IDENTIFIER asc, de.DATAELEM_ID desc");
 
+        // LOGGER.debug("SQL: " + sql.toString());
+
         final List<DataElement> dataElements = new ArrayList<DataElement>();
 
         getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
@@ -150,16 +148,12 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                     curElmIdf = elmIdf;
                 }
 
-                String workingCopyString = rs.getString("de.WORKING_COPY");
-                boolean wokringCopy = StringUtils.equalsIgnoreCase("Y", workingCopyString);
-
                 de = new DataElement();
                 de.setId(rs.getInt("de.DATAELEM_ID"));
                 de.setShortName(rs.getString("de.SHORT_NAME"));
                 de.setStatus(rs.getString("de.REG_STATUS"));
                 de.setType(rs.getString("de.TYPE"));
                 de.setModified(new Date(rs.getLong("de.DATE")));
-                de.setWorkingCopy(wokringCopy);
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
 
                 dataElements.add(de);
@@ -201,7 +195,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             sql.append("and de.IDENTIFIER like :identifier ");
             params.put("identifier", "%" + filter.getIdentifier() + "%");
         }
-        // TODO: keyword
         // attributes
         for (int i = 0; i < filter.getAttributes().size(); i++) {
             Attribute a = filter.getAttributes().get(i);
@@ -264,9 +257,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                     }
                 }
 
-                String workingCopyString = rs.getString("de.WORKING_COPY");
-                boolean wokringCopy = StringUtils.equalsIgnoreCase("Y", workingCopyString);
-
                 de = new DataElement();
                 de.setId(rs.getInt("de.DATAELEM_ID"));
                 de.setShortName(rs.getString("de.SHORT_NAME"));
@@ -275,7 +265,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setModified(new Date(rs.getLong("de.DATE")));
                 de.setTableName(rs.getString("tableName"));
                 de.setDataSetName(rs.getString("datasetName"));
-                de.setWorkingCopy(wokringCopy);
                 de.setWorkingUser(rs.getString("de.WORKING_USER"));
 
                 dataElements.add(de);
