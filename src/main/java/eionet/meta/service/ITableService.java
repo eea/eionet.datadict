@@ -44,10 +44,19 @@ public interface ITableService {
     List<DataSetTable> searchTables(TableFilter tableFilter) throws ServiceException;
 
     /**
-     * Lists
+     * Lists table attributes.
      *
      * @return
      * @throws ServiceException
      */
     List<Attribute> getTableAttributes() throws ServiceException;
+
+    /**
+     * Returns the name attribute(s) of the table.
+     *
+     * @param tableId
+     * @return
+     * @throws ServiceException
+     */
+    List<String> getNameAttribute(int tableId) throws ServiceException;
 }

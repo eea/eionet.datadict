@@ -464,7 +464,7 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             List<Schema> schemas = schemaDAO.listForSchemaSet(schemaSetId);
             for (Schema schema : schemas) {
-                schema.setAttributeValues(attributeDAO.getAttributeValues(schema.getId(), DElemAttribute.ParentType.SCHEMA));
+                schema.setAttributeValues(attributeDAO.getAttributeValues(schema.getId(), DElemAttribute.ParentType.SCHEMA.toString()));
             }
             return schemas;
         } catch (Exception e) {

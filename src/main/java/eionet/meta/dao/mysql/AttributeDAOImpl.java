@@ -126,7 +126,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
      * @see eionet.meta.dao.IAttributeDAO#getAttributeValues(int, eionet.meta.DElemAttribute.ParentType)
      */
     @Override
-    public Map<String, List<String>> getAttributeValues(int parentId, ParentType parentType) {
+    public Map<String, List<String>> getAttributeValues(int parentId, String parentType) {
 
         String sql =
                 "select SHORT_NAME, VALUE from ATTRIBUTE, M_ATTRIBUTE"
@@ -135,7 +135,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("parentId", parentId);
-        params.put("parentType", parentType.toString());
+        params.put("parentType", parentType);
 
         final HashMap<String, List<String>> resultMap = new HashMap<String, List<String>>();
         getNamedParameterJdbcTemplate().query(sql, params, new RowCallbackHandler() {

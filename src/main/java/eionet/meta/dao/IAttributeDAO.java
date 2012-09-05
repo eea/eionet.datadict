@@ -58,7 +58,7 @@ public interface IAttributeDAO {
      * @param parentType
      * @return
      */
-    Map<String, List<String>> getAttributeValues(int parentId, DElemAttribute.ParentType parentType);
+    Map<String, List<String>> getAttributeValues(int parentId, String parentType);
 
     /**
      * Returns attribute by shortName.

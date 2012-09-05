@@ -22,6 +22,7 @@
 package eionet.meta.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,7 +72,20 @@ public class TableServiceImpl implements ITableService {
         try {
             return attributeDAO.getAttributes(DElemAttribute.ParentType.TABLE, DElemAttribute.TYPE_SIMPLE);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get schema set attributes: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get table attributes: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getNameAttribute(int tableId) throws ServiceException {
+        try {
+            Map<String, List<String>> result = attributeDAO.getAttributeValues(tableId, "T");
+            return result.get("Name");
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get table name attributes: " + e.getMessage(), e);
         }
     }
 
