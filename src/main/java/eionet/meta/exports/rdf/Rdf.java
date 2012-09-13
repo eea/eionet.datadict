@@ -177,7 +177,7 @@ public class Rdf {
         streamWriter.writeEmptyElement(FOAF_NS, "isPrimaryTopicOf");
         streamWriter.writeAttribute(RDF_NS, "resource", StringUtils.substringBeforeLast(this.baseUri, "/rdf"));
         streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
-        streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
+        streamWriter.writeAttribute(RDF_NS, "resource", StringUtils.stripEnd(this.baseUri, "/"));
         streamWriter.writeEndElement(); // </rdfs:Class>
 
         Vector elms = searchEngine.getDataElements(null, null, null, null, tbl.getID());
@@ -197,7 +197,7 @@ public class Rdf {
             streamWriter.writeEndElement(); // </rdfs:domain>
 
             streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
-            streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
+            streamWriter.writeAttribute(RDF_NS, "resource", StringUtils.stripEnd(this.baseUri, "/"));
 
             streamWriter.writeEndElement(); // </rdf:Property>
         }
