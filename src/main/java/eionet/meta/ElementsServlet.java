@@ -12,14 +12,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
+import eionet.meta.exports.rdf.Rdf;
 import eionet.util.DDServletRequestWrapper;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid
  *
  */
-public class ElementsServlet extends HttpServlet{
+public class ElementsServlet extends HttpServlet {
 
     /** */
     private static final String DATA_ELEMENT_JSP = "/data_element.jsp";
@@ -28,11 +29,12 @@ public class ElementsServlet extends HttpServlet{
 
     /*
      * (non-Javadoc)
+     *
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        if (LOGGER.isTraceEnabled()){
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Entered request: " + request.getRequestURL());
         }
 
@@ -44,30 +46,27 @@ public class ElementsServlet extends HttpServlet{
         }
 
         String[] pathInfoSegments = StringUtils.split(pathInfo, "/");
-        if (pathInfoSegments[0].equals("latest")){
+        if (pathInfoSegments[0].equals("latest")) {
 
             // a latest common element definition is requested (i.e. by its alfa-numeric identifier)
             handleRequestForLatest(request, response, pathInfoSegments);
             return;
-        }
-        else if (pathInfoSegments[0].equals("add")){
+        } else if (pathInfoSegments[0].equals("add")) {
 
             // a request for adding a new element
             handleRequestForAdd(request, response, pathInfoSegments);
-        }
-        else if (NumberUtils.toInt(pathInfoSegments[0]) > 0){
+        } else if (NumberUtils.toInt(pathInfoSegments[0]) > 0) {
 
             // a request specific to a particular element (i.e. by its auto-generated identifier)
             handleRequestForParticular(request, response, pathInfoSegments);
-        }
-        else{
+        } else {
             throw new DDRuntimeException("Request not supported: " + request.getRequestURL());
         }
     }
 
-
     /*
      * (non-Javadoc)
+     *
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -78,33 +77,34 @@ public class ElementsServlet extends HttpServlet{
     }
 
     /**
-     * 
+     *
      * @param request
      * @param response
      * @param pathInfoSegments
      * @throws IOException
      * @throws ServletException
      */
-    private void handleRequestForAdd(HttpServletRequest request, HttpServletResponse response, String[] pathInfoSegments) throws ServletException, IOException {
+    private void handleRequestForAdd(HttpServletRequest request, HttpServletResponse response, String[] pathInfoSegments)
+            throws ServletException, IOException {
 
         DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
         wrappedRequest.addParameterValue("mode", "add");
         wrappedRequest.getRequestDispatcher(DATA_ELEMENT_JSP).forward(wrappedRequest, response);
     }
 
-
     /**
-     * 
+     *
      * @param request
      * @param response
      * @param pathInfoSegments
      * @throws IOException
      * @throws ServletException
      */
-    private void handleRequestForLatest(HttpServletRequest request, HttpServletResponse response, String[] pathInfoSegments) throws ServletException, IOException {
+    private void handleRequestForLatest(HttpServletRequest request, HttpServletResponse response, String[] pathInfoSegments)
+            throws ServletException, IOException {
 
-        String elmIdentifier = pathInfoSegments.length>1 ? pathInfoSegments[1] : null;
-        if (elmIdentifier==null){
+        String elmIdentifier = pathInfoSegments.length > 1 ? pathInfoSegments[1] : null;
+        if (elmIdentifier == null) {
             throw new DDRuntimeException("Missing data element identifier in path info!");
         }
 
@@ -113,21 +113,29 @@ public class ElementsServlet extends HttpServlet{
         wrappedRequest.getRequestDispatcher(DATA_ELEMENT_JSP).forward(wrappedRequest, response);
     }
 
-
     /**
-     * 
+     *
      * @param request
      * @param response
      * @param pathInfoSegments
      * @throws IOException
      * @throws ServletException
      */
-    private void handleRequestForParticular(HttpServletRequest request, HttpServletResponse response, String[] pathInfoSegments) throws ServletException, IOException {
+    private void handleRequestForParticular(HttpServletRequest request, HttpServletResponse response, String[] pathInfoSegments)
+            throws ServletException, IOException {
 
         String elementId = pathInfoSegments[0];
         String event = "view";
-        if (pathInfoSegments.length>1) {
+        if (pathInfoSegments.length > 1) {
             event = pathInfoSegments[1];
+        }
+
+        // If event is "rdf", forward to the RDF-generating servlet
+        if (event.equals("rdf")) {
+            DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
+            wrappedRequest.addParameterValue("id", elementId);
+            wrappedRequest.addParameterValue("type", Rdf.CODE_LIST_TYPE);
+            wrappedRequest.getRequestDispatcher("/GetRdf").forward(wrappedRequest, response);
         }
 
         // Make sure that the event and element id detected from the path info
@@ -138,11 +146,10 @@ public class ElementsServlet extends HttpServlet{
         DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
         wrappedRequest.addParameterValue("delem_id", elementId);
 
-        if (event.equals("subscribe") || event.equals("checkout") || event.equals("newversion")){
+        if (event.equals("subscribe") || event.equals("checkout") || event.equals("newversion")) {
             wrappedRequest.addParameterValue("mode", "view");
             wrappedRequest.addParameterValue("action", event);
-        }
-        else{
+        } else {
             wrappedRequest.addParameterValue("mode", event);
         }
 

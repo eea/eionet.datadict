@@ -33,6 +33,7 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import eionet.meta.DDSearchEngine;
@@ -40,6 +41,7 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 
@@ -299,6 +301,56 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 result.add(a);
             }
         }
+        return result;
+    }
+
+    @Override
+    public List<FixedValue> getFixedValues(int dataElementId) {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select * ");
+        sql.append(" from FXV ");
+        sql.append(" where OWNER_ID = :ownerId ");
+        sql.append(" and OWNER_TYPE=:ownerType ");
+        sql.append(" order by FXV_ID");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ownerId", dataElementId);
+        params.put("ownerType", "elem");
+
+        List<FixedValue> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<FixedValue>() {
+            public FixedValue mapRow(ResultSet rs, int rowNum) throws SQLException {
+                FixedValue fv = new FixedValue();
+                fv.setId(rs.getInt("FXV_ID"));
+                fv.setOwnerId(rs.getInt("OWNER_ID"));
+                fv.setOwnerType(rs.getString("OWNER_TYPE"));
+                fv.setValue(rs.getString("VALUE"));
+                fv.setDefinition(rs.getString("DEFINITION"));
+                fv.setShortDescription(rs.getString("SHORT_DESC"));
+                return fv;
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public DataElement getDataElement(int id) {
+        String sql = "select * from DATAELEM de where de.DATAELEM_ID = :id";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("id", id);
+
+        DataElement result = getNamedParameterJdbcTemplate().queryForObject(sql, parameters, new RowMapper<DataElement>() {
+            public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DataElement de = new DataElement();
+                de.setId(rs.getInt("de.DATAELEM_ID"));
+                de.setShortName(rs.getString("de.SHORT_NAME"));
+                de.setStatus(rs.getString("de.REG_STATUS"));
+                de.setType(rs.getString("de.TYPE"));
+                de.setModified(new Date(rs.getLong("de.DATE")));
+                de.setWorkingUser(rs.getString("de.WORKING_USER"));
+                return de;
+            }
+        });
         return result;
     }
 

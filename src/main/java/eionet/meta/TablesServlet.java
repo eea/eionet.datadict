@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import eionet.meta.exports.rdf.Rdf;
 import eionet.util.DDServletRequestWrapper;
 
 /**
@@ -49,6 +50,7 @@ public class TablesServlet extends HttpServlet{
             RequestDispatcher requestDispatcher = null;
             DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
             if (pathInfoSegments[0].equals("rdf")){
+                wrappedRequest.addParameterValue("type", Rdf.TABLE_TYPE);
                 requestDispatcher = wrappedRequest.getRequestDispatcher("/GetRdf");
             }
             else if (pathInfoSegments[0].equals("add")){
@@ -76,6 +78,7 @@ public class TablesServlet extends HttpServlet{
 
             DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
             wrappedRequest.addParameterValue("id", tableId);
+            wrappedRequest.addParameterValue("type", Rdf.TABLE_TYPE);
             wrappedRequest.getRequestDispatcher("/GetRdf").forward(wrappedRequest, response);
         }
         else {

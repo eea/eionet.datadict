@@ -24,7 +24,9 @@ package eionet.meta.service;
 import java.util.List;
 
 import eionet.meta.dao.domain.Attribute;
+import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
+import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 
@@ -60,6 +62,14 @@ public interface IDataService {
     Attribute getAttributeByName(String shortName) throws ServiceException;
 
     /**
+     * Returns data element by id.
+     *
+     * @param id
+     * @return
+     */
+    DataElement getDataElement(int id) throws ServiceException;
+
+    /**
      * Search data elements.
      *
      * @param filter
@@ -67,4 +77,20 @@ public interface IDataService {
      * @throws ServiceException
      */
     DataElementsResult searchDataElements(DataElementsFilter filter) throws ServiceException;
+
+    /**
+     * Returns data element's fixed values.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    List<FixedValue> getFixedValues(int dataElementId) throws ServiceException;
+
+    /**
+     * Returns data elements that have code list values.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    List<DataElement> getDataElementsWithFixedValues() throws ServiceException;
 }

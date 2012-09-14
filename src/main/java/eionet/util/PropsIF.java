@@ -91,7 +91,8 @@ public interface PropsIF {
     public static final String IRRELEVANT_ATTRS_PREFIX = "irrelevantAttrs.";
 
     /** */
-    public static final String RDF_BASE_URI = "rdf.baseUri";
+    public static final String RDF_TABLES_BASE_URI = "rdf.tables.baseUri";
+    public static final String RDF_DATAELEMENTS_BASE_URI = "rdf.dataelements.baseUri";
 
     /** */
     public static final String GENERAL_SCHEMA_URI = "dd.generalSchemaUri";

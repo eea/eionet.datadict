@@ -450,6 +450,10 @@
         <servlet-name>DownloadServlet</servlet-name>
         <url-pattern>/schemas/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/void.rdf</url-pattern>
+    </servlet-mapping>
 
     <!-- Mime mappings. -->
     <mime-mapping>

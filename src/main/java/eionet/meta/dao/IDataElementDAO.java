@@ -25,6 +25,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import eionet.meta.dao.domain.Attribute;
+import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 
@@ -49,5 +51,20 @@ public interface IDataElementDAO {
      * @return
      */
     List<Attribute> getDataElementAttributes() throws SQLException;
+
+    /**
+     * Returns data element's fixed values.
+     *
+     * @return
+     */
+    List<FixedValue> getFixedValues(int dataElementId);
+
+    /**
+     * Returns data element by id.
+     *
+     * @param id
+     * @return
+     */
+    DataElement getDataElement(int id);
 
 }
