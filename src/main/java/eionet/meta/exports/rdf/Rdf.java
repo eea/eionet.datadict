@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
@@ -239,12 +240,14 @@ public class Rdf {
         streamWriter.setPrefix("rdfs", RDFS_NS);
         streamWriter.setPrefix("owl", OWL_NS);
         streamWriter.setPrefix("foaf", FOAF_NS);
+        streamWriter.setPrefix("dd", DD_NS);
 
         streamWriter.writeStartElement(RDF_NS, "RDF");
         streamWriter.writeNamespace("rdf", RDF_NS);
         streamWriter.writeNamespace("rdfs", RDFS_NS);
         streamWriter.writeNamespace("owl", OWL_NS);
         streamWriter.writeNamespace("foaf", FOAF_NS);
+        streamWriter.writeNamespace("dd", DD_NS);
 
         streamWriter.writeStartElement(RDFS_NS, "Class");
         streamWriter.writeAttribute(RDF_NS, "about", this.baseUri + "/" + tbl.getIdentifier());
@@ -262,24 +265,66 @@ public class Rdf {
 
             DataElement elm = (DataElement) elms.get(i);
 
-            streamWriter.writeStartElement(RDF_NS, "Property");
-            streamWriter.writeAttribute(RDF_NS, "ID", elm.getIdentifier());
+            if (elm.getType().equalsIgnoreCase("CH1")) {
+                writeFixedValueProperty(streamWriter, elm);
+            } else {
+                writeRegularProperty(streamWriter, elm);
+            }
 
-            streamWriter.writeStartElement(RDFS_NS, "label");
-            streamWriter.writeCharacters(elm.getShortName());
-            streamWriter.writeEndElement(); // </rdfs:label>
-
-            streamWriter.writeStartElement(RDFS_NS, "domain");
-            streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri + "/" + tbl.getIdentifier());
-            streamWriter.writeEndElement(); // </rdfs:domain>
-
-            streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
-            streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
-
-            streamWriter.writeEndElement(); // </rdf:Property>
         }
 
         streamWriter.writeEndElement(); // </rdf:RDF>
+    }
+
+    /**
+     * Writes regular property RDF output.
+     *
+     * @param streamWriter
+     * @param element
+     * @throws XMLStreamException
+     */
+    private void writeRegularProperty(XMLStreamWriter streamWriter, DataElement element) throws XMLStreamException {
+        streamWriter.writeStartElement(RDF_NS, "Property");
+        streamWriter.writeAttribute(RDF_NS, "ID", element.getIdentifier());
+
+        streamWriter.writeStartElement(RDFS_NS, "label");
+        streamWriter.writeCharacters(element.getShortName());
+        streamWriter.writeEndElement(); // </rdfs:label>
+
+        streamWriter.writeStartElement(RDFS_NS, "domain");
+        streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri + "/" + tbl.getIdentifier());
+        streamWriter.writeEndElement(); // </rdfs:domain>
+
+        streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
+        streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
+
+        streamWriter.writeEndElement(); // </rdf:Property>
+    }
+
+    /**
+     * Writes fixed value property RDF output.
+     *
+     * @param streamWriter
+     * @param element
+     * @throws XMLStreamException
+     */
+    private void writeFixedValueProperty(XMLStreamWriter streamWriter, DataElement element) throws XMLStreamException {
+        streamWriter.writeStartElement(OWL_NS, "DatatypeProperty");
+        streamWriter.writeAttribute(RDF_NS, "ID", element.getIdentifier());
+
+        streamWriter.writeStartElement(RDFS_NS, "label");
+        streamWriter.writeCharacters(element.getShortName());
+        streamWriter.writeEndElement(); // </rdfs:label>
+
+        streamWriter.writeStartElement(RDFS_NS, "domain");
+        streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri + "/" + tbl.getIdentifier());
+        streamWriter.writeEndElement(); // </rdfs:domain>
+
+        streamWriter.writeStartElement(DD_NS, "usesVocabulary");
+        streamWriter.writeAttribute(RDF_NS, "resource", "/dataelements/" + element.getID());
+        streamWriter.writeEndElement(); // </dd:usesVocabulary>
+
+        streamWriter.writeEndElement(); // </owl:DatatypeProperty>
     }
 
     /**
