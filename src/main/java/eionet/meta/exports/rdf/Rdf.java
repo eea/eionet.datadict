@@ -92,6 +92,7 @@ public class Rdf {
                 HashSet datasetStatuses = new HashSet();
                 datasetStatuses.add("Released");
                 datasetStatuses.add("Recorded");
+                this.baseUri = Props.getRequiredProperty(PropsIF.RDF_TABLES_BASE_URI);
                 tables = searchEngine.getDatasetTables(null, null, null, null, null, null, datasetStatuses, false);
                 if (tables == null || tables.isEmpty()) {
                     throw new Exception("No tables found!");
@@ -206,7 +207,7 @@ public class Rdf {
 
             DsTable table = (DsTable) tables.get(i);
             String tableId = table.getID();
-            String tableRdfUrl = MessageFormat.format(baseUri, tableId);
+            String tableRdfUrl = MessageFormat.format(baseUri, Integer.parseInt(tableId));
 
             streamWriter.writeStartElement(DD_NS, "TableSchema");
             streamWriter.writeAttribute(RDF_NS, "about", tableRdfUrl);
