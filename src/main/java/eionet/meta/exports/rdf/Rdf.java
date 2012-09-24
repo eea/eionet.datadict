@@ -79,6 +79,7 @@ public class Rdf {
 
         if (type.equals(TABLE_TYPE)) {
             tableService = ctx.getBean(ITableService.class);
+            dataService = ctx.getBean(IDataService.class);
 
             if (id != null) {
 
@@ -285,6 +286,13 @@ public class Rdf {
      * @throws XMLStreamException
      */
     private void writeRegularProperty(XMLStreamWriter streamWriter, DataElement element) throws XMLStreamException {
+        String type = null;
+        try {
+            type = dataService.getDataElementDataType(Integer.parseInt(element.getID()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         streamWriter.writeStartElement(RDF_NS, "Property");
         streamWriter.writeAttribute(RDF_NS, "ID", element.getIdentifier());
 
@@ -295,6 +303,12 @@ public class Rdf {
         streamWriter.writeStartElement(RDFS_NS, "domain");
         streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri + "/" + tbl.getIdentifier());
         streamWriter.writeEndElement(); // </rdfs:domain>
+
+        if (StringUtils.isNotEmpty(type)) {
+            streamWriter.writeStartElement(RDFS_NS, "range");
+            streamWriter.writeAttribute(RDF_NS, "resource", getXmlType(type));
+            streamWriter.writeEndElement(); // </rdfs:domain>
+        }
 
         streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
         streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
@@ -326,6 +340,44 @@ public class Rdf {
         streamWriter.writeEndElement(); // </dd:usesVocabulary>
 
         streamWriter.writeEndElement(); // </owl:DatatypeProperty>
+    }
+
+    /**
+     * Returns the xml type according the attribute's type in database.
+     *
+     * @param type
+     * @return
+     */
+    private String getXmlType(String type) {
+        String xmlTypePrefix = "http://www.w3.org/2001/XMLSchema#";
+        String suffix = null;
+
+        if (type.equalsIgnoreCase("string")) {
+            suffix = "string";
+        }
+        if (type.equalsIgnoreCase("boolean")) {
+            suffix = "boolean";
+        }
+        if (type.equalsIgnoreCase("integer")) {
+            suffix = "integer";
+        }
+        if (type.equalsIgnoreCase("date")) {
+            suffix = "date";
+        }
+        if (type.equalsIgnoreCase("decimal")) {
+            suffix = "decimal";
+        }
+        if (type.equalsIgnoreCase("float")) {
+            suffix = "float";
+        }
+        if (type.equalsIgnoreCase("double")) {
+            suffix = "double";
+        }
+
+        if (suffix == null) {
+            suffix = "string";
+        }
+        return xmlTypePrefix + suffix;
     }
 
     /**

@@ -32,6 +32,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -304,6 +305,9 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<FixedValue> getFixedValues(int dataElementId) {
         StringBuffer sql = new StringBuffer();
@@ -333,6 +337,9 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DataElement getDataElement(int id) {
         String sql = "select * from DATAELEM de where de.DATAELEM_ID = :id";
@@ -351,6 +358,30 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 return de;
             }
         });
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDataElementDataType(int dataElementId) {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select at.VALUE from DATAELEM de ");
+        sql.append("left join ATTRIBUTE at on at.DATAELEM_ID = de.DATAELEM_ID ");
+        sql.append("left join M_ATTRIBUTE ma on ma.M_ATTRIBUTE_ID = at.M_ATTRIBUTE_ID ");
+        sql.append("where de.dataelem_id = :dataElementId and ma.NAME like :dataType ");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("dataElementId", dataElementId);
+        params.put("dataType", "datatype");
+
+        String result = null;
+        try {
+            result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, String.class);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
         return result;
     }
 

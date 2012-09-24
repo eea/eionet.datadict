@@ -93,4 +93,13 @@ public interface IDataService {
      * @throws ServiceException
      */
     List<DataElement> getDataElementsWithFixedValues() throws ServiceException;
+
+    /**
+     * Returns data element's data type.
+     *
+     * @param dataElementId
+     * @return
+     * @throws ServiceException
+     */
+    String getDataElementDataType(int dataElementId) throws ServiceException;
 }

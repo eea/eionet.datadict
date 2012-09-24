@@ -93,6 +93,9 @@ public class DataServiceImpl implements IDataService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DataElement getDataElement(int id) throws ServiceException {
         try {
@@ -102,6 +105,9 @@ public class DataServiceImpl implements IDataService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<DataElement> getDataElementsWithFixedValues() throws ServiceException {
         try {
@@ -123,6 +129,18 @@ public class DataServiceImpl implements IDataService {
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get data elements with fixed values: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDataElementDataType(int dataElementId) throws ServiceException {
+        try {
+            return dataElementDao.getDataElementDataType(dataElementId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get data element's data type: " + e.getMessage(), e);
         }
     }
 }

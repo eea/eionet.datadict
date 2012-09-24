@@ -67,4 +67,11 @@ public interface IDataElementDAO {
      */
     DataElement getDataElement(int id);
 
+    /**
+     *
+     * @param dataElementId
+     * @return
+     */
+    String getDataElementDataType(int dataElementId);
+
 }
