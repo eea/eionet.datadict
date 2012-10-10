@@ -127,7 +127,7 @@ public class Rdf {
     /**
      * Writes RDF output of CommonElement fixed values.
      *
-     * @param writer
+     * @param writer - output
      * @throws Exception
      */
     private void writeCodeList(Writer writer) throws Exception {
@@ -146,6 +146,9 @@ public class Rdf {
         streamWriter.writeNamespace("rdf", RDF_NS);
         streamWriter.writeNamespace("rdfs", RDFS_NS);
         streamWriter.writeNamespace("skos", SKOS_NS);
+        streamWriter.writeNamespace("foaf", FOAF_NS);
+        // Normally the URL in xml:base ends with a slash. Not here.
+        // Therefore we have to include the id again in the Collection URI and Concepts.
         streamWriter.writeAttribute("xml", XML_NS, "base", StringUtils.substringBeforeLast(this.baseUri, "/rdf"));
 
         streamWriter.writeStartElement(SKOS_NS, "Collection");
@@ -155,16 +158,21 @@ public class Rdf {
         streamWriter.writeCharacters(dataElement.getShortName());
         streamWriter.writeEndElement();
 
+        streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
+        streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
+
+        streamWriter.writeEmptyElement(FOAF_NS, "isPrimaryTopicOf");
+        streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id));
+
         for (FixedValue fv : fixedValues) {
-            streamWriter.writeStartElement(SKOS_NS, "member");
-            streamWriter.writeAttribute(RDF_NS, "resource", fv.getValue());
-            streamWriter.writeEndElement();
+            streamWriter.writeEmptyElement(SKOS_NS, "member");
+            streamWriter.writeAttribute(RDF_NS, "resource", Integer.toString(id) + "/" + fv.getValue());
         }
         streamWriter.writeEndElement(); // </skos:Collection>
 
         for (FixedValue fv : fixedValues) {
             streamWriter.writeStartElement(SKOS_NS, "Concept");
-            streamWriter.writeAttribute(RDF_NS, "about", fv.getValue());
+            streamWriter.writeAttribute(RDF_NS, "about", Integer.toString(id) + "/" + fv.getValue());
 
             streamWriter.writeStartElement(SKOS_NS, "prefLabel");
             streamWriter.writeCharacters(fv.getValue());
@@ -253,13 +261,17 @@ public class Rdf {
 
         streamWriter.writeStartElement(RDFS_NS, "Class");
         streamWriter.writeAttribute(RDF_NS, "about", this.baseUri + "/" + tbl.getIdentifier());
+
         streamWriter.writeStartElement(RDFS_NS, "label");
         streamWriter.writeCharacters(tableName);
         streamWriter.writeEndElement(); // </rdfs:label>
+
         streamWriter.writeEmptyElement(FOAF_NS, "isPrimaryTopicOf");
         streamWriter.writeAttribute(RDF_NS, "resource", StringUtils.substringBeforeLast(this.baseUri, "/rdf"));
+
         streamWriter.writeEmptyElement(RDFS_NS, "isDefinedBy");
         streamWriter.writeAttribute(RDF_NS, "resource", this.baseUri);
+
         streamWriter.writeEndElement(); // </rdfs:Class>
 
         Vector elms = searchEngine.getDataElements(null, null, null, null, tbl.getID());
