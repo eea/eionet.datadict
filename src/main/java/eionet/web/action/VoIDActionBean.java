@@ -21,7 +21,9 @@
 
 package eionet.web.action;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,9 +35,11 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 
 import org.apache.commons.lang.StringUtils;
 
+import eionet.meta.DDSearchEngine;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.exports.rdf.VoIDXmlWriter;
 import eionet.meta.service.IDataService;
+import eionet.util.sql.ConnectionUtil;
 
 /**
  * The Vocabulary of data elements with fixed values (VoID) action bean. http://www.w3.org/TR/void/
@@ -62,8 +66,16 @@ public class VoIDActionBean extends AbstractActionBean {
         StreamingResolution result = new StreamingResolution("application/xml") {
             public void stream(HttpServletResponse response) throws Exception {
                 List<DataElement> dataElements = dataService.getDataElementsWithFixedValues();
+
+                HashSet<String> datasetStatuses = new HashSet<String>();
+                datasetStatuses.add("Released");
+                datasetStatuses.add("Recorded");
+                DDSearchEngine searchEngine = new DDSearchEngine(ConnectionUtil.getConnection());
+                Vector tables = searchEngine.getDatasetTables(null, null, null, null, null, null, datasetStatuses, false);
+
+
                 VoIDXmlWriter xmlWriter = new VoIDXmlWriter(response.getOutputStream(), contextRoot);
-                xmlWriter.writeVoIDXml(dataElements);
+                xmlWriter.writeVoIDXml(dataElements, tables);
             }
         };
         return result;

@@ -125,7 +125,6 @@ public class SchemasManifestXmlWriter {
 
         }
 
-        // TODO: all the referenced schemas
         SchemaFilter schemaFilter = new SchemaFilter();
         SchemasResult schemaResult = schemaService.searchSchemas(schemaFilter);
 

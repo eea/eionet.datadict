@@ -22,8 +22,12 @@
 package eionet.meta.exports.rdf;
 
 import java.io.OutputStream;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -31,6 +35,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
 
+import eionet.meta.DsTable;
 import eionet.meta.dao.domain.DataElement;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -81,8 +86,10 @@ public class VoIDXmlWriter {
      * @param dataElements
      * @throws XMLStreamException
      */
-    public void writeVoIDXml(List<DataElement> dataElements) throws XMLStreamException {
-        String uriPattern = Props.getRequiredProperty(PropsIF.RDF_DATAELEMENTS_BASE_URI);
+    public void writeVoIDXml(List<DataElement> dataElements, Vector tables) throws XMLStreamException {
+        String dataElementsBaseUri = Props.getRequiredProperty(PropsIF.RDF_DATAELEMENTS_BASE_URI);
+        String tablesBaseUri = Props.getRequiredProperty(PropsIF.RDF_TABLES_BASE_URI);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
         writer.writeStartDocument(ENCODING, "1.0");
 
@@ -93,15 +100,54 @@ public class VoIDXmlWriter {
         writer.writeNamespace(DCT_NS_PREFIX, DCT_NS);
         writer.writeNamespace(VOID_NS_PREFIX, VOID_NS);
 
+        for (int i = 0; tables != null && i < tables.size(); i++) {
+
+            DsTable table = (DsTable) tables.get(i);
+            String tableId = table.getID();
+            String tableRdfUrl = MessageFormat.format(tablesBaseUri, Integer.parseInt(tableId));
+
+            writer.writeStartElement(VOID_NS_PREFIX, "Dataset", VOID_NS);
+            writer.writeAttribute(RDF_NS_PREFIX, RDF_NS, "ID", "TBL" + tableId);
+
+            writer.writeStartElement(RDFS_NS_PREFIX, "label", RDFS_NS);
+            writer.writeCharacters(table.getName());
+            writer.writeEndElement();
+
+            writer.writeStartElement(VOID_NS_PREFIX, "dataDump", VOID_NS);
+            writer.writeAttribute(RDF_NS_PREFIX, RDF_NS, "resource", tableRdfUrl);
+            writer.writeEndElement();
+
+            if (StringUtils.isNotEmpty(table.getDstDate())) {
+                Long milliseconds = Long.parseLong(table.getDstDate());
+                writer.writeStartElement(DCT_NS_PREFIX, "modified", DCT_NS);
+                writer.writeAttribute(RDF_NS_PREFIX, RDF_NS, "datatype", "http://www.w3.org/2001/XMLSchema#dateTime");
+                writer.writeCharacters(dateFormat.format(new Date(milliseconds)));
+                writer.writeEndElement();
+            }
+
+            writer.writeEndElement();
+        }
+
         for (DataElement de : dataElements) {
-            String dataelementUri = MessageFormat.format(uriPattern, de.getId());
+            String dataelementUri = MessageFormat.format(dataElementsBaseUri, de.getId());
 
             writer.writeStartElement(VOID_NS_PREFIX, "Dataset", VOID_NS);
             writer.writeAttribute(RDF_NS_PREFIX, RDF_NS, "about", StringUtils.substringBeforeLast(dataelementUri, "/rdf"));
 
+            writer.writeStartElement(RDFS_NS_PREFIX, "label", RDFS_NS);
+            writer.writeCharacters(de.getShortName());
+            writer.writeEndElement();
+
             writer.writeStartElement(VOID_NS_PREFIX, "dataDump", VOID_NS);
             writer.writeAttribute(RDF_NS_PREFIX, RDF_NS, "resource", dataelementUri);
             writer.writeEndElement();
+
+            if (de.getModified() != null) {
+                writer.writeStartElement(DCT_NS_PREFIX, "modified", DCT_NS);
+                writer.writeAttribute(RDF_NS_PREFIX, RDF_NS, "datatype", "http://www.w3.org/2001/XMLSchema#dateTime");
+                writer.writeCharacters(dateFormat.format(de.getModified()));
+                writer.writeEndElement();
+            }
 
             writer.writeEndElement();
         }
