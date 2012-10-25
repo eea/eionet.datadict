@@ -107,7 +107,7 @@ public class SchemasManifestXmlWriter {
         for (SchemaSet ss : schemaSetsResult.getList()) {
 
             writer.writeStartElement("dd", "SchemaSet", DD_NS);
-            writer.writeAttribute("rdf", RDF_NS, "about", "schemaSet/" + ss.getIdentifier());
+            writer.writeAttribute("rdf", RDF_NS, "about", "schemaset/" + ss.getIdentifier());
 
             writer.writeStartElement(RDFS_NS, "label");
             writer.writeCharacters(ss.getNameAttribute());
@@ -117,7 +117,7 @@ public class SchemasManifestXmlWriter {
 
             for (Schema s : schemas) {
                 writer.writeStartElement("dd", "hasSchema", DD_NS);
-                writer.writeAttribute("rdf", RDF_NS, "resource", "schema/" + ss.getIdentifier() + "/" + s.getFileName());
+                writer.writeAttribute("rdf", RDF_NS, "resource", "schemas/" + ss.getIdentifier() + "/" + s.getFileName());
                 writer.writeEndElement();
             }
 
