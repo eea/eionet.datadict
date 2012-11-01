@@ -114,7 +114,13 @@
     <filter-mapping>
         <filter-name>ContentNegotiationFilter</filter-name>
         <url-pattern>/tables/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>ContentNegotiationFilter</filter-name>
         <url-pattern>/dataelements/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>ContentNegotiationFilter</filter-name>
         <url-pattern>/schemasets/*</url-pattern>
     </filter-mapping>
 
