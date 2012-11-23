@@ -39,6 +39,7 @@ import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
 import eionet.meta.FixedValue;
 import eionet.meta.dao.DAOException;
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.schemas.SchemaRepository;
@@ -123,7 +124,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
         loadSchemaSetByIdentifier();
 
         if (!isUserLoggedIn()) {
-            if (!Util.enumEquals(schemaSet.getRegStatus(), SchemaSet.RegStatus.RELEASED, SchemaSet.RegStatus.PUBLIC_DRAFT)) {
+            if (!Util.enumEquals(schemaSet.getRegStatus(), RegStatus.RELEASED, RegStatus.PUBLIC_DRAFT)) {
                 throw new ServiceException("Un-authenticated users can only see definitions in Released status!");
             }
         }

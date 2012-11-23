@@ -1,0 +1,156 @@
+/*
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either exprevf or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ *
+ * The Original Code is Content Registry 3
+ *
+ * The Initial Owner of the Original Code is European Environment
+ * Agency. Portions created by TripleDev or Zero Technologies are Copyright
+ * (C) European Environment Agency.  All Rights Reserved.
+ *
+ * Contributor(s):
+ *        Juhan Voolaid
+ */
+
+package eionet.meta.dao.mysql;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import eionet.meta.dao.IVocabularyFolderDAO;
+import eionet.meta.dao.domain.RegStatus;
+import eionet.meta.dao.domain.VocabularyFolder;
+
+/**
+ * Vocabualary folder DAO.
+ *
+ * @author Juhan Voolaid
+ */
+@Repository
+public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabularyFolderDAO {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<VocabularyFolder> getVocabularyFolders(String userName) {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID ");
+        sql.append("from T_VOCABULARY_FOLDER");
+
+        List<VocabularyFolder> items =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {
+                    public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyFolder vf = new VocabularyFolder();
+                        vf.setId(rs.getInt("VOCABULARY_FOLDER_ID"));
+                        vf.setIdentifier(rs.getString("IDENTIFIER"));
+                        vf.setLabel(rs.getString("LABEL"));
+                        vf.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                        vf.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                        vf.setWorkingUser(rs.getString("WORKING_USER"));
+                        vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
+                        vf.setUserModified(rs.getString("USER_MODIFIED"));
+                        vf.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                        return vf;
+                    }
+                });
+
+        return items;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int createVocabularyFolder(VocabularyFolder vocabularyFolder) {
+        String sql =
+                "insert into T_VOCABULARY_FOLDER (IDENTIFIER,  LABEL, REG_STATUS, "
+                        + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID) "
+                        + "values (:identifier,  :label, :regStatus, :workingCopy, :workingUser, now(), :userModified, :checkedOutCopyId)";
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("identifier", vocabularyFolder.getIdentifier());
+        parameters.put("label", vocabularyFolder.getLabel());
+        parameters.put("regStatus", vocabularyFolder.getRegStatus().toString());
+        parameters.put("workingCopy", vocabularyFolder.isWorkingCopy());
+        parameters.put("workingUser", vocabularyFolder.getWorkingUser());
+        parameters.put("userModified", vocabularyFolder.getUserModified());
+        parameters.put("checkedOutCopyId",
+                vocabularyFolder.getCheckedOutCopyId() <= 0 ? null : vocabularyFolder.getCheckedOutCopyId());
+
+        getNamedParameterJdbcTemplate().update(sql, parameters);
+        return getLastInsertId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VocabularyFolder getVocabularyFolder(String identifier, boolean workingCopy) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("identifier", identifier);
+        params.put("workingCopy", workingCopy);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID ");
+        sql.append("from T_VOCABULARY_FOLDER ");
+        sql.append("where IDENTIFIER=:identifier and WORKING_COPY=:workingCopy");
+
+        VocabularyFolder result =
+                getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyFolder>() {
+                    public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyFolder vf = new VocabularyFolder();
+                        vf.setId(rs.getInt("VOCABULARY_FOLDER_ID"));
+                        vf.setIdentifier(rs.getString("IDENTIFIER"));
+                        vf.setLabel(rs.getString("LABEL"));
+                        vf.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                        vf.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                        vf.setWorkingUser(rs.getString("WORKING_USER"));
+                        vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
+                        vf.setUserModified(rs.getString("USER_MODIFIED"));
+                        vf.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                        return vf;
+                    }
+                });
+
+        return result;
+    }
+
+    @Override
+    public void updateVocabularyFolder(VocabularyFolder vocabularyFolder) {
+        String sql =
+                "update T_VOCABULARY_FOLDER set IDENTIFIER = :identifier,  LABEL = :label, REG_STATUS = :regStatus, "
+                        + "WORKING_COPY = :workingCopy, WORKING_USER = :workingUser, DATE_MODIFIED = now(), USER_MODIFIED = :userModified "
+                        + "where VOCABULARY_FOLDER_ID = :vocabularyFolderId";
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("vocabularyFolderId", vocabularyFolder.getId());
+        parameters.put("identifier", vocabularyFolder.getIdentifier());
+        parameters.put("label", vocabularyFolder.getLabel());
+        parameters.put("regStatus", vocabularyFolder.getRegStatus().toString());
+        parameters.put("workingCopy", vocabularyFolder.isWorkingCopy());
+        parameters.put("workingUser", vocabularyFolder.getWorkingUser());
+        parameters.put("userModified", vocabularyFolder.getUserModified());
+
+        getNamedParameterJdbcTemplate().update(sql, parameters);
+    }
+
+}

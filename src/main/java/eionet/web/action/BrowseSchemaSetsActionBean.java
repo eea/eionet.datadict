@@ -35,6 +35,7 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
@@ -79,6 +80,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     private Set<Integer> deletableSchemas;
 
     /**
+     * View list action.
      *
      * @return
      * @throws ServiceException
@@ -92,6 +94,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
     }
 
     /**
+     * View working copies action.
      *
      * @return
      * @throws ServiceException
@@ -152,7 +155,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
         if (getUser() != null) {
             try {
                 return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d")
-                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+                        || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
             } catch (Exception e) {
                 LOGGER.error("Failed to read user permission", e);
             }
@@ -200,7 +203,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
                 for (SchemaSet schemaSet : schemaSets) {
                     // Must not be a working copy, nor must it be checked out
                     if (!schemaSet.isWorkingCopy() && StringUtils.isBlank(schemaSet.getWorkingUser())) {
-                        String permission = schemaSet.getRegStatus().equals(SchemaSet.RegStatus.RELEASED) ? "er" : "d";
+                        String permission = schemaSet.getRegStatus().equals(RegStatus.RELEASED) ? "er" : "d";
                         if (SecurityUtil.hasPerm(userName, "/schemasets", permission)) {
                             deletableSchemaSets.add(schemaSet.getId());
                         }
@@ -224,7 +227,7 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
                 for (Schema schema : schemas) {
                     // Must be a root-level schema, and must not be a working copy nor must it be checked out
                     if (schema.getSchemaSetId() <= 0 && !schema.isWorkingCopy() && StringUtils.isBlank(schema.getWorkingUser())) {
-                        String permission = schema.getRegStatus().equals(SchemaSet.RegStatus.RELEASED) ? "er" : "d";
+                        String permission = schema.getRegStatus().equals(RegStatus.RELEASED) ? "er" : "d";
                         if (schema.getSchemaSetId() > 0) {
                             if (SecurityUtil.hasPerm(userName, "/schemasets", permission)) {
                                 deletableSchemas.add(schema.getId());

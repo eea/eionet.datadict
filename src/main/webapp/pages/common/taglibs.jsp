@@ -4,3 +4,4 @@
 <%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld" %>
 <%@ taglib prefix="display" uri="http://displaytag.sf.net" %>
 <%@ taglib prefix="ddfn" uri="http://dd.eionet.europa.eu/jstl/functions" %>
+<%@ taglib prefix="dd" tagdir="/WEB-INF/tags" %>

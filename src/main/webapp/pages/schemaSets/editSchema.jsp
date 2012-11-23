@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<%@page import="eionet.meta.dao.domain.SchemaSet"%>
+<%@page import="eionet.meta.dao.domain.RegStatus"%>
 <%@page import="eionet.meta.DElemAttribute"%>
 
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Edit schema set">
@@ -78,7 +78,7 @@
                             <img style="border:0" src="${pageContext.request.contextPath}/images/mandatory.gif" width="16" height="16" alt=""/>
                         </td>
                         <td class="simple_attr_value">
-                            <c:set var="regStatuses" value="<%=SchemaSet.RegStatus.values()%>"/>
+                            <c:set var="regStatuses" value="<%=RegStatus.values()%>"/>
                             <stripes:select name="schema.regStatus" value="${actionBean.schema.regStatus}">
                                 <c:forEach items="${regStatuses}" var="aRegStatus">
                                     <stripes:option value="${aRegStatus}" label="${aRegStatus}"/>

@@ -38,6 +38,7 @@ import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.ISchemaDAO;
 import eionet.meta.dao.ISchemaSetDAO;
 import eionet.meta.dao.domain.Attribute;
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.schemas.SchemaRepository;
@@ -173,7 +174,7 @@ public class SchemaServiceImpl implements ISchemaService {
                 throw new ValidationException("Cannot delete a checked-out schema set: " + schemaSet.getIdentifier());
             } else if (schemaSet.isWorkingCopy() && !StringUtils.equals(username, schemaSet.getWorkingUser())) {
                 throw new ValidationException("Cannot delete another user's working copy: " + schemaSet.getIdentifier());
-            } else if (schemaSet.getRegStatus().equals(SchemaSet.RegStatus.RELEASED)) {
+            } else if (schemaSet.getRegStatus().equals(RegStatus.RELEASED)) {
                 if (!deleteReleasedPerm) {
                     throw new ValidationException("No permission to delete released schema set: " + schemaSet.getIdentifier());
                 }
@@ -441,7 +442,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Transactional(rollbackFor = ServiceException.class)
     public int addSchema(Schema schema, Map<Integer, Set<String>> attributes) throws ServiceException {
         if (schema.getSchemaSetId() == 0) {
-            schema.setRegStatus(SchemaSet.RegStatus.DRAFT);
+            schema.setRegStatus(RegStatus.DRAFT);
         }
 
         try {

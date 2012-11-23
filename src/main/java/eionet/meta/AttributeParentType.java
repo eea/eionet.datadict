@@ -1,9 +1,9 @@
 package eionet.meta;
 
-import eionet.meta.dao.domain.SchemaSet.RegStatus;
+import eionet.meta.dao.domain.RegStatus;
 
 /**
- * 
+ *
  * @author Jaanus Heinlaid
  *
  */
@@ -16,7 +16,7 @@ public enum AttributeParentType {
     String s;
 
     /**
-     * 
+     *
      * @param s
      */
     AttributeParentType(String s){
@@ -32,7 +32,7 @@ public enum AttributeParentType {
     }
 
     /**
-     * 
+     *
      * @param s
      * @return
      */
@@ -46,7 +46,7 @@ public enum AttributeParentType {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public static RegStatus getDefault(){

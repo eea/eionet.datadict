@@ -37,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.displaytag.properties.SortOrderEnum;
 
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
@@ -95,7 +96,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
         searchFilter.setPageNumber(page);
 
         if (!isAuthenticated()) {
-            searchFilter.setRegStatus(SchemaSet.RegStatus.RELEASED.toString());
+            searchFilter.setRegStatus(RegStatus.RELEASED.toString());
         }
 
         if (StringUtils.isNotEmpty(sort)) {
@@ -146,7 +147,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
         if (getUser() != null) {
             try {
                 return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d")
-                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+                        || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
             } catch (Exception e) {
                 LOGGER.error("Failed to read user permission", e);
             }
@@ -169,7 +170,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
     public List<String> getRegStatuses() {
         List<String> result = new ArrayList<String>();
         result.add("");
-        for (SchemaSet.RegStatus rs : SchemaSet.RegStatus.values()) {
+        for (RegStatus rs : RegStatus.values()) {
             result.add(rs.toString());
         }
 
@@ -273,7 +274,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
                 for (SchemaSet schemaSet : schemaSets) {
                     // Must not be a working copy, nor must it be checked out
                     if (!schemaSet.isWorkingCopy() && StringUtils.isBlank(schemaSet.getWorkingUser())) {
-                        String permission = schemaSet.getRegStatus().equals(SchemaSet.RegStatus.RELEASED) ? "er" : "d";
+                        String permission = schemaSet.getRegStatus().equals(RegStatus.RELEASED) ? "er" : "d";
                         if (SecurityUtil.hasPerm(userName, "/schemasets", permission)) {
                             deletable.add(schemaSet.getId());
                         }

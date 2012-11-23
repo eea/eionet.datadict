@@ -207,6 +207,14 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/searchelements/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/vocabularies/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/vocabulary/*</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>env</servlet-name>

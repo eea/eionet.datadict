@@ -34,6 +34,7 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
 
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
@@ -91,7 +92,7 @@ public class SearchSchemaActionBean extends AbstractActionBean {
         searchFilter.setPageNumber(page);
 
         if (!isAuthenticated()) {
-            searchFilter.setRegStatus(SchemaSet.RegStatus.RELEASED.toString());
+            searchFilter.setRegStatus(RegStatus.RELEASED.toString());
         }
 
         if (StringUtils.isNotEmpty(sort)) {
@@ -162,7 +163,7 @@ public class SearchSchemaActionBean extends AbstractActionBean {
     public List<String> getRegStatuses() {
         List<String> result = new ArrayList<String>();
         result.add("");
-        for (SchemaSet.RegStatus rs : SchemaSet.RegStatus.values()) {
+        for (RegStatus rs : RegStatus.values()) {
             result.add(rs.toString());
         }
 
