@@ -64,6 +64,11 @@ private String legalizeAlert(String in){
     String table_id = request.getParameter("table_id");
     if (table_id == null) table_id = "";
 
+    String parent_link = request.getParameter("parent_link");
+    if (parent_link == null){
+        parent_link = "";
+    }
+
     // handle POST request
     if (request.getMethod().equals("POST")){
         Connection userConn = null;
@@ -94,7 +99,8 @@ private String legalizeAlert(String in){
                                                      "&parent_name=" + parent_name +
                                                      "&parent_ns=" + parent_ns +
                                                      "&table_id=" + table_id +
-                                                     "&dataset_id=" + dataset_id;
+                                                     "&dataset_id=" + dataset_id +
+                                                     "&parent_link=" + parent_link;
         response.sendRedirect(redirUrl);
         return;
     }
@@ -150,7 +156,7 @@ private String legalizeAlert(String in){
             function addNew(){
                 var id = document.forms["form1"].elements["new_attr_id"].value;
                 var url = "<%=redirUrl%>" + "complex_attr.jsp?mode=add&attr_id=" + id +
-                            "&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>&table_id=<%=table_id%>&dataset_id=<%=dataset_id%>";
+                            "&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>&table_id=<%=table_id%>&dataset_id=<%=dataset_id%>&parent_link=<%=parent_link%>";
 
                 <%
                 if (ds!=null && ds.equals("true")){
@@ -165,7 +171,7 @@ private String legalizeAlert(String in){
 
             function edit(id){
                 var url = "<%=redirUrl%>" + "complex_attr.jsp?mode=edit&attr_id=" + id +
-                            "&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>&table_id=<%=table_id%>&dataset_id=<%=dataset_id%>";
+                            "&parent_id=<%=parent_id%>&parent_type=<%=parent_type%>&parent_name=<%=parent_name%>&parent_ns=<%=parent_ns%>&table_id=<%=table_id%>&dataset_id=<%=dataset_id%>&parent_link=<%=parent_link%>";
                 <%
                 if (ds!=null && ds.equals("true")){
                     %>
@@ -194,8 +200,9 @@ private String legalizeAlert(String in){
 <%
 StringBuffer parentLink = new StringBuffer();
 String dispParentType = request.getParameter("parent_type");
-if (dispParentType==null)
+if (dispParentType == null){
     dispParentType = "";
+}
 else if (dispParentType.equals("DS")){
     dispParentType = "dataset";
     parentLink.append(request.getContextPath() + "/datasets/");
@@ -208,13 +215,24 @@ else if (dispParentType.equals("E")){
     dispParentType = "element";
     parentLink.append(request.getContextPath() + "/dataelements/");
 }
+else if (dispParentType.equals("SCH")){
+    dispParentType = "schema";
+}
+else if (dispParentType.equals("SCS")){
+    dispParentType = "schema set";
+}
 
 String dispParentName = request.getParameter("parent_name");
-if (dispParentName==null)
+if (dispParentName==null){
     dispParentName = "";
+}
 
-if (parentLink.length()>0)
+if (parentLink.length()>0){
     parentLink.append(request.getParameter("parent_id"));
+}
+else if (!Util.isEmpty(parent_link)){
+    parentLink.append(parent_link);
+}
 
 %>
 
@@ -383,6 +401,7 @@ for (int i=0; i<complexAttrs.size(); i++){ // loop over attributes
     <input type="hidden" name="parent_ns" value="<%=parent_ns%>"/>
     <input type="hidden" name="table_id" value="<%=table_id%>"/>
     <input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
+    <input type="hidden" name="parent_link" value="<%=parent_link%>"/>
     <%
     if (ds != null){
         %>

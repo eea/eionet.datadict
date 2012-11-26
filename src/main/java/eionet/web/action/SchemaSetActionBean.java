@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -76,9 +77,17 @@ public class SchemaSetActionBean extends AbstractActionBean {
     @SpringBean
     private SchemaRepository schemaRepository;
 
-    /** */
+    /** Simple attributes of this schema set. */
     private SchemaSet schemaSet;
+
+    /** */
     private LinkedHashMap<Integer, DElemAttribute> attributes;
+
+    /** Complex attributes of this schema set. */
+    private Vector complexAttributes;
+
+    /** For every complex attribute in {@link #complexAttributes} maps the Vector of its fields. */
+    private HashMap<String, Vector> complexAttributeFields;
 
     /** */
     private List<Schema> schemas;
@@ -189,7 +198,9 @@ public class SchemaSetActionBean extends AbstractActionBean {
         Resolution resolution = new ForwardResolution(ADD_SCHEMA_SET_JSP);
         if (!isGetOrHeadRequest()) {
             schemaService.addSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
-            resolution = new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
+            resolution =
+                    new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier())
+                    .addParameter("workingCopy", true);
             addSystemMessage("Working copy successfully created!");
         }
         return resolution;
@@ -219,7 +230,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema set successfully updated!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter(
+                "workingCopy", true);
     }
 
     /**
@@ -229,7 +241,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      * @throws DAOException
      */
     public Resolution cancelEdit() throws DAOException {
-        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter(
+                "workingCopy", true);
     }
 
     /**
@@ -256,7 +269,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), schemaSet.getComment());
         addSystemMessage("Schema set successfully checked in!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", false);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter(
+                "workingCopy", false);
     }
 
     /**
@@ -273,7 +287,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         schemaService.checkOutSchemaSet(schemaSet.getId(), getUserName());
         addSystemMessage("Schema set successfully checked out!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter(
+                "workingCopy", true);
     }
 
     /**
@@ -289,7 +304,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         schemaService.copySchemaSet(schemaSet.getId(), getUserName(), newIdentifier);
         addSystemMessage("The new version's working copy successfully created!");
-        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", newIdentifier).addParameter("workingCopy", true);
+        return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", newIdentifier).addParameter("workingCopy",
+                true);
     }
 
     /**
@@ -325,7 +341,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
         int checkedOutCopyId = schemaService.undoCheckOutSchemaSet(schemaSet.getId(), getUserName());
         addSystemMessage("Working copy successfully deleted!");
         if (checkedOutCopyId > 0) {
-            return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", false);
+            return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier())
+                    .addParameter("workingCopy", false);
         } else {
             return new RedirectResolution(BrowseSchemaSetsActionBean.class);
         }
@@ -351,7 +368,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
             addSystemMessage("Schemas succesfully deleted.");
         }
 
-        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
+        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.identifier", schemaSet.getIdentifier())
+                .addParameter("workingCopy", true);
     }
 
     /**
@@ -380,7 +398,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
         }
 
         addSystemMessage("Schema successfully uploaded!");
-        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter("workingCopy", true);
+        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.identifier", schemaSet.getIdentifier())
+                .addParameter("workingCopy", true);
     }
 
     /**
@@ -687,8 +706,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 int schemaSetId = schemaSet == null ? 0 : schemaSet.getId();
 
                 attributes =
-                    searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
-                            DElemAttribute.TYPE_SIMPLE);
+                        searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
+                                DElemAttribute.TYPE_SIMPLE);
 
                 // If this is a POST request of "add", "save" or "saveAndClose",
                 // then substitute the values we got from database with the values
@@ -818,7 +837,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -889,7 +908,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 LinkedHashMap<Integer, DElemAttribute> attrsMap =
-                    searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+                        searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
                 if (attrsMap != null) {
                     for (DElemAttribute attribute : attrsMap.values()) {
                         if (attribute.isMandatory()) {
@@ -975,7 +994,44 @@ public class SchemaSetActionBean extends AbstractActionBean {
             return false;
         } else {
             return StringUtils.isNotBlank(schemaSet.getWorkingUser()) && !schemaSet.isWorkingCopy()
-            && schemaSet.getWorkingUser().equals(getUserName());
+                    && schemaSet.getWorkingUser().equals(getUserName());
         }
+    }
+
+    /**
+     * @return the complexAttributes
+     * @throws DAOException
+     */
+    public Vector getComplexAttributes() throws DAOException {
+
+        if (complexAttributes == null) {
+
+            DDSearchEngine searchEngine = null;
+            try {
+                searchEngine = DDSearchEngine.create();
+                complexAttributes =
+                        schemaSet == null ? new Vector() : searchEngine.getComplexAttributes(String.valueOf(schemaSet.getId()),
+                                DElemAttribute.ParentType.SCHEMA_SET.toString());
+
+                        complexAttributeFields = new HashMap<String, Vector>();
+                        for (Iterator iter = complexAttributes.iterator(); iter.hasNext();) {
+                            DElemAttribute attr = (DElemAttribute) iter.next();
+                            String attrId = attr.getID();
+                            complexAttributeFields.put(attrId, searchEngine.getAttrFields(attrId, DElemAttribute.FIELD_PRIORITY_HIGH));
+                        }
+            } catch (SQLException e) {
+                throw new DAOException(e.getMessage(), e);
+            } finally {
+                DDSearchEngine.close(searchEngine);
+            }
+        }
+        return complexAttributes;
+    }
+
+    /**
+     * @return the complexAttributeFields
+     */
+    public HashMap<String, Vector> getComplexAttributeFields() {
+        return complexAttributeFields;
     }
 }

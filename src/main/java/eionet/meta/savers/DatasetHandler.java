@@ -119,7 +119,9 @@ public class DatasetHandler extends BaseHandler {
      */
     public void cleanup() throws Exception {
 
-        if (!doCleanup) return;
+        if (!doCleanup) {
+            return;
+        }
 
         processOriginals(origs);
 
@@ -132,23 +134,25 @@ public class DatasetHandler extends BaseHandler {
         }
     }
 
+    @Override
     public void execute_() throws Exception {
 
         if (mode==null || (!mode.equalsIgnoreCase("add") &&
                 !mode.equalsIgnoreCase("edit") &&
                 !mode.equalsIgnoreCase("restore") &&
-                !mode.equalsIgnoreCase("delete")))
+                !mode.equalsIgnoreCase("delete"))) {
             throw new Exception("DatasetHandler mode unspecified!");
+        }
 
         if (mode.equalsIgnoreCase("add")) {
             insert();
             ds_id = getLastInsertID();
         }
-        else if (mode.equalsIgnoreCase("edit"))
+        else if (mode.equalsIgnoreCase("edit")) {
             update();
-        else if (mode.equalsIgnoreCase("restore"))
+        } else if (mode.equalsIgnoreCase("restore")) {
             restore();
-        else {
+        } else {
             delete();
             cleanVisuals();
         }
@@ -156,13 +160,17 @@ public class DatasetHandler extends BaseHandler {
 
     private void insert() throws Exception {
 
-        if (this.idfier == null)
+        if (this.idfier == null) {
             throw new SQLException("Identifier must be specified!");
+        }
 
-        if (exists()) throw new SQLException("Such a dataset already exists!");
+        if (exists()) {
+            throw new SQLException("Such a dataset already exists!");
+        }
 
-        if (Util.isEmpty(ds_name))
+        if (Util.isEmpty(ds_name)) {
             ds_name = idfier;
+        }
 
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("DATASET");
@@ -172,20 +180,24 @@ public class DatasetHandler extends BaseHandler {
         // if not in import mode, treat new datasets as working copies until checked in
         if (!isImportMode) {
             gen.setField("WORKING_COPY", "Y");
-            if (user!=null && user.isAuthentic())
+            if (user!=null && user.isAuthentic()) {
                 gen.setField("WORKING_USER", user.getUserName());
+            }
             gen.setFieldExpr("DATE", String.valueOf(System.currentTimeMillis()));
         }
-        if (user!=null)
+        if (user!=null) {
             gen.setField("USER", user.getUserName());
-        if (date==null)
+        }
+        if (date==null) {
             date = String.valueOf(System.currentTimeMillis());
+        }
         gen.setFieldExpr("DATE", date);
 
         // set the status
         String status = req.getParameter("reg_status");
-        if (!Util.isEmpty(status))
+        if (!Util.isEmpty(status)) {
             gen.setField("REG_STATUS", status);
+        }
 
         Statement stmt = conn.createStatement();
         stmt.executeUpdate(gen.insertStatement());
@@ -220,7 +232,9 @@ public class DatasetHandler extends BaseHandler {
 
     private void update() throws Exception {
 
-        if (ds_id==null) throw new Exception("Dataset ID missing!");
+        if (ds_id==null) {
+            throw new Exception("Dataset ID missing!");
+        }
 
         // see if it's just an unlock
         String unlock = req.getParameter("unlock");
@@ -247,9 +261,9 @@ public class DatasetHandler extends BaseHandler {
             if (updVer!=null && updVer.equalsIgnoreCase("true")) {
                 verMan.setVersionUpdate(true);
                 setCheckedInCopyID(ds_id);
-            }
-            else
+            } else {
                 setCheckedInCopyID(req.getParameter("checkedout_copy_id"));
+            }
 
             verMan.checkIn(ds_id, "dst",
                     req.getParameter("reg_status"));
@@ -268,10 +282,11 @@ public class DatasetHandler extends BaseHandler {
             String fldName = strType.equals("simple") ? "VISUAL" :
                 "DETAILED_VISUAL";
 
-            if (dsVisual.equalsIgnoreCase("NULL"))
+            if (dsVisual.equalsIgnoreCase("NULL")) {
                 gen.setFieldExpr(fldName, dsVisual);
-            else
+            } else {
                 gen.setField(fldName, dsVisual);
+            }
 
             INParameters inParams = new INParameters();
             String q = gen.updateStatement()+" where DATASET_ID="+inParams.add(ds_id, Types.INTEGER);
@@ -289,10 +304,14 @@ public class DatasetHandler extends BaseHandler {
 
         // set the status
         String status = req.getParameter("reg_status");
-        if (!Util.isEmpty(status)) gen.setField("REG_STATUS", status);
+        if (!Util.isEmpty(status)) {
+            gen.setField("REG_STATUS", status);
+        }
 
         // short name
-        if (!Util.isEmpty(ds_name)) gen.setField("SHORT_NAME", ds_name);
+        if (!Util.isEmpty(ds_name)) {
+            gen.setField("SHORT_NAME", ds_name);
+        }
 
         // display create links
         gen.setFieldExpr("DISP_CREATE_LINKS", getDisplayCreateLinks());
@@ -313,8 +332,9 @@ public class DatasetHandler extends BaseHandler {
 
     private void restore() throws Exception {
 
-        if (ds_ids==null || ds_ids.length==0)
+        if (ds_ids==null || ds_ids.length==0) {
             return;
+        }
 
         SQLGenerator gen = new SQLGenerator();
         gen.setTable("DATASET");
@@ -350,7 +370,9 @@ public class DatasetHandler extends BaseHandler {
         }
         finally {
             try {
-                if (stmt!=null) stmt.close();
+                if (stmt!=null) {
+                    stmt.close();
+                }
             }
             catch (SQLException e) {}
         }
@@ -362,11 +384,13 @@ public class DatasetHandler extends BaseHandler {
      */
     private void delete(Statement stmt) throws Exception {
 
-        if (ds_ids==null || ds_ids.length==0)
+        if (ds_ids==null || ds_ids.length==0) {
             return;
+        }
 
-        if (user==null)
+        if (user==null) {
             throw new Exception("You have no permission to delete");
+        }
 
         String s = req.getParameter("complete");
         boolean isCompleteDelete = s!=null && s.equals("true");
@@ -415,8 +439,9 @@ public class DatasetHandler extends BaseHandler {
                         try {
                             unlockNamespaces.add(namespace);
                             String checkedOutCopyID = rs.getString("CHECKEDOUT_COPY_ID");
-                            if (checkedOutCopyID!=null && checkedOutCopyID.length()>0)
+                            if (checkedOutCopyID!=null && checkedOutCopyID.length()>0) {
                                 unlockCheckedoutCopies.add(rs.getString("CHECKEDOUT_COPY_ID"));
+                            }
                         } catch (NullPointerException npe) {}
                     }
                 }
@@ -429,7 +454,7 @@ public class DatasetHandler extends BaseHandler {
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "er");
                 } else {
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "u") ||
-                    SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "er");
+                            SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "er");
                 }
                 if (!canDelete) {
                     throw new Exception("You have no permission to delete this dataset: " +
@@ -455,8 +480,9 @@ public class DatasetHandler extends BaseHandler {
         // delete the datasets themselves
         buf = new StringBuffer("delete from DATASET where ");
         for (i=0; i<ds_ids.length; i++) {
-            if (i>0)
+            if (i>0) {
                 buf.append(" or ");
+            }
             buf.append("DATASET_ID=");
             buf.append(ds_ids[i]);
         }
@@ -512,8 +538,9 @@ public class DatasetHandler extends BaseHandler {
             }
         }
 
-        if (identifiers.size()==0)
+        if (identifiers.size()==0) {
             return;
+        }
 
         int i=0;
         for (Iterator iter = identifiers.iterator(); iter.hasNext(); i++) {
@@ -559,15 +586,17 @@ public class DatasetHandler extends BaseHandler {
      */
     private void setDeletedFlag(Statement stmt) throws SQLException {
 
-        if (ds_ids==null || ds_ids.length==0)
+        if (ds_ids==null || ds_ids.length==0) {
             return;
+        }
 
         StringBuffer buf = new StringBuffer("update DATASET set DELETED=");
         buf.append(SQL.toLiteral(user.getUserName()));
         buf.append(" where ");
         for (int i=0; i<ds_ids.length; i++) {
-            if (i>0)
+            if (i>0) {
                 buf.append(" or ");
+            }
             buf.append("DATASET_ID=");
             buf.append(ds_ids[i]);
         }
@@ -657,7 +686,7 @@ public class DatasetHandler extends BaseHandler {
             params.addParameterValue("parent_type", "DS");
 
             AttrFieldsHandler attrFieldsHandler =
-                new AttrFieldsHandler(conn, params, ctx);
+                    new AttrFieldsHandler(conn, params, ctx);
             //attrFieldsHandler.setVersioning(this.versioning);
             attrFieldsHandler.setVersioning(false);
             try {
@@ -678,7 +707,9 @@ public class DatasetHandler extends BaseHandler {
         INParameters inParams = new INParameters();
         StringBuffer buf = new StringBuffer("delete from DST2ROD where ");
         for (int i=0; i<ds_ids.length; i++) {
-            if (i>0) buf.append(" or ");
+            if (i>0) {
+                buf.append(" or ");
+            }
             buf.append("DATASET_ID=").append(inParams.add(ds_ids[i], Types.INTEGER));
         }
 
@@ -755,8 +786,9 @@ public class DatasetHandler extends BaseHandler {
             }
             else {
                 String attrValue = req.getParameter(parName);
-                if (attrValue.length()==0)
+                if (attrValue.length()==0) {
                     continue;
+                }
                 String attrID = parName.substring(ATTR_PREFIX.length());
                 insertAttribute(attrID, attrValue);
             }
@@ -794,7 +826,7 @@ public class DatasetHandler extends BaseHandler {
 
                 INParameters inParams = new INParameters();
                 String qry = "select distinct TABLE_ID from DST2TBL where DATASET_ID="
-                    + inParams.add(ds_ids[i], Types.INTEGER);
+                        + inParams.add(ds_ids[i], Types.INTEGER);
 
                 pstmt1 = SQL.preparedStatement(qry, inParams, conn);
                 rs = pstmt1.executeQuery();
@@ -885,8 +917,8 @@ public class DatasetHandler extends BaseHandler {
         INParameters inParams = new INParameters();
 
         String qry =
-            "select count(*) as COUNT from DATASET " +
-            "where IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR);
+                "select count(*) as COUNT from DATASET " +
+                        "where IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR);
 
         ResultSet rs = null;
         PreparedStatement stmt = null;
@@ -941,7 +973,7 @@ public class DatasetHandler extends BaseHandler {
         INParameters inParams = new INParameters();
 
         String s = "update NAMESPACE set WORKING_USER=NULL where NAMESPACE_ID="
-            + inParams.add(nsID, Types.INTEGER);
+                + inParams.add(nsID, Types.INTEGER);
 
         PreparedStatement stmt = SQL.preparedStatement(s, inParams, conn);
         stmt.executeUpdate();
@@ -1033,6 +1065,17 @@ public class DatasetHandler extends BaseHandler {
             buf = new StringBuffer(gen.updateStatement());
             buf.append(" where PARENT_TYPE='DS' and PARENT_ID=").
             append(inParams.add(oldID, Types.INTEGER));
+
+            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+            stmt.executeUpdate();
+
+            inParams = new INParameters();
+            gen.clear();
+            gen.setTable("COMPLEX_ATTR_ROW");
+            gen.setFieldExpr("ROW_ID", "md5(concat(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID,POSITION))");
+            buf = new StringBuffer(gen.updateStatement());
+            buf.append(" where PARENT_TYPE='DS' and PARENT_ID=").
+            append(inParams.add(newID, Types.INTEGER));
 
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();

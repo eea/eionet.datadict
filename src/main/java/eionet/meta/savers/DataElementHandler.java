@@ -273,6 +273,7 @@ public class DataElementHandler extends BaseHandler {
         stmt.close();
     }
 
+    @Override
     public void execute_() throws Exception {
 
         // initialize this.topNsReleaseNeeded (just in case)
@@ -696,7 +697,7 @@ public class DataElementHandler extends BaseHandler {
 
             INParameters inParams = new INParameters();
             String q = "delete from TBL2ELEM where TABLE_ID="
-                + inParams.add(tableID, Types.INTEGER)+" and (";
+                    + inParams.add(tableID, Types.INTEGER)+" and (";
 
             for (int i=0; i<linkelms.length; i++) {
                 if (i>0) {
@@ -774,7 +775,7 @@ public class DataElementHandler extends BaseHandler {
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "er");
                 } else {
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "u") ||
-                    SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "er");
+                            SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "er");
                 }
                 if (!canDelete) {
                     throw new Exception("You have no permission to delete this element: " +
@@ -834,8 +835,8 @@ public class DataElementHandler extends BaseHandler {
         }
 
         StringBuffer buf = new StringBuffer().
-        append("delete from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID in (").
-        append(eionet.util.Util.toCSV(delem_ids)).append(")");
+                append("delete from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID in (").
+                append(eionet.util.Util.toCSV(delem_ids)).append(")");
 
         // Skip the deletion of image-attributes if not in complete-delete mode.
         // That's because image-attributes are handled by image upload servlet instead.
@@ -870,7 +871,7 @@ public class DataElementHandler extends BaseHandler {
             params.addParameterValue("parent_type", "E");
 
             AttrFieldsHandler attrFieldsHandler =
-                new AttrFieldsHandler(conn, params, ctx);
+                    new AttrFieldsHandler(conn, params, ctx);
             attrFieldsHandler.setVersioning(versioning);
             try {
                 attrFieldsHandler.execute();
@@ -959,8 +960,8 @@ public class DataElementHandler extends BaseHandler {
         INParameters inParams = new INParameters();
 
         StringBuffer buf = new StringBuffer().
-        append("select max(POSITION) from TBL2ELEM where TABLE_ID=").
-        append(inParams.add(tableID, Types.INTEGER));
+                append("select max(POSITION) from TBL2ELEM where TABLE_ID=").
+                append(inParams.add(tableID, Types.INTEGER));
 
         LOGGER.debug(buf.toString());
 
@@ -1099,7 +1100,7 @@ public class DataElementHandler extends BaseHandler {
             PreparedStatement stmt = null;
             try {
                 stmt = conn.prepareStatement(
-                "update TBL2ELEM set MULTIVAL_DELIM=? where DATAELEM_ID=? and TABLE_ID=?");
+                        "update TBL2ELEM set MULTIVAL_DELIM=? where DATAELEM_ID=? and TABLE_ID=?");
                 for (Iterator iter = valueDelims.entrySet().iterator(); iter.hasNext();) {
 
                     Map.Entry entry = (Map.Entry)iter.next();
@@ -1813,6 +1814,13 @@ public class DataElementHandler extends BaseHandler {
             stmt.executeUpdate(buf.toString());
 
             gen.clear();
+            gen.setTable("COMPLEX_ATTR_ROW");
+            gen.setFieldExpr("ROW_ID", "md5(concat(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID,POSITION))");
+            buf = new StringBuffer(gen.updateStatement());
+            buf.append(" where PARENT_TYPE='E' and PARENT_ID=").append(newID);
+            stmt.executeUpdate(buf.toString());
+
+            gen.clear();
             gen.setTable("TBL2ELEM");
             gen.setFieldExpr("DATAELEM_ID", newID);
             buf = new StringBuffer(gen.updateStatement());
@@ -1869,8 +1877,8 @@ public class DataElementHandler extends BaseHandler {
         String questionMarks = eionet.util.Util.toCSV(questionMarksArray);
 
         String sqlQuery =
-            "select ACL_NAME from ACLS where PARENT_NAME='/elements' and ACL_NAME in (" + questionMarks
-            + ") and ACL_NAME not in (select IDENTIFIER from DATAELEM where PARENT_NS is null and IDENTIFIER in (" + questionMarks + "))";
+                "select ACL_NAME from ACLS where PARENT_NAME='/elements' and ACL_NAME in (" + questionMarks
+                + ") and ACL_NAME not in (select IDENTIFIER from DATAELEM where PARENT_NS is null and IDENTIFIER in (" + questionMarks + "))";
 
         HashSet<String> aclsToDelete = new HashSet<String>();
         ResultSet rs = null;

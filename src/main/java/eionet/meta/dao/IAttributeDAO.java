@@ -22,6 +22,14 @@ public interface IAttributeDAO {
     void copySimpleAttributes(int parentId, String parentType, int newParentId);
 
     /**
+     *
+     * @param parentId
+     * @param parentType
+     * @param newParentId
+     */
+    void copyComplexAttributes(int parentId, String parentType, int newParentId);
+
+    /**
      * Deletes all attributes of given parent ids.
      *
      * @param parentIds

@@ -84,8 +84,9 @@ public class DsTableHandler extends BaseHandler {
 
         if (ctx!=null) {
             String _versioning = ctx.getInitParameter("versioning");
-            if (_versioning!=null && _versioning.equalsIgnoreCase("false"))
+            if (_versioning!=null && _versioning.equalsIgnoreCase("false")) {
                 setVersioning(false);
+            }
         }
     }
 
@@ -122,6 +123,7 @@ public class DsTableHandler extends BaseHandler {
      *
      * @throws Exception
      */
+    @Override
     public void execute_() throws Exception {
 
         if (mode!=null && mode.equalsIgnoreCase("copy")) {
@@ -183,7 +185,7 @@ public class DsTableHandler extends BaseHandler {
             PreparedStatement stmt = null;
             try {
                 stmt = conn.prepareStatement(
-                "update DST2TBL set POSITION=? where TABLE_ID=? and DATASET_ID=?");
+                        "update DST2TBL set POSITION=? where TABLE_ID=? and DATASET_ID=?");
                 for (Iterator iter = positions.entrySet().iterator(); iter.hasNext();) {
 
                     Map.Entry entry = (Map.Entry)iter.next();
@@ -237,8 +239,8 @@ public class DsTableHandler extends BaseHandler {
 
             inParams = new INParameters();
             String q = "delete from TBL2ELEM where TABLE_ID="
-                + inParams.add(req.getParameter("table_id"), Types.INTEGER)
-                + " and DATAELEM_ID=" + inParams.add(req.getParameter("rplc_id"), Types.INTEGER);
+                    + inParams.add(req.getParameter("table_id"), Types.INTEGER)
+                    + " and DATAELEM_ID=" + inParams.add(req.getParameter("rplc_id"), Types.INTEGER);
 
             stmt = SQL.preparedStatement(q, inParams, conn);
             stmt.executeUpdate();
@@ -396,7 +398,9 @@ public class DsTableHandler extends BaseHandler {
         // delete the tbl2dst relations
         buf = new StringBuffer("delete from DST2TBL where ");
         for (int i=0; i<del_IDs.length; i++) {
-            if (i>0) buf.append(" or ");
+            if (i>0) {
+                buf.append(" or ");
+            }
             buf.append("TABLE_ID=").append(inParams.add(del_IDs[i], Types.INTEGER));
         }
         stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
@@ -409,7 +413,9 @@ public class DsTableHandler extends BaseHandler {
         // delete the tables themselves
         buf = new StringBuffer("delete from DS_TABLE where ");
         for (int i=0; i<del_IDs.length; i++) {
-            if (i>0) buf.append(" or ");
+            if (i>0) {
+                buf.append(" or ");
+            }
             buf.append("TABLE_ID=").append(inParams.add(del_IDs[i], Types.INTEGER));
         }
         stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
@@ -500,7 +506,7 @@ public class DsTableHandler extends BaseHandler {
             }
 
             DataElementHandler delemHandler =
-                new DataElementHandler(conn, params, ctx);
+                    new DataElementHandler(conn, params, ctx);
             delemHandler.setUser(user);
             delemHandler.setSuperUser(superUser);
             delemHandler.setVersioning(false);
@@ -578,7 +584,7 @@ public class DsTableHandler extends BaseHandler {
      *
      */
     private String createNamespace(String dstName, String tblIdfier, String tblParentNS)
-    throws Exception {
+            throws Exception {
         dstName = dstName==null ? "" : dstName;
         String shortName  = tblIdfier + "_tbl_" + dstName + "_dst";
         String fullName   = tblIdfier + " table in " + dstName + " dataset";
@@ -606,8 +612,8 @@ public class DsTableHandler extends BaseHandler {
         }
 
         StringBuffer buf = new StringBuffer().
-        append("delete from ATTRIBUTE where PARENT_TYPE='T' and DATAELEM_ID in (").
-        append(eionet.util.Util.toCSV(del_IDs)).append(")");
+                append("delete from ATTRIBUTE where PARENT_TYPE='T' and DATAELEM_ID in (").
+                append(eionet.util.Util.toCSV(del_IDs)).append(")");
 
         // Skip the deletion of image-attributes if not in complete-delete mode.
         // That's because image-attributes are handled by image upload servlet instead.
@@ -645,7 +651,7 @@ public class DsTableHandler extends BaseHandler {
             params.addParameterValue("parent_type", "T");
 
             AttrFieldsHandler attrFieldsHandler =
-                new AttrFieldsHandler(conn, params, ctx);
+                    new AttrFieldsHandler(conn, params, ctx);
             //attrFieldsHandler.setVersioning(this.versioning);
             attrFieldsHandler.setVersioning(false);
             try {
@@ -671,7 +677,10 @@ public class DsTableHandler extends BaseHandler {
                     continue;
                 }
                 attrID = parName.substring(ATTR_PREFIX.length());
-                if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID)!=null) continue;  //some attributes will be inherited from dataset level
+                if (req.getParameterValues(INHERIT_ATTR_PREFIX + attrID)!=null)
+                {
+                    continue;  //some attributes will be inherited from dataset level
+                }
                 insertAttribute(attrID, attrValue);
             }
             else if (parName.startsWith(ATTR_MULT_PREFIX)) {
@@ -806,9 +815,9 @@ public class DsTableHandler extends BaseHandler {
         INParameters inParams = new INParameters();
 
         String qry =
-            "select distinct CORRESP_NS from DS_TABLE" +
-            " where DS_TABLE.IDENTIFIER=" + inParams.add(tblIdfier, Types.VARCHAR) +
-            " and DS_TABLE.PARENT_NS=" + inParams.add(dstNamespaceID, Types.INTEGER);
+                "select distinct CORRESP_NS from DS_TABLE" +
+                        " where DS_TABLE.IDENTIFIER=" + inParams.add(tblIdfier, Types.VARCHAR) +
+                        " and DS_TABLE.PARENT_NS=" + inParams.add(dstNamespaceID, Types.INTEGER);
 
         PreparedStatement stmt = SQL.preparedStatement(qry, inParams, conn);
         ResultSet rs = stmt.executeQuery();
@@ -890,13 +899,16 @@ public class DsTableHandler extends BaseHandler {
             }
         }
 
-        if (nss.size()==0)
+        if (nss.size()==0) {
             return;
+        }
 
         int i=0;
         StringBuffer buf = new StringBuffer("delete from NAMESPACE where ");
         for (Iterator iter = nss.iterator(); iter.hasNext(); i++) {
-            if (i>0) buf.append(" or ");
+            if (i>0) {
+                buf.append(" or ");
+            }
             buf.append("NAMESPACE_ID=").append(iter.next());
         }
 
@@ -924,36 +936,42 @@ public class DsTableHandler extends BaseHandler {
             catch (Exception e) {
                 e.printStackTrace();
                 try {
-                    if (stmt!=null) stmt.close();
-                    if (rs!=null) rs.close();
+                    if (stmt!=null) {
+                        stmt.close();
+                    }
+                    if (rs!=null) {
+                        rs.close();
+                    }
                 }
                 catch (SQLException sqle) {}
             }
         }
 
-        if (parentNsID==null)
+        if (parentNsID==null) {
             throw new Exception("Failed to obtain parent namespace ID which is required");
+        }
 
         return parentNsID;
     }
 
     /**
      *
-     * @param oldID
+     * @param checkedOutTableID
      * @param newID
      * @throws SQLException
      */
-    public static void replaceTableId(String oldID, String newID, Connection conn) throws SQLException {
+    public static void replaceTableId(String checkedOutTableID, String newID, Connection conn) throws SQLException {
 
-        if (oldID==null || oldID.length()==0 || newID==null || newID.length()==0)
+        if (checkedOutTableID==null || checkedOutTableID.length()==0 || newID==null || newID.length()==0) {
             return;
+        }
 
         PreparedStatement stmt = null;
         try {
             SQLGenerator gen = new SQLGenerator();
 
             INParameters inParams = new INParameters();
-            inParams.add(oldID, Types.INTEGER);
+            inParams.add(checkedOutTableID, Types.INTEGER);
             inParams.add(newID, Types.INTEGER);
 
             gen.setTable("DS_TABLE");
@@ -990,6 +1008,13 @@ public class DsTableHandler extends BaseHandler {
             buf.append(" where PARENT_TYPE='T' and PARENT_ID=?");
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();
+
+            gen = new SQLGenerator();
+            gen.setTable("COMPLEX_ATTR_ROW");
+            gen.setFieldExpr("ROW_ID", "md5(concat(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID, POSITION))");
+            buf = new StringBuffer(gen.updateStatement());
+            buf.append(" where PARENT_TYPE='T' and PARENT_ID=").append(checkedOutTableID);
+            stmt.executeUpdate(buf.toString());
 
             gen = new SQLGenerator();
             gen.setTable("CACHE");

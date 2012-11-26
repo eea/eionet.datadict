@@ -465,7 +465,8 @@ public class SchemaServiceImpl implements ISchemaService {
         try {
             List<Schema> schemas = schemaDAO.listForSchemaSet(schemaSetId);
             for (Schema schema : schemas) {
-                schema.setAttributeValues(attributeDAO.getAttributeValues(schema.getId(), DElemAttribute.ParentType.SCHEMA.toString()));
+                schema.setAttributeValues(attributeDAO.getAttributeValues(schema.getId(),
+                        DElemAttribute.ParentType.SCHEMA.toString()));
             }
             return schemas;
         } catch (Exception e) {
@@ -500,6 +501,9 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Copy the schema set's simple attributes.
             attributeDAO.copySimpleAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET.toString(), newSchemaSetId);
+
+            // Copy the schema set's complex attributes.
+            attributeDAO.copyComplexAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET.toString(), newSchemaSetId);
 
             // Get the schema set's schemas and copy them and their simple attributes too.
             List<Schema> schemas = schemaDAO.listForSchemaSet(schemaSetId);
@@ -706,6 +710,9 @@ public class SchemaServiceImpl implements ISchemaService {
             // Copy the schema's simple attributes.
             attributeDAO.copySimpleAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
 
+            // Copy the schema's complex attributes.
+            attributeDAO.copyComplexAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
+
             // Make a working copy in the repository too.
             schemaRepository.checkOutSchema(schema.getFileName());
 
@@ -803,6 +810,9 @@ public class SchemaServiceImpl implements ISchemaService {
             // Copy the schema set's simple attributes.
             attributeDAO.copySimpleAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET.toString(), newSchemaSetId);
 
+            // Copy the schema set's complex attributes.
+            attributeDAO.copyComplexAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET.toString(), newSchemaSetId);
+
             // Get the schema set's schemas and copy them and their simple attributes too.
             List<Schema> schemas = schemaDAO.listForSchemaSet(schemaSetId);
             for (Schema schema : schemas) {
@@ -865,8 +875,11 @@ public class SchemaServiceImpl implements ISchemaService {
             // Copy schema row, get the new row's ID.
             int newSchemaId = schemaDAO.copySchemaRow(schemaId, userName, newFile.getFileName(), schema.getRegStatus());
 
-            // Copy the schema set's simple attributes.
+            // Copy the schema's simple attributes.
             attributeDAO.copySimpleAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
+
+            // Copy the schema's complex attributes.
+            attributeDAO.copyComplexAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
 
             // Save the new file in schema repository.
             schemaRepository.addSchema(newFile, null, false);
@@ -892,6 +905,9 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Copy the schema's simple attributes.
             attributeDAO.copySimpleAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
+
+            // Copy the schema's complex attributes.
+            attributeDAO.copyComplexAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
 
             // Copy the file in schema repository.
             String srcSchemaSetIdentifier = schema.getSchemaSetIdentifier();

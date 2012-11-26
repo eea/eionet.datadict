@@ -753,9 +753,9 @@ public class VersionManager {
                 v = searchEngine.getDatasetTables(checkedoutCopyID, false);
                 for (int i = 0; v != null && i < v.size(); i++) {
                     DsTable tbl = (DsTable) v.get(i);
-                    String oldID = (String) tableIdsAndIdentifiers.get(tbl.getIdentifier());
-                    if (oldID != null) {
-                        DsTableHandler.replaceTableId(oldID, tbl.getID(), this.conn);
+                    String checkedOutTableID = (String) tableIdsAndIdentifiers.get(tbl.getIdentifier());
+                    if (checkedOutTableID != null) {
+                        DsTableHandler.replaceTableId(checkedOutTableID, tbl.getID(), this.conn);
                     }
                 }
             } else {

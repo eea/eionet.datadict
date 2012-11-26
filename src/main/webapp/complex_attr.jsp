@@ -98,13 +98,19 @@ private String legalizeAlert(String in){
             String table_id = request.getParameter("table_id");
             if (table_id == null) table_id = "";
 
+            String parent_link = request.getParameter("parent_link");
+            if (parent_link == null){
+                parent_link = "";
+            }
+
             String redirUrl = "complex_attr.jsp?mode=edit&parent_id=" + parent_id +
                                                              "&parent_type=" + parent_type +
                                                              "&parent_name=" + parent_name +
                                                              "&parent_ns=" + parent_ns +
-                                                             "&attr_id=" + attr_id+
-                                                             "&table_id=" + table_id+
-                                                             "&dataset_id=" + dataset_id;
+                                                             "&attr_id=" + attr_id +
+                                                             "&table_id=" + table_id +
+                                                             "&dataset_id=" + dataset_id +
+                                                             "&parent_link=" + parent_link;
             if (ds != null)
                 redirUrl = redirUrl + "&ds=" + ds;
 
@@ -174,13 +180,15 @@ private String legalizeAlert(String in){
                                                              "&parent_name=" + parent_name +
                                                              "&parent_ns=" + parent_ns +
                                                              "&table_id=" + table_id+
-                                                             "&dataset_id=" + dataset_id;
+                                                             "&dataset_id=" + dataset_id +
+                                                             "&parent_link=" + parent_link;
             String backURLEscaped = "complex_attrs.jsp?parent_id=" + parent_id +
                                                          "&amp;parent_type=" + parent_type +
                                                          "&amp;parent_name=" + parent_name +
                                                          "&amp;parent_ns=" + parent_ns +
                                                          "&amp;table_id=" + table_id+
-                                                         "&amp;dataset_id=" + dataset_id;
+                                                         "&amp;dataset_id=" + dataset_id+
+                                                         "&amp;parent_link=" + parent_link;
             if (ds != null){
                 backURL = backURL + "&ds=" + ds;
                 backURLEscaped = backURLEscaped + "&amp;ds=" + ds;
@@ -327,8 +335,9 @@ String hlpScreen = mode.equals("view") ? "complex_attr_view" : "complex_attr_edi
 
 StringBuffer parentLink = new StringBuffer();
 String dispParentType = request.getParameter("parent_type");
-if (dispParentType==null)
+if (dispParentType == null){
     dispParentType = "";
+}
 else if (dispParentType.equals("DS")){
     dispParentType = "dataset";
     parentLink.append(request.getContextPath() + "/datasets/");
@@ -341,13 +350,24 @@ else if (dispParentType.equals("E")){
     dispParentType = "element";
     parentLink.append(request.getContextPath() + "/dataelements/");
 }
+else if (dispParentType.equals("SCH")){
+    dispParentType = "schema";
+}
+else if (dispParentType.equals("SCS")){
+    dispParentType = "schema set";
+}
 
 String dispParentName = request.getParameter("parent_name");
-if (dispParentName==null)
+if (dispParentName==null){
     dispParentName = "";
+}
 
-if (parentLink.length()>0)
+if (parentLink.length()>0){
     parentLink.append(request.getParameter("parent_id"));
+}
+else if (!Util.isEmpty(parent_link)){
+    parentLink.append(parent_link);
+}
 %>
 
 <h1 style="margin-bottom:20px">Complex attribute <a href=""><%=attrName%></a> of <%=dispParentType%> <a href="<%=parentLink%>"><%=dispParentName%></a></h1>
@@ -528,6 +548,7 @@ if (parentLink.length()>0)
     <input type="hidden" name="parent_ns" value="<%=parent_ns%>"/>
     <input type="hidden" name="table_id" value="<%=table_id%>"/>
     <input type="hidden" name="dataset_id" value="<%=dataset_id%>"/>
+    <input type="hidden" name="parent_link" value="<%=parent_link%>"/>
 
     <input type="hidden" name="position" value="<%=String.valueOf(position)%>"/>
 

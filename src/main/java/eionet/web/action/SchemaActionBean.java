@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -79,8 +80,14 @@ public class SchemaActionBean extends AbstractActionBean {
     private SchemaSet schemaSet;
     private FileBean uploadedFile;
 
-    /** */
+    /** Simple attributes of this schema. */
     private LinkedHashMap<Integer, DElemAttribute> attributes;
+
+    /** Complex attributes of this schema. */
+    private Vector complexAttributes;
+
+    /** For every complex attribute in {@link #complexAttributes} maps the Vector of its fields. */
+    private HashMap<String, Vector> complexAttributeFields;
 
     /** This schema's attribute values as submitted from the save/add form. */
     private Map<Integer, Set<String>> saveAttributeValues;
@@ -197,8 +204,8 @@ public class SchemaActionBean extends AbstractActionBean {
                 throw e;
             }
             resolution =
-                new RedirectResolution(getClass()).addParameter("schema.fileName", schema.getFileName()).addParameter(
-                        "workingCopy", true);
+                    new RedirectResolution(getClass()).addParameter("schema.fileName", schema.getFileName()).addParameter(
+                            "workingCopy", true);
             addSystemMessage("Working copy successfully created!");
         }
         return resolution;
@@ -596,7 +603,7 @@ public class SchemaActionBean extends AbstractActionBean {
                     Integer attributeId = null;
                     if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_MULTI_PREFIX)) {
                         attributeId =
-                            Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
+                                Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_MULTI_PREFIX));
                     } else if (paramName.startsWith(DElemAttribute.REQUEST_PARAM_PREFIX)) {
                         attributeId = Integer.valueOf(StringUtils.substringAfter(paramName, DElemAttribute.REQUEST_PARAM_PREFIX));
                     }
@@ -630,7 +637,7 @@ public class SchemaActionBean extends AbstractActionBean {
                 int schemaId = schema == null ? 0 : schema.getId();
 
                 attributes =
-                    searchEngine.getObjectAttributes(schemaId, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+                        searchEngine.getObjectAttributes(schemaId, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
 
                 // If this is a POST request where new attribute values are submitted (e.g. "save", "add", etc)
                 // then substitute the values we got from database with the values
@@ -1012,7 +1019,44 @@ public class SchemaActionBean extends AbstractActionBean {
             return false;
         } else {
             return StringUtils.isNotBlank(schema.getWorkingUser()) && !schema.isWorkingCopy()
-            && schema.getWorkingUser().equals(getUserName());
+                    && schema.getWorkingUser().equals(getUserName());
         }
+    }
+
+    /**
+     * @return the complexAttributes
+     * @throws DAOException
+     */
+    public Vector getComplexAttributes() throws DAOException {
+
+        if (complexAttributes == null) {
+
+            DDSearchEngine searchEngine = null;
+            try {
+                searchEngine = DDSearchEngine.create();
+                complexAttributes = schema == null ? new Vector() :
+                    searchEngine.getComplexAttributes(String.valueOf(schema.getId()), DElemAttribute.ParentType.SCHEMA.toString());
+
+                complexAttributeFields = new HashMap<String, Vector>();
+                for (Iterator iter = complexAttributes.iterator(); iter.hasNext();){
+                    DElemAttribute attr = (DElemAttribute) iter.next();
+                    String attrId = attr.getID();
+                    complexAttributeFields.put(attrId, searchEngine.getAttrFields(attrId, DElemAttribute.FIELD_PRIORITY_HIGH));
+                }
+            } catch (SQLException e) {
+                throw new DAOException(e.getMessage(), e);
+            } finally {
+                DDSearchEngine.close(searchEngine);
+            }
+        }
+        return complexAttributes;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public HashMap getComplexAttributeFields(){
+        return complexAttributeFields;
     }
 }
