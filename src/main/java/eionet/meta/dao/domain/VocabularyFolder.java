@@ -33,6 +33,7 @@ public class VocabularyFolder {
     /** Properties. */
     private int id;
     private String identifier;
+    private String continuityId;
     private String label;
     private RegStatus regStatus = RegStatus.DRAFT;
     private boolean workingCopy;
@@ -186,6 +187,21 @@ public class VocabularyFolder {
      */
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    /**
+     * @return the continuityId
+     */
+    public String getContinuityId() {
+        return continuityId;
+    }
+
+    /**
+     * @param continuityId
+     *            the continuityId to set
+     */
+    public void setContinuityId(String continuityId) {
+        this.continuityId = continuityId;
     }
 
 }

@@ -55,4 +55,26 @@ public interface IVocabularyConceptDAO {
      * @param vocabularyConcept
      */
     void updateVocabularyConcept(VocabularyConcept vocabularyConcept);
+
+    /**
+     * Deletes vocabulary concepts.
+     *
+     * @param ids
+     */
+    void deleteVocabularyConcepts(List<Integer> ids);
+
+    /**
+     * Deletes vocabulary concepts.
+     *
+     * @param vocabularyFolderId
+     */
+    void deleteVocabularyConcepts(int vocabularyFolderId);
+
+    /**
+     * Moves vocabulary concepts from one folder to another.
+     *
+     * @param fromVocabularyFolderId
+     * @param toVocabularyFolderId
+     */
+    void moveVocabularyConcepts(int fromVocabularyFolderId, int toVocabularyFolderId);
 }

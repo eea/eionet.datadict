@@ -41,7 +41,7 @@
                 }
 
                 closePopup = function(divId) {
-                    $(divId).dialog('close');
+                    $(divId).dialog("close");
                     return false;
                 }
 
@@ -56,8 +56,13 @@
     </stripes:layout-component>
 
     <stripes:layout-component name="contents">
-        <c:url var="mandatoryPic" value="/images/mandatory.gif" />
-        <c:url var="optionalPic" value="/images/optional.gif" />
+
+        <div id="drop-operations">
+            <h2>Operations:</h2>
+            <ul>
+                <li><a href="#" id="addNewConceptLink">Add new concept</a></li>
+            </ul>
+        </div>
 
         <h1>Edit vocabulary</h1>
 
@@ -102,8 +107,6 @@
             </table>
         </div>
         </stripes:form>
-
-        <a href="#" id="addNewConceptLink">New concept</a>
 
         <div id="addNewConceptDiv" title="New concept">
             <stripes:form id="form" method="post" beanclass="${actionBean.class.name}">
@@ -179,6 +182,7 @@
             <stripes:hidden name="vocabularyFolder.identifier" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
             <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%">
+                <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
                 <display:column>
                     <stripes:checkbox name="conceptIds" value="${item.id}" />
                 </display:column>
@@ -189,18 +193,20 @@
                 <display:column title="Definition" property="definition" />
                 <display:column title="Notation" property="notation" />
             </display:table>
-            <stripes:submit name="deleteConcepts" value="Delete" />
-            <input type="button" onclick="toggleSelectAll('conceptsForm');return false" value="Select all" name="selectAll">
+            <c:if test="${not empty actionBean.vocabularyConcepts}">
+                <stripes:submit name="deleteConcepts" value="Delete" />
+                <input type="button" onclick="toggleSelectAll('conceptsForm');return false" value="Select all" name="selectAll">
+            </c:if>
         </stripes:form>
 
         <!-- Vocabulary concept edit forms -->
-        <c:forEach var="item" items="${actionBean.vocabularyConcepts}">
+        <c:forEach var="item" items="${actionBean.vocabularyConcepts}" varStatus="loop">
             <div id="editConceptDiv${item.id}" title="Edit concept">
-                <stripes:form id="form" method="post" beanclass="${actionBean.class.name}">
+                <stripes:form id="form${item.id}" method="post" beanclass="${actionBean.class.name}">
                     <stripes:hidden name="vocabularyFolder.identifier" />
                     <stripes:hidden name="vocabularyFolder.workingCopy" />
                     <stripes:hidden name="vocabularyFolder.id" />
-                    <stripes:hidden name="vocabularyConcept.id" value="${item.id}" />
+                    <stripes:hidden name="vocabularyConcepts[${loop.index}].id" />
 
                     <div id="outerframe">
                         <table class="datatable">
@@ -217,7 +223,7 @@
                                     <dd:mandatoryIcon />
                                 </td>
                                 <td class="simple_attr_value">
-                                    <stripes:text class="smalltext" size="30" name="vocabularyConcept.identifier" value="${item.identifier}" />
+                                    <stripes:text class="smalltext" size="30" name="vocabularyConcepts[${loop.index}].identifier" />
                                 </td>
                             </tr>
                             <tr>
@@ -228,7 +234,7 @@
                                     <dd:mandatoryIcon />
                                 </td>
                                 <td class="simple_attr_value">
-                                    <stripes:text name="vocabularyConcept.label" value="${item.label}" style="width: 500px;" class="smalltext"/>
+                                    <stripes:text name="vocabularyConcepts[${loop.index}].label" style="width: 500px;" class="smalltext"/>
                                 </td>
                             </tr>
                             <tr>
@@ -239,7 +245,7 @@
                                     <dd:optionalIcon />
                                 </td>
                                 <td class="simple_attr_value">
-                                    <stripes:text name="vocabularyConcept.definition" value="${item.definition}" style="width: 500px;" class="smalltext"/>
+                                    <stripes:text name="vocabularyConcepts[${loop.index}].definition" style="width: 500px;" class="smalltext"/>
                                 </td>
                             </tr>
                             <tr>
@@ -250,14 +256,14 @@
                                     <dd:mandatoryIcon />
                                 </td>
                                 <td class="simple_attr_value">
-                                    <stripes:text class="smalltext" value="${item.notation}" size="30" name="vocabularyConcept.notation" />
+                                    <stripes:text class="smalltext" size="30" name="vocabularyConcepts[${loop.index}].notation" />
                                 </td>
                             </tr>
                             <tr>
                                 <th>&nbsp;</th>
                                 <td colspan="2">
                                     <stripes:submit name="saveConcept" value="Save" class="mediumbuttonb"/>
-                                    <button class="mediumbuttonb" onClick="closePopup('#editConceptDiv${item.id}')">Cancel</button>
+                                    <button type="button" onClick="closePopup('#editConceptDiv${item.id}')">Cancel</button>
                                 </td>
                             </tr>
                         </table>

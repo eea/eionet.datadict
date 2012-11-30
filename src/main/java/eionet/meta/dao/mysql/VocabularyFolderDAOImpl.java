@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -53,7 +54,14 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID ");
-        sql.append("from T_VOCABULARY_FOLDER");
+        sql.append("from T_VOCABULARY_FOLDER ");
+        sql.append("where ");
+        if (StringUtils.isBlank(userName)) {
+            sql.append("WORKING_COPY=FALSE ");
+        } else {
+            sql.append("(WORKING_COPY=FALSE or WORKING_USER=:workingUser) ");
+            params.put("workingUser", userName);
+        }
 
         List<VocabularyFolder> items =
                 getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {
@@ -81,14 +89,15 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
     @Override
     public int createVocabularyFolder(VocabularyFolder vocabularyFolder) {
         String sql =
-                "insert into T_VOCABULARY_FOLDER (IDENTIFIER,  LABEL, REG_STATUS, "
+                "insert into T_VOCABULARY_FOLDER (IDENTIFIER,  LABEL, REG_STATUS, CONTINUITY_ID, "
                         + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID) "
-                        + "values (:identifier,  :label, :regStatus, :workingCopy, :workingUser, now(), :userModified, :checkedOutCopyId)";
+                        + "values (:identifier,  :label, :regStatus, :continuityId, :workingCopy, :workingUser, now(), :userModified, :checkedOutCopyId)";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("identifier", vocabularyFolder.getIdentifier());
         parameters.put("label", vocabularyFolder.getLabel());
         parameters.put("regStatus", vocabularyFolder.getRegStatus().toString());
+        parameters.put("continuityId", vocabularyFolder.getContinuityId());
         parameters.put("workingCopy", vocabularyFolder.isWorkingCopy());
         parameters.put("workingUser", vocabularyFolder.getWorkingUser());
         parameters.put("userModified", vocabularyFolder.getUserModified());
@@ -110,7 +119,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, ");
-        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID ");
         sql.append("from T_VOCABULARY_FOLDER ");
         sql.append("where IDENTIFIER=:identifier and WORKING_COPY=:workingCopy");
 
@@ -127,6 +136,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
                         vf.setUserModified(rs.getString("USER_MODIFIED"));
                         vf.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                        vf.setContinuityId(rs.getString("CONTINUITY_ID"));
                         return vf;
                     }
                 });
@@ -134,10 +144,13 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateVocabularyFolder(VocabularyFolder vocabularyFolder) {
         String sql =
-                "update T_VOCABULARY_FOLDER set IDENTIFIER = :identifier,  LABEL = :label, REG_STATUS = :regStatus, "
+                "update T_VOCABULARY_FOLDER set IDENTIFIER = :identifier,  LABEL = :label, REG_STATUS = :regStatus, CHECKEDOUT_COPY_ID = :checkedOutCopyId, "
                         + "WORKING_COPY = :workingCopy, WORKING_USER = :workingUser, DATE_MODIFIED = now(), USER_MODIFIED = :userModified "
                         + "where VOCABULARY_FOLDER_ID = :vocabularyFolderId";
 
@@ -149,8 +162,54 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         parameters.put("workingCopy", vocabularyFolder.isWorkingCopy());
         parameters.put("workingUser", vocabularyFolder.getWorkingUser());
         parameters.put("userModified", vocabularyFolder.getUserModified());
+        parameters.put("checkedOutCopyId",
+                vocabularyFolder.getCheckedOutCopyId() <= 0 ? null : vocabularyFolder.getCheckedOutCopyId());
 
         getNamedParameterJdbcTemplate().update(sql, parameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteVocabularyFolders(List<Integer> ids) {
+        String sql = "delete from T_VOCABULARY_FOLDER where VOCABULARY_FOLDER_ID in (:ids)";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ids", ids);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
+    @Override
+    public VocabularyFolder getVocabularyFolder(int vocabularyFolderId) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", vocabularyFolderId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID ");
+        sql.append("from T_VOCABULARY_FOLDER ");
+        sql.append("where VOCABULARY_FOLDER_ID=:id");
+
+        VocabularyFolder result =
+                getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyFolder>() {
+                    public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyFolder vf = new VocabularyFolder();
+                        vf.setId(rs.getInt("VOCABULARY_FOLDER_ID"));
+                        vf.setIdentifier(rs.getString("IDENTIFIER"));
+                        vf.setLabel(rs.getString("LABEL"));
+                        vf.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                        vf.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                        vf.setWorkingUser(rs.getString("WORKING_USER"));
+                        vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
+                        vf.setUserModified(rs.getString("USER_MODIFIED"));
+                        vf.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                        vf.setContinuityId(rs.getString("CONTINUITY_ID"));
+                        return vf;
+                    }
+                });
+
+        return result;
     }
 
 }

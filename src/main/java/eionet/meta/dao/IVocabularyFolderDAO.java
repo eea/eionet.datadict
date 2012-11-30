@@ -24,6 +24,7 @@ package eionet.meta.dao;
 import java.util.List;
 
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.ServiceException;
 
 /**
  * Vocabulary DAO interface.
@@ -65,4 +66,19 @@ public interface IVocabularyFolderDAO {
      */
     VocabularyFolder getVocabularyFolder(String identifier, boolean workingCopy);
 
+    /**
+     * Returns vocabulary folder.
+     *
+     * @param vocabularyFolderId
+     * @return
+     * @throws ServiceException
+     */
+    VocabularyFolder getVocabularyFolder(int vocabularyFolderId);
+
+    /**
+     * Deletes vocabulary folders.
+     *
+     * @param ids
+     */
+    void deleteVocabularyFolders(List<Integer> ids);
 }

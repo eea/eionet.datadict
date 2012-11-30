@@ -26,29 +26,38 @@
             </div>
         </c:if>
 
-        <ul class="menu">
-            <c:forEach var="item" items="${actionBean.vocabularyFolders}">
-                <li>
-                    <c:choose>
-                        <c:when test="${item.draftStatus && empty actionBean.user}">
-                            <span class="link-folder" style="color:gray;">
-                                <c:out value="${item.label}"/>&nbsp;<sup style="font-size:0.7em">(<c:out value="${item.regStatus}" />)</sup>
-                            </span>
-                        </c:when>
-                        <c:otherwise>
-                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
-                                <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
-                                <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
-                                <c:out value="${item.label}"/>
-                            </stripes:link>
-                        </c:otherwise>
-                    </c:choose>
-                    <c:if test="${not empty actionBean.userName && item.workingCopy && actionBean.userName==item.workingUser}">
-                        <span title="Your working copy" class="checkedout"><strong>*</strong></span>
-                    </c:if>
-                </li>
-            </c:forEach>
-         </ul>
+        <stripes:form id="vocabulariesForm" beanclass="${actionBean.class.name}" method="post" style="margin-top:1em">
+            <ul class="menu">
+                <c:forEach var="item" items="${actionBean.vocabularyFolders}">
+                    <li>
+                        <c:if test="${not empty actionBean.user}">
+                            <stripes:checkbox name="folderIds" value="${item.id}" />
+                        </c:if>
+                        <c:choose>
+                            <c:when test="${item.draftStatus && empty actionBean.user}">
+                                <span class="link-folder" style="color:gray;">
+                                    <c:out value="${item.label}"/>&nbsp;<sup style="font-size:0.7em">(<c:out value="${item.regStatus}" />)</sup>
+                                </span>
+                            </c:when>
+                            <c:otherwise>
+                                <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
+                                    <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
+                                    <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
+                                    <c:out value="${item.label}"/>
+                                </stripes:link>
+                            </c:otherwise>
+                        </c:choose>
+                        <c:if test="${not empty actionBean.userName && item.workingCopy && actionBean.userName==item.workingUser}">
+                            <span title="Your working copy" class="checkedout"><strong>*</strong></span>
+                        </c:if>
+                    </li>
+                </c:forEach>
+             </ul>
+             <c:if test="${not empty actionBean.user && not empty actionBean.vocabularyFolders}">
+                 <stripes:submit name="delete" value="Delete" onclick="return confirm('Are you sure you want to delete the selected vocabularies?');"/>
+                 <input type="button" onclick="toggleSelectAll('vocabulariesForm');return false" value="Select all" name="selectAll" />
+             </c:if>
+         </stripes:form>
 
     </stripes:layout-component>
 

@@ -10,6 +10,8 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
+                <c:if test="${actionBean.vocabularyFolder.workingCopy &&
+                    actionBean.vocabularyFolder.workingUser eq actionBean.userName}">
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="edit">
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
@@ -17,6 +19,27 @@
                         Edit vocabulary
                     </stripes:link>
                 </li>
+                </c:if>
+                <c:if test="${actionBean.vocabularyFolder.workingCopy}">
+                <li>
+                    <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
+                        <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                        Check in
+                    </stripes:link>
+                </li>
+                </c:if>
+                <c:if test="${not actionBean.vocabularyFolder.workingCopy}">
+                <li>
+                    <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkOut">
+                        <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                        Check out
+                    </stripes:link>
+                </li>
+                </c:if>
             </ul>
         </div>
 
@@ -48,6 +71,7 @@
         <!-- Vocabulary concepts -->
 
         <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%">
+            <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
             <display:column title="Identifier" property="identifier" />
             <display:column title="Label" property="label" />
             <display:column title="Definition" property="definition" />

@@ -63,6 +63,7 @@ import org.apache.commons.lang.StringUtils;
 import eionet.meta.DDRuntimeException;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
+import eionet.meta.dao.domain.VocabularyFolder;
 
 //import eionet.meta.Log;
 
@@ -1282,6 +1283,21 @@ public class Util {
     }
 
     /**
+     * Return unique continuity ID for vocabulary folder.
+     *
+     * @param vocabularyFolder
+     * @return
+     */
+    public static String generateContinuityId(VocabularyFolder vocabularyFolder) {
+
+        if (vocabularyFolder == null || isEmpty(vocabularyFolder.getIdentifier())) {
+            return null;
+        }
+        String name = vocabularyFolder.getIdentifier() + Thread.currentThread().getId() + System.currentTimeMillis();
+        return UUID.nameUUIDFromBytes(name.getBytes()).toString();
+    }
+
+    /**
      * Returns the URL binding of the given Stripes action bean class. Be aware that a Stripes URL binding may be parameterized
      * (e.g. "/foo/{bar}/{baz}"). If you want to get the URL binding with parameters replaced by real values, use
      * {@link #getUrlBinding(Class, Pair...)}.
@@ -1327,5 +1343,19 @@ public class Util {
         }
 
         return urlBinding;
+    }
+
+    /**
+     * Returns true, if the identifier is alphanumeric.
+     *
+     * @param identifier
+     * @return
+     */
+    public static boolean isValidIdentifier(String identifier) {
+        if (StringUtils.isNotEmpty(identifier)) {
+            String regex = "^[a-zA-Z0-9]+$";
+            return identifier.matches(regex);
+        }
+        return false;
     }
 }

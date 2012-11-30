@@ -51,7 +51,8 @@ public interface IVocabularyService {
     int createVocabularyFolder(VocabularyFolder vocabularyFolder) throws ServiceException;
 
     /**
-     * Updates vocabulary folder.
+     * Updates vocabulary folder. The vocabularyFolder.id must be correctly set. Only fields: identifier, label, regStatus will be
+     * updated.
      *
      * @param vocabularyFolder
      * @throws ServiceException
@@ -67,6 +68,15 @@ public interface IVocabularyService {
      * @throws ServiceException
      */
     VocabularyFolder getVocabularyFolder(String identifier, boolean workingCopy) throws ServiceException;
+
+    /**
+     * Returns vocabulary folder.
+     *
+     * @param vocabularyFolderId
+     * @return
+     * @throws ServiceException
+     */
+    VocabularyFolder getVocabularyFolder(int vocabularyFolderId) throws ServiceException;
 
     /**
      * Returns the vocabulary folder's concepts.
@@ -94,4 +104,41 @@ public interface IVocabularyService {
      * @throws ServiceException
      */
     void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException;
+
+    /**
+     * Deletes vocabulary concepts.
+     *
+     * @param ids
+     * @throws ServiceException
+     */
+    void deleteVocabularyConcepts(List<Integer> ids) throws ServiceException;
+
+    /**
+     * Deletes vocabulary folders.
+     *
+     * @param ids
+     * @throws ServiceException
+     */
+    void deleteVocabularyFolders(List<Integer> ids) throws ServiceException;
+
+    /**
+     * Checks out vocabulary folder.
+     *
+     * @param vocabularyFolderId
+     * @param userName
+     * @return
+     * @throws ServiceException
+     */
+    int checkOutVocabularyFolder(int vocabularyFolderId, String userName) throws ServiceException;
+
+    /**
+     * Checks in the vocabulary folder.
+     *
+     * @param vocabularyFolderId
+     *            the id of the checked out object
+     * @param userName
+     * @return
+     * @throws ServiceException
+     */
+    int checkInVocabularyFolder(int vocabularyFolderId, String userName) throws ServiceException;
 }

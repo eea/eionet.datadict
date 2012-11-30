@@ -109,4 +109,44 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteVocabularyConcepts(List<Integer> ids) {
+        String sql = "delete from T_VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID in (:ids)";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ids", ids);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteVocabularyConcepts(int vocabularyFolderId) {
+        String sql = "delete from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID = :vocabularyFolderId";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("vocabularyFolderId", vocabularyFolderId);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void moveVocabularyConcepts(int fromVocabularyFolderId, int toVocabularyFolderId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("update T_VOCABULARY_CONCEPT set VOCABULARY_CONCEPT_ID = :toVocabularyFolderId ");
+        sql.append("where VOCABULARY_CONCEPT_ID = :fromVocabularyFolderId");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("fromVocabularyFolderId", fromVocabularyFolderId);
+        parameters.put("toVocabularyFolderId", toVocabularyFolderId);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
 }

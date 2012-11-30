@@ -25,6 +25,7 @@ import java.util.List;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
@@ -49,6 +50,9 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /** Vocabulary folders. */
     private List<VocabularyFolder> vocabularyFolders;
 
+    /** Selected vocabulary folder ids. */
+    private List<Integer> folderIds;
+
     /**
      * View vocabulary folders list action.
      *
@@ -59,6 +63,19 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     public Resolution viewList() throws ServiceException {
         vocabularyFolders = vocabularyService.getVocabularyFolders(getUserName());
         return new ForwardResolution(BROWSE_VOCABULARY_FOLDERS_JSP);
+    }
+
+    /**
+     * Deletes vocabulary folders.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution delete() throws ServiceException {
+        vocabularyService.deleteVocabularyFolders(folderIds);
+        addSystemMessage("Vocabularies deleted successfully");
+        RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class);
+        return resolution;
     }
 
     /**
@@ -82,6 +99,21 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      */
     public void setVocabularyService(IVocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
+    }
+
+    /**
+     * @return the folderIds
+     */
+    public List<Integer> getFolderIds() {
+        return folderIds;
+    }
+
+    /**
+     * @param folderIds
+     *            the folderIds to set
+     */
+    public void setFolderIds(List<Integer> folderIds) {
+        this.folderIds = folderIds;
     }
 
 }

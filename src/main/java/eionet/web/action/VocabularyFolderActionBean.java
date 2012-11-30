@@ -29,6 +29,7 @@ import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -36,6 +37,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.util.Util;
 
 /**
  * Edit vocabulary folder action bean.
@@ -74,7 +76,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution view() throws ServiceException {
-        vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), false);
+        vocabularyFolder =
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
     }
@@ -95,7 +98,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution edit() throws ServiceException {
-        vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), false);
+        vocabularyFolder =
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
     }
@@ -127,13 +131,15 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution saveConcept() throws ServiceException {
-        if (vocabularyConcept.getId() == 0) {
+
+        if (vocabularyConcept != null) {
+            // Save new concept
             vocabularyService.createVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept);
-            LOGGER.debug("Creating vocabulary concept: " + vocabularyConcept.getIdentifier());
         } else {
-            vocabularyService.updateVocabularyConcept(vocabularyConcept);
-            LOGGER.debug("Updating vocabulary concept: " + vocabularyConcept.getIdentifier());
+            // Update existing concept
+            vocabularyService.updateVocabularyConcept(getEditableConcept());
         }
+
         addSystemMessage("Vocabulary concept saved successfully");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
@@ -142,17 +148,108 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
+     * Action for checking in vocabulary folder.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution checkIn() throws ServiceException {
+        vocabularyService.checkInVocabularyFolder(vocabularyFolder.getId(), getUserName());
+        addSystemMessage("Successfully checked in");
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", false);
+        return resolution;
+    }
+
+    /**
+     * Action for checking out vocabulary folder.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution checkOut() throws ServiceException {
+        vocabularyService.checkOutVocabularyFolder(vocabularyFolder.getId(), getUserName());
+        addSystemMessage("Successfully checked out");
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", true);
+        return resolution;
+    }
+
+    /**
      * Deletes vocabulary concepts.
      *
      * @return
+     * @throws ServiceException
      */
-    public Resolution deleteConcepts() {
-        LOGGER.debug("Deleting concepts: " + StringUtils.join(conceptIds, ", "));
+    public Resolution deleteConcepts() throws ServiceException {
+        vocabularyService.deleteVocabularyConcepts(conceptIds);
         addSystemMessage("Vocabulary concepts deleted successfully");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         return resolution;
+    }
+
+    /**
+     * Validates save folder.
+     *
+     * @throws ServiceException
+     */
+    @ValidationMethod(on = {"saveFolder"})
+    public void validateSaveFolder() throws ServiceException {
+        if (StringUtils.isEmpty(vocabularyFolder.getIdentifier())) {
+            addGlobalValidationError("Vocabulary identifier is missing");
+        } else {
+            if (!Util.isValidIdentifier(vocabularyFolder.getIdentifier())) {
+                addGlobalValidationError("Vocabulary identifier must be alpha-numeric value");
+            }
+        }
+        if (StringUtils.isEmpty(vocabularyFolder.getLabel())) {
+            addGlobalValidationError("Vocabulary label is missing");
+        }
+
+        if (isValidationErrors()) {
+            vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
+        }
+    }
+
+    /**
+     * Validates save concept.
+     *
+     * @throws ServiceException
+     */
+    @ValidationMethod(on = {"saveConcept"})
+    public void validateSaveConcept() throws ServiceException {
+        VocabularyConcept vc = null;
+        if (vocabularyConcept != null) {
+            // Validating new concept
+            vc = vocabularyConcept;
+        } else {
+            // Validating edit concept
+            vc = getEditableConcept();
+        }
+
+        if (StringUtils.isEmpty(vc.getIdentifier())) {
+            addGlobalValidationError("Vocabulary concept identifier is missing");
+        } else {
+            if (!Util.isValidIdentifier(vc.getIdentifier())) {
+                addGlobalValidationError("Vocabulary concept identifier must be alpha-numeric value");
+            }
+        }
+        if (StringUtils.isEmpty(vc.getLabel())) {
+            addGlobalValidationError("Vocabulary concept label is missing");
+        }
+        if (StringUtils.isEmpty(vc.getNotation())) {
+            addGlobalValidationError("Vocabulary notation is missing");
+        }
+
+        if (isValidationErrors()) {
+            LOGGER.debug("Validated - got errors");
+            vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getId());
+            vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
+        }
     }
 
     /**
@@ -189,6 +286,20 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
+     * Returns the vocabulary concept that is submitted by form for update.
+     *
+     * @return
+     */
+    public VocabularyConcept getEditableConcept() {
+        for (VocabularyConcept vc : vocabularyConcepts) {
+            if (vc != null) {
+                return vc;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return the vocabularyFolder
      */
     public VocabularyFolder getVocabularyFolder() {
@@ -208,6 +319,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public List<VocabularyConcept> getVocabularyConcepts() {
         return vocabularyConcepts;
+    }
+
+    /**
+     * @param vocabularyConcepts
+     *            the vocabularyConcepts to set
+     */
+    public void setVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts) {
+        this.vocabularyConcepts = vocabularyConcepts;
     }
 
     /**
