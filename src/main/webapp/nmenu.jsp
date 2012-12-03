@@ -27,5 +27,6 @@
           <li><a href="<%=request.getContextPath()%>/schemasets/browse/">Schemas</a></li> <%
         }
         %>
+        <li><a href="<%=request.getContextPath()%>/vocabularies">Vocabularies</a></li>
     </ul>
 </div>

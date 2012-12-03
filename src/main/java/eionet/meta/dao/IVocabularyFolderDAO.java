@@ -43,6 +43,18 @@ public interface IVocabularyFolderDAO {
     List<VocabularyFolder> getVocabularyFolders(String userName);
 
     /**
+     * Returns versions of the vocabulary folders.
+     *
+     * @param continuityId
+     * @param vocabularyFolderId
+     *            folder to exclude
+     * @param userName
+     *
+     * @return
+     */
+    List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName);
+
+    /**
      * Creates vocabulary folder.
      *
      * @param vocabularyFolder
@@ -74,6 +86,15 @@ public interface IVocabularyFolderDAO {
      * @throws ServiceException
      */
     VocabularyFolder getVocabularyFolder(int vocabularyFolderId);
+
+    /**
+     * Returns the checked out version of the given vocabulary folder.
+     *
+     * @param checkedOutCopyId
+     * @return
+     * @throws ServiceException
+     */
+    VocabularyFolder getVocabularyWorkingCopy(int checkedOutCopyId);
 
     /**
      * Deletes vocabulary folders.

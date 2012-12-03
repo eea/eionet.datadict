@@ -68,11 +68,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public int createVocabularyFolder(VocabularyFolder vocabularyFolder) throws ServiceException {
+    public int createVocabularyFolder(VocabularyFolder vocabularyFolder, String userName) throws ServiceException {
         try {
             if (StringUtils.isEmpty(vocabularyFolder.getContinuityId())) {
                 vocabularyFolder.setContinuityId(Util.generateContinuityId(vocabularyFolder));
             }
+            vocabularyFolder.setUserModified(userName);
             return vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
         } catch (Exception e) {
             throw new ServiceException("Failed to create vocabulary folder: " + e.getMessage(), e);
@@ -265,6 +266,91 @@ public class VocabularyServiceImpl implements IVocabularyService {
             return originalVocabularyFolderId;
         } catch (Exception e) {
             throw new ServiceException("Failed to check-in vocabulary folder: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName)
+            throws ServiceException {
+        try {
+            VocabularyFolder originalVocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
+
+            vocabularyFolder.setContinuityId(originalVocabularyFolder.getContinuityId());
+            vocabularyFolder.setUserModified(userName);
+            int newVocabularyFolderId = vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
+
+            List<VocabularyConcept> concepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderId);
+            for (VocabularyConcept vc : concepts) {
+                vocabularyConceptDAO.createVocabularyConcept(newVocabularyFolderId, vc);
+            }
+
+            return newVocabularyFolderId;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to create vocabulary folder copy: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName)
+            throws ServiceException {
+        try {
+            return vocabularyFolderDAO.getVocabularyFolderVersions(continuityId, vocabularyFolderId, userName);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get vocabulary folder versions: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void undoCheckOut(int vocabularyFolderId, String userName) throws ServiceException {
+        if (StringUtils.isBlank(userName)) {
+            throw new IllegalArgumentException("User name must not be blank!");
+        }
+
+        try {
+            VocabularyFolder vocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
+
+            if (!vocabularyFolder.isWorkingCopy()) {
+                throw new ServiceException("Vocabulary is not a working copy.");
+            }
+
+            if (!StringUtils.equals(userName, vocabularyFolder.getWorkingUser())) {
+                throw new ServiceException("Check-in user is not the current working user.");
+            }
+
+            int originalVocabularyFolderId = vocabularyFolder.getCheckedOutCopyId();
+
+            // Update original vocabulary folder
+            VocabularyFolder originalVocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(originalVocabularyFolderId);
+            originalVocabularyFolder.setCheckedOutCopyId(0);
+            originalVocabularyFolder.setWorkingUser(null);
+            vocabularyFolderDAO.updateVocabularyFolder(originalVocabularyFolder);
+
+            // Delete checked out version
+            vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId));
+
+        } catch (Exception e) {
+            throw new ServiceException("Failed to undo checkout for vocabulary folder: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VocabularyFolder getVocabularyWorkingCopy(int checkedOutCopyId) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.getVocabularyWorkingCopy(checkedOutCopyId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get the checked out vocabulary folder: " + e.getMessage(), e);
         }
     }
 

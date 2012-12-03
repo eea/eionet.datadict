@@ -13,6 +13,7 @@
         <h1>New vocabulary</h1>
 
         <stripes:form id="form" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
+        <stripes:hidden name="copyId" />
         <div id="outerframe">
             <c:url var="mandatoryPic" value="/images/mandatory.gif" />
             <table class="datatable">

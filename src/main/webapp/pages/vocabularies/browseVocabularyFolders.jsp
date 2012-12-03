@@ -7,12 +7,14 @@
 
     <stripes:layout-component name="contents">
 
+        <c:if test="${not empty actionBean.user}">
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
                 <li><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
             </ul>
         </div>
+        </c:if>
 
         <h1>Browse vocabularies</h1>
 
@@ -31,7 +33,7 @@
                 <c:forEach var="item" items="${actionBean.vocabularyFolders}">
                     <li>
                         <c:if test="${not empty actionBean.user}">
-                            <stripes:checkbox name="folderIds" value="${item.id}" />
+                            <stripes:checkbox name="folderIds" value="${item.id}" disabled="${item.workingCopy || not empty item.workingUser}" />
                         </c:if>
                         <c:choose>
                             <c:when test="${item.draftStatus && empty actionBean.user}">
@@ -47,7 +49,7 @@
                                 </stripes:link>
                             </c:otherwise>
                         </c:choose>
-                        <c:if test="${not empty actionBean.userName && item.workingCopy && actionBean.userName==item.workingUser}">
+                        <c:if test="${item.workingCopy && actionBean.userName==item.workingUser}">
                             <span title="Your working copy" class="checkedout"><strong>*</strong></span>
                         </c:if>
                     </li>

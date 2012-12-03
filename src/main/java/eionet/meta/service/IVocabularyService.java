@@ -43,12 +43,38 @@ public interface IVocabularyService {
     List<VocabularyFolder> getVocabularyFolders(String userName) throws ServiceException;
 
     /**
+     * Returns versions of the vocabulary folders.
+     *
+     * @param continuityId
+     * @param vocabularyFolderId
+     *            folder to exclude
+     * @param userName
+     *
+     * @return
+     */
+    List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName)
+            throws ServiceException;
+
+    /**
      * Creates vocabulary folder.
      *
      * @param vocabularyFolder
+     * @param userName
      * @return
      */
-    int createVocabularyFolder(VocabularyFolder vocabularyFolder) throws ServiceException;
+    int createVocabularyFolder(VocabularyFolder vocabularyFolder, String userName) throws ServiceException;
+
+    /**
+     * Creates copy of vocabulary folder - the concepts will be copied.
+     *
+     * @param vocabularyFolder
+     * @param vocabularyFolderId
+     *            id from which the copy will be made of
+     * @param userName
+     * @return
+     */
+    int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName)
+            throws ServiceException;
 
     /**
      * Updates vocabulary folder. The vocabularyFolder.id must be correctly set. Only fields: identifier, label, regStatus will be
@@ -68,6 +94,15 @@ public interface IVocabularyService {
      * @throws ServiceException
      */
     VocabularyFolder getVocabularyFolder(String identifier, boolean workingCopy) throws ServiceException;
+
+    /**
+     * Returns the checked out version of the given vocabulary folder.
+     *
+     * @param checkedOutCopyId
+     * @return
+     * @throws ServiceException
+     */
+    VocabularyFolder getVocabularyWorkingCopy(int checkedOutCopyId) throws ServiceException;
 
     /**
      * Returns vocabulary folder.
@@ -141,4 +176,14 @@ public interface IVocabularyService {
      * @throws ServiceException
      */
     int checkInVocabularyFolder(int vocabularyFolderId, String userName) throws ServiceException;
+
+    /**
+     * Discards the checked out version.
+     *
+     * @param vocabularyFolderId
+     *            id of the checked out version
+     * @param userName
+     * @throws ServiceException
+     */
+    void undoCheckOut(int vocabularyFolderId, String userName) throws ServiceException;
 }

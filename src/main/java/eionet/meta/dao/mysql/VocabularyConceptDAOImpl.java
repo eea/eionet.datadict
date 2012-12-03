@@ -139,8 +139,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void moveVocabularyConcepts(int fromVocabularyFolderId, int toVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("update T_VOCABULARY_CONCEPT set VOCABULARY_CONCEPT_ID = :toVocabularyFolderId ");
-        sql.append("where VOCABULARY_CONCEPT_ID = :fromVocabularyFolderId");
+        sql.append("update T_VOCABULARY_CONCEPT set VOCABULARY_FOLDER_ID = :toVocabularyFolderId ");
+        sql.append("where VOCABULARY_FOLDER_ID = :fromVocabularyFolderId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("fromVocabularyFolderId", fromVocabularyFolderId);

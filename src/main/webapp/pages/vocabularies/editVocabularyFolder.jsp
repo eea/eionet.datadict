@@ -2,6 +2,8 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
+<%@page import="eionet.meta.dao.domain.RegStatus"%>
+
 <stripes:layout-render name="/pages/common/template.jsp"
     pageTitle="Edit vocabulary">
 
@@ -61,6 +63,21 @@
             <h2>Operations:</h2>
             <ul>
                 <li><a href="#" id="addNewConceptLink">Add new concept</a></li>
+                <li>
+                    <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
+                        <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                        Check in
+                    </stripes:link>
+                </li>
+                <li>
+                    <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="undoCheckOut">
+                        <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                        Undo checkout
+                    </stripes:link>
+                </li>
             </ul>
         </div>
 
@@ -68,6 +85,7 @@
 
         <stripes:form id="form" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
         <stripes:hidden name="vocabularyFolder.id" />
+        <stripes:hidden name="vocabularyFolder.workingCopy" />
         <div id="outerframe">
             <table class="datatable">
                 <colgroup>
@@ -84,6 +102,22 @@
                     </td>
                     <td class="simple_attr_value">
                         <stripes:text class="smalltext" size="30" name="vocabularyFolder.identifier"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Registration status
+                    </th>
+                    <td class="simple_attr_help">
+                        <dd:mandatoryIcon />
+                    </td>
+                    <td class="simple_attr_value">
+                        <c:set var="regStatuses" value="<%=RegStatus.values()%>"/>
+                        <stripes:select name="vocabularyFolder.regStatus" value="${actionBean.vocabularyFolder.regStatus}">
+                            <c:forEach items="${regStatuses}" var="aRegStatus">
+                                <stripes:option value="${aRegStatus}" label="${aRegStatus}"/>
+                            </c:forEach>
+                        </stripes:select>
                     </td>
                 </tr>
                 <tr>

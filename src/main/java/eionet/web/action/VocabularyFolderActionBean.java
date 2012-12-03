@@ -59,6 +59,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /** Vocabulary folder. */
     private VocabularyFolder vocabularyFolder;
 
+    /** Other versions of the same vocabulary folder. */
+    private List<VocabularyFolder> vocabularyFolderVersions;
+
     /** Vocabulary concepts. */
     private List<VocabularyConcept> vocabularyConcepts;
 
@@ -67,6 +70,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /** Selected vocabulary concept ids. */
     private List<Integer> conceptIds;
+
+    /** Vocabulary folder id, from which the copy is made of. */
+    private int copyId;
 
     /**
      * Navigates to view vocabulary folder page.
@@ -79,7 +85,24 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
+        vocabularyFolderVersions =
+                vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
+                        getUserName());
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
+    }
+
+    /**
+     * Navigates to view vocabulary's working copy page.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution viewWorkingCopy() throws ServiceException {
+        vocabularyFolder = vocabularyService.getVocabularyWorkingCopy(vocabularyFolder.getId());
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+        return resolution;
     }
 
     /**
@@ -112,10 +135,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public Resolution saveFolder() throws ServiceException {
         if (vocabularyFolder.getId() == 0) {
-            vocabularyService.createVocabularyFolder(vocabularyFolder);
+            if (copyId != 0) {
+                vocabularyService.createVocabularyFolderCopy(vocabularyFolder, copyId, getUserName());
+            } else {
+                vocabularyService.createVocabularyFolder(vocabularyFolder, getUserName());
+            }
         } else {
             vocabularyService.updateVocabularyFolder(vocabularyFolder);
-            LOGGER.debug("Updating vocabulary folder: " + vocabularyFolder.getIdentifier());
         }
         addSystemMessage("Vocabulary saved successfully");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
@@ -178,6 +204,21 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
+     * Deletes the checked out version.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution undoCheckOut() throws ServiceException {
+        vocabularyService.undoCheckOut(vocabularyFolder.getId(), getUserName());
+        addSystemMessage("Checked out version successfully deleted");
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", false);
+        return resolution;
+    }
+
+    /**
      * Deletes vocabulary concepts.
      *
      * @return
@@ -199,6 +240,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     @ValidationMethod(on = {"saveFolder"})
     public void validateSaveFolder() throws ServiceException {
+
+        if (getUser() == null) {
+            addGlobalValidationError("User must be logged in");
+        }
+
         if (StringUtils.isEmpty(vocabularyFolder.getIdentifier())) {
             addGlobalValidationError("Vocabulary identifier is missing");
         } else {
@@ -271,6 +317,54 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         return resolution;
+    }
+
+    /**
+     * True, if logged in user is the working user of the vocabulary.
+     *
+     * @return
+     */
+    public boolean isUserWorkingCopy() {
+        boolean result = false;
+        String sessionUser = getUserName();
+        if (!StringUtils.isBlank(sessionUser)) {
+            if (vocabularyFolder != null) {
+                String workingUser = vocabularyFolder.getWorkingUser();
+                return vocabularyFolder.isWorkingCopy() && StringUtils.equals(workingUser, sessionUser);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * True, if vocabulary is checked out by other user.
+     *
+     * @return
+     */
+    public boolean isCheckedOutByOther() {
+
+        if (vocabularyFolder == null) {
+            return false;
+        } else {
+            return StringUtils.isNotBlank(vocabularyFolder.getWorkingUser()) && !vocabularyFolder.isWorkingCopy()
+                    && !StringUtils.equals(getUserName(), vocabularyFolder.getWorkingUser());
+        }
+    }
+
+    /**
+     * True, if vocabulary is checked out by user.
+     *
+     * @return
+     */
+    public boolean isCheckedOutByUser() {
+
+        if (vocabularyFolder == null) {
+            return false;
+        } else {
+            return StringUtils.isNotBlank(vocabularyFolder.getWorkingUser()) && !vocabularyFolder.isWorkingCopy()
+                    && StringUtils.equals(getUserName(), vocabularyFolder.getWorkingUser());
+        }
     }
 
     /**
@@ -365,6 +459,28 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public void setConceptIds(List<Integer> conceptIds) {
         this.conceptIds = conceptIds;
+    }
+
+    /**
+     * @return the copyId
+     */
+    public int getCopyId() {
+        return copyId;
+    }
+
+    /**
+     * @param copyId
+     *            the copyId to set
+     */
+    public void setCopyId(int copyId) {
+        this.copyId = copyId;
+    }
+
+    /**
+     * @return the vocabularyFolderVersions
+     */
+    public List<VocabularyFolder> getVocabularyFolderVersions() {
+        return vocabularyFolderVersions;
     }
 
 }
