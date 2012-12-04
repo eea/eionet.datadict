@@ -137,6 +137,17 @@
                     </td>
                 </tr>
                 <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Numeric concept identifiers
+                    </th>
+                    <td class="simple_attr_help">
+                        <dd:mandatoryIcon />
+                    </td>
+                    <td class="simple_attr_value">
+                        <stripes:checkbox name="vocabularyFolder.numericConceptIdentifiers" />
+                    </td>
+                </tr>
+                <tr>
                     <th>&nbsp;</th>
                     <td colspan="2">
                         <stripes:submit name="saveFolder" value="Save" class="mediumbuttonb"/>
@@ -152,6 +163,7 @@
             <stripes:hidden name="vocabularyFolder.identifier" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
             <stripes:hidden name="vocabularyFolder.id" />
+            <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
 
             <c:set var="divId" value="addNewConceptDiv" />
             <c:if test="${actionBean.editDivId eq divId}">
@@ -196,7 +208,7 @@
                             <dd:optionalIcon />
                         </td>
                         <td class="simple_attr_value">
-                            <stripes:text name="vocabularyConcept.definition" style="width: 500px;" class="smalltext"/>
+                            <stripes:textarea name="vocabularyConcept.definition" style="width: 500px;" class="smalltext"/>
                         </td>
                     </tr>
                     <tr>
@@ -251,6 +263,7 @@
                     <stripes:hidden name="vocabularyFolder.identifier" />
                     <stripes:hidden name="vocabularyFolder.workingCopy" />
                     <stripes:hidden name="vocabularyFolder.id" />
+                    <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
                     <stripes:hidden name="vocabularyConcepts[${loop.index}].id" />
 
                     <c:set var="divId" value="editConceptDiv${item.id}" />
@@ -296,7 +309,7 @@
                                     <dd:optionalIcon />
                                 </td>
                                 <td class="simple_attr_value">
-                                    <stripes:text name="vocabularyConcepts[${loop.index}].definition" style="width: 500px;" class="smalltext"/>
+                                    <stripes:textarea name="vocabularyConcepts[${loop.index}].definition" style="width: 500px;" class="smalltext"/>
                                 </td>
                             </tr>
                             <tr>

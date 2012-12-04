@@ -45,6 +45,17 @@
                     </td>
                 </tr>
                 <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Numeric concept identifiers
+                    </th>
+                    <td class="simple_attr_help">
+                        <dd:mandatoryIcon />
+                    </td>
+                    <td class="simple_attr_value">
+                        <stripes:checkbox name="vocabularyFolder.numericConceptIdentifiers" />
+                    </td>
+                </tr>
+                <tr>
                     <th>&nbsp;</th>
                     <td colspan="2">
                         <stripes:submit name="saveFolder" value="Add" class="mediumbuttonb"/>

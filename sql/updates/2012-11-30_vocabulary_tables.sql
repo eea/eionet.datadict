@@ -10,6 +10,7 @@ create table T_VOCABULARY_FOLDER (
     WORKING_USER varchar(50) default null,
     DATE_MODIFIED timestamp not null default now(),
     USER_MODIFIED varchar(50) default null,
+    CONCEPT_IDENTIFIER_NUMERIC boolean not null default false,
     primary key (VOCABULARY_FOLDER_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -22,7 +23,7 @@ create table T_VOCABULARY_CONCEPT (
     VOCABULARY_FOLDER_ID int(10) unsigned not null,
     IDENTIFIER varchar(100) not null,
     LABEL varchar(255) not null,
-    DEFINITION varchar(255),
+    DEFINITION text default null,
     NOTATION varchar(50) not null,
     primary key (VOCABULARY_CONCEPT_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

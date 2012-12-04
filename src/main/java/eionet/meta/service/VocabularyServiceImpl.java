@@ -139,6 +139,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vf.setIdentifier(vocabularyFolder.getIdentifier());
             vf.setLabel(vocabularyFolder.getLabel());
             vf.setRegStatus(vocabularyFolder.getRegStatus());
+            vf.setNumericConceptIdentifiers(vocabularyFolder.isNumericConceptIdentifiers());
             vocabularyFolderDAO.updateVocabularyFolder(vf);
         } catch (Exception e) {
             throw new ServiceException("Failed to update vocabulary folder: " + e.getMessage(), e);
@@ -362,7 +363,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyFolderDAO.isUniqueFolderIdentifier(identifier, excludedVocabularyFolderIds);
         } catch (Exception e) {
-            throw new ServiceException("Failed unique vocabulary identifier: " + e.getMessage(), e);
+            throw new ServiceException("Failed to check unique vocabulary identifier: " + e.getMessage(), e);
         }
     }
 
@@ -375,7 +376,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyConceptDAO.isUniqueConceptIdentifier(identifier, vocabularyFolderId, vocabularyConceptId);
         } catch (Exception e) {
-            throw new ServiceException("Failed unique concept identifier: " + e.getMessage(), e);
+            throw new ServiceException("Failed to check unique concept identifier: " + e.getMessage(), e);
         }
     }
 

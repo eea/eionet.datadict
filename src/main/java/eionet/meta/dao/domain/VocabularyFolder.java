@@ -41,6 +41,7 @@ public class VocabularyFolder {
     private Date dateModified;
     private String userModified;
     private int checkedOutCopyId;
+    private boolean numericConceptIdentifiers;
 
     /**
      * True, if status is "Draft".
@@ -202,6 +203,21 @@ public class VocabularyFolder {
      */
     public void setContinuityId(String continuityId) {
         this.continuityId = continuityId;
+    }
+
+    /**
+     * @return the numericConceptIdentifiers
+     */
+    public boolean isNumericConceptIdentifiers() {
+        return numericConceptIdentifiers;
+    }
+
+    /**
+     * @param numericConceptIdentifiers
+     *            the numericConceptIdentifiers to set
+     */
+    public void setNumericConceptIdentifiers(boolean numericConceptIdentifiers) {
+        this.numericConceptIdentifiers = numericConceptIdentifiers;
     }
 
 }
