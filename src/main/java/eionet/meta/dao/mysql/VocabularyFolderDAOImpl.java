@@ -23,6 +23,7 @@ package eionet.meta.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -289,6 +290,32 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                 });
 
         return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isUniqueFolderIdentifier(String identifier, int... excludedVocabularyFolderIds) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("identifier", identifier);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select count(VOCABULARY_FOLDER_ID) from T_VOCABULARY_FOLDER ");
+        sql.append("where IDENTIFIER = :identifier ");
+        if (excludedVocabularyFolderIds != null) {
+            sql.append("and VOCABULARY_FOLDER_ID not in (:excludedVocabularyFolderIds)");
+
+            List<Integer> excluded = new ArrayList<Integer>();
+            for (int i : excludedVocabularyFolderIds) {
+                excluded.add(i);
+            }
+            parameters.put("excludedVocabularyFolderIds", excluded);
+        }
+
+        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+
+        return result == 0;
     }
 
 }

@@ -77,4 +77,14 @@ public interface IVocabularyConceptDAO {
      * @param toVocabularyFolderId
      */
     void moveVocabularyConcepts(int fromVocabularyFolderId, int toVocabularyFolderId);
+
+    /**
+     * True, if identifier is unique.
+     *
+     * @param identifier
+     * @param vocabularyFolderId
+     * @param vocabularyConceptId
+     * @return
+     */
+    boolean isUniqueConceptIdentifier(String identifier, int vocabularyFolderId, int vocabularyConceptId);
 }

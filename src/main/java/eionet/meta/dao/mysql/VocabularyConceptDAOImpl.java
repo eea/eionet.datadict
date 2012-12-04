@@ -149,4 +149,26 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isUniqueConceptIdentifier(String identifier, int vocabularyFolderId, int vocabularyConceptId) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("identifier", identifier);
+        parameters.put("vocabularyFolderId", vocabularyFolderId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select count(VOCABULARY_CONCEPT_ID) from T_VOCABULARY_CONCEPT ");
+        sql.append("where IDENTIFIER = :identifier and VOCABULARY_FOLDER_ID = :vocabularyFolderId ");
+        if (vocabularyConceptId != 0) {
+            sql.append("and VOCABULARY_CONCEPT_ID != :vocabularyConceptId");
+            parameters.put("vocabularyConceptId", vocabularyConceptId);
+        }
+
+        int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
+
+        return result == 0;
+    }
+
 }

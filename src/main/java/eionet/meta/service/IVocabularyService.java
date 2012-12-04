@@ -186,4 +186,25 @@ public interface IVocabularyService {
      * @throws ServiceException
      */
     void undoCheckOut(int vocabularyFolderId, String userName) throws ServiceException;
+
+    /**
+     * True, if identifier is unique.
+     *
+     * @param identifier
+     * @param excludedVocabularyFolderIds
+     * @return
+     * @throws ServiceException
+     */
+    boolean isUniqueFolderIdentifier(String identifier, int... excludedVocabularyFolderIds) throws ServiceException;
+
+    /**
+     * True, if identifier is unique.
+     *
+     * @param identifier
+     * @param vocabularyFolderId
+     * @param vocabularyConceptId
+     * @return
+     * @throws ServiceException
+     */
+    boolean isUniqueConceptIdentifier(String identifier, int vocabularyFolderId, int vocabularyConceptId) throws ServiceException;
 }

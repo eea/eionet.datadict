@@ -50,6 +50,10 @@
                 <c:forEach var="item" items="${actionBean.vocabularyConcepts}">
                     initPopup("#editConceptDiv${item.id}");
                 </c:forEach>
+
+                <c:if test="${not empty actionBean.editDivId}">
+                    openPopup("#${actionBean.editDivId}");
+                </c:if>
             });
 
         } ) ( jQuery );
@@ -86,6 +90,7 @@
         <stripes:form id="form" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
         <stripes:hidden name="vocabularyFolder.id" />
         <stripes:hidden name="vocabularyFolder.workingCopy" />
+        <stripes:hidden name="vocabularyFolder.checkedOutCopyId" />
         <div id="outerframe">
             <table class="datatable">
                 <colgroup>
@@ -147,6 +152,12 @@
             <stripes:hidden name="vocabularyFolder.identifier" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
             <stripes:hidden name="vocabularyFolder.id" />
+
+            <c:set var="divId" value="addNewConceptDiv" />
+            <c:if test="${actionBean.editDivId eq divId}">
+                <!--  validation errors -->
+                <stripes:errors/>
+            </c:if>
 
             <div id="outerframe">
                 <table class="datatable">
@@ -241,6 +252,12 @@
                     <stripes:hidden name="vocabularyFolder.workingCopy" />
                     <stripes:hidden name="vocabularyFolder.id" />
                     <stripes:hidden name="vocabularyConcepts[${loop.index}].id" />
+
+                    <c:set var="divId" value="editConceptDiv${item.id}" />
+                    <c:if test="${actionBean.editDivId eq divId}">
+                        <!--  validation errors -->
+                        <stripes:errors/>
+                    </c:if>
 
                     <div id="outerframe">
                         <table class="datatable">

@@ -102,4 +102,14 @@ public interface IVocabularyFolderDAO {
      * @param ids
      */
     void deleteVocabularyFolders(List<Integer> ids);
+
+    /**
+     * True, if identifier is unique.
+     *
+     * @param identifier
+     * @param excludedVocabularyFolderIds
+     * @return
+     */
+    boolean isUniqueFolderIdentifier(String identifier, int... excludedVocabularyFolderIds);
+
 }

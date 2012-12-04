@@ -354,4 +354,29 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isUniqueFolderIdentifier(String identifier, int... excludedVocabularyFolderIds) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.isUniqueFolderIdentifier(identifier, excludedVocabularyFolderIds);
+        } catch (Exception e) {
+            throw new ServiceException("Failed unique vocabulary identifier: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isUniqueConceptIdentifier(String identifier, int vocabularyFolderId, int vocabularyConceptId)
+            throws ServiceException {
+        try {
+            return vocabularyConceptDAO.isUniqueConceptIdentifier(identifier, vocabularyFolderId, vocabularyConceptId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed unique concept identifier: " + e.getMessage(), e);
+        }
+    }
+
 }

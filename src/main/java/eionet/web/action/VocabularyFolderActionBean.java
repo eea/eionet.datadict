@@ -52,6 +52,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private static final String EDIT_VOCABULARY_FOLDER_JSP = "/pages/vocabularies/editVocabularyFolder.jsp";
     private static final String VIEW_VOCABULARY_FOLDER_JSP = "/pages/vocabularies/viewVocabularyFolder.jsp";
 
+    /** Popup div's id prefix on jsp page. */
+    private static final String EDIT_DIV_ID_PREFIX = "editConceptDiv";
+    /** Pop div's id for new concept form. */
+    private static final String NEW_CONCEPT_DIV_ID = "addNewConceptDiv";
+
     /** Vocabulary service. */
     @SpringBean
     private IVocabularyService vocabularyService;
@@ -73,6 +78,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /** Vocabulary folder id, from which the copy is made of. */
     private int copyId;
+
+    /** Popup div id to keep open, when validation error occur. */
+    private String editDivId;
 
     /**
      * Navigates to view vocabulary folder page.
@@ -256,6 +264,18 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary label is missing");
         }
 
+        // Validate unique identifier
+        if (vocabularyFolder.getId() == 0) {
+            if (!vocabularyService.isUniqueFolderIdentifier(vocabularyFolder.getIdentifier())) {
+                addGlobalValidationError("Vocabulary identifier is not unique");
+            }
+        } else {
+            if (!vocabularyService.isUniqueFolderIdentifier(vocabularyFolder.getIdentifier(), vocabularyFolder.getId(),
+                    vocabularyFolder.getCheckedOutCopyId())) {
+                addGlobalValidationError("Vocabulary identifier is not unique");
+            }
+        }
+
         if (isValidationErrors()) {
             vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
         }
@@ -272,9 +292,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         if (vocabularyConcept != null) {
             // Validating new concept
             vc = vocabularyConcept;
+            editDivId = NEW_CONCEPT_DIV_ID;
         } else {
             // Validating edit concept
             vc = getEditableConcept();
+            editDivId = EDIT_DIV_ID_PREFIX + vc.getId();
         }
 
         if (StringUtils.isEmpty(vc.getIdentifier())) {
@@ -289,6 +311,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
         if (StringUtils.isEmpty(vc.getNotation())) {
             addGlobalValidationError("Vocabulary notation is missing");
+        }
+
+        // Validate unique identifier
+        if (!vocabularyService.isUniqueConceptIdentifier(vc.getIdentifier(), vocabularyFolder.getId(), vc.getId())) {
+            addGlobalValidationError("Vocabulary concept identifier is not unique");
         }
 
         if (isValidationErrors()) {
@@ -481,6 +508,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public List<VocabularyFolder> getVocabularyFolderVersions() {
         return vocabularyFolderVersions;
+    }
+
+    /**
+     * @return the editDivId
+     */
+    public String getEditDivId() {
+        return editDivId;
     }
 
 }
