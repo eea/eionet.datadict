@@ -105,7 +105,7 @@ public class FixedValuesHandler extends BaseHandler{
 
         String[] newValues = req.getParameterValues("new_value");
         for (int i=0; newValues!=null && i<newValues.length; i++) {
-            insertValue(newValues[i]);
+            insertValue(newValues[i].trim());
         }
     }
 

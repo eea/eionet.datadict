@@ -83,7 +83,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         parameters.put("identifier", vocabularyConcept.getIdentifier());
         parameters.put("label", vocabularyConcept.getLabel());
         parameters.put("definition", vocabularyConcept.getDefinition());
-        parameters.put("notation", vocabularyConcept.getNotation());
+        parameters.put("notation", vocabularyConcept.getNotation().trim());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
         return getLastInsertId();
@@ -104,7 +104,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         parameters.put("identifier", vocabularyConcept.getIdentifier());
         parameters.put("label", vocabularyConcept.getLabel());
         parameters.put("definition", vocabularyConcept.getDefinition());
-        parameters.put("notation", vocabularyConcept.getNotation());
+        parameters.put("notation", vocabularyConcept.getNotation().trim());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
