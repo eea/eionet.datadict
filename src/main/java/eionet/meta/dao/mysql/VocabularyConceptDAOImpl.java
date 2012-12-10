@@ -51,7 +51,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
-        sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID=:vocabularyFolderId order by IDENTIFIER");
+        sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID=:vocabularyFolderId order by IDENTIFIER + 0");
 
         List<VocabularyConcept> resultList =
                 getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyConcept>() {
