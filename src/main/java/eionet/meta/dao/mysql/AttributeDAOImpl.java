@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -19,6 +21,8 @@ import eionet.meta.DElemAttribute.ParentType;
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.domain.Attribute;
+import eionet.meta.dao.domain.ComplexAttribute;
+import eionet.meta.dao.domain.ComplexAttributeField;
 import eionet.util.Pair;
 
 /**
@@ -31,8 +35,8 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
     /** */
     private static final String COPY_SIMPLE_ATTRIBUTES_SQL =
-            "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) "
-                    + "select :newParentId, PARENT_TYPE, M_ATTRIBUTE_ID, VALUE from ATTRIBUTE where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType";
+        "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) "
+        + "select :newParentId, PARENT_TYPE, M_ATTRIBUTE_ID, VALUE from ATTRIBUTE where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType";
 
     /**
      * @see eionet.meta.dao.IAttributeDAO#copySimpleAttributes(int, java.lang.String, int)
@@ -82,16 +86,16 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
     /** */
     private static final String REPLACE_SIMPLE_ATTR_PARENT_ID_SQL = "update ATTRIBUTE set DATAELEM_ID=:substituteId "
-            + "where DATAELEM_ID=:replacedId and PARENT_TYPE=:parentType";
+        + "where DATAELEM_ID=:replacedId and PARENT_TYPE=:parentType";
     /** */
     private static final String REPLACE_COMPLEX_ATTR_PARENT_ID_SQL = "update COMPLEX_ATTR_ROW set PARENT_ID=:substituteId "
-            + "where PARENT_ID=:replacedId and PARENT_TYPE=:parentType";
+        + "where PARENT_ID=:replacedId and PARENT_TYPE=:parentType";
     /** */
     private static final String REPLACE_COMPLEX_ATTR_ROW_ID_SQL = "update COMPLEX_ATTR_ROW set ROW_ID=:substituteId "
-            + "where ROW_ID=:replacedId";
+        + "where ROW_ID=:replacedId";
     /** */
     private static final String REPLACE_COMPLEX_ATTR_FIELD_ROW_ID_SQL = "update COMPLEX_ATTR_FIELD set ROW_ID=:substituteId "
-            + "where ROW_ID=:replacedId";
+        + "where ROW_ID=:replacedId";
 
     /**
      * @see eionet.meta.dao.IAttributeDAO#replaceParentId(int, int, eionet.meta.DElemAttribute.ParentType)
@@ -107,8 +111,8 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         getNamedParameterJdbcTemplate().update(REPLACE_SIMPLE_ATTR_PARENT_ID_SQL, prms);
 
         String sql =
-                "select M_COMPLEX_ATTR_ID, POSITION, ROW_ID from COMPLEX_ATTR_ROW "
-                        + "where PARENT_ID=:parentId and PARENT_TYPE=:parentType order by ROW_ID";
+            "select M_COMPLEX_ATTR_ID, POSITION, ROW_ID from COMPLEX_ATTR_ROW "
+            + "where PARENT_ID=:parentId and PARENT_TYPE=:parentType order by ROW_ID";
 
         prms = new HashMap<String, Object>();
         prms.put("parentId", replacedId);
@@ -168,9 +172,9 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     public Map<String, List<String>> getAttributeValues(int parentId, String parentType) {
 
         String sql =
-                "select SHORT_NAME, VALUE from ATTRIBUTE, M_ATTRIBUTE"
-                        + " where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType and ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID"
-                        + " order by SHORT_NAME, VALUE";
+            "select SHORT_NAME, VALUE from ATTRIBUTE, M_ATTRIBUTE"
+            + " where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType and ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID"
+            + " order by SHORT_NAME, VALUE";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("parentId", parentId);
@@ -218,34 +222,65 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ComplexAttribute getComplexAttributeByName(String complexAttrName) {
+
+        String sql =
+            "select * from M_COMPLEX_ATTR as a, M_COMPLEX_ATTR_FIELD as f "
+            + "where a.M_COMPLEX_ATTR_ID = f.M_COMPLEX_ATTR_ID and a.NAME= :attrName";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("attrName", complexAttrName);
+
+        ComplexAttribute complexAttribute =
+            getNamedParameterJdbcTemplate().query(sql, params, new ResultSetExtractor<ComplexAttribute>() {
+
+                @Override
+                public ComplexAttribute extractData(ResultSet rs) throws DataAccessException, SQLException {
+                    ComplexAttribute complexAttribute = null;
+                    while (rs.next()) {
+                        if (complexAttribute == null) {
+                            complexAttribute = new ComplexAttribute(rs.getInt("a.M_COMPLEX_ATTR_ID"), rs.getString("a.NAME"));
+                        }
+                        ComplexAttributeField field =
+                            new ComplexAttributeField(rs.getInt("f.M_COMPLEX_ATTR_FIELD_ID"), rs.getString("f.NAME"));
+                        complexAttribute.addField(field);
+                    }
+                    return complexAttribute;
+                }
+            });
+        return complexAttribute;
+    }
+
     /*
      * (non-Javadoc)
-     *
      * @see eionet.meta.dao.IAttributeDAO#copyComplexAttributes(int, java.lang.String, int)
      */
     @Override
     public void copyComplexAttributes(int parentId, final String parentType, final int newParentId) {
 
         String sqlQuery =
-                "select M_COMPLEX_ATTR_ID, COMPLEX_ATTR_ROW.ROW_ID, POSITION, HARV_ATTR_ID, M_COMPLEX_ATTR_FIELD_ID, VALUE "
-                        + "from COMPLEX_ATTR_ROW, COMPLEX_ATTR_FIELD where PARENT_ID=:parentId and PARENT_TYPE=:parentType "
-                        + "and COMPLEX_ATTR_ROW.ROW_ID=COMPLEX_ATTR_FIELD.ROW_ID "
-                        + "order by COMPLEX_ATTR_ROW.ROW_ID, M_COMPLEX_ATTR_FIELD_ID";
+            "select M_COMPLEX_ATTR_ID, COMPLEX_ATTR_ROW.ROW_ID, POSITION, HARV_ATTR_ID, M_COMPLEX_ATTR_FIELD_ID, VALUE "
+            + "from COMPLEX_ATTR_ROW, COMPLEX_ATTR_FIELD where PARENT_ID=:parentId and PARENT_TYPE=:parentType "
+            + "and COMPLEX_ATTR_ROW.ROW_ID=COMPLEX_ATTR_FIELD.ROW_ID "
+            + "order by COMPLEX_ATTR_ROW.ROW_ID, M_COMPLEX_ATTR_FIELD_ID";
 
         Map<String, Object> queryParams = new HashMap<String, Object>();
         queryParams.put("parentId", parentId);
         queryParams.put("parentType", parentType);
 
         final String sqlInsertRow =
-                "insert into COMPLEX_ATTR_ROW " + "(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID, POSITION, HARV_ATTR_ID, ROW_ID) "
-                        + "values (:parentId, :parentType, :attrId, :position, :harvAttrId, :rowId)";
+            "insert into COMPLEX_ATTR_ROW " + "(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID, POSITION, HARV_ATTR_ID, ROW_ID) "
+            + "values (:parentId, :parentType, :attrId, :position, :harvAttrId, :rowId)";
 
         final Map<String, Object> insertRowParams = new HashMap<String, Object>();
         insertRowParams.put("parentId", newParentId);
         insertRowParams.put("parentType", parentType);
 
         final String sqlInsertField =
-                "insert into COMPLEX_ATTR_FIELD (ROW_ID, M_COMPLEX_ATTR_FIELD_ID, VALUE) " + "values (:rowId, :fieldId, :value)";
+            "insert into COMPLEX_ATTR_FIELD (ROW_ID, M_COMPLEX_ATTR_FIELD_ID, VALUE) " + "values (:rowId, :fieldId, :value)";
 
         final Map<String, Object> insertFieldParams = new HashMap<String, Object>();
 

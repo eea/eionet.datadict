@@ -23,16 +23,19 @@ package eionet.meta.service.data;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.Attribute;
+import eionet.meta.dao.domain.ComplexAttribute;
+import eionet.meta.dao.domain.ComplexAttributeField;
 
 /**
  * Schema set search filter.
  *
  * @author Juhan Voolaid
  */
-public class SchemaSetFilter extends PagedRequest {
+public class SchemaSetFilter extends PagedRequest implements IObjectWithDynamicAttrs{
 
     /** */
     private String identifier;
@@ -41,10 +44,16 @@ public class SchemaSetFilter extends PagedRequest {
     private String regStatus;
 
     /** */
+    private List<String> regStatuses;
+
+    /** */
     private String searchingUser;
 
     /** Dynamic search attributes. */
     private List<Attribute> attributes;
+
+    /** Dynamic search complex attributes. */
+    private List<ComplexAttribute> complexAttributes;
 
     /**
      *
@@ -57,15 +66,21 @@ public class SchemaSetFilter extends PagedRequest {
         if (StringUtils.isNotEmpty(regStatus)) {
             return true;
         }
+        if (CollectionUtils.isNotEmpty(regStatuses)) {
+            return true;
+        }
         if (isAttributesValued()) {
+            return true;
+        }
+        if (isComplexAttributesValued()) {
             return true;
         }
         return false;
     }
 
     /**
-     *
-     * @return
+     * Check if any field in attributes has value.
+     * @return true if attribute field has value.
      */
     public boolean isAttributesValued() {
         if (attributes != null && attributes.size() > 0) {
@@ -76,6 +91,25 @@ public class SchemaSetFilter extends PagedRequest {
             }
         }
 
+        return false;
+    }
+    /**
+     * Check if any field in complex attributes has value.
+     * @return true if complex attribute field has value.
+     */
+    public boolean isComplexAttributesValued() {
+
+        if (this.complexAttributes != null && this.complexAttributes.size() > 0) {
+            for (ComplexAttribute a : this.complexAttributes) {
+                if (a.getFields() != null) {
+                    for (ComplexAttributeField field : a.getFields()) {
+                        if (StringUtils.isNotEmpty(field.getValue())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
         return false;
     }
 
@@ -112,6 +146,7 @@ public class SchemaSetFilter extends PagedRequest {
     /**
      * @return the attributes
      */
+    @Override
     public List<Attribute> getAttributes() {
         return attributes;
     }
@@ -120,6 +155,7 @@ public class SchemaSetFilter extends PagedRequest {
      * @param attributes
      *            the attributes to set
      */
+    @Override
     public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
     }
@@ -138,4 +174,33 @@ public class SchemaSetFilter extends PagedRequest {
         this.searchingUser = searchingUser;
     }
 
+    /**
+     * @return the complexAttributes
+     */
+    @Override
+    public List<ComplexAttribute> getComplexAttributes() {
+        return complexAttributes;
+    }
+
+    /**
+     * @param complexAtributes the complexAttributes to set
+     */
+    @Override
+    public void setComplexAttributes(List<ComplexAttribute> complexAttributes) {
+        this.complexAttributes = complexAttributes;
+    }
+
+    /**
+     * @return the regStatuses
+     */
+    public List<String> getRegStatuses() {
+        return regStatuses;
+    }
+
+    /**
+     * @param regStatuses the regStatuses to set
+     */
+    public void setRegStatuses(List<String> regStatuses) {
+        this.regStatuses = regStatuses;
+    }
 }

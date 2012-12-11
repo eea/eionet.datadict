@@ -23,6 +23,7 @@ package eionet.meta.dao;
 
 import java.util.List;
 
+import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.DataSetTable;
 import eionet.meta.service.data.TableFilter;
 
@@ -33,5 +34,18 @@ import eionet.meta.service.data.TableFilter;
  */
 public interface ITableDAO {
 
+    /**
+     * Search dataset tables by search criteria defined in DatasetFilter. The methods searches dataset tables by short name,
+     * identifier and simple attributes
+     * @param tableFilter TableFilter object defining search criteria
+     * @return List of DataSetTable objects.
+     */
     List<DataSetTable> searchTables(TableFilter tableFilter);
+
+    /**
+     * Returns list of DataSetTable objects included in specified datasets.
+     * @param datasets List of DataSet objects
+     * @return
+     */
+    List<DataSetTable> listForDatasets(List<DataSet> datasets);
 }

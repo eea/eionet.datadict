@@ -44,6 +44,9 @@ public class SchemaFilter extends PagedRequest {
     private String regStatus;
 
     /** */
+    private List<String> regStatuses;
+
+    /** */
     private String searchingUser;
 
     /**
@@ -158,4 +161,19 @@ public class SchemaFilter extends PagedRequest {
     public void setRegStatus(String regStatus) {
         this.regStatus = regStatus;
     }
+
+    /**
+     * @return the regStatuses
+     */
+    public List<String> getRegStatuses() {
+        return regStatuses;
+    }
+
+    /**
+     * @param regStatuses the regStatuses to set
+     */
+    public void setRegStatuses(List<String> regStatuses) {
+        this.regStatuses = regStatuses;
+    }
+
 }

@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -36,6 +38,7 @@ import org.springframework.stereotype.Repository;
 
 import eionet.meta.dao.ITableDAO;
 import eionet.meta.dao.domain.Attribute;
+import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.DataSetTable;
 import eionet.meta.service.data.TableFilter;
 
@@ -50,6 +53,9 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
     /** Logger. */
     private static final Logger LOGGER = Logger.getLogger(TableDAOImpl.class);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<DataSetTable> searchTables(TableFilter tableFilter) {
         StringBuilder sql = new StringBuilder();
@@ -149,6 +155,52 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
         });
 
         Collections.sort(resultList);
+        return resultList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<DataSetTable> listForDatasets(List<DataSet> datasets) {
+        StringBuilder sql = new StringBuilder();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        sql.append("select dst.TABLE_ID, dst.SHORT_NAME, ds.REG_STATUS, dst.IDENTIFIER, ds.IDENTIFIER, ds.DATASET_ID ");
+        sql.append("from DS_TABLE as dst ");
+        sql.append("inner join DST2TBL as dst2ds on dst2ds.TABLE_ID = dst.TABLE_ID ");
+        sql.append("inner join DATASET as ds on dst2ds.DATASET_ID = ds.DATASET_ID ");
+        sql.append("where ds.DELETED is null ");
+        sql.append("and ds.WORKING_COPY = 'N' ");
+
+        //set dataset filters
+        if (datasets!=null && datasets.size()>0){
+            sql.append("and ds.DATASET_ID IN( :datasetIds ) ");
+            params.put("datasetIds", CollectionUtils.collect(datasets, new BeanToPropertyValueTransformer("id")));
+        }
+
+        sql.append("order by ds.IDENTIFIER asc, ds.DATASET_ID desc, dst.IDENTIFIER asc, dst.TABLE_ID desc");
+
+        final List<DataSetTable> resultList = new ArrayList<DataSetTable>();
+
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
+
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                DataSetTable table = new DataSetTable();
+                table.setId(rs.getInt("dst.TABLE_ID"));
+                table.setShortName(rs.getString("dst.SHORT_NAME"));
+                table.setDataSetStatus(rs.getString("ds.REG_STATUS"));
+
+                // skip tables that do not actually exist (ie trash from some erroneous situation)
+                if (StringUtils.isEmpty(rs.getString("dst.IDENTIFIER"))) {
+                    return;
+                }
+                table.setIdentifier(rs.getString("dst.IDENTIFIER"));
+                resultList.add(table);
+            }
+        });
         return resultList;
     }
 }

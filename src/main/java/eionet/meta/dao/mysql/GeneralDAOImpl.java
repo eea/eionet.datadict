@@ -21,13 +21,20 @@
 
 package eionet.meta.dao.mysql;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcDaoSupport;
 
 import eionet.meta.dao.IGeneralDao;
+import eionet.meta.dao.domain.Attribute;
+import eionet.meta.dao.domain.ComplexAttribute;
+import eionet.meta.dao.domain.ComplexAttributeField;
+import eionet.meta.service.data.IObjectWithDynamicAttrs;
 
 /**
  * General dao.
@@ -64,4 +71,101 @@ public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implem
         return getJdbcTemplate().queryForInt("select M_ATTRIBUTE_ID from M_ATTRIBUTE where SHORT_NAME='Name'");
     }
 
+    /**
+     * Build SQL for searching objects by dynamic attribute values. The method also fills SQL query parameters map.
+     * @param filter IObjectWithDynamicAttrsFilter object where attribute values have been defined
+     * @param params SQL query parameters map.
+     * @param keyField Foreign key field in SQL to be used when joining ATTRIBUTE table.
+     * @return SQL constraint with attributes values.
+     */
+    protected StringBuilder getAttributesSqlConstraintAndAppendParams(IObjectWithDynamicAttrs filter, Map<String, Object> params,
+            String keyField) {
+
+        StringBuilder sql = new StringBuilder();
+        boolean attributesExist = false;
+        if (filter.getAttributes() != null) {
+            for (Attribute attr : filter.getAttributes()) {
+                if (StringUtils.isNotEmpty(attr.getValue())) {
+                    attributesExist = true;
+                    break;
+                }
+            }
+        }
+        if (attributesExist) {
+            for (int i = 0; i < filter.getAttributes().size(); i++) {
+                Attribute a = filter.getAttributes().get(i);
+                String idKey = "attrId" + i;
+                String valueKey = "attrValue" + i;
+                if (StringUtils.isNotEmpty(a.getValue())) {
+                    sql.append("and " + keyField + " in ( ");
+                    sql.append("select a.DATAELEM_ID from ATTRIBUTE a where a.PARENT_TYPE = :parentType ");
+                    sql.append(" and a.M_ATTRIBUTE_ID = :" + idKey + " and a.VALUE like :" + valueKey);
+                    sql.append(") ");
+                    params.put(idKey, a.getId());
+                    params.put(valueKey, "%" + a.getValue() + "%");
+                }
+
+            }
+        }
+        return sql;
+    }
+
+    /**
+     * Build SQL for searching objects by dynamic complex attribute field values. The method also fills SQL query parameters map.
+     * @param filter IObjectWithDynamicAttrsFilter object where attribute values have been defined
+     * @param params SQL query parameters map.
+     * @param keyField Foreign key field in SQL to be used when joining ATTRIBUTE table.
+     * @return SQL constraint with attributes values.
+     */
+    protected StringBuilder getComplexAttrsSqlConstraintAndAppendParams(IObjectWithDynamicAttrs filter,
+            Map<String, Object> params, String keyField) {
+
+        StringBuilder sql = new StringBuilder();
+        boolean attributesExist = false;
+        if (filter.getComplexAttributes() != null) {
+            for (ComplexAttribute attr : filter.getComplexAttributes()) {
+                if (attr.getFields() != null) {
+                    for (ComplexAttributeField field : attr.getFields()) {
+                        if (StringUtils.isNotEmpty(field.getValue())) {
+                            attributesExist = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (attributesExist) {
+            for (int i = 0; i < filter.getComplexAttributes().size(); i++) {
+                ComplexAttribute a = filter.getComplexAttributes().get(i);
+                String idKey = "complexAttrId" + i;
+                if (a.getFields() != null) {
+                    for (int j = 0; j < a.getFields().size(); j++) {
+                        ComplexAttributeField field = a.getFields().get(j);
+                        if (StringUtils.isNotEmpty(field.getValue())) {
+                            sql.append("and " + keyField + " in ( ");
+                            sql.append("select a.PARENT_ID from COMPLEX_ATTR_ROW a INNER JOIN COMPLEX_ATTR_FIELD f "
+                                    + " ON a.ROW_ID=f.ROW_ID where a.PARENT_TYPE = :parentType and a.M_COMPLEX_ATTR_ID = :"
+                                    + idKey);
+
+                            String idFieldKey = "attrFieldId" + j;
+                            String valueKey = "attrFieldValue" + j;
+                            sql.append("  and f.M_COMPLEX_ATTR_FIELD_ID = :" + idFieldKey);
+                            params.put(idFieldKey, field.getId());
+                            if (field.isExactMatchInSearch()) {
+                                sql.append("  and f.VALUE = :" + valueKey);
+                                params.put(valueKey, field.getValue());
+                            } else {
+                                sql.append("  and f.VALUE like :" + valueKey);
+                                params.put(valueKey, "%" + field.getValue() + "%");
+                            }
+                            sql.append(") ");
+                        }
+
+                    }
+                    params.put(idKey, a.getId());
+                }
+            }
+        }
+        return sql;
+    }
 }

@@ -59,4 +59,6 @@ public interface ITableService {
      * @throws ServiceException
      */
     List<String> getNameAttribute(int tableId) throws ServiceException;
+
+    List<DataSetTable> getTablesForObligation(String obligationId, boolean releasedOnly) throws ServiceException;
 }

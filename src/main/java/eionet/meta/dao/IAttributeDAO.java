@@ -5,6 +5,7 @@ import java.util.Map;
 
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.domain.Attribute;
+import eionet.meta.dao.domain.ComplexAttribute;
 
 /**
  *
@@ -75,4 +76,11 @@ public interface IAttributeDAO {
      * @return
      */
     Attribute getAttributeByName(String shortName);
+
+    /**
+     * Returns complex attribute object by name.
+     * @param complexAttrName Exact name of attribute.
+     * @return CoplexAttribute object
+     */
+    ComplexAttribute getComplexAttributeByName(String complexAttrName);
 }

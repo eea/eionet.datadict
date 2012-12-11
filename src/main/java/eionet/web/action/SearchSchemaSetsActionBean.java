@@ -96,7 +96,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
         searchFilter.setPageNumber(page);
 
         if (!isAuthenticated()) {
-            searchFilter.setRegStatus(RegStatus.RELEASED.toString());
+            searchFilter.setRegStatuses(RegStatus.getPublicStatuses());
         }
 
         if (StringUtils.isNotEmpty(sort)) {
@@ -147,7 +147,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
         if (getUser() != null) {
             try {
                 return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d")
-                        || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
             } catch (Exception e) {
                 LOGGER.error("Failed to read user permission", e);
             }

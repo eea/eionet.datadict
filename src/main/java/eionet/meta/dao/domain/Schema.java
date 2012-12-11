@@ -17,6 +17,7 @@ public class Schema {
     private int schemaSetId;
     private String continuityId;
     private RegStatus regStatus;
+    private RegStatus schemaSetRegStatus;
     private boolean isWorkingCopy;
     private String workingUser;
     private Date dateModified;
@@ -322,6 +323,20 @@ public class Schema {
      */
     public void setSchemaSetNameAttribute(String schemaSetNameAttribute) {
         this.schemaSetNameAttribute = schemaSetNameAttribute;
+    }
+
+    /**
+     * @return the schemaSetRegStatus
+     */
+    public RegStatus getSchemaSetRegStatus() {
+        return schemaSetRegStatus;
+    }
+
+    /**
+     * @param schemaSetRegStatus the schemaSetRegStatus to set
+     */
+    public void setSchemaSetRegStatus(RegStatus schemaSetRegStatus) {
+        this.schemaSetRegStatus = schemaSetRegStatus;
     }
 
 }

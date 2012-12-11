@@ -6,6 +6,7 @@ import java.util.Set;
 
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.Schema;
+import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SchemaFilter;
 import eionet.meta.service.data.SchemasResult;
@@ -220,4 +221,11 @@ public interface ISchemaDAO {
      * @return
      */
     boolean schemaExists(String fileName, int schemaSetId);
+
+    /**
+     * Returns list of Schemas included in specified schemasets.
+     * @param datasets List of SchemaSet objects
+     * @return
+     */
+    List<Schema> listForSchemaSets(List<SchemaSet> list);
 }

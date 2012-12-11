@@ -388,4 +388,6 @@ public interface ISchemaService {
      * @throws ServiceException
      */
     boolean schemaExists(String fileName, int schemaSetId) throws ServiceException;
+
+    List<Schema> getSchemasForObligation(String obligationId, boolean releasedOnly) throws ServiceException;
 }

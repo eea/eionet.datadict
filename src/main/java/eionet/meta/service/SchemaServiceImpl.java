@@ -21,6 +21,8 @@
 
 package eionet.meta.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,8 @@ import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.ISchemaDAO;
 import eionet.meta.dao.ISchemaSetDAO;
 import eionet.meta.dao.domain.Attribute;
+import eionet.meta.dao.domain.ComplexAttribute;
+import eionet.meta.dao.domain.ComplexAttributeField;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
@@ -129,7 +133,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ServiceException
      */
     private void doDeleteSchemaSets(List<Integer> schemaSetIds, String username, boolean includingContents)
-            throws ServiceException {
+    throws ServiceException {
         try {
             // Validate permissions
             boolean deletePerm = username != null && SecurityUtil.hasPerm(username, "/schemasets", "d");
@@ -168,7 +172,7 @@ public class SchemaServiceImpl implements ISchemaService {
      * @throws ValidationException
      */
     private void ensureDeleteAllowed(String username, boolean deleteReleasedPerm, List<SchemaSet> schemaSets)
-            throws ValidationException {
+    throws ValidationException {
         for (SchemaSet schemaSet : schemaSets) {
             if (schemaSet.isCheckedOut()) {
                 throw new ValidationException("Cannot delete a checked-out schema set: " + schemaSet.getIdentifier());
@@ -277,7 +281,7 @@ public class SchemaServiceImpl implements ISchemaService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateSchemaSet(SchemaSet schemaSet, Map<Integer, Set<String>> attributes, String username)
-            throws ServiceException {
+    throws ServiceException {
         try {
             schemaSetDAO.updateSchemaSet(schemaSet);
             if (attributes != null && !attributes.isEmpty()) {
@@ -940,6 +944,45 @@ public class SchemaServiceImpl implements ISchemaService {
             return schemaDAO.schemaExists(fileName, schemaSetId);
         } catch (Exception e) {
             throw new ServiceException(e.getMessage(), e);
+        }
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Schema> getSchemasForObligation(String obligationId, boolean releasedOnly) throws ServiceException {
+        try {
+            SchemaSetFilter schemasetFilter = new SchemaSetFilter();
+            if (releasedOnly){
+                schemasetFilter.setRegStatuses(Arrays.asList(RegStatus.RELEASED.toString()));
+            }
+            else{
+                schemasetFilter.setRegStatuses(RegStatus.getPublicStatuses());
+            }
+            //Set up ROD url attribute value
+            ComplexAttribute rodAttr = attributeDAO.getComplexAttributeByName("ROD");
+            ComplexAttributeField field = rodAttr.getField("url");
+            if (field !=null){
+                field.setValue(obligationId);
+                field.setExactMatchInSearch(true);
+            }
+            List<ComplexAttribute> complexAttributes = new ArrayList<ComplexAttribute>();
+            complexAttributes.add(rodAttr);
+            schemasetFilter.setComplexAttributes(complexAttributes);
+
+            schemasetFilter.setUsePaging(false);
+
+            //search schemasets
+            SchemaSetsResult schemasetsResult = schemaSetDAO.searchSchemaSets(schemasetFilter);
+
+            if (schemasetsResult!=null && schemasetsResult.getList().size()>0){
+                return schemaDAO.listForSchemaSets(schemasetsResult.getList());
+            }
+            else{
+                return new ArrayList<Schema>();
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Failed to search schemas for obligation: " + e.getMessage(), e);
         }
     }
 

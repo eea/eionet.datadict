@@ -92,7 +92,7 @@ public class SearchSchemaActionBean extends AbstractActionBean {
         searchFilter.setPageNumber(page);
 
         if (!isAuthenticated()) {
-            searchFilter.setRegStatus(RegStatus.RELEASED.toString());
+            searchFilter.setRegStatuses(RegStatus.getPublicStatuses());
         }
 
         if (StringUtils.isNotEmpty(sort)) {
@@ -140,7 +140,7 @@ public class SearchSchemaActionBean extends AbstractActionBean {
         addSystemMessage("Schema successfully copied");
 
         return new RedirectResolution(SchemaSetActionBean.class).addParameter("schemaSet.identifier", schemaSet.getIdentifier())
-                .addParameter("workingCopy", true);
+        .addParameter("workingCopy", true);
     }
 
     /**
@@ -152,7 +152,7 @@ public class SearchSchemaActionBean extends AbstractActionBean {
     public Resolution cancelCopy() throws ServiceException {
         SchemaSet schemaSet = schemaService.getSchemaSet(schemaSetId);
         return new RedirectResolution(SchemaSetActionBean.class).addParameter("schemaSet.identifier", schemaSet.getIdentifier())
-                .addParameter("workingCopy", true);
+        .addParameter("workingCopy", true);
     }
 
     /**

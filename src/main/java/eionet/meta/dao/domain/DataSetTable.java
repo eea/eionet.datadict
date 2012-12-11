@@ -36,12 +36,14 @@ public class DataSetTable implements Comparable<DataSetTable> {
 
     private String name;
 
+    private String identifier;
+
     private String dataSetName;
 
     private String dataSetStatus;
 
     public boolean isStatusReleased() {
-        return "Released".equals(dataSetStatus);
+        return DatasetRegStatus.RELEASED.toString().equals(dataSetStatus);
     }
 
     public String getStatusImage() {
@@ -135,6 +137,20 @@ public class DataSetTable implements Comparable<DataSetTable> {
      */
     public void setDataSetStatus(String dataSetStatus) {
         this.dataSetStatus = dataSetStatus;
+    }
+
+    /**
+     * @return the identifier
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * @param identifier the identifier to set
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
 }

@@ -25,6 +25,7 @@ import java.util.List;
 
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.DatasetFilter;
 
 /**
  * Data set DAO.
@@ -40,5 +41,13 @@ public interface IDataSetDAO {
      * @throws ServiceException
      */
     List<DataSet> getDataSets();
+
+    /**
+     * Search datasets by search criteria defined in DatasetFilter. The methods searches datasets by short name, identifier,
+     * registrations statuses, attributes and complex attributes.
+     * @param datasetFilter DatasetFilter object defining search criteria
+     * @return List of DataSet objects.
+     */
+    public List<DataSet> searchDatasets(DatasetFilter datasetFilter);
 
 }

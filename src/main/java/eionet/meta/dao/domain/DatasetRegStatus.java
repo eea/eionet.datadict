@@ -16,24 +16,20 @@
  * (C) European Environment Agency.  All Rights Reserved.
  *
  * Contributor(s):
- *        Juhan Voolaid
+ *        Enriko Käsper
  */
 
 package eionet.meta.dao.domain;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Registration status.
  *
- * @author Juhan Voolaid
+ * @author Enriko Käsper
  */
-public enum RegStatus {
+public enum DatasetRegStatus {
 
     /** */
-    DRAFT("Draft"), PUBLIC_DRAFT("Public draft"), RELEASED("Released");
-
+    INCOMPLETE("Incomplete"), CANDIDATE("Candidate"), RECORDED("Recorded"), QUALIFIED("Qualified"), RELEASED("Released");
     /** */
     String s;
 
@@ -41,7 +37,7 @@ public enum RegStatus {
      *
      * @param s
      */
-    RegStatus(String s) {
+    DatasetRegStatus(String s) {
         this.s = s;
     }
 
@@ -59,8 +55,8 @@ public enum RegStatus {
      * @param s
      * @return
      */
-    public static RegStatus fromString(String s) {
-        for (RegStatus regStatus : RegStatus.values()) {
+    public static DatasetRegStatus fromString(String s) {
+        for (DatasetRegStatus regStatus : DatasetRegStatus.values()) {
             if (regStatus.toString().equals(s)) {
                 return regStatus;
             }
@@ -72,15 +68,7 @@ public enum RegStatus {
      *
      * @return
      */
-    public static RegStatus getDefault() {
-        return RegStatus.DRAFT;
-    }
-
-    /**
-     * Returns the list of public statuses that can be displayed for anonymous users.
-     * @return List of RegStatues objects converted to String.
-     */
-    public static List<String> getPublicStatuses() {
-        return Arrays.asList(RegStatus.RELEASED.toString(), RegStatus.PUBLIC_DRAFT.toString());
+    public static DatasetRegStatus getDefault() {
+        return DatasetRegStatus.INCOMPLETE;
     }
 }
