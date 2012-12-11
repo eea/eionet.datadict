@@ -454,7 +454,7 @@ public class DatasetHandler extends BaseHandler {
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "er");
                 } else {
                     canDelete = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "u") ||
-                            SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "er");
+                    SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "er");
                 }
                 if (!canDelete) {
                     throw new Exception("You have no permission to delete this dataset: " +
@@ -686,7 +686,7 @@ public class DatasetHandler extends BaseHandler {
             params.addParameterValue("parent_type", "DS");
 
             AttrFieldsHandler attrFieldsHandler =
-                    new AttrFieldsHandler(conn, params, ctx);
+                new AttrFieldsHandler(conn, params, ctx);
             //attrFieldsHandler.setVersioning(this.versioning);
             attrFieldsHandler.setVersioning(false);
             try {
@@ -826,7 +826,7 @@ public class DatasetHandler extends BaseHandler {
 
                 INParameters inParams = new INParameters();
                 String qry = "select distinct TABLE_ID from DST2TBL where DATASET_ID="
-                        + inParams.add(ds_ids[i], Types.INTEGER);
+                    + inParams.add(ds_ids[i], Types.INTEGER);
 
                 pstmt1 = SQL.preparedStatement(qry, inParams, conn);
                 rs = pstmt1.executeQuery();
@@ -917,8 +917,8 @@ public class DatasetHandler extends BaseHandler {
         INParameters inParams = new INParameters();
 
         String qry =
-                "select count(*) as COUNT from DATASET " +
-                        "where IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR);
+            "select count(*) as COUNT from DATASET " +
+            "where IDENTIFIER=" + inParams.add(idfier, Types.VARCHAR);
 
         ResultSet rs = null;
         PreparedStatement stmt = null;
@@ -973,7 +973,7 @@ public class DatasetHandler extends BaseHandler {
         INParameters inParams = new INParameters();
 
         String s = "update NAMESPACE set WORKING_USER=NULL where NAMESPACE_ID="
-                + inParams.add(nsID, Types.INTEGER);
+            + inParams.add(nsID, Types.INTEGER);
 
         PreparedStatement stmt = SQL.preparedStatement(s, inParams, conn);
         stmt.executeUpdate();
@@ -1053,6 +1053,17 @@ public class DatasetHandler extends BaseHandler {
             gen.setFieldExpr("DATAELEM_ID", newID);
             buf = new StringBuffer(gen.updateStatement());
             buf.append(" where PARENT_TYPE='DS' and DATAELEM_ID=").
+            append(inParams.add(oldID, Types.INTEGER));
+
+            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+            stmt.executeUpdate();
+
+            inParams = new INParameters();
+            gen.clear();
+            gen.setTable("COMPLEX_ATTR_ROW r, COMPLEX_ATTR_FIELD f");
+            gen.setFieldExpr("f.ROW_ID", "md5(concat(" + inParams.add(newID, Types.INTEGER) +" , r.PARENT_TYPE, r.M_COMPLEX_ATTR_ID, r.POSITION))");
+            buf = new StringBuffer(gen.updateStatement());
+            buf.append(" where r.ROW_ID=f.ROW_ID and r.PARENT_TYPE='DS' and r.PARENT_ID=").
             append(inParams.add(oldID, Types.INTEGER));
 
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
