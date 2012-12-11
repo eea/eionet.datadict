@@ -2,7 +2,7 @@
 <Context>
 
     <Resource
-	    name="jdbc/datadict"
+        name="jdbc/datadict"
         auth="Container"
         type="javax.sql.DataSource"
         maxActive="100"
@@ -11,7 +11,10 @@
         username="${db.user}"
         password="${db.password}"
         driverClassName="com.mysql.jdbc.Driver"
-        url="jdbc:mysql://${db.host}/${db.database}?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;emptyStringsConvertToZero=false&amp;jdbcCompliantTruncation=false">
+        url="jdbc:mysql://${db.host}/${db.database}?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;emptyStringsConvertToZero=false&amp;jdbcCompliantTruncation=false"
+        validationQuery="SELECT 1"
+        testOnBorrow="true"
+        >
     </Resource>
 
 </Context>
