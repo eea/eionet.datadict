@@ -40,8 +40,6 @@ public class PagedRequest {
 
     private SortOrderEnum sortOrder;
 
-    private boolean usePaging = true;
-
     /**
      * Returns the offset of the first row for the search result to return.
      */
@@ -107,20 +105,6 @@ public class PagedRequest {
      */
     public void setSortOrder(SortOrderEnum sortOrder) {
         this.sortOrder = sortOrder;
-    }
-
-    /**
-     * @return the usePaging
-     */
-    public boolean isUsePaging() {
-        return usePaging;
-    }
-
-    /**
-     * @param usePaging the usePaging to set
-     */
-    public void setUsePaging(boolean usePaging) {
-        this.usePaging = usePaging;
     }
 
 }

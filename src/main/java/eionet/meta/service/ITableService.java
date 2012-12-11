@@ -16,41 +16,47 @@
  * (C) European Environment Agency.  All Rights Reserved.
  *
  * Contributor(s):
- *        Enriko Käsper
+ *        Juhan Voolaid
  */
-package eionet.meta.service.data;
+
+package eionet.meta.service;
 
 import java.util.List;
 
 import eionet.meta.dao.domain.Attribute;
-import eionet.meta.dao.domain.ComplexAttribute;
+import eionet.meta.dao.domain.DataSetTable;
+import eionet.meta.service.data.TableFilter;
 
 /**
+ * Table service interface.
  *
- * Interface for objects that are related with dynamic attributes. The interface provides methods for setting and getting
- * attributes.
- *
- * @author Enriko Käsper
+ * @author Juhan Voolaid
  */
-public interface IObjectWithDynamicAttrs {
+public interface ITableService {
 
     /**
-     * @return the attributes
+     * Searches tables.
+     *
+     * @param tableFilter
+     * @return
+     * @throws ServiceException
      */
-    public List<Attribute> getAttributes();
+    List<DataSetTable> searchTables(TableFilter tableFilter) throws ServiceException;
 
     /**
-     * @param attributes the attributes to set
+     * Lists table attributes.
+     *
+     * @return
+     * @throws ServiceException
      */
-    public void setAttributes(List<Attribute> attributes);
+    List<Attribute> getTableAttributes() throws ServiceException;
 
     /**
-     * @return the complex attributes
+     * Returns the name attribute(s) of the table.
+     *
+     * @param tableId
+     * @return
+     * @throws ServiceException
      */
-    public List<ComplexAttribute> getComplexAttributes();
-
-    /**
-     * @param attributes the complex attributes to set
-     */
-    public void setComplexAttributes(List<ComplexAttribute> complexAttributes);
+    List<String> getNameAttribute(int tableId) throws ServiceException;
 }

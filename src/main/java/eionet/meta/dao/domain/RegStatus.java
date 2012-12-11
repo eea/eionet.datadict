@@ -16,7 +16,7 @@
  * (C) European Environment Agency.  All Rights Reserved.
  *
  * Contributor(s):
- *        Enriko Käsper
+ *        Juhan Voolaid
  */
 
 package eionet.meta.dao.domain;
@@ -24,12 +24,13 @@ package eionet.meta.dao.domain;
 /**
  * Registration status.
  *
- * @author Enriko Käsper
+ * @author Juhan Voolaid
  */
-public enum DatasetRegStatus {
+public enum RegStatus {
 
     /** */
-    INCOMPLETE("Incomplete"), CANDIDATE("Candidate"), RECORDED("Recorded"), QUALIFIED("Qualified"), RELEASED("Released");
+    DRAFT("Draft"), PUBLIC_DRAFT("Public draft"), RELEASED("Released");
+
     /** */
     String s;
 
@@ -37,15 +38,15 @@ public enum DatasetRegStatus {
      *
      * @param s
      */
-    DatasetRegStatus(String s) {
+    RegStatus(String s) {
         this.s = s;
     }
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Enum#toString()
      */
-    @Override
     public String toString() {
         return s;
     }
@@ -55,8 +56,8 @@ public enum DatasetRegStatus {
      * @param s
      * @return
      */
-    public static DatasetRegStatus fromString(String s) {
-        for (DatasetRegStatus regStatus : DatasetRegStatus.values()) {
+    public static RegStatus fromString(String s) {
+        for (RegStatus regStatus : RegStatus.values()) {
             if (regStatus.toString().equals(s)) {
                 return regStatus;
             }
@@ -68,7 +69,7 @@ public enum DatasetRegStatus {
      *
      * @return
      */
-    public static DatasetRegStatus getDefault() {
-        return DatasetRegStatus.INCOMPLETE;
+    public static RegStatus getDefault() {
+        return RegStatus.DRAFT;
     }
 }

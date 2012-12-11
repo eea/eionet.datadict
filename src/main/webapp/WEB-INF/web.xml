@@ -215,10 +215,6 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/vocabulary/*</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>StripesDispatcher</servlet-name>
-        <url-pattern>/api/*</url-pattern>
-    </servlet-mapping>
 
     <servlet>
         <servlet-name>env</servlet-name>
