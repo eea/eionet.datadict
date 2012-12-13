@@ -63,6 +63,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             sql.append("(WORKING_COPY=FALSE or WORKING_USER=:workingUser) ");
             params.put("workingUser", userName);
         }
+        sql.append("order by IDENTIFIER ");
 
         List<VocabularyFolder> items =
                 getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {

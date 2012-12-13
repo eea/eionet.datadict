@@ -216,7 +216,7 @@
                             Notation
                         </th>
                         <td class="simple_attr_help">
-                            <dd:mandatoryIcon />
+                            <dd:optionalIcon />
                         </td>
                         <td class="simple_attr_value">
                             <stripes:text class="smalltext" size="30" name="vocabularyConcept.notation" />
@@ -317,7 +317,7 @@
                                     Notation
                                 </th>
                                 <td class="simple_attr_help">
-                                    <dd:mandatoryIcon />
+                                    <dd:optionalIcon />
                                 </td>
                                 <td class="simple_attr_value">
                                     <stripes:text class="smalltext" size="30" name="vocabularyConcepts[${loop.index}].notation" />

@@ -315,9 +315,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         if (StringUtils.isEmpty(vc.getLabel())) {
             addGlobalValidationError("Vocabulary concept label is missing");
         }
-        if (StringUtils.isEmpty(vc.getNotation())) {
-            addGlobalValidationError("Vocabulary notation is missing");
-        }
 
         // Validate unique identifier
         if (!vocabularyService.isUniqueConceptIdentifier(vc.getIdentifier(), vocabularyFolder.getId(), vc.getId())) {

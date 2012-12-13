@@ -24,7 +24,7 @@ create table T_VOCABULARY_CONCEPT (
     IDENTIFIER varchar(100) not null,
     LABEL varchar(255) not null,
     DEFINITION text default null,
-    NOTATION varchar(50) not null,
+    NOTATION varchar(50) default null,
     primary key (VOCABULARY_CONCEPT_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

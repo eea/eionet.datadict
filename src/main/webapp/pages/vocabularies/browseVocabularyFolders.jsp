@@ -38,14 +38,17 @@
                         <c:choose>
                             <c:when test="${item.draftStatus && empty actionBean.user}">
                                 <span class="link-folder" style="color:gray;">
-                                    <c:out value="${item.label}"/>&nbsp;<sup style="font-size:0.7em">(<c:out value="${item.regStatus}" />)</sup>
+                                    <c:out value="${item.identifier}"/>
+                                    (<c:out value="${item.label}"/>)
+                                    <sup style="font-size:0.7em">(<c:out value="${item.regStatus}" />)</sup>
                                 </span>
                             </c:when>
                             <c:otherwise>
                                 <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
                                     <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
                                     <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
-                                    <c:out value="${item.label}"/>
+                                    <c:out value="${item.identifier}"/>
+                                    (<c:out value="${item.label}"/>)
                                 </stripes:link>
                             </c:otherwise>
                         </c:choose>
