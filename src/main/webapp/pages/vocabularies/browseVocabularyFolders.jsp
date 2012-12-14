@@ -30,8 +30,8 @@
 
         <stripes:form id="vocabulariesForm" beanclass="${actionBean.class.name}" method="post" style="margin-top:1em">
             <ul class="menu">
-                <c:forEach var="item" items="${actionBean.vocabularyFolders}">
-                    <li>
+                <c:forEach var="item" items="${actionBean.vocabularyFolders}" varStatus="itemLoop">
+                    <li class="zebra${itemLoop.index % 2 != 0 ? 'odd' : 'even'}">
                         <c:if test="${not empty actionBean.user}">
                             <stripes:checkbox name="folderIds" value="${item.id}" disabled="${item.workingCopy || not empty item.workingUser}" />
                         </c:if>
