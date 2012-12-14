@@ -40,7 +40,7 @@
                                 <span class="link-folder" style="color:gray;">
                                     <c:out value="${item.identifier}"/>
                                     (<c:out value="${item.label}"/>)
-                                    <sup style="font-size:0.7em">(<c:out value="${item.regStatus}" />)</sup>
+                                    <sup style="font-size:0.7em"><c:out value="${item.regStatus}" /></sup>
                                 </span>
                             </c:when>
                             <c:otherwise>
@@ -48,8 +48,8 @@
                                     <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
                                     <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
                                     <c:out value="${item.identifier}"/>
-                                    (<c:out value="${item.label}"/>)
                                 </stripes:link>
+                                    (<c:out value="${item.label}"/>)
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${item.workingCopy && actionBean.userName==item.workingUser}">
