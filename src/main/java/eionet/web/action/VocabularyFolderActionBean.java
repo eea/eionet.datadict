@@ -23,20 +23,27 @@ package eionet.web.action;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
 
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.Util;
 
 /**
@@ -347,6 +354,32 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         return resolution;
+    }
+
+    /**
+     * Action, that returns RDF output of the vocabulary.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution rdf() throws ServiceException {
+        vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), false);
+        vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
+
+        if (!vocabularyFolder.getRegStatus().equals(RegStatus.RELEASED)) {
+            throw new RuntimeException("Vocabulary is not in released status.");
+        }
+
+        final String contextRoot = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabularies/" + vocabularyFolder.getIdentifier();
+
+        StreamingResolution result = new StreamingResolution("application/xml") {
+            public void stream(HttpServletResponse response) throws Exception {
+                VocabularyXmlWriter xmlWriter =
+                        new VocabularyXmlWriter(response.getOutputStream(), contextRoot, vocabularyFolder, vocabularyConcepts);
+                xmlWriter.writeManifestXml();
+            }
+        };
+        return result;
     }
 
     /**
