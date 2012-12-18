@@ -99,7 +99,7 @@
 						        <stripes:param name="schema.fileName" value="${actionBean.schema.fileName}"/>
                                 <stripes:param name="workingCopy" value="true"/>
 						    </stripes:url>
-                            <a href="/datadict/complex_attrs.jsp?parent_id=${actionBean.schema.id}&parent_type=SCH&parent_name=${actionBean.schema.fileName}&parent_link=${viewUrl}">Edit complex attributes</a>
+                            <a href="${pageContext.request.contextPath}/complex_attrs.jsp?parent_id=${actionBean.schema.id}&parent_type=SCH&parent_name=${actionBean.schema.fileName}&parent_link=${viewUrl}">Edit complex attributes</a>
                         </li>
                         <li>
                             <a href="#" id="uploadSchemaLink">Re-upload file</a>
