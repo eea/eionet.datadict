@@ -77,9 +77,10 @@ public class Util {
     /** */
     private static final int BUF_SIZE = 1024;
     private static Hashtable xmlEscapes = null;
-    private static String[][] allowedFxvDatatypeConversions = { {"boolean", "string"}, {"date", "string"}, {"float", "string"},
-        {"double", "string"}, {"integer", "string"}, {"integer", "float"}, {"integer", "double"}, {"integer", "decimal"},
-        {"float", "double"}, {"float", "decimal"}, {"double", "decimal"}, {"decimal", "string"}};
+    private static String[][] allowedFxvDatatypeConversions = { { "boolean", "string" }, { "date", "string" },
+        { "float", "string" }, { "double", "string" }, { "integer", "string" }, { "integer", "float" },
+        { "integer", "double" }, { "integer", "decimal" }, { "float", "double" }, { "float", "decimal" },
+        { "double", "decimal" }, { "decimal", "string" } };
 
     /** */
     private static final SimpleDateFormat hhmmssFormat = new SimpleDateFormat("HH:mm:ss");
@@ -285,7 +286,6 @@ public class Util {
         // here we assume that every full hour is accepted
         /*
          * if (hour < 0 || hour > 23) {
-         *
          * hour = cur_hour>=23 ? 0 : cur_hour + 1; }
          */
 
@@ -852,25 +852,17 @@ public class Util {
 
         /*
          * if (literal == null) return null;
-         *
          * UnicodeEscapes unicodeEscapes = null;
-         *
          * StringBuffer buf = new StringBuffer(); for (int i=0; i<literal.length(); i++) {
-         *
          * char c = literal.charAt(i);
-         *
          * if (c=='&') { int j = literal.indexOf(";", i); if (j > i){ char cc = literal.charAt(i+1); int decimal = -1; if (cc=='#'){
          * // handle Unicode decimal escape String sDecimal = literal.substring(i+2, j);
-         *
          * try { decimal = Integer.parseInt(sDecimal); } catch (Exception e) {} } else { // handle entity String ent =
          * literal.substring(i+1, j); if (unicodeEscapes == null) unicodeEscapes = new UnicodeEscapes(); decimal =
          * unicodeEscapes.getDecimal(ent); }
-         *
          * if (decimal >= 0) { // if decimal was found, use the corresponding char. otherwise stick to c. c = (char)decimal; i = j;
          * } } }
-         *
          * buf.append(c); }
-         *
          * return buf.toString();
          */
     }
@@ -973,8 +965,8 @@ public class Util {
      */
     public static boolean skipAttributeByDatatype(String attrShortName, String datatype) {
 
-        return (attrShortName == null || datatype == null) ? false : IrrelevantAttributes.getInstance().isIrrelevant(datatype,
-                attrShortName);
+        return (attrShortName == null || datatype == null) ? false
+                : IrrelevantAttributes.getInstance().isIrrelevant(datatype, attrShortName);
     }
 
     /*

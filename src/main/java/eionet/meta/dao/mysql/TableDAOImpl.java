@@ -165,9 +165,15 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
     public List<DataSetTable> listForDatasets(List<DataSet> datasets) {
         StringBuilder sql = new StringBuilder();
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        int nameAttrId = getNameAttributeId();
 
-        sql.append("select dst.TABLE_ID, dst.SHORT_NAME, ds.REG_STATUS, dst.IDENTIFIER, ds.IDENTIFIER, ds.DATASET_ID ");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("nameAttrId", nameAttrId);
+        params.put("parentType", "T");
+
+        sql.append("select dst.TABLE_ID, dst.SHORT_NAME, ds.REG_STATUS, dst.IDENTIFIER, ds.IDENTIFIER, ds.DATASET_ID, ");
+        sql.append("(select VALUE from ATTRIBUTE where M_ATTRIBUTE_ID = :nameAttrId and DATAELEM_ID = dst.TABLE_ID ");
+        sql.append("and PARENT_TYPE = :parentType limit 1 ) as fullName ");
         sql.append("from DS_TABLE as dst ");
         sql.append("inner join DST2TBL as dst2ds on dst2ds.TABLE_ID = dst.TABLE_ID ");
         sql.append("inner join DATASET as ds on dst2ds.DATASET_ID = ds.DATASET_ID ");
@@ -191,6 +197,7 @@ public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
                 DataSetTable table = new DataSetTable();
                 table.setId(rs.getInt("dst.TABLE_ID"));
                 table.setShortName(rs.getString("dst.SHORT_NAME"));
+                table.setName(rs.getString("fullName"));
                 table.setDataSetStatus(rs.getString("ds.REG_STATUS"));
 
                 // skip tables that do not actually exist (ie trash from some erroneous situation)

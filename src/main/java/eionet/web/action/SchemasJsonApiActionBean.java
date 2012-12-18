@@ -136,7 +136,7 @@ public class SchemasJsonApiActionBean extends AbstractActionBean {
                 JSONObject ci = new JSONObject();
                 ci.put("url", webAppUrl + "GetSchema?id=TBL" + dsTable.getId());
                 ci.put("identifier", dsTable.getIdentifier());
-                ci.put("name", dsTable.getShortName());
+                ci.put("name", dsTable.getName());
                 ci.put("status", dsTable.getDataSetStatus());
                 itemList.add(ci);
             }
