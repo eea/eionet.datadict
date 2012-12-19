@@ -21,11 +21,13 @@
 
 package eionet.web.action;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
 import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
@@ -36,7 +38,6 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
 
-import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
@@ -362,24 +363,32 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @return
      * @throws ServiceException
      */
-    public Resolution rdf() throws ServiceException {
-        vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), false);
-        vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
+    public Resolution rdf() {
+        try {
+            vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), false);
+            vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
 
-        if (!vocabularyFolder.getRegStatus().equals(RegStatus.RELEASED)) {
-            throw new RuntimeException("Vocabulary is not in released status.");
-        }
-
-        final String contextRoot = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabularies/" + vocabularyFolder.getIdentifier();
-
-        StreamingResolution result = new StreamingResolution("application/xml") {
-            public void stream(HttpServletResponse response) throws Exception {
-                VocabularyXmlWriter xmlWriter =
-                        new VocabularyXmlWriter(response.getOutputStream(), contextRoot, vocabularyFolder, vocabularyConcepts);
-                xmlWriter.writeManifestXml();
+            if (vocabularyFolder.isDraftStatus()) {
+                throw new RuntimeException("Vocabulary is not in released or public draft status.");
             }
-        };
-        return result;
+
+            final String contextRoot =
+                    Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabularies/" + vocabularyFolder.getIdentifier() + "/";
+
+            StreamingResolution result = new StreamingResolution("application/xml") {
+                public void stream(HttpServletResponse response) throws Exception {
+                    VocabularyXmlWriter xmlWriter =
+                            new VocabularyXmlWriter(response.getOutputStream(), contextRoot, vocabularyFolder, vocabularyConcepts);
+                    xmlWriter.writeManifestXml();
+                }
+            };
+            return result;
+        } catch (Exception e) {
+            LOGGER.error("Failed to output vocabulary RDF data", e);
+            ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            error.setErrorMessage(e.getMessage());
+            return error;
+        }
     }
 
     /**
