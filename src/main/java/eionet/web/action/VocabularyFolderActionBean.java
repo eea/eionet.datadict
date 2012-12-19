@@ -272,6 +272,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary label is missing");
         }
 
+        if (StringUtils.isNotEmpty(vocabularyFolder.getBaseUri())) {
+            if (!Util.isURI(vocabularyFolder.getBaseUri())) {
+                addGlobalValidationError("Base URI contains illegal characters");
+            }
+        }
+
         // Validate unique identifier
         if (vocabularyFolder.getId() == 0) {
             if (!vocabularyService.isUniqueFolderIdentifier(vocabularyFolder.getIdentifier())) {
@@ -373,7 +379,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
 
             final String contextRoot =
-                    Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabularies/" + vocabularyFolder.getIdentifier() + "/";
+                    StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
+                            .getRequiredProperty(PropsIF.DD_URL) + "/vocabularies/" + vocabularyFolder.getIdentifier() + "/";
 
             StreamingResolution result = new StreamingResolution("application/rdf+xml") {
                 public void stream(HttpServletResponse response) throws Exception {

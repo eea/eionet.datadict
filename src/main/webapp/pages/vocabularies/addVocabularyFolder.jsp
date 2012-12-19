@@ -46,6 +46,17 @@
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
+                        Base URI
+                    </th>
+                    <td class="simple_attr_help">
+                        <dd:optionalIcon />
+                    </td>
+                    <td class="simple_attr_value">
+                        <stripes:text name="vocabularyFolder.baseUri" style="width: 500px;" class="smalltext"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
                         Numeric concept identifiers
                     </th>
                     <td class="simple_attr_help">

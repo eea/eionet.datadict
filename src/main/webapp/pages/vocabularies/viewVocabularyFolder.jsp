@@ -89,6 +89,14 @@
                     </td>
                 </tr>
                 <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Base URI
+                    </th>
+                    <td class="simple_attr_value">
+                        <c:out value="${actionBean.vocabularyFolder.baseUri}" />
+                    </td>
+                </tr>
+                <tr>
                 <th scope="row" class="scope-row simple_attr_title">
                     Registration status
                 </th>

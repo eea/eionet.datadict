@@ -42,6 +42,7 @@ public class VocabularyFolder {
     private String userModified;
     private int checkedOutCopyId;
     private boolean numericConceptIdentifiers;
+    private String baseUri;
 
     /**
      * True, if status is "Draft".
@@ -218,6 +219,21 @@ public class VocabularyFolder {
      */
     public void setNumericConceptIdentifiers(boolean numericConceptIdentifiers) {
         this.numericConceptIdentifiers = numericConceptIdentifiers;
+    }
+
+    /**
+     * @return the baseUri
+     */
+    public String getBaseUri() {
+        return baseUri;
+    }
+
+    /**
+     * @param baseUri
+     *            the baseUri to set
+     */
+    public void setBaseUri(String baseUri) {
+        this.baseUri = baseUri;
     }
 
 }

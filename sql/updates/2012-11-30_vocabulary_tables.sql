@@ -11,6 +11,7 @@ create table T_VOCABULARY_FOLDER (
     DATE_MODIFIED timestamp not null default now(),
     USER_MODIFIED varchar(50) default null,
     CONCEPT_IDENTIFIER_NUMERIC boolean not null default false,
+    BASE_URI varchar(255) default null,
     primary key (VOCABULARY_FOLDER_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

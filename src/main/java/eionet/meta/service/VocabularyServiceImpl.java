@@ -140,6 +140,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vf.setLabel(vocabularyFolder.getLabel());
             vf.setRegStatus(vocabularyFolder.getRegStatus());
             vf.setNumericConceptIdentifiers(vocabularyFolder.isNumericConceptIdentifiers());
+            vf.setBaseUri(vocabularyFolder.getBaseUri());
             vocabularyFolderDAO.updateVocabularyFolder(vf);
         } catch (Exception e) {
             throw new ServiceException("Failed to update vocabulary folder: " + e.getMessage(), e);
