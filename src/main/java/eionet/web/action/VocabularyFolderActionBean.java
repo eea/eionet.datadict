@@ -375,7 +375,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             final String contextRoot =
                     Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabularies/" + vocabularyFolder.getIdentifier() + "/";
 
-            StreamingResolution result = new StreamingResolution("application/xml") {
+            StreamingResolution result = new StreamingResolution("application/rdf+xml") {
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyXmlWriter xmlWriter =
                             new VocabularyXmlWriter(response.getOutputStream(), contextRoot, vocabularyFolder, vocabularyConcepts);
