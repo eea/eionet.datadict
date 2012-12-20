@@ -277,8 +277,8 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         params.put("checkedOutCopyId", checkedOutCopyId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, BASE_URI ");
-        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID, CONCEPT_IDENTIFIER_NUMERIC");
+        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, BASE_URI, ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID, CONCEPT_IDENTIFIER_NUMERIC ");
         sql.append("from T_VOCABULARY_FOLDER ");
         sql.append("where CHECKEDOUT_COPY_ID=:checkedOutCopyId");
 

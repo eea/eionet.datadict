@@ -171,7 +171,6 @@
 
         <div id="addNewConceptDiv" title="New concept">
             <stripes:form id="form" method="post" beanclass="${actionBean.class.name}">
-            <stripes:hidden name="vocabularyFolder.identifier" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
             <stripes:hidden name="vocabularyFolder.id" />
             <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
@@ -251,10 +250,10 @@
             <stripes:hidden name="vocabularyFolder.workingCopy" />
             <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%">
                 <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
-                <display:column>
+                <display:column style="width: 1%">
                     <stripes:checkbox name="conceptIds" value="${item.id}" />
                 </display:column>
-                <display:column title="Identifier" property="identifier" />
+                <display:column title="Id" property="identifier" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
                 <display:column title="Label">
                     <a href="#" onClick="openPopup('#editConceptDiv${item.id}')">${item.label}</a>
                 </display:column>

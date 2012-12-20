@@ -142,7 +142,7 @@
 
         <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%">
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
-            <display:column title="Identifier" property="identifier" />
+            <display:column title="Id" property="identifier" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
             <display:column title="Label" property="label" />
             <display:column title="Definition" property="definition" />
             <display:column title="Notation" property="notation" />
