@@ -55,7 +55,24 @@
         </div>
         </c:if>
 
-        <h1>Vocabulary</h1>
+        <h1>View vocabulary</h1>
+
+        <c:if test="${not actionBean.vocabularyFolder.draftStatus && not actionBean.vocabularyFolder.workingCopy}">
+        <c:url var="rdfIconUrl" value="/images/rdf-icon.gif" />
+        <div id="createbox" style="clear:right">
+            <table id="outputsmenu">
+                <tr>
+                    <td style="width:73%">Get RDF output of this vocabulary</td>
+                    <td style="width:27%">
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="rdf">
+                            <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                            <img src="${rdfIconUrl}" border="0" />
+                        </stripes:link>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        </c:if>
 
         <c:if test="${actionBean.checkedOutByUser}">
             <div class="note-msg">
