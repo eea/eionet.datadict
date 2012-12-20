@@ -57,6 +57,18 @@
 
         <h1>View vocabulary</h1>
 
+        <c:if test="${actionBean.checkedOutByUser}">
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>You have a
+                    <stripes:link beanclass="${actionBean.class.name}" event="viewWorkingCopy">
+                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}"/>
+                        <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}"/>
+                        working copy
+                    </stripes:link> of this vocabulary!</p>
+            </div>
+        </c:if>
+
         <c:if test="${not actionBean.vocabularyFolder.draftStatus && not actionBean.vocabularyFolder.workingCopy}">
         <c:url var="rdfIconUrl" value="/images/rdf-icon.gif" />
         <div id="createbox" style="clear:right">
@@ -72,18 +84,6 @@
                 </tr>
             </table>
         </div>
-        </c:if>
-
-        <c:if test="${actionBean.checkedOutByUser}">
-            <div class="note-msg">
-                <strong>Note</strong>
-                <p>You have a
-                    <stripes:link beanclass="${actionBean.class.name}" event="viewWorkingCopy">
-                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}"/>
-                        <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}"/>
-                        working copy
-                    </stripes:link> of this vocabulary!</p>
-            </div>
         </c:if>
 
         <!-- Vocabulary folder -->
