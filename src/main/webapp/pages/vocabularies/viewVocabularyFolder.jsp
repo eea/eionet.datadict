@@ -168,13 +168,13 @@
         <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept" style="width:80%" requestURI="/vocabulary/${actionBean.vocabularyFolder.identifier}/view" >
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
 
-            <display:column title="Id" property="identifier" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
-            <display:column title="Label" property="label" />
-            <display:column title="Definition" property="definition" />
-            <display:column title="Notation" property="notation" />
+            <display:column title="Id" property="identifier" escapeXml="true" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
+            <display:column title="Label" escapeXml="true" property="label" />
+            <display:column title="Definition" escapeXml="true" property="definition" />
+            <display:column title="Notation" escapeXml="true" property="notation" />
         </display:table>
 
-    <%-- The section that displays versions of this schema set.
+    <%-- The section that displays versions of this schema set. --%>
 
     <c:if test="${not empty actionBean.vocabularyFolderVersions}">
         <h2>Other versions of this vocabulary</h2>
@@ -204,7 +204,7 @@
             </display:column>
         </display:table>
     </c:if>
---%>
+
     </stripes:layout-component>
 
 </stripes:layout-render>

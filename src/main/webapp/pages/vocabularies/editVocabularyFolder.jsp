@@ -282,12 +282,12 @@
                 <display:column style="width: 1%">
                     <stripes:checkbox name="conceptIds" value="${item.id}" />
                 </display:column>
-                <display:column title="Id" property="identifier" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
+                <display:column title="Id" escapeXml="true" property="identifier" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
                 <display:column title="Label">
-                    <a href="#" onClick="openPopup('#editConceptDiv${item.id}')">${item.label}</a>
+                    <a href="#" onClick="openPopup('#editConceptDiv${item.id}')"><c:out value="${item.label}" /></a>
                 </display:column>
-                <display:column title="Definition" property="definition" />
-                <display:column title="Notation" property="notation" />
+                <display:column title="Definition" escapeXml="true" property="definition" />
+                <display:column title="Notation" escapeXml="true" property="notation" />
             </display:table>
             <c:if test="${not empty actionBean.vocabularyConcepts.list}">
                 <stripes:submit name="deleteConcepts" value="Delete" />

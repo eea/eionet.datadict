@@ -46,7 +46,9 @@
                             <c:otherwise>
                                 <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
                                     <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
-                                    <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
+                                    <c:if test="${item.workingCopy}">
+                                        <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
+                                    </c:if>
                                     <c:out value="${item.identifier}"/>
                                 </stripes:link>
                                     (<c:out value="${item.label}"/>)
