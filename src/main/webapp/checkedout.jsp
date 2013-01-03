@@ -1,4 +1,6 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,eionet.util.sql.ConnectionUtil,eionet.meta.dao.domain.*"%>
+<%@page contentType="text/html;charset=UTF-8" %>
+<%@page import="java.sql.SQLException,java.sql.Connection,eionet.meta.DataElement,eionet.meta.DDSearchEngine,eionet.meta.Dataset"%>
+<%@page import="eionet.util.Util,eionet.util.sql.ConnectionUtil,eionet.meta.dao.domain.SchemaSet,eionet.meta.dao.domain.Schema"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!
