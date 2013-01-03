@@ -138,17 +138,43 @@
             </table>
         </div>
 
-        <%-- Vocabulary concepts --%>
+        <!-- Vocabulary concepts search -->
+        <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
+            <stripes:hidden name="vocabularyFolder.identifier" />
+            <stripes:hidden name="vocabularyFolder.workingCopy" />
+            <div id="searchframe">
+            <table class="datatable">
+                <colgroup>
+                    <col style="width:26%"/>
+                    <col />
+                    <col />
+                </colgroup>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title" title="Text to filter from label, notation and definition">
+                        <span style="white-space:nowrap;">Filtering text</span>
+                    </th>
+                    <td class="simple_attr_value" style="width: 400px; padding-right: 10px;">
+                        <stripes:text class="smalltext" size="30" name="filter.text"/>
+                    </td>
+                    <td>
+                        <stripes:submit name="view" value="Search" class="mediumbuttonb"/>
+                    </td>
+                </tr>
+            </table>
+            </div>
+        </stripes:form>
 
-        <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%">
+        <%-- Vocabulary concepts --%>
+        <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept" style="width:80%" requestURI="/vocabulary/${actionBean.vocabularyFolder.identifier}/view" >
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
+
             <display:column title="Id" property="identifier" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
             <display:column title="Label" property="label" />
             <display:column title="Definition" property="definition" />
             <display:column title="Notation" property="notation" />
         </display:table>
 
-    <%-- The section that displays versions of this schema set. --%>
+    <%-- The section that displays versions of this schema set.
 
     <c:if test="${not empty actionBean.vocabularyFolderVersions}">
         <h2>Other versions of this vocabulary</h2>
@@ -178,7 +204,7 @@
             </display:column>
         </display:table>
     </c:if>
-
+--%>
     </stripes:layout-component>
 
 </stripes:layout-render>

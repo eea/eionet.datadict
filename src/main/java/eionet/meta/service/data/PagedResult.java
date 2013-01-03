@@ -45,6 +45,20 @@ public abstract class PagedResult<T> implements PaginatedList {
 
     private SortOrderEnum sortOrder;
 
+    /**
+     * Class constructor.
+     */
+    public PagedResult() {
+    }
+
+    /**
+     *
+     * Class constructor.
+     *
+     * @param items
+     * @param totalItems
+     * @param pagedRequest
+     */
     public PagedResult(List<T> items, int totalItems, PagedRequest pagedRequest) {
         this.items = items;
         this.totalItems = totalItems;
@@ -125,11 +139,19 @@ public abstract class PagedResult<T> implements PaginatedList {
     }
 
     /**
-     * @param pageSize the pageSize to set
+     * @param pageSize
+     *            the pageSize to set
      */
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
 
-
+    /**
+     * Sets items.
+     *
+     * @param items
+     */
+    public void setList(List<T> items) {
+        this.items = items;
+    }
 }

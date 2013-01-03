@@ -43,6 +43,8 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
@@ -76,7 +78,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private List<VocabularyFolder> vocabularyFolderVersions;
 
     /** Vocabulary concepts. */
-    private List<VocabularyConcept> vocabularyConcepts;
+    private VocabularyConceptResult vocabularyConcepts;
 
     /** Vocabulary concept to add/edit. */
     private VocabularyConcept vocabularyConcept;
@@ -90,6 +92,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /** Popup div id to keep open, when validation error occur. */
     private String editDivId;
 
+    /** Vocabulary concept filter. */
+    private VocabularyConceptFilter filter;
+
+    /** Concepts table page number. */
+    private int page = 1;
+
     /**
      * Navigates to view vocabulary folder page.
      *
@@ -100,10 +108,16 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public Resolution view() throws ServiceException {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
-        vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
+        initFilter();
+        vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         vocabularyFolderVersions =
                 vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
                         getUserName());
+        return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
+    }
+
+    public Resolution search() throws ServiceException {
+        LOGGER.debug("Serching");
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
     }
 
@@ -139,7 +153,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public Resolution edit() throws ServiceException {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
-        vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
+        initFilter();
+        vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
     }
 
@@ -291,7 +306,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
 
         if (isValidationErrors()) {
-            vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
+            initFilter();
+            vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         }
     }
 
@@ -336,9 +352,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
 
         if (isValidationErrors()) {
-            LOGGER.debug("Validated - got errors");
             vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getId());
-            vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
+            initFilter();
+            vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         }
     }
 
@@ -372,7 +388,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public Resolution rdf() {
         try {
             vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), false);
-            vocabularyConcepts = vocabularyService.getVocabularyConcepts(vocabularyFolder.getId());
+            initFilter();
+            filter.setUsePaging(false);
+            vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
 
             if (vocabularyFolder.isDraftStatus()) {
                 throw new RuntimeException("Vocabulary is not in released or public draft status.");
@@ -385,7 +403,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             StreamingResolution result = new StreamingResolution("application/rdf+xml") {
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyXmlWriter xmlWriter =
-                            new VocabularyXmlWriter(response.getOutputStream(), contextRoot, vocabularyFolder, vocabularyConcepts);
+                            new VocabularyXmlWriter(response.getOutputStream(), contextRoot, vocabularyFolder,
+                                    vocabularyConcepts.getList());
                     xmlWriter.writeManifestXml();
                 }
             };
@@ -396,6 +415,17 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
+    }
+
+    /**
+     * Initiates filter correct with parameters.
+     */
+    private void initFilter() {
+        if (filter == null) {
+            filter = new VocabularyConceptFilter();
+        }
+        filter.setVocabularyFolderId(vocabularyFolder.getId());
+        filter.setPageNumber(page);
     }
 
     /**
@@ -456,7 +486,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             return "";
         }
         if (vocabularyConcepts != null) {
-            return Integer.toString(vocabularyConcepts.size() + 1);
+            return "N/A";
         }
         return "1";
     }
@@ -467,7 +497,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @return
      */
     public VocabularyConcept getEditableConcept() {
-        for (VocabularyConcept vc : vocabularyConcepts) {
+        for (VocabularyConcept vc : vocabularyConcepts.getList()) {
             if (vc != null) {
                 return vc;
             }
@@ -493,7 +523,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /**
      * @return the vocabularyConcepts
      */
-    public List<VocabularyConcept> getVocabularyConcepts() {
+    public VocabularyConceptResult getVocabularyConcepts() {
         return vocabularyConcepts;
     }
 
@@ -501,7 +531,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @param vocabularyConcepts
      *            the vocabularyConcepts to set
      */
-    public void setVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts) {
+    public void setVocabularyConcepts(VocabularyConceptResult vocabularyConcepts) {
         this.vocabularyConcepts = vocabularyConcepts;
     }
 
@@ -570,6 +600,36 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public String getEditDivId() {
         return editDivId;
+    }
+
+    /**
+     * @return the filter
+     */
+    public VocabularyConceptFilter getFilter() {
+        return filter;
+    }
+
+    /**
+     * @param filter
+     *            the filter to set
+     */
+    public void setFilter(VocabularyConceptFilter filter) {
+        this.filter = filter;
+    }
+
+    /**
+     * @return the page
+     */
+    public int getPage() {
+        return page;
+    }
+
+    /**
+     * @param page
+     *            the page to set
+     */
+    public void setPage(int page) {
+        this.page = page;
     }
 
 }

@@ -27,11 +27,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
 
 /**
  * Vocabulary concept DAO.
@@ -67,6 +70,49 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 });
 
         return resultList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VocabularyConceptResult searchVocabularyConcepts(VocabularyConceptFilter filter) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyFolderId", filter.getVocabularyFolderId());
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select SQL_CALC_FOUND_ROWS VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
+        sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID=:vocabularyFolderId ");
+        if (StringUtils.isNotEmpty(filter.getText())) {
+            params.put("text", "%" + filter.getText() + "%");
+            sql.append("and (NOTATION like :text ");
+            sql.append("or LABEL like :text ");
+            sql.append("or DEFINITION like :text) ");
+        }
+        sql.append("order by IDENTIFIER + 0 ");
+        if (filter.isUsePaging()) {
+            sql.append("LIMIT ").append(filter.getOffset()).append(",").append(filter.getPageSize());
+        }
+
+        List<VocabularyConcept> resultList =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyConcept>() {
+                    public VocabularyConcept mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyConcept vc = new VocabularyConcept();
+                        vc.setId(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                        vc.setIdentifier(rs.getString("IDENTIFIER"));
+                        vc.setLabel(rs.getString("LABEL"));
+                        vc.setDefinition(rs.getString("DEFINITION"));
+                        vc.setNotation(rs.getString("NOTATION"));
+                        return vc;
+                    }
+                });
+
+        String totalSql = "SELECT FOUND_ROWS()";
+        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+
+        VocabularyConceptResult result = new VocabularyConceptResult(resultList, totalItems, filter);
+
+        return result;
     }
 
     /**

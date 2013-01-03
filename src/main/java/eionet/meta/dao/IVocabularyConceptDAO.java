@@ -24,6 +24,8 @@ package eionet.meta.dao;
 import java.util.List;
 
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
 
 /**
  * Vocabulary concept DAO interface.
@@ -31,6 +33,14 @@ import eionet.meta.dao.domain.VocabularyConcept;
  * @author Juhan Voolaid
  */
 public interface IVocabularyConceptDAO {
+
+    /**
+     * Returns the vocabulary folder's concepts.
+     *
+     * @param filter
+     * @return
+     */
+    VocabularyConceptResult searchVocabularyConcepts(VocabularyConceptFilter filter);
 
     /**
      * Returns the vocabulary folder's concepts.
@@ -87,4 +97,5 @@ public interface IVocabularyConceptDAO {
      * @return
      */
     boolean isUniqueConceptIdentifier(String identifier, int vocabularyFolderId, int vocabularyConceptId);
+
 }

@@ -33,6 +33,8 @@ import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.util.Util;
 
 /**
@@ -96,9 +98,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public List<VocabularyConcept> getVocabularyConcepts(int vocabularyFolderId) throws ServiceException {
+    public VocabularyConceptResult searchVocabularyConcepts(VocabularyConceptFilter filter) throws ServiceException {
         try {
-            return vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderId);
+            return vocabularyConceptDAO.searchVocabularyConcepts(filter);
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concepts: " + e.getMessage(), e);
         }

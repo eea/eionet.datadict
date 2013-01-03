@@ -25,6 +25,8 @@ import java.util.List;
 
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.VocabularyConceptFilter;
+import eionet.meta.service.data.VocabularyConceptResult;
 
 /**
  * Folder service.
@@ -116,11 +118,11 @@ public interface IVocabularyService {
     /**
      * Returns the vocabulary folder's concepts.
      *
-     * @param vocabularyFolderId
+     * @param filter
      * @return
      * @throws ServiceException
      */
-    List<VocabularyConcept> getVocabularyConcepts(int vocabularyFolderId) throws ServiceException;
+    VocabularyConceptResult searchVocabularyConcepts(VocabularyConceptFilter filter) throws ServiceException;
 
     /**
      * Creates new vocabulary concept into database.
