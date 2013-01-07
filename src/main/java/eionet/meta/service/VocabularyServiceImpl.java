@@ -75,6 +75,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
             if (StringUtils.isEmpty(vocabularyFolder.getContinuityId())) {
                 vocabularyFolder.setContinuityId(Util.generateContinuityId(vocabularyFolder));
             }
+            // Validate type
+            if (vocabularyFolder.isSiteCodeType() && !vocabularyFolder.isNumericConceptIdentifiers()) {
+                throw new IllegalArgumentException("Site code type vocabulary must have numeric concept identifiers");
+            }
+
             vocabularyFolder.setUserModified(userName);
             return vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
         } catch (Exception e) {
@@ -380,6 +385,53 @@ public class VocabularyServiceImpl implements IVocabularyService {
             return vocabularyConceptDAO.isUniqueConceptIdentifier(identifier, vocabularyFolderId, vocabularyConceptId);
         } catch (Exception e) {
             throw new ServiceException("Failed to check unique concept identifier: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void reserveFreeSiteCodes(int vocabularyFolderId, int amount, int startIdentifier) throws ServiceException {
+        try {
+            VocabularyFolder vf = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
+
+            if (!vf.isWorkingCopy()) {
+                throw new IllegalStateException("Vocabulary folder must be checked out");
+            }
+            if (!vf.isSiteCodeType()) {
+                throw new IllegalStateException("Vocabulary folder must be site code type");
+            }
+
+            vocabularyConceptDAO.insertEmptyConcepts(vocabularyFolderId, amount, startIdentifier);
+
+        } catch (Exception e) {
+            throw new ServiceException("Failed to reserve empty site codes: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNextIdentifierValue(int vocabularyFolderId) throws ServiceException {
+        try {
+            return vocabularyConceptDAO.getNextIdentifierValue(vocabularyFolderId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get next concept identifier: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> checkAvailableIdentifiers(int vocabularyFolderId, int amount, int startingIdentifier)
+            throws ServiceException {
+        try {
+            return vocabularyConceptDAO.checkAvailableIdentifiers(vocabularyFolderId, amount, startingIdentifier);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to check available identifiers: " + e.getMessage(), e);
         }
     }
 

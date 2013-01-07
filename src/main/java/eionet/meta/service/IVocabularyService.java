@@ -209,4 +209,34 @@ public interface IVocabularyService {
      * @throws ServiceException
      */
     boolean isUniqueConceptIdentifier(String identifier, int vocabularyFolderId, int vocabularyConceptId) throws ServiceException;
+
+    /**
+     * Reserves free site codes.
+     *
+     * @param vocabularyFolderId
+     * @param amount
+     * @param startIdentifier
+     * @throws ServiceException
+     */
+    void reserveFreeSiteCodes(int vocabularyFolderId, int amount, int startIdentifier) throws ServiceException;
+
+    /**
+     * Returns the next highest vocabulary concept identifier numeric value.s
+     *
+     * @param vocabularyFolderId
+     * @return
+     * @throws ServiceException
+     */
+    int getNextIdentifierValue(int vocabularyFolderId) throws ServiceException;
+
+    /**
+     * Returns identifiers that match with the given range.
+     *
+     * @param vocabularyFolderId
+     * @param amount
+     * @param startingIdentifier
+     * @return
+     * @throws ServiceException
+     */
+    List<Integer> checkAvailableIdentifiers(int vocabularyFolderId, int amount, int startingIdentifier) throws ServiceException;
 }

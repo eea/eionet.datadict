@@ -30,6 +30,13 @@
                     return false;
                 });
 
+                // Reserve site codes dialog
+                $("#reserveSiteCodesDialog").dialog({
+                    autoOpen: false,
+                    width: 600
+                });
+
+
                 var initPopup = function(divId) {
                     $(divId).dialog({
                         autoOpen: false,
@@ -67,6 +74,9 @@
             <h2>Operations:</h2>
             <ul>
                 <li><a href="#" id="addNewConceptLink">Add new concept</a></li>
+                <c:if test="${actionBean.vocabularyFolder.siteCodeType}">
+                    <li><a href="#" onClick="openPopup('#reserveSiteCodesDialog')">Reserve free site codes</a></li>
+                </c:if>
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
@@ -111,6 +121,28 @@
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
+                        Label
+                    </th>
+                    <td class="simple_attr_help">
+                        <dd:mandatoryIcon />
+                    </td>
+                    <td class="simple_attr_value">
+                        <stripes:text name="vocabularyFolder.label" style="width: 500px;" class="smalltext"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Base URI
+                    </th>
+                    <td class="simple_attr_help">
+                        <dd:optionalIcon />
+                    </td>
+                    <td class="simple_attr_value">
+                        <stripes:text name="vocabularyFolder.baseUri" style="width: 500px;" class="smalltext"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
                         Registration status
                     </th>
                     <td class="simple_attr_help">
@@ -127,24 +159,13 @@
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
-                        Base URI
-                    </th>
-                    <td class="simple_attr_help">
-                        <dd:optionalIcon />
-                    </td>
-                    <td class="simple_attr_value">
-                        <stripes:text name="vocabularyFolder.baseUri" style="width: 500px;" class="smalltext"/>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row" class="scope-row simple_attr_title">
-                        Label
+                        Type
                     </th>
                     <td class="simple_attr_help">
                         <dd:mandatoryIcon />
                     </td>
                     <td class="simple_attr_value">
-                        <stripes:text name="vocabularyFolder.label" style="width: 500px;" class="smalltext"/>
+                        <c:out value="${actionBean.vocabularyFolder.type.label}" />
                     </td>
                 </tr>
                 <tr>
@@ -376,6 +397,51 @@
                 </stripes:form>
             </div>
         </c:forEach>
+
+        <div id="reserveSiteCodesDialog">
+            <stripes:form method="post" id="reserveFreeSiteCodesForm" beanclass="${actionBean.class.name}">
+                <stripes:hidden name="vocabularyFolder.id" />
+                <stripes:hidden name="vocabularyFolder.workingCopy" />
+                <stripes:hidden name="vocabularyFolder.identifier" />
+
+                <table class="datatable">
+                    <colgroup>
+                        <col style="width:26%"/>
+                        <col style="width:4%"/>
+                        <col />
+                    </colgroup>
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title" title="Lowest of the generated identifier">
+                            Starting identifier
+                        </th>
+                        <td class="simple_attr_help">
+                            <dd:mandatoryIcon />
+                        </td>
+                        <td class="simple_attr_value">
+                            <stripes:text class="smalltext" size="30" name="startIdentifier" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title" title="Amount of site codes to reserve">
+                            Amount
+                        </th>
+                        <td class="simple_attr_help">
+                            <dd:mandatoryIcon />
+                        </td>
+                        <td class="simple_attr_value">
+                            <stripes:text class="smalltext" size="30" name="amount" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">&nbsp;</td>
+                        <td>
+                            <stripes:submit name="reserveFreeSiteCodes" value="Reserve site codes" />
+                            <button type="button" onClick="closePopup('#reserveSiteCodesDialog')">Cancel</button>
+                        </td>
+                    </tr>
+                </table>
+            </stripes:form>
+        </div>
     </stripes:layout-component>
 
 </stripes:layout-render>

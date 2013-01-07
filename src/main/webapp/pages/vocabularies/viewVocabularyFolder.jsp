@@ -134,6 +134,14 @@
                         <span>${dateFormatted}</span>
                     </c:if>
                 </td>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Type
+                    </th>
+                    <td class="simple_attr_value">
+                        <c:out value="${actionBean.vocabularyFolder.type.label}" />
+                    </td>
+                </tr>
             </tr>
             </table>
         </div>

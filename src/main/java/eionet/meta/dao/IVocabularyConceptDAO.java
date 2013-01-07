@@ -98,4 +98,30 @@ public interface IVocabularyConceptDAO {
      */
     boolean isUniqueConceptIdentifier(String identifier, int vocabularyFolderId, int vocabularyConceptId);
 
+    /**
+     * Returns the next highest vocabulary concept identifier numeric value.
+     *
+     * @param vocabularyFolderId
+     * @return
+     */
+    int getNextIdentifierValue(int vocabularyFolderId);
+
+    /**
+     * Inserts multiple empty concepts.
+     *
+     * @param vocabularyFolderId
+     * @param amount
+     * @param startingIdentifier
+     */
+    void insertEmptyConcepts(int vocabularyFolderId, int amount, int startingIdentifier);
+
+    /**
+     * Returns identifiers that match with the given range.
+     *
+     * @param vocabularyFolderId
+     * @param amount
+     * @param startingIdentifier
+     * @return
+     */
+    List<Integer> checkAvailableIdentifiers(int vocabularyFolderId, int amount, int startingIdentifier);
 }

@@ -57,6 +57,20 @@
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
+                        Type
+                    </th>
+                    <td class="simple_attr_help">
+                        <dd:mandatoryIcon />
+                    </td>
+                    <td class="simple_attr_value">
+                        <c:out value="${actionBean.vocabularyFolder.type.label}" />
+                        <stripes:select name="vocabularyFolder.type">
+                            <stripes:options-enumeration enum="eionet.meta.dao.domain.VocabularyType" label="label"/>
+                        </stripes:select>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
                         Numeric concept identifiers
                     </th>
                     <td class="simple_attr_help">

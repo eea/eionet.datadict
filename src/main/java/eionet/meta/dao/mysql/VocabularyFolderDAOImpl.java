@@ -35,6 +35,7 @@ import org.springframework.stereotype.Repository;
 import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.dao.domain.VocabularyType;
 
 /**
  * Vocabualary folder DAO.
@@ -53,7 +54,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         Map<String, Object> params = new HashMap<String, Object>();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, ");
+        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, VOCABULARY_TYPE, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID ");
         sql.append("from T_VOCABULARY_FOLDER ");
         sql.append("where ");
@@ -73,6 +74,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setIdentifier(rs.getString("IDENTIFIER"));
                         vf.setLabel(rs.getString("LABEL"));
                         vf.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                        vf.setType(VocabularyType.valueOf(rs.getString("VOCABULARY_TYPE")));
                         vf.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                         vf.setWorkingUser(rs.getString("WORKING_USER"));
                         vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
@@ -95,7 +97,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         params.put("vocabularyFolderId", vocabularyFolderId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, ");
+        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, VOCABULARY_TYPE, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID ");
         sql.append("from T_VOCABULARY_FOLDER ");
         sql.append("where CONTINUITY_ID = :continuityId and VOCABULARY_FOLDER_ID != :vocabularyFolderId ");
@@ -114,6 +116,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setIdentifier(rs.getString("IDENTIFIER"));
                         vf.setLabel(rs.getString("LABEL"));
                         vf.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                        vf.setType(VocabularyType.valueOf(rs.getString("VOCABULARY_TYPE")));
                         vf.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                         vf.setWorkingUser(rs.getString("WORKING_USER"));
                         vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
@@ -132,9 +135,9 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
     @Override
     public int createVocabularyFolder(VocabularyFolder vocabularyFolder) {
         String sql =
-                "insert into T_VOCABULARY_FOLDER (IDENTIFIER,  LABEL, REG_STATUS, CONTINUITY_ID, "
+                "insert into T_VOCABULARY_FOLDER (IDENTIFIER, LABEL, REG_STATUS, CONTINUITY_ID, VOCABULARY_TYPE, "
                         + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONCEPT_IDENTIFIER_NUMERIC, BASE_URI) "
-                        + "values (:identifier,  :label, :regStatus, :continuityId, :workingCopy, :workingUser, now(), :userModified, "
+                        + "values (:identifier,  :label, :regStatus, :continuityId, :vocabularyType, :workingCopy, :workingUser, now(), :userModified, "
                         + ":checkedOutCopyId, :numericConceptIdentifiers, :baseUri)";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -142,6 +145,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         parameters.put("label", vocabularyFolder.getLabel());
         parameters.put("regStatus", vocabularyFolder.getRegStatus().toString());
         parameters.put("continuityId", vocabularyFolder.getContinuityId());
+        parameters.put("vocabularyType", vocabularyFolder.getType().name());
         parameters.put("workingCopy", vocabularyFolder.isWorkingCopy());
         parameters.put("workingUser", vocabularyFolder.getWorkingUser());
         parameters.put("userModified", vocabularyFolder.getUserModified());
@@ -164,7 +168,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         params.put("workingCopy", workingCopy);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, BASE_URI, ");
+        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, BASE_URI, VOCABULARY_TYPE, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID, CONCEPT_IDENTIFIER_NUMERIC ");
         sql.append("from T_VOCABULARY_FOLDER ");
         sql.append("where IDENTIFIER=:identifier and WORKING_COPY=:workingCopy");
@@ -177,6 +181,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setIdentifier(rs.getString("IDENTIFIER"));
                         vf.setLabel(rs.getString("LABEL"));
                         vf.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                        vf.setType(VocabularyType.valueOf(rs.getString("VOCABULARY_TYPE")));
                         vf.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                         vf.setWorkingUser(rs.getString("WORKING_USER"));
                         vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
@@ -240,7 +245,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         params.put("id", vocabularyFolderId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, BASE_URI, ");
+        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, BASE_URI, VOCABULARY_TYPE, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID, CONCEPT_IDENTIFIER_NUMERIC ");
         sql.append("from T_VOCABULARY_FOLDER ");
         sql.append("where VOCABULARY_FOLDER_ID=:id");
@@ -253,6 +258,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setIdentifier(rs.getString("IDENTIFIER"));
                         vf.setLabel(rs.getString("LABEL"));
                         vf.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                        vf.setType(VocabularyType.valueOf(rs.getString("VOCABULARY_TYPE")));
                         vf.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                         vf.setWorkingUser(rs.getString("WORKING_USER"));
                         vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
@@ -277,7 +283,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         params.put("checkedOutCopyId", checkedOutCopyId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, BASE_URI, ");
+        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, BASE_URI, VOCABULARY_TYPE, ");
         sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID, CONCEPT_IDENTIFIER_NUMERIC ");
         sql.append("from T_VOCABULARY_FOLDER ");
         sql.append("where CHECKEDOUT_COPY_ID=:checkedOutCopyId");
@@ -290,6 +296,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setIdentifier(rs.getString("IDENTIFIER"));
                         vf.setLabel(rs.getString("LABEL"));
                         vf.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                        vf.setType(VocabularyType.valueOf(rs.getString("VOCABULARY_TYPE")));
                         vf.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
                         vf.setWorkingUser(rs.getString("WORKING_USER"));
                         vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));

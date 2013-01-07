@@ -43,6 +43,7 @@ public class VocabularyFolder {
     private int checkedOutCopyId;
     private boolean numericConceptIdentifiers;
     private String baseUri;
+    private VocabularyType type;
 
     /**
      * True, if status is "Draft".
@@ -51,6 +52,30 @@ public class VocabularyFolder {
      */
     public boolean isDraftStatus() {
         if (RegStatus.DRAFT.equals(regStatus)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * True, if type is "COMMON".
+     *
+     * @return
+     */
+    public boolean isCommonType() {
+        if (VocabularyType.COMMON.equals(type)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * True, if type is "SITE_CODE".
+     *
+     * @return
+     */
+    public boolean isSiteCodeType() {
+        if (VocabularyType.SITE_CODE.equals(type)) {
             return true;
         }
         return false;
@@ -234,6 +259,21 @@ public class VocabularyFolder {
      */
     public void setBaseUri(String baseUri) {
         this.baseUri = baseUri;
+    }
+
+    /**
+     * @return the type
+     */
+    public VocabularyType getType() {
+        return type;
+    }
+
+    /**
+     * @param type
+     *            the type to set
+     */
+    public void setType(VocabularyType type) {
+        this.type = type;
     }
 
 }

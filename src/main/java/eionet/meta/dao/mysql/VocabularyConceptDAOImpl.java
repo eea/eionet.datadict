@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -221,6 +222,70 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         int result = getNamedParameterJdbcTemplate().queryForInt(sql.toString(), parameters);
 
         return result == 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNextIdentifierValue(int vocabularyFolderId) {
+        String sql =
+                "SELECT MAX(0 + IDENTIFIER) FROM T_VOCABULARY_CONCEPT GROUP BY VOCABULARY_FOLDER_ID HAVING VOCABULARY_FOLDER_ID = :vocabularyFolderId";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("vocabularyFolderId", vocabularyFolderId);
+
+        try {
+            int result = getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
+            return result + 1;
+        } catch (EmptyResultDataAccessException e) {
+            return 1;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void insertEmptyConcepts(int vocabularyFolderId, int amount, int identifier) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL) ");
+        sql.append("values (:vocabularyFolderId, :identifier, :label)");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object>[] batchValues = (HashMap<String, Object>[]) new HashMap[amount];
+
+        for (int i = 0; i < batchValues.length; i++) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("vocabularyFolderId", vocabularyFolderId);
+            params.put("identifier", Integer.toString(identifier++));
+            params.put("label", "Not yet assigned");
+            batchValues[i] = params;
+        }
+
+        getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Integer> checkAvailableIdentifiers(int vocabularyFolderId, int amount, int startingIdentifier) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("select IDENTIFIER from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID = :vocabularyFolderId ");
+        sql.append("and IDENTIFIER between :start and :end");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("vocabularyFolderId", vocabularyFolderId);
+        parameters.put("start", startingIdentifier);
+        parameters.put("end", startingIdentifier + amount);
+
+        List<Integer> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), parameters, new RowMapper<Integer>() {
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new Integer(rs.getString("IDENTIFIER"));
+            }
+        });
+
+        return resultList;
     }
 
 }
