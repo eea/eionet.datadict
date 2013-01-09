@@ -196,6 +196,7 @@ public class DDUser{
     /**
      *
      */
+    @Override
     public String toString() {
         return (username == null ? "" : username );
     }

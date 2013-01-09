@@ -25,11 +25,15 @@ package eionet.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.tee.uit.security.AccessControlListIF;
 import com.tee.uit.security.AccessController;
@@ -242,8 +246,7 @@ public class SecurityUtil {
                     result =
                         casLoginUrl.replaceFirst("/login", "/logout")
                         + "?url="
-                        + URLEncoder.encode(request.getScheme() + "://" + casServerName + request.getContextPath(),
-                        "UTF-8");
+                        + URLEncoder.encode(request.getScheme() + "://" + casServerName + request.getContextPath(), "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     throw new DDRuntimeException(e.toString(), e);
                 }
@@ -282,25 +285,47 @@ public class SecurityUtil {
      */
     public static String buildAfterLoginURL(HttpServletRequest request) {
 
-        // System.out.println(">>>>>>>>>>>>>>>>>>>>>");
-        // Enumeration attributeNames = request.getAttributeNames();
-        // while (attributeNames!=null && attributeNames.hasMoreElements()){
-        // String attrName = attributeNames.nextElement().toString();
-        // Object attrValue = request.getAttribute(attrName);
-        // System.out.println(attrName + " " + attrValue);
-        // }
-        // System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<");
-
         String requestUri = (String) request.getAttribute("javax.servlet.forward.request_uri");
-        if (requestUri==null){
+        if (requestUri == null) {
             requestUri = request.getRequestURL().toString();
         }
 
         String queryString = (String) request.getAttribute("javax.servlet.forward.query_string");
-        if (queryString==null){
+        if (queryString == null) {
             queryString = request.getQueryString();
         }
 
-        return queryString==null ? requestUri : requestUri + "?" + queryString;
+        return queryString == null ? requestUri : requestUri + "?" + queryString;
+    }
+
+    /**
+     * Returns the list of countries the logged in user represents detected from the roles assigned for the user in LDAP.
+     * The country code is last 2 digits on role name. The country codes are detected only for the parent roles given as method
+     * argument.
+     * @param dduser Logged in user object.
+     * @param parentRoles List of parent roles, where country code will be detected as last 2 digits.
+     * @return List of ISO2 country codes in upper codes. Null if user object or parentRoles are null.
+     */
+    public static List<String> getUserCountriesFromRoles(DDUser dduser, String[] parentRoles) {
+
+        if (dduser == null || dduser.getUserRoles() == null || parentRoles == null) {
+            return null;
+        }
+
+        List<String> countries = new ArrayList<String>();
+        for (String role : dduser.getUserRoles()){
+            for (String parentRole : parentRoles){
+                if (!parentRole.endsWith("-")){
+                    parentRole = parentRole.concat("-");
+                }
+                if (role.startsWith(parentRole)){
+                    String roleSuffix = StringUtils.substringAfter(role, parentRole).toUpperCase();
+                    if (roleSuffix.length() == 2 && !countries.contains(roleSuffix)){
+                        countries.add(roleSuffix);
+                    }
+                }
+            }
+        }
+        return countries;
     }
 }
