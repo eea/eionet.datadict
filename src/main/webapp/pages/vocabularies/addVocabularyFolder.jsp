@@ -6,7 +6,7 @@
 <%@page import="net.sourceforge.stripes.action.ActionBean"%>
 
 <stripes:layout-render name="/pages/common/template.jsp"
-    pageTitle="Edit vocabulary">
+    pageTitle="Add vocabulary">
 
     <stripes:layout-component name="contents">
 

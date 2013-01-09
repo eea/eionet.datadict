@@ -28,5 +28,12 @@
         }
         %>
         <li><a href="<%=request.getContextPath()%>/vocabularies">Vocabularies</a></li>
+        <%
+        if (_user!=null){
+            %>
+            <li><a href="<%=request.getContextPath()%>/services/list">Services</a></li>
+            <%
+        }
+        %>
     </ul>
 </div>

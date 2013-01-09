@@ -43,6 +43,7 @@ import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.service.data.DataElementsFilter;
 import eionet.meta.service.data.DataElementsResult;
 
@@ -359,6 +360,27 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
             }
         });
         return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataElement getDataElement(String identifier) {
+        return getDataElement(getDataElementId(identifier));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDataElementId(String identifier) {
+        String sql = "select max(de.DATAELEM_ID) from DATAELEM de where de.IDENTIFIER = :identifier and de.REG_STATUS = :regStatus";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("identifier", identifier);
+        parameters.put("regStatus", RegStatus.RELEASED.toString());
+
+        return getNamedParameterJdbcTemplate().queryForInt(sql, parameters);
     }
 
     /**
