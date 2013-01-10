@@ -139,23 +139,6 @@ body {
 .error {
     font-style: bold;
 }
-/*
-input[type="submit"][disabled], input[type="reset"][disabled],  input[type="button"][disabled] {
-    font-size: 90%;
-    font-weight: bold;
-    color: #C0C0C0;
-    text-decoration: none;
-    background: #edf1e7;
-}
-*/
-
-/*
-* Quickfix to problem when content of div #container overflows its height:
-* setting the minimum height of workarea to surely exceed the height of the menu in leftcolumn
-*/
-#workarea {
-    min-height:200px;
-}
 
 /*
 * Horisontal list.
