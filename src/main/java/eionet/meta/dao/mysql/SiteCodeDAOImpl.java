@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.domain.SiteCodeStatus;
@@ -41,6 +42,7 @@ import eionet.meta.service.data.SiteCodeResult;
  *
  * @author Enriko Käsper
  */
+@Repository
 public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
     /**
