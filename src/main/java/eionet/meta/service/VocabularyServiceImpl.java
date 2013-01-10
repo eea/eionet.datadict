@@ -283,7 +283,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName)
-            throws ServiceException {
+    throws ServiceException {
         try {
             VocabularyFolder originalVocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
@@ -307,7 +307,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName)
-            throws ServiceException {
+    throws ServiceException {
         try {
             return vocabularyFolderDAO.getVocabularyFolderVersions(continuityId, vocabularyFolderId, userName);
         } catch (Exception e) {
@@ -380,7 +380,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public boolean isUniqueConceptIdentifier(String identifier, int vocabularyFolderId, int vocabularyConceptId)
-            throws ServiceException {
+    throws ServiceException {
         try {
             return vocabularyConceptDAO.isUniqueConceptIdentifier(identifier, vocabularyFolderId, vocabularyConceptId);
         } catch (Exception e) {
@@ -405,6 +405,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             vocabularyConceptDAO.insertEmptyConcepts(vocabularyFolderId, amount, startIdentifier);
 
+            //TODO
+            // 1. get added concept IDs
+            // 2. insert new Site code rows with correct status, user and
+
         } catch (Exception e) {
             throw new ServiceException("Failed to reserve empty site codes: " + e.getMessage(), e);
         }
@@ -427,7 +431,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public List<Integer> checkAvailableIdentifiers(int vocabularyFolderId, int amount, int startingIdentifier)
-            throws ServiceException {
+    throws ServiceException {
         try {
             return vocabularyConceptDAO.checkAvailableIdentifiers(vocabularyFolderId, amount, startingIdentifier);
         } catch (Exception e) {

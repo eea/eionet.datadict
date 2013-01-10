@@ -24,7 +24,7 @@ public class SecurityUtilTest extends TestCase {
         EasyMock.reset(dduser);
         String[] roles2 =
         { "eionet", "eionet-nrc", "eionet-nrc-energy", "eea", "eionet-nfp", "eionet-nfp-mc-ee", "eea-epa", "eea-epa-members",
-                "eionet-nrc-soil", "eionet-nrc-energy-mc", "eionet-nrc-soil-mc, eionet-nrc-soil-mc-ee", "eionet-nrc-nature-mc-fi" };
+                "eionet-nrc-soil", "eionet-nrc-energy-mc", "eionet-nrc-soil-mc", "eionet-nrc-soil-mc-ee", "eionet-nrc-nature-mc-fi" };
         EasyMock.expect(dduser.getUserRoles()).andReturn(roles2).anyTimes();
         EasyMock.replay(dduser);
 

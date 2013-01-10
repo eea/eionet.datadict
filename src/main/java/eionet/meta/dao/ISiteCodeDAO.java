@@ -9,43 +9,33 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- * The Original Code is Content Registry 3
+ * The Original Code is Data Dictionary
  *
  * The Initial Owner of the Original Code is European Environment
  * Agency. Portions created by TripleDev or Zero Technologies are Copyright
  * (C) European Environment Agency.  All Rights Reserved.
  *
  * Contributor(s):
- *        Juhan Voolaid
+ *        Enriko Käsper
  */
 
-package eionet.meta.service.data;
+package eionet.meta.dao;
 
-import java.util.List;
+import eionet.meta.service.data.SiteCodeFilter;
+import eionet.meta.service.data.SiteCodeResult;
 
 /**
- * Site code search result.
+ * Site code DAO interface.
  *
- * @author Juhan Voolaid
+ * @author Enriko Käsper
  */
-public class SiteCodeResult extends PagedResult<SiteCode> {
+public interface ISiteCodeDAO {
 
     /**
-     * Class constructor.
+     * Search site codes from database using SiteCodeFilter.
+     * @param filter
+     * @return SiteCodeResult object with found rows.
      */
-    private SiteCodeResult() {
-        super();
-    }
-
-    /**
-     * Class constructor.
-     *
-     * @param items
-     * @param totalItems
-     * @param pagedRequest
-     */
-    public SiteCodeResult(List<SiteCode> items, int totalItems, PagedRequest pagedRequest) {
-        super(items, totalItems, pagedRequest);
-    }
+    public SiteCodeResult searchSiteCodes(SiteCodeFilter filter);
 
 }

@@ -21,6 +21,7 @@
 
 package eionet.meta.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +30,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import eionet.meta.DDUser;
 import eionet.meta.dao.IDataElementDAO;
+import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
+import eionet.util.SecurityUtil;
 
 /**
  * Site code service implementation.
@@ -44,9 +48,17 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
 
     private static final String SITE_CODE_IDENTIFIER = "CountryCode";
 
+    /** List of roles which is used for calculating users permissions on country level*/
+    private static final String[] COUNTRY_USER_ROLES = { "eionet-nfp-cc", "eionet-nfp-mc", "eionet-nrc-nature-cc",
+    "eionet-nrc-nature-mc" };
+
     /** Data element DAO. */
     @Autowired
     private IDataElementDAO dataElementDao;
+
+    /** Site Code DAO. */
+    @Autowired
+    private ISiteCodeDAO siteCodeDao;
 
     /**
      * {@inheritDoc}
@@ -66,7 +78,24 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
      */
     @Override
     public List<FixedValue> getUserCountries(DDUser user) throws ServiceException {
-        // TODO Auto-generated method stub
+
+        if (user != null) {
+            List<FixedValue> allCountries = getAllCountries();
+            if (user.hasPermission("sitecode", "u")) {
+                return allCountries;
+            } else {
+                List<String> userCountries = SecurityUtil.getUserCountriesFromRoles(user, COUNTRY_USER_ROLES);
+                if (userCountries != null) {
+                    List<FixedValue> userCountryFixedValues = new ArrayList<FixedValue>();
+                    for (FixedValue countryFxv : allCountries) {
+                        if (userCountries.contains(countryFxv.getValue())) {
+                            userCountryFixedValues.add(countryFxv);
+                        }
+                    }
+                    return userCountryFixedValues;
+                }
+            }
+        }
         return null;
     }
 
@@ -75,7 +104,23 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
      */
     @Override
     public void allocateSiteCodes(String country, int amount, String userName) throws ServiceException {
-        // TODO Auto-generated method stub
+
+        SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
+        siteCodeFilter.setPageNumber(1);
+        siteCodeFilter.setPageSize(amount);
+        siteCodeFilter.setStatus(SiteCodeStatus.NEW);
+        try {
+            SiteCodeResult freeSiteCodes = siteCodeDao.searchSiteCodes(siteCodeFilter);
+
+            if (freeSiteCodes.getFullListSize() != amount){
+                throw new ServiceException("Did not find enough free site codes for allocating " + amount + " sites!");
+            }
+
+            //TODO update the list for allocating the received codes
+
+        } catch (Exception e) {
+            throw new ServiceException("Failed to allocate site codes: " + e.getMessage(), e);
+        }
 
     }
 

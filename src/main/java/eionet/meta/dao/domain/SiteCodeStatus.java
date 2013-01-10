@@ -9,43 +9,28 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- * The Original Code is Content Registry 3
+ * The Original Code is Data Dictionary
  *
  * The Initial Owner of the Original Code is European Environment
  * Agency. Portions created by TripleDev or Zero Technologies are Copyright
  * (C) European Environment Agency.  All Rights Reserved.
  *
  * Contributor(s):
- *        Juhan Voolaid
+ *        Enriko Käsper
  */
 
-package eionet.meta.service.data;
-
-import java.util.List;
+package eionet.meta.dao.domain;
 
 /**
- * Site code search result.
+ * Status codes used for site codes.
  *
- * @author Juhan Voolaid
+ * @author Enriko Käsper
  */
-public class SiteCodeResult extends PagedResult<SiteCode> {
-
-    /**
-     * Class constructor.
-     */
-    private SiteCodeResult() {
-        super();
-    }
-
-    /**
-     * Class constructor.
-     *
-     * @param items
-     * @param totalItems
-     * @param pagedRequest
-     */
-    public SiteCodeResult(List<SiteCode> items, int totalItems, PagedRequest pagedRequest) {
-        super(items, totalItems, pagedRequest);
-    }
-
+public enum SiteCodeStatus {
+    /** Not allocated to any country. */
+    NEW,
+    /** Country has requested site code and it is allocated for this country. */
+    ALLOCATED,
+    /** Site code has been allocated for particular site name. */
+    ASSIGNED
 }

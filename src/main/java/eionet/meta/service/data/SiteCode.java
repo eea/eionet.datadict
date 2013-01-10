@@ -21,6 +21,9 @@
 
 package eionet.meta.service.data;
 
+import java.util.Date;
+
+import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 
 /**
@@ -29,5 +32,98 @@ import eionet.meta.dao.domain.VocabularyConcept;
  * @author Juhan Voolaid
  */
 public class SiteCode extends VocabularyConcept {
+
+    /** Properties. */
+    private int siteCodeId;
+    private SiteCodeStatus status = SiteCodeStatus.NEW;
+    private String countryCode;
+    private Date dateCreated;
+    private String userCreated;
+    private Date dateAllocated;
+    private String userAllocated;
+    /**
+     * @return the id
+     */
+    public int getSiteCodeId() {
+        return siteCodeId;
+    }
+    /**
+     * @param id the id to set
+     */
+    public void setSiteCodeId(int id) {
+        this.siteCodeId = id;
+    }
+    /**
+     * @return the status
+     */
+    public SiteCodeStatus getStatus() {
+        return status;
+    }
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(SiteCodeStatus status) {
+        this.status = status;
+    }
+    /**
+     * @return the countryCode
+     */
+    public String getCountryCode() {
+        return countryCode;
+    }
+    /**
+     * @param countryCode the countryCode to set
+     */
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+    /**
+     * @return the dateCreated
+     */
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+    /**
+     * @param dateCreated the dateCreated to set
+     */
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+    /**
+     * @return the userCreated
+     */
+    public String getUserCreated() {
+        return userCreated;
+    }
+    /**
+     * @param userCreated the userCreated to set
+     */
+    public void setUserCreated(String userCreated) {
+        this.userCreated = userCreated;
+    }
+    /**
+     * @return the dateAllocated
+     */
+    public Date getDateAllocated() {
+        return dateAllocated;
+    }
+    /**
+     * @param dateAllocated the dateAllocated to set
+     */
+    public void setDateAllocated(Date dateAllocated) {
+        this.dateAllocated = dateAllocated;
+    }
+    /**
+     * @return the userAllocated
+     */
+    public String getUserAllocated() {
+        return userAllocated;
+    }
+    /**
+     * @param userAllocated the userAllocated to set
+     */
+    public void setUserAllocated(String userAllocated) {
+        this.userAllocated = userAllocated;
+    }
 
 }

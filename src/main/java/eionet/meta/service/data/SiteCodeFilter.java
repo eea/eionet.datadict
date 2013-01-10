@@ -21,11 +21,61 @@
 
 package eionet.meta.service.data;
 
+import eionet.meta.dao.domain.SiteCodeStatus;
+
 /**
  * Site code search filter.
  *
  * @author Juhan Voolaid
  */
+
 public class SiteCodeFilter extends PagedRequest {
+
+    private String countryCode;
+    private SiteCodeStatus status;
+    private String siteName;
+
+    /**
+     * @return the status
+     */
+    public SiteCodeStatus getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(SiteCodeStatus status) {
+        this.status = status;
+    }
+
+    /**
+     * @return the countryCode
+     */
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    /**
+     * @param countryCode the countryCode to set
+     */
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    /**
+     * @return the siteName
+     */
+    public String getSiteName() {
+        return siteName;
+    }
+
+    /**
+     * @param siteName the siteName to set
+     */
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
+    }
+
 
 }

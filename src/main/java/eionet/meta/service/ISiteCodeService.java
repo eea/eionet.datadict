@@ -23,7 +23,8 @@ public interface ISiteCodeService {
     List<FixedValue> getAllCountries() throws ServiceException;
 
     /**
-     * Returns countries that are allocatable by user.
+     * Returns countries that are allocatable by user. If user has update permissions on site codes,
+     * then all countries will be returned.
      *
      * @return
      * @throws ServiceException

@@ -313,6 +313,7 @@ public class SecurityUtil {
         }
 
         List<String> countries = new ArrayList<String>();
+
         for (String role : dduser.getUserRoles()){
             for (String parentRole : parentRoles){
                 if (!parentRole.endsWith("-")){
