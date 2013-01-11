@@ -407,8 +407,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             VocabularyFolder vf = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
-            if (!vf.isWorkingCopy()) {
-                throw new IllegalStateException("Vocabulary folder must be checked out");
+            if (vf.isWorkingCopy()) {
+                throw new IllegalStateException("Vocabulary folder cannot be checked out");
             }
             if (!vf.isSiteCodeType()) {
                 throw new IllegalStateException("Vocabulary folder must be site code type");

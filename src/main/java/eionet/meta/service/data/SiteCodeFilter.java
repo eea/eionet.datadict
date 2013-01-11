@@ -35,6 +35,7 @@ public class SiteCodeFilter extends PagedRequest {
     private String countryCode;
     private SiteCodeStatus status;
     private String siteName;
+    private String identifier;
     private DDUser user;
 
     /**
@@ -95,6 +96,21 @@ public class SiteCodeFilter extends PagedRequest {
      */
     public void setUser(DDUser user) {
         this.user = user;
+    }
+
+    /**
+     * @return the identifier
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * @param identifier
+     *            the identifier to set
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
 }

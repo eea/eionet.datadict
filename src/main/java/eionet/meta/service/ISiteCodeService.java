@@ -23,8 +23,8 @@ public interface ISiteCodeService {
     List<FixedValue> getAllCountries() throws ServiceException;
 
     /**
-     * Returns countries that are allocatable by user. If user has update permissions on site codes,
-     * then all countries will be returned.
+     * Returns countries that are allocatable by user. If user has update permissions on site codes, then all countries will be
+     * returned.
      *
      * @return
      * @throws ServiceException
@@ -59,4 +59,20 @@ public interface ISiteCodeService {
      * @throws ServiceException
      */
     SiteCodeResult searchSiteCodes(SiteCodeFilter filter) throws ServiceException;
+
+    /**
+     * Returns the first vocabulary folder Id where type is SITE_CODE.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    int getSiteCodeVocabularyFolderId() throws ServiceException;
+
+    /**
+     * Returns number of available free unallocated site codes.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    int getFeeSiteCodeAmount() throws ServiceException;
 }

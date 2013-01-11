@@ -37,6 +37,7 @@ public interface ISiteCodeDAO {
 
     /**
      * Search site codes from database using SiteCodeFilter.
+     *
      * @param filter
      * @return SiteCodeResult object with found rows.
      */
@@ -50,16 +51,29 @@ public interface ISiteCodeDAO {
 
     /**
      * Allocates the given site codes for country. If Site names are provided, then this information is stored as for information.
-     * @param freeSiteCodes The list of free site code objects that will be allocated.
-     * @param countryCode The allocating country.
-     * @param userName User who started the allocation.
-     * @param siteNames Optinoal list of site names.
+     *
+     * @param freeSiteCodes
+     *            The list of free site code objects that will be allocated.
+     * @param countryCode
+     *            The allocating country.
+     * @param userName
+     *            User who started the allocation.
+     * @param siteNames
+     *            Optinoal list of site names.
      */
     public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames);
 
     /**
      * Returns the first vocabulary folder Id where type is SITE_CODE.
+     *
      * @return
      */
     int getSiteCodeVocabularyFolderId();
+
+    /**
+     * Returns number of available free unallocated site codes.
+     *
+     * @return
+     */
+    int getFeeSiteCodeAmount();
 }

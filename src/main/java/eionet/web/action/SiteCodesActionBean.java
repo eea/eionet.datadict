@@ -37,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.service.ISiteCodeService;
+import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
@@ -46,7 +47,7 @@ import eionet.meta.service.data.SiteCodeResult;
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/services/siteCodes")
+@UrlBinding("/services/siteCodes/{$event}")
 public class SiteCodesActionBean extends AbstractActionBean {
 
     /** Page. */
@@ -54,7 +55,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
     /** Choice radio button values. */
     private static final String CHOICE_AMOUNT = "amount";
-    private static final String CHOICE_LABELS = "labels";
+    private static final String CHOICE_LABEL = "label";
 
     /** Maximum amount site codes to allocate. */
     private static final int MAX_AMOUNT = 10;
@@ -62,6 +63,10 @@ public class SiteCodesActionBean extends AbstractActionBean {
     /** Site code service. */
     @SpringBean
     private ISiteCodeService siteCodeService;
+
+    /** Vocabulary service. */
+    @SpringBean
+    private IVocabularyService vocabularyService;
 
     /** Form fields. */
     private String country;
@@ -81,6 +86,21 @@ public class SiteCodesActionBean extends AbstractActionBean {
     /** Site codes search result. */
     private SiteCodeResult siteCodeResult;
 
+    /** Concepts table page number. */
+    private int page = 1;
+
+    /** Amount of concepts to reserve. */
+    private int reserveAmount;
+
+    /** The starting identifier for reserving new site codes. */
+    private int startIdentifier;
+
+    /** Site code folder id. */
+    private int siteCodeFolderId;
+
+    /** Number of available new unallocated site codes. */
+    private int unallocatedSiteCodes;
+
     /**
      * View site codes action.
      *
@@ -89,8 +109,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution view() throws ServiceException {
+        unallocatedSiteCodes = siteCodeService.getFeeSiteCodeAmount();
         initFormData();
-        siteCodeResult = siteCodeService.searchSiteCodes(filter);
         return new ForwardResolution(VIEW_SITE_CODES_JSP);
     }
 
@@ -107,6 +127,20 @@ public class SiteCodesActionBean extends AbstractActionBean {
     }
 
     /**
+     * Action that reserves new site codes (empty vocabulary concepts).
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution reserveNewSiteCodes() throws ServiceException {
+
+        vocabularyService.reserveFreeSiteCodes(siteCodeFolderId, reserveAmount, startIdentifier, getUserName());
+
+        addSystemMessage("New site codes successfully created");
+        return new RedirectResolution(SiteCodesActionBean.class);
+    }
+
+    /**
      * Allocate action.
      *
      * @return
@@ -119,7 +153,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
         LOGGER.debug(amount);
         LOGGER.debug(choice);
 
-        if ("label".equals(choice)) {
+        if (CHOICE_LABEL.equals(choice)) {
             siteCodeService.allocateSiteCodes(country, labels.split("\\n"), getUserName());
         } else {
             siteCodeService.allocateSiteCodes(country, amount, getUserName());
@@ -134,7 +168,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    @ValidationMethod(on = { "allocate" })
+    @ValidationMethod(on = {"allocate"})
     public void validateAllocate() throws ServiceException {
 
         if (!isAllocationRight()) {
@@ -153,7 +187,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
                 addGlobalValidationError("Number of site codes cannot exceed more than " + MAX_AMOUNT);
             }
         }
-        if (CHOICE_LABELS.equals(choice)) {
+        if (CHOICE_LABEL.equals(choice)) {
             if (StringUtils.isEmpty(labels)) {
                 addGlobalValidationError("Site code names must be valued");
             }
@@ -161,6 +195,38 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
         if (isValidationErrors()) {
             initFormData();
+            siteCodeResult = siteCodeService.searchSiteCodes(filter);
+        }
+    }
+
+    /**
+     * Validates reserve site codes.
+     *
+     * @throws ServiceException
+     */
+    @ValidationMethod(on = {"reserveNewSiteCodes"})
+    public void validateReserveNewSiteCodes() throws ServiceException {
+        if (!isAllocationRight()) {
+            addGlobalValidationError("No privilege to reserve new site codes");
+        }
+
+        if (reserveAmount < 1) {
+            addGlobalValidationError("Amount must be a positive number");
+        }
+
+        if (reserveAmount > 1000) {
+            addGlobalValidationError("Amount cannot be bigger than 1000");
+        }
+
+        List<Integer> unavailableIdentifiers =
+                vocabularyService.checkAvailableIdentifiers(siteCodeFolderId, reserveAmount, startIdentifier);
+        if (unavailableIdentifiers.size() > 0) {
+            addGlobalValidationError("Identifers are unavailaible: " + StringUtils.join(unavailableIdentifiers, ", "));
+        }
+
+        if (isValidationErrors()) {
+            initFormData();
+            siteCodeResult = siteCodeService.searchSiteCodes(filter);
         }
     }
 
@@ -174,6 +240,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
             filter = new SiteCodeFilter();
         }
         filter.setUser(getUser());
+        filter.setPageNumber(page);
 
         if (getUser() != null) {
             userCountries = siteCodeService.getUserCountries(getUser());
@@ -181,6 +248,9 @@ public class SiteCodesActionBean extends AbstractActionBean {
             userCountries = new ArrayList<FixedValue>();
         }
         countries = siteCodeService.getAllCountries();
+
+        siteCodeFolderId = siteCodeService.getSiteCodeVocabularyFolderId();
+        startIdentifier = vocabularyService.getNextIdentifierValue(siteCodeFolderId);
     }
 
     /**
@@ -188,7 +258,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      *
      * @return
      */
-    public boolean isAllocationRight()  throws ServiceException{
+    public boolean isAllocationRight() throws ServiceException {
         if (getUser() != null) {
             userCountries = siteCodeService.getUserCountries(getUser());
             return getUser().hasPermission("sitecode", "u") || (userCountries != null && userCountries.size() > 0);
@@ -311,6 +381,73 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     public void setSiteCodeResult(SiteCodeResult siteCodeResult) {
         this.siteCodeResult = siteCodeResult;
+    }
+
+    /**
+     * @return the page
+     */
+    public int getPage() {
+        return page;
+    }
+
+    /**
+     * @param page
+     *            the page to set
+     */
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    /**
+     * @return the reserveAmount
+     */
+    public int getReserveAmount() {
+        return reserveAmount;
+    }
+
+    /**
+     * @param reserveAmount
+     *            the reserveAmount to set
+     */
+    public void setReserveAmount(int reserveAmount) {
+        this.reserveAmount = reserveAmount;
+    }
+
+    /**
+     * @return the startIdentifier
+     */
+    public int getStartIdentifier() {
+        return startIdentifier;
+    }
+
+    /**
+     * @param startIdentifier
+     *            the startIdentifier to set
+     */
+    public void setStartIdentifier(int startIdentifier) {
+        this.startIdentifier = startIdentifier;
+    }
+
+    /**
+     * @return the siteCodeFolderId
+     */
+    public int getSiteCodeFolderId() {
+        return siteCodeFolderId;
+    }
+
+    /**
+     * @param siteCodeFolderId
+     *            the siteCodeFolderId to set
+     */
+    public void setSiteCodeFolderId(int siteCodeFolderId) {
+        this.siteCodeFolderId = siteCodeFolderId;
+    }
+
+    /**
+     * @return the unallocatedSiteCodes
+     */
+    public int getUnallocatedSiteCodes() {
+        return unallocatedSiteCodes;
     }
 
 }

@@ -99,12 +99,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /** Concepts table page number. */
     private int page = 1;
 
-    /** Amount of concepts to reserve. */
-    private int amount;
-
-    /** The starting identifier for reserving new site codes. */
-    private int startIdentifier;
-
     /**
      * Navigates to view vocabulary folder page.
      *
@@ -162,29 +156,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         initFilter();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
-        startIdentifier = vocabularyService.getNextIdentifierValue(vocabularyFolder.getId());
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
     }
 
-    /**
-     * Action that reserves free site codes (empty vocabulary concepts).
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution reserveFreeSiteCodes() throws ServiceException {
-
-        if (!isCreateNewSiteCodeAllowed()) {
-            throw new ServiceException("You are not authorised for this operation!");
-        }
-        vocabularyService.reserveFreeSiteCodes(vocabularyFolder.getId(), amount, startIdentifier, getUserName());
-
-        addSystemMessage(amount + " free site codes successfully created");
-        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
-        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
-        return resolution;
-    }
     /**
      * Returns true if the current user is allowed to add new site codes.
      *
@@ -306,33 +280,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         return resolution;
-    }
-
-    /**
-     * Validates save concept.
-     *
-     * @throws ServiceException
-     */
-    @ValidationMethod(on = {"reserveFreeSiteCodes"})
-    public void validateReserveFreeSiteCodes() throws ServiceException {
-        if (amount < 1) {
-            addGlobalValidationError("Amount must be a positive number");
-        }
-
-        if (amount > 1000) {
-            addGlobalValidationError("Amount cannot be bigger than 1000");
-        }
-
-        List<Integer> unavailableIdentifiers = vocabularyService.checkAvailableIdentifiers(vocabularyFolder.getId(), amount, startIdentifier);
-        if (unavailableIdentifiers.size() > 0) {
-            addGlobalValidationError("Identifers are unavailaible: " + StringUtils.join(unavailableIdentifiers, ", "));
-        }
-
-        if (isValidationErrors()) {
-            vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getId());
-            initFilter();
-            vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
-        }
     }
 
     /**
@@ -710,36 +657,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public void setPage(int page) {
         this.page = page;
-    }
-
-    /**
-     * @return the amount
-     */
-    public int getAmount() {
-        return amount;
-    }
-
-    /**
-     * @param amount
-     *            the amount to set
-     */
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    /**
-     * @return the startIdentifier
-     */
-    public int getStartIdentifier() {
-        return startIdentifier;
-    }
-
-    /**
-     * @param startIdentifier
-     *            the startIdentifier to set
-     */
-    public void setStartIdentifier(int startIdentifier) {
-        this.startIdentifier = startIdentifier;
     }
 
 }

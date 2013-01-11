@@ -30,6 +30,12 @@
                     width: 800
                 });
 
+                // Reserve site codes dialog
+                $("#reserveSiteCodesDialog").dialog({
+                    autoOpen: false,
+                    width: 600
+                });
+
                 // Doggle fields based on the radio button
                 $("input:radio[name=choice]").click(function() {
                     var value = $(this).val();
@@ -43,6 +49,18 @@
                         $("#labelsText").val("");
                     }
                 });
+
+                // Function for opening popups
+                openPopup = function(divId) {
+                    $(divId).dialog('open');
+                    return false;
+                }
+
+                // Function for closing popups
+                closePopup = function(divId) {
+                    $(divId).dialog("close");
+                    return false;
+                }
 
 
                 // First disable both fields
@@ -79,11 +97,57 @@
             <h2>Operations:</h2>
             <ul>
                 <li><a href="#" id="allocateSiteCodesLink">Allocate site codes</a></li>
+                <li><a href="#" onClick="openPopup('#reserveSiteCodesDialog')">Reserve free site codes</a></li>
             </ul>
         </div>
         </c:if>
 
         <h1>Site codes</h1>
+
+        <%-- Info text --%>
+        <c:if test="${actionBean.context.eventName == 'view'}">
+
+            <p>
+            Site code is a unique identifier of site records in the
+            <a href=http://dd.eionet.europa.eu/datasets/latest/CDDA>Common database of designated areas</a>
+            which is annually updated in one of the EEA's priority dataflows.
+            </p>
+
+            <p>
+            CDDA, as the main European inventory of protected areas, provides the data for
+            <a href="http://www.wdpa.org/">World Database on Protected Areas (WDPA)</a>.
+            In order to keep identification of the CDDA site records compatible with the WDPA,
+            the EEA agreed to use for the identification the code list maintained by the WDPA.
+            Whenever it is needed the WDPA provides free codes from the codelist to the EEA.
+            These free codes are then distributed on demand to the individual countries who assign
+            the codes to new national sites during the update of the CDDA data.
+            </p>
+
+            <p>
+            In the past the distribution of the free codes as well as maintenance of the European codelists
+            has been performed manually by the ETC/BD. This service automatizes the process of the code distribution.
+            </p>
+
+            <p>
+            Appointed Reportnet users, which are all Eionet <a href="http://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nfp">NFPs</a>
+            and <a href="http://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nrc-nature">NRCs for Nature and Biodiversity</a>,
+            can reserve a set of new site codes for their new sites after logging into the service. The process is called allocation of site codes.
+            </p>
+
+            <p>
+            Number of free unallocated Site codes: <c:out value="${actionBean.unallocatedSiteCodes}" />
+            </p>
+
+            <c:if test="${empty actionBean.user}">
+            <div class="note-msg">
+                <strong>Note</strong>
+                <p>
+                Please <a href="https://sso.eionet.europa.eu/login?service=http%3A%2F%2Fdd.eionet.europa.eu%2Flogin">log-in</a> with your Eionet
+                user name and password in order to allocate new site codes or see the list of codes already allocated.
+                </p>
+            </div>
+            </c:if>
+        </c:if>
 
         <%-- Site codes search --%>
         <stripes:form method="get" id="searchSiteCodesForm" beanclass="${actionBean.class.name}">
@@ -124,8 +188,16 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="simple_attr_title" title="Allocated country">
-                        Site code name
+                    <td class="simple_attr_title" title="Site code number">
+                        Site code
+                    </td>
+                    <td class="simple_attr_value">
+                        <stripes:text class="smalltext" size="6" name="filter.identifier" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="simple_attr_title" title="Site code name">
+                        Site name
                     </td>
                     <td class="simple_attr_value">
                         <stripes:text class="smalltext" size="30" name="filter.siteName" />
@@ -141,7 +213,8 @@
         </stripes:form>
 
         <%-- Site codes table --%>
-        <display:table name="actionBean.siteCodeResult" class="datatable" id="siteCode" style="width:80%" requestURI="/services/siteCodes" >
+        <c:if test="${actionBean.context.eventName == 'search'}">
+        <display:table name="actionBean.siteCodeResult" class="datatable" id="siteCode" style="width:80%" requestURI="/services/siteCodes/search" >
             <display:setProperty name="basic.msg.empty_list" value="No site codes found." />
 
             <display:column title="Site code" property="identifier" escapeXml="true" class="number" style="width: 1%" />
@@ -151,6 +224,7 @@
             <display:column title="Allocated" escapeXml="true" property="dateAllocated" />
             <display:column title="User" escapeXml="true" property="userAllocated" />
         </display:table>
+        </c:if>
 
         <%-- Site codes allocation popup --%>
         <div id="allocateSiteCodesDiv" title="Allocate site codes">
@@ -201,6 +275,50 @@
                         <td>
                             <stripes:submit name="allocate" value="Allocate site codes" />
                             <button type="button" id="closeAllocateLink">Cancel</button>
+                        </td>
+                    </tr>
+                </table>
+            </stripes:form>
+        </div>
+
+        <%-- Reserve site codes range --%>
+        <div id="reserveSiteCodesDialog">
+            <stripes:form method="post" id="reserveFreeSiteCodesForm" beanclass="${actionBean.class.name}">
+                <stripes:hidden name="siteCodeFolderId" />
+
+                <table class="datatable">
+                    <colgroup>
+                        <col style="width:26%"/>
+                        <col style="width:4%"/>
+                        <col />
+                    </colgroup>
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title" title="Lowest of the generated identifier">
+                            Starting identifier
+                        </th>
+                        <td class="simple_attr_help">
+                            <dd:mandatoryIcon />
+                        </td>
+                        <td class="simple_attr_value">
+                            <stripes:text class="smalltext" size="30" name="startIdentifier" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title" title="Amount of site codes to reserve">
+                            Amount
+                        </th>
+                        <td class="simple_attr_help">
+                            <dd:mandatoryIcon />
+                        </td>
+                        <td class="simple_attr_value">
+                            <stripes:text class="smalltext" size="30" name="reserveAmount" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">&nbsp;</td>
+                        <td>
+                            <stripes:submit name="reserveNewSiteCodes" value="Reserve site codes" />
+                            <button type="button" onClick="closePopup('#reserveSiteCodesDialog')">Cancel</button>
                         </td>
                     </tr>
                 </table>

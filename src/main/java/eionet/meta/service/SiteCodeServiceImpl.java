@@ -50,7 +50,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
 
     /** List of roles which is used for calculating users permissions on country level */
     private static final String[] COUNTRY_USER_ROLES = {"eionet-nfp-cc", "eionet-nfp-mc", "eionet-nrc-nature-cc",
-    "eionet-nrc-nature-mc"};
+            "eionet-nrc-nature-mc"};
 
     /** Data element DAO. */
     @Autowired
@@ -126,7 +126,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             }
             siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames);
 
-            //TODO return the list of site codes to be allocated
+            // TODO return the list of site codes to be allocated
         } catch (Exception e) {
             throw new ServiceException("Failed to allocate site codes: " + e.getMessage(), e);
         }
@@ -141,6 +141,30 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             return siteCodeDao.searchSiteCodes(filter);
         } catch (Exception e) {
             throw new ServiceException("Failed to search site codes: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getSiteCodeVocabularyFolderId() throws ServiceException {
+        try {
+            return siteCodeDao.getSiteCodeVocabularyFolderId();
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get site code folder id: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getFeeSiteCodeAmount() throws ServiceException {
+        try {
+            return siteCodeDao.getFeeSiteCodeAmount();
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get unallocated site coudes amount: " + e.getMessage(), e);
         }
     }
 }

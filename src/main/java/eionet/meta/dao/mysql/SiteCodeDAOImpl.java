@@ -66,6 +66,10 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             params.put("text", "%" + filter.getSiteName() + "%");
             sql.append("and vc.LABEL like :text ");
         }
+        if (StringUtils.isNotEmpty(filter.getIdentifier())) {
+            params.put("identifier", filter.getIdentifier());
+            sql.append("and vc.IDENTIFIER like :identifier ");
+        }
         if (filter.getStatus() != null) {
             params.put("status", filter.getStatus().toString());
             sql.append("and sc.STATUS = :status ");
@@ -106,11 +110,12 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         return result;
     }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName){
+    public void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName) {
 
         StringBuilder sql = new StringBuilder();
         sql.append("insert into T_SITE_CODE (VOCABULARY_CONCEPT_ID, USER_CREATED, DATE_CREATED) ");
@@ -136,11 +141,11 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * {@inheritDoc}
      */
     @Override
-    public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames){
+    public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames) {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("update T_SITE_CODE set CC_ISO2 = :country, SITE_NAME = :siteName, STATUS = :status, " +
-        "DATE_ALLOCATED = :dateAllocated, USER_ALLOCATED = :userAllocated ");
+        sql.append("update T_SITE_CODE set CC_ISO2 = :country, SITE_NAME = :siteName, STATUS = :status, "
+                + "DATE_ALLOCATED = :dateAllocated, USER_ALLOCATED = :userAllocated ");
         sql.append("where SITE_CODE_ID = :siteCodeId");
 
         Date dateAllocated = new Date();
@@ -154,10 +159,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             params.put("status", SiteCodeStatus.ALLOCATED.toString());
             params.put("dateAllocated", dateAllocated);
             params.put("userAllocated", userName);
-            if (siteNames.length>i && siteNames[i] !=null){
+            if (siteNames.length > i && siteNames[i] != null) {
                 params.put("siteName", siteNames[i]);
-            }
-            else{
+            } else {
                 params.put("siteName", "");
             }
             batchValues[i] = params;
@@ -166,17 +170,27 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
 
     }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getSiteCodeVocabularyFolderId(){
+    public int getSiteCodeVocabularyFolderId() {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select min(VOCABULARY_FOLDER_ID) from T_VOCABULARY_FOLDER where VOCABULARY_TYPE = :type");
+        sql.append("select min(VOCABULARY_FOLDER_ID) from T_VOCABULARY_FOLDER where VOCABULARY_TYPE = '"
+                + VocabularyType.SITE_CODE.name() + "'");
 
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("type", VocabularyType.SITE_CODE);
+        return getJdbcTemplate().queryForInt(sql.toString());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getFeeSiteCodeAmount() {
+        StringBuilder sql = new StringBuilder();
+        sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS = '" + SiteCodeStatus.NEW + "'");
 
         return getJdbcTemplate().queryForInt(sql.toString());
     }
