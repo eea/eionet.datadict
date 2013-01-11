@@ -10,7 +10,7 @@
         ( function($) {
             $(document).ready(function() {
 
-                var sampleNames = "site name 1\nsite name 2\nsite name 3\n";
+                var sampleNames = "site name 1\nsite name 2\nsite name 3\n...";
 
                 // Open allocate site codes dialog
                 $("#allocateSiteCodesLink").click(function() {
@@ -156,7 +156,7 @@
         <div id="allocateSiteCodesDiv" title="Allocate site codes">
             <div class="tip-msg">
                 <strong>Tip</strong>
-                <p>Country codes can be allocated by number or by list of site code names where each name is on new line.</p>
+                <p>Site codes can be allocated by number or by list of site names where each name is on a new line.</p>
             </div>
 
             <stripes:form method="post" id="allocateSiteCodesForm" beanclass="${actionBean.class.name}">
@@ -169,18 +169,18 @@
                     <tr>
                         <td>&nbsp;</td>
                         <td class="simple_attr_title" title="Country to allocate to">
-                            Country
+                            <label for="country">Country</label>
                         </td>
                         <td class="simple_attr_value">
-                            <stripes:select name="country">
+                            <stripes:select name="country" id="country">
                                 <stripes:options-collection collection="${actionBean.userCountries}" value="value" label="definition" />
                             </stripes:select>
                         </td>
                     </tr>
                     <tr>
-                        <td><stripes:radio name="choice" value="amount" /></td>
+                        <td><stripes:radio name="choice" value="amount" id="choiceAmount" checked="checked"/></td>
                         <td class="simple_attr_title" title="Number of site codes to allocate">
-                            Number of site codes
+                            <label for="choiceAmount">Number of site codes</label>
                         </td>
                         <td class="simple_attr_value">
                             <stripes:text class="smalltext" size="5" name="amount" id="amountText"/>
@@ -188,9 +188,9 @@
                     </tr>
                     <tr><td colspan="4" style="padding-left: 10%">Or</td></tr>
                     <tr>
-                        <td><stripes:radio name="choice" value="label" /></td>
+                        <td><stripes:radio name="choice" value="label" id="choiceLabel"/></td>
                         <td class="simple_attr_title" title="List of new site code names separated by new line">
-                            Site code names
+                            <label for="choiceLabel">Site code names</label>
                         </td>
                         <td class="simple_attr_value">
                             <stripes:textarea class="smalltext" name="labels" id="labelsText" rows="5" cols="60"/>

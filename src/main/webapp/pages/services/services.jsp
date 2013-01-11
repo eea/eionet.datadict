@@ -9,7 +9,7 @@
         <h1>Services</h1>
 
         <ul>
-            <li><stripes:link href="/services/siteCodes">Site codes</stripes:link></li>
+            <li><stripes:link href="/services/siteCodes">CDDA dataflow site codes</stripes:link></li>
         </ul>
 
     </stripes:layout-component>

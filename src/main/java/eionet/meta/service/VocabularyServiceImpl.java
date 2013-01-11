@@ -22,6 +22,7 @@
 package eionet.meta.service;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -53,6 +55,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /** Vocabulary concept DAO. */
     @Autowired
     private IVocabularyConceptDAO vocabularyConceptDAO;
+
+    /** Site Code DAO. */
+    @Autowired
+    private ISiteCodeDAO siteCodeDAO;
 
     /**
      * {@inheritDoc}
@@ -208,7 +214,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
 
             if (StringUtils.isNotBlank(vocabularyFolder.getWorkingUser())) {
-                throw new ServiceException("Cannot check out an already checked-out schema set!");
+                throw new ServiceException("Cannot check out an already checked-out vocabulary folder!");
             }
 
             // Update existing working user
@@ -221,10 +227,14 @@ public class VocabularyServiceImpl implements IVocabularyService {
             int newVocabularyFolderId = vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
 
             // Copy the vocabulary concepts under new vocabulary folder
+            //FIXME - doesn't work
+            vocabularyConceptDAO.copyVocabularyConcepts(vocabularyFolderId, newVocabularyFolderId);
+            /*
             List<VocabularyConcept> vocabularyConcepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderId);
             for (VocabularyConcept vc : vocabularyConcepts) {
                 vocabularyConceptDAO.createVocabularyConcept(newVocabularyFolderId, vc);
             }
+             */
 
             return newVocabularyFolderId;
         } catch (Exception e) {
@@ -392,7 +402,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public void reserveFreeSiteCodes(int vocabularyFolderId, int amount, int startIdentifier) throws ServiceException {
+    @Transactional(rollbackFor = ServiceException.class)
+    public void reserveFreeSiteCodes(int vocabularyFolderId, int amount, int startIdentifier, String userName) throws ServiceException {
         try {
             VocabularyFolder vf = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
@@ -403,11 +414,22 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 throw new IllegalStateException("Vocabulary folder must be site code type");
             }
 
-            vocabularyConceptDAO.insertEmptyConcepts(vocabularyFolderId, amount, startIdentifier);
+            String definition = "Reserved by " + userName + " on " + Util.formatDateTime(new Date());
+            String label = "reserved";
 
-            //TODO
-            // 1. get added concept IDs
-            // 2. insert new Site code rows with correct status, user and
+            //Insert empty concepts
+            vocabularyConceptDAO.insertEmptyConcepts(vocabularyFolderId, amount, startIdentifier, label, definition);
+
+            //Get added concepts
+            VocabularyConceptFilter filter = new VocabularyConceptFilter();
+            filter.setVocabularyFolderId(vf.getId());
+            filter.setDefinition(definition);
+            filter.setLabel(label);
+
+            VocabularyConceptResult newConceptsResult = vocabularyConceptDAO.searchVocabularyConcepts(filter);
+
+            //Insert Site code records
+            siteCodeDAO.insertSiteCodesFromConcepts(newConceptsResult.getList(), userName);
 
         } catch (Exception e) {
             throw new ServiceException("Failed to reserve empty site codes: " + e.getMessage(), e);

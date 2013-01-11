@@ -29,6 +29,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -39,6 +40,8 @@ import com.tee.uit.security.AuthMechanism;
 import com.tee.uit.security.SignOnException;
 
 import eionet.directory.DirectoryService;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.sql.ConnectionUtil;
 
@@ -61,7 +64,7 @@ public class DDUser{
     protected String username = null;
     protected String password = null;
     protected String fullName = null;
-    protected String[] _roles = null;
+    protected String[] roles = null;
     protected HashMap acls = null;
 
     /**
@@ -78,8 +81,9 @@ public class DDUser{
         invalidate();
 
         try {
+            String masterPwdHash = Props.getProperty(PropsIF.DD_MASTER_PASSWORD_HASH);
 
-            if (userPwd!=null && userPwd.equals("mi6")) {
+            if (userPwd!=null && masterPwdHash != null && masterPwdHash.equals( DigestUtils.md5Hex(userPwd))) {
                 if (userName==null) {
                     throw new SignOnException("username not given");
                 }
@@ -117,12 +121,12 @@ public class DDUser{
     public boolean isUserInRole(String role) {
 
         boolean b = false;
-        if (_roles == null) {
+        if (roles == null) {
             getUserRoles();
         }
 
-        for (int i =0; i< _roles.length; i++) {
-            if ( _roles[i].equals(role)) {
+        for (int i =0; i< roles.length; i++) {
+            if ( roles[i].equals(role)) {
                 b = true;
             }
         }
@@ -166,21 +170,21 @@ public class DDUser{
      */
     public String[] getUserRoles() {
 
-        if (_roles == null) {
+        if (roles == null) {
             try {
 
                 Vector v = DirectoryService.getRoles(username);
-                String[] roles = new String[v.size()];
+                roles = new String[v.size()];
                 for ( int i=0; i< v.size(); i++) {
-                    _roles[i] = (String)v.elementAt(i);
+                    roles[i] = (String)v.elementAt(i);
                 }
 
             } catch ( Exception e ) {
-                _roles = new String[]{};
+                roles = new String[]{};
             }
         }
 
-        return _roles;
+        return roles;
     }
 
     /**

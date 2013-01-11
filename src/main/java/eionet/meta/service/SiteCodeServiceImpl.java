@@ -81,7 +81,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
 
         if (user != null) {
             List<FixedValue> allCountries = getAllCountries();
-            if (user.hasPermission("sitecode", "u")) {
+            if (user.hasPermission("/sitecodes", "u")) {
                 return allCountries;
             } else {
                 List<String> userCountries = SecurityUtil.getUserCountriesFromRoles(user, COUNTRY_USER_ROLES);
@@ -103,8 +103,17 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
      * {@inheritDoc}
      */
     @Override
-    public void allocateSiteCodes(String country, int amount, String userName) throws ServiceException {
+    public void allocateSiteCodes(String countryCode, int amount, String userName) throws ServiceException {
+        allocateSiteCodes(countryCode, new String[amount], userName);
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void allocateSiteCodes(String countryCode, String[] siteNames, String userName) throws ServiceException {
+
+        int amount = siteNames.length;
         SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
         siteCodeFilter.setPageNumber(1);
         siteCodeFilter.setPageSize(amount);
@@ -115,22 +124,12 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             if (freeSiteCodes.getFullListSize() != amount) {
                 throw new ServiceException("Did not find enough free site codes for allocating " + amount + " sites!");
             }
+            siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames);
 
-            // TODO update the list for allocating the received codes
-
+            //TODO return the list of site codes to be allocated
         } catch (Exception e) {
             throw new ServiceException("Failed to allocate site codes: " + e.getMessage(), e);
         }
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void allocateSiteCodes(String country, String[] siteCodeNames, String userName) throws ServiceException {
-        // TODO Auto-generated method stub
-
     }
 
     /**

@@ -47,6 +47,7 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.SecurityUtil;
 import eionet.util.Util;
 
 /**
@@ -113,12 +114,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution view() throws ServiceException {
         vocabularyFolder =
-                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+            vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         initFilter();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         vocabularyFolderVersions =
-                vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
-                        getUserName());
+            vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
+                    getUserName());
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
     }
 
@@ -158,7 +159,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public Resolution edit() throws ServiceException {
         vocabularyFolder =
-                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+            vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         initFilter();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         startIdentifier = vocabularyService.getNextIdentifierValue(vocabularyFolder.getId());
@@ -173,13 +174,32 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public Resolution reserveFreeSiteCodes() throws ServiceException {
 
-        vocabularyService.reserveFreeSiteCodes(vocabularyFolder.getId(), amount, startIdentifier);
+        if (!isCreateNewSiteCodeAllowed()) {
+            throw new ServiceException("You are not authorised for this operation!");
+        }
+        vocabularyService.reserveFreeSiteCodes(vocabularyFolder.getId(), amount, startIdentifier, getUserName());
 
-        addSystemMessage("Free site codes successfully created");
+        addSystemMessage(amount + " free site codes successfully created");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         return resolution;
+    }
+    /**
+     * Returns true if the current user is allowed to add new site codes.
+     *
+     * @return
+     */
+    public boolean isCreateNewSiteCodeAllowed() {
+
+        if (getUser() != null) {
+            try {
+                return SecurityUtil.hasPerm(getUserName(), "/sitecodes", "i");
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+        return false;
     }
 
     /**
@@ -452,18 +472,19 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
 
             final String contextRoot =
-                    StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
-                            .getRequiredProperty(PropsIF.DD_URL) + "/vocabularies/" + vocabularyFolder.getIdentifier() + "/";
+                StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
+                        .getRequiredProperty(PropsIF.DD_URL) + "/vocabularies/" + vocabularyFolder.getIdentifier() + "/";
 
-            StreamingResolution result = new StreamingResolution("application/rdf+xml") {
-                public void stream(HttpServletResponse response) throws Exception {
-                    VocabularyXmlWriter xmlWriter =
+                StreamingResolution result = new StreamingResolution("application/rdf+xml") {
+                    @Override
+                    public void stream(HttpServletResponse response) throws Exception {
+                        VocabularyXmlWriter xmlWriter =
                             new VocabularyXmlWriter(response.getOutputStream(), contextRoot, vocabularyFolder,
                                     vocabularyConcepts.getList());
-                    xmlWriter.writeManifestXml();
-                }
-            };
-            return result;
+                        xmlWriter.writeManifestXml();
+                    }
+                };
+                return result;
         } catch (Exception e) {
             LOGGER.error("Failed to output vocabulary RDF data", e);
             ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
@@ -512,7 +533,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             return false;
         } else {
             return StringUtils.isNotBlank(vocabularyFolder.getWorkingUser()) && !vocabularyFolder.isWorkingCopy()
-                    && !StringUtils.equals(getUserName(), vocabularyFolder.getWorkingUser());
+            && !StringUtils.equals(getUserName(), vocabularyFolder.getWorkingUser());
         }
     }
 
@@ -527,7 +548,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             return false;
         } else {
             return StringUtils.isNotBlank(vocabularyFolder.getWorkingUser()) && !vocabularyFolder.isWorkingCopy()
-                    && StringUtils.equals(getUserName(), vocabularyFolder.getWorkingUser());
+            && StringUtils.equals(getUserName(), vocabularyFolder.getWorkingUser());
         }
     }
 

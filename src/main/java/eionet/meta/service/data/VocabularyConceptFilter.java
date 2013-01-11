@@ -34,6 +34,15 @@ public class VocabularyConceptFilter extends PagedRequest {
     /** Text search value. */
     private String text;
 
+    /** Identifier exact search value. */
+    private String identifier;
+
+    /** Definition exact search value. */
+    private String definition;
+
+    /** Label exact search value. */
+    private String label;
+
     /**
      * @return the vocabularyFolderId
      */
@@ -62,6 +71,48 @@ public class VocabularyConceptFilter extends PagedRequest {
      */
     public void setText(String text) {
         this.text = text;
+    }
+
+    /**
+     * @return the identifier
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * @param identifier the identifier to set
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    /**
+     * @return the definition
+     */
+    public String getDefinition() {
+        return definition;
+    }
+
+    /**
+     * @param definition the definition to set
+     */
+    public void setDefinition(String definition) {
+        this.definition = definition;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
     }
 
 }

@@ -119,6 +119,12 @@ public class SiteCodesActionBean extends AbstractActionBean {
         LOGGER.debug(amount);
         LOGGER.debug(choice);
 
+        if ("label".equals(choice)) {
+            siteCodeService.allocateSiteCodes(country, labels.split("\\n"), getUserName());
+        } else {
+            siteCodeService.allocateSiteCodes(country, amount, getUserName());
+        }
+
         addSystemMessage("Site codes successfully allocated");
         return new RedirectResolution(SiteCodesActionBean.class);
     }
@@ -128,7 +134,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    @ValidationMethod(on = {"allocate"})
+    @ValidationMethod(on = { "allocate" })
     public void validateAllocate() throws ServiceException {
 
         if (!isAllocationRight()) {
@@ -182,9 +188,10 @@ public class SiteCodesActionBean extends AbstractActionBean {
      *
      * @return
      */
-    public boolean isAllocationRight() {
+    public boolean isAllocationRight()  throws ServiceException{
         if (getUser() != null) {
-            return getUser().hasPermission("sitecode", "u");
+            userCountries = siteCodeService.getUserCountries(getUser());
+            return getUser().hasPermission("sitecode", "u") || (userCountries != null && userCountries.size() > 0);
         }
 
         return false;

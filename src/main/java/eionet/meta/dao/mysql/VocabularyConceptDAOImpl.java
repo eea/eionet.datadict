@@ -91,6 +91,14 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             sql.append("or LABEL like :text ");
             sql.append("or DEFINITION like :text) ");
         }
+        if (StringUtils.isNotEmpty(filter.getDefinition())){
+            params.put("definition", filter.getDefinition());
+            sql.append("and DEFINITION = :definition ");
+        }
+        if (StringUtils.isNotEmpty(filter.getLabel())){
+            params.put("label", filter.getLabel());
+            sql.append("and LABEL = :label ");
+        }
         sql.append("order by IDENTIFIER + 0 ");
         if (filter.isUsePaging()) {
             sql.append("LIMIT ").append(filter.getOffset()).append(",").append(filter.getPageSize());
@@ -116,6 +124,23 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         VocabularyConceptResult result = new VocabularyConceptResult(resultList, totalItems, filter);
 
         return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION) ");
+        sql.append("select :newVocabularyFolderId, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
+        sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID = :oldVocabularyFolderId");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("newVocabularyFolderId", newVocabularyFolderId);
+        parameters.put("oldVocabularyFolderId", oldVocabularyFolderId);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 
     /**
@@ -248,10 +273,10 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
      * {@inheritDoc}
      */
     @Override
-    public void insertEmptyConcepts(int vocabularyFolderId, int amount, int identifier) {
+    public void insertEmptyConcepts(int vocabularyFolderId, int amount, int identifier, String label, String definition) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL) ");
-        sql.append("values (:vocabularyFolderId, :identifier, :label)");
+        sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION) ");
+        sql.append("values (:vocabularyFolderId, :identifier, :label, :definition, :notation)");
 
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[amount];
@@ -260,7 +285,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("vocabularyFolderId", vocabularyFolderId);
             params.put("identifier", Integer.toString(identifier++));
-            params.put("label", "Not yet assigned");
+            params.put("label", label);
+            params.put("definition", definition);
+            params.put("notation", Integer.toString(identifier));
             batchValues[i] = params;
         }
 

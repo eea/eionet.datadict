@@ -23,6 +23,7 @@ package eionet.meta.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Repository;
 
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.domain.SiteCodeStatus;
+import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.SiteCode;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
@@ -56,7 +58,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         StringBuilder sql = new StringBuilder();
         sql.append("select SQL_CALC_FOUND_ROWS sc.SITE_CODE_ID, sc.VOCABULARY_CONCEPT_ID, sc.STATUS, sc.CC_ISO2, "
                 + "sc.DATE_CREATED, sc.USER_CREATED, vc.VOCABULARY_CONCEPT_ID, vc.IDENTIFIER, vc.LABEL, "
-                + "vc.DEFINITION, vc.NOTATION ");
+                + "vc.DEFINITION, vc.NOTATION, sc.DATE_ALLOCATED, sc.USER_ALLOCATED ");
         sql.append("from T_SITE_CODE sc, T_VOCABULARY_CONCEPT vc where sc.VOCABULARY_CONCEPT_ID=vc.VOCABULARY_CONCEPT_ID ");
 
         if (StringUtils.isNotEmpty(filter.getSiteName())) {
@@ -102,5 +104,65 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         SiteCodeResult result = new SiteCodeResult(resultList, totalItems, filter);
 
         return result;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName){
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into T_SITE_CODE (VOCABULARY_CONCEPT_ID, USER_CREATED, DATE_CREATED) ");
+        sql.append("values (:vocabularyConceptId, :userName, :dateCreated)");
+
+        Date dateCreated = new Date();
+        @SuppressWarnings("unchecked")
+        Map<String, Object>[] batchValues = new HashMap[vocabularyConcepts.size()];
+
+        for (int i = 0; i < vocabularyConcepts.size(); i++) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("vocabularyConceptId", vocabularyConcepts.get(i).getId());
+            params.put("userName", userName);
+            params.put("dateCreated", dateCreated);
+            batchValues[i] = params;
+        }
+
+        getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames){
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("update T_SITE_CODE set CC_ISO2 = :country, SITE_NAME = :siteName, STATUS = :status, " +
+        "DATE_ALLOCATED = :dateAllocated, USER_ALLOCATED = :userAllocated ");
+        sql.append("where SITE_CODE_ID = :siteCodeId");
+
+        Date dateAllocated = new Date();
+        @SuppressWarnings("unchecked")
+        Map<String, Object>[] batchValues = new HashMap[siteNames.length];
+
+        for (int i = 0; i < freeSiteCodes.size(); i++) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("siteCodeId", freeSiteCodes.get(i).getSiteCodeId());
+            params.put("country", countryCode);
+            params.put("status", SiteCodeStatus.ALLOCATED);
+            params.put("dateAllocated", dateAllocated);
+            params.put("userAllocated", userName);
+            if (siteNames.length>i && siteNames[i] !=null){
+                params.put("siteName", siteNames[i]);
+            }
+            else{
+                params.put("siteName", "");
+            }
+            batchValues[i] = params;
+        }
+
+        getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+
     }
 }

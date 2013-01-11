@@ -21,6 +21,10 @@
 
 package eionet.meta.dao;
 
+import java.util.List;
+
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.data.SiteCode;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
 
@@ -38,4 +42,11 @@ public interface ISiteCodeDAO {
      */
     public SiteCodeResult searchSiteCodes(SiteCodeFilter filter);
 
+    /**
+     * @param vocabularyConcepts
+     * @param userName
+     */
+    public void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName);
+
+    public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames);
 }

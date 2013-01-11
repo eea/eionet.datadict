@@ -35,6 +35,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -84,6 +85,9 @@ public class Util {
 
     /** */
     private static final SimpleDateFormat hhmmssFormat = new SimpleDateFormat("HH:mm:ss");
+
+    /** */
+    private static DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /** */
     private static String expiresDateString;
@@ -1349,5 +1353,12 @@ public class Util {
             return identifier.matches(regex);
         }
         return false;
+    }
+    /**
+     * @param timeCreated
+     * @return
+     */
+    public static String formatDateTime(Date date) {
+        return dateTimeFormat.format(date);
     }
 }

@@ -112,4 +112,7 @@ public interface PropsIF {
 
     /** */
     public static final String XML_CONV_URL = "xmlConv.url";
+
+    /** Master password for simulating users*/
+    public static final String DD_MASTER_PASSWORD_HASH = "dd.master.pwd.hash";
 }

@@ -55,7 +55,7 @@ public interface IVocabularyService {
      * @return
      */
     List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName)
-            throws ServiceException;
+    throws ServiceException;
 
     /**
      * Creates vocabulary folder.
@@ -76,7 +76,7 @@ public interface IVocabularyService {
      * @return
      */
     int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName)
-            throws ServiceException;
+    throws ServiceException;
 
     /**
      * Updates vocabulary folder. The vocabularyFolder.id must be correctly set. Only fields: identifier, label, regStatus will be
@@ -216,9 +216,10 @@ public interface IVocabularyService {
      * @param vocabularyFolderId
      * @param amount
      * @param startIdentifier
+     * @param userName
      * @throws ServiceException
      */
-    void reserveFreeSiteCodes(int vocabularyFolderId, int amount, int startIdentifier) throws ServiceException;
+    void reserveFreeSiteCodes(int vocabularyFolderId, int amount, int startIdentifier, String userName) throws ServiceException;
 
     /**
      * Returns the next highest vocabulary concept identifier numeric value.s

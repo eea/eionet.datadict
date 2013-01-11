@@ -112,8 +112,10 @@ public interface IVocabularyConceptDAO {
      * @param vocabularyFolderId
      * @param amount
      * @param startingIdentifier
+     * @param label
+     * @param defintion
      */
-    void insertEmptyConcepts(int vocabularyFolderId, int amount, int startingIdentifier);
+    void insertEmptyConcepts(int vocabularyFolderId, int amount, int startingIdentifier, String label, String definition);
 
     /**
      * Returns identifiers that match with the given range.
@@ -124,4 +126,11 @@ public interface IVocabularyConceptDAO {
      * @return
      */
     List<Integer> checkAvailableIdentifiers(int vocabularyFolderId, int amount, int startingIdentifier);
+
+    /**
+     * Copy vocabulary concepts from one folder to another, used by check out functionality.
+     * @param oldVocabularyFolderId Source Vocabulary folder ID the concepts will be copied from.
+     * @param newVocabularyFolderId Destination Vocabulary folder ID the concepts will be copied to.
+     */
+    void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId);
 }
