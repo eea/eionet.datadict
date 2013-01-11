@@ -21,6 +21,7 @@
 
 package eionet.meta.service.data;
 
+import eionet.meta.DDUser;
 import eionet.meta.dao.domain.SiteCodeStatus;
 
 /**
@@ -34,6 +35,7 @@ public class SiteCodeFilter extends PagedRequest {
     private String countryCode;
     private SiteCodeStatus status;
     private String siteName;
+    private DDUser user;
 
     /**
      * @return the status
@@ -43,7 +45,8 @@ public class SiteCodeFilter extends PagedRequest {
     }
 
     /**
-     * @param status the status to set
+     * @param status
+     *            the status to set
      */
     public void setStatus(SiteCodeStatus status) {
         this.status = status;
@@ -57,7 +60,8 @@ public class SiteCodeFilter extends PagedRequest {
     }
 
     /**
-     * @param countryCode the countryCode to set
+     * @param countryCode
+     *            the countryCode to set
      */
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
@@ -71,11 +75,26 @@ public class SiteCodeFilter extends PagedRequest {
     }
 
     /**
-     * @param siteName the siteName to set
+     * @param siteName
+     *            the siteName to set
      */
     public void setSiteName(String siteName) {
         this.siteName = siteName;
     }
 
+    /**
+     * @return the user
+     */
+    public DDUser getUser() {
+        return user;
+    }
+
+    /**
+     * @param user
+     *            the user to set
+     */
+    public void setUser(DDUser user) {
+        this.user = user;
+    }
 
 }

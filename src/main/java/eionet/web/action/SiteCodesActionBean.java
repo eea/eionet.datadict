@@ -21,6 +21,7 @@
 
 package eionet.web.action;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -34,9 +35,11 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.service.ISiteCodeService;
-import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.SiteCodeFilter;
+import eionet.meta.service.data.SiteCodeResult;
 
 /**
  * Site codes controller.
@@ -56,10 +59,6 @@ public class SiteCodesActionBean extends AbstractActionBean {
     /** Maximum amount site codes to allocate. */
     private static final int MAX_AMOUNT = 10;
 
-    /** Vocabulary service. */
-    @SpringBean
-    private IVocabularyService vocabularyService;
-
     /** Site code service. */
     @SpringBean
     private ISiteCodeService siteCodeService;
@@ -73,6 +72,15 @@ public class SiteCodesActionBean extends AbstractActionBean {
     /** Site code countries. */
     private List<FixedValue> countries;
 
+    /** Site code countries. */
+    private List<FixedValue> userCountries;
+
+    /** Site code search filter. */
+    private SiteCodeFilter filter;
+
+    /** Site codes search result. */
+    private SiteCodeResult siteCodeResult;
+
     /**
      * View site codes action.
      *
@@ -81,7 +89,20 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution view() throws ServiceException {
-        countries = siteCodeService.getAllCountries();
+        initFormData();
+        siteCodeResult = siteCodeService.searchSiteCodes(filter);
+        return new ForwardResolution(VIEW_SITE_CODES_JSP);
+    }
+
+    /**
+     * Search action.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution search() throws ServiceException {
+        initFormData();
+        siteCodeResult = siteCodeService.searchSiteCodes(filter);
         return new ForwardResolution(VIEW_SITE_CODES_JSP);
     }
 
@@ -110,8 +131,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
     @ValidationMethod(on = {"allocate"})
     public void validateAllocate() throws ServiceException {
 
-        if (getUser() == null) {
-            addGlobalValidationError("User must be logged in");
+        if (!isAllocationRight()) {
+            addGlobalValidationError("No privilege to allocate site codes");
         }
 
         if (StringUtils.isEmpty(choice)) {
@@ -133,8 +154,52 @@ public class SiteCodesActionBean extends AbstractActionBean {
         }
 
         if (isValidationErrors()) {
-            countries = siteCodeService.getAllCountries();
+            initFormData();
         }
+    }
+
+    /**
+     * Initializes form beans.
+     *
+     * @throws ServiceException
+     */
+    private void initFormData() throws ServiceException {
+        if (filter == null) {
+            filter = new SiteCodeFilter();
+        }
+        filter.setUser(getUser());
+
+        if (getUser() != null) {
+            userCountries = siteCodeService.getUserCountries(getUser());
+        } else {
+            userCountries = new ArrayList<FixedValue>();
+        }
+        countries = siteCodeService.getAllCountries();
+    }
+
+    /**
+     * True, if the user has allocation right.
+     *
+     * @return
+     */
+    public boolean isAllocationRight() {
+        if (getUser() != null) {
+            return getUser().hasPermission("sitecode", "u");
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns public filtering statuses.
+     *
+     * @return
+     */
+    public SiteCodeStatus[] getPublicStatuses() {
+        SiteCodeStatus[] result = new SiteCodeStatus[2];
+        result[0] = SiteCodeStatus.ALLOCATED;
+        result[1] = SiteCodeStatus.ASSIGNED;
+        return result;
     }
 
     /**
@@ -202,6 +267,43 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     public List<FixedValue> getCountries() {
         return countries;
+    }
+
+    /**
+     * @return the filter
+     */
+    public SiteCodeFilter getFilter() {
+        return filter;
+    }
+
+    /**
+     * @param filter
+     *            the filter to set
+     */
+    public void setFilter(SiteCodeFilter filter) {
+        this.filter = filter;
+    }
+
+    /**
+     * @return the userCountries
+     */
+    public List<FixedValue> getUserCountries() {
+        return userCountries;
+    }
+
+    /**
+     * @return the siteCodeResult
+     */
+    public SiteCodeResult getSiteCodeResult() {
+        return siteCodeResult;
+    }
+
+    /**
+     * @param siteCodeResult
+     *            the siteCodeResult to set
+     */
+    public void setSiteCodeResult(SiteCodeResult siteCodeResult) {
+        this.siteCodeResult = siteCodeResult;
     }
 
 }

@@ -27,10 +27,31 @@ package eionet.meta.dao.domain;
  * @author Enriko Käsper
  */
 public enum SiteCodeStatus {
+
     /** Not allocated to any country. */
-    NEW,
+    NEW("New"),
     /** Country has requested site code and it is allocated for this country. */
-    ALLOCATED,
+    ALLOCATED("Allocated"),
     /** Site code has been allocated for particular site name. */
-    ASSIGNED
+    ASSIGNED("Assigned");
+
+    /** Label. */
+    private String label;
+
+    /**
+     * Class constructor.
+     *
+     * @param name
+     */
+    private SiteCodeStatus(String label) {
+        this.label = label;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
 }

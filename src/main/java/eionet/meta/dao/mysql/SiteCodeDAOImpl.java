@@ -65,11 +65,11 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         }
         if (filter.getStatus() != null) {
             params.put("status", filter.getStatus());
-            sql.append("and sc.STATUS=:status");
+            sql.append("and sc.STATUS=:status ");
         }
         if (filter.getCountryCode() != null) {
             params.put("countryCode", filter.getCountryCode());
-            sql.append("and sc.CC_ISO2=:countryCode");
+            sql.append("and sc.CC_ISO2=:countryCode ");
         }
         sql.append("order by IDENTIFIER + 0 ");
         if (filter.isUsePaging()) {

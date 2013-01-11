@@ -48,9 +48,9 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
 
     private static final String SITE_CODE_IDENTIFIER = "CountryCode";
 
-    /** List of roles which is used for calculating users permissions on country level*/
-    private static final String[] COUNTRY_USER_ROLES = { "eionet-nfp-cc", "eionet-nfp-mc", "eionet-nrc-nature-cc",
-    "eionet-nrc-nature-mc" };
+    /** List of roles which is used for calculating users permissions on country level */
+    private static final String[] COUNTRY_USER_ROLES = {"eionet-nfp-cc", "eionet-nfp-mc", "eionet-nrc-nature-cc",
+            "eionet-nrc-nature-mc"};
 
     /** Data element DAO. */
     @Autowired
@@ -112,11 +112,11 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
         try {
             SiteCodeResult freeSiteCodes = siteCodeDao.searchSiteCodes(siteCodeFilter);
 
-            if (freeSiteCodes.getFullListSize() != amount){
+            if (freeSiteCodes.getFullListSize() != amount) {
                 throw new ServiceException("Did not find enough free site codes for allocating " + amount + " sites!");
             }
 
-            //TODO update the list for allocating the received codes
+            // TODO update the list for allocating the received codes
 
         } catch (Exception e) {
             throw new ServiceException("Failed to allocate site codes: " + e.getMessage(), e);
@@ -138,7 +138,10 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
      */
     @Override
     public SiteCodeResult searchSiteCodes(SiteCodeFilter filter) throws ServiceException {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            return siteCodeDao.searchSiteCodes(filter);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to search site codes: " + e.getMessage(), e);
+        }
     }
 }
