@@ -7,10 +7,12 @@ create table T_SITE_CODE (
 	SITE_CODE_NAT varchar(30) default null,
     STATUS enum('NEW','ALLOCATED','ASSIGNED') not null default 'NEW',
     CC_ISO2 char(2) default null,
-    DATE_CREATED timestamp not null default now(),
+    PARENT_ISO char(3) default null,
+    DATE_CREATED datetime null default null,
     USER_CREATED varchar(50) default null,
-    DATE_ALLOCATED timestamp null default null,
+    DATE_ALLOCATED datetime null default null,
     USER_ALLOCATED varchar(50),
+    DATE_DELETED year null default null,
     primary key (SITE_CODE_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
