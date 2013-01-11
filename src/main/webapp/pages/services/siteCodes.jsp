@@ -92,12 +92,16 @@
 
     <stripes:layout-component name="contents">
 
-        <c:if test="${actionBean.allocationRight}">
+        <c:if test="${actionBean.allocateRight || actionBean.createRight}">
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <li><a href="#" id="allocateSiteCodesLink">Allocate site codes</a></li>
-                <li><a href="#" onClick="openPopup('#reserveSiteCodesDialog')">Reserve free site codes</a></li>
+                <c:if test="${actionBean.allocateRight}">
+                    <li><a href="#" id="allocateSiteCodesLink">Allocate site codes</a></li>
+                </c:if>
+                <c:if test="${actionBean.createRight}">
+                    <li><a href="#" onClick="openPopup('#reserveSiteCodesDialog')">Reserve free site codes</a></li>
+                </c:if>
             </ul>
         </div>
         </c:if>
@@ -211,6 +215,16 @@
                 </tr>
            </table>
         </stripes:form>
+
+        <%--Allocated user countries --%>
+        <c:if test="${not empty actionBean.allocations}">
+            <h3>Allocated site codes:</h3>
+            <ul>
+            <c:forEach items="${actionBean.allocations}" var="entry">
+                <li>${entry.key} - ${entry.value}</li>
+            </c:forEach>
+            </ul>
+        </c:if>
 
         <%-- Site codes table --%>
         <c:if test="${actionBean.context.eventName == 'search'}">

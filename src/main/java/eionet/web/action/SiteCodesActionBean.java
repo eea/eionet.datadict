@@ -23,6 +23,7 @@ package eionet.web.action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -41,6 +42,7 @@ import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
+import eionet.util.SecurityUtil;
 
 /**
  * Site codes controller.
@@ -100,6 +102,9 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
     /** Number of available new unallocated site codes. */
     private int unallocatedSiteCodes;
+
+    /** Allocations per user country. */
+    private Map<String, Integer> allocations;
 
     /**
      * View site codes action.
@@ -171,7 +176,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
     @ValidationMethod(on = {"allocate"})
     public void validateAllocate() throws ServiceException {
 
-        if (!isAllocationRight()) {
+        if (!isAllocateRight()) {
             addGlobalValidationError("No privilege to allocate site codes");
         }
 
@@ -206,7 +211,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     @ValidationMethod(on = {"reserveNewSiteCodes"})
     public void validateReserveNewSiteCodes() throws ServiceException {
-        if (!isAllocationRight()) {
+        if (!isCreateRight()) {
             addGlobalValidationError("No privilege to reserve new site codes");
         }
 
@@ -244,6 +249,10 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
         if (getUser() != null) {
             userCountries = siteCodeService.getUserCountries(getUser());
+
+            if (!isUpdateRight() && !isCreateRight()) {
+                allocations = siteCodeService.getCountryAllocations(userCountries);
+            }
         } else {
             userCountries = new ArrayList<FixedValue>();
         }
@@ -254,14 +263,38 @@ public class SiteCodesActionBean extends AbstractActionBean {
     }
 
     /**
+     * True, if user has site code update right.
+     *
+     * @return
+     */
+    private boolean isUpdateRight() {
+        if (getUser() != null) {
+            return getUser().hasPermission("/sitecodes", "u");
+        }
+        return false;
+    }
+
+    /**
+     * True, if user has site code create right.
+     *
+     * @return
+     */
+    public boolean isCreateRight() {
+        if (getUser() != null) {
+            return getUser().hasPermission("/sitecodes", "c");
+        }
+        return false;
+    }
+
+    /**
      * True, if the user has allocation right.
      *
      * @return
      */
-    public boolean isAllocationRight() throws ServiceException {
+    public boolean isAllocateRight() throws ServiceException {
         if (getUser() != null) {
-            userCountries = siteCodeService.getUserCountries(getUser());
-            return getUser().hasPermission("sitecode", "u") || (userCountries != null && userCountries.size() > 0);
+            List<String> countriesByRole = SecurityUtil.getUserCountriesFromRoles(getUser(), ISiteCodeService.COUNTRY_USER_ROLES);
+            return isUpdateRight() || (countriesByRole != null && countriesByRole.size() > 0);
         }
 
         return false;
@@ -448,6 +481,13 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     public int getUnallocatedSiteCodes() {
         return unallocatedSiteCodes;
+    }
+
+    /**
+     * @return the allocations
+     */
+    public Map<String, Integer> getAllocations() {
+        return allocations;
     }
 
 }

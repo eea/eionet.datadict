@@ -1,6 +1,7 @@
 package eionet.meta.service;
 
 import java.util.List;
+import java.util.Map;
 
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.FixedValue;
@@ -13,6 +14,10 @@ import eionet.meta.service.data.SiteCodeResult;
  * @author Juhan Voolaid
  */
 public interface ISiteCodeService {
+
+    /** List of roles which is used for calculating users permissions on country level */
+    public static final String[] COUNTRY_USER_ROLES = {"eionet-nfp-cc", "eionet-nfp-mc", "eionet-nrc-nature-cc",
+            "eionet-nrc-nature-mc"};
 
     /**
      * Returns all site code countries.
@@ -75,4 +80,13 @@ public interface ISiteCodeService {
      * @throws ServiceException
      */
     int getFeeSiteCodeAmount() throws ServiceException;
+
+    /**
+     * Returns number of allocated site codes per country.
+     *
+     * @param countries
+     * @return
+     * @throws ServiceException
+     */
+    Map<String, Integer> getCountryAllocations(List<FixedValue> countries) throws ServiceException;
 }

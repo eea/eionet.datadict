@@ -22,7 +22,9 @@
 package eionet.meta.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,10 +49,6 @@ import eionet.util.SecurityUtil;
 public class SiteCodeServiceImpl implements ISiteCodeService {
 
     private static final String SITE_CODE_IDENTIFIER = "CountryCode";
-
-    /** List of roles which is used for calculating users permissions on country level */
-    private static final String[] COUNTRY_USER_ROLES = {"eionet-nfp-cc", "eionet-nfp-mc", "eionet-nrc-nature-cc",
-            "eionet-nrc-nature-mc"};
 
     /** Data element DAO. */
     @Autowired
@@ -113,6 +111,8 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
     @Override
     public void allocateSiteCodes(String countryCode, String[] siteNames, String userName) throws ServiceException {
 
+        // TODO: validate user right to allocate given country code
+
         int amount = siteNames.length;
         SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
         siteCodeFilter.setPageNumber(1);
@@ -165,6 +165,24 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             return siteCodeDao.getFeeSiteCodeAmount();
         } catch (Exception e) {
             throw new ServiceException("Failed to get unallocated site coudes amount: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Integer> getCountryAllocations(List<FixedValue> countries) throws ServiceException {
+        try {
+            Map<String, Integer> result = new LinkedHashMap<String, Integer>();
+            for (FixedValue fv : countries) {
+                int amount = siteCodeDao.getCountryAllocations(fv.getValue());
+                result.put(fv.getDefinition(), amount);
+            }
+
+        return result;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get country allocations: " + e.getMessage(), e);
         }
     }
 }

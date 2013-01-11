@@ -76,4 +76,12 @@ public interface ISiteCodeDAO {
      * @return
      */
     int getFeeSiteCodeAmount();
+
+    /**
+     * Returns number of allocated site codes.
+     *
+     * @param countryCode
+     * @return
+     */
+    int getCountryAllocations(String countryCode);
 }

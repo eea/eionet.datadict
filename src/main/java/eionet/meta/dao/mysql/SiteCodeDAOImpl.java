@@ -178,10 +178,12 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     public int getSiteCodeVocabularyFolderId() {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select min(VOCABULARY_FOLDER_ID) from T_VOCABULARY_FOLDER where VOCABULARY_TYPE = '"
-                + VocabularyType.SITE_CODE.name() + "'");
+        sql.append("select min(VOCABULARY_FOLDER_ID) from T_VOCABULARY_FOLDER where VOCABULARY_TYPE = :type");
 
-        return getJdbcTemplate().queryForInt(sql.toString());
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("type", VocabularyType.SITE_CODE.name());
+
+        return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
     }
 
     /**
@@ -190,8 +192,27 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     @Override
     public int getFeeSiteCodeAmount() {
         StringBuilder sql = new StringBuilder();
-        sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS = '" + SiteCodeStatus.NEW + "'");
+        sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS = :status");
 
-        return getJdbcTemplate().queryForInt(sql.toString());
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("status", SiteCodeStatus.NEW.name());
+
+        return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getCountryAllocations(String countryCode) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("countryCode", countryCode);
+        params.put("status", SiteCodeStatus.ALLOCATED.name());
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS = :status ");
+        sql.append("and CC_ISO2 = :countryCode");
+
+        return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
     }
 }
