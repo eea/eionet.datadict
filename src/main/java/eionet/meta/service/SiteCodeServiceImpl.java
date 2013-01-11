@@ -50,7 +50,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
 
     /** List of roles which is used for calculating users permissions on country level */
     private static final String[] COUNTRY_USER_ROLES = {"eionet-nfp-cc", "eionet-nfp-mc", "eionet-nrc-nature-cc",
-            "eionet-nrc-nature-mc"};
+    "eionet-nrc-nature-mc"};
 
     /** Data element DAO. */
     @Autowired
@@ -121,7 +121,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
         try {
             SiteCodeResult freeSiteCodes = siteCodeDao.searchSiteCodes(siteCodeFilter);
 
-            if (freeSiteCodes.getFullListSize() != amount) {
+            if (freeSiteCodes.getList().size() != amount) {
                 throw new ServiceException("Did not find enough free site codes for allocating " + amount + " sites!");
             }
             siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames);

@@ -35,6 +35,7 @@ import org.springframework.stereotype.Repository;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.data.SiteCode;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
@@ -66,12 +67,12 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             sql.append("and vc.LABEL like :text ");
         }
         if (filter.getStatus() != null) {
-            params.put("status", filter.getStatus());
-            sql.append("and sc.STATUS=:status ");
+            params.put("status", filter.getStatus().toString());
+            sql.append("and sc.STATUS = :status ");
         }
         if (filter.getCountryCode() != null) {
             params.put("countryCode", filter.getCountryCode());
-            sql.append("and sc.CC_ISO2=:countryCode ");
+            sql.append("and sc.CC_ISO2 = :countryCode ");
         }
         sql.append("order by IDENTIFIER + 0 ");
         if (filter.isUsePaging()) {
@@ -150,7 +151,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("siteCodeId", freeSiteCodes.get(i).getSiteCodeId());
             params.put("country", countryCode);
-            params.put("status", SiteCodeStatus.ALLOCATED);
+            params.put("status", SiteCodeStatus.ALLOCATED.toString());
             params.put("dateAllocated", dateAllocated);
             params.put("userAllocated", userName);
             if (siteNames.length>i && siteNames[i] !=null){
@@ -164,5 +165,19 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
 
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getSiteCodeVocabularyFolderId(){
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select min(VOCABULARY_FOLDER_ID) from T_VOCABULARY_FOLDER where VOCABULARY_TYPE = :type");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("type", VocabularyType.SITE_CODE);
+
+        return getJdbcTemplate().queryForInt(sql.toString());
     }
 }

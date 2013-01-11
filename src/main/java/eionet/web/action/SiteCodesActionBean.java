@@ -67,7 +67,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
     private String country;
     private String labels;
     private int amount;
-    private String choice;
+    private String choice = CHOICE_AMOUNT;
 
     /** Site code countries. */
     private List<FixedValue> countries;

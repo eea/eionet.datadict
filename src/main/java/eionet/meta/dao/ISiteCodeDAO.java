@@ -48,5 +48,18 @@ public interface ISiteCodeDAO {
      */
     public void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName);
 
+    /**
+     * Allocates the given site codes for country. If Site names are provided, then this information is stored as for information.
+     * @param freeSiteCodes The list of free site code objects that will be allocated.
+     * @param countryCode The allocating country.
+     * @param userName User who started the allocation.
+     * @param siteNames Optinoal list of site names.
+     */
     public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames);
+
+    /**
+     * Returns the first vocabulary folder Id where type is SITE_CODE.
+     * @return
+     */
+    int getSiteCodeVocabularyFolderId();
 }
