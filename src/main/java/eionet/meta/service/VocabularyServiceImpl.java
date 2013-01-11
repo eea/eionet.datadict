@@ -425,6 +425,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             filter.setVocabularyFolderId(vf.getId());
             filter.setDefinition(definition);
             filter.setLabel(label);
+            filter.setUsePaging(false);
 
             VocabularyConceptResult newConceptsResult = vocabularyConceptDAO.searchVocabularyConcepts(filter);
 

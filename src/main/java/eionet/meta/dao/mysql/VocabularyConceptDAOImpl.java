@@ -284,10 +284,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         for (int i = 0; i < batchValues.length; i++) {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("vocabularyFolderId", vocabularyFolderId);
-            params.put("identifier", Integer.toString(identifier++));
+            params.put("identifier", Integer.toString(identifier));
             params.put("label", label);
             params.put("definition", definition);
             params.put("notation", Integer.toString(identifier));
+            identifier++;
             batchValues[i] = params;
         }
 

@@ -138,9 +138,9 @@
             can reserve a set of new site codes for their new sites after logging into the service. The process is called allocation of site codes.
             </p>
 
-            <p>
-            Number of free unallocated Site codes: <c:out value="${actionBean.unallocatedSiteCodes}" />
-            </p>
+            <div class="advice-msg">
+                Number of free unallocated Site codes in the system: <strong><c:out value="${actionBean.unallocatedSiteCodes}" /></strong>
+            </div>
 
             <c:if test="${empty actionBean.user}">
             <div class="note-msg">
@@ -152,9 +152,20 @@
             </div>
             </c:if>
         </c:if>
+        <%--Allocated user countries --%>
+        <c:if test="${not empty actionBean.allocations}">
+            <c:forEach items="${actionBean.allocations}" var="entry">
+                <div class="important-msg">
+                    <strong>Country: ${entry.key}</strong>
+                    <p>Number of allocated, unused codes: <strong>${entry.value}</strong></p>
+                </div>
+                <p>Please check the list and consider using the codes before requesting any new ones.</p>
+            </c:forEach>
+        </c:if>
 
         <%-- Site codes search --%>
         <stripes:form method="get" id="searchSiteCodesForm" beanclass="${actionBean.class.name}">
+            <h2>Search site codes</h2>
             <table class="datatable">
                 <colgroup>
                     <col style="width:26%"/>
@@ -216,15 +227,6 @@
            </table>
         </stripes:form>
 
-        <%--Allocated user countries --%>
-        <c:if test="${not empty actionBean.allocations}">
-            <h3>Allocated site codes:</h3>
-            <ul>
-            <c:forEach items="${actionBean.allocations}" var="entry">
-                <li>${entry.key} - ${entry.value}</li>
-            </c:forEach>
-            </ul>
-        </c:if>
 
         <%-- Site codes table --%>
         <c:if test="${actionBean.context.eventName == 'search'}">
@@ -244,7 +246,8 @@
         <div id="allocateSiteCodesDiv" title="Allocate site codes">
             <div class="tip-msg">
                 <strong>Tip</strong>
-                <p>Site codes can be allocated by number or by list of site names where each name is on a new line.</p>
+                <p>Site codes can be allocated by inserting the number of new sites or by pasting the list of sites (their names, national codes or other identifiers)
+                into the area below. Please assure that each site occupy one line.</p>
             </div>
 
             <stripes:form method="post" id="allocateSiteCodesForm" beanclass="${actionBean.class.name}">
@@ -268,7 +271,7 @@
                     <tr>
                         <td><stripes:radio name="choice" value="amount" id="choiceAmount" checked="checked"/></td>
                         <td class="simple_attr_title" title="Number of site codes to allocate">
-                            <label for="choiceAmount">Number of site codes</label>
+                            <label for="choiceAmount">Number of new site codes</label>
                         </td>
                         <td class="simple_attr_value">
                             <stripes:text class="smalltext" size="5" name="amount" id="amountText"/>
@@ -278,7 +281,7 @@
                     <tr>
                         <td><stripes:radio name="choice" value="label" id="choiceLabel"/></td>
                         <td class="simple_attr_title" title="List of new site code names separated by new line">
-                            <label for="choiceLabel">Site code names</label>
+                            <label for="choiceLabel">Site names</label>
                         </td>
                         <td class="simple_attr_value">
                             <stripes:textarea class="smalltext" name="labels" id="labelsText" rows="5" cols="60"/>

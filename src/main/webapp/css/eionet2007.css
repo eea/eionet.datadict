@@ -182,7 +182,8 @@ body {
     border-bottom: 1px solid #315076;
 }
 
-.popup #workarea {
+.popup #
+ {
     margin-left: 0;
     border-left: 0;
     padding: 1em;
@@ -329,4 +330,9 @@ div#drop-operations:hover ul, .over ul {
 
 img.scaled2 {
     width: 100%;
+}
+d.simple_attr_title{
+    background-color: #f6f6f6;
+    font-weight: bold;
+    border-bottom: 2px solid white;
 }
