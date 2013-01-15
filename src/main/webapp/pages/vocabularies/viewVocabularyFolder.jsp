@@ -11,12 +11,14 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <li>
-                    <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">
-                        <stripes:param name="copyId" value="${actionBean.vocabularyFolder.id}" />
-                        Create new copy
-                    </stripes:link>
-                </li>
+                <c:if test="${not actionBean.vocabularyFolder.siteCodeType}">
+                    <li>
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">
+                            <stripes:param name="copyId" value="${actionBean.vocabularyFolder.id}" />
+                            Create new copy
+                        </stripes:link>
+                    </li>
+                </c:if>
                 <c:if test="${actionBean.userWorkingCopy}">
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="edit">

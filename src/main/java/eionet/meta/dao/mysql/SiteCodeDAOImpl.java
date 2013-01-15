@@ -215,4 +215,18 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean siteCodeFolderExists() {
+        StringBuilder sql = new StringBuilder();
+        sql.append("select count(VOCABULARY_FOLDER_ID) from T_VOCABULARY_FOLDER where VOCABULARY_TYPE = :type");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("type", VocabularyType.SITE_CODE.name());
+
+        return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params) > 0;
+    }
 }

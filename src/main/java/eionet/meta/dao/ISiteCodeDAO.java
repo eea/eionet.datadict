@@ -41,13 +41,13 @@ public interface ISiteCodeDAO {
      * @param filter
      * @return SiteCodeResult object with found rows.
      */
-    public SiteCodeResult searchSiteCodes(SiteCodeFilter filter);
+    SiteCodeResult searchSiteCodes(SiteCodeFilter filter);
 
     /**
      * @param vocabularyConcepts
      * @param userName
      */
-    public void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName);
+    void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName);
 
     /**
      * Allocates the given site codes for country. If Site names are provided, then this information is stored as for information.
@@ -61,7 +61,7 @@ public interface ISiteCodeDAO {
      * @param siteNames
      *            Optinoal list of site names.
      */
-    public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames);
+    void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames);
 
     /**
      * Returns the first vocabulary folder Id where type is SITE_CODE.
@@ -84,4 +84,11 @@ public interface ISiteCodeDAO {
      * @return
      */
     int getCountryAllocations(String countryCode);
+
+    /**
+     * True, if there already is existing vocabulary folder with type SITE_CODE;
+     *
+     * @return
+     */
+    boolean siteCodeFolderExists();
 }

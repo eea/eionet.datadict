@@ -86,6 +86,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 throw new IllegalArgumentException("Site code type vocabulary must have numeric concept identifiers");
             }
 
+            if (vocabularyFolder.isSiteCodeType() && siteCodeDAO.siteCodeFolderExists()) {
+                throw new IllegalStateException("Vocabulary folder with type 'SITE_CODE' already exists");
+            }
+
             vocabularyFolder.setUserModified(userName);
             return vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
         } catch (Exception e) {
@@ -226,15 +230,17 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolder.setWorkingCopy(true);
             int newVocabularyFolderId = vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
 
-            // Copy the vocabulary concepts under new vocabulary folder
-            //FIXME - doesn't work
-            vocabularyConceptDAO.copyVocabularyConcepts(vocabularyFolderId, newVocabularyFolderId);
-            /*
-            List<VocabularyConcept> vocabularyConcepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderId);
-            for (VocabularyConcept vc : vocabularyConcepts) {
-                vocabularyConceptDAO.createVocabularyConcept(newVocabularyFolderId, vc);
+            // Copy the vocabulary concepts under new vocabulary folder (except of site code type)
+            if (!vocabularyFolder.isSiteCodeType()) {
+                //FIXME - doesn't work
+                vocabularyConceptDAO.copyVocabularyConcepts(vocabularyFolderId, newVocabularyFolderId);
+                /*
+                List<VocabularyConcept> vocabularyConcepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderId);
+                for (VocabularyConcept vc : vocabularyConcepts) {
+                    vocabularyConceptDAO.createVocabularyConcept(newVocabularyFolderId, vc);
+                }
+                 */
             }
-             */
 
             return newVocabularyFolderId;
         } catch (Exception e) {
@@ -266,7 +272,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
             int originalVocabularyFolderId = vocabularyFolder.getCheckedOutCopyId();
 
             // Remove old vocabulary concepts
-            vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
+            if (!vocabularyFolder.isSiteCodeType()) {
+                vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
+            }
 
             // Update original vocabulary folder
             vocabularyFolder.setCheckedOutCopyId(0);
@@ -277,7 +285,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);
 
             // Move new vocabulary concepts to folder
-            vocabularyConceptDAO.moveVocabularyConcepts(vocabularyFolderId, originalVocabularyFolderId);
+            if (!vocabularyFolder.isSiteCodeType()) {
+                vocabularyConceptDAO.moveVocabularyConcepts(vocabularyFolderId, originalVocabularyFolderId);
+            }
 
             // Delete checked out version
             vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId));
@@ -296,6 +306,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     throws ServiceException {
         try {
             VocabularyFolder originalVocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
+
+            if (originalVocabularyFolder.isSiteCodeType()) {
+                throw new IllegalArgumentException("Cannot make copy of vocabulary with type 'SITE_CODE'");
+            }
 
             vocabularyFolder.setContinuityId(originalVocabularyFolder.getContinuityId());
             vocabularyFolder.setUserModified(userName);

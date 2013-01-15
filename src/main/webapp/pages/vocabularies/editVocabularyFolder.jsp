@@ -66,7 +66,9 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <li><a href="#" id="addNewConceptLink">Add new concept</a></li>
+                <c:if test="${actionBean.vocabularyFolder.commonType}">
+                    <li><a href="#" id="addNewConceptLink">Add new concept</a></li>
+                </c:if>
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
