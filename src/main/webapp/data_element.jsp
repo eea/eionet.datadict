@@ -2354,10 +2354,10 @@
                                                                                                 + "&amp;parent_type=" + type;
                                                                                     }
 
-                                                                                    if (shortDesc.length() == 0)
-                                                                                        shortDesc = "&nbsp;";
-                                                                                    if (defin.length() == 0)
-                                                                                        defin = "&nbsp;";
+                                                                                    //if (shortDesc.length() == 0)
+                                                                                    //    shortDesc = "&nbsp;";
+                                                                                    //if (defin.length() == 0)
+                                                                                    //    defin = "&nbsp;";
 
                                                                                     defin = defin == null ? "" : defin;
                                                                                     String dispDefin = defin.length() > MAX_CELL_LEN ? defin
