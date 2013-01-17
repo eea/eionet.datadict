@@ -21,6 +21,8 @@
 
 package eionet.web.action;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.AllocationResult;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
 import eionet.util.SecurityUtil;
@@ -59,8 +62,14 @@ public class SiteCodesActionBean extends AbstractActionBean {
     private static final String CHOICE_AMOUNT = "amount";
     private static final String CHOICE_LABEL = "label";
 
+    /** Date-time format. */
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
     /** Maximum amount site codes to allocate. */
-    private static final int MAX_AMOUNT = 10;
+    private static final int MAX_ALLOCATE_AMOUNT = 1000;
+
+    /** Maximum amount available site codes to reserve. */
+    private static final int MAX_RESERVE_AMOUNT = 10000;
 
     /** Site code service. */
     @SpringBean
@@ -106,6 +115,12 @@ public class SiteCodesActionBean extends AbstractActionBean {
     /** Allocations per user country. */
     private Map<String, Integer> allocations;
 
+    /** Filtering property for allocated user. */
+    private String userAllocated;
+
+    /** Filtering property for date of allocation. */
+    private String dateAllocated;
+
     /**
      * View site codes action.
      *
@@ -126,6 +141,9 @@ public class SiteCodesActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution search() throws ServiceException {
+        LOGGER.debug("search");
+        LOGGER.debug("userAllocated: " + userAllocated);
+        LOGGER.debug("dateAllocated: " + dateAllocated);
         initFormData();
         siteCodeResult = siteCodeService.searchSiteCodes(filter);
         return new ForwardResolution(VIEW_SITE_CODES_JSP);
@@ -158,14 +176,20 @@ public class SiteCodesActionBean extends AbstractActionBean {
         LOGGER.debug(amount);
         LOGGER.debug(choice);
 
+        AllocationResult allocationResult = null;
         if (CHOICE_LABEL.equals(choice)) {
-            siteCodeService.allocateSiteCodes(country, labels.split("\\n"), getUserName());
+            allocationResult = siteCodeService.allocateSiteCodes(country, labels.split("\\n"), getUserName());
         } else {
-            siteCodeService.allocateSiteCodes(country, amount, getUserName());
+            allocationResult = siteCodeService.allocateSiteCodes(country, amount, getUserName());
         }
 
-        addSystemMessage("Site codes successfully allocated");
-        return new RedirectResolution(SiteCodesActionBean.class);
+        addSystemMessage(allocationResult.getAmount()
+                + " site codes successfully allocated. For new allocated site codes, see the table below.");
+
+        userAllocated = getUserName();
+        dateAllocated = new SimpleDateFormat(DATE_TIME_FORMAT).format(allocationResult.getAllocationTime());
+        return new RedirectResolution(SiteCodesActionBean.class, "search").addParameter("userAllocated", userAllocated)
+                .addParameter("dateAllocated", dateAllocated);
     }
 
     /**
@@ -188,8 +212,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
             if (amount < 1) {
                 addGlobalValidationError("Number of site codes must be positive number");
             }
-            if (amount > MAX_AMOUNT) {
-                addGlobalValidationError("Number of site codes cannot exceed more than " + MAX_AMOUNT);
+            if (amount > MAX_ALLOCATE_AMOUNT) {
+                addGlobalValidationError("Number of site codes cannot exceed more than " + MAX_ALLOCATE_AMOUNT);
             }
         }
         if (CHOICE_LABEL.equals(choice)) {
@@ -219,8 +243,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
             addGlobalValidationError("Amount must be a positive number");
         }
 
-        if (reserveAmount > 1000) {
-            addGlobalValidationError("Amount cannot be bigger than 1000");
+        if (reserveAmount > MAX_RESERVE_AMOUNT) {
+            addGlobalValidationError("Amount cannot be bigger than " + MAX_RESERVE_AMOUNT);
         }
 
         List<Integer> unavailableIdentifiers =
@@ -246,6 +270,17 @@ public class SiteCodesActionBean extends AbstractActionBean {
         }
         filter.setUser(getUser());
         filter.setPageNumber(page);
+
+        if (StringUtils.isNotEmpty(userAllocated)) {
+            filter.setUserAllocated(userAllocated);
+        }
+        if (StringUtils.isNotEmpty(dateAllocated)) {
+            try {
+                filter.setDateAllocated(new SimpleDateFormat(DATE_TIME_FORMAT).parse(dateAllocated));
+            } catch (ParseException e) {
+                LOGGER.warn("Failed to parse date: " + dateAllocated, e);
+            }
+        }
 
         if (getUser() != null) {
             userCountries = siteCodeService.getUserCountries(getUser());
@@ -488,6 +523,36 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     public Map<String, Integer> getAllocations() {
         return allocations;
+    }
+
+    /**
+     * @return the userAllocated
+     */
+    public String getUserAllocated() {
+        return userAllocated;
+    }
+
+    /**
+     * @param userAllocated
+     *            the userAllocated to set
+     */
+    public void setUserAllocated(String userAllocated) {
+        this.userAllocated = userAllocated;
+    }
+
+    /**
+     * @return the dateAllocated
+     */
+    public String getDateAllocated() {
+        return dateAllocated;
+    }
+
+    /**
+     * @param dateAllocated
+     *            the dateAllocated to set
+     */
+    public void setDateAllocated(String dateAllocated) {
+        this.dateAllocated = dateAllocated;
     }
 
 }

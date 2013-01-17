@@ -59,6 +59,16 @@
 
         <h1>View vocabulary</h1>
 
+        <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
+            <div class="note-msg">
+                <strong>Notice</strong>
+                <p>
+                For checked out site codes, vocabulary concepts are not visible. To view them, see the
+                <stripes:link href="/services/siteCodes">site codes page</stripes:link>.
+                </p>
+            </div>
+        </c:if>
+
         <c:if test="${actionBean.checkedOutByUser}">
             <div class="note-msg">
                 <strong>Note</strong>

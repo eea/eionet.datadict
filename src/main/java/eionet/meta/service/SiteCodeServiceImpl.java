@@ -22,6 +22,8 @@
 package eionet.meta.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,7 @@ import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SiteCodeStatus;
+import eionet.meta.service.data.AllocationResult;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
 import eionet.util.SecurityUtil;
@@ -101,15 +104,15 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
      * {@inheritDoc}
      */
     @Override
-    public void allocateSiteCodes(String countryCode, int amount, String userName) throws ServiceException {
-        allocateSiteCodes(countryCode, new String[amount], userName);
+    public AllocationResult allocateSiteCodes(String countryCode, int amount, String userName) throws ServiceException {
+        return allocateSiteCodes(countryCode, new String[amount], userName);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void allocateSiteCodes(String countryCode, String[] siteNames, String userName) throws ServiceException {
+    public AllocationResult allocateSiteCodes(String countryCode, String[] siteNames, String userName) throws ServiceException {
 
         // TODO: validate user right to allocate given country code
 
@@ -121,12 +124,20 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
         try {
             SiteCodeResult freeSiteCodes = siteCodeDao.searchSiteCodes(siteCodeFilter);
 
+            Calendar c = Calendar.getInstance();
+            c.set(Calendar.MILLISECOND, 0);
+            Date allocationTime = c.getTime();
+
             if (freeSiteCodes.getList().size() != amount) {
                 throw new ServiceException("Did not find enough free site codes for allocating " + amount + " sites!");
             }
-            siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames);
+            siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames, allocationTime);
 
-            // TODO return the list of site codes to be allocated
+            AllocationResult result = new AllocationResult();
+            result.setAmount(amount);
+            result.setUserName(userName);
+            result.setAllocationTime(allocationTime);
+            return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to allocate site codes: " + e.getMessage(), e);
         }
@@ -180,7 +191,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
                 result.put(fv.getDefinition(), amount);
             }
 
-        return result;
+            return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get country allocations: " + e.getMessage(), e);
         }

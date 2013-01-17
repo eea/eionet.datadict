@@ -5,6 +5,7 @@ import java.util.Map;
 
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.service.data.AllocationResult;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
 
@@ -44,7 +45,7 @@ public interface ISiteCodeService {
      * @param userName
      * @throws ServiceException
      */
-    void allocateSiteCodes(String country, int amount, String userName) throws ServiceException;
+    AllocationResult allocateSiteCodes(String country, int amount, String userName) throws ServiceException;
 
     /**
      * Allocates available site codes to given country.
@@ -54,7 +55,7 @@ public interface ISiteCodeService {
      * @param userName
      * @throws ServiceException
      */
-    void allocateSiteCodes(String country, String[] siteCodeNames, String userName) throws ServiceException;
+    AllocationResult allocateSiteCodes(String country, String[] siteCodeNames, String userName) throws ServiceException;
 
     /**
      * Searches site codes.

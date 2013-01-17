@@ -21,6 +21,7 @@
 
 package eionet.meta.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -60,8 +61,12 @@ public interface ISiteCodeDAO {
      *            User who started the allocation.
      * @param siteNames
      *            Optinoal list of site names.
+     *
+     * @param allocationTime
+     *            allocation time
      */
-    void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames);
+    void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames,
+            Date allocationTime);
 
     /**
      * Returns the first vocabulary folder Id where type is SITE_CODE.

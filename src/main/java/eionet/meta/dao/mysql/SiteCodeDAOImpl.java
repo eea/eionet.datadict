@@ -70,6 +70,14 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             params.put("identifier", filter.getIdentifier());
             sql.append("and vc.IDENTIFIER like :identifier ");
         }
+        if (StringUtils.isNotEmpty(filter.getUserAllocated())) {
+            params.put("userAllocated", filter.getUserAllocated());
+            sql.append("and sc.USER_ALLOCATED like :userAllocated ");
+        }
+        if (filter.getDateAllocated() != null) {
+            params.put("dateAllocated", filter.getDateAllocated());
+            sql.append("and sc.DATE_ALLOCATED = :dateAllocated ");
+        }
         if (filter.getStatus() != null) {
             params.put("status", filter.getStatus().toString());
             sql.append("and sc.STATUS = :status ");
@@ -141,14 +149,13 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * {@inheritDoc}
      */
     @Override
-    public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames) {
+    public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames, Date allocationTime) {
 
         StringBuilder sql = new StringBuilder();
         sql.append("update T_SITE_CODE set CC_ISO2 = :country, SITE_NAME = :siteName, STATUS = :status, "
                 + "DATE_ALLOCATED = :dateAllocated, USER_ALLOCATED = :userAllocated ");
         sql.append("where SITE_CODE_ID = :siteCodeId");
 
-        Date dateAllocated = new Date();
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[siteNames.length];
 
@@ -157,7 +164,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             params.put("siteCodeId", freeSiteCodes.get(i).getSiteCodeId());
             params.put("country", countryCode);
             params.put("status", SiteCodeStatus.ALLOCATED.toString());
-            params.put("dateAllocated", dateAllocated);
+            params.put("dateAllocated", allocationTime);
             params.put("userAllocated", userName);
             if (siteNames.length > i && siteNames[i] != null) {
                 params.put("siteName", siteNames[i]);

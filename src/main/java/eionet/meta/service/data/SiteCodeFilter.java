@@ -21,6 +21,8 @@
 
 package eionet.meta.service.data;
 
+import java.util.Date;
+
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.SiteCodeStatus;
 
@@ -30,12 +32,21 @@ import eionet.meta.dao.domain.SiteCodeStatus;
  * @author Juhan Voolaid
  */
 
+/**
+ * Type definition ...
+ *
+ * @author Juhan Voolaid
+ */
 public class SiteCodeFilter extends PagedRequest {
 
     private String countryCode;
     private SiteCodeStatus status;
     private String siteName;
     private String identifier;
+    private Date dateAllocated;
+    /** Used for filtering by allocated user name. */
+    private String userAllocated;
+    /** Used for filtering by user privileges. */
     private DDUser user;
 
     /**
@@ -111,6 +122,36 @@ public class SiteCodeFilter extends PagedRequest {
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    /**
+     * @return the dateAllocated
+     */
+    public Date getDateAllocated() {
+        return dateAllocated;
+    }
+
+    /**
+     * @param dateAllocated
+     *            the dateAllocated to set
+     */
+    public void setDateAllocated(Date dateAllocated) {
+        this.dateAllocated = dateAllocated;
+    }
+
+    /**
+     * @return the userAllocated
+     */
+    public String getUserAllocated() {
+        return userAllocated;
+    }
+
+    /**
+     * @param userAllocated
+     *            the userAllocated to set
+     */
+    public void setUserAllocated(String userAllocated) {
+        this.userAllocated = userAllocated;
     }
 
 }

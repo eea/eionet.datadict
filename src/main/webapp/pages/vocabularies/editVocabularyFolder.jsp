@@ -89,6 +89,16 @@
 
         <h1>Edit vocabulary</h1>
 
+        <c:if test="${actionBean.vocabularyFolder.workingCopy && actionBean.vocabularyFolder.siteCodeType}">
+            <div class="note-msg">
+                <strong>Notice</strong>
+                <p>
+                For checked out site codes, vocabulary concepts are not visible. To view them, see the
+                <stripes:link href="/services/siteCodes">site codes page</stripes:link>.
+                </p>
+            </div>
+        </c:if>
+
         <stripes:form id="form" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
         <stripes:hidden name="vocabularyFolder.id" />
         <stripes:hidden name="vocabularyFolder.workingCopy" />

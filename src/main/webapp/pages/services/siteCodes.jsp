@@ -235,9 +235,13 @@
 
             <display:column title="Site code" property="identifier" escapeXml="true" class="number" style="width: 1%" />
             <display:column title="Site name" escapeXml="true" property="label" />
-            <display:column title="Status" property="status" />
+            <display:column title="Status">
+                <c:out value="${siteCode.status.label}" />
+            </display:column>
             <display:column title="Country" escapeXml="true" property="countryCode" />
-            <display:column title="Allocated" escapeXml="true" property="dateAllocated" />
+            <display:column title="Allocated">
+                <fmt:formatDate value="${siteCode.dateAllocated}" pattern="yyyy-MM-dd HH:mm:ss" />
+            </display:column>
             <display:column title="User" escapeXml="true" property="userAllocated" />
         </display:table>
         </c:if>
