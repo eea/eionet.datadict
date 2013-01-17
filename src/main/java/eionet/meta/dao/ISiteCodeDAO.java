@@ -21,6 +21,8 @@
 
 package eionet.meta.dao;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +45,15 @@ public interface ISiteCodeDAO {
      * @return SiteCodeResult object with found rows.
      */
     SiteCodeResult searchSiteCodes(SiteCodeFilter filter);
+
+    /**
+     * Exports site codes in CSV format.
+     *
+     * @param filter
+     * @param os
+     * @throws IOException
+     */
+    void exportSiteCodes(SiteCodeFilter filter, OutputStream os) throws IOException;
 
     /**
      * @param vocabularyConcepts

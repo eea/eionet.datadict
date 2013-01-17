@@ -27,10 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
@@ -141,12 +144,28 @@ public class SiteCodesActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution search() throws ServiceException {
-        LOGGER.debug("search");
-        LOGGER.debug("userAllocated: " + userAllocated);
-        LOGGER.debug("dateAllocated: " + dateAllocated);
         initFormData();
         siteCodeResult = siteCodeService.searchSiteCodes(filter);
         return new ForwardResolution(VIEW_SITE_CODES_JSP);
+    }
+
+    /**
+     * Export CSV action.
+     *
+     * @return
+     */
+    public Resolution exportCsv() {
+        initFilter();
+        filter.setUsePaging(false);
+        StreamingResolution resolution = new StreamingResolution("application/csv") {
+            @Override
+            public void stream(HttpServletResponse response) throws Exception {
+                siteCodeService.exportSiteCodes(filter, response.getOutputStream());
+            }
+        };
+
+        resolution.setFilename("siteCodes.csv");
+        return resolution;
     }
 
     /**
@@ -170,12 +189,6 @@ public class SiteCodesActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution allocate() throws ServiceException {
-        LOGGER.debug("Result: ");
-        LOGGER.debug(country);
-        LOGGER.debug(labels);
-        LOGGER.debug(amount);
-        LOGGER.debug(choice);
-
         AllocationResult allocationResult = null;
         if (CHOICE_LABEL.equals(choice)) {
             allocationResult = siteCodeService.allocateSiteCodes(country, labels.split("\\n"), getUserName());
@@ -265,6 +278,27 @@ public class SiteCodesActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     private void initFormData() throws ServiceException {
+        initFilter();
+
+        if (getUser() != null) {
+            userCountries = siteCodeService.getUserCountries(getUser());
+
+            if (!isUpdateRight() && !isCreateRight()) {
+                allocations = siteCodeService.getCountryAllocations(userCountries);
+            }
+        } else {
+            userCountries = new ArrayList<FixedValue>();
+        }
+        countries = siteCodeService.getAllCountries();
+
+        siteCodeFolderId = siteCodeService.getSiteCodeVocabularyFolderId();
+        startIdentifier = vocabularyService.getNextIdentifierValue(siteCodeFolderId);
+    }
+
+    /**
+     * Initializes search filter.
+     */
+    private void initFilter() {
         if (filter == null) {
             filter = new SiteCodeFilter();
         }
@@ -281,20 +315,6 @@ public class SiteCodesActionBean extends AbstractActionBean {
                 LOGGER.warn("Failed to parse date: " + dateAllocated, e);
             }
         }
-
-        if (getUser() != null) {
-            userCountries = siteCodeService.getUserCountries(getUser());
-
-            if (!isUpdateRight() && !isCreateRight()) {
-                allocations = siteCodeService.getCountryAllocations(userCountries);
-            }
-        } else {
-            userCountries = new ArrayList<FixedValue>();
-        }
-        countries = siteCodeService.getAllCountries();
-
-        siteCodeFolderId = siteCodeService.getSiteCodeVocabularyFolderId();
-        startIdentifier = vocabularyService.getNextIdentifierValue(siteCodeFolderId);
     }
 
     /**

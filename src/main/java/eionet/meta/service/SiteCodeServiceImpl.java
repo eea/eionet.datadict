@@ -21,6 +21,8 @@
 
 package eionet.meta.service;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -194,6 +196,26 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get country allocations: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void exportSiteCodes(SiteCodeFilter filter, OutputStream os) throws ServiceException {
+        try {
+            siteCodeDao.exportSiteCodes(filter, os);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get export site codes CSV: " + e.getMessage(), e);
+        } finally {
+            try {
+                if (os != null) {
+                    os.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

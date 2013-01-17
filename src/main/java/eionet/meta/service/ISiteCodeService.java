@@ -1,5 +1,6 @@
 package eionet.meta.service;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +66,15 @@ public interface ISiteCodeService {
      * @throws ServiceException
      */
     SiteCodeResult searchSiteCodes(SiteCodeFilter filter) throws ServiceException;
+
+    /**
+     * Exports site codes in CSV format.
+     *
+     * @param filter
+     * @param os
+     * @throws ServiceException
+     */
+    void exportSiteCodes(SiteCodeFilter filter, OutputStream os) throws ServiceException;
 
     /**
      * Returns the first vocabulary folder Id where type is SITE_CODE.

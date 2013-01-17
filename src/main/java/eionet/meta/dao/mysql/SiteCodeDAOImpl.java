@@ -21,17 +21,23 @@
 
 package eionet.meta.dao.mysql;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -55,7 +61,91 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     public SiteCodeResult searchSiteCodes(SiteCodeFilter filter) {
 
         Map<String, Object> params = new HashMap<String, Object>();
+        String sql = getSiteCodesSql(filter, params);
 
+        List<SiteCode> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<SiteCode>() {
+            @Override
+            public SiteCode mapRow(ResultSet rs, int rowNum) throws SQLException {
+                SiteCode sc = new SiteCode();
+                sc.setId(rs.getInt("vc.VOCABULARY_CONCEPT_ID"));
+                sc.setIdentifier(rs.getString("vc.IDENTIFIER"));
+                sc.setLabel(rs.getString("vc.LABEL"));
+                sc.setDefinition(rs.getString("vc.DEFINITION"));
+                sc.setNotation(rs.getString("vc.NOTATION"));
+                sc.setSiteCodeId(rs.getInt("sc.SITE_CODE_ID"));
+                sc.setStatus(SiteCodeStatus.valueOf(rs.getString("sc.STATUS")));
+                sc.setCountryCode(rs.getString("sc.CC_ISO2"));
+                sc.setDateCreated(rs.getTimestamp("sc.DATE_CREATED"));
+                sc.setUserCreated(rs.getString("sc.USER_CREATED"));
+                sc.setDateAllocated(rs.getTimestamp("sc.DATE_ALLOCATED"));
+                sc.setUserAllocated(rs.getString("sc.USER_ALLOCATED"));
+                return sc;
+            }
+        });
+
+        String totalSql = "SELECT FOUND_ROWS()";
+        int totalItems = getJdbcTemplate().queryForInt(totalSql);
+
+        SiteCodeResult result = new SiteCodeResult(resultList, totalItems, filter);
+
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void exportSiteCodes(SiteCodeFilter filter, OutputStream os) throws IOException {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        String sql = getSiteCodesSql(filter, params);
+
+        final CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(os), ',');
+        // write header
+        csvWriter.writeNext(new String[] {"Site code", "Site name", "Status", "Country", "Allocated", "User"});
+
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+
+                SiteCode sc = new SiteCode();
+                sc.setId(rs.getInt("vc.VOCABULARY_CONCEPT_ID"));
+                sc.setIdentifier(rs.getString("vc.IDENTIFIER"));
+                sc.setLabel(rs.getString("vc.LABEL"));
+                sc.setDefinition(rs.getString("vc.DEFINITION"));
+                sc.setNotation(rs.getString("vc.NOTATION"));
+                sc.setSiteCodeId(rs.getInt("sc.SITE_CODE_ID"));
+                sc.setStatus(SiteCodeStatus.valueOf(rs.getString("sc.STATUS")));
+                sc.setCountryCode(rs.getString("sc.CC_ISO2"));
+                sc.setDateCreated(rs.getTimestamp("sc.DATE_CREATED"));
+                sc.setUserCreated(rs.getString("sc.USER_CREATED"));
+                sc.setDateAllocated(rs.getTimestamp("sc.DATE_ALLOCATED"));
+                sc.setUserAllocated(rs.getString("sc.USER_ALLOCATED"));
+
+                String dateAllocated = null;
+                if (sc.getDateAllocated() != null) {
+                    dateAllocated = sdf.format(sc.getDateAllocated());
+                }
+
+                csvWriter.writeNext(new String[] {sc.getIdentifier(), sc.getLabel(), sc.getStatus().getLabel(),
+                        sc.getCountryCode(), dateAllocated, sc.getUserAllocated()});
+            }
+        });
+
+        csvWriter.close();
+    }
+
+    /**
+     * Returns SiteCode search SQL and also populates the parameters map.
+     *
+     * @param filter
+     * @param params
+     * @return
+     */
+    private String getSiteCodesSql(SiteCodeFilter filter, Map<String, Object> params) {
         StringBuilder sql = new StringBuilder();
         sql.append("select SQL_CALC_FOUND_ROWS sc.SITE_CODE_ID, sc.VOCABULARY_CONCEPT_ID, sc.STATUS, sc.CC_ISO2, "
                 + "sc.DATE_CREATED, sc.USER_CREATED, vc.VOCABULARY_CONCEPT_ID, vc.IDENTIFIER, vc.LABEL, "
@@ -91,32 +181,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             sql.append("LIMIT ").append(filter.getOffset()).append(",").append(filter.getPageSize());
         }
 
-        List<SiteCode> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<SiteCode>() {
-            @Override
-            public SiteCode mapRow(ResultSet rs, int rowNum) throws SQLException {
-                SiteCode sc = new SiteCode();
-                sc.setId(rs.getInt("vc.VOCABULARY_CONCEPT_ID"));
-                sc.setIdentifier(rs.getString("vc.IDENTIFIER"));
-                sc.setLabel(rs.getString("vc.LABEL"));
-                sc.setDefinition(rs.getString("vc.DEFINITION"));
-                sc.setNotation(rs.getString("vc.NOTATION"));
-                sc.setSiteCodeId(rs.getInt("sc.SITE_CODE_ID"));
-                sc.setStatus(SiteCodeStatus.valueOf(rs.getString("sc.STATUS")));
-                sc.setCountryCode(rs.getString("sc.CC_ISO2"));
-                sc.setDateCreated(rs.getTimestamp("sc.DATE_CREATED"));
-                sc.setUserCreated(rs.getString("sc.USER_CREATED"));
-                sc.setDateAllocated(rs.getTimestamp("sc.DATE_ALLOCATED"));
-                sc.setUserAllocated(rs.getString("sc.USER_ALLOCATED"));
-                return sc;
-            }
-        });
-
-        String totalSql = "SELECT FOUND_ROWS()";
-        int totalItems = getJdbcTemplate().queryForInt(totalSql);
-
-        SiteCodeResult result = new SiteCodeResult(resultList, totalItems, filter);
-
-        return result;
+        return sql.toString();
     }
 
     /**
@@ -149,7 +214,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * {@inheritDoc}
      */
     @Override
-    public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames, Date allocationTime) {
+    public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames,
+            Date allocationTime) {
 
         StringBuilder sql = new StringBuilder();
         sql.append("update T_SITE_CODE set CC_ISO2 = :country, SITE_NAME = :siteName, STATUS = :status, "
@@ -236,4 +302,5 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params) > 0;
     }
+
 }

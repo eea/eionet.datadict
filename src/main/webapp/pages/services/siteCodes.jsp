@@ -230,6 +230,14 @@
 
         <%-- Site codes table --%>
         <c:if test="${actionBean.context.eventName == 'search'}">
+        <c:if test="${actionBean.siteCodeResult.totalItems > 0}">
+            <stripes:link beanclass="${actionBean.class.name}" event="exportCsv">
+                <stripes:param name="userAllocated" value="${actionBean.userAllocated}" />
+                <stripes:param name="dateAllocated" value="${actionBean.dateAllocated}" />
+                Export CSV
+            </stripes:link>
+            <br />
+        </c:if>
         <display:table name="actionBean.siteCodeResult" class="datatable" id="siteCode" style="width:80%" requestURI="/services/siteCodes/search" >
             <display:setProperty name="basic.msg.empty_list" value="No site codes found." />
 

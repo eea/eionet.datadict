@@ -154,4 +154,12 @@ public abstract class PagedResult<T> implements PaginatedList {
     public void setList(List<T> items) {
         this.items = items;
     }
+
+    /**
+     * @return the totalItems
+     */
+    public int getTotalItems() {
+        return totalItems;
+    }
+
 }
