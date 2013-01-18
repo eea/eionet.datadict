@@ -38,6 +38,9 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
+import org.displaytag.properties.MediaTypeEnum;
+import org.displaytag.tags.TableTagParameters;
+import org.displaytag.util.ParamEncoder;
 
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SiteCodeStatus;
@@ -74,6 +77,9 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
     /** Maximum amount site codes to allocate using the 2nd option with site names. */
     private static final int MAX_ALLOCATE_AMOUNT_WITH_NAMES = 500;
+
+    /** Maximum amount site codes to allocate by ETC or EEA users. */
+    private static final int MAX_ALLOCATE_AMOUNT_FOR_ETC = 1000;
 
     /** Maximum amount available site codes to reserve. */
     private static final int MAX_RESERVE_AMOUNT = 10000;
@@ -158,6 +164,13 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     public Resolution search() throws ServiceException {
         initFormData();
+
+        //detect if it is a export request, don't use paging in this case.
+        String exportTypeStr =
+            getContext().getRequest().getParameter((new ParamEncoder("siteCode").encodeParameterName(TableTagParameters.PARAMETER_EXPORTTYPE)));
+        if (String.valueOf(MediaTypeEnum.CSV.getCode()).equals (exportTypeStr)) {
+            filter.setUsePaging(false);
+        }
         siteCodeResult = siteCodeService.searchSiteCodes(filter);
         return new ForwardResolution(VIEW_SITE_CODES_JSP);
     }
@@ -176,7 +189,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
                 siteCodeService.exportSiteCodes(filter, response.getOutputStream());
             }
         };
-        //TODO add date into the file name
+        // TODO add date into the file name
         resolution.setFilename("siteCodes.csv");
         return resolution;
     }
@@ -191,7 +204,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
         vocabularyService.reserveFreeSiteCodes(siteCodeFolderId, reserveAmount, startIdentifier, getUserName());
 
-        addSystemMessage("New site codes successfully created in range " + startIdentifier + " - " + endIdentifier);
+        addSystemMessage(reserveAmount + " new site codes successfully created in range " + startIdentifier + " - "
+                + endIdentifier);
         return new RedirectResolution(SiteCodesActionBean.class);
     }
 
@@ -214,9 +228,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
         userAllocated = getUserName();
         dateAllocated = new SimpleDateFormat(DATE_TIME_FORMAT).format(allocationResult.getAllocationTime());
-        return new RedirectResolution(SiteCodesActionBean.class, "search").addParameter("userAllocated", userAllocated)
-        .addParameter("dateAllocated", dateAllocated).addParameter("filter.status", SiteCodeStatus.ALLOCATED)
-        .addParameter("filter.pageSize", allocationResult.getAmount());
+        return new RedirectResolution(SiteCodesActionBean.class, "search").addParameter("userAllocated", userAllocated).addParameter("dateAllocated", dateAllocated).addParameter("filter.status", SiteCodeStatus.ALLOCATED).addParameter("filter.pageSize", allocationResult.getAmount());
     }
 
     /**
@@ -224,7 +236,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    @ValidationMethod(on = {"allocate"})
+    @ValidationMethod(on = { "allocate" })
     public void validateAllocate() throws ServiceException {
 
         if (!isAllocateRight()) {
@@ -239,13 +251,43 @@ public class SiteCodesActionBean extends AbstractActionBean {
             if (amount < 1) {
                 addGlobalValidationError("Number of site codes must be positive number");
             }
-            if (amount > MAX_ALLOCATE_AMOUNT) {
-                addGlobalValidationError("Number of site codes cannot exceed more than " + MAX_ALLOCATE_AMOUNT);
-            }
         }
         if (CHOICE_LABEL.equals(choice)) {
             if (StringUtils.isEmpty(labels)) {
                 addGlobalValidationError("Site code names must be valued");
+            }
+        }
+        if (isUpdateRight()) {
+            // validation for ETCs
+            if ((CHOICE_AMOUNT.equals(choice) && amount > MAX_ALLOCATE_AMOUNT_FOR_ETC)
+                    || (CHOICE_LABEL.equals(choice) && labels.split("\\n").length > MAX_ALLOCATE_AMOUNT_FOR_ETC)) {
+                addGlobalValidationError("Number of allocated site codes cannot exceed " + MAX_ALLOCATE_AMOUNT_FOR_ETC
+                        + " in one request.");
+            }
+        } else {
+            // validation for countries
+            int unusedCodes = getUnusedCodesForCountry(country);
+            if (CHOICE_AMOUNT.equals(choice)) {
+                if (amount + unusedCodes > MAX_ALLOCATE_AMOUNT) {
+                    addGlobalValidationError("Unable to allocate site codes! You already have or after the allocation"
+                            + " you would have more than " + MAX_ALLOCATE_AMOUNT
+                            + " site codes, yet unassigned, allocated. Try using the allocation method 2 by providing site names"
+                            + " or IDs in the dedicated textarea. In this case you are able to allocate up to "
+                            + MAX_ALLOCATE_AMOUNT_WITH_NAMES
+                            + " site codes. If you need more site codes allocated than this criteria allows, "
+                            + "then please contact ETC/BD with explanation of why you need more codes. "
+                            + "ETC/BD then can allocate the codes for your country if the explanation is valid.)");
+                }
+            }
+            if (CHOICE_LABEL.equals(choice)) {
+                if (labels.split("\\n").length + unusedCodes > MAX_ALLOCATE_AMOUNT_WITH_NAMES) {
+                    addGlobalValidationError("Unable to allocate site codes! You already have or after the allocation"
+                            + " you would have more than "
+                            + MAX_ALLOCATE_AMOUNT_WITH_NAMES
+                            + " site codes, yet unassigned, allocated. If you need more site codes allocated than this criteria allows, "
+                            + "then please contact ETC/BD with explanation of why you need more codes. "
+                            + "ETC/BD then can allocate the codes for your country if the explanation is valid.)");
+                }
             }
         }
 
@@ -260,7 +302,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    @ValidationMethod(on = {"reserveNewSiteCodes"})
+    @ValidationMethod(on = { "reserveNewSiteCodes" })
     public void validateReserveNewSiteCodes() throws ServiceException {
         if (!isCreateRight()) {
             addGlobalValidationError("No privilege to reserve new site codes");
@@ -277,7 +319,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
         if (endIdentifier < startIdentifier) {
             addGlobalValidationError("Range start should be lower than range end");
         }
-        setReserveAmount(endIdentifier-startIdentifier);
+
+        setReserveAmount(endIdentifier - startIdentifier + 1);
 
         if (reserveAmount > MAX_RESERVE_AMOUNT) {
             addGlobalValidationError("Amount cannot be bigger than " + MAX_RESERVE_AMOUNT);
@@ -388,6 +431,18 @@ public class SiteCodesActionBean extends AbstractActionBean {
         result[0] = SiteCodeStatus.ALLOCATED;
         result[1] = SiteCodeStatus.ASSIGNED;
         return result;
+    }
+
+    private int getUnusedCodesForCountry(String countryCode) {
+
+        if (allocations != null) {
+            for (CountryAllocations allocation : allocations) {
+                if (countryCode.equals(allocation.getCountry().getValue())) {
+                    return allocation.getUnusedCodes();
+                }
+            }
+        }
+        return 0;
     }
 
     /**
@@ -632,6 +687,5 @@ public class SiteCodesActionBean extends AbstractActionBean {
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
-
 
 }

@@ -100,11 +100,11 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <c:if test="${actionBean.allocateRight}">
-                    <li><a href="#" id="allocateSiteCodesLink">Allocate site codes</a></li>
-                </c:if>
                 <c:if test="${actionBean.createRight}">
                     <li><a href="#" onClick="openPopup('#reserveSiteCodesDialog')">Add new site codes</a></li>
+                </c:if>
+                <c:if test="${actionBean.allocateRight}">
+                    <li><a href="#" id="allocateSiteCodesLink">Allocate site codes</a></li>
                 </c:if>
             </ul>
         </div>
@@ -162,13 +162,18 @@
                 <div class="important-msg">
                     <strong>Country: ${allocations.country.definition}</strong>
                     <p>Number of allocated, used codes: <strong>${allocations.usedCodes}</strong>
+                            <stripes:link beanclass="${actionBean.class.name}" event="search">
+                                <stripes:param name="filter.countryCode" value="${allocations.country.value}" />
+                                <stripes:param name="filter.allocatedUsedStatuses" value="true" />
+                                See the list
+                            </stripes:link>
+                    </p>
                     <c:choose>
                         <c:when test="${allocations.unusedCodes > 0}">
                             <p style="color:red">Number of allocated, unused codes: <strong>${allocations.unusedCodes}</strong>
-                            <%-- Fix me --%>
                             <stripes:link beanclass="${actionBean.class.name}" event="search">
-                                <stripes:param name="filter.countryCode" value="${actionBean.userAllocated}" />
-                                <stripes:param name="filter.status" value="" />
+                                <stripes:param name="filter.countryCode" value="${allocations.country.value}" />
+                                <stripes:param name="filter.status" value="${actionBean.allocatedStatus}" />
                                 See the list
                             </stripes:link>
                             </p>
@@ -178,10 +183,9 @@
                             <p>Number of allocated, unused codes: <strong>${allocations.unusedCodes}</strong>
                         </c:otherwise>
                     </c:choose>
-                        <c:if test="${actionBean.allocateRight}">
-                            <p><input type="button" name="allocateCodes" value="Allocate site codes"  id="allocateSiteCodesLink2"/></p>
-                        </c:if>
-                    </p>
+                    <c:if test="${actionBean.allocateRight}">
+                        <p><input type="button" name="allocateCodes" value="Allocate site codes"  id="allocateSiteCodesLink2"/></p>
+                    </c:if>
                 </div>
             </c:forEach>
         </c:if>
@@ -249,6 +253,7 @@
 
         <%-- Site codes table --%>
         <c:if test="${actionBean.context.eventName == 'search'}">
+        <%--
         <c:if test="${actionBean.siteCodeResult.totalItems > 0}">
             <stripes:link beanclass="${actionBean.class.name}" event="exportCsv">
                 <stripes:param name="userAllocated" value="${actionBean.userAllocated}" />
@@ -257,7 +262,9 @@
             </stripes:link>
             <br />
         </c:if>
-        <display:table name="actionBean.siteCodeResult" class="datatable" id="siteCode" style="width:80%" requestURI="/services/siteCodes/search" >
+        --%>
+        <display:table name="actionBean.siteCodeResult" class="datatable" id="siteCode" style="width:80%"
+        requestURI="/services/siteCodes/search" export="true">
             <display:setProperty name="basic.msg.empty_list" value="No site codes found." />
 
             <display:column title="Site code" property="identifier" escapeXml="true" class="number" style="width: 1%" />
@@ -273,6 +280,11 @@
             <c:if test="${actionBean.filter.status == actionBean.allocatedStatus}">
                 <display:column title="Preliminary site name/identifier" escapeXml="true" property="initialSiteName" />
             </c:if>
+            <display:setProperty name="export.excel.filename" value="CDDASiteCodes.xls"/>
+            <display:setProperty name="export.excel" value="false" />
+            <display:setProperty name="export.csv.filename" value="CDDASiteCodes.csv"/>
+            <display:setProperty name="export.csv" value="true" />
+            <display:setProperty name="export.xml" value="false" />
         </display:table>
         </c:if>
         <%-- Site codes allocation popup --%>

@@ -27,7 +27,7 @@ import java.io.OutputStreamWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +104,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         final CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(os), ',');
         // write header
-        csvWriter.writeNext(new String[] {"Site code", "Site name", "Status", "Country", "Allocated", "User"});
+        csvWriter.writeNext(new String[] { "Site code", "Site name", "Status", "Country", "Allocated", "User" });
 
         getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
 
@@ -132,8 +132,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                     dateAllocated = sdf.format(sc.getDateAllocated());
                 }
 
-                csvWriter.writeNext(new String[] {sc.getIdentifier(), sc.getLabel(), sc.getStatus().getLabel(),
-                        sc.getCountryCode(), dateAllocated, sc.getUserAllocated()});
+                csvWriter.writeNext(new String[] { sc.getIdentifier(), sc.getLabel(), sc.getStatus().getLabel(),
+                        sc.getCountryCode(), dateAllocated, sc.getUserAllocated() });
             }
         });
 
@@ -173,6 +173,10 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         if (filter.getStatus() != null) {
             params.put("status", filter.getStatus().toString());
             sql.append("and sc.STATUS = :status ");
+        }
+        else if (filter.isAllocatedUsedStatuses()) {
+            params.put("statuses", Arrays.asList(SiteCodeFilter.ALLOCATED_USED_STATUSES));
+            sql.append("and sc.STATUS IN  (:statuses) ");
         }
         if (filter.getCountryCode() != null) {
             params.put("countryCode", filter.getCountryCode());
@@ -227,12 +231,11 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[siteNames.length];
 
-        //TODO update vocabulary concepts, set Identifier = <allocated>
         for (int i = 0; i < freeSiteCodes.size(); i++) {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("siteCodeId", freeSiteCodes.get(i).getSiteCodeId());
             params.put("country", countryCode);
-            params.put("status", SiteCodeStatus.ALLOCATED.toString());
+            params.put("status", SiteCodeStatus.ALLOCATED.name());
             params.put("dateAllocated", allocationTime);
             params.put("userAllocated", userName);
             if (siteNames.length > i && siteNames[i] != null) {
@@ -242,8 +245,20 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             }
             batchValues[i] = params;
         }
-
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+
+        // update place-holder value in concept label to <allocated>
+        StringBuilder sqlForConcepts = new StringBuilder();
+        sqlForConcepts.append("update T_VOCABULARY_CONCEPT set LABEL = :label where VOCABULARY_CONCEPT_ID IN "
+                + " (select VOCABULARY_CONCEPT_ID from T_SITE_CODE where STATUS = :status AND "
+                + "DATE_ALLOCATED = :dateAllocated AND USER_ALLOCATED = :userAllocated )");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("status", SiteCodeStatus.ALLOCATED.name());
+        parameters.put("dateAllocated", allocationTime);
+        parameters.put("userAllocated", userName);
+        parameters.put("label", "<" + SiteCodeStatus.ALLOCATED.name().toLowerCase() + ">");
+        getNamedParameterJdbcTemplate().update(sqlForConcepts.toString(), parameters);
 
     }
 
@@ -297,14 +312,10 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public int getCountryUsedAllocations(String countryCode) {
-        List<String> statuses = new ArrayList<String>();
-        statuses.add(SiteCodeStatus.ASSIGNED.name());
-        statuses.add(SiteCodeStatus.DELETED.name());
-        statuses.add(SiteCodeStatus.DISAPPEARED.name());
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("countryCode", countryCode);
-        params.put("statuses", statuses);
+        params.put("statuses", Arrays.asList(SiteCodeFilter.ALLOCATED_USED_STATUSES));
 
         StringBuilder sql = new StringBuilder();
         sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS in (:statuses) ");

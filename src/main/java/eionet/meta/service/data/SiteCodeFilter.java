@@ -39,6 +39,10 @@ import eionet.meta.dao.domain.SiteCodeStatus;
  */
 public class SiteCodeFilter extends PagedRequest {
 
+    /** site code status representing allocated codes that are or has been in use: assigned, deleted or disappeared */
+    public static final String[] ALLOCATED_USED_STATUSES = { SiteCodeStatus.ASSIGNED.name(), SiteCodeStatus.DELETED.name(),
+        SiteCodeStatus.DISAPPEARED.name() };
+
     private String countryCode;
     private SiteCodeStatus status;
     private String siteName;
@@ -48,6 +52,9 @@ public class SiteCodeFilter extends PagedRequest {
     private String userAllocated;
     /** Used for filtering by user privileges. */
     private DDUser user;
+
+    /** use only allocated codes in use */
+    private boolean allocatedUsedStatuses;
 
     /**
      * @return the status
@@ -152,6 +159,20 @@ public class SiteCodeFilter extends PagedRequest {
      */
     public void setUserAllocated(String userAllocated) {
         this.userAllocated = userAllocated;
+    }
+
+    /**
+     * @return the allocatedUsed
+     */
+    public boolean isAllocatedUsedStatuses() {
+        return allocatedUsedStatuses;
+    }
+
+    /**
+     * @param allocatedUsed the allocatedUsed to set
+     */
+    public void setAllocatedUsedStatuses(boolean allocatedUsed) {
+        this.allocatedUsedStatuses = allocatedUsed;
     }
 
 }

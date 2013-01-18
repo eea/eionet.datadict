@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
+import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.VocabularyConceptFilter;
@@ -429,7 +430,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
 
             String definition = "Added by " + userName + " on " + Util.formatDateTime(new Date());
-            String label = "<available>";
+            String label = "<" + SiteCodeStatus.AVAILABLE.toString().toLowerCase() + ">";
 
             //Insert empty concepts
             vocabularyConceptDAO.insertEmptyConcepts(vocabularyFolderId, amount, startIdentifier, label, definition);

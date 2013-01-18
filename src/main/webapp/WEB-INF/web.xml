@@ -102,7 +102,10 @@
         <filter-name>ContentNegotiationFilter</filter-name>
         <filter-class>eionet.web.filter.ContentNegotiationFilter</filter-class>
     </filter>
-
+    <filter>
+        <filter-name>ResponseOverrideFilter</filter-name>
+        <filter-class>org.displaytag.filter.ResponseOverrideFilter</filter-class>
+    </filter>
     <!-- Filter Mappings -->
 
     <filter-mapping>
@@ -171,6 +174,10 @@
     <filter-mapping>
         <filter-name>DataElementJspFilter</filter-name>
         <url-pattern>/data_element.jsp</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>ResponseOverrideFilter</filter-name>
+        <url-pattern>/services/siteCodes/*</url-pattern>
     </filter-mapping>
 
     <!-- servlets -->
