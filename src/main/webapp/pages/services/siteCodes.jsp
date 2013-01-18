@@ -17,6 +17,10 @@
                     $("#allocateSiteCodesDiv").dialog('open');
                     return false;
                 });
+                $("#allocateSiteCodesLink2").click(function() {
+                    $("#allocateSiteCodesDiv").dialog('open');
+                    return false;
+                });
 
                 // Close allocate site codes dialog
                 $("#closeAllocateLink").click(function() {
@@ -100,7 +104,7 @@
                     <li><a href="#" id="allocateSiteCodesLink">Allocate site codes</a></li>
                 </c:if>
                 <c:if test="${actionBean.createRight}">
-                    <li><a href="#" onClick="openPopup('#reserveSiteCodesDialog')">Reserve free site codes</a></li>
+                    <li><a href="#" onClick="openPopup('#reserveSiteCodesDialog')">Add new site codes</a></li>
                 </c:if>
             </ul>
         </div>
@@ -139,7 +143,7 @@
             </p>
 
             <div class="advice-msg">
-                Number of free unallocated Site codes in the system: <strong><c:out value="${actionBean.unallocatedSiteCodes}" /></strong>
+                Number of available Site codes in the system: <strong><c:out value="${actionBean.unallocatedSiteCodes}" /></strong>
             </div>
 
             <c:if test="${empty actionBean.user}">
@@ -157,9 +161,27 @@
             <c:forEach items="${actionBean.allocations}" var="entry">
                 <div class="important-msg">
                     <strong>Country: ${entry.key}</strong>
-                    <p>Number of allocated, unused codes: <strong>${entry.value}</strong></p>
+                    <c:choose>
+                        <c:when test="${entry.value > 0}">
+                            <p style="color:red">Number of allocated, unused codes: <strong>${entry.value}</strong>
+                            <%-- Fix me --%>
+                            <stripes:link beanclass="${actionBean.class.name}" event="search">
+                                <stripes:param name="filter.countryCode" value="${actionBean.userAllocated}" />
+                                <stripes:param name="filter.status" value="" />
+                                See the list
+                            </stripes:link>
+                            </p>
+                            <p>Please check the list and consider using the codes before requesting any new ones.</p>
+                        </c:when>
+                        <c:otherwise>
+                            <p>Number of allocated, unused codes: <strong>${entry.value}</strong>
+                        </c:otherwise>
+                    </c:choose>
+                        <c:if test="${actionBean.allocateRight}">
+                            <p><input type="button" name="allocateCodes" value="Allocate site codes"  id="allocateSiteCodesLink2"/></p>
+                        </c:if>
+                    </p>
                 </div>
-                <p>Please check the list and consider using the codes before requesting any new ones.</p>
             </c:forEach>
         </c:if>
 
@@ -168,26 +190,24 @@
             <h2>Search site codes</h2>
             <table class="datatable">
                 <colgroup>
-                    <col style="width:26%"/>
+                    <col style="width:30 em;"/>
                     <col />
                 </colgroup>
                 <tr>
-                    <td class="simple_attr_title" title="Allocated country">
-                        Country
-                    </td>
+                    <th title="Allocated country">
+                        <label for="countryFilter">Country</label>
+                    </th>
                     <td class="simple_attr_value">
-                        <stripes:select name="filter.countryCode">
+                        <stripes:select name="filter.countryCode" id="countryFilter">
                             <stripes:option label="All" value="" />
                             <stripes:options-collection collection="${actionBean.countries}" value="value" label="definition" />
                         </stripes:select>
                     </td>
-                </tr>
-                <tr>
-                    <td class="simple_attr_title" title="Allocated country">
-                        Status
-                    </td>
+                    <th title="Allocated country">
+                        <label for="statusFilter">Status</label>
+                    </th>
                     <td class="simple_attr_value">
-                        <stripes:select name="filter.status">
+                        <stripes:select name="filter.status" id="statusFilter">
                             <stripes:option label="All" value="" />
                             <c:choose>
                                 <c:when test="${not empty actionBean.user}">
@@ -203,19 +223,17 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="simple_attr_title" title="Site code number">
-                        Site code
-                    </td>
+                    <th class="simple_attr_title" title="Site code number">
+                        <label for="siteCodeFilter">Site code</label>
+                    </th>
                     <td class="simple_attr_value">
-                        <stripes:text class="smalltext" size="6" name="filter.identifier" />
-                    </td>
-                </tr>
-                <tr>
-                    <td class="simple_attr_title" title="Site code name">
-                        Site name
-                    </td>
+                        <stripes:text class="smalltext" size="20" name="filter.identifier" id="siteCodeFilter"/>
+                    </thd>
+                    <th class="simple_attr_title" title="Site code name">
+                        <label for="siteNameFilter">Site name</label>
+                    </th>
                     <td class="simple_attr_value">
-                        <stripes:text class="smalltext" size="30" name="filter.siteName" />
+                        <stripes:text class="smalltext" size="30" name="filter.siteName"  id="siteNameFilter"/>
                     </td>
                 </tr>
                 <tr>
@@ -251,15 +269,16 @@
                 <fmt:formatDate value="${siteCode.dateAllocated}" pattern="yyyy-MM-dd HH:mm:ss" />
             </display:column>
             <display:column title="User" escapeXml="true" property="userAllocated" />
+            <c:if test="${actionBean.filter.status == actionBean.allocatedStatus}">
+                <display:column title="Preliminary site name/identifier" escapeXml="true" property="initialSiteName" />
+            </c:if>
         </display:table>
         </c:if>
-
         <%-- Site codes allocation popup --%>
         <div id="allocateSiteCodesDiv" title="Allocate site codes">
             <div class="tip-msg">
                 <strong>Tip</strong>
-                <p>Site codes can be allocated by inserting the number of new sites or by pasting the list of sites (their names, national codes or other identifiers)
-                into the area below. Please assure that each site occupy one line.</p>
+                <p>You have the following two options how to allocate new global site codes for your sites.</p>
             </div>
 
             <stripes:form method="post" id="allocateSiteCodesForm" beanclass="${actionBean.class.name}">
@@ -282,27 +301,31 @@
                     </tr>
                     <tr>
                         <td><stripes:radio name="choice" value="amount" id="choiceAmount" checked="checked"/></td>
-                        <td class="simple_attr_title" title="Number of site codes to allocate">
-                            <label for="choiceAmount">Number of new site codes</label>
-                        </td>
-                        <td class="simple_attr_value">
+                        <td class="simple_attr_title" title="Number of site codes to allocate" colspan="2">
+                            <label for="choiceAmount">Enter the number of new site codes and press OK button</label>
                             <stripes:text class="smalltext" size="5" name="amount" id="amountText"/>
                         </td>
                     </tr>
                     <tr><td colspan="4" style="padding-left: 10%">Or</td></tr>
                     <tr>
                         <td><stripes:radio name="choice" value="label" id="choiceLabel"/></td>
-                        <td class="simple_attr_title" title="List of new site code names separated by new line">
-                            <label for="choiceLabel">Site names</label>
+                        <td class="simple_attr_title" title="List of new site code names separated by new line" colspan="2">
+                            <label for="choiceLabel">Copy a list of new sites (their names, national codes or other identifiers
+                             of your choice, or their combinations - anything that help you to remember which sites you have
+                             allocated the codes for) and paste them into the area below. Please assure that each site occupy one line.
+                             The result will be displayed for your reference and sent to you by email.</label>
                         </td>
-                        <td class="simple_attr_value">
-                            <stripes:textarea class="smalltext" name="labels" id="labelsText" rows="5" cols="60"/>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="simple_attr_value" colspan="2">
+                            <stripes:textarea class="smalltext" name="labels" id="labelsText" rows="7" cols="70"/>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2">&nbsp;</td>
                         <td>
-                            <stripes:submit name="allocate" value="Allocate site codes" />
+                            <stripes:submit name="allocate" value="OK" />
                             <button type="button" id="closeAllocateLink">Cancel</button>
                         </td>
                     </tr>
@@ -311,10 +334,15 @@
         </div>
 
         <%-- Reserve site codes range --%>
-        <div id="reserveSiteCodesDialog">
+        <div id="reserveSiteCodesDialog"  title="Add new site codes">
             <stripes:form method="post" id="reserveFreeSiteCodesForm" beanclass="${actionBean.class.name}">
                 <stripes:hidden name="siteCodeFolderId" />
 
+                <div class="tip-msg">
+                    <strong>Tip</strong>
+                    <p>Insert the range of new site codes. All the new site codes falling inclusively between range start and range end will be availabel for countries to be allocated.
+                    </p>
+                </div>
                 <table class="datatable">
                     <colgroup>
                         <col style="width:26%"/>
@@ -322,31 +350,31 @@
                         <col />
                     </colgroup>
                     <tr>
-                        <th scope="row" class="scope-row simple_attr_title" title="Lowest of the generated identifier">
-                            Starting identifier
+                        <th scope="row" class="scope-row simple_attr_title" title="Lowest value of the inserted unallocated site codes">
+                            <label for="rangeStart">Range start</label>
                         </th>
                         <td class="simple_attr_help">
                             <dd:mandatoryIcon />
                         </td>
                         <td class="simple_attr_value">
-                            <stripes:text class="smalltext" size="30" name="startIdentifier" />
+                            <stripes:text class="smalltext" size="30" name="startIdentifier" id="rangeStart" />
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row" class="scope-row simple_attr_title" title="Amount of site codes to reserve">
-                            Amount
+                        <th scope="row" class="scope-row simple_attr_title" title="Highest value of the inserted unallocated site codes">
+                            <label for="rangeEnd">Range end</label>
                         </th>
                         <td class="simple_attr_help">
                             <dd:mandatoryIcon />
                         </td>
                         <td class="simple_attr_value">
-                            <stripes:text class="smalltext" size="30" name="reserveAmount" />
+                            <stripes:text class="smalltext" size="30" name="endIdentifier" id="rangeEnd" />
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2">&nbsp;</td>
                         <td>
-                            <stripes:submit name="reserveNewSiteCodes" value="Reserve site codes" />
+                            <stripes:submit name="reserveNewSiteCodes" value="OK" />
                             <button type="button" onClick="closePopup('#reserveSiteCodesDialog')">Cancel</button>
                         </td>
                     </tr>

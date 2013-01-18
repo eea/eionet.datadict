@@ -122,7 +122,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
         SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
         siteCodeFilter.setPageNumber(1);
         siteCodeFilter.setPageSize(amount);
-        siteCodeFilter.setStatus(SiteCodeStatus.NEW);
+        siteCodeFilter.setStatus(SiteCodeStatus.AVAILABLE);
         try {
             SiteCodeResult freeSiteCodes = siteCodeDao.searchSiteCodes(siteCodeFilter);
 

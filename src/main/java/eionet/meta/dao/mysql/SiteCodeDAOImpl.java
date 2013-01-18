@@ -79,6 +79,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 sc.setUserCreated(rs.getString("sc.USER_CREATED"));
                 sc.setDateAllocated(rs.getTimestamp("sc.DATE_ALLOCATED"));
                 sc.setUserAllocated(rs.getString("sc.USER_ALLOCATED"));
+                sc.setInitialSiteName(rs.getString("sc.INITIAL_SITE_NAME"));
                 return sc;
             }
         });
@@ -149,7 +150,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         StringBuilder sql = new StringBuilder();
         sql.append("select SQL_CALC_FOUND_ROWS sc.SITE_CODE_ID, sc.VOCABULARY_CONCEPT_ID, sc.STATUS, sc.CC_ISO2, "
                 + "sc.DATE_CREATED, sc.USER_CREATED, vc.VOCABULARY_CONCEPT_ID, vc.IDENTIFIER, vc.LABEL, "
-                + "vc.DEFINITION, vc.NOTATION, sc.DATE_ALLOCATED, sc.USER_ALLOCATED ");
+                + "vc.DEFINITION, vc.NOTATION, sc.DATE_ALLOCATED, sc.USER_ALLOCATED, sc.INITIAL_SITE_NAME ");
         sql.append("from T_SITE_CODE sc, T_VOCABULARY_CONCEPT vc where sc.VOCABULARY_CONCEPT_ID=vc.VOCABULARY_CONCEPT_ID ");
 
         if (StringUtils.isNotEmpty(filter.getSiteName())) {
@@ -218,13 +219,14 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             Date allocationTime) {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("update T_SITE_CODE set CC_ISO2 = :country, SITE_NAME = :siteName, STATUS = :status, "
+        sql.append("update T_SITE_CODE set CC_ISO2 = :country, INITIAL_SITE_NAME = :siteName, STATUS = :status, "
                 + "DATE_ALLOCATED = :dateAllocated, USER_ALLOCATED = :userAllocated ");
         sql.append("where SITE_CODE_ID = :siteCodeId");
 
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[siteNames.length];
 
+        //TODO update vocabulary concepts, set Identifier = <allocated>
         for (int i = 0; i < freeSiteCodes.size(); i++) {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("siteCodeId", freeSiteCodes.get(i).getSiteCodeId());
@@ -268,7 +270,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS = :status");
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("status", SiteCodeStatus.NEW.name());
+        params.put("status", SiteCodeStatus.AVAILABLE.name());
 
         return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
     }

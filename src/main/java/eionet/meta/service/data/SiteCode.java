@@ -35,12 +35,13 @@ public class SiteCode extends VocabularyConcept {
 
     /** Properties. */
     private int siteCodeId;
-    private SiteCodeStatus status = SiteCodeStatus.NEW;
+    private SiteCodeStatus status = SiteCodeStatus.AVAILABLE;
     private String countryCode;
     private Date dateCreated;
     private String userCreated;
     private Date dateAllocated;
     private String userAllocated;
+    private String initialSiteName;
     /**
      * @return the id
      */
@@ -124,6 +125,18 @@ public class SiteCode extends VocabularyConcept {
      */
     public void setUserAllocated(String userAllocated) {
         this.userAllocated = userAllocated;
+    }
+    /**
+     * @return the initialSiteName
+     */
+    public String getInitialSiteName() {
+        return initialSiteName;
+    }
+    /**
+     * @param initialSiteName the initialSiteName to set
+     */
+    public void setInitialSiteName(String initialSiteName) {
+        this.initialSiteName = initialSiteName;
     }
 
 }

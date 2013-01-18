@@ -46,6 +46,7 @@ import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.AllocationResult;
+import eionet.meta.service.data.PagedRequest;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
 import eionet.util.SecurityUtil;
@@ -69,7 +70,10 @@ public class SiteCodesActionBean extends AbstractActionBean {
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /** Maximum amount site codes to allocate. */
-    private static final int MAX_ALLOCATE_AMOUNT = 1000;
+    private static final int MAX_ALLOCATE_AMOUNT = 100;
+
+    /** Maximum amount site codes to allocate using the 2nd option with site names. */
+    private static final int MAX_ALLOCATE_AMOUNT_WITH_NAMES = 500;
 
     /** Maximum amount available site codes to reserve. */
     private static final int MAX_RESERVE_AMOUNT = 10000;
@@ -103,11 +107,17 @@ public class SiteCodesActionBean extends AbstractActionBean {
     /** Concepts table page number. */
     private int page = 1;
 
+    /** Number of rows displayed on page. */
+    private int pageSize = PagedRequest.DEFAULT_PAGE_SIZE;
+
     /** Amount of concepts to reserve. */
     private int reserveAmount;
 
     /** The starting identifier for reserving new site codes. */
     private int startIdentifier;
+
+    /** The ending identifier for reserving new site codes. */
+    private int endIdentifier;
 
     /** Site code folder id. */
     private int siteCodeFolderId;
@@ -123,6 +133,9 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
     /** Filtering property for date of allocation. */
     private String dateAllocated;
+
+    /** Make the enum value visible for jsp. */
+    private String allocatedStatus = SiteCodeStatus.ALLOCATED.toString();
 
     /**
      * View site codes action.
@@ -163,7 +176,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
                 siteCodeService.exportSiteCodes(filter, response.getOutputStream());
             }
         };
-
+        //TODO add date into the file name
         resolution.setFilename("siteCodes.csv");
         return resolution;
     }
@@ -178,7 +191,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
         vocabularyService.reserveFreeSiteCodes(siteCodeFolderId, reserveAmount, startIdentifier, getUserName());
 
-        addSystemMessage("New site codes successfully created");
+        addSystemMessage("New site codes successfully created in range " + startIdentifier + " - " + endIdentifier);
         return new RedirectResolution(SiteCodesActionBean.class);
     }
 
@@ -202,7 +215,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
         userAllocated = getUserName();
         dateAllocated = new SimpleDateFormat(DATE_TIME_FORMAT).format(allocationResult.getAllocationTime());
         return new RedirectResolution(SiteCodesActionBean.class, "search").addParameter("userAllocated", userAllocated)
-                .addParameter("dateAllocated", dateAllocated);
+        .addParameter("dateAllocated", dateAllocated).addParameter("filter.status", SiteCodeStatus.ALLOCATED)
+        .addParameter("filter.pageSize", allocationResult.getAmount());
     }
 
     /**
@@ -252,16 +266,25 @@ public class SiteCodesActionBean extends AbstractActionBean {
             addGlobalValidationError("No privilege to reserve new site codes");
         }
 
-        if (reserveAmount < 1) {
-            addGlobalValidationError("Amount must be a positive number");
+        if (startIdentifier < 1) {
+            addGlobalValidationError("Range start must be a positive number");
         }
+
+        if (endIdentifier < 1) {
+            addGlobalValidationError("Range end must be a positive number");
+        }
+
+        if (endIdentifier < startIdentifier) {
+            addGlobalValidationError("Range start should be lower than range end");
+        }
+        setReserveAmount(endIdentifier-startIdentifier);
 
         if (reserveAmount > MAX_RESERVE_AMOUNT) {
             addGlobalValidationError("Amount cannot be bigger than " + MAX_RESERVE_AMOUNT);
         }
 
         List<Integer> unavailableIdentifiers =
-                vocabularyService.checkAvailableIdentifiers(siteCodeFolderId, reserveAmount, startIdentifier);
+            vocabularyService.checkAvailableIdentifiers(siteCodeFolderId, reserveAmount, startIdentifier);
         if (unavailableIdentifiers.size() > 0) {
             addGlobalValidationError("Identifers are unavailaible: " + StringUtils.join(unavailableIdentifiers, ", "));
         }
@@ -574,5 +597,41 @@ public class SiteCodesActionBean extends AbstractActionBean {
     public void setDateAllocated(String dateAllocated) {
         this.dateAllocated = dateAllocated;
     }
+
+    /**
+     * @return the endIdentifier
+     */
+    public int getEndIdentifier() {
+        return endIdentifier;
+    }
+
+    /**
+     * @param endIdentifier the endIdentifier to set
+     */
+    public void setEndIdentifier(int endIdentifier) {
+        this.endIdentifier = endIdentifier;
+    }
+
+    /**
+     * @return the allocated
+     */
+    public String getAllocatedStatus() {
+        return allocatedStatus;
+    }
+
+    /**
+     * @return the pageSize
+     */
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    /**
+     * @param pageSize the pageSize to set
+     */
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
 
 }

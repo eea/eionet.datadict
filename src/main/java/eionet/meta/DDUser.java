@@ -50,13 +50,13 @@ import eionet.util.sql.ConnectionUtil;
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class DDUser{
+public class DDUser {
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(DDUser.class);
 
     /** */
-    public static final String ACL_UPDATE_PRM   = "u";
+    public static final String ACL_UPDATE_PRM = "u";
     public static final String ACL_SERVICE_NAME = "/";
 
     /** */
@@ -83,13 +83,13 @@ public class DDUser{
         try {
             String masterPwdHash = Props.getProperty(PropsIF.DD_MASTER_PASSWORD_HASH);
 
-            if (userPwd!=null && masterPwdHash != null && masterPwdHash.equals( DigestUtils.md5Hex(userPwd))) {
-                if (userName==null) {
+            if (userPwd != null && masterPwdHash != null && masterPwdHash.equals(DigestUtils.md5Hex(userPwd))) {
+                if (userName == null) {
                     throw new SignOnException("username not given");
                 }
                 fullName = userName;
-            }
-            else {
+                LOGGER.info("User " + userName + " logged in with master password.");
+            } else {
                 AuthMechanism.sessionLogin(userName, userPwd);
                 fullName = AuthMechanism.getFullName(userName);
             }
@@ -97,8 +97,7 @@ public class DDUser{
             authented = true;
             username = userName;
             password = userPwd;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error(e.toString(), e);
         }
 
@@ -125,8 +124,8 @@ public class DDUser{
             getUserRoles();
         }
 
-        for (int i =0; i< roles.length; i++) {
-            if ( roles[i].equals(role)) {
+        for (int i = 0; i < roles.length; i++) {
+            if (roles[i].equals(role)) {
                 b = true;
             }
         }
@@ -158,8 +157,7 @@ public class DDUser{
 
         try {
             return ConnectionUtil.getConnection();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DDRuntimeException(e);
         }
     }
@@ -175,12 +173,12 @@ public class DDUser{
 
                 Vector v = DirectoryService.getRoles(username);
                 roles = new String[v.size()];
-                for ( int i=0; i< v.size(); i++) {
-                    roles[i] = (String)v.elementAt(i);
+                for (int i = 0; i < v.size(); i++) {
+                    roles[i] = (String) v.elementAt(i);
                 }
 
-            } catch ( Exception e ) {
-                roles = new String[]{};
+            } catch (Exception e) {
+                roles = new String[] {};
             }
         }
 
@@ -202,7 +200,7 @@ public class DDUser{
      */
     @Override
     public String toString() {
-        return (username == null ? "" : username );
+        return (username == null ? "" : username);
     }
 
     /**
@@ -217,7 +215,7 @@ public class DDUser{
             acls = AccessController.getAcls();
         }
 
-        return (AccessControlListIF)acls.get(name);
+        return (AccessControlListIF) acls.get(name);
     }
 
     /**
@@ -277,9 +275,6 @@ public class DDUser{
             if (acl != null) {
 
                 result = acl.checkPermission(userName, permission);
-                if (!result) {
-                    LOGGER.debug("User " + userName + " does not have permission " + permission + " in ACL \"" + aclPath + "\"");
-                }
             } else {
                 LOGGER.warn("ACL \"" + aclPath + "\" not found!");
             }

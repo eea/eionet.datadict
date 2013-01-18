@@ -29,11 +29,15 @@ package eionet.meta.dao.domain;
 public enum SiteCodeStatus {
 
     /** Not allocated to any country. */
-    NEW("New"),
+    AVAILABLE("Available"),
     /** Country has requested site code and it is allocated for this country. */
     ALLOCATED("Allocated"),
     /** Site code has been allocated for particular site name. */
-    ASSIGNED("Assigned");
+    ASSIGNED("Assigned"),
+    /** Site code was not reported in the CDDA dataset. */
+    DISAPPEARED("Disappeared"),
+    /** Site code has been flagged for deletion by the data reporter. */
+    DELETED("Deleted");
 
     /** Label. */
     private String label;

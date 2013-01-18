@@ -428,8 +428,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 throw new IllegalStateException("Vocabulary folder must be site code type");
             }
 
-            String definition = "Reserved by " + userName + " on " + Util.formatDateTime(new Date());
-            String label = "reserved";
+            String definition = "Added by " + userName + " on " + Util.formatDateTime(new Date());
+            String label = "<available>";
 
             //Insert empty concepts
             vocabularyConceptDAO.insertEmptyConcepts(vocabularyFolderId, amount, startIdentifier, label, definition);
