@@ -26,9 +26,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +38,7 @@ import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.service.data.AllocationResult;
+import eionet.meta.service.data.CountryAllocations;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
 import eionet.util.SecurityUtil;
@@ -185,12 +184,18 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Integer> getCountryAllocations(List<FixedValue> countries) throws ServiceException {
+    public List<CountryAllocations> getCountryAllocations(List<FixedValue> countries) throws ServiceException {
         try {
-            Map<String, Integer> result = new LinkedHashMap<String, Integer>();
+            List<CountryAllocations> result = new ArrayList<CountryAllocations>();
             for (FixedValue fv : countries) {
-                int amount = siteCodeDao.getCountryAllocations(fv.getValue());
-                result.put(fv.getDefinition(), amount);
+                CountryAllocations ca = new CountryAllocations();
+                int usedCodes = siteCodeDao.getCountryUsedAllocations(fv.getValue());
+                int unusedCodes = siteCodeDao.getCountryUnusedAllocations(fv.getValue());
+                ca.setCountry(fv);
+                ca.setUsedCodes(usedCodes);
+                ca.setUnusedCodes(unusedCodes);
+
+                result.add(ca);
             }
 
             return result;

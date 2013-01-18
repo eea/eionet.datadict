@@ -25,7 +25,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,6 +45,7 @@ import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.AllocationResult;
+import eionet.meta.service.data.CountryAllocations;
 import eionet.meta.service.data.PagedRequest;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
@@ -126,7 +126,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
     private int unallocatedSiteCodes;
 
     /** Allocations per user country. */
-    private Map<String, Integer> allocations;
+    private List<CountryAllocations> allocations;
 
     /** Filtering property for allocated user. */
     private String userAllocated;
@@ -564,7 +564,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
     /**
      * @return the allocations
      */
-    public Map<String, Integer> getAllocations() {
+    public List<CountryAllocations> getAllocations() {
         return allocations;
     }
 

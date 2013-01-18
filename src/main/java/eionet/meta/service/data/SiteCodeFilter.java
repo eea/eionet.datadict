@@ -33,7 +33,7 @@ import eionet.meta.dao.domain.SiteCodeStatus;
  */
 
 /**
- * Type definition ...
+ * Site code search filter.
  *
  * @author Juhan Voolaid
  */

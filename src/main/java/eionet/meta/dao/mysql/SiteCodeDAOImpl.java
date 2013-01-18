@@ -27,6 +27,7 @@ import java.io.OutputStreamWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -279,13 +280,34 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * {@inheritDoc}
      */
     @Override
-    public int getCountryAllocations(String countryCode) {
+    public int getCountryUnusedAllocations(String countryCode) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("countryCode", countryCode);
         params.put("status", SiteCodeStatus.ALLOCATED.name());
 
         StringBuilder sql = new StringBuilder();
         sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS = :status ");
+        sql.append("and CC_ISO2 = :countryCode");
+
+        return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getCountryUsedAllocations(String countryCode) {
+        List<String> statuses = new ArrayList<String>();
+        statuses.add(SiteCodeStatus.ASSIGNED.name());
+        statuses.add(SiteCodeStatus.DELETED.name());
+        statuses.add(SiteCodeStatus.DISAPPEARED.name());
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("countryCode", countryCode);
+        params.put("statuses", statuses);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS in (:statuses) ");
         sql.append("and CC_ISO2 = :countryCode");
 
         return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);

@@ -94,12 +94,20 @@ public interface ISiteCodeDAO {
     int getFeeSiteCodeAmount();
 
     /**
-     * Returns number of allocated site codes.
+     * Returns number of site codes in status: allocated.
      *
      * @param countryCode
      * @return
      */
-    int getCountryAllocations(String countryCode);
+    int getCountryUnusedAllocations(String countryCode);
+
+    /**
+     * Returns number of site codes in status: assigned, deleted, disapared.
+     *
+     * @param countryCode
+     * @return
+     */
+    int getCountryUsedAllocations(String countryCode);
 
     /**
      * True, if there already is existing vocabulary folder with type SITE_CODE;

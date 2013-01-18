@@ -2,11 +2,11 @@ package eionet.meta.service;
 
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Map;
 
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.service.data.AllocationResult;
+import eionet.meta.service.data.CountryAllocations;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
 
@@ -99,5 +99,5 @@ public interface ISiteCodeService {
      * @return
      * @throws ServiceException
      */
-    Map<String, Integer> getCountryAllocations(List<FixedValue> countries) throws ServiceException;
+    List<CountryAllocations> getCountryAllocations(List<FixedValue> countries) throws ServiceException;
 }

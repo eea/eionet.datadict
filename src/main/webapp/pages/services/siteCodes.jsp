@@ -158,12 +158,13 @@
         </c:if>
         <%--Allocated user countries --%>
         <c:if test="${not empty actionBean.allocations}">
-            <c:forEach items="${actionBean.allocations}" var="entry">
+            <c:forEach items="${actionBean.allocations}" var="allocations">
                 <div class="important-msg">
-                    <strong>Country: ${entry.key}</strong>
+                    <strong>Country: ${allocations.country.definition}</strong>
+                    <p>Number of allocated, used codes: <strong>${allocations.usedCodes}</strong>
                     <c:choose>
-                        <c:when test="${entry.value > 0}">
-                            <p style="color:red">Number of allocated, unused codes: <strong>${entry.value}</strong>
+                        <c:when test="${allocations.unusedCodes > 0}">
+                            <p style="color:red">Number of allocated, unused codes: <strong>${allocations.unusedCodes}</strong>
                             <%-- Fix me --%>
                             <stripes:link beanclass="${actionBean.class.name}" event="search">
                                 <stripes:param name="filter.countryCode" value="${actionBean.userAllocated}" />
@@ -174,7 +175,7 @@
                             <p>Please check the list and consider using the codes before requesting any new ones.</p>
                         </c:when>
                         <c:otherwise>
-                            <p>Number of allocated, unused codes: <strong>${entry.value}</strong>
+                            <p>Number of allocated, unused codes: <strong>${allocations.unusedCodes}</strong>
                         </c:otherwise>
                     </c:choose>
                         <c:if test="${actionBean.allocateRight}">
