@@ -4,12 +4,10 @@
 
 	FIXME!
 	SET correct VOCABULARY_ID before executing the script.
-	SET csv file name
+	SET csv file name if it is in different folder
 */
 
-/*SET @CSV_FILE = "C:/Projects/EEA/datadict/CDDA_SiteCodes.csv";*/
-SET @CSV_FILE = "./CDDA_SiteCodes.csv";
-SET @VOCABULARY_ID = 2;
+SET @VOCABULARY_ID = ??;
 
 /* Create temporary table for import */
 DROP TABLE IF EXISTS TMP_CDDA_SITE_CODE_IMPORT;
@@ -34,8 +32,10 @@ create table TMP_CDDA_SITE_CODE_IMPORT (
 /* Load data */
 LOAD DATA local INFILE "./CDDA_SiteCodes.csv" IGNORE INTO TABLE TMP_CDDA_SITE_CODE_IMPORT CHARACTER SET 'utf8' 
 FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'  IGNORE 1 LINES
-(SITE_CODE, CC, @field_ALLOCATED_DATE, ALLOCATED_NAME, PARENT_ISO, SITE_CODE_NAT, SITE_NAME, @field_CREATED_YEAR, @field_REPORTED_YEAR, @field_DELETED_YEAR, @field_DISAPPEAERED_YEAR)
-SET ALLOCATED_DATE = IF(@field_ALLOCATED_DATE='',null,str_to_date(IF(LENGTH(@field_ALLOCATED_DATE)=4,concat(@field_ALLOCATED_DATE,'-01-01'),@field_ALLOCATED_DATE), '%Y-%m-%d')),
+(SITE_CODE, @field_CC, @field_ALLOCATED_DATE, ALLOCATED_NAME, PARENT_ISO, SITE_CODE_NAT, SITE_NAME, @field_CREATED_YEAR, @field_REPORTED_YEAR, @field_DELETED_YEAR, @field_DISAPPEAERED_YEAR)
+SET 
+ CC = IF(@field_CC='UK', 'GB', @field_CC),
+ ALLOCATED_DATE = IF(@field_ALLOCATED_DATE='',null,str_to_date(IF(LENGTH(@field_ALLOCATED_DATE)=4,concat(@field_ALLOCATED_DATE,'-01-01'),@field_ALLOCATED_DATE), '%Y-%m-%d')),
  CREATED_YEAR = IF(@field_CREATED_YEAR='',null,str_to_date(IF(LENGTH(@field_CREATED_YEAR)=4,concat(@field_CREATED_YEAR,'-01-01'),@field_CREATED_YEAR), '%Y-%m-%d')),
  SITE_CODE_REPORTED_YEAR = IF(@field_REPORTED_YEAR='',null,str_to_date(IF(LENGTH(@field_REPORTED_YEAR)=4,concat(@field_REPORTED_YEAR,'-01-01'),@field_REPORTED_YEAR), '%Y-%m-%d')),
  SITE_DELETED_YEAR = IF(@field_DELETED_YEAR='',null,str_to_date(IF(LENGTH(@field_DELETED_YEAR)=4,concat(@field_DELETED_YEAR,'-01-01'),@field_DELETED_YEAR), '%Y-%m-%d')),
