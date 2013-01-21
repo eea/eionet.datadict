@@ -99,11 +99,12 @@
             </div>
         </c:if>
 
-        <stripes:form id="form" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
-        <stripes:hidden name="vocabularyFolder.id" />
-        <stripes:hidden name="vocabularyFolder.workingCopy" />
-        <stripes:hidden name="vocabularyFolder.checkedOutCopyId" />
+        <stripes:form id="editVocabularyFolderForm" method="post" beanclass="${actionBean.class.name}" style="padding-top:20px">
         <div id="outerframe">
+            <stripes:hidden name="vocabularyFolder.id" />
+            <stripes:hidden name="vocabularyFolder.workingCopy" />
+            <stripes:hidden name="vocabularyFolder.checkedOutCopyId" />
+
             <table class="datatable">
                 <colgroup>
                     <col style="width:26%"/>
@@ -193,11 +194,7 @@
         </stripes:form>
 
         <div id="addNewConceptDiv" title="New concept">
-            <stripes:form id="form" method="post" beanclass="${actionBean.class.name}">
-            <stripes:hidden name="vocabularyFolder.identifier" />
-            <stripes:hidden name="vocabularyFolder.workingCopy" />
-            <stripes:hidden name="vocabularyFolder.id" />
-            <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
+            <stripes:form id="addNewConceptForm" method="post" beanclass="${actionBean.class.name}">
 
             <c:set var="divId" value="addNewConceptDiv" />
             <c:if test="${actionBean.editDivId eq divId}">
@@ -205,7 +202,12 @@
                 <stripes:errors/>
             </c:if>
 
-            <div id="outerframe">
+            <div>
+                <stripes:hidden name="vocabularyFolder.identifier" />
+                <stripes:hidden name="vocabularyFolder.workingCopy" />
+                <stripes:hidden name="vocabularyFolder.id" />
+                <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
+
                 <table class="datatable">
                     <colgroup>
                         <col style="width:26%"/>
@@ -242,7 +244,7 @@
                             <dd:optionalIcon />
                         </td>
                         <td class="simple_attr_value">
-                            <stripes:textarea name="vocabularyConcept.definition" style="width: 500px;" class="smalltext"/>
+                            <stripes:textarea name="vocabularyConcept.definition" rows="3" cols="60" class="smalltext"/>
                         </td>
                     </tr>
                     <tr>
@@ -270,9 +272,10 @@
 
         <!-- Vocabulary concepts search -->
         <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
+            <div id="searchframe">
             <stripes:hidden name="vocabularyFolder.identifier" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
-            <div id="searchframe">
+
             <table class="datatable">
                 <colgroup>
                     <col style="width:26%"/>
@@ -296,8 +299,6 @@
 
         <!-- Vocabulary concepts -->
         <stripes:form method="post" id="conceptsForm" beanclass="${actionBean.class.name}">
-            <stripes:hidden name="vocabularyFolder.identifier" />
-            <stripes:hidden name="vocabularyFolder.workingCopy" />
             <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%"
                 requestURI="/vocabulary/${actionBean.vocabularyFolder.identifier}/edit">
                 <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
@@ -313,8 +314,12 @@
                 <display:column title="Notation" escapeXml="true" property="notation" />
             </display:table>
             <c:if test="${not empty actionBean.vocabularyConcepts.list}">
-                <stripes:submit name="deleteConcepts" value="Delete" />
-                <input type="button" onclick="toggleSelectAll('conceptsForm');return false" value="Select all" name="selectAll">
+                <div>
+                    <stripes:hidden name="vocabularyFolder.identifier" />
+                    <stripes:hidden name="vocabularyFolder.workingCopy" />
+                    <stripes:submit name="deleteConcepts" value="Delete" />
+                    <input type="button" onclick="toggleSelectAll('conceptsForm');return false" value="Select all" name="selectAll">
+                </div>
             </c:if>
         </stripes:form>
 
@@ -322,13 +327,6 @@
         <c:forEach var="item" items="${actionBean.vocabularyConcepts.list}" varStatus="loop">
             <div id="editConceptDiv${item.id}" title="Edit concept">
                 <stripes:form id="form${item.id}" method="post" beanclass="${actionBean.class.name}">
-                    <stripes:hidden name="vocabularyFolder.identifier" />
-                    <stripes:hidden name="vocabularyFolder.workingCopy" />
-                    <stripes:hidden name="vocabularyFolder.id" />
-                    <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
-                    <stripes:hidden name="page" />
-                    <stripes:hidden name="filter.text" />
-                    <stripes:hidden name="vocabularyConcepts.list[${loop.index}].id" />
 
                     <c:set var="divId" value="editConceptDiv${item.id}" />
                     <c:if test="${actionBean.editDivId eq divId}">
@@ -336,7 +334,15 @@
                         <stripes:errors/>
                     </c:if>
 
-                    <div id="outerframe">
+                    <div>
+                        <stripes:hidden name="vocabularyFolder.identifier" />
+                        <stripes:hidden name="vocabularyFolder.workingCopy" />
+                        <stripes:hidden name="vocabularyFolder.id" />
+                        <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
+                        <stripes:hidden name="page" />
+                        <stripes:hidden name="filter.text" />
+                        <stripes:hidden name="vocabularyConcepts.list[${loop.index}].id" />
+
                         <table class="datatable">
                             <colgroup>
                                 <col style="width:26%"/>
@@ -373,7 +379,7 @@
                                     <dd:optionalIcon />
                                 </td>
                                 <td class="simple_attr_value">
-                                    <stripes:textarea name="vocabularyConcepts.list[${loop.index}].definition" style="width: 500px;" class="smalltext"/>
+                                    <stripes:textarea name="vocabularyConcepts.list[${loop.index}].definition" rows="3" cols="60" class="smalltext"/>
                                 </td>
                             </tr>
                             <tr>

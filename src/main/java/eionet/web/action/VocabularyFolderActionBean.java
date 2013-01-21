@@ -207,18 +207,24 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public Resolution saveConcept() throws ServiceException {
 
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+
         if (vocabularyConcept != null) {
             // Save new concept
             vocabularyService.createVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept);
         } else {
             // Update existing concept
             vocabularyService.updateVocabularyConcept(getEditableConcept());
+            initFilter();
+            resolution.addParameter("page", page);
+            if (StringUtils.isNotEmpty(filter.getText())) {
+                resolution.addParameter("filter.text", filter.getText());
+            }
         }
 
         addSystemMessage("Vocabulary concept saved successfully");
-        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
-        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
-        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         return resolution;
     }
 
