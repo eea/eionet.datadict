@@ -26,13 +26,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
@@ -174,25 +171,6 @@ public class SiteCodesActionBean extends AbstractActionBean {
         }
         siteCodeResult = siteCodeService.searchSiteCodes(filter);
         return new ForwardResolution(VIEW_SITE_CODES_JSP);
-    }
-
-    /**
-     * Export CSV action.
-     *
-     * @return
-     */
-    public Resolution exportCsv() {
-        initFilter();
-        filter.setUsePaging(false);
-        StreamingResolution resolution = new StreamingResolution("application/csv") {
-            @Override
-            public void stream(HttpServletResponse response) throws Exception {
-                siteCodeService.exportSiteCodes(filter, response.getOutputStream());
-            }
-        };
-        // TODO add date into the file name
-        resolution.setFilename("siteCodes.csv");
-        return resolution;
     }
 
     /**

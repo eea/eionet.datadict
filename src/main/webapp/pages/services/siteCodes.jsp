@@ -242,6 +242,18 @@
                     </td>
                 </tr>
                 <tr>
+                    <th class="simple_attr_title" title="Result page size">
+                        <label for="pageSize">Page size</label>
+                    </th>
+                    <td class="simple_attr_value">
+                        <stripes:select name="filter.pageSize" id="pageSize" value="${actionBean.filter.pageSize}">
+                            <stripes:option value="20" label="20" />
+                            <stripes:option value="50" label="50" />
+                            <stripes:option value="100" label="100" />
+                        </stripes:select>
+                    </td>
+                </tr>
+                <tr>
                     <td>&nbsp;</td>
                     <td>
                         <stripes:submit name="search" value="Search" />
@@ -253,16 +265,6 @@
 
         <%-- Site codes table --%>
         <c:if test="${actionBean.context.eventName == 'search'}">
-        <%--
-        <c:if test="${actionBean.siteCodeResult.totalItems > 0}">
-            <stripes:link beanclass="${actionBean.class.name}" event="exportCsv">
-                <stripes:param name="userAllocated" value="${actionBean.userAllocated}" />
-                <stripes:param name="dateAllocated" value="${actionBean.dateAllocated}" />
-                Export CSV
-            </stripes:link>
-            <br />
-        </c:if>
-        --%>
         <c:set var="exporttext"><div class="exportlinks"> Downlaod all results as: {0} </div></c:set>
 
         <display:table name="actionBean.siteCodeResult" class="datatable" id="siteCode" style="width:80%"
