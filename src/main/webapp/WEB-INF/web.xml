@@ -177,9 +177,8 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>ResponseOverrideFilter</filter-name>
-        <url-pattern>/services/siteCodes/*</url-pattern>
+        <url-pattern>/services/siteCodes/search</url-pattern>
     </filter-mapping>
-
     <!-- servlets -->
     <servlet>
         <servlet-name>StripesDispatcher</servlet-name>

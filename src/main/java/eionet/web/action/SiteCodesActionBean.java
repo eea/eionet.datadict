@@ -168,7 +168,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
         //detect if it is a export request, don't use paging in this case.
         String exportTypeStr =
             getContext().getRequest().getParameter((new ParamEncoder("siteCode").encodeParameterName(TableTagParameters.PARAMETER_EXPORTTYPE)));
-        if (String.valueOf(MediaTypeEnum.CSV.getCode()).equals (exportTypeStr)) {
+        if (String.valueOf(MediaTypeEnum.CSV.getCode()).equals (exportTypeStr)
+                || String.valueOf(MediaTypeEnum.EXCEL.getCode()).equals (exportTypeStr)) {
             filter.setUsePaging(false);
         }
         siteCodeResult = siteCodeService.searchSiteCodes(filter);
@@ -345,7 +346,17 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     private void initFormData() throws ServiceException {
         initFilter();
+        initUserCountryData();
+        countries = siteCodeService.getAllCountries();
 
+        siteCodeFolderId = siteCodeService.getSiteCodeVocabularyFolderId();
+        startIdentifier = vocabularyService.getNextIdentifierValue(siteCodeFolderId);
+    }
+    /**
+     *
+     * @throws ServiceException
+     */
+    private void initUserCountryData() throws ServiceException {
         if (getUser() != null) {
             userCountries = siteCodeService.getUserCountries(getUser());
 
@@ -355,10 +366,6 @@ public class SiteCodesActionBean extends AbstractActionBean {
         } else {
             userCountries = new ArrayList<FixedValue>();
         }
-        countries = siteCodeService.getAllCountries();
-
-        siteCodeFolderId = siteCodeService.getSiteCodeVocabularyFolderId();
-        startIdentifier = vocabularyService.getNextIdentifierValue(siteCodeFolderId);
     }
 
     /**
@@ -432,9 +439,17 @@ public class SiteCodesActionBean extends AbstractActionBean {
         result[1] = SiteCodeStatus.ASSIGNED;
         return result;
     }
+    /**
+     *
+     * @param countryCode
+     * @return
+     * @throws ServiceException
+     */
+    private int getUnusedCodesForCountry(String countryCode) throws ServiceException {
 
-    private int getUnusedCodesForCountry(String countryCode) {
-
+        if (allocations == null){
+            initUserCountryData();
+        }
         if (allocations != null) {
             for (CountryAllocations allocation : allocations) {
                 if (countryCode.equals(allocation.getCountry().getValue())) {
