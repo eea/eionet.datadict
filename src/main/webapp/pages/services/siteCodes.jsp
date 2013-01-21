@@ -250,6 +250,8 @@
                             <stripes:option value="20" label="20" />
                             <stripes:option value="50" label="50" />
                             <stripes:option value="100" label="100" />
+                            <stripes:option value="500" label="500" />
+                            <stripes:option value="1000" label="1000" />
                         </stripes:select>
                     </td>
                 </tr>
