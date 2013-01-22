@@ -365,7 +365,7 @@
                                     <c:if test="${actionBean.allocateRightAsCountry && fn:length(actionBean.allocations) > 0}">
                                         <p>Limit for self-made allocations is <c:out value="${actionBean.maxAllocateAmount}"/> codes.
                                         You can still allocate up to <span style="color:red;"><c:out value="${actionBean.maxAllocateAmount - actionBean.allocations[0].unusedCodes}"/></span>
-                                        site codes. Please use the second option if you need more.</p>
+                                        site codes. Please contact ETC/BD (<a href="mailto:cdda@mnhn.fr">cdda@mnhn.fr</a>) if you need more.</p>
                                     </c:if>
                                 </td>
                             </tr>
