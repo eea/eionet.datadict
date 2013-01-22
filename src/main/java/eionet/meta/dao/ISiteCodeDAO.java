@@ -86,9 +86,10 @@ public interface ISiteCodeDAO {
      * Returns number of site codes in status: allocated.
      *
      * @param countryCode
+     * @param withoutInitialName
      * @return
      */
-    int getCountryUnusedAllocations(String countryCode);
+    int getCountryUnusedAllocations(String countryCode, boolean withoutInitialName);
 
     /**
      * Returns number of site codes in status: assigned, deleted, disapared.

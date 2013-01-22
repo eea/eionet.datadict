@@ -38,6 +38,9 @@ public class CountryAllocations {
     /** Number of site codes in status: allocated. */
     private int unusedCodes;
 
+    /** Number of site codes in status: allocated and initial_site_code is not filled. */
+    private int unusedCodesWithoutSiteNames;
+
     /**
      * @return the country
      */
@@ -81,6 +84,20 @@ public class CountryAllocations {
      */
     public void setUnusedCodes(int unusedCodes) {
         this.unusedCodes = unusedCodes;
+    }
+
+    /**
+     * @return the unusedCodesWithoutSiteNames
+     */
+    public int getUnusedCodesWithoutSiteNames() {
+        return unusedCodesWithoutSiteNames;
+    }
+
+    /**
+     * @param unusedCodesWithoutSiteNames the unusedCodesWithoutSiteNames to set
+     */
+    public void setUnusedCodesWithoutSiteNames(int unusedCodesWithoutSiteNames) {
+        this.unusedCodesWithoutSiteNames = unusedCodesWithoutSiteNames;
     }
 
 }

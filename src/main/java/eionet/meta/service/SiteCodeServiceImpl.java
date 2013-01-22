@@ -113,8 +113,6 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
     @Override
     public AllocationResult allocateSiteCodes(String countryCode, String[] siteNames, String userName) throws ServiceException {
 
-        // TODO: validate user right to allocate given country code
-
         int amount = siteNames.length;
         SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
         siteCodeFilter.setPageNumber(1);
@@ -188,10 +186,12 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             for (FixedValue fv : countries) {
                 CountryAllocations ca = new CountryAllocations();
                 int usedCodes = siteCodeDao.getCountryUsedAllocations(fv.getValue());
-                int unusedCodes = siteCodeDao.getCountryUnusedAllocations(fv.getValue());
+                int unusedCodes = siteCodeDao.getCountryUnusedAllocations(fv.getValue(),false);
+                int unusedCodesWithoutNames = siteCodeDao.getCountryUnusedAllocations(fv.getValue(),true);
                 ca.setCountry(fv);
                 ca.setUsedCodes(usedCodes);
                 ca.setUnusedCodes(unusedCodes);
+                ca.setUnusedCodesWithoutSiteNames(unusedCodesWithoutNames);
 
                 result.add(ca);
             }

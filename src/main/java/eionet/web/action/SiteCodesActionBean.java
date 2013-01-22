@@ -24,6 +24,7 @@ package eionet.web.action;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -69,11 +70,11 @@ public class SiteCodesActionBean extends AbstractActionBean {
     /** Date-time format. */
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    /** Maximum amount site codes to allocate. */
-    private static final int MAX_ALLOCATE_AMOUNT = 100;
+    /** Maximum amount site codes to allocate without name (1st method). */
+    private static final int MAX_ALLOCATE_AMOUNT_WITHOUT_NAMES = 100;
 
-    /** Maximum amount site codes to allocate using the 2nd option with site names. */
-    private static final int MAX_ALLOCATE_AMOUNT_WITH_NAMES = 500;
+    /** Maximum amount site codes to allocate. */
+    private static final int MAX_ALLOCATE_AMOUNT = 500;
 
     /** Maximum amount site codes to allocate by ETC or EEA users. */
     private static final int MAX_ALLOCATE_AMOUNT_FOR_ETC = 1000;
@@ -91,7 +92,10 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
     /** Form fields. */
     private String country;
+    /** Country inserted site names or other identifiers into textarea. The values are separated by new line.*/
     private String labels;
+    /** List of cleaned up (trimmed and nulls removed) site names inserted by country. */
+    private String[] siteNames;
     private int amount;
     private String choice = CHOICE_AMOUNT;
 
@@ -162,11 +166,11 @@ public class SiteCodesActionBean extends AbstractActionBean {
     public Resolution search() throws ServiceException {
         initFormData();
 
-        //detect if it is a export request, don't use paging in this case.
+        // detect if it is a export request, don't use paging in this case.
         String exportTypeStr =
             getContext().getRequest().getParameter((new ParamEncoder("siteCode").encodeParameterName(TableTagParameters.PARAMETER_EXPORTTYPE)));
-        if (String.valueOf(MediaTypeEnum.CSV.getCode()).equals (exportTypeStr)
-                || String.valueOf(MediaTypeEnum.EXCEL.getCode()).equals (exportTypeStr)) {
+        if (String.valueOf(MediaTypeEnum.CSV.getCode()).equals(exportTypeStr)
+                || String.valueOf(MediaTypeEnum.EXCEL.getCode()).equals(exportTypeStr)) {
             filter.setUsePaging(false);
         }
         siteCodeResult = siteCodeService.searchSiteCodes(filter);
@@ -183,8 +187,10 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
         vocabularyService.reserveFreeSiteCodes(siteCodeFolderId, reserveAmount, startIdentifier, getUserName());
 
+        String eventTime = new SimpleDateFormat(DATE_TIME_FORMAT).format(new Date());
+
         addSystemMessage(reserveAmount + " new site codes successfully created in range " + startIdentifier + " - "
-                + endIdentifier);
+                + endIdentifier + ". (" + eventTime + ")");
         return new RedirectResolution(SiteCodesActionBean.class);
     }
 
@@ -197,16 +203,20 @@ public class SiteCodesActionBean extends AbstractActionBean {
     public Resolution allocate() throws ServiceException {
         AllocationResult allocationResult = null;
         if (CHOICE_LABEL.equals(choice)) {
-            allocationResult = siteCodeService.allocateSiteCodes(country, labels.split("\\n"), getUserName());
+            if (siteNames == null || siteNames.length == 0) {
+                setCleanSiteNames();
+            }
+            allocationResult = siteCodeService.allocateSiteCodes(country, siteNames, getUserName());
         } else {
             allocationResult = siteCodeService.allocateSiteCodes(country, amount, getUserName());
         }
 
-        addSystemMessage(allocationResult.getAmount()
-                + " site codes successfully allocated. For new allocated site codes, see the table below.");
-
         userAllocated = getUserName();
         dateAllocated = new SimpleDateFormat(DATE_TIME_FORMAT).format(allocationResult.getAllocationTime());
+
+        addSystemMessage(allocationResult.getAmount()
+                + " site codes successfully allocated. For new allocated site codes, see the table below. (" + dateAllocated + ")");
+
         return new RedirectResolution(SiteCodesActionBean.class, "search").addParameter("userAllocated", userAllocated).addParameter("dateAllocated", dateAllocated).addParameter("filter.status", SiteCodeStatus.ALLOCATED).addParameter("filter.pageSize", allocationResult.getAmount());
     }
 
@@ -223,7 +233,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
         }
 
         if (StringUtils.isEmpty(choice)) {
-            addGlobalValidationError("Number of site codes or site code names must be specified");
+            addGlobalValidationError("Number of site codes or site ames must be specified");
         }
 
         if (CHOICE_AMOUNT.equals(choice)) {
@@ -231,38 +241,43 @@ public class SiteCodesActionBean extends AbstractActionBean {
                 addGlobalValidationError("Number of site codes must be positive number");
             }
         }
+        // clean site names - remove empty values
+        setCleanSiteNames();
         if (CHOICE_LABEL.equals(choice)) {
-            if (StringUtils.isEmpty(labels)) {
-                addGlobalValidationError("Site code names must be valued");
+            if (StringUtils.isEmpty(labels) || siteNames == null || siteNames.length == 0) {
+                addGlobalValidationError("The list of preliminary site names/identifiers must be valued");
             }
         }
+
         if (isUpdateRight()) {
             // validation for ETCs
             if ((CHOICE_AMOUNT.equals(choice) && amount > MAX_ALLOCATE_AMOUNT_FOR_ETC)
-                    || (CHOICE_LABEL.equals(choice) && labels.split("\\n").length > MAX_ALLOCATE_AMOUNT_FOR_ETC)) {
+                    || (CHOICE_LABEL.equals(choice) && siteNames.length > MAX_ALLOCATE_AMOUNT_FOR_ETC)) {
                 addGlobalValidationError("Number of allocated site codes cannot exceed " + MAX_ALLOCATE_AMOUNT_FOR_ETC
                         + " in one request.");
             }
         } else {
             // validation for countries
-            int unusedCodes = getUnusedCodesForCountry(country);
+            int unusedCodesWithoutNames = getUnusedCodesForCountry(country, true);
+            int unusedCodes = getUnusedCodesForCountry(country, false);
             if (CHOICE_AMOUNT.equals(choice)) {
-                if (amount + unusedCodes > MAX_ALLOCATE_AMOUNT) {
+                if ((amount + unusedCodesWithoutNames > MAX_ALLOCATE_AMOUNT_WITHOUT_NAMES)
+                        || (amount + unusedCodes > MAX_ALLOCATE_AMOUNT)) {
                     addGlobalValidationError("Unable to allocate site codes! You already have or after the allocation"
-                            + " you would have more than " + MAX_ALLOCATE_AMOUNT
+                            + " you would have more than " + MAX_ALLOCATE_AMOUNT_WITHOUT_NAMES
                             + " site codes, yet unassigned, allocated. Try using the allocation method 2 by providing site names"
                             + " or IDs in the dedicated textarea. In this case you are able to allocate up to "
-                            + MAX_ALLOCATE_AMOUNT_WITH_NAMES
+                            + MAX_ALLOCATE_AMOUNT
                             + " site codes. If you need more site codes allocated than this criteria allows, "
                             + "then please contact ETC/BD with explanation of why you need more codes. "
                             + "ETC/BD then can allocate the codes for your country if the explanation is valid.)");
                 }
             }
             if (CHOICE_LABEL.equals(choice)) {
-                if (labels.split("\\n").length + unusedCodes > MAX_ALLOCATE_AMOUNT_WITH_NAMES) {
+                if (siteNames.length + unusedCodes > MAX_ALLOCATE_AMOUNT) {
                     addGlobalValidationError("Unable to allocate site codes! You already have or after the allocation"
                             + " you would have more than "
-                            + MAX_ALLOCATE_AMOUNT_WITH_NAMES
+                            + MAX_ALLOCATE_AMOUNT
                             + " site codes, yet unassigned, allocated. If you need more site codes allocated than this criteria allows, "
                             + "then please contact ETC/BD with explanation of why you need more codes. "
                             + "ETC/BD then can allocate the codes for your country if the explanation is valid.)");
@@ -330,6 +345,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
         siteCodeFolderId = siteCodeService.getSiteCodeVocabularyFolderId();
         startIdentifier = vocabularyService.getNextIdentifierValue(siteCodeFolderId);
     }
+
     /**
      *
      * @throws ServiceException
@@ -373,7 +389,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      *
      * @return
      */
-    private boolean isUpdateRight() {
+    public boolean isUpdateRight() {
         if (getUser() != null) {
             return getUser().hasPermission("/sitecodes", "u");
         }
@@ -398,9 +414,18 @@ public class SiteCodesActionBean extends AbstractActionBean {
      * @return
      */
     public boolean isAllocateRight() throws ServiceException {
+        return isUpdateRight() || isAllocateRightAsCountry();
+    }
+
+    /**
+     * True, if the user has allocation right for country.
+     *
+     * @return
+     */
+    public boolean isAllocateRightAsCountry() throws ServiceException {
         if (getUser() != null) {
             List<String> countriesByRole = SecurityUtil.getUserCountriesFromRoles(getUser(), ISiteCodeService.COUNTRY_USER_ROLES);
-            return isUpdateRight() || (countriesByRole != null && countriesByRole.size() > 0);
+            return countriesByRole != null && countriesByRole.size() > 0;
         }
 
         return false;
@@ -417,25 +442,46 @@ public class SiteCodesActionBean extends AbstractActionBean {
         result[1] = SiteCodeStatus.ASSIGNED;
         return result;
     }
+
     /**
      *
      * @param countryCode
      * @return
      * @throws ServiceException
      */
-    private int getUnusedCodesForCountry(String countryCode) throws ServiceException {
+    private int getUnusedCodesForCountry(String countryCode, boolean onlyWithoutNames) throws ServiceException {
 
-        if (allocations == null){
+        if (allocations == null) {
             initUserCountryData();
         }
         if (allocations != null) {
             for (CountryAllocations allocation : allocations) {
                 if (countryCode.equals(allocation.getCountry().getValue())) {
-                    return allocation.getUnusedCodes();
+                    if (onlyWithoutNames) {
+                        return allocation.getUnusedCodesWithoutSiteNames();
+                    } else {
+                        return allocation.getUnusedCodes();
+                    }
                 }
             }
         }
         return 0;
+    }
+
+    /**
+     * Remove empty labels from the list of inserted new line separated site names
+     */
+    private void setCleanSiteNames() {
+        if (labels != null && labels.length() > 0) {
+            String[] labelsArray = labels.split("\\n");
+            List<String> siteNamesList = new ArrayList<String>();
+            for (String label : labelsArray) {
+                if (label.trim().length() > 0) {
+                    siteNamesList.add(label.trim());
+                }
+            }
+            siteNames = siteNamesList.toArray(new String[] {});
+        }
     }
 
     /**
@@ -681,4 +727,13 @@ public class SiteCodesActionBean extends AbstractActionBean {
         this.pageSize = pageSize;
     }
 
+    /** Returns the maximum amount of codes allowed to allocate to one country. */
+    public int getMaxAllocateAmount() {
+        return MAX_ALLOCATE_AMOUNT;
+    }
+
+    /** Returns the maximum amount of codes allowed to allocate without site names to one country. */
+    public int getMaxAllocateAmountWithoutNames() {
+        return MAX_ALLOCATE_AMOUNT_WITHOUT_NAMES;
+    }
 }

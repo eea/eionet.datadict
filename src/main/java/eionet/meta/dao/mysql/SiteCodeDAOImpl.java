@@ -242,14 +242,17 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * {@inheritDoc}
      */
     @Override
-    public int getCountryUnusedAllocations(String countryCode) {
+    public int getCountryUnusedAllocations(String countryCode, boolean withoutInitialName) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("countryCode", countryCode);
         params.put("status", SiteCodeStatus.ALLOCATED.name());
 
         StringBuilder sql = new StringBuilder();
         sql.append("select count(SITE_CODE_ID) from T_SITE_CODE where STATUS = :status ");
-        sql.append("and CC_ISO2 = :countryCode");
+        sql.append("and CC_ISO2 = :countryCode ");
+        if (withoutInitialName){
+            sql.append("and (INITIAL_SITE_NAME is null or INITIAL_SITE_NAME = '') ");
+        }
 
         return getNamedParameterJdbcTemplate().queryForInt(sql.toString(), params);
     }

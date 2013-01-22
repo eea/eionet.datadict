@@ -297,61 +297,107 @@
         </c:if>
         <%-- Site codes allocation popup --%>
         <div id="allocateSiteCodesDiv" title="Allocate site codes">
-            <div class="tip-msg">
-                <strong>Tip</strong>
-                <p>You have the following two options how to allocate new global site codes for your sites.</p>
-            </div>
+            <c:choose>
+                <c:when test="${actionBean.updateRight ||
+                    (actionBean.allocateRightAsCountry && fn:length(actionBean.allocations) > 0 &&
+                    actionBean.allocations[0].unusedCodes < actionBean.maxAllocateAmount)}">
+                    <div class="tip-msg">
+                        <strong>Tip</strong>
+                        <p>You have the following two options how to allocate new global site codes for your sites.</p>
+                    </div>
 
-            <stripes:form method="post" id="allocateSiteCodesForm" beanclass="${actionBean.class.name}">
-                <table class="datatable">
-                    <colgroup>
-                        <col style="width:1%" />
-                        <col style="width:26%"/>
-                        <col />
-                    </colgroup>
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td class="simple_attr_title" title="Country to allocate to">
-                            <label for="country">Country</label>
-                        </td>
-                        <td class="simple_attr_value">
-                            <stripes:select name="country" id="country">
-                                <stripes:options-collection collection="${actionBean.userCountries}" value="value" label="definition" />
-                            </stripes:select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><stripes:radio name="choice" value="amount" id="choiceAmount" checked="checked"/></td>
-                        <td class="simple_attr_title" title="Number of site codes to allocate" colspan="2">
-                            <label for="choiceAmount">Enter the number of new site codes and press OK button</label>
-                            <stripes:text class="smalltext" size="5" name="amount" id="amountText"/>
-                        </td>
-                    </tr>
-                    <tr><td colspan="4" style="padding-left: 10%">Or</td></tr>
-                    <tr>
-                        <td><stripes:radio name="choice" value="label" id="choiceLabel"/></td>
-                        <td class="simple_attr_title" title="List of new site code names separated by new line" colspan="2">
-                            <label for="choiceLabel">Copy a list of new sites (their names, national codes or other identifiers
-                             of your choice, or their combinations - anything that help you to remember which sites you have
-                             allocated the codes for) and paste them into the area below. Please assure that each site occupy one line.
-                             The result will be displayed for your reference and sent to you by email.</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td class="simple_attr_value" colspan="2">
-                            <stripes:textarea class="smalltext" name="labels" id="labelsText" rows="7" cols="70"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">&nbsp;</td>
-                        <td>
-                            <stripes:submit name="allocate" value="OK" />
-                            <button type="button" id="closeAllocateLink">Cancel</button>
-                        </td>
-                    </tr>
-                </table>
-            </stripes:form>
+                    <stripes:form method="post" id="allocateSiteCodesForm" beanclass="${actionBean.class.name}">
+                        <table class="datatable">
+                            <colgroup>
+                                <col style="width:1%" />
+                                <col style="width:26%"/>
+                                <col />
+                            </colgroup>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td class="simple_attr_title" title="Country to allocate to">
+                                    <label for="country">Country</label>
+                                </td>
+                                <td class="simple_attr_value">
+                                    <stripes:select name="country" id="country">
+                                        <stripes:options-collection collection="${actionBean.userCountries}" value="value" label="definition" />
+                                    </stripes:select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><stripes:radio name="choice" value="amount" id="choiceAmount" checked="checked"/></td>
+                                <td class="simple_attr_title" title="Number of site codes to allocate" colspan="2">
+                                    <label for="choiceAmount">Enter the number of new site codes and press OK button</label>
+                                    <stripes:text class="smalltext" size="5" name="amount" id="amountText"/>
+                                    <c:if test="${actionBean.allocateRightAsCountry && fn:length(actionBean.allocations) > 0}">
+                                        <c:choose>
+                                            <c:when test="${actionBean.allocations[0].unusedCodesWithoutSiteNames < actionBean.maxAllocateAmountWithoutNames}">
+                                                <p>Allocation limit for this option is <c:out value="${actionBean.maxAllocateAmountWithoutNames}"/> codes.
+                                                You can still allocate up to <span style="color:red;">
+                                                <c:choose>
+                                                    <c:when test="${(actionBean.maxAllocateAmount - actionBean.allocations[0].unusedCodes) < (actionBean.maxAllocateAmountWithoutNames - actionBean.allocations[0].unusedCodesWithoutSiteNames)}">
+                                                        <c:out value="${actionBean.maxAllocateAmount - actionBean.allocations[0].unusedCodes}"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:out value="${actionBean.maxAllocateAmountWithoutNames - actionBean.allocations[0].unusedCodesWithoutSiteNames}"/>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                </span>
+                                                site codes by this option. Please use the second option if you need more.</p>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <p>This option can’t be used! Its allocation limit is <c:out value="${actionBean.maxAllocateAmountWithoutNames}"/> codes.
+                                                <span style="color:red;"><c:out value="${actionBean.allocations[0].unusedCodesWithoutSiteNames}"/></span>
+                                                site codes have already been allocated by this option. Please use the second option if you need to allocate more.</p>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:if>
+                                </td>
+                            </tr>
+                            <tr><td colspan="4" style="padding-left: 10%">Or</td></tr>
+                            <tr>
+                                <td><stripes:radio name="choice" value="label" id="choiceLabel"/></td>
+                                <td class="simple_attr_title" title="List of new site code names separated by new line" colspan="2">
+                                    <label for="choiceLabel">Copy a list of new sites (their names, national codes or other identifiers
+                                    of your choice, or their combinations - anything that help you to remember which sites you have
+                                    allocated the codes for) and paste them into the area below. Please assure that each site occupy one line.
+                                    The result will be displayed for your reference and sent to you by email.</label>
+                                    <c:if test="${actionBean.allocateRightAsCountry && fn:length(actionBean.allocations) > 0}">
+                                        <p>Limit for self-made allocations is <c:out value="${actionBean.maxAllocateAmount}"/> codes.
+                                        You can still allocate up to <span style="color:red;"><c:out value="${actionBean.maxAllocateAmount - actionBean.allocations[0].unusedCodes}"/></span>
+                                        site codes. Please use the second option if you need more.</p>
+                                    </c:if>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="simple_attr_value" colspan="2">
+                                    <stripes:textarea class="smalltext" name="labels" id="labelsText" rows="7" cols="70"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">&nbsp;</td>
+                                <td>
+                                    <stripes:submit name="allocate" value="OK" />
+                                    <button type="button" id="closeAllocateLink">Cancel</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </stripes:form>
+                </c:when>
+                <c:when test="${actionBean.allocateRightAsCountry && fn:length(actionBean.allocations) > 0 &&
+                    actionBean.allocations[0].unusedCodes >= actionBean.maxAllocateAmount}">
+                    <div class="warning-msg">
+                        <strong>Warning</strong>
+                        <p>You have already allocated <strong><c:out value="${actionBean.allocations[0].unusedCodes}"/></strong> site codes.
+                        You can’t allocate more by yourself.
+                        If you need more codes please contact ETC/BD (<a href="mailto:cdda@mnhn.fr">cdda@mnhn.fr</a>)
+                        with explanation. </p>
+                    </div>
+                    <button type="button" id="closeAllocateLink" style="margin-left:15em;">OK</button>
+                </c:when>
+                <c:otherwise></c:otherwise>
+            </c:choose>
         </div>
 
         <%-- Reserve site codes range --%>
