@@ -91,38 +91,48 @@ public class VocabularyXmlWriter {
         writer.writeStartElement("rdf", "RDF", RDF_NS);
         writer.writeNamespace("rdf", RDF_NS);
         writer.writeNamespace("rdfs", RDFS_NS);
-        writer.writeNamespace("", SKOS_NS);
+        writer.writeNamespace("skos", SKOS_NS);
         writer.writeAttribute("xml", XML_NS, "base", contextRoot);
 
+        writer.writeCharacters("\n");
         writer.writeStartElement(SKOS_NS, "ConceptScheme");
         writer.writeAttribute("rdf", RDF_NS, "about", "");
 
+        writer.writeCharacters("\n");
         writer.writeStartElement(RDFS_NS, "label");
         writer.writeCharacters(vocabularyFolder.getLabel());
         writer.writeEndElement();
 
-        writer.writeEndElement();
+        writer.writeCharacters("\n");
+        writer.writeEndElement(); // End ConceptScheme
 
         for (VocabularyConcept vc : vocabularyConcepts) {
+            writer.writeCharacters("\n");
             writer.writeStartElement(SKOS_NS, "Concept");
             writer.writeAttribute("rdf", RDF_NS, "about", vc.getIdentifier());
 
             if (StringUtils.isNotEmpty(vc.getNotation())) {
+                writer.writeCharacters("\n");
                 writer.writeStartElement(SKOS_NS, "notation");
                 writer.writeCharacters(vc.getNotation());
                 writer.writeEndElement();
             }
 
+            writer.writeCharacters("\n");
             writer.writeStartElement(SKOS_NS, "prefLabel");
             writer.writeCharacters(vc.getLabel());
             writer.writeEndElement();
 
-            writer.writeEmptyElement("inScheme");
+            writer.writeCharacters("\n");
+            writer.writeEmptyElement(SKOS_NS, "inScheme");
             writer.writeAttribute("rdf", RDF_NS, "resource", "");
 
+            writer.writeCharacters("\n");
             writer.writeEndElement();
         }
 
-        writer.writeEndElement();
+        writer.writeCharacters("\n");
+        writer.writeEndElement(); // End rdf:RDF
+        writer.writeCharacters("\n");
     }
 }
