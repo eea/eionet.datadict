@@ -37,6 +37,7 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
 import org.displaytag.properties.MediaTypeEnum;
+import org.displaytag.properties.SortOrderEnum;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 
@@ -95,7 +96,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
     /** Form fields. */
     private String country;
-    /** Country inserted site names or other identifiers into textarea. The values are separated by new line.*/
+    /** Country inserted site names or other identifiers into textarea. The values are separated by new line. */
     private String labels;
     /** List of cleaned up (trimmed and nulls removed) site names inserted by country. */
     private String[] siteNames;
@@ -116,6 +117,12 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
     /** Concepts table page number. */
     private int page = 1;
+
+    /** Sorting parameter. */
+    private String sort;
+
+    /** Sorting direction. */
+    private String dir;
 
     /** Number of rows displayed on page. */
     private int pageSize = PagedRequest.DEFAULT_PAGE_SIZE;
@@ -171,7 +178,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
         // detect if it is a export request, don't use paging in this case.
         String exportTypeStr =
-            getContext().getRequest().getParameter((new ParamEncoder("siteCode").encodeParameterName(TableTagParameters.PARAMETER_EXPORTTYPE)));
+                getContext().getRequest().getParameter(
+                        (new ParamEncoder("siteCode").encodeParameterName(TableTagParameters.PARAMETER_EXPORTTYPE)));
         if (String.valueOf(MediaTypeEnum.CSV.getCode()).equals(exportTypeStr)
                 || String.valueOf(MediaTypeEnum.EXCEL.getCode()).equals(exportTypeStr)) {
             filter.setUsePaging(false);
@@ -254,7 +262,9 @@ public class SiteCodesActionBean extends AbstractActionBean {
         addSystemMessage(allocationResult.getAmount()
                 + " site codes successfully allocated. For new allocated site codes, see the table below. (" + dateAllocated + ")");
 
-        return new RedirectResolution(SiteCodesActionBean.class, "search").addParameter("userAllocated", userAllocated).addParameter("dateAllocated", dateAllocated).addParameter("filter.status", SiteCodeStatus.ALLOCATED).addParameter("filter.pageSize", allocationResult.getAmount());
+        return new RedirectResolution(SiteCodesActionBean.class, "search").addParameter("userAllocated", userAllocated)
+                .addParameter("dateAllocated", dateAllocated).addParameter("filter.status", SiteCodeStatus.ALLOCATED)
+                .addParameter("filter.pageSize", allocationResult.getAmount());
     }
 
     /**
@@ -262,7 +272,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    @ValidationMethod(on = { "allocate" })
+    @ValidationMethod(on = {"allocate"})
     public void validateAllocate() throws ServiceException {
 
         if (!isAllocateRight()) {
@@ -333,7 +343,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    @ValidationMethod(on = { "reserveNewSiteCodes" })
+    @ValidationMethod(on = {"reserveNewSiteCodes"})
     public void validateReserveNewSiteCodes() throws ServiceException {
         if (!isCreateRight()) {
             addGlobalValidationError("No privilege to reserve new site codes");
@@ -358,7 +368,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
         }
 
         List<Integer> unavailableIdentifiers =
-            vocabularyService.checkAvailableIdentifiers(siteCodeFolderId, reserveAmount, startIdentifier);
+                vocabularyService.checkAvailableIdentifiers(siteCodeFolderId, reserveAmount, startIdentifier);
         if (unavailableIdentifiers.size() > 0) {
             addGlobalValidationError("Identifers are unavailaible: " + StringUtils.join(unavailableIdentifiers, ", "));
         }
@@ -408,6 +418,14 @@ public class SiteCodesActionBean extends AbstractActionBean {
         }
         filter.setUser(getUser());
         filter.setPageNumber(page);
+        filter.setSortProperty(sort);
+        if (StringUtils.isNotEmpty(dir)) {
+            if (dir.equals("asc")) {
+                filter.setSortOrder(SortOrderEnum.ASCENDING);
+            } else {
+                filter.setSortOrder(SortOrderEnum.DESCENDING);
+            }
+        }
 
         if (StringUtils.isNotEmpty(userAllocated)) {
             filter.setUserAllocated(userAllocated);
@@ -737,7 +755,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param endIdentifier the endIdentifier to set
+     * @param endIdentifier
+     *            the endIdentifier to set
      */
     public void setEndIdentifier(int endIdentifier) {
         this.endIdentifier = endIdentifier;
@@ -758,10 +777,41 @@ public class SiteCodesActionBean extends AbstractActionBean {
     }
 
     /**
-     * @param pageSize the pageSize to set
+     * @param pageSize
+     *            the pageSize to set
      */
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    /**
+     * @return the sort
+     */
+    public String getSort() {
+        return sort;
+    }
+
+    /**
+     * @param sort
+     *            the sort to set
+     */
+    public void setSort(String sort) {
+        this.sort = sort;
+    }
+
+    /**
+     * @return the dir
+     */
+    public String getDir() {
+        return dir;
+    }
+
+    /**
+     * @param dir
+     *            the dir to set
+     */
+    public void setDir(String dir) {
+        this.dir = dir;
     }
 
     /** Returns the maximum amount of codes allowed to allocate to one country. */

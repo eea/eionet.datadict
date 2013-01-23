@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.displaytag.properties.SortOrderEnum;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -120,8 +121,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         if (filter.getStatus() != null) {
             params.put("status", filter.getStatus().toString());
             sql.append("and sc.STATUS = :status ");
-        }
-        else if (filter.isAllocatedUsedStatuses()) {
+        } else if (filter.isAllocatedUsedStatuses()) {
             params.put("statuses", Arrays.asList(SiteCodeFilter.ALLOCATED_USED_STATUSES));
             sql.append("and sc.STATUS IN  (:statuses) ");
         }
@@ -129,7 +129,22 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             params.put("countryCode", filter.getCountryCode());
             sql.append("and sc.CC_ISO2 = :countryCode ");
         }
-        sql.append("order by IDENTIFIER + 0 ");
+
+        // sorting
+        if (StringUtils.isNotEmpty(filter.getSortProperty())) {
+            if (filter.getSortProperty().equals("identifier")) {
+                sql.append("order by IDENTIFIER + 0");
+            } else {
+                sql.append("order by " + filter.getSortProperty());
+            }
+            if (SortOrderEnum.ASCENDING.equals(filter.getSortOrder())) {
+                sql.append(" ASC ");
+            } else {
+                sql.append(" DESC ");
+            }
+        } else {
+            sql.append("order by IDENTIFIER + 0 ");
+        }
         if (filter.isUsePaging()) {
             sql.append("LIMIT ").append(filter.getOffset()).append(",").append(filter.getPageSize());
         }

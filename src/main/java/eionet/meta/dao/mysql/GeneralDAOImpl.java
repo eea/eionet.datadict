@@ -27,6 +27,7 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcDaoSupport;
 
@@ -42,6 +43,9 @@ import eionet.meta.service.data.IObjectWithDynamicAttrs;
  * @author Juhan Voolaid
  */
 public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implements IGeneralDao {
+
+    /** Logger. */
+    protected static final Logger LOGGER = Logger.getLogger(GeneralDAOImpl.class);
 
     /**
      * Data source.
@@ -73,9 +77,13 @@ public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implem
 
     /**
      * Build SQL for searching objects by dynamic attribute values. The method also fills SQL query parameters map.
-     * @param filter IObjectWithDynamicAttrsFilter object where attribute values have been defined
-     * @param params SQL query parameters map.
-     * @param keyField Foreign key field in SQL to be used when joining ATTRIBUTE table.
+     *
+     * @param filter
+     *            IObjectWithDynamicAttrsFilter object where attribute values have been defined
+     * @param params
+     *            SQL query parameters map.
+     * @param keyField
+     *            Foreign key field in SQL to be used when joining ATTRIBUTE table.
      * @return SQL constraint with attributes values.
      */
     protected StringBuilder getAttributesSqlConstraintAndAppendParams(IObjectWithDynamicAttrs filter, Map<String, Object> params,
@@ -112,9 +120,13 @@ public abstract class GeneralDAOImpl extends NamedParameterJdbcDaoSupport implem
 
     /**
      * Build SQL for searching objects by dynamic complex attribute field values. The method also fills SQL query parameters map.
-     * @param filter IObjectWithDynamicAttrsFilter object where attribute values have been defined
-     * @param params SQL query parameters map.
-     * @param keyField Foreign key field in SQL to be used when joining ATTRIBUTE table.
+     *
+     * @param filter
+     *            IObjectWithDynamicAttrsFilter object where attribute values have been defined
+     * @param params
+     *            SQL query parameters map.
+     * @param keyField
+     *            Foreign key field in SQL to be used when joining ATTRIBUTE table.
      * @return SQL constraint with attributes values.
      */
     protected StringBuilder getComplexAttrsSqlConstraintAndAppendParams(IObjectWithDynamicAttrs filter,

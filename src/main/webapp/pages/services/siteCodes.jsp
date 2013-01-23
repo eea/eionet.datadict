@@ -273,18 +273,18 @@
         requestURI="/services/siteCodes/search" export="true">
             <display:setProperty name="basic.msg.empty_list" value="No site codes found." />
 
-            <display:column title="Site code" property="identifier" escapeXml="true" class="number" style="width: 1%" />
-            <display:column title="Site name" escapeXml="true" property="label" />
-            <display:column title="Status">
+            <display:column title="Site code" property="identifier" escapeXml="true" class="number" style="width: 1%" sortable="true" sortProperty="identifier" />
+            <display:column title="Site name" escapeXml="true" property="label" sortable="true" sortProperty="label" />
+            <display:column title="Status" sortable="true" sortProperty="status">
                 <c:out value="${siteCode.status.label}" />
             </display:column>
-            <display:column title="Country" escapeXml="true" property="countryCode" />
-            <display:column title="Allocated">
+            <display:column title="Country" escapeXml="true" property="countryCode" sortable="true" sortProperty="cc_iso2" />
+            <display:column title="Allocated" sortable="true" sortProperty="date_allocated">
                 <fmt:formatDate value="${siteCode.dateAllocated}" pattern="yyyy-MM-dd HH:mm:ss" />
             </display:column>
-            <display:column title="User" escapeXml="true" property="userAllocated" />
+            <display:column title="User" escapeXml="true" property="userAllocated" sortable="true" sortProperty="user_allocated" />
             <c:if test="${actionBean.filter.status == actionBean.allocatedStatus}">
-                <display:column title="Preliminary site name/identifier" escapeXml="true" property="initialSiteName" />
+                <display:column title="Preliminary site name/identifier" escapeXml="true" property="initialSiteName" sortable="true" sortProperty="initial_site_name" />
             </c:if>
             <display:setProperty name="export.banner" value="${exporttext}"/>
             <display:setProperty name="export.excel.filename" value="CDDASiteCodes.xls"/>
