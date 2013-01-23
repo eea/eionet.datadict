@@ -42,6 +42,9 @@ import org.displaytag.util.ParamEncoder;
 
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SiteCodeStatus;
+import eionet.meta.notif.SiteCodeAddedNotification;
+import eionet.meta.notif.SiteCodeAllocationNotification;
+import eionet.meta.notif.UNSEventSender;
 import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
@@ -189,6 +192,20 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
         String eventTime = new SimpleDateFormat(DATE_TIME_FORMAT).format(new Date());
 
+        // FIXME move to service layer
+        try {
+            SiteCodeAddedNotification notification = new SiteCodeAddedNotification();
+            notification.setCreatedTime(new Date());
+            notification.setUsername(getUserName());
+            notification.setNewCodesStartIdentifier(startIdentifier);
+            notification.setNofAddedCodes(reserveAmount);
+            notification.setNewCodesEndIdentifier(startIdentifier + reserveAmount);
+            notification.setTotalNumberOfAvailableCodes(siteCodeService.getFeeSiteCodeAmount());
+            UNSEventSender.siteCodesAdded(notification, getUserName());
+        } catch (Exception e) {
+            LOGGER.error("Unable to send notifications: " + e.getMessage());
+        }
+
         addSystemMessage(reserveAmount + " new site codes successfully created in range " + startIdentifier + " - "
                 + endIdentifier + ". (" + eventTime + ")");
         return new RedirectResolution(SiteCodesActionBean.class);
@@ -213,6 +230,26 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
         userAllocated = getUserName();
         dateAllocated = new SimpleDateFormat(DATE_TIME_FORMAT).format(allocationResult.getAllocationTime());
+
+        // FIXME move to service
+        try {
+            SiteCodeAllocationNotification notification = new SiteCodeAllocationNotification();
+            notification.setAllocationTime(allocationResult.getAllocationTime());
+            notification.setUsername(getUserName());
+            notification.setCountry(country);
+            notification.setNofAvailableCodes(siteCodeService.getFeeSiteCodeAmount());
+            notification.setTotalNofAllocatedCodes(getUnusedCodesForCountry(country, false) - allocationResult.getAmount());
+            notification.setNofCodesAllocatedByEvent(allocationResult.getAmount());
+            SiteCodeFilter filter = new SiteCodeFilter();
+            filter.setDateAllocated(allocationResult.getAllocationTime());
+            filter.setUserAllocated(userAllocated);
+            SiteCodeResult siteCodes = siteCodeService.searchSiteCodes(filter);
+            notification.setSiteCodes(siteCodes.getList());
+
+            UNSEventSender.siteCodesAllocated(notification, getUserName());
+        } catch (Exception e) {
+            LOGGER.error("Unable to send notifications: " + e.getMessage());
+        }
 
         addSystemMessage(allocationResult.getAmount()
                 + " site codes successfully allocated. For new allocated site codes, see the table below. (" + dateAllocated + ")");

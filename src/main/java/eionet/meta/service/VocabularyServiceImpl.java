@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,9 @@ import eionet.util.Util;
 @Service
 @Transactional
 public class VocabularyServiceImpl implements IVocabularyService {
+
+    /** Logger. */
+    protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceImpl.class);
 
     /** Vocabulary folder DAO. */
     @Autowired
@@ -446,6 +450,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             //Insert Site code records
             siteCodeDAO.insertSiteCodesFromConcepts(newConceptsResult.getList(), userName);
+
+            LOGGER.info(userName + " created " + amount + " new site codes.");
 
         } catch (Exception e) {
             throw new ServiceException("Failed to reserve empty site codes: " + e.getMessage(), e);

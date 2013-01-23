@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +50,9 @@ import eionet.util.SecurityUtil;
 @Service
 @Transactional
 public class SiteCodeServiceImpl implements ISiteCodeService {
+
+    /** Logger. */
+    protected static final Logger LOGGER = Logger.getLogger(SiteCodeServiceImpl.class);
 
     private static final String SITE_CODE_IDENTIFIER = "CountryCode";
 
@@ -134,6 +138,9 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             result.setAmount(amount);
             result.setUserName(userName);
             result.setAllocationTime(allocationTime);
+
+            LOGGER.info(userName + " allocated " + amount + " site codes for " + countryCode + " on " + allocationTime);
+
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to allocate site codes: " + e.getMessage(), e);

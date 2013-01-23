@@ -226,6 +226,36 @@ public class UNSEventSender {
         sendEvent(predicateObjects, user);
     }
 
+    public static void siteCodesAdded(SiteCodeAddedNotification siteCodeAddedNotif, String user) {
+
+        if (siteCodeAddedNotif == null) {
+            return;
+        }
+        Hashtable predicateObjects = new Hashtable();
+        Vector objects = null;
+
+        //TODO convert siteCodeAddedNotif object to XML - RPC equest.
+        predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
+
+        // FIXME
+        //sendEvent(predicateObjects, user);
+    }
+
+    public static void siteCodesAllocated(SiteCodeAllocationNotification siteCodeAllocatedNotif, String user) {
+
+        if (siteCodeAllocatedNotif == null) {
+            return;
+        }
+        Hashtable predicateObjects = new Hashtable();
+        Vector objects = null;
+
+        //TODO convert siteCodeAllocatedNotif object to XML - RPC equest.
+        predicateObjects.put(Props.getProperty(PropsIF.OUTSERV_PRED_TITLE), objects);
+
+        // FIXME
+        //sendEvent(predicateObjects, user);
+    }
+
     /*
      *
      */
@@ -302,8 +332,7 @@ public class UNSEventSender {
         try {
             // instantiate XML-RPC client object, set username/password from configuration
             XmlRpcClient client = new XmlRpcClient(serverURL);
-            client.setBasicAuthentication(Props.getProperty(Subscriber.PROP_UNS_USERNAME),
-                    Props.getProperty(Subscriber.PROP_UNS_PASSWORD));
+            client.setBasicAuthentication(Props.getProperty(Subscriber.PROP_UNS_USERNAME), Props.getProperty(Subscriber.PROP_UNS_PASSWORD));
 
             // prepare call parameters
             Vector params = new Vector();
