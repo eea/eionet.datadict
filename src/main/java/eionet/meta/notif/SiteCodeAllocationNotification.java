@@ -21,7 +21,6 @@
 
 package eionet.meta.notif;
 
-import java.util.Date;
 import java.util.List;
 
 import eionet.meta.service.data.SiteCode;
@@ -35,95 +34,132 @@ public class SiteCodeAllocationNotification {
     public static final String CDDA_SITE_CODES_ALLOCATED_EVENT = "Site codes allocated";
 
     private String username;
-    private Date allocationTime;
+    private String allocationTime;
     private String country;
     private int nofCodesAllocatedByEvent;
     private int totalNofAllocatedCodes;
     private int nofAvailableCodes;
     private List<SiteCode> siteCodes;
+    private boolean adminRole;
+
     /**
      * @return the username
      */
     public String getUsername() {
         return username;
     }
+
     /**
-     * @param username the username to set
+     * @param username
+     *            the username to set
      */
     public void setUsername(String username) {
         this.username = username;
     }
+
     /**
      * @return the allocationTime
      */
-    public Date getAllocationTime() {
+    public String getAllocationTime() {
         return allocationTime;
     }
+
     /**
-     * @param allocationTime the allocationTime to set
+     * @param allocationTime
+     *            the allocationTime to set
      */
-    public void setAllocationTime(Date allocationTime) {
+    public void setAllocationTime(String allocationTime) {
         this.allocationTime = allocationTime;
     }
+
     /**
      * @return the country
      */
     public String getCountry() {
         return country;
     }
+
     /**
-     * @param country the country to set
+     * @param country
+     *            the country to set
      */
     public void setCountry(String country) {
         this.country = country;
     }
+
     /**
      * @return the nofCodesAllocatedByEvent
      */
     public int getNofCodesAllocatedByEvent() {
         return nofCodesAllocatedByEvent;
     }
+
     /**
-     * @param nofCodesAllocatedByEvent the nofCodesAllocatedByEvent to set
+     * @param nofCodesAllocatedByEvent
+     *            the nofCodesAllocatedByEvent to set
      */
     public void setNofCodesAllocatedByEvent(int nofCodesAllocatedByEvent) {
         this.nofCodesAllocatedByEvent = nofCodesAllocatedByEvent;
     }
+
     /**
      * @return the totalNofAllocatedCodes
      */
     public int getTotalNofAllocatedCodes() {
         return totalNofAllocatedCodes;
     }
+
     /**
-     * @param totalNofAllocatedCodes the totalNofAllocatedCodes to set
+     * @param totalNofAllocatedCodes
+     *            the totalNofAllocatedCodes to set
      */
     public void setTotalNofAllocatedCodes(int totalNofAllocatedCodes) {
         this.totalNofAllocatedCodes = totalNofAllocatedCodes;
     }
+
     /**
      * @return the nofAvailableCodes
      */
     public int getNofAvailableCodes() {
         return nofAvailableCodes;
     }
+
     /**
-     * @param nofAvailableCodes the nofAvailableCodes to set
+     * @param nofAvailableCodes
+     *            the nofAvailableCodes to set
      */
     public void setNofAvailableCodes(int nofAvailableCodes) {
         this.nofAvailableCodes = nofAvailableCodes;
     }
+
     /**
      * @return the siteCodes
      */
     public List<SiteCode> getSiteCodes() {
         return siteCodes;
     }
+
     /**
-     * @param siteCodes the siteCodes to set
+     * @param siteCodes
+     *            the siteCodes to set
      */
     public void setSiteCodes(List<SiteCode> siteCodes) {
         this.siteCodes = siteCodes;
+    }
+
+    /**
+     * @return the adminRole
+     */
+    public boolean isAdminRole() {
+        return adminRole;
+    }
+
+    /**
+     * @param adminRole
+     *            the adminRole to set
+     */
+    public void setAdminRole(boolean adminRole) {
+        this.adminRole = adminRole;
     }
 
 }

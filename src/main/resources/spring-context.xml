@@ -20,7 +20,8 @@
         <property name="url" value="${db.url}" />
         <property name="username" value="${db.usr}" />
         <property name="password" value="${db.psw}" />
-        <!-- The following two properties required because MySQL kills idle connections after 8 hours. -->
+        <!-- The following two properties required because MySQL kills idle
+            connections after 8 hours. -->
         <property name="validationQuery" value="SELECT 1" />
         <property name="testOnBorrow" value="true" />
     </bean>
@@ -31,6 +32,22 @@
     <bean id="txManager"
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="freemarkerConfiguration"
+        class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+        <property name="templateLoaderPath" value="/WEB-INF/templates/" />
+    </bean>
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${smtp.host}" />
+        <property name="username" value="${smtp.username}" />
+        <property name="password" value="${smtp.password}" />
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.starttls.enable">${smtp.tls}</prop>
+            </props>
+        </property>
     </bean>
 
     <context:property-placeholder location="classpath:datadict.properties" />

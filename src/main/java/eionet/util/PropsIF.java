@@ -113,6 +113,11 @@ public interface PropsIF {
     /** */
     public static final String XML_CONV_URL = "xmlConv.url";
 
-    /** Master password for simulating users*/
+    /** Master password for simulating users */
     public static final String DD_MASTER_PASSWORD_HASH = "dd.master.pwd.hash";
+
+    /** Site code notification addresses. */
+    public static final String SITE_CODE_NOTIFICATION_FROM = "siteCode.notification.from";
+    public static final String SITE_CODE_ALLOCATE_NOTIFICATION_TO = "siteCode.allocate.notification.to";
+    public static final String SITE_CODE_RESERVE_NOTIFICATION_TO = "siteCode.reserve.notification.to";
 }

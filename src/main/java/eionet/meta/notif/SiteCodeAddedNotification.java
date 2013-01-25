@@ -21,8 +21,6 @@
 
 package eionet.meta.notif;
 
-import java.util.Date;
-
 /**
  * Notification object for sending data to UNS.
  *
@@ -33,7 +31,7 @@ public class SiteCodeAddedNotification {
     public static final String NEW_CDDA_SITE_CODES_EVENT = "New site codes added";
 
     private String username;
-    private Date createdTime;
+    private String createdTime;
     private int nofAddedCodes;
     private int newCodesStartIdentifier;
     private int newCodesEndIdentifier;
@@ -47,7 +45,8 @@ public class SiteCodeAddedNotification {
     }
 
     /**
-     * @param username the username to set
+     * @param username
+     *            the username to set
      */
     public void setUsername(String username) {
         this.username = username;
@@ -61,7 +60,8 @@ public class SiteCodeAddedNotification {
     }
 
     /**
-     * @param nofAddedCodes the nofAddedCodes to set
+     * @param nofAddedCodes
+     *            the nofAddedCodes to set
      */
     public void setNofAddedCodes(int nofAddedCodes) {
         this.nofAddedCodes = nofAddedCodes;
@@ -75,7 +75,8 @@ public class SiteCodeAddedNotification {
     }
 
     /**
-     * @param newCodesStartIdentifier the newCodesStartIdentifier to set
+     * @param newCodesStartIdentifier
+     *            the newCodesStartIdentifier to set
      */
     public void setNewCodesStartIdentifier(int newCodesStartIdentifier) {
         this.newCodesStartIdentifier = newCodesStartIdentifier;
@@ -89,7 +90,8 @@ public class SiteCodeAddedNotification {
     }
 
     /**
-     * @param newCodesEndIdentifier the newCodesEndIdentifier to set
+     * @param newCodesEndIdentifier
+     *            the newCodesEndIdentifier to set
      */
     public void setNewCodesEndIdentifier(int newCodesEndIdentifier) {
         this.newCodesEndIdentifier = newCodesEndIdentifier;
@@ -103,7 +105,8 @@ public class SiteCodeAddedNotification {
     }
 
     /**
-     * @param totalNumberOfAvailableCodes the totalNumberOfAvailableCodes to set
+     * @param totalNumberOfAvailableCodes
+     *            the totalNumberOfAvailableCodes to set
      */
     public void setTotalNumberOfAvailableCodes(int totalNumberOfAvailableCodes) {
         this.totalNumberOfAvailableCodes = totalNumberOfAvailableCodes;
@@ -112,14 +115,15 @@ public class SiteCodeAddedNotification {
     /**
      * @return the createdTime
      */
-    public Date getCreatedTime() {
+    public String getCreatedTime() {
         return createdTime;
     }
 
     /**
-     * @param createdTime the createdTime to set
+     * @param createdTime
+     *            the createdTime to set
      */
-    public void setCreatedTime(Date createdTime) {
+    public void setCreatedTime(String createdTime) {
         this.createdTime = createdTime;
     }
 
