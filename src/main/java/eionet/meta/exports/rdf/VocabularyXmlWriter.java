@@ -47,6 +47,12 @@ public class VocabularyXmlWriter {
     private static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
     private static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
 
+    /** Characters that aren't allowed in IRIs. */
+    private static final String[] BAD_IRI_CHARS = {" ", "{", "}", "<", ">", "\"", "|", "\\", "^", "`"};
+    /** Replacements for characters that aren't allowed in IRIs. */
+    private static final String[] BAD_IRI_CHARS_ESCAPES = {"%20", "%7B", "%7D", "%3C", "%3E", "%22", "%7C", "%5C", "%5E", "%60"};
+
+    /** The base URI of the concept. It must end with a slash (/). */
     private String contextRoot;
 
     /**
@@ -75,6 +81,17 @@ public class VocabularyXmlWriter {
     }
 
     /**
+     * Escapes IRI's reserved characters in the given URL string.
+     *
+     * @param url is a string.
+     * @return escaped URI
+     */
+    public static String escapeIRI(String url) {
+
+        return url == null ? null : StringUtils.replaceEach(url, BAD_IRI_CHARS, BAD_IRI_CHARS_ESCAPES);
+    }
+
+    /**
      * Writes rdf output to stream.
      *
      * @throws XMLStreamException
@@ -92,11 +109,11 @@ public class VocabularyXmlWriter {
         writer.writeNamespace("rdf", RDF_NS);
         writer.writeNamespace("rdfs", RDFS_NS);
         writer.writeNamespace("skos", SKOS_NS);
-        writer.writeAttribute("xml", XML_NS, "base", contextRoot);
+        writer.writeAttribute("xml", XML_NS, "base", escapeIRI(contextRoot));
 
         writer.writeCharacters("\n");
         writer.writeStartElement(SKOS_NS, "ConceptScheme");
-        writer.writeAttribute("rdf", RDF_NS, "about", "");
+        writer.writeAttribute("rdf", RDF_NS, "about", escapeIRI(contextRoot));
 
         writer.writeCharacters("\n");
         writer.writeStartElement(RDFS_NS, "label");
@@ -109,7 +126,7 @@ public class VocabularyXmlWriter {
         for (VocabularyConcept vc : vocabularyConcepts) {
             writer.writeCharacters("\n");
             writer.writeStartElement(SKOS_NS, "Concept");
-            writer.writeAttribute("rdf", RDF_NS, "about", vc.getIdentifier());
+            writer.writeAttribute("rdf", RDF_NS, "about", escapeIRI(contextRoot + vc.getIdentifier()));
 
             if (StringUtils.isNotEmpty(vc.getNotation())) {
                 writer.writeCharacters("\n");
@@ -125,7 +142,7 @@ public class VocabularyXmlWriter {
 
             writer.writeCharacters("\n");
             writer.writeEmptyElement(SKOS_NS, "inScheme");
-            writer.writeAttribute("rdf", RDF_NS, "resource", "");
+            writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(contextRoot));
 
             writer.writeCharacters("\n");
             writer.writeEndElement();
