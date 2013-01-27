@@ -31,7 +31,6 @@ import eionet.meta.service.data.SiteCode;
  * @author Enriko Käsper
  */
 public class SiteCodeAllocationNotification {
-    public static final String CDDA_SITE_CODES_ALLOCATED_EVENT = "Site codes allocated";
 
     private String username;
     private String allocationTime;
@@ -41,6 +40,8 @@ public class SiteCodeAllocationNotification {
     private int nofAvailableCodes;
     private List<SiteCode> siteCodes;
     private boolean adminRole;
+    private boolean test;
+    private String to;
 
     /**
      * @return the username
@@ -160,6 +161,34 @@ public class SiteCodeAllocationNotification {
      */
     public void setAdminRole(boolean adminRole) {
         this.adminRole = adminRole;
+    }
+
+    /**
+     * @return the test
+     */
+    public boolean isTest() {
+        return test;
+    }
+
+    /**
+     * @param test the test to set
+     */
+    public void setTest(boolean test) {
+        this.test = test;
+    }
+
+    /**
+     * @return the to
+     */
+    public String getTo() {
+        return to;
+    }
+
+    /**
+     * @param to the to to set
+     */
+    public void setTo(String to) {
+        this.to = to;
     }
 
 }

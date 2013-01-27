@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 import javax.mail.internet.InternetAddress;
@@ -37,6 +38,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
+import eionet.directory.DirServiceException;
+import eionet.directory.DirectoryService;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.notif.SiteCodeAddedNotification;
 import eionet.meta.notif.SiteCodeAllocationNotification;
@@ -60,6 +63,15 @@ public class EmailServiceImpl implements IEmailService {
     /** Placeholder for country code. */
     private static final String COUNTRY_CODE_PLACEHOLDER = "[iso_country_code]";
 
+    /** Placeholder for member or collaborative country abbreviation. */
+    private static final String MC_CC_PLACEHOLDER = "[mc_or_cc]";
+
+    /** Member country string in LDAP role. */
+    private static final String MC = "mc";
+
+    /** Collaborative country string in LDAP role. */
+    private static final String CC = "cc";
+
     /** Freemarker template engine configuration. */
     @Autowired
     private Configuration configuration;
@@ -76,7 +88,8 @@ public class EmailServiceImpl implements IEmailService {
      * {@inheritDoc}
      */
     @Override
-    public void notifySiteCodeAllocation(String country, AllocationResult allocationResult, boolean adminRole) throws ServiceException {
+    public void notifySiteCodeAllocation(String country, AllocationResult allocationResult, boolean adminRole)
+    throws ServiceException {
         try {
             SiteCodeAllocationNotification notification = new SiteCodeAllocationNotification();
             notification.setAllocationTime(allocationResult.getAllocationTime().toString());
@@ -94,14 +107,19 @@ public class EmailServiceImpl implements IEmailService {
             notification.setSiteCodes(siteCodes.getList());
             notification.setAdminRole(adminRole);
 
+            final String[] to;
+            // if test e-mail is provided, then do not send notification to actual receivers
+            if (!StringUtils.isEmpty(Props.getProperty(PropsIF.SITE_CODE_TEST_NOTIFICATION_TO))) {
+                notification.setTest(true);
+                notification.setTo(StringUtils.join(parseRoleAddresses(country), ","));
+                to = StringUtils.split(Props.getProperty(PropsIF.SITE_CODE_TEST_NOTIFICATION_TO), ",");
+            } else {
+                to = parseRoleAddresses(country);
+            }
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("data", notification);
 
             final String text = processTemplate("site_code_allocation.ftl", map);
-
-            String recipients = Props.getRequiredProperty(PropsIF.SITE_CODE_ALLOCATE_NOTIFICATION_TO);
-            recipients = StringUtils.replace(recipients, COUNTRY_CODE_PLACEHOLDER, country.toLowerCase());
-            final String[] to = StringUtils.split(recipients, ",");
 
             MimeMessagePreparator mimeMessagePreparator = new MimeMessagePreparator() {
                 @Override
@@ -134,12 +152,19 @@ public class EmailServiceImpl implements IEmailService {
             notification.setNewCodesEndIdentifier(startIdentifier + reserveAmount - 1);
             notification.setTotalNumberOfAvailableCodes(siteCodeDao.getFeeSiteCodeAmount());
 
+            final String[] to;
+            // if test e-mail is provided, then do not send notification to actual receivers
+            if (!StringUtils.isEmpty(Props.getProperty(PropsIF.SITE_CODE_TEST_NOTIFICATION_TO))) {
+                notification.setTest(true);
+                notification.setTo(Props.getRequiredProperty(PropsIF.SITE_CODE_RESERVE_NOTIFICATION_TO));
+                to = StringUtils.split(Props.getProperty(PropsIF.SITE_CODE_TEST_NOTIFICATION_TO), ",");
+            } else {
+                to = StringUtils.split(Props.getRequiredProperty(PropsIF.SITE_CODE_RESERVE_NOTIFICATION_TO), ",");
+            }
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("data", notification);
 
             final String text = processTemplate("site_code_reservation.ftl", map);
-
-            final String[] to = StringUtils.split(Props.getRequiredProperty(PropsIF.SITE_CODE_RESERVE_NOTIFICATION_TO), ",");
 
             MimeMessagePreparator mimeMessagePreparator = new MimeMessagePreparator() {
                 @Override
@@ -174,4 +199,53 @@ public class EmailServiceImpl implements IEmailService {
         return writer.toString();
     }
 
+    /**
+     * Parse LDAP role e-mail addresses and replace country code and member/collaborative country abbreviations.
+     * @param country
+     * @return
+     * @throws DirServiceException
+     */
+    private String[] parseRoleAddresses(String country) throws DirServiceException {
+        String recipients = Props.getRequiredProperty(PropsIF.SITE_CODE_ALLOCATE_NOTIFICATION_TO);
+        recipients = StringUtils.replace(recipients, COUNTRY_CODE_PLACEHOLDER, country.toLowerCase());
+        String[] to = StringUtils.split(recipients, ",");
+
+        for (int i = 0; i < to.length; i++) {
+            if (to[i].contains(MC_CC_PLACEHOLDER)) {
+                // test if it is member country
+                String roleId = StringUtils.substringBefore(to[i], "@");
+                String mcRoleId = StringUtils.replace(roleId, MC_CC_PLACEHOLDER, MC);
+                if (roleExists(mcRoleId)) {
+                    to[i] = StringUtils.replace(to[i], MC_CC_PLACEHOLDER, MC);
+                    continue;
+                }
+                // test if it is collaborative country country
+                String ccRoleId = StringUtils.replace(roleId, MC_CC_PLACEHOLDER, CC);
+                if (roleExists(ccRoleId)) {
+                    to[i] = StringUtils.replace(to[i], MC_CC_PLACEHOLDER, CC);
+                }
+            }
+        }
+
+        return to;
+    }
+
+    /**
+     * Check if role exists in LDAP.
+     * @param roleId
+     * @return true if role is present.
+     */
+    private boolean roleExists(String roleId) {
+        try {
+            Hashtable<String, Object> role = DirectoryService.getRole(roleId);
+            if (role != null) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (DirServiceException e) {
+            // role does not exist
+            return false;
+        }
+    }
 }

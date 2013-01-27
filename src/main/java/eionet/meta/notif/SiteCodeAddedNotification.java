@@ -28,14 +28,14 @@ package eionet.meta.notif;
  */
 public class SiteCodeAddedNotification {
 
-    public static final String NEW_CDDA_SITE_CODES_EVENT = "New site codes added";
-
     private String username;
     private String createdTime;
     private int nofAddedCodes;
     private int newCodesStartIdentifier;
     private int newCodesEndIdentifier;
     private int totalNumberOfAvailableCodes;
+    private boolean test;
+    private String to;
 
     /**
      * @return the username
@@ -125,6 +125,34 @@ public class SiteCodeAddedNotification {
      */
     public void setCreatedTime(String createdTime) {
         this.createdTime = createdTime;
+    }
+
+    /**
+     * @return the test
+     */
+    public boolean isTest() {
+        return test;
+    }
+
+    /**
+     * @param test the test to set
+     */
+    public void setTest(boolean test) {
+        this.test = test;
+    }
+
+    /**
+     * @return the to
+     */
+    public String getTo() {
+        return to;
+    }
+
+    /**
+     * @param to the to to set
+     */
+    public void setTo(String to) {
+        this.to = to;
     }
 
 }
