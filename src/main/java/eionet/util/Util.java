@@ -75,7 +75,7 @@ import eionet.meta.dao.domain.VocabularyFolder;
  */
 public class Util {
 
-    /** */
+    /** Size of buffer for the write() method. */
     private static final int BUF_SIZE = 1024;
     private static Hashtable xmlEscapes = null;
     private static String[][] allowedFxvDatatypeConversions = { { "boolean", "string" }, { "date", "string" },
@@ -223,6 +223,7 @@ public class Util {
     }
 
     /**
+     * Formats a timestamp to the presentation used on web pages.
      *
      * @param timestamp
      * @return
@@ -235,7 +236,6 @@ public class Util {
     /**
      *
      */
-
     public static String pdfDate(long timestamp) {
 
         Date date = new Date(timestamp);
@@ -251,7 +251,7 @@ public class Util {
 
     /**
      * A method for calculating time difference in MILLISECONDS, between a date-time specified in input parameters and the current
-     * date-time.<BR>
+     * date-time.
      * <BR>
      * This should be useful for calculating sleep time for code that has a certain schedule for execution.
      *
@@ -378,7 +378,7 @@ public class Util {
     }
 
     /**
-     * A method for counting occurances of a substring in a string.
+     * A method for counting occurences of a substring in a string.
      */
     public static int countSubString(String str, String substr) {
         int count = 0;
@@ -559,9 +559,11 @@ public class Util {
     }
 
     /**
-     *
-     * @param s
-     * @return
+     * Finds all urls in a given string and replaces them with HTML anchors with target being a new window.
+     * @param in - the text to scan in plain text.
+     * @param newWindow - whether to launch links in a new window.
+     * @param cutLink - can shorten the link text in the output HTML.
+     * @return The modified text as HTML
      */
     public static String processForLink(String in, boolean newWindow, int cutLink) {
 
@@ -1342,18 +1344,19 @@ public class Util {
     }
 
     /**
-     * Returns true, if the identifier is alphanumeric.
+     * Returns true, if the identifier doesn't contain banned characters.
      *
-     * @param identifier
-     * @return
+     * @param identifier - the string to test.
+     * @return - the true/false result.
      */
     public static boolean isValidIdentifier(String identifier) {
         if (StringUtils.isNotEmpty(identifier)) {
-            String regex = "^[a-zA-Z0-9]+$";
+            String regex = "^[^/#:]+$";
             return identifier.matches(regex);
         }
         return false;
     }
+
     /**
      * @param timeCreated
      * @return
