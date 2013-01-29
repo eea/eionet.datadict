@@ -41,8 +41,10 @@ import org.apache.commons.lang.StringUtils;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
+import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.util.Props;
@@ -71,6 +73,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /** Vocabulary service. */
     @SpringBean
     private IVocabularyService vocabularyService;
+
+    /** Site code service. */
+    @SpringBean
+    private ISiteCodeService siteCodeService;
 
     /** Vocabulary folder. */
     private VocabularyFolder vocabularyFolder;
@@ -108,12 +114,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution view() throws ServiceException {
         vocabularyFolder =
-            vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         initFilter();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         vocabularyFolderVersions =
-            vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
-                    getUserName());
+                vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
+                        getUserName());
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
     }
 
@@ -153,7 +159,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public Resolution edit() throws ServiceException {
         vocabularyFolder =
-            vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         initFilter();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
@@ -418,26 +424,34 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), false);
             initFilter();
             filter.setUsePaging(false);
-            vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+            List<? extends VocabularyConcept> concepts = null;
+            if (vocabularyFolder.isSiteCodeType()) {
+                SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
+                siteCodeFilter.setUsePaging(false);
+                concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
+            } else {
+                concepts = vocabularyService.searchVocabularyConcepts(filter).getList();
+            }
+
+            final List<? extends VocabularyConcept> finalConcepts = concepts;
 
             if (vocabularyFolder.isDraftStatus()) {
                 throw new RuntimeException("Vocabulary is not in released or public draft status.");
             }
 
             final String contextRoot =
-                StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
-                        .getRequiredProperty(PropsIF.DD_URL) + "/vocabularies/" + vocabularyFolder.getIdentifier() + "/";
+                    StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
+                            .getRequiredProperty(PropsIF.DD_URL) + "/vocabularies/" + vocabularyFolder.getIdentifier() + "/";
 
-                StreamingResolution result = new StreamingResolution("application/rdf+xml") {
-                    @Override
-                    public void stream(HttpServletResponse response) throws Exception {
-                        VocabularyXmlWriter xmlWriter =
-                            new VocabularyXmlWriter(response.getOutputStream(), contextRoot, vocabularyFolder,
-                                    vocabularyConcepts.getList());
-                        xmlWriter.writeManifestXml();
-                    }
-                };
-                return result;
+            StreamingResolution result = new StreamingResolution("application/rdf+xml") {
+                @Override
+                public void stream(HttpServletResponse response) throws Exception {
+                    VocabularyXmlWriter xmlWriter =
+                            new VocabularyXmlWriter(response.getOutputStream(), contextRoot, vocabularyFolder, finalConcepts);
+                    xmlWriter.writeManifestXml();
+                }
+            };
+            return result;
         } catch (Exception e) {
             LOGGER.error("Failed to output vocabulary RDF data", e);
             ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
@@ -486,7 +500,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             return false;
         } else {
             return StringUtils.isNotBlank(vocabularyFolder.getWorkingUser()) && !vocabularyFolder.isWorkingCopy()
-            && !StringUtils.equals(getUserName(), vocabularyFolder.getWorkingUser());
+                    && !StringUtils.equals(getUserName(), vocabularyFolder.getWorkingUser());
         }
     }
 
@@ -501,7 +515,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             return false;
         } else {
             return StringUtils.isNotBlank(vocabularyFolder.getWorkingUser()) && !vocabularyFolder.isWorkingCopy()
-            && StringUtils.equals(getUserName(), vocabularyFolder.getWorkingUser());
+                    && StringUtils.equals(getUserName(), vocabularyFolder.getWorkingUser());
         }
     }
 

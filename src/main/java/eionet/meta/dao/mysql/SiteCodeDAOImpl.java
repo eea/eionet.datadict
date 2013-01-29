@@ -123,7 +123,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             sql.append("and sc.STATUS = :status ");
         } else if (filter.isAllocatedUsedStatuses()) {
             params.put("statuses", Arrays.asList(SiteCodeFilter.ALLOCATED_USED_STATUSES));
-            sql.append("and sc.STATUS IN  (:statuses) ");
+            sql.append("and sc.STATUS IN (:statuses) ");
         }
         if (filter.getCountryCode() != null) {
             params.put("countryCode", filter.getCountryCode());

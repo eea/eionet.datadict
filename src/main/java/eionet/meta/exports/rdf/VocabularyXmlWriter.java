@@ -22,6 +22,7 @@
 package eionet.meta.exports.rdf;
 
 import java.io.OutputStream;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -33,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.SiteCode;
 
 /**
  * Vocabulary RDF-XML writer.
@@ -41,11 +43,13 @@ import eionet.meta.service.ServiceException;
  */
 public class VocabularyXmlWriter {
 
+    /** RDF write constants. */
     private static final String ENCODING = "UTF-8";
     private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
     private static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
     private static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
+    private static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
 
     /** Characters that aren't allowed in IRIs. */
     private static final String[] BAD_IRI_CHARS = {" ", "{", "}", "<", ">", "\"", "|", "\\", "^", "`"};
@@ -62,7 +66,7 @@ public class VocabularyXmlWriter {
 
     /** Objects to write to output. */
     private VocabularyFolder vocabularyFolder;
-    private List<VocabularyConcept> vocabularyConcepts;
+    private List<? extends VocabularyConcept> vocabularyConcepts;
 
     /**
      * Class constructor.
@@ -73,7 +77,7 @@ public class VocabularyXmlWriter {
      * @throws XMLStreamException
      */
     public VocabularyXmlWriter(OutputStream out, String contextRoot, VocabularyFolder vocabularyFolder,
-            List<VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
+            List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
         writer = XMLOutputFactory.newInstance().createXMLStreamWriter(out, ENCODING);
         this.contextRoot = contextRoot;
         this.vocabularyFolder = vocabularyFolder;
@@ -83,7 +87,8 @@ public class VocabularyXmlWriter {
     /**
      * Escapes IRI's reserved characters in the given URL string.
      *
-     * @param url is a string.
+     * @param url
+     *            is a string.
      * @return escaped URI
      */
     public static String escapeIRI(String url) {
@@ -104,11 +109,17 @@ public class VocabularyXmlWriter {
         writer.setPrefix("rdf", RDF_NS);
         writer.setPrefix("rdfs", RDFS_NS);
         writer.setPrefix("skos", SKOS_NS);
+        if (vocabularyFolder.isSiteCodeType()) {
+            writer.setPrefix("dd", DD_SCHEMA_NS);
+        }
 
         writer.writeStartElement("rdf", "RDF", RDF_NS);
         writer.writeNamespace("rdf", RDF_NS);
         writer.writeNamespace("rdfs", RDFS_NS);
         writer.writeNamespace("skos", SKOS_NS);
+        if (vocabularyFolder.isSiteCodeType()) {
+            writer.writeNamespace("dd", DD_SCHEMA_NS);
+        }
         writer.writeAttribute("xml", XML_NS, "base", escapeIRI(contextRoot));
 
         writer.writeCharacters("\n");
@@ -144,6 +155,10 @@ public class VocabularyXmlWriter {
             writer.writeEmptyElement(SKOS_NS, "inScheme");
             writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(contextRoot));
 
+            if (vocabularyFolder.isSiteCodeType()) {
+                writeSiteCodeData((SiteCode) vc);
+            }
+
             writer.writeCharacters("\n");
             writer.writeEndElement();
         }
@@ -151,5 +166,44 @@ public class VocabularyXmlWriter {
         writer.writeCharacters("\n");
         writer.writeEndElement(); // End rdf:RDF
         writer.writeCharacters("\n");
+    }
+
+    /**
+     * Writes site code specific properties to RDF output.
+     *
+     * @param sc
+     * @throws XMLStreamException
+     */
+    private void writeSiteCodeData(SiteCode sc) throws XMLStreamException {
+        writer.writeCharacters("\n");
+        writer.writeStartElement(DD_SCHEMA_NS, "siteCode");
+        writer.writeAttribute("rdf", RDF_NS, "datatype", "http://www.w3.org/2001/XMLSchema#int");
+        writer.writeCharacters(sc.getIdentifier());
+        writer.writeEndElement();
+
+        writer.writeCharacters("\n");
+        writer.writeStartElement(DD_SCHEMA_NS, "siteName");
+        writer.writeCharacters(sc.getLabel());
+        writer.writeEndElement();
+
+        if (StringUtils.isNotEmpty(sc.getCountryCode())) {
+            writer.writeCharacters("\n");
+            writer.writeEmptyElement(DD_SCHEMA_NS, "countryAllocated");
+            writer.writeAttribute("rdf", RDF_NS, "resource",
+                    "http://rdfdata.eionet.europa.eu/eea/countries/" + sc.getCountryCode());
+        }
+
+        Calendar created = Calendar.getInstance();
+        created.setTime(sc.getDateCreated());
+        writer.writeCharacters("\n");
+        writer.writeStartElement(DD_SCHEMA_NS, "yearCreated");
+        writer.writeAttribute("rdf", RDF_NS, "datatype", "http://www.w3.org/2001/XMLSchema#gYear");
+        writer.writeCharacters(Integer.toString(created.get(Calendar.YEAR)));
+        writer.writeEndElement();
+
+        writer.writeCharacters("\n");
+        writer.writeEmptyElement(RDF_NS, "type");
+        writer.writeAttribute("rdf", RDF_NS, "resource", "http://dd.eionet.europa.eu/schema.rdf#SiteCode");
+
     }
 }
