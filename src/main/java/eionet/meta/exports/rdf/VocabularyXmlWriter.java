@@ -193,13 +193,15 @@ public class VocabularyXmlWriter {
                     "http://rdfdata.eionet.europa.eu/eea/countries/" + sc.getCountryCode());
         }
 
-        Calendar created = Calendar.getInstance();
-        created.setTime(sc.getDateCreated());
-        writer.writeCharacters("\n");
-        writer.writeStartElement(DD_SCHEMA_NS, "yearCreated");
-        writer.writeAttribute("rdf", RDF_NS, "datatype", "http://www.w3.org/2001/XMLSchema#gYear");
-        writer.writeCharacters(Integer.toString(created.get(Calendar.YEAR)));
-        writer.writeEndElement();
+        if (sc.getDateCreated() != null){
+            Calendar created = Calendar.getInstance();
+            created.setTime(sc.getDateCreated());
+            writer.writeCharacters("\n");
+            writer.writeStartElement(DD_SCHEMA_NS, "yearCreated");
+            writer.writeAttribute("rdf", RDF_NS, "datatype", "http://www.w3.org/2001/XMLSchema#gYear");
+            writer.writeCharacters(Integer.toString(created.get(Calendar.YEAR)));
+            writer.writeEndElement();
+        }
 
         writer.writeCharacters("\n");
         writer.writeEmptyElement(RDF_NS, "type");
