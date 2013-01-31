@@ -186,6 +186,11 @@ public class VocabularyXmlWriter {
         writer.writeCharacters(sc.getLabel());
         writer.writeEndElement();
 
+        writer.writeCharacters("\n");
+        writer.writeStartElement(DD_SCHEMA_NS, "status");
+        writer.writeCharacters(sc.getStatus().name());
+        writer.writeEndElement();
+
         if (StringUtils.isNotEmpty(sc.getCountryCode())) {
             writer.writeCharacters("\n");
             writer.writeEmptyElement(DD_SCHEMA_NS, "countryAllocated");
