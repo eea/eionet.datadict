@@ -89,15 +89,15 @@ public class EmailServiceImpl implements IEmailService {
      */
     @Override
     public void notifySiteCodeAllocation(String country, AllocationResult allocationResult, boolean adminRole)
-    throws ServiceException {
+            throws ServiceException {
         try {
             SiteCodeAllocationNotification notification = new SiteCodeAllocationNotification();
             notification.setAllocationTime(allocationResult.getAllocationTime().toString());
             notification.setUsername(allocationResult.getUserName());
             notification.setCountry(country);
-            notification.setNofAvailableCodes(siteCodeDao.getFeeSiteCodeAmount());
-            notification.setTotalNofAllocatedCodes(siteCodeDao.getCountryUnusedAllocations(country, false));
-            notification.setNofCodesAllocatedByEvent(allocationResult.getAmount());
+            notification.setNofAvailableCodes(Integer.toString(siteCodeDao.getFeeSiteCodeAmount()));
+            notification.setTotalNofAllocatedCodes(Integer.toString(siteCodeDao.getCountryUnusedAllocations(country, false)));
+            notification.setNofCodesAllocatedByEvent(Integer.toString(allocationResult.getAmount()));
 
             SiteCodeFilter filter = new SiteCodeFilter();
             filter.setDateAllocated(allocationResult.getAllocationTime());
@@ -147,10 +147,10 @@ public class EmailServiceImpl implements IEmailService {
             SiteCodeAddedNotification notification = new SiteCodeAddedNotification();
             notification.setCreatedTime(new Date().toString());
             notification.setUsername(userName);
-            notification.setNewCodesStartIdentifier(startIdentifier);
-            notification.setNofAddedCodes(reserveAmount);
-            notification.setNewCodesEndIdentifier(startIdentifier + reserveAmount - 1);
-            notification.setTotalNumberOfAvailableCodes(siteCodeDao.getFeeSiteCodeAmount());
+            notification.setNewCodesStartIdentifier(Integer.toString(startIdentifier));
+            notification.setNofAddedCodes(Integer.toString(reserveAmount));
+            notification.setNewCodesEndIdentifier(Integer.toString(startIdentifier + reserveAmount - 1));
+            notification.setTotalNumberOfAvailableCodes(Integer.toString(siteCodeDao.getFeeSiteCodeAmount()));
 
             final String[] to;
             // if test e-mail is provided, then do not send notification to actual receivers
@@ -201,6 +201,7 @@ public class EmailServiceImpl implements IEmailService {
 
     /**
      * Parse LDAP role e-mail addresses and replace country code and member/collaborative country abbreviations.
+     *
      * @param country
      * @return
      * @throws DirServiceException
@@ -232,6 +233,7 @@ public class EmailServiceImpl implements IEmailService {
 
     /**
      * Check if role exists in LDAP.
+     *
      * @param roleId
      * @return true if role is present.
      */

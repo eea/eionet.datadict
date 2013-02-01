@@ -35,9 +35,9 @@ public class SiteCodeAllocationNotification {
     private String username;
     private String allocationTime;
     private String country;
-    private int nofCodesAllocatedByEvent;
-    private int totalNofAllocatedCodes;
-    private int nofAvailableCodes;
+    private String nofCodesAllocatedByEvent;
+    private String totalNofAllocatedCodes;
+    private String nofAvailableCodes;
     private List<SiteCode> siteCodes;
     private boolean adminRole;
     private boolean test;
@@ -91,7 +91,7 @@ public class SiteCodeAllocationNotification {
     /**
      * @return the nofCodesAllocatedByEvent
      */
-    public int getNofCodesAllocatedByEvent() {
+    public String getNofCodesAllocatedByEvent() {
         return nofCodesAllocatedByEvent;
     }
 
@@ -99,14 +99,14 @@ public class SiteCodeAllocationNotification {
      * @param nofCodesAllocatedByEvent
      *            the nofCodesAllocatedByEvent to set
      */
-    public void setNofCodesAllocatedByEvent(int nofCodesAllocatedByEvent) {
+    public void setNofCodesAllocatedByEvent(String nofCodesAllocatedByEvent) {
         this.nofCodesAllocatedByEvent = nofCodesAllocatedByEvent;
     }
 
     /**
      * @return the totalNofAllocatedCodes
      */
-    public int getTotalNofAllocatedCodes() {
+    public String getTotalNofAllocatedCodes() {
         return totalNofAllocatedCodes;
     }
 
@@ -114,14 +114,14 @@ public class SiteCodeAllocationNotification {
      * @param totalNofAllocatedCodes
      *            the totalNofAllocatedCodes to set
      */
-    public void setTotalNofAllocatedCodes(int totalNofAllocatedCodes) {
+    public void setTotalNofAllocatedCodes(String totalNofAllocatedCodes) {
         this.totalNofAllocatedCodes = totalNofAllocatedCodes;
     }
 
     /**
      * @return the nofAvailableCodes
      */
-    public int getNofAvailableCodes() {
+    public String getNofAvailableCodes() {
         return nofAvailableCodes;
     }
 
@@ -129,7 +129,7 @@ public class SiteCodeAllocationNotification {
      * @param nofAvailableCodes
      *            the nofAvailableCodes to set
      */
-    public void setNofAvailableCodes(int nofAvailableCodes) {
+    public void setNofAvailableCodes(String nofAvailableCodes) {
         this.nofAvailableCodes = nofAvailableCodes;
     }
 
@@ -171,7 +171,8 @@ public class SiteCodeAllocationNotification {
     }
 
     /**
-     * @param test the test to set
+     * @param test
+     *            the test to set
      */
     public void setTest(boolean test) {
         this.test = test;
@@ -185,7 +186,8 @@ public class SiteCodeAllocationNotification {
     }
 
     /**
-     * @param to the to to set
+     * @param to
+     *            the to to set
      */
     public void setTo(String to) {
         this.to = to;

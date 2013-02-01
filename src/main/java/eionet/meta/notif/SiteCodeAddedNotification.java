@@ -30,10 +30,10 @@ public class SiteCodeAddedNotification {
 
     private String username;
     private String createdTime;
-    private int nofAddedCodes;
-    private int newCodesStartIdentifier;
-    private int newCodesEndIdentifier;
-    private int totalNumberOfAvailableCodes;
+    private String nofAddedCodes;
+    private String newCodesStartIdentifier;
+    private String newCodesEndIdentifier;
+    private String totalNumberOfAvailableCodes;
     private boolean test;
     private String to;
 
@@ -53,66 +53,6 @@ public class SiteCodeAddedNotification {
     }
 
     /**
-     * @return the nofAddedCodes
-     */
-    public int getNofAddedCodes() {
-        return nofAddedCodes;
-    }
-
-    /**
-     * @param nofAddedCodes
-     *            the nofAddedCodes to set
-     */
-    public void setNofAddedCodes(int nofAddedCodes) {
-        this.nofAddedCodes = nofAddedCodes;
-    }
-
-    /**
-     * @return the newCodesStartIdentifier
-     */
-    public int getNewCodesStartIdentifier() {
-        return newCodesStartIdentifier;
-    }
-
-    /**
-     * @param newCodesStartIdentifier
-     *            the newCodesStartIdentifier to set
-     */
-    public void setNewCodesStartIdentifier(int newCodesStartIdentifier) {
-        this.newCodesStartIdentifier = newCodesStartIdentifier;
-    }
-
-    /**
-     * @return the newCodesEndIdentifier
-     */
-    public int getNewCodesEndIdentifier() {
-        return newCodesEndIdentifier;
-    }
-
-    /**
-     * @param newCodesEndIdentifier
-     *            the newCodesEndIdentifier to set
-     */
-    public void setNewCodesEndIdentifier(int newCodesEndIdentifier) {
-        this.newCodesEndIdentifier = newCodesEndIdentifier;
-    }
-
-    /**
-     * @return the totalNumberOfAvailableCodes
-     */
-    public int getTotalNumberOfAvailableCodes() {
-        return totalNumberOfAvailableCodes;
-    }
-
-    /**
-     * @param totalNumberOfAvailableCodes
-     *            the totalNumberOfAvailableCodes to set
-     */
-    public void setTotalNumberOfAvailableCodes(int totalNumberOfAvailableCodes) {
-        this.totalNumberOfAvailableCodes = totalNumberOfAvailableCodes;
-    }
-
-    /**
      * @return the createdTime
      */
     public String getCreatedTime() {
@@ -128,6 +68,66 @@ public class SiteCodeAddedNotification {
     }
 
     /**
+     * @return the nofAddedCodes
+     */
+    public String getNofAddedCodes() {
+        return nofAddedCodes;
+    }
+
+    /**
+     * @param nofAddedCodes
+     *            the nofAddedCodes to set
+     */
+    public void setNofAddedCodes(String nofAddedCodes) {
+        this.nofAddedCodes = nofAddedCodes;
+    }
+
+    /**
+     * @return the newCodesStartIdentifier
+     */
+    public String getNewCodesStartIdentifier() {
+        return newCodesStartIdentifier;
+    }
+
+    /**
+     * @param newCodesStartIdentifier
+     *            the newCodesStartIdentifier to set
+     */
+    public void setNewCodesStartIdentifier(String newCodesStartIdentifier) {
+        this.newCodesStartIdentifier = newCodesStartIdentifier;
+    }
+
+    /**
+     * @return the newCodesEndIdentifier
+     */
+    public String getNewCodesEndIdentifier() {
+        return newCodesEndIdentifier;
+    }
+
+    /**
+     * @param newCodesEndIdentifier
+     *            the newCodesEndIdentifier to set
+     */
+    public void setNewCodesEndIdentifier(String newCodesEndIdentifier) {
+        this.newCodesEndIdentifier = newCodesEndIdentifier;
+    }
+
+    /**
+     * @return the totalNumberOfAvailableCodes
+     */
+    public String getTotalNumberOfAvailableCodes() {
+        return totalNumberOfAvailableCodes;
+    }
+
+    /**
+     * @param totalNumberOfAvailableCodes
+     *            the totalNumberOfAvailableCodes to set
+     */
+    public void setTotalNumberOfAvailableCodes(String totalNumberOfAvailableCodes) {
+        this.totalNumberOfAvailableCodes = totalNumberOfAvailableCodes;
+    }
+
+    /**
      * @return the test
      */
     public boolean isTest() {
@@ -135,7 +135,8 @@ public class SiteCodeAddedNotification {
     }
 
     /**
-     * @param test the test to set
+     * @param test
+     *            the test to set
      */
     public void setTest(boolean test) {
         this.test = test;
@@ -149,7 +150,8 @@ public class SiteCodeAddedNotification {
     }
 
     /**
-     * @param to the to to set
+     * @param to
+     *            the to to set
      */
     public void setTo(String to) {
         this.to = to;
