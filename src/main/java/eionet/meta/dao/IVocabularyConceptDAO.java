@@ -51,6 +51,15 @@ public interface IVocabularyConceptDAO {
     List<VocabularyConcept> getVocabularyConcepts(int vocabularyFolderId);
 
     /**
+     * Returns vocabulary concept.
+     *
+     * @param vocabularyFolderId
+     * @param conceptIdentifier
+     * @return
+     */
+    VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier);
+
+    /**
      * Creates new vocabulary concept into database.
      *
      * @param vocabularyFolderId
@@ -129,8 +138,11 @@ public interface IVocabularyConceptDAO {
 
     /**
      * Copy vocabulary concepts from one folder to another, used by check out functionality.
-     * @param oldVocabularyFolderId Source Vocabulary folder ID the concepts will be copied from.
-     * @param newVocabularyFolderId Destination Vocabulary folder ID the concepts will be copied to.
+     *
+     * @param oldVocabularyFolderId
+     *            Source Vocabulary folder ID the concepts will be copied from.
+     * @param newVocabularyFolderId
+     *            Destination Vocabulary folder ID the concepts will be copied to.
      */
     void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId);
 }

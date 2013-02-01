@@ -22,8 +22,10 @@
 package eionet.web.action;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sourceforge.stripes.action.DefaultHandler;
@@ -70,6 +72,27 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     /** Pop div's id for new concept form. */
     private static final String NEW_CONCEPT_DIV_ID = "addNewConceptDiv";
 
+    /** Reserved event names, that cannot be vocabulary concept identifiers. */
+    public static List<String> RESERVED_VOCABULARY_EVENTS;
+
+    static {
+        RESERVED_VOCABULARY_EVENTS = new ArrayList<String>();
+        RESERVED_VOCABULARY_EVENTS.add("view");
+        RESERVED_VOCABULARY_EVENTS.add("search");
+        RESERVED_VOCABULARY_EVENTS.add("viewWorkingCopy");
+        RESERVED_VOCABULARY_EVENTS.add("add");
+        RESERVED_VOCABULARY_EVENTS.add("edit");
+        RESERVED_VOCABULARY_EVENTS.add("saveFolder");
+        RESERVED_VOCABULARY_EVENTS.add("saveConcept");
+        RESERVED_VOCABULARY_EVENTS.add("checkIn");
+        RESERVED_VOCABULARY_EVENTS.add("checkOut");
+        RESERVED_VOCABULARY_EVENTS.add("undoCheckOut");
+        RESERVED_VOCABULARY_EVENTS.add("deleteConcepts");
+        RESERVED_VOCABULARY_EVENTS.add("cancelAdd");
+        RESERVED_VOCABULARY_EVENTS.add("cancelSave");
+        RESERVED_VOCABULARY_EVENTS.add("rdf");
+    }
+
     /** Vocabulary service. */
     @SpringBean
     private IVocabularyService vocabularyService;
@@ -113,6 +136,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution view() throws ServiceException {
+        // Check if vocabulary concept url
+        Resolution resolution = getVocabularyConceptResolution();
+        if (resolution != null) {
+            return resolution;
+        }
+
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         initFilter();
@@ -374,6 +403,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 if (!Util.isValidIdentifier(vc.getIdentifier())) {
                     addGlobalValidationError("Vocabulary concept identifier must be alpha-numeric value");
                 }
+                if (RESERVED_VOCABULARY_EVENTS.contains(vc.getIdentifier())) {
+                    addGlobalValidationError("This vocabulary concept identifier is reserved value and cannot be used");
+                }
             }
         }
         if (StringUtils.isEmpty(vc.getLabel())) {
@@ -458,6 +490,32 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             error.setErrorMessage(e.getMessage());
             return error;
         }
+    }
+
+    /**
+     * Forwards to vocabulary concept page, if the url patter is: /vocabylary/folderIdentifier/conceptIdentifier.
+     *
+     * @return
+     */
+    private Resolution getVocabularyConceptResolution() {
+        HttpServletRequest httpRequest = getContext().getRequest();
+        String url = httpRequest.getRequestURL().toString();
+        // String query = httpRequest.getQueryString();
+
+        String[] parameters = StringUtils.split(StringUtils.substringAfter(url, "/vocabulary/"), "/");
+
+        if (parameters.length >= 2) {
+            if (!RESERVED_VOCABULARY_EVENTS.contains(parameters[1])) {
+                RedirectResolution resolution = new RedirectResolution(VocabularyConceptActionBean.class, "view");
+                resolution.addParameter("vocabularyFolder.identifier", parameters[0]);
+                resolution.addParameter("vocabularyConcept.identifier", parameters[1]);
+                resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+
+                return resolution;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -679,4 +737,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.page = page;
     }
 
+    /**
+     * @return the vocabularyService
+     */
+    public IVocabularyService getVocabularyService() {
+        return vocabularyService;
+    }
 }

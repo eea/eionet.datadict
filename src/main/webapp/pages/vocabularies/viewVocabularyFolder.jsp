@@ -190,7 +190,21 @@
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
 
             <display:column title="Id" property="identifier" escapeXml="true" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
-            <display:column title="Label" escapeXml="true" property="label" />
+            <display:column title="Label">
+                <c:choose>
+                    <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
+                        <stripes:link href="/vocabulary/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/">
+                            <c:out value="${concept.label}" />
+                        </stripes:link>
+                    </c:when>
+                    <c:otherwise>
+                        <stripes:link href="/vocabulary/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/">
+                            <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                            <c:out value="${concept.label}" />
+                        </stripes:link>
+                    </c:otherwise>
+                </c:choose>
+            </display:column>
             <display:column title="Definition" escapeXml="true" property="definition" />
             <display:column title="Notation" escapeXml="true" property="notation" />
         </display:table>

@@ -237,13 +237,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             // Copy the vocabulary concepts under new vocabulary folder (except of site code type)
             if (!vocabularyFolder.isSiteCodeType()) {
-                //FIXME - doesn't work
+                // FIXME - doesn't work
                 vocabularyConceptDAO.copyVocabularyConcepts(vocabularyFolderId, newVocabularyFolderId);
                 /*
-                List<VocabularyConcept> vocabularyConcepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderId);
-                for (VocabularyConcept vc : vocabularyConcepts) {
-                    vocabularyConceptDAO.createVocabularyConcept(newVocabularyFolderId, vc);
-                }
+                 * List<VocabularyConcept> vocabularyConcepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderId); for
+                 * (VocabularyConcept vc : vocabularyConcepts) { vocabularyConceptDAO.createVocabularyConcept(newVocabularyFolderId,
+                 * vc); }
                  */
             }
 
@@ -308,7 +307,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName)
-    throws ServiceException {
+            throws ServiceException {
         try {
             VocabularyFolder originalVocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
@@ -336,7 +335,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName)
-    throws ServiceException {
+            throws ServiceException {
         try {
             return vocabularyFolderDAO.getVocabularyFolderVersions(continuityId, vocabularyFolderId, userName);
         } catch (Exception e) {
@@ -409,7 +408,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public boolean isUniqueConceptIdentifier(String identifier, int vocabularyFolderId, int vocabularyConceptId)
-    throws ServiceException {
+            throws ServiceException {
         try {
             return vocabularyConceptDAO.isUniqueConceptIdentifier(identifier, vocabularyFolderId, vocabularyConceptId);
         } catch (Exception e) {
@@ -422,7 +421,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public void reserveFreeSiteCodes(int vocabularyFolderId, int amount, int startIdentifier, String userName) throws ServiceException {
+    public void reserveFreeSiteCodes(int vocabularyFolderId, int amount, int startIdentifier, String userName)
+            throws ServiceException {
         try {
             VocabularyFolder vf = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
@@ -436,10 +436,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             String definition = "Added by " + userName + " on " + Util.formatDateTime(new Date());
             String label = "<" + SiteCodeStatus.AVAILABLE.toString().toLowerCase() + ">";
 
-            //Insert empty concepts
+            // Insert empty concepts
             vocabularyConceptDAO.insertEmptyConcepts(vocabularyFolderId, amount, startIdentifier, label, definition);
 
-            //Get added concepts
+            // Get added concepts
             VocabularyConceptFilter filter = new VocabularyConceptFilter();
             filter.setVocabularyFolderId(vf.getId());
             filter.setDefinition(definition);
@@ -448,7 +448,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             VocabularyConceptResult newConceptsResult = vocabularyConceptDAO.searchVocabularyConcepts(filter);
 
-            //Insert Site code records
+            // Insert Site code records
             siteCodeDAO.insertSiteCodesFromConcepts(newConceptsResult.getList(), userName);
 
             LOGGER.info(userName + " created " + amount + " new site codes.");
@@ -475,11 +475,23 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public List<Integer> checkAvailableIdentifiers(int vocabularyFolderId, int amount, int startingIdentifier)
-    throws ServiceException {
+            throws ServiceException {
         try {
             return vocabularyConceptDAO.checkAvailableIdentifiers(vocabularyFolderId, amount, startingIdentifier);
         } catch (Exception e) {
             throw new ServiceException("Failed to check available identifiers: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier) throws ServiceException {
+        try {
+            return vocabularyConceptDAO.getVocabularyConcept(vocabularyFolderId, conceptIdentifier);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
         }
     }
 

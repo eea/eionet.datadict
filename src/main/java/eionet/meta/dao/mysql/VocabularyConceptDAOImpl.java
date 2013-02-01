@@ -58,18 +58,18 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID=:vocabularyFolderId order by IDENTIFIER + 0");
 
         List<VocabularyConcept> resultList =
-            getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyConcept>() {
-                @Override
-                public VocabularyConcept mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    VocabularyConcept vc = new VocabularyConcept();
-                    vc.setId(rs.getInt("VOCABULARY_CONCEPT_ID"));
-                    vc.setIdentifier(rs.getString("IDENTIFIER"));
-                    vc.setLabel(rs.getString("LABEL"));
-                    vc.setDefinition(rs.getString("DEFINITION"));
-                    vc.setNotation(rs.getString("NOTATION"));
-                    return vc;
-                }
-            });
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyConcept>() {
+                    @Override
+                    public VocabularyConcept mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyConcept vc = new VocabularyConcept();
+                        vc.setId(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                        vc.setIdentifier(rs.getString("IDENTIFIER"));
+                        vc.setLabel(rs.getString("LABEL"));
+                        vc.setDefinition(rs.getString("DEFINITION"));
+                        vc.setNotation(rs.getString("NOTATION"));
+                        return vc;
+                    }
+                });
 
         return resultList;
     }
@@ -91,11 +91,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             sql.append("or LABEL like :text ");
             sql.append("or DEFINITION like :text) ");
         }
-        if (StringUtils.isNotEmpty(filter.getDefinition())){
+        if (StringUtils.isNotEmpty(filter.getDefinition())) {
             params.put("definition", filter.getDefinition());
             sql.append("and DEFINITION = :definition ");
         }
-        if (StringUtils.isNotEmpty(filter.getLabel())){
+        if (StringUtils.isNotEmpty(filter.getLabel())) {
             params.put("label", filter.getLabel());
             sql.append("and LABEL = :label ");
         }
@@ -105,18 +105,18 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         }
 
         List<VocabularyConcept> resultList =
-            getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyConcept>() {
-                @Override
-                public VocabularyConcept mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    VocabularyConcept vc = new VocabularyConcept();
-                    vc.setId(rs.getInt("VOCABULARY_CONCEPT_ID"));
-                    vc.setIdentifier(rs.getString("IDENTIFIER"));
-                    vc.setLabel(rs.getString("LABEL"));
-                    vc.setDefinition(rs.getString("DEFINITION"));
-                    vc.setNotation(rs.getString("NOTATION"));
-                    return vc;
-                }
-            });
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyConcept>() {
+                    @Override
+                    public VocabularyConcept mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyConcept vc = new VocabularyConcept();
+                        vc.setId(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                        vc.setIdentifier(rs.getString("IDENTIFIER"));
+                        vc.setLabel(rs.getString("LABEL"));
+                        vc.setDefinition(rs.getString("DEFINITION"));
+                        vc.setNotation(rs.getString("NOTATION"));
+                        return vc;
+                    }
+                });
 
         String totalSql = "SELECT FOUND_ROWS()";
         int totalItems = getJdbcTemplate().queryForInt(totalSql);
@@ -257,7 +257,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public int getNextIdentifierValue(int vocabularyFolderId) {
         String sql =
-            "SELECT MAX(0 + IDENTIFIER) FROM T_VOCABULARY_CONCEPT GROUP BY VOCABULARY_FOLDER_ID HAVING VOCABULARY_FOLDER_ID = :vocabularyFolderId";
+                "SELECT MAX(0 + IDENTIFIER) FROM T_VOCABULARY_CONCEPT GROUP BY VOCABULARY_FOLDER_ID HAVING VOCABULARY_FOLDER_ID = :vocabularyFolderId";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("vocabularyFolderId", vocabularyFolderId);
 
@@ -317,6 +317,36 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         });
 
         return resultList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyFolderId", vocabularyFolderId);
+        params.put("identifier", conceptIdentifier);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
+        sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID=:vocabularyFolderId and IDENTIFIER=:identifier");
+
+        VocabularyConcept result =
+                getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyConcept>() {
+                    @Override
+                    public VocabularyConcept mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyConcept vc = new VocabularyConcept();
+                        vc.setId(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                        vc.setIdentifier(rs.getString("IDENTIFIER"));
+                        vc.setLabel(rs.getString("LABEL"));
+                        vc.setDefinition(rs.getString("DEFINITION"));
+                        vc.setNotation(rs.getString("NOTATION"));
+                        return vc;
+                    }
+                });
+
+        return result;
     }
 
 }

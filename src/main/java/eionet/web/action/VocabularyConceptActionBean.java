@@ -1,0 +1,99 @@
+/*
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ *
+ * The Original Code is Content Registry 3
+ *
+ * The Initial Owner of the Original Code is European Environment
+ * Agency. Portions created by TripleDev or Zero Technologies are Copyright
+ * (C) European Environment Agency.  All Rights Reserved.
+ *
+ * Contributor(s):
+ *        Juhan Voolaid
+ */
+
+package eionet.web.action;
+
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.IVocabularyService;
+import eionet.meta.service.ServiceException;
+
+/**
+ * Vocabulary concept action bean.
+ *
+ * @author Juhan Voolaid
+ */
+@UrlBinding("/vocabularyconcept/{vocabularyFolder.identifier}/{vocabularyConcept.identifier}/{$event}")
+public class VocabularyConceptActionBean extends AbstractActionBean {
+
+    /** JSP pages. */
+    private static final String VIEW_VOCABULARY_CONCEPT_JSP = "/pages/vocabularies/viewVocabularyConcept.jsp";
+
+    /** Vocabulary service. */
+    @SpringBean
+    private IVocabularyService vocabularyService;
+
+    /** Vocabulary folder. */
+    private VocabularyFolder vocabularyFolder;
+
+    /** Vocabulary concept to add/edit. */
+    private VocabularyConcept vocabularyConcept;
+
+    /**
+     * View action.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    @DefaultHandler
+    public Resolution view() throws ServiceException {
+        vocabularyFolder =
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
+        return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
+    }
+
+    /**
+     * @return the vocabularyFolder
+     */
+    public VocabularyFolder getVocabularyFolder() {
+        return vocabularyFolder;
+    }
+
+    /**
+     * @param vocabularyFolder
+     *            the vocabularyFolder to set
+     */
+    public void setVocabularyFolder(VocabularyFolder vocabularyFolder) {
+        this.vocabularyFolder = vocabularyFolder;
+    }
+
+    /**
+     * @return the vocabularyConcept
+     */
+    public VocabularyConcept getVocabularyConcept() {
+        return vocabularyConcept;
+    }
+
+    /**
+     * @param vocabularyConcept
+     *            the vocabularyConcept to set
+     */
+    public void setVocabularyConcept(VocabularyConcept vocabularyConcept) {
+        this.vocabularyConcept = vocabularyConcept;
+    }
+
+}
