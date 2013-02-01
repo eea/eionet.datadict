@@ -43,6 +43,9 @@ public class VocabularyConceptFilter extends PagedRequest {
     /** Label exact search value. */
     private String label;
 
+    /** If ture, the identifier sorting is numeric. */
+    private boolean numericIdentifierSorting;
+
     /**
      * @return the vocabularyFolderId
      */
@@ -81,7 +84,8 @@ public class VocabularyConceptFilter extends PagedRequest {
     }
 
     /**
-     * @param identifier the identifier to set
+     * @param identifier
+     *            the identifier to set
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -95,7 +99,8 @@ public class VocabularyConceptFilter extends PagedRequest {
     }
 
     /**
-     * @param definition the definition to set
+     * @param definition
+     *            the definition to set
      */
     public void setDefinition(String definition) {
         this.definition = definition;
@@ -109,10 +114,26 @@ public class VocabularyConceptFilter extends PagedRequest {
     }
 
     /**
-     * @param label the label to set
+     * @param label
+     *            the label to set
      */
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    /**
+     * @return the numericIdentifierSorting
+     */
+    public boolean isNumericIdentifierSorting() {
+        return numericIdentifierSorting;
+    }
+
+    /**
+     * @param numericIdentifierSorting
+     *            the numericIdentifierSorting to set
+     */
+    public void setNumericIdentifierSorting(boolean numericIdentifierSorting) {
+        this.numericIdentifierSorting = numericIdentifierSorting;
     }
 
 }

@@ -99,7 +99,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("label", filter.getLabel());
             sql.append("and LABEL = :label ");
         }
-        sql.append("order by IDENTIFIER + 0 ");
+        if (filter.isNumericIdentifierSorting()) {
+            sql.append("order by IDENTIFIER + 0 ");
+        } else {
+            sql.append("order by IDENTIFIER ");
+        }
         if (filter.isUsePaging()) {
             sql.append("LIMIT ").append(filter.getOffset()).append(",").append(filter.getPageSize());
         }

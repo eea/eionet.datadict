@@ -527,6 +527,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
         filter.setVocabularyFolderId(vocabularyFolder.getId());
         filter.setPageNumber(page);
+        filter.setNumericIdentifierSorting(vocabularyFolder.isNumericConceptIdentifiers());
     }
 
     /**
