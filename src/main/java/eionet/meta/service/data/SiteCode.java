@@ -42,6 +42,8 @@ public class SiteCode extends VocabularyConcept {
     private Date dateAllocated;
     private String userAllocated;
     private String initialSiteName;
+    private String yearsDeleted;
+    private String yearsDisappeared;
     /**
      * @return the id
      */
@@ -137,6 +139,30 @@ public class SiteCode extends VocabularyConcept {
      */
     public void setInitialSiteName(String initialSiteName) {
         this.initialSiteName = initialSiteName;
+    }
+    /**
+     * @return the yearsDeleted
+     */
+    public String getYearsDeleted() {
+        return yearsDeleted;
+    }
+    /**
+     * @param yearsDeleted the yearsDeleted to set
+     */
+    public void setYearsDeleted(String yearsDeleted) {
+        this.yearsDeleted = yearsDeleted;
+    }
+    /**
+     * @return the yearsDisappeared
+     */
+    public String getYearsDisappeared() {
+        return yearsDisappeared;
+    }
+    /**
+     * @param yearsDisappeared the yearsDisappeared to set
+     */
+    public void setYearsDisappeared(String yearsDisappeared) {
+        this.yearsDisappeared = yearsDisappeared;
     }
 
 }

@@ -76,6 +76,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 sc.setDateAllocated(rs.getTimestamp("sc.DATE_ALLOCATED"));
                 sc.setUserAllocated(rs.getString("sc.USER_ALLOCATED"));
                 sc.setInitialSiteName(rs.getString("sc.INITIAL_SITE_NAME"));
+                sc.setYearsDeleted(rs.getString("sc.YEARS_DELETED"));
+                sc.setYearsDisappeared(rs.getString("sc.YEARS_DISAPPEARED"));
                 return sc;
             }
         });

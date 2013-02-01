@@ -208,6 +208,18 @@ public class VocabularyXmlWriter {
             writer.writeEndElement();
         }
 
+        if (StringUtils.isNotEmpty(sc.getYearsDeleted())) {
+            writer.writeCharacters("\n");
+            writer.writeEmptyElement(DD_SCHEMA_NS, "yearsDeleted");
+            writer.writeCharacters(sc.getYearsDeleted());
+        }
+
+        if (StringUtils.isNotEmpty(sc.getYearsDisappeared())) {
+            writer.writeCharacters("\n");
+            writer.writeEmptyElement(DD_SCHEMA_NS, "yearsDisappeared");
+            writer.writeCharacters(sc.getYearsDisappeared());
+        }
+
         writer.writeCharacters("\n");
         writer.writeEmptyElement(RDF_NS, "type");
         writer.writeAttribute("rdf", RDF_NS, "resource", "http://dd.eionet.europa.eu/schema.rdf#SiteCode");
