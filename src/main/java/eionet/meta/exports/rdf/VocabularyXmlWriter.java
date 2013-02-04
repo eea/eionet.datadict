@@ -210,14 +210,16 @@ public class VocabularyXmlWriter {
 
         if (StringUtils.isNotEmpty(sc.getYearsDeleted())) {
             writer.writeCharacters("\n");
-            writer.writeEmptyElement(DD_SCHEMA_NS, "yearsDeleted");
+            writer.writeStartElement(DD_SCHEMA_NS, "yearsDeleted");
             writer.writeCharacters(sc.getYearsDeleted());
+            writer.writeEndElement();
         }
 
         if (StringUtils.isNotEmpty(sc.getYearsDisappeared())) {
             writer.writeCharacters("\n");
-            writer.writeEmptyElement(DD_SCHEMA_NS, "yearsDisappeared");
+            writer.writeStartElement(DD_SCHEMA_NS, "yearsDisappeared");
             writer.writeCharacters(sc.getYearsDisappeared());
+            writer.writeEndElement();
         }
 
         writer.writeCharacters("\n");
