@@ -136,19 +136,22 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution view() throws ServiceException {
+        vocabularyFolder =
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+
+        validateView();
         // Check if vocabulary concept url
         Resolution resolution = getVocabularyConceptResolution();
         if (resolution != null) {
             return resolution;
         }
 
-        vocabularyFolder =
-                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         initFilter();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         vocabularyFolderVersions =
                 vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
                         getUserName());
+
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
     }
 
@@ -207,6 +210,30 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }
+        }
+        return false;
+    }
+
+    /**
+     * True, if user has update right.
+     *
+     * @return
+     */
+    public boolean isUpdateRight() {
+        if (getUser() != null) {
+            return getUser().hasPermission("/vocabularies", "u");
+        }
+        return false;
+    }
+
+    /**
+     * True, if user has create right.
+     *
+     * @return
+     */
+    public boolean isCreateRight() {
+        if (getUser() != null) {
+            return getUser().hasPermission("/vocabularies", "c");
         }
         return false;
     }
@@ -324,6 +351,39 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
+     * Validates check out.
+     *
+     * @throws ServiceException
+     */
+    @ValidationMethod(on = {"checkOut"})
+    public void validateCheckOut() throws ServiceException {
+        if (!isUpdateRight()) {
+            addGlobalValidationError("No permission to modify vocabulary");
+        }
+    }
+
+    /**
+     * Validates view action.
+     *
+     * @throws ServiceException
+     */
+    private void validateView() throws ServiceException {
+        LOGGER.debug("validate view");
+        if (vocabularyFolder.isWorkingCopy() || vocabularyFolder.isDraftStatus()) {
+            if (getUser() == null) {
+                LOGGER.debug("view error 1");
+                throw new ServiceException("User must be logged in");
+            } else {
+                if (vocabularyFolder.isWorkingCopy() && !isUserWorkingCopy()) {
+                    LOGGER.debug("view error 2");
+                    throw new ServiceException("Illegal user for viewing this working copy");
+                }
+            }
+        }
+
+    }
+
+    /**
      * Validates save folder.
      *
      * @throws ServiceException
@@ -331,8 +391,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     @ValidationMethod(on = {"saveFolder"})
     public void validateSaveFolder() throws ServiceException {
 
-        if (getUser() == null) {
-            addGlobalValidationError("User must be logged in");
+        if (vocabularyFolder.getId() == 0) {
+            if (!isCreateRight()) {
+                addGlobalValidationError("No permission to create new vocabulary");
+            }
+        } else {
+            if (!isUpdateRight()) {
+                addGlobalValidationError("No permission to modify vocabulary");
+            }
         }
 
         if (StringUtils.isEmpty(vocabularyFolder.getIdentifier())) {
@@ -381,6 +447,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     @ValidationMethod(on = {"saveConcept"})
     public void validateSaveConcept() throws ServiceException {
+        if (!isUpdateRight()) {
+            addGlobalValidationError("No permission to modify vocabulary");
+        }
+
         VocabularyConcept vc = null;
         if (vocabularyConcept != null) {
             // Validating new concept

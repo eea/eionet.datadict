@@ -68,4 +68,5 @@ public class DDExceptionHandler extends DefaultExceptionHandler {
         LOGGER.error("Exception caught", exc);
         return new RedirectResolution(ErrorActionBean.class).addParameter("message", exc.getMessage());
     }
+
 }
