@@ -27,8 +27,8 @@
             <table class="datatable">
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
-                        Identifier</th>
-                    <td class="simple_attr_value"><c:out value="${actionBean.vocabularyConcept.identifier}" />
+                        Concept URI</th>
+                    <td class="simple_attr_value"><c:out value="${actionBean.conceptUri}" />
                     </td>
                 </tr>
                 <tr>

@@ -23,13 +23,19 @@ package eionet.web.action;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
+import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+
+import org.apache.commons.lang.StringUtils;
+
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 
 /**
  * Vocabulary concept action bean.
@@ -41,6 +47,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /** JSP pages. */
     private static final String VIEW_VOCABULARY_CONCEPT_JSP = "/pages/vocabularies/viewVocabularyConcept.jsp";
+    private static final String EDIT_VOCABULARY_CONCEPT_JSP = "/pages/vocabularies/editVocabularyConcept.jsp";
 
     /** Vocabulary service. */
     @SpringBean
@@ -64,6 +71,51 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
+    }
+
+    /**
+     * Display edit form action.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution edit() throws ServiceException {
+        vocabularyFolder =
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
+        return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
+    }
+
+    /**
+     * Action for saving concept.
+     *
+     * @return
+     */
+    public Resolution saveConcept() {
+
+        // LOGGER.debug("Saving ... " + vocabularyConcept.getAltLabel().size());
+
+        RedirectResolution resolution = new RedirectResolution(getClass(), "edit");
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier());
+        return resolution;
+    }
+
+    /**
+     * Returns concept URI.
+     *
+     * @return
+     */
+    public String getConceptUri() {
+        String baseUri = vocabularyFolder.getBaseUri();
+        if (StringUtils.isEmpty(baseUri)) {
+            baseUri = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + vocabularyFolder.getIdentifier();
+        }
+        if (!baseUri.endsWith("/")) {
+            baseUri += "/";
+        }
+        return baseUri + vocabularyConcept.getIdentifier();
     }
 
     /**
