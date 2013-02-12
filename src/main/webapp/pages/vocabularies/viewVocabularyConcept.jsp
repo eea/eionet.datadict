@@ -28,7 +28,7 @@
                 <col style="min-width:8em"/>
                 <col />
                 <tr>
-                    <th scope="row" class="scope-row simple_attr_title">
+                    <th scope="row" class="scope-row simple_attr_title" style="min-width:8em">
                         Concept URI</th>
                     <td class="simple_attr_value" style="font-weight:bold"><c:out value="${actionBean.conceptUri}" />
                     </td>
