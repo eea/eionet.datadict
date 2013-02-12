@@ -25,10 +25,12 @@
         <!-- Vocabulary folder -->
         <div id="outerframe" style="padding-top: 20px">
             <table class="datatable">
+                <col style="min-width:8em"/>
+                <col />
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Concept URI</th>
-                    <td class="simple_attr_value"><c:out value="${actionBean.conceptUri}" />
+                    <td class="simple_attr_value" style="font-weight:bold"><c:out value="${actionBean.conceptUri}" />
                     </td>
                 </tr>
                 <tr>
