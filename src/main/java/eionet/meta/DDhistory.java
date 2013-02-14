@@ -77,28 +77,25 @@ public class DDhistory {
   */
   private void addUrl(String url) {
 
-      if (historySize==0) {
+      if (historySize == 0) {
           history.add(url);
-          historySize=1;
-          currentUrl=url;
-          backUrl="";
-      }
-      else {
+          historySize = 1;
+          currentUrl = url;
+          backUrl = "";
+      } else {
           QueryString qs = new QueryString(url);
           if (qs.equals(currentUrl)) return;
           if (qs.equals(backUrl)) {  //move back
               history.remove(historySize-1);
-              currentUrl=backUrl;
+              currentUrl = backUrl;
               historySize--;
-              backUrl = historySize>1 ? (String)history.get(historySize-2):"";
-          }
-          else if (!getLastMatching(url).equals(START_PAGE) && getLastMatching(url)!=null) {
+              backUrl = historySize > 1 ? (String) history.get(historySize - 2) : "";
+          } else if (!getLastMatching(url).equals(START_PAGE) && getLastMatching(url) != null) {
               gotoLastMatching(url);
-          }
-          else { //move forward
+          } else { //move forward
               history.add(url);
-              backUrl=currentUrl;
-              currentUrl=url;
+              backUrl = currentUrl;
+              currentUrl = url;
               historySize++;
           }
 
@@ -108,25 +105,25 @@ public class DDhistory {
       If there are not any matches, then it cleans the history and currentUrl is start page
   */
   private void gotoMatching(String[] find_url, boolean matching) {
-      boolean found=false;
-      if (historySize>0) {
-        for (int i=history.size();i>0;i--) {
+      boolean found = false;
+      if (historySize > 0) {
+        for (int i = history.size();i > 0;i--) {
             currentUrl = (String)history.get(i-1);
-            historySize=i;
-            backUrl = historySize>1 ? (String)history.get(historySize-2):"";
-            found=false;
-            for (int j=0;j<find_url.length;j++) {
-                if (currentUrl.indexOf(find_url[j])>-1) {
+            historySize = i;
+            backUrl = historySize > 1 ? (String) history.get(historySize-2):"";
+            found = false;
+            for (int j=0; j < find_url.length; j++) {
+                if (currentUrl.indexOf(find_url[j]) > -1) {
                   if (matching) return;
-                  found=true;
+                  found = true;
                 }
             }
             if (!matching && !found)
                 return;
-            history.remove(i-1);
+            history.remove(i - 1);
         }
       }
-      historySize=0;
+      historySize = 0;
       backUrl = "";
       currentUrl = START_PAGE;
   }
@@ -134,17 +131,17 @@ public class DDhistory {
       If there are not any matches, then it returns start page
   */
   private String getMatching(String[] find_url, boolean matching) {
-      boolean found=false;
+      boolean found = false;
       String url="";
 
-      if (historySize>0) {
-        for (int i=history.size();i>0;i--) {
+      if (historySize > 0) {
+        for (int i = history.size(); i > 0; i--) {
             url = (String)history.get(i-1);
-            found=false;
-            for (int j=0;j<find_url.length;j++) {
-                if (url.indexOf(find_url[j])>-1) {
+            found = false;
+            for (int j=0; j < find_url.length; j++) {
+                if (url.indexOf(find_url[j]) > -1) {
                   if (matching) return url;
-                  found=true;
+                  found = true;
                 }
             }
             if (!matching && !found)
@@ -154,11 +151,11 @@ public class DDhistory {
       return START_PAGE;
   }
   private void removeUrl(int index) {
-      if (historySize>index && index>=0) {
+      if (historySize > index && index >= 0) {
           history.remove(index);
-          currentUrl=backUrl;
+          currentUrl = backUrl;
           historySize--;
-          backUrl = historySize>1 ? (String)history.get(historySize-2):"";
+          backUrl = historySize > 1 ? (String) history.get(historySize - 2) : "";
       }
   }
 }

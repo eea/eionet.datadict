@@ -40,6 +40,7 @@ import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 
 /**
+ * Search engine.
  *
  * @author Jaanus Heinlaid
  *
@@ -50,14 +51,15 @@ public class DDSearchEngine {
     private static final Logger LOGGER = Logger.getLogger(DDSearchEngine.class);
 
     /** */
-    public final static String ORDER_BY_M_ATTR_NAME = "SHORT_NAME";
-    public final static String ORDER_BY_M_ATTR_DISP_ORDER = "DISP_ORDER";
-    private final static String ELEMENT_TYPE = "elm";
+    public static final String ORDER_BY_M_ATTR_NAME = "SHORT_NAME";
+    public static final String ORDER_BY_M_ATTR_DISP_ORDER = "DISP_ORDER";
+    private static final String ELEMENT_TYPE = "elm";
 
     private Connection conn = null;
     private ServletContext ctx = null;
     private String sessionID = "";
 
+    //TODO: Check if the domain needs to be updated
     private String rodObligUrl = "http://rod.eionet.eu.int/obligations/";
     private String predIdentifier = "http://purl.org/dc/elements/1.1/identifier";
     private String predTitle = "http://purl.org/dc/elements/1.1/title";
@@ -105,7 +107,7 @@ public class DDSearchEngine {
         }
     }
 
-    public void setUser(DDUser user) {
+    public void setUser(final DDUser user) {
         this.user = user;
     }
 
@@ -116,8 +118,8 @@ public class DDSearchEngine {
     /**
      *
      * @param datasetID
-     * @return
-     * @throws SQLException
+     * @return all dataset elements
+     * @throws SQLException if database query fails
      */
     public Vector getAllDatasetElements(String datasetID) throws SQLException {
 
@@ -253,6 +255,7 @@ public class DDSearchEngine {
 
     /**
      *
+     * @throws SQLException if database query fails
      */
     public Vector getDataElements() throws SQLException {
         return getDataElements(null, null, null, null);
@@ -260,13 +263,15 @@ public class DDSearchEngine {
 
     /**
      *
+     * @throws SQLException if database query fails
      */
-    public Vector getDataElements(Vector params, String type, String datasetIdf, String short_name) throws SQLException {
-        return getDataElements(params, type, datasetIdf, short_name, null);
+    public Vector getDataElements(Vector params, String type, String datasetIdf, String shortName) throws SQLException {
+        return getDataElements(params, type, datasetIdf, shortName, null);
     }
 
     /**
-     * Get data elements by table id. 5 inputs
+     * Get data elements by table id. 5 inputs.
+     * @throws SQLException if database query fails
      */
     public Vector getDataElements(Vector unUsed1, String unUsed2, String unUsed3, String unUsed4, String tableID)
     throws SQLException {
@@ -289,10 +294,10 @@ public class DDSearchEngine {
             .append("left outer join DST2TBL on DS_TABLE.TABLE_ID=DST2TBL.TABLE_ID ")
             .append("left outer join DATASET on DST2TBL.DATASET_ID=DATASET.DATASET_ID ").append("where ")
             .append("TBL2ELEM.TABLE_ID=").append(inPrms.add(tableID, Types.INTEGER))
-            .append(" and DATASET.DELETED is null and ").append("DATAELEM.WORKING_COPY='N'"). // JH200505 - don't want
+            .append(" and DATASET.DELETED is null and ").append("DATAELEM.WORKING_COPY='N'") // JH200505 - don't want
             // working
             // copies coming up here
-            append(" order by TBL2ELEM.POSITION asc");
+            .append(" order by TBL2ELEM.POSITION asc");
 
         // log the monster query
         LOGGER.debug(monsterQry.toString());
@@ -406,44 +411,49 @@ public class DDSearchEngine {
     }
 
     /**
-     * Get data elements by table id and dataset id 6 inputs
+     * Get data elements by table id and dataset id 6 inputs.
+     * @throws SQLException if database query fails
      */
-    public Vector getDataElements(Vector params, String type, String datasetIdf, String short_name, String tableID,
+    public Vector getDataElements(Vector params, String type, String datasetIdf, String shortName, String tableID,
             String datasetID) throws SQLException {
 
-        return getDataElements(params, type, datasetIdf, short_name, tableID, datasetID, false);
+        return getDataElements(params, type, datasetIdf, shortName, tableID, datasetID, false);
     }
 
     /**
-     * Get data elements with control over working copies 7 inputs
+     * Get data elements with control over working copies 7 inputs.
+     * @throws SQLException if database query fails
      */
-    public Vector getDataElements(Vector params, String type, String datasetIdf, String short_name, String tableID,
+    public Vector getDataElements(Vector params, String type, String datasetIdf, String shortName, String tableID,
             String datasetID, boolean wrkCopies) throws SQLException {
 
-        return getDataElements(params, type, datasetIdf, short_name, tableID, datasetID, wrkCopies, null);
+        return getDataElements(params, type, datasetIdf, shortName, tableID, datasetID, wrkCopies, null);
     }
 
     /**
-     * Get data elements, control over working copies & params oper 8 inputs
+     * Get data elements, control over working copies & params oper 8 inputs.
+     * @throws SQLException if database query fails
      */
-    public Vector getDataElements(Vector params, String type, String datasetIdf, String short_name, String tableID,
+    public Vector getDataElements(Vector params, String type, String datasetIdf, String shortName, String tableID,
             String datasetID, boolean wrkCopies, String oper) throws SQLException {
-        return getDataElements(params, type, datasetIdf, short_name, null, tableID, datasetID, wrkCopies, null);
+        return getDataElements(params, type, datasetIdf, shortName, null, tableID, datasetID, wrkCopies, null);
     }
 
     /**
-     * Get data elements, control over working copies & params oper 9 inputs
+     * Get data elements, control over working copies & params oper 9 inputs.
+     * @throws SQLException if database query fails
      */
-    public Vector getDataElements(Vector params, String type, String datasetIdf, String short_name, String idfier, String tableID,
+    public Vector getDataElements(Vector params, String type, String datasetIdf, String shortName, String idfier, String tableID,
             String datasetID, boolean wrkCopies, String oper) throws SQLException {
 
-        return getDataElements(params, type, datasetIdf, short_name, idfier, tableID, datasetID, wrkCopies, false, oper);
+        return getDataElements(params, type, datasetIdf, shortName, idfier, tableID, datasetID, wrkCopies, false, oper);
     }
 
     /**
-     * Get data elements, control over working copies, historic versions & params oper 10 inputs
+     * Get data elements, control over working copies, historic versions & params oper 10 inputs.
+     * @throws SQLException if database query fails
      */
-    public Vector getDataElements(Vector params, String type, String datasetIdf, String short_name, String idfier, String tableID,
+    public Vector getDataElements(Vector params, String type, String datasetIdf, String shortName, String idfier, String tableID,
             String datasetID, boolean wrkCopies, boolean isIncludeHistoricVersions, String oper) throws SQLException {
 
         // set up the IN parameters for the upcoming PreparedStatement
@@ -486,7 +496,7 @@ public class DDSearchEngine {
         }
 
         // set the element short name
-        if (short_name != null && short_name.length() != 0) {
+        if (shortName != null && shortName.length() != 0) {
             if (constraints.length() != 0) {
                 constraints.append(" and ");
             }
@@ -497,9 +507,9 @@ public class DDSearchEngine {
             }
             constraints.append(oper);
             if (oper.trim().equalsIgnoreCase("like")) {
-                constraints.append(inPrms.add("%" + short_name + "%"));
+                constraints.append(inPrms.add("%" + shortName + "%"));
             } else {
-                constraints.append(inPrms.add(short_name));
+                constraints.append(inPrms.add(shortName));
             }
         }
 
@@ -746,50 +756,50 @@ public class DDSearchEngine {
      *
      * @param params
      * @param type
-     * @param short_name
+     * @param shortName
      * @param idfier
      * @param wrkCopies
      * @param oper
-     * @return
-     * @throws SQLException
+     * @return common elements as vector
+     * @throws SQLException if database query fails
      */
-    public Vector getCommonElements(Vector params, String type, String short_name, String idfier, boolean wrkCopies, String oper)
+    public Vector getCommonElements(Vector params, String type, String shortName, String idfier, boolean wrkCopies, String oper)
     throws SQLException {
-        return getCommonElements(params, type, short_name, idfier, wrkCopies, false, oper);
+        return getCommonElements(params, type, shortName, idfier, wrkCopies, false, oper);
     }
 
     /**
      *
      * @param params
      * @param type
-     * @param short_name
+     * @param shortName
      * @param idfier
      * @param wrkCopies
      * @param isIncludeHistoricVersions
      * @param oper
-     * @return
-     * @throws SQLException
+     * @return common elements as vector
+     * @throws SQLException if database query fails
      */
-    public Vector getCommonElements(Vector params, String type, String short_name, String idfier, boolean wrkCopies,
+    public Vector getCommonElements(Vector params, String type, String shortName, String idfier, boolean wrkCopies,
             boolean isIncludeHistoricVersions, String oper) throws SQLException {
 
-        return getCommonElements(params, type, short_name, idfier, null, wrkCopies, false, oper);
+        return getCommonElements(params, type, shortName, idfier, null, wrkCopies, false, oper);
     }
 
     /**
      *
      * @param params
      * @param type
-     * @param short_name
+     * @param shortName
      * @param idfier
      * @param regStatus
      * @param wrkCopies
      * @param isIncludeHistoricVersions
      * @param oper
-     * @return
-     * @throws SQLException
+     * @return common elements as vector
+     * @throws SQLException if database query fails
      */
-    public Vector getCommonElements(Vector params, String type, String short_name, String idfier, String regStatus,
+    public Vector getCommonElements(Vector params, String type, String shortName, String idfier, String regStatus,
             boolean wrkCopies, boolean isIncludeHistoricVersions, String oper) throws SQLException {
 
         Vector result = new Vector();
@@ -828,7 +838,7 @@ public class DDSearchEngine {
         }
 
         // set the element short name
-        if (short_name != null && short_name.length() != 0) {
+        if (shortName != null && shortName.length() != 0) {
 
             if (constraints.length() != 0) {
                 constraints.append(" and ");
@@ -842,9 +852,9 @@ public class DDSearchEngine {
             constraints.append(oper);
 
             if (oper.trim().equalsIgnoreCase("like")) {
-                constraints.append(inParams.add("%" + short_name + "%"));
+                constraints.append(inParams.add("%" + shortName + "%"));
             } else {
-                constraints.append(inParams.add(short_name));
+                constraints.append(inParams.add(shortName));
             }
         }
 
@@ -1046,8 +1056,8 @@ public class DDSearchEngine {
      * @param tblIdf
      * @param dstIdf
      * @param statuses
-     * @return
-     * @throws SQLException
+     * @return latest element ID as string
+     * @throws SQLException if database query fails
      */
     public String getLatestElmID(String elmIdf, String tblIdf, String dstIdf, Vector statuses) throws SQLException {
 
@@ -1121,8 +1131,8 @@ public class DDSearchEngine {
      * @param tblIdf
      * @param dstIdf
      * @param statuses
-     * @return
-     * @throws SQLException
+     * @return latest element as DataElement
+     * @throws SQLException if database query fails
      */
     public DataElement getLatestElm(String elmIdf, String tblIdf, String dstIdf, Vector statuses) throws SQLException {
 
@@ -1136,7 +1146,7 @@ public class DDSearchEngine {
      * @param datasetIdentifier
      * @param statuses
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public DsTable getLatestTbl(String identifier, String datasetIdentifier, List statuses) throws SQLException {
 
@@ -1149,8 +1159,8 @@ public class DDSearchEngine {
      * @param identifier
      * @param datasetIdentifier
      * @param statuses
-     * @return
-     * @throws SQLException
+     * @return table id as String
+     * @throws SQLException if database query fails
      */
     public String getLatestTblID(String identifier, String datasetIdentifier, List statuses) throws SQLException {
 
@@ -1200,7 +1210,7 @@ public class DDSearchEngine {
      * @param idf
      * @param statuses
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public String getLatestDstID(String idf, Vector statuses) throws SQLException {
 
@@ -1250,7 +1260,7 @@ public class DDSearchEngine {
      * @param idf
      * @param statuses
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Dataset getLatestDst(String idf, Vector statuses) throws SQLException {
         String latestID = getLatestDstID(idf, statuses);
@@ -1261,7 +1271,7 @@ public class DDSearchEngine {
      *
      * @param idf
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Dataset getLatestDst(String idf) throws SQLException {
         return getLatestDst(idf, null);
@@ -1287,7 +1297,7 @@ public class DDSearchEngine {
      * @param tblID
      * @param inheritAttrs
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public DataElement getDataElement(String elmID, String tblID, boolean inheritAttrs) throws SQLException {
 
@@ -1399,15 +1409,15 @@ public class DDSearchEngine {
         return getDElemAttributes(null, type, null);
     }
 
-    public Vector getDElemAttributes(String attr_id, String type) throws SQLException {
-        return getDElemAttributes(attr_id, type, null);
+    public Vector getDElemAttributes(String attrId, String type) throws SQLException {
+        return getDElemAttributes(attrId, type, null);
     }
 
-    public Vector getDElemAttributes(String attr_id, String type, String orderBy) throws SQLException {
-        return getDElemAttributes(attr_id, type, orderBy, null);
+    public Vector getDElemAttributes(String attrId, String type, String orderBy) throws SQLException {
+        return getDElemAttributes(attrId, type, orderBy, null);
     }
 
-    public Vector getDElemAttributes(String attr_id, String type, String orderBy, String inheritable) throws SQLException {
+    public Vector getDElemAttributes(String attrId, String type, String orderBy, String inheritable) throws SQLException {
 
         if (type == null) {
             type = DElemAttribute.TYPE_SIMPLE;
@@ -1417,24 +1427,24 @@ public class DDSearchEngine {
         StringBuffer qry = new StringBuffer();
         if (type.equals(DElemAttribute.TYPE_SIMPLE)) {
             qry.append("select distinct M_ATTRIBUTE_ID as ID, M_ATTRIBUTE.* from M_ATTRIBUTE");
-            if (attr_id != null) {
+            if (attrId != null) {
                 qry.append(" where M_ATTRIBUTE_ID=");
             }
         } else {
             qry.append("select distinct M_COMPLEX_ATTR_ID as ID, M_COMPLEX_ATTR.* from M_COMPLEX_ATTR");
-            if (attr_id != null) {
+            if (attrId != null) {
                 qry.append(" where M_COMPLEX_ATTR_ID=");
             }
         }
-        if (attr_id != null) {
-            qry.append(inParams.add(attr_id, Types.INTEGER));
+        if (attrId != null) {
+            qry.append(inParams.add(attrId, Types.INTEGER));
         }
 
         if (inheritable != null) {
-            if (attr_id != null) {
+            if (attrId != null) {
                 qry.append(" AND ");
             }
-            if (attr_id == null) {
+            if (attrId == null) {
                 qry.append(" WHERE ");
             }
             qry.append("INHERIT=").append(inParams.add(inheritable));
@@ -1500,7 +1510,7 @@ public class DDSearchEngine {
      * @param delem_id
      * @param parent_type
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getFixedValues(String delem_id, String parent_type) throws SQLException {
 
@@ -1548,29 +1558,29 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param attr_id
+     * @param attrId
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getAttrFields(String attr_id) throws SQLException {
-        return getAttrFields(attr_id, null);
+    public Vector getAttrFields(String attrId) throws SQLException {
+        return getAttrFields(attrId, null);
     }
 
     /**
      *
-     * @param attr_id
+     * @param attrId
      * @param priority
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getAttrFields(String attr_id, String priority) throws SQLException {
+    public Vector getAttrFields(String attrId, String priority) throws SQLException {
 
         INParameters inParams = new INParameters();
 
         StringBuffer buf = new StringBuffer();
         buf.append("select * from M_COMPLEX_ATTR_FIELD ");
         buf.append("where M_COMPLEX_ATTR_ID=");
-        buf.append(inParams.add(attr_id, Types.INTEGER));
+        buf.append(inParams.add(attrId, Types.INTEGER));
         if (priority != null) {
             buf.append(" and PRIORITY=").append(inParams.add(priority));
         }
@@ -1618,7 +1628,7 @@ public class DDSearchEngine {
      *
      * @param field_id
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Hashtable getAttrField(String field_id) throws SQLException {
 
@@ -1666,50 +1676,50 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param attr_id
-     * @param parent_id
+     * @param attrId
+     * @param parentId
      * @param parent_type
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getComplexAttribute(String attr_id, String parent_id, String parent_type) throws SQLException {
-        return getComplexAttributes(parent_id, parent_type, attr_id);
+    public Vector getComplexAttribute(String attrId, String parentId, String parent_type) throws SQLException {
+        return getComplexAttributes(parentId, parent_type, attrId);
     }
 
     /**
      *
-     * @param parent_id
+     * @param parentId
      * @param parent_type
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getComplexAttributes(String parent_id, String parent_type) throws SQLException {
-        return getComplexAttributes(parent_id, parent_type, null);
+    public Vector getComplexAttributes(String parentId, String parent_type) throws SQLException {
+        return getComplexAttributes(parentId, parent_type, null);
     }
 
     /**
      *
-     * @param parent_id
+     * @param parentId
      * @param parent_type
-     * @param attr_id
+     * @param attrId
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getComplexAttributes(String parent_id, String parent_type, String attr_id) throws SQLException {
-        return getComplexAttributes(parent_id, parent_type, attr_id, null, null);
+    public Vector getComplexAttributes(String parentId, String parent_type, String attrId) throws SQLException {
+        return getComplexAttributes(parentId, parent_type, attrId, null, null);
     }
 
     /**
      *
-     * @param parent_id
+     * @param parentId
      * @param parent_type
      * @param attr_id
      * @param inheritTblID
      * @param inheritDstID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getComplexAttributes(String parent_id, String parent_type, String attr_id, String inheritTblID,
+    public Vector getComplexAttributes(String parentId, String parent_type, String attr_id, String inheritTblID,
             String inheritDstID) throws SQLException {
 
         INParameters inParams = new INParameters();
@@ -1745,7 +1755,7 @@ public class DDSearchEngine {
         buf.append("on M_COMPLEX_ATTR.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID ");
         buf.append("where ");
         buf.append("((COMPLEX_ATTR_ROW.PARENT_ID=");
-        buf.append(inParams.add(parent_id, Types.INTEGER));
+        buf.append(inParams.add(parentId, Types.INTEGER));
         buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE=");
         buf.append(inParams.add(parent_type));
         buf.append(")");
@@ -1900,7 +1910,7 @@ public class DDSearchEngine {
                 attr.addRow(rowHash);
                 attr.addInheritedValue(rowHash);
                 attr.setInheritedLevel(inherited);
-            } else {// inheritance type 2 - show values from upper levels or if current level has values then onlycurrent level
+            } else { // inheritance type 2 - show values from upper levels or if current level has values then onlycurrent level
                 if (attr.getInheritedLevel() == null) {
                     attr.addInheritedValue(rowHash);
                     attr.setInheritedLevel(inherited);
@@ -1925,7 +1935,7 @@ public class DDSearchEngine {
      *
      * @param attr_id
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getComplexAttributeValues(String attr_id) throws SQLException {
 
@@ -2022,7 +2032,7 @@ public class DDSearchEngine {
      *
      * @param attr_id
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getSimpleAttributeValues(String attr_id) throws SQLException {
 
@@ -2074,7 +2084,7 @@ public class DDSearchEngine {
     /**
      *
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getNamespaces() throws SQLException {
         return getNamespaces(null);
@@ -2084,7 +2094,7 @@ public class DDSearchEngine {
      *
      * @param id
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Namespace getNamespace(String id) throws SQLException {
         Vector v = getNamespaces(id);
@@ -2098,7 +2108,7 @@ public class DDSearchEngine {
      *
      * @param id
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getNamespaces(String id) throws SQLException {
 
@@ -2161,7 +2171,7 @@ public class DDSearchEngine {
      *
      * @param datasetID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Dataset getDeletedDataset(String datasetID) throws SQLException {
         Vector v = getDatasets(datasetID, false, true);
@@ -2176,7 +2186,7 @@ public class DDSearchEngine {
      *
      * @param datasetID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Dataset getDataset(String datasetID) throws SQLException {
 
@@ -2191,7 +2201,7 @@ public class DDSearchEngine {
     /**
      *
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getDatasets() throws SQLException {
         return getDatasets(null, false, false);
@@ -2201,7 +2211,7 @@ public class DDSearchEngine {
      *
      * @param wrkCopies
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getDatasets(boolean wrkCopies) throws SQLException {
         return getDatasets(null, wrkCopies, false);
@@ -2210,7 +2220,7 @@ public class DDSearchEngine {
     /**
      *
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getDeletedDatasets() throws SQLException {
         if (user == null || !user.isAuthentic()) {
@@ -2225,7 +2235,7 @@ public class DDSearchEngine {
      * @param wrkCopies
      * @param deleted
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     private Vector getDatasets(String datasetID, boolean wrkCopies, boolean deleted) throws SQLException {
 
@@ -2323,64 +2333,67 @@ public class DDSearchEngine {
     /**
      *
      * @param params
-     * @param short_name
+     * @param shortName
      * @param version
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getDatasets(Vector params, String short_name, String version) throws SQLException {
-        return getDatasets(params, short_name, version, null);
+    public Vector getDatasets(Vector params, String shortName, String version) throws SQLException {
+        return getDatasets(params, shortName, version, null);
     }
 
     /**
      *
      * @param params
-     * @param short_name
+     * @param shortName
      * @param version
      * @param oper
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getDatasets(Vector params, String short_name, String version, String oper) throws SQLException {
-        return getDatasets(params, short_name, version, oper, false);
+    public Vector getDatasets(Vector params, String shortName, String version, String oper) throws SQLException {
+        return getDatasets(params, shortName, version, oper, false);
     }
 
     /**
      *
      * @param params
-     * @param short_name
+     * @param shortName
      * @param version
      * @param oper
      * @param wrkCopies
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getDatasets(Vector params, String short_name, String version, String oper, boolean wrkCopies)
+    public Vector getDatasets(Vector params, String shortName, String version, String oper, boolean wrkCopies)
     throws SQLException {
-        return getDatasets(params, short_name, null, version, oper, wrkCopies);
+        return getDatasets(params, shortName, null, version, oper, wrkCopies);
     }
 
     /**
-     * get datasets by params, control oper & working copies
+     * get datasets by params, control oper & working copies.
+     * @throws SQLException if database query fails
      */
-    public Vector getDatasets(Vector params, String short_name, String idfier, String version, String oper, boolean wrkCopies)
+    public Vector getDatasets(Vector params, String shortName, String idfier, String version, String oper, boolean wrkCopies)
     throws SQLException {
 
-        return getDatasets(params, short_name, idfier, version, oper, wrkCopies, null);
+        return getDatasets(params, shortName, idfier, version, oper, wrkCopies, null);
     }
 
     /**
-     * get datasets by params, control oper & working copies
+     * get datasets by params, control oper & working copies.
+     * @throws SQLException if database query fails
      */
-    public Vector getDatasets(Vector params, String short_name, String idfier, String version, String oper, boolean wrkCopies,
+    public Vector getDatasets(Vector params, String shortName, String idfier, String version, String oper, boolean wrkCopies,
             HashSet statuses) throws SQLException {
-        return getDatasets(params, short_name, idfier, version, oper, wrkCopies, false, statuses);
+        return getDatasets(params, shortName, idfier, version, oper, wrkCopies, false, statuses);
     }
 
     /**
      * Get datasets by params, control oper, working copies & historic versions.
+     * @throws SQLException if database query fails
      */
-    public Vector getDatasets(Vector params, String short_name, String idfier, String version, String oper, boolean wrkCopies,
+    public Vector getDatasets(Vector params, String shortName, String idfier, String version, String oper, boolean wrkCopies,
             boolean isIncludeHistoricVersions, HashSet statuses) throws SQLException {
 
         // get the id of simple attribute "Name"
@@ -2401,7 +2414,7 @@ public class DDSearchEngine {
         StringBuffer constraints = new StringBuffer("DATASET.DELETED is null");
 
         // short name into constraints
-        if (short_name != null && short_name.length() != 0) {
+        if (shortName != null && shortName.length() != 0) {
             constraints.append(" and DATASET.SHORT_NAME");
             // overwrite 'match' operator with 'like', because short name is not fulltext-indexed
             if (oper.trim().equalsIgnoreCase("match")) {
@@ -2409,9 +2422,9 @@ public class DDSearchEngine {
             }
             constraints.append(oper);
             if (oper.trim().equalsIgnoreCase("like")) {
-                constraints.append(inParams.add("%" + short_name + "%"));
+                constraints.append(inParams.add("%" + shortName + "%"));
             } else {
-                constraints.append(inParams.add(short_name));
+                constraints.append(inParams.add(shortName));
             }
         }
 
@@ -2592,7 +2605,7 @@ public class DDSearchEngine {
     }
 
     /**
-     * Returns true if this.user should not see definition in the given status
+     * Returns true if this.user should not see definition in the given status.
      *
      * @param regStatus
      * @return
@@ -2615,7 +2628,7 @@ public class DDSearchEngine {
      * @param dstID
      * @param isOrderByPositions
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getDatasetTables(String dstID, boolean isOrderByPositions) throws SQLException {
 
@@ -2686,63 +2699,63 @@ public class DDSearchEngine {
     /**
      *
      * @param params
-     * @param short_name
-     * @param full_name
+     * @param shortName
+     * @param fullName
      * @param definition
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getDatasetTables(Vector params, String short_name, String full_name, String definition) throws SQLException {
-        return getDatasetTables(params, short_name, full_name, definition, null);
+    public Vector getDatasetTables(Vector params, String shortName, String fullName, String definition) throws SQLException {
+        return getDatasetTables(params, shortName, fullName, definition, null);
     }
 
     /**
      *
      * @param params
-     * @param short_name
-     * @param full_name
+     * @param shortName
+     * @param fullName
      * @param definition
      * @param oper
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getDatasetTables(Vector params, String short_name, String full_name, String definition, String oper)
+    public Vector getDatasetTables(Vector params, String shortName, String fullName, String definition, String oper)
     throws SQLException {
 
-        return getDatasetTables(params, short_name, null, full_name, definition, oper);
+        return getDatasetTables(params, shortName, null, fullName, definition, oper);
     }
 
     /**
      *
      * @param params
-     * @param short_name
+     * @param shortName
      * @param idfier
-     * @param full_name
+     * @param fullName
      * @param definition
      * @param oper
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getDatasetTables(Vector params, String short_name, String idfier, String full_name, String definition,
+    public Vector getDatasetTables(Vector params, String shortName, String idfier, String fullName, String definition,
             String oper) throws SQLException {
 
-        return getDatasetTables(params, short_name, idfier, full_name, definition, oper, null, true);
+        return getDatasetTables(params, shortName, idfier, fullName, definition, oper, null, true);
     }
 
     /**
      *
      * @param params
-     * @param short_name
+     * @param shortName
      * @param idfier
-     * @param full_name
+     * @param fullName
      * @param definition
      * @param oper
      * @param dstStatuses
      * @param latestOnly
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
-    public Vector getDatasetTables(Vector params, String short_name, String idfier, String full_name, String definition,
+    public Vector getDatasetTables(Vector params, String shortName, String idfier, String fullName, String definition,
             String oper, HashSet dstStatuses, boolean latestOnly) throws SQLException {
 
         INParameters inParams = new INParameters();
@@ -2781,7 +2794,7 @@ public class DDSearchEngine {
         }
 
         // short name into constraints
-        if (short_name != null && short_name.length() != 0) {
+        if (shortName != null && shortName.length() != 0) {
             constraints.append(" and DS_TABLE.SHORT_NAME");
             // overwrite 'match' operator with 'like', because short name is not fulltext-indexed
             if (oper.trim().equalsIgnoreCase("match")) {
@@ -2789,9 +2802,9 @@ public class DDSearchEngine {
             }
             constraints.append(oper);
             if (oper.trim().equalsIgnoreCase("like")) {
-                constraints.append(inParams.add("%" + short_name + "%"));
+                constraints.append(inParams.add("%" + shortName + "%"));
             } else {
-                constraints.append(inParams.add(short_name));
+                constraints.append(inParams.add(shortName));
             }
         }
 
@@ -2811,11 +2824,11 @@ public class DDSearchEngine {
         }
 
         // full name into constraints
-        if (full_name != null && full_name.length() != 0) {
+        if (fullName != null && fullName.length() != 0) {
             if (constraints.length() != 0) {
                 constraints.append(" and ");
             }
-            constraints.append("DS_TABLE.NAME like ").append(inParams.add("%" + full_name + "%"));
+            constraints.append("DS_TABLE.NAME like ").append(inParams.add("%" + fullName + "%"));
         }
         // definition into constraints
         if (definition != null && definition.length() != 0) {
@@ -2972,7 +2985,7 @@ public class DDSearchEngine {
      *
      * @param tableID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public DsTable getDatasetTable(String tableID) throws SQLException {
         return getDatasetTable(tableID, null);
@@ -2983,7 +2996,7 @@ public class DDSearchEngine {
      * @param tableID
      * @param dstID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public DsTable getDatasetTable(String tableID, String dstID) throws SQLException {
 
@@ -3054,7 +3067,7 @@ public class DDSearchEngine {
      * @param parentType
      * @param attrType
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getAttributes(String parentID, String parentType, String attrType) throws SQLException {
         return getAttributes(parentID, parentType, attrType, null, null);
@@ -3068,7 +3081,7 @@ public class DDSearchEngine {
      * @param inheritTblID
      * @param inheritDsID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getAttributes(String parentID, String parentType, String attrType, String inheritTblID, String inheritDsID)
     throws SQLException {
@@ -3084,7 +3097,7 @@ public class DDSearchEngine {
      * @param parentID
      * @param parentType
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getSimpleAttributes(String parentID, String parentType) throws SQLException {
         return getSimpleAttributes(parentID, parentType, null, null);
@@ -3097,7 +3110,7 @@ public class DDSearchEngine {
      * @param inheritTblID
      * @param inheritDstID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getSimpleAttributes(String parentID, String parentType, String inheritTblID, String inheritDstID)
     throws SQLException {
@@ -3140,8 +3153,7 @@ public class DDSearchEngine {
 
                 DElemAttribute attr = getAttributeById(v, rs.getString("M_ATTRIBUTE.M_ATTRIBUTE_ID"));
                 if (attr == null) {
-                    attr =
-                        new DElemAttribute(rs.getString("M_ATTRIBUTE.M_ATTRIBUTE_ID"), rs.getString("M_ATTRIBUTE.NAME"),
+                    attr = new DElemAttribute(rs.getString("M_ATTRIBUTE.M_ATTRIBUTE_ID"), rs.getString("M_ATTRIBUTE.NAME"),
                                 rs.getString("M_ATTRIBUTE.SHORT_NAME"), DElemAttribute.TYPE_SIMPLE, null,
                                 rs.getString("M_ATTRIBUTE.DEFINITION"), rs.getString("M_ATTRIBUTE.OBLIGATION"),
                                 rs.getString("M_ATTRIBUTE.DISP_MULTIPLE"));
@@ -3162,7 +3174,7 @@ public class DDSearchEngine {
                         attr.setValue(value);
                         attr.setInheritedValue(value);
                         attr.setInheritedLevel(inherited);
-                    } else {// inheritance type 2 - show values from upper levels or if current level has values then onlycurrent
+                    } else { // inheritance type 2 - show values from upper levels or if current level has values then onlycurrent
                         // level
                         if (attr.getInheritedLevel() == null) {
                             attr.setInheritedValue(value);
@@ -3202,7 +3214,7 @@ public class DDSearchEngine {
      *
      * @param fxv_id
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public FixedValue getFixedValue(String fxv_id) throws SQLException {
 
@@ -3282,7 +3294,7 @@ public class DDSearchEngine {
      * Get the last insert ID from database.
      *
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public String getLastInsertID() throws SQLException {
 
@@ -3303,7 +3315,7 @@ public class DDSearchEngine {
     /**
      *
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getDstOtherVersions(String idfier, String ofID) throws SQLException {
 
@@ -3322,7 +3334,7 @@ public class DDSearchEngine {
      * @param idfier
      * @param ofID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getElmOtherVersions(String idfier, String ofID) throws SQLException {
 
@@ -3454,10 +3466,10 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param attrID
+     * @param attrID - attribute ID
      * @param attrType
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public int getAttributeUseCount(String attrID, String attrType) throws SQLException {
 
@@ -3502,7 +3514,7 @@ public class DDSearchEngine {
      *
      * @param elm
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public boolean hasNewerReleases(DataElement elm) throws SQLException {
 
@@ -3541,7 +3553,7 @@ public class DDSearchEngine {
      * @param elmIdentifier
      * @param elmId
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getNewerReleases(String elmIdentifier, String elmId) throws SQLException {
 
@@ -3567,7 +3579,7 @@ public class DDSearchEngine {
      *
      * @param relID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Hashtable getFKRelation(String relID) throws SQLException {
 
@@ -3630,7 +3642,7 @@ public class DDSearchEngine {
      *
      * @param elmID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getFKRelationsElm(String elmID) throws SQLException {
         return getFKRelationsElm(elmID, null);
@@ -3640,7 +3652,7 @@ public class DDSearchEngine {
      *
      * @param elmID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getFKRelationsElm(String elmID, String dstID) throws SQLException {
 
@@ -3741,7 +3753,7 @@ public class DDSearchEngine {
     /**
      *
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getHarvesters() throws SQLException {
 
@@ -3773,9 +3785,9 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param attrID
+     * @param attrID - attribute ID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getHarvesterFieldsByAttr(String attrID) throws SQLException {
         return getHarvesterFieldsByAttr(attrID, true);
@@ -3783,10 +3795,10 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param attrID
+     * @param attrID - attribute ID
      * @param all
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getHarvesterFieldsByAttr(String attrID, boolean all) throws SQLException {
         return getHarvesterFieldsByAttr(attrID, all, null);
@@ -3794,11 +3806,11 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param attrID
+     * @param attrID - attribute ID
      * @param all
      * @param includeFields
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getHarvesterFieldsByAttr(String attrID, boolean all, HashSet includeFields) throws SQLException {
 
@@ -3895,11 +3907,11 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param attrID
+     * @param attrID - attribute ID
      * @param parentID
      * @param unUsed
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public HashSet getHarvestedAttrIDs(String attrID, String parentID, String unUsed) throws SQLException {
 
@@ -3938,6 +3950,8 @@ public class DDSearchEngine {
 
     /**
      *
+     * @param attrID - attribute ID
+     * @throws SQLException if database query fails
      */
     public Vector getHarvestedAttrs(String attrID) throws SQLException {
 
@@ -4056,9 +4070,9 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param attrID
+     * @param attrID - attribute ID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Hashtable getHarvestedAttrFieldsHash(String attrID) throws SQLException {
         Hashtable hash = new Hashtable();
@@ -4078,7 +4092,7 @@ public class DDSearchEngine {
      *
      * @param tblID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public boolean hasGIS(String tblID) throws SQLException {
 
@@ -4120,7 +4134,7 @@ public class DDSearchEngine {
      *
      * @param ownerID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getDocs(String ownerID) throws SQLException {
         return getDocs(ownerID, "dst");
@@ -4131,7 +4145,7 @@ public class DDSearchEngine {
      * @param ownerID
      * @param ownerType
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getDocs(String ownerID, String ownerType) throws SQLException {
 
@@ -4194,7 +4208,7 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param attrID
+     * @param attrID - attribute ID
      * @param attrType
      * @return
      */
@@ -4215,7 +4229,7 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param attrID
+     * @param attrID - attribute ID
      * @return
      */
     public String getSimpleAttrHelp(String attrID) {
@@ -4275,7 +4289,7 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param attrID
+     * @param attrID - attribute ID
      * @return
      */
     public String getComplexAttrHelp(String attrID) {
@@ -4338,7 +4352,7 @@ public class DDSearchEngine {
      * @param objType
      * @param article
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public String getCacheFileName(String objID, String objType, String article) throws SQLException {
 
@@ -4379,7 +4393,7 @@ public class DDSearchEngine {
      * @param objID
      * @param objType
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Hashtable getCache(String objID, String objType) throws SQLException {
 
@@ -4715,7 +4729,7 @@ public class DDSearchEngine {
      *
      * @param elmID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public Vector getReferringTables(String elmID) throws SQLException {
 
@@ -4846,7 +4860,7 @@ public class DDSearchEngine {
      *
      * @param dstID
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public String getDatasetIdentifierById(String dstID) throws SQLException {
 
@@ -4881,7 +4895,7 @@ public class DDSearchEngine {
      *
      * @param namespaceId
      * @return
-     * @throws SQLException
+     * @throws SQLException if database query fails
      */
     public String getDatasetIdentifierByNamespace(String namespaceId) throws SQLException {
 
@@ -4901,6 +4915,12 @@ public class DDSearchEngine {
         }
     }
 
+    /**
+     *
+     * @param tableNamespaceID
+     * @return
+     * @throws SQLException if database query fails
+     */
     public String[] getDataElementParentIdentifiers(String tableNamespaceID) throws SQLException {
 
         INParameters inParams = new INParameters();
@@ -4936,6 +4956,7 @@ public class DDSearchEngine {
      *
      * @param elmID
      * @return
+     * @throws SQLException if database query fails
      */
     public String getElmOwner(String elmIdfier) throws SQLException {
 
@@ -4993,7 +5014,7 @@ public class DDSearchEngine {
      * @param searchEngine
      */
     public static void close(DDSearchEngine searchEngine) {
-        if (searchEngine!=null){
+        if (searchEngine != null) {
             searchEngine.close();
         }
     }

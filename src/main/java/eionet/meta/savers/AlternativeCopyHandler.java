@@ -37,13 +37,13 @@ public class AlternativeCopyHandler extends OldCopyHandler {
     private DDUser user = null;
 
     /** */
-    private HashMap<String,String> oldNewElements = new HashMap<String, String>();
-    private HashMap<String,String> oldNewTables = new HashMap<String, String>();
-    private HashMap<String,String> oldNewDatasets = new HashMap<String, String>();
+    private HashMap<String, String> oldNewElements = new HashMap<String, String>();
+    private HashMap<String, String> oldNewTables = new HashMap<String, String>();
+    private HashMap<String, String> oldNewDatasets = new HashMap<String, String>();
 
     /** */
-    private HashMap<String,Set<String>> dst2Tables = new HashMap<String,Set<String>>();
-    private HashMap<String,Set<String>> tbl2Elements = new HashMap<String,Set<String>>();
+    private HashMap<String, Set<String>> dst2Tables = new HashMap<String, Set<String>>();
+    private HashMap<String, Set<String>> tbl2Elements = new HashMap<String, Set<String>>();
 
     /**
      *
@@ -94,12 +94,12 @@ public class AlternativeCopyHandler extends OldCopyHandler {
         String newDstId = createNewDataset(dstId, makeItWorkingCopy, resetVersionAndStatus);
 
         // create new tables
-        for (Entry<String, String> entry : oldNewTables.entrySet()){
+        for (Entry<String, String> entry : oldNewTables.entrySet()) {
             entry.setValue(createNewTable(entry.getKey()));
         }
 
         // create new elements
-        for (Entry<String, String> entry : oldNewElements.entrySet()){
+        for (Entry<String, String> entry : oldNewElements.entrySet()) {
             entry.setValue(createNewElement(entry.getKey(), false, false, false));
         }
 
@@ -130,7 +130,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
         String newId = createNewElement(elmId, makeItWorkingCopy, isCopyTbl2ElmRelations, resetVersionAndStatus);
 
         // If new element successfully created and its ID available, copy attributes, fixed values, etc.
-        if (newId!=null){
+        if (newId != null) {
 
             // Element-to-table relations will also be copied if required by the method input.
             copyDependencies(isCopyTbl2ElmRelations);
@@ -345,7 +345,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      * @param newId
      * @return
      */
-    protected static String fixedValuesCopyStatement(String oldId, String newId){
+    protected static String fixedValuesCopyStatement(String oldId, String newId) {
 
         Map<String, Object> newValues = toValueMap("OWNER_ID", newId);
         newValues.put("FXV_ID", null);
@@ -359,7 +359,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      * @param newId
      * @return
      */
-    protected static String fkRelationsCopyStatementA(String oldId, String newId){
+    protected static String fkRelationsCopyStatementA(String oldId, String newId) {
 
         Map<String, Object> newValues = toValueMap("A_ID", newId);
         newValues.put("REL_ID", null);
@@ -373,7 +373,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      * @param newId
      * @return
      */
-    protected static String fkRelationsCopyStatementB(String oldId, String newId){
+    protected static String fkRelationsCopyStatementB(String oldId, String newId) {
 
         Map<String, Object> newValues = toValueMap("B_ID", newId);
         newValues.put("REL_ID", null);
@@ -387,7 +387,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      * @param newId
      * @return
      */
-    protected static String elmToTblRelationsCopyStatement(String oldId, String newId){
+    protected static String elmToTblRelationsCopyStatement(String oldId, String newId) {
 
         Map<String, Object> newValues = toValueMap("DATAELEM_ID", newId);
         String whereClause = "DATAELEM_ID=" + oldId;
@@ -402,7 +402,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      * @param newTblId
      * @return
      */
-    protected static String dstToTblRelationsCopyStatement(String oldDstId, String newDstId, String oldTblId, String newTblId){
+    protected static String dstToTblRelationsCopyStatement(String oldDstId, String newDstId, String oldTblId, String newTblId) {
 
         Map<String, Object> newValues = toValueMap("DATASET_ID", newDstId);
         newValues.put("TABLE_ID", newTblId);
@@ -418,7 +418,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      * @param newElmId
      * @return
      */
-    protected static String tblToElmRelationsCopyStatement(String oldTblId, String newTblId, String oldElmId, String newElmId){
+    protected static String tblToElmRelationsCopyStatement(String oldTblId, String newTblId, String oldElmId, String newElmId) {
 
         Map<String, Object> newValues = toValueMap("TABLE_ID", newTblId);
         newValues.put("DATAELEM_ID", newElmId);
@@ -456,21 +456,21 @@ public class AlternativeCopyHandler extends OldCopyHandler {
         String sql = "select TABLE_ID from DST2TBL where DATASET_ID=?";
         ResultSet rs = null;
         PreparedStatement pstmt = null;
-        try{
+        try {
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, Integer.parseInt(dstId));
 
             LOGGER.debug("Getting ids of tables to copy ...");
 
             rs = pstmt.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 oldNewTables.put(rs.getString(1), null);
             }
             SQL.close(rs);
 
             LOGGER.debug(oldNewTables.size() + " tables found");
 
-            if (!oldNewTables.isEmpty()){
+            if (!oldNewTables.isEmpty()) {
 
                 dst2Tables.put(dstId, oldNewTables.keySet());
 
@@ -480,17 +480,17 @@ public class AlternativeCopyHandler extends OldCopyHandler {
                     + "where TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID and TABLE_ID in ("
                     + Util.toCSV(oldNewTables.keySet()) + ")";
                 rs = pstmt.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
 
                     String elmId = rs.getString("DATAELEM_ID");
                     String parentNs = rs.getString("PARENT_NS");
-                    if (parentNs!=null){
+                    if (parentNs != null) {
                         oldNewElements.put(elmId, null);
                     }
 
                     String tblId = rs.getString("TABLE_ID");
                     Set<String> tblElms = tbl2Elements.get(tblId);
-                    if (tblElms==null){
+                    if (tblElms == null) {
                         tblElms = new HashSet<String>();
                         tbl2Elements.put(tblId, tblElms);
                     }
@@ -498,8 +498,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
                 }
                 LOGGER.debug(oldNewElements.size() + " elements found");
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(pstmt);
         }
@@ -531,7 +530,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
         }
 
         String newId = String.valueOf(copyAutoIncRow("DATASET", "DATASET_ID=" + dstId, "DATASET_ID", newValues));
-        if (newId!=null){
+        if (newId != null) {
             oldNewDatasets.put(dstId, newId);
         }
         return newId;
@@ -551,7 +550,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
         }
 
         String newId = String.valueOf(copyAutoIncRow("DS_TABLE", "TABLE_ID=" + tblId, "TABLE_ID", newValues));
-        if (newId!=null){
+        if (newId != null) {
             oldNewTables.put(tblId, newId);
         }
         return newId;
@@ -583,7 +582,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
         }
 
         String newId = String.valueOf(copyAutoIncRow("DATAELEM", "DATAELEM_ID=" + elmId, "DATAELEM_ID", newValues));
-        if (newId!=null){
+        if (newId != null) {
             oldNewElements.put(elmId, newId);
         }
         return newId;
@@ -599,11 +598,11 @@ public class AlternativeCopyHandler extends OldCopyHandler {
         LOGGER.debug("Going to run various copy statements ...");
 
         Statement stmt = null;
-        try{
+        try {
             stmt = conn.createStatement();
             boolean isEmptyBatch = true;
 
-            for (Entry<String, String> entry : oldNewDatasets.entrySet()){
+            for (Entry<String, String> entry : oldNewDatasets.entrySet()) {
 
                 stmt.addBatch(simpleAttrsCopyStatement(entry.getKey(), entry.getValue(), "DS"));
                 isEmptyBatch = false;
@@ -613,7 +612,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
                 stmt.addBatch(rodLinksCopyStatement(entry.getKey(), entry.getValue()));
             }
 
-            for (Entry<String, String> entry : oldNewTables.entrySet()){
+            for (Entry<String, String> entry : oldNewTables.entrySet()) {
 
                 stmt.addBatch(simpleAttrsCopyStatement(entry.getKey(), entry.getValue(), "T"));
                 isEmptyBatch = false;
@@ -622,7 +621,7 @@ public class AlternativeCopyHandler extends OldCopyHandler {
                 stmt.addBatch(documentsCopyStatement(entry.getKey(), entry.getValue(), "tbl"));
             }
 
-            for (Entry<String, String> entry : oldNewElements.entrySet()){
+            for (Entry<String, String> entry : oldNewElements.entrySet()) {
 
                 stmt.addBatch(simpleAttrsCopyStatement(entry.getKey(), entry.getValue(), "E"));
                 isEmptyBatch = false;
@@ -637,24 +636,24 @@ public class AlternativeCopyHandler extends OldCopyHandler {
 
             }
 
-            for (Entry<String, Set<String>> entry : dst2Tables.entrySet()){
+            for (Entry<String, Set<String>> entry : dst2Tables.entrySet()) {
 
                 String oldDstId = entry.getKey();
                 String newDstId = oldNewDatasets.get(oldDstId);
-                for (String oldTblId : entry.getValue()){
+                for (String oldTblId : entry.getValue()) {
                     String newTblId = oldNewTables.get(oldTblId);
                     stmt.addBatch(dstToTblRelationsCopyStatement(oldDstId, newDstId, oldTblId, newTblId));
                     isEmptyBatch = false;
                 }
             }
 
-            for (Entry<String, Set<String>> entry : tbl2Elements.entrySet()){
+            for (Entry<String, Set<String>> entry : tbl2Elements.entrySet()) {
 
                 String oldTblId = entry.getKey();
                 String newTblId = oldNewTables.get(oldTblId);
-                for (String oldElmId : entry.getValue()){
+                for (String oldElmId : entry.getValue()) {
                     String newElmId = oldNewElements.get(oldElmId);
-                    if (newElmId==null){
+                    if (newElmId == null) {
                         newElmId = oldElmId;
                     }
                     stmt.addBatch(tblToElmRelationsCopyStatement(oldTblId, newTblId, oldElmId, newElmId));
@@ -662,12 +661,11 @@ public class AlternativeCopyHandler extends OldCopyHandler {
                 }
             }
 
-            if (isEmptyBatch==false){
+            if (isEmptyBatch == false) {
                 LOGGER.debug("Executing mega-batch ...");
                 stmt.executeBatch();
             }
-        }
-        finally{
+        } finally {
             SQL.close(stmt);
         }
     }
