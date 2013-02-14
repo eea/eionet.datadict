@@ -15,7 +15,7 @@
  * The Original Code code was developed for the European
  * Environment Agency (EEA) under the IDA/EINRC framework contract.
  *
- * Copyright (C) 2000-2002 by European Environment Agency.  All
+ * Copyright (C) 2000-2013 by European Environment Agency.  All
  * Rights Reserved.
  *
  * Original Code: Jaanus Heinlaid (TietoEnator)
@@ -1167,6 +1167,8 @@ public class Util {
     }
 
     /**
+     * Converts a collection to a row of comma-separated-values. Caution: empty strings are ignored,
+     * values are not enclosed in double quotes. Double-quotes in values are not escaped.
      *
      * @param coll
      * @return
@@ -1187,6 +1189,8 @@ public class Util {
     }
 
     /**
+     * Converts an array to a row of comma-separated-values. Caution: empty strings are ignored,
+     * values are not enclosed in double quotes. Double-quotes in values are not escaped.
      *
      * @param coll
      * @return
@@ -1227,9 +1231,9 @@ public class Util {
     }
 
     /**
-     *
-     * @param i
-     * @return
+     * Convert a byte to a Boolean. 0 is false. Everything else is true.
+     * @param i - the byte
+     * @return the Boolean value
      */
     public static boolean toBoolean(byte i) {
         if (i == 0) {
@@ -1240,9 +1244,9 @@ public class Util {
     }
 
     /**
-     *
-     * @param b
-     * @return
+     * Convert a Boolean value to a byte.
+     * @param b - the value
+     * @return 0 or 1.
      */
     public static byte toByte(boolean b) {
         if (b == false) {
@@ -1344,22 +1348,25 @@ public class Util {
     }
 
     /**
-     * Returns true, if the identifier doesn't contain banned characters.
+     * Returns true if the identifier doesn't contain banned characters.
+     * We allow the slash (/) eventhough it has an effect on relative links.
      *
      * @param identifier - the string to test.
      * @return - the true/false result.
      */
     public static boolean isValidIdentifier(String identifier) {
         if (StringUtils.isNotEmpty(identifier)) {
-            String regex = "^[^/#:]+$";
+            String regex = "^[^#:]+$";
             return identifier.matches(regex);
         }
         return false;
     }
 
     /**
-     * @param timeCreated
-     * @return
+     * Format a date object to yyyy-MM-dd HH:mm:ss. Is this format chosen to fit what the database uses?
+     *
+     * @param date - the date
+     * @return date as string
      */
     public static String formatDateTime(Date date) {
         return dateTimeFormat.format(date);
