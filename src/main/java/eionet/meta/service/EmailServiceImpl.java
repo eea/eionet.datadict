@@ -102,6 +102,7 @@ public class EmailServiceImpl implements IEmailService {
             SiteCodeFilter filter = new SiteCodeFilter();
             filter.setDateAllocated(allocationResult.getAllocationTime());
             filter.setUserAllocated(allocationResult.getUserName());
+            filter.setUsePaging(false);
             SiteCodeResult siteCodes = siteCodeDao.searchSiteCodes(filter);
 
             notification.setSiteCodes(siteCodes.getList());
