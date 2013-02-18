@@ -190,7 +190,7 @@
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
 
             <display:column title="Id" property="identifier" escapeXml="true" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
-            <display:column title="Label">
+            <display:column title="Preferred label">
                 <c:choose>
                     <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
                         <stripes:link href="/vocabulary/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/">
@@ -209,7 +209,7 @@
             <display:column title="Notation" escapeXml="true" property="notation" />
         </display:table>
 
-    <%-- The section that displays versions of this schema set. --%>
+    <%-- The section that displays versions of this vocabulary. --%>
 
     <c:if test="${not empty actionBean.vocabularyFolderVersions}">
         <h2>Other versions of this vocabulary</h2>

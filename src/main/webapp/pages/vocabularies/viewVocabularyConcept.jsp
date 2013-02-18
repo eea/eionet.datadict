@@ -28,14 +28,14 @@
                 <col style="min-width:8em"/>
                 <col />
                 <tr>
-                    <th scope="row" class="scope-row simple_attr_title" style="min-width:8em">
+                    <th scope="row" class="scope-row simple_attr_title" style="min-width:7em">
                         Concept URI</th>
                     <td class="simple_attr_value" style="font-weight:bold"><c:out value="${actionBean.conceptUri}" />
                     </td>
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
-                        Label</th>
+                        Preferred label</th>
                     <td class="simple_attr_value"><c:out value="${actionBean.vocabularyConcept.label}" />
                     </td>
                 </tr>
