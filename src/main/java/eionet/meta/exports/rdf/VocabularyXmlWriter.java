@@ -51,10 +51,13 @@ public class VocabularyXmlWriter {
     private static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
     private static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
 
-    /** Characters that aren't allowed in IRIs. */
-    private static final String[] BAD_IRI_CHARS = {" ", "{", "}", "<", ">", "\"", "|", "\\", "^", "`"};
+    /** Characters that aren't allowed in IRIs.
+        Special consideration for plus (+): It is historically used to encode space. If we leave it
+        unencoded, then it could be mistakenly decoded back to a space.
+     */
+    private static final String[] BAD_IRI_CHARS = {" ", "{", "}", "<", ">", "\"", "|", "\\", "^", "`", "+"};
     /** Replacements for characters that aren't allowed in IRIs. */
-    private static final String[] BAD_IRI_CHARS_ESCAPES = {"%20", "%7B", "%7D", "%3C", "%3E", "%22", "%7C", "%5C", "%5E", "%60"};
+    private static final String[] BAD_IRI_CHARS_ESCAPES = {"%20", "%7B", "%7D", "%3C", "%3E", "%22", "%7C", "%5C", "%5E", "%60", "%2B" };
 
     /** The base URI of the concept. It must end with a slash (/). */
     private String contextRoot;
@@ -150,6 +153,13 @@ public class VocabularyXmlWriter {
             writer.writeStartElement(SKOS_NS, "prefLabel");
             writer.writeCharacters(vc.getLabel());
             writer.writeEndElement();
+
+            if (StringUtils.isNotEmpty(vc.getDefinition())) {
+                writer.writeCharacters("\n");
+                writer.writeStartElement(SKOS_NS, "definition");
+                writer.writeCharacters(vc.getDefinition());
+                writer.writeEndElement();
+            }
 
             writer.writeCharacters("\n");
             writer.writeEmptyElement(SKOS_NS, "inScheme");
