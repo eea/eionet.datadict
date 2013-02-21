@@ -5,27 +5,27 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
     version="2.0">
 
-	<description>DataDict local JSTL functions library.</description>
-	<display-name>DataDict JSTL static functions.</display-name>
-	<tlib-version>1.0</tlib-version>
-	<short-name>ddfn</short-name>
-	<uri>http://dd.eionet.europa.eu/jstl/functions</uri>
+    <description>DataDict local JSTL functions library.</description>
+    <display-name>DataDict JSTL static functions.</display-name>
+    <tlib-version>1.0</tlib-version>
+    <short-name>ddfn</short-name>
+    <uri>http://dd.eionet.europa.eu/jstl/functions</uri>
 
-	<function>
-		<description>
-			Checks if the authenticated user or anonymous user has the given permission in the given acl.
-			The 1st parameter is user attribute in HTTP session, the 2nd is the acl name and the 3rd is the permission identifier.
-			If any of the three is null or zero length, returns false.
-		</description>
-		<name>userHasPermission</name>
-		<function-class>eionet.web.util.JstlFunctions</function-class>
-		<function-signature>boolean userHasPermission(java.lang.String, java.lang.String, java.lang.String)</function-signature>
-		<example>
-			${hasPermission("mrx", "/", "u")}
-		</example>
-	</function>
-	
-	<function>
+    <function>
+        <description>
+            Checks if the authenticated user or anonymous user has the given permission in the given acl.
+            The 1st parameter is user attribute in HTTP session, the 2nd is the acl name and the 3rd is the permission identifier.
+            If any of the three is null or zero length, returns false.
+        </description>
+        <name>userHasPermission</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>boolean userHasPermission(java.lang.String, java.lang.String, java.lang.String)</function-signature>
+        <example>
+            ${hasPermission("mrx", "/", "u")}
+        </example>
+    </function>
+
+    <function>
         <description>
             Delegates the call to org.apache.commons.lang.StringUtils.join(Object[], String) or
             org.apache.commons.lang.StringUtils.join(Collection, String) if the first input parameter
@@ -38,7 +38,7 @@
         <example>
         </example>
     </function>
-    
+
     <function>
         <description>
             Returns true if the given array or collection (i.e. the first input parameter)
@@ -50,7 +50,7 @@
         <example>
         </example>
     </function>
-    
+
     <function>
         <description>
             Returns checked="checked" if the given condition is true, otherwise returns an empty string.
@@ -61,7 +61,7 @@
         <example>
         </example>
     </function>
-    
+
     <function>
         <description>
             Returns selected="selected" if the given condition is true, otherwise returns an empty string.
@@ -72,7 +72,7 @@
         <example>
         </example>
     </function>
-    
+
     <function>
         <description>
             Returns disabled="disabled" if the given condition is true, otherwise returns an empty string.
@@ -84,4 +84,14 @@
         </example>
     </function>
 
+    <function>
+        <description>
+            Returns the text where URLs are replaced by HTML links.
+        </description>
+        <name>linkify</name>
+        <function-class>eionet.web.util.JstlFunctions</function-class>
+        <function-signature>java.lang.String linkify(java.lang.String)</function-signature>
+        <example>
+        </example>
+    </function>
 </taglib>

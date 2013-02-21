@@ -68,8 +68,8 @@
     <stripes:layout-component name="contents">
 
     <stripes:url var="viewUrl" beanclass="${actionBean.class.name}" event="view">
-	    <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
-	</stripes:url>
+        <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
+    </stripes:url>
 
     <%-- Dropdown operations menu --%>
 
@@ -286,7 +286,7 @@
                             <c:if test="${complexAttrRowsLoop.index > 0}">---<br/></c:if>
                             <c:forEach items="${actionBean.complexAttributeFields[complexAttr.ID]}" var="complexAttrField" varStatus="complexAttrFieldLoop">
                                 <c:if test="${not empty complexAttrField['id'] && not empty complexAttrRow[complexAttrField['id']]}">
-                                    <c:out value="${complexAttrRow[complexAttrField['id']]}"/><br/>
+                                    <dd:linkify value="${complexAttrRow[complexAttrField['id']]}" /><br/>
                                 </c:if>
                             </c:forEach>
                         </c:forEach>

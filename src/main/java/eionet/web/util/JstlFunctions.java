@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.util.SecurityUtil;
+import eionet.util.Util;
 
 /**
  *
@@ -138,5 +139,15 @@ public class JstlFunctions {
         } else {
             return "";
         }
+    }
+
+    /**
+     * Returns the text where URLs are replaced by HTML links.
+     *
+     * @param text
+     * @return
+     */
+    public static String linkify(String text) {
+        return Util.processForLink(text, false, text.length());
     }
 }
