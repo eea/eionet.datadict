@@ -21,6 +21,8 @@
 
 package eionet.meta.dao.domain;
 
+import java.util.List;
+
 /**
  * Vocabulary concept.
  *
@@ -34,6 +36,8 @@ public class VocabularyConcept {
     private String label;
     private String definition;
     private String notation;
+
+    private List<List<VocabularyConceptAttribute>> attributes;
 
     /**
      * @return the id
@@ -108,6 +112,21 @@ public class VocabularyConcept {
      */
     public void setNotation(String notation) {
         this.notation = notation;
+    }
+
+    /**
+     * @return the attributes
+     */
+    public List<List<VocabularyConceptAttribute>> getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * @param attributes
+     *            the attributes to set
+     */
+    public void setAttributes(List<List<VocabularyConceptAttribute>> attributes) {
+        this.attributes = attributes;
     }
 
 }

@@ -145,4 +145,11 @@ public interface IVocabularyConceptDAO {
      *            Destination Vocabulary folder ID the concepts will be copied to.
      */
     void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId);
+
+    /**
+     * Copy existing VocabularyConceptAttributes from original concepts to newly copied concepts.
+     *
+     * @param newVocabularyFolderId
+     */
+    void copyVocabularyConceptsAttributes(int newVocabularyFolderId);
 }

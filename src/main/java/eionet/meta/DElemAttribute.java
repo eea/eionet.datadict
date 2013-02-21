@@ -1,5 +1,5 @@
-
 package eionet.meta;
+
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -11,12 +11,12 @@ import eionet.util.Util;
  * @author Jaanus Heinlaid
  *
  */
-public class DElemAttribute{
+public class DElemAttribute {
 
     public static final String TYPE_SIMPLE = "SIMPLE";
     public static final String TYPE_COMPLEX = "COMPLEX";
 
-    public static final String FIELD_ID   = "fld-id";
+    public static final String FIELD_ID = "fld-id";
     public static final String FIELD_NAME = "fld-name";
     public static final String FIELD_DEFN = "fld-defn";
     public static final String FIELD_VALUE = "fld-value";
@@ -27,7 +27,19 @@ public class DElemAttribute{
     public static final String REQUEST_PARAM_PREFIX = "attr_";
     public static final String REQUEST_PARAM_MULTI_PREFIX = "attr_mult_";
 
-    private Hashtable typeWeights = new Hashtable();
+    public static Hashtable<String, Integer> typeWeights = new Hashtable<String, Integer>();
+    static {
+        typeWeights.put("VCO", new Integer(512)); // vocabulary concept
+        typeWeights.put(ParentType.SCHEMA_SET.toString(), new Integer(256)); // schema set
+        typeWeights.put(ParentType.SCHEMA.toString(), new Integer(128)); // schema
+        typeWeights.put("TBL", new Integer(64));
+        typeWeights.put("FXV", new Integer(32));
+        typeWeights.put("DCL", new Integer(16));
+        typeWeights.put("DST", new Integer(8));
+        typeWeights.put("AGG", new Integer(4));
+        typeWeights.put("CH1", new Integer(2));
+        typeWeights.put("CH2", new Integer(1));
+    }
 
     private String type = null;
     private String name = null;
@@ -37,23 +49,23 @@ public class DElemAttribute{
     private Vector values = null;
     private Vector originalValues = null;
     private Vector inheritedValues = null;
-    private String inheritedValue = null; //for attributes, which can hae only 1 value
+    private String inheritedValue = null; // for attributes, which can hae only 1 value
     private String originalValue = null;
-    private String inheritedLevel = null; //possible values: null, T, DS
+    private String inheritedLevel = null; // possible values: null, T, DS
     private String fixedValueID = null;
     private String definition = null;
     private String obligation = "M";
     private Namespace ns = null;
 
-    private String displayType   = null;
-    private int displayOrder  = 999;
-    private int displayWhen      = -1;
-    private String displayWidth  = "20";
+    private String displayType = null;
+    private int displayOrder = 999;
+    private int displayWhen = -1;
+    private String displayWidth = "20";
     private String displayHeight = "1";
-    private String displayMultiple   = "0";
-    private String inheritable   = "0";
-    private String harvesterID   = null;
-    private String harvAttrID   = null;
+    private String displayMultiple = "0";
+    private String inheritable = "0";
+    private String harvesterID = null;
+    private String harvAttrID = null;
 
     private Vector fields = null;
     private Vector rows = null;
@@ -68,16 +80,6 @@ public class DElemAttribute{
         this.shortName = shortName;
         this.type = type;
         this.value = value;
-
-        typeWeights.put(ParentType.SCHEMA_SET.toString(), new Integer(256)); // schema set
-        typeWeights.put(ParentType.SCHEMA.toString(), new Integer(128)); // schema
-        typeWeights.put("TBL", new Integer(64));
-        typeWeights.put("FXV", new Integer(32));
-        typeWeights.put("DCL", new Integer(16));
-        typeWeights.put("DST", new Integer(8));
-        typeWeights.put("AGG", new Integer(4));
-        typeWeights.put("CH1", new Integer(2));
-        typeWeights.put("CH2", new Integer(1));
     }
 
     public DElemAttribute(String id, String name, String shortName, String type, String value, String definition) {
@@ -90,7 +92,8 @@ public class DElemAttribute{
         this.obligation = obligation;
     }
 
-    public DElemAttribute(String id, String name, String shortName, String type, String value, String definition, String obligation, String multiple) {
+    public DElemAttribute(String id, String name, String shortName, String type, String value, String definition,
+            String obligation, String multiple) {
         this(id, name, shortName, type, value, definition, obligation);
         this.displayMultiple = multiple;
         if (this.displayMultiple.equals("1")) {
@@ -125,13 +128,13 @@ public class DElemAttribute{
             value = inheritedValue;
         }
 
-        //if (displayMultiple != null && displayMultiple.equals("1")) {
+        // if (displayMultiple!=null && displayMultiple.equals("1")) {
         if (values != null) {
             if (values.size() > 0) {
                 StringBuffer buf = new StringBuffer();
                 for (int i = 0; i < values.size(); i++) {
                     buf.append(values.get(i));
-                    if (i != values.size()-1) {
+                    if (i != values.size() - 1) {
                         buf.append(", ");
                     }
                 }
@@ -139,7 +142,7 @@ public class DElemAttribute{
                 return buf.toString();
             }
         }
-        //}
+        // }
 
         return value;
     }
@@ -203,17 +206,13 @@ public class DElemAttribute{
         return ns;
     }
 
-    public void setDisplayProps(String displayType,
-            int displayOrder,
-            int displayWhen,
-            String displayWidth,
-            String displayHeight,
+    public void setDisplayProps(String displayType, int displayOrder, int displayWhen, String displayWidth, String displayHeight,
             String displayMultiple) {
 
-        this.displayType   = displayType;
-        this.displayOrder  = displayOrder;
-        this.displayWhen   = displayWhen;
-        this.displayWidth  = displayWidth;
+        this.displayType = displayType;
+        this.displayOrder = displayOrder;
+        this.displayWhen = displayWhen;
+        this.displayWidth = displayWidth;
         this.displayHeight = displayHeight;
         this.displayMultiple = displayMultiple;
     }
@@ -268,7 +267,7 @@ public class DElemAttribute{
             }
         }
 
-        // if displayWhen == 0, no flag can possible be set
+        // if displayWhen==0, no flag can possible be set
         if (displayWhen == 0) {
             return false;
         }
@@ -278,7 +277,7 @@ public class DElemAttribute{
             return false;
         }
 
-        Integer weight = (Integer)typeWeights.get(type);
+        Integer weight = (Integer) typeWeights.get(type);
         if (weight == null) {
             return false;
         }
@@ -286,7 +285,7 @@ public class DElemAttribute{
         // we divide displayWhen with the type's weight
         // and if the result is an odd number, we return true
         // if not, we return false
-        int div = displayWhen/weight.intValue();
+        int div = displayWhen / weight.intValue();
 
         if (div % 2 != 0) {
             return true;
@@ -332,9 +331,8 @@ public class DElemAttribute{
     }
 
     /**
-     * A function for getting value of the specified field.
-     * Meant for complex attributes only and return the field
-     * value as soon as it finds it in one of the rows.
+     * A function for getting value of the specified field. Meant for complex attributes only and return the field value as soon as
+     * it finds it in one of the rows.
      */
 
     public String getFieldValueByID(String fldID) {
@@ -346,7 +344,7 @@ public class DElemAttribute{
         Vector _rows = getRows();
         for (int i = 0; _rows != null && i < _rows.size(); i++) {
             Hashtable rowHash = (Hashtable) _rows.get(i);
-            String value = (String)rowHash.get(fldID);
+            String value = (String) rowHash.get(fldID);
             if (value == null) {
                 continue;
             } else {
@@ -358,9 +356,8 @@ public class DElemAttribute{
     }
 
     /**
-     * A function for getting value of the specified field.
-     * Meant for complex attributes only and return the field
-     * value as soon as it finds it in one of the rows.
+     * A function for getting value of the specified field. Meant for complex attributes only and return the field value as soon as
+     * it finds it in one of the rows.
      */
 
     public String getFieldValueByName(String fldName) {
@@ -374,9 +371,9 @@ public class DElemAttribute{
         }
 
         for (int i = 0; i < fields.size(); i++) {
-            Hashtable fldHash = (Hashtable)fields.get(i);
+            Hashtable fldHash = (Hashtable) fields.get(i);
             if (fldName.equals(fldHash.get("name"))) {
-                return (String)fldHash.get("id");
+                return (String) fldHash.get("id");
             }
         }
 
@@ -404,12 +401,11 @@ public class DElemAttribute{
             return false;
         }
 
-        DElemAttribute oAttr = (DElemAttribute)o;
+        DElemAttribute oAttr = (DElemAttribute) o;
 
         // for now, we don't support complex attributes here
         String oType = oAttr.getType();
-        if ((type != null && type.equals(TYPE_COMPLEX)) ||
-                (oType != null && oType.equals(TYPE_COMPLEX))) {
+        if ((type != null && type.equals(TYPE_COMPLEX)) || (oType != null && oType.equals(TYPE_COMPLEX))) {
             return false;
         }
 
@@ -474,20 +470,20 @@ public class DElemAttribute{
     }
 
     public String getInheritedValue() {
-        //if (displayMultiple != null && displayMultiple.equals("1")) {
+        // if (displayMultiple!=null && displayMultiple.equals("1")) {
         if (inheritedValues != null) {
             if (inheritedValues.size() > 0) {
                 StringBuffer buf = new StringBuffer();
                 for (int i = 0; i < inheritedValues.size(); i++) {
                     buf.append(inheritedValues.get(i));
-                    if (i != inheritedValues.size()-1) {
+                    if (i != inheritedValues.size() - 1) {
                         buf.append(", ");
                     }
                 }
                 return buf.toString();
             }
         }
-        //}
+        // }
         return inheritedValue;
     }
 
@@ -506,7 +502,7 @@ public class DElemAttribute{
                 StringBuffer buf = new StringBuffer();
                 for (int i = 0; i < originalValues.size(); i++) {
                     buf.append(originalValues.get(i));
-                    if (i != originalValues.size()-1) {
+                    if (i != originalValues.size() - 1) {
                         buf.append(", ");
                     }
                 }
@@ -546,7 +542,7 @@ public class DElemAttribute{
     }
 
     public void clearInherited() {
-        //if (inheritedValues != null)
+        // if (inheritedValues!=null)
         inheritedValues = null;
         inheritedValue = null;
     }
@@ -558,7 +554,7 @@ public class DElemAttribute{
         }
 
         for (int i = 0; i < attrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute)attrs.get(i);
+            DElemAttribute attr = (DElemAttribute) attrs.get(i);
             String shortName = attr.getShortName();
             int pos = order.indexOf(shortName);
             if (pos == -1) {
@@ -617,6 +613,7 @@ public class DElemAttribute{
 
         /*
          * (non-Javadoc)
+         *
          * @see java.lang.Enum#toString()
          */
         public String toString() {

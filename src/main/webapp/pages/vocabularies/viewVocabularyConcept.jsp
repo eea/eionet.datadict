@@ -17,6 +17,16 @@
                         Back to vocabulary
                     </stripes:link>
                 </li>
+                <c:if test="${actionBean.vocabularyFolder.workingCopy}">
+                <li>
+                    <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean" event="edit">
+                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                        <stripes:param name="vocabularyConcept.identifier" value="${actionBean.vocabularyConcept.identifier}" />
+                        Edit concept
+                    </stripes:link>
+                </li>
+                </c:if>
             </ul>
         </div>
 
@@ -51,6 +61,25 @@
                     <td class="simple_attr_value"><c:out value="${actionBean.vocabularyConcept.notation}" />
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title" style="background-color: #FFFFFF;"><br/>Additional attributes</th>
+                    <td></td>
+                </tr>
+                <c:forEach var="attributeValues" items="${actionBean.vocabularyConcept.attributes}">
+                    <c:set var="attrMeta" value="${attributeValues[0]}"/>
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title">${attrMeta.label}</th>
+                        <td class="simple_attr_value">
+                            <c:forEach var="attr" items="${attributeValues}" varStatus="innerLoop">
+                                <c:out value="${attr.value}" />
+                                <c:if test="${not empty attr.language}">[${attr.language}]</c:if>
+                                <c:if test="${fn:length(attributeValues) - innerLoop.index - 1 >= 1}">
+                                    <hr />
+                                </c:if>
+                            </c:forEach>
+                        </td>
+                    </tr>
+                </c:forEach>
             </table>
         </div>
 

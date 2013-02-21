@@ -126,6 +126,10 @@
         <filter-name>ContentNegotiationFilter</filter-name>
         <url-pattern>/schemasets/*</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>ContentNegotiationFilter</filter-name>
+        <url-pattern>/vocabulary/*</url-pattern>
+    </filter-mapping>
 
     <filter-mapping>
         <filter-name>StripesFilter</filter-name>

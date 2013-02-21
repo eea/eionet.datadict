@@ -153,6 +153,14 @@ public interface IVocabularyService {
     void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException;
 
     /**
+     * Updates vocabulary concept without updating attributes.
+     *
+     * @param vocabularyConcept
+     * @throws ServiceException
+     */
+    void quickUpdateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException;
+
+    /**
      * Deletes vocabulary concepts.
      *
      * @param ids

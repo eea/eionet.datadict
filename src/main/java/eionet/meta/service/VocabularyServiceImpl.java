@@ -21,6 +21,7 @@
 
 package eionet.meta.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -31,11 +32,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -64,6 +67,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /** Site Code DAO. */
     @Autowired
     private ISiteCodeDAO siteCodeDAO;
+
+    /** Attribute DAO. */
+    @Autowired
+    private IAttributeDAO attributeDAO;
 
     /**
      * {@inheritDoc}
@@ -142,13 +149,54 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(rollbackFor = ServiceException.class)
     public void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
+        try {
+            vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
+
+            // Update vocabulary concept attributes.
+            List<VocabularyConceptAttribute> toInsert = new ArrayList<VocabularyConceptAttribute>();
+            List<VocabularyConceptAttribute> toUpdate = new ArrayList<VocabularyConceptAttribute>();
+            List<Integer> excludedIds = new ArrayList<Integer>();
+
+            if (vocabularyConcept.getAttributes() != null) {
+                for (List<VocabularyConceptAttribute> attributes : vocabularyConcept.getAttributes()) {
+                    if (attributes != null) {
+                        for (VocabularyConceptAttribute attr : attributes) {
+                            if (attr != null) {
+                                if (attr.getId() != 0) {
+                                    excludedIds.add(attr.getId());
+                                    toUpdate.add(attr);
+                                } else {
+                                    attr.setVocabularyConceptId(vocabularyConcept.getId());
+                                    toInsert.add(attr);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            attributeDAO.updateVocabularyConceptAttributes(toUpdate);
+            attributeDAO.deleteVocabularyConceptAttributes(excludedIds, vocabularyConcept.getId());
+            attributeDAO.createVocabularyConceptAttributes(toInsert);
+
+        } catch (Exception e) {
+            throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
+        }
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void quickUpdateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
         try {
             vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
         } catch (Exception e) {
             throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
         }
-
     }
 
     /**
@@ -237,13 +285,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             // Copy the vocabulary concepts under new vocabulary folder (except of site code type)
             if (!vocabularyFolder.isSiteCodeType()) {
-                // FIXME - doesn't work
                 vocabularyConceptDAO.copyVocabularyConcepts(vocabularyFolderId, newVocabularyFolderId);
-                /*
-                 * List<VocabularyConcept> vocabularyConcepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderId); for
-                 * (VocabularyConcept vc : vocabularyConcepts) { vocabularyConceptDAO.createVocabularyConcept(newVocabularyFolderId,
-                 * vc); }
-                 */
+                vocabularyConceptDAO.copyVocabularyConceptsAttributes(newVocabularyFolderId);
             }
 
             return newVocabularyFolderId;
@@ -306,6 +349,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(rollbackFor = ServiceException.class)
     public int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName)
             throws ServiceException {
         try {
@@ -489,7 +533,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier) throws ServiceException {
         try {
-            return vocabularyConceptDAO.getVocabularyConcept(vocabularyFolderId, conceptIdentifier);
+            VocabularyConcept result = vocabularyConceptDAO.getVocabularyConcept(vocabularyFolderId, conceptIdentifier);
+            List<List<VocabularyConceptAttribute>> attributes = attributeDAO.getVocabularyConceptAttributes(result.getId());
+
+            result.setAttributes(attributes);
+
+            return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
         }

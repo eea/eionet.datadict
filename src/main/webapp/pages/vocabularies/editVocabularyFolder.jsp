@@ -298,6 +298,7 @@
         </stripes:form>
 
         <!-- Vocabulary concepts -->
+        <c:url var="editIcon" value="/images/edit.gif" />
         <stripes:form method="post" id="conceptsForm" beanclass="${actionBean.class.name}">
             <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%"
                 requestURI="/vocabulary/${actionBean.vocabularyFolder.identifier}/edit">
@@ -308,7 +309,13 @@
                 </display:column>
                 <display:column title="Id" escapeXml="true" property="identifier" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
                 <display:column title="Label">
-                    <a href="#" onClick="openPopup('#editConceptDiv${item.id}')"><c:out value="${item.label}" /></a>
+                    <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean" event="edit">
+                        <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                        <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                        <stripes:param name="vocabularyConcept.identifier" value="${item.identifier}" />
+                        <c:out value="${item.label}" />
+                    </stripes:link>
+                    <a href="#" onClick="openPopup('#editConceptDiv${item.id}')"><img src="${editIcon}" title="Quick edit" alt="Quick edit" style="border:0" /></a>
                 </display:column>
                 <display:column title="Definition" escapeXml="true" property="definition" />
                 <display:column title="Notation" escapeXml="true" property="notation" />

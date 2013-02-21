@@ -6,6 +6,7 @@ import java.util.Map;
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.ComplexAttribute;
+import eionet.meta.dao.domain.VocabularyConceptAttribute;
 
 /**
  *
@@ -79,8 +80,23 @@ public interface IAttributeDAO {
 
     /**
      * Returns complex attribute object by name.
-     * @param complexAttrName Exact name of attribute.
+     *
+     * @param complexAttrName
+     *            Exact name of attribute.
      * @return CoplexAttribute object
      */
     ComplexAttribute getComplexAttributeByName(String complexAttrName);
+
+    /**
+     * Returns dynamic attributes for vocabulary concept.
+     *
+     * @return
+     */
+    List<List<VocabularyConceptAttribute>> getVocabularyConceptAttributes(int vocabularyConceptId);
+
+    void createVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes);
+
+    void updateVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes);
+
+    void deleteVocabularyConceptAttributes(List<Integer> excludedIds, int vocabularyConceptId);
 }

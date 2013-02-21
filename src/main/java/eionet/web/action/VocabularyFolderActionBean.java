@@ -278,7 +278,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyService.createVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept);
         } else {
             // Update existing concept
-            vocabularyService.updateVocabularyConcept(getEditableConcept());
+            vocabularyService.quickUpdateVocabularyConcept(getEditableConcept());
             initFilter();
             resolution.addParameter("page", page);
             if (StringUtils.isNotEmpty(filter.getText())) {
@@ -368,14 +368,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     private void validateView() throws ServiceException {
-        LOGGER.debug("validate view");
         if (vocabularyFolder.isWorkingCopy() || vocabularyFolder.isDraftStatus()) {
             if (getUser() == null) {
-                LOGGER.debug("view error 1");
                 throw new ServiceException("User must be logged in");
             } else {
                 if (vocabularyFolder.isWorkingCopy() && !isUserWorkingCopy()) {
-                    LOGGER.debug("view error 2");
                     throw new ServiceException("Illegal user for viewing this working copy");
                 }
             }

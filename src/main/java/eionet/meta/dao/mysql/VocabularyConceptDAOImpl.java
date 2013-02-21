@@ -136,13 +136,30 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION) ");
-        sql.append("select :newVocabularyFolderId, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
+        sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ORIGINAL_CONCEPT_ID) ");
+        sql.append("select :newVocabularyFolderId, IDENTIFIER, LABEL, DEFINITION, NOTATION, VOCABULARY_CONCEPT_ID ");
         sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID = :oldVocabularyFolderId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("newVocabularyFolderId", newVocabularyFolderId);
         parameters.put("oldVocabularyFolderId", oldVocabularyFolderId);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void copyVocabularyConceptsAttributes(int newVocabularyFolderId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into T_VOCABULARY_CONCEPT_ATTRIBUTE (M_ATTRIBUTE_ID, VOCABULARY_CONCEPT_ID, ATTR_VALUE, LANGUAGE) ");
+        sql.append("select attr.M_ATTRIBUTE_ID, con.VOCABULARY_CONCEPT_ID, attr.ATTR_VALUE, attr.LANGUAGE ");
+        sql.append("from T_VOCABULARY_CONCEPT_ATTRIBUTE attr left join T_VOCABULARY_CONCEPT con ");
+        sql.append("on attr.VOCABULARY_CONCEPT_ID = con.ORIGINAL_CONCEPT_ID where con.VOCABULARY_FOLDER_ID = :newVocabularyFolderId");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("newVocabularyFolderId", newVocabularyFolderId);
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
@@ -223,7 +240,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void moveVocabularyConcepts(int fromVocabularyFolderId, int toVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("update T_VOCABULARY_CONCEPT set VOCABULARY_FOLDER_ID = :toVocabularyFolderId ");
+        sql.append("update T_VOCABULARY_CONCEPT set VOCABULARY_FOLDER_ID = :toVocabularyFolderId, ORIGINAL_CONCEPT_ID = null ");
         sql.append("where VOCABULARY_FOLDER_ID = :fromVocabularyFolderId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();

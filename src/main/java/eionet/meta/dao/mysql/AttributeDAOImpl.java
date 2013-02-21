@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -23,6 +24,7 @@ import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.ComplexAttribute;
 import eionet.meta.dao.domain.ComplexAttributeField;
+import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.util.Pair;
 
 /**
@@ -35,8 +37,8 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
     /** */
     private static final String COPY_SIMPLE_ATTRIBUTES_SQL =
-        "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) "
-        + "select :newParentId, PARENT_TYPE, M_ATTRIBUTE_ID, VALUE from ATTRIBUTE where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType";
+            "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) "
+                    + "select :newParentId, PARENT_TYPE, M_ATTRIBUTE_ID, VALUE from ATTRIBUTE where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType";
 
     /**
      * @see eionet.meta.dao.IAttributeDAO#copySimpleAttributes(int, java.lang.String, int)
@@ -86,16 +88,16 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
 
     /** */
     private static final String REPLACE_SIMPLE_ATTR_PARENT_ID_SQL = "update ATTRIBUTE set DATAELEM_ID=:substituteId "
-        + "where DATAELEM_ID=:replacedId and PARENT_TYPE=:parentType";
+            + "where DATAELEM_ID=:replacedId and PARENT_TYPE=:parentType";
     /** */
     private static final String REPLACE_COMPLEX_ATTR_PARENT_ID_SQL = "update COMPLEX_ATTR_ROW set PARENT_ID=:substituteId "
-        + "where PARENT_ID=:replacedId and PARENT_TYPE=:parentType";
+            + "where PARENT_ID=:replacedId and PARENT_TYPE=:parentType";
     /** */
     private static final String REPLACE_COMPLEX_ATTR_ROW_ID_SQL = "update COMPLEX_ATTR_ROW set ROW_ID=:substituteId "
-        + "where ROW_ID=:replacedId";
+            + "where ROW_ID=:replacedId";
     /** */
     private static final String REPLACE_COMPLEX_ATTR_FIELD_ROW_ID_SQL = "update COMPLEX_ATTR_FIELD set ROW_ID=:substituteId "
-        + "where ROW_ID=:replacedId";
+            + "where ROW_ID=:replacedId";
 
     /**
      * @see eionet.meta.dao.IAttributeDAO#replaceParentId(int, int, eionet.meta.DElemAttribute.ParentType)
@@ -111,8 +113,8 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         getNamedParameterJdbcTemplate().update(REPLACE_SIMPLE_ATTR_PARENT_ID_SQL, prms);
 
         String sql =
-            "select M_COMPLEX_ATTR_ID, POSITION, ROW_ID from COMPLEX_ATTR_ROW "
-            + "where PARENT_ID=:parentId and PARENT_TYPE=:parentType order by ROW_ID";
+                "select M_COMPLEX_ATTR_ID, POSITION, ROW_ID from COMPLEX_ATTR_ROW "
+                        + "where PARENT_ID=:parentId and PARENT_TYPE=:parentType order by ROW_ID";
 
         prms = new HashMap<String, Object>();
         prms.put("parentId", replacedId);
@@ -172,9 +174,9 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     public Map<String, List<String>> getAttributeValues(int parentId, String parentType) {
 
         String sql =
-            "select SHORT_NAME, VALUE from ATTRIBUTE, M_ATTRIBUTE"
-            + " where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType and ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID"
-            + " order by SHORT_NAME, VALUE";
+                "select SHORT_NAME, VALUE from ATTRIBUTE, M_ATTRIBUTE"
+                        + " where DATAELEM_ID=:parentId and PARENT_TYPE=:parentType and ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID"
+                        + " order by SHORT_NAME, VALUE";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("parentId", parentId);
@@ -229,58 +231,57 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     public ComplexAttribute getComplexAttributeByName(String complexAttrName) {
 
         String sql =
-            "select * from M_COMPLEX_ATTR as a, M_COMPLEX_ATTR_FIELD as f "
-            + "where a.M_COMPLEX_ATTR_ID = f.M_COMPLEX_ATTR_ID and a.NAME= :attrName";
+                "select * from M_COMPLEX_ATTR as a, M_COMPLEX_ATTR_FIELD as f "
+                        + "where a.M_COMPLEX_ATTR_ID = f.M_COMPLEX_ATTR_ID and a.NAME= :attrName";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("attrName", complexAttrName);
 
         ComplexAttribute complexAttribute =
-            getNamedParameterJdbcTemplate().query(sql, params, new ResultSetExtractor<ComplexAttribute>() {
+                getNamedParameterJdbcTemplate().query(sql, params, new ResultSetExtractor<ComplexAttribute>() {
 
-                @Override
-                public ComplexAttribute extractData(ResultSet rs) throws DataAccessException, SQLException {
-                    ComplexAttribute complexAttribute = null;
-                    while (rs.next()) {
-                        if (complexAttribute == null) {
-                            complexAttribute = new ComplexAttribute(rs.getInt("a.M_COMPLEX_ATTR_ID"), rs.getString("a.NAME"));
+                    @Override
+                    public ComplexAttribute extractData(ResultSet rs) throws DataAccessException, SQLException {
+                        ComplexAttribute complexAttribute = null;
+                        while (rs.next()) {
+                            if (complexAttribute == null) {
+                                complexAttribute = new ComplexAttribute(rs.getInt("a.M_COMPLEX_ATTR_ID"), rs.getString("a.NAME"));
+                            }
+                            ComplexAttributeField field =
+                                    new ComplexAttributeField(rs.getInt("f.M_COMPLEX_ATTR_FIELD_ID"), rs.getString("f.NAME"));
+                            complexAttribute.addField(field);
                         }
-                        ComplexAttributeField field =
-                            new ComplexAttributeField(rs.getInt("f.M_COMPLEX_ATTR_FIELD_ID"), rs.getString("f.NAME"));
-                        complexAttribute.addField(field);
+                        return complexAttribute;
                     }
-                    return complexAttribute;
-                }
-            });
+                });
         return complexAttribute;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see eionet.meta.dao.IAttributeDAO#copyComplexAttributes(int, java.lang.String, int)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void copyComplexAttributes(int parentId, final String parentType, final int newParentId) {
 
         String sqlQuery =
-            "select M_COMPLEX_ATTR_ID, COMPLEX_ATTR_ROW.ROW_ID, POSITION, HARV_ATTR_ID, M_COMPLEX_ATTR_FIELD_ID, VALUE "
-            + "from COMPLEX_ATTR_ROW, COMPLEX_ATTR_FIELD where PARENT_ID=:parentId and PARENT_TYPE=:parentType "
-            + "and COMPLEX_ATTR_ROW.ROW_ID=COMPLEX_ATTR_FIELD.ROW_ID "
-            + "order by COMPLEX_ATTR_ROW.ROW_ID, M_COMPLEX_ATTR_FIELD_ID";
+                "select M_COMPLEX_ATTR_ID, COMPLEX_ATTR_ROW.ROW_ID, POSITION, HARV_ATTR_ID, M_COMPLEX_ATTR_FIELD_ID, VALUE "
+                        + "from COMPLEX_ATTR_ROW, COMPLEX_ATTR_FIELD where PARENT_ID=:parentId and PARENT_TYPE=:parentType "
+                        + "and COMPLEX_ATTR_ROW.ROW_ID=COMPLEX_ATTR_FIELD.ROW_ID "
+                        + "order by COMPLEX_ATTR_ROW.ROW_ID, M_COMPLEX_ATTR_FIELD_ID";
 
         Map<String, Object> queryParams = new HashMap<String, Object>();
         queryParams.put("parentId", parentId);
         queryParams.put("parentType", parentType);
 
         final String sqlInsertRow =
-            "insert into COMPLEX_ATTR_ROW " + "(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID, POSITION, HARV_ATTR_ID, ROW_ID) "
-            + "values (:parentId, :parentType, :attrId, :position, :harvAttrId, :rowId)";
+                "insert into COMPLEX_ATTR_ROW " + "(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID, POSITION, HARV_ATTR_ID, ROW_ID) "
+                        + "values (:parentId, :parentType, :attrId, :position, :harvAttrId, :rowId)";
 
         final Map<String, Object> insertRowParams = new HashMap<String, Object>();
         insertRowParams.put("parentId", newParentId);
         insertRowParams.put("parentType", parentType);
 
         final String sqlInsertField =
-            "insert into COMPLEX_ATTR_FIELD (ROW_ID, M_COMPLEX_ATTR_FIELD_ID, VALUE) " + "values (:rowId, :fieldId, :value)";
+                "insert into COMPLEX_ATTR_FIELD (ROW_ID, M_COMPLEX_ATTR_FIELD_ID, VALUE) " + "values (:rowId, :fieldId, :value)";
 
         final Map<String, Object> insertFieldParams = new HashMap<String, Object>();
 
@@ -320,5 +321,133 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
                 getNamedParameterJdbcTemplate().update(sqlInsertField, insertFieldParams);
             }
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<List<VocabularyConceptAttribute>> getVocabularyConceptAttributes(int vocabularyConceptId) {
+        final Map<String, Object> params = new HashMap<String, Object>();
+        params.put("attributeWeight", DElemAttribute.typeWeights.get("VCO"));
+        params.put("vocabularyConceptId", vocabularyConceptId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select * from T_VOCABULARY_CONCEPT_ATTRIBUTE v RIGHT OUTER JOIN M_ATTRIBUTE m ");
+        sql.append("ON (v.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID and v.VOCABULARY_CONCEPT_ID = :vocabularyConceptId) ");
+        sql.append("WHERE FLOOR(m.DISP_WHEN / :attributeWeight) %2 != 0 ");
+        sql.append("order by m.DISP_ORDER, v.LANGUAGE, v.ATTR_VALUE");
+
+        final List<List<VocabularyConceptAttribute>> result = new ArrayList<List<VocabularyConceptAttribute>>();
+
+        getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowCallbackHandler() {
+
+            List<VocabularyConceptAttribute> attributes = null;
+            String previousShortName = null;
+
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+
+                if (attributes == null) {
+                    attributes = new ArrayList<VocabularyConceptAttribute>();
+                    previousShortName = rs.getString("m.SHORT_NAME");
+                }
+
+                VocabularyConceptAttribute atr = new VocabularyConceptAttribute();
+                atr.setId(rs.getInt("v.ID"));
+                atr.setVocabularyConceptId(rs.getInt("v.VOCABULARY_CONCEPT_ID"));
+                atr.setValue(rs.getString("v.ATTR_VALUE"));
+                atr.setLanguage(rs.getString("v.LANGUAGE"));
+                atr.setLanguageUsed(rs.getBoolean("m.LANGUAGE_USED"));
+                atr.setAttributeId(rs.getInt("m.M_ATTRIBUTE_ID"));
+                atr.setDataType(rs.getString("m.DATA_TYPE"));
+                atr.setInputType(rs.getString("m.DISP_TYPE"));
+                atr.setLabel(rs.getString("m.NAME"));
+                atr.setHeight(rs.getInt("m.DISP_HEIGHT"));
+                atr.setWidth(rs.getInt("m.DISP_WIDTH"));
+                atr.setMultiValue(rs.getBoolean("m.DISP_MULTIPLE"));
+
+                if (!StringUtils.equals(previousShortName, rs.getString("m.SHORT_NAME"))) {
+                    result.add(attributes);
+                    attributes = new ArrayList<VocabularyConceptAttribute>();
+                }
+
+                attributes.add(atr);
+                previousShortName = rs.getString("m.SHORT_NAME");
+
+                if (rs.isLast()) {
+                    result.add(attributes);
+                }
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into T_VOCABULARY_CONCEPT_ATTRIBUTE (M_ATTRIBUTE_ID, VOCABULARY_CONCEPT_ID, ATTR_VALUE, LANGUAGE) ");
+        sql.append("values (:attributeId, :vocabularyConceptId, :value, :language)");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object>[] batchValues = new HashMap[attributes.size()];
+
+        for (int i = 0; i < batchValues.length; i++) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("attributeId", attributes.get(i).getAttributeId());
+            params.put("vocabularyConceptId", attributes.get(i).getVocabularyConceptId());
+            params.put("value", attributes.get(i).getValue());
+            params.put("language", attributes.get(i).getLanguage());
+            batchValues[i] = params;
+        }
+
+        getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("update T_VOCABULARY_CONCEPT_ATTRIBUTE set ATTR_VALUE=:value, LANGUAGE=:language ");
+        sql.append("where ID = :id");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object>[] batchValues = new HashMap[attributes.size()];
+
+        for (int i = 0; i < batchValues.length; i++) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("id", attributes.get(i).getId());
+            params.put("value", attributes.get(i).getValue());
+            params.put("language", attributes.get(i).getLanguage());
+            batchValues[i] = params;
+        }
+
+        getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteVocabularyConceptAttributes(List<Integer> excludedIds, int vocabularyConceptId) {
+        String sql = null;
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("vocabularyConceptId", vocabularyConceptId);
+
+        if (excludedIds.size() == 0) {
+            sql = "delete from T_VOCABULARY_CONCEPT_ATTRIBUTE where VOCABULARY_CONCEPT_ID = :vocabularyConceptId";
+        } else {
+            sql = "delete from T_VOCABULARY_CONCEPT_ATTRIBUTE where VOCABULARY_CONCEPT_ID = :vocabularyConceptId and ID not in (:excludedIds)";
+            parameters.put("excludedIds", excludedIds);
+        }
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 }
