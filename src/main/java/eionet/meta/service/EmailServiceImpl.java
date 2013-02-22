@@ -37,6 +37,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import eionet.directory.DirServiceException;
 import eionet.directory.DirectoryService;
@@ -58,6 +59,7 @@ import freemarker.template.TemplateException;
  * @author Juhan Voolaid
  */
 @Service
+@Transactional
 public class EmailServiceImpl implements IEmailService {
 
     /** Placeholder for country code. */
@@ -89,7 +91,7 @@ public class EmailServiceImpl implements IEmailService {
      */
     @Override
     public void notifySiteCodeAllocation(String country, AllocationResult allocationResult, boolean adminRole)
-            throws ServiceException {
+    throws ServiceException {
         try {
             SiteCodeAllocationNotification notification = new SiteCodeAllocationNotification();
             notification.setAllocationTime(allocationResult.getAllocationTime().toString());
