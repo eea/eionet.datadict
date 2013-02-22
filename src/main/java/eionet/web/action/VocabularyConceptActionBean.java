@@ -74,7 +74,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution view() throws ServiceException {
         vocabularyFolder =
-                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+            vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
         validateView();
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
@@ -88,7 +88,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     public Resolution edit() throws ServiceException {
         vocabularyFolder =
-                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+            vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
         validateView();
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
@@ -148,13 +148,15 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary concept identifier is not unique");
         }
 
-        for (List<VocabularyConceptAttribute> attributes : vocabularyConcept.getAttributes()) {
-            if (attributes != null) {
-                for (VocabularyConceptAttribute attr : attributes) {
-                    if (attr != null) {
-                        if (StringUtils.isEmpty(attr.getValue())) {
-                            addGlobalValidationError("An attribute value was missing");
-                            break;
+        if (vocabularyConcept.getAttributes() != null){
+            for (List<VocabularyConceptAttribute> attributes : vocabularyConcept.getAttributes()) {
+                if (attributes != null) {
+                    for (VocabularyConceptAttribute attr : attributes) {
+                        if (attr != null) {
+                            if (StringUtils.isEmpty(attr.getValue())) {
+                                addGlobalValidationError("An attribute value was missing");
+                                break;
+                            }
                         }
                     }
                 }
