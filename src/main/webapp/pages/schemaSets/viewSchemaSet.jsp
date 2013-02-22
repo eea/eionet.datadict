@@ -272,7 +272,7 @@
             <c:forEach items="${actionBean.complexAttributes}" var="complexAttr" varStatus="complexAttrsLoop">
                 <tr class="zebra${complexAttrsLoop.index % 2 != 0 ? 'odd' : 'even'}">
                     <td>
-                        <a href="${pageContext.request.contextPath}/complex_attr.jsp?attr_id=${complexAttr.ID}&amp;parent_id=${actionBean.schemaSet.id}&amp;parent_type=SCH&amp;parent_name=${actionBean.schemaSet.identifier}&amp;parent_link=${viewUrl}">
+                        <a href="${pageContext.request.contextPath}/complex_attr.jsp?attr_id=${complexAttr.ID}&amp;parent_id=${actionBean.schemaSet.id}&amp;parent_type=SCS&amp;parent_name=${actionBean.schemaSet.identifier}&amp;parent_link=${viewUrl}">
                             <c:out value="${complexAttr.shortName}"/>
                         </a>
                     </td>
