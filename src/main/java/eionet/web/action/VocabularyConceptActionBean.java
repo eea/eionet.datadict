@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
@@ -226,7 +227,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         if (!baseUri.endsWith("/")) {
             baseUri += "/";
         }
-        return baseUri + vocabularyConcept.getIdentifier();
+
+        return VocabularyXmlWriter.escapeIRI(baseUri + vocabularyConcept.getIdentifier());
     }
 
     /**
