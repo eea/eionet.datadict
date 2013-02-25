@@ -211,7 +211,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     private boolean isUpdateRight() {
         if (getUser() != null) {
-            return getUser().hasPermission("/vocabularies", "u");
+            return getUser().hasPermission("/vocabularies", "u") || getUser().hasPermission("/vocabularies", "i");
         }
         return false;
     }

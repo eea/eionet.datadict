@@ -221,7 +221,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public boolean isUpdateRight() {
         if (getUser() != null) {
-            return getUser().hasPermission("/vocabularies", "u");
+            return getUser().hasPermission("/vocabularies", "u") || getUser().hasPermission("/vocabularies", "i");
         }
         return false;
     }
@@ -233,7 +233,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public boolean isCreateRight() {
         if (getUser() != null) {
-            return getUser().hasPermission("/vocabularies", "c");
+            return getUser().hasPermission("/vocabularies", "i");
         }
         return false;
     }
