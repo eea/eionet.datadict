@@ -113,9 +113,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public VocabularyFolder getVocabularyFolder(String identifier, boolean workingCopy) throws ServiceException {
+    public VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy) throws ServiceException {
         try {
-            return vocabularyFolderDAO.getVocabularyFolder(identifier, workingCopy);
+            return vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, workingCopy);
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary folder: " + e.getMessage(), e);
         }
@@ -211,6 +211,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vf.setRegStatus(vocabularyFolder.getRegStatus());
             vf.setNumericConceptIdentifiers(vocabularyFolder.isNumericConceptIdentifiers());
             vf.setBaseUri(vocabularyFolder.getBaseUri());
+            vf.setFolderName(vocabularyFolder.getFolderName());
             vocabularyFolderDAO.updateVocabularyFolder(vf);
         } catch (Exception e) {
             throw new ServiceException("Failed to update vocabulary folder: " + e.getMessage(), e);
@@ -391,14 +392,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public void undoCheckOut(int vocabularyFolderId, String userName) throws ServiceException {
+    public int undoCheckOut(int vocabularyFolderId, String userName) throws ServiceException {
         if (StringUtils.isBlank(userName)) {
             throw new IllegalArgumentException("User name must not be blank!");
         }
 
         try {
             VocabularyFolder vocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
-
             if (!vocabularyFolder.isWorkingCopy()) {
                 throw new ServiceException("Vocabulary is not a working copy.");
             }
@@ -418,6 +418,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             // Delete checked out version
             vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId));
 
+            return originalVocabularyFolderId;
         } catch (Exception e) {
             throw new ServiceException("Failed to undo checkout for vocabulary folder: " + e.getMessage(), e);
         }
@@ -439,9 +440,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public boolean isUniqueFolderIdentifier(String identifier, int... excludedVocabularyFolderIds) throws ServiceException {
+    public boolean isUniqueFolderIdentifier(String folderName, String identifier, int... excludedVocabularyFolderIds) throws ServiceException {
         try {
-            return vocabularyFolderDAO.isUniqueFolderIdentifier(identifier, excludedVocabularyFolderIds);
+            return vocabularyFolderDAO.isUniqueFolderIdentifier(folderName, identifier, excludedVocabularyFolderIds);
         } catch (Exception e) {
             throw new ServiceException("Failed to check unique vocabulary identifier: " + e.getMessage(), e);
         }

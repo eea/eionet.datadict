@@ -90,12 +90,13 @@ public interface IVocabularyService {
     /**
      * Returns vocabulary folder.
      *
+     * @param folderName
      * @param identifier
      * @param workingCopy
      * @return
      * @throws ServiceException
      */
-    VocabularyFolder getVocabularyFolder(String identifier, boolean workingCopy) throws ServiceException;
+    VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy) throws ServiceException;
 
     /**
      * Returns the checked out version of the given vocabulary folder.
@@ -203,19 +204,22 @@ public interface IVocabularyService {
      * @param vocabularyFolderId
      *            id of the checked out version
      * @param userName
+     * @return original id
      * @throws ServiceException
      */
-    void undoCheckOut(int vocabularyFolderId, String userName) throws ServiceException;
+    int undoCheckOut(int vocabularyFolderId, String userName) throws ServiceException;
 
     /**
      * True, if identifier is unique.
      *
+     * @param folderName
      * @param identifier
      * @param excludedVocabularyFolderIds
      * @return
      * @throws ServiceException
      */
-    boolean isUniqueFolderIdentifier(String identifier, int... excludedVocabularyFolderIds) throws ServiceException;
+    boolean isUniqueFolderIdentifier(String folderName, String identifier, int... excludedVocabularyFolderIds)
+            throws ServiceException;
 
     /**
      * True, if identifier is unique.

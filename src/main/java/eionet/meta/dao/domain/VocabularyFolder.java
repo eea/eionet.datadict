@@ -44,6 +44,7 @@ public class VocabularyFolder {
     private boolean numericConceptIdentifiers;
     private String baseUri;
     private VocabularyType type;
+    private String folderName;
 
     /**
      * True, if status is "Draft".
@@ -274,6 +275,21 @@ public class VocabularyFolder {
      */
     public void setType(VocabularyType type) {
         this.type = type;
+    }
+
+    /**
+     * @return the folderName
+     */
+    public String getFolderName() {
+        return folderName;
+    }
+
+    /**
+     * @param folderName
+     *            the folderName to set
+     */
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
     }
 
 }

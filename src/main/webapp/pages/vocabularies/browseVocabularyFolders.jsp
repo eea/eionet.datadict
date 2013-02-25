@@ -38,18 +38,19 @@
                         <c:choose>
                             <c:when test="${item.draftStatus && empty actionBean.user}">
                                 <span class="link-folder" style="color:gray;">
-                                    <c:out value="${item.identifier}"/>
+                                    <c:out value="${item.folderName}"/>/<c:out value="${item.identifier}"/>
                                     (<c:out value="${item.label}"/>)
                                     <sup style="font-size:0.7em"><c:out value="${item.regStatus}" /></sup>
                                 </span>
                             </c:when>
                             <c:otherwise>
                                 <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
+                                    <stripes:param name="vocabularyFolder.folderName" value="${item.folderName}" />
                                     <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
                                     <c:if test="${item.workingCopy}">
                                         <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
                                     </c:if>
-                                    <c:out value="${item.identifier}"/>
+                                    <c:out value="${item.folderName}"/>/<c:out value="${item.identifier}"/>
                                 </stripes:link>
                                     (<c:out value="${item.label}"/>)
                             </c:otherwise>

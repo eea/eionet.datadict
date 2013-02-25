@@ -22,6 +22,7 @@
                 <c:if test="${actionBean.userWorkingCopy}">
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="edit">
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                         <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         Edit vocabulary
@@ -30,6 +31,7 @@
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                         <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         Check in
@@ -38,6 +40,7 @@
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="undoCheckOut">
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                         Undo checkout
                     </stripes:link>
@@ -47,6 +50,7 @@
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkOut">
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                         <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         Check out
@@ -74,6 +78,7 @@
                 <strong>Note</strong>
                 <p>You have a
                     <stripes:link beanclass="${actionBean.class.name}" event="viewWorkingCopy">
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}"/>
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}"/>
                         working copy
@@ -89,6 +94,7 @@
                     <td style="width:73%">Get RDF output of this vocabulary</td>
                     <td style="width:27%">
                         <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="rdf">
+                            <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                             <img src="${rdfIconUrl}" alt="Export RDF" />
                         </stripes:link>
@@ -101,6 +107,14 @@
         <!-- Vocabulary folder -->
         <div id="outerframe" style="padding-top:20px">
             <table class="datatable">
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Folder
+                    </th>
+                    <td class="simple_attr_value">
+                        <c:out value="${actionBean.vocabularyFolder.folderName}" />
+                    </td>
+                </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Identifier
@@ -162,6 +176,7 @@
         <!-- Vocabulary concepts search -->
         <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
             <div id="searchframe">
+                <stripes:hidden name="vocabularyFolder.folderName" />
                 <stripes:hidden name="vocabularyFolder.identifier" />
                 <stripes:hidden name="vocabularyFolder.workingCopy" />
                 <table class="datatable">
@@ -186,19 +201,19 @@
         </stripes:form>
 
         <%-- Vocabulary concepts --%>
-        <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept" style="width:80%" requestURI="/vocabulary/${actionBean.vocabularyFolder.identifier}/view" >
+        <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept" style="width:80%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view" >
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
 
             <display:column title="Id" property="identifier" escapeXml="true" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
             <display:column title="Preferred label">
                 <c:choose>
                     <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
-                        <stripes:link href="/vocabulary/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/">
+                        <stripes:link href="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/">
                             <c:out value="${concept.label}" />
                         </stripes:link>
                     </c:when>
                     <c:otherwise>
-                        <stripes:link href="/vocabulary/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/">
+                        <stripes:link href="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/">
                             <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                             <c:out value="${concept.label}" />
                         </stripes:link>
@@ -223,6 +238,7 @@
                     </c:when>
                     <c:otherwise>
                         <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" class="link-folder">
+                            <stripes:param name="vocabularyFolder.folderName" value="${item.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${item.identifier}" />
                             <stripes:param name="vocabularyFolder.workingCopy" value="${item.workingCopy}" />
                             <c:out value="${item.label}"/>

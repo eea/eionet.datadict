@@ -24,6 +24,17 @@
                 </colgroup>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
+                        Folder
+                    </th>
+                    <td class="simple_attr_help">
+                        <img style="border:0" src="${mandatoryPic}" width="16" height="16" alt=""/>
+                    </td>
+                    <td class="simple_attr_value">
+                        <stripes:text class="smalltext" size="30" name="vocabularyFolder.folderName"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
                         Identifier
                     </th>
                     <td class="simple_attr_help">

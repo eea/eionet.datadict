@@ -59,7 +59,7 @@ import eionet.util.Util;
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/vocabulary/{vocabularyFolder.identifier}/{$event}")
+@UrlBinding("/vocabulary/{vocabularyFolder.folderName}/{vocabularyFolder.identifier}/{$event}")
 public class VocabularyFolderActionBean extends AbstractActionBean {
 
     /** JSP pages. */
@@ -137,7 +137,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution view() throws ServiceException {
         vocabularyFolder =
-                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                        vocabularyFolder.isWorkingCopy());
 
         validateView();
         // Check if vocabulary concept url
@@ -191,7 +192,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public Resolution edit() throws ServiceException {
         vocabularyFolder =
-                vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                        vocabularyFolder.isWorkingCopy());
         initFilter();
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         return new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
@@ -256,6 +258,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
         addSystemMessage("Vocabulary saved successfully");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         return resolution;
@@ -270,6 +273,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public Resolution saveConcept() throws ServiceException {
 
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
 
@@ -300,6 +304,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         vocabularyService.checkInVocabularyFolder(vocabularyFolder.getId(), getUserName());
         addSystemMessage("Successfully checked in");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", false);
         return resolution;
@@ -315,6 +320,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         vocabularyService.checkOutVocabularyFolder(vocabularyFolder.getId(), getUserName());
         addSystemMessage("Successfully checked out");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", true);
         return resolution;
@@ -327,9 +333,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution undoCheckOut() throws ServiceException {
-        vocabularyService.undoCheckOut(vocabularyFolder.getId(), getUserName());
+        int id = vocabularyService.undoCheckOut(vocabularyFolder.getId(), getUserName());
+        vocabularyFolder = vocabularyService.getVocabularyFolder(id);
         addSystemMessage("Checked out version successfully deleted");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", false);
         return resolution;
@@ -345,6 +353,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         vocabularyService.deleteVocabularyConcepts(conceptIds);
         addSystemMessage("Vocabulary concepts deleted successfully");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         return resolution;
@@ -398,6 +407,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
         }
 
+        if (StringUtils.isEmpty(vocabularyFolder.getFolderName())) {
+            addGlobalValidationError("Folder name is missing");
+        } else {
+            if (!Util.isValidIdentifier(vocabularyFolder.getFolderName())) {
+                addGlobalValidationError("Folder must be alpha-numeric value");
+            }
+        }
         if (StringUtils.isEmpty(vocabularyFolder.getIdentifier())) {
             addGlobalValidationError("Vocabulary identifier is missing");
         } else {
@@ -421,12 +437,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
         // Validate unique identifier
         if (vocabularyFolder.getId() == 0) {
-            if (!vocabularyService.isUniqueFolderIdentifier(vocabularyFolder.getIdentifier())) {
+            if (!vocabularyService.isUniqueFolderIdentifier(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier())) {
                 addGlobalValidationError("Vocabulary identifier is not unique");
             }
         } else {
-            if (!vocabularyService.isUniqueFolderIdentifier(vocabularyFolder.getIdentifier(), vocabularyFolder.getId(),
-                    vocabularyFolder.getCheckedOutCopyId())) {
+            if (!vocabularyService.isUniqueFolderIdentifier(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                    vocabularyFolder.getId(), vocabularyFolder.getCheckedOutCopyId())) {
                 addGlobalValidationError("Vocabulary identifier is not unique");
             }
         }
@@ -504,9 +520,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * Navigates to edit vocabulary folder page.
      *
      * @return
+     * @throws ServiceException
      */
-    public Resolution cancelSave() {
+    public Resolution cancelSave() throws ServiceException {
+        vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getId());
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         return resolution;
@@ -520,7 +539,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     public Resolution rdf() {
         try {
-            vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), false);
+            vocabularyFolder =
+                    vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                            false);
             initFilter();
             filter.setUsePaging(false);
             List<? extends VocabularyConcept> concepts = null;
@@ -540,7 +561,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             final String contextRoot =
                     StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
-                            .getRequiredProperty(PropsIF.DD_URL) + "/vocabularies/" + vocabularyFolder.getIdentifier() + "/";
+                            .getRequiredProperty(PropsIF.DD_URL)
+                            + "/vocabularies/"
+                            + vocabularyFolder.getFolderName()
+                            + "/"
+                            + vocabularyFolder.getIdentifier() + "/";
 
             StreamingResolution result = new StreamingResolution("application/rdf+xml") {
                 @Override
@@ -571,11 +596,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
         String[] parameters = StringUtils.split(StringUtils.substringAfter(url, "/vocabulary/"), "/");
 
-        if (parameters.length >= 2) {
-            if (!RESERVED_VOCABULARY_EVENTS.contains(parameters[1])) {
+        if (parameters.length >= 3) {
+            if (!RESERVED_VOCABULARY_EVENTS.contains(parameters[2])) {
                 RedirectResolution resolution = new RedirectResolution(VocabularyConceptActionBean.class, "view");
-                resolution.addParameter("vocabularyFolder.identifier", parameters[0]);
-                resolution.addParameter("vocabularyConcept.identifier", parameters[1]);
+                resolution.addParameter("vocabularyFolder.folderName", parameters[0]);
+                resolution.addParameter("vocabularyFolder.identifier", parameters[1]);
+                resolution.addParameter("vocabularyConcept.identifier", parameters[2]);
                 resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
 
                 return resolution;

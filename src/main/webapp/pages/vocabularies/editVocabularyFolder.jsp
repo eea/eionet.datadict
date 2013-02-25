@@ -71,6 +71,7 @@
                 </c:if>
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                         <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
@@ -79,6 +80,7 @@
                 </li>
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="undoCheckOut">
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                         Undo checkout
@@ -111,6 +113,17 @@
                     <col style="width:4%"/>
                     <col />
                 </colgroup>
+                <tr>
+                    <th scope="row" class="scope-row simple_attr_title">
+                        Folder
+                    </th>
+                    <td class="simple_attr_help">
+                        <dd:mandatoryIcon />
+                    </td>
+                    <td class="simple_attr_value">
+                        <stripes:text class="smalltext" size="30" name="vocabularyFolder.folderName"/>
+                    </td>
+                </tr>
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title">
                         Identifier
@@ -203,6 +216,7 @@
             </c:if>
 
             <div>
+                <stripes:hidden name="vocabularyFolder.folderName" />
                 <stripes:hidden name="vocabularyFolder.identifier" />
                 <stripes:hidden name="vocabularyFolder.workingCopy" />
                 <stripes:hidden name="vocabularyFolder.id" />
@@ -273,6 +287,7 @@
         <!-- Vocabulary concepts search -->
         <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
             <div id="searchframe">
+            <stripes:hidden name="vocabularyFolder.folderName" />
             <stripes:hidden name="vocabularyFolder.identifier" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
 
@@ -301,7 +316,7 @@
         <c:url var="editIcon" value="/images/edit.gif" />
         <stripes:form method="post" id="conceptsForm" beanclass="${actionBean.class.name}">
             <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%"
-                requestURI="/vocabulary/${actionBean.vocabularyFolder.identifier}/edit">
+                requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/edit">
                 <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
 
                 <display:column style="width: 1%">
@@ -310,6 +325,7 @@
                 <display:column title="Id" escapeXml="true" property="identifier" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
                 <display:column title="Label">
                     <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean" event="edit">
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                         <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         <stripes:param name="vocabularyConcept.identifier" value="${item.identifier}" />
@@ -322,6 +338,7 @@
             </display:table>
             <c:if test="${not empty actionBean.vocabularyConcepts.list}">
                 <div>
+                    <stripes:hidden name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                     <stripes:hidden name="vocabularyFolder.identifier" />
                     <stripes:hidden name="vocabularyFolder.workingCopy" />
                     <stripes:submit name="deleteConcepts" value="Delete" />
@@ -342,6 +359,7 @@
                     </c:if>
 
                     <div>
+                        <stripes:hidden name="vocabularyFolder.folderName" />
                         <stripes:hidden name="vocabularyFolder.identifier" />
                         <stripes:hidden name="vocabularyFolder.workingCopy" />
                         <stripes:hidden name="vocabularyFolder.id" />

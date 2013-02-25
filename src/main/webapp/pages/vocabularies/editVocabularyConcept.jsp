@@ -26,11 +26,13 @@
             <ul>
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="edit">
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                         <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         Back to vocabulary
                     </stripes:link>
                     <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean" event="view">
+                        <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                         <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                         <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
                         <stripes:param name="vocabularyConcept.identifier" value="${actionBean.vocabularyConcept.identifier}" />
@@ -45,6 +47,7 @@
         <stripes:form id="editForm" method="post" beanclass="${actionBean.class.name}">
 
             <div>
+                <stripes:hidden name="vocabularyFolder.folderName" />
                 <stripes:hidden name="vocabularyFolder.identifier" />
                 <stripes:hidden name="vocabularyFolder.workingCopy" />
                 <stripes:hidden name="vocabularyFolder.id" />
@@ -112,7 +115,7 @@
                     <%-- Additional attributes --%>
                     <tr>
                         <td colspan="3">
-                            <table class="datatable">
+                            <table class="datatable" width="100%">
                                 <colgroup>
                                     <col style="width:26%"/>
                                     <col style="width:4%"/>

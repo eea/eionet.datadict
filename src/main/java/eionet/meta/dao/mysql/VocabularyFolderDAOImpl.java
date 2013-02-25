@@ -55,7 +55,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, VOCABULARY_TYPE, ");
-        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, FOLDER_NAME ");
         sql.append("from T_VOCABULARY_FOLDER ");
         sql.append("where ");
         if (StringUtils.isBlank(userName)) {
@@ -64,7 +64,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
             sql.append("(WORKING_COPY=FALSE or WORKING_USER=:workingUser) ");
             params.put("workingUser", userName);
         }
-        sql.append("order by IDENTIFIER ");
+        sql.append("order by FOLDER_NAME, IDENTIFIER ");
 
         List<VocabularyFolder> items =
                 getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {
@@ -80,6 +80,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
                         vf.setUserModified(rs.getString("USER_MODIFIED"));
                         vf.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                        vf.setFolderName(rs.getString("FOLDER_NAME"));
                         return vf;
                     }
                 });
@@ -98,7 +99,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, VOCABULARY_TYPE, ");
-        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, FOLDER_NAME ");
         sql.append("from T_VOCABULARY_FOLDER ");
         sql.append("where CONTINUITY_ID = :continuityId and VOCABULARY_FOLDER_ID != :vocabularyFolderId ");
         if (StringUtils.isBlank(userName)) {
@@ -122,6 +123,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
                         vf.setUserModified(rs.getString("USER_MODIFIED"));
                         vf.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                        vf.setFolderName(rs.getString("FOLDER_NAME"));
                         return vf;
                     }
                 });
@@ -136,9 +138,9 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
     public int createVocabularyFolder(VocabularyFolder vocabularyFolder) {
         String sql =
                 "insert into T_VOCABULARY_FOLDER (IDENTIFIER, LABEL, REG_STATUS, CONTINUITY_ID, VOCABULARY_TYPE, "
-                        + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONCEPT_IDENTIFIER_NUMERIC, BASE_URI) "
+                        + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONCEPT_IDENTIFIER_NUMERIC, BASE_URI, FOLDER_NAME) "
                         + "values (:identifier,  :label, :regStatus, :continuityId, :vocabularyType, :workingCopy, :workingUser, now(), :userModified, "
-                        + ":checkedOutCopyId, :numericConceptIdentifiers, :baseUri)";
+                        + ":checkedOutCopyId, :numericConceptIdentifiers, :baseUri, :folderName)";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("identifier", vocabularyFolder.getIdentifier());
@@ -153,6 +155,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                 vocabularyFolder.getCheckedOutCopyId() <= 0 ? null : vocabularyFolder.getCheckedOutCopyId());
         parameters.put("numericConceptIdentifiers", vocabularyFolder.isNumericConceptIdentifiers());
         parameters.put("baseUri", vocabularyFolder.getBaseUri());
+        parameters.put("folderName", vocabularyFolder.getFolderName());
 
         getNamedParameterJdbcTemplate().update(sql, parameters);
         return getLastInsertId();
@@ -162,16 +165,17 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
      * {@inheritDoc}
      */
     @Override
-    public VocabularyFolder getVocabularyFolder(String identifier, boolean workingCopy) {
+    public VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("identifier", identifier);
         params.put("workingCopy", workingCopy);
+        params.put("folderName", folderName);
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, BASE_URI, VOCABULARY_TYPE, ");
-        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID, CONCEPT_IDENTIFIER_NUMERIC ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID, CONCEPT_IDENTIFIER_NUMERIC, FOLDER_NAME ");
         sql.append("from T_VOCABULARY_FOLDER ");
-        sql.append("where IDENTIFIER=:identifier and WORKING_COPY=:workingCopy");
+        sql.append("where IDENTIFIER=:identifier and WORKING_COPY=:workingCopy and FOLDER_NAME=:folderName");
 
         VocabularyFolder result =
                 getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyFolder>() {
@@ -190,6 +194,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setContinuityId(rs.getString("CONTINUITY_ID"));
                         vf.setNumericConceptIdentifiers(rs.getBoolean("CONCEPT_IDENTIFIER_NUMERIC"));
                         vf.setBaseUri(rs.getString("BASE_URI"));
+                        vf.setFolderName(rs.getString("FOLDER_NAME"));
                         return vf;
                     }
                 });
@@ -205,7 +210,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         String sql =
                 "update T_VOCABULARY_FOLDER set IDENTIFIER = :identifier,  LABEL = :label, REG_STATUS = :regStatus, CHECKEDOUT_COPY_ID = :checkedOutCopyId, "
                         + "WORKING_COPY = :workingCopy, WORKING_USER = :workingUser, DATE_MODIFIED = now(), USER_MODIFIED = :userModified,"
-                        + " CONCEPT_IDENTIFIER_NUMERIC = :numericConceptIdentifiers, BASE_URI = :baseUri "
+                        + " CONCEPT_IDENTIFIER_NUMERIC = :numericConceptIdentifiers, BASE_URI = :baseUri , FOLDER_NAME = :folderName "
                         + "where VOCABULARY_FOLDER_ID = :vocabularyFolderId";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -220,6 +225,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                 vocabularyFolder.getCheckedOutCopyId() <= 0 ? null : vocabularyFolder.getCheckedOutCopyId());
         parameters.put("numericConceptIdentifiers", vocabularyFolder.isNumericConceptIdentifiers());
         parameters.put("baseUri", vocabularyFolder.getBaseUri());
+        parameters.put("folderName", vocabularyFolder.getFolderName());
 
         getNamedParameterJdbcTemplate().update(sql, parameters);
     }
@@ -246,7 +252,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, BASE_URI, VOCABULARY_TYPE, ");
-        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID, CONCEPT_IDENTIFIER_NUMERIC ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID, CONCEPT_IDENTIFIER_NUMERIC, FOLDER_NAME ");
         sql.append("from T_VOCABULARY_FOLDER ");
         sql.append("where VOCABULARY_FOLDER_ID=:id");
 
@@ -267,6 +273,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setContinuityId(rs.getString("CONTINUITY_ID"));
                         vf.setNumericConceptIdentifiers(rs.getBoolean("CONCEPT_IDENTIFIER_NUMERIC"));
                         vf.setBaseUri(rs.getString("BASE_URI"));
+                        vf.setFolderName(rs.getString("FOLDER_NAME"));
                         return vf;
                     }
                 });
@@ -284,7 +291,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         StringBuilder sql = new StringBuilder();
         sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, BASE_URI, VOCABULARY_TYPE, ");
-        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID, CONCEPT_IDENTIFIER_NUMERIC ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, CONTINUITY_ID, CONCEPT_IDENTIFIER_NUMERIC, FOLDER_NAME ");
         sql.append("from T_VOCABULARY_FOLDER ");
         sql.append("where CHECKEDOUT_COPY_ID=:checkedOutCopyId");
 
@@ -305,6 +312,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
                         vf.setContinuityId(rs.getString("CONTINUITY_ID"));
                         vf.setNumericConceptIdentifiers(rs.getBoolean("CONCEPT_IDENTIFIER_NUMERIC"));
                         vf.setBaseUri(rs.getString("BASE_URI"));
+                        vf.setFolderName(rs.getString("FOLDER_NAME"));
                         return vf;
                     }
                 });
@@ -316,13 +324,14 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
      * {@inheritDoc}
      */
     @Override
-    public boolean isUniqueFolderIdentifier(String identifier, int... excludedVocabularyFolderIds) {
+    public boolean isUniqueFolderIdentifier(String folderName, String identifier, int... excludedVocabularyFolderIds) {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("identifier", identifier);
+        parameters.put("folderName", folderName);
 
         StringBuilder sql = new StringBuilder();
         sql.append("select count(VOCABULARY_FOLDER_ID) from T_VOCABULARY_FOLDER ");
-        sql.append("where IDENTIFIER = :identifier ");
+        sql.append("where IDENTIFIER = :identifier and FOLDER_NAME = :folderName ");
         if (excludedVocabularyFolderIds != null && excludedVocabularyFolderIds.length > 0) {
             sql.append("and VOCABULARY_FOLDER_ID not in (:excludedVocabularyFolderIds)");
 

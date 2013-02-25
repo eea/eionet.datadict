@@ -72,11 +72,12 @@ public interface IVocabularyFolderDAO {
     /**
      * Returns vocabulary folder.
      *
+     * @param folderName
      * @param identifier
      * @param workingCopy
      * @return
      */
-    VocabularyFolder getVocabularyFolder(String identifier, boolean workingCopy);
+    VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy);
 
     /**
      * Returns vocabulary folder.
@@ -106,10 +107,11 @@ public interface IVocabularyFolderDAO {
     /**
      * True, if identifier is unique.
      *
+     * @param folderName
      * @param identifier
      * @param excludedVocabularyFolderIds
      * @return
      */
-    boolean isUniqueFolderIdentifier(String identifier, int... excludedVocabularyFolderIds);
+    boolean isUniqueFolderIdentifier(String folderName, String identifier, int... excludedVocabularyFolderIds);
 
 }

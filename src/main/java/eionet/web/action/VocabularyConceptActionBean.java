@@ -48,7 +48,7 @@ import eionet.util.Util;
  *
  * @author Juhan Voolaid
  */
-@UrlBinding("/vocabularyconcept/{vocabularyFolder.identifier}/{vocabularyConcept.identifier}/{$event}")
+@UrlBinding("/vocabularyconcept/{vocabularyFolder.folderName}/{vocabularyFolder.identifier}/{vocabularyConcept.identifier}/{$event}")
 public class VocabularyConceptActionBean extends AbstractActionBean {
 
     /** JSP pages. */
@@ -74,7 +74,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution view() throws ServiceException {
         vocabularyFolder =
-            vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                        vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
         validateView();
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
@@ -88,7 +89,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     public Resolution edit() throws ServiceException {
         vocabularyFolder =
-            vocabularyService.getVocabularyFolder(vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                        vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
         validateView();
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
@@ -106,6 +108,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         addSystemMessage("Vocabulary concept saved successfully");
 
         RedirectResolution resolution = new RedirectResolution(getClass(), "edit");
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier());
@@ -144,11 +147,12 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
 
         // Validate unique identifier
-        if (!vocabularyService.isUniqueConceptIdentifier(vocabularyConcept.getIdentifier(), vocabularyFolder.getId(), vocabularyConcept.getId())) {
+        if (!vocabularyService.isUniqueConceptIdentifier(vocabularyConcept.getIdentifier(), vocabularyFolder.getId(),
+                vocabularyConcept.getId())) {
             addGlobalValidationError("Vocabulary concept identifier is not unique");
         }
 
-        if (vocabularyConcept.getAttributes() != null){
+        if (vocabularyConcept.getAttributes() != null) {
             for (List<VocabularyConceptAttribute> attributes : vocabularyConcept.getAttributes()) {
                 if (attributes != null) {
                     for (VocabularyConceptAttribute attr : attributes) {
@@ -164,7 +168,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
 
         if (isValidationErrors()) {
-            vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
+            vocabularyConcept =
+                    vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
         }
     }
 
@@ -224,7 +229,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     public String getConceptUri() {
         String baseUri = vocabularyFolder.getBaseUri();
         if (StringUtils.isEmpty(baseUri)) {
-            baseUri = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + vocabularyFolder.getIdentifier();
+            baseUri =
+                    Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + vocabularyFolder.getFolderName() + "/"
+                            + vocabularyFolder.getIdentifier();
         }
         if (!baseUri.endsWith("/")) {
             baseUri += "/";
