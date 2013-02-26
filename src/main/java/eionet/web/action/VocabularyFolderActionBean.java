@@ -170,6 +170,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public Resolution viewWorkingCopy() throws ServiceException {
         vocabularyFolder = vocabularyService.getVocabularyWorkingCopy(vocabularyFolder.getId());
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class);
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
         return resolution;
