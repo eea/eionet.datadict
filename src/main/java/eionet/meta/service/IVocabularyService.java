@@ -121,10 +121,13 @@ public interface IVocabularyService {
      *
      * @param vocabularyFolderId
      * @param conceptIdentifier
+     * @param emptyAttributes
+     *            when true, then attributes that are not valued are also included
      * @return
      * @throws ServiceException
      */
-    VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier) throws ServiceException;
+    VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier, boolean emptyAttributes)
+            throws ServiceException;
 
     /**
      * Returns the vocabulary folder's concepts.
@@ -134,6 +137,16 @@ public interface IVocabularyService {
      * @throws ServiceException
      */
     VocabularyConceptResult searchVocabularyConcepts(VocabularyConceptFilter filter) throws ServiceException;
+
+    /**
+     * Returns the vocabulary folder's concepts with additional attributes.
+     *
+     * @param vocabularyFolderId
+     * @param numericConceptIdentifiers
+     * @return
+     * @throws ServiceException
+     */
+    List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers) throws ServiceException;
 
     /**
      * Creates new vocabulary concept into database.

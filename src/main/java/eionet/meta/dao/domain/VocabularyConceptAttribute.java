@@ -52,6 +52,8 @@ public class VocabularyConceptAttribute {
 
     private boolean multiValue;
 
+    private String rdfProperty;
+
     /**
      * @return the id
      */
@@ -230,6 +232,21 @@ public class VocabularyConceptAttribute {
      */
     public void setMultiValue(boolean multiValue) {
         this.multiValue = multiValue;
+    }
+
+    /**
+     * @return the rdfProperty
+     */
+    public String getRdfProperty() {
+        return rdfProperty;
+    }
+
+    /**
+     * @param rdfProperty
+     *            the rdfProperty to set
+     */
+    public void setRdfProperty(String rdfProperty) {
+        this.rdfProperty = rdfProperty;
     }
 
 }

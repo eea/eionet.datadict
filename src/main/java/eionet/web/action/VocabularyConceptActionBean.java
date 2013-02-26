@@ -76,7 +76,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
-        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
+        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), false);
         validateView();
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
     }
@@ -91,7 +91,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
-        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
+        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), true);
         validateView();
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
@@ -169,7 +169,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
         if (isValidationErrors()) {
             vocabularyConcept =
-                    vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier());
+                    vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), true);
         }
     }
 

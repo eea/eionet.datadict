@@ -32,6 +32,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SiteCode;
@@ -51,13 +52,14 @@ public class VocabularyXmlWriter {
     private static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
     private static final String DD_SCHEMA_NS = "http://dd.eionet.europa.eu/schema.rdf#";
 
-    /** Characters that aren't allowed in IRIs.
-        Special consideration for plus (+): It is historically used to encode space. If we leave it
-        unencoded, then it could be mistakenly decoded back to a space.
+    /**
+     * Characters that aren't allowed in IRIs. Special consideration for plus (+): It is historically used to encode space. If we
+     * leave it unencoded, then it could be mistakenly decoded back to a space.
      */
     private static final String[] BAD_IRI_CHARS = {" ", "{", "}", "<", ">", "\"", "|", "\\", "^", "`", "+"};
     /** Replacements for characters that aren't allowed in IRIs. */
-    private static final String[] BAD_IRI_CHARS_ESCAPES = {"%20", "%7B", "%7D", "%3C", "%3E", "%22", "%7C", "%5C", "%5E", "%60", "%2B" };
+    private static final String[] BAD_IRI_CHARS_ESCAPES = {"%20", "%7B", "%7D", "%3C", "%3E", "%22", "%7C", "%5C", "%5E", "%60",
+            "%2B"};
 
     /** The base URI of the concept. It must end with a slash (/). */
     private String contextRoot;
@@ -167,6 +169,8 @@ public class VocabularyXmlWriter {
 
             if (vocabularyFolder.isSiteCodeType()) {
                 writeSiteCodeData((SiteCode) vc);
+            } else {
+                writeAdditionalAttributes(vc.getAttributes());
             }
 
             writer.writeCharacters("\n");
@@ -176,6 +180,29 @@ public class VocabularyXmlWriter {
         writer.writeCharacters("\n");
         writer.writeEndElement(); // End rdf:RDF
         writer.writeCharacters("\n");
+    }
+
+    private void writeAdditionalAttributes(List<List<VocabularyConceptAttribute>> attributes) throws XMLStreamException {
+        if (attributes != null) {
+            for (List<VocabularyConceptAttribute> attrs : attributes) {
+                if (attrs != null) {
+                    for (VocabularyConceptAttribute attr : attrs) {
+                        if (StringUtils.isNotEmpty(attr.getValue()) && StringUtils.isNotEmpty(StringUtils.substringAfter(attr.getRdfProperty(), "skos:"))) {
+                            writer.writeCharacters("\n");
+                            writer.writeStartElement(SKOS_NS, StringUtils.substringAfter(attr.getRdfProperty(), "skos:"));
+                            if (StringUtils.isNotEmpty(attr.getLanguage())) {
+                                writer.writeAttribute("xml", XML_NS, "lang", attr.getLanguage());
+                            }
+                            if (StringUtils.isNotEmpty(attr.getDataType())) {
+                                writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(attr.getDataType()));
+                            }
+                            writer.writeCharacters(attr.getValue());
+                            writer.writeEndElement();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -208,7 +235,7 @@ public class VocabularyXmlWriter {
                     "http://rdfdata.eionet.europa.eu/eea/countries/" + sc.getCountryCode());
         }
 
-        if (sc.getDateCreated() != null){
+        if (sc.getDateCreated() != null) {
             Calendar created = Calendar.getInstance();
             created.setTime(sc.getDateCreated());
             writer.writeCharacters("\n");

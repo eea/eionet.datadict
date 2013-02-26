@@ -90,13 +90,32 @@ public interface IAttributeDAO {
     /**
      * Returns dynamic attributes for vocabulary concept.
      *
+     * @param vocabularyConceptId
+     * @param emptyAttributes
+     *            when true, then attributes that are not valued are also included
      * @return
      */
-    List<List<VocabularyConceptAttribute>> getVocabularyConceptAttributes(int vocabularyConceptId);
+    List<List<VocabularyConceptAttribute>> getVocabularyConceptAttributes(int vocabularyConceptId, boolean emptyAttributes);
 
+    /**
+     * Inserts the attributes.
+     *
+     * @param attributes
+     */
     void createVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes);
 
+    /**
+     * Updates the attributes.
+     *
+     * @param attributes
+     */
     void updateVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes);
 
+    /**
+     * Deletes the attributes except the excludedIds.
+     *
+     * @param excludedIds
+     * @param vocabularyConceptId
+     */
     void deleteVocabularyConceptAttributes(List<Integer> excludedIds, int vocabularyConceptId);
 }

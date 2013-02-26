@@ -327,13 +327,18 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
      * {@inheritDoc}
      */
     @Override
-    public List<List<VocabularyConceptAttribute>> getVocabularyConceptAttributes(int vocabularyConceptId) {
+    public List<List<VocabularyConceptAttribute>> getVocabularyConceptAttributes(int vocabularyConceptId, boolean emptyAttributes) {
         final Map<String, Object> params = new HashMap<String, Object>();
         params.put("attributeWeight", DElemAttribute.typeWeights.get("VCO"));
         params.put("vocabularyConceptId", vocabularyConceptId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select * from T_VOCABULARY_CONCEPT_ATTRIBUTE v RIGHT OUTER JOIN M_ATTRIBUTE m ");
+        sql.append("select * from T_VOCABULARY_CONCEPT_ATTRIBUTE v ");
+        if (emptyAttributes) {
+            sql.append("RIGHT OUTER JOIN M_ATTRIBUTE m ");
+        } else {
+            sql.append("LEFT JOIN M_ATTRIBUTE m ");
+        }
         sql.append("ON (v.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID and v.VOCABULARY_CONCEPT_ID = :vocabularyConceptId) ");
         sql.append("WHERE FLOOR(m.DISP_WHEN / :attributeWeight) %2 != 0 ");
         sql.append("order by m.DISP_ORDER, v.LANGUAGE, v.ATTR_VALUE");
@@ -366,6 +371,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
                 atr.setHeight(rs.getInt("m.DISP_HEIGHT"));
                 atr.setWidth(rs.getInt("m.DISP_WIDTH"));
                 atr.setMultiValue(rs.getBoolean("m.DISP_MULTIPLE"));
+                atr.setRdfProperty(rs.getString("m.RDF_PROPERTY"));
 
                 if (!StringUtils.equals(previousShortName, rs.getString("m.SHORT_NAME"))) {
                     result.add(attributes);

@@ -532,12 +532,37 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier) throws ServiceException {
+    public VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier, boolean emptyAttributes) throws ServiceException {
         try {
             VocabularyConcept result = vocabularyConceptDAO.getVocabularyConcept(vocabularyFolderId, conceptIdentifier);
-            List<List<VocabularyConceptAttribute>> attributes = attributeDAO.getVocabularyConceptAttributes(result.getId());
+            List<List<VocabularyConceptAttribute>> attributes = attributeDAO.getVocabularyConceptAttributes(result.getId(), emptyAttributes);
 
             result.setAttributes(attributes);
+
+            return result;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers) throws ServiceException {
+        try {
+
+            VocabularyConceptFilter filter = new VocabularyConceptFilter();
+            filter.setVocabularyFolderId(vocabularyFolderId);
+            filter.setUsePaging(false);
+            filter.setNumericIdentifierSorting(numericConceptIdentifiers);
+
+            List<VocabularyConcept> result = vocabularyConceptDAO.searchVocabularyConcepts(filter).getList();
+
+            for (VocabularyConcept vc : result) {
+                List<List<VocabularyConceptAttribute>> attributes = attributeDAO.getVocabularyConceptAttributes(vc.getId(), false);
+                vc.setAttributes(attributes);
+            }
 
             return result;
         } catch (Exception e) {

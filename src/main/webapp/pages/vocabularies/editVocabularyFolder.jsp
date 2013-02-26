@@ -66,9 +66,6 @@
         <div id="drop-operations">
             <h2>Operations:</h2>
             <ul>
-                <c:if test="${actionBean.vocabularyFolder.commonType}">
-                    <li><a href="#" id="addNewConceptLink">Add new concept</a></li>
-                </c:if>
                 <li>
                     <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkIn">
                         <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
@@ -341,11 +338,22 @@
                     <stripes:hidden name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                     <stripes:hidden name="vocabularyFolder.identifier" />
                     <stripes:hidden name="vocabularyFolder.workingCopy" />
-                    <stripes:submit name="deleteConcepts" value="Delete" />
                     <input type="button" onclick="toggleSelectAll('conceptsForm');return false" value="Select all" name="selectAll">
+                    <stripes:submit name="deleteConcepts" value="Delete" />
+
+                    <c:if test="${actionBean.vocabularyFolder.commonType}">
+                        <button id="addNewConceptLink">Add new concept</button>
+                    </c:if>
                 </div>
             </c:if>
         </stripes:form>
+
+        <c:if test="${actionBean.vocabularyConcepts.fullListSize == 0}">
+            <c:if test="${actionBean.vocabularyFolder.commonType}">
+                <br />
+                <button id="addNewConceptLink">Add new concept</button>
+            </c:if>
+        </c:if>
 
         <!-- Vocabulary concept edit forms -->
         <c:forEach var="item" items="${actionBean.vocabularyConcepts.list}" varStatus="loop">

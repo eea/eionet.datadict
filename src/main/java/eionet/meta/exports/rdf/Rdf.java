@@ -360,7 +360,7 @@ public class Rdf {
      * @param type
      * @return
      */
-    private String getXmlType(String type) {
+    public static String getXmlType(String type) {
         String xmlTypePrefix = "http://www.w3.org/2001/XMLSchema#";
         String suffix = null;
 
