@@ -315,6 +315,8 @@
             <display:table name="${actionBean.vocabularyConcepts}" class="datatable" id="item" style="width:80%"
                 requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/edit">
                 <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
+                <display:setProperty name="paging.banner.item_name" value="concept" />
+                <display:setProperty name="paging.banner.items_name" value="concepts" />
 
                 <display:column style="width: 1%">
                     <stripes:checkbox name="conceptIds" value="${item.id}" />

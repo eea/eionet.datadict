@@ -21,8 +21,6 @@
 
 package eionet.web.action;
 
-import java.util.List;
-
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
@@ -34,7 +32,6 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.IVocabularyService;
@@ -152,6 +149,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary concept identifier is not unique");
         }
 
+        /*
         if (vocabularyConcept.getAttributes() != null) {
             for (List<VocabularyConceptAttribute> attributes : vocabularyConcept.getAttributes()) {
                 if (attributes != null) {
@@ -166,6 +164,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                 }
             }
         }
+        */
 
         if (isValidationErrors()) {
             vocabularyConcept =

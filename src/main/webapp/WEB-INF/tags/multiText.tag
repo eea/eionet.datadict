@@ -8,7 +8,7 @@
 
 <%--
     Input tag for text attribute which supports multiple values.
-    For the delete button to work, removeField(elementId) javaScript function must be included.
+    For the delete button to work, $(".delLink").click javaScript function must be included.
     Parameters:
         - attributes must be List of eionet.meta.dao.domain.VocabularyConceptAttribute objects.
         - attributeId numeric id of the attribute definition (in M_ATTRIBUTE table).
@@ -34,15 +34,11 @@
         var currentSize = ${fn:length(attributes)};
 
         $("#multiAdd${uniqueId}").live("click", function(event){
-            var newValue = $("#newField${uniqueId}").val();
-            var newField = "<span id='multySpan${uniqueId}-" + currentSize + "'>";
-            newField += "<input type='hidden' name='${fieldName}[" + currentSize + "].attributeId' value='${attributeId}' />";
-            newField += "<input class='${fieldClass}' type='text' size='${fieldSize}' value='"+ newValue +"' name='${fieldName}[" + currentSize + "].value'>";
-            newField += " <a href='#' onclick='removeField(\"multySpan${uniqueId}-" + currentSize + "\")'><img style='border:0' src='${delIcon}' alt='Remove' /></a><br></span>";
-            var multiDivHtml = $("#multiDiv${uniqueId}").html();
-            multiDivHtml += newField;
-            $("#multiDiv${uniqueId}").html(multiDivHtml);
-            $("#newField${uniqueId}").val('');
+            var newInput = $("#newField${uniqueId}").clone(true);
+            newInput.attr("id", "multySpan${uniqueId}-" + currentSize);
+            newInput.find("input[type='text']").attr("name", "${fieldName}[" + currentSize + "].value");
+            newInput.find("input[type='hidden']").attr("name", "${fieldName}[" + currentSize + "].attributeId");
+            newInput.appendTo("#multiDiv${uniqueId}");
             currentSize++;
             event.preventDefault();
         });
@@ -52,17 +48,24 @@
 // ]]>
 </script>
 
-<div id="multiDiv${uniqueId}">
-    <input id="newField${uniqueId}" class="${fieldClass}" size="${fieldSize}" type="text">
-    <a href='#' id="multiAdd${uniqueId}"><img style='border:0' src='${addIcon}' alt='Add' /></a><br>
+<div style="display:none">
+    <span id="newField${uniqueId}">
+        <input type="hidden" name="" value="${attributeId}" />
+        <input class="smalltext" size="${fieldSize}" type="text">
+        <a href="#" class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a>
+        <br/>
+    </span>
+</div>
 
+<div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${attributes}" varStatus="innerLoop">
         <c:if test="${attr.id != 0}">
         <span id="multySpan${uniqueId}-${innerLoop.index}">
             <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
             <input value="${attr.value}" name="${fieldName}[${innerLoop.index}].value" class="${fieldClass}" size="${fieldSize}" type="text">
-            <a href='#' onclick="removeField('multySpan${uniqueId}-${innerLoop.index}')"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br>
+            <a href='#' class="delLink"><img style='border:0' src='${delIcon}' alt='Remove' /></a><br>
         </span>
         </c:if>
     </c:forEach>
 </div>
+<a href="#" id="multiAdd${uniqueId}">Add new</a>

@@ -165,11 +165,15 @@ public class VocabularyServiceImpl implements IVocabularyService {
                         for (VocabularyConceptAttribute attr : attributes) {
                             if (attr != null) {
                                 if (attr.getId() != 0) {
-                                    excludedIds.add(attr.getId());
-                                    toUpdate.add(attr);
+                                    if (StringUtils.isNotEmpty(attr.getValue())) {
+                                        excludedIds.add(attr.getId());
+                                        toUpdate.add(attr);
+                                    }
                                 } else {
-                                    attr.setVocabularyConceptId(vocabularyConcept.getId());
-                                    toInsert.add(attr);
+                                    if (StringUtils.isNotEmpty(attr.getValue())) {
+                                        attr.setVocabularyConceptId(vocabularyConcept.getId());
+                                        toInsert.add(attr);
+                                    }
                                 }
                             }
                         }
@@ -440,7 +444,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public boolean isUniqueFolderIdentifier(String folderName, String identifier, int... excludedVocabularyFolderIds) throws ServiceException {
+    public boolean isUniqueFolderIdentifier(String folderName, String identifier, int... excludedVocabularyFolderIds)
+            throws ServiceException {
         try {
             return vocabularyFolderDAO.isUniqueFolderIdentifier(folderName, identifier, excludedVocabularyFolderIds);
         } catch (Exception e) {
@@ -532,10 +537,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier, boolean emptyAttributes) throws ServiceException {
+    public VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier, boolean emptyAttributes)
+            throws ServiceException {
         try {
             VocabularyConcept result = vocabularyConceptDAO.getVocabularyConcept(vocabularyFolderId, conceptIdentifier);
-            List<List<VocabularyConceptAttribute>> attributes = attributeDAO.getVocabularyConceptAttributes(result.getId(), emptyAttributes);
+            List<List<VocabularyConceptAttribute>> attributes =
+                    attributeDAO.getVocabularyConceptAttributes(result.getId(), emptyAttributes);
 
             result.setAttributes(attributes);
 
@@ -549,7 +556,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers) throws ServiceException {
+    public List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers)
+            throws ServiceException {
         try {
 
             VocabularyConceptFilter filter = new VocabularyConceptFilter();

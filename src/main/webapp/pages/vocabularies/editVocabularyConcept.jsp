@@ -10,9 +10,9 @@
         ( function($) {
             $(document).ready(function() {
 
-                removeField = function(elementId) {
-                    $("#" + elementId).html('');
-                };
+                $(".delLink").click(function() {
+                    this.parentElement.remove();
+                });
             });
         } ) ( jQuery );
         // ]]>
@@ -115,6 +115,7 @@
                     <%-- Additional attributes --%>
                     <tr>
                         <td colspan="3">
+                            <h2>Additional attributes:</h2>
                             <table class="datatable" width="100%">
                                 <colgroup>
                                     <col style="width:26%"/>
