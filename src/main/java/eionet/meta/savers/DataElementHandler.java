@@ -1785,6 +1785,18 @@ public class DataElementHandler extends BaseHandler {
             stmt.executeUpdate(buf.toString());
 
             gen.clear();
+            INParameters inParams = new INParameters();
+            gen.setTable("COMPLEX_ATTR_ROW r, COMPLEX_ATTR_FIELD f");
+            gen.setFieldExpr("f.ROW_ID", "md5(concat(" + inParams.add(newID, Types.INTEGER)
+                + " , r.PARENT_TYPE, r.M_COMPLEX_ATTR_ID, r.POSITION))");
+            buf = new StringBuffer(gen.updateStatement());
+            buf.append(" where r.ROW_ID=f.ROW_ID and r.PARENT_TYPE='E' and r.PARENT_ID=").
+            append(inParams.add(oldID, Types.INTEGER));
+            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
+            ((PreparedStatement) stmt).executeUpdate();
+            inParams = new INParameters();
+
+            gen.clear();
             gen.setTable("COMPLEX_ATTR_ROW");
             gen.setFieldExpr("PARENT_ID", newID);
             buf = new StringBuffer(gen.updateStatement());
