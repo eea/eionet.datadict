@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -73,6 +74,10 @@ public class EmailServiceImpl implements IEmailService {
 
     /** Collaborative country string in LDAP role. */
     private static final String CC = "cc";
+
+    /** List of member countries. Keep it here just for backuping LDAP roles checking request. */
+    private static final String[] MC_COUNTRIES = { "at", "be", "bg", "ch", "cy", "cz", "de", "dk", "ee", "es", "fi", "fr", "gb",
+        "gr", "hu", "ie", "is", "it", "li", "lt", "lu", "lv", "mt", "nl", "no", "pl", "pt", "ro", "se", "si", "sk", "tr" };
 
     /** Freemarker template engine configuration. */
     @Autowired
@@ -227,6 +232,15 @@ public class EmailServiceImpl implements IEmailService {
                 String ccRoleId = StringUtils.replace(roleId, MC_CC_PLACEHOLDER, CC);
                 if (roleExists(ccRoleId)) {
                     to[i] = StringUtils.replace(to[i], MC_CC_PLACEHOLDER, CC);
+                }
+                // could not
+                if (to[i].contains(MC_CC_PLACEHOLDER)) {
+                    if (ArrayUtils.contains(MC_COUNTRIES, country.toLowerCase())){
+                        StringUtils.replace(to[i], MC_CC_PLACEHOLDER, MC);
+                    }
+                    else{
+                        StringUtils.replace(to[i], MC_CC_PLACEHOLDER, CC);
+                    }
                 }
             }
         }
