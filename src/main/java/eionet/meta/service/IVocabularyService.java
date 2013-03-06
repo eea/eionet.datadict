@@ -55,7 +55,7 @@ public interface IVocabularyService {
      * @return
      */
     List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName)
-            throws ServiceException;
+    throws ServiceException;
 
     /**
      * Creates vocabulary folder.
@@ -76,7 +76,7 @@ public interface IVocabularyService {
      * @return
      */
     int createVocabularyFolderCopy(VocabularyFolder vocabularyFolder, int vocabularyFolderId, String userName)
-            throws ServiceException;
+    throws ServiceException;
 
     /**
      * Updates vocabulary folder. The vocabularyFolder.id must be correctly set. Only fields: identifier, label, regStatus will be
@@ -275,4 +275,12 @@ public interface IVocabularyService {
      * @throws ServiceException
      */
     List<Integer> checkAvailableIdentifiers(int vocabularyFolderId, int amount, int startingIdentifier) throws ServiceException;
+
+    /**
+     * Calls Content Registry REST method for re-harvesting the vocabulary RDF. When REST request fails,
+     * then the error is logged in log file. The Exception is only thrown, when vocabulary fodler is not found in DB.
+     * @param vocabularyFolderId Vocabulary folder primary key.
+     * @throws ServiceException System did not find the vocabulary folder from DB.
+     */
+    void pingCrToReharvestVocabulary(int vocabularyFolderId) throws ServiceException;
 }

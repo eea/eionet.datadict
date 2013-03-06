@@ -21,6 +21,10 @@
 
 package eionet.meta.service;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -42,6 +46,8 @@ import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.Util;
 
 /**
@@ -578,4 +584,47 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void pingCrToReharvestVocabulary(int vocabularyFolderId) throws ServiceException {
+
+        String crPingUrl = Props.getProperty(PropsIF.CR_PING_URL);
+
+        if (!Util.isEmpty(crPingUrl) && Util.isURI(crPingUrl)) {
+
+            VocabularyFolder vocabluary = getVocabularyFolder(vocabularyFolderId);
+            StringBuilder rdfUrl = new StringBuilder(Props.getProperty(PropsIF.DD_URL));
+
+            if (!Props.getProperty(PropsIF.DD_URL).endsWith("/")) {
+                rdfUrl.append("/");
+            }
+            rdfUrl.append("vocabulary/");
+            rdfUrl.append(vocabluary.getFolderName());
+            rdfUrl.append("/");
+            rdfUrl.append(vocabluary.getIdentifier());
+            rdfUrl.append("/rdf");
+
+            crPingUrl += rdfUrl.toString();
+            try {
+                URL url = new URL(crPingUrl);
+                HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+                int status = httpConn.getResponseCode();
+                if (status >= 400) {
+                    LOGGER.error("Unable to ping CR (responseCode: " + status + ") for reharvesting vocabulary folder: "
+                            + crPingUrl);
+                } else {
+                    LOGGER.debug("Ping request (responseCode: " + status + ") was sent to CR for reharvesting vocabulary folder: "
+                            + crPingUrl);
+                }
+            } catch (MalformedURLException e) {
+                LOGGER.error("Unable to ping CR: " + crPingUrl);
+                e.printStackTrace();
+            } catch (IOException e) {
+                LOGGER.error("Unable to ping CR: " + crPingUrl);
+                e.printStackTrace();
+            }
+        }
+    }
 }

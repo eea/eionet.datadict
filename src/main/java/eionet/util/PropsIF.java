@@ -121,4 +121,7 @@ public interface PropsIF {
     public static final String SITE_CODE_ALLOCATE_NOTIFICATION_TO = "siteCode.allocate.notification.to";
     public static final String SITE_CODE_RESERVE_NOTIFICATION_TO = "siteCode.reserve.notification.to";
     public static final String SITE_CODE_TEST_NOTIFICATION_TO = "siteCode.test.notification.to";
+
+    /** Content Registry URL for making the request to reharvest the source */
+    public static final String CR_PING_URL = "cr.reharvest.request.url";
 }

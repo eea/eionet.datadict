@@ -180,8 +180,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
 
         // detect if it is a export request, don't use paging in this case.
         String exportTypeStr =
-                getContext().getRequest().getParameter(
-                        (new ParamEncoder("siteCode").encodeParameterName(TableTagParameters.PARAMETER_EXPORTTYPE)));
+                getContext().getRequest().getParameter((new ParamEncoder("siteCode").encodeParameterName(TableTagParameters.PARAMETER_EXPORTTYPE)));
         if (String.valueOf(MediaTypeEnum.CSV.getCode()).equals(exportTypeStr)
                 || String.valueOf(MediaTypeEnum.EXCEL.getCode()).equals(exportTypeStr)) {
             filter.setUsePaging(false);
@@ -243,12 +242,18 @@ public class SiteCodesActionBean extends AbstractActionBean {
             addWarningMessage("Failed to send notification: " + e.getMessage());
         }
 
+        // Ping CR to reharvest site codes
+        try {
+            siteCodeFolderId = siteCodeService.getSiteCodeVocabularyFolderId();
+            vocabularyService.pingCrToReharvestVocabulary(siteCodeFolderId);
+        } catch (ServiceException e) {
+            LOGGER.error("Failed to send ping request to Content Registry", e);
+        }
+
         addSystemMessage(allocationResult.getAmount()
                 + " site codes successfully allocated. For new allocated site codes, see the table below. (" + dateAllocated + ")");
 
-        return new RedirectResolution(SiteCodesActionBean.class, "search").addParameter("userAllocated", userAllocated)
-                .addParameter("dateAllocated", dateAllocated).addParameter("filter.status", SiteCodeStatus.ALLOCATED)
-                .addParameter("filter.pageSize", allocationResult.getAmount());
+        return new RedirectResolution(SiteCodesActionBean.class, "search").addParameter("userAllocated", userAllocated).addParameter("dateAllocated", dateAllocated).addParameter("filter.status", SiteCodeStatus.ALLOCATED).addParameter("filter.pageSize", allocationResult.getAmount());
     }
 
     /**
@@ -256,7 +261,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    @ValidationMethod(on = {"allocate"})
+    @ValidationMethod(on = { "allocate" })
     public void validateAllocate() throws ServiceException {
 
         if (!isAllocateRight()) {
@@ -327,7 +332,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      *
      * @throws ServiceException
      */
-    @ValidationMethod(on = {"reserveNewSiteCodes"})
+    @ValidationMethod(on = { "reserveNewSiteCodes" })
     public void validateReserveNewSiteCodes() throws ServiceException {
         if (!isCreateRight()) {
             addGlobalValidationError("No privilege to reserve new site codes");
