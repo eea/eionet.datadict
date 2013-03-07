@@ -198,6 +198,11 @@ public class VocabularyXmlWriter {
                             }
                             writer.writeCharacters(attr.getValue());
                             writer.writeEndElement();
+                        } else if (StringUtils.isNotEmpty(attr.getRelatedIdentifier()) &&
+                                StringUtils.isNotEmpty(StringUtils.substringAfter(attr.getRdfProperty(), "skos:"))) {
+                            writer.writeCharacters("\n");
+                            writer.writeEmptyElement(SKOS_NS, StringUtils.substringAfter(attr.getRdfProperty(), "skos:"));
+                            writer.writeAttribute("rdf", RDF_NS, "resource", escapeIRI(contextRoot + attr.getRelatedIdentifier()));
                         }
                     }
                 }
