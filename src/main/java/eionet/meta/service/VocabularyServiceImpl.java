@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -593,7 +594,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
         String crPingUrl = Props.getProperty(PropsIF.CR_PING_URL);
 
-        if (!Util.isEmpty(crPingUrl) && Util.isURI(crPingUrl)) {
+        if (!Util.isEmpty(crPingUrl)) {
 
             VocabularyFolder vocabluary = getVocabularyFolder(vocabularyFolderId);
             StringBuilder rdfUrl = new StringBuilder(Props.getProperty(PropsIF.DD_URL));
@@ -607,17 +608,20 @@ public class VocabularyServiceImpl implements IVocabularyService {
             rdfUrl.append(vocabluary.getIdentifier());
             rdfUrl.append("/rdf");
 
-            crPingUrl += rdfUrl.toString();
             try {
-                URL url = new URL(crPingUrl);
-                HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-                int status = httpConn.getResponseCode();
-                if (status >= 400) {
-                    LOGGER.error("Unable to ping CR (responseCode: " + status + ") for reharvesting vocabulary folder: "
-                            + crPingUrl);
-                } else {
-                    LOGGER.debug("Ping request (responseCode: " + status + ") was sent to CR for reharvesting vocabulary folder: "
-                            + crPingUrl);
+                crPingUrl = String.format(crPingUrl, URLEncoder.encode(rdfUrl.toString(), "UTF-8"));
+
+                if (Util.isURI(crPingUrl)) {
+                    URL url = new URL(crPingUrl);
+                    HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+                    int status = httpConn.getResponseCode();
+                    if (status >= 400) {
+                        LOGGER.error("Unable to ping CR (responseCode: " + status + ") for reharvesting vocabulary folder: "
+                                + crPingUrl);
+                    } else {
+                        LOGGER.debug("Ping request (responseCode: " + status
+                                + ") was sent to CR for reharvesting vocabulary folder: " + crPingUrl);
+                    }
                 }
             } catch (MalformedURLException e) {
                 LOGGER.error("Unable to ping CR: " + crPingUrl);
