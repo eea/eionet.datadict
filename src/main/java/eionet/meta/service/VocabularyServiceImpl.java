@@ -171,12 +171,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
                         for (VocabularyConceptAttribute attr : attributes) {
                             if (attr != null) {
                                 if (attr.getId() != 0) {
-                                    if (StringUtils.isNotEmpty(attr.getValue())) {
+                                    if (StringUtils.isNotEmpty(attr.getValue()) || attr.getRelatedId() != null) {
                                         excludedIds.add(attr.getId());
                                         toUpdate.add(attr);
                                     }
                                 } else {
-                                    if (StringUtils.isNotEmpty(attr.getValue())) {
+                                    if (StringUtils.isNotEmpty(attr.getValue()) || attr.getRelatedId() != null) {
                                         attr.setVocabularyConceptId(vocabularyConcept.getId());
                                         toInsert.add(attr);
                                     }
@@ -298,6 +298,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             if (!vocabularyFolder.isSiteCodeType()) {
                 vocabularyConceptDAO.copyVocabularyConcepts(vocabularyFolderId, newVocabularyFolderId);
                 vocabularyConceptDAO.copyVocabularyConceptsAttributes(newVocabularyFolderId);
+                vocabularyConceptDAO.updateRelatedConceptIds(newVocabularyFolderId);
             }
 
             return newVocabularyFolderId;

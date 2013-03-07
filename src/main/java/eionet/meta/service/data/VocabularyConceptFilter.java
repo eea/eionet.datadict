@@ -21,6 +21,8 @@
 
 package eionet.meta.service.data;
 
+import java.util.List;
+
 /**
  * Vocabulary concept search filter.
  *
@@ -45,6 +47,12 @@ public class VocabularyConceptFilter extends PagedRequest {
 
     /** If ture, the identifier sorting is numeric. */
     private boolean numericIdentifierSorting;
+
+    /** Concept id's that don't get returned. */
+    private List<Integer> excludedIds;
+
+    /** Concept id's that get returned. */
+    private List<Integer> includedIds;
 
     /**
      * @return the vocabularyFolderId
@@ -134,6 +142,36 @@ public class VocabularyConceptFilter extends PagedRequest {
      */
     public void setNumericIdentifierSorting(boolean numericIdentifierSorting) {
         this.numericIdentifierSorting = numericIdentifierSorting;
+    }
+
+    /**
+     * @return the excludedIds
+     */
+    public List<Integer> getExcludedIds() {
+        return excludedIds;
+    }
+
+    /**
+     * @param excludedIds
+     *            the excludedIds to set
+     */
+    public void setExcludedIds(List<Integer> excludedIds) {
+        this.excludedIds = excludedIds;
+    }
+
+    /**
+     * @return the includedIds
+     */
+    public List<Integer> getIncludedIds() {
+        return includedIds;
+    }
+
+    /**
+     * @param includedIds
+     *            the includedIds to set
+     */
+    public void setIncludedIds(List<Integer> includedIds) {
+        this.includedIds = includedIds;
     }
 
 }

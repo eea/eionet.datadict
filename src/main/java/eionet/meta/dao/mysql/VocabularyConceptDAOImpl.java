@@ -80,11 +80,14 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public VocabularyConceptResult searchVocabularyConcepts(VocabularyConceptFilter filter) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("vocabularyFolderId", filter.getVocabularyFolderId());
 
         StringBuilder sql = new StringBuilder();
         sql.append("select SQL_CALC_FOUND_ROWS VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
-        sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID=:vocabularyFolderId ");
+        sql.append("from T_VOCABULARY_CONCEPT where 1 = 1 ");
+        if (filter.getVocabularyFolderId() > 0) {
+            params.put("vocabularyFolderId", filter.getVocabularyFolderId());
+            sql.append("and VOCABULARY_FOLDER_ID=:vocabularyFolderId ");
+        }
         if (StringUtils.isNotEmpty(filter.getText())) {
             params.put("text", "%" + filter.getText() + "%");
             sql.append("and (NOTATION like :text ");
@@ -98,6 +101,14 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         if (StringUtils.isNotEmpty(filter.getLabel())) {
             params.put("label", filter.getLabel());
             sql.append("and LABEL = :label ");
+        }
+        if (filter.getExcludedIds() != null && !filter.getExcludedIds().isEmpty()) {
+            params.put("excludedIds", filter.getExcludedIds());
+            sql.append("and VOCABULARY_CONCEPT_ID not in (:excludedIds) ");
+        }
+        if (filter.getIncludedIds() != null && !filter.getIncludedIds().isEmpty()) {
+            params.put("includedIds", filter.getIncludedIds());
+            sql.append("and VOCABULARY_CONCEPT_ID in (:includedIds) ");
         }
         if (filter.isNumericIdentifierSorting()) {
             sql.append("order by IDENTIFIER + 0 ");
@@ -153,10 +164,31 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void copyVocabularyConceptsAttributes(int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_VOCABULARY_CONCEPT_ATTRIBUTE (M_ATTRIBUTE_ID, VOCABULARY_CONCEPT_ID, ATTR_VALUE, LANGUAGE) ");
-        sql.append("select attr.M_ATTRIBUTE_ID, con.VOCABULARY_CONCEPT_ID, attr.ATTR_VALUE, attr.LANGUAGE ");
-        sql.append("from T_VOCABULARY_CONCEPT_ATTRIBUTE attr left join T_VOCABULARY_CONCEPT con ");
-        sql.append("on attr.VOCABULARY_CONCEPT_ID = con.ORIGINAL_CONCEPT_ID where con.VOCABULARY_FOLDER_ID = :newVocabularyFolderId");
+        sql.append("insert into T_VOCABULARY_CONCEPT_ATTRIBUTE (M_ATTRIBUTE_ID, VOCABULARY_CONCEPT_ID, ATTR_VALUE, LANGUAGE, LINK_TEXT, RELATED_CONCEPT_ID) ");
+        sql.append("select attr.M_ATTRIBUTE_ID, con.VOCABULARY_CONCEPT_ID, attr.ATTR_VALUE, attr.LANGUAGE, attr.LINK_TEXT, attr.RELATED_CONCEPT_ID ");
+        sql.append("from T_VOCABULARY_CONCEPT_ATTRIBUTE attr ");
+        sql.append("left join T_VOCABULARY_CONCEPT con on attr.VOCABULARY_CONCEPT_ID = con.ORIGINAL_CONCEPT_ID  ");
+        sql.append("where con.VOCABULARY_FOLDER_ID = :newVocabularyFolderId");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("newVocabularyFolderId", newVocabularyFolderId);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateRelatedConceptIds(int newVocabularyFolderId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE T_VOCABULARY_CONCEPT_ATTRIBUTE attr, T_VOCABULARY_CONCEPT con1, T_VOCABULARY_CONCEPT con2, M_ATTRIBUTE m ");
+        sql.append("set attr.RELATED_CONCEPT_ID = con2.VOCABULARY_CONCEPT_ID ");
+        sql.append("where attr.VOCABULARY_CONCEPT_ID = con1.VOCABULARY_CONCEPT_ID ");
+        sql.append("and attr.RELATED_CONCEPT_ID = con2.ORIGINAL_CONCEPT_ID ");
+        sql.append("and attr.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID ");
+        sql.append("and con1.VOCABULARY_FOLDER_ID = :newVocabularyFolderId ");
+        sql.append("and m.SHORT_NAME in ('broaderLocalConcept', 'narrowerLocalConcept', 'relatedLocalConcept')");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("newVocabularyFolderId", newVocabularyFolderId);

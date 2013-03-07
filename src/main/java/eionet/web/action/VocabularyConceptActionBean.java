@@ -21,6 +21,9 @@
 
 package eionet.web.action;
 
+import java.util.Collections;
+import java.util.List;
+
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
@@ -36,6 +39,7 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
@@ -62,6 +66,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     /** Vocabulary concept to add/edit. */
     private VocabularyConcept vocabularyConcept;
 
+    /** Other vocabulary concepts in the vocabulary folder. */
+    private List<VocabularyConcept> vocabularyConcepts;
+
     /**
      * View action.
      *
@@ -73,7 +80,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
-        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), false);
+        vocabularyConcept =
+                vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), false);
         validateView();
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
     }
@@ -88,8 +96,10 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
-        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), true);
+        vocabularyConcept =
+                vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), true);
         validateView();
+        initBeans();
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
     }
 
@@ -149,27 +159,18 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             addGlobalValidationError("Vocabulary concept identifier is not unique");
         }
 
-        /*
-        if (vocabularyConcept.getAttributes() != null) {
-            for (List<VocabularyConceptAttribute> attributes : vocabularyConcept.getAttributes()) {
-                if (attributes != null) {
-                    for (VocabularyConceptAttribute attr : attributes) {
-                        if (attr != null) {
-                            if (StringUtils.isEmpty(attr.getValue())) {
-                                addGlobalValidationError("An attribute value was missing");
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        */
-
         if (isValidationErrors()) {
             vocabularyConcept =
                     vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), true);
         }
+    }
+
+    private void initBeans() throws ServiceException {
+        VocabularyConceptFilter filter = new VocabularyConceptFilter();
+        filter.setVocabularyFolderId(vocabularyFolder.getId());
+        filter.setUsePaging(false);
+        filter.setExcludedIds(Collections.singletonList(vocabularyConcept.getId()));
+        vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter).getList();
     }
 
     /**
@@ -226,6 +227,15 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @return
      */
     public String getConceptUri() {
+        return VocabularyXmlWriter.escapeIRI(getUriPrefix() + vocabularyConcept.getIdentifier());
+    }
+
+    /**
+     * Returns concept URI prefix.
+     *
+     * @return
+     */
+    public String getUriPrefix() {
         String baseUri = vocabularyFolder.getBaseUri();
         if (StringUtils.isEmpty(baseUri)) {
             baseUri =
@@ -236,7 +246,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             baseUri += "/";
         }
 
-        return VocabularyXmlWriter.escapeIRI(baseUri + vocabularyConcept.getIdentifier());
+        return VocabularyXmlWriter.escapeIRI(baseUri);
     }
 
     /**
@@ -267,6 +277,13 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     public void setVocabularyConcept(VocabularyConcept vocabularyConcept) {
         this.vocabularyConcept = vocabularyConcept;
+    }
+
+    /**
+     * @return the vocabularyConcepts
+     */
+    public List<VocabularyConcept> getVocabularyConcepts() {
+        return vocabularyConcepts;
     }
 
 }

@@ -340,6 +340,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
             sql.append("LEFT JOIN M_ATTRIBUTE m ");
         }
         sql.append("ON (v.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID and v.VOCABULARY_CONCEPT_ID = :vocabularyConceptId) ");
+        sql.append("LEFT JOIN T_VOCABULARY_CONCEPT c ON v.RELATED_CONCEPT_ID = c.VOCABULARY_CONCEPT_ID ");
         sql.append("WHERE FLOOR(m.DISP_WHEN / :attributeWeight) %2 != 0 ");
         sql.append("order by m.DISP_ORDER, v.LANGUAGE, v.ATTR_VALUE");
 
@@ -372,6 +373,10 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
                 atr.setWidth(rs.getInt("m.DISP_WIDTH"));
                 atr.setMultiValue(rs.getBoolean("m.DISP_MULTIPLE"));
                 atr.setRdfProperty(rs.getString("m.RDF_PROPERTY"));
+                atr.setIdentifier(rs.getString("m.SHORT_NAME"));
+                atr.setLinkText(rs.getString("v.LINK_TEXT"));
+                atr.setRelatedId(rs.getInt("v.RELATED_CONCEPT_ID"));
+                atr.setRelatedIdentifier(rs.getString("c.IDENTIFIER"));
 
                 if (!StringUtils.equals(previousShortName, rs.getString("m.SHORT_NAME"))) {
                     result.add(attributes);
@@ -396,8 +401,8 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     @Override
     public void createVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_VOCABULARY_CONCEPT_ATTRIBUTE (M_ATTRIBUTE_ID, VOCABULARY_CONCEPT_ID, ATTR_VALUE, LANGUAGE) ");
-        sql.append("values (:attributeId, :vocabularyConceptId, :value, :language)");
+        sql.append("insert into T_VOCABULARY_CONCEPT_ATTRIBUTE (M_ATTRIBUTE_ID, VOCABULARY_CONCEPT_ID, ATTR_VALUE, RELATED_CONCEPT_ID, LANGUAGE, LINK_TEXT) ");
+        sql.append("values (:attributeId, :vocabularyConceptId, :value, :relatedId, :language, :linkText)");
 
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[attributes.size()];
@@ -408,6 +413,8 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
             params.put("vocabularyConceptId", attributes.get(i).getVocabularyConceptId());
             params.put("value", attributes.get(i).getValue());
             params.put("language", attributes.get(i).getLanguage());
+            params.put("relatedId", attributes.get(i).getRelatedId());
+            params.put("linkText", attributes.get(i).getLinkText());
             batchValues[i] = params;
         }
 
@@ -420,7 +427,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     @Override
     public void updateVocabularyConceptAttributes(List<VocabularyConceptAttribute> attributes) {
         StringBuilder sql = new StringBuilder();
-        sql.append("update T_VOCABULARY_CONCEPT_ATTRIBUTE set ATTR_VALUE=:value, LANGUAGE=:language ");
+        sql.append("update T_VOCABULARY_CONCEPT_ATTRIBUTE set ATTR_VALUE=:value, RELATED_CONCEPT_ID=:relatedId, LANGUAGE=:language, LINK_TEXT=:linkText ");
         sql.append("where ID = :id");
 
         @SuppressWarnings("unchecked")
@@ -431,6 +438,8 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
             params.put("id", attributes.get(i).getId());
             params.put("value", attributes.get(i).getValue());
             params.put("language", attributes.get(i).getLanguage());
+            params.put("relatedId", attributes.get(i).getRelatedId());
+            params.put("linkText", attributes.get(i).getLinkText());
             batchValues[i] = params;
         }
 

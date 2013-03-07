@@ -152,4 +152,11 @@ public interface IVocabularyConceptDAO {
      * @param newVocabularyFolderId
      */
     void copyVocabularyConceptsAttributes(int newVocabularyFolderId);
+
+    /**
+     * Updates the T_VOCABULARY_CONCEPT_ATTRITUBE.RELATED_CONCEPT_ID to what the new checked out concept's id currently is.
+     *
+     * @param newVocabularyFolderId
+     */
+    void updateRelatedConceptIds(int newVocabularyFolderId);
 }

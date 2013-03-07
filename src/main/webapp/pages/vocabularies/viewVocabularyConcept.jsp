@@ -73,7 +73,24 @@
                         <th scope="row" class="scope-row simple_attr_title">${attrMeta.label}</th>
                         <td class="simple_attr_value">
                             <c:forEach var="attr" items="${attributeValues}" varStatus="innerLoop">
-                                <c:out value="${attr.value}" />
+                                <c:choose>
+                                    <c:when test="${not empty attr.relatedIdentifier}">
+                                        <c:choose>
+                                            <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
+                                                <a href="${actionBean.uriPrefix}${attr.relatedIdentifier}"><c:out value="${actionBean.uriPrefix}${attr.relatedIdentifier}" /></a>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:out value="${actionBean.uriPrefix}${attr.relatedIdentifier}" />
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <c:if test="${not empty attr.linkText}">
+                                            (<c:out value="${attr.linkText}" />)
+                                        </c:if>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:out value="${attr.value}" />
+                                    </c:otherwise>
+                                </c:choose>
                                 <c:if test="${not empty attr.language}">[${attr.language}]</c:if>
                                 <c:if test="${fn:length(attributeValues) - innerLoop.index - 1 >= 1}">
                                     <hr />

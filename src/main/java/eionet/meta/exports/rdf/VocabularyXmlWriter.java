@@ -193,7 +193,7 @@ public class VocabularyXmlWriter {
                             if (StringUtils.isNotEmpty(attr.getLanguage())) {
                                 writer.writeAttribute("xml", XML_NS, "lang", attr.getLanguage());
                             }
-                            if (StringUtils.isNotEmpty(attr.getDataType())) {
+                            if (StringUtils.isNotEmpty(attr.getDataType()) && StringUtils.isEmpty(attr.getLanguage())) {
                                 writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(attr.getDataType()));
                             }
                             writer.writeCharacters(attr.getValue());

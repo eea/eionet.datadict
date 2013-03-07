@@ -34,9 +34,14 @@ public class VocabularyConceptAttribute {
 
     private int vocabularyConceptId;
 
+    /** M_ATTRIBUTE.SHORT_NAME. */
+    private String identifier;
+
     private String label;
 
     private String value;
+
+    private Integer relatedId;
 
     private String language;
 
@@ -53,6 +58,11 @@ public class VocabularyConceptAttribute {
     private boolean multiValue;
 
     private String rdfProperty;
+
+    private String linkText;
+
+    /** Related concept properties. */
+    private String relatedIdentifier;
 
     /**
      * @return the id
@@ -247,6 +257,66 @@ public class VocabularyConceptAttribute {
      */
     public void setRdfProperty(String rdfProperty) {
         this.rdfProperty = rdfProperty;
+    }
+
+    /**
+     * @return the identifier
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * @param identifier
+     *            the identifier to set
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    /**
+     * @return the linkText
+     */
+    public String getLinkText() {
+        return linkText;
+    }
+
+    /**
+     * @param linkText
+     *            the linkText to set
+     */
+    public void setLinkText(String linkText) {
+        this.linkText = linkText;
+    }
+
+    /**
+     * @return the relatedIdentifier
+     */
+    public String getRelatedIdentifier() {
+        return relatedIdentifier;
+    }
+
+    /**
+     * @param relatedIdentifier
+     *            the relatedIdentifier to set
+     */
+    public void setRelatedIdentifier(String relatedIdentifier) {
+        this.relatedIdentifier = relatedIdentifier;
+    }
+
+    /**
+     * @return the relatedId
+     */
+    public Integer getRelatedId() {
+        return relatedId;
+    }
+
+    /**
+     * @param relatedId
+     *            the relatedId to set
+     */
+    public void setRelatedId(Integer relatedId) {
+        this.relatedId = relatedId;
     }
 
 }
