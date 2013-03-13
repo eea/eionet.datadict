@@ -124,7 +124,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, workingCopy);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary folder: " + e.getMessage(), e);
+            String parameters =
+                    "folderName=" + String.valueOf(folderName) + "; identifier=" + String.valueOf(identifier) + "; workingCopy="
+                            + workingCopy;
+            throw new ServiceException("Failed to get vocabulary folder (" + parameters + "):" + e.getMessage(), e);
         }
     }
 
@@ -261,7 +264,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary folder: " + e.getMessage(), e);
+            String parameters = "id=" + vocabularyFolderId;
+            throw new ServiceException("Failed to get vocabulary folder ( " + parameters + "): " + e.getMessage(), e);
         }
     }
 
