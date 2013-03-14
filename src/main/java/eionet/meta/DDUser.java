@@ -92,7 +92,7 @@ public class DDUser {
             } else {
                 AuthMechanism.sessionLogin(userName, userPwd);
                 fullName = AuthMechanism.getFullName(userName);
-                LOGGER.info("User " + userName + " logged in.");
+                LOGGER.debug("User " + userName + " logged in through local login page.");
             }
 
             authented = true;
@@ -177,7 +177,7 @@ public class DDUser {
                 for (int i = 0; i < v.size(); i++) {
                     roles[i] = (String) v.elementAt(i);
                 }
-                LOGGER.debug("Found the following roles for user (" + username + "):" + StringUtils.join(roles, ','));
+                LOGGER.debug("Found " + roles.length + " roles for user (" + username + ")");
             } catch (Exception e) {
                 LOGGER.error("Unable to get any role for loggedin user (" + username + "). DirServiceException: " + e.getMessage());
                 roles = new String[] {};

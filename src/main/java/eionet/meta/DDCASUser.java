@@ -26,12 +26,14 @@ public class DDCASUser extends DDUser {
      *  (non-Javadoc)
      * @see eionet.meta.DDuser#authenticate(java.lang.String, java.lang.String)
      */
+    @Override
     public boolean authenticate(String userName, String userPws) {
 
         invalidate();
 
         try {
             fullName = AuthMechanism.getFullName(userName);
+            LOGGER.debug("User " + userName + " logged in through CAS.");
         }
         catch (SignOnException e) {
             LOGGER.error("Fatal error: can not get full name for authaticated user", e);
