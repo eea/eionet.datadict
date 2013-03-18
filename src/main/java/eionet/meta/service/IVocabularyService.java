@@ -130,6 +130,17 @@ public interface IVocabularyService {
             throws ServiceException;
 
     /**
+     * Returns vocabulary concept.
+     *
+     * @param vocabularyConceptId
+     * @param emptyAttributes
+     *            when true, then attributes that are not valued are also included
+     * @return
+     * @throws ServiceException
+     */
+    VocabularyConcept getVocabularyConcept(int vocabularyConceptId, boolean emptyAttributes) throws ServiceException;
+
+    /**
      * Returns the vocabulary folder's concepts.
      *
      * @param filter

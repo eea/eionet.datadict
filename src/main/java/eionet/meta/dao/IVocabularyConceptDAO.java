@@ -60,6 +60,14 @@ public interface IVocabularyConceptDAO {
     VocabularyConcept getVocabularyConcept(int vocabularyFolderId, String conceptIdentifier);
 
     /**
+     * Returns vocabulary concept.
+     *
+     * @param vocabularyConceptId
+     * @return
+     */
+    VocabularyConcept getVocabularyConcept(int vocabularyConceptId);
+
+    /**
      * Creates new vocabulary concept into database.
      *
      * @param vocabularyFolderId

@@ -568,6 +568,25 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
+    public VocabularyConcept getVocabularyConcept(int vocabularyConceptId, boolean emptyAttributes)
+            throws ServiceException {
+        try {
+            VocabularyConcept result = vocabularyConceptDAO.getVocabularyConcept(vocabularyConceptId);
+            List<List<VocabularyConceptAttribute>> attributes =
+                    attributeDAO.getVocabularyConceptAttributes(result.getId(), emptyAttributes);
+
+            result.setAttributes(attributes);
+
+            return result;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers)
             throws ServiceException {
         try {

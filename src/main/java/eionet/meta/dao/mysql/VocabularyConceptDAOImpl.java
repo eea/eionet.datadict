@@ -402,4 +402,33 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VocabularyConcept getVocabularyConcept(int vocabularyConceptId) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyConceptId", vocabularyConceptId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
+        sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID=:vocabularyConceptId");
+
+        VocabularyConcept result =
+                getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, new RowMapper<VocabularyConcept>() {
+                    @Override
+                    public VocabularyConcept mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyConcept vc = new VocabularyConcept();
+                        vc.setId(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                        vc.setIdentifier(rs.getString("IDENTIFIER"));
+                        vc.setLabel(rs.getString("LABEL"));
+                        vc.setDefinition(rs.getString("DEFINITION"));
+                        vc.setNotation(rs.getString("NOTATION"));
+                        return vc;
+                    }
+                });
+
+        return result;
+    }
+
 }

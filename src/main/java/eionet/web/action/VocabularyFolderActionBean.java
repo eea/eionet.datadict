@@ -412,14 +412,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             addGlobalValidationError("Folder name is missing");
         } else {
             if (!Util.isValidIdentifier(vocabularyFolder.getFolderName())) {
-                addGlobalValidationError("Folder must be alpha-numeric value");
+                addGlobalValidationError("Folder contains illegal characters (/%?#:\\)");
             }
         }
         if (StringUtils.isEmpty(vocabularyFolder.getIdentifier())) {
             addGlobalValidationError("Vocabulary identifier is missing");
         } else {
             if (!Util.isValidIdentifier(vocabularyFolder.getIdentifier())) {
-                addGlobalValidationError("Vocabulary identifier must be alpha-numeric value");
+                addGlobalValidationError("Vocabulary identifier contains illegal characters (/%?#:\\)");
             }
         }
         if (StringUtils.isEmpty(vocabularyFolder.getLabel())) {
@@ -485,7 +485,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 }
             } else {
                 if (!Util.isValidIdentifier(vc.getIdentifier())) {
-                    addGlobalValidationError("Vocabulary concept identifier must be alpha-numeric value");
+                    addGlobalValidationError("Vocabulary concept identifier contains illegal characters (/%?#:\\)");
                 }
                 if (RESERVED_VOCABULARY_EVENTS.contains(vc.getIdentifier())) {
                     addGlobalValidationError("This vocabulary concept identifier is reserved value and cannot be used");

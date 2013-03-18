@@ -142,7 +142,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                 }
             } else {
                 if (!Util.isValidIdentifier(vocabularyConcept.getIdentifier())) {
-                    addGlobalValidationError("Vocabulary concept identifier must be alpha-numeric value");
+                    addGlobalValidationError("Vocabulary concept identifier contains illegal characters (/%?#:\\)");
                 }
                 if (VocabularyFolderActionBean.RESERVED_VOCABULARY_EVENTS.contains(vocabularyConcept.getIdentifier())) {
                     addGlobalValidationError("This vocabulary concept identifier is reserved value and cannot be used");
@@ -161,7 +161,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
         if (isValidationErrors()) {
             vocabularyConcept =
-                    vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept.getIdentifier(), true);
+                    vocabularyService.getVocabularyConcept(vocabularyConcept.getId(), true);
         }
     }
 

@@ -1356,7 +1356,7 @@ public class Util {
      */
     public static boolean isValidIdentifier(String identifier) {
         if (StringUtils.isNotEmpty(identifier)) {
-            String regex = "^[^#:]+$";
+            String regex = "^[^/\\?\\%\\\\#:]+$";
             return identifier.matches(regex);
         }
         return false;
