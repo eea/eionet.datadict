@@ -1349,7 +1349,6 @@ public class Util {
 
     /**
      * Returns true if the identifier doesn't contain banned characters.
-     * We allow the slash (/) eventhough it has an effect on relative links.
      *
      * @param identifier - the string to test.
      * @return - the true/false result.
