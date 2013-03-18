@@ -89,7 +89,7 @@
         <table width="auto" cellspacing="0" style="clear:right">
             <tr valign="top">
                 <td align="right" style="padding-right:10">
-                    <strong>Registration status</strong>
+                    <label for="regStatusSelect" class="question">Registration status</label>
                 </td>
                 <td>
                     <a href="help.jsp?screen=dataset&area=regstatus" onclick="pop(this.href);return false;">
@@ -105,7 +105,7 @@
             </tr>
             <tr valign="top">
                 <td align="right" style="padding-right:10">
-                    <b>Dataset</b>
+                    <label for="datasetSelect" class="question">Dataset</label>
                 </td>
                 <td>
                     <a href="help.jsp?screen=search_element&amp;area=dataset" onclick="pop(this.href);return false;">
@@ -121,7 +121,7 @@
             </tr>
             <tr valign="top">
                 <td align="right" style="padding-right:10">
-                    <b>Type</b>
+                    <label for="typeSelect" class="question">Type</label>
                 </td>
                 <td>
                     <a href="help.jsp?screen=element&amp;area=type" onclick="pop(this.href);return false;">
@@ -129,7 +129,7 @@
                     </a>
                 </td>
                 <td colspan="2">
-                    <stripes:select name="filter.type" class="small">
+                    <stripes:select name="filter.type" class="small" id="typeSelect">
                         <stripes:option value="" label="All" />
                         <stripes:option value="CH1" label="Data element with fixed values (codes)" />
                         <stripes:option value="CH2" label="Data element with quantitative values (e.g. measurements)" />
@@ -138,7 +138,7 @@
             </tr>
             <tr valign="top">
                 <td align="right" style="padding-right:10">
-                    <b>Short name</b>
+                    <label for="txtShortName" class="question">Short name</label>
                 </td>
                 <td>
                     <a href="help.jsp?screen=dataset&amp;area=short_name" onclick="pop(this.href);return false;">
@@ -146,12 +146,12 @@
                     </a>
                 </td>
                 <td colspan="2">
-                    <stripes:text name="filter.shortName" class="smalltext" size="59" />
+                    <stripes:text name="filter.shortName" class="smalltext" size="59" id="txtShortName"/>
                 </td>
             </tr>
             <tr valign="top">
                 <td align="right" style="padding-right:10">
-                    <b>Identifier</b>
+                    <label for="txtIdentifier" class="question">Identifier</label>
                 </td>
                 <td>
                     <a href="help.jsp?screen=dataset&amp;area=identifier" onclick="pop(this.href);return false;">
@@ -159,13 +159,13 @@
                     </a>
                 </td>
                 <td colspan="2">
-                    <stripes:text name="filter.identifier" class="smalltext" size="59" />
+                    <stripes:text name="filter.identifier" class="smalltext" size="59" id="txtIdentifier"/>
                 </td>
             </tr>
             <c:forEach items="${actionBean.filter.attributes}" var="attr" varStatus="row">
                 <tr valign="top">
                     <td align="right" style="padding-right:10">
-                        <b><c:out value="${attr.shortName}" /></b>
+                        <label for="txtFilterAttr_${attr.id}_${row.index}" class="question"><c:out value="${attr.shortName}" /></label>
                     </td>
                     <td>
                         <a href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
@@ -176,14 +176,14 @@
                         <stripes:hidden name="filter.attributes[${row.index}].id" />
                         <stripes:hidden name="filter.attributes[${row.index}].name" />
                         <stripes:hidden name="filter.attributes[${row.index}].shortName" />
-                        <stripes:text name="filter.attributes[${row.index}].value" class="smalltext" size="59" />
+                        <stripes:text name="filter.attributes[${row.index}].value" class="smalltext" size="59" id="txtFilterAttr_${attr.id}_${row.index}"/>
                     </td>
                 </tr>
             </c:forEach>
             <c:forEach items="${actionBean.addedAttributes}" var="attr" varStatus="row">
                 <tr valign="top">
                     <td align="right" style="padding-right:10">
-                        <b><c:out value="${attr.shortName}" /></b>
+                        <label for="txtAddedAttr_${attr.id}_${row.index}" class="question"><c:out value="${attr.shortName}" /></label>
                     </td>
                     <td>
                         <a href="help.jsp?attrid=${attr.id}&amp;attrtype=SIMPLE" onclick="pop(this.href);return false;">
@@ -194,7 +194,7 @@
                         <stripes:hidden name="addedAttributes[${row.index}].id" />
                         <stripes:hidden name="addedAttributes[${row.index}].name" />
                         <stripes:hidden name="addedAttributes[${row.index}].shortName" />
-                        <stripes:text name="addedAttributes[${row.index}].value" class="smalltext" size="59" />
+                        <stripes:text name="addedAttributes[${row.index}].value" class="smalltext" size="59" id="txtAddedAttr_${attr.id}_${row.index}"/>
                         <img src="${removeIcon}" border="0" onclick="deleteAttribute(${attr.id})" />
                     </td>
                 </tr>
@@ -202,14 +202,14 @@
             <tr valign="top">
                 <td colspan="2">&nbsp;</td>
                 <td colspan="2">
-                    <stripes:radio id="nonCommonRadio" name="filter.elementType" value="${actionBean.filter.nonCommonElementType}" checked="${actionBean.filter.nonCommonElementType}" /> Non-common elements
-                    <stripes:radio id="commonRadio" name="filter.elementType" value="${actionBean.filter.commonElementType}" /> Common elements
+                    <stripes:radio id="nonCommonRadio" name="filter.elementType" value="${actionBean.filter.nonCommonElementType}" checked="${actionBean.filter.nonCommonElementType}" /><label for="nonCommonRadio" class="question">Non-common elements</label>
+                    <stripes:radio id="commonRadio" name="filter.elementType" value="${actionBean.filter.commonElementType}" /><label for="commonRadio" class="question">Common elements</label>
                 </td>
             </tr>
             <tr valign="top">
                 <td colspan="2">&nbsp;</td>
                 <td colspan="2">
-                    <stripes:checkbox name="filter.includeHistoricVersions" /> Include historic versions
+                    <stripes:checkbox name="filter.includeHistoricVersions" id="chkInclHistoricVersions"/><label for="chkInclHistoricVersions" class="question">Include historic versions</label>
                 </td>
             </tr>
             <tr>
