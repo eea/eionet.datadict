@@ -248,6 +248,30 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
+    public void markConceptsObsolete(List<Integer> ids) throws ServiceException {
+        try {
+            vocabularyConceptDAO.markConceptsObsolete(ids);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to mark the concepts obsolete: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unMarkConceptsObsolete(List<Integer> ids) throws ServiceException {
+        try {
+            vocabularyConceptDAO.unMarkConceptsObsolete(ids);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to delete remove obsolete status: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void deleteVocabularyFolders(List<Integer> ids) throws ServiceException {
         try {
             vocabularyFolderDAO.deleteVocabularyFolders(ids);
@@ -568,8 +592,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public VocabularyConcept getVocabularyConcept(int vocabularyConceptId, boolean emptyAttributes)
-            throws ServiceException {
+    public VocabularyConcept getVocabularyConcept(int vocabularyConceptId, boolean emptyAttributes) throws ServiceException {
         try {
             VocabularyConcept result = vocabularyConceptDAO.getVocabularyConcept(vocabularyConceptId);
             List<List<VocabularyConceptAttribute>> attributes =

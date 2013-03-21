@@ -82,7 +82,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         Map<String, Object> params = new HashMap<String, Object>();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select SQL_CALC_FOUND_ROWS VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
+        sql.append("select SQL_CALC_FOUND_ROWS VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, OBSOLETE_DATE ");
         sql.append("from T_VOCABULARY_CONCEPT where 1 = 1 ");
         if (filter.getVocabularyFolderId() > 0) {
             params.put("vocabularyFolderId", filter.getVocabularyFolderId());
@@ -110,6 +110,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("includedIds", filter.getIncludedIds());
             sql.append("and VOCABULARY_CONCEPT_ID in (:includedIds) ");
         }
+        if (filter.isObsoleteOnly()) {
+            sql.append("and OBSOLETE_DATE IS NOT NULL ");
+        }
         if (filter.isNumericIdentifierSorting()) {
             sql.append("order by IDENTIFIER + 0 ");
         } else {
@@ -129,6 +132,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
+                        vc.setCreated(rs.getDate("CREATION_DATE"));
+                        vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
                         return vc;
                     }
                 });
@@ -252,6 +257,31 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         parameters.put("ids", ids);
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void markConceptsObsolete(List<Integer> ids) {
+        String sql = "update T_VOCABULARY_CONCEPT set OBSOLETE_DATE = now() where VOCABULARY_CONCEPT_ID in (:ids)";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ids", ids);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unMarkConceptsObsolete(List<Integer> ids) {
+        String sql = "update T_VOCABULARY_CONCEPT set OBSOLETE_DATE = NULL where VOCABULARY_CONCEPT_ID in (:ids)";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("ids", ids);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+
     }
 
     /**
@@ -382,7 +412,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         params.put("identifier", conceptIdentifier);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
+        sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, OBSOLETE_DATE ");
         sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID=:vocabularyFolderId and IDENTIFIER=:identifier");
 
         VocabularyConcept result =
@@ -395,6 +425,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
+                        vc.setCreated(rs.getDate("CREATION_DATE"));
+                        vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
                         return vc;
                     }
                 });
@@ -411,7 +443,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         params.put("vocabularyConceptId", vocabularyConceptId);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION ");
+        sql.append("select VOCABULARY_CONCEPT_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, CREATION_DATE, OBSOLETE_DATE ");
         sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID=:vocabularyConceptId");
 
         VocabularyConcept result =
@@ -424,6 +456,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
+                        vc.setCreated(rs.getDate("CREATION_DATE"));
+                        vc.setObsolete(rs.getDate("OBSOLETE_DATE"));
                         return vc;
                     }
                 });

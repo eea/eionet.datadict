@@ -123,6 +123,44 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     }
 
     /**
+     * Marks vocabulary concept obsolete.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution markConceptObsolete() throws ServiceException {
+        vocabularyService.markConceptsObsolete(Collections.singletonList(vocabularyConcept.getId()));
+
+        addSystemMessage("Vocabulary concept marked obsolete");
+
+        RedirectResolution resolution = new RedirectResolution(getClass(), "edit");
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier());
+        return resolution;
+    }
+
+    /**
+     * Removes the obsolete status from concept.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution unMarkConceptObsolete() throws ServiceException {
+        vocabularyService.unMarkConceptsObsolete(Collections.singletonList(vocabularyConcept.getId()));
+
+        addSystemMessage("Obsolete status removed from vocabulary concept");
+
+        RedirectResolution resolution = new RedirectResolution(getClass(), "edit");
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+        resolution.addParameter("vocabularyConcept.identifier", vocabularyConcept.getIdentifier());
+        return resolution;
+    }
+
+    /**
      * Validates save concept.
      *
      * @throws ServiceException
@@ -160,8 +198,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
 
         if (isValidationErrors()) {
-            vocabularyConcept =
-                    vocabularyService.getVocabularyConcept(vocabularyConcept.getId(), true);
+            vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyConcept.getId(), true);
         }
     }
 

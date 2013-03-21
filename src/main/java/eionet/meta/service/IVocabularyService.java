@@ -195,6 +195,22 @@ public interface IVocabularyService {
     void deleteVocabularyConcepts(List<Integer> ids) throws ServiceException;
 
     /**
+     * Mark concepts obsolete.
+     *
+     * @param ids
+     * @throws ServiceException
+     */
+    void markConceptsObsolete(List<Integer> ids) throws ServiceException;
+
+    /**
+     * Remove obsolete date from concepts.
+     *
+     * @param ids
+     * @throws ServiceException
+     */
+    void unMarkConceptsObsolete(List<Integer> ids) throws ServiceException;
+
+    /**
      * Deletes vocabulary folders.
      *
      * @param ids

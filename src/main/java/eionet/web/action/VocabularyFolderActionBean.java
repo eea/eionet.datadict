@@ -361,6 +361,38 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
+     * Marks vocabulary concepts obsolete.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution markConceptsObsolete() throws ServiceException {
+        vocabularyService.markConceptsObsolete(conceptIds);
+        addSystemMessage("Vocabulary concepts marked obsolete");
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+        return resolution;
+    }
+
+    /**
+     * Removes the obsolete status from concepts.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution unMarkConceptsObsolete() throws ServiceException {
+        vocabularyService.unMarkConceptsObsolete(conceptIds);
+        addSystemMessage("Obsolete status removed from vocabulary concepts");
+        RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
+        resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
+        resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
+        resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
+        return resolution;
+    }
+
+    /**
      * Validates check out.
      *
      * @throws ServiceException

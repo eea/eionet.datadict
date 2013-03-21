@@ -284,28 +284,35 @@
         <!-- Vocabulary concepts search -->
         <stripes:form method="get" id="searchForm" beanclass="${actionBean.class.name}">
             <div id="searchframe">
-            <stripes:hidden name="vocabularyFolder.folderName" />
-            <stripes:hidden name="vocabularyFolder.identifier" />
-            <stripes:hidden name="vocabularyFolder.workingCopy" />
-
-            <table class="datatable">
-                <colgroup>
-                    <col style="width:26%"/>
-                    <col />
-                    <col />
-                </colgroup>
-                <tr>
-                    <th scope="row" class="scope-row simple_attr_title" title="Text to filter from label, notation and definition">
-                        <span style="white-space:nowrap;">Filtering text</span>
-                    </th>
-                    <td class="simple_attr_value" style="width: 400px; padding-right: 10px;">
-                        <stripes:text class="smalltext" size="30" name="filter.text"/>
-                    </td>
-                    <td>
-                        <stripes:submit name="edit" value="Search" class="mediumbuttonb"/>
-                    </td>
-                </tr>
-            </table>
+                <stripes:hidden name="vocabularyFolder.folderName" />
+                <stripes:hidden name="vocabularyFolder.identifier" />
+                <stripes:hidden name="vocabularyFolder.workingCopy" />
+                <table class="datatable">
+                    <colgroup>
+                        <col style="width:10em;"/>
+                        <col />
+                        <col style="width:10em;"/>
+                        <col />
+                        <col />
+                    </colgroup>
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title" title="Text to filter from label, notation and definition">
+                            <label for="filterText"><span style="white-space:nowrap;">Filtering text</span></label>
+                        </th>
+                        <td class="simple_attr_value">
+                            <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
+                        </td>
+                        <th scope="row" class="scope-row simple_attr_title" title="Find only concepts with obsolete status">
+                            <label for="obsoleteOnly"><span style="white-space:nowrap;">Obsolete only</span></label>
+                        </th>
+                        <td class="simple_attr_value" style="padding-right: 5em;">
+                            <stripes:checkbox name="filter.obsoleteOnly" id="obsoleteOnly" />
+                        </td>
+                        <td>
+                            <stripes:submit name="edit" value="Search" class="mediumbuttonb"/>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </stripes:form>
 
@@ -321,7 +328,16 @@
                 <display:column style="width: 1%">
                     <stripes:checkbox name="conceptIds" value="${item.id}" />
                 </display:column>
-                <display:column title="Id" escapeXml="true" property="identifier" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" />
+                <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%">
+                    <c:choose>
+                        <c:when test="${item.obsolete != null}">
+                            <span style="font-style:italic"><c:out value="${item.identifier}" /></span>
+                        </c:when>
+                        <c:otherwise>
+                            <c:out value="${item.identifier}" />
+                        </c:otherwise>
+                    </c:choose>
+                </display:column>
                 <display:column title="Label">
                     <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean" event="edit">
                         <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
@@ -342,6 +358,8 @@
                     <stripes:hidden name="vocabularyFolder.workingCopy" />
                     <input type="button" onclick="toggleSelectAll('conceptsForm');return false" value="Select all" name="selectAll">
                     <stripes:submit name="deleteConcepts" value="Delete" />
+                    <stripes:submit name="markConceptsObsolete" value="Mark obsolete" />
+                    <stripes:submit name="unMarkConceptsObsolete" value="Remove obsolete status" />
 
                     <c:if test="${actionBean.vocabularyFolder.commonType}">
                         <button id="addNewConceptLink">Add new concept</button>

@@ -21,6 +21,7 @@
 
 package eionet.meta.dao.domain;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +37,8 @@ public class VocabularyConcept {
     private String label;
     private String definition;
     private String notation;
+    private Date created;
+    private Date obsolete;
 
     private List<List<VocabularyConceptAttribute>> attributes;
 
@@ -127,6 +130,36 @@ public class VocabularyConcept {
      */
     public void setAttributes(List<List<VocabularyConceptAttribute>> attributes) {
         this.attributes = attributes;
+    }
+
+    /**
+     * @return the created
+     */
+    public Date getCreated() {
+        return created;
+    }
+
+    /**
+     * @param created
+     *            the created to set
+     */
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    /**
+     * @return the obsolete
+     */
+    public Date getObsolete() {
+        return obsolete;
+    }
+
+    /**
+     * @param obsolete
+     *            the obsolete to set
+     */
+    public void setObsolete(Date obsolete) {
+        this.obsolete = obsolete;
     }
 
 }

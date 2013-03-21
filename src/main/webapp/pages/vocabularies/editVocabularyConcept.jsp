@@ -111,6 +111,20 @@
                             <stripes:text class="smalltext" size="30" name="vocabularyConcept.notation" />
                         </td>
                     </tr>
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title">
+                            Created</th>
+                        <td class="simple_attr_help"></td>
+                        <td class="simple_attr_value"><fmt:formatDate pattern="dd.MM.yyyy" value="${actionBean.vocabularyConcept.created}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="scope-row simple_attr_title">
+                            Obsolete</th>
+                        <td class="simple_attr_help"></td>
+                        <td class="simple_attr_value"><fmt:formatDate pattern="dd.MM.yyyy" value="${actionBean.vocabularyConcept.obsolete}" />
+                        </td>
+                    </tr>
 
                     <%-- Additional attributes --%>
                     <tr>
@@ -191,6 +205,14 @@
                         <th>&nbsp;</th>
                         <td colspan="2">
                             <stripes:submit name="saveConcept" value="Save" class="mediumbuttonb"/>
+                            <c:choose>
+                                <c:when test="${actionBean.vocabularyConcept.obsolete != null}">
+                                    <stripes:submit name="unMarkConceptObsolete" value="Remove obsolete status" class="mediumbuttonb"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <stripes:submit name="markConceptObsolete" value="Mark obsolete" class="mediumbuttonb"/>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                     </tr>
                 </table>
