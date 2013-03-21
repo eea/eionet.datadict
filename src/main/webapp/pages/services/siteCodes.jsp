@@ -11,6 +11,7 @@
             $(document).ready(function() {
 
                 var sampleNames = "site name 1\nsite name 2\nsite name 3\n...";
+                var allocated = false;
 
                 // Open allocate site codes dialog
                 $("#allocateSiteCodesLink").click(function() {
@@ -21,6 +22,15 @@
                     $("#allocateSiteCodesDiv").dialog('open');
                     return false;
                 });
+                $("#allocateButton").click(function() {
+                    // prevents double submits
+                    if (!allocated) {
+                        allocated = true;
+                        return true;
+                    }
+                    return false;
+                });
+
 
                 // Close allocate site codes dialog
                 $("#closeAllocateLink").click(function() {
@@ -378,7 +388,7 @@
                             <tr>
                                 <td colspan="2">&nbsp;</td>
                                 <td>
-                                    <stripes:submit name="allocate" value="OK" />
+                                    <stripes:submit name="allocate" value="OK" id="allocateButton" />
                                     <button type="button" id="closeAllocateLink">Cancel</button>
                                 </td>
                             </tr>
