@@ -66,16 +66,16 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     /** */
     private static final String INSERT_SQL =
         "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, CONTINUITY_ID, REG_STATUS, "
-        + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID) "
-        + "values (:filename,:schemaSetId,:continuityId,:regStatus,:workingCopy,:workingUser,now(),:userModified,:comment,:checkedOutCopyId)";
+        + "WORKING_COPY, WORKING_USER, DATE_MODIFIED, USER_MODIFIED, COMMENT, CHECKEDOUT_COPY_ID, OTHER_DOCUMENT) "
+        + "values (:filename,:schemaSetId,:continuityId,:regStatus,:workingCopy,:workingUser,now(),:userModified,:comment,:checkedOutCopyId,:otherDocument)";
 
     /** */
     private static final String LIST_FOR_SCHEMA_SET = "select * from T_SCHEMA where SCHEMA_SET_ID=:schemaSetId order by FILENAME";
 
     /** */
     private static final String COPY_TO_SCHEMA_SET_SQL =
-        "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, DATE_MODIFIED, USER_MODIFIED) "
-        + "select ifnull(:newFileName,FILENAME), ifnull(:schemaSetId,SCHEMA_SET_ID), now(), :userName from T_SCHEMA where SCHEMA_ID=:schemaId";
+        "insert into T_SCHEMA (FILENAME, SCHEMA_SET_ID, DATE_MODIFIED, USER_MODIFIED, OTHER_DOCUMENT) "
+        + "select ifnull(:newFileName,FILENAME), ifnull(:schemaSetId,SCHEMA_SET_ID), now(), :userName, OTHER_DOCUMENT from T_SCHEMA where SCHEMA_ID=:schemaId";
 
     /** */
     private static final String GET_WORKING_COPIES_SQL =
@@ -86,8 +86,8 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
 
     /** */
     private static final String COPY_SCHEMA_ROW = "insert into T_SCHEMA "
-        + "(FILENAME, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID, REG_STATUS)"
-        + " select ifnull(:fileName,FILENAME), CONTINUITY_ID, true, :userName, :userName, :checkedOutCopyId, :regStatus"
+        + "(FILENAME, CONTINUITY_ID, WORKING_COPY, WORKING_USER, USER_MODIFIED, CHECKEDOUT_COPY_ID, REG_STATUS, OTHER_DOCUMENT)"
+        + " select ifnull(:fileName,FILENAME), CONTINUITY_ID, true, :userName, :userName, :checkedOutCopyId, :regStatus, OTHER_DOCUMENT"
         + " from T_SCHEMA where SCHEMA_ID=:schemaId";
 
     /** */
@@ -121,6 +121,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
         params.put("userModified", schema.getUserModified());
         params.put("comment", schema.getComment());
         params.put("checkedOutCopyId", schema.getCheckedOutCopyId() <= 0 ? null : schema.getCheckedOutCopyId());
+        params.put("otherDocument", schema.isOtherDocument());
 
         getNamedParameterJdbcTemplate().update(INSERT_SQL, params);
 
@@ -224,6 +225,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 schema.setSchemaSetIdentifier(rs.getString("IDENTIFIER"));
                 schema.setSchemaSetRegStatus(RegStatus.fromString(rs.getString("SS_REG_STATUS")));
                 schema.setNameAttribute(rs.getString("SCHEMA_NAME_ATTR"));
+                schema.setOtherDocument(rs.getBoolean("OTHER_DOCUMENT"));
                 return schema;
             }
         });
@@ -360,6 +362,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 schema.setSchemaSetWorkingUser(rs.getString("SS.WORKING_USER"));
                 schema.setNameAttribute(rs.getString("NAME_ATTR"));
                 schema.setSchemaSetNameAttribute(rs.getString("SS_NAME_ATTR"));
+                schema.setOtherDocument(rs.getBoolean("S.OTHER_DOCUMENT"));
                 return schema;
             }
         });
@@ -452,6 +455,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                     schema.setUserModified(rs.getString("USER_MODIFIED"));
                     schema.setComment(rs.getString("COMMENT"));
                     schema.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                    schema.setOtherDocument(rs.getBoolean("OTHER_DOCUMENT"));
                     return schema;
                 }
             });
@@ -494,6 +498,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 schema.setComment(rs.getString("S.COMMENT"));
                 schema.setCheckedOutCopyId(rs.getInt("S.CHECKEDOUT_COPY_ID"));
                 schema.setSchemaSetId(rs.getInt("S.SCHEMA_SET_ID"));
+                schema.setOtherDocument(rs.getBoolean("S.OTHER_DOCUMENT"));
                 return schema;
             }
         });
@@ -525,6 +530,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 schema.setComment(rs.getString("S.COMMENT"));
                 schema.setCheckedOutCopyId(rs.getInt("S.CHECKEDOUT_COPY_ID"));
                 schema.setSchemaSetId(rs.getInt("S.SCHEMA_SET_ID"));
+                schema.setOtherDocument(rs.getBoolean("S.OTHER_DOCUMENT"));
                 return schema;
             }
         });
@@ -630,6 +636,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 schema.setUserModified(rs.getString("USER_MODIFIED"));
                 schema.setComment(rs.getString("COMMENT"));
                 schema.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                schema.setOtherDocument(rs.getBoolean("OTHER_DOCUMENT"));
 
                 String name = rs.getString("NAME");
                 if (StringUtils.isNotBlank(name)) {
@@ -667,6 +674,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                     schema.setUserModified(rs.getString("USER_MODIFIED"));
                     schema.setComment(rs.getString("COMMENT"));
                     schema.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                    schema.setOtherDocument(rs.getBoolean("OTHER_DOCUMENT"));
                     return schema;
                 }
             });
@@ -750,6 +758,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
                 ss.setUserModified(rs.getString("USER_MODIFIED"));
                 ss.setComment(rs.getString("COMMENT"));
                 ss.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                ss.setOtherDocument(rs.getBoolean("OTHER_DOCUMENT"));
                 return ss;
             }
         });
@@ -791,6 +800,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
             schema.setUserModified(rs.getString("USER_MODIFIED"));
             schema.setComment(rs.getString("COMMENT"));
             schema.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+            schema.setOtherDocument(rs.getBoolean("OTHER_DOCUMENT"));
             return schema;
         }
     }

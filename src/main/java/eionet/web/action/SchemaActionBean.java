@@ -73,6 +73,9 @@ public class SchemaActionBean extends AbstractActionBean {
     private static final String VIEW_SCHEMA_JSP = "/pages/schemaSets/viewSchema.jsp";
 
     /** */
+    private static final String VIEW_DOCUMENT_JSP = "/pages/schemaSets/viewDocument.jsp";
+
+    /** */
     private static final String EDIT_SCHEMA_JSP = "/pages/schemaSets/editSchema.jsp";
 
     /** */
@@ -121,6 +124,7 @@ public class SchemaActionBean extends AbstractActionBean {
     private boolean workingCopy;
 
     /**
+     * Handles view action.
      *
      * @return
      * @throws ServiceException
@@ -130,6 +134,10 @@ public class SchemaActionBean extends AbstractActionBean {
     public Resolution view() throws ServiceException, IOException {
 
         loadSchemaByName();
+        if (schema.isOtherDocument()) {
+            return new ForwardResolution(VIEW_DOCUMENT_JSP);
+        }
+
         loadSchemaString();
         if (!workingCopy) {
             xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
@@ -170,8 +178,8 @@ public class SchemaActionBean extends AbstractActionBean {
         schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema successfully updated!");
         return new RedirectResolution(getClass())
-        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -219,8 +227,8 @@ public class SchemaActionBean extends AbstractActionBean {
     public Resolution cancelEdit() throws ServiceException {
 
         return new RedirectResolution(getClass())
-        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -255,8 +263,8 @@ public class SchemaActionBean extends AbstractActionBean {
         int finalId = schemaService.checkInSchema(schema.getId(), getUserName(), schema.getComment());
         addSystemMessage("Schema successfully checked in!");
         return new RedirectResolution(getClass())
-        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
+                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
     }
 
     /**
@@ -274,8 +282,8 @@ public class SchemaActionBean extends AbstractActionBean {
         int newSchemaSetId = schemaService.checkOutSchema(schema.getId(), getUserName());
         addSystemMessage("Schema successfully checked out!");
         return new RedirectResolution(getClass())
-        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -293,8 +301,8 @@ public class SchemaActionBean extends AbstractActionBean {
         loadSchemaById();
         addSystemMessage("The new version's working copy successfully created!");
         return new RedirectResolution(getClass())
-        .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-        .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
+                .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", true);
     }
 
     /**
@@ -308,8 +316,8 @@ public class SchemaActionBean extends AbstractActionBean {
         addSystemMessage("Working copy successfully deleted!");
         if (checkedOutCopyId > 0) {
             return new RedirectResolution(getClass())
-            .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
-            .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
+                    .addParameter("schemaSet.identifier", schemaSet == null ? null : schemaSet.getIdentifier())
+                    .addParameter("schema.fileName", schema.getFileName()).addParameter("workingCopy", false);
         } else {
             return new RedirectResolution(BrowseSchemaSetsActionBean.class);
         }
@@ -328,6 +336,9 @@ public class SchemaActionBean extends AbstractActionBean {
         schemaRepository.reuploadSchema(schema.getFileName(), schemaSetIdentifier, uploadedFile);
 
         addSystemMessage("Schema file successfully uploaded!");
+        if (schema.isOtherDocument()) {
+            return new ForwardResolution(VIEW_DOCUMENT_JSP);
+        }
         loadSchemaString();
         if (!workingCopy) {
             xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
@@ -531,11 +542,15 @@ public class SchemaActionBean extends AbstractActionBean {
 
         if (isValidationErrors()) {
             loadSchemaById();
-            loadSchemaString();
-            if (!workingCopy) {
-                xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
+            if (schema.isOtherDocument()) {
+                getContext().setSourcePageResolution(new ForwardResolution(VIEW_DOCUMENT_JSP));
+            } else {
+                loadSchemaString();
+                if (!workingCopy) {
+                    xmlConvData = xmlConvService.getSchemaConversionsData(getSchemaUrl());
+                }
+                getContext().setSourcePageResolution(new ForwardResolution(VIEW_SCHEMA_JSP));
             }
-            getContext().setSourcePageResolution(new ForwardResolution(VIEW_SCHEMA_JSP));
         }
     }
 
@@ -1034,11 +1049,12 @@ public class SchemaActionBean extends AbstractActionBean {
             DDSearchEngine searchEngine = null;
             try {
                 searchEngine = DDSearchEngine.create();
-                complexAttributes = schema == null ? new Vector() :
-                    searchEngine.getComplexAttributes(String.valueOf(schema.getId()), DElemAttribute.ParentType.SCHEMA.toString());
+                complexAttributes =
+                        schema == null ? new Vector() : searchEngine.getComplexAttributes(String.valueOf(schema.getId()),
+                                DElemAttribute.ParentType.SCHEMA.toString());
 
                 complexAttributeFields = new HashMap<String, Vector>();
-                for (Iterator iter = complexAttributes.iterator(); iter.hasNext();){
+                for (Iterator iter = complexAttributes.iterator(); iter.hasNext();) {
                     DElemAttribute attr = (DElemAttribute) iter.next();
                     String attrId = attr.getID();
                     complexAttributeFields.put(attrId, searchEngine.getAttrFields(attrId, DElemAttribute.FIELD_PRIORITY_HIGH));
@@ -1056,7 +1072,7 @@ public class SchemaActionBean extends AbstractActionBean {
      *
      * @return
      */
-    public HashMap getComplexAttributeFields(){
+    public HashMap getComplexAttributeFields() {
         return complexAttributeFields;
     }
 }

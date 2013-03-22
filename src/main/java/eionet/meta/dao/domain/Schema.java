@@ -24,6 +24,7 @@ public class Schema {
     private String userModified;
     private String comment;
     private int checkedOutCopyId;
+    private boolean otherDocument;
 
     /** Relational properties. */
     private String schemaSetIdentifier;
@@ -333,10 +334,26 @@ public class Schema {
     }
 
     /**
-     * @param schemaSetRegStatus the schemaSetRegStatus to set
+     * @param schemaSetRegStatus
+     *            the schemaSetRegStatus to set
      */
     public void setSchemaSetRegStatus(RegStatus schemaSetRegStatus) {
         this.schemaSetRegStatus = schemaSetRegStatus;
+    }
+
+    /**
+     * @return the otherDocument
+     */
+    public boolean isOtherDocument() {
+        return otherDocument;
+    }
+
+    /**
+     * @param otherDocument
+     *            the otherDocument to set
+     */
+    public void setOtherDocument(boolean otherDocument) {
+        this.otherDocument = otherDocument;
     }
 
 }

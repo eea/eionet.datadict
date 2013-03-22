@@ -373,7 +373,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
     }
 
     /**
-     * Loads schema set.
+     * Uploads schema.
      *
      * @throws ServiceException
      * @throws IOException
@@ -388,6 +388,37 @@ public class SchemaSetActionBean extends AbstractActionBean {
             schema.setFileName(uploadedFile.getFileName());
             schema.setUserModified(getUserName());
             schema.setSchemaSetId(schemaSet.getId());
+            schemaService.addSchema(schema, getSaveAttributeValues());
+        } catch (ServiceException e) {
+            SchemaRepository.deleteQuietly(schemaFile);
+            throw e;
+        } catch (RuntimeException e) {
+            SchemaRepository.deleteQuietly(schemaFile);
+            throw e;
+        }
+
+        addSystemMessage("Schema successfully uploaded!");
+        return new RedirectResolution(getClass(), "editSchemas").addParameter("schemaSet.identifier", schemaSet.getIdentifier())
+                .addParameter("workingCopy", true);
+    }
+
+    /**
+     * Uploads other document.
+     *
+     * @throws ServiceException
+     * @throws IOException
+     */
+    public Resolution uploadOtherDocument() throws ServiceException, IOException {
+
+        File schemaFile = null;
+        try {
+            schemaFile = schemaRepository.addSchema(uploadedFile, schemaSet.getIdentifier(), true);
+
+            Schema schema = new Schema();
+            schema.setFileName(uploadedFile.getFileName());
+            schema.setUserModified(getUserName());
+            schema.setSchemaSetId(schemaSet.getId());
+            schema.setOtherDocument(true);
             schemaService.addSchema(schema, getSaveAttributeValues());
         } catch (ServiceException e) {
             SchemaRepository.deleteQuietly(schemaFile);
@@ -511,6 +542,52 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         if (!isValidationErrors()) {
             validateUploadedFile();
+        }
+
+        if (!isValidationErrors()) {
+            for (DElemAttribute mandatoryAttr : getMandatorySchemaAttributes()) {
+                Integer attrId = Integer.valueOf(mandatoryAttr.getID());
+                Set<String> values = getSaveAttributeValues().get(attrId);
+                if (CollectionUtils.isEmpty(values) || StringUtils.isBlank(values.iterator().next())) {
+                    addGlobalValidationError(mandatoryAttr.getShortName() + " is missing!");
+                    break;
+                }
+            }
+        }
+
+        if (isValidationErrors()) {
+            loadSchemaSetById();
+        }
+    }
+
+    /**
+     * @throws IOException
+     * @throws ServiceException
+     * @throws DAOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     *
+     */
+    @ValidationMethod(on = {"uploadOtherDocument"})
+    public void validateOtherDocumentUpload() throws IOException, ServiceException, DAOException, ParserConfigurationException,
+    SAXException {
+
+        if (uploadedFile == null) {
+            addGlobalValidationError("No file uploaded!");
+        } else if (uploadedFile.getSize() <= 0) {
+            addGlobalValidationError("Uploaded file must not be empty!");
+        }
+
+        if (!isValidationErrors()) {
+            if (schemaSet == null || StringUtils.isBlank(schemaSet.getIdentifier())) {
+                addGlobalValidationError("Schema set identifier missing!");
+            }
+        }
+
+        if (!isValidationErrors()) {
+            if (schemaService.schemaExists(uploadedFile.getFileName(), schemaSet.getId())) {
+                addGlobalValidationError("A schema with such a file name already exists!");
+            }
         }
 
         if (!isValidationErrors()) {

@@ -59,6 +59,24 @@
                             $('#uploadSchemaDialog').dialog("close");
                             return true;
                         });
+
+                        //////////////////////
+
+                        $("#uploadDocumentLink").click(function() {
+                            $('#uploadDocumentDialog').dialog('open');
+                            return false;
+                        });
+
+                        $('#uploadDocumentDialog').dialog({
+                            autoOpen: false,
+                            width: 500
+                        });
+
+                        $("#closeUploadDocumentDialog").click(function() {
+                            $('#uploadDocumentDialog').dialog("close");
+                            return true;
+                        });
+
                     });
             } ) ( jQuery );
         // ]]>
@@ -99,6 +117,9 @@
                         </li>
                         <li>
                             <a href="#" id="uploadSchemaLink">Upload schema</a>
+                        </li>
+                        <li>
+                            <a href="#" id="uploadDocumentLink">Upload other document</a>
                         </li>
                         <li>
                             <stripes:link beanclass="eionet.web.action.SearchSchemaActionBean" event="search">Copy existing schema
@@ -238,7 +259,7 @@
 
     <%-- Schemas section --%>
 
-    <h2>Schemas</h2>
+    <h2>Schemas and documents</h2>
 
     <c:if test="${empty actionBean.schemas}">
         <div style="margin-top:3em">No schemas defined for this schema set yet!</div>
@@ -381,6 +402,29 @@
             <br/><br/>
             <stripes:submit name="uploadSchema" value="Upload"/>
             <input type="button" id="closeUploadSchemaDialog" value="Cancel"/>
+
+            <div style="display:none">
+                <stripes:hidden name="schemaSet.id"/>
+                <stripes:hidden name="schemaSet.identifier"/>
+            </div>
+        </stripes:form>
+    </div>
+
+    <div id="uploadDocumentDialog" title="Upload document">
+        <stripes:form beanclass="${actionBean.class.name}" method="post">
+
+            <label for="fileToUpload">File to upload*:</label>
+            <stripes:file name="uploadedFile" id="fileToUpload" size="40"/>
+            <c:if test="${not empty actionBean.mandatorySchemaAttributes}">
+                <c:forEach items="${actionBean.mandatorySchemaAttributes}" var="mandatoryAttr">
+                    <br/>
+                    <label for="attr_${mandatoryAttr.ID}_text"><c:out value="${mandatoryAttr.shortName}"/>*:</label>
+                    <input type="text" name="attr_${mandatoryAttr.ID}" id="attr_${mandatoryAttr.ID}_text" class="smalltext" style="width:100%"/>
+                </c:forEach>
+            </c:if>
+            <br/><br/>
+            <stripes:submit name="uploadOtherDocument" value="Upload"/>
+            <input type="button" id="closeUploadDocumentDialog" value="Cancel"/>
 
             <div style="display:none">
                 <stripes:hidden name="schemaSet.id"/>
