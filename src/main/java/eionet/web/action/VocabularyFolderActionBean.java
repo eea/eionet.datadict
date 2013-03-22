@@ -39,6 +39,9 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
+import org.displaytag.properties.MediaTypeEnum;
+import org.displaytag.tags.TableTagParameters;
+import org.displaytag.util.ParamEncoder;
 
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -148,6 +151,15 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
 
         initFilter();
+
+        // detect if it is a export request, don't use paging in this case.
+        String exportTypeStr =
+                getContext().getRequest().getParameter((new ParamEncoder("concept").encodeParameterName(TableTagParameters.PARAMETER_EXPORTTYPE)));
+        if (String.valueOf(MediaTypeEnum.CSV.getCode()).equals(exportTypeStr)
+                || String.valueOf(MediaTypeEnum.EXCEL.getCode()).equals(exportTypeStr)) {
+            filter.setUsePaging(false);
+        }
+
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         vocabularyFolderVersions =
                 vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
@@ -644,6 +656,25 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
 
         return null;
+    }
+
+    /**
+     * Returns concept URI prefix.
+     *
+     * @return
+     */
+    public String getUriPrefix() {
+        String baseUri = vocabularyFolder.getBaseUri();
+        if (StringUtils.isEmpty(baseUri)) {
+            baseUri =
+                    Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + vocabularyFolder.getFolderName() + "/"
+                            + vocabularyFolder.getIdentifier();
+        }
+        if (!baseUri.endsWith("/")) {
+            baseUri += "/";
+        }
+
+        return VocabularyXmlWriter.escapeIRI(baseUri);
     }
 
     /**
