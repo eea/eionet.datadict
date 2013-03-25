@@ -591,8 +591,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             filter.setUsePaging(false);
             List<? extends VocabularyConcept> concepts = null;
             if (vocabularyFolder.isSiteCodeType()) {
+                String countryCode = getContext().getRequestParameter("countryCode");
+                String identifier = getContext().getRequestParameter("identifier");
                 SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
                 siteCodeFilter.setUsePaging(false);
+                siteCodeFilter.setCountryCode(countryCode);
+                siteCodeFilter.setIdentifier(identifier);
                 concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
             } else {
                 concepts =
