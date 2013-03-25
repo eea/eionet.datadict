@@ -617,7 +617,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                     xmlWriter.writeManifestXml();
                 }
             };
-            result.setFilename(vocabularyFolder.getLabel() + ".rdf");
+            result.setFilename(vocabularyFolder.getIdentifier() + ".rdf");
             return result;
         } catch (Exception e) {
             LOGGER.error("Failed to output vocabulary RDF data", e);
@@ -648,7 +648,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                     VocabularyCSVOutputHelper.writeCSV(response.getOutputStream(), getUriPrefix(), vocabularyConcepts.getList());
                 }
             };
-            result.setFilename(vocabularyFolder.getLabel() + ".csv");
+            result.setFilename(vocabularyFolder.getIdentifier() + ".csv");
             return result;
         } catch (Exception e) {
             LOGGER.error("Failed to output vocabulary CSV data", e);
