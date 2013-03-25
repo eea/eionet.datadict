@@ -39,9 +39,6 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
-import org.displaytag.properties.MediaTypeEnum;
-import org.displaytag.tags.TableTagParameters;
-import org.displaytag.util.ParamEncoder;
 
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -56,6 +53,7 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
+import eionet.util.VocabularyCSVOutputHelper;
 
 /**
  * Edit vocabulary folder action bean.
@@ -94,6 +92,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         RESERVED_VOCABULARY_EVENTS.add("cancelAdd");
         RESERVED_VOCABULARY_EVENTS.add("cancelSave");
         RESERVED_VOCABULARY_EVENTS.add("rdf");
+        RESERVED_VOCABULARY_EVENTS.add("csv");
     }
 
     /** Vocabulary service. */
@@ -152,14 +151,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
         initFilter();
 
-        // detect if it is a export request, don't use paging in this case.
-        String exportTypeStr =
-                getContext().getRequest().getParameter((new ParamEncoder("concept").encodeParameterName(TableTagParameters.PARAMETER_EXPORTTYPE)));
-        if (String.valueOf(MediaTypeEnum.CSV.getCode()).equals(exportTypeStr)
-                || String.valueOf(MediaTypeEnum.EXCEL.getCode()).equals(exportTypeStr)) {
-            filter.setUsePaging(false);
-        }
-
         vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
         vocabularyFolderVersions =
                 vocabularyService.getVocabularyFolderVersions(vocabularyFolder.getContinuityId(), vocabularyFolder.getId(),
@@ -169,7 +160,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     public Resolution search() throws ServiceException {
-        LOGGER.debug("Serching");
         return new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP);
     }
 
@@ -626,9 +616,41 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                     xmlWriter.writeManifestXml();
                 }
             };
+            result.setFilename(vocabularyFolder.getLabel() + ".rdf");
             return result;
         } catch (Exception e) {
             LOGGER.error("Failed to output vocabulary RDF data", e);
+            ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            error.setErrorMessage(e.getMessage());
+            return error;
+        }
+    }
+
+    /**
+     * Returns vocabulary concepts CSV.
+     *
+     * @return
+     */
+    public Resolution csv() {
+        try {
+            vocabularyFolder =
+                    vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                            vocabularyFolder.isWorkingCopy());
+            validateView();
+            initFilter();
+            filter.setUsePaging(false);
+            vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
+
+            StreamingResolution result = new StreamingResolution("text/csv") {
+                @Override
+                public void stream(HttpServletResponse response) throws Exception {
+                    VocabularyCSVOutputHelper.writeCSV(response.getOutputStream(), getUriPrefix(), vocabularyConcepts.getList());
+                }
+            };
+            result.setFilename(vocabularyFolder.getLabel() + ".csv");
+            return result;
+        } catch (Exception e) {
+            LOGGER.error("Failed to output vocabulary CSV data", e);
             ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
             error.setErrorMessage(e.getMessage());
             return error;

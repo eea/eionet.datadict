@@ -88,6 +88,7 @@
 
         <c:if test="${not actionBean.vocabularyFolder.draftStatus && not actionBean.vocabularyFolder.workingCopy}">
         <c:url var="rdfIconUrl" value="/images/rdf-icon.gif" />
+        <c:url var="csvIconUrl" value="/images/csv_icon_sm.gif" />
         <div id="createbox" style="clear:right">
             <table id="outputsmenu">
                 <tr>
@@ -97,6 +98,16 @@
                             <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                             <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                             <img src="${rdfIconUrl}" alt="Export RDF" />
+                        </stripes:link>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:73%">Get CSV output of this vocabulary</td>
+                    <td style="width:27%">
+                        <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="csv">
+                            <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                            <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                            <img src="${csvIconUrl}" alt="Export CSV" />
                         </stripes:link>
                     </td>
                 </tr>
@@ -209,7 +220,7 @@
         </stripes:form>
 
         <%-- Vocabulary concepts --%>
-        <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept" export="true"
+        <display:table name="actionBean.vocabularyConcepts" class="datatable" id="concept"
             style="width:80%" requestURI="/vocabulary/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/view" >
             <display:setProperty name="basic.msg.empty_list" value="No vocabulary concepts found." />
             <display:setProperty name="paging.banner.item_name" value="concept" />
@@ -240,19 +251,9 @@
                     </c:otherwise>
                 </c:choose>
             </display:column>
-            <display:column title="URI" media="csv">
-                <c:out value="${actionBean.uriPrefix}${concept.identifier}" />
-            </display:column>
-            <display:column title="Label" escapeXml="true" property="label" media="csv" />
             <display:column title="Definition" escapeXml="true" property="definition" />
             <display:column title="Notation" escapeXml="true" property="notation" />
 
-            <display:setProperty name="export.banner" value="Download all results as: {0}"/>
-            <display:setProperty name="export.csv.filename" value="vocabulary.csv"/>
-            <display:setProperty name="export.csv" value="true" />
-            <display:setProperty name="export.csv.include_header" value="true" />
-            <display:setProperty name="export.xml" value="false" />
-            <display:setProperty name="export.excel" value="false" />
         </display:table>
 
     <%-- The section that displays versions of this vocabulary. --%>
