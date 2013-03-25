@@ -54,7 +54,11 @@ public class VocabularyConceptFilter extends PagedRequest {
     /** Concept id's that get returned. */
     private List<Integer> includedIds;
 
+    /** Only obsolete. */
     private boolean obsoleteOnly;
+
+    /** Only not obsolete. */
+    private boolean validOnly;
 
     /**
      * @return the vocabularyFolderId
@@ -189,6 +193,21 @@ public class VocabularyConceptFilter extends PagedRequest {
      */
     public void setObsoleteOnly(boolean obsoleteOnly) {
         this.obsoleteOnly = obsoleteOnly;
+    }
+
+    /**
+     * @return the validOnly
+     */
+    public boolean isValidOnly() {
+        return validOnly;
+    }
+
+    /**
+     * @param validOnly
+     *            the validOnly to set
+     */
+    public void setValidOnly(boolean validOnly) {
+        this.validOnly = validOnly;
     }
 
 }

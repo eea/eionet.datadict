@@ -154,11 +154,12 @@ public interface IVocabularyService {
      *
      * @param vocabularyFolderId
      * @param numericConceptIdentifiers
+     * @param validOnly
      * @return
      * @throws ServiceException
      */
-    List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers)
-            throws ServiceException;
+    List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers,
+            boolean validOnly) throws ServiceException;
 
     /**
      * Creates new vocabulary concept into database.

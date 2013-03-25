@@ -113,6 +113,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         if (filter.isObsoleteOnly()) {
             sql.append("and OBSOLETE_DATE IS NOT NULL ");
         }
+        if (filter.isValidOnly()) {
+            sql.append("and OBSOLETE_DATE IS NULL ");
+        }
         if (filter.isNumericIdentifierSorting()) {
             sql.append("order by IDENTIFIER + 0 ");
         } else {

@@ -610,14 +610,15 @@ public class VocabularyServiceImpl implements IVocabularyService {
      * {@inheritDoc}
      */
     @Override
-    public List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers)
-            throws ServiceException {
+    public List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers,
+            boolean validOnly) throws ServiceException {
         try {
 
             VocabularyConceptFilter filter = new VocabularyConceptFilter();
             filter.setVocabularyFolderId(vocabularyFolderId);
             filter.setUsePaging(false);
             filter.setNumericIdentifierSorting(numericConceptIdentifiers);
+            filter.setValidOnly(validOnly);
 
             List<VocabularyConcept> result = vocabularyConceptDAO.searchVocabularyConcepts(filter).getList();
 

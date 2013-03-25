@@ -579,6 +579,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                             false);
             initFilter();
             filter.setUsePaging(false);
+            filter.setValidOnly(true);
             List<? extends VocabularyConcept> concepts = null;
             if (vocabularyFolder.isSiteCodeType()) {
                 String countryCode = getContext().getRequestParameter("countryCode");
@@ -591,7 +592,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             } else {
                 concepts =
                         vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
-                                vocabularyFolder.isNumericConceptIdentifiers());
+                                vocabularyFolder.isNumericConceptIdentifiers(), true);
             }
 
             final List<? extends VocabularyConcept> finalConcepts = concepts;
