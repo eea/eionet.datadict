@@ -28,6 +28,11 @@ package eionet.meta.dao.domain;
  */
 public class VocabularyConceptAttribute {
 
+    /** Attribute short names (M_ATTRIBUTE.SHORT_NAME). */
+    public static final String BROADER_LOCAL_CONCEPT = "broaderLocalConcept";
+    public static final String NARROWER_LOCAL_CONCEPT = "narrowerLocalConcept";
+    public static final String RELATED_LOCAL_CONCEPT = "relatedLocalConcept";
+
     private int id;
 
     private int attributeId;

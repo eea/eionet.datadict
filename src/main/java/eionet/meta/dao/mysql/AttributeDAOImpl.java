@@ -459,9 +459,89 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         if (excludedIds.size() == 0) {
             sql = "delete from T_VOCABULARY_CONCEPT_ATTRIBUTE where VOCABULARY_CONCEPT_ID = :vocabularyConceptId";
         } else {
-            sql = "delete from T_VOCABULARY_CONCEPT_ATTRIBUTE where VOCABULARY_CONCEPT_ID = :vocabularyConceptId and ID not in (:excludedIds)";
+            sql =
+                    "delete from T_VOCABULARY_CONCEPT_ATTRIBUTE where VOCABULARY_CONCEPT_ID = :vocabularyConceptId and ID not in (:excludedIds)";
             parameters.put("excludedIds", excludedIds);
         }
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<VocabularyConceptAttribute> getDeletedConceptAttributes(List<Integer> excludedIds, int vocabularyConceptId) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("vocabularyConceptId", vocabularyConceptId);
+
+        StringBuilder sql = new StringBuilder();
+        if (excludedIds.size() == 0) {
+            sql.append("select * from T_VOCABULARY_CONCEPT_ATTRIBUTE a LEFT JOIN M_ATTRIBUTE m ON a.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID ");
+            sql.append("where a.VOCABULARY_CONCEPT_ID = :vocabularyConceptId");
+        } else {
+            sql.append("select * from T_VOCABULARY_CONCEPT_ATTRIBUTE a LEFT JOIN M_ATTRIBUTE m ON a.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID ");
+            sql.append("where a.VOCABULARY_CONCEPT_ID = :vocabularyConceptId and a.ID not in (:excludedIds)");
+            parameters.put("excludedIds", excludedIds);
+        }
+
+        List<VocabularyConceptAttribute> result =
+                getNamedParameterJdbcTemplate().query(sql.toString(), parameters, new RowMapper<VocabularyConceptAttribute>() {
+                    @Override
+                    public VocabularyConceptAttribute mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyConceptAttribute atr = new VocabularyConceptAttribute();
+                        atr.setId(rs.getInt("a.ID"));
+                        atr.setAttributeId(rs.getInt("a.M_ATTRIBUTE_ID"));
+                        atr.setIdentifier(rs.getString("m.SHORT_NAME"));
+                        atr.setVocabularyConceptId(rs.getInt("a.VOCABULARY_CONCEPT_ID"));
+                        atr.setValue(rs.getString("a.ATTR_VALUE"));
+                        atr.setLanguage(rs.getString("a.LANGUAGE"));
+                        atr.setLinkText(rs.getString("a.LINK_TEXT"));
+                        atr.setRelatedId(rs.getInt("a.RELATED_CONCEPT_ID"));
+
+                        return atr;
+                    }
+                });
+
+        return result;
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void checkAndDeleteConceptAttribute(int conceptId, int relatedConceptId, String identifier) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("conceptId", conceptId);
+        parameters.put("relatedConceptId", relatedConceptId);
+        parameters.put("identifier", identifier);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("DELETE a FROM T_VOCABULARY_CONCEPT_ATTRIBUTE a LEFT JOIN M_ATTRIBUTE m ON a.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID WHERE ");
+        sql.append("a.VOCABULARY_CONCEPT_ID = :conceptId AND a.RELATED_CONCEPT_ID = :relatedConceptId AND m.SHORT_NAME = :identifier ");
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void checkAndAddConceptAttribute(int conceptId, int relatedConceptId, String identifier) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("conceptId", conceptId);
+        parameters.put("relatedConceptId", relatedConceptId);
+        parameters.put("identifier", identifier);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("INSERT INTO T_VOCABULARY_CONCEPT_ATTRIBUTE (M_ATTRIBUTE_ID, VOCABULARY_CONCEPT_ID, RELATED_CONCEPT_ID) ");
+        sql.append("SELECT DISTINCT m.M_ATTRIBUTE_ID, :conceptId, :relatedConceptId FROM T_VOCABULARY_CONCEPT_ATTRIBUTE a ");
+        sql.append("RIGHT JOIN M_ATTRIBUTE m ON a.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID ");
+        sql.append("WHERE m.SHORT_NAME = :identifier AND NOT EXISTS ");
+        sql.append(" (SELECT a2.ID FROM T_VOCABULARY_CONCEPT_ATTRIBUTE a2 LEFT JOIN M_ATTRIBUTE m2 ON a2.M_ATTRIBUTE_ID = m2.M_ATTRIBUTE_ID WHERE ");
+        sql.append("  a2.VOCABULARY_CONCEPT_ID = :conceptId AND a2.RELATED_CONCEPT_ID = :relatedConceptId AND m2.SHORT_NAME = :identifier)");
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }

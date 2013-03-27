@@ -118,4 +118,10 @@ public interface IAttributeDAO {
      * @param vocabularyConceptId
      */
     void deleteVocabularyConceptAttributes(List<Integer> excludedIds, int vocabularyConceptId);
+
+    List<VocabularyConceptAttribute> getDeletedConceptAttributes(List<Integer> excludedIds, int vocabularyConceptId);
+
+    void checkAndDeleteConceptAttribute(int conceptId, int relatedConceptId, String identifier);
+
+    void checkAndAddConceptAttribute(int conceptId, int relatedConceptId, String identifier);
 }

@@ -191,14 +191,70 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 }
             }
 
+            List<VocabularyConceptAttribute> deletedAttributes =
+                    attributeDAO.getDeletedConceptAttributes(excludedIds, vocabularyConcept.getId());
+
             attributeDAO.updateVocabularyConceptAttributes(toUpdate);
             attributeDAO.deleteVocabularyConceptAttributes(excludedIds, vocabularyConcept.getId());
             attributeDAO.createVocabularyConceptAttributes(toInsert);
+
+            fixRelatedConcepts(vocabularyConcept.getId(), deletedAttributes);
 
         } catch (Exception e) {
             throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
         }
 
+    }
+
+    /**
+     * As a last step when updating vocabulary concept, this method checks all the related attributes and makes sure that the
+     * concepts are related in both sides (A related with B -> B related with A). Also when relation gets deleted from one side,
+     * then we make sure to deleted it also from the other side of the relation.
+     *
+     * @param vocabularyConceptId
+     * @param deletedAttributes
+     */
+    private void fixRelatedConcepts(int vocabularyConceptId, List<VocabularyConceptAttribute> deletedAttributes) {
+        // Delete redundant related attributes
+        for (VocabularyConceptAttribute attribute : deletedAttributes) {
+            if (VocabularyConceptAttribute.BROADER_LOCAL_CONCEPT.equals(attribute.getIdentifier())) {
+                attributeDAO.checkAndDeleteConceptAttribute(attribute.getRelatedId(), attribute.getVocabularyConceptId(),
+                        VocabularyConceptAttribute.NARROWER_LOCAL_CONCEPT);
+            }
+            if (VocabularyConceptAttribute.NARROWER_LOCAL_CONCEPT.equals(attribute.getIdentifier())) {
+                attributeDAO.checkAndDeleteConceptAttribute(attribute.getRelatedId(), attribute.getVocabularyConceptId(),
+                        VocabularyConceptAttribute.BROADER_LOCAL_CONCEPT);
+            }
+            if (VocabularyConceptAttribute.RELATED_LOCAL_CONCEPT.equals(attribute.getIdentifier())) {
+                attributeDAO.checkAndDeleteConceptAttribute(attribute.getRelatedId(), attribute.getVocabularyConceptId(),
+                        VocabularyConceptAttribute.RELATED_LOCAL_CONCEPT);
+            }
+        }
+
+        // Add missing related attributes
+        List<List<VocabularyConceptAttribute>> attributes =
+                attributeDAO.getVocabularyConceptAttributes(vocabularyConceptId, false);
+
+        for (List<VocabularyConceptAttribute> attribute : attributes) {
+            if (VocabularyConceptAttribute.BROADER_LOCAL_CONCEPT.equals(attribute.get(0).getIdentifier())) {
+                for (VocabularyConceptAttribute attr : attribute) {
+                    attributeDAO.checkAndAddConceptAttribute(attr.getRelatedId(), attr.getVocabularyConceptId(),
+                            VocabularyConceptAttribute.NARROWER_LOCAL_CONCEPT);
+                }
+            }
+            if (VocabularyConceptAttribute.NARROWER_LOCAL_CONCEPT.equals(attribute.get(0).getIdentifier())) {
+                for (VocabularyConceptAttribute attr : attribute) {
+                    attributeDAO.checkAndAddConceptAttribute(attr.getRelatedId(), attr.getVocabularyConceptId(),
+                            VocabularyConceptAttribute.BROADER_LOCAL_CONCEPT);
+                }
+            }
+            if (VocabularyConceptAttribute.RELATED_LOCAL_CONCEPT.equals(attribute.get(0).getIdentifier())) {
+                for (VocabularyConceptAttribute attr : attribute) {
+                    attributeDAO.checkAndAddConceptAttribute(attr.getRelatedId(), attr.getVocabularyConceptId(),
+                            VocabularyConceptAttribute.RELATED_LOCAL_CONCEPT);
+                }
+            }
+        }
     }
 
     /**

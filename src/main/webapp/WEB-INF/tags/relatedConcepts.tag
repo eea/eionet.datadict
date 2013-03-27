@@ -73,7 +73,7 @@
         <c:if test="${attr.id != 0}">
         <span id="multySpan${uniqueId}-${innerLoop.index}">
             <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
-            <select name="${fieldName}[${innerLoop.index}].relatedId">
+            <select name="${fieldName}[${innerLoop.index}].relatedId" disabled="disabled">
                 <option value=""></option>
                 <c:forEach var="concept" items="${vocabularyConcepts}">
                     <c:choose>
