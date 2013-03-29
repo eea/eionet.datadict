@@ -5,18 +5,22 @@ import java.util.Vector;
 import eionet.util.QueryString;
 /**
  * A Class class.
- * <P>
+ *
  * @author Enriko Käsper
  */
 public class DDhistory {
 
   private static String START_PAGE="index.jsp";
-  private Vector history; //stores all the loaded urls
-  private String backUrl = null;  //back button should use this url
-  private String currentUrl = null;  //this url can be used to reload the page
-  private int historySize=0;
+  /** stores all the loaded urls. */
+  private Vector history;
+  /** back button should use this url. */
+  private String backUrl = null;
+  /** this url can be used to reload the page. */
+  private String currentUrl = null;
+  private int historySize = 0;
+
   /**
-   * Constructor
+   * Constructor.
    */
   public DDhistory() {
       history = new Vector();
@@ -72,9 +76,11 @@ public class DDhistory {
   public void remove(int index) {
       removeUrl(index);
   }
-  /* This method sets the loaded url as currentUrl, if it is not the same as last url in history
-      If loaded url is the same as history(i-1), then the user clicked the back button.
-  */
+
+  /**
+   * This method sets the loaded url as currentUrl, if it is not the same as last url in history.
+   *  If loaded url is the same as history(i-1), then the user clicked the back button.
+   */
   private void addUrl(String url) {
 
       if (historySize == 0) {
@@ -101,14 +107,15 @@ public class DDhistory {
 
       }
   }
-  /* finds last matching url or not matching from history and sets it as currentUrl
-      If there are not any matches, then it cleans the history and currentUrl is start page
-  */
+  /**
+   * finds last matching url or not matching from history and sets it as currentUrl.
+   * If there are not any matches, then it cleans the history and currentUrl is start page
+   */
   private void gotoMatching(String[] find_url, boolean matching) {
       boolean found = false;
       if (historySize > 0) {
         for (int i = history.size();i > 0;i--) {
-            currentUrl = (String)history.get(i-1);
+            currentUrl = (String)history.get(i - 1);
             historySize = i;
             backUrl = historySize > 1 ? (String) history.get(historySize-2):"";
             found = false;
@@ -127,9 +134,10 @@ public class DDhistory {
       backUrl = "";
       currentUrl = START_PAGE;
   }
-  /* finds last matching url or not matching from history
-      If there are not any matches, then it returns start page
-  */
+  /**
+   * finds last matching url or not matching from history.
+   * If there are not any matches, then it returns start page
+   */
   private String getMatching(String[] find_url, boolean matching) {
       boolean found = false;
       String url="";
@@ -150,6 +158,7 @@ public class DDhistory {
       }
       return START_PAGE;
   }
+
   private void removeUrl(int index) {
       if (historySize > index && index >= 0) {
           history.remove(index);
@@ -159,4 +168,3 @@ public class DDhistory {
       }
   }
 }
-

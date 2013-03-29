@@ -57,7 +57,7 @@ public class DDSearchParameter {
     }
 
     public void apostrophizeValues() {
-        for (int i=0; attrValues!=null && i<attrValues.size(); i++) {
+        for (int i = 0; attrValues != null && i < attrValues.size(); i++) {
             String value = (String)attrValues.get(i);
             attrValues.remove(i);
             attrValues.add(i, apostrophize(value));
@@ -65,7 +65,7 @@ public class DDSearchParameter {
     }
 
     private void legalizeValues() {
-        for (int i=0; attrValues!=null && i<attrValues.size(); i++) {
+        for (int i = 0; attrValues != null && i < attrValues.size(); i++) {
             String value = (String)attrValues.get(i);
             attrValues.remove(i);
             attrValues.add(i, legalize(value));
@@ -76,33 +76,25 @@ public class DDSearchParameter {
         return "'" + in + "'";
     }
 
+    /**
+     * Scans the string for single quotes and adds a quote. I.e. make it safe for SQL.
+     * Since there is no SQL operation here, why is the data made SQL-safe?
+     * @param in - input string
+     * @return - the quoted string.
+     */
     private String legalize(String in) {
-
         in = (in != null ? in : "");
         StringBuffer ret = new StringBuffer();
 
         for (int i = 0; i < in.length(); i++) {
             char c = in.charAt(i);
-            if (c == '\'' && i!=0 && i!=in.length()-1) {
+            if (c == '\'' && i != 0 && i != in.length()-1) {
                 ret.append("''");
-            }
-            else
+            } else {
                 ret.append(c);
+            }
         }
-
         return ret.toString();
     }
 
-    public static void main(String[] args) {
-        Vector v = new Vector();
-        v.add("kal'a");
-        v.add("maja");
-        DDSearchParameter par = new DDSearchParameter("9", v);
-        par.apostrophizeValues();
-
-        Vector vv = par.getAttrValues();
-        for (int i=0; i<vv.size(); i++) {
-            System.out.println(vv.get(i));
-        }
-    }
 }
