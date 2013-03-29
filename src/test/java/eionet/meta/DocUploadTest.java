@@ -24,19 +24,20 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.TestCase;
 
-import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 import eionet.test.Seed;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
+import eionet.DDDatabaseTestCase;
 
 
 /*
@@ -62,33 +63,11 @@ class MockServletInputStream extends ServletInputStream {
  *
  * See www.easymock.org and http://www.evolutionnext.com/blog/2006/01/27.html
  */
-public class DocUploadTest extends DatabaseTestCase {
+public class DocUploadTest extends DDDatabaseTestCase {
 
-    /** */
-    private FlatXmlDataSet loadedDataSet;
-
-    /**
-     * Provide a connection to the database.
-     */
-    protected IDatabaseConnection getConnection() throws Exception {
-        Class.forName(Props.getProperty(PropsIF.DBDRV));
-        Connection jdbcConn = DriverManager.getConnection(
-                Props.getProperty(PropsIF.DBURL),
-                Props.getProperty(PropsIF.DBUSR),
-                Props.getProperty(PropsIF.DBPSW));
-
-        return new DatabaseConnection(jdbcConn);
-    }
-
-    /**
-     * Load the data which will be inserted for the test
-     * The tables must already exist
-     */
-    protected IDataSet getDataSet() throws Exception {
-        loadedDataSet = new FlatXmlDataSet(
-                getClass().getClassLoader().getResourceAsStream(
-                "seed-docupload.xml"));
-        return loadedDataSet;
+    @Override
+    protected String getSeedFilename() {
+        return "seed-docupload.xml";
     }
 
     /**
@@ -124,6 +103,7 @@ public class DocUploadTest extends DatabaseTestCase {
         expect(request.getParameter("file")).andReturn(filename);
         expect(request.getContentType()).andReturn("text/xml");
         expect(request.getParameter("delete")).andReturn("");
+        expect(request.getContextPath()).andReturn("/");
         MockServletInputStream instream = new MockServletInputStream(filename);
 
         expect(request.getInputStream()).andReturn(instream);
@@ -190,6 +170,7 @@ public class DocUploadTest extends DatabaseTestCase {
         expect(request.getSession()).andReturn(httpSession);
         expect(request.getParameter("idf")).andReturn("CDDA");
         expect(request.getParameter("ds_id")).andReturn(ds_id);
+        expect(request.getContextPath()).andReturn("/");
 
         String absPath = DocUpload.getAbsFilePath(getClass().getClassLoader().getResource(Seed.HLP).getFile());
         String legalizedAbsPath = DocUpload.legalizePath(absPath);

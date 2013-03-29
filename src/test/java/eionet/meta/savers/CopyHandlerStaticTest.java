@@ -15,13 +15,13 @@ import eionet.util.sql.SQL;
  * @author Jaanus Heinlaid
  *
  */
-public class CopyHandlerStaticTest extends TestCase{
+public class CopyHandlerStaticTest extends TestCase {
 
     /**
      *
      */
     @Test
-    public void testCopyRowsStatement1(){
+    public void testCopyRowsStatement1() {
 
         String whereClause = "USER='heinlja'";
         String start = "insert into DATASET (";
@@ -29,9 +29,9 @@ public class CopyHandlerStaticTest extends TestCase{
 
         assertTrue(actual.startsWith(start));
         int i = actual.indexOf(")", start.length());
-        assertTrue(i>start.length());
+        assertTrue(i > start.length());
 
-        String columnsCSV = actual.substring(start.length(),i);
+        String columnsCSV = actual.substring(start.length(), i);
         String expected = start + columnsCSV + ") select " + columnsCSV + " from DATASET where " + whereClause;
         assertEquals(expected, actual);
     }
@@ -40,7 +40,7 @@ public class CopyHandlerStaticTest extends TestCase{
      *
      */
     @Test
-    public void testCopyRowsStatement2(){
+    public void testCopyRowsStatement2() {
 
         HashMap<String,Object> newValues = new HashMap<String,Object>();
         newValues.put("REG_STATUS", SQL.toLiteral("new_reg_status"));
@@ -55,13 +55,13 @@ public class CopyHandlerStaticTest extends TestCase{
 
         assertTrue(actual.startsWith(start));
         int i = actual.indexOf(")", start.length());
-        assertTrue(i>start.length());
+        assertTrue(i > start.length());
 
-        String columnsCSV = actual.substring(start.length(),i);
+        String columnsCSV = actual.substring(start.length(), i);
         String valuesCSV = new String(columnsCSV);
-        for (Entry<String,Object> entry : newValues.entrySet()){
+        for (Entry<String,Object> entry : newValues.entrySet()) {
             Object value = entry.getValue();
-            valuesCSV = StringUtils.replace(valuesCSV, entry.getKey(), value==null ? "NULL" : value.toString());
+            valuesCSV = StringUtils.replace(valuesCSV, entry.getKey(), (value == null) ? "NULL" : value.toString());
         }
 
         String expected = start + columnsCSV + ") select " + valuesCSV + " from DATASET where " + whereClause;

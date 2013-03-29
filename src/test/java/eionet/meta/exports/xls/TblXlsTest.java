@@ -28,7 +28,7 @@ public class TblXlsTest extends TestCase{
     /**
      * @throws SQLException
      */
-    public void testStoreAndDelete(){
+    public void testStoreAndDelete() {
         try{
             String fileName = "test.txt";
             int i = TblXls.storeCacheEntry("999999", fileName, conn);
@@ -36,7 +36,7 @@ public class TblXlsTest extends TestCase{
             String s = TblXls.deleteCacheEntry("999999", conn);
             assertEquals(fileName, s);
         }
-        catch (Exception e){
+        catch (Exception e) {
             fail("Was not expecting any exceptions, but catched " + e.toString());
         }
     }
@@ -52,7 +52,7 @@ public class TblXlsTest extends TestCase{
                 conn.close();
             }
         }
-        catch (SQLException e){}
+        catch (SQLException e) {}
     }
 
 }

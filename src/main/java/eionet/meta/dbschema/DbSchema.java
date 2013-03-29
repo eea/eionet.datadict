@@ -21,7 +21,7 @@ import eionet.util.sql.SQL;
  * @author Jaanus Heinlaid
  *
  */
-public class DbSchema{
+public class DbSchema {
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(DbSchema.class);
@@ -35,7 +35,7 @@ public class DbSchema{
     /**
      *
      */
-    private DbSchema(){
+    private DbSchema() {
 
         try {
             init();
@@ -51,38 +51,37 @@ public class DbSchema{
      * @throws SQLException
      *
      */
-    private void init() throws DDConnectionException, SQLException{
+    private void init() throws DDConnectionException, SQLException {
 
         ResultSet rs = null;
         Statement stmt = null;
         Connection conn = null;
         ArrayList<String> tableNamesCaseSensitive = new ArrayList<String>();
-        try{
+        try {
             conn = ConnectionUtil.getConnection();
             stmt = conn.createStatement();
             rs = stmt.executeQuery("show tables");
 
-            while (rs.next()){
+            while (rs.next()) {
                 String name = rs.getString(1);
                 tableNamesCaseSensitive.add(name);
                 tablesColumns.put(name.toUpperCase(), null);
             }
             SQL.close(rs);
 
-            for (String tableName : tableNamesCaseSensitive){
+            for (String tableName : tableNamesCaseSensitive) {
 
                 ArrayList<String> columns = new ArrayList<String>();
 
-                rs = stmt.executeQuery("describe " + tableName);
-                while (rs.next()){
+                rs = stmt.executeQuery("describe `" + tableName + "`");
+                while (rs.next()) {
                     columns.add(rs.getString(1));
                 }
                 SQL.close(rs);
 
                 tablesColumns.put(tableName.toUpperCase(), Collections.unmodifiableList(columns));
             }
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
             SQL.close(conn);
@@ -94,7 +93,7 @@ public class DbSchema{
      * @param tableName
      * @return
      */
-    public static List<String> getTableColumns(String tableName){
+    public static List<String> getTableColumns(String tableName) {
 
         return instance.tablesColumns.get(tableName.toUpperCase());
     }
@@ -104,15 +103,15 @@ public class DbSchema{
      * @param tableName
      * @return
      */
-    public static List<String> getTableColumns(String tableName, String... skipColumns){
+    public static List<String> getTableColumns(String tableName, String... skipColumns) {
 
-        if (skipColumns==null || skipColumns.length==0){
+        if (skipColumns == null || skipColumns.length == 0) {
             return getTableColumns(tableName);
         }
-        else{
+        else {
             List<String> columns = getTableColumns(tableName);
-            List<String> result = columns==null ? new ArrayList<String>() : new ArrayList<String>(columns);
-            for (int i=0; i<skipColumns.length; i++){
+            List<String> result = (columns == null) ? new ArrayList<String>() : new ArrayList<String>(columns);
+            for (int i=0; i<skipColumns.length; i++) {
                 result.remove(skipColumns[i]);
             }
             return result;
@@ -125,15 +124,14 @@ public class DbSchema{
      * @param skipColumns
      * @return
      */
-    public static List<String> getTableColumns(String tableName, Collection<String> skipColumns){
+    public static List<String> getTableColumns(String tableName, Collection<String> skipColumns) {
 
-        if (skipColumns==null || skipColumns.isEmpty()){
+        if (skipColumns == null || skipColumns.isEmpty()) {
             return getTableColumns(tableName);
-        }
-        else{
+        } else {
             List<String> columns = getTableColumns(tableName);
-            List<String> result = columns==null ? new ArrayList<String>() : new ArrayList<String>(columns);
-            for (String skipColumn : skipColumns){
+            List<String> result = (columns == null) ? new ArrayList<String>() : new ArrayList<String>(columns);
+            for (String skipColumn : skipColumns) {
                 result.remove(skipColumn);
             }
             return result;

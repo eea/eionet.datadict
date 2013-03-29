@@ -1,2 +1,0 @@
-
-alter table FK_RELATION change column DEFINITION DEFINITION text not null default '';

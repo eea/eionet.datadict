@@ -12,7 +12,7 @@ import org.dbunit.dataset.ReplacementTable;
  * @author Jaanus Heinlaid
  *
  */
-public class ColumnSpecificReplacementTable extends ReplacementTable{
+public class ColumnSpecificReplacementTable extends ReplacementTable {
 
     /** */
     private ITable table;
@@ -28,12 +28,12 @@ public class ColumnSpecificReplacementTable extends ReplacementTable{
 
         super(table);
 
-        if (columnNames==null || columnNames.length==0){
+        if (columnNames == null || columnNames.length == 0) {
             throw new IllegalArgumentException("At least one column name must be given!");
         }
 
         this.table = table;
-        for (int i=0; i<columnNames.length; i++){
+        for (int i = 0; i < columnNames.length; i++) {
             this.columnNames.add(columnNames[i]);
         }
     }
@@ -43,7 +43,7 @@ public class ColumnSpecificReplacementTable extends ReplacementTable{
      * @see org.dbunit.dataset.ReplacementTable#addReplacementSubstring(java.lang.String, java.lang.String)
      */
     @Override
-    public void addReplacementSubstring(String originalSubstring, String replacementSubstring){
+    public void addReplacementSubstring(String originalSubstring, String replacementSubstring) {
 
         throw new UnsupportedOperationException("Method not supported!");
     }
@@ -56,7 +56,7 @@ public class ColumnSpecificReplacementTable extends ReplacementTable{
     @Override
     public Object getValue(int row, String column) throws DataSetException{
 
-        if (column!=null && columnNames.contains(column)){
+        if (column != null && columnNames.contains(column)) {
             return super.getValue(row, column);
         }
         else{

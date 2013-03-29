@@ -17,47 +17,46 @@ shell>svn checkout https://svn.eionet.europa.eu/repositories/Reportnet/datadict/
 
 NB! The resulting /var/local/build/datadict directory will be denoted below as $CHECKOUT_HOME
 
-2. Create DD database and database user in MySql
+2. Create local.properties file by making a copy of default.properties.
+
+shell>cd $CHECKOUT_HOME
+shell>cp default.properties local.properties
+
+3. In the freshly created local.properties file, change property values as
+   appropriate for your environment. You will find meanings of every property
+   from inside the file as comments.
+
+4. Create DD database and database user in MySql matching the values in local.properties
 
 mysql>create database DataDict;
 mysql>CREATE USER 'dduser'@'localhost' IDENTIFIED BY 'password-here';
 mysql>GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser'@'localhost'
 
-3. Import initial database structure and init data
+4. Import initial database structure and init data
 
+shell>mvn liquibase:update
 shell>cd $CHECKOUT_HOME/sql
-shell>mysql -u root -p DataDict < dd-struct.sql
 shell>mysql -u root -p DataDict < dd-attrs-meta.sql
 shell>mysql -u root -p DataDict < help-data.sql
 
-4. Create the database and user that will be used by unit tests only!
-
-mysql>create database DD_test;
-mysql>CREATE USER 'ddtest'@'localhost' IDENTIFIED BY 'password-here';
-mysql>GRANT ALL PRIVILEGES ON DD_test.* TO 'ddtest'@'localhost'
-
-5. Import initial database structure into the database that will be used by unit tests only
-
-shell>cd $CHECKOUT_HOME/sql
-shell>mysql -u root -p DD_test < dd-struct.sql
-
-6. Create local.properties file by making a copy of default.properties
+5. Unit testing: The unit test mechanism will install its own embedded
+   database and create the tables when you execute them. Note that the
+   MySQL database will keep running afterwards. You can run individual
+   tests with: -Dtest=DatasetImportHandlerTest
 
 shell>cd $CHECKOUT_HOME
-shell>cp default.properties local.properties
+shell>mvn -Denv=unittest -Dmaven.test.skip=false test
 
-7. In the freshly created local.properties file, change property values as appropriate for your environment.
-   You will find meanings of every property from inside the file as comments.
-
-8. Optional step: revise $CHECKOUT_HOME/custom/*.txt files for modifying the content of headers and footers in DD web pages texts and links.
+6. Optional step: revise $CHECKOUT_HOME/custom/*.txt files for modifying
+   the content of headers and footers in DD web pages texts and links.
    You will find guidelines from inside $CHECKOUT_HOME/custom/README.txt.
 
-9. Build the DD web application by issuing the following Maven command
+7. Build the DD web application by issuing the following Maven command
 
 shell>cd $CHECKOUT_HOME
 shell>mvn -Dmaven.test.skip=true clean install
 
-10. Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.
+8. Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.
 
 
 

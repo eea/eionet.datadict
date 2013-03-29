@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -16,6 +17,9 @@ import java.util.List;
  *
  */
 public class SQL {
+
+    /** */
+    private static final Logger LOGGER = Logger.getLogger(SQL.class);
 
     /**
      *
@@ -205,6 +209,7 @@ public class SQL {
                     stmt.close();
                 }
             } catch (SQLException e) {
+                LOGGER.error(e.toString(), e);
             }
         }
     }
@@ -219,6 +224,7 @@ public class SQL {
             try {
                 conn.close();
             } catch (SQLException e) {
+                LOGGER.error(e.toString(), e);
             }
         }
     }
@@ -233,6 +239,7 @@ public class SQL {
             try {
                 stmt.close();
             } catch (SQLException e) {
+                LOGGER.error(e.toString(), e);
             }
         }
     }
@@ -247,6 +254,7 @@ public class SQL {
             try {
                 rs.close();
             } catch (SQLException e) {
+                LOGGER.error(e.toString(), e);
             }
         }
     }
@@ -261,6 +269,7 @@ public class SQL {
             try {
                 conn.rollback();
             } catch (SQLException e) {
+                LOGGER.error(e.toString(), e);
             }
         }
     }
@@ -358,6 +367,7 @@ public class SQL {
                     pstmt.close();
                 }
             } catch (SQLException e) {
+                LOGGER.error(e.toString(), e);
             }
         }
     }

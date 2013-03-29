@@ -9,28 +9,32 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Test;
 
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.SQL;
+import eionet.DDDatabaseTestCase;
 
 /**
+ * THIS TEST HAS NO ASSERTS! It not a component test, it is a performance test.
  *
  * @author Jaanus Heinlaid
  *
  */
-public class AlternativeCopyHandlerTest extends DatabaseTestCase {
+public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
 
-    /** */
-    private static final String SEED_INSERT_TESTS_XML = "seed-insert-tests.xml";
+    @Override
+    protected String getSeedFilename() {
+        return "seed-insert-tests.xml";
+    }
 
     /** */
     private static final Logger LOGGER = Logger.getLogger(AlternativeCopyHandlerTest.class);
@@ -41,69 +45,32 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
     /** */
     HashMap<String, String> idMap;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.dbunit.DatabaseTestCase#getConnection()
-     */
+
     @Override
-    protected IDatabaseConnection getConnection() throws Exception {
-
-        return new DatabaseConnection(ConnectionUtil.getConnection());
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.dbunit.DatabaseTestCase#getDataSet()
-     */
-    @Override
-    protected IDataSet getDataSet() throws Exception {
-
-        return xmlDataset;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.dbunit.DatabaseTestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception{
+    protected void setUp() throws Exception {
 
         LOGGER.debug("Running setup ...");
 
-        prepareDataset();
+        xmlDataset = getDataSet();
         prepareIds();
         super.setUp();
     }
 
     /**
-     *
-     * @throws DataSetException
-     * @throws IOException
-     */
-    private void prepareDataset() throws DataSetException, IOException{
-
-        if (xmlDataset==null){
-            xmlDataset = new FlatXmlDataSet(getClass().getClassLoader().getResourceAsStream(SEED_INSERT_TESTS_XML));
-        }
-    }
-
-    /**
      * @throws DataSetException
      *
      */
-    private void prepareIds() throws DataSetException{
+    private void prepareIds() throws DataSetException {
 
-        if (idMap==null){
+        if (idMap == null) {
 
             idMap = new HashMap<String, String>();
             ITable table = xmlDataset.getTable("ATTRIBUTE");
             int rowCount = table.getRowCount();
-            for (int i=0; i<rowCount; i++){
+            for (int i = 0; i < rowCount; i++) {
 
                 String oldId = table.getValue(i, "DATAELEM_ID").toString();
-                if (!idMap.containsKey(oldId)){
+                if (!idMap.containsKey(oldId)) {
 
                     String newId = String.valueOf(Integer.parseInt(oldId) + 10000);
                     idMap.put(oldId, newId);
@@ -116,18 +83,18 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
      * @throws Exception
      */
     @Test
-    public void testManyInsertSelects1() throws Exception{
+    public void testManyInsertSelects1() throws Exception {
 
         Connection conn = null;
         try{
             conn = getConnection().getConnection();
             conn.setAutoCommit(false);
 
-            int i=0;
+            int i = 0;
             LOGGER.debug("Starting inserts ...");
 
             long startTime = System.currentTimeMillis();
-            for (Entry<String, String> entry : idMap.entrySet()){
+            for (Entry<String, String> entry : idMap.entrySet()) {
 
                 Statement stmt = null;
                 try{
@@ -146,7 +113,7 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
             long endTime = System.currentTimeMillis();
             LOGGER.debug(i + " inserts took " + (endTime-startTime) + " ms");
         }
-        catch (Exception e){
+        catch (Exception e) {
             SQL.rollback(conn);
             throw e;
         }
@@ -159,7 +126,7 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
      * @throws Exception
      */
     @Test
-    public void testManyInsertSelects2() throws Exception{
+    public void testManyInsertSelects2() throws Exception {
 
         Statement stmt = null;
         Connection conn = null;
@@ -167,13 +134,13 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
             conn = getConnection().getConnection();
             conn.setAutoCommit(false);
 
-            int i=0;
+            int i = 0;
             LOGGER.debug("Starting inserts ...");
 
             long startTime = System.currentTimeMillis();
             stmt = conn.createStatement();
 
-            for (Entry<String, String> entry : idMap.entrySet()){
+            for (Entry<String, String> entry : idMap.entrySet()) {
 
                 String sql = AlternativeCopyHandler.simpleAttrsCopyStatement(entry.getKey(), entry.getValue(), "E");
                 stmt.addBatch(sql);
@@ -185,7 +152,7 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
             long endTime = System.currentTimeMillis();
             LOGGER.debug(i + " inserts took " + (endTime-startTime) + " ms");
         }
-        catch (Exception e){
+        catch (Exception e) {
             SQL.rollback(conn);
             throw e;
         }
@@ -200,7 +167,7 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
      *
      */
     @Test
-    public void testBatchedInsertSelects() throws Exception{
+    public void testBatchedInsertSelects() throws Exception {
 
         PreparedStatement pstmt = null;
         Connection conn = null;
@@ -210,13 +177,13 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
 
             String sql = AlternativeCopyHandler.simpleAttrsCopyStatement("?", "?", "E");
 
-            int i=0;
+            int i = 0;
             LOGGER.debug("Starting inserts ...");
 
             long startTime = System.currentTimeMillis();
             pstmt = conn.prepareStatement(sql);
 
-            for (Entry<String, String> entry : idMap.entrySet()){
+            for (Entry<String, String> entry : idMap.entrySet()) {
 
                 pstmt.setInt(1, Integer.parseInt(entry.getValue()));
                 pstmt.setInt(2, Integer.parseInt(entry.getKey()));
@@ -229,7 +196,7 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
             long endTime = System.currentTimeMillis();
             LOGGER.debug(i + " inserts took " + (endTime-startTime) + " ms");
         }
-        catch (Exception e){
+        catch (Exception e) {
             SQL.rollback(conn);
             throw e;
         }
@@ -244,7 +211,7 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
      * @throws Exception
      */
     @Test
-    public void testSingleExtendedInsert() throws Exception{
+    public void testSingleExtendedInsert() throws Exception {
 
         String getCurrentRowsSQL = "select * from ATTRIBUTE where PARENT_TYPE='E' and DATAELEM_ID in ("
             + Util.toCSV(idMap.keySet()) + ")";
@@ -259,14 +226,14 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
             conn = getConnection().getConnection();
             conn.setAutoCommit(false);
 
-            int i=0;
+            int i = 0;
             LOGGER.debug("Starting single extended insert ...");
 
             long startTime = System.currentTimeMillis();
 
             stmt = conn.createStatement();
             rs = stmt.executeQuery(getCurrentRowsSQL);
-            while (rs.next()){
+            while (rs.next()) {
 
                 int oldId = rs.getInt("DATAELEM_ID");
                 int newId = oldId + 10000;
@@ -274,7 +241,7 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
                 int mAttrId = rs.getInt("M_ATTRIBUTE_ID");
                 String value = rs.getString("VALUE");
 
-                if (i>0){
+                if (i > 0) {
                     insertNewRowsSQL.append(",");
                 }
                 insertNewRowsSQL.append("(");
@@ -298,7 +265,7 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
             long endTime = System.currentTimeMillis();
             LOGGER.debug("The single extended insert took " + (endTime-startTime) + " ms");
         }
-        catch (Exception e){
+        catch (Exception e) {
             SQL.rollback(conn);
             throw e;
         }
@@ -314,7 +281,7 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
      * @throws Exception
      */
     @Test
-    public void testSingleBatchInsert() throws Exception{
+    public void testSingleBatchInsert() throws Exception {
 
         String sql = "insert into ATTRIBUTE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE) values (?,?,?,?)";
 
@@ -332,7 +299,7 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
             long startTime = System.currentTimeMillis();
             pstmt = conn.prepareStatement(sql);
 
-            for (int i=0; i<rowCount; i++){
+            for (int i = 0; i < rowCount; i++) {
 
                 String oldId = table.getValue(i, "DATAELEM_ID").toString();
                 int newId = Integer.parseInt(oldId) + 10000;
@@ -351,12 +318,10 @@ public class AlternativeCopyHandlerTest extends DatabaseTestCase {
             conn.commit();
             long endTime = System.currentTimeMillis();
             LOGGER.debug("The single batch insert took " + (endTime-startTime) + " ms");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             SQL.rollback(conn);
             throw e;
-        }
-        finally{
+        } finally {
             SQL.close(pstmt);
             SQL.close(conn);
         }

@@ -11,8 +11,9 @@ import eionet.util.sql.ConnectionUtil;
  * @author Jaanus Heinlaid, e-mail: <a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>
  *
  */
-public class DstPdfGuidelineTest extends TestCase{
+public class DstPdfGuidelineTest extends TestCase {
 
+//FIXME: This should be a DBUNIT test.
     /** */
     private Connection conn = null;
 
@@ -26,19 +27,14 @@ public class DstPdfGuidelineTest extends TestCase{
     }
 
     /**
-     * @throws SQLException
+     * @throws Exception
      */
-    public void testStoreAndDelete(){
-        try{
-            String fileName = "test.txt";
-            int i = DstPdfGuideline.storeCacheEntry("9999", fileName, conn);
-            assertTrue(i>0);
-            String s = DstPdfGuideline.deleteCacheEntry("9999", conn);
-            assertEquals(fileName, s);
-        }
-        catch (Exception e){
-            fail("Was not expecting any exceptions, but catched " + e.toString());
-        }
+    public void testStoreAndDelete() throws Exception {
+        String fileName = "test.txt";
+        int i = DstPdfGuideline.storeCacheEntry("9999", fileName, conn);
+        assertTrue(i > 0);
+        String s = DstPdfGuideline.deleteCacheEntry("9999", conn);
+        assertEquals(fileName, s);
     }
 
     /*
@@ -47,12 +43,11 @@ public class DstPdfGuidelineTest extends TestCase{
      */
     protected void tearDown() throws Exception {
         super.tearDown();
-        try{
-            if (conn!=null) {
+        try {
+            if (conn != null) {
                 conn.close();
             }
-        }
-        catch (SQLException e){}
+        } catch (SQLException e) {}
     }
 
 }

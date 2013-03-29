@@ -8,53 +8,30 @@ import java.sql.DriverManager;
 
 import junit.framework.TestCase;
 
-import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.DDDatabaseTestCase;
 
 
-public class FixedValuesHandlerTest extends DatabaseTestCase {
+public class FixedValuesHandlerTest extends DDDatabaseTestCase {
     
-    private FlatXmlDataSet loadedDataSet;
-
-    /**
-     * Provide a connection to the database.
-     */
-    protected IDatabaseConnection getConnection() throws Exception {
-        Class.forName(Props.getProperty(PropsIF.DBDRV));
-        Connection jdbcConn = DriverManager.getConnection(
-                Props.getProperty(PropsIF.DBURL),
-                Props.getProperty(PropsIF.DBUSR),
-                Props.getProperty(PropsIF.DBPSW));
-            
-        return new DatabaseConnection(jdbcConn);
-    }
-
-    /**
-     * Load the data which will be inserted for the test
-     * seed-attributes has some fixed values
-     */
-    protected IDataSet getDataSet() throws Exception {
-        loadedDataSet = new FlatXmlDataSet(
-                getClass().getClassLoader().getResourceAsStream(
-                        "seed-attributes.xml"));
-        return loadedDataSet;
+    @Override
+    protected String getSeedFilename() {
+        return "seed-attributes.xml";
     }
 
     private void runEditFixedValue(String definition, String short_desc) throws Exception {
         String fxv_id = "1280";
 
-        QueryDataSet queryDataSet = new QueryDataSet(getConnection());
-
-        queryDataSet.addTable("FXV", "SELECT count(*) as C FROM FXV");
-        queryDataSet.addTable("EDITREC", "SELECT * FROM FXV WHERE FXV_ID='1280'");
+        QueryDataSet queryDataSet = createQueries();
 
         // Verify that there are the expected number of rows in the table
         ITable tmpTable = queryDataSet.getTable("FXV");
@@ -77,6 +54,7 @@ public class FixedValuesHandlerTest extends DatabaseTestCase {
         handler.execute();
     
         // Verify that there are the expected number of rows in the table
+        queryDataSet = createQueries();
         tmpTable = queryDataSet.getTable("FXV");
         TestCase.assertEquals("20", tmpTable.getValue(0, "C").toString());
 
@@ -84,6 +62,14 @@ public class FixedValuesHandlerTest extends DatabaseTestCase {
         TestCase.assertEquals(definition, tmpTable.getValue(0, "DEFINITION"));
         TestCase.assertEquals(short_desc, tmpTable.getValue(0, "SHORT_DESC"));
 
+    }
+
+    private QueryDataSet createQueries() throws Exception {
+        QueryDataSet queryDataSet = new QueryDataSet(getConnection());
+
+        queryDataSet.addTable("FXV", "SELECT count(*) as C FROM FXV");
+        queryDataSet.addTable("EDITREC", "SELECT * FROM FXV WHERE FXV_ID='1280'");
+        return queryDataSet;
     }
 
     public void testSimpleValues() throws Exception {

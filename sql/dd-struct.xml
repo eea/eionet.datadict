@@ -1,0 +1,1295 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- 
+     You can run this change log on your database as many times as you want, it will ignore the
+     changes that are already applied. It also means that you can't modify an existing revision.
+     Always add to the end.
+
+     Use the maven goals: liquibase:update and liquibase:status
+      Potentially with -Dliquibase.dropFirst=true
+     $Id$
+ -->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="roug" id="rev-1">
+        <createTable tableName="ACL_ROWS">
+            <column defaultValueNumeric="0" name="ACL_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'object'" name="TYPE" type="enum('object','doc','dcc')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'user'" name="ENTRY_TYPE" type="enum('owner','user','localgroup','other','foreign','unauthenticated','authenticated','mask')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="PRINCIPAL" type="CHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="PERMISSIONS" type="CHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="STATUS" type="INT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-2">
+        <createTable tableName="ACLS">
+            <column name="ACL_ID" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValue="" name="ACL_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PARENT_NAME" type="VARCHAR(100)"/>
+            <column defaultValue="" name="OWNER" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="DESCRIPTION" type="VARCHAR(255)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-3">
+        <createTable tableName="ATTRIBUTE">
+            <column defaultValueNumeric="0" name="M_ATTRIBUTE_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="DATAELEM_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'E'" name="PARENT_TYPE" type="enum('E','T','DS','SCH','SCS')">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-4">
+        <createTable tableName="CACHE">
+            <column defaultValueNumeric="0" name="OBJ_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'dst'" name="OBJ_TYPE" type="enum('dst','tbl','elm')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'pdf'" name="ARTICLE" type="enum('pdf','xls','xform','xmlinst')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FILENAME" type="VARCHAR(255)"/>
+            <column defaultValueNumeric="0" name="CREATED" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-5">
+        <createTable tableName="COMPLEX_ATTR_FIELD">
+            <column defaultValueNumeric="0" name="M_COMPLEX_ATTR_FIELD_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="ROW_ID" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-6">
+        <createTable tableName="COMPLEX_ATTR_ROW">
+            <column defaultValueNumeric="0" name="PARENT_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'E'" name="PARENT_TYPE" type="enum('E','C','DS','FV','T','SCH','SCS')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="M_COMPLEX_ATTR_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="POSITION" type="INT(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="ROW_ID" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HARV_ATTR_ID" type="VARCHAR(32)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-7">
+        <createTable tableName="DATAELEM">
+            <column defaultValue="'CH2'" name="TYPE" type="enum('CH1','CH2')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATAELEM_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="1" name="NAMESPACE_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="SHORT_NAME" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WORKING_USER" type="VARCHAR(255)"/>
+            <column defaultValue="'N'" name="WORKING_COPY" type="enum('Y','N')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'Incomplete'" name="REG_STATUS" type="enum('Recorded','Qualified','Released','Incomplete','Candidate')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="1" name="VERSION" type="INT(4) UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER" type="VARCHAR(255)"/>
+            <column defaultValueNumeric="0" name="DATE" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PARENT_NS" type="INT(10)"/>
+            <column name="TOP_NS" type="INT(10)"/>
+            <column defaultValue="" name="IDENTIFIER" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="NULL" name="GIS" type="enum('','class','subclass','subtype')"/>
+            <column defaultValue="'true'" name="IS_ROD_PARAM" type="enum('true','false')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-8">
+        <createTable tableName="DATASET">
+            <column name="DATASET_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValue="" name="SHORT_NAME" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="1" name="VERSION" type="INT(4) UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VISUAL" type="TEXT"/>
+            <column name="DETAILED_VISUAL" type="TEXT"/>
+            <column name="WORKING_USER" type="VARCHAR(255)"/>
+            <column defaultValue="'N'" name="WORKING_COPY" type="enum('Y','N')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'Incomplete'" name="REG_STATUS" type="enum('Recorded','Qualified','Released','Incomplete','Candidate')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="DATE" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER" type="VARCHAR(255)"/>
+            <column defaultValueNumeric="0" name="CORRESP_NS" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DELETED" type="VARCHAR(255)"/>
+            <column defaultValue="" name="IDENTIFIER" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="43" name="DISP_CREATE_LINKS" type="INT(2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-9">
+        <createTable tableName="DOC">
+            <column defaultValueNumeric="0" name="OWNER_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'dst'" name="OWNER_TYPE" type="enum('dst','tbl','elm')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="MD5_PATH" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ABS_PATH" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="TITLE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-10">
+        <createTable tableName="documentation">
+            <column name="page_id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValue="text/html" name="content_type" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="title" type="VARCHAR(512)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-11">
+        <createTable tableName="DS_TABLE">
+            <column name="TABLE_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValue="" name="SHORT_NAME" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WORKING_USER" type="VARCHAR(255)"/>
+            <column defaultValue="'N'" name="WORKING_COPY" type="enum('Y','N')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="1" name="VERSION" type="INT(4) UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="DATE" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER" type="VARCHAR(255)"/>
+            <column defaultValueNumeric="0" name="CORRESP_NS" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="PARENT_NS" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="IDENTIFIER" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-12">
+        <createTable tableName="DST2ROD">
+            <column defaultValueNumeric="0" name="DATASET_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="ACTIVITY_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-13">
+        <createTable tableName="DST2TBL">
+            <column defaultValueNumeric="0" name="DATASET_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="TABLE_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="POSITION" type="INT(3) UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-14">
+        <createTable tableName="FK_RELATION">
+            <column name="REL_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="A_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="B_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'1'" name="A_CARDIN" type="enum('0','1','+','*')"/>
+            <column defaultValue="'1'" name="B_CARDIN" type="enum('0','1','+','*')"/>
+            <column name="DEFINITION" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-15">
+        <createTable tableName="FXV">
+            <column name="FXV_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="OWNER_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'elem'" name="OWNER_TYPE" type="enum('elem','attr')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'N'" name="IS_DEFAULT" type="enum('Y','N')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITION" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SHORT_DESC" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-16">
+        <createTable tableName="HARV_ATTR">
+            <column defaultValue="" name="HARV_ATTR_ID" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="HARVESTER_ID" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="HARVESTED" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="MD5KEY" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="LOGICAL_ID" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-17">
+        <createTable tableName="HARV_ATTR_FIELD">
+            <column defaultValue="" name="HARV_ATTR_MD5" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="FLD_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FLD_VALUE" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-18">
+        <createTable tableName="HLP_AREA">
+            <column defaultValue="" name="AREA_ID" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="SCREEN_ID" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="LANGUAGE" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HTML" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="MD5" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="400" name="POPUP_WIDTH" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="400" name="POPUP_LENGTH" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-19">
+        <createTable tableName="HLP_SCREEN">
+            <column defaultValue="" name="SCREEN_ID" type="VARCHAR(100)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DESCRIPTION" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-20">
+        <createTable tableName="M_ATTRIBUTE">
+            <column name="M_ATTRIBUTE_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValue="" name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'M'" name="OBLIGATION" type="enum('M','O','C')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITION" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="SHORT_NAME" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="44" name="NAMESPACE_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'text'" name="DISP_TYPE" type="enum('text','textarea','select','image')"/>
+            <column defaultValueNumeric="999" name="DISP_ORDER" type="INT(3) UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="31" name="DISP_WHEN" type="INT(2) UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="20" name="DISP_WIDTH" type="INT(3) UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="1" name="DISP_HEIGHT" type="INT(3) UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'0'" name="DISP_MULTIPLE" type="enum('0','1')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'0'" name="INHERIT" type="enum('0','1','2')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="LANGUAGE_USED" type="TINYINT(1)"/>
+            <column defaultValue="NULL" name="DATA_TYPE" type="enum('reference','','string','integer','decimal','boolean','dateTime','date')"/>
+            <column name="RDF_PROPERTY" type="VARCHAR(100)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-21">
+        <createTable tableName="M_COMPLEX_ATTR">
+            <column name="M_COMPLEX_ATTR_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValue="" name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'O'" name="OBLIGATION" type="enum('M','O','C')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITION" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="SHORT_NAME" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="1" name="NAMESPACE_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="999" name="DISP_ORDER" type="INT(3) UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'7'" name="DISP_WHEN" type="enum('1','2','3','4','5','6','7')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'0'" name="INHERIT" type="enum('0','1','2')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HARVESTER_ID" type="VARCHAR(225)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-22">
+        <createTable tableName="M_COMPLEX_ATTR_FIELD">
+            <column defaultValueNumeric="0" name="M_COMPLEX_ATTR_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="M_COMPLEX_ATTR_FIELD_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DEFINITION" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="POSITION" type="INT(2)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'0'" name="PRIORITY" type="enum('0','1')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HARV_ATTR_FLD_NAME" type="VARCHAR(200)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-23">
+        <createTable tableName="NAMESPACE">
+            <column name="NAMESPACE_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValue="" name="SHORT_NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="FULL_NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="DEFINITION" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PARENT_NS" type="INT UNSIGNED"/>
+            <column name="WORKING_USER" type="VARCHAR(255)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-24">
+        <createTable tableName="ROD_ACTIVITIES">
+            <column defaultValueNumeric="0" name="ACTIVITY_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ACTIVITY_TITLE" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="LEGINSTR_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LEGINSTR_TITLE" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-25">
+        <createTable tableName="SCHEMA">
+            <column name="SCHEMA_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="FILENAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SCHEMA_SET_ID" type="INT UNSIGNED"/>
+            <column name="CONTINUITY_ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'Draft'" name="REG_STATUS" type="enum('Draft','Released')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="WORKING_COPY" type="TINYINT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WORKING_USER" type="VARCHAR(50)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="DATE" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER" type="VARCHAR(50)"/>
+            <column name="COMMENT" type="TEXT"/>
+            <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-26">
+        <createTable tableName="SCHEMA_SET">
+            <column name="SCHEMA_SET_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="IDENTIFIER" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTINUITY_ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'Draft'" name="REG_STATUS" type="enum('Draft','Released')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="WORKING_COPY" type="TINYINT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WORKING_USER" type="VARCHAR(50)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="DATE" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER" type="VARCHAR(50)"/>
+            <column name="COMMENT" type="TEXT"/>
+            <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-27">
+        <createTable tableName="T_SCHEMA">
+            <column name="SCHEMA_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="FILENAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SCHEMA_SET_ID" type="INT UNSIGNED"/>
+            <column name="CONTINUITY_ID" type="VARCHAR(36)"/>
+            <column defaultValue="NULL" name="REG_STATUS" type="enum('Draft','Public draft','Released')"/>
+            <column defaultValueNumeric="0" name="WORKING_COPY" type="TINYINT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WORKING_USER" type="VARCHAR(50)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="DATE_MODIFIED" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_MODIFIED" type="VARCHAR(50)"/>
+            <column name="COMMENT" type="TEXT"/>
+            <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+            <column defaultValueNumeric="0" name="OTHER_DOCUMENT" type="TINYINT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-28">
+        <createTable tableName="T_SCHEMA_SET">
+            <column name="SCHEMA_SET_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="IDENTIFIER" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTINUITY_ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="NULL" name="REG_STATUS" type="enum('Draft','Public draft','Released')"/>
+            <column defaultValueNumeric="0" name="WORKING_COPY" type="TINYINT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WORKING_USER" type="VARCHAR(50)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="DATE_MODIFIED" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_MODIFIED" type="VARCHAR(50)"/>
+            <column name="COMMENT" type="TEXT"/>
+            <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-29">
+        <createTable tableName="T_SITE_CODE">
+            <column name="SITE_CODE_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="VOCABULARY_CONCEPT_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SITE_CODE" type="VARCHAR(100)"/>
+            <column name="INITIAL_SITE_NAME" type="VARCHAR(200)"/>
+            <column name="SITE_CODE_NAT" type="VARCHAR(30)"/>
+            <column defaultValue="'AVAILABLE'" name="STATUS" type="enum('AVAILABLE','ALLOCATED','ASSIGNED','DELETED','DISAPPEARED')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CC_ISO2" type="CHAR(2)"/>
+            <column name="PARENT_ISO" type="CHAR(3)"/>
+            <column name="DATE_CREATED" type="DATETIME"/>
+            <column name="USER_CREATED" type="VARCHAR(50)"/>
+            <column name="DATE_ALLOCATED" type="DATETIME"/>
+            <column name="USER_ALLOCATED" type="VARCHAR(50)"/>
+            <column name="DATE_DELETED" type="YEAR"/>
+            <column name="YEARS_DELETED" type="VARCHAR(100)"/>
+            <column name="YEARS_DISAPPEARED" type="VARCHAR(100)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-30">
+        <createTable tableName="T_VOCABULARY_CONCEPT">
+            <column name="VOCABULARY_CONCEPT_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="VOCABULARY_FOLDER_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IDENTIFIER" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LABEL" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITION" type="TEXT"/>
+            <column name="NOTATION" type="VARCHAR(50)"/>
+            <column name="ORIGINAL_CONCEPT_ID" type="INT UNSIGNED"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-31">
+        <createTable tableName="T_VOCABULARY_CONCEPT_ATTRIBUTE">
+            <column name="ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="M_ATTRIBUTE_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VOCABULARY_CONCEPT_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ATTR_VALUE" type="TEXT"/>
+            <column name="LANGUAGE" type="VARCHAR(10)"/>
+            <column name="LINK_TEXT" type="VARCHAR(255)"/>
+            <column name="RELATED_CONCEPT_ID" type="INT UNSIGNED"/>
+        </createTable>
+        <modifySql dbms="mysql">
+             <replace replace="LONGTEXT" with="text"/>
+         </modifySql>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-32">
+        <createTable tableName="T_VOCABULARY_FOLDER">
+            <column name="VOCABULARY_FOLDER_ID" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CONTINUITY_ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IDENTIFIER" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LABEL" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="'Draft'" name="REG_STATUS" type="enum('Draft','Public draft','Released')">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="WORKING_COPY" type="TINYINT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+            <column name="WORKING_USER" type="VARCHAR(50)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="DATE_MODIFIED" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_MODIFIED" type="VARCHAR(50)"/>
+            <column defaultValueNumeric="0" name="CONCEPT_IDENTIFIER_NUMERIC" type="TINYINT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BASE_URI" type="VARCHAR(255)"/>
+            <column defaultValue="COMMON" name="VOCABULARY_TYPE" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="common" name="FOLDER_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-33">
+        <createTable tableName="TBL2ELEM">
+            <column defaultValueNumeric="0" name="TABLE_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="DATAELEM_ID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="POSITION" type="INT(3) UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MULTIVAL_DELIM" type="VARCHAR(1)"/>
+            <column defaultValueNumeric="0" name="MANDATORY" type="TINYINT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="PRIM_KEY" type="TINYINT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+             <append value=" ENGINE=InnoDB DEFAULT CHARSET=utf8"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-35">
+        <addPrimaryKey columnNames="ACL_ID, TYPE, ENTRY_TYPE, PRINCIPAL, STATUS" tableName="ACL_ROWS"/>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-36">
+        <addPrimaryKey columnNames="OBJ_ID, OBJ_TYPE, ARTICLE" tableName="CACHE"/>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-37">
+        <addPrimaryKey columnNames="HARV_ATTR_ID, HARVESTER_ID, HARVESTED" tableName="HARV_ATTR"/>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-38">
+        <sql>ALTER TABLE HARV_ATTR_FIELD ADD PRIMARY KEY  (HARV_ATTR_MD5,FLD_NAME,FLD_VALUE(200))</sql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-39">
+        <addPrimaryKey columnNames="AREA_ID, SCREEN_ID, LANGUAGE" tableName="HLP_AREA"/>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-41">
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_CONCEPT_ID" baseTableName="T_SITE_CODE"
+        constraintName="FK_VOCABULARY_CONCEPT_ID" deferrable="false" initiallyDeferred="false"
+        onDelete="CASCADE"
+        referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-42">
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_FOLDER_ID" baseTableName="T_VOCABULARY_CONCEPT"
+        constraintName="FK_VOCABULARY_FOLDER_ID" deferrable="false" initiallyDeferred="false"
+        onDelete="CASCADE" onUpdate="CASCADE"
+        referencedColumnNames="VOCABULARY_FOLDER_ID" referencedTableName="T_VOCABULARY_FOLDER" referencesUniqueColumn="false"/>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-43">
+        <addForeignKeyConstraint baseColumnNames="VOCABULARY_CONCEPT_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE"
+        constraintName="FK_CONCEPT_ATTRIBUTE_ID" deferrable="false" initiallyDeferred="false"
+        onDelete="CASCADE" onUpdate="CASCADE"
+        referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-44">
+        <addForeignKeyConstraint baseColumnNames="M_ATTRIBUTE_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE"
+        constraintName="FK_M_ATTRIBUTE_ATTRIBUTE_ID" deferrable="false" initiallyDeferred="false"
+        onDelete="CASCADE" onUpdate="CASCADE"
+        referencedColumnNames="M_ATTRIBUTE_ID" referencedTableName="M_ATTRIBUTE" referencesUniqueColumn="false"/>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-45">
+        <addForeignKeyConstraint baseColumnNames="RELATED_CONCEPT_ID" baseTableName="T_VOCABULARY_CONCEPT_ATTRIBUTE"
+        constraintName="FK_RELATED_CONCEPT_ID" deferrable="false" initiallyDeferred="false"
+        onDelete="CASCADE" onUpdate="CASCADE"
+        referencedColumnNames="VOCABULARY_CONCEPT_ID" referencedTableName="T_VOCABULARY_CONCEPT" referencesUniqueColumn="false"/>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-46">
+        <createIndex indexName="ACL_NAME" tableName="ACLS" unique="true">
+            <column name="ACL_NAME"/>
+            <column name="PARENT_NAME"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-47">
+        <sql>ALTER TABLE ATTRIBUTE ADD UNIQUE KEY ATTRIBUTE_UNIQUE (DATAELEM_ID,PARENT_TYPE,M_ATTRIBUTE_ID,VALUE(255))</sql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-48">
+        <createIndex indexName="DATAELEM_ID" tableName="ATTRIBUTE" unique="false">
+            <column name="DATAELEM_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-49">
+        <createIndex indexName="PARENT_TYPE" tableName="ATTRIBUTE" unique="false">
+            <column name="PARENT_TYPE"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-50">
+        <createIndex indexName="M_ATTRIBUTE_ID" tableName="ATTRIBUTE" unique="false">
+            <column name="M_ATTRIBUTE_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-51">
+        <createIndex indexName="COMPLEX_ATTR_FIELD_UNIQUE" tableName="COMPLEX_ATTR_FIELD" unique="true">
+            <column name="ROW_ID"/>
+            <column name="M_COMPLEX_ATTR_FIELD_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-52">
+        <createIndex indexName="ROW_ID" tableName="COMPLEX_ATTR_FIELD" unique="false">
+            <column name="ROW_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-53">
+        <createIndex indexName="M_COMPLEX_ATTR_FIELD_ID" tableName="COMPLEX_ATTR_FIELD" unique="false">
+            <column name="M_COMPLEX_ATTR_FIELD_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-54">
+        <createIndex indexName="ROW_ID" tableName="COMPLEX_ATTR_ROW" unique="true">
+            <column name="ROW_ID"/>
+        </createIndex>
+        <createIndex indexName="PARENT_ID" tableName="COMPLEX_ATTR_ROW" unique="false">
+            <column name="PARENT_ID"/>
+        </createIndex>
+        <createIndex indexName="PARENT_TYPE" tableName="COMPLEX_ATTR_ROW" unique="false">
+            <column name="PARENT_TYPE"/>
+        </createIndex>
+        <createIndex indexName="M_COMPLEX_ATTR_ID" tableName="COMPLEX_ATTR_ROW" unique="false">
+            <column name="M_COMPLEX_ATTR_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-58">
+        <createIndex indexName="IDENTIFIER" tableName="DATAELEM" unique="false">
+            <column name="IDENTIFIER"/>
+        </createIndex>
+        <createIndex indexName="SHORT_NAME" tableName="DATAELEM" unique="false">
+            <column name="SHORT_NAME"/>
+        </createIndex>
+        <createIndex indexName="PARENT_NS" tableName="DATAELEM" unique="false">
+            <column name="PARENT_NS"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-61">
+        <createIndex indexName="IDENTIFIER" tableName="DATASET" unique="false">
+            <column name="IDENTIFIER"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-62">
+        <createIndex indexName="SHORT_NAME" tableName="DATASET" unique="false">
+            <column name="SHORT_NAME"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-63">
+        <createIndex indexName="CORRESP_NS" tableName="DATASET" unique="false">
+            <column name="CORRESP_NS"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-64">
+        <createIndex indexName="DOC_UNIQUE" tableName="DOC" unique="true">
+            <column name="OWNER_ID"/>
+            <column name="OWNER_TYPE"/>
+            <column name="MD5_PATH"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-65">
+        <createIndex indexName="OWNER_ID" tableName="DOC" unique="false">
+            <column name="OWNER_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-66">
+        <createIndex indexName="OWNER_TYPE" tableName="DOC" unique="false">
+            <column name="OWNER_TYPE"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-67">
+        <createIndex indexName="DATASET_ID" tableName="DST2ROD" unique="false">
+            <column name="DATASET_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-68">
+        <createIndex indexName="ACTIVITY_ID" tableName="DST2ROD" unique="false">
+            <column name="ACTIVITY_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-69">
+        <createIndex indexName="DST2ROD_UNIQUE" tableName="DST2ROD" unique="true">
+            <column name="DATASET_ID"/>
+            <column name="ACTIVITY_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-70">
+        <createIndex indexName="DATASET_ID" tableName="DST2TBL" unique="false">
+            <column name="DATASET_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-71">
+        <createIndex indexName="DST2TBL_UNIQUE" tableName="DST2TBL" unique="true">
+            <column name="DATASET_ID"/>
+            <column name="TABLE_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-72">
+        <createIndex indexName="TABLE_ID" tableName="DST2TBL" unique="false">
+            <column name="TABLE_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-73">
+        <createIndex indexName="IDENTIFIER" tableName="DS_TABLE" unique="false">
+            <column name="IDENTIFIER"/>
+        </createIndex>
+        <createIndex indexName="SHORT_NAME" tableName="DS_TABLE" unique="false">
+            <column name="SHORT_NAME"/>
+        </createIndex>
+        <createIndex indexName="CORRESP_NS" tableName="DS_TABLE" unique="false">
+            <column name="CORRESP_NS"/>
+        </createIndex>
+        <createIndex indexName="PARENT_NS" tableName="DS_TABLE" unique="false">
+            <column name="PARENT_NS"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-77">
+        <createIndex indexName="A_ID" tableName="FK_RELATION" unique="false">
+            <column name="A_ID"/>
+        </createIndex>
+        <createIndex indexName="B_ID" tableName="FK_RELATION" unique="false">
+            <column name="B_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-79">
+        <sql>ALTER TABLE FXV ADD UNIQUE KEY FXV_UNIQUE (OWNER_ID,OWNER_TYPE,VALUE(255))</sql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-80">
+        <sql>ALTER TABLE FXV ADD UNIQUE KEY OWNER_ID (OWNER_ID,OWNER_TYPE,VALUE(255))</sql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-81">
+        <createIndex indexName="OWNER_TYPE" tableName="FXV" unique="false">
+            <column name="OWNER_TYPE"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-82">
+        <createIndex indexName="FILENAME" tableName="SCHEMA" unique="false">
+            <column name="FILENAME"/>
+        </createIndex>
+        <createIndex indexName="SCHEMA_SET_ID" tableName="SCHEMA" unique="false">
+            <column name="SCHEMA_SET_ID"/>
+        </createIndex>
+        <createIndex indexName="CONTINUITY_ID" tableName="SCHEMA" unique="false">
+            <column name="CONTINUITY_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-85">
+        <createIndex indexName="IDENTIFIER" tableName="SCHEMA_SET" unique="false">
+            <column name="IDENTIFIER"/>
+        </createIndex>
+        <createIndex indexName="CONTINUITY_ID" tableName="SCHEMA_SET" unique="false">
+            <column name="CONTINUITY_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-87">
+        <createIndex indexName="TBL2ELEM_UNIQUE" tableName="TBL2ELEM" unique="true">
+            <column name="TABLE_ID"/>
+            <column name="DATAELEM_ID"/>
+        </createIndex>
+        <createIndex indexName="TABLE_ID" tableName="TBL2ELEM" unique="false">
+            <column name="TABLE_ID"/>
+        </createIndex>
+        <createIndex indexName="DATAELEM_ID" tableName="TBL2ELEM" unique="false">
+            <column name="DATAELEM_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-91">
+        <createIndex indexName="FILENAME" tableName="T_SCHEMA" unique="false">
+            <column name="FILENAME"/>
+        </createIndex>
+        <createIndex indexName="CONTINUITY_ID" tableName="T_SCHEMA" unique="false">
+            <column name="CONTINUITY_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-92">
+        <addForeignKeyConstraint baseColumnNames="SCHEMA_SET_ID" baseTableName="T_SCHEMA"
+        constraintName="FK_SCHEMA_SET_ID" deferrable="false" initiallyDeferred="false"
+        onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="SCHEMA_SET_ID" referencedTableName="T_SCHEMA_SET" referencesUniqueColumn="false"/>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-93">
+        <createIndex indexName="IDENTIFIER" tableName="T_SCHEMA_SET" unique="false">
+            <column name="IDENTIFIER"/>
+        </createIndex>
+        <createIndex indexName="CONTINUITY_ID" tableName="T_SCHEMA_SET" unique="false">
+            <column name="CONTINUITY_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-95">
+        <createIndex indexName="UNIQUE_CONCEPT" tableName="T_VOCABULARY_CONCEPT" unique="true">
+            <column name="VOCABULARY_FOLDER_ID"/>
+            <column name="IDENTIFIER"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-96">
+        <createIndex indexName="UNIQUE_VOCABULARY" tableName="T_VOCABULARY_FOLDER" unique="true">
+            <column name="FOLDER_NAME"/>
+            <column name="IDENTIFIER"/>
+            <column name="WORKING_COPY"/>
+        </createIndex>
+        <createIndex indexName="IDENTIFIER" tableName="T_VOCABULARY_FOLDER" unique="false">
+            <column name="IDENTIFIER"/>
+        </createIndex>
+        <createIndex indexName="FOLDER_NAME" tableName="T_VOCABULARY_FOLDER" unique="false">
+            <column name="FOLDER_NAME"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-99">
+        <sql>ALTER TABLE T_VOCABULARY_CONCEPT ADD COLUMN OBSOLETE_DATE timestamp NULL default NULL;
+             ALTER TABLE T_VOCABULARY_CONCEPT ADD COLUMN CREATION_DATE timestamp NOT NULL default now();
+             UPDATE T_VOCABULARY_CONCEPT SET CREATION_DATE = now()</sql>
+    </changeSet>
+
+    <changeSet author="roug" id="rev-100">
+        <comment>Auto increments can't be added in the create table change set.</comment>
+        <addAutoIncrement tableName="ACLS" columnName="ACL_ID" columnDataType="INT"/>
+        <addAutoIncrement tableName="DATAELEM" columnName="DATAELEM_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="DATASET" columnName="DATASET_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="DS_TABLE" columnName="TABLE_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="FK_RELATION" columnName="REL_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="FXV" columnName="FXV_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="M_ATTRIBUTE" columnName="M_ATTRIBUTE_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="M_COMPLEX_ATTR" columnName="M_COMPLEX_ATTR_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="M_COMPLEX_ATTR_FIELD" columnName="M_COMPLEX_ATTR_FIELD_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="NAMESPACE" columnName="NAMESPACE_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="SCHEMA" columnName="SCHEMA_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="SCHEMA_SET" columnName="SCHEMA_SET_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="T_SCHEMA" columnName="SCHEMA_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="T_SCHEMA_SET" columnName="SCHEMA_SET_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="T_SITE_CODE" columnName="SITE_CODE_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="T_VOCABULARY_CONCEPT" columnName="VOCABULARY_CONCEPT_ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="T_VOCABULARY_CONCEPT_ATTRIBUTE" columnName="ID" columnDataType="INT UNSIGNED"/>
+        <addAutoIncrement tableName="T_VOCABULARY_FOLDER" columnName="VOCABULARY_FOLDER_ID" columnDataType="INT UNSIGNED"/>
+    </changeSet>
+
+    <!-- Dropping the second of two identical indexes on FXV. See roug@rev-80 -->
+    <changeSet author="roug" id="rev-101">
+        <comment>Dropping the second of two identical indexes on FXV. See roug@rev-80</comment>
+        <dropIndex indexName="OWNER_ID" tableName="FXV" />
+    </changeSet>
+
+</databaseChangeLog>

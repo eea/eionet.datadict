@@ -1,1 +1,0 @@
-alter table T_SCHEMA ADD COLUMN OTHER_DOCUMENT bool not null default false;

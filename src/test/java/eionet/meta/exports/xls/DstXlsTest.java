@@ -29,7 +29,7 @@ public class DstXlsTest extends TestCase{
     /**
      * @throws SQLException
      */
-    public void testStoreAndDelete(){
+    public void testStoreAndDelete() {
         try{
             String fileName = "test.txt";
             int i = DstXls.storeCacheEntry("999999", fileName, conn);
@@ -37,7 +37,7 @@ public class DstXlsTest extends TestCase{
             String s = DstXls.deleteCacheEntry("999999", conn);
             assertEquals(fileName, s);
         }
-        catch (Exception e){
+        catch (Exception e) {
             fail("Was not expecting any exceptions, but catched " + e.toString());
         }
     }
@@ -48,11 +48,10 @@ public class DstXlsTest extends TestCase{
      */
     protected void tearDown() throws Exception {
         super.tearDown();
-        try{
+        try {
             if (conn!=null) {
                 conn.close();
             }
-        }
-        catch (SQLException e){}
+        } catch (SQLException e) {}
     }
 }

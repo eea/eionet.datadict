@@ -10,6 +10,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <env>local</env>
         <java_version>1.6</java_version>
+        <maven.test.skip>true</maven.test.skip>
     </properties>
 
     <version>1.0-SNAPSHOT</version>
@@ -150,6 +151,25 @@
                                 </antcall>
                             </tasks>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>2.0.5</version>
+                <configuration>
+                    <propertyFile>target/classes/liquibase.properties</propertyFile>
+                    <changeLogFile>sql/dd-struct.xml</changeLogFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>Update database</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -412,11 +432,6 @@
             <version>1.2.2</version>
         </dependency>
         <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <version>3.0</version>
-        </dependency>
-        <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.3</version>
@@ -459,15 +474,14 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.3.1</version>
-            <!-- <scope>test</scope> --> <!-- Forgotten? -->
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.dbunit</groupId>
             <artifactId>dbunit</artifactId>
             <version>2.4.7</version>
-            <!-- <scope>test</scope> --> <!-- Forgotten? -->
+            <scope>test</scope>
         </dependency>
-<!--
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-mxj</artifactId>
@@ -480,6 +494,18 @@
             <version>5.0.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>2.0.5</version>
+        </dependency>
+<!--
 -->
     </dependencies>
 

@@ -18,62 +18,45 @@ import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.TestCase;
 
-import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.meta.TestUser;
+import eionet.DDDatabaseTestCase;
 
 
 /**
- * This unittest tests the DocUpload servlet
+ * This unittest tests the attributes.
  * 
  * See www.easymock.org and http://www.evolutionnext.com/blog/2006/01/27.html
  */
-public class AttributeHandlerTest extends DatabaseTestCase {
+public class AttributeHandlerTest extends DDDatabaseTestCase {
     
-    /** */
-    private FlatXmlDataSet loadedDataSet;
-
-    /**
-     * Provide a connection to the database.
-     */
-    protected IDatabaseConnection getConnection() throws Exception {
-        Class.forName(Props.getProperty(PropsIF.DBDRV));
-        Connection jdbcConn = DriverManager.getConnection(
-                Props.getProperty(PropsIF.DBURL),
-                Props.getProperty(PropsIF.DBUSR),
-                Props.getProperty(PropsIF.DBPSW));
-            
-        return new DatabaseConnection(jdbcConn);
+    @Override
+    protected String getSeedFilename() {
+        return "seed-attributes.xml";
     }
 
     /**
-     * Load the data which will be inserted for the test
-     */
-    protected IDataSet getDataSet() throws Exception {
-        loadedDataSet = new FlatXmlDataSet(
-                getClass().getClassLoader().getResourceAsStream(
-                        "seed-attributes.xml"));
-        return loadedDataSet;
-    }
-
-    /**
-     * Tests that a simple attribute with M_ATTRIBUTE_ID=18 is deleted
+     * Tests that a simple attribute with M_ATTRIBUTE_ID=37 is deleted.
      */
     public void testDeleteSimpleAttr() throws Exception {
         String attribute_to_delete = "37";
 
+        TestUser masterUser = new TestUser();
+        masterUser.authenticate("master","master");
+
         QueryDataSet queryDataSet = new QueryDataSet(getConnection());
 
         queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
-        queryDataSet.addTable("M_ATTRIBUTE",
-                "SELECT count(*) as C FROM M_ATTRIBUTE");
+        queryDataSet.addTable("M_ATTRIBUTE", "SELECT count(*) as C FROM M_ATTRIBUTE");
         queryDataSet.addTable("FXV", "SELECT count(*) as C FROM FXV");
         // Verify that there are the expected number of rows in the ATTRIBUTE table
         ITable tmpTable = queryDataSet.getTable("ATTRIBUTE");
@@ -94,10 +77,8 @@ public class AttributeHandlerTest extends DatabaseTestCase {
         Connection jdbcConn = getConnection().getConnection();
     
         // This is what we expect for the servletContext object
-        expect(servletContext.getInitParameter("visuals-path")).andReturn(
-                "HERE-IS-VISUALS-PATH");
-        expect(servletContext.getInitParameter("versioning")).andReturn(
-                "HERE-IS-VERSIONING");
+        expect(servletContext.getInitParameter("visuals-path")).andReturn("HERE-IS-VISUALS-PATH");
+        expect(servletContext.getInitParameter("versioning")).andReturn("HERE-IS-VERSIONING");
 
         // This is what we expect for the request object
         expect(request.getRequestedSessionId()).andReturn("92834kejwh89");
@@ -106,12 +87,11 @@ public class AttributeHandlerTest extends DatabaseTestCase {
         expect(request.getParameter("attr_id")).andReturn(attribute_to_delete);
         expect(request.getParameter("name")).andReturn("Keywords");
         expect(request.getParameter("short_name")).andReturn("Keyword");
-        expect(request.getParameter("definition")).andReturn(
-                "One or more significant words.");
+        expect(request.getParameter("definition")).andReturn("One or more significant words.");
         expect(request.getParameter("obligation")).andReturn("M");
         expect(request.getParameter("ns")).andReturn("basens");
-        String[] vs = new String[1];
 
+        String[] vs = new String[1];
         vs[0] = attribute_to_delete;
         expect(request.getParameterValues("simple_attr_id")).andReturn(vs);
         expect(request.getParameterValues("complex_attr_id")).andReturn(null);
@@ -122,9 +102,9 @@ public class AttributeHandlerTest extends DatabaseTestCase {
         replay(servletConfig);
         replay(servletContext);
 
-        AttributeHandler instance = new AttributeHandler(jdbcConn, request,
-                servletContext);
-
+        // Create and execute the instance
+        AttributeHandler instance = new AttributeHandler(jdbcConn, request, servletContext);
+        instance.setUser(masterUser);
         instance.execute_();
 
         // verify the responses
@@ -132,6 +112,11 @@ public class AttributeHandlerTest extends DatabaseTestCase {
         verify(response);
         verify(servletConfig);
         verify(servletContext);
+
+        queryDataSet = new QueryDataSet(getConnection());
+        queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
+        queryDataSet.addTable("M_ATTRIBUTE", "SELECT count(*) as C FROM M_ATTRIBUTE");
+        queryDataSet.addTable("FXV", "SELECT count(*) as C FROM FXV");
 
         // Verify that there are the expected number of rows in the ATTRIBUTE table
         tmpTable = queryDataSet.getTable("ATTRIBUTE");

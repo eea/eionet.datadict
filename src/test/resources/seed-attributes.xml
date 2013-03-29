@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
 <!-- Copy of attribute #18 and #40.
-     There are 615 rows of # 18 and 142 of # 40
+     There are 615 rows of # 37 and 142 of # 40
 -->
   <ATTRIBUTE M_ATTRIBUTE_ID="37" DATAELEM_ID="738" VALUE="Soil degradation and pollution" PARENT_TYPE="DS"/>
   <ATTRIBUTE M_ATTRIBUTE_ID="37" DATAELEM_ID="1205" VALUE="Nature conservation and biodiversity" PARENT_TYPE="DS"/>

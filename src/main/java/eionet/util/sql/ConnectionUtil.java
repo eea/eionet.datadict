@@ -61,6 +61,7 @@ public class ConnectionUtil {
         // property names depending on whether the code is being run by a unit test
         // (this is just to avoid shooting in the leg by running unit tests
         // accidentally against the real database)
+        isUnitTest = false;
         String drvProperty = isUnitTest ? PropsIF.DB_UNITTEST_DRV : PropsIF.DBDRV;
         String urlProperty = isUnitTest ? PropsIF.DB_UNITTEST_URL : PropsIF.DBURL;
         String usrProperty = isUnitTest ? PropsIF.DB_UNITTEST_USR : PropsIF.DBUSR;

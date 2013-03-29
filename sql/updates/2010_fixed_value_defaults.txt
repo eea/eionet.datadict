@@ -1,6 +1,0 @@
--- this sciprt alters the FXV tables so that the VALUE, DEFINITION and SHORT_DESC fields
--- get proper non-null default values (fix for https://svn.eionet.europa.eu/projects/Reportnet/ticket/2387)
-
-alter table FXV change column VALUE VALUE text not null default '';
-alter table FXV change column DEFINITION DEFINITION text not null default '';
-alter table FXV change column SHORT_DESC SHORT_DESC text not null default '';

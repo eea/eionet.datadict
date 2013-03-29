@@ -58,7 +58,7 @@ public class DocDownloadTest extends TestCase {
         catch (ServletException e){
             message = e.getMessage();
         }
-        if (message==null || !message.startsWith("java.lang.Exception: Failed to get the file path from db")) {
+        if (message == null || !message.startsWith("java.lang.Exception: Failed to get the file path from db")) {
             fail("Was expecting exception with message 'Failed to get the file path from db'");
         }
 

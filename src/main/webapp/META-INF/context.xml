@@ -10,8 +10,8 @@
         maxWait="10000"
         username="${db.user}"
         password="${db.password}"
-        driverClassName="com.mysql.jdbc.Driver"
-        url="jdbc:mysql://${db.host}/${db.database}?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;emptyStringsConvertToZero=false&amp;jdbcCompliantTruncation=false"
+        driverClassName="${db.driver}"
+        url="${db.jdbcurl.encoded}"
         validationQuery="SELECT 1"
         testOnBorrow="true"
         >

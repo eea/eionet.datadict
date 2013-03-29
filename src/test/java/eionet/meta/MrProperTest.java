@@ -9,43 +9,23 @@ import java.util.Vector;
 
 import junit.framework.TestCase;
 
-import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 import eionet.meta.savers.Parameters;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.DDDatabaseTestCase;
 
 
-public class MrProperTest extends DatabaseTestCase {
+public class MrProperTest extends DDDatabaseTestCase {
 
-    private FlatXmlDataSet loadedDataSet;
-
-    /**
-     * Provide a connection to the database.
-     */
-    protected IDatabaseConnection getConnection() throws Exception {
-        Class.forName(Props.getProperty(PropsIF.DBDRV));
-        Connection conn = DriverManager.getConnection(
-                Props.getProperty(PropsIF.DBURL),
-                Props.getProperty(PropsIF.DBUSR),
-                Props.getProperty(PropsIF.DBPSW));
-            
-        return new DatabaseConnection(conn);
-    }
-
-    /**
-     * Load the data which will be inserted for the test
-     * seed-attributes has some fixed values
-     */
-    protected IDataSet getDataSet() throws Exception {
-        loadedDataSet = new FlatXmlDataSet(
-                getClass().getClassLoader().getResourceAsStream(
-                        "seed-dataelement.xml"));
-        return loadedDataSet;
+    @Override
+    protected String getSeedFilename() {
+        return "seed-dataelement.xml";
     }
 
     /**

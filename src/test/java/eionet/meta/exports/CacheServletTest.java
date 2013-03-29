@@ -16,23 +16,20 @@ public class CacheServletTest extends TestCase{
     /**
      *
      */
-    public void test_deleteCacheEntry(){
+    public void test_deleteCacheEntry() {
 
         Connection conn = null;
-        try{
+        try {
             conn = ConnectionUtil.getConnection();
             CacheServlet.deleteCacheEntry("9999", "l'll", "a'sdasd", conn);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             fail("Was not expecting any exceptions, but catched " + e.toString());
-        }
-        finally{
-            try{
-                if (conn!=null) {
+        } finally {
+            try {
+                if (conn != null) {
                     conn.close();
                 }
-            }
-            catch (SQLException e){}
+            } catch (SQLException e) {}
         }
     }
 }
