@@ -81,16 +81,14 @@ public class DocUpload extends HttpServlet{
             HttpUploader.upload(req, file);
             save(dstID, file, req.getParameter(REQPAR_TITLE));
             res.sendRedirect(req.getContextPath() + "/datasets/" + dstID);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (e instanceof SQLException) {
                 int errCode = ((SQLException)e).getErrorCode();
                 System.out.println(errCode);
             }
             e.printStackTrace();
-            throw new ServletException(e.getMessage()==null ? "" : e.getMessage(), e);
-        }
-        finally {
+            throw new ServletException(e.getMessage() == null ? "" : e.getMessage(), e);
+        } finally {
             closeConnection();
         }
     }
@@ -112,9 +110,12 @@ public class DocUpload extends HttpServlet{
     }
 
     /**
-     * @param req
-     * @return
-     * @throws DDException
+     * Removes the directory structure from a file path.
+     *
+     * @param submittedFilePath
+     *         The path like C:\Windows\registry.reg
+     * @return the file name (registry.reg)
+     * @throws DDException if the file path is empty or missing
      */
     private static String extractFileName(String submittedFilePath) throws DDException {
 
@@ -122,14 +123,14 @@ public class DocUpload extends HttpServlet{
             throw new DDException("Missing file path!");
         }
 
-        if (submittedFilePath.indexOf("\\")<0 && submittedFilePath.indexOf("/")<0) {
+        if (submittedFilePath.indexOf("\\") < 0 && submittedFilePath.indexOf("/") < 0) {
             return submittedFilePath;
         } else {
             int i = submittedFilePath.lastIndexOf("\\");
-            if (i<0) {
+            if (i < 0) {
                 i = submittedFilePath.lastIndexOf("/");
             }
-            return submittedFilePath.substring(i+1, submittedFilePath.length());
+            return submittedFilePath.substring(i + 1, submittedFilePath.length());
         }
     }
 
@@ -171,7 +172,7 @@ public class DocUpload extends HttpServlet{
         insertCols.put("MD5_PATH", "md5(" + inParams.add(legalizedPath) + ")");
         insertCols.put("ABS_PATH", inParams.add(legalizedPath));
 
-        if (title==null || title.length()==0) {
+        if (title == null || title.length() == 0) {
             title = file.getName();
         }
         insertCols.put("TITLE", inParams.add(title));
@@ -219,7 +220,7 @@ public class DocUpload extends HttpServlet{
             stmt = conn.prepareStatement("select count(*) from DOC where MD5_PATH=?");
             stmt.setString(1, md5);
             rs = stmt.executeQuery();
-            if (rs.next() && rs.getInt(1)==0) {
+            if (rs.next() && rs.getInt(1) == 0) {
                 File file = new File(absPath);
                 if (file.exists() && !file.isDirectory()) {
                     file.delete();
@@ -238,7 +239,7 @@ public class DocUpload extends HttpServlet{
      *
      */
     private void openConnection() throws DDConnectionException, SQLException {
-        if (conn==null) {
+        if (conn == null) {
             conn = ConnectionUtil.getConnection();
         }
     }
@@ -247,13 +248,11 @@ public class DocUpload extends HttpServlet{
      *
      */
     private void closeConnection() {
-        if (conn!=null) {
+        if (conn != null) {
             try {
                 conn.close();
-            }
-            catch (SQLException sqle) {
-            }
-            finally {
+            } catch (SQLException sqle) {
+            } finally {
                 conn=null;
             }
         }
@@ -265,9 +264,9 @@ public class DocUpload extends HttpServlet{
      */
     public static String legalizePath(String path) {
         StringBuffer buf = new StringBuffer();
-        for (int i=0; path!=null && i<path.length(); i++) {
+        for (int i = 0; path != null && i < path.length(); i++) {
             char c = path.charAt(i);
-            if (c=='\\') {
+            if (c == '\\') {
                 buf.append("\\\\");
             } else {
                 buf.append(c);
