@@ -143,7 +143,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     }
 
     /**
-     * @see eionet.meta.dao.ISchemaDAO#listForSchemaSets(List<SchemaSets> schemaSets)
+     * @see eionet.meta.dao.ISchemaDAO#listForSchemaSets(List<SchemaSets>)
      */
     @Override
     public List<Schema> listForSchemaSets(List<SchemaSet> schemaSets) {
@@ -695,7 +695,7 @@ public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
     }
 
     /**
-     * @see eionet.meta.dao.ISchemaDAO#copySchemaRow(int, java.lang.String, java.lang.String)
+     * @see eionet.meta.dao.ISchemaDAO#copySchemaRow(int, java.lang.String, java.lang.String, eionet.meta.dao.domain.RegStatus)
      */
     @Override
     public int copySchemaRow(int schemaId, String userName, String newFileName, RegStatus regStatus) {

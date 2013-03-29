@@ -168,7 +168,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
     }
 
     /**
-     * @see eionet.meta.dao.IAttributeDAO#getAttributeValues(int, eionet.meta.DElemAttribute.ParentType)
+     * @see eionet.meta.dao.IAttributeDAO#getAttributeValues(int, java.lang.String)
      */
     @Override
     public Map<String, List<String>> getAttributeValues(int parentId, String parentType) {
