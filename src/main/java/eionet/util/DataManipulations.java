@@ -43,7 +43,7 @@ import eionet.util.sql.SQLGenerator;
  *
  * @author jaanus
  */
-public class DataManipulations{
+public class DataManipulations {
 
     /** */
     protected static final int IDX_TBL = 0;
@@ -79,7 +79,7 @@ public class DataManipulations{
      */
     public void testWrite() throws Exception {
 
-        for (int i=0; i<10; i++) {
+        for (int i = 0; i < 10; i++) {
             outputWrite(i + " ...");
             //Thread.sleep(3000);
         }
@@ -106,7 +106,7 @@ public class DataManipulations{
             append("FXV.FXV_ID is null");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 hashSet.add(rs.getString(1));
             }
             rs.close();
@@ -119,17 +119,16 @@ public class DataManipulations{
                 DataElementHandler.autoCreateBooleanFixedValues(stmt, (String)i.next());
             }
             outputWriteln("Created fixed values for " + count + " boolean data elements");
-        }
-        finally {
+        } finally {
+        //TODO: Make a method that closes and ignores exceptions. Call it closeIgnoringExceptions()
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -148,7 +147,7 @@ public class DataManipulations{
         CopyHandler copyHandler = new CopyHandler(conn, null, null);
         String newID = copyHandler.copy(gen, "TABLE_ID=" + tblID, false);
 
-        if (newID!=null) {
+        if (newID != null) {
             // copy simple attributes
             gen.clear();
             gen.setTable("ATTRIBUTE");
@@ -185,7 +184,7 @@ public class DataManipulations{
         CopyHandler copyHandler = new CopyHandler(conn, null, null);
         String newID = copyHandler.copy(gen, "DATAELEM_ID=" + elmID, false);
 
-        if (newID!=null) {
+        if (newID != null) {
 
             // copy simple attributes
             gen.clear();
@@ -236,7 +235,7 @@ public class DataManipulations{
             HashSet hashSet = new HashSet();
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 String tblID = rs.getString("TABLE_ID");
                 if (!hashSet.contains(tblID)) {
                     hashSet.add(tblID);
@@ -246,7 +245,7 @@ public class DataManipulations{
             rs.close();
 
             boolean attemptingDelete = false;
-            if (count>0) {
+            if (count > 0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such tables found, now deleting them...");
             } else {
@@ -262,17 +261,15 @@ public class DataManipulations{
             if (attemptingDelete) {
                 outputWriteln(count + " deleted");
             }
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -298,7 +295,7 @@ public class DataManipulations{
             HashSet hashSet = new HashSet();
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 Hashtable hash = new Hashtable();
                 hash.put("DATASET_ID", rs.getString("DATASET_ID"));
                 hash.put("TABLE_ID", rs.getString("TABLE_ID"));
@@ -310,7 +307,7 @@ public class DataManipulations{
             rs.close();
 
             boolean attemptingDelete = false;
-            if (count>0) {
+            if (count > 0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such relations found, now deleting them...");
             } else {
@@ -330,17 +327,15 @@ public class DataManipulations{
             if (attemptingDelete) {
                 outputWriteln(count + " deleted");
             }
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -364,7 +359,7 @@ public class DataManipulations{
             HashSet hashSet = new HashSet();
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 String elmID = rs.getString("DATAELEM_ID");
                 if (!hashSet.contains(elmID)) {
                     hashSet.add(elmID);
@@ -374,7 +369,7 @@ public class DataManipulations{
             rs.close();
 
             boolean attemptingDelete = false;
-            if (count>0) {
+            if (count > 0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such non-common elements found, now deleting them...");
             } else {
@@ -390,17 +385,15 @@ public class DataManipulations{
             if (attemptingDelete) {
                 outputWriteln(count + " deleted");
             }
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -428,7 +421,7 @@ public class DataManipulations{
             HashSet hashSet = new HashSet();
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 Hashtable hash = new Hashtable();
                 hash.put("DATAELEM_ID", rs.getString("DATAELEM_ID"));
                 hash.put("TABLE_ID", rs.getString("TABLE_ID"));
@@ -440,7 +433,7 @@ public class DataManipulations{
             rs.close();
 
             boolean attemptingDelete = false;
-            if (count>0) {
+            if (count > 0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such relations found, now deleting them...");
             } else {
@@ -460,17 +453,15 @@ public class DataManipulations{
             if (attemptingDelete) {
                 outputWriteln(count + " deleted");
             }
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -481,7 +472,7 @@ public class DataManipulations{
      */
     public void deleteTblWithElements(String tblID) throws Exception {
 
-        if (tblID==null) {
+        if (tblID == null) {
             return;
         }
 
@@ -494,28 +485,26 @@ public class DataManipulations{
             buf.append("select DATAELEM_ID from TBL2ELEM where TABLE_ID=").append(tblID);
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 elmIDs.add(rs.getString(1));
             }
 
             // delete the elements found
-            for (int i=0; i<elmIDs.size(); i++) {
+            for (int i = 0; i < elmIDs.size(); i++) {
                 this.deleteElm((String)elmIDs.get(i));
             }
 
             // now delete the table itself
             this.deleteTbl(tblID);
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -525,7 +514,7 @@ public class DataManipulations{
      */
     public void deleteTbl(String tblID) throws Exception {
 
-        if (tblID==null) {
+        if (tblID == null) {
             return;
         }
 
@@ -543,7 +532,7 @@ public class DataManipulations{
             buf = new StringBuffer();
             buf.append("select distinct ROW_ID from COMPLEX_ATTR_ROW where PARENT_TYPE='T' and PARENT_ID=").append(tblID);
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 hashSet.add(rs.getString(1));
             }
             rs.close();
@@ -586,17 +575,15 @@ public class DataManipulations{
             buf.append("delete from DS_TABLE where TABLE_ID=").append(tblID);
             stmt = conn.createStatement();
             stmt.executeUpdate(buf.toString());
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -607,7 +594,7 @@ public class DataManipulations{
      */
     public void deleteDstWithTablesAndElements(String dstID) throws Exception {
 
-        if (dstID==null) {
+        if (dstID == null) {
             return;
         }
 
@@ -620,28 +607,26 @@ public class DataManipulations{
             buf.append("select TABLE_ID from DST2TBL where DATASET_ID=").append(dstID);
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 tblIDs.add(rs.getString(1));
             }
 
             // delete the tables found
-            for (int i=0; i<tblIDs.size(); i++) {
+            for (int i = 0; i < tblIDs.size(); i++) {
                 deleteTblWithElements((String)tblIDs.get(i));
             }
 
             // now delete the dataset itself
             deleteDst(dstID);
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
 
     }
@@ -653,7 +638,7 @@ public class DataManipulations{
      */
     public void deleteDst(String dstID) throws Exception {
 
-        if (dstID==null) {
+        if (dstID == null) {
             return;
         }
 
@@ -671,7 +656,7 @@ public class DataManipulations{
             buf = new StringBuffer();
             buf.append("select distinct ROW_ID from COMPLEX_ATTR_ROW where PARENT_TYPE='DS' and PARENT_ID=").append(dstID);
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 hashSet.add(rs.getString(1));
             }
             rs.close();
@@ -712,17 +697,15 @@ public class DataManipulations{
             // delete orphan ACLS and NAMESPACES in case they might result from the delete of this dataset
             deleteOrphanAcls();
             deleteOrphanNamespaces();
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -732,7 +715,7 @@ public class DataManipulations{
      */
     public void deleteElm(String elmID) throws Exception {
 
-        if (elmID==null) {
+        if (elmID == null) {
             return;
         }
 
@@ -750,7 +733,7 @@ public class DataManipulations{
             buf = new StringBuffer();
             buf.append("select distinct ROW_ID from COMPLEX_ATTR_ROW where PARENT_TYPE='E' and PARENT_ID=").append(elmID);
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 hashSet.add(rs.getString(1));
             }
             rs.close();
@@ -799,17 +782,15 @@ public class DataManipulations{
             buf.append("delete from DATAELEM where DATAELEM_ID=").append(elmID);
             stmt = conn.createStatement();
             stmt.executeUpdate(buf.toString());
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -837,7 +818,7 @@ public class DataManipulations{
             HashSet hashSet = new HashSet();
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 nsID = rs.getString(1);
                 if (!hashSet.contains(nsID)) {
                     hashSet.add(nsID);
@@ -847,7 +828,7 @@ public class DataManipulations{
             rs.close();
 
             boolean attemptingDelete = false;
-            if (count>0) {
+            if (count > 0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such namespaces found, now deleting them...");
             } else {
@@ -865,17 +846,15 @@ public class DataManipulations{
             if (attemptingDelete) {
                 outputWriteln(count + " deleted");
             }
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -901,7 +880,7 @@ public class DataManipulations{
             HashSet hashSet = new HashSet();
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 aclID = rs.getString(1);
                 if (!hashSet.contains(aclID)) {
                     hashSet.add(aclID);
@@ -915,7 +894,7 @@ public class DataManipulations{
             append("where ACLS.PARENT_NAME='/elements' and DATAELEM.PARENT_NS is null and DATAELEM.IDENTIFIER is null");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 aclID = rs.getString(1);
                 if (!hashSet.contains(aclID)) {
                     hashSet.add(aclID);
@@ -925,7 +904,7 @@ public class DataManipulations{
             rs.close();
 
             boolean attemptingDelete = false;
-            if (count>0) {
+            if (count > 0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such ACLs found, now deleting them...");
             } else {
@@ -947,17 +926,15 @@ public class DataManipulations{
             if (attemptingDelete) {
                 outputWriteln(count + " deleted");
             }
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -993,7 +970,7 @@ public class DataManipulations{
      * @throws IOException
      */
     public void outputWrite(String message) throws IOException {
-        if (outputWriter!=null && message!=null) {
+        if (outputWriter != null && message != null) {
             outputWriter.print(message);
             outputWriter.flush();
         }
@@ -1005,7 +982,7 @@ public class DataManipulations{
      * @throws IOException
      */
     public void outputWriteln(String message) throws IOException {
-        if (outputWriter!=null && message!=null) {
+        if (outputWriter != null && message != null) {
             outputWriter.println(message);
             outputWriter.flush();
         }
@@ -1022,23 +999,20 @@ public class DataManipulations{
         ResultSet rs = null;
         try {
             DataManipulations script = new DataManipulations(ConnectionUtil.getConnection(), new PrintWriter(System.out));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(System.out);
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-                if (conn!=null) {
+                if (conn != null) {
                     conn.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 }

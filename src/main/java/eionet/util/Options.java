@@ -56,7 +56,7 @@ public class Options{
  *
  */
     public Options(String usage) {
-        this.usage = usage==null ? usage : ("\n" + usage);
+        this.usage = usage == null ? usage : ("\n" + usage);
     }
 
 /**
@@ -89,7 +89,7 @@ public class Options{
         boolean error = false;
         int i;
 
-        for (i=0; !eofoptions && !error && i<args.length; i++) {
+        for (i = 0; !eofoptions && !error && i < args.length; i++) {
 
             switch(args[i].charAt(0)) {
                 case '-' :
@@ -97,7 +97,7 @@ public class Options{
                     if (map.containsKey(option)) {
                         i++;
                         Vector values = (Vector)map.get(option);
-                        if (values.contains(args[i]) || values.size()==0) {
+                        if (values.contains(args[i]) || values.size() == 0) {
                             options.put(option, args[i]);
                         }
                         else {
@@ -118,7 +118,7 @@ public class Options{
         }
 
         if (error)
-            errMsg = "Illegal option or option value " + args[i-1] + " !";
+            errMsg = "Illegal option or option value " + args[i - 1] + " !";
 
         return error;
     }

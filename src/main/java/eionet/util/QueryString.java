@@ -32,10 +32,10 @@ import eionet.meta.DDRuntimeException;
 
 /**
  * A Class class.
- * <P>
+ *
  * @author Enriko Käsper, Jaanus Heinlaid
  */
-public class QueryString{
+public class QueryString {
 
     /** */
     private String queryString = null;
@@ -106,7 +106,7 @@ public class QueryString{
      */
     private boolean hasParam(String param) {
 
-        if (queryString.indexOf(param + "=")>0) {
+        if (queryString.indexOf(param + "=") > 0) {
             return true;
         }
         return false;
@@ -120,7 +120,7 @@ public class QueryString{
 
     private void append(String param, String value) {
 
-        String s =queryString.indexOf("?")>0 ? "&" : "?";
+        String s =queryString.indexOf("?") > 0 ? "&" : "?";
 
         queryString += s + param + "=" + value;
     }
@@ -131,17 +131,17 @@ public class QueryString{
      */
     private void remove(String param) {
 
-        int i=queryString.indexOf(param);
-        if (i<1) {
+        int i = queryString.indexOf(param);
+        if (i < 1) {
             return;
         }
 
-        int and=queryString.indexOf("&", i);
+        int and = queryString.indexOf("&", i);
 
-        if (and>0) {
-            queryString = queryString.substring(0,i-1) + queryString.substring(and);
+        if (and > 0) {
+            queryString = queryString.substring(0, i - 1) + queryString.substring(and);
         } else {
-            queryString = queryString.substring(0,i-1);
+            queryString = queryString.substring(0, i - 1);
         }
     }
 
@@ -152,16 +152,16 @@ public class QueryString{
      */
     private void change(String param, String value) {
 
-        int i=queryString.indexOf(param);
-        if (i<1) {
+        int i = queryString.indexOf(param);
+        if (i < 1) {
             return;
         }
-        String begin=queryString.substring(0, i);
-        String str=queryString.substring(i);
+        String begin = queryString.substring(0, i);
+        String str = queryString.substring(i);
         int j = str.indexOf("&");
-        String end = j>0 ? str.substring(j) : "";
+        String end = j > 0 ? str.substring(j) : "";
 
-        queryString=begin + param + "=" + value + end ;
+        queryString = begin + param + "=" + value + end ;
     }
 
     /**
@@ -177,21 +177,21 @@ public class QueryString{
 
         int sep = queryString.indexOf("?");
         int sep2 = s.indexOf("?");
-        if (sep>0) {
-            if (sep!=sep2) {
+        if (sep > 0) {
+            if (sep != sep2) {
                 return false;
             }
-            if (!queryString.substring(0,sep).equalsIgnoreCase(s.substring(0,sep))) {
+            if (!queryString.substring(0, sep).equalsIgnoreCase(s.substring(0, sep))) {
                 return false;
             }
 
-            String query = queryString.substring(sep+1);
+            String query = queryString.substring(sep + 1);
             StringTokenizer tokens = new StringTokenizer(query, "&");
-            String query2 = s.substring(sep+1);
+            String query2 = s.substring(sep + 1);
             StringTokenizer tokens2 = new StringTokenizer(query2, "&");
 
 
-            if (tokens.countTokens()!=tokens2.countTokens()) {
+            if (tokens.countTokens() != tokens2.countTokens()) {
                 return false;
             }
             boolean ok = false;
@@ -202,15 +202,14 @@ public class QueryString{
                         ok = true;
                     }
                 }
-                if (ok==false) {
+                if (ok == false) {
                     return false;
                 }
-                ok=false;
+                ok = false;
                 tokens2 = new StringTokenizer(query2, "&");
             }
 
-        }
-        else {
+        } else {
             return queryString.equalsIgnoreCase(s);
         }
         return true;
@@ -222,9 +221,9 @@ public class QueryString{
      * @param encoding
      * @return
      */
-    public static String toQueryString(Map parameterMap, String encoding){
+    public static String toQueryString(Map parameterMap, String encoding) {
 
-        if (parameterMap==null || parameterMap.isEmpty()){
+        if (parameterMap == null || parameterMap.isEmpty()) {
             return "";
         }
 
@@ -232,27 +231,27 @@ public class QueryString{
         Set entrySet = parameterMap.entrySet();
 
         try {
-            for (Iterator entryIter = entrySet.iterator(); entryIter.hasNext();){
+            for (Iterator entryIter = entrySet.iterator(); entryIter.hasNext();) {
 
                 Map.Entry entry = (Map.Entry)entryIter.next();
                 String key = entry.getKey().toString();
 
                 Object value = entry.getValue();
-                if (value!=null){
-                    if (value instanceof String[]){
+                if (value != null) {
+                    if (value instanceof String[]) {
                         String[] values = (String[]) value;
                         for (int i = 0; i < values.length; i++) {
-                            if (result.length()>0){
+                            if (result.length() > 0) {
                                 result.append("&");
                             }
                             result.append(URLEncoder.encode(key, encoding)).append("=");
                             result.append(URLEncoder.encode(values[i], encoding));
                         }
                     }
-                    else if (value instanceof Iterable){
+                    else if (value instanceof Iterable) {
                         Iterable values = (Iterable) value;
-                        for (Iterator iter = values.iterator(); iter.hasNext();){
-                            if (result.length()>0){
+                        for (Iterator iter = values.iterator(); iter.hasNext();) {
+                            if (result.length() > 0) {
                                 result.append("&");
                             }
                             result.append(URLEncoder.encode(key, encoding)).append("=");
@@ -265,7 +264,7 @@ public class QueryString{
             throw new DDRuntimeException(e);
         }
 
-        return result.length()==0 ? "" : "?" + result;
+        return result.length() == 0 ? "" : "?" + result;
     }
 }
 

@@ -302,7 +302,7 @@ public class UnicodeEscapes{
     public int getDecimal(String ent) {
 
         String sDecimal = (String) unicodeEscapes.get(ent);
-        if (sDecimal==null) return -1;
+        if (sDecimal == null) return -1;
         return Integer.parseInt(sDecimal);
     }
 
@@ -313,10 +313,10 @@ public class UnicodeEscapes{
      */
     public boolean isXHTMLEntity(String s) {
 
-        if (s==null || s.length()==0) return false;
+        if (s == null || s.length() == 0) return false;
         if (!(s.startsWith("&") && s.endsWith(";"))) return false;
 
-        if (s.length()==2) return false;
+        if (s.length() == 2) return false;
 
         String ss = s.substring(1, s.length()-1);
         return unicodeEscapes.containsKey(ss);
@@ -329,13 +329,13 @@ public class UnicodeEscapes{
      */
     public boolean isNumericHTMLEscapeCode(String s) {
 
-        if (s==null || s.length()==0) return false;
+        if (s == null || s.length() == 0) return false;
         if (!(s.startsWith("&") && s.endsWith(";"))) return false;
 
         char c = s.charAt(1);
-        if (c!='#') return false;
+        if (c != '#') return false;
 
-        if (s.length()==3) return false;
+        if (s.length() == 3) return false;
 
         try {
             Integer.parseInt(s.substring(2, s.length()-1));

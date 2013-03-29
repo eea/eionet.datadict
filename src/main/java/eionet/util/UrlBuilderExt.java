@@ -12,7 +12,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Jaanus Heinlaid
  *
  */
-public class UrlBuilderExt extends UrlBuilder{
+public class UrlBuilderExt extends UrlBuilder {
 
     /**
      * 
@@ -46,14 +46,13 @@ public class UrlBuilderExt extends UrlBuilder{
     /**
      * @see net.sourceforge.stripes.util.UrlBuilder#toString()
      */
-    public String toString(){
+    public String toString() {
 
         String url = build();
         String anchor = getAnchor();
-        if (!StringUtils.isBlank(anchor)){
+        if (!StringUtils.isBlank(anchor)) {
             return new StringBuilder(url).append("#").append(StringUtil.uriFragmentEncode(anchor)).toString();
-        }
-        else{
+        } else {
             return url;
         }
     }

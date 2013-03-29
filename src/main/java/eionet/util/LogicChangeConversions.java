@@ -80,7 +80,7 @@ public class LogicChangeConversions extends DataManipulations {
                 String dstID = rs.getString(2);
                 if (existingDatasets.contains(dstID) && existingTables.containsKey(tblID)) {
                     Vector tblDatasets = (Vector)existingTables.get(tblID);
-                    if (tblDatasets==null)
+                    if (tblDatasets == null)
                         tblDatasets = new Vector();
                     tblDatasets.add(dstID);
                     countTblDatasets++;
@@ -100,12 +100,12 @@ public class LogicChangeConversions extends DataManipulations {
             long timeStart = System.currentTimeMillis();
             if (!existingTables.isEmpty()) {
                 Iterator iterTables = existingTables.keySet().iterator();
-                while (iterTables!=null && iterTables.hasNext()) {
+                while (iterTables != null && iterTables.hasNext()) {
                     String tblID = (String)iterTables.next();
                     Vector tblDatasets = (Vector)existingTables.get(tblID);
                     SQLGenerator gen = new SQLGenerator();
                     // skip first dataset since for one dataset the table copy already exists
-                    for (int i=1; tblDatasets!=null && i<tblDatasets.size(); i++) {
+                    for (int i=1; tblDatasets != null && i<tblDatasets.size(); i++) {
                         String dstID = (String)tblDatasets.get(i);
                         // delete the table's relation with this dataset,
                         // since that relation will now be created with the new table copy
@@ -114,7 +114,7 @@ public class LogicChangeConversions extends DataManipulations {
                         stmt.executeUpdate(buf.toString());
                         // create new table copy, relate it to this dataset
                         String newTblID = copyTbl(tblID);
-                        if (newTblID!=null && newTblID.length()>0) {
+                        if (newTblID != null && newTblID.length() > 0) {
                             countTablesCreated++;
                             gen.clear();
                             gen.setTable("DST2TBL");
@@ -122,7 +122,7 @@ public class LogicChangeConversions extends DataManipulations {
                             gen.setFieldExpr("TABLE_ID", newTblID);
                             stmt.executeUpdate(gen.insertStatement());
 
-                            if (countTablesCreated==(outputRefreshStep*countOutputRefreshSteps)) {
+                            if (countTablesCreated == (outputRefreshStep*countOutputRefreshSteps)) {
                                 outputWrite(".");
                                 countOutputRefreshSteps++;
                             }
@@ -135,13 +135,12 @@ public class LogicChangeConversions extends DataManipulations {
             long durationMillis = timeEnd - timeStart;
             outputWriteln("");
             outputWriteln(countTablesCreated + " new tables created, time spent: " + durationMillis/1000 + " sec");
-        }
-        finally {
+        } finally {
+            //TODO: Make a method that closes and ignores exceptions. Call it closeIgnoringExceptions()
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
-            }
-            catch (SQLException e) {}
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {}
         }
     }
 
@@ -175,7 +174,7 @@ public class LogicChangeConversions extends DataManipulations {
                 String elmPos = rs.getString("POSITION");
                 if (existingTables.contains(tblID) && existingNonCommonElements.containsKey(elmID)) {
                     Vector elmTables = (Vector)existingNonCommonElements.get(elmID);
-                    if (elmTables==null)
+                    if (elmTables == null)
                         elmTables = new Vector();
                     String[] elmTable = new String[2];
                     elmTable[IDX_TBL] = tblID;
@@ -199,12 +198,12 @@ public class LogicChangeConversions extends DataManipulations {
             long timeStart = System.currentTimeMillis();
             if (!existingNonCommonElements.isEmpty()) {
                 Iterator iterElements = existingNonCommonElements.keySet().iterator();
-                while (iterElements!=null && iterElements.hasNext()) {
+                while (iterElements != null && iterElements.hasNext()) {
                     String elmID = (String)iterElements.next();
                     Vector elmTables = (Vector)existingNonCommonElements.get(elmID);
                     SQLGenerator gen = new SQLGenerator();
                     // skip first table since for one table the element copy already exists
-                    for (int i=1; elmTables!=null && i<elmTables.size(); i++) {
+                    for (int i=1; elmTables != null && i<elmTables.size(); i++) {
                         String[] table = (String[])elmTables.get(i);
                         String tblID = table[IDX_TBL];
                         String tblPos = table[IDX_POS];
@@ -215,7 +214,7 @@ public class LogicChangeConversions extends DataManipulations {
                         stmt.executeUpdate(buf.toString());
                         // create new element copy, relate it to this table
                         String newElmID = copyElm(elmID);
-                        if (newElmID!=null && newElmID.length()>0) {
+                        if (newElmID != null && newElmID.length() > 0) {
                             countElmsCreated++;
                             gen.clear();
                             gen.setTable("TBL2ELEM");
@@ -223,7 +222,7 @@ public class LogicChangeConversions extends DataManipulations {
                             gen.setFieldExpr("DATAELEM_ID", newElmID);
                             stmt.executeUpdate(gen.insertStatement());
 
-                            if (countElmsCreated==(outputRefreshStep*countOutputRefreshSteps)) {
+                            if (countElmsCreated == (outputRefreshStep*countOutputRefreshSteps)) {
                                 outputWrite(".");
                                 countOutputRefreshSteps++;
                             }
@@ -236,13 +235,11 @@ public class LogicChangeConversions extends DataManipulations {
             long durationMillis = timeEnd - timeStart;
             outputWriteln("");
             outputWriteln(countElmsCreated + " new non-common elements created, time spent: " + durationMillis/1000 + " sec");
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
-            }
-            catch (SQLException e) {}
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {}
         }
     }
 
@@ -266,12 +263,12 @@ public class LogicChangeConversions extends DataManipulations {
             Hashtable prevOne = null;
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 String dstID = rs.getString("DST2TBL.DATASET_ID");
                 Hashtable thisOne = new Hashtable();
                 thisOne.put("DST2TBL.DATASET_ID", dstID);
                 thisOne.put("DS_TABLE.IDENTIFIER", rs.getString("DS_TABLE.IDENTIFIER"));
-                if (prevOne!=null && prevOne.equals(thisOne)) {
+                if (prevOne != null && prevOne.equals(thisOne)) {
                     Hashtable hash = new Hashtable();
                     hash.put("DATASET_ID", dstID);
                     hash.put("TABLE_ID", rs.getString("DS_TABLE.TABLE_ID"));
@@ -279,18 +276,16 @@ public class LogicChangeConversions extends DataManipulations {
                         hashSet.add(hash);
                         count++;
                     }
-                }
-                else
+                } else
                     prevOne = thisOne;
             }
             rs.close();
 
             boolean attemptingDelete = false;
-            if (count>0) {
+            if (count > 0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such relations found, now deleting them...");
-            }
-            else
+            } else
                 outputWriteln(count + " such relations found");
 
             count = 0;
@@ -305,13 +300,11 @@ public class LogicChangeConversions extends DataManipulations {
 
             if (attemptingDelete)
                 outputWriteln(count + " deleted");
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
-            }
-            catch (SQLException e) {}
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {}
         }
     }
 
@@ -370,12 +363,12 @@ public class LogicChangeConversions extends DataManipulations {
             Hashtable prevOne = null;
             stmt = conn.createStatement();
             rs = stmt.executeQuery(buf.toString());
-            while (rs!=null && rs.next()) {
+            while (rs != null && rs.next()) {
                 String tblID = rs.getString("TBL2ELEM.TABLE_ID");
                 Hashtable thisOne = new Hashtable();
                 thisOne.put("TBL2ELEM.TABLE_ID", tblID);
                 thisOne.put("DATAELEM.IDENTIFIER", rs.getString("DATAELEM.IDENTIFIER"));
-                if (prevOne!=null && prevOne.equals(thisOne)) {
+                if (prevOne != null && prevOne.equals(thisOne)) {
                     Hashtable hash = new Hashtable();
                     hash.put("TABLE_ID", tblID);
                     hash.put("DATAELEM_ID", rs.getString("DATAELEM.DATAELEM_ID"));
@@ -383,18 +376,16 @@ public class LogicChangeConversions extends DataManipulations {
                         hashSet.add(hash);
                         count++;
                     }
-                }
-                else
+                } else
                     prevOne = thisOne;
             }
             rs.close();
 
             boolean attemptingDelete = false;
-            if (count>0) {
+            if (count > 0) {
                 attemptingDelete = true;
                 outputWriteln(count + " such relations found, now deleting them...");
-            }
-            else
+            } else
                 outputWriteln(count + " such relations found");
 
             count = 0;
@@ -409,13 +400,11 @@ public class LogicChangeConversions extends DataManipulations {
 
             if (attemptingDelete)
                 outputWriteln(count + " deleted");
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
-            }
-            catch (SQLException e) {}
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {}
         }
     }
 }

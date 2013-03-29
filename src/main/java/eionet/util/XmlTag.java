@@ -46,7 +46,7 @@ public class XmlTag {
      * @param attrValue
      */
     public void setAttribute(String attrName, String attrValue) {
-        if (attributes==null)
+        if (attributes == null)
             attributes = new Hashtable();
 
         attributes.put(attrName, attrValue);
@@ -102,7 +102,7 @@ public class XmlTag {
         buf.append(getTagName());
 
         Hashtable attributes = getAttributes();
-        if (attributes!=null && attributes.size()>0) {
+        if (attributes != null && attributes.size() > 0) {
             Enumeration attrNames = attributes.keys();
             while (attrNames.hasMoreElements()) {
                 String attrName = (String)attrNames.nextElement();
@@ -162,7 +162,7 @@ public class XmlTag {
         addDefaultAttributes();
 
         String content = getContent();
-        if (content==null || content.trim().length()==0)
+        if (content == null || content.trim().length() == 0)
             return getStartEnd();
         else {
             StringBuffer buf = new StringBuffer(getStart());
@@ -187,7 +187,7 @@ public class XmlTag {
     private void addDefaultAttributes() {
 
         Hashtable defaultAttributes = getDefaultAttributes();
-        if (defaultAttributes!=null && defaultAttributes.size()>0) {
+        if (defaultAttributes != null && defaultAttributes.size() > 0) {
             Enumeration defaultAttrNames = defaultAttributes.keys();
             while (defaultAttrNames.hasMoreElements()) {
                 String defaultAttrName = (String)defaultAttrNames.nextElement();
