@@ -232,7 +232,7 @@
         String copy_elem_id = request.getParameter("copy_elem_id");
         String dsID = request.getParameter("ds_id");
         String tableID = request.getParameter("table_id");
-        
+
         // indicates whether element is fixed values or quantitative
         String type = request.getParameter("type");
         if (type != null && type.length() == 0) {
@@ -248,7 +248,7 @@
         else if (request.getParameter("idfier") != null){
             idfier = request.getParameter("idfier");
         }
-        
+
         String tableIdf = request.getParameter("table_idf");
         String datasetIdf = request.getParameter("dataset_idf");
 
@@ -350,7 +350,7 @@
             ////////////////////////////
             String redirUrl = null;
             if (mode.equals("add") || mode.equals("copy")) {
-                
+
                 String id = handler.getLastInsertID();
                 if (id != null && id.length() > 0){
                     redirUrl = request.getContextPath() + "/dataelements/" + id;
@@ -361,7 +361,7 @@
                 boolean isSaveClose = request.getParameter("saveclose")!=null && request.getParameter("saveclose").equalsIgnoreCase("true");
                 boolean isCheckIn = request.getParameter("check_in")!=null && request.getParameter("check_in").equalsIgnoreCase("true");
                 boolean isSwitchType = request.getParameter("switch_type")!=null && request.getParameter("switch_type").equalsIgnoreCase("true");
-                
+
                 String id = isCheckIn ? handler.getCheckedInCopyID() : delem_id;
                 redirUrl = request.getContextPath() + "/dataelements/" + id;
                 if (!isSaveClose && !isCheckIn && !isSwitchType){
@@ -373,9 +373,9 @@
                 else if (isSwitchType){
                     redirUrl = redirUrl + "/?feedback=switch_type";
                 }
-                
+
             } else if (mode.equals("delete")) {
-                
+
                 if (elmCommon){
                     String checkedoutCopyID = request.getParameter("checkedout_copy_id");
                     String wasWorkingCopy = request.getParameter("is_working_copy");
@@ -536,8 +536,8 @@
                             && elmRegStatus != null && user != null
                             && isLatestElm;
                     if (canCheckout) {
-                        if (elmRegStatus.equals("Released")
-                                || elmRegStatus.equals("Recorded"))
+                        if (elmRegStatus.equals("Released"))
+                            // || elmRegStatus.equals("Recorded")
                             canCheckout = editReleasedPrm;
                         else
                             canCheckout = editPrm || editReleasedPrm;

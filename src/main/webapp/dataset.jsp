@@ -175,7 +175,7 @@
             }
         }
         else if (mode.equals("edit")){
-            
+
             if (request.getParameter("check_in")!=null && request.getParameter("check_in").equalsIgnoreCase("true")){
                 // if this was a check-in, redirect to the view of the checked-in copy
                 redirUrl = request.getContextPath() + "/datasets/" + handler.getCheckedInCopyID() + "/?feedback=checkin";
@@ -287,7 +287,8 @@
 
                 canCheckout = !dataset.isWorkingCopy() && workingUser==null && regStatus!=null && user!=null && isLatestDst;
                 if (canCheckout){
-                    if (regStatus.equals("Released") || regStatus.equals("Recorded"))
+                    if (regStatus.equals("Released"))
+                            //|| regStatus.equals("Recorded"))
                         canCheckout = editReleasedPrm;
                     else
                         canCheckout = editPrm || editReleasedPrm;
@@ -578,7 +579,7 @@
                 document.location.assign("<%=request.getContextPath()%>/datasets/" + id + "/edit");
             }
             else if (mode=="checkout"){
-            	document.location.assign("<%=request.getContextPath()%>/datasets/" + id + "/checkout");
+                document.location.assign("<%=request.getContextPath()%>/datasets/" + id + "/checkout");
             }
             else if (mode=="newversion"){
                 document.location.assign("<%=request.getContextPath()%>/datasets/" + id + "/newversion");
@@ -1779,7 +1780,7 @@ else if (mode.equals("add"))
                         <input type="hidden" name="checkedout_copy_id" value="<%=checkedoutCopyID%>"/><%
                     }
                     if (dataset!=null){
-                        
+
                         if (dataset.isWorkingCopy()){
                             %>
                             <input type="hidden" name="is_working_copy" value="true"/><%
