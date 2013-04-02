@@ -46,6 +46,7 @@ import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
+import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
@@ -403,6 +404,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public void validateCheckOut() throws ServiceException {
         if (!isUpdateRight()) {
             addGlobalValidationError("No permission to modify vocabulary");
+            getContext().setSourcePageResolution(new ForwardResolution(VIEW_VOCABULARY_FOLDER_JSP));
         }
     }
 
@@ -579,7 +581,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                             false);
             initFilter();
             filter.setUsePaging(false);
-            filter.setValidOnly(true);
+            filter.setObsoleteStatus(ObsoleteStatus.VALID_ONLY);
             List<? extends VocabularyConcept> concepts = null;
             if (vocabularyFolder.isSiteCodeType()) {
                 String countryCode = getContext().getRequestParameter("countryCode");
@@ -592,7 +594,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             } else {
                 concepts =
                         vocabularyService.getVocabularyConceptsWithAttributes(vocabularyFolder.getId(),
-                                vocabularyFolder.isNumericConceptIdentifiers(), true);
+                                vocabularyFolder.isNumericConceptIdentifiers(), ObsoleteStatus.VALID_ONLY);
             }
 
             final List<? extends VocabularyConcept> finalConcepts = concepts;

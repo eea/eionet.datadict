@@ -45,6 +45,7 @@ import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyConceptAttribute;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.util.Props;
@@ -667,14 +668,14 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers,
-            boolean validOnly) throws ServiceException {
+            ObsoleteStatus obsoleteStatus) throws ServiceException {
         try {
 
             VocabularyConceptFilter filter = new VocabularyConceptFilter();
             filter.setVocabularyFolderId(vocabularyFolderId);
             filter.setUsePaging(false);
             filter.setNumericIdentifierSorting(numericConceptIdentifiers);
-            filter.setValidOnly(validOnly);
+            filter.setObsoleteStatus(obsoleteStatus);
 
             List<VocabularyConcept> result = vocabularyConceptDAO.searchVocabularyConcepts(filter).getList();
 

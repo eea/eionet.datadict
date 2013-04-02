@@ -25,6 +25,7 @@ import java.util.List;
 
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 
@@ -154,12 +155,12 @@ public interface IVocabularyService {
      *
      * @param vocabularyFolderId
      * @param numericConceptIdentifiers
-     * @param validOnly
+     * @param obsoleteStatus
      * @return
      * @throws ServiceException
      */
     List<VocabularyConcept> getVocabularyConceptsWithAttributes(int vocabularyFolderId, boolean numericConceptIdentifiers,
-            boolean validOnly) throws ServiceException;
+            ObsoleteStatus obsoleteStatus) throws ServiceException;
 
     /**
      * Creates new vocabulary concept into database.

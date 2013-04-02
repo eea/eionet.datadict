@@ -54,11 +54,10 @@ public class VocabularyConceptFilter extends PagedRequest {
     /** Concept id's that get returned. */
     private List<Integer> includedIds;
 
-    /** Only obsolete. */
-    private boolean obsoleteOnly;
+    /** Obsolete status. */
+    private ObsoleteStatus obsoleteStatus = ObsoleteStatus.VALID_ONLY;
 
-    /** Only not obsolete. */
-    private boolean validOnly;
+    private String obsoleteDate;
 
     /**
      * @return the vocabularyFolderId
@@ -181,33 +180,33 @@ public class VocabularyConceptFilter extends PagedRequest {
     }
 
     /**
-     * @return the obsoleteOnly
+     * @return the obsoleteStatus
      */
-    public boolean isObsoleteOnly() {
-        return obsoleteOnly;
+    public ObsoleteStatus getObsoleteStatus() {
+        return obsoleteStatus;
     }
 
     /**
-     * @param obsoleteOnly
-     *            the obsoleteOnly to set
+     * @param obsoleteStatus
+     *            the obsoleteStatus to set
      */
-    public void setObsoleteOnly(boolean obsoleteOnly) {
-        this.obsoleteOnly = obsoleteOnly;
+    public void setObsoleteStatus(ObsoleteStatus obsoleteStatus) {
+        this.obsoleteStatus = obsoleteStatus;
     }
 
     /**
-     * @return the validOnly
+     * @return the obsoleteDate
      */
-    public boolean isValidOnly() {
-        return validOnly;
+    public String getObsoleteDate() {
+        return obsoleteDate;
     }
 
     /**
-     * @param validOnly
-     *            the validOnly to set
+     * @param obsoleteDate
+     *            the obsoleteDate to set
      */
-    public void setValidOnly(boolean validOnly) {
-        this.validOnly = validOnly;
+    public void setObsoleteDate(String obsoleteDate) {
+        this.obsoleteDate = obsoleteDate;
     }
 
 }

@@ -34,6 +34,7 @@ import org.springframework.stereotype.Repository;
 
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.data.ObsoleteStatus;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 
@@ -110,11 +111,13 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("includedIds", filter.getIncludedIds());
             sql.append("and VOCABULARY_CONCEPT_ID in (:includedIds) ");
         }
-        if (filter.isObsoleteOnly()) {
-            sql.append("and OBSOLETE_DATE IS NOT NULL ");
-        }
-        if (filter.isValidOnly()) {
-            sql.append("and OBSOLETE_DATE IS NULL ");
+        if (filter.getObsoleteStatus() != null) {
+            if (ObsoleteStatus.VALID_ONLY.equals(filter.getObsoleteStatus())) {
+                sql.append("and OBSOLETE_DATE IS NULL ");
+            }
+            if (ObsoleteStatus.OBSOLETE_ONLY.equals(filter.getObsoleteStatus())) {
+                sql.append("and OBSOLETE_DATE IS NOT NULL ");
+            }
         }
         if (filter.isNumericIdentifierSorting()) {
             sql.append("order by IDENTIFIER + 0 ");
@@ -155,8 +158,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void copyVocabularyConcepts(int oldVocabularyFolderId, int newVocabularyFolderId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ORIGINAL_CONCEPT_ID) ");
-        sql.append("select :newVocabularyFolderId, IDENTIFIER, LABEL, DEFINITION, NOTATION, VOCABULARY_CONCEPT_ID ");
+        sql.append("insert into T_VOCABULARY_CONCEPT (VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ORIGINAL_CONCEPT_ID, OBSOLETE_DATE, CREATION_DATE) ");
+        sql.append("select :newVocabularyFolderId, IDENTIFIER, LABEL, DEFINITION, NOTATION, VOCABULARY_CONCEPT_ID, OBSOLETE_DATE, CREATION_DATE ");
         sql.append("from T_VOCABULARY_CONCEPT where VOCABULARY_FOLDER_ID = :oldVocabularyFolderId");
 
         Map<String, Object> parameters = new HashMap<String, Object>();

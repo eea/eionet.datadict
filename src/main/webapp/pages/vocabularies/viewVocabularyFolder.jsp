@@ -2,8 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp"
-    pageTitle="Vocabulary">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary">
 
     <stripes:layout-component name="contents">
 
@@ -205,11 +204,13 @@
                         <td class="simple_attr_value">
                             <stripes:text class="smalltext" size="30" name="filter.text" id="filterText"/>
                         </td>
-                        <th scope="row" class="scope-row simple_attr_title" title="Find only concepts with obsolete status">
-                            <label for="obsoleteOnly"><span style="white-space:nowrap;">Obsolete only</span></label>
+                        <th scope="row" class="scope-row simple_attr_title" title="Concept's obsolete status">
+                            <label for="obsoleteStatus"><span style="white-space:nowrap;">Obsolete status</span></label>
                         </th>
                         <td class="simple_attr_value" style="padding-right: 5em;">
-                            <stripes:checkbox name="filter.obsoleteOnly" id="obsoleteOnly" />
+                            <stripes:select name="filter.obsoleteStatus" id="obsoleteStatus">
+                                <stripes:options-enumeration enum="eionet.meta.service.data.ObsoleteStatus" label="label"/>
+                            </stripes:select>
                         </td>
                         <td>
                             <stripes:submit name="view" value="Search" class="mediumbuttonb"/>
@@ -229,7 +230,7 @@
             <display:column title="Id" class="${actionBean.vocabularyFolder.numericConceptIdentifiers ? 'number' : ''}" style="width: 1%" media="html">
                 <c:choose>
                     <c:when test="${concept.obsolete != null}">
-                        <span style="font-style:italic"><c:out value="${concept.identifier}" /></span>
+                        <span style="text-decoration:line-through"><c:out value="${concept.identifier}" /></span>
                     </c:when>
                     <c:otherwise>
                         <c:out value="${concept.identifier}" />
@@ -253,6 +254,12 @@
             </display:column>
             <display:column title="Definition" escapeXml="true" property="definition" />
             <display:column title="Notation" escapeXml="true" property="notation" />
+
+            <c:if test="${actionBean.filter.obsoleteStatus != 'VALID_ONLY'}">
+                <display:column title="Obsolete from">
+                    <fmt:formatDate value="${concept.obsolete}" pattern="dd.MM.yyyy"/>
+                </display:column>
+            </c:if>
 
         </display:table>
 
