@@ -109,7 +109,7 @@ public class DocUploadTest extends DDDatabaseTestCase {
         expect(request.getInputStream()).andReturn(instream);
 
         // this is what expect for the httpSession
-        DDUser user = new TestUser();
+        DDUser user = new FakeUser();
         user.authenticate("heinlja", "heinlja"); // THIS USER ACCOUNT MUST BE LISTED IN dd.group!
 
         expect(httpSession.getAttribute(SecurityUtil.REMOTEUSER)).andReturn(user);
@@ -178,7 +178,7 @@ public class DocUploadTest extends DDDatabaseTestCase {
         expect(request.getParameter("delete")).andReturn(filePathMd5);
 
         // this is what expect for the httpSession
-        DDUser user = new TestUser();
+        DDUser user = new FakeUser();
         user.authenticate("heinlja", "heinlja"); // THIS USER ACCOUNT MUST BE LISTED IN dd.group!
 
         expect(httpSession.getAttribute("eionet.util.SecurityUtil.user")).andReturn(user);

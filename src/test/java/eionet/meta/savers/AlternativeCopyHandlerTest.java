@@ -9,13 +9,16 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+
 import org.junit.Test;
 
 import eionet.util.Util;
@@ -24,7 +27,6 @@ import eionet.util.sql.SQL;
 import eionet.DDDatabaseTestCase;
 
 /**
- * THIS TEST HAS NO ASSERTS! It not a component test, it is a performance test.
  *
  * @author Jaanus Heinlaid
  *
@@ -48,9 +50,6 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
 
     @Override
     protected void setUp() throws Exception {
-
-        LOGGER.debug("Running setup ...");
-
         xmlDataset = getDataSet();
         prepareIds();
         super.setUp();
@@ -77,6 +76,7 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
                 }
             }
         }
+        assertEquals(162, idMap.size());
     }
 
     /**
@@ -86,25 +86,23 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
     public void testManyInsertSelects1() throws Exception {
 
         Connection conn = null;
-        try{
+        try {
             conn = getConnection().getConnection();
             conn.setAutoCommit(false);
 
             int i = 0;
-            LOGGER.debug("Starting inserts ...");
 
             long startTime = System.currentTimeMillis();
             for (Entry<String, String> entry : idMap.entrySet()) {
 
                 Statement stmt = null;
-                try{
+                try {
                     stmt = conn.createStatement();
                     String sql = AlternativeCopyHandler.simpleAttrsCopyStatement(entry.getKey(), entry.getValue(), "E");
                     stmt.addBatch(sql);
                     stmt.executeBatch();
                     i++;
-                }
-                finally{
+                } finally {
                     SQL.close(stmt);
                 }
             }
@@ -112,12 +110,16 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
             conn.commit();
             long endTime = System.currentTimeMillis();
             LOGGER.debug(i + " inserts took " + (endTime-startTime) + " ms");
-        }
-        catch (Exception e) {
+            // Verify that there are the expected number of rows in the table
+            QueryDataSet queryDataSet = new QueryDataSet(getConnection());
+            queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
+            ITable tmpTable = queryDataSet.getTable("ATTRIBUTE");
+            assertEquals("1620", tmpTable.getValue(0, "C").toString());
+
+        } catch (Exception e) {
             SQL.rollback(conn);
             throw e;
-        }
-        finally{
+        } finally {
             SQL.close(conn);
         }
     }
@@ -130,7 +132,7 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
 
         Statement stmt = null;
         Connection conn = null;
-        try{
+        try {
             conn = getConnection().getConnection();
             conn.setAutoCommit(false);
 
@@ -151,12 +153,15 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
             conn.commit();
             long endTime = System.currentTimeMillis();
             LOGGER.debug(i + " inserts took " + (endTime-startTime) + " ms");
-        }
-        catch (Exception e) {
+            // Verify that there are the expected number of rows in the table
+            QueryDataSet queryDataSet = new QueryDataSet(getConnection());
+            queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
+            ITable tmpTable = queryDataSet.getTable("ATTRIBUTE");
+            assertEquals("1620", tmpTable.getValue(0, "C").toString());
+        } catch (Exception e) {
             SQL.rollback(conn);
             throw e;
-        }
-        finally{
+        } finally {
             SQL.close(stmt);
             SQL.close(conn);
         }
@@ -171,7 +176,7 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
 
         PreparedStatement pstmt = null;
         Connection conn = null;
-        try{
+        try {
             conn = getConnection().getConnection();
             conn.setAutoCommit(false);
 
@@ -195,12 +200,15 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
             conn.commit();
             long endTime = System.currentTimeMillis();
             LOGGER.debug(i + " inserts took " + (endTime-startTime) + " ms");
-        }
-        catch (Exception e) {
+            // Verify that there are the expected number of rows in the table
+            QueryDataSet queryDataSet = new QueryDataSet(getConnection());
+            queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
+            ITable tmpTable = queryDataSet.getTable("ATTRIBUTE");
+            assertEquals("1620", tmpTable.getValue(0, "C").toString());
+        } catch (Exception e) {
             SQL.rollback(conn);
             throw e;
-        }
-        finally{
+        } finally {
             SQL.close(pstmt);
             SQL.close(conn);
         }
@@ -222,7 +230,7 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
         ResultSet rs = null;
         Statement stmt = null;
         Connection conn = null;
-        try{
+        try {
             conn = getConnection().getConnection();
             conn.setAutoCommit(false);
 
@@ -264,12 +272,15 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
             conn.commit();
             long endTime = System.currentTimeMillis();
             LOGGER.debug("The single extended insert took " + (endTime-startTime) + " ms");
-        }
-        catch (Exception e) {
+            // Verify that there are the expected number of rows in the table
+            QueryDataSet queryDataSet = new QueryDataSet(getConnection());
+            queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
+            ITable tmpTable = queryDataSet.getTable("ATTRIBUTE");
+            assertEquals("1620", tmpTable.getValue(0, "C").toString());
+        } catch (Exception e) {
             SQL.rollback(conn);
             throw e;
-        }
-        finally{
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
             SQL.close(conn);
@@ -290,7 +301,7 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
 
         PreparedStatement pstmt = null;
         Connection conn = null;
-        try{
+        try {
             conn = getConnection().getConnection();
             conn.setAutoCommit(false);
 
@@ -318,6 +329,11 @@ public class AlternativeCopyHandlerTest extends DDDatabaseTestCase {
             conn.commit();
             long endTime = System.currentTimeMillis();
             LOGGER.debug("The single batch insert took " + (endTime-startTime) + " ms");
+            // Verify that there are the expected number of rows in the table
+            QueryDataSet queryDataSet = new QueryDataSet(getConnection());
+            queryDataSet.addTable("ATTRIBUTE", "SELECT count(*) as C FROM ATTRIBUTE");
+            ITable tmpTable = queryDataSet.getTable("ATTRIBUTE");
+            assertEquals("1620", tmpTable.getValue(0, "C").toString());
         } catch (Exception e) {
             SQL.rollback(conn);
             throw e;

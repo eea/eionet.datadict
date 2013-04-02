@@ -11,7 +11,7 @@ import org.xml.sax.XMLReader;
 
 import eionet.DDDatabaseTestCase;
 import eionet.meta.DDUser;
-import eionet.meta.TestUser;
+import eionet.meta.FakeUser;
 import eionet.test.Seed;
 
 /**
@@ -49,7 +49,7 @@ public class DatasetImportTest extends DDDatabaseTestCase {
         // SAX was OK, but maybe handler has problems of its own
         StringBuffer responseText = new StringBuffer();
 
-        DDUser testUser = new TestUser();
+        DDUser testUser = new FakeUser();
         testUser.authenticate("jaanus", "jaanus");
 
         //TODO: You can no longer provide null as the servlet context, so this fails

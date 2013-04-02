@@ -14,7 +14,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.xml.sax.XMLReader;
 
 import eionet.meta.DDUser;
-import eionet.meta.TestUser;
+import eionet.meta.FakeUser;
 import eionet.test.Seed;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -79,7 +79,7 @@ public class DatasetImportHandlerTest extends DDDatabaseTestCase {
      */
     public void X_testSimpleDatasetImport() throws Exception {
 
-        TestUser testUser = new TestUser();
+        FakeUser testUser = new FakeUser();
         testUser.authenticate("heinlja", "");
 
         DatasetImport dstImport = simpleDatasetImport(

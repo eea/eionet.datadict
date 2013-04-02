@@ -57,7 +57,7 @@ public class MrProperTest extends DDDatabaseTestCase {
 
         MrProper mrProper = null;
         
-        DDUser testUser = new TestUser();
+        DDUser testUser = new FakeUser();
 
         testUser.authenticate("jaanus", "jaanus");
 

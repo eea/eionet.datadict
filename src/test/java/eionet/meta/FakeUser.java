@@ -6,12 +6,12 @@ import java.sql.Connection;
 import eionet.util.sql.ConnectionUtil;
 
 
-public class TestUser extends DDUser {
+public class FakeUser extends DDUser {
 
     /**
      *
      */
-    public TestUser() {
+    public FakeUser() {
         super();
     }
 

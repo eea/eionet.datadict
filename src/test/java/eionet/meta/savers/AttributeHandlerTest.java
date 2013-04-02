@@ -28,7 +28,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import eionet.meta.TestUser;
+import eionet.meta.FakeUser;
 import eionet.DDDatabaseTestCase;
 
 
@@ -50,7 +50,7 @@ public class AttributeHandlerTest extends DDDatabaseTestCase {
     public void testDeleteSimpleAttr() throws Exception {
         String attribute_to_delete = "37";
 
-        TestUser masterUser = new TestUser();
+        FakeUser masterUser = new FakeUser();
         masterUser.authenticate("master","master");
 
         QueryDataSet queryDataSet = new QueryDataSet(getConnection());
