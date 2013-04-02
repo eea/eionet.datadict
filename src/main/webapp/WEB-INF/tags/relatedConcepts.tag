@@ -52,7 +52,7 @@
 </script>
 
 <div style="display:none">
-    <span id="newField${uniqueId}">
+    <div id="newField${uniqueId}">
         <input type="hidden" name="" value="${attributeId}" />
         <select name="">
             <option value=""></option>
@@ -65,20 +65,21 @@
             <legend>Link text</legend>
             <input name="" class="${fieldClass}" size="${fieldSize}" type="text">
         </fieldset>
-    </span>
+    </div>
 </div>
 
 <div id="multiDiv${uniqueId}">
     <c:forEach var="attr" items="${attributes}" varStatus="innerLoop">
         <c:if test="${attr.id != 0}">
-        <span id="multySpan${uniqueId}-${innerLoop.index}">
+        <div id="multySpan${uniqueId}-${innerLoop.index}">
             <input type="hidden" name="${fieldName}[${innerLoop.index}].id" value="${attr.id}" />
-            <select name="${fieldName}[${innerLoop.index}].relatedId" disabled="disabled">
+            <input type="hidden" name="${fieldName}[${innerLoop.index}].relatedId" value="${attr.relatedId}" />
+            <select name="select-${fieldName}[${innerLoop.index}].relatedId" disabled="disabled">
                 <option value=""></option>
                 <c:forEach var="concept" items="${vocabularyConcepts}">
                     <c:choose>
                         <c:when test="${concept.id eq attr.relatedId}">
-                            <option value="${concept.id}" selected="true"><c:out value="${concept.identifier}" /> (<c:out value="${concept.label}" />)</option>
+                            <option value="${concept.id}" selected="selected"><c:out value="${concept.identifier}" /> (<c:out value="${concept.label}" />)</option>
                         </c:when>
                         <c:otherwise>
                             <option value="${concept.id}"><c:out value="${concept.identifier}" /> (<c:out value="${concept.label}" />)</option>
@@ -91,7 +92,7 @@
                 <legend>Link text</legend>
                 <input value="${attr.linkText}" name="${fieldName}[${innerLoop.index}].linkText" class="${fieldClass}" size="${fieldSize}" type="text">
             </fieldset>
-        </span>
+        </div>
         </c:if>
     </c:forEach>
 </div>
