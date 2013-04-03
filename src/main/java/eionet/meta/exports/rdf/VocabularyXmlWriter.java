@@ -193,7 +193,7 @@ public class VocabularyXmlWriter {
                             writer.writeStartElement(SKOS_NS, StringUtils.substringAfter(attr.getRdfProperty(), "skos:"));
                             if (StringUtils.isNotEmpty(attr.getLanguage())) {
                                 writer.writeAttribute("xml", XML_NS, "lang", attr.getLanguage());
-                            }
+                            } //TODO: Use } else if {
                             if (StringUtils.isNotEmpty(attr.getDataType()) && StringUtils.isEmpty(attr.getLanguage())
                                     && !(attr.getDataType().equalsIgnoreCase("string"))) {
                                 writer.writeAttribute("rdf", RDF_NS, "datatype", Rdf.getXmlType(attr.getDataType()));

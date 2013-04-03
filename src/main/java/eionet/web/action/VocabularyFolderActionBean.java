@@ -606,7 +606,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             final String contextRoot =
                     StringUtils.isNotEmpty(vocabularyFolder.getBaseUri()) ? vocabularyFolder.getBaseUri() : Props
                             .getRequiredProperty(PropsIF.DD_URL)
-                            + "/vocabularies/"
+                            + "/vocabulary/"
                             + vocabularyFolder.getFolderName()
                             + "/"
                             + vocabularyFolder.getIdentifier() + "/";
