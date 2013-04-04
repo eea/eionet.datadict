@@ -135,6 +135,43 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
      * {@inheritDoc}
      */
     @Override
+    public List<VocabularyFolder> getWorkingCopies(String userName) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("workingUser", userName);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select VOCABULARY_FOLDER_ID, IDENTIFIER, LABEL, REG_STATUS, WORKING_COPY, VOCABULARY_TYPE, ");
+        sql.append("WORKING_USER, DATE_MODIFIED, USER_MODIFIED, CHECKEDOUT_COPY_ID, FOLDER_NAME ");
+        sql.append("from T_VOCABULARY_FOLDER ");
+        sql.append("where WORKING_USER=:workingUser and WORKING_COPY = 1");
+
+        List<VocabularyFolder> items =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyFolder>() {
+                    public VocabularyFolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyFolder vf = new VocabularyFolder();
+                        vf.setId(rs.getInt("VOCABULARY_FOLDER_ID"));
+                        vf.setIdentifier(rs.getString("IDENTIFIER"));
+                        vf.setLabel(rs.getString("LABEL"));
+                        vf.setRegStatus(RegStatus.fromString(rs.getString("REG_STATUS")));
+                        vf.setType(VocabularyType.valueOf(rs.getString("VOCABULARY_TYPE")));
+                        vf.setWorkingCopy(rs.getBoolean("WORKING_COPY"));
+                        vf.setWorkingUser(rs.getString("WORKING_USER"));
+                        vf.setDateModified(rs.getTimestamp("DATE_MODIFIED"));
+                        vf.setUserModified(rs.getString("USER_MODIFIED"));
+                        vf.setCheckedOutCopyId(rs.getInt("CHECKEDOUT_COPY_ID"));
+                        vf.setFolderName(rs.getString("FOLDER_NAME"));
+                        return vf;
+                    }
+                });
+
+        return items;
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int createVocabularyFolder(VocabularyFolder vocabularyFolder) {
         String sql =
                 "insert into T_VOCABULARY_FOLDER (IDENTIFIER, LABEL, REG_STATUS, CONTINUITY_ID, VOCABULARY_TYPE, "

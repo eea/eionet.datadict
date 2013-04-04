@@ -1,4 +1,6 @@
 <%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
+<%@page import="eionet.meta.dao.domain.SchemaSet,eionet.meta.dao.domain.Schema"%>
+<%@page import="eionet.meta.dao.domain.VocabularyFolder"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!
@@ -6,8 +8,11 @@ ServletContext ctx = null;
 boolean userHasWorkingCopies = false;
 Vector datasets=null;
 Vector commonElements=null;
+List<SchemaSet> schemaSets=null;
+List<Schema> schemas=null;
+List<VocabularyFolder> vocabularies = null;
 %>
-
+<%@ include file="/pages/common/taglibs.jsp"%>
 <%@ include file="history.jsp" %>
 
 <%
@@ -16,37 +21,40 @@ Vector commonElements=null;
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     DDUser user = SecurityUtil.getUser(request);
-    
+
     if (user==null){
         response.sendRedirect("index.jsp");
         return;
     }
-    
+
     ctx = getServletContext();
-    
+
     Connection conn = null;
-    
+
     // try-catch block of the whole page
     try {
-    
+
         conn = ConnectionUtil.getConnection();
 
         DDSearchEngine searchEngine = new DDSearchEngine(conn, "", ctx);
-        searchEngine.setUser(user);        
+        searchEngine.setUser(user);
         userHasWorkingCopies = searchEngine.hasUserWorkingCopies();
 
         if (userHasWorkingCopies){
             datasets = searchEngine.getDatasets(null, null, null, null, true);
             commonElements = searchEngine.getCommonElements(null, null, null, null, true, "=");
+            schemaSets = searchEngine.getSchemaSetWorkingCopies();
+            schemas = searchEngine.getSchemaWorkingCopies();
+            vocabularies = searchEngine.getVocabularyWorkingCopies();
         }
         else{
             request.getRequestDispatcher("Logout").forward(request,response);
             return;
         }
-            
-            
+
+
 
 %>
 
@@ -63,26 +71,26 @@ Vector commonElements=null;
 <%@ include file="nmenu.jsp" %>
 
 <div id="workarea">
-    <h1>Logging out</h1>    
+    <h1>Logging out</h1>
 
     <p class="advise-msg">You have the following objects checked out:</p>
     <table class="datatable">
         <tbody>
-            <%             
+            <%
             int d=0;
             // DATASETS
             if (datasets!=null && datasets.size()>0){
                 %>
                 <%
                 for (int i=0; i<datasets.size(); i++){
-        
+
                     Dataset dataset = (Dataset)datasets.get(i);
-            
+
                     String ds_id = dataset.getID();
                     String dsVersion = dataset.getVersion()==null ? "" : dataset.getVersion();
                     String ds_name = Util.processForDisplay(dataset.getShortName());
                     if (ds_name == null) ds_name = "unknown";
-                    if (ds_name.length() == 0) ds_name = "empty";                                    
+                    if (ds_name.length() == 0) ds_name = "empty";
                     String dsFullName=dataset.getName();
                     if (dsFullName == null) dsFullName = ds_name;
                     if (dsFullName.length() == 0) dsFullName = ds_name;
@@ -90,8 +98,8 @@ Vector commonElements=null;
                         dsFullName = dsFullName.substring(0,60) + " ...";
                         d++;
                     %>
-        
-                    <tr>                    
+
+                    <tr>
                         <td colspan="2" title="<%=dsFullName%>">
                             Dataset:&nbsp;
                             <a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>">
@@ -104,7 +112,7 @@ Vector commonElements=null;
             }
             // COMMON ELEMENTS
             if (commonElements!=null && commonElements.size()>0){
-                
+
                 for (int i=0; i<commonElements.size(); i++){
                     DataElement dataElement = (DataElement)commonElements.get(i);
                     String delem_id = dataElement.getID();
@@ -113,7 +121,7 @@ Vector commonElements=null;
                     if (delem_name.length() == 0) delem_name = "empty";
                     String delem_type = dataElement.getType();
                     if (delem_type == null) delem_type = "unknown";
-            
+
                     String displayType = "unknown";
                     if (delem_type.equals("CH1")){
                         displayType = "Fixed values";
@@ -121,7 +129,7 @@ Vector commonElements=null;
                     else if (delem_type.equals("CH2")){
                         displayType = "Quantitative";
                     }
-        
+
                     d++;
                     %>
                     <tr>
@@ -134,6 +142,64 @@ Vector commonElements=null;
                         </td>
                     </tr>
                     <%
+                }
+            }
+
+            // SCHEMA SETS
+            if (schemaSets!=null && !schemaSets.isEmpty()){
+                for (int i=0; i<schemaSets.size(); i++){
+
+                    SchemaSet schemaSet = schemaSets.get(i);
+                    %>
+                    <tr>
+                        <td>
+                            Schema set:
+                            <stripes:link beanclass="eionet.web.action.SchemaSetActionBean"><c:out value="<%=schemaSet.getIdentifier()%>"/>
+                                <stripes:param name="schemaSet.identifier" value="<%=schemaSet.getIdentifier()%>"/>
+                                <stripes:param name="workingCopy" value="true"/>
+                            </stripes:link>
+                        </td>
+                    </tr>
+                <%
+                }
+            }
+
+            // SCHEMAS
+            if (schemas!=null && !schemas.isEmpty()){
+                for (int i=0; i<schemas.size(); i++){
+
+                    Schema schema = schemas.get(i);
+                    %>
+                    <tr>
+                        <td>
+                            Schema:
+                            <stripes:link beanclass="eionet.web.action.SchemaActionBean"><c:out value="<%=schema.getFileName()%>"/>
+                                <stripes:param name="schema.fileName" value="<%=schema.getFileName()%>"/>
+                                <stripes:param name="workingCopy" value="true"/>
+                            </stripes:link>
+                        </td>
+                    </tr>
+                <%
+                }
+            }
+
+            // Vocabularies
+            if (vocabularies!=null && !vocabularies.isEmpty()){
+                for (int i=0; i<vocabularies.size(); i++){
+
+                    VocabularyFolder vocabulary = vocabularies.get(i);
+                    %>
+                    <tr>
+                        <td>
+                            Vocabulary:
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean"><c:out value="<%=vocabulary.getLabel()%>"/>
+                                <stripes:param name="vocabularyFolder.folderName" value="<%=vocabulary.getFolderName()%>"/>
+                                <stripes:param name="vocabularyFolder.identifier" value="<%=vocabulary.getIdentifier()%>"/>
+                                <stripes:param name="vocabularyFolder.workingCopy" value="true"/>
+                            </stripes:link>
+                        </td>
+                    </tr>
+                <%
                 }
             }
             %>
@@ -152,7 +218,7 @@ Vector commonElements=null;
             <input type="submit" value="Logout" class="smallbutton"/>
         </div>
     </form>
-    
+
 </div> <!-- workarea -->
 </div> <!-- container -->
 <%@ include file="footer.jsp" %>

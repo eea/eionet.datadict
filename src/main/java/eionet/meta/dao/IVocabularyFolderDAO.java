@@ -55,6 +55,14 @@ public interface IVocabularyFolderDAO {
     List<VocabularyFolder> getVocabularyFolderVersions(String continuityId, int vocabularyFolderId, String userName);
 
     /**
+     * Returns working copies.
+     *
+     * @param userName
+     * @return
+     */
+    List<VocabularyFolder> getWorkingCopies(String userName);
+
+    /**
      * Creates vocabulary folder.
      *
      * @param vocabularyFolder

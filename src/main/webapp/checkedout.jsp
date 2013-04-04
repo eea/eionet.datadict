@@ -1,6 +1,7 @@
 <%@page contentType="text/html;charset=UTF-8" %>
 <%@page import="java.sql.SQLException,java.sql.Connection,eionet.meta.DataElement,eionet.meta.DDSearchEngine,eionet.meta.Dataset"%>
 <%@page import="eionet.util.Util,eionet.util.sql.ConnectionUtil,eionet.meta.dao.domain.SchemaSet,eionet.meta.dao.domain.Schema"%>
+<%@page import="eionet.meta.dao.domain.VocabularyFolder"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%!
@@ -10,6 +11,7 @@ Vector datasets=null;
 Vector commonElements=null;
 List<SchemaSet> schemaSets=null;
 List<Schema> schemas=null;
+List<VocabularyFolder> vocabularies = null;
 %>
 
 <%@ include file="/pages/common/taglibs.jsp"%>
@@ -47,6 +49,7 @@ List<Schema> schemas=null;
             commonElements = searchEngine.getCommonElements(null, null, null, null, true, "=");
             schemaSets = searchEngine.getSchemaSetWorkingCopies();
             schemas = searchEngine.getSchemaWorkingCopies();
+            vocabularies = searchEngine.getVocabularyWorkingCopies();
         }
 
 %>
@@ -156,7 +159,7 @@ List<Schema> schemas=null;
                             Schema set:
                             <stripes:link beanclass="eionet.web.action.SchemaSetActionBean"><c:out value="<%=schemaSet.getIdentifier()%>"/>
                                 <stripes:param name="schemaSet.identifier" value="<%=schemaSet.getIdentifier()%>"/>
-                                <stripes:param name="workginCopy" value="true"/>
+                                <stripes:param name="workingCopy" value="true"/>
                             </stripes:link>
                         </td>
                     </tr>
@@ -179,7 +182,7 @@ List<Schema> schemas=null;
                             Schema:
                             <stripes:link beanclass="eionet.web.action.SchemaActionBean"><c:out value="<%=schema.getFileName()%>"/>
                                 <stripes:param name="schema.fileName" value="<%=schema.getFileName()%>"/>
-                                <stripes:param name="workginCopy" value="true"/>
+                                <stripes:param name="workingCopy" value="true"/>
                             </stripes:link>
                         </td>
                     </tr>
@@ -188,6 +191,30 @@ List<Schema> schemas=null;
             } else {
                 %>
                     <tr><td>You have no schemas checked out!</td></tr>
+                <%
+            }
+
+            // Vocabularies
+            if (vocabularies!=null && !vocabularies.isEmpty()){
+                for (int i=0; i<vocabularies.size(); i++){
+
+                    VocabularyFolder vocabulary = vocabularies.get(i);
+                    %>
+                    <tr>
+                        <td>
+                            Vocabulary:
+                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean"><c:out value="<%=vocabulary.getLabel()%>"/>
+                                <stripes:param name="vocabularyFolder.folderName" value="<%=vocabulary.getFolderName()%>"/>
+                                <stripes:param name="vocabularyFolder.identifier" value="<%=vocabulary.getIdentifier()%>"/>
+                                <stripes:param name="vocabularyFolder.workingCopy" value="true"/>
+                            </stripes:link>
+                        </td>
+                    </tr>
+                <%
+                }
+            } else {
+                %>
+                    <tr><td>You have no vocabularies checked out!</td></tr>
                 <%
             }
             %>

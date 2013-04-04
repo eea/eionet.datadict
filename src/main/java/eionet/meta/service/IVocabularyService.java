@@ -316,4 +316,13 @@ public interface IVocabularyService {
      *             System did not find the vocabulary folder from DB.
      */
     void pingCrToReharvestVocabulary(int vocabularyFolderId) throws ServiceException;
+
+    /**
+     * Returns user's working copies.
+     *
+     * @param userName
+     * @return
+     * @throws ServiceException
+     */
+    List<VocabularyFolder> getWorkingCopies(String userName) throws ServiceException;;
 }

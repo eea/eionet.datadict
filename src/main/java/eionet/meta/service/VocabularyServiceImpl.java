@@ -736,4 +736,16 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<VocabularyFolder> getWorkingCopies(String userName) throws ServiceException {
+        try {
+            return vocabularyFolderDAO.getWorkingCopies(userName);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to get vocabulary folder working copies: " + e.getMessage(), e);
+        }
+    }
 }
