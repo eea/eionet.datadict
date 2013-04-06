@@ -124,7 +124,7 @@ public class DsTable implements Comparable {
     }
 
     public boolean isWorkingCopy() {
-        if (workingCopy==null) {
+        if (workingCopy == null) {
             return false;
         } else if (workingCopy.equals("Y")) {
             return true;
@@ -179,12 +179,12 @@ public class DsTable implements Comparable {
 
 
     public Vector getVersioningAttributes() {
-        if (simpleAttrs==null) {
+        if (simpleAttrs == null) {
             return null;
         }
 
         Vector set = new Vector();
-        for (int i=0; i<simpleAttrs.size(); i++) {
+        for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.effectsVersion()) {
                 set.add(attr);
@@ -197,7 +197,7 @@ public class DsTable implements Comparable {
     public String getAttributeValueByShortName(String name) {
 
         DElemAttribute attr = null;
-        for (int i=0; i<simpleAttrs.size(); i++) {
+        for (int i = 0; i < simpleAttrs.size(); i++) {
             attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr.getValue();
@@ -210,7 +210,7 @@ public class DsTable implements Comparable {
     public DElemAttribute getAttributeByShortName(String name) {
 
         // look from simple attributes
-        for (int i=0; i<simpleAttrs.size(); i++) {
+        for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
@@ -218,7 +218,7 @@ public class DsTable implements Comparable {
         }
 
         // if it wasn't in the simple attributes, look from complex ones
-        for (int i=0; i<complexAttrs.size(); i++) {
+        for (int i = 0; i < complexAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
@@ -268,11 +268,11 @@ public class DsTable implements Comparable {
 
         DsTable oTbl = (DsTable)o;
         String oCompStr = oTbl.getCompStr();
-        if (oCompStr==null && compStr==null) {
+        if (oCompStr == null && compStr == null) {
             return 0;
-        } else if (oCompStr==null) {
+        } else if (oCompStr == null) {
             return 1;
-        } else if (compStr==null) {
+        } else if (compStr == null) {
             return -1;
         }
 
@@ -310,7 +310,7 @@ public class DsTable implements Comparable {
      */
     public String getReferenceURL() {
 
-        if (getIdentifier()==null) {
+        if (getIdentifier() == null) {
             return null;
         }
 

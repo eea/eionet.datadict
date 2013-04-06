@@ -38,7 +38,7 @@ public class HarvestingServlet extends HttpServlet {
         res.setContentType("text/plain");
 
         DDUser user = SecurityUtil.getUser(req);
-        if (user==null || !user.isAuthentic())
+        if (user == null || !user.isAuthentic())
             throw new ServletException("User not authorized!");
 
         out.println("Harvesting. Please wait ...");
@@ -49,8 +49,7 @@ public class HarvestingServlet extends HttpServlet {
         try {
             harvester.harvest();
             out.println("Successfully done!!!");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
             out.println("Encountered the following exception:");
             e.printStackTrace(new PrintStream(out));

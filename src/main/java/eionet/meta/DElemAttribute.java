@@ -267,7 +267,7 @@ public class DElemAttribute {
             }
         }
 
-        // if displayWhen==0, no flag can possible be set
+        // if displayWhen == 0, no flag can possible be set
         if (displayWhen == 0) {
             return false;
         }

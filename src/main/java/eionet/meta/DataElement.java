@@ -139,12 +139,12 @@ public class DataElement implements Comparable{
     }
 
     public Vector getVersioningAttributes() {
-        if (simpleAttrs==null) {
+        if (simpleAttrs == null) {
             return null;
         }
 
         Vector set = new Vector();
-        for (int i=0; i<simpleAttrs.size(); i++) {
+        for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.effectsVersion()) {
                 set.add(attr);
@@ -165,7 +165,7 @@ public class DataElement implements Comparable{
     public DElemAttribute getAttributeByShortName(String name) {
 
         // look from simple attributes
-        for (int i=0; i<simpleAttrs.size(); i++) {
+        for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
@@ -173,7 +173,7 @@ public class DataElement implements Comparable{
         }
 
         // if it wasn't in the simple attributes, look from complex ones
-        for (int i=0; i<complexAttrs.size(); i++) {
+        for (int i = 0; i < complexAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
@@ -185,7 +185,7 @@ public class DataElement implements Comparable{
 
     public DElemAttribute getAttributeByName(String name) {
 
-        for (int i=0; i<simpleAttrs.size(); i++) {
+        for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getName().equalsIgnoreCase(name)) {
                 return attr;
@@ -197,7 +197,7 @@ public class DataElement implements Comparable{
 
     public DElemAttribute getAttributeById(String id) {
 
-        for (int i=0; i<simpleAttrs.size(); i++) {
+        for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getID().equalsIgnoreCase(id)) {
                 return attr;
@@ -210,7 +210,7 @@ public class DataElement implements Comparable{
     public String getAttributeValueByShortName(String name) {
 
         DElemAttribute attr = null;
-        for (int i=0; i<simpleAttrs.size(); i++) {
+        for (int i = 0; i < simpleAttrs.size(); i++) {
             attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr.getValue();
@@ -223,7 +223,7 @@ public class DataElement implements Comparable{
     public String getAttributeValueByName(String name) {
 
         DElemAttribute attr = null;
-        for (int i=0; i<simpleAttrs.size(); i++) {
+        for (int i = 0; i < simpleAttrs.size(); i++) {
             attr = (DElemAttribute)simpleAttrs.get(i);
             if (attr.getName().equalsIgnoreCase(name)) {
                 return attr.getValue();
@@ -286,7 +286,7 @@ public class DataElement implements Comparable{
     }
 
     public boolean isWorkingCopy() {
-        if (workingCopy==null) {
+        if (workingCopy == null) {
             return false;
         } else if (workingCopy.equals("Y")) {
             return true;
@@ -346,14 +346,14 @@ public class DataElement implements Comparable{
 
     public boolean hasImages() {
         boolean hasImages = false;
-        for (int t=0; simpleAttrs!=null && t<simpleAttrs.size(); t++) {
+        for (int t = 0; simpleAttrs != null && t < simpleAttrs.size(); t++) {
             DElemAttribute attr = (DElemAttribute)simpleAttrs.get(t);
             String dispType = attr.getDisplayType();
             Vector values = attr.getValues();
-            if (dispType!=null &&
+            if (dispType != null &&
                     dispType.equals("image") &&
-                    values!=null &&
-                    values.size()>0) {
+                    values != null &&
+                    values.size() > 0) {
                 hasImages = true;
                 break;
             }
@@ -391,17 +391,17 @@ public class DataElement implements Comparable{
      */
     public String getReferenceURL() {
 
-        if (identifier==null || identifier.isEmpty()){
+        if (identifier == null || identifier.isEmpty()){
             return null;
         }
 
         StringBuffer result = new StringBuffer();
         String jspUrlPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-        if (jspUrlPrefix!=null){
+        if (jspUrlPrefix != null){
             result.append(jspUrlPrefix);
         }
 
-        boolean isCommonElement = ns==null || ns.getID()==null;
+        boolean isCommonElement = ns == null || ns.getID() == null;
         if (isCommonElement){
             result.append("dataelements/latest/" + identifier);
         }
@@ -499,7 +499,7 @@ public class DataElement implements Comparable{
      * @return
      */
     public boolean isCommon() {
-        return (ns==null || ns.getID()==null);
+        return (ns == null || ns.getID() == null);
     }
 
     /**

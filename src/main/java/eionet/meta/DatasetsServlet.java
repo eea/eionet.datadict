@@ -32,7 +32,7 @@ public class DatasetsServlet extends HttpServlet{
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        if (LOGGER.isTraceEnabled()){
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Entered request: " + request.getRequestURL());
         }
 
@@ -44,24 +44,24 @@ public class DatasetsServlet extends HttpServlet{
         }
 
         String[] pathInfoSegments = StringUtils.split(pathInfo, "/");
-        if (pathInfoSegments[0].equals("latest")){
+        if (pathInfoSegments[0].equals("latest")) {
 
             // a latest dataset definition is requested (i.e. by its alfa-numeric identifier)
             handleRequestForLatest(request, response, pathInfoSegments);
             return;
         }
-        else if (pathInfoSegments[0].equals("rdf")){
+        else if (pathInfoSegments[0].equals("rdf")) {
 
             // RDF of all datasets is requested
             handleRequestForAllRdf(request, response, pathInfoSegments);
             return;
         }
-        else if (pathInfoSegments[0].equals("add")){
+        else if (pathInfoSegments[0].equals("add")) {
 
             // a request for adding a new dataset
             handleRequestForAdd(request, response, pathInfoSegments);
         }
-        else if (NumberUtils.toInt(pathInfoSegments[0]) > 0){
+        else if (NumberUtils.toInt(pathInfoSegments[0]) > 0) {
 
             // a request specific to a particular dataset (i.e. by its auto-generated identifier)
             handleRequestForParticular(request, response, pathInfoSegments);
@@ -136,7 +136,7 @@ public class DatasetsServlet extends HttpServlet{
         DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
         wrappedRequest.addParameterValue("ds_id", datasetId);
 
-        if (event.equals("subscribe") || event.equals("checkout") || event.equals("newversion")){
+        if (event.equals("subscribe") || event.equals("checkout") || event.equals("newversion")) {
             wrappedRequest.addParameterValue("mode", "view");
             wrappedRequest.addParameterValue("action", event);
         }
@@ -158,41 +158,39 @@ public class DatasetsServlet extends HttpServlet{
     private void handleRequestForLatest(HttpServletRequest request, HttpServletResponse response, String[] pathInfoSegments)
     throws ServletException, IOException {
 
-        String datasetIdentifier = pathInfoSegments.length>1 ? pathInfoSegments[1] : null;
-        if (datasetIdentifier==null){
+        String datasetIdentifier = pathInfoSegments.length > 1 ? pathInfoSegments[1] : null;
+        if (datasetIdentifier == null) {
             throw new DDRuntimeException("Missing datast identifier in path info!");
         }
 
         String tableIdentifier = null;
-        if (pathInfoSegments.length>2 && pathInfoSegments[2].equals("tables")){
-            tableIdentifier = pathInfoSegments.length>3 ? pathInfoSegments[3] : null;
-            if (tableIdentifier==null){
+        if (pathInfoSegments.length > 2 && pathInfoSegments[2].equals("tables")) {
+            tableIdentifier = pathInfoSegments.length > 3 ? pathInfoSegments[3] : null;
+            if (tableIdentifier == null) {
                 throw new DDRuntimeException("Missing table identifier in path info!");
             }
         }
 
         String elementIdentifier = null;
-        if (pathInfoSegments.length>4 && pathInfoSegments[4].equals("elements")){
-            elementIdentifier = pathInfoSegments.length>5 ? pathInfoSegments[5] : null;
-            if (elementIdentifier==null){
+        if (pathInfoSegments.length > 4 && pathInfoSegments[4].equals("elements")) {
+            elementIdentifier = pathInfoSegments.length > 5 ? pathInfoSegments[5] : null;
+            if (elementIdentifier == null) {
                 throw new DDRuntimeException("Missing element identifier in path info!");
             }
         }
 
-        if (elementIdentifier!=null && tableIdentifier!=null){
+        if (elementIdentifier != null && tableIdentifier != null) {
             DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
             wrappedRequest.addParameterValue("element_idf", elementIdentifier);
             wrappedRequest.addParameterValue("table_idf", tableIdentifier);
             wrappedRequest.addParameterValue("dataset_idf", datasetIdentifier);
             wrappedRequest.getRequestDispatcher("/data_element.jsp").forward(wrappedRequest, response);
-        }
-        else if (tableIdentifier!=null){
+        } else if (tableIdentifier != null) {
             DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
             wrappedRequest.addParameterValue("table_idf", tableIdentifier);
             wrappedRequest.addParameterValue("dataset_idf", datasetIdentifier);
             wrappedRequest.getRequestDispatcher("/dstable.jsp").forward(wrappedRequest, response);
-        }
-        else{
+        } else {
             DDServletRequestWrapper wrappedRequest = new DDServletRequestWrapper(request);
             wrappedRequest.addParameterValue("dataset_idf", datasetIdentifier);
             wrappedRequest.getRequestDispatcher(DATASET_JSP).forward(wrappedRequest, response);

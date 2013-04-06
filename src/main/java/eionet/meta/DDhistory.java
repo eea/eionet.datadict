@@ -114,12 +114,12 @@ public class DDhistory {
   private void gotoMatching(String[] find_url, boolean matching) {
       boolean found = false;
       if (historySize > 0) {
-        for (int i = history.size();i > 0;i--) {
+        for (int i = history.size(); i > 0; i--) {
             currentUrl = (String)history.get(i - 1);
             historySize = i;
             backUrl = historySize > 1 ? (String) history.get(historySize-2):"";
             found = false;
-            for (int j=0; j < find_url.length; j++) {
+            for (int j = 0; j < find_url.length; j++) {
                 if (currentUrl.indexOf(find_url[j]) > -1) {
                   if (matching) return;
                   found = true;
@@ -146,7 +146,7 @@ public class DDhistory {
         for (int i = history.size(); i > 0; i--) {
             url = (String)history.get(i-1);
             found = false;
-            for (int j=0; j < find_url.length; j++) {
+            for (int j = 0; j < find_url.length; j++) {
                 if (url.indexOf(find_url[j]) > -1) {
                   if (matching) return url;
                   found = true;

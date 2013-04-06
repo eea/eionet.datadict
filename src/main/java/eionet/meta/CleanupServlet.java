@@ -71,7 +71,7 @@ public class CleanupServlet extends HttpServlet{
             res.setContentType("text/plain");
 
             action = req.getParameter(PAR_ACTION);
-            if (action==null) {
+            if (action == null) {
                 throw new Exception("Missing request parameter: " + PAR_ACTION);
             }
             String objIDs = req.getParameter(PAR_OBJ_IDS);
@@ -91,13 +91,13 @@ public class CleanupServlet extends HttpServlet{
                 dataManipulations.outputWriteln("ALL DONE!");
             }
             else if (action.equals(ACTION_DELETE_ELM) || action.equals(ACTION_DELETE_TBL) || action.equals(ACTION_DELETE_DST)) {
-                if (objIDs!=null && objIDs.trim().length()>0) {
+                if (objIDs != null && objIDs.trim().length() > 0) {
 
                     tx = SQLTransaction.begin(conn);
                     StringTokenizer st = new StringTokenizer(objIDs);
                     while (st.hasMoreTokens()) {
 
-                        if (dataManipulations==null) {
+                        if (dataManipulations == null) {
                             dataManipulations = new DataManipulations(conn, null);
                         }
 
@@ -125,9 +125,9 @@ public class CleanupServlet extends HttpServlet{
             SQLTransaction.rollback(tx);
             LOGGER.error(e);
 
-            if (writer!=null) {
+            if (writer != null) {
                 String trace = eionet.util.Util.getStack(e);
-                writer.println(trace==null ? e.toString() : trace);
+                writer.println(trace == null ? e.toString() : trace);
                 writer.flush();
             }
         }
@@ -135,11 +135,11 @@ public class CleanupServlet extends HttpServlet{
 
             SQLTransaction.end(tx);
 
-            if (writer!=null) {
+            if (writer != null) {
                 writer.close();
             }
             try {
-                if (conn!=null) {
+                if (conn != null) {
                     conn.close();
                 }
             }

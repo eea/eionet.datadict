@@ -47,7 +47,7 @@ public class DocDownload extends HttpServlet{
                 throw new Exception("The file does not exist!");
 
             String fileName = file.getName();
-            if (fileName==null) fileName = "unknown.unknown";
+            if (fileName == null) fileName = "unknown.unknown";
 
             res.setContentType(mimeType);
 
@@ -56,11 +56,9 @@ public class DocDownload extends HttpServlet{
             res.setHeader("Content-Disposition", strBuf.toString());
 
             writeFile(file, res);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new ServletException(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection();
         }
     }
@@ -81,12 +79,11 @@ public class DocDownload extends HttpServlet{
             in = new FileInputStream(file);
             res.setContentLength(in.available());
             out = res.getOutputStream();
-            while ((i=in.read(buf, 0, buf.length)) != -1) {
+            while ((i = in.read(buf, 0, buf.length)) != -1) {
                 out.write(buf, 0, i);
             }
-        }
-        finally {
-            if (in!=null) in.close();
+        } finally {
+            if (in != null) in.close();
             out.close();
         }
     }
@@ -117,13 +114,11 @@ public class DocDownload extends HttpServlet{
                 absPath = rs.getString("ABS_PATH");
                 setMimeType(absPath);
             }
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
-            }
-            catch (SQLException e) {}
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {}
         }
 
         return absPath;
@@ -170,7 +165,7 @@ public class DocDownload extends HttpServlet{
      */
     private void guard(HttpServletRequest req) throws Exception {
         DDUser user = SecurityUtil.getUser(req);
-        if (user==null)
+        if (user == null)
             throw new Exception("Not authenticated!");
     }
 
@@ -180,7 +175,7 @@ public class DocDownload extends HttpServlet{
      * @throws SQLException
      */
     private void openConnection() throws DDConnectionException, SQLException {
-        if (conn==null) {
+        if (conn == null) {
             conn = ConnectionUtil.getConnection();
         }
     }
@@ -190,14 +185,12 @@ public class DocDownload extends HttpServlet{
      *
      */
     private void closeConnection() {
-        if (conn!=null) {
+        if (conn != null) {
             try {
                 conn.close();
-            }
-            catch (SQLException sqle) {
-            }
-            finally {
-                conn=null;
+            } catch (SQLException sqle) {
+            } finally {
+                conn = null;
             }
         }
     }

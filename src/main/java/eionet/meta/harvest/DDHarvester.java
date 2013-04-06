@@ -70,16 +70,16 @@ public abstract class DDHarvester implements HarvesterIF{
             return;
         }
         Enumeration flds = hash.keys();
-        if (flds==null || !flds.hasMoreElements()) {
+        if (flds == null || !flds.hasMoreElements()) {
             return;
         }
 
-        if (harvesterID==null || harvestingTime==0) {
+        if (harvesterID == null || harvestingTime == 0) {
             throw new Exception("Failed to find the harvesting ID and time!");
         }
 
         getConnection();
-        if (conn==null || conn.isClosed()) {
+        if (conn == null || conn.isClosed()) {
             throw new Exception("Failed to get the DB connection!");
         }
 
@@ -110,17 +110,17 @@ public abstract class DDHarvester implements HarvesterIF{
             stmt.close();
 
             // store in HARV_ATTR_FIELD (using a do-while cause hasMoreElements() has been called already)
-            do{
+            do {
                 String fldName  = (String)flds.nextElement();
                 HashSet fldValues = new HashSet();
 
                 Object o = hash.get(fldName);
-                if (o==null) {
+                if (o == null) {
                     o = "";
                 }
 
                 if (o.getClass().getName().endsWith("Vector")) {
-                    for (int i=0; i<((Vector)o).size(); i++) {
+                    for (int i = 0; i < ((Vector)o).size(); i++) {
                         fldValues.add(((Vector)o).get(i));
                     }
                 }
@@ -142,19 +142,16 @@ public abstract class DDHarvester implements HarvesterIF{
                     stmt.executeUpdate();
                 }
 
-            }
-            while (flds.hasMoreElements());
-        }
-        finally {
+            } while (flds.hasMoreElements());
+        } finally {
             try {
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-                if (conn!=null) {
+                if (conn != null) {
                     conn.close();
                 }
-            }
-            catch (SQLException e) {}
+            } catch (SQLException e) {}
         }
     }
 
@@ -178,7 +175,7 @@ public abstract class DDHarvester implements HarvesterIF{
      */
     public void cleanup() {
 
-        if (conn==null) {
+        if (conn == null) {
             return;
         }
 
@@ -197,10 +194,10 @@ public abstract class DDHarvester implements HarvesterIF{
         }
         finally {
             try {
-                if (stmt!=null) {
+                if (stmt != null) {
                     stmt.close();
                 }
-                if (conn!=null) {
+                if (conn != null) {
                     conn.close();
                 }
             }
@@ -230,7 +227,7 @@ public abstract class DDHarvester implements HarvesterIF{
                 v.add(rs.getString(1));
             }
 
-            for (int i=0; i<v.size(); i++) {
+            for (int i = 0; i < v.size(); i++) {
                 INParameters inParams = new INParameters();
                 StringBuffer buf = new StringBuffer("delete from COMPLEX_ATTR_ROW where ROW_ID=");
                 buf.append(inParams.add(v.get(i)));
@@ -241,7 +238,7 @@ public abstract class DDHarvester implements HarvesterIF{
         }
         finally {
             try {
-                if (rs!=null) {
+                if (rs != null) {
                     rs.close();
                 }
             }
@@ -250,14 +247,14 @@ public abstract class DDHarvester implements HarvesterIF{
     }
 
     private void getConnection() throws Exception {
-        if (conn==null || conn.isClosed()) {
+        if (conn == null || conn.isClosed()) {
             ConnectionUtil.getConnection();
         }
     }
 
     private void closeConnection() {
         try {
-            if (conn!=null) {
+            if (conn != null) {
                 conn.close();
             }
         }
@@ -266,7 +263,7 @@ public abstract class DDHarvester implements HarvesterIF{
 
     private String getMD5(String[] flds) {
         StringBuffer buf = new StringBuffer("md5('");
-        for (int i=0; i<flds.length; i++) {
+        for (int i = 0; i < flds.length; i++) {
             buf.append(flds[i]);
         }
         return buf.append("')").toString();

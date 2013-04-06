@@ -12,7 +12,6 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
 import eionet.meta.DDRuntimeException;
-import eionet.util.IsJUnitRuntime;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -47,7 +46,7 @@ public class ConnectionUtil {
         if (isJNDIDataSource()) {
             return dataSource.getConnection();
         } else {
-            return getSimpleConnection(IsJUnitRuntime.VALUE);
+            return getSimpleConnection();
         }
     }
 
@@ -56,35 +55,26 @@ public class ConnectionUtil {
      * @return
      * @throws SQLException
      */
-    private static Connection getSimpleConnection(boolean isUnitTest) throws SQLException {
+    private static Connection getSimpleConnection() throws SQLException {
 
-        // property names depending on whether the code is being run by a unit test
-        // (this is just to avoid shooting in the leg by running unit tests
-        // accidentally against the real database)
-        isUnitTest = false;
-        String drvProperty = isUnitTest ? PropsIF.DB_UNITTEST_DRV : PropsIF.DBDRV;
-        String urlProperty = isUnitTest ? PropsIF.DB_UNITTEST_URL : PropsIF.DBURL;
-        String usrProperty = isUnitTest ? PropsIF.DB_UNITTEST_USR : PropsIF.DBUSR;
-        String pwdProperty = isUnitTest ? PropsIF.DB_UNITTEST_PWD : PropsIF.DBPSW;
-
-        String drv = Props.getProperty(drvProperty);
+        String drv = Props.getProperty(PropsIF.DBDRV);
         if (drv == null || drv.trim().length() == 0) {
-            throw new SQLException("Failed to get connection, missing property: " + drvProperty);
+            throw new SQLException("Failed to get connection, missing property: " + PropsIF.DBDRV);
         }
 
-        String url = Props.getProperty(urlProperty);
+        String url = Props.getProperty(PropsIF.DBURL);
         if (url == null || url.trim().length() == 0) {
-            throw new SQLException("Failed to get connection, missing property: " + urlProperty);
+            throw new SQLException("Failed to get connection, missing property: " + PropsIF.DBURL);
         }
 
-        String usr = Props.getProperty(usrProperty);
+        String usr = Props.getProperty(PropsIF.DBUSR);
         if (usr == null || usr.trim().length() == 0) {
-            throw new SQLException("Failed to get connection, missing property: " + usrProperty);
+            throw new SQLException("Failed to get connection, missing property: " + PropsIF.DBUSR);
         }
 
-        String pwd = Props.getProperty(pwdProperty);
+        String pwd = Props.getProperty(PropsIF.DBPSW);
         if (pwd == null || pwd.trim().length() == 0) {
-            throw new SQLException("Failed to get connection, missing property: " + pwdProperty);
+            throw new SQLException("Failed to get connection, missing property: " + PropsIF.DBPSW);
         }
 
         try {

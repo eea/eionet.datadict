@@ -37,9 +37,9 @@ public class TblPdfGuideline {
     public TblPdfGuideline(DDSearchEngine searchEngine, DstPdfGuideline owner)//, Section parentSection)
     throws Exception {
 
-        //if (parentSection==null) throw new Exception("parentSection cannot be null!");
+        //if (parentSection == null) throw new Exception("parentSection cannot be null!");
 
-        if (searchEngine==null) {
+        if (searchEngine == null) {
             throw new Exception("searchEngine cannot be null!");
         }
 
@@ -82,7 +82,7 @@ public class TblPdfGuideline {
      */
     private void write(DsTable dsTable) throws Exception {
 
-        if (dsTable==null) {
+        if (dsTable == null) {
             throw new Exception("Table object was null!");
         }
 
@@ -95,11 +95,11 @@ public class TblPdfGuideline {
         if (owner != null) {
             nr = owner.getSectioning().level(tblName + titleTail, 2);
         }
-        nr = nr==null ? "" : nr + " ";
+        nr = nr == null ? "" : nr + " ";
 
         Paragraph prg = new Paragraph();
         prg.add(new Chunk(nr + tblName, Fonts.getUnicode(14, Font.BOLD)));
-        if (titleTail.length()>0) {
+        if (titleTail.length() > 0) {
             prg.add(new Chunk(titleTail, Fonts.getUnicode(14)));
         }
 
@@ -132,7 +132,7 @@ public class TblPdfGuideline {
 
         /* write image attributes
         Element imgAttrs = PdfUtil.imgAttributes(v, vsPath);
-        if (imgAttrs!=null) {
+        if (imgAttrs != null) {
             addElement(new Phrase("\n"));
             addElement(imgAttrs);
         }*/
@@ -142,7 +142,7 @@ public class TblPdfGuideline {
         // and split the elements vector into GIS and non-GIS
 
         v = dsTable.getElements();
-        if (v==null || v.size()==0) {
+        if (v == null || v.size() == 0) {
             return;
         }
 
@@ -150,8 +150,8 @@ public class TblPdfGuideline {
         Vector nonGisElms = new Vector();
 
         DataElement elem = null;
-        String dstID = params==null ? null : params.getParameter("dstID");
-        for (int i=0; i<v.size(); i++) {
+        String dstID = params == null ? null : params.getParameter("dstID");
+        for (int i = 0; i < v.size(); i++) {
             elem = (DataElement)v.get(i);
             Vector fxValues = searchEngine.getFixedValues(elem.getID(), "elem");
             elem.setFixedValues(fxValues);
@@ -161,14 +161,14 @@ public class TblPdfGuideline {
             elem.setAttributes(attrs);
 
             // split vector by GIS
-            if (elem.getGIS()!=null) {
+            if (elem.getGIS() != null) {
                 gisElms.add(elem);
             } else {
                 nonGisElms.add(elem);
             }
         }
 
-        if (owner!=null) {
+        if (owner != null) {
             owner.addTblElms(dsTable.getID(), v);
             owner.addTblNames(dsTable.getID(), tblName);
         }
@@ -190,7 +190,7 @@ public class TblPdfGuideline {
                 PdfUtil.tableElements(nonGisElms, null, owner.getSectioning()));
 
         // write GIS elements factlist
-        if (gisElms.size()>0) {
+        if (gisElms.size() > 0) {
             addElement(new Phrase("\n"));
 
             prg = new Paragraph();
@@ -207,7 +207,7 @@ public class TblPdfGuideline {
         }
 
         /* write data element full guidelines, each into a separate chapter
-        for (int i=0; v!=null && i<v.size(); i++) {
+        for (int i = 0; v != null && i < v.size(); i++) {
             elem = (DataElement)v.get(i);
             addElement(new Paragraph("\n"));
             ElmPdfGuideline elmGuideln = new ElmPdfGuideline(searchEngine, this); //, section);
@@ -218,7 +218,7 @@ public class TblPdfGuideline {
 
     protected void addElement(Element elm) {
 
-        if (owner!=null) {
+        if (owner != null) {
             owner.addElement(elm);
         }
 
@@ -235,7 +235,7 @@ public class TblPdfGuideline {
     }
 
     protected Sectioning getSectioning() {
-        if (owner!=null) {
+        if (owner != null) {
             return owner.getSectioning();
         } else {
             return null;

@@ -74,13 +74,13 @@ public class MdbFile {
      */
     private MdbFile(Connection conn, String dstID, String fullPath) throws MdbException {
 
-        if (conn==null) {
+        if (conn == null) {
             throw new MdbException("SQL connection not given");
         }
-        if (dstID==null) {
+        if (dstID == null) {
             throw new MdbException("Dataset ID not given");
         }
-        if (fullPath==null) {
+        if (fullPath == null) {
             throw new MdbException("File path not given");
         }
 
@@ -115,7 +115,7 @@ public class MdbFile {
         }
 
         Dataset dst = searchEngine.getDataset(dstID);
-        if (dst==null) {
+        if (dst == null) {
             throw new MdbException("Dataset not found, id=" + dstID);
         }
 
@@ -134,12 +134,12 @@ public class MdbFile {
             db = Database.create(file);
 
             Vector tables = searchEngine.getDatasetTables(dstID, true);
-            for (int i=0; tables!=null && i<tables.size(); i++) {
+            for (int i = 0; tables != null && i < tables.size(); i++) {
                 createTable((DsTable)tables.get(i), db);
             }
         }
         finally {
-            if (db!=null) {
+            if (db != null) {
                 try { db.close(); } catch (Throwable t) {}
             }
         }
@@ -152,32 +152,32 @@ public class MdbFile {
      */
     private void createTable(DsTable tbl, Database db) throws Exception {
 
-        if (tbl==null) {
+        if (tbl == null) {
             return;
         }
-        if (db==null) {
+        if (db == null) {
             return;
         }
 
         Vector gisColumns = new Vector();
         Vector nonGisColumns = new Vector();
         Vector elems = searchEngine.getDataElements(null, null, null, null, tbl.getID());
-        if (elems!=null && elems.size()>0) {
+        if (elems != null && elems.size() > 0) {
             gisColumns = createGISColumns(elems);
             nonGisColumns = createNONGISColumns(elems);
         }
 
         boolean atLeastOneCreated = false;
         String tableName = tbl.getIdentifier();
-        //if (gisColumns!=null && gisColumns.size()>0) {
-        if (nonGisColumns!=null && nonGisColumns.size()>0) {
+        //if (gisColumns != null && gisColumns.size() > 0) {
+        if (nonGisColumns != null && nonGisColumns.size() > 0) {
             //db.createTable(tableName, gisColumns);
             db.createTable(tableName, nonGisColumns);
             atLeastOneCreated = true;
         }
 
-        //if (nonGisColumns!=null && nonGisColumns.size()>0) {
-        if (gisColumns!=null && gisColumns.size()>0) {
+        //if (nonGisColumns != null && nonGisColumns.size() > 0) {
+        if (gisColumns != null && gisColumns.size() > 0) {
             if (atLeastOneCreated) {
                 tableName = tableName + "_meta";
             }
@@ -198,18 +198,18 @@ public class MdbFile {
 
         Vector result = new Vector();
 
-        if (elems==null || elems.size()==0) {
+        if (elems == null || elems.size() == 0) {
             return result;
         }
 
         int done = 0;
-        for (int i=0; i<elems.size(); i++) {
+        for (int i = 0; i < elems.size(); i++) {
 
             Column col = null;
             DataElement elm = (DataElement)elems.get(i);
-            if (elm.getGIS()!=null) { // we want only GIS elements here!
+            if (elm.getGIS() != null) { // we want only GIS elements here!
                 col = createColumn((DataElement)elems.get(i));
-                if (col!=null) {
+                if (col != null) {
                     result.add(col);
                 }
             }
@@ -225,18 +225,18 @@ public class MdbFile {
 
         Vector result = new Vector();
 
-        if (elems==null || elems.size()==0) {
+        if (elems == null || elems.size() == 0) {
             return result;
         }
 
         int done = 0;
-        for (int i=0; i<elems.size(); i++) {
+        for (int i = 0; i < elems.size(); i++) {
 
             Column col = null;
             DataElement elm = (DataElement)elems.get(i);
-            if (elm.getGIS()==null) { // we want only NON-GIS elements here!
+            if (elm.getGIS() == null) { // we want only NON-GIS elements here!
                 col = createColumn((DataElement)elems.get(i));
-                if (col!=null) {
+                if (col != null) {
                     result.add(col);
                 }
             }
@@ -250,12 +250,12 @@ public class MdbFile {
      */
     private Column createColumn(DataElement elm) throws SQLException {
 
-        if (elm==null) {
+        if (elm == null) {
             return null;
         }
         String colName = elm.getIdentifier();
         String elmDataType = elm.getAttributeValueByShortName("Datatype");
-        if (colName==null || elmDataType==null) {
+        if (colName == null || elmDataType == null) {
             return null;
         }
 
@@ -279,25 +279,25 @@ public class MdbFile {
             db = Database.create(file);
 
             List cols = getVmdColumns();
-            if (cols==null || cols.size()==0) {
+            if (cols == null || cols.size() == 0) {
                 throw new MdbException("No columns were added for validation metadata");
             }
 
             db.createTable(VMD_TABLENAME, cols);
             Table vmdTable = db.getTable(VMD_TABLENAME);
-            if (vmdTable==null) {
+            if (vmdTable == null) {
                 throw new NullPointerException();
             }
 
             List rows = createVmdRows();
-            if (rows==null || rows.size()==0) {
+            if (rows == null || rows.size() == 0) {
                 throw new MdbException("No rows were added for validation metadata");
             }
 
             vmdTable.addRows(rows);
         }
         finally {
-            if (db!=null) {
+            if (db != null) {
                 try { db.close(); } catch (Throwable t) {}
             }
         }
@@ -313,17 +313,17 @@ public class MdbFile {
         //"TblIdf", "ElmIdf", "TblNr", "TblNsID", "TblNsURL", "TblSchemaURL", "DstIdf", "DstNr", "DstNsID", "DstNsURL", "DstSchemaURL", "DstSchemaLocation", "DstsNsID", "DstsNsURL"
 
         Vector ddTables = searchEngine.getDatasetTables(dstID, true);
-        if (ddTables==null || ddTables.size()==0) {
+        if (ddTables == null || ddTables.size() == 0) {
             return null;
         }
 
         Vector rows = new Vector();
-        for (int i=0; ddTables!=null && i<ddTables.size(); i++) {
+        for (int i = 0; ddTables != null && i < ddTables.size(); i++) {
 
             DsTable tbl = (DsTable)ddTables.get(i);
 
             Vector ddElms = searchEngine.getDataElements(null, null, null, null, tbl.getID());
-            for (int j=0; ddElms!=null && j<ddElms.size(); j++) {
+            for (int j = 0; ddElms != null && j < ddElms.size(); j++) {
 
                 DataElement elm = (DataElement)ddElms.get(j);
                 Object[] row = constructVmdRow(getDst(), tbl, elm);
@@ -368,7 +368,7 @@ public class MdbFile {
      */
     private static List getVmdColumns() throws SQLException {
         Vector cols = new Vector();
-        for (int i=0; i<VMD_COLUMNS.length; i++) {
+        for (int i = 0; i < VMD_COLUMNS.length; i++) {
             Column col = new Column();
             String colName = VMD_COLUMNS[i];
             int colType = Mdb.getVmdColumnType(colName);
@@ -409,38 +409,36 @@ public class MdbFile {
      */
     public static void main(String args[]) {
 
-        String dstID = (args!=null && args.length > 0) ? args[0] : null;
-        String fileFullPath = (args!=null && args.length > 1) ? args[1] : null;
-        String vmdOnly = (args!=null && args.length > 2) ? args[2] : null;
+        String dstID = (args != null && args.length > 0) ? args[0] : null;
+        String fileFullPath = (args != null && args.length > 1) ? args[1] : null;
+        String vmdOnly = (args != null && args.length > 2) ? args[2] : null;
 
         System.out.println("entered " + MdbFile.class.getName() + ".main() with " + args);
 
         Connection conn = null;
         try {
-            if (dstID==null) {
+            if (dstID == null) {
                 throw new MdbException("Missing command line argument for dataset id");
             }
-            if (fileFullPath==null) {
+            if (fileFullPath == null) {
                 throw new MdbException("Missing command line argument for file full path");
             }
 
             Properties props = MdbFile.getProperties();
             conn = ConnectionUtil.getConnection();
-            if (vmdOnly==null) {
+            if (vmdOnly == null) {
                 MdbFile.create(conn, dstID, fileFullPath);
             } else {
                 MdbFile.create(conn, dstID, fileFullPath, Boolean.valueOf(vmdOnly).booleanValue());
             }
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             try {
                 SQL.close(conn);
                 System.err.println("============>");
                 System.err.println(t.getMessage());
                 t.printStackTrace(System.err);
                 System.err.println("============>");
-            }
-            finally {
+            } finally {
                 System.exit(1);
             }
         }
@@ -451,7 +449,7 @@ public class MdbFile {
     /*
      *
      */
-    private static Properties getProperties() throws Throwable{
+    private static Properties getProperties() throws Throwable {
 
         Vector v = new Vector();
         v.add(PropsIF.DBDRV);
@@ -461,10 +459,10 @@ public class MdbFile {
 
         Properties props = new Properties();
 
-        for (int i=0; i<v.size(); i++) {
+        for (int i = 0; i < v.size(); i++) {
             String propName  = (String)v.get(i);
             String propValue = Props.getProperty(propName);
-            if (propValue==null || propValue.length()==0) {
+            if (propValue == null || propValue.length() == 0) {
                 throw new MdbException("Could not find property: " + propName);
             } else {
                 props.setProperty(propName, propValue);
@@ -479,7 +477,7 @@ public class MdbFile {
      */
     private static void log(String msg) {
 
-        if (LOGGER!=null) {
+        if (LOGGER != null) {
             LOGGER.debug(msg);
         } else {
             System.out.println(msg);
@@ -491,11 +489,10 @@ public class MdbFile {
      */
     private static void log(String msg, Throwable t) {
 
-        if (LOGGER!=null) {
+        if (LOGGER != null) {
             LOGGER.debug(msg);
             LOGGER.debug(Util.getStack(t));
-        }
-        else {
+        } else {
             System.out.println(msg);
             System.out.println(Util.getStack(t));
         }
@@ -506,7 +503,7 @@ public class MdbFile {
      */
     private static void log(Throwable t) {
 
-        if (LOGGER!=null) {
+        if (LOGGER != null) {
             LOGGER.debug(Util.getStack(t));
         } else {
             System.out.println(Util.getStack(t));
@@ -514,7 +511,7 @@ public class MdbFile {
     }
 
     /*
-     *
+     * FIXME: Move to unit test.
      */
     private static void createTest() throws Exception {
 
@@ -558,7 +555,7 @@ public class MdbFile {
      * @throws SQLException
      */
     public String getDstIdf() throws SQLException {
-        if (dstIdf==null) {
+        if (dstIdf == null) {
             dstIdf = getDst().getIdentifier();
         }
         return dstIdf;
@@ -571,7 +568,7 @@ public class MdbFile {
      */
     public Dataset getDst() throws SQLException {
 
-        if (dst==null) {
+        if (dst == null) {
             dst = searchEngine.getDataset(getDstID());
         }
         return dst;
@@ -583,7 +580,7 @@ public class MdbFile {
      * @throws SQLException
      */
     public String getDstNsID() throws SQLException {
-        if (dstNsID==null) {
+        if (dstNsID == null) {
             dstNsID = getDst().getNamespaceID();
         }
         return dstNsID;
@@ -603,10 +600,10 @@ public class MdbFile {
      */
     private static String getDstSchemaLocationPrefix() {
 
-        if (dstSchemaLocationPrefix==null) {
+        if (dstSchemaLocationPrefix == null) {
 
             String jspURLPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-            if (jspURLPrefix==null || jspURLPrefix.length()==0) {
+            if (jspURLPrefix == null || jspURLPrefix.length() == 0) {
                 throw new DDRuntimeException("Missing " + PropsIF.JSP_URL_PREFIX + " property!");
             }
 
@@ -627,10 +624,10 @@ public class MdbFile {
      */
     private static String getNamespaceURLPrefix() {
 
-        if (namespaceURLPrefix==null) {
+        if (namespaceURLPrefix == null) {
 
             String jspURLPrefix = Props.getProperty(PropsIF.JSP_URL_PREFIX);
-            if (jspURLPrefix==null || jspURLPrefix.length()==0) {
+            if (jspURLPrefix == null || jspURLPrefix.length() == 0) {
                 throw new DDRuntimeException("Missing " + PropsIF.JSP_URL_PREFIX + " property!");
             }
 

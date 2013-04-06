@@ -55,9 +55,9 @@ public class FixedValuesHandler extends BaseHandler{
             ownerType = _ownerType;
         }
 
-        if (ctx!=null) {
+        if (ctx != null) {
             String _versioning = ctx.getInitParameter("versioning");
-            if (_versioning!=null && _versioning.equalsIgnoreCase("false")) {
+            if (_versioning != null && _versioning.equalsIgnoreCase("false")) {
                 setVersioning(false);
             }
         }
@@ -104,7 +104,7 @@ public class FixedValuesHandler extends BaseHandler{
     private void insert() throws Exception {
 
         String[] newValues = req.getParameterValues("new_value");
-        for (int i=0; newValues!=null && i<newValues.length; i++) {
+        for (int i = 0; newValues != null && i < newValues.length; i++) {
             insertValue(newValues[i].trim());
         }
     }
@@ -124,17 +124,17 @@ public class FixedValuesHandler extends BaseHandler{
         map.put("VALUE", inParams.add(value));
 
         String isDefault = req.getParameter("is_default");
-        if (isDefault!=null && isDefault.equalsIgnoreCase("true")) {
+        if (isDefault != null && isDefault.equalsIgnoreCase("true")) {
             map.put("IS_DEFAULT", "'Y'");
         }
 
         String definition = req.getParameter("definition");
-        if (definition!=null) {
+        if (definition != null) {
             map.put("DEFINITION", inParams.add(definition));
         }
 
         String shortDesc = req.getParameter("short_desc");
-        if (shortDesc!=null) {
+        if (shortDesc != null) {
             map.put("SHORT_DESC", inParams.add(shortDesc));
         }
 
@@ -143,8 +143,7 @@ public class FixedValuesHandler extends BaseHandler{
             stmt = SQL.preparedStatement(SQL.insertStatement("FXV", map), inParams, conn);
             stmt.executeUpdate();
             setLastInsertID();
-        }
-        finally {
+        } finally {
             SQL.close(stmt);
         }
     }
@@ -166,17 +165,17 @@ public class FixedValuesHandler extends BaseHandler{
 
         INParameters inParams = new INParameters();
         LinkedHashMap map = new LinkedHashMap();
-        if (isDefault!=null) {
+        if (isDefault != null) {
             map.put("IS_DEFAULT", isDefault.equals("true") ? "'Y'" : "'N'");
         }
-        if (definition!=null) {
+        if (definition != null) {
             map.put("DEFINITION", inParams.add(definition));
         }
-        if (definition!=null) {
+        if (definition != null) {
             map.put("SHORT_DESC", inParams.add(shortDesc));
         }
 
-        if (map.size()==0) {
+        if (map.size() == 0) {
             return;
         }
 
@@ -187,8 +186,7 @@ public class FixedValuesHandler extends BaseHandler{
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();
             lastInsertID = fxvID;
-        }
-        finally {
+        } finally {
             SQL.close(stmt);
         }
     }
@@ -204,7 +202,7 @@ public class FixedValuesHandler extends BaseHandler{
             return;
         }
 
-        for (int i=0; i<fxvID.length; i++) {
+        for (int i = 0; i < fxvID.length; i++) {
             deleteValue(fxvID[i]);
         }
     }
@@ -239,7 +237,7 @@ public class FixedValuesHandler extends BaseHandler{
         allowanceChecked = true;
 
         // check if legal mode
-        if (mode==null || (!mode.equalsIgnoreCase("add") &&
+        if (mode == null || (!mode.equalsIgnoreCase("add") &&
                 !mode.equalsIgnoreCase("edit") &&
                 !mode.equalsIgnoreCase("delete")) &&
                 !mode.equalsIgnoreCase("edit_positions")) {
@@ -260,7 +258,7 @@ public class FixedValuesHandler extends BaseHandler{
             throw new Exception("FixedValuesHandler: unknown parent type!");
         }
 
-        // for owners with type!="elem" fixed values always allowed
+        // for owners with type != "elem" fixed values always allowed
         if (!ownerType.equals("elem")) {
             return;
         }
@@ -268,9 +266,9 @@ public class FixedValuesHandler extends BaseHandler{
         // get the element's datatype and check if fxvalues are allowed
         DDSearchEngine eng = new DDSearchEngine(conn);
         DataElement elm = eng.getDataElement(ownerID);
-        String dtype = elm==null ? "" :
+        String dtype = elm == null ? "" :
             elm.getAttributeValueByShortName("Datatype");
-        dtype = dtype==null ? "" : dtype.toUpperCase();
+        dtype = dtype == null ? "" : dtype.toUpperCase();
         if (prhbDatatypes.contains(dtype.toUpperCase()) && !mode.equalsIgnoreCase("edit")) {
             allowed = false;
         }
@@ -293,8 +291,7 @@ public class FixedValuesHandler extends BaseHandler{
             if (rs.next()) {
                 lastInsertID = rs.getString(1);
             }
-        }
-        finally {
+        } finally {
             SQL.close(rs);
             SQL.close(stmt);
         }

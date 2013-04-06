@@ -20,7 +20,7 @@ public class GetImportResults extends HttpServlet {
 
         // get the text to write
         String text = req.getParameter("text");
-        if (text==null)
+        if (text == null)
             throw new ServletException("Text was null!");
 
         // set up the OutputStream to write to
@@ -35,8 +35,7 @@ public class GetImportResults extends HttpServlet {
 
             // flush the text to barray
             pdf.flush();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(new PrintStream(res.getOutputStream()));
         }
 

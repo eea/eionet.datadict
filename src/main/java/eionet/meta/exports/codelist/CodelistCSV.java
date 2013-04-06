@@ -21,7 +21,7 @@ public class CodelistCSV extends Codelist{
     public CodelistCSV(Connection conn, PrintWriter writer) {
 
         this.writer = writer;
-        if (conn!=null) {
+        if (conn != null) {
             searchEngine = new DDSearchEngine(conn);
         }
     }
@@ -35,7 +35,7 @@ public class CodelistCSV extends Codelist{
         Vector elms = new Vector();
         if (objType.equalsIgnoreCase(ELM)) {
             DataElement elm = searchEngine.getDataElement(objID);
-            if (elm!=null) {
+            if (elm != null) {
                 elms.add(elm);
             }
         }
@@ -59,13 +59,13 @@ public class CodelistCSV extends Codelist{
      */
     private void write(Vector elms, String objType) throws Exception {
 
-        if (elms==null || elms.isEmpty()) {
+        if (elms == null || elms.isEmpty()) {
             return;
         }
 
         boolean elmObjType = objType.equalsIgnoreCase(ELM);
 
-        for (int i=0; i<elms.size(); i++) {
+        for (int i = 0; i < elms.size(); i++) {
 
             DataElement elm = (DataElement)elms.get(i);
             String elmIdf = elm.getIdentifier();
@@ -73,8 +73,8 @@ public class CodelistCSV extends Codelist{
                 throw new DDRuntimeException("Failed to get the element's identifier");
             }
 
-            String dstIdf = elm.getDstIdentifier()==null ? "" : elm.getDstIdentifier();
-            String tblIdf = elm.getTblIdentifier()==null ? "" : elm.getTblIdentifier();
+            String dstIdf = elm.getDstIdentifier() == null ? "" : elm.getDstIdentifier();
+            String tblIdf = elm.getTblIdentifier() == null ? "" : elm.getTblIdentifier();
 
             if (!elmObjType || (elmObjType && !elm.isCommon())) {
 
@@ -87,11 +87,11 @@ public class CodelistCSV extends Codelist{
             }
 
             Vector fxvs = searchEngine.getFixedValues(elm.getID());
-            for (int j=0; fxvs!=null && j<fxvs.size(); j++) {
+            for (int j = 0; fxvs != null && j < fxvs.size(); j++) {
 
                 FixedValue fxv = (FixedValue)fxvs.get(j);
                 String value = fxv.getValue();
-                if (value!=null && value.trim().length()>0) {
+                if (value != null && value.trim().length()>0) {
 
                     StringBuffer line = new StringBuffer();
 
@@ -108,19 +108,18 @@ public class CodelistCSV extends Codelist{
 
                     append(line, value);
                     line.append(",");
-                    append(line, fxv.getDefinition()==null ? "" : fxv.getDefinition());
+                    append(line, fxv.getDefinition() == null ? "" : fxv.getDefinition());
                     line.append(",");
-                    append(line, fxv.getShortDesc()==null ? "" : fxv.getShortDesc());
+                    append(line, fxv.getShortDesc() == null ? "" : fxv.getShortDesc());
 
                     lines.add(line.toString());
                 }
             }
         }
 
-        if (lines==null || lines.isEmpty()) {
+        if (lines == null || lines.isEmpty()) {
             lines.add("No codelists found!");
-        }
-        else {
+        } else {
             // header line where the field meanings are explained
             lines.add(0, "Dataset,Table,Element,Fixed,Value,Definition,ShortDescription");
         }

@@ -115,11 +115,11 @@ public abstract class XmlInst implements XmlInstIF {
 
         writeHeader();
 
-        if (this.docElement==null) throw new Exception("Missing document element!");
+        if (this.docElement == null) throw new Exception("Missing document element!");
         startDocElement();
 
         // write content
-        for (int i=0; i<content.size(); i++) {
+        for (int i = 0; i < content.size(); i++) {
             writer.print((String)content.get(i));
         }
 
@@ -131,7 +131,7 @@ public abstract class XmlInst implements XmlInstIF {
         if (s == null) return null;
 
         StringBuffer buf = new StringBuffer();
-        for (int i=0; i<s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == '<')
                 buf.append("&lt;");
@@ -151,7 +151,7 @@ public abstract class XmlInst implements XmlInstIF {
         if (s == null) return null;
 
         StringBuffer buf = new StringBuffer("<![CDATA[");
-        for (int i=0; i<s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (Character.isISOControl(c)) {
                 if (Character.isWhitespace(c))
@@ -167,12 +167,12 @@ public abstract class XmlInst implements XmlInstIF {
 
     protected String getLead(String leadName) {
 
-        if (leads==null || leads.size()==0) {
+        if (leads == null || leads.size() == 0) {
             setLeads();
         }
 
         String lead = (String)leads.get(leadName);
-        if (lead==null)
+        if (lead == null)
             lead = curLead;
         else
             curLead = lead;
@@ -190,7 +190,7 @@ public abstract class XmlInst implements XmlInstIF {
     }
 
     protected void writeRows(Vector elms) {
-        for (int i=0; i<ROW_COUNT; i++) {
+        for (int i = 0; i < ROW_COUNT; i++) {
             writeRow(elms);
         }
     }
@@ -199,7 +199,7 @@ public abstract class XmlInst implements XmlInstIF {
         addString(startRow());
         newLine();
 
-        for (int i=0; elms!=null && i<elms.size(); i++) {
+        for (int i = 0; elms != null && i < elms.size(); i++) {
             DataElement elm = (DataElement)elms.get(i);
             addString(elm(elm.getIdentifier()));
             newLine();

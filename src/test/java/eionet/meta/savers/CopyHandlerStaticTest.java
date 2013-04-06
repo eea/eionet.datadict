@@ -51,8 +51,6 @@ public class CopyHandlerStaticTest extends TestCase {
         String start = "insert into DATASET (";
         String actual = CopyHandler.rowsCopyStatement("DATASET", whereClause, newValues);
 
-        System.out.println("actual: " + actual);
-
         assertTrue(actual.startsWith(start));
         int i = actual.indexOf(")", start.length());
         assertTrue(i > start.length());
@@ -65,7 +63,6 @@ public class CopyHandlerStaticTest extends TestCase {
         }
 
         String expected = start + columnsCSV + ") select " + valuesCSV + " from DATASET where " + whereClause;
-        System.out.println("expected: " + expected);
 
         assertEquals(expected, actual);
     }

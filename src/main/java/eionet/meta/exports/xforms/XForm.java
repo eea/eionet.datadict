@@ -62,7 +62,7 @@ public abstract class XForm implements XFormIF {
     */
     public void flush(String template) throws Exception {
 
-        if (template==null)
+        if (template == null)
             throw new Exception("Template path cannot be null!");
 
         URL url = new URL(template);
@@ -70,7 +70,7 @@ public abstract class XForm implements XFormIF {
 
         String line;
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        while ((line=reader.readLine())!=null)
+        while ((line=reader.readLine()) != null)
             writeLine(line);
 
         in.close();
@@ -79,35 +79,30 @@ public abstract class XForm implements XFormIF {
 
     private void writeLine(String line) throws Exception {
 
-        if (line==null) return;
+        if (line == null) return;
 
         if (line.trim().startsWith("<f:model")) {
             writer.println(line);
             String lead = extractLead(line) + "\t";
             writeInstance(lead);
             writeBinds(lead);
-        }
-        else if (line.trim().startsWith("<f:group id=\"controls\"")) {
+        } else if (line.trim().startsWith("<f:group id=\"controls\"")) {
             writer.println(line);
             writeControlsLabel(extractLead(line) + "\t");
-        }
-        else if (line.trim().startsWith("<f:repeat")) {
+        } else if (line.trim().startsWith("<f:repeat")) {
             writeRepeat(line);
             writeControls(extractLead(line) + "\t");
-        }
-        else if (line.trim().startsWith("<f:insert")) {
+        } else if (line.trim().startsWith("<f:insert")) {
             writeInsert(line);
-        }
-        else if (line.trim().startsWith("<f:delete")) {
+        } else if (line.trim().startsWith("<f:delete")) {
             writeDelete(line);
-        }
-        else
+        } else
             writer.println(line);
     }
 
     protected String extractLead(String line) {
         StringBuffer buf = new StringBuffer();
-        for (int i=0; i<line.length(); i++) {
+        for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
             if (Character.isWhitespace(c))
                 buf.append(line.charAt(i));
@@ -141,7 +136,7 @@ public abstract class XForm implements XFormIF {
 
     protected void writeRegularBinds(String lead) throws Exception {
 
-        for (int i=0; i<binds.size(); i++) {
+        for (int i = 0; i < binds.size(); i++) {
             Hashtable bind = (Hashtable)binds.get(i);
             String id = (String)bind.get(ATTR_ID);
             String type = (String)bind.get(ATTR_TYPE);
@@ -150,10 +145,10 @@ public abstract class XForm implements XFormIF {
 
             StringBuffer buf = new StringBuffer("<f:bind");
 
-            if (id!=null) buf.append(" id=\"").append(id).append("\"");
-            if (type!=null) buf.append(" type=\"").append(type).append("\"");
-            if (nodeset!=null) buf.append(" nodeset=\"").append(nodeset).append("\"");
-            if (constraint!=null) buf.append(" constraint=\"").append(constraint).append("\"");
+            if (id != null) buf.append(" id=\"").append(id).append("\"");
+            if (type != null) buf.append(" type=\"").append(type).append("\"");
+            if (nodeset != null) buf.append(" nodeset=\"").append(nodeset).append("\"");
+            if (constraint != null) buf.append(" constraint=\"").append(constraint).append("\"");
 
             buf.append("/>");
 
@@ -163,7 +158,7 @@ public abstract class XForm implements XFormIF {
 
     private void writeControls(String lead) throws Exception {
 
-        for (int i=0; i<controls.size(); i++) {
+        for (int i = 0; i < controls.size(); i++) {
             Hashtable control = (Hashtable)controls.get(i);
             String bind  = (String)control.get(ATTR_BIND);
             String label = (String)control.get(CTRL_LABEL);
@@ -173,25 +168,25 @@ public abstract class XForm implements XFormIF {
 
             // start control
             StringBuffer buf = new StringBuffer("<f:").append(type);
-            if (bind!=null)
+            if (bind != null)
                 buf.append(" bind=\"").append(bind).append("\"");
             buf.append(">");
             writer.println(lead + buf.toString());
 
             // write label
-            if (label!=null) {
+            if (label != null) {
                 buf = new StringBuffer("<f:label>").append(label).append("</f:label>");
                 writer.println(lead + "\t" + buf.toString());
             }
 
             // write hint
-            if (hint!=null) {
+            if (hint != null) {
                 buf = new StringBuffer("<f:hint>").append(hint).append("</f:hint>");
                 writer.println(lead + "\t" + buf.toString());
             }
 
             // write alert
-            if (alert!=null) {
+            if (alert != null) {
                 buf = new StringBuffer("<f:alert>").append(alert).append("</f:alert>");
                 writer.println(lead + "\t" + buf.toString());
             }
@@ -206,7 +201,7 @@ public abstract class XForm implements XFormIF {
 
     private void writeSelectItems(Vector fxvs, String lead) throws Exception {
 
-        for (int i=0; fxvs!=null && i<fxvs.size(); i++) {
+        for (int i = 0; fxvs != null && i < fxvs.size(); i++) {
             writeSelectItem((FixedValue)fxvs.get(i), lead);
         }
     }
@@ -214,7 +209,7 @@ public abstract class XForm implements XFormIF {
     private void writeSelectItem(FixedValue fxv, String lead) throws Exception {
 
         String value = fxv.getValue();
-        if (value==null || value.length()==0)
+        if (value == null || value.length() == 0)
             return;
         else
             value = Util.escapeXML(value);
@@ -228,7 +223,7 @@ public abstract class XForm implements XFormIF {
     }
 
     protected String getRef(String tagName) throws Exception {
-        if (instance==null)
+        if (instance == null)
             throw new Exception("getRef(): instance document is not set!");
         return "";
     }
@@ -239,9 +234,9 @@ public abstract class XForm implements XFormIF {
 
         String attrStart = name + "=\"";
         int i = line.indexOf(attrStart);
-        if (i!=-1) {
+        if (i != -1) {
             int j = line.indexOf("\"", i + attrStart.length());
-            if (j!=-1)
+            if (j != -1)
                 buf.replace(i + attrStart.length(), j, value);
         }
 
@@ -253,7 +248,7 @@ public abstract class XForm implements XFormIF {
         if (s == null) return null;
 
         StringBuffer buf = new StringBuffer("<![CDATA[");
-        for (int i=0; i<s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (Character.isISOControl(c)) {
                 if (Character.isWhitespace(c))
@@ -272,38 +267,38 @@ public abstract class XForm implements XFormIF {
         StringBuffer buf = new StringBuffer();
 
         String minSize = (String)bind.get(ATTR_MINSIZE);
-        if (minSize!=null)
+        if (minSize != null)
             buf.append("string-length(.)&gt;=").append(minSize);
 
         String maxSize = (String)bind.get(ATTR_MAXSIZE);
-        if (maxSize!=null) {
-            if (buf.length()!=0) buf.append(" and ");
+        if (maxSize != null) {
+            if (buf.length() != 0) buf.append(" and ");
             buf.append("string-length(.)&lt;=").append(maxSize);
         }
 
         String minInclValue = (String)bind.get(ATTR_MIN_INCL_VALUE);
         String minExclValue = (String)bind.get(ATTR_MIN_EXCL_VALUE);
-        if (minInclValue!=null) {
-            if (buf.length()!=0) buf.append(" and ");
+        if (minInclValue != null) {
+            if (buf.length() != 0) buf.append(" and ");
             buf.append("number(.)&gt;=").append(minInclValue);
         }
-        else if (minExclValue!=null) {
-            if (buf.length()!=0) buf.append(" and ");
+        else if (minExclValue != null) {
+            if (buf.length() != 0) buf.append(" and ");
             buf.append("number(.)&gt;").append(minExclValue);
         }
 
         String maxInclValue = (String)bind.get(ATTR_MAX_INCL_VALUE);
         String maxExclValue = (String)bind.get(ATTR_MAX_EXCL_VALUE);
-        if (maxInclValue!=null) {
-            if (buf.length()!=0) buf.append(" and ");
+        if (maxInclValue != null) {
+            if (buf.length() != 0) buf.append(" and ");
             buf.append("number(.)&lt;=").append(maxInclValue);
         }
-        else if (maxExclValue!=null) {
-            if (buf.length()!=0) buf.append(" and ");
+        else if (maxExclValue != null) {
+            if (buf.length() != 0) buf.append(" and ");
             buf.append("number(.)&lt;").append(maxExclValue);
         }
 
-        if (buf.length()!=0)
+        if (buf.length() != 0)
             return buf.toString();
         else
             return null;

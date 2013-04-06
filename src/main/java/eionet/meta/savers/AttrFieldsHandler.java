@@ -53,9 +53,9 @@ public class AttrFieldsHandler extends BaseHandler {
 
         harvAttrID = req.getParameter("harv_attr_id");
 
-        if (ctx!=null) {
+        if (ctx != null) {
             String _versioning = ctx.getInitParameter("versioning");
-            if (_versioning!=null && _versioning.equalsIgnoreCase("false"))
+            if (_versioning != null && _versioning.equalsIgnoreCase("false"))
                 setVersioning(false);
         }
     }
@@ -71,10 +71,10 @@ public class AttrFieldsHandler extends BaseHandler {
 
     public void execute_() throws Exception {
 
-        if (mode==null || (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("delete")))
+        if (mode == null || (!mode.equalsIgnoreCase("add") && !mode.equalsIgnoreCase("delete")))
             throw new Exception("AttrFieldsHandler mode unspecified!");
 
-        if (parent_type!=null) {
+        if (parent_type != null) {
 
             // if in versioning mode, we cannot edit attributes of
             // non-working copies
@@ -93,10 +93,9 @@ public class AttrFieldsHandler extends BaseHandler {
             if (parent_id == null) throw new Exception("AttrFieldsHandler: parent id not specified!");
             if (parent_type == null) throw new Exception("AttrFieldsHandler: parent type not specified!");
             insert();
-        }
-        else {
-            if (del_rows == null || del_rows.length==0)
-                if (del_attrs == null || del_attrs.length==0)
+        } else {
+            if (del_rows == null || del_rows.length == 0)
+                if (del_attrs == null || del_attrs.length == 0)
                     if (parent_id == null && parent_type == null)
                         throw new Exception("AttrFieldsHandler: no rows, no attributes, no parents for deletion specified!");
             delete();
@@ -129,7 +128,7 @@ public class AttrFieldsHandler extends BaseHandler {
         map.put("PARENT_TYPE", inParams.add(parent_type));
 
         String position = req.getParameter("position");
-        if (position == null || position.length()==0)
+        if (position == null || position.length() == 0)
             position = "0";
         map.put("POSITION", inParams.add(position, Types.INTEGER));
 
@@ -174,17 +173,13 @@ public class AttrFieldsHandler extends BaseHandler {
 
                 stmt = SQL.preparedStatement(SQL.insertStatement("COMPLEX_ATTR_FIELD", map), inParams, conn);
                 stmt.executeUpdate();
-            }
-            while (params.hasMoreElements());
-        }
-        catch (SQLException sqle) {
+            } while (params.hasMoreElements());
+        } catch (SQLException sqle) {
             sqle.printStackTrace(System.out);
-        }
-        finally {
+        } finally {
             try {
-                if (stmt!=null) stmt.close();
-            }
-            catch (SQLException e) {}
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {}
         }
     }
 
@@ -202,8 +197,8 @@ public class AttrFieldsHandler extends BaseHandler {
         INParameters inParamsRow = new INParameters();
         StringBuffer bufRow = new StringBuffer();
         bufRow.append("delete from COMPLEX_ATTR_ROW where ");
-        for (int i=0; del_rows!=null && i<del_rows.length; i++) {
-            if (i>0)
+        for (int i = 0; del_rows != null && i < del_rows.length; i++) {
+            if (i > 0)
                 bufRow.append(" or ");
             bufRow.append("ROW_ID=").append(inParamsRow.add(del_rows[i]));
         }
@@ -211,8 +206,8 @@ public class AttrFieldsHandler extends BaseHandler {
         INParameters inParamsFld = new INParameters();
         StringBuffer bufFld = new StringBuffer();
         bufFld.append("delete from COMPLEX_ATTR_FIELD where ");
-        for (int i=0; del_rows!=null && i<del_rows.length; i++) {
-            if (i>0)
+        for (int i = 0; del_rows != null && i < del_rows.length; i++) {
+            if (i > 0)
                 bufFld.append(" or ");
             bufFld.append("ROW_ID=").append(inParamsFld.add(del_rows[i]));
         }
@@ -224,13 +219,11 @@ public class AttrFieldsHandler extends BaseHandler {
             stmt2 = SQL.preparedStatement(bufFld.toString(), inParamsFld, conn);
             stmt1.executeUpdate();
             stmt2.executeUpdate();
-        }
-        finally {
+        } finally {
             try {
-                if (stmt1!=null) stmt1.close();
-                if (stmt2!=null) stmt2.close();
-            }
-            catch (SQLException e) {}
+                if (stmt1 != null) stmt1.close();
+                if (stmt2 != null) stmt2.close();
+            } catch (SQLException e) {}
         }
     }
 
@@ -246,8 +239,8 @@ public class AttrFieldsHandler extends BaseHandler {
         append(" and PARENT_TYPE=").append(inParams.add(parent_type));
         if (del_attrs != null && del_attrs.length != 0) {
             buf.append(" and (");
-            for (int i=0; i<del_attrs.length; i++) {
-                if (i>0)
+            for (int i = 0; i < del_attrs.length; i++) {
+                if (i > 0)
                     buf.append(" or ");
                 buf.append("M_COMPLEX_ATTR_ID=").append(inParams.add(del_attrs[i], Types.INTEGER));
             }
@@ -263,17 +256,15 @@ public class AttrFieldsHandler extends BaseHandler {
             while (rs.next()) {
                 v.add(rs.getString("ROW_ID"));
             }
-        }
-        finally {
+        } finally {
             try {
-                if (rs!=null) rs.close();
-                if (stmt!=null) stmt.close();
-            }
-            catch (SQLException e) {}
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {}
         }
 
         del_rows = new String[v.size()];
-        for (int i=0; i<v.size(); i++)
+        for (int i = 0; i < v.size(); i++)
             del_rows[i] = (String)v.get(i);
     }
 

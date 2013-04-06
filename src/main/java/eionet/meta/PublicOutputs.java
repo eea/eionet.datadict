@@ -43,7 +43,7 @@ public class PublicOutputs {
      */
     public static Vector getOrder(Class c) {
 
-        if (orders==null)
+        if (orders == null)
             init();
         return (Vector)orders.get(c);
     }
@@ -53,7 +53,7 @@ public class PublicOutputs {
      */
     public static Hashtable getWeights(Class c) {
 
-        if (weights==null)
+        if (weights == null)
             init();
         return (Hashtable)weights.get(c);
     }

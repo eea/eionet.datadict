@@ -23,14 +23,13 @@ public class OrgHarvester extends DDHarvester{
         Vector orgs = null;
         try {
             orgs = DirectoryService.listOrganisations();
-        }
-        catch (DirServiceException dse) {
+        } catch (DirServiceException dse) {
             dse.printStackTrace();
         }
-        if (orgs==null)
+        if (orgs == null)
             return;
 
-        for (int i=0; i<orgs.size(); i++) {
+        for (int i = 0; i < orgs.size(); i++) {
 
             String orgID = (String)orgs.get(i);
             if (orgID.startsWith("="))
@@ -39,15 +38,14 @@ public class OrgHarvester extends DDHarvester{
             Hashtable h = null;
             try {
                 h = DirectoryService.getOrganisation(orgID);
-            }
-            catch (DirServiceException dse) {
+            } catch (DirServiceException dse) {
                 dse.printStackTrace();
             }
-            if (h==null)
+            if (h == null)
                 continue;
 
             String id = (String)h.get("ID");
-            if (id==null)
+            if (id == null)
                 continue;
 
             store(h, id);
@@ -60,8 +58,7 @@ public class OrgHarvester extends DDHarvester{
 
         try {
             harvester.harvest();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(System.out);
             harvester.cleanup();
         }

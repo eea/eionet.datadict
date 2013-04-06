@@ -27,7 +27,7 @@ public class LoginServlet extends LoginLogoutServlet {
         String password = req.getParameter("j_password");
 
         DDUser user = new DDUser();
-        if (user.authenticate(username, password)==true) {
+        if (user.authenticate(username, password) == true) {
 
             allocSession(req, user);
 
@@ -35,8 +35,7 @@ public class LoginServlet extends LoginLogoutServlet {
             PrintWriter out = res.getWriter();
             out.print(responseText(req));
             out.close();
-        }
-        else {
+        } else {
             String loginErrorPage = getServletContext().getInitParameter(INITPAR_LOGIN_ERROR_PAGE);
             freeSession(req);
             res.sendRedirect(loginErrorPage);
@@ -52,7 +51,7 @@ public class LoginServlet extends LoginLogoutServlet {
 
         String target = req.getParameter("target");
         StringBuffer buf = new StringBuffer("<html><script>");
-        if (target!=null && target.equals("blank"))
+        if (target != null && target.equals("blank"))
             buf.append("window.opener.location.reload(true);");
         buf.append("window.close();</script></html>");
         return buf.toString();
